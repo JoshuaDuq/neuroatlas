@@ -92,3 +92,38 @@ test('a range input still accepts shortcuts, since it types nothing', () => {
   assert.equal(shortcutsAllowed({ tagName: 'INPUT', type: 'range' }), true);
   assert.equal(shortcutsAllowed({ tagName: 'INPUT', type: 'checkbox' }), true);
 });
+
+test('switching atlas is a distinct status from first load', () => {
+  // On first load there is nothing to show, so the stage covers the viewport.
+  // Switching atlas must leave the model on screen and usable.
+  const s = session();
+  s.setStatus('ready');
+  s.setSwitching({ loaded: 1, total: 4 });
+  const snapshot = s.assemble(modelState);
+  assert.equal(snapshot.status, 'switching');
+  assert.deepEqual(snapshot.progress, { loaded: 1, total: 4 });
+  s.setStatus('ready');
+  assert.equal(s.assemble(modelState).status, 'ready');
+});
+
+test('a failed atlas switch reports without declaring the viewer broken', () => {
+  const s = session();
+  s.setStatus('ready');
+  s.failSwitch('HCP-MMP1.0 multimodal atlas', new Error('boom'));
+  const snapshot = s.assemble(modelState);
+  assert.equal(snapshot.status, 'ready', 'the model still on screen is still usable');
+  assert.equal(snapshot.error, null);
+  assert.match(snapshot.notice, /HCP-MMP1\.0 multimodal atlas/);
+});
+
+test('a failure message names the atlas, not the parser that gave up', () => {
+  // A missing file makes GLTFLoader parse the 404 page and report
+  // "Unexpected token '<'". That is an implementation detail leaking into
+  // the interface; the reader is told what failed instead.
+  const s = session();
+  s.failSwitch('HCP-MMP1.0 multimodal atlas',
+    new SyntaxError(`Unexpected token '<', "<!doctype "... is not valid JSON`));
+  const notice = s.assemble(modelState).notice;
+  assert.ok(!notice.includes('Unexpected token'), notice);
+  assert.ok(!notice.includes('doctype'), notice);
+});

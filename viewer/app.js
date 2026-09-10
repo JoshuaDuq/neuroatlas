@@ -81,19 +81,20 @@ export async function startApp() {
 
   async function setAtlas(id) {
     if (id === model.state.atlas) return;
-    session.setProgress(null);
+    session.setSwitching(null);
     render();
     try {
       await model.setAtlas(id, progress => {
         if (progress?.total) {
-          session.setProgress({ loaded: progress.loaded, total: progress.total });
+          session.setSwitching({ loaded: progress.loaded, total: progress.total });
           render();
         }
       });
       session.setStatus('ready');
     } catch (error) {
-      // Keep the atlas that still works; the control reverts on the next render.
-      session.setError(error);
+      // The control reflects model.state.atlas, so it reverts on this render.
+      const label = model.manifest.atlases.find(atlas => atlas.id === id)?.label ?? id;
+      session.failSwitch(label, error);
     }
     render();
   }
