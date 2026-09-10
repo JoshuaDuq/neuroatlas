@@ -80,7 +80,11 @@
         0.0,
         1.0
       ]
-    ]
+    ],
+    "shading": {
+      "method": "Gaussian segmentation gradient normals; geometry unchanged",
+      "sigma_voxels": 0.8
+    }
   },
   "regions": [
     {
