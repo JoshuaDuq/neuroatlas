@@ -7,3 +7,5 @@ __pycache__/
 .DS_Store
 *.blend1
 data/cache/
+deliverables/*.blend
+deliverables/*.png

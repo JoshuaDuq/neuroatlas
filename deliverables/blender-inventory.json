@@ -1,0 +1,3284 @@
+[
+  {
+    "id": "aseg:midline:14",
+    "vertices": 1624,
+    "faces": 3244,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:15",
+    "vertices": 1912,
+    "faces": 3812,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:0",
+    "vertices": 16817,
+    "faces": 30684,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:0",
+    "vertices": 16842,
+    "faces": 30780,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:16",
+    "vertices": 9216,
+    "faces": 18444,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:255",
+    "vertices": 1011,
+    "faces": 2022,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:253",
+    "vertices": 591,
+    "faces": 1182,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:254",
+    "vertices": 659,
+    "faces": 1318,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:252",
+    "vertices": 651,
+    "faces": 1302,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:251",
+    "vertices": 1128,
+    "faces": 2260,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:6",
+    "vertices": 3313,
+    "faces": 5477,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:6",
+    "vertices": 4127,
+    "faces": 6958,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:7",
+    "vertices": 2969,
+    "faces": 4924,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:7",
+    "vertices": 3207,
+    "faces": 5402,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:8",
+    "vertices": 3401,
+    "faces": 5785,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:8",
+    "vertices": 3419,
+    "faces": 5769,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:1",
+    "vertices": 1609,
+    "faces": 2539,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:1",
+    "vertices": 1547,
+    "faces": 2385,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:2",
+    "vertices": 2044,
+    "faces": 3319,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:2",
+    "vertices": 2182,
+    "faces": 3565,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:3",
+    "vertices": 3379,
+    "faces": 5649,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:3",
+    "vertices": 3354,
+    "faces": 5624,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:4",
+    "vertices": 3762,
+    "faces": 6367,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:4",
+    "vertices": 3386,
+    "faces": 5518,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:5",
+    "vertices": 1154,
+    "faces": 1779,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:5",
+    "vertices": 1474,
+    "faces": 2299,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:9",
+    "vertices": 1915,
+    "faces": 3011,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:9",
+    "vertices": 1775,
+    "faces": 2696,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:10",
+    "vertices": 1372,
+    "faces": 1890,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:10",
+    "vertices": 1445,
+    "faces": 2055,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:11",
+    "vertices": 2317,
+    "faces": 3745,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:11",
+    "vertices": 2320,
+    "faces": 3756,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:12",
+    "vertices": 2962,
+    "faces": 4760,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:12",
+    "vertices": 2655,
+    "faces": 4221,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:13",
+    "vertices": 1005,
+    "faces": 1456,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:13",
+    "vertices": 685,
+    "faces": 971,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:14",
+    "vertices": 1757,
+    "faces": 2760,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:14",
+    "vertices": 1803,
+    "faces": 2902,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:15",
+    "vertices": 6581,
+    "faces": 10829,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:15",
+    "vertices": 6463,
+    "faces": 10510,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:16",
+    "vertices": 10703,
+    "faces": 19093,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:16",
+    "vertices": 10463,
+    "faces": 18327,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:17",
+    "vertices": 1988,
+    "faces": 2753,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:17",
+    "vertices": 1874,
+    "faces": 2654,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:18",
+    "vertices": 1951,
+    "faces": 2873,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:18",
+    "vertices": 1751,
+    "faces": 2446,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:21",
+    "vertices": 2683,
+    "faces": 4382,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:21",
+    "vertices": 2791,
+    "faces": 4538,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:22",
+    "vertices": 3605,
+    "faces": 6086,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:22",
+    "vertices": 3258,
+    "faces": 5487,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:23",
+    "vertices": 4117,
+    "faces": 6532,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:23",
+    "vertices": 3970,
+    "faces": 6202,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:19",
+    "vertices": 3648,
+    "faces": 5744,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:19",
+    "vertices": 3810,
+    "faces": 5901,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:20",
+    "vertices": 2177,
+    "faces": 3540,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:20",
+    "vertices": 2704,
+    "faces": 4339,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:24",
+    "vertices": 4572,
+    "faces": 7090,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:24",
+    "vertices": 5265,
+    "faces": 8244,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:25",
+    "vertices": 4895,
+    "faces": 8001,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:25",
+    "vertices": 4657,
+    "faces": 7875,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:26",
+    "vertices": 6024,
+    "faces": 10053,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:26",
+    "vertices": 6095,
+    "faces": 10281,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:27",
+    "vertices": 5975,
+    "faces": 10193,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:27",
+    "vertices": 4933,
+    "faces": 8267,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:28",
+    "vertices": 5481,
+    "faces": 8988,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:28",
+    "vertices": 5038,
+    "faces": 8174,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:29",
+    "vertices": 6126,
+    "faces": 10000,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:29",
+    "vertices": 6119,
+    "faces": 9979,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:30",
+    "vertices": 5897,
+    "faces": 9435,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:30",
+    "vertices": 6201,
+    "faces": 10118,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:31",
+    "vertices": 2066,
+    "faces": 3259,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:31",
+    "vertices": 1713,
+    "faces": 2644,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:32",
+    "vertices": 750,
+    "faces": 990,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:32",
+    "vertices": 677,
+    "faces": 902,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:33",
+    "vertices": 1323,
+    "faces": 2037,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:33",
+    "vertices": 1114,
+    "faces": 1669,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:34",
+    "vertices": 4616,
+    "faces": 7398,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:34",
+    "vertices": 4083,
+    "faces": 6612,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:35",
+    "vertices": 1938,
+    "faces": 2787,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:35",
+    "vertices": 1812,
+    "faces": 2560,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:36",
+    "vertices": 2631,
+    "faces": 4083,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:36",
+    "vertices": 1929,
+    "faces": 2949,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:37",
+    "vertices": 3983,
+    "faces": 6517,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:37",
+    "vertices": 3580,
+    "faces": 5851,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:38",
+    "vertices": 4593,
+    "faces": 7547,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:38",
+    "vertices": 4684,
+    "faces": 7819,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:51",
+    "vertices": 4639,
+    "faces": 6799,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:72",
+    "vertices": 1669,
+    "faces": 2534,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:90",
+    "vertices": 948,
+    "faces": 1347,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:65",
+    "vertices": 972,
+    "faces": 1415,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:88",
+    "vertices": 1550,
+    "faces": 2243,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:91",
+    "vertices": 1365,
+    "faces": 2076,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:92",
+    "vertices": 1368,
+    "faces": 2157,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:52",
+    "vertices": 4521,
+    "faces": 7073,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:38",
+    "vertices": 2225,
+    "faces": 3476,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:32",
+    "vertices": 1088,
+    "faces": 1597,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:40",
+    "vertices": 2042,
+    "faces": 3155,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:41",
+    "vertices": 1252,
+    "faces": 1927,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:164",
+    "vertices": 871,
+    "faces": 1238,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:162",
+    "vertices": 812,
+    "faces": 1157,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:161",
+    "vertices": 1182,
+    "faces": 1725,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:35",
+    "vertices": 1013,
+    "faces": 1517,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:58",
+    "vertices": 958,
+    "faces": 1267,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:53",
+    "vertices": 4209,
+    "faces": 6019,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:9",
+    "vertices": 5102,
+    "faces": 7945,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:8",
+    "vertices": 6817,
+    "faces": 10830,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:99",
+    "vertices": 1188,
+    "faces": 1749,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:74",
+    "vertices": 1283,
+    "faces": 1977,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:75",
+    "vertices": 1673,
+    "faces": 2627,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:84",
+    "vertices": 1909,
+    "faces": 2964,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:76",
+    "vertices": 1299,
+    "faces": 1954,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:66",
+    "vertices": 594,
+    "faces": 829,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:94",
+    "vertices": 1223,
+    "faces": 1847,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:103",
+    "vertices": 1159,
+    "faces": 1664,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:12",
+    "vertices": 1283,
+    "faces": 1937,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:39",
+    "vertices": 1561,
+    "faces": 2413,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:36",
+    "vertices": 1050,
+    "faces": 1551,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:37",
+    "vertices": 1789,
+    "faces": 2764,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:96",
+    "vertices": 2767,
+    "faces": 4530,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:54",
+    "vertices": 1687,
+    "faces": 2602,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:44",
+    "vertices": 1653,
+    "faces": 2617,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:55",
+    "vertices": 2456,
+    "faces": 3888,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:78",
+    "vertices": 2053,
+    "faces": 3227,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:56",
+    "vertices": 1150,
+    "faces": 1611,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:42",
+    "vertices": 1789,
+    "faces": 2869,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:45",
+    "vertices": 1784,
+    "faces": 2829,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:30",
+    "vertices": 1288,
+    "faces": 1922,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:47",
+    "vertices": 1647,
+    "faces": 2510,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:46",
+    "vertices": 1068,
+    "faces": 1597,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:29",
+    "vertices": 987,
+    "faces": 1475,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:68",
+    "vertices": 1983,
+    "faces": 3139,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:67",
+    "vertices": 1714,
+    "faces": 2689,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:70",
+    "vertices": 1195,
+    "faces": 1826,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:63",
+    "vertices": 1398,
+    "faces": 2177,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:73",
+    "vertices": 1819,
+    "faces": 2859,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:86",
+    "vertices": 2266,
+    "faces": 3600,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:87",
+    "vertices": 1621,
+    "faces": 2498,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:69",
+    "vertices": 2101,
+    "faces": 3240,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:71",
+    "vertices": 1333,
+    "faces": 2072,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:24",
+    "vertices": 877,
+    "faces": 1275,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:89",
+    "vertices": 998,
+    "faces": 1472,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:61",
+    "vertices": 1032,
+    "faces": 1475,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:59",
+    "vertices": 968,
+    "faces": 1354,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:179",
+    "vertices": 1099,
+    "faces": 1624,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:175",
+    "vertices": 2041,
+    "faces": 2983,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:77",
+    "vertices": 1651,
+    "faces": 2565,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:125",
+    "vertices": 1798,
+    "faces": 2532,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:85",
+    "vertices": 1399,
+    "faces": 2124,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:112",
+    "vertices": 1173,
+    "faces": 1712,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:117",
+    "vertices": 2701,
+    "faces": 4338,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:111",
+    "vertices": 1331,
+    "faces": 2045,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:34",
+    "vertices": 1094,
+    "faces": 1569,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:62",
+    "vertices": 1204,
+    "faces": 1754,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:142",
+    "vertices": 1965,
+    "faces": 2651,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:118",
+    "vertices": 1209,
+    "faces": 1794,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:10",
+    "vertices": 1489,
+    "faces": 2319,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:18",
+    "vertices": 1507,
+    "faces": 2285,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:113",
+    "vertices": 736,
+    "faces": 1033,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:115",
+    "vertices": 962,
+    "faces": 1360,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:114",
+    "vertices": 1048,
+    "faces": 1562,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:108",
+    "vertices": 1904,
+    "faces": 2904,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:169",
+    "vertices": 1480,
+    "faces": 2186,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:157",
+    "vertices": 1157,
+    "faces": 1705,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:120",
+    "vertices": 2492,
+    "faces": 3755,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:97",
+    "vertices": 1131,
+    "faces": 1678,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:79",
+    "vertices": 1104,
+    "faces": 1669,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:80",
+    "vertices": 1018,
+    "faces": 1519,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:82",
+    "vertices": 1233,
+    "faces": 1897,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:81",
+    "vertices": 1067,
+    "faces": 1585,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:168",
+    "vertices": 1086,
+    "faces": 1628,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:146",
+    "vertices": 1198,
+    "faces": 1722,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:145",
+    "vertices": 1501,
+    "faces": 2318,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:144",
+    "vertices": 1962,
+    "faces": 2960,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:17",
+    "vertices": 1299,
+    "faces": 1949,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:174",
+    "vertices": 1278,
+    "faces": 1867,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:95",
+    "vertices": 1242,
+    "faces": 1855,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:48",
+    "vertices": 1422,
+    "faces": 2185,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:20",
+    "vertices": 725,
+    "faces": 1041,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:21",
+    "vertices": 780,
+    "faces": 1101,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:159",
+    "vertices": 732,
+    "faces": 1055,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:173",
+    "vertices": 1341,
+    "faces": 1940,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:109",
+    "vertices": 1380,
+    "faces": 2076,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:50",
+    "vertices": 1531,
+    "faces": 2348,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:2",
+    "vertices": 867,
+    "faces": 1225,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:23",
+    "vertices": 724,
+    "faces": 1014,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:93",
+    "vertices": 2144,
+    "faces": 3319,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:101",
+    "vertices": 1342,
+    "faces": 2100,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:102",
+    "vertices": 1242,
+    "faces": 1905,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:100",
+    "vertices": 1714,
+    "faces": 2614,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:170",
+    "vertices": 1116,
+    "faces": 1663,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:180",
+    "vertices": 778,
+    "faces": 1094,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:57",
+    "vertices": 994,
+    "faces": 1444,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:64",
+    "vertices": 969,
+    "faces": 1409,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:60",
+    "vertices": 1374,
+    "faces": 2104,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:171",
+    "vertices": 1171,
+    "faces": 1768,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:83",
+    "vertices": 1406,
+    "faces": 2198,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:124",
+    "vertices": 1657,
+    "faces": 2400,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:27",
+    "vertices": 1269,
+    "faces": 1979,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:122",
+    "vertices": 2265,
+    "faces": 3511,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:11",
+    "vertices": 777,
+    "faces": 1150,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:148",
+    "vertices": 3283,
+    "faces": 5462,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:105",
+    "vertices": 1481,
+    "faces": 2158,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:149",
+    "vertices": 3825,
+    "faces": 6275,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:147",
+    "vertices": 1486,
+    "faces": 2323,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:116",
+    "vertices": 2152,
+    "faces": 3410,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:150",
+    "vertices": 2695,
+    "faces": 4438,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:143",
+    "vertices": 1312,
+    "faces": 1980,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:151",
+    "vertices": 2301,
+    "faces": 3623,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:138",
+    "vertices": 1735,
+    "faces": 2736,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:126",
+    "vertices": 1409,
+    "faces": 2024,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:155",
+    "vertices": 916,
+    "faces": 1308,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:127",
+    "vertices": 1423,
+    "faces": 2137,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:137",
+    "vertices": 1742,
+    "faces": 2610,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:178",
+    "vertices": 1192,
+    "faces": 1755,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:110",
+    "vertices": 1660,
+    "faces": 2328,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:22",
+    "vertices": 721,
+    "faces": 1033,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:166",
+    "vertices": 1404,
+    "faces": 1949,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:167",
+    "vertices": 1751,
+    "faces": 2523,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:106",
+    "vertices": 1762,
+    "faces": 2565,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:31",
+    "vertices": 2016,
+    "faces": 3060,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:15",
+    "vertices": 2026,
+    "faces": 3233,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:119",
+    "vertices": 2105,
+    "faces": 2936,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:121",
+    "vertices": 1415,
+    "faces": 2103,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:25",
+    "vertices": 1650,
+    "faces": 2521,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:104",
+    "vertices": 1686,
+    "faces": 2593,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:14",
+    "vertices": 2684,
+    "faces": 3774,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:165",
+    "vertices": 642,
+    "faces": 920,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:98",
+    "vertices": 709,
+    "faces": 1014,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:43",
+    "vertices": 2036,
+    "faces": 3173,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:26",
+    "vertices": 1525,
+    "faces": 2411,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:123",
+    "vertices": 718,
+    "faces": 1027,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:128",
+    "vertices": 1385,
+    "faces": 2021,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:129",
+    "vertices": 1766,
+    "faces": 2720,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:176",
+    "vertices": 1373,
+    "faces": 2039,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:130",
+    "vertices": 1883,
+    "faces": 2912,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:28",
+    "vertices": 1322,
+    "faces": 2000,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:107",
+    "vertices": 834,
+    "faces": 1189,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:132",
+    "vertices": 1388,
+    "faces": 2142,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:177",
+    "vertices": 1235,
+    "faces": 1896,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:133",
+    "vertices": 1990,
+    "faces": 3161,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:134",
+    "vertices": 1978,
+    "faces": 3187,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:136",
+    "vertices": 1478,
+    "faces": 2282,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:135",
+    "vertices": 2223,
+    "faces": 3569,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:131",
+    "vertices": 2743,
+    "faces": 4537,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:172",
+    "vertices": 1313,
+    "faces": 1972,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:139",
+    "vertices": 1658,
+    "faces": 2512,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:140",
+    "vertices": 1209,
+    "faces": 1804,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:141",
+    "vertices": 877,
+    "faces": 1275,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:1",
+    "vertices": 5728,
+    "faces": 9907,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:4",
+    "vertices": 6059,
+    "faces": 9109,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:33",
+    "vertices": 874,
+    "faces": 1244,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:5",
+    "vertices": 4287,
+    "faces": 6205,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:13",
+    "vertices": 1290,
+    "faces": 1936,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:19",
+    "vertices": 788,
+    "faces": 1144,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:158",
+    "vertices": 873,
+    "faces": 1247,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:6",
+    "vertices": 3481,
+    "faces": 5040,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:156",
+    "vertices": 640,
+    "faces": 886,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:3",
+    "vertices": 1111,
+    "faces": 1618,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:152",
+    "vertices": 594,
+    "faces": 844,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:16",
+    "vertices": 630,
+    "faces": 903,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:7",
+    "vertices": 699,
+    "faces": 994,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:49",
+    "vertices": 1334,
+    "faces": 2031,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:153",
+    "vertices": 994,
+    "faces": 1429,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:160",
+    "vertices": 774,
+    "faces": 1119,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:154",
+    "vertices": 692,
+    "faces": 1000,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:left:163",
+    "vertices": 1274,
+    "faces": 1904,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:39",
+    "vertices": 756,
+    "faces": 1128,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:39",
+    "vertices": 918,
+    "faces": 1392,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:40",
+    "vertices": 978,
+    "faces": 1472,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:40",
+    "vertices": 677,
+    "faces": 970,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:41",
+    "vertices": 3050,
+    "faces": 5066,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:41",
+    "vertices": 3841,
+    "faces": 6443,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:26",
+    "vertices": 859,
+    "faces": 1718,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:18",
+    "vertices": 1433,
+    "faces": 2874,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:11",
+    "vertices": 3072,
+    "faces": 6160,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:8",
+    "vertices": 21387,
+    "faces": 42914,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:7",
+    "vertices": 6146,
+    "faces": 12308,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:31",
+    "vertices": 1751,
+    "faces": 3538,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:17",
+    "vertices": 3729,
+    "faces": 7458,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:5",
+    "vertices": 1102,
+    "faces": 2216,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:4",
+    "vertices": 10461,
+    "faces": 20950,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:13",
+    "vertices": 1390,
+    "faces": 2776,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:12",
+    "vertices": 3986,
+    "faces": 7976,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:10",
+    "vertices": 3692,
+    "faces": 7380,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:left:28",
+    "vertices": 3367,
+    "faces": 6746,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:midline:85",
+    "vertices": 289,
+    "faces": 578,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:43",
+    "vertices": 2995,
+    "faces": 5021,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:43",
+    "vertices": 4005,
+    "faces": 6808,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:44",
+    "vertices": 2558,
+    "faces": 4217,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:44",
+    "vertices": 2695,
+    "faces": 4511,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:51",
+    "vertices": 4210,
+    "faces": 6253,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:72",
+    "vertices": 1086,
+    "faces": 1608,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:90",
+    "vertices": 1350,
+    "faces": 2006,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:65",
+    "vertices": 932,
+    "faces": 1365,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:88",
+    "vertices": 1453,
+    "faces": 2102,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:91",
+    "vertices": 1659,
+    "faces": 2579,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:92",
+    "vertices": 1059,
+    "faces": 1589,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:52",
+    "vertices": 4840,
+    "faces": 7751,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:38",
+    "vertices": 2367,
+    "faces": 3690,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:32",
+    "vertices": 1115,
+    "faces": 1626,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:40",
+    "vertices": 1881,
+    "faces": 2870,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:41",
+    "vertices": 1364,
+    "faces": 2114,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:164",
+    "vertices": 800,
+    "faces": 1093,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:162",
+    "vertices": 869,
+    "faces": 1234,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:161",
+    "vertices": 1124,
+    "faces": 1624,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:35",
+    "vertices": 1179,
+    "faces": 1749,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:58",
+    "vertices": 1099,
+    "faces": 1519,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:53",
+    "vertices": 3962,
+    "faces": 5730,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:9",
+    "vertices": 4614,
+    "faces": 7164,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:8",
+    "vertices": 6466,
+    "faces": 10320,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:99",
+    "vertices": 1425,
+    "faces": 2171,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:74",
+    "vertices": 1362,
+    "faces": 2055,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:75",
+    "vertices": 1255,
+    "faces": 1881,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:84",
+    "vertices": 2370,
+    "faces": 3613,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:76",
+    "vertices": 1039,
+    "faces": 1539,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:66",
+    "vertices": 656,
+    "faces": 948,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:94",
+    "vertices": 1338,
+    "faces": 2002,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:103",
+    "vertices": 998,
+    "faces": 1382,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:12",
+    "vertices": 1012,
+    "faces": 1432,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:39",
+    "vertices": 1705,
+    "faces": 2608,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:36",
+    "vertices": 1482,
+    "faces": 2285,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:37",
+    "vertices": 2180,
+    "faces": 3421,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:96",
+    "vertices": 2712,
+    "faces": 4425,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:54",
+    "vertices": 1678,
+    "faces": 2552,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:44",
+    "vertices": 1974,
+    "faces": 3189,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:55",
+    "vertices": 2509,
+    "faces": 3961,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:78",
+    "vertices": 2244,
+    "faces": 3529,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:56",
+    "vertices": 1421,
+    "faces": 2128,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:42",
+    "vertices": 1617,
+    "faces": 2525,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:45",
+    "vertices": 1788,
+    "faces": 2847,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:30",
+    "vertices": 1551,
+    "faces": 2328,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:47",
+    "vertices": 1762,
+    "faces": 2770,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:46",
+    "vertices": 926,
+    "faces": 1353,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:29",
+    "vertices": 1023,
+    "faces": 1532,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:68",
+    "vertices": 1749,
+    "faces": 2709,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:67",
+    "vertices": 1829,
+    "faces": 2834,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:70",
+    "vertices": 1696,
+    "faces": 2668,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:63",
+    "vertices": 1740,
+    "faces": 2711,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:73",
+    "vertices": 1915,
+    "faces": 2996,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:86",
+    "vertices": 2299,
+    "faces": 3679,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:87",
+    "vertices": 1219,
+    "faces": 1854,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:69",
+    "vertices": 2343,
+    "faces": 3742,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:71",
+    "vertices": 1261,
+    "faces": 1938,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:24",
+    "vertices": 743,
+    "faces": 1042,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:89",
+    "vertices": 960,
+    "faces": 1421,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:61",
+    "vertices": 1002,
+    "faces": 1410,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:59",
+    "vertices": 873,
+    "faces": 1232,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:179",
+    "vertices": 1309,
+    "faces": 1909,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:175",
+    "vertices": 1952,
+    "faces": 2805,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:77",
+    "vertices": 1796,
+    "faces": 2698,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:125",
+    "vertices": 2055,
+    "faces": 3031,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:85",
+    "vertices": 1057,
+    "faces": 1595,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:112",
+    "vertices": 1235,
+    "faces": 1788,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:117",
+    "vertices": 2829,
+    "faces": 4538,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:111",
+    "vertices": 1414,
+    "faces": 2154,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:34",
+    "vertices": 800,
+    "faces": 1091,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:62",
+    "vertices": 1444,
+    "faces": 2144,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:142",
+    "vertices": 2097,
+    "faces": 2840,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:118",
+    "vertices": 1008,
+    "faces": 1462,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:10",
+    "vertices": 1507,
+    "faces": 2355,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:18",
+    "vertices": 1692,
+    "faces": 2580,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:113",
+    "vertices": 762,
+    "faces": 1085,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:115",
+    "vertices": 1023,
+    "faces": 1457,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:114",
+    "vertices": 1086,
+    "faces": 1535,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:108",
+    "vertices": 1553,
+    "faces": 2282,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:169",
+    "vertices": 1405,
+    "faces": 2136,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:157",
+    "vertices": 898,
+    "faces": 1297,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:120",
+    "vertices": 2104,
+    "faces": 2999,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:97",
+    "vertices": 1194,
+    "faces": 1721,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:79",
+    "vertices": 1004,
+    "faces": 1464,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:80",
+    "vertices": 853,
+    "faces": 1212,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:82",
+    "vertices": 1354,
+    "faces": 2104,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:81",
+    "vertices": 1386,
+    "faces": 2068,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:168",
+    "vertices": 1056,
+    "faces": 1543,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:146",
+    "vertices": 1139,
+    "faces": 1684,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:145",
+    "vertices": 1816,
+    "faces": 2833,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:144",
+    "vertices": 1909,
+    "faces": 2889,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:17",
+    "vertices": 1118,
+    "faces": 1662,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:174",
+    "vertices": 979,
+    "faces": 1434,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:95",
+    "vertices": 1150,
+    "faces": 1641,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:48",
+    "vertices": 1283,
+    "faces": 1942,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:20",
+    "vertices": 674,
+    "faces": 941,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:21",
+    "vertices": 637,
+    "faces": 855,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:159",
+    "vertices": 784,
+    "faces": 1129,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:173",
+    "vertices": 1121,
+    "faces": 1573,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:109",
+    "vertices": 1186,
+    "faces": 1748,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:50",
+    "vertices": 1532,
+    "faces": 2345,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:2",
+    "vertices": 897,
+    "faces": 1280,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:23",
+    "vertices": 755,
+    "faces": 1056,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:93",
+    "vertices": 2175,
+    "faces": 3518,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:101",
+    "vertices": 985,
+    "faces": 1451,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:102",
+    "vertices": 1140,
+    "faces": 1706,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:100",
+    "vertices": 1953,
+    "faces": 3047,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:170",
+    "vertices": 1247,
+    "faces": 1885,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:180",
+    "vertices": 893,
+    "faces": 1257,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:57",
+    "vertices": 1212,
+    "faces": 1767,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:64",
+    "vertices": 990,
+    "faces": 1441,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:60",
+    "vertices": 1433,
+    "faces": 2214,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:171",
+    "vertices": 1100,
+    "faces": 1631,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:83",
+    "vertices": 1693,
+    "faces": 2702,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:124",
+    "vertices": 1371,
+    "faces": 1868,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:27",
+    "vertices": 1440,
+    "faces": 2273,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:122",
+    "vertices": 1978,
+    "faces": 2989,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:11",
+    "vertices": 962,
+    "faces": 1440,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:148",
+    "vertices": 2735,
+    "faces": 4417,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:105",
+    "vertices": 1440,
+    "faces": 2146,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:149",
+    "vertices": 3691,
+    "faces": 6038,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:147",
+    "vertices": 1397,
+    "faces": 2130,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:116",
+    "vertices": 1920,
+    "faces": 3001,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:150",
+    "vertices": 3014,
+    "faces": 4994,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:143",
+    "vertices": 1523,
+    "faces": 2367,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:151",
+    "vertices": 2392,
+    "faces": 3635,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:138",
+    "vertices": 1377,
+    "faces": 2095,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:126",
+    "vertices": 1158,
+    "faces": 1652,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:155",
+    "vertices": 878,
+    "faces": 1262,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:127",
+    "vertices": 1081,
+    "faces": 1553,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:137",
+    "vertices": 1611,
+    "faces": 2368,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:178",
+    "vertices": 1359,
+    "faces": 1989,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:110",
+    "vertices": 1996,
+    "faces": 2898,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:22",
+    "vertices": 841,
+    "faces": 1203,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:166",
+    "vertices": 1735,
+    "faces": 2558,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:167",
+    "vertices": 1941,
+    "faces": 2807,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:106",
+    "vertices": 1804,
+    "faces": 2619,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:31",
+    "vertices": 1877,
+    "faces": 2841,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:15",
+    "vertices": 2275,
+    "faces": 3581,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:119",
+    "vertices": 1737,
+    "faces": 2412,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:121",
+    "vertices": 1330,
+    "faces": 1961,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:25",
+    "vertices": 1619,
+    "faces": 2494,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:104",
+    "vertices": 1604,
+    "faces": 2449,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:14",
+    "vertices": 2592,
+    "faces": 3640,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:165",
+    "vertices": 699,
+    "faces": 1024,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:98",
+    "vertices": 1026,
+    "faces": 1528,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:43",
+    "vertices": 1582,
+    "faces": 2455,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:26",
+    "vertices": 1293,
+    "faces": 1902,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:123",
+    "vertices": 795,
+    "faces": 1161,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:128",
+    "vertices": 1532,
+    "faces": 2290,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:129",
+    "vertices": 2005,
+    "faces": 3186,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:176",
+    "vertices": 1297,
+    "faces": 1875,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:130",
+    "vertices": 1486,
+    "faces": 2238,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:28",
+    "vertices": 1646,
+    "faces": 2538,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:107",
+    "vertices": 1019,
+    "faces": 1501,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:132",
+    "vertices": 1260,
+    "faces": 1891,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:177",
+    "vertices": 1305,
+    "faces": 1943,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:133",
+    "vertices": 2049,
+    "faces": 3204,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:134",
+    "vertices": 2281,
+    "faces": 3613,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:136",
+    "vertices": 1602,
+    "faces": 2464,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:135",
+    "vertices": 2265,
+    "faces": 3633,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:131",
+    "vertices": 2758,
+    "faces": 4562,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:172",
+    "vertices": 1378,
+    "faces": 2092,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:139",
+    "vertices": 2674,
+    "faces": 4311,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:140",
+    "vertices": 1449,
+    "faces": 2274,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:141",
+    "vertices": 1069,
+    "faces": 1599,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:1",
+    "vertices": 5830,
+    "faces": 10006,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:4",
+    "vertices": 6165,
+    "faces": 9155,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:33",
+    "vertices": 930,
+    "faces": 1343,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:5",
+    "vertices": 4316,
+    "faces": 6303,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:13",
+    "vertices": 1467,
+    "faces": 2220,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:19",
+    "vertices": 814,
+    "faces": 1189,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:158",
+    "vertices": 892,
+    "faces": 1284,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:6",
+    "vertices": 3109,
+    "faces": 4404,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:156",
+    "vertices": 589,
+    "faces": 794,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:3",
+    "vertices": 1240,
+    "faces": 1806,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:152",
+    "vertices": 644,
+    "faces": 884,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:16",
+    "vertices": 718,
+    "faces": 1002,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:7",
+    "vertices": 823,
+    "faces": 1177,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:49",
+    "vertices": 1121,
+    "faces": 1645,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:153",
+    "vertices": 902,
+    "faces": 1340,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:160",
+    "vertices": 762,
+    "faces": 1100,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:154",
+    "vertices": 779,
+    "faces": 1129,
+    "modifiers": 0
+  },
+  {
+    "id": "hcp-mmp:right:163",
+    "vertices": 1301,
+    "faces": 1908,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:58",
+    "vertices": 845,
+    "faces": 1694,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:54",
+    "vertices": 1569,
+    "faces": 3138,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:50",
+    "vertices": 3157,
+    "faces": 6354,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:47",
+    "vertices": 22024,
+    "faces": 44220,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:46",
+    "vertices": 6420,
+    "faces": 12892,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:63",
+    "vertices": 1871,
+    "faces": 3738,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:53",
+    "vertices": 3749,
+    "faces": 7514,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:44",
+    "vertices": 1018,
+    "faces": 2064,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:43",
+    "vertices": 9771,
+    "faces": 19566,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:52",
+    "vertices": 1398,
+    "faces": 2792,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:51",
+    "vertices": 3824,
+    "faces": 7648,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:49",
+    "vertices": 3652,
+    "faces": 7308,
+    "modifiers": 0
+  },
+  {
+    "id": "aseg:right:60",
+    "vertices": 3389,
+    "faces": 6782,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:45",
+    "vertices": 4445,
+    "faces": 7528,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:45",
+    "vertices": 4063,
+    "faces": 6827,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:46",
+    "vertices": 6851,
+    "faces": 11763,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:46",
+    "vertices": 6657,
+    "faces": 11445,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:47",
+    "vertices": 2862,
+    "faces": 4780,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:47",
+    "vertices": 3423,
+    "faces": 5822,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:48",
+    "vertices": 1533,
+    "faces": 2421,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:48",
+    "vertices": 1665,
+    "faces": 2588,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:49",
+    "vertices": 3660,
+    "faces": 6121,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:49",
+    "vertices": 3409,
+    "faces": 5681,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:50",
+    "vertices": 4693,
+    "faces": 7782,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:50",
+    "vertices": 3650,
+    "faces": 6091,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:51",
+    "vertices": 1841,
+    "faces": 2990,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:51",
+    "vertices": 1693,
+    "faces": 2759,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:52",
+    "vertices": 705,
+    "faces": 1026,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:52",
+    "vertices": 867,
+    "faces": 1275,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:53",
+    "vertices": 3326,
+    "faces": 5498,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:53",
+    "vertices": 3665,
+    "faces": 6026,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:54",
+    "vertices": 2256,
+    "faces": 3630,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:54",
+    "vertices": 3051,
+    "faces": 5053,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:55",
+    "vertices": 4333,
+    "faces": 7362,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:55",
+    "vertices": 4038,
+    "faces": 6882,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:56",
+    "vertices": 862,
+    "faces": 1295,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:56",
+    "vertices": 1764,
+    "faces": 2546,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:57",
+    "vertices": 6081,
+    "faces": 10488,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:57",
+    "vertices": 5947,
+    "faces": 10222,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:58",
+    "vertices": 1568,
+    "faces": 2517,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:58",
+    "vertices": 1381,
+    "faces": 2203,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:59",
+    "vertices": 1915,
+    "faces": 3156,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:59",
+    "vertices": 2289,
+    "faces": 3769,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:61",
+    "vertices": 1554,
+    "faces": 2449,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:61",
+    "vertices": 1612,
+    "faces": 2525,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:62",
+    "vertices": 3501,
+    "faces": 5853,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:62",
+    "vertices": 3121,
+    "faces": 5198,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:60",
+    "vertices": 1602,
+    "faces": 2416,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:60",
+    "vertices": 1125,
+    "faces": 1701,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:63",
+    "vertices": 738,
+    "faces": 1092,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:63",
+    "vertices": 708,
+    "faces": 1042,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:64",
+    "vertices": 1608,
+    "faces": 2429,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:64",
+    "vertices": 1739,
+    "faces": 2690,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:65",
+    "vertices": 1796,
+    "faces": 2898,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:65",
+    "vertices": 1968,
+    "faces": 3207,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:66",
+    "vertices": 3277,
+    "faces": 5495,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:66",
+    "vertices": 3250,
+    "faces": 5436,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:67",
+    "vertices": 4476,
+    "faces": 6809,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:67",
+    "vertices": 4612,
+    "faces": 6937,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:68",
+    "vertices": 6359,
+    "faces": 10804,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:68",
+    "vertices": 6045,
+    "faces": 10206,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:69",
+    "vertices": 2908,
+    "faces": 4787,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:69",
+    "vertices": 2869,
+    "faces": 4734,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:70",
+    "vertices": 2853,
+    "faces": 4697,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:70",
+    "vertices": 3000,
+    "faces": 4918,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:71",
+    "vertices": 1521,
+    "faces": 2259,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:71",
+    "vertices": 1035,
+    "faces": 1466,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:72",
+    "vertices": 2211,
+    "faces": 3568,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:72",
+    "vertices": 2848,
+    "faces": 4654,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:73",
+    "vertices": 2569,
+    "faces": 3672,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:73",
+    "vertices": 2245,
+    "faces": 3297,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:74",
+    "vertices": 8896,
+    "faces": 15485,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:74",
+    "vertices": 10298,
+    "faces": 18099,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:75",
+    "vertices": 1081,
+    "faces": 1643,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:75",
+    "vertices": 880,
+    "faces": 1291,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:left:-1",
+    "vertices": 16624,
+    "faces": 30512,
+    "modifiers": 0
+  },
+  {
+    "id": "destrieux:right:-1",
+    "vertices": 16624,
+    "faces": 30537,
+    "modifiers": 0
+  }
+]
