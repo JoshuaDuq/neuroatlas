@@ -1,0 +1,8 @@
+{
+  "rays": 400,
+  "identical_selections": true,
+  "standard_total_ms": 3602.3075,
+  "accelerated_total_ms": 27.681416999999783,
+  "speedup": 130.1345050363581,
+  "note": "Local CPU raycasting benchmark; excludes rendering and does not measure frame rate."
+}
