@@ -1,7 +1,10 @@
 import { edgeLabels } from '../render/orientation.js';
 import { scaleBar } from '../render/scale-bar.js';
 
+// Oblique is included so the control always has an answer. A segmented
+// control with nothing selected reads as broken rather than as a default.
 const VIEW_LABELS = {
+  oblique: 'Oblique',
   left: 'Left', right: 'Right', anterior: 'Front', posterior: 'Back',
   superior: 'Top', inferior: 'Bottom',
 };

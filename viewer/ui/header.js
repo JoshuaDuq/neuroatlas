@@ -1,3 +1,5 @@
+import { count } from './format.js';
+
 const megabytes = bytes => (bytes / 1_048_576).toFixed(1);
 
 const switchProgress = progress => progress?.total
@@ -7,7 +9,7 @@ const switchProgress = progress => progress?.total
 /** Atlas choice, visible region count, and the theme switch. */
 export function createHeader({ atlases, onAtlas, onTheme }) {
   const container = document.getElementById('atlas-switch');
-  const count = document.getElementById('region-count');
+  const regionCount = document.getElementById('region-count');
   const themeButton = document.getElementById('theme-toggle');
   const themeLabel = document.getElementById('theme-label');
 
@@ -35,9 +37,9 @@ export function createHeader({ atlases, onAtlas, onTheme }) {
         button.disabled = state.status === 'loading' || switching;
         button.dataset.loading = String(switching && !active);
       }
-      count.textContent = switching
+      regionCount.textContent = switching
         ? switchProgress(state.progress)
-        : state.status === 'ready' ? `${visibleCount} regions` : '';
+        : state.status === 'ready' ? count(visibleCount, 'region') : '';
       const dark = state.theme === 'dark';
       themeLabel.textContent = dark ? 'Light' : 'Dark';
       themeButton.setAttribute('aria-pressed', String(dark));
