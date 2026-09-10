@@ -10,7 +10,7 @@ from scipy.ndimage import map_coordinates
 
 from .export import compact_region
 from .geometry import extract_structure, normalize, partition_surface, to_gltf
-from .sources import read_config, sha256, verify_sources, write_json
+from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 
 
 def triangle_areas(triangles):
@@ -38,6 +38,68 @@ def validate_degenerate_parents(parents, triangles):
             distances = np.linalg.norm(triangle - closest, axis=1)
         if distances.max() > 1e-9:
             raise ValueError("Geometry changed on a source degenerate triangle")
+
+
+def oriented_triangle_codes(nodes):
+    """Canonicalize cyclic order while retaining the triangle's winding."""
+    starts = nodes.argmin(axis=1)
+    ordered = np.take_along_axis(nodes, (starts[:, None] + np.arange(3)) % 3, axis=1)
+    return ordered @ np.array([49, 7, 1])
+
+
+def validate_tessellation(barycentric, partition, face_labels, regular):
+    # Seven barycentric sites define the documented vertex-cell convention.
+    sites = np.array(
+        [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],
+            [0.5, 0.5, 0],
+            [0, 0.5, 0.5],
+            [0.5, 0, 0.5],
+            [1 / 3, 1 / 3, 1 / 3],
+        ]
+    )
+    distances = np.max(np.abs(barycentric[:, :, None] - sites), axis=3)
+    nodes = distances.argmin(axis=2)
+    if np.any(distances.min(axis=2) > 1e-8):
+        raise ValueError("Unexpected barycentric tessellation vertex")
+    actual = np.column_stack(
+        [
+            partition.parent_faces[regular],
+            oriented_triangle_codes(nodes),
+            partition.labels[regular],
+        ]
+    )
+    uniform = np.all(face_labels == face_labels[:, :1], axis=1)
+    counts = np.bincount(partition.parent_faces, minlength=len(face_labels))
+    if not np.array_equal(counts, np.where(uniform, 1, 6)):
+        raise ValueError("Incomplete source triangle tessellation")
+    parent_ids = np.unique(partition.parent_faces[regular])
+    uniform_ids = parent_ids[uniform[parent_ids]]
+    mixed_ids = parent_ids[~uniform[parent_ids]]
+    # This fixed reference is independent of partition_surface's edge indexing.
+    cells = np.array([[0, 3, 6], [0, 6, 5], [1, 4, 6], [1, 6, 3], [2, 5, 6], [2, 6, 4]])
+    expected = np.vstack(
+        [
+            np.column_stack(
+                [uniform_ids, np.full(len(uniform_ids), 9), face_labels[uniform_ids, 0]]
+            ),
+            np.column_stack(
+                [
+                    np.repeat(mixed_ids, 6),
+                    np.tile(oriented_triangle_codes(cells), len(mixed_ids)),
+                    face_labels[mixed_ids][:, cells[:, 0]].ravel(),
+                ]
+            ),
+        ]
+    )
+    actual = actual[np.lexsort((actual[:, 1], actual[:, 0]))]
+    expected = expected[np.lexsort((expected[:, 1], expected[:, 0]))]
+    if not np.array_equal(actual, expected):
+        raise ValueError(
+            "Source triangle tessellation has gaps, overlaps or wrong winding"
+        )
 
 
 def validate_partition(vertices, faces, labels, partition):
@@ -87,6 +149,8 @@ def validate_partition(vertices, faces, labels, partition):
     covered = np.unique(partition.faces[partition.faces < len(vertices)])
     if not np.array_equal(covered, np.unique(faces)):
         raise ValueError("Some source vertices were lost")
+    barycentric = np.stack([1 - u - v, u, v], axis=2)
+    validate_tessellation(barycentric, partition, labels[faces], regular)
     return {
         "source_vertices": len(vertices),
         "source_triangles": len(faces),
@@ -237,13 +301,140 @@ def validate_structures(config):
     return {"file": path.name, "sha256": sha256(path), "regions": reports}
 
 
+def expected_cortical_metadata(config, atlas):
+    regions = {}
+    for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
+        labels, colors, names = read_annot(
+            config["source_directory"]
+            / "label"
+            / f"{prefix}.{atlas['annotation']}.annot"
+        )
+        for label, count in zip(*np.unique(labels, return_counts=True)):
+            name = "Unknown" if label == -1 else names[label].decode()
+            region_id = f"{atlas['id']}:{hemisphere}:{label}"
+            regions[region_id] = {
+                "id": region_id,
+                "atlas": atlas["id"],
+                "hemisphere": hemisphere,
+                "source_label_id": int(label),
+                "source_name": name,
+                "label": f"{name.replace('_', ' ')} · {hemisphere}",
+                "kind": "non-region"
+                if name in {"Unknown", "unknown", "???", "Medial_wall"}
+                else "cortex",
+                "source_annotation_value": 0 if label == -1 else int(colors[label, 4]),
+                "source_vertex_count": int(count),
+            }
+    return regions
+
+
+def expected_structure_metadata(config):
+    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
+    volume = np.asarray(image.dataobj)
+    table = read_color_table()
+    regions = {}
+    for label in config["structures"]["labels"]:
+        name = table[label][0]
+        hemisphere = {"Left": "left", "Right": "right"}.get(
+            name.split("-")[0], "midline"
+        )
+        region_id = f"aseg:{hemisphere}:{label}"
+        regions[region_id] = {
+            "id": region_id,
+            "atlas": "aseg",
+            "hemisphere": hemisphere,
+            "source_label_id": label,
+            "source_name": name,
+            "label": name.replace("-", " "),
+            "kind": "structure",
+            "voxel_count": int(np.count_nonzero(volume == label)),
+            "voxel_size_mm": [float(size) for size in image.header.get_zooms()[:3]],
+        }
+    return regions, image.header.get_vox2ras_tkr()
+
+
+def validate_region_metadata(region, mesh, expected, tolerance):
+    for field, value in expected.items():
+        if region.get(field) != value:
+            raise ValueError(f"Manifest metadata mismatch: {expected['id']} {field}")
+        if mesh.metadata.get(field) != value:
+            raise ValueError(f"GLB metadata mismatch: {expected['id']} {field}")
+    if mesh.metadata.get("region_id") != expected["id"]:
+        raise ValueError(f"GLB metadata mismatch: {expected['id']} region_id")
+    for field, count in [
+        ("vertex_count", len(mesh.vertices)),
+        ("triangle_count", len(mesh.faces)),
+    ]:
+        if region.get(field) != count:
+            raise ValueError(
+                f"Manifest geometry count mismatch: {expected['id']} {field}"
+            )
+    if not np.isclose(
+        region["surface_area_mm2"], mesh.area * 1e6, rtol=tolerance, atol=0
+    ):
+        raise ValueError(f"Manifest surface area mismatch: {expected['id']}")
+
+
+def validate_manifest(config, manifest):
+    records = manifest["regions"]
+    regions = {region["id"]: region for region in records}
+    if len(records) != len(regions):
+        raise ValueError("Manifest contains duplicate IDs")
+    atlas_records = {atlas["id"]: atlas for atlas in manifest["atlases"]}
+    if len(atlas_records) != len(manifest["atlases"]) or set(atlas_records) != {
+        atlas["id"] for atlas in config["atlases"]
+    }:
+        raise ValueError("Manifest atlas set mismatch")
+    groups = {}
+    for atlas in config["atlases"]:
+        filename = f"cortex-{atlas['id']}.glb"
+        expected = expected_cortical_metadata(config, atlas)
+        groups[filename] = expected
+        metadata = {
+            **atlas,
+            "file": filename,
+            "region_count": sum(r["kind"] == "cortex" for r in expected.values()),
+        }
+        if atlas_records[atlas["id"]] != metadata:
+            raise ValueError(f"Manifest atlas metadata mismatch: {atlas['id']}")
+    structures, affine = expected_structure_metadata(config)
+    groups["structures.glb"] = structures
+    expected_structures = {
+        "file": "structures.glb",
+        "region_count": len(structures),
+        "voxel_to_surface_ras_mm": affine.tolist(),
+    }
+    for field, value in expected_structures.items():
+        if manifest["structures"].get(field) != value:
+            raise ValueError(f"Manifest structures metadata mismatch: {field}")
+    expected_ids = {region_id for group in groups.values() for region_id in group}
+    if set(regions) != expected_ids:
+        raise ValueError("Manifest has missing or unexpected region IDs")
+    tolerance = config["validation"]["relative_area_tolerance"]
+    for filename, expected in groups.items():
+        meshes = read_meshes(config["output_directory"] / filename)
+        if set(meshes) != set(expected):
+            raise ValueError(f"GLB has missing or unexpected region IDs: {filename}")
+        for region_id, metadata in expected.items():
+            validate_region_metadata(
+                regions[region_id], meshes[region_id], metadata, tolerance
+            )
+    voxel_volume = abs(np.linalg.det(affine[:3, :3]))
+    for region_id, metadata in structures.items():
+        if not np.isclose(
+            regions[region_id]["segmentation_volume_mm3"],
+            metadata["voxel_count"] * voxel_volume,
+            rtol=1e-12,
+            atol=0,
+        ):
+            raise ValueError(f"Manifest segmentation volume mismatch: {region_id}")
+
+
 def main():
     config = read_config()
     verify_sources()
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
-    identifiers = [region["id"] for region in manifest["regions"]]
-    if len(identifiers) != len(set(identifiers)):
-        raise ValueError("Manifest contains duplicate IDs")
+    validate_manifest(config, manifest)
     report = {
         "status": "passed",
         "scope": "Source-to-asset conversion fidelity",

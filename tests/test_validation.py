@@ -60,3 +60,197 @@ def test_source_degenerate_face_is_preserved_and_reported():
     bad[1, 0] = 5
     with pytest.raises(ValueError, match="degenerate"):
         validate_partition(vertices, faces, labels, replace(partition, vertices=bad))
+
+
+@pytest.mark.parametrize("damage", ["duplicate", "reverse"])
+def test_validation_rejects_overlap_and_reversed_winding(damage):
+    vertices = np.array([[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [1.0, 3.0, 0.0]])
+    faces = np.array([[0, 1, 2]])
+    labels = np.array([1, 2, 3])
+    partition = partition_surface(vertices, faces, labels)
+    damaged = partition.faces.copy()
+    if damage == "duplicate":
+        damaged[1] = damaged[0]
+    else:
+        damaged = damaged[:, ::-1]
+    with pytest.raises(ValueError, match="tessellation"):
+        validate_partition(vertices, faces, labels, replace(partition, faces=damaged))
+
+
+def test_validation_accepts_reordered_faces_and_cyclic_vertex_order():
+    vertices = np.array([[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [1.0, 3.0, 0.0]])
+    faces = np.array([[0, 1, 2]])
+    labels = np.array([1, 2, 3])
+    partition = partition_surface(vertices, faces, labels)
+    validate_partition(
+        vertices,
+        faces,
+        labels,
+        replace(
+            partition,
+            faces=np.roll(partition.faces[::-1], 1, axis=1),
+            labels=partition.labels[::-1],
+            parent_faces=partition.parent_faces[::-1],
+        ),
+    )
+
+
+@pytest.fixture
+def manifest_assets(tmp_path):
+    import nibabel as nib
+    import trimesh
+
+    from brain_model.export import add_region, write_scene
+
+    source = tmp_path / "source"
+    (source / "label").mkdir(parents=True)
+    (source / "mri").mkdir()
+    atlas = {"id": "test", "label": "Test atlas", "annotation": "test"}
+    manifest = {
+        "atlases": [{**atlas, "file": "cortex-test.glb", "region_count": 2}],
+        "structures": {"file": "structures.glb", "region_count": 1},
+        "regions": [],
+    }
+    config = {
+        "source_directory": source,
+        "output_directory": tmp_path,
+        "atlases": [atlas],
+        "structures": {"labels": [10]},
+        "validation": {"relative_area_tolerance": 1e-6},
+    }
+    scene = trimesh.Scene()
+    vertices = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+    faces = np.array([[0, 1, 2]])
+    normals = np.tile([0.0, 0.0, 1.0], (3, 1))
+    for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
+        nib.freesurfer.write_annot(
+            source / "label" / f"{prefix}.test.annot",
+            np.array([-1, 1, 1]),
+            np.array([[0, 0, 0, 0], [1, 2, 3, 0]]),
+            [b"Unknown", b"Test_Region"],
+        )
+        for label, name, count, kind in [
+            (-1, "Unknown", 1, "non-region"),
+            (1, "Test_Region", 2, "cortex"),
+        ]:
+            region = {
+                "id": f"test:{hemisphere}:{label}",
+                "label": f"{name.replace('_', ' ')} · {hemisphere}",
+                "atlas": "test",
+                "hemisphere": hemisphere,
+                "kind": kind,
+                "source_name": name,
+                "source_label_id": label,
+                "source_annotation_value": 0 if label == -1 else 197121,
+                "source_vertex_count": count,
+            }
+            add_region(scene, vertices, faces, normals, region, [1, 2, 3])
+            manifest["regions"].append(
+                {
+                    **region,
+                    "vertex_count": 3,
+                    "triangle_count": 1,
+                    "surface_area_mm2": 0.5,
+                }
+            )
+    write_scene(scene, tmp_path / "cortex-test.glb")
+    volume = np.zeros((3, 3, 3), dtype=np.int32)
+    volume[1, 1, 1] = 10
+    image = nib.MGHImage(volume, np.eye(4))
+    nib.save(image, source / "mri/aseg.mgz")
+    manifest["structures"]["voxel_to_surface_ras_mm"] = (
+        image.header.get_vox2ras_tkr().tolist()
+    )
+    region = {
+        "id": "aseg:left:10",
+        "label": "Left Thalamus Proper",
+        "source_name": "Left-Thalamus-Proper",
+        "atlas": "aseg",
+        "hemisphere": "left",
+        "source_label_id": 10,
+        "kind": "structure",
+        "voxel_count": 1,
+        "voxel_size_mm": [1.0, 1.0, 1.0],
+    }
+    scene = trimesh.Scene()
+    add_region(scene, vertices, faces, normals, region, [1, 2, 3])
+    write_scene(scene, tmp_path / "structures.glb")
+    manifest["regions"].append(
+        {
+            **region,
+            "vertex_count": 3,
+            "triangle_count": 1,
+            "surface_area_mm2": 0.5,
+            "segmentation_volume_mm3": 1.0,
+        }
+    )
+    return config, manifest
+
+
+def test_manifest_matches_sources_and_meshes(manifest_assets):
+    from brain_model import validate
+
+    validate.validate_manifest(*manifest_assets)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("id", "test:left:999"),
+        ("source_name", "Wrong"),
+        ("label", "Wrong"),
+        ("kind", "cortex"),
+        ("hemisphere", "right"),
+        ("atlas", "wrong"),
+        ("source_label_id", 999),
+        ("source_annotation_value", 999),
+        ("source_vertex_count", 999),
+        ("vertex_count", 999),
+        ("triangle_count", 999),
+    ],
+)
+def test_manifest_rejects_stale_region_metadata(manifest_assets, field, value):
+    from brain_model import validate
+
+    config, manifest = manifest_assets
+    manifest["regions"][0][field] = value
+    with pytest.raises(ValueError, match="Manifest"):
+        validate.validate_manifest(config, manifest)
+
+
+@pytest.mark.parametrize(
+    "damage", ["missing", "duplicate", "atlas_count", "structure_count"]
+)
+def test_manifest_rejects_incomplete_region_sets_and_counts(manifest_assets, damage):
+    from brain_model import validate
+
+    config, manifest = manifest_assets
+    if damage == "missing":
+        manifest["regions"].pop()
+    elif damage == "duplicate":
+        manifest["regions"].append(manifest["regions"][0])
+    elif damage == "atlas_count":
+        manifest["atlases"][0]["region_count"] += 1
+    else:
+        manifest["structures"]["region_count"] += 1
+    with pytest.raises(ValueError, match="Manifest"):
+        validate.validate_manifest(config, manifest)
+
+
+def test_metadata_is_checked_against_source_when_manifest_and_glb_agree(
+    manifest_assets,
+):
+    import trimesh
+
+    from brain_model import validate
+    from brain_model.export import write_scene
+
+    config, manifest = manifest_assets
+    region_id = manifest["regions"][0]["id"]
+    manifest["regions"][0]["source_name"] = "Wrong"
+    path = config["output_directory"] / "cortex-test.glb"
+    scene = trimesh.load_scene(path, process=False)
+    scene.geometry[region_id].metadata["source_name"] = "Wrong"
+    write_scene(scene, path)
+    with pytest.raises(ValueError, match="metadata"):
+        validate.validate_manifest(config, manifest)

@@ -64,7 +64,7 @@
   ],
   "structures": {
     "file": "structures.glb",
-    "sha256": "d7f1790e9857e1f2613b8ffa50629b1ff6a3d64120cbedc648335af0445416c4",
+    "sha256": "7ec9ee13ef6cfb613a23ff29f191f6953329908b80383e359e0dfc46804bfe4d",
     "regions": [
       {
         "id": "aseg:midline:255",

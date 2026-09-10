@@ -7,6 +7,7 @@ from nibabel.freesurfer.io import read_annot, read_geometry
 
 from .export import add_region, compact_region, write_scene
 from .geometry import extract_structure, partition_surface
+from .shading import structure_normals
 from .sources import read_color_table, read_config, verify_sources, write_json
 
 HEMISPHERES = {"lh": "left", "rh": "right"}
@@ -96,8 +97,12 @@ def build_structures(config):
             "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
         }
         mesh = extract_structure(volume, label, affine)
+        normals = structure_normals(
+            volume == label, affine, mesh.vertices,
+            config["structures"]["shading_sigma_voxels"],
+        )
         exported = add_region(
-            scene, mesh.vertices, mesh.faces, mesh.vertex_normals, region, color
+            scene, mesh.vertices, mesh.faces, normals, region, color
         )
         region.update(
             vertex_count=len(exported.vertices),
@@ -114,6 +119,10 @@ def build_structures(config):
         "file": filename,
         "region_count": len(regions),
         "voxel_to_surface_ras_mm": affine.tolist(),
+        "shading": {
+            "method": "Gaussian segmentation gradient normals; geometry unchanged",
+            "sigma_voxels": config["structures"]["shading_sigma_voxels"],
+        },
     }, regions
 
 
