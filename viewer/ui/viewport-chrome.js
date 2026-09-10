@@ -53,7 +53,7 @@ export function createViewportChrome({ onView, onRetry }) {
       }
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
-      bar.hidden = !ready;
+      if (!ready) bar.hidden = true;
 
       if (state.status === 'context-lost') {
         stageMessage.textContent = state.error.message;
@@ -81,13 +81,15 @@ export function createViewportChrome({ onView, onRetry }) {
       }
     },
 
-    /** Called every frame the camera moves, outside the state loop. */
+    /** Called when the camera moves or the viewport resizes, outside the state loop. */
     updateCamera(camera, distance, viewportHeight) {
       const labels = edgeLabels(camera);
       for (const [edge, node] of Object.entries(edges)) node.textContent = labels[edge];
-      const { millimetres, pixels } = scaleBar(camera.fov, distance, viewportHeight);
-      barRule.style.width = `${Math.round(pixels)}px`;
-      barText.textContent = `${millimetres} mm`;
+      const measured = scaleBar(camera.fov, distance, viewportHeight);
+      bar.hidden = !measured;
+      if (!measured) return;
+      barRule.style.width = `${Math.round(measured.pixels)}px`;
+      barText.textContent = `${measured.millimetres} mm`;
     },
 
     showHover(label, position) {

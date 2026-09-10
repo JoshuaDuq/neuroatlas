@@ -27,7 +27,7 @@ const token = name =>
  * to outline. Selection and hover are drawn here, over the render, so the
  * model never has to alter a material to show them.
  */
-export function createScene(host, { onContextLost, onContextRestored } = {}) {
+export function createScene(host, { onContextLost, onContextRestored, onResize } = {}) {
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
   const renderer = new WebGLRenderer({ antialias: true });
@@ -103,6 +103,9 @@ export function createScene(host, { onContextLost, onContextRestored } = {}) {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     invalidate();
+    // The scale bar is derived from the viewport height, so it is stale the
+    // moment the viewport changes and cannot wait for the camera to move.
+    onResize?.();
   }
 
   /** Selection gets both tones; hover gets the halo alone. */
