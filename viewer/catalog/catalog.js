@@ -91,13 +91,17 @@ export function createCatalog(manifest) {
         if (!into.has(entry.label.group)) into.set(entry.label.group, []);
         into.get(entry.label.group).push(entry);
       }
-      const build = map => [...map.entries()]
+      // A lobe and a system can share a name — Destrieux has a Limbic lobe and
+      // aseg a Limbic system — so the key, not the name, identifies a group.
+      const build = (map, kind) => [...map.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([name, group]) => ({
           name,
+          kind,
+          key: `${kind}:${name}`,
           rows: group.sort(compare).map(entry => row(entry, settings)),
         }));
-      return [...build(cortical), ...build(structural)];
+      return [...build(cortical, 'cortex'), ...build(structural, 'structure')];
     },
 
     /**

@@ -3,63 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Brain atlas · Model inspector</title>
+    <meta name="description" content="A precise, source-faithful atlas of the human brain built on the FreeSurfer fsaverage reference template." />
+    <title>NeuroAtlas</title>
   </head>
   <body>
-    <main id="inspector" data-status="loading">
-      <header>
-        <div><span class="eyebrow">REFERENCE ANATOMY</span><h1>Brain atlas <span>/ Model inspector</span></h1></div>
-        <span id="model-status" role="status">Loading source geometry…</span>
-      </header>
-      <section id="viewport" aria-label="Interactive 3D brain model">
-        <div id="loading" role="status">Loading brain model…</div>
-        <div class="view-controls" aria-label="Anatomical views">
-          <button data-view="left">Left</button>
-          <button data-view="right">Right</button>
-          <button data-view="anterior">Anterior</button>
-          <button data-view="posterior">Posterior</button>
-          <button data-view="superior">Superior</button>
-          <button data-view="inferior">Inferior</button>
+    <div id="app" data-status="loading">
+      <header id="masthead">
+        <h1 class="brand">NeuroAtlas</h1>
+        <div id="atlas-switch" class="segmented" role="group" aria-label="Cortical atlas"></div>
+        <div class="masthead-end">
+          <span id="region-count" class="measure"></span>
+          <button id="theme-toggle" type="button" aria-pressed="false">
+            <span id="theme-label">Dark</span>
+          </button>
         </div>
-        <div id="hover-label" aria-live="off"></div>
-        <p class="interaction-hint">Drag to rotate · Scroll to zoom · Click a region to select</p>
-      </section>
-      <aside aria-label="Model inspection controls">
-        <fieldset id="model-controls" disabled>
-          <label for="atlas">Cortical atlas</label>
-          <select id="atlas"></select>
-          <label for="hemisphere">Hemisphere</label>
-          <select id="hemisphere">
-            <option value="both">Both hemispheres</option>
-            <option value="left">Left hemisphere</option>
-            <option value="right">Right hemisphere</option>
-          </select>
-          <label class="check"><input id="cortex" type="checkbox" checked /> Show cortex</label>
-          <label for="opacity">Cortex opacity <output id="opacity-value">100%</output></label>
-          <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
-          <label class="check"><input id="atlas-colors" type="checkbox" checked /> Atlas colors</label>
-          <label for="region">Find a region</label>
-          <select id="region"><option value="">Choose a region…</option></select>
-          <div class="selection">
-            <span class="eyebrow">SELECTED REGION</span>
-            <h2 id="selected-label">Select a region</h2>
-            <p id="selected-description">Click the surface, or hide the cortex to inspect internal anatomy.</p>
-            <dl id="selected-metadata" hidden>
-              <dt>Hemisphere</dt><dd id="selected-hemisphere"></dd>
-              <dt>Source label</dt><dd id="selected-source"></dd>
-              <dt>Atlas</dt><dd id="selected-atlas"></dd>
-            </dl>
-            <button id="isolate" disabled>Isolate region</button>
-            <button id="focus" disabled>Focus selection</button>
-          </div>
-          <button id="reset">Reset view</button>
-        </fieldset>
-        <p class="source-note">FreeSurfer fsaverage reference template. <span id="atlas-note"></span> Surface positions and scale are preserved.</p>
-        <a class="manifest-link" href="models/manifest.json" target="_blank" rel="noreferrer">View model provenance ↗</a>
+      </header>
+
+      <aside id="navigator" aria-label="Find a region">
+        <div class="rail-head">
+          <label class="visually-hidden" for="search">Search regions</label>
+          <input id="search" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Search regions" role="combobox" aria-expanded="false"
+                 aria-controls="results" aria-autocomplete="list" />
+        </div>
+        <div class="rail-body">
+          <div id="results" role="listbox" aria-label="Search results" hidden></div>
+          <div id="tree" role="tree" aria-label="Browse anatomy"></div>
+        </div>
+        <p id="rail-notice" class="rail-notice" hidden></p>
       </aside>
-      <footer><span>Native cortical resolution · Source-derived anatomy</span><span>R +X &nbsp; S +Y &nbsp; P +Z · meters</span></footer>
-      <output id="viewer-state" hidden aria-hidden="true"></output>
-    </main>
+
+      <main id="viewport">
+        <div id="orientation" class="orientation" aria-hidden="true">
+          <span data-edge="top"></span><span data-edge="right"></span>
+          <span data-edge="bottom"></span><span data-edge="left"></span>
+        </div>
+        <div id="views" class="views" role="group" aria-label="Anatomical view"></div>
+        <div id="scale-bar" class="chip scale-bar" aria-hidden="true">
+          <span class="scale-bar-rule"></span>
+          <span class="measure"></span>
+        </div>
+        <div id="hover-label" class="chip hover-label" aria-hidden="true" hidden></div>
+        <div id="stage" class="stage" role="status">
+          <p id="stage-message">Loading anatomy…</p>
+          <div id="stage-progress" class="progress" hidden>
+            <span id="stage-bar"></span>
+          </div>
+          <button id="stage-retry" type="button" hidden>Retry</button>
+        </div>
+      </main>
+
+      <aside id="inspector" aria-label="Selection and display">
+        <div class="rail-body">
+          <p class="section-label">Selected</p>
+          <div class="panel-body">
+            <h2 id="selected-name">No region selected</h2>
+            <p id="selected-hint">Click the model, or search on the left.</p>
+            <dl id="selected-facts" hidden>
+              <dt>Hemisphere</dt><dd id="fact-hemisphere"></dd>
+              <dt>Atlas</dt><dd id="fact-atlas"></dd>
+              <dt id="fact-metric-label">Surface area</dt>
+              <dd id="fact-metric" class="measure"></dd>
+              <dt>Source label</dt><dd id="fact-source" class="measure"></dd>
+            </dl>
+            <div class="actions">
+              <button id="focus" type="button" disabled>Focus</button>
+              <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
+            </div>
+          </div>
+
+          <p class="section-label">Display</p>
+          <div class="panel-body">
+            <label for="hemisphere">Hemisphere</label>
+            <select id="hemisphere">
+              <option value="both">Both</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+
+            <label class="check">
+              <input id="cortex" type="checkbox" checked /> Show cortex
+            </label>
+
+            <label for="opacity">
+              Cortex opacity <output id="opacity-value" class="measure">100%</output>
+            </label>
+            <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+
+            <label class="check">
+              <input id="atlas-colors" type="checkbox" checked /> Atlas colours
+            </label>
+
+            <button id="reset" type="button">Reset view</button>
+          </div>
+        </div>
+      </aside>
+
+      <footer id="colophon">
+        <span>FreeSurfer fsaverage reference template · not individual or clinical anatomy</span>
+        <a id="provenance" href="models/manifest.json" target="_blank" rel="noreferrer">Provenance</a>
+      </footer>
+    </div>
+
+    <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>
     <script type="module" src="/viewer/main.js"></script>
   </body>
 </html>
