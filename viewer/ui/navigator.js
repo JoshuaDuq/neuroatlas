@@ -1,3 +1,5 @@
+import { count } from './format.js';
+
 const REASON_TEXT = {
   hemisphere: 'hemisphere hidden',
   'cortex-hidden': 'cortex off',
@@ -99,7 +101,7 @@ export function createNavigator({
       const more = document.createElement('p');
       more.className = 'empty';
       more.textContent =
-        `Showing ${here.length} of ${found.total} matches. Refine the search to narrow it.`;
+        `Showing ${here.length} of ${count(found.total, 'match')}. Refine the search to narrow it.`;
       results.append(more);
     }
 
@@ -108,7 +110,7 @@ export function createNavigator({
       const other = atlases.find(atlas => atlas.id !== state.atlas);
       const line = document.createElement('p');
       line.className = 'empty';
-      line.textContent = `${elsewhere.length} more in ${other.label}. `;
+      line.textContent = `${count(elsewhere.length, 'match')} in ${other.label}. `;
       const switchTo = document.createElement('button');
       switchTo.type = 'button';
       switchTo.textContent = 'Switch atlas';
@@ -148,11 +150,11 @@ export function createNavigator({
       const name = document.createElement('span');
       name.className = 'row-name';
       name.textContent = group.name;
-      const count = document.createElement('span');
-      count.className = 'group-count';
-      count.textContent = String(group.rows.length);
-      header.append(marker, name, count);
-      header.setAttribute('aria-label', `${group.name}, ${group.rows.length} regions`);
+      const badge = document.createElement('span');
+      badge.className = 'group-count';
+      badge.textContent = String(group.rows.length);
+      header.append(marker, name, badge);
+      header.setAttribute('aria-label', `${group.name}, ${count(group.rows.length, 'region')}`);
       header.addEventListener('click', () => onToggleGroup(group.key));
       tree.append(header);
 

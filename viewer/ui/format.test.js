@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { quantity } from './format.js';
+import { count, quantity } from './format.js';
 
 const THIN = ' ';
 
@@ -28,4 +28,15 @@ test('a genuine zero is shown as zero', () => {
 test('trailing zeros from rounding are not shown as false precision', () => {
   assert.equal(quantity(1000, 'mm²'), `1000${THIN}mm²`);
   assert.equal(quantity(2.5, 'mm²'), `2.5${THIN}mm²`);
+});
+
+test('counts agree with their noun', () => {
+  assert.equal(count(0, 'region'), '0 regions');
+  assert.equal(count(1, 'region'), '1 region');
+  assert.equal(count(2, 'region'), '2 regions');
+  assert.equal(count(185, 'region'), '185 regions');
+});
+
+test('counts group their digits like every other number here', () => {
+  assert.equal(count(21472, 'match'), `21${THIN}472 matches`);
 });
