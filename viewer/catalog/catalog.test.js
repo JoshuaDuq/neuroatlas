@@ -26,11 +26,11 @@ const settings = (over = {}) => ({
 });
 
 const catalog = createCatalog(manifest);
-const names = rows => rows.map(row => row.label.name);
+const names = found => found.rows.map(row => row.label.name);
 
 test('an empty query returns nothing rather than everything', () => {
-  assert.deepEqual(catalog.search('', settings()), []);
-  assert.deepEqual(catalog.search('   ', settings()), []);
+  assert.deepEqual(catalog.search('', settings()), { rows: [], total: 0 });
+  assert.deepEqual(catalog.search('   ', settings()), { rows: [], total: 0 });
 });
 
 test('results rank by prefix, then word boundary, then bare substring', () => {
@@ -45,12 +45,12 @@ test('results rank by prefix, then word boundary, then bare substring', () => {
 
 test('an exact code match outranks everything else', () => {
   const found = catalog.search('V1', settings({ atlas: 'hcp-mmp' }));
-  assert.equal(found[0].label.code, 'V1');
+  assert.equal(found.rows[0].label.code, 'V1');
 });
 
 test('ties break alphabetically, then left hemisphere before right', () => {
   const found = catalog.search('Central sulcus', settings());
-  assert.deepEqual(found.map(row => row.region.hemisphere), ['left', 'right']);
+  assert.deepEqual(found.rows.map(row => row.region.hemisphere), ['left', 'right']);
 });
 
 test('aliases are searchable', () => {
@@ -60,13 +60,13 @@ test('aliases are searchable', () => {
 
 test('hidden regions are returned with the reason, never silently dropped', () => {
   const found = catalog.search('putamen', settings({ hemisphere: 'right' }));
-  assert.equal(found.length, 1);
-  assert.equal(found[0].visible, false);
-  assert.equal(found[0].reason, 'hemisphere');
+  assert.equal(found.rows.length, 1);
+  assert.equal(found.rows[0].visible, false);
+  assert.equal(found.rows[0].reason, 'hemisphere');
 });
 
 test('unlabelled cortex is never offered as a result', () => {
-  assert.deepEqual(catalog.search('unlabelled', settings()), []);
+  assert.deepEqual(catalog.search('unlabelled', settings()).rows, []);
 });
 
 test('groups cover the active atlas, then the shared structures', () => {
@@ -105,4 +105,15 @@ test('visible count matches the meshes the model will show', async () => {
   // to region is one to one, so the catalog must agree without walking meshes.
   assert.equal(full.visibleCount(settings()), 185);
   assert.equal(full.visibleCount(settings({ cortexVisible: false })), 35);
+});
+
+test('a capped result set reports the true total, never a silent cut', async () => {
+  // "s" matches hundreds of regions. Returning 50 without saying so is the
+  // silent absence this navigator exists to avoid.
+  const real = JSON.parse(
+    await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+  const full = createCatalog(real);
+  const found = full.search('s', settings(), 50);
+  assert.equal(found.rows.length, 50);
+  assert.ok(found.total > 50, `expected more than 50 matches, got ${found.total}`);
 });

@@ -64,6 +64,8 @@ toggle; about.
 
 - Search matches readable name, source name, area code, and curated aliases.
   Up/Down navigate, Enter selects, Escape clears.
+- Results are capped at fifty, and the cap is **stated**: "Showing 50 of 214
+  matches." A silent cut is the same defect as a silent absence.
 - Regions that are currently hidden appear **dimmed, with the reason**
   ("hidden · cortex off"), never silently absent, in **both the search results
   and the browse tree**. Selecting one is a no-op until it is visible; the row
@@ -472,12 +474,16 @@ and no shadow.
 2. **Atlas switching.** Spinner on the target segment; the rest of the UI stays
    live; **the control reverts on failure.** Today a failure leaves a disabled
    fieldset with no way forward.
-3. **No search results.** Includes the exit:
+3. **Context lost.** See item 6 — recovered without a Retry button, because
+   the page recovers itself and a button that does nothing is worse than none.
+4. **No search results.** Includes the exit:
    *"No match for 'amyg'. 2 matches are hidden — cortex is off."* with an inline
    **Show cortex** action.
-4. **No selection.** The inspector guides rather than sitting empty.
-5. **Error.** Real message, working Retry, provenance link still reachable.
-6. **Context lost.** `webglcontextlost` is intercepted, an overlay explains, and
+5. **No selection.** The inspector guides rather than sitting empty.
+6. **Error.** Real message, working Retry, provenance link still reachable.
+   The message names what failed; a failed atlas load says which atlas, not
+   the glTF parser's complaint about the 404 page it was handed.
+7. **Context lost.** `webglcontextlost` is intercepted, an overlay explains, and
    `webglcontextrestored` rebuilds the passes. Currently unhandled: a blank
    canvas and no explanation.
 
@@ -558,8 +564,8 @@ into the pure modules above, and the panels are verified in a real browser.
 
 | Risk | Response |
 |---|---|
-| Two `OutlinePass` instances plus `GTAOPass` may be too costly on integrated GPUs | Measure in the manner of `scripts/benchmark-picking.mjs`. Fallback: one pass with a custom two-tone edge shader |
-| A 360-item tree may be slow to render | Measure. Fallback: lazy-render group children on expand |
+| ~~Two `OutlinePass` instances plus `GTAOPass` may be too costly~~ | **Measured and closed.** Continuous rendering under a forced camera change: 6.9 ms median frame with no outline, 7.0 ms with both passes active. A 0.1 ms difference against a 16.7 ms budget, so the custom-shader fallback is not needed |
+| ~~A 360-item tree may be slow to render~~ | **Closed by construction.** Group children are created only while their group is open, so the tree never holds 360 rows at once |
 | `backdrop-filter` unsupported on older browsers | Degrades to flat 0.90 alpha, which is already the measured case |
 
 ## 13. Parked
