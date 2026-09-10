@@ -128,9 +128,11 @@ export async function startApp() {
     catalog,
     onFocus: focusSelection,
     onIsolate: () => display(() => {
-      if (model.state.isolatedRegion) model.setCortexVisible(model.state.cortexVisible);
-      else model.isolate();
-      focusSelection();
+      if (model.state.isolatedRegion) model.clearIsolation();
+      else {
+        model.isolate();
+        focusSelection();
+      }
     }),
   });
 
