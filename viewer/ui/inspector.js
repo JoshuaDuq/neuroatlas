@@ -44,8 +44,10 @@ export function createInspector({ catalog, atlases, onFocus, onIsolate }) {
       hint.hidden = true;
       facts.hidden = false;
       hemisphere.textContent = HEMISPHERE_WORDS[region.hemisphere] ?? region.hemisphere;
-      const source = atlasNames.get(region.atlas) ?? STRUCTURES_SOURCE;
-      atlasName.textContent = label.code ? `${source} · ${label.code}` : source;
+      const sourceName = atlasNames.get(region.atlas) ?? STRUCTURES_SOURCE;
+      atlasName.textContent = label.code
+        ? `${sourceName} · ${label.code}`
+        : sourceName;
 
       const isStructure = region.kind === 'structure';
       metricLabel.textContent = isStructure ? 'Volume' : 'Surface area';
