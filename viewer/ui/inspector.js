@@ -2,8 +2,13 @@ import { quantity } from './format.js';
 
 const HEMISPHERE_WORDS = { left: 'Left', right: 'Right', midline: 'Midline' };
 
+// The structures layer has no manifest atlas entry, so it needs a name of its
+// own. Internal identifiers like "aseg" should never reach the interface.
+const STRUCTURES_SOURCE = 'FreeSurfer subcortical segmentation';
+
 /** The selected region: what it is, and what is measured about it. */
-export function createInspector({ catalog, onFocus, onIsolate }) {
+export function createInspector({ catalog, atlases, onFocus, onIsolate }) {
+  const atlasNames = new Map(atlases.map(atlas => [atlas.id, atlas.label]));
   const name = document.getElementById('selected-name');
   const hint = document.getElementById('selected-hint');
   const facts = document.getElementById('selected-facts');
@@ -39,7 +44,8 @@ export function createInspector({ catalog, onFocus, onIsolate }) {
       hint.hidden = true;
       facts.hidden = false;
       hemisphere.textContent = HEMISPHERE_WORDS[region.hemisphere] ?? region.hemisphere;
-      atlasName.textContent = label.code ? `${region.atlas} · ${label.code}` : region.atlas;
+      const source = atlasNames.get(region.atlas) ?? STRUCTURES_SOURCE;
+      atlasName.textContent = label.code ? `${source} · ${label.code}` : source;
 
       const isStructure = region.kind === 'structure';
       metricLabel.textContent = isStructure ? 'Volume' : 'Surface area';

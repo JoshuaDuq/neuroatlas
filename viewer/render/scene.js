@@ -118,7 +118,8 @@ export function createScene(host, { onContextLost, onContextRestored } = {}) {
    * Move to a framed destination. Orbit limits are applied on arrival, not on
    * departure: a tighter maxDistance would otherwise yank a distant camera.
    */
-  function moveTo({ position, target, near, far, minDistance, maxDistance }) {
+  function moveTo({ position, target, near, far, minDistance, maxDistance },
+    { immediate = false } = {}) {
     camera.near = near;
     camera.far = far;
     camera.updateProjectionMatrix();
@@ -127,7 +128,10 @@ export function createScene(host, { onContextLost, onContextRestored } = {}) {
       controls.maxDistance = maxDistance;
       controls.update();
     };
-    if (prefersReducedMotion()) {
+    // The camera begins at the origin, inside the model. Animating the first
+    // framing would swoop out of the brain on every load; the first paint
+    // should simply be correct.
+    if (immediate || prefersReducedMotion()) {
       camera.position.copy(position);
       controls.target.copy(target);
       arrive();
