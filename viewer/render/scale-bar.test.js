@@ -30,3 +30,18 @@ test('the reported pixel length matches the reported millimetres', () => {
   const perPixel = millimetresPerPixel(35, 0.42, 900);
   assert.ok(Math.abs(bar.pixels * perPixel - bar.millimetres) < 1e-9);
 });
+
+test('a degenerate viewport yields no bar rather than a false measurement', () => {
+  // A page loaded in a hidden or background tab measures 0 and the camera
+  // never moves, so the bar computed once and stayed wrong. Showing 0.1 mm
+  // beside a 180 mm brain is worse than showing nothing.
+  assert.equal(scaleBar(35, 0.5, 0), null);
+  assert.equal(scaleBar(35, 0.5, Number.NaN), null);
+  assert.equal(scaleBar(35, 0, 800), null);
+  assert.equal(scaleBar(35, Number.NaN, 800), null);
+  assert.equal(scaleBar(35, -1, 800), null);
+});
+
+test('a usable viewport still yields a bar', () => {
+  assert.equal(scaleBar(35, 0.5, 800).millimetres, 50);
+});

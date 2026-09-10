@@ -29,9 +29,13 @@ export async function startApp() {
 
   const wanted = decodeState(globalThis.location.hash);
   const session = createSession({ views: Object.keys(VIEW_DIRECTIONS) });
+  // Declared before the scene: its resize observer can fire during the model
+  // download, which is long, and would otherwise hit a dead zone.
+  let chrome = null;
   const scene = createScene(viewport, {
     onContextLost: () => { session.setContextLost(); render(); },
     onContextRestored: () => { session.setStatus('ready'); render(); },
+    onResize: () => onCameraChange(),
   });
   const theme = createTheme(() => scene.applyTheme());
 
@@ -157,7 +161,7 @@ export async function startApp() {
 
   const shortcuts = createShortcuts();
 
-  const chrome = createViewportChrome({
+  chrome = createViewportChrome({
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
   });
@@ -224,8 +228,12 @@ export async function startApp() {
     onSelect: select,
   });
 
-  const onCameraChange = () =>
+  // Declared as a function so the scene's resize callback, wired above before
+  // the chrome exists, can reach it.
+  function onCameraChange() {
+    if (!chrome) return;
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
+  }
   scene.controls.addEventListener('change', onCameraChange);
 
   const onKeyDown = event => {

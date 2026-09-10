@@ -26,7 +26,11 @@ export function millimetresPerPixel(fovDegrees, distanceMetres, viewportHeightPx
  * always fits.
  */
 export function scaleBar(fovDegrees, distanceMetres, viewportHeightPx) {
+  // A hidden or background tab measures zero. Reporting a length derived from
+  // that is reporting a false measurement, so nothing is reported instead.
+  if (!(distanceMetres > 0) || !(viewportHeightPx > 0)) return null;
   const perPixel = millimetresPerPixel(fovDegrees, distanceMetres, viewportHeightPx);
+  if (!Number.isFinite(perPixel) || perPixel <= 0) return null;
   let chosen = STEPS[0];
   for (const step of STEPS) {
     const pixels = step / perPixel;
