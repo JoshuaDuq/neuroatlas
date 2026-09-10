@@ -229,7 +229,8 @@ for (const button of document.querySelectorAll('[data-view]')) {
 }
 
 try {
-  model = await BrainAtlas.load('/models/manifest.json');
+  const manifestUrl = `${import.meta.env.BASE_URL}models/manifest.json`;
+  model = await BrainAtlas.load(manifestUrl);
   scene.add(model.group);
   bounds.setFromObject(model.group);
   for (const atlas of model.manifest.atlases) {

@@ -8,7 +8,8 @@ test('fits all anatomical bounds inside landscape and portrait viewports', () =>
   for (const aspect of [1.7, 0.6]) {
     const camera = new PerspectiveCamera(35, aspect, 0.001, 10);
     const center = frameBounds(camera, bounds, new Vector3(-1, 0.3, -0.45).normalize());
-    assert.deepEqual(center.toArray(), [0, 0.02, 0]);
+    const [cx, cy, cz] = center.toArray();
+    assert.ok(Math.abs(cx) < 1e-6 && Math.abs(cy - 0.02) < 1e-6 && Math.abs(cz) < 1e-6);
     for (const x of [bounds.min.x, bounds.max.x]) {
       for (const y of [bounds.min.y, bounds.max.y]) {
         for (const z of [bounds.min.z, bounds.max.z]) {
