@@ -61,11 +61,16 @@ export async function startApp() {
     render();
   }
 
-  function applyView(view) {
+  let framed = false;
+
+  function applyView(view, { immediate = false } = {}) {
     if (!session.setView(view)) return;
     scene.camera.up.copy(upFor(view));
-    scene.moveTo(planFraming(
-      scene.camera, scene.controls, bounds, VIEW_DIRECTIONS[view], frameTo));
+    scene.moveTo(
+      planFraming(scene.camera, scene.controls, bounds, VIEW_DIRECTIONS[view], frameTo),
+      { immediate: immediate || !framed },
+    );
+    framed = true;
     render();
   }
 
@@ -131,6 +136,7 @@ export async function startApp() {
 
   const inspector = createInspector({
     catalog,
+    atlases: model.manifest.atlases,
     onFocus: focusSelection,
     onIsolate: () => display(() => {
       if (model.state.isolatedRegion) model.clearIsolation();
@@ -259,17 +265,19 @@ export async function startApp() {
   scene.applyTheme();
   session.setTheme(theme.current);
   scene.setSize();
-  applyView(session.assemble(model.state).view);
+  applyView(session.assemble(model.state).view, { immediate: true });
   if (wanted.hemisphere) model.setHemisphere(wanted.hemisphere);
   if (wanted.cortexVisible !== undefined) model.setCortexVisible(wanted.cortexVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
   if (wanted.atlasColors !== undefined) model.setAtlasColors(wanted.atlasColors);
-  if (wanted.view) applyView(wanted.view);
+  if (wanted.view) applyView(wanted.view, { immediate: true });
   if (wanted.selectedRegion && catalog.get(wanted.selectedRegion)) {
     try {
       model.select(wanted.selectedRegion);
+      // Isolation depends on a selection, so it is restored after one.
+      if (wanted.isolatedRegion === wanted.selectedRegion) model.isolate();
     } catch {
-      session.notify('That region is not in this view.');
+      session.notify('That region is not shown in this view.');
     }
   }
   session.setStatus('ready');
