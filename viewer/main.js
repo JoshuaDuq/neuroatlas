@@ -9,7 +9,7 @@ import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { BrainAtlas } from './brain-atlas.js';
+import { BrainAtlas } from './model/brain-atlas.js';
 import { frameBounds } from './render/camera-views.js';
 import './style.css';
 
