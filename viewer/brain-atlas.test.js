@@ -68,21 +68,24 @@ test('selection events carry source metadata; medial wall cannot become a region
   atlas.dispose();
 });
 
-test('neutral cortex and optional atlas colors change appearance without geometry changes', async () => {
+test('starts with atlas colors active and toggles neutral cortex without geometry changes', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
+  assert.equal(atlas.state.atlasColors, true);
   const mesh = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-left');
   const geometry = mesh.geometry;
-  const neutral = mesh.material.color.getHex();
-  atlas.setAtlasColors(true);
-  assert.equal(mesh.material.color.getHex(), 0xffffff);
-  assert.notEqual(neutral, 0xffffff);
-  assert.equal(mesh.geometry, geometry);
+  const colored = mesh.material.color.getHex();
+  assert.equal(colored, 0xffffff);
   const structure = atlas.visibleMeshes.find(mesh => mesh.userData.kind === 'structure');
   assert.equal(structure.material.color.getHex(), 0xffffff);
   atlas.setAtlasColors(false);
-  assert.equal(mesh.material.color.getHex(), neutral);
+  const neutral = mesh.material.color.getHex();
+  assert.notEqual(neutral, 0xffffff);
   assert.notEqual(structure.material.color.getHex(), 0xffffff);
+  assert.equal(mesh.geometry, geometry);
+  atlas.setAtlasColors(true);
+  assert.equal(mesh.material.color.getHex(), colored);
+  assert.equal(structure.material.color.getHex(), 0xffffff);
   atlas.dispose();
 });
 
