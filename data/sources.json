@@ -1,0 +1,93 @@
+{
+  "sources": [
+    {
+      "path": "data/fsaverage/mri/aseg.mgz",
+      "sha256": "b55ef817e5e5bd1a3d76d4a2305283eef16fbff199ead3d840dd4b0fa8205e48",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/mri/aseg.mgz"
+    },
+    {
+      "path": "data/fsaverage/mri/orig.mgz",
+      "sha256": "97862f8adfa48ff0c22d1441a81554f35c562c2232b43d8738730dc9ceb2c0a1",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/mri/orig.mgz"
+    },
+    {
+      "path": "data/fsaverage/surf/lh.pial",
+      "sha256": "9cb004f61a2eeb977b1b595ad6de6656afdfc1f37ade0c00a8dde91e990a0f29",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/surf/lh.pial"
+    },
+    {
+      "path": "data/fsaverage/surf/lh.white",
+      "sha256": "c80741da738b70bc0ab1e0dcd6e8eec3d3d9f22af5812c38120a8ce4fb9fa7d3",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/surf/lh.white"
+    },
+    {
+      "path": "data/fsaverage/surf/lh.sulc",
+      "sha256": "6ebd903d42cd17b51d84229d641fe10a3b32d839c0a69266b089811df5874d91",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/surf/lh.sulc"
+    },
+    {
+      "path": "data/fsaverage/label/lh.aparc.a2009s.annot",
+      "sha256": "8ce931d3c87d9dfd369ac739fa32c04ab9b8335afab0e6d77f569b43d8c0b70e",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/label/lh.aparc.a2009s.annot"
+    },
+    {
+      "path": "data/fsaverage/surf/rh.pial",
+      "sha256": "4f752701f74c1626ee3b6239046b9aa793ca4e87c6ae9a6b74a233c04e651212",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/surf/rh.pial"
+    },
+    {
+      "path": "data/fsaverage/surf/rh.white",
+      "sha256": "4e6e74efbd851e3b23a943c28b062acb3395341ac02156a4d1078d735b55e295",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/surf/rh.white"
+    },
+    {
+      "path": "data/fsaverage/surf/rh.sulc",
+      "sha256": "11db597df4edff92b1aa8e6d99bfb4728da4f8178a9984951df2e0572f040f4c",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/surf/rh.sulc"
+    },
+    {
+      "path": "data/fsaverage/label/rh.aparc.a2009s.annot",
+      "sha256": "f0de8093fc336ddea7fdefde91449f552accdb198dd51a559718262adf317aac",
+      "url": "https://osf.io/download/3bxqt?version=2",
+      "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+      "archive_member": "fsaverage/label/rh.aparc.a2009s.annot"
+    },
+    {
+      "path": "data/fsaverage/label/lh.HCPMMP1.annot",
+      "sha256": "d4da634644b4c595dbda23963e01752059f0e7714be70169eb84e25e09ba2b44",
+      "md5": "46a102b59b2fb1bb4bd62d51bf02e975",
+      "url": "https://ndownloader.figshare.com/files/5528816",
+      "citation": "https://doi.org/10.6084/m9.figshare.3498446.v2"
+    },
+    {
+      "path": "data/fsaverage/label/rh.HCPMMP1.annot",
+      "sha256": "744eff4e57ce8121c43851eea425475baf92d9ba8686299a7435517ab972e9a2",
+      "md5": "75e96b331940227bbcb07c1c791c2463",
+      "url": "https://ndownloader.figshare.com/files/5528819",
+      "citation": "https://doi.org/10.6084/m9.figshare.3498446.v2"
+    },
+    {
+      "path": "data/FreeSurferColorLUT.txt",
+      "sha256": "06eaf85bfe2e1c433d2398b1cbe715e9c68fea03b23679d3c60d134237169ffb",
+      "url": "https://github.com/mne-tools/mne-python/blob/v1.11.0/mne/data/FreeSurferColorLUT.txt"
+    }
+  ]
+}
