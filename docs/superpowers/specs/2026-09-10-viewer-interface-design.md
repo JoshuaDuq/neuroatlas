@@ -54,7 +54,7 @@ Three zones, one job each. No control ever appears in two places.
 
 - **Left rail — Find.** Search plus a browsable tree.
 - **Centre — See.** The viewport as hero.
-- **Right rail — Know.** `SELECTED` above `DISPLAY`.
+- **Right rail — Know.** *Selected* above *Display*.
 
 **Header.** Wordmark; atlas as a **segmented control**, not a dropdown, because
 with two atlases a dropdown hides half the product; visible region count; theme
@@ -87,12 +87,12 @@ toggle; about.
 
 **Right rail.**
 
-- `SELECTED`: readable name, laterality, atlas, source label id, and the
+- *Selected*: readable name, laterality, atlas, source label id, and the
   metrics already present in the manifest (`surface_area_mm2` for cortex,
   `segmentation_volume_mm3` for structures). Actions: Focus, Isolate.
 - `Isolate` is a **toggle that releases itself**. Today the only exit is Reset,
   which also discards every other setting.
-- `DISPLAY`: hemisphere, cortex visibility, cortex opacity, atlas colours.
+- *Display*: hemisphere, cortex visibility, cortex opacity, atlas colours.
 
 **Responsive.** Below 1000px the rails become a bottom sheet with Find /
 Selected / Display tabs. The viewport keeps the top 60%. Orientation markers
@@ -175,9 +175,10 @@ One-way, no exceptions. UI modules are constructed with callbacks, receive
 
 ### 5.3 Invariants
 
-1. **One writer per channel.** The model owns material appearance; the view owns
-   the outline pass. This is what lets hover and selection be visually distinct
-   without a second writer on `emissive`.
+1. **One writer per channel.** The model writes materials, from source colour
+   and display settings only. The view owns the outline pass. Selection and
+   hover never enter the material path at all (section 7.3), so there is no
+   second writer on `emissive` and no way for the two to disagree.
 2. **One visibility rule.** `catalog/visibility.js` is consumed by both
    `brain-atlas.js` and the navigator. Two implementations would drift, and the
    drift would be invisible.
@@ -210,7 +211,8 @@ Acyclic.
 
 ### 5.5 Changes to `brain-atlas.js`
 
-Additive and backward-compatible; all existing tests stay green.
+Three additions and one removal. No public method changes signature
+incompatibly, and all existing tests stay green.
 
 1. Thread an optional `onProgress` through `loadLayer` / `setAtlas` /
    `initialize`, so a 28 MB load can show determinate progress.
@@ -219,6 +221,9 @@ Additive and backward-compatible; all existing tests stay green.
    `state`, because `state` reads `visibleMeshCount` -> `visibleMeshes` ->
    `mesh.visible`, and would recurse through the value it is computing.
 3. Consume `catalog/visibility.js` instead of its own inline predicate.
+4. **Remove the selection emissive** at lines 184-185. Selection is signalled
+   by the outline pass alone, so the material must not be altered to show it
+   (section 7.3). No existing test asserts `emissive`, so this stays green.
 
 ### 5.6 Bootstrap order
 
@@ -276,12 +281,31 @@ the interface, consistent with how `manifest.json` already documents
 
 ## 7. Visual system
 
-**Rationale.** The model is warm bone (`#D6CFC2`) and today's chrome is warm
-beige (`#F4F3EF`). Everything shares one temperature, so nothing separates —
-this is the cause of the flatness in the current build. The chrome becomes
-cool-neutral and **the anatomy is the only warm thing on screen.**
+### 7.0 Restraint rules
 
-### 7.1 Tokens, every value contrast-verified
+These are the constraints that keep the result an instrument rather than a
+generic dashboard. They are stated first because everything below obeys them,
+and because anything left unstated gets invented at implementation time.
+
+1. **Colour carries meaning; chrome is achromatic.** The accent appears on
+   exactly four things: the focus ring, the selected row, the active segment,
+   and links. Nowhere else. Every other surface, border and label is neutral.
+2. **The anatomy never receives a colour that is not source data.** See 7.3.
+3. **Nothing floats.** No drop shadows anywhere. Depth is expressed by hairline
+   rules and one-step surface value shifts.
+4. **Words before icons.** No emoji, ever. Icons only where an icon is faster
+   to read than its label.
+5. **Nothing animates except the camera.** See the motion rule in 7.2.
+6. **Every number carries a unit and a fixed precision.** See 7.5.
+7. **No decorative element may be added that does not encode information.**
+   Not badges, not pills, not gradients, not illustrated empty states.
+
+### 7.1 Palette
+
+The model is warm bone (`#D6CFC2`) and today's chrome is warm beige
+(`#F4F3EF`). Everything shares one temperature, so nothing separates — this is
+the cause of the flatness in the current build. The chrome becomes cool-neutral
+so that **the anatomy is the only warm thing on screen.**
 
 | Token | Light | Dark | Measured |
 |---|---|---|---|
@@ -304,15 +328,92 @@ owes 3:1. One token for both is how design systems quietly fail WCAG 1.4.11.
 The focus ring reuses `--accent` and clears 3:1 on all three surfaces in both
 themes (measured 4.96:1 to 8.19:1), so one ring token works everywhere.
 
-**Type.** `12 · 13 · 14 · 20px`, expressed in rem so OS font scaling works.
-Nothing below 12px. Metrics use `font-variant-numeric: tabular-nums`.
+### 7.2 Type, density, motion
 
-**Space.** 4px base: `4 8 12 16 20 24 32 40`.
-**Radius.** 4 controls, 6 panels, 8 popovers.
-**Elevation.** Borders, not shadows. One soft shadow, popovers only.
-**Motion.** 120ms state, 240ms panels and camera transitions.
+**Families.** Interface text uses the platform grotesque:
+`ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+sans-serif`. **Every measured quantity is set in mono**
+(`ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`), which is both an
+instrument convention and the reason columns of figures align.
 
-### 7.2 Scene tokens
+**Scale.** Four sizes, in rem so OS font scaling works, nothing below 12px:
+
+| Size | Weight | Use |
+|---|---|---|
+| 12px | 500 | section labels, orientation markers, provenance |
+| 13px | 400 | tree rows, control labels, metadata |
+| 14px | 400 | body text, search input |
+| 17px | 600 | selected region name |
+
+Three weights only: 400, 500, 600. No 300, no 700. Section labels are
+**sentence case above a hairline rule, never all-caps** — repeated all-caps
+micro-labels are a template tic, and four of them on one screen is noise.
+The 17px title carries `-0.01em` tracking; nothing else is tracked.
+
+**Density.** A 4px baseline governs everything:
+
+| Element | Size |
+|---|---|
+| Baseline unit | 4px |
+| Tree and list row | 28px |
+| Control height | 32px |
+| Panel padding | 16px |
+| Rail width | 320px each |
+| Header | 52px |
+| Footer | 28px |
+
+**Radius.** 2px on controls, 3px on panels. Nothing rounder.
+**Elevation.** None. No shadows anywhere, including popovers; a popover is a
+`--surface-base` panel with a `--border-control` hairline.
+**Motion.** Interface state changes are **instant**. The only animation in the
+product is the camera view transition, 240ms `cubic-bezier(.4,0,.2,1)`, which
+earns its place because spatial continuity genuinely aids anatomical
+orientation. It jump-cuts under `prefers-reduced-motion`. No slide, scale or
+bounce exists anywhere.
+
+**Icons.** One 16px stroke set at 1.5px, used for exactly five things: search
+affordance, disclosure triangle, close, external link, theme. Every other
+control is a word.
+
+### 7.3 What the anatomy may be coloured
+
+**Rule: the 3D model displays source data and user display settings, and
+nothing else.** No interface colour is ever applied to it.
+
+This is a correctness requirement, not an aesthetic preference. With atlas
+colours enabled the region's colour **is** the datum — it encodes atlas
+identity from the FreeSurfer lookup table. Tinting the selected region with an
+accent emissive would alter the value the user is reading. An instrument does
+not modify the measurement in order to indicate selection.
+
+Selection and hover are therefore signalled **entirely by the outline pass**,
+which composites over the render without touching a material:
+
+| | Material | Outline |
+|---|---|---|
+| Hover | unchanged | 1px, halo tone only |
+| Selected | unchanged | 2px, two-tone core + halo |
+
+This also simplifies invariant 1 in section 5.3: the model writes materials
+from source colour and display settings alone, and selection never enters the
+material path.
+
+**Why two-tone, and why it is not a preference.** With atlas colours enabled
+the cortex takes 512 source colours spanning the gamut. Measured against all of
+them, no single outline colour survives: near-black reaches only 1.42:1 against
+`#5F0044`, near-white 1.01:1 against `#E1FDEA`, and the accent 1.00:1 against
+`#6B6757`. Selection would be invisible on those regions.
+
+A two-tone outline of `#0B1114` core plus `#F2F6FA` halo measures **4.19:1
+worst case across all 512 colours** — 440 carried by the dark tone, 72 by the
+light. The floor across the entire greyscale ramp is also 4.19:1, so the
+guarantee is structural rather than a property of these particular colours: a
+colour cannot be close to both black and white.
+
+Because the outline is achromatic in both themes, it behaves identically
+whether atlas colours are on or off. There is no mode switch to get wrong.
+
+### 7.4 Scene tokens
 
 CSS remains the single source of truth. `scene.js` reads these via
 `getComputedStyle(document.documentElement)` on theme change, so a colour is
@@ -329,29 +430,28 @@ changed in exactly one place.
 --scene-exposure       0.98    / 1.12
 ```
 
-`hiddenEdgeColor` must be a per-theme token. The current `0x000000` is invisible
-against a dark background.
+`--accent` is deliberately absent: no interface colour reaches the scene.
+`hiddenEdgeColor` must be a per-theme token; the current `0x000000` is
+invisible against a dark background.
 
-### 7.3 Selection and hover
+### 7.5 Quantities
 
-|  | Material (model owns) | Outline (view owns) |
-|---|---|---|
-| Hover | untouched | thin, halo tone only |
-| Selected | accent emissive fill | thick, two-tone core + halo |
+Measured values are the reason the product exists, so their rendering is
+specified rather than left to the implementer.
 
-**Why two-tone, and why it is not a preference.** With atlas colours enabled the
-cortex takes 512 source colours spanning the gamut. Measured against all of
-them, no single outline colour survives: near-black reaches only 1.42:1 against
-`#5F0044`, near-white 1.01:1 against `#E1FDEA`, and the accent 1.00:1 against
-`#6B6757`. Selection would be invisible on those regions.
+- **Four significant figures**, always. `3214 mm²`, not `3214.153 mm²`.
+- **Mono, tabular**, so columns align and digits do not jitter on update.
+- A **thin space** separates value and unit; the unit uses the real superscript
+  character (`mm²`, `mm³`), never `mm2`.
+- **No thousands separator** below five digits; a thin space above.
+- Precision is **uniform within a column**. Mixed precision reads as an error.
+- A quantity that is absent renders as `—`, never as `0` or an empty cell.
 
-A two-tone outline of `#0B1114` core plus `#F2F6FA` halo measures **4.19:1
-worst case across all 512 colours** — 440 carried by the dark tone, 72 by the
-light. The floor across the entire greyscale ramp is also 4.19:1, so the
-guarantee is structural rather than a property of these particular colours: a
-colour cannot be close to both black and white.
+**Scale bar.** The bar snaps to the nearest 1–2–5 sequence value
+(1, 2, 5, 10, 20, 50, 100 mm) that keeps its drawn length between 60 and 140px.
+An arbitrary value such as `37 mm` is the mark of a scale bar nobody designed.
 
-### 7.4 Viewport overlays
+### 7.6 Viewport overlays
 
 Orientation markers, scale bar and hover label sit over rendered geometry whose
 luminance runs from near-black crevices to near-white speculars, so none of the
@@ -359,7 +459,8 @@ UI ratios above apply to them by default.
 
 Overlays therefore render on `--surface-base` chips at **0.90 alpha with a
 backdrop blur**. Measured against both extremes the model can present:
-**11.0:1 to 15.1:1** in both themes.
+**11.0:1 to 15.1:1** in both themes. Chips carry a `--border-subtle` hairline
+and no shadow.
 
 ## 8. States
 
@@ -379,7 +480,12 @@ backdrop blur**. Measured against both extremes the model can present:
    canvas and no explanation.
 
 Selection cleared as a side effect (hiding the cortex drops the selected region)
-raises a transient `notice`: *"Selection cleared — cortex hidden."*
+raises a `notice`: *"Selection cleared — cortex hidden."*
+
+A notice renders as an **inline status line at the foot of the rail it
+concerns**, in `--text-secondary`, and is cleared by the user's next action.
+It is never a floating toast and never dismisses on a timer: a timed message
+is one the user can miss, which in an instrument is a defect.
 
 ## 9. Accessibility
 
