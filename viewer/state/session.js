@@ -68,6 +68,32 @@ export function createSession({ views, theme = 'light' }) {
 
     setProgress: progress => act({ status: 'loading', progress }),
 
+    /**
+     * Swapping atlas is not first load. There is already a model on screen,
+     * so it stays visible and usable and only the atlas control reports.
+     */
+    setSwitching: progress => act({ status: 'switching', progress }),
+
+    /**
+     * A failed swap leaves the working atlas in place; it is not a dead viewer.
+     *
+     * The reader is told which atlas failed. The underlying error is not
+     * shown: a missing file makes the glTF loader parse the 404 page and
+     * report "Unexpected token '<'", which describes the parser rather than
+     * anything the reader can act on. It goes to the console instead.
+     */
+    failSwitch(atlasLabel, error) {
+      console.error(error);
+      state = {
+        ...state,
+        status: 'ready',
+        progress: null,
+        error: null,
+        notice: `Could not load the ${atlasLabel}. The model file may be `
+          + 'unavailable — check your connection and try again.',
+      };
+    },
+
     setError: error => act({ status: 'error', error, progress: null }),
 
     /** Notices are cleared by the next action, never by a timer. */

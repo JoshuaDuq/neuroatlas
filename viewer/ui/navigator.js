@@ -4,57 +4,77 @@ const REASON_TEXT = {
   isolated: 'isolated',
 };
 
+const SIDE = { left: 'L', right: 'R', midline: 'mid' };
+const SIDE_WORD = { left: 'left', right: 'right', midline: 'midline' };
+
 /**
  * Find a region: search, or browse the anatomy.
  *
- * A region that matches but is not currently on screen is shown dimmed with
- * the reason, never omitted. Silent absence is what makes a tool feel broken,
- * and with 547 regions it happens constantly.
+ * Two established patterns rather than one improvised one. Search is a
+ * combobox: focus stays in the field and aria-activedescendant points at the
+ * active option, so typing is never interrupted. The browse tree is a tree:
+ * focus moves between items, arrows open and close, and Enter selects.
+ * Selecting on focus would announce once per keypress while arrowing through
+ * 360 areas.
+ *
+ * A region that matches but is not on screen is shown dimmed with the reason
+ * and an action that reveals it. Silent absence is what makes a tool feel
+ * broken.
  */
-export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQuery, onReveal, onAtlas }) {
+export function createNavigator({
+  catalog, atlases, onSelect, onToggleGroup, onQuery, onReveal, onAtlas,
+}) {
   const search = document.getElementById('search');
   const results = document.getElementById('results');
   const tree = document.getElementById('tree');
   const notice = document.getElementById('rail-notice');
   let structureKey = null;
+  let activeIndex = -1;
 
-  const onInput = event => onQuery(event.target.value);
-  search.addEventListener('input', onInput);
+  const options = () => [...results.querySelectorAll('[role="option"]')];
+  const treeItems = () => [...tree.querySelectorAll('[role="treeitem"]')];
 
-  function rowElement(row, { indent = false } = {}) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = indent ? 'row row-indent' : 'row';
-    button.dataset.regionId = row.region.id;
-    button.setAttribute('role', 'option');
-    button.setAttribute('aria-selected', 'false');
+  function activate(row) {
+    if (row.dataset.visible === 'true') onSelect(row.dataset.regionId);
+    else onReveal(row.dataset.reason, row.dataset.regionId);
+  }
+
+  function buildRow(row, { role, level }) {
+    const item = document.createElement('div');
+    item.id = `row-${role}-${row.region.id}`.replaceAll(':', '-');
+    item.className = role === 'treeitem' ? 'row row-indent' : 'row';
+    item.setAttribute('role', role);
+    item.tabIndex = -1;
+    item.dataset.regionId = row.region.id;
+    item.dataset.visible = String(row.visible);
+    if (level) item.setAttribute('aria-level', String(level));
+    if (role === 'option') item.setAttribute('aria-selected', 'false');
 
     const name = document.createElement('span');
     name.className = 'row-name';
     name.textContent = row.label.name;
-    button.append(name);
+    item.append(name);
 
+    const side = SIDE_WORD[row.region.hemisphere] ?? row.region.hemisphere;
+    const tail = document.createElement('span');
     if (row.visible) {
-      const side = document.createElement('span');
-      side.className = 'row-side';
-      side.textContent = row.region.hemisphere === 'midline'
-        ? 'mid'
-        : row.region.hemisphere.slice(0, 1).toUpperCase();
-      button.append(side);
+      tail.className = 'row-side';
+      tail.textContent = SIDE[row.region.hemisphere] ?? '';
+      // The glyph is "L"; the name says "left". Laterality is never a glyph alone,
+      // and it is what distinguishes two otherwise identical rows.
+      item.setAttribute('aria-label', `${row.label.name}, ${side}`);
     } else {
-      button.dataset.hidden = 'true';
-      const reason = document.createElement('span');
-      reason.className = 'row-reason';
-      reason.textContent = REASON_TEXT[row.reason] ?? 'hidden';
-      button.append(reason);
-      button.title = `Hidden: ${REASON_TEXT[row.reason] ?? row.reason}`;
+      item.dataset.hidden = 'true';
+      item.dataset.reason = row.reason;
+      tail.className = 'row-reason';
+      tail.textContent = REASON_TEXT[row.reason] ?? 'hidden';
+      // Spoken as part of the row, so the state is never colour-only.
+      item.setAttribute('aria-label',
+        `${row.label.name}, ${side}, hidden: ${tail.textContent}. Activate to reveal.`);
     }
-
-    button.addEventListener('click', () => {
-      if (row.visible) onSelect(row.region.id);
-      else onReveal(row.reason, row.region.id);
-    });
-    return button;
+    item.append(tail);
+    item.addEventListener('click', () => activate(item));
+    return item;
   }
 
   function renderResults(state) {
@@ -62,8 +82,10 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
     const here = found.filter(row => row.reason !== 'other-atlas');
     const elsewhere = found.filter(row => row.reason === 'other-atlas');
     results.replaceChildren();
+    activeIndex = -1;
+    search.removeAttribute('aria-activedescendant');
 
-    for (const row of here) results.append(rowElement(row));
+    for (const row of here) results.append(buildRow(row, { role: 'option' }));
 
     if (!here.length) {
       const empty = document.createElement('p');
@@ -72,7 +94,7 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
       results.append(empty);
     }
 
-    // Matches in the other parcellation are reported rather than dropped.
+    // Matches in the other parcellation are reported, not dropped.
     if (elsewhere.length) {
       const other = atlases.find(atlas => atlas.id !== state.atlas);
       const line = document.createElement('p');
@@ -80,7 +102,7 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
       line.textContent = `${elsewhere.length} more in ${other.label}. `;
       const switchTo = document.createElement('button');
       switchTo.type = 'button';
-      switchTo.textContent = `Switch atlas`;
+      switchTo.textContent = 'Switch atlas';
       switchTo.addEventListener('click', () => onAtlas(other.id));
       line.append(switchTo);
       results.append(line);
@@ -91,8 +113,8 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
     tree.replaceChildren();
     let section = null;
     for (const group of catalog.groups(state)) {
-      // Cortical lobes and subcortical systems are separate vocabularies, and
-      // can share a name, so the tree says which is which.
+      // Lobes and systems are separate vocabularies and can share a name, so
+      // the tree says which is which.
       if (group.kind !== section) {
         section = group.kind;
         const heading = document.createElement('p');
@@ -100,17 +122,20 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
         heading.textContent = section === 'cortex' ? 'Cortex' : 'Subcortical';
         tree.append(heading);
       }
-      const expanded = state.expanded.has(group.key);
 
-      const header = document.createElement('button');
-      header.type = 'button';
+      const expanded = state.expanded.has(group.key);
+      const header = document.createElement('div');
       header.className = 'row group-row';
       header.setAttribute('role', 'treeitem');
       header.setAttribute('aria-expanded', String(expanded));
+      header.setAttribute('aria-level', '1');
+      header.tabIndex = -1;
+      header.dataset.groupKey = group.key;
 
       const marker = document.createElement('span');
       marker.className = 'disclosure';
       marker.textContent = expanded ? '▾' : '▸';
+      marker.setAttribute('aria-hidden', 'true');
       const name = document.createElement('span');
       name.className = 'row-name';
       name.textContent = group.name;
@@ -118,22 +143,93 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
       count.className = 'group-count';
       count.textContent = String(group.rows.length);
       header.append(marker, name, count);
+      header.setAttribute('aria-label', `${group.name}, ${group.rows.length} regions`);
       header.addEventListener('click', () => onToggleGroup(group.key));
       tree.append(header);
 
-      // Children are built only when open: 360 HCP areas need not exist as DOM.
       if (!expanded) continue;
-      for (const row of group.rows) tree.append(rowElement(row, { indent: true }));
+      // Children exist only while open: 360 areas need not all be DOM.
+      const children = document.createElement('div');
+      children.setAttribute('role', 'group');
+      for (const row of group.rows) {
+        children.append(buildRow(row, { role: 'treeitem', level: 2 }));
+      }
+      tree.append(children);
     }
+    const first = treeItems()[0];
+    if (first) first.tabIndex = 0;
   }
 
   function markSelection(state) {
     const id = state.selectedRegion?.id ?? null;
-    for (const row of [...results.children, ...tree.children]) {
-      if (!row.dataset?.regionId) continue;
-      row.setAttribute('aria-selected', String(row.dataset.regionId === id));
+    for (const item of [...options(), ...treeItems()]) {
+      if (!item.dataset.regionId) continue;
+      const selected = item.dataset.regionId === id;
+      item.dataset.selected = String(selected);
+      if (item.getAttribute('role') === 'option') {
+        item.setAttribute('aria-selected', String(selected));
+      } else {
+        item.setAttribute('aria-current', selected ? 'true' : 'false');
+      }
     }
   }
+
+  /** Combobox: the field keeps focus, the active option is pointed at. */
+  function moveActiveOption(delta) {
+    const list = options();
+    if (!list.length) return;
+    for (const option of list) delete option.dataset.active;
+    activeIndex = Math.max(0, Math.min(list.length - 1, activeIndex + delta));
+    const active = list[activeIndex];
+    active.dataset.active = 'true';
+    active.scrollIntoView({ block: 'nearest' });
+    search.setAttribute('aria-activedescendant', active.id);
+  }
+
+  /** Tree: focus itself moves, so the reader hears one item per keypress. */
+  function moveTreeFocus(delta) {
+    const items = treeItems();
+    if (!items.length) return;
+    const index = items.indexOf(document.activeElement);
+    const next = items[Math.max(0, Math.min(items.length - 1, index + delta))];
+    for (const item of items) item.tabIndex = -1;
+    next.tabIndex = 0;
+    next.focus();
+  }
+
+  const onTreeKey = event => {
+    const item = event.target.closest('[role="treeitem"]');
+    if (!item) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveTreeFocus(event.key === 'ArrowDown' ? 1 : -1);
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      item.click();
+    } else if (event.key === 'ArrowRight' && item.dataset.groupKey) {
+      if (item.getAttribute('aria-expanded') === 'false') item.click();
+    } else if (event.key === 'ArrowLeft' && item.dataset.groupKey) {
+      if (item.getAttribute('aria-expanded') === 'true') item.click();
+    }
+  };
+
+  const onSearchKey = event => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveActiveOption(event.key === 'ArrowDown' ? 1 : -1);
+    } else if (event.key === 'Enter') {
+      const active = options()[activeIndex];
+      if (active) {
+        event.preventDefault();
+        activate(active);
+      }
+    }
+  };
+
+  const onInput = event => onQuery(event.target.value);
+  search.addEventListener('input', onInput);
+  search.addEventListener('keydown', onSearchKey);
+  tree.addEventListener('keydown', onTreeKey);
 
   return {
     update(state) {
@@ -143,7 +239,7 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
       search.setAttribute('aria-expanded', String(searching));
       if (document.activeElement !== search) search.value = state.query;
 
-      // Rebuild only when the structure could have changed, not on every tick.
+      // Rebuild only when the structure could have changed.
       const key = [
         state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity > 0,
         state.isolatedRegion, state.query, [...state.expanded].sort().join(),
@@ -161,16 +257,15 @@ export function createNavigator({ catalog, atlases, onSelect, onToggleGroup, onQ
 
     focusSearch() { search.focus(); search.select(); },
 
-    /** Arrow keys move focus; Enter selects. Selecting on focus would flood a screen reader. */
     moveFocus(delta) {
-      const rows = [...(results.hidden ? tree : results).querySelectorAll('.row')];
-      if (!rows.length) return;
-      const index = rows.indexOf(document.activeElement);
-      rows[Math.max(0, Math.min(rows.length - 1, index + delta))].focus();
+      if (results.hidden) moveTreeFocus(delta);
+      else moveActiveOption(delta);
     },
 
     dispose() {
       search.removeEventListener('input', onInput);
+      search.removeEventListener('keydown', onSearchKey);
+      tree.removeEventListener('keydown', onTreeKey);
       results.replaceChildren();
       tree.replaceChildren();
     },

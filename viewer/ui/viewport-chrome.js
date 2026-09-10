@@ -48,7 +48,7 @@ export function createViewportChrome({ onView, onRetry }) {
       for (const button of buttons) {
         button.setAttribute('aria-pressed', String(button.dataset.view === state.view));
       }
-      const ready = state.status === 'ready';
+      const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       bar.hidden = !ready;
 

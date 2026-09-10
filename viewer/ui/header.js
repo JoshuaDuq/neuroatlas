@@ -1,3 +1,9 @@
+const megabytes = bytes => (bytes / 1_048_576).toFixed(1);
+
+const switchProgress = progress => progress?.total
+  ? `Loading ${megabytes(progress.loaded)} / ${megabytes(progress.total)} MB`
+  : 'Loading atlas…';
+
 /** Atlas choice, visible region count, and the theme switch. */
 export function createHeader({ atlases, onAtlas, onTheme }) {
   const container = document.getElementById('atlas-switch');
@@ -22,13 +28,16 @@ export function createHeader({ atlases, onAtlas, onTheme }) {
 
   return {
     update(state, { visibleCount }) {
+      const switching = state.status === 'switching';
       for (const button of buttons) {
         const active = button.dataset.atlas === state.atlas;
         button.setAttribute('aria-pressed', String(active));
-        button.disabled = state.status === 'loading';
-        button.dataset.loading = String(active && state.status === 'loading');
+        button.disabled = state.status === 'loading' || switching;
+        button.dataset.loading = String(switching && !active);
       }
-      count.textContent = state.status === 'ready' ? `${visibleCount} regions` : '';
+      count.textContent = switching
+        ? switchProgress(state.progress)
+        : state.status === 'ready' ? `${visibleCount} regions` : '';
       const dark = state.theme === 'dark';
       themeLabel.textContent = dark ? 'Light' : 'Dark';
       themeButton.setAttribute('aria-pressed', String(dark));
