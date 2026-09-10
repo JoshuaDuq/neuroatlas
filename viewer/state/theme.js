@@ -1,0 +1,43 @@
+const STORAGE_KEY = 'neuroatlas.theme';
+
+const systemPrefersDark = () =>
+  globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+
+/**
+ * Light or dark, stored per reader.
+ *
+ * The attribute drives the CSS token layer; the renderer then reads its
+ * colours back out of that layer, so neither palette is duplicated in JS.
+ */
+export function createTheme(onChange) {
+  let stored = null;
+  try {
+    stored = localStorage.getItem(STORAGE_KEY);
+  } catch {
+    stored = null;
+  }
+  let theme = stored === 'dark' || stored === 'light'
+    ? stored
+    : (systemPrefersDark() ? 'dark' : 'light');
+
+  function apply() {
+    document.documentElement.dataset.theme = theme;
+    onChange(theme);
+  }
+
+  apply();
+
+  return {
+    get current() { return theme; },
+    toggle() {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem(STORAGE_KEY, theme);
+      } catch {
+        // A reader with site data disabled still gets the theme, just not the memory of it.
+      }
+      apply();
+      return theme;
+    },
+  };
+}

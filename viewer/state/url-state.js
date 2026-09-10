@@ -24,10 +24,23 @@ const HEMISPHERES = ['both', 'left', 'right'];
 
 const flag = value => (value === '1' ? true : value === '0' ? false : undefined);
 
+/** State carries the selected region as a record; the URL carries its id. */
+const identifier = value => (typeof value === 'object' ? value.id : value);
+
 const FIELDS = [
   { key: 'atlas', param: 'atlas', read: value => value || undefined },
-  { key: 'selectedRegion', param: 'region', read: value => value || undefined },
-  { key: 'isolatedRegion', param: 'isolate', read: value => value || undefined },
+  {
+    key: 'selectedRegion',
+    param: 'region',
+    read: value => value || undefined,
+    write: identifier,
+  },
+  {
+    key: 'isolatedRegion',
+    param: 'isolate',
+    read: value => value || undefined,
+    write: identifier,
+  },
   { key: 'view', param: 'view', read: value => value || undefined },
   {
     key: 'hemisphere',

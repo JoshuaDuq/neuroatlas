@@ -1,0 +1,64 @@
+/* Reset, typography and focus. Nothing here is decorative. */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text-primary);
+  background: var(--surface-canvas);
+}
+
+button, input, select, output { font: inherit; color: inherit; }
+
+h1, h2, h3, p, dl, dd, figure { margin: 0; }
+
+/* One ring, on every surface, in both themes. Never removed, only restyled. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+[hidden] { display: none !important; }
+
+/* Numbers are measurements: mono so columns align and digits do not jitter. */
+.measure {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sentence case above a hairline, never repeated all-caps. */
+.section-label {
+  font-size: var(--text-micro);
+  font-weight: 500;
+  color: var(--text-tertiary);
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .chip, .panel, button, input, select { border-color: CanvasText; }
+  :focus-visible { outline-color: Highlight; }
+}

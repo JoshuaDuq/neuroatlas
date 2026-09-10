@@ -52,3 +52,14 @@ test('region identifiers containing colons are not mangled', () => {
   const encoded = encodeState({ atlas: 'destrieux', selectedRegion: 'destrieux:left:75' });
   assert.equal(decodeState(encoded).selectedRegion, 'destrieux:left:75');
 });
+
+test('the selected region encodes by id, even though state holds the object', () => {
+  // BrainAtlas.state.selectedRegion is the region record, not its id. Encoding
+  // it with String() produced "[object Object]" in the shareable link.
+  const encoded = encodeState({
+    atlas: 'destrieux',
+    selectedRegion: { id: 'destrieux:left:29', label: 'Precentral gyrus' },
+  });
+  assert.equal(encoded, 'atlas=destrieux&region=destrieux:left:29');
+  assert.equal(decodeState(encoded).selectedRegion, 'destrieux:left:29');
+});

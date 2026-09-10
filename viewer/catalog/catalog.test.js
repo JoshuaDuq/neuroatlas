@@ -74,6 +74,22 @@ test('groups cover the active atlas, then the shared structures', () => {
   assert.deepEqual(groups.map(group => group.name),
     ['Central', 'Insula', 'Parietal', 'Temporal', 'Basal ganglia']);
   assert.deepEqual(groups.map(group => group.rows.length), [3, 1, 1, 1, 1]);
+  assert.deepEqual(groups.map(group => group.kind),
+    ['cortex', 'cortex', 'cortex', 'cortex', 'structure']);
+});
+
+test('group keys stay distinct when a lobe and a system share a name', () => {
+  // Destrieux has a Limbic lobe and aseg has a Limbic system. Keyed by name
+  // alone, expanding one in the tree would expand both.
+  const shared = createCatalog({ regions: [
+    cortex('d:l:9', 'left', 'G_oc-temp_med-Parahip'),
+    { id: 'a:l:9', atlas: 'aseg', hemisphere: 'left', kind: 'structure',
+      source_name: 'Left-Hippocampus' },
+  ] });
+  const groups = shared.groups(settings());
+  assert.deepEqual(groups.map(group => group.name), ['Limbic', 'Limbic']);
+  assert.deepEqual(groups.map(group => group.key), ['cortex:Limbic', 'structure:Limbic']);
+  assert.equal(new Set(groups.map(group => group.key)).size, 2);
 });
 
 test('switching atlas switches which cortical groups exist', () => {
