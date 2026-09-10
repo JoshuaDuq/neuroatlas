@@ -1,6 +1,7 @@
 import { Group } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
+import { visibilityOf } from '../catalog/visibility.js';
 
 function validateManifest(manifest) {
   if (manifest.schema_version !== 1 || !manifest.atlases?.length ||
@@ -81,16 +82,16 @@ export class BrainAtlas extends EventTarget {
     this.disposed = false;
   }
 
-  async initialize(atlasId = this.manifest.atlases[0].id) {
-    await this.loadLayer('structures', this.manifest.structures.file);
-    await this.setAtlas(atlasId);
+  async initialize(atlasId = this.manifest.atlases[0].id, onProgress) {
+    await this.loadLayer('structures', this.manifest.structures.file, onProgress);
+    await this.setAtlas(atlasId, onProgress);
   }
 
-  async loadLayer(id, file) {
+  async loadLayer(id, file, onProgress) {
     if (this.disposed) throw new Error('BrainAtlas has been disposed.');
     if (this.layers.has(id)) return this.layers.get(id);
     if (this.pending.has(id)) return this.pending.get(id);
-    const loading = this.loader.loadAsync(file).then(({ scene }) => {
+    const loading = this.loader.loadAsync(file, onProgress).then(({ scene }) => {
       if (this.disposed) {
         disposeScene(scene);
         throw new Error('BrainAtlas was disposed during loading.');
@@ -135,26 +136,39 @@ export class BrainAtlas extends EventTarget {
     return loading;
   }
 
-  async setAtlas(id) {
+  async setAtlas(id, onProgress) {
     const atlas = this.manifest.atlases.find(atlas => atlas.id === id);
     if (!atlas) throw new Error(`Unknown atlas: ${id}`);
     const request = ++this.requestNumber;
-    await this.loadLayer(id, atlas.file);
+    await this.loadLayer(id, atlas.file, onProgress);
     if (request !== this.requestNumber) return;
     this.atlasId = id;
     this.isolatedId = null;
     this.select(null);
   }
 
-  get state() {
+  /**
+   * The display settings, as a plain object. Cheap: it walks nothing.
+   *
+   * Kept separate from `state` because the visibility rule needs these, and
+   * `state` reads visibleMeshCount -> visibleMeshes -> mesh.visible, which
+   * would recurse through the value being computed.
+   */
+  get settings() {
     return {
       atlas: this.atlasId,
       hemisphere: this.hemisphere,
       cortexVisible: this.cortexVisible,
       cortexOpacity: this.cortexOpacity,
       atlasColors: this.atlasColors,
-      selectedRegion: this.regions.get(this.selectedId) ?? null,
       isolatedRegion: this.isolatedId,
+    };
+  }
+
+  get state() {
+    return {
+      ...this.settings,
+      selectedRegion: this.regions.get(this.selectedId) ?? null,
       visibleMeshCount: this.visibleMeshes.length,
     };
   }
@@ -166,23 +180,19 @@ export class BrainAtlas extends EventTarget {
   }
 
   update() {
+    const settings = this.settings;
     for (const [id, layer] of this.layers) {
       layer.scene.visible = id === 'structures' || id === this.atlasId;
       for (const mesh of layer.meshes) {
         const region = this.regions.get(mesh.userData.region_id);
         const cortex = id !== 'structures';
-        const hemisphereVisible = this.hemisphere === 'both' ||
-          region.hemisphere === 'midline' || region.hemisphere === this.hemisphere;
-        mesh.visible = hemisphereVisible &&
-          (!cortex || (this.cortexVisible && this.cortexOpacity > 0)) &&
-          (!this.isolatedId || region.id === this.isolatedId);
-        const selected = region.id === this.selectedId;
+        mesh.visible = visibilityOf(region, settings).visible;
         const material = mesh.material;
         material.color.copy(this.sourceColors.get(mesh));
         if (!this.atlasColors) material.color.setHex(cortex ? 0xd6cfc2 : 0xc7beb0);
         if (region.kind === 'non-region') material.color.setHex(0xb0aca5);
-        material.emissive.setHex(selected ? 0x547879 : 0x000000);
-        material.emissiveIntensity = selected ? 0.65 : 0;
+        // Selection is drawn by the outline pass. Tinting the material would
+        // alter a region's atlas colour, which is the datum being displayed.
         material.opacity = cortex ? this.cortexOpacity : 1;
         const transparent = material.opacity < 1;
         if (material.transparent !== transparent) {

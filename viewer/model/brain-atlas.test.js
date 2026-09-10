@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { BoxGeometry, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
+import { visibilityOf } from '../catalog/visibility.js';
 import { BrainAtlas } from './brain-atlas.js';
 
 const regions = [
@@ -20,8 +21,10 @@ function fixture() {
   };
   const loads = [];
   const loader = {
-    async loadAsync(file) {
+    async loadAsync(file, onProgress) {
       loads.push(file);
+      onProgress?.({ loaded: 10, total: 20 });
+      onProgress?.({ loaded: 20, total: 20 });
       const scene = new Group();
       const atlasId = file === 'structures.glb' ? 'aseg' : file[0];
       for (const [index, region] of regions.filter(region => region.atlas === atlasId).entries()) {
@@ -135,5 +138,60 @@ test('accelerated picking preserves original indices, positions, and hit region'
   const ray = new Raycaster(new Vector3(.03, 0, .1), new Vector3(0, 0, -1));
   ray.firstHitOnly = true;
   assert.equal(atlas.pick(ray).id, 'a-right');
+  atlas.dispose();
+});
+
+test('selection leaves the material untouched, so atlas colour stays the datum', async () => {
+  // With atlas colours on, a region's colour encodes atlas identity. Tinting
+  // the selection would alter the value being read, so selection is signalled
+  // by the outline pass alone.
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.setAtlasColors(true);
+  const mesh = atlas.visibleMeshes.find(m => m.userData.region_id === 'a-left');
+  const before = {
+    colour: mesh.material.color.getHex(),
+    emissive: mesh.material.emissive.getHex(),
+    intensity: mesh.material.emissiveIntensity,
+  };
+  atlas.select('a-left');
+  assert.equal(mesh.material.color.getHex(), before.colour);
+  assert.equal(mesh.material.emissive.getHex(), before.emissive);
+  assert.equal(mesh.material.emissiveIntensity, before.intensity);
+  atlas.dispose();
+});
+
+test('settings is a cheap snapshot that does not walk the scene graph', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  assert.deepEqual(atlas.settings, {
+    atlas: 'a', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
+    atlasColors: true, isolatedRegion: null,
+  });
+  assert.ok(!('visibleMeshCount' in atlas.settings));
+  assert.equal(atlas.state.visibleMeshCount, 4);
+  atlas.dispose();
+});
+
+test('mesh visibility agrees with the shared rule for every region', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.setHemisphere('left');
+  for (const [id, layer] of atlas.layers) {
+    for (const mesh of layer.meshes) {
+      const region = atlas.regions.get(mesh.userData.region_id);
+      const expected = visibilityOf(region, atlas.settings).visible;
+      assert.equal(mesh.visible && layer.scene.visible, expected,
+        `${id}/${region.id} disagreed with the shared visibility rule`);
+    }
+  }
+  atlas.dispose();
+});
+
+test('load progress is reported while a layer downloads', async () => {
+  const seen = [];
+  const { atlas } = fixture();
+  await atlas.initialize('a', event => seen.push(event.loaded));
+  assert.deepEqual(seen, [10, 20, 10, 20], "structures and the atlas each report");
   atlas.dispose();
 });
