@@ -48,7 +48,8 @@ dl { display: grid; grid-template-columns: 84px 1fr; font-size: 11px; row-gap: 8
 dl[hidden] { display: none; }
 dt { color: #8a928c; }
 dd { margin: 0; overflow-wrap: anywhere; }
-#isolate, #reset { width: 100%; font-size: 12px; }
+#isolate, #reset, #focus { width: 100%; font-size: 12px; }
+#focus { margin-top: 7px; background: transparent; }
 #reset { background: transparent; }
 .source-note { border-top: 1px solid #dedfd9; padding-top: 19px; margin: 25px 0 8px; color: #90968f; font-size: 10px; line-height: 1.7; }
 .manifest-link { font-size: 10px; color: #758478; text-underline-offset: 3px; }

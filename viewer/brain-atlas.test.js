@@ -117,3 +117,20 @@ test('picking respects hemisphere visibility and leaves unlabeled cortex unselec
   assert.equal(atlas.pick(raycaster), null);
   atlas.dispose();
 });
+
+test('accelerated picking preserves original indices, positions, and hit region', async () => {
+  const { atlas } = fixture();
+  const raw = await atlas.loader.loadAsync('a.glb');
+  const original = raw.scene.children[1].geometry;
+  const positions = original.attributes.position.array.slice();
+  const indices = original.index.array.slice();
+  await atlas.initialize('a');
+  const mesh = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-right');
+  assert.ok(mesh.geometry.boundsTree, 'every loaded mesh must have a spatial index');
+  assert.deepEqual(mesh.geometry.attributes.position.array, positions);
+  assert.deepEqual(mesh.geometry.index.array, indices);
+  const ray = new Raycaster(new Vector3(.03, 0, .1), new Vector3(0, 0, -1));
+  ray.firstHitOnly = true;
+  assert.equal(atlas.pick(ray).id, 'a-right');
+  atlas.dispose();
+});

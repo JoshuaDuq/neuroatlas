@@ -66,6 +66,7 @@ let hoverRegion = null;
 let pointerStart = null;
 let hoverFrame = null;
 const raycaster = new Raycaster();
+raycaster.firstHitOnly = true;
 const bounds = new Box3();
 const directions = {
   oblique: new Vector3(-1, 0.3, -0.45).normalize(),
@@ -123,6 +124,15 @@ function updateState() {
   element('selected-source').textContent = region?.source_label_id ?? '';
   element('selected-atlas').textContent = region?.atlas ?? '';
   element('isolate').disabled = !region || Boolean(state.isolatedRegion);
+  element('focus').disabled = !region;
+  const regionSelect = element('region');
+  const selectable = model.visibleMeshes
+    .map(mesh => model.regions.get(mesh.userData.region_id))
+    .filter(item => item.kind !== 'non-region')
+    .sort((a, b) => a.label.localeCompare(b.label));
+  regionSelect.replaceChildren(new Option('Choose a region…', ''),
+    ...selectable.map(item => new Option(item.label, item.id)));
+  regionSelect.value = region?.id ?? '';
   element('atlas-note').textContent = state.atlas === 'hcp-mmp'
     ? 'HCP-MMP1.0 labels projected to fsaverage by Mills. '
     : 'Destrieux anatomical parcellation. ';
@@ -141,6 +151,20 @@ function pick(event) {
   camera.updateMatrixWorld();
   raycaster.setFromCamera(pointer, camera);
   return model.pick(raycaster);
+}
+
+function focusSelection() {
+  const id = model.state.selectedRegion?.id;
+  if (!id) return;
+  const selected = model.visibleMeshes.find(mesh => mesh.userData.region_id === id);
+  const selectionBounds = new Box3().setFromObject(selected);
+  const direction = camera.position.clone().sub(controls.target).normalize();
+  controls.minDistance = .001;
+  camera.near = .00005;
+  camera.updateProjectionMatrix();
+  controls.target.copy(frameBounds(camera, selectionBounds, direction));
+  controls.update();
+  dirty = true;
 }
 
 function showError(error) {
@@ -221,7 +245,9 @@ element('hemisphere').addEventListener('change', event => model.setHemisphere(ev
 element('cortex').addEventListener('change', event => model.setCortexVisible(event.target.checked));
 element('opacity').addEventListener('input', event => model.setCortexOpacity(Number(event.target.value)));
 element('atlas-colors').addEventListener('change', event => model.setAtlasColors(event.target.checked));
-element('isolate').addEventListener('click', () => model.isolate());
+element('region').addEventListener('change', event => model.select(event.target.value || null));
+element('isolate').addEventListener('click', () => { model.isolate(); focusSelection(); });
+element('focus').addEventListener('click', focusSelection);
 element('reset').addEventListener('click', () => { model.reset(); setView('oblique'); });
 for (const button of document.querySelectorAll('[data-view]')) {
   button.disabled = true;
