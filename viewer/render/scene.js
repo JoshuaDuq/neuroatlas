@@ -27,7 +27,7 @@ const token = name =>
  * to outline. Selection and hover are drawn here, over the render, so the
  * model never has to alter a material to show them.
  */
-export function createScene(host) {
+export function createScene(host, { onContextLost, onContextRestored } = {}) {
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
   const renderer = new WebGLRenderer({ antialias: true });
@@ -166,17 +166,19 @@ export function createScene(host) {
     dirty = false;
   });
 
-  const onContextLost = event => {
+  // Reported upward rather than written to the DOM: the app owns status, and
+  // a status written here would be overwritten by the next render.
+  const handleLost = event => {
     event.preventDefault();
-    host.closest('#app')?.setAttribute('data-status', 'context-lost');
+    onContextLost?.();
   };
-  const onContextRestored = () => {
-    host.closest('#app')?.setAttribute('data-status', 'ready');
+  const handleRestored = () => {
     applyTheme();
     setSize();
+    onContextRestored?.();
   };
-  renderer.domElement.addEventListener('webglcontextlost', onContextLost);
-  renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
+  renderer.domElement.addEventListener('webglcontextlost', handleLost);
+  renderer.domElement.addEventListener('webglcontextrestored', handleRestored);
 
   const observer = new ResizeObserver(setSize);
   observer.observe(host);
@@ -194,8 +196,8 @@ export function createScene(host) {
       renderer.setAnimationLoop(null);
       observer.disconnect();
       controls.removeEventListener('change', invalidate);
-      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
-      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
+      renderer.domElement.removeEventListener('webglcontextlost', handleLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', handleRestored);
       controls.dispose();
       for (const pass of composer.passes) pass.dispose?.();
       composer.dispose();

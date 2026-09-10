@@ -68,16 +68,24 @@ export function createCatalog(manifest) {
   return {
     get: id => byId.get(id) ?? null,
 
+    /**
+     * Ranked matches, capped, plus how many there really were. The caller
+     * needs the total: showing the first fifty without saying so is the
+     * silent absence this index exists to avoid.
+     */
     search(rawQuery, settings, limit = 50) {
       const query = normalise(rawQuery);
-      if (!query) return [];
+      if (!query) return { rows: [], total: 0 };
       const matched = [];
       for (const entry of selectable) {
         const tier = Math.min(...entry.searchable.map(text => tierOf(text, query)));
         if (tier !== NO_MATCH) matched.push({ entry, tier });
       }
       matched.sort((a, b) => a.tier - b.tier || compare(a.entry, b.entry));
-      return matched.slice(0, limit).map(({ entry }) => row(entry, settings));
+      return {
+        rows: matched.slice(0, limit).map(({ entry }) => row(entry, settings)),
+        total: matched.length,
+      };
     },
 
     /** Cortical groups of the active atlas, then the shared structure systems. */

@@ -52,6 +52,12 @@ export function createViewportChrome({ onView, onRetry }) {
       orientation.hidden = !ready;
       bar.hidden = !ready;
 
+      if (state.status === 'context-lost') {
+        stageMessage.textContent = state.error.message;
+        stageProgress.hidden = true;
+        retry.hidden = true;
+        return;
+      }
       if (state.status === 'error') {
         stageMessage.textContent = state.error?.message ?? 'Something went wrong.';
         stageProgress.hidden = true;

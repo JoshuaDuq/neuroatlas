@@ -96,6 +96,13 @@ export function createSession({ views, theme = 'light' }) {
 
     setError: error => act({ status: 'error', error, progress: null }),
 
+    /** The GPU dropped the context. Recoverable, and said so plainly. */
+    setContextLost: () => act({
+      status: 'context-lost',
+      progress: null,
+      error: new Error('The 3D view was interrupted by the graphics driver. Restoring…'),
+    }),
+
     /** Notices are cleared by the next action, never by a timer. */
     notify(notice) {
       state = { ...state, notice };

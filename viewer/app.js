@@ -11,6 +11,7 @@ import { createDisplay } from './ui/display.js';
 import { createHeader } from './ui/header.js';
 import { createInspector } from './ui/inspector.js';
 import { createNavigator } from './ui/navigator.js';
+import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
 
 const VIEW_KEYS = ['left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
@@ -27,8 +28,11 @@ export async function startApp() {
   const announcer = document.getElementById('announcer');
 
   const wanted = decodeState(globalThis.location.hash);
-  const scene = createScene(viewport);
   const session = createSession({ views: Object.keys(VIEW_DIRECTIONS) });
+  const scene = createScene(viewport, {
+    onContextLost: () => { session.setContextLost(); render(); },
+    onContextRestored: () => { session.setStatus('ready'); render(); },
+  });
   const theme = createTheme(() => scene.applyTheme());
 
   const manifestUrl = `${import.meta.env.BASE_URL}models/manifest.json`;
@@ -145,6 +149,8 @@ export async function startApp() {
     onReset: () => display(() => { model.reset(); applyView('oblique'); }),
   });
 
+  const shortcuts = createShortcuts();
+
   const chrome = createViewportChrome({
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
@@ -228,6 +234,8 @@ export async function startApp() {
       return;
     }
     if (!shortcutsAllowed(event.target)) return;
+    if (event.key === '?') { event.preventDefault(); return shortcuts.toggle(); }
+    if (shortcuts.isOpen) return;
     if (event.key === '/') { event.preventDefault(); navigator.focusSearch(); return; }
     if (event.key === 'ArrowDown') { event.preventDefault(); navigator.moveFocus(1); return; }
     if (event.key === 'ArrowUp') { event.preventDefault(); navigator.moveFocus(-1); return; }
@@ -273,6 +281,7 @@ export async function startApp() {
       globalThis.removeEventListener('keydown', onKeyDown);
       scene.controls.removeEventListener('change', onCameraChange);
       clearTimeout(urlTimer);
+      shortcuts.dispose();
       picker.dispose();
       chrome.dispose();
       display_.dispose();

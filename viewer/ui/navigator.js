@@ -79,8 +79,9 @@ export function createNavigator({
 
   function renderResults(state) {
     const found = catalog.search(state.query, state);
-    const here = found.filter(row => row.reason !== 'other-atlas');
-    const elsewhere = found.filter(row => row.reason === 'other-atlas');
+    const here = found.rows.filter(row => row.reason !== 'other-atlas');
+    const elsewhere = found.rows.filter(row => row.reason === 'other-atlas');
+    const capped = found.total - found.rows.length;
     results.replaceChildren();
     activeIndex = -1;
     search.removeAttribute('aria-activedescendant');
@@ -92,6 +93,14 @@ export function createNavigator({
       empty.className = 'empty';
       empty.textContent = `No match for “${state.query}”.`;
       results.append(empty);
+    }
+
+    if (capped > 0) {
+      const more = document.createElement('p');
+      more.className = 'empty';
+      more.textContent =
+        `Showing ${here.length} of ${found.total} matches. Refine the search to narrow it.`;
+      results.append(more);
     }
 
     // Matches in the other parcellation are reported, not dropped.

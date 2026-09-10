@@ -16,6 +16,7 @@
           <button id="theme-toggle" type="button" aria-pressed="false">
             <span id="theme-label">Dark</span>
           </button>
+          <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
         </div>
       </header>
 
@@ -104,6 +105,12 @@
         <a id="provenance" href="models/manifest.json" target="_blank" rel="noreferrer">Provenance</a>
       </footer>
     </div>
+
+    <dialog id="shortcuts" aria-labelledby="shortcuts-title">
+      <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+      <dl id="shortcuts-list"></dl>
+      <button id="shortcuts-close" type="button">Close</button>
+    </dialog>
 
     <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>
     <script type="module" src="/viewer/main.js"></script>
