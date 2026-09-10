@@ -1,0 +1,386 @@
+{
+  "status": "passed",
+  "scope": "Source-to-asset conversion fidelity",
+  "clinical_accuracy_validated": false,
+  "atlases": [
+    {
+      "file": "cortex-destrieux.glb",
+      "sha256": "3d239a7e3dfd721618a66f236d57ed559bab5b9a18094caa24619caca59bad2d",
+      "mesh_count": 150,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 163842,
+          "source_triangles": 327680,
+          "source_zero_area_triangles": 2,
+          "export_triangles": 415800,
+          "maximum_parent_plane_error_mm": 5.523359547510154e-15,
+          "maximum_parent_area_error_mm2": 2.220446049250313e-16,
+          "source_surface_area_mm2": 76417.2869689338,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 163842,
+          "source_triangles": 327680,
+          "source_zero_area_triangles": 2,
+          "export_triangles": 415720,
+          "maximum_parent_plane_error_mm": 5.717648576819556e-15,
+          "maximum_parent_area_error_mm2": 2.220446049250313e-16,
+          "source_surface_area_mm2": 76346.04263114321,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "maximum_glb_coordinate_error_mm": 5.191557926523714e-06,
+      "maximum_normal_component_error": 2.9802319723160053e-08
+    },
+    {
+      "file": "cortex-hcp-mmp.glb",
+      "sha256": "4f014d84517bd75075c8c8b9e21e2371fdb10f9afb24f687c610c60928687507",
+      "mesh_count": 362,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 163842,
+          "source_triangles": 327680,
+          "source_zero_area_triangles": 2,
+          "export_triangles": 469080,
+          "maximum_parent_plane_error_mm": 5.981326545168031e-15,
+          "maximum_parent_area_error_mm2": 2.0905791654259983e-14,
+          "source_surface_area_mm2": 76417.2869689338,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 163842,
+          "source_triangles": 327680,
+          "source_zero_area_triangles": 2,
+          "export_triangles": 470655,
+          "maximum_parent_plane_error_mm": 6.106226635438361e-15,
+          "maximum_parent_area_error_mm2": 1.1102230246251565e-16,
+          "source_surface_area_mm2": 76346.04263114321,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "maximum_glb_coordinate_error_mm": 5.191557926523714e-06,
+      "maximum_normal_component_error": 2.9802319723160053e-08
+    }
+  ],
+  "structures": {
+    "file": "structures.glb",
+    "sha256": "d7f1790e9857e1f2613b8ffa50629b1ff6a3d64120cbedc648335af0445416c4",
+    "regions": [
+      {
+        "id": "aseg:midline:255",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.5389958308494164e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 1071.8333569228405
+      },
+      {
+        "id": "aseg:midline:254",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.311011114449459e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 553.8749965348603
+      },
+      {
+        "id": "aseg:midline:253",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.84564344176038e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 525.4166611060919
+      },
+      {
+        "id": "aseg:midline:252",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.289156340629004e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 453.6250028991662
+      },
+      {
+        "id": "aseg:midline:251",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0686634637382353e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 1284.9166605631633
+      },
+      {
+        "id": "aseg:midline:85",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.490986995499652e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 88.49999783067807
+      },
+      {
+        "id": "aseg:right:63",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.7418136596679688e-06,
+        "marching_cubes_auxiliary_center_vertices": 11,
+        "maximum_glb_coordinate_error_mm": 2.6137020092029085e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 753.833352505994
+      },
+      {
+        "id": "aseg:right:60",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.7774905579153636e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 5044.041676124283
+      },
+      {
+        "id": "aseg:right:58",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2823659166067937e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 740.8750032933119
+      },
+      {
+        "id": "aseg:right:54",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.996755599975586e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.0875590835734198e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 2209.6250854534273
+      },
+      {
+        "id": "aseg:right:53",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.562999725341797e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 2.636463506996524e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 5348.166728040536
+      },
+      {
+        "id": "aseg:right:52",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0728836059570312e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2654586878753988e-06,
+        "maximum_trilinear_isovalue_deviation": 1.0728836059570312e-06,
+        "mesh_volume_mm3": 1783.791681071433
+      },
+      {
+        "id": "aseg:right:51",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 6841.291872953565
+      },
+      {
+        "id": "aseg:right:50",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.385807991027832e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 3807.208528030942
+      },
+      {
+        "id": "aseg:right:49",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9073486328125e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 8559.708374156267
+      },
+      {
+        "id": "aseg:right:47",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.185604095458984e-06,
+        "marching_cubes_auxiliary_center_vertices": 48,
+        "maximum_glb_coordinate_error_mm": 4.6123607353786115e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500083446502686,
+        "mesh_volume_mm3": 64622.08393915042
+      },
+      {
+        "id": "aseg:right:46",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.231929779052734e-06,
+        "marching_cubes_auxiliary_center_vertices": 12,
+        "maximum_glb_coordinate_error_mm": 4.292051794072422e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500089406967163,
+        "mesh_volume_mm3": 13137.291640764739
+      },
+      {
+        "id": "aseg:right:44",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.8014183044433594e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 2.601735916871576e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": 434.0000148486983
+      },
+      {
+        "id": "aseg:right:43",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.8014183044433594e-06,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 2.6124672288051168e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": 19639.500108746233
+      },
+      {
+        "id": "aseg:left:31",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.562999725341797e-06,
+        "marching_cubes_auxiliary_center_vertices": 13,
+        "maximum_glb_coordinate_error_mm": 2.620275029245383e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 711.2916855545844
+      },
+      {
+        "id": "aseg:left:28",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.7332971516121824e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 5109.1249887157455
+      },
+      {
+        "id": "aseg:left:26",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2823659166067937e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 762.6666572859973
+      },
+      {
+        "id": "aseg:left:18",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.8054403341842842e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 1922.7916652062763
+      },
+      {
+        "id": "aseg:left:17",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.562999725341797e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.636463506996524e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 5128.16668404662
+      },
+      {
+        "id": "aseg:midline:16",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 4.1067925333252405e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 26579.167038834894
+      },
+      {
+        "id": "aseg:midline:15",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.7418136596679688e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.5767620527628383e-06,
+        "maximum_trilinear_isovalue_deviation": 2.7418136596679688e-06,
+        "mesh_volume_mm3": 2205.333410288102
+      },
+      {
+        "id": "aseg:midline:14",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.493717959610543e-07,
+        "maximum_trilinear_isovalue_deviation": 9.5367431640625e-07,
+        "mesh_volume_mm3": 1916.1666947339731
+      },
+      {
+        "id": "aseg:left:13",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2654586878753988e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1920928955078125e-06,
+        "mesh_volume_mm3": 1744.7499857574421
+      },
+      {
+        "id": "aseg:left:12",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 7208.125082324455
+      },
+      {
+        "id": "aseg:left:11",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.4234314243899882e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 3588.0417660965627
+      },
+      {
+        "id": "aseg:left:10",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.8477439880371094e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 1.8477439880371094e-06,
+        "mesh_volume_mm3": 8579.25006784611
+      },
+      {
+        "id": "aseg:left:8",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.185604095458984e-06,
+        "marching_cubes_auxiliary_center_vertices": 33,
+        "maximum_glb_coordinate_error_mm": 4.490271518027896e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500089406967163,
+        "mesh_volume_mm3": 64350.25026284607
+      },
+      {
+        "id": "aseg:left:7",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.947185516357422e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 4.17756386106696e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500065565109253,
+        "mesh_volume_mm3": 13184.083418741691
+      },
+      {
+        "id": "aseg:left:5",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.86102294921875e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.605957059705159e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 512.8333523720243
+      },
+      {
+        "id": "aseg:left:4",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 3.516674041748047e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 3.510814851210294e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500065565109253,
+        "mesh_volume_mm3": 21400.000069327256
+      }
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brain atlas · Model inspector</title>
+  </head>
+  <body>
+    <main id="inspector" data-status="loading">
+      <header>
+        <div><span class="eyebrow">REFERENCE ANATOMY</span><h1>Brain atlas <span>/ Model inspector</span></h1></div>
+        <span id="model-status" role="status">Loading source geometry…</span>
+      </header>
+      <section id="viewport" aria-label="Interactive 3D brain model">
+        <div id="loading" role="status">Loading brain model…</div>
+        <div class="view-controls" aria-label="Anatomical views">
+          <button data-view="left">Left</button>
+          <button data-view="right">Right</button>
+          <button data-view="anterior">Anterior</button>
+          <button data-view="posterior">Posterior</button>
+          <button data-view="superior">Superior</button>
+          <button data-view="inferior">Inferior</button>
+        </div>
+        <div id="hover-label" aria-live="off"></div>
+        <p class="interaction-hint">Drag to rotate · Scroll to zoom · Click a region to select</p>
+      </section>
+      <aside aria-label="Model inspection controls">
+        <fieldset id="model-controls" disabled>
+          <label for="atlas">Cortical atlas</label>
+          <select id="atlas"></select>
+          <label for="hemisphere">Hemisphere</label>
+          <select id="hemisphere">
+            <option value="both">Both hemispheres</option>
+            <option value="left">Left hemisphere</option>
+            <option value="right">Right hemisphere</option>
+          </select>
+          <label class="check"><input id="cortex" type="checkbox" checked /> Show cortex</label>
+          <label for="opacity">Cortex opacity <output id="opacity-value">100%</output></label>
+          <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+          <label class="check"><input id="atlas-colors" type="checkbox" /> Atlas colors</label>
+          <div class="selection">
+            <span class="eyebrow">SELECTED REGION</span>
+            <h2 id="selected-label">Select a region</h2>
+            <p id="selected-description">Click the surface, or hide the cortex to inspect internal anatomy.</p>
+            <dl id="selected-metadata" hidden>
+              <dt>Hemisphere</dt><dd id="selected-hemisphere"></dd>
+              <dt>Source label</dt><dd id="selected-source"></dd>
+              <dt>Atlas</dt><dd id="selected-atlas"></dd>
+            </dl>
+            <button id="isolate" disabled>Isolate region</button>
+          </div>
+          <button id="reset">Reset view</button>
+        </fieldset>
+        <p class="source-note">FreeSurfer fsaverage reference template. <span id="atlas-note"></span> Surface positions and scale are preserved.</p>
+        <a class="manifest-link" href="/models/manifest.json" target="_blank" rel="noreferrer">View model provenance ↗</a>
+      </aside>
+      <footer><span>Native cortical resolution · Source-derived anatomy</span><span>R +X &nbsp; S +Y &nbsp; P +Z · meters</span></footer>
+      <output id="viewer-state" hidden aria-hidden="true"></output>
+    </main>
+    <script type="module" src="/viewer/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+source_directory: data/fsaverage
+output_directory: public/models
+atlases:
+  - id: destrieux
+    label: Destrieux anatomical atlas
+    annotation: aparc.a2009s
+    citation: https://doi.org/10.1016/j.neuroimage.2010.06.010
+  - id: hcp-mmp
+    label: HCP-MMP1.0 multimodal atlas
+    annotation: HCPMMP1
+    citation: https://doi.org/10.1038/nature18933
+structures:
+  labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28, 31,
+           43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 58, 60, 63,
+           85, 251, 252, 253, 254, 255]
+validation:
+  coordinate_tolerance_mm: 0.00002
+  relative_area_tolerance: 0.000001
