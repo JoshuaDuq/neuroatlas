@@ -1,0 +1,85 @@
+import { Sphere, Vector3 } from 'three';
+
+/**
+ * Anatomical view directions, in the manifest's coordinate system
+ * (x = right, y = superior, z = posterior). Each vector points from the
+ * subject toward the camera.
+ */
+export const VIEW_DIRECTIONS = {
+  oblique: new Vector3(-1, 0.3, -0.45).normalize(),
+  left: new Vector3(-1, 0, 0),
+  right: new Vector3(1, 0, 0),
+  anterior: new Vector3(0, 0, -1),
+  posterior: new Vector3(0, 0, 1),
+  superior: new Vector3(0, 1, 0),
+  inferior: new Vector3(0, -1, 0),
+};
+
+/** Looking straight down or up needs an up vector that is not the view axis. */
+export function upFor(view) {
+  if (view === 'superior') return new Vector3(0, 0, -1);
+  if (view === 'inferior') return new Vector3(0, 0, 1);
+  return new Vector3(0, 1, 0);
+}
+
+/**
+ * Clipping planes and orbit limits for whatever is being framed.
+ *
+ * Derived from the framed radius rather than set once and mutated, so
+ * focusing a small structure tightens the near plane and returning to the
+ * whole brain restores it. The near-to-far ratio is constant, which is what
+ * keeps depth precision the same at every scale; the previous code moved the
+ * near plane to 50 um while leaving far at 10 m, a 200,000:1 ratio that
+ * persisted for the rest of the session.
+ */
+export function cameraConstraints(bounds) {
+  const radius = bounds.getBoundingSphere(new Sphere()).radius;
+  return {
+    near: radius * 0.01,
+    far: radius * 100,
+    minDistance: radius * 0.25,
+    maxDistance: radius * 15,
+  };
+}
+
+/** Fit a perspective camera to unchanged world bounds, with a small screen margin. */
+export function frameBounds(camera, bounds, direction) {
+  const center = bounds.getCenter(new Vector3());
+  const right = new Vector3().crossVectors(camera.up, direction).normalize();
+  const up = new Vector3().crossVectors(direction, right).normalize();
+  const verticalSlope = Math.tan(camera.fov * Math.PI / 360) * 0.92;
+  const horizontalSlope = verticalSlope * camera.aspect;
+  let distance = 0;
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) {
+        const corner = new Vector3(x, y, z).sub(center);
+        const depth = corner.dot(direction);
+        distance = Math.max(distance,
+          depth + Math.abs(corner.dot(right)) / horizontalSlope,
+          depth + Math.abs(corner.dot(up)) / verticalSlope);
+      }
+    }
+  }
+  camera.position.copy(center).addScaledVector(direction, distance);
+  camera.lookAt(center);
+  camera.updateMatrixWorld();
+  return center;
+}
+
+/**
+ * Frame bounds and apply the matching constraints in one step, so the two can
+ * never be applied separately and drift apart.
+ */
+export function frameTo(camera, controls, bounds, direction) {
+  const { near, far, minDistance, maxDistance } = cameraConstraints(bounds);
+  camera.near = near;
+  camera.far = far;
+  controls.minDistance = minDistance;
+  controls.maxDistance = maxDistance;
+  const center = frameBounds(camera, bounds, direction);
+  camera.updateProjectionMatrix();
+  controls.target.copy(center);
+  controls.update();
+  return center;
+}

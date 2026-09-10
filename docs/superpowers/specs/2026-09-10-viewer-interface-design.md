@@ -447,9 +447,11 @@ specified rather than left to the implementer.
 - Precision is **uniform within a column**. Mixed precision reads as an error.
 - A quantity that is absent renders as `—`, never as `0` or an empty cell.
 
-**Scale bar.** The bar snaps to the nearest 1–2–5 sequence value
-(1, 2, 5, 10, 20, 50, 100 mm) that keeps its drawn length between 60 and 140px.
-An arbitrary value such as `37 mm` is the mark of a scale bar nobody designed.
+**Scale bar.** The bar snaps to the largest 1–2–5 sequence value
+(1, 2, 5, 10, 20, 50, 100 mm) whose drawn length falls between 60 and 150px.
+The window spans a factor of 2.5 because that is the widest gap in the
+sequence; a narrower window has distances at which no step fits. An arbitrary
+value such as `37 mm` is the mark of a scale bar nobody designed.
 
 ### 7.6 Viewport overlays
 
