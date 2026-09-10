@@ -28,5 +28,5 @@ only the published assets and stable region metadata.
   implementation, fix findings, and write integration/provenance documentation.
 
 Scope and numerical requirements are in `docs/model-design.md`. Work proceeds
-in this empty repository on `codex/brain-model`; no existing checkout needs
-isolation. No publishing or unrelated website design is included.
+directly in this empty repository; no existing checkout needs isolation.
+No publishing or unrelated website design is included.
