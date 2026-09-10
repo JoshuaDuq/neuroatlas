@@ -1,5 +1,6 @@
 import { Group } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 function validateManifest(manifest) {
   if (manifest.schema_version !== 1 || !manifest.atlases?.length ||
@@ -31,7 +32,10 @@ function disposeScene(scene) {
       }
     }
   });
-  for (const geometry of geometries) geometry.dispose();
+  for (const geometry of geometries) {
+    geometry.boundsTree = null;
+    geometry.dispose();
+  }
   for (const material of materials) material.dispose();
   for (const texture of textures) texture.dispose();
   scene.removeFromParent();
@@ -107,6 +111,9 @@ export class BrainAtlas extends EventTarget {
             throw new Error(`Expected a standard glTF material: ${region.id}`);
           }
           originalMaterials.add(mesh.material);
+          // Indirect indexing preserves the scientific source triangle order.
+          mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
+          mesh.raycast = acceleratedRaycast;
           mesh.material = mesh.material.clone();
           this.sourceColors.set(mesh, mesh.material.color.clone());
           meshes.push(mesh);
