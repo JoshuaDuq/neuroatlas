@@ -195,3 +195,18 @@ test('load progress is reported while a layer downloads', async () => {
   assert.deepEqual(seen, [10, 20, 10, 20], "structures and the atlas each report");
   atlas.dispose();
 });
+
+test('isolation can be released without disturbing any other setting', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.setCortexOpacity(0.5);
+  atlas.select('a-right');
+  atlas.isolate();
+  assert.equal(atlas.state.isolatedRegion, 'a-right');
+  atlas.clearIsolation();
+  assert.equal(atlas.state.isolatedRegion, null);
+  assert.equal(atlas.state.selectedRegion.id, 'a-right', 'selection survives');
+  assert.equal(atlas.state.cortexOpacity, 0.5, 'other settings are untouched');
+  assert.equal(atlas.visibleMeshes.length, 4);
+  atlas.dispose();
+});

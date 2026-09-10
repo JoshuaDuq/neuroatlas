@@ -267,6 +267,12 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
+  /** Release isolation on its own, leaving every other setting alone. */
+  clearIsolation() {
+    this.isolatedId = null;
+    this.update();
+  }
+
   reset() {
     this.hemisphere = 'both';
     this.cortexVisible = true;
