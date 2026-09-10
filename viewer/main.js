@@ -10,7 +10,7 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { BrainAtlas } from './brain-atlas.js';
-import { frameBounds } from './camera.js';
+import { frameBounds } from './render/camera-views.js';
 import './style.css';
 
 const element = id => document.getElementById(id);
