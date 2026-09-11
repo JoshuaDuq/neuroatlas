@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "sagittal: fractional position, both retained sides, MRI visibility",
+    "coronal: fractional position, both retained sides, MRI visibility",
+    "axial: fractional position, both retained sides, MRI visibility",
+    "oblique: fractional position, both retained sides, MRI visibility",
+    "Midsagittal preset places the plane at R = 0",
+    "Three linked MRI planes, crosshair click, 1 mm keyboard movement, source label readout, window/level, PNG export",
+    "Cut stays active after switching cortical atlas",
+    "Reset restores full brain",
+    "Narrow viewport dialog has no horizontal overflow"
+  ],
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "failedResponses": []
+}

@@ -97,13 +97,13 @@ test('switching atlas switches which cortical groups exist', () => {
     ['V–Z', 'Basal ganglia']);
 });
 
-test('visible count matches the meshes the model will show', async () => {
+test('visible region count excludes unlabelled medial surfaces', async () => {
   const real = JSON.parse(
     await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
   const full = createCatalog(real);
-  // assets.test.js asserts the model shows 185 meshes for destrieux, and mesh
-  // to region is one to one, so the catalog must agree without walking meshes.
-  assert.equal(full.visibleCount(settings()), 185);
+  // 148 Destrieux regions + 35 structures; two medial surfaces are non-regions.
+  assert.equal(full.visibleCount(settings()), 183);
+  assert.equal(full.visibleCount(settings({ atlas: 'hcp-mmp' })), 395);
   assert.equal(full.visibleCount(settings({ cortexVisible: false })), 35);
 });
 

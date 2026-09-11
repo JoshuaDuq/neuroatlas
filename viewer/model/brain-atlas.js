@@ -80,6 +80,7 @@ export class BrainAtlas extends EventTarget {
     this.isolatedId = null;
     this.requestNumber = 0;
     this.disposed = false;
+    this.clippingPlanes = [];
   }
 
   async initialize(atlasId = this.manifest.atlases[0].id, onProgress) {
@@ -188,6 +189,10 @@ export class BrainAtlas extends EventTarget {
         const cortex = id !== 'structures';
         mesh.visible = visibilityOf(region, settings).visible;
         const material = mesh.material;
+        if (material.clippingPlanes !== this.clippingPlanes) {
+          material.clippingPlanes = this.clippingPlanes;
+          material.needsUpdate = true;
+        }
         material.color.copy(this.sourceColors.get(mesh));
         if (!this.atlasColors) material.color.setHex(cortex ? 0xd6cfc2 : 0xc7beb0);
         if (region.kind === 'non-region') material.color.setHex(0xb0aca5);
@@ -210,11 +215,32 @@ export class BrainAtlas extends EventTarget {
   }
 
   /** Raycaster must already be configured with the host camera and pointer. */
-  pick(raycaster) {
+  intersect(raycaster) {
     this.group.updateMatrixWorld(true);
-    const hit = raycaster.intersectObjects(this.visibleMeshes, false)[0];
+    const firstHitOnly = raycaster.firstHitOnly;
+    let hits;
+    try {
+      if (this.clippingPlanes.length) raycaster.firstHitOnly = false;
+      hits = raycaster.intersectObjects(this.visibleMeshes, false);
+    } finally {
+      raycaster.firstHitOnly = firstHitOnly;
+    }
+    return hits.find(hit => this.clippingPlanes.every(plane => plane.distanceToPoint(hit.point) >= -1e-9)) ?? null;
+  }
+
+  pick(raycaster) {
+    const hit = this.intersect(raycaster);
     if (!hit || hit.object.userData.kind === 'non-region') return null;
     return this.regions.get(hit.object.userData.region_id);
+  }
+
+  setClippingPlanes(planes) {
+    if (!Array.isArray(planes) || planes.some(plane => !plane.isPlane ||
+        !Number.isFinite(plane.constant) || !plane.normal.toArray().every(Number.isFinite) || Math.abs(plane.normal.length() - 1) > 1e-6)) {
+      throw new Error('Clipping requires normalized, finite Three.js planes.');
+    }
+    this.clippingPlanes = planes;
+    this.update();
   }
 
   select(id) {
@@ -274,6 +300,7 @@ export class BrainAtlas extends EventTarget {
   }
 
   reset() {
+    this.clippingPlanes = [];
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;

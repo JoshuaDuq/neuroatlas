@@ -7,6 +7,9 @@ import { createScene, planFraming } from './render/scene.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
 import { createTheme } from './state/theme.js';
 import { decodeState, encodeState } from './state/url-state.js';
+import { BrainSections } from './slices/sections.js';
+import { rasToWorld } from './slices/coordinates.js';
+import { createSectionControls } from './ui/sections.js';
 import { createDisplay } from './ui/display.js';
 import { createHeader } from './ui/header.js';
 import { createInspector } from './ui/inspector.js';
@@ -52,6 +55,10 @@ export async function startApp() {
   scene.scene.add(model.group);
   scene.transparencyProbe = () =>
     model.visibleMeshes.some(mesh => mesh.material.transparent);
+
+  const sections = new BrainSections(model, new URL('volumes.json', new URL(manifestUrl, location.href)));
+  scene.scene.add(sections.group);
+  scene.sectionsProbe = () => sections.active;
 
   // ---- commands ---------------------------------------------------------
 
@@ -116,7 +123,7 @@ export async function startApp() {
   function reveal(reason, id) {
     if (reason === 'cortex-hidden') model.setCortexVisible(true);
     if (reason === 'hemisphere') model.setHemisphere('both');
-    if (reason === 'isolated') model.reset();
+    if (reason === 'isolated') model.clearIsolation();
     select(id);
   }
 
@@ -156,9 +163,25 @@ export async function startApp() {
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
     onAtlasColors: value => display(() => model.setAtlasColors(value)),
-    onReset: () => display(() => { model.reset(); applyView('oblique'); }),
+    onReset: () => display(() => { sections.setMode('off'); model.reset(); applyView('oblique'); }),
   });
 
+  function faceCut() {
+    if (!sections.active) return;
+    const frame = sections.frame;
+    const direction = rasToWorld(frame.normal.toArray()).normalize()
+      .multiplyScalar(sections.state.reverse ? -1 : 1);
+    const namedView = {
+      sagittal: ['right', 'left'], coronal: ['anterior', 'posterior'],
+      axial: ['superior', 'inferior'], oblique: ['oblique', 'oblique'],
+    }[sections.state.mode][Number(sections.state.reverse)];
+    session.setView(namedView);
+    scene.camera.up.copy(rasToWorld(frame.v.toArray()).normalize());
+    scene.moveTo(planFraming(scene.camera, scene.controls, bounds, direction, frameTo));
+    render();
+  }
+
+  const sectionControls = createSectionControls(sections, { onFaceView: faceCut, onSelect: select });
   const shortcuts = createShortcuts();
 
   chrome = createViewportChrome({
@@ -179,6 +202,7 @@ export async function startApp() {
     navigator.update(state);
     inspector.update(state);
     display_.update(state);
+    sectionControls.update();
     chrome.update(state);
     outline();
     syncUrl(state);
@@ -195,6 +219,7 @@ export async function startApp() {
   let hovered = null;
 
   function outline() {
+    if (sections.active) { scene.setOutlined(); return; }
     const ids = {
       selected: model.state.selectedRegion?.id,
       hovered: hovered?.id,
@@ -219,7 +244,7 @@ export async function startApp() {
   const picker = createPicker({
     domElement: scene.domElement,
     camera: scene.camera,
-    model: () => model,
+    model: () => sections,
     onHover: (region, position) => {
       hovered = region;
       chrome.showHover(region ? catalog.get(region.id).label.name : null, position);
@@ -237,6 +262,7 @@ export async function startApp() {
   scene.controls.addEventListener('change', onCameraChange);
 
   const onKeyDown = event => {
+    if (event.defaultPrevented || document.getElementById('mpr-dialog').open) return;
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.key === 'Escape') {
       if (document.activeElement === document.getElementById('search')) {
@@ -270,6 +296,7 @@ export async function startApp() {
   // ---- start ------------------------------------------------------------
 
   model.addEventListener('change', render);
+  sections.addEventListener('change', render);
   scene.applyTheme();
   session.setTheme(theme.current);
   scene.setSize();
@@ -297,6 +324,10 @@ export async function startApp() {
       globalThis.removeEventListener('keydown', onKeyDown);
       scene.controls.removeEventListener('change', onCameraChange);
       clearTimeout(urlTimer);
+      sections.removeEventListener('change', render);
+      model.removeEventListener('change', render);
+      sectionControls.dispose();
+      sections.dispose();
       shortcuts.dispose();
       picker.dispose();
       chrome.dispose();

@@ -17,3 +17,8 @@ structures:
 validation:
   coordinate_tolerance_mm: 0.00002
   relative_area_tolerance: 0.000001
+sections:
+  field_of_view_mm: 256
+  texture_size: 512
+  window_center: 90
+  window_width: 180

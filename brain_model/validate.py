@@ -11,6 +11,7 @@ from scipy.ndimage import map_coordinates
 from .export import compact_region
 from .geometry import extract_structure, normalize, partition_surface, to_gltf
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
+from .validate_volumes import validate_volumes
 
 
 def triangle_areas(triangles):
@@ -441,6 +442,7 @@ def main():
         "clinical_accuracy_validated": False,
         "atlases": [validate_atlas(config, atlas) for atlas in config["atlases"]],
         "structures": validate_structures(config),
+        "volumes": validate_volumes(config),
     }
     write_json(config["output_directory"] / "validation.json", report)
     print(

@@ -1,4 +1,7 @@
 {
+  "volumes": {
+    "file": "volumes.json"
+  },
   "schema_version": 1,
   "template": "FreeSurfer fsaverage (FreeSurfer 6)",
   "coordinate_system": {
