@@ -1,5 +1,5 @@
 const LANGUAGES = ['en', 'fr'];
-const METHODS = new Set(['lesion-mapping', 'case-report', 'case-series']);
+const METHODS = new Set(['lesion-mapping', 'meta-analysis', 'case-report', 'case-series']);
 
 function requireValue(condition, context) {
   if (!condition) throw new Error(`Invalid clinical catalog: ${context}`);

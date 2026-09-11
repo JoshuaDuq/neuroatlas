@@ -18,7 +18,13 @@ test('published clinical content resolves to the actual atlas and cited evidence
   for (const id of ['aseg:left:17', 'aseg:right:53']) {
     assert.equal(catalog.forRegion(id)[0].deficit, 'amnesia');
   }
-  assert.deepEqual(catalog.forRegion('destrieux:right:38'), []);
+  assert.deepEqual(catalog.forRegion('destrieux:left:19'), []);
+  // Two meta-analyses carve neglect and aphasia differently from the single
+  // studies beside them, so a region can carry more than one association.
+  assert.deepEqual(catalog.forRegion('destrieux:right:38').map(a => a.id), ['neglect-allocentric']);
+  assert.deepEqual(catalog.forRegion('destrieux:right:26').map(a => a.id).sort(),
+    ['neglect-egocentric', 'neglect-perceptual']);
+  assert.ok(data.references.some(r => r.method === 'meta-analysis'), 'pooled lesion evidence is present');
   assert.equal(catalog.search('prosopagnosie', 'fr')[0].id, 'agnosia');
   assert.equal(catalog.search('set shifting', 'en')[0].id, 'executive');
   assert.ok(catalog.forDeficit('apraxia').every(a =>
