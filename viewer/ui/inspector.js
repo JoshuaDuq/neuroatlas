@@ -1,14 +1,13 @@
 import { quantity } from './format.js';
-
-const HEMISPHERE_WORDS = { left: 'Left', right: 'Right', midline: 'Midline' };
-
-// The structures layer has no manifest atlas entry, so it needs a name of its
-// own. Internal identifiers like "aseg" should never reach the interface.
-const STRUCTURES_SOURCE = 'FreeSurfer subcortical segmentation';
+import { t } from '../i18n/translations.js';
 
 /** The selected region: what it is, and what is measured about it. */
 export function createInspector({ catalog, atlases, onFocus, onIsolate }) {
-  const atlasNames = new Map(atlases.map(atlas => [atlas.id, atlas.label]));
+  const inspectorPanel = document.getElementById('inspector');
+  const labelSelected = document.getElementById('label-selected');
+  const factHemiLabel = document.getElementById('fact-hemisphere-label');
+  const factAtlasLabel = document.getElementById('fact-atlas-label');
+  const factSourceLabel = document.getElementById('fact-source-label');
   const name = document.getElementById('selected-name');
   const hint = document.getElementById('selected-hint');
   const facts = document.getElementById('selected-facts');
@@ -25,13 +24,23 @@ export function createInspector({ catalog, atlases, onFocus, onIsolate }) {
 
   return {
     update(state) {
+      const i18n = t(state.lang, 'inspector');
+      const atlasDict = t(state.lang, 'atlases');
+      const sideWords = t(state.lang, 'sides').capitalized;
+
+      if (inspectorPanel) inspectorPanel.setAttribute('aria-label', i18n.panelLabel);
+      if (labelSelected) labelSelected.textContent = i18n.selectedHeading;
+      if (factHemiLabel) factHemiLabel.textContent = i18n.hemisphere;
+      if (factAtlasLabel) factAtlasLabel.textContent = i18n.atlas;
+      if (factSourceLabel) factSourceLabel.textContent = i18n.sourceLabel;
+      focus.textContent = i18n.focus;
+      isolate.textContent = i18n.isolate;
+
       const region = state.selectedRegion;
       if (!region) {
-        name.textContent = 'No region selected';
+        name.textContent = i18n.noRegionSelected;
         hint.hidden = false;
-        hint.textContent = state.cortexVisible
-          ? 'Click the model, or search on the left.'
-          : 'Cortex is hidden — internal structures are selectable.';
+        hint.textContent = state.cortexVisible ? i18n.hintCortex : i18n.hintStructures;
         facts.hidden = true;
         focus.disabled = true;
         isolate.disabled = true;
@@ -43,14 +52,14 @@ export function createInspector({ catalog, atlases, onFocus, onIsolate }) {
       name.textContent = label.name;
       hint.hidden = true;
       facts.hidden = false;
-      hemisphere.textContent = HEMISPHERE_WORDS[region.hemisphere] ?? region.hemisphere;
-      const sourceName = atlasNames.get(region.atlas) ?? STRUCTURES_SOURCE;
+      hemisphere.textContent = sideWords[region.hemisphere] ?? region.hemisphere;
+      const sourceName = atlasDict[region.atlas] ?? atlasDict.aseg;
       atlasName.textContent = label.code
         ? `${sourceName} · ${label.code}`
         : sourceName;
 
       const isStructure = region.kind === 'structure';
-      metricLabel.textContent = isStructure ? 'Volume' : 'Surface area';
+      metricLabel.textContent = isStructure ? i18n.volume : i18n.surfaceArea;
       metric.textContent = isStructure
         ? quantity(region.segmentation_volume_mm3, 'mm³')
         : quantity(region.surface_area_mm2, 'mm²');

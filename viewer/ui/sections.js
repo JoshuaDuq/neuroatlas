@@ -1,8 +1,39 @@
 import { Vector3 } from 'three';
 import { centeredFrame, pointOnFrame } from '../slices/coordinates.js';
+import { t } from '../i18n/translations.js';
+import { STRUCTURE_LABELS } from '../catalog/structure-groups.js';
+import { STRUCTURE_LABELS_FR } from '../catalog/structure-groups.fr.js';
+import { DESTRIEUX_LABELS } from '../catalog/destrieux-labels.js';
+import { DESTRIEUX_LABELS_FR } from '../catalog/destrieux-labels.fr.js';
 
 const AXES = { sagittal: 0, coronal: 1, axial: 2 };
-const LABELS = { sagittal: 'Sagittal', coronal: 'Coronal', axial: 'Axial' };
+const FR_EDGE = { R: 'D', L: 'G', S: 'S', I: 'I', P: 'P', A: 'A' };
+
+const TISSUE_NAMES_FR = {
+  Unknown: 'Non étiqueté',
+  '???': 'Non étiqueté',
+  'Left-Cerebral-White-Matter': 'Substance blanche cérébrale',
+  'Right-Cerebral-White-Matter': 'Substance blanche cérébrale',
+  CSF: 'Liquide cérébro-spinal (LCS)',
+  'Left-vessel': 'Vaisseau cérébral',
+  'Right-vessel': 'Vaisseau cérébral',
+  'WM-hypointensities': 'Hypointensités de la substance blanche',
+  ctx_lh_Medial_wall: 'Paroi médiale',
+  ctx_rh_Medial_wall: 'Paroi médiale',
+};
+
+const TISSUE_NAMES_EN = {
+  Unknown: 'Unlabelled',
+  '???': 'Unlabelled',
+  'Left-Cerebral-White-Matter': 'Cerebral white matter',
+  'Right-Cerebral-White-Matter': 'Cerebral white matter',
+  CSF: 'Cerebrospinal fluid (CSF)',
+  'Left-vessel': 'Cerebral vessel',
+  'Right-vessel': 'Cerebral vessel',
+  'WM-hypointensities': 'White matter hypointensities',
+  ctx_lh_Medial_wall: 'Medial wall',
+  ctx_rh_Medial_wall: 'Medial wall',
+};
 
 /** Cut controls and linked MRI sections; the controller owns all coordinates. */
 export function createSectionControls(sections, { onFaceView, onSelect }) {
@@ -20,10 +51,25 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
   const width = document.getElementById('mri-window-width');
   const center = document.getElementById('mri-window-center');
   const mprOverlay = document.getElementById('mpr-overlay');
+  const cutModeLabel = document.getElementById('cut-mode-label');
+  const cutTiltLabel = document.getElementById('cut-tilt-label');
+  const cutAzimuthLabel = document.getElementById('cut-azimuth-label');
+  const cutReverseText = document.getElementById('cut-reverse-text');
+  const cutMidlineBtn = document.getElementById('cut-midline');
+  const cutFaceBtn = document.getElementById('cut-face-view');
+  const mprOpenBtn = document.getElementById('mpr-open');
+  const mprCloseBtn = document.getElementById('mpr-close');
+  const mprTitle = document.getElementById('mpr-title');
+  const mprSubtitle = document.getElementById('mpr-subtitle');
+  const mriWidthText = document.getElementById('mri-window-width-text');
+  const mriCenterText = document.getElementById('mri-window-center-text');
+  const mprOverlayText = document.getElementById('mpr-overlay-text');
+  const mprNote = document.getElementById('mpr-note');
   const listeners = [];
   const panels = new Map();
   let previousImage = null;
   let animation = null;
+  let currentLang = 'en';
 
   function reportError(error) { status.textContent = error.message; console.error(error); }
 
@@ -54,19 +100,19 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
   listen(tilt, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
   listen(azimuth, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
-  listen(document.getElementById('cut-face-view'), 'click', onFaceView);
-  listen(document.getElementById('cut-midline'), 'click', async () => {
+  listen(cutFaceBtn, 'click', onFaceView);
+  listen(cutMidlineBtn, 'click', async () => {
     sections.setCrosshair([0, sections.state.crosshair[1], sections.state.crosshair[2]]);
     await sections.setMode('sagittal');
     onFaceView();
   });
-  listen(document.getElementById('mpr-open'), 'click', async () => {
+  listen(mprOpenBtn, 'click', async () => {
     await sections.load();
     dialog.showModal();
     previousImage = null;
     update();
   });
-  listen(document.getElementById('mpr-close'), 'click', () => dialog.close());
+  listen(mprCloseBtn, 'click', () => dialog.close());
   listen(width, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
   listen(center, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
 
@@ -81,25 +127,21 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
   for (const [name, axis] of Object.entries(AXES)) {
     const article = document.createElement('article');
     const heading = document.createElement('h3');
-    heading.textContent = LABELS[name];
     const canvas = document.createElement('canvas');
     canvas.width = 512; canvas.height = 512;
     canvas.tabIndex = 0;
     canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', `${LABELS[name]} MRI. Click to place crosshair; arrow keys change slice.`);
     const label = document.createElement('label');
-    label.textContent = `${LABELS[name]} position (mm)`;
     const slider = document.createElement('input');
     slider.type = 'range'; slider.min = '-128'; slider.max = '128'; slider.step = '1';
-    slider.setAttribute('aria-label', `${LABELS[name]} MRI position`);
     const output = document.createElement('output');
     output.className = 'measure';
     const exportButton = document.createElement('button');
-    exportButton.type = 'button'; exportButton.textContent = 'Save PNG';
+    exportButton.type = 'button';
     label.append(slider, output);
     article.append(heading, canvas, label, exportButton);
     grid.append(article);
-    panels.set(name, { canvas, slider, output });
+    panels.set(name, { heading, canvas, label, slider, output, exportButton });
     listen(slider, 'input', () => schedule(() => {
       const point = [...sections.state.crosshair]; point[axis] = Number(slider.value);
       selectPoint(point);
@@ -129,6 +171,8 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
     const { size, fieldOfView } = sections.display;
     const pixels = sections.pixels(frame);
     const ctx = panel.canvas.getContext('2d');
+    const mprI18n = t(currentLang, 'mpr');
+    const planeName = mprI18n.labels[name] ?? name;
     panel.canvas.width = size; panel.canvas.height = size;
     // The MRI reference retains all source intensities, including unsegmented voxels.
     for (let index=3; index<pixels.length; index+=4) {
@@ -142,38 +186,97 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
     ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,size); ctx.moveTo(0,y); ctx.lineTo(size,y); ctx.stroke();
     ctx.fillStyle = '#fff'; ctx.font = '16px system-ui'; ctx.textAlign = 'center';
     for (const [index, point] of [[size/2,22],[size-16,size/2],[size/2,size-14],[16,size/2]].entries()) {
-      ctx.fillText(frame.edges[index], ...point);
+      const edgeLetter = currentLang === 'fr' ? (FR_EDGE[frame.edges[index]] ?? frame.edges[index]) : frame.edges[index];
+      ctx.fillText(edgeLetter, ...point);
     }
     ctx.font = '12px monospace'; ctx.textAlign = 'left';
-    ctx.fillText(`${LABELS[name]} ${sections.state.crosshair[AXES[name]].toFixed(1)} mm`, 10, size-12);
+    ctx.fillText(`${planeName} ${sections.state.crosshair[AXES[name]].toFixed(1)} mm`, 10, size-12);
   }
 
-  function update() {
+  function sampleDisplayName(sample) {
+    if (!sample?.name) return '';
+    const rawName = sample.name;
+    if (currentLang === 'fr') {
+      if (TISSUE_NAMES_FR[rawName]) return TISSUE_NAMES_FR[rawName];
+      if (STRUCTURE_LABELS_FR[rawName]) return STRUCTURE_LABELS_FR[rawName].name;
+      const clean = rawName.replace(/^ctx_[lr]h_/, '');
+      if (DESTRIEUX_LABELS_FR[clean]) return DESTRIEUX_LABELS_FR[clean].name;
+      if (rawName.endsWith('_ROI')) return rawName.replace(/^[LR]_/, '').replace(/_ROI$/, '');
+      return rawName;
+    }
+    if (TISSUE_NAMES_EN[rawName]) return TISSUE_NAMES_EN[rawName];
+    if (STRUCTURE_LABELS[rawName]) return STRUCTURE_LABELS[rawName].name;
+    const clean = rawName.replace(/^ctx_[lr]h_/, '');
+    if (DESTRIEUX_LABELS[clean]) return DESTRIEUX_LABELS[clean].name;
+    if (rawName.endsWith('_ROI')) return rawName.replace(/^[LR]_/, '').replace(/_ROI$/, '');
+    return rawName;
+  }
+
+  function update(appState) {
+    if (appState?.lang) currentLang = appState.lang;
+    const cutsI18n = t(currentLang, 'cuts');
+    const mprI18n = t(currentLang, 'mpr');
     const state = sections.state;
+
+    if (cutModeLabel) cutModeLabel.textContent = cutsI18n.cuttingPlane;
+    for (const opt of mode.options) {
+      if (cutsI18n.modes[opt.value]) opt.textContent = cutsI18n.modes[opt.value];
+    }
     mode.value = state.mode;
-    document.getElementById('cut-axis').textContent = {
-      off: 'Position (mm)', sagittal: 'R coordinate (mm): − left / + right',
-      coronal: 'A coordinate (mm): − posterior / + anterior',
-      axial: 'S coordinate (mm): − inferior / + superior', oblique: 'Normal offset from origin (mm)',
-    }[state.mode];
+    document.getElementById('cut-axis').textContent = cutsI18n.axes[state.mode] ?? cutsI18n.axes.off;
     const offset = new Vector3(...state.crosshair).dot(sections.frame.normal);
     if (document.activeElement !== position) position.value = String(offset);
     if (document.activeElement !== number) number.value = offset.toFixed(1);
+    number.setAttribute('aria-label', cutsI18n.exactPositionAria);
     reverse.checked = state.reverse;
     mprOverlay.checked = state.overlay;
     oblique.hidden = state.mode !== 'oblique';
+    if (cutTiltLabel) cutTiltLabel.textContent = cutsI18n.tilt;
+    if (cutAzimuthLabel) cutAzimuthLabel.textContent = cutsI18n.azimuth;
+    if (cutReverseText) cutReverseText.textContent = cutsI18n.reverseSide;
+    if (cutMidlineBtn) cutMidlineBtn.textContent = cutsI18n.midsagittal;
+    if (cutFaceBtn) cutFaceBtn.textContent = cutsI18n.faceCut;
+    if (mprOpenBtn) mprOpenBtn.textContent = cutsI18n.openMpr;
+
     tilt.value = state.tilt; azimuth.value = state.azimuth;
     document.getElementById('cut-angles').textContent = `${state.tilt}° / ${state.azimuth}°`;
-    for (const element of [position,number,reverse,document.getElementById('cut-face-view')]) {
+    for (const element of [position,number,reverse,cutFaceBtn]) {
       element.disabled = !sections.active;
     }
-    status.textContent = state.status === 'loading' ? 'Preparing anatomy…'
-      : state.error || (sections.active ? `Tissue cut at ${offset.toFixed(1)} mm · 1 mm · ${sections.model.state.atlas === 'hcp-mmp' ? 'derived HCP labels' : 'native Destrieux labels'}` : 'Full brain · no cut');
+
+    const atlasLabel = sections.model.state.atlas === 'hcp-mmp' ? cutsI18n.hcpDerived : cutsI18n.destrieuxNative;
+    status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
+      : state.error || (sections.active ? cutsI18n.statusActive(offset.toFixed(1), atlasLabel) : cutsI18n.statusFull);
+
+    if (mprTitle) mprTitle.textContent = mprI18n.title;
+    if (mprSubtitle) mprSubtitle.textContent = mprI18n.subtitle;
+    if (mprCloseBtn) mprCloseBtn.textContent = mprI18n.close;
+    if (mriWidthText) mriWidthText.textContent = mprI18n.contrastWindow;
+    if (mriCenterText) mriCenterText.textContent = mprI18n.windowCenter;
+    if (mprOverlayText) mprOverlayText.textContent = mprI18n.segmentationOverlay;
+    if (mprNote) mprNote.textContent = mprI18n.note;
+
+    for (const [name, panel] of panels) {
+      const planeName = mprI18n.labels[name] ?? name;
+      panel.heading.textContent = planeName;
+      panel.canvas.setAttribute('aria-label', mprI18n.sliceAria(planeName));
+      panel.label.childNodes[0].nodeValue = `${mprI18n.positionLabel(planeName)} `;
+      panel.slider.setAttribute('aria-label', mprI18n.sliderAria(planeName));
+      panel.exportButton.textContent = mprI18n.savePng;
+    }
+
     if (!dialog.open || !sections.volumes) return;
     width.value = sections.display.windowWidth; center.value = sections.display.windowCenter;
     const sample = sections.sample(state.crosshair);
-    readout.textContent = `R ${state.crosshair[0].toFixed(1)} · A ${state.crosshair[1].toFixed(1)} · S ${state.crosshair[2].toFixed(1)} mm — ${sample.name} (label ${sample.labelId})`;
-    const imageKey = JSON.stringify([state.crosshair,state.overlay,sections.display.windowCenter,sections.display.windowWidth]);
+    const displayName = sampleDisplayName(sample);
+    readout.textContent = mprI18n.readout(
+      state.crosshair[0].toFixed(1),
+      state.crosshair[1].toFixed(1),
+      state.crosshair[2].toFixed(1),
+      displayName,
+      sample.labelId,
+    );
+    const imageKey = JSON.stringify([state.crosshair,state.overlay,sections.display.windowCenter,sections.display.windowWidth,currentLang]);
     if (imageKey === previousImage) return;
     previousImage = imageKey;
     for (const [name, panel] of panels) {

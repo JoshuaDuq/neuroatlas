@@ -29,13 +29,14 @@ export function shortcutsAllowed(target) {
   return true;
 }
 
-export function createSession({ views, theme = 'light' }) {
+export function createSession({ views, theme = 'light', lang = 'en' }) {
   const knownViews = new Set(views);
   let state = {
     view: 'oblique',
     query: '',
     expanded: new Set(),
     theme,
+    lang: ['en', 'fr'].includes(lang) ? lang : 'en',
     status: 'loading',
     progress: null,
     error: null,
@@ -64,6 +65,8 @@ export function createSession({ views, theme = 'light' }) {
 
     setTheme: value => act({ theme: value }),
 
+    setLang: value => act({ lang: ['en', 'fr'].includes(value) ? value : 'en' }),
+
     setStatus: status => act({ status, progress: null, error: null }),
 
     setProgress: progress => act({ status: 'loading', progress }),
@@ -84,13 +87,17 @@ export function createSession({ views, theme = 'light' }) {
      */
     failSwitch(atlasLabel, error) {
       console.error(error);
+      const isFr = state.lang === 'fr';
       state = {
         ...state,
         status: 'ready',
         progress: null,
         error: null,
-        notice: `Could not load the ${atlasLabel}. The model file may be `
-          + 'unavailable — check your connection and try again.',
+        notice: isFr
+          ? `Impossible de charger ${atlasLabel}. Le fichier modèle est peut-être `
+            + 'indisponible — vérifiez votre connexion et réessayez.'
+          : `Could not load the ${atlasLabel}. The model file may be `
+            + 'unavailable — check your connection and try again.',
       };
     },
 
@@ -100,7 +107,9 @@ export function createSession({ views, theme = 'light' }) {
     setContextLost: () => act({
       status: 'context-lost',
       progress: null,
-      error: new Error('The 3D view was interrupted by the graphics driver. Restoring…'),
+      error: new Error(state.lang === 'fr'
+        ? 'La vue 3D a été interrompue par le pilote graphique. Restauration…'
+        : 'The 3D view was interrupted by the graphics driver. Restoring…'),
     }),
 
     /** Notices are cleared by the next action, never by a timer. */

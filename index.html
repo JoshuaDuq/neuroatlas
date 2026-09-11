@@ -14,6 +14,10 @@
         <div id="atlas-switch" class="segmented" role="group" aria-label="Cortical atlas"></div>
         <div class="masthead-end">
           <span id="region-count" class="measure"></span>
+          <div id="lang-switch" class="segmented" role="group" aria-label="Language">
+            <button type="button" data-lang="en" aria-pressed="true">EN</button>
+            <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+          </div>
           <button id="theme-toggle" type="button" aria-pressed="false">
             <span id="theme-label">Dark</span>
           </button>
@@ -23,7 +27,7 @@
 
       <aside id="navigator" aria-label="Find a region">
         <div class="rail-head">
-          <label class="visually-hidden" for="search">Search regions</label>
+          <label id="search-label" class="visually-hidden" for="search">Search regions</label>
           <input id="search" type="search" autocomplete="off" spellcheck="false"
                  placeholder="Search regions" role="combobox" aria-expanded="false"
                  aria-controls="results" aria-autocomplete="list" />
@@ -57,16 +61,16 @@
 
       <aside id="inspector" aria-label="Selection and display">
         <div class="rail-body">
-          <p class="section-label">Selected</p>
+          <p id="label-selected" class="section-label">Selected</p>
           <div class="panel-body">
             <h2 id="selected-name">No region selected</h2>
             <p id="selected-hint">Click the model, or search on the left.</p>
             <dl id="selected-facts" hidden>
-              <dt>Hemisphere</dt><dd id="fact-hemisphere"></dd>
-              <dt>Atlas</dt><dd id="fact-atlas"></dd>
+              <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
+              <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
               <dt id="fact-metric-label">Surface area</dt>
               <dd id="fact-metric" class="measure"></dd>
-              <dt>Source label</dt><dd id="fact-source" class="measure"></dd>
+              <dt id="fact-source-label">Source label</dt><dd id="fact-source" class="measure"></dd>
             </dl>
             <div class="actions">
               <button id="focus" type="button" disabled>Focus</button>
@@ -74,9 +78,9 @@
             </div>
           </div>
 
-          <p class="section-label">Anatomical cuts</p>
+          <p id="label-cuts" class="section-label">Anatomical cuts</p>
           <div class="panel-body section-controls">
-            <label for="cut-mode">Cutting plane</label>
+            <label id="cut-mode-label" for="cut-mode">Cutting plane</label>
             <select id="cut-mode">
               <option value="off">Full brain</option>
               <option value="sagittal">Sagittal</option>
@@ -90,13 +94,13 @@
               <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
             </div>
             <div id="cut-oblique" hidden>
-              <label for="cut-tilt">Tilt from axial</label>
+              <label id="cut-tilt-label" for="cut-tilt">Tilt from axial</label>
               <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
-              <label for="cut-azimuth">Rotation around superior axis</label>
+              <label id="cut-azimuth-label" for="cut-azimuth">Rotation around superior axis</label>
               <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
               <output id="cut-angles" class="measure"></output>
             </div>
-            <label class="check"><input id="cut-reverse" type="checkbox" disabled /> Reverse retained side</label>
+            <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
             <div class="actions">
               <button id="cut-midline" type="button">Midsagittal</button>
               <button id="cut-face-view" type="button" disabled>Face cut</button>
@@ -105,9 +109,9 @@
             <p id="cut-status" role="status">Full brain · no cut</p>
           </div>
 
-          <p class="section-label">Display</p>
+          <p id="label-display" class="section-label">Display</p>
           <div class="panel-body">
-            <label for="hemisphere">Hemisphere</label>
+            <label id="display-hemisphere-label" for="hemisphere">Hemisphere</label>
             <select id="hemisphere">
               <option value="both">Both</option>
               <option value="left">Left</option>
@@ -115,16 +119,16 @@
             </select>
 
             <label class="check">
-              <input id="cortex" type="checkbox" checked /> Show cortex
+              <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
             </label>
 
             <label for="opacity">
-              Cortex opacity <output id="opacity-value" class="measure">100%</output>
+              <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
             </label>
             <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
 
             <label class="check">
-              <input id="atlas-colors" type="checkbox" checked /> Atlas colours
+              <input id="atlas-colors" type="checkbox" checked /> <span id="atlas-colors-text">Atlas colours</span>
             </label>
 
             <button id="reset" type="button">Reset view</button>
@@ -133,7 +137,7 @@
       </aside>
 
       <footer id="colophon">
-        <span>FreeSurfer fsaverage reference template · not individual or clinical anatomy</span>
+        <span id="colophon-text">FreeSurfer fsaverage reference template · not individual or clinical anatomy</span>
         <a id="provenance" href="models/manifest.json" target="_blank" rel="noreferrer">Provenance</a>
       </footer>
     </div>
@@ -141,19 +145,19 @@
     <dialog id="mpr-dialog" aria-labelledby="mpr-title">
       <div class="mpr-header">
         <div><h2 id="mpr-title">Linked MRI sections</h2>
-          <p>Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
+          <p id="mpr-subtitle">Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
         <button id="mpr-close" type="button">Close slices</button>
       </div>
       <div id="mpr-grid"></div>
       <p id="mpr-readout" class="measure" role="status"></p>
       <div class="mpr-display">
-        <label for="mri-window-width">Contrast window
+        <label for="mri-window-width"><span id="mri-window-width-text">Contrast window</span>
           <input id="mri-window-width" type="range" min="10" max="255" value="180" /></label>
-        <label for="mri-window-center">Window center
+        <label for="mri-window-center"><span id="mri-window-center-text">Window center</span>
           <input id="mri-window-center" type="range" min="0" max="255" value="90" /></label>
-        <label class="check"><input id="mpr-overlay" type="checkbox" /> Segmentation overlay</label>
+        <label class="check"><input id="mpr-overlay" type="checkbox" /> <span id="mpr-overlay-text">Segmentation overlay</span></label>
       </div>
-      <p class="mpr-note">1 mm reference-template grid · surface RAS coordinates · L/R explicitly marked.
+      <p id="mpr-note" class="mpr-note">1 mm reference-template grid · surface RAS coordinates · L/R explicitly marked.
         MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.</p>
     </dialog>
 

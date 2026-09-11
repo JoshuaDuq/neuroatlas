@@ -1,0 +1,78 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { PerspectiveCamera, Vector3 } from 'three';
+import { createSession } from '../state/session.js';
+import { decodeState, encodeState } from '../state/url-state.js';
+import { count } from '../ui/format.js';
+import { edgeLabels } from '../render/orientation.js';
+import { t } from './translations.js';
+
+test('session accepts and toggles language', () => {
+  const session = createSession({ views: ['oblique', 'left'], lang: 'en' });
+  const modelState = { atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1 };
+  assert.equal(session.assemble(modelState).lang, 'en');
+
+  session.setLang('fr');
+  assert.equal(session.assemble(modelState).lang, 'fr');
+
+  session.setLang('invalid');
+  assert.equal(session.assemble(modelState).lang, 'en');
+});
+
+test('session notifies in French when in French mode', () => {
+  const session = createSession({ views: ['oblique'], lang: 'fr' });
+  const modelState = { atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1 };
+  session.failSwitch('Destrieux', new Error('boom'));
+  assert.match(session.assemble(modelState).notice, /Impossible de charger/);
+});
+
+test('url-state encodes and decodes lang', () => {
+  const stateEn = {
+    atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
+    atlasColors: false, view: 'oblique', selectedRegion: null, isolatedRegion: null,
+    lang: 'en',
+  };
+  // Default lang is omitted to keep URLs clean
+  assert.equal(encodeState(stateEn), 'atlas=destrieux');
+
+  const stateFr = { ...stateEn, lang: 'fr' };
+  assert.equal(encodeState(stateFr), 'atlas=destrieux&lang=fr');
+
+  assert.equal(decodeState('#atlas=destrieux&lang=fr').lang, 'fr');
+  assert.equal(decodeState('#atlas=destrieux&lang=en').lang, 'en');
+  assert.equal(decodeState('#atlas=destrieux&lang=unknown').lang, undefined);
+});
+
+test('count formats plural nouns in French correctly', () => {
+  assert.equal(count(0, 'region', 'fr'), '0 régions');
+  assert.equal(count(1, 'region', 'fr'), '1 région');
+  assert.equal(count(2, 'region', 'fr'), '2 régions');
+  assert.equal(count(183, 'region', 'fr'), '183 régions');
+  assert.equal(count(1, 'match', 'fr'), '1 correspondance');
+  assert.equal(count(5, 'match', 'fr'), '5 correspondances');
+});
+
+test('edgeLabels returns French anatomical orientation letters', () => {
+  const camera = new PerspectiveCamera(35, 1.6, 0.001, 10);
+  camera.up.set(0, 1, 0);
+  // Anterior view: facing the subject
+  camera.position.set(0, 0, -0.5);
+  camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld(true);
+
+  const enEdges = edgeLabels(camera, 'en');
+  assert.equal(enEdges.right, 'L');
+  assert.equal(enEdges.left, 'R');
+
+  const frEdges = edgeLabels(camera, 'fr');
+  assert.equal(frEdges.right, 'G'); // Gauche
+  assert.equal(frEdges.left, 'D');  // Droite
+  assert.equal(frEdges.top, 'S');   // Supérieur
+  assert.equal(frEdges.bottom, 'I'); // Inférieur
+});
+
+test('translations dictionary returns valid sections and falls back safely', () => {
+  assert.ok(t('fr', 'header').languageSwitch === 'Langue');
+  assert.ok(t('en', 'header').languageSwitch === 'Language');
+  assert.ok(t('unknown', 'header').languageSwitch === 'Language');
+});
