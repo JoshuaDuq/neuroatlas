@@ -153,6 +153,32 @@ references:
       en: 344 people with focal lesions, including 165 with prefrontal involvement.
       fr: 344 personnes avec lésions focales, dont 165 avec atteinte préfrontale.
 
+  - id: na-2022
+    title: 'Language systems from lesion-symptom mapping in aphasia: A meta-analysis of voxel-based lesion mapping studies'
+    authors: Na Y, Jung J, Tench CR, Auer DP, Pyun SB
+    year: 2022
+    journal: 'NeuroImage: Clinical'
+    doi: 10.1016/j.nicl.2022.103038
+    pmid: '35569227'
+    method: meta-analysis
+    scope: abstract
+    population:
+      en: 2,007 individuals with post-stroke aphasia, pooled from 25 voxel-based lesion-symptom mapping studies.
+      fr: 2 007 personnes avec aphasie post-AVC, regroupées à partir de 25 études de cartographie lésion–symptôme voxel par voxel.
+
+  - id: chechlacz-2012
+    title: 'Neuroanatomical dissections of unilateral visual neglect symptoms: ALE meta-analysis of lesion-symptom mapping'
+    authors: Chechlacz M, Rotshtein P, Humphreys GW
+    year: 2012
+    journal: Frontiers in Human Neuroscience
+    doi: 10.3389/fnhum.2012.00230
+    pmid: '22907997'
+    method: meta-analysis
+    scope: abstract
+    population:
+      en: Lesion-symptom mapping studies of unilateral visual neglect, pooled by anatomic likelihood estimation; the abstract reports no combined patient total.
+      fr: Études de cartographie lésion–symptôme de la négligence visuelle unilatérale, regroupées par estimation de vraisemblance anatomique; le résumé n’indique aucun effectif total.
+
 associations:
   - id: aphasia-comprehension
     deficit: aphasia
@@ -313,3 +339,86 @@ associations:
       - {region: 'destrieux:right:6', source_name: G_and_S_cingul-Ant}
     evidence:
       - {reference: glascher-2012, role: supporting}
+
+  - id: aphasia-repetition
+    deficit: aphasia
+    title: {en: Repeating words and sentences, fr: Répétition de mots et de phrases}
+    network: {en: Left dorsal language pathway, fr: Voie langagière dorsale gauche}
+    laterality: left
+    finding:
+      en: Across 25 pooled lesion-mapping studies, repetition-selective deficits arose only from lesions involving the posterior superior temporal gyrus.
+      fr: Sur 25 études de cartographie lésionnelle regroupées, les déficits sélectifs de répétition ne survenaient que pour des lésions impliquant le gyrus temporal supérieur postérieur.
+    limitation:
+      en: Pooled coordinates from post-stroke aphasia. Repetition is one task among several, and pooling across studies cannot resolve subregions within a gyrus.
+      fr: Coordonnées regroupées issues d’aphasies post-AVC. La répétition n’est qu’une tâche parmi d’autres, et le regroupement entre études ne peut pas distinguer les sous-régions d’un gyrus.
+    mapping_note:
+      en: The whole lateral superior temporal parcel is shown. The pooled result concerns its posterior portion.
+      fr: La parcelle temporale supérieure latérale entière est affichée. Le résultat regroupé concerne sa portion postérieure.
+    mappings:
+      - {region: 'destrieux:left:34', source_name: G_temp_sup-Lateral}
+    evidence:
+      - {reference: na-2022, role: supporting}
+
+  - id: aphasia-production
+    deficit: aphasia
+    title: {en: Speaking with comprehension preserved, fr: Parole avec compréhension préservée}
+    network: {en: Left insular and motor speech system, fr: Système insulaire et moteur de la parole (gauche)}
+    laterality: left
+    finding:
+      en: Damage to insular and motor areas impaired speech while comprehension stayed relatively preserved; frontal lesions produced the same dissociation more severely.
+      fr: Les lésions des aires insulaires et motrices altéraient la parole en préservant relativement la compréhension; les lésions frontales produisaient la même dissociation de façon plus sévère.
+    limitation:
+      en: The dissociation is between pooled task scores, not a claim that these parcels constitute a speech output system. Underlying white matter carried part of the effect.
+      fr: La dissociation porte sur des scores regroupés, et non sur l’affirmation que ces parcelles constituent un système de production de la parole. La substance blanche sous-jacente portait une partie de l’effet.
+    mapping_note:
+      en: Whole insular and precentral parcels are shown. The pooled clusters covered parts of each together with adjacent white matter, which has no parcel here.
+      fr: Les parcelles insulaires et précentrale entières sont affichées. Les amas regroupés couvraient une partie de chacune ainsi que la substance blanche adjacente, qui n’a pas de parcelle ici.
+    mappings:
+      - {region: 'destrieux:left:17', source_name: G_Ins_lg_and_S_cent_ins}
+      - {region: 'destrieux:left:18', source_name: G_insular_short}
+      - {region: 'destrieux:left:29', source_name: G_precentral}
+    evidence:
+      - {reference: na-2022, role: supporting}
+
+  - id: neglect-egocentric
+    deficit: neglect
+    title: {en: Neglect of one side of space, fr: Négligence d’un côté de l’espace}
+    network: {en: Right perisylvian attention network, fr: Réseau attentionnel périsylvien droit}
+    laterality: right
+    finding:
+      en: Egocentric neglect symptoms were associated with damage in a perisylvian network — precentral, postcentral, supramarginal and superior temporal gyri — and with subcortical damage.
+      fr: Les symptômes de négligence égocentrée étaient associés à des lésions d’un réseau périsylvien — gyrus précentral, postcentral, supramarginal et temporal supérieur — et à des lésions sous-corticales.
+    limitation:
+      en: Pooling across studies that diagnosed neglect with different tests. The same analysis implicated long association and projection white matter, so a disconnection account is not excluded.
+      fr: Regroupement d’études diagnostiquant la négligence avec des tests différents. La même analyse impliquait la substance blanche d’association et de projection, de sorte qu’une explication par déconnexion n’est pas exclue.
+    mapping_note:
+      en: Cortical parcels only. The subcortical and white-matter findings of the same meta-analysis have no parcel shown here.
+      fr: Parcelles corticales uniquement. Les résultats sous-corticaux et de substance blanche de la même méta-analyse n’ont pas de parcelle affichée ici.
+    mappings:
+      - {region: 'destrieux:right:29', source_name: G_precentral}
+      - {region: 'destrieux:right:28', source_name: G_postcentral}
+      - {region: 'destrieux:right:26', source_name: G_pariet_inf-Supramar}
+      - {region: 'destrieux:right:34', source_name: G_temp_sup-Lateral}
+    evidence:
+      - {reference: chechlacz-2012, role: supporting}
+
+  - id: neglect-allocentric
+    deficit: neglect
+    title: {en: Neglect of one side of each object, fr: Négligence d’un côté de chaque objet}
+    network: {en: Right posterior temporo-parieto-occipital cortex, fr: Cortex temporo-pariéto-occipital postérieur droit}
+    laterality: right
+    finding:
+      en: Allocentric neglect symptoms were associated with more posterior lesions, including the angular, middle temporal and middle occipital gyri.
+      fr: Les symptômes de négligence allocentrée étaient associés à des lésions plus postérieures, incluant les gyrus angulaire, temporal moyen et occipital moyen.
+    limitation:
+      en: Egocentric and allocentric symptoms co-occur in many patients, so these sites are a dissociation in pooled data rather than a boundary in any one person.
+      fr: Les symptômes égocentrés et allocentrés coexistent chez de nombreux patients; ces sites constituent donc une dissociation dans des données regroupées, et non une frontière chez une personne donnée.
+    mapping_note:
+      en: Whole parcels are shown for a result reported as overlapping likelihood clusters, which do not follow parcel borders.
+      fr: Les parcelles entières sont affichées pour un résultat rapporté sous forme d’amas de vraisemblance, qui ne suivent pas les limites des parcelles.
+    mappings:
+      - {region: 'destrieux:right:25', source_name: G_pariet_inf-Angular}
+      - {region: 'destrieux:right:38', source_name: G_temporal_middle}
+      - {region: 'destrieux:right:19', source_name: G_occipital_middle}
+    evidence:
+      - {reference: chechlacz-2012, role: supporting}
