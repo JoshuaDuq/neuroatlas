@@ -1,6 +1,7 @@
 import { Vector3 } from 'three';
 import { centeredFrame, pointOnFrame } from '../slices/coordinates.js';
 import { t } from '../i18n/translations.js';
+import { PHONE_QUERY } from '../render/device.js';
 import { STRUCTURE_LABELS } from '../catalog/structure-groups.js';
 import { STRUCTURE_LABELS_FR } from '../catalog/structure-groups.fr.js';
 import { DESTRIEUX_LABELS } from '../catalog/destrieux-labels.js';
@@ -49,6 +50,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const status = document.getElementById('cut-status');
   const dialog = document.getElementById('mpr-dialog');
   const grid = document.getElementById('mpr-grid');
+  const planeSwitch = document.getElementById('mpr-planes');
   const readout = document.getElementById('mpr-readout');
   const width = document.getElementById('mri-window-width');
   const center = document.getElementById('mri-window-center');
@@ -153,7 +155,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     label.append(slider, output);
     article.append(heading, canvas, label, exportButton);
     grid.append(article);
-    panels.set(name, { heading, canvas, label, slider, output, exportButton });
+    panels.set(name, { article, heading, canvas, label, slider, output, exportButton });
     listen(slider, 'input', () => schedule(() => {
       const point = [...sections.state.crosshair]; point[axis] = Number(slider.value);
       selectPoint(point);
@@ -177,6 +179,42 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       link.href = canvas.toDataURL('image/png'); link.click();
     });
   }
+
+  /*
+   * Three sections stacked at 375px is a very long scroll with the crosshair
+   * off screen, so a phone shows one plane at a time. The crosshair stays
+   * linked across all three — only the drawing is deferred, and skipping two
+   * canvases spares a phone two 512-square resamples on every crosshair move.
+   */
+  const phoneQuery = globalThis.matchMedia?.(PHONE_QUERY)
+    ?? { matches: false, addEventListener() {}, removeEventListener() {} };
+  let activePlane = 'axial';
+
+  const planeButtons = Object.keys(AXES).map(name => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.plane = name;
+    listen(button, 'click', () => { activePlane = name; applyPlaneMode(); });
+    planeSwitch.append(button);
+    return button;
+  });
+
+  const planeVisible = name => !phoneQuery.matches || name === activePlane;
+
+  function applyPlaneMode() {
+    const onePlane = phoneQuery.matches;
+    planeSwitch.hidden = !onePlane;
+    for (const [name, panel] of panels) {
+      panel.article.hidden = !planeVisible(name);
+    }
+    for (const button of planeButtons) {
+      button.setAttribute('aria-pressed', String(button.dataset.plane === activePlane));
+    }
+    // The newly shown plane has not been drawn while it was hidden.
+    previousImage = null;
+    update();
+  }
+  phoneQuery.addEventListener('change', applyPlaneMode);
 
   function drawPanel(name, panel) {
     const frame = centeredFrame(name, sections.state.crosshair);
@@ -286,6 +324,10 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       panel.slider.setAttribute('aria-label', mprI18n.sliderAria(planeName));
       panel.exportButton.textContent = mprI18n.savePng;
     }
+    planeSwitch.setAttribute('aria-label', mprI18n.planes);
+    for (const button of planeButtons) {
+      button.textContent = mprI18n.labels[button.dataset.plane] ?? button.dataset.plane;
+    }
 
     if (!dialog.open || !sections.volumes) return;
     width.value = sections.display.windowWidth; center.value = sections.display.windowCenter;
@@ -305,12 +347,17 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       const coordinate = state.crosshair[AXES[name]];
       panel.slider.value = coordinate;
       panel.output.textContent = `${coordinate.toFixed(1)} mm`;
-      drawPanel(name,panel);
+      // A plane nobody can see is not resampled; it redraws when it is shown.
+      if (planeVisible(name)) drawPanel(name, panel);
     }
   }
 
+  applyPlaneMode();
+
   return { update, dispose() {
     if (animation !== null) cancelAnimationFrame(animation);
+    phoneQuery.removeEventListener('change', applyPlaneMode);
+    planeSwitch.replaceChildren();
     for (const [element,type,listener] of listeners) element.removeEventListener(type,listener);
     grid.replaceChildren();
     dialog.close();

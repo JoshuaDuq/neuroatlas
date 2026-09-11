@@ -128,6 +128,27 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   pointer-events: none;
 }
 
+/*
+ * Chrome is placed against the rectangle the reader can see, not the canvas.
+ * On a phone the sheet covers the lower canvas, and markers pinned to the
+ * canvas edge would sit behind it. The renderer and the interface derive this
+ * rectangle from the same source; these four are set by viewport-chrome.js.
+ */
+#viewport {
+  --vis-top: 0px;
+  --vis-right: 0px;
+  --vis-bottom: 0px;
+  --vis-left: 0px;
+  --vis-cx: 50%;
+  --vis-cy: 50%;
+}
+
+.orientation {
+  position: absolute;
+  inset: var(--vis-top) var(--vis-right) var(--vis-bottom) var(--vis-left);
+  pointer-events: none;
+}
+
 .orientation > span {
   position: absolute;
   z-index: 2;
@@ -144,7 +165,13 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .orientation [data-edge="left"] { left: var(--space-3); top: 50%; transform: translateY(-50%); }
 .orientation [data-edge="right"] { right: var(--space-3); top: 50%; transform: translateY(-50%); }
 
-.views { position: absolute; z-index: 2; left: var(--space-4); bottom: var(--space-4); display: flex; }
+.views {
+  position: absolute;
+  z-index: 2;
+  left: calc(var(--vis-left) + var(--space-4));
+  bottom: calc(var(--vis-bottom) + var(--space-4));
+  display: flex;
+}
 .views button {
   height: 26px;
   padding: 0 var(--space-2);
@@ -159,8 +186,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .views button[aria-pressed="true"] { background: var(--accent-wash); border-color: var(--accent); color: var(--accent); z-index: 1; }
 
 .scale-bar {
-  right: var(--space-4);
-  bottom: var(--space-4);
+  right: calc(var(--vis-right) + var(--space-4));
+  bottom: calc(var(--vis-bottom) + var(--space-4));
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -180,8 +207,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
  * measurement, not decoration.
  */
 @media (max-width: 700px) {
-  .scale-bar { top: var(--space-3); bottom: auto; }
-  .views { right: var(--space-4); overflow-x: auto; scrollbar-width: none; }
+  .scale-bar { top: calc(var(--vis-top) + var(--space-3)); bottom: auto; }
+  .views { right: calc(var(--vis-right) + var(--space-4)); overflow-x: auto; scrollbar-width: none; }
   .views::-webkit-scrollbar { display: none; }
 }
 
@@ -262,4 +289,78 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 @media (max-width: 700px) {
   #mpr-grid { grid-template-columns: 1fr; }
   .mpr-display { flex-wrap: wrap; }
+}
+
+/* Reticle ---------------------------------------------------------------- */
+/*
+ * The touch replacement for hover. A fingertip covers far more of the canvas
+ * than a Destrieux sulcal band, so identification stops being a matter of
+ * aim: the reader moves the anatomy under a fixed mark and reads what is
+ * under it. Hidden entirely where a cursor exists.
+ */
+.reticle {
+  position: absolute;
+  z-index: 2;
+  left: var(--vis-cx);
+  top: var(--vis-cy);
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  pointer-events: none;
+  display: none;
+}
+.reticle-mark, .reticle-mark::before, .reticle-mark::after {
+  position: absolute;
+  background: var(--scene-outline-core);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--scene-outline-halo) 70%, transparent);
+}
+/* A gap at the centre: the mark must not hide the thing it is naming. */
+.reticle-mark {
+  inset: 0;
+  background: none;
+  box-shadow: none;
+}
+.reticle-mark::before {
+  content: "";
+  left: 50%; top: 0;
+  width: 1px; height: 14px;
+  transform: translateX(-50%);
+  box-shadow: 0 30px 0 0 var(--scene-outline-core);
+}
+.reticle-mark::after {
+  content: "";
+  top: 50%; left: 0;
+  height: 1px; width: 14px;
+  transform: translateY(-50%);
+  box-shadow: 30px 0 0 0 var(--scene-outline-core);
+}
+
+.reticle-readout {
+  position: absolute;
+  z-index: 3;
+  left: var(--vis-cx);
+  top: calc(var(--vis-cy) + 34px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: auto;
+  min-height: 28px;
+  max-width: 280px;
+  padding: var(--space-1) var(--space-3);
+  pointer-events: auto;
+  cursor: pointer;
+  color: var(--text-primary);
+  text-align: left;
+}
+.reticle-readout[data-empty="true"] { color: var(--text-tertiary); }
+.reticle-readout .reticle-readout-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.reticle-readout .reticle-readout-action {
+  flex: none;
+  color: var(--accent);
+  font-size: var(--text-micro);
 }

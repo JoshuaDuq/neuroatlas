@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="A precise, source-faithful atlas of the human brain built on a full-resolution FreeSurfer reconstruction." />
     <title>NeuroAtlas</title>
     <link rel="icon" href="data:," />
@@ -13,52 +13,43 @@
         <h1 class="brand">NeuroAtlas</h1>
         <div id="atlas-switch" class="segmented" role="group" aria-label="Cortical atlas"></div>
         <div class="masthead-end">
-          <span id="region-count" class="measure"></span>
-          <div id="lang-switch" class="segmented" role="group" aria-label="Language">
-            <button type="button" data-lang="en" aria-pressed="true">EN</button>
-            <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+          <!--
+            On a phone these four are settings, not instruments, and the row
+            they sit in does not fit beside the atlas switch. They collapse
+            behind one button there and sit in the masthead everywhere else;
+            the panel is display:contents above the phone breakpoint, so the
+            desktop masthead is unchanged.
+          -->
+          <button id="masthead-more" type="button" aria-expanded="false"
+                  aria-controls="masthead-menu" aria-label="More settings" hidden>⋯</button>
+          <div id="masthead-menu">
+            <span id="region-count" class="measure"></span>
+            <div id="lang-switch" class="segmented" role="group" aria-label="Language">
+              <button type="button" data-lang="en" aria-pressed="true">EN</button>
+              <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+            </div>
+            <button id="theme-toggle" type="button" aria-pressed="false">
+              <span id="theme-label">Dark</span>
+            </button>
+            <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
           </div>
-          <button id="theme-toggle" type="button" aria-pressed="false">
-            <span id="theme-label">Dark</span>
-          </button>
-          <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
         </div>
       </header>
-
-      <aside id="navigator" aria-label="Find a region">
-        <div class="rail-head explorer-head">
-          <div id="explorer-switch" class="segmented" role="group" aria-label="Explore the atlas">
-            <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
-            <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
-          </div>
-        </div>
-        <div id="anatomy-search" class="rail-head">
-          <label id="search-label" class="visually-hidden" for="search">Search regions</label>
-          <input id="search" type="search" autocomplete="off" spellcheck="false"
-                 placeholder="Search regions" role="combobox" aria-expanded="false"
-                 aria-controls="results" aria-autocomplete="list" />
-        </div>
-        <div id="anatomy-browser" class="rail-body">
-          <div id="results" role="listbox" aria-label="Search results" hidden></div>
-          <div id="tree" role="tree" aria-label="Browse anatomy"></div>
-        </div>
-        <div id="deficit-browser" class="rail-body" hidden>
-          <div class="panel-body clinical-intro">
-            <p id="clinical-introduction"></p>
-            <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
-            <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
-          </div>
-          <div id="deficit-list" aria-label="Deficits"></div>
-          <p id="clinical-coverage" class="clinical-note panel-body"></p>
-        </div>
-        <p id="rail-notice" class="rail-notice" hidden></p>
-      </aside>
 
       <main id="viewport">
         <div id="orientation" class="orientation" aria-hidden="true">
           <span data-edge="top"></span><span data-edge="right"></span>
           <span data-edge="bottom"></span><span data-edge="left"></span>
         </div>
+        <!--
+          The touch replacement for hover. A fingertip covers far more of the
+          canvas than a Destrieux sulcal band, so the reader lines a region up
+          under a fixed crosshair and reads it, rather than aiming at it.
+        -->
+        <div id="reticle" class="reticle" aria-hidden="true" hidden>
+          <span class="reticle-mark"></span>
+        </div>
+        <button id="reticle-readout" class="chip reticle-readout" type="button" hidden></button>
         <div id="views" class="views" role="group" aria-label="Anatomical view"></div>
         <div id="scale-bar" class="chip scale-bar" aria-hidden="true">
           <span class="scale-bar-rule"></span>
@@ -74,90 +65,145 @@
         </div>
       </main>
 
-      <aside id="inspector" aria-label="Selection and display">
-        <div class="rail-body">
-          <p id="label-selected" class="section-label">Selected</p>
-          <div class="panel-body">
-            <h2 id="selected-name">No region selected</h2>
-            <p id="selected-hint">Click the model, or search on the left.</p>
-            <dl id="selected-facts" hidden>
-              <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
-              <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
-              <dt id="fact-metric-label">Surface area</dt>
-              <dd id="fact-metric" class="measure"></dd>
-              <dt id="fact-source-label">Source label</dt><dd id="fact-source" class="measure"></dd>
-            </dl>
-            <div class="actions">
-              <button id="focus" type="button" disabled>Focus</button>
-              <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
-            </div>
-          </div>
-
-          <section id="clinical-region" hidden></section>
-          <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
-
-          <p id="label-cuts" class="section-label">Anatomical cuts</p>
-          <div class="panel-body section-controls">
-            <label id="cut-mode-label" for="cut-mode">Cutting plane</label>
-            <select id="cut-mode">
-              <option value="off">Full brain</option>
-              <option value="sagittal">Sagittal</option>
-              <option value="coronal">Coronal</option>
-              <option value="axial">Axial / transverse</option>
-              <option value="oblique">Oblique</option>
-            </select>
-            <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
-            <select id="cut-atlas"></select>
-            <label id="cut-axis" for="cut-position">Position (mm)</label>
-            <div class="cut-position-row">
-              <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
-              <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
-            </div>
-            <div id="cut-oblique" hidden>
-              <label id="cut-tilt-label" for="cut-tilt">Tilt from axial</label>
-              <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
-              <label id="cut-azimuth-label" for="cut-azimuth">Rotation around superior axis</label>
-              <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
-              <output id="cut-angles" class="measure"></output>
-            </div>
-            <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
-            <div class="actions">
-              <button id="cut-midline" type="button">Midsagittal</button>
-              <button id="cut-face-view" type="button" disabled>Face cut</button>
-            </div>
-            <button id="mpr-open" type="button">Open linked MRI slices</button>
-            <p id="cut-status" role="status">Full brain · no cut</p>
-          </div>
-
-          <p id="label-display" class="section-label">Display</p>
-          <div class="panel-body">
-            <label id="display-hemisphere-label" for="hemisphere">Hemisphere</label>
-            <label id="detail-label" for="detail">Internal anatomy</label>
-            <select id="detail"></select>
-            <label id="hemisphere-label-el" for="hemisphere">Hemisphere</label>
-            <select id="hemisphere">
-              <option value="both">Both</option>
-              <option value="left">Left</option>
-              <option value="right">Right</option>
-            </select>
-
-            <label class="check">
-              <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
-            </label>
-
-            <label for="opacity">
-              <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
-            </label>
-            <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
-
-            <label class="check">
-              <input id="atlas-colors" type="checkbox" /> <span id="atlas-colors-text">Atlas colours</span>
-            </label>
-
-            <button id="reset" type="button">Reset view</button>
-          </div>
+      <!--
+        The rails. Above the phone breakpoint this wrapper is display:contents
+        and its two children are grid items of #app exactly as before; on a
+        phone it becomes one sheet over the canvas, with the handle, the
+        selection strip and the tab bar below.
+      -->
+      <div id="sheet">
+        <div id="sheet-grip" class="sheet-grip" hidden>
+          <button id="sheet-handle" type="button" aria-expanded="false" aria-controls="sheet"
+                  aria-label="Expand panel"><span class="sheet-handle-bar"></span></button>
+          <button id="sheet-selection" type="button" class="sheet-selection" hidden>
+            <span id="sheet-selection-name" class="sheet-selection-name"></span>
+            <span id="sheet-selection-side" class="sheet-selection-side measure"></span>
+            <span class="sheet-selection-chevron" aria-hidden="true">›</span>
+          </button>
+          <div id="sheet-tabs" class="sheet-tabs" role="tablist" aria-label="Panels"></div>
+          <p id="sheet-disclaimer" class="sheet-disclaimer"></p>
         </div>
-      </aside>
+
+        <aside id="navigator" aria-label="Find a region" data-tab="find">
+          <div class="rail-head explorer-head">
+            <div id="explorer-switch" class="segmented" role="group" aria-label="Explore the atlas">
+              <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
+              <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
+            </div>
+          </div>
+          <div id="anatomy-search" class="rail-head">
+            <label id="search-label" class="visually-hidden" for="search">Search regions</label>
+            <input id="search" type="search" autocomplete="off" spellcheck="false"
+                   placeholder="Search regions" role="combobox" aria-expanded="false"
+                   aria-controls="results" aria-autocomplete="list" />
+          </div>
+          <div id="anatomy-browser" class="rail-body">
+            <div id="results" role="listbox" aria-label="Search results" hidden></div>
+            <div id="tree" role="tree" aria-label="Browse anatomy"></div>
+          </div>
+          <div id="deficit-browser" class="rail-body" hidden>
+            <div class="panel-body clinical-intro">
+              <p id="clinical-introduction"></p>
+              <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
+              <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
+            </div>
+            <div id="deficit-list" aria-label="Deficits"></div>
+            <p id="clinical-coverage" class="clinical-note panel-body"></p>
+          </div>
+          <p id="rail-notice" class="rail-notice" hidden></p>
+        </aside>
+
+        <aside id="inspector" aria-label="Selection and display">
+          <div class="rail-body">
+            <div class="tab-group" data-tab="region">
+              <p id="label-selected" class="section-label">Selected</p>
+              <div class="panel-body">
+                <h2 id="selected-name">No region selected</h2>
+                <p id="selected-hint">Click the model, or search on the left.</p>
+                <dl id="selected-facts" hidden>
+                  <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
+                  <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
+                  <dt id="fact-metric-label">Surface area</dt>
+                  <dd id="fact-metric" class="measure"></dd>
+                  <dt id="fact-source-label">Source label</dt><dd id="fact-source" class="measure"></dd>
+                </dl>
+                <div class="actions">
+                  <button id="focus" type="button" disabled>Focus</button>
+                  <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
+                </div>
+              </div>
+
+              <section id="clinical-region" hidden></section>
+              <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
+            </div>
+
+            <div class="tab-group" data-tab="cuts">
+              <p id="label-cuts" class="section-label">Anatomical cuts</p>
+              <div class="panel-body section-controls">
+                <label id="cut-mode-label" for="cut-mode">Cutting plane</label>
+                <select id="cut-mode">
+                  <option value="off">Full brain</option>
+                  <option value="sagittal">Sagittal</option>
+                  <option value="coronal">Coronal</option>
+                  <option value="axial">Axial / transverse</option>
+                  <option value="oblique">Oblique</option>
+                </select>
+                <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
+                <select id="cut-atlas"></select>
+                <label id="cut-axis" for="cut-position">Position (mm)</label>
+                <div class="cut-position-row">
+                  <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
+                  <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
+                </div>
+                <div id="cut-oblique" hidden>
+                  <label id="cut-tilt-label" for="cut-tilt">Tilt from axial</label>
+                  <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
+                  <label id="cut-azimuth-label" for="cut-azimuth">Rotation around superior axis</label>
+                  <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
+                  <output id="cut-angles" class="measure"></output>
+                </div>
+                <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
+                <div class="actions">
+                  <button id="cut-midline" type="button">Midsagittal</button>
+                  <button id="cut-face-view" type="button" disabled>Face cut</button>
+                </div>
+                <button id="mpr-open" type="button">Open linked MRI slices</button>
+                <p id="cut-status" role="status">Full brain · no cut</p>
+              </div>
+            </div>
+
+            <div class="tab-group" data-tab="display">
+              <p id="label-display" class="section-label">Display</p>
+              <div class="panel-body">
+                <label id="display-hemisphere-label" for="hemisphere">Hemisphere</label>
+                <label id="detail-label" for="detail">Internal anatomy</label>
+                <select id="detail"></select>
+                <label id="hemisphere-label-el" for="hemisphere">Hemisphere</label>
+                <select id="hemisphere">
+                  <option value="both">Both</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+
+                <label class="check">
+                  <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
+                </label>
+
+                <label for="opacity">
+                  <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
+                </label>
+                <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+
+                <label class="check">
+                  <input id="atlas-colors" type="checkbox" /> <span id="atlas-colors-text">Atlas colours</span>
+                </label>
+
+                <button id="reset" type="button">Reset view</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
 
       <footer id="colophon">
         <span id="colophon-text">FreeSurfer reference anatomy · not clinical anatomy</span>
@@ -171,6 +217,12 @@
           <p id="mpr-subtitle">Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
         <button id="mpr-close" type="button">Close slices</button>
       </div>
+      <!--
+        Three sections stacked at 375px would be a very long scroll with the
+        crosshair off screen. On a phone one plane is shown at a time and this
+        switches between them; it is hidden where all three fit side by side.
+      -->
+      <div id="mpr-planes" class="segmented" role="group" aria-label="Section plane" hidden></div>
       <div id="mpr-grid"></div>
       <p id="mpr-readout" class="measure" role="status"></p>
       <div class="mpr-display">

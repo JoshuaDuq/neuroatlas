@@ -12,7 +12,7 @@ const VIEW_KEYS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superio
  * from near-black crevices to near-white speculars, so no fixed text colour
  * would be legible against all of it.
  */
-export function createViewportChrome({ onView, onRetry }) {
+export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
   const orientation = document.getElementById('orientation');
   const edges = Object.fromEntries(
     [...orientation.children].map(node => [node.dataset.edge, node]));
@@ -21,6 +21,14 @@ export function createViewportChrome({ onView, onRetry }) {
   const barRule = bar.querySelector('.scale-bar-rule');
   const barText = bar.querySelector('.measure');
   const hover = document.getElementById('hover-label');
+  const host = document.getElementById('viewport');
+  const reticle = document.getElementById('reticle');
+  const readout = document.getElementById('reticle-readout');
+  const readoutName = document.createElement('span');
+  readoutName.className = 'reticle-readout-name';
+  const readoutAction = document.createElement('span');
+  readoutAction.className = 'reticle-readout-action';
+  readout.append(readoutName, readoutAction);
   const stage = document.getElementById('stage');
   const stageMessage = document.getElementById('stage-message');
   const stageProgress = document.getElementById('stage-progress');
@@ -28,6 +36,13 @@ export function createViewportChrome({ onView, onRetry }) {
   const retry = document.getElementById('stage-retry');
   let currentLang = 'en';
   let lastCameraArgs = null;
+  let reticleRegion = null;
+  let reticleEnabled = false;
+
+  const onReadout = () => {
+    if (reticleRegion) onReticleSelect?.(reticleRegion.id);
+  };
+  readout.addEventListener('click', onReadout);
 
   const buttons = VIEW_KEYS.map(view => {
     const button = document.createElement('button');
@@ -41,6 +56,49 @@ export function createViewportChrome({ onView, onRetry }) {
   retry.addEventListener('click', onRetry);
 
   return {
+    /**
+     * Place every overlay against the rectangle the reader can actually see.
+     *
+     * On a phone the sheet covers the lower canvas; markers pinned to the
+     * canvas edge would sit behind it, and the inferior marker would be
+     * invisible exactly when a reader needs to know which way is down.
+     */
+    setViewport(rect) {
+      const { width, height } = host.getBoundingClientRect();
+      if (!width || !height || !rect) return;
+      host.style.setProperty('--vis-top', `${Math.round(rect.y)}px`);
+      host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
+      host.style.setProperty('--vis-right', `${Math.round(width - rect.x - rect.width)}px`);
+      host.style.setProperty('--vis-bottom', `${Math.round(height - rect.y - rect.height)}px`);
+      host.style.setProperty('--vis-cx', `${Math.round(rect.x + rect.width / 2)}px`);
+      host.style.setProperty('--vis-cy', `${Math.round(rect.y + rect.height / 2)}px`);
+    },
+
+    /**
+     * Turn the crosshair on for touch. It replaces hover rather than adding a
+     * second way to select: a finger has no hover, and a Destrieux sulcal
+     * band is narrower than the finger that would have to land on it.
+     */
+    setReticle(enabled) {
+      reticleEnabled = enabled;
+      reticle.hidden = !enabled;
+      readout.hidden = !enabled;
+      if (!enabled) reticleRegion = null;
+    },
+
+    /** What the crosshair is over now. Called on every camera change. */
+    showReticleRegion(region, label) {
+      if (!reticleEnabled) return;
+      reticleRegion = region;
+      const copy = t(currentLang, 'viewport');
+      readoutName.textContent = label ?? copy.reticleEmpty;
+      readoutAction.textContent = region ? copy.reticleAction : '';
+      readout.dataset.empty = String(!region);
+      readout.disabled = !region;
+      readout.setAttribute('aria-label',
+        region ? `${copy.reticleAria}: ${label}` : copy.reticleEmpty);
+    },
+
     update(state) {
       currentLang = state.lang;
       const i18nViewport = t(state.lang, 'viewport');
@@ -54,6 +112,10 @@ export function createViewportChrome({ onView, onRetry }) {
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       if (!ready) bar.hidden = true;
+      if (reticleEnabled) {
+        reticle.hidden = !ready;
+        readout.hidden = !ready;
+      }
 
       if (lastCameraArgs) {
         const labels = edgeLabels(lastCameraArgs.camera, currentLang);
@@ -115,6 +177,8 @@ export function createViewportChrome({ onView, onRetry }) {
 
     dispose() {
       retry.removeEventListener('click', onRetry);
+      readout.removeEventListener('click', onReadout);
+      readout.replaceChildren();
       views.replaceChildren();
     },
   };

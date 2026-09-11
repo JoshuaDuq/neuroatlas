@@ -9,6 +9,8 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
+import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
+import { pixelRatioCap } from './device.js';
 
 const TRANSITION_MS = 240;
 
@@ -33,7 +35,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
   const renderer = new WebGLRenderer({ antialias: true });
   renderer.localClippingEnabled = true;
-  renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio, 2));
+  renderer.setPixelRatio(pixelRatioCap());
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label',
@@ -47,6 +49,15 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
   controls.listenToKeyEvents(renderer.domElement);
+
+  /*
+   * How much of the canvas the interface is covering. On a phone the sheet
+   * sits over the canvas rather than beside it, so the renderer is told what
+   * the reader can see instead of being resized: resizing would reallocate
+   * the composer target, the occlusion pass and both outline passes on every
+   * frame of a drag.
+   */
+  let chromeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 
   const renderTarget = new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 });
   const composer = new EffectComposer(renderer, renderTarget);
@@ -101,12 +112,41 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     invalidate();
   }
 
+  /** The canvas rectangle the interface leaves uncovered. */
+  function measureVisible() {
+    const { width, height } = host.getBoundingClientRect();
+    return visibleRect({ width, height }, chromeInsets);
+  }
+
+  /**
+   * Slide the frustum so the anatomy sits in the middle of what is visible.
+   *
+   * The camera is not moved: moving it would drag the orbit target off the
+   * anatomy and orbiting would swing the model around a point beside it.
+   */
+  function applyViewOffset() {
+    const { width, height } = host.getBoundingClientRect();
+    if (!width || !height) return;
+    const offset = viewOffset({ width, height }, visibleRect({ width, height }, chromeInsets));
+    if (offset) {
+      camera.setViewOffset(offset.fullWidth, offset.fullHeight,
+        offset.offsetX, offset.offsetY, offset.width, offset.height);
+    } else if (camera.view?.enabled) {
+      camera.clearViewOffset();
+    }
+    camera.updateProjectionMatrix();
+    invalidate();
+  }
+
   function setSize() {
     const { width, height } = host.getBoundingClientRect();
     if (!width || !height) return;
+    const ratio = pixelRatioCap();
+    if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
     renderer.setSize(width, height);
     composer.setSize(width, height);
     camera.aspect = width / height;
+    applyViewOffset();
     camera.updateProjectionMatrix();
     invalidate();
     // The scale bar is derived from the viewport height, so it is stale the
@@ -202,6 +242,30 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     scene, camera, controls,
     domElement: renderer.domElement,
     applyTheme, setAppearance, setSize, setOutlined, moveTo, invalidate,
+
+    /**
+     * Declare how much of the canvas the interface covers. Reported upward as
+     * a resize, because everything derived from the viewport — framing, the
+     * reticle, the markers, the presets — is stale the moment it changes.
+     */
+    setChromeInsets(next) {
+      const merged = { top: 0, right: 0, bottom: 0, left: 0, ...next };
+      const same = Object.keys(merged).every(key => merged[key] === chromeInsets[key]);
+      if (same) return;
+      chromeInsets = merged;
+      applyViewOffset();
+      onResize?.();
+    },
+
+    /** The canvas rectangle the interface leaves uncovered, in CSS pixels. */
+    get visibleRect() { return measureVisible(); },
+
+    /** The fraction of each frustum axis that rectangle spans, for framing. */
+    get viewportFit() {
+      const { width, height } = host.getBoundingClientRect();
+      return fitScale({ width, height }, visibleRect({ width, height }, chromeInsets));
+    },
+
     set sectionsProbe(probe) { hasSections = probe; },
     set transparencyProbe(probe) { hasTransparency = probe; },
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
@@ -223,8 +287,14 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   };
 }
 
-/** Where a camera would sit to frame these bounds, without moving it there. */
-export function planFraming(camera, controls, bounds, direction, frameTo) {
+/**
+ * Where a camera would sit to frame these bounds, without moving it there.
+ *
+ * `fit` is the fraction of each frustum axis the interface leaves uncovered,
+ * from `scene.viewportFit`. It reaches `frameTo` unchanged, so framing fits
+ * the anatomy to what the reader can see rather than to the whole canvas.
+ */
+export function planFraming(camera, controls, bounds, direction, frameTo, fit) {
   const start = {
     position: camera.position.clone(),
     target: controls.target.clone(),
@@ -233,7 +303,7 @@ export function planFraming(camera, controls, bounds, direction, frameTo) {
     minDistance: controls.minDistance,
     maxDistance: controls.maxDistance,
   };
-  const target = frameTo(camera, controls, bounds, direction);
+  const target = frameTo(camera, controls, bounds, direction, fit);
   const plan = {
     position: camera.position.clone(),
     target: target.clone(),

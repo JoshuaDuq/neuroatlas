@@ -1,0 +1,286 @@
+/*
+ * The phone shell.
+ *
+ * One rule governs it: the anatomy is the product, so the canvas is full
+ * bleed and the interface sits over it rather than beside it. The sheet
+ * rests at three heights; the renderer is told how much it covers, and
+ * framing, the reticle and the viewport chrome all read that one rectangle.
+ *
+ * The query matches a phone in either orientation. A landscape phone is 812
+ * by 375, so a max-width alone would hand it the desktop layout — the shape
+ * it has least room for. This is the literal twin of PHONE_QUERY in
+ * render/device.js; the two are kept in step by hand.
+ */
+@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+  #app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100dvh;
+    min-height: 0;
+    /* The shell is a fixed frame: nothing scrolls but the panel inside the
+       sheet, so the canvas never fights a document scroll and the URL bar
+       never collapses mid-gesture. */
+    overflow: hidden;
+  }
+
+  #masthead {
+    grid-column: 1;
+    grid-row: 1;
+    flex-wrap: nowrap;
+    height: auto;
+    gap: var(--space-3);
+    padding: max(var(--space-2), env(safe-area-inset-top)) var(--space-3) var(--space-2);
+    padding-left: max(var(--space-3), env(safe-area-inset-left));
+    padding-right: max(var(--space-3), env(safe-area-inset-right));
+  }
+  .brand { font-size: var(--text-ui); margin-right: 0; flex: none; }
+  #atlas-switch { min-width: 0; flex: 1; }
+  #atlas-switch button {
+    min-width: 0;
+    flex: 1;
+    padding: 0 var(--space-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The settings collapse behind one button; the panel becomes a popup. */
+  #masthead-more { display: block; flex: none; width: var(--control-height); padding: 0; }
+  #masthead-menu {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% - var(--space-1));
+    right: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    min-width: 180px;
+    padding: var(--space-3);
+    background: var(--surface-base);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  }
+  #masthead-menu[hidden] { display: none !important; }
+  #masthead-menu #region-count { color: var(--text-secondary); }
+  #masthead { position: relative; }
+
+  /* The colophon's disclaimer moves into the sheet, where it stays visible. */
+  #colophon { display: none; }
+
+  /* ---- viewport ------------------------------------------------------- */
+  #viewport {
+    grid-column: 1;
+    grid-row: 2;
+    /* The sheet overlays this, so the canvas keeps the whole cell. */
+  }
+
+  /* ---- the sheet ------------------------------------------------------ */
+  #sheet {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--sheet-height, 132px);
+    background: var(--surface-base);
+    border-top: 1px solid var(--border-subtle);
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    box-shadow: 0 -6px 24px rgb(0 0 0 / 0.16);
+    overscroll-behavior: contain;
+  }
+  /* Only a settled sheet animates; a dragged one tracks the finger exactly. */
+  #sheet[data-dragging="false"] { transition: height var(--camera-transition) ease; }
+
+  .sheet-grip {
+    display: block;
+    flex: none;
+    /* The grip is the drag surface; the panel below it scrolls instead. */
+    touch-action: none;
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+
+  #sheet-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .sheet-handle-bar {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-control);
+  }
+
+  .sheet-selection {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    height: var(--row-height);
+    padding: 0 var(--space-4);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    text-align: left;
+  }
+  .sheet-selection-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .sheet-selection-side { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
+  .sheet-selection-chevron { color: var(--text-tertiary); }
+
+  .sheet-tabs {
+    display: flex;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .sheet-tabs button {
+    flex: 1;
+    min-width: 0;
+    height: var(--control-height);
+    padding: 0 var(--space-1);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    font-size: var(--text-ui);
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sheet-tabs button[aria-selected="true"] {
+    color: var(--accent);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+
+  /*
+   * "Not clinical anatomy" is a safety statement, so it is not allowed into
+   * the overflow menu with the settings. It stays under the tab bar, visible
+   * at every sheet height including the lowest.
+   */
+  .sheet-disclaimer {
+    padding: var(--space-1) var(--space-4);
+    font-size: var(--text-micro);
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---- panels inside the sheet ---------------------------------------- */
+  #navigator, #inspector {
+    grid-column: auto;
+    grid-row: auto;
+    flex: 1;
+    min-height: 0;
+    border: 0;
+    background: none;
+  }
+  #navigator[hidden], #inspector[hidden] { display: none !important; }
+  #inspector > .rail-body, #navigator .rail-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+  /* Tab groups are invisible above this breakpoint and sectioning here. */
+  .tab-group[hidden] { display: none !important; }
+  /* The first visible label in a panel has nothing above it to rule off. */
+  .sheet-panel-first > .section-label { border-top: 0; }
+
+  /* ---- viewport chrome ------------------------------------------------ */
+  /* Presets scroll rather than wrap, and clear the sheet. */
+  .views {
+    left: calc(var(--vis-left) + var(--space-3));
+    right: calc(var(--vis-right) + var(--space-3));
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .views::-webkit-scrollbar { display: none; }
+  .hover-label { display: none; }
+
+  #reticle { display: block; }
+  .reticle-readout { max-width: min(280px, calc(100% - var(--space-8))); }
+
+  /* ---- dialogs -------------------------------------------------------- */
+  /* A phone has no room for a dialog inset from the screen. */
+  #mpr-dialog, #shortcuts {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    padding: var(--space-4);
+    padding-top: max(var(--space-4), env(safe-area-inset-top));
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+  #mpr-planes { display: flex; margin-bottom: var(--space-3); }
+  #mpr-planes button { flex: 1; min-width: 0; }
+  #mpr-grid article[hidden] { display: none !important; }
+  .mpr-header { position: sticky; top: 0; background: var(--surface-base); }
+  #shortcuts-list { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  #shortcuts-list dt { margin-top: var(--space-2); }
+}
+
+/*
+ * Landscape: a sheet at the foot of a 375px-tall screen would leave the
+ * anatomy a strip, so it moves to the side. The shell is the same sheet with
+ * the same rests, measured across instead of up; `effective-viewport.js`
+ * works in rectangles for exactly this reason.
+ */
+@media (max-height: 480px) and (orientation: landscape) {
+  #sheet {
+    /* Set from the viewport's own offset: a side sheet anchored at zero would
+       cover the wordmark and the atlas switch. */
+    top: var(--sheet-top, 0px);
+    right: auto;
+    bottom: 0;
+    height: auto;
+    width: var(--sheet-width, 56px);
+    border-top: 0;
+    border-right: 1px solid var(--border-subtle);
+    border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
+    box-shadow: 6px 0 24px rgb(0 0 0 / 0.16);
+    padding-left: max(0px, env(safe-area-inset-left));
+  }
+  #sheet[data-dragging="false"] { transition: width var(--camera-transition) ease; }
+
+  #sheet-handle { width: 100%; height: 20px; }
+  .sheet-handle-bar { width: 28px; }
+  .sheet-tabs { flex-wrap: wrap; }
+  .sheet-tabs button { flex: 1 0 50%; }
+  .sheet-disclaimer { white-space: normal; }
+  #masthead { padding-left: max(var(--space-3), env(safe-area-inset-left)); }
+}
+
+/*
+ * A finger is not a cursor. Rows and controls grow to the platform's minimum
+ * target wherever the pointer is coarse, including tablets. Everything in
+ * components.css is sized from these two tokens, so this is the whole change.
+ */
+@media (pointer: coarse) {
+  :root {
+    --row-height: 44px;
+    --control-height: 44px;
+  }
+  .check input { width: 20px; height: 20px; }
+  .cut-position-row input[type="number"] { height: var(--control-height); width: 88px; }
+  /* A 16px field is the threshold below which iOS zooms the page on focus. */
+  input[type="search"], input[type="number"], select { font-size: 1rem; }
+  input[type="range"] { height: 32px; }
+}

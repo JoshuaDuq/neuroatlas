@@ -10,6 +10,20 @@
   min-height: 560px;
 }
 
+/*
+ * Placed explicitly rather than flowed. Auto-placement made the layout a
+ * function of source order, and when the rails stacked below 1000px the tall
+ * row landed on whichever element happened to come second — the navigator —
+ * leaving the viewport 188px of a 812px screen. Naming the cells means moving
+ * markup cannot silently move the anatomy again.
+ */
+#navigator { grid-column: 1; grid-row: 2; }
+#viewport  { grid-column: 2; grid-row: 2; }
+#inspector { grid-column: 3; grid-row: 2; }
+
+/* The rails are grid items in their own right until the phone layout claims them. */
+#sheet { display: contents; }
+
 #masthead {
   grid-column: 1 / -1;
   display: flex;
@@ -78,18 +92,37 @@
 }
 #colophon a { color: var(--accent); text-underline-offset: 2px; }
 
-/* Below this width the rails stack under the viewport as plain panels. */
+/*
+ * Below this width the rails stack under the viewport as plain panels. The
+ * viewport is named as the tall row so it keeps the screen it deserves; the
+ * rails follow it rather than pushing it under the fold.
+ */
 @media (max-width: 1000px) {
   #app {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: var(--header-height) 58dvh auto auto var(--footer-height);
+    grid-template-rows: auto 58dvh auto auto var(--footer-height);
     height: auto;
   }
+  #viewport  { grid-column: 1; grid-row: 2; }
+  #navigator { grid-column: 1; grid-row: 3; }
+  #inspector { grid-column: 1; grid-row: 4; }
   #navigator, #inspector {
     border-left: 0;
     border-right: 0;
     border-top: 1px solid var(--border-subtle);
   }
   .rail-body { overflow-y: visible; }
-  #masthead { flex-wrap: wrap; gap: var(--space-3); }
+  /*
+   * The masthead is free to grow here. It was pinned to --header-height while
+   * its contents wrapped, so the wrapped row overflowed and was painted over
+   * by the panel below it: the theme toggle, the region count and the
+   * shortcuts button could not be tapped at all.
+   */
+  #masthead {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    height: auto;
+    min-height: var(--header-height);
+    padding: var(--space-2) var(--space-4);
+  }
 }
