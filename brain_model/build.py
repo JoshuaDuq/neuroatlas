@@ -9,6 +9,7 @@ from .export import add_region, compact_region, write_scene
 from .geometry import extract_structure, partition_surface
 from .shading import structure_normals
 from .sources import read_color_table, read_config, verify_sources, write_json
+from .tissue_labels import export_tissue_labels
 from .volumes import export_volumes
 
 HEMISPHERES = {"lh": "left", "rh": "right"}
@@ -141,6 +142,7 @@ def main():
     export_volumes(config)
     manifest = {
         "volumes": {"file": "volumes.json"},
+        "tissues": {"file": "tissue-labels.json"},
         "schema_version": 1,
         "template": "FreeSurfer fsaverage (FreeSurfer 6)",
         "coordinate_system": {
@@ -170,6 +172,7 @@ def main():
         ],
         "provenance": provenance,
     }
+    export_tissue_labels(config, manifest)
     write_json(config["output_directory"] / "manifest.json", manifest)
     print(f"Exported {len(regions)} meshes including explicit non-region surfaces.")
 

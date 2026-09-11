@@ -2,6 +2,9 @@
   "volumes": {
     "file": "volumes.json"
   },
+  "tissues": {
+    "file": "tissue-labels.json"
+  },
   "schema_version": 1,
   "template": "FreeSurfer fsaverage (FreeSurfer 6)",
   "coordinate_system": {
@@ -8023,6 +8026,20 @@
         "path": "data/FreeSurferColorLUT.txt",
         "sha256": "06eaf85bfe2e1c433d2398b1cbe715e9c68fea03b23679d3c60d134237169ffb",
         "url": "https://github.com/mne-tools/mne-python/blob/v1.11.0/mne/data/FreeSurferColorLUT.txt"
+      },
+      {
+        "path": "data/fsaverage/mri/aparc.a2009s+aseg.mgz",
+        "sha256": "ddf4caf1745af87d17b865f03e816adfc8875ad3d457e529697beb350ea4338e",
+        "url": "https://osf.io/download/3bxqt?version=2",
+        "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+        "archive_member": "fsaverage/mri/aparc.a2009s+aseg.mgz"
+      },
+      {
+        "path": "data/fsaverage/mri/ribbon.mgz",
+        "sha256": "b660c527ca4cf4b19d41c114c31a0af497f12f60f62a7b20953e7fe7a93f3452",
+        "url": "https://osf.io/download/3bxqt?version=2",
+        "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
+        "archive_member": "fsaverage/mri/ribbon.mgz"
       }
     ]
   }

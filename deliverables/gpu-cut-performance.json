@@ -1,0 +1,63 @@
+{
+  "environment": "Local headless Google Chrome, 1512 × 1000, full-resolution Destrieux cortex",
+  "notes": "Main-thread timing includes input dispatch, cut transform, clipping and UI updates; animation-frame intervals include browser rendering and scheduling. These are local measurements, not a cross-device FPS guarantee.",
+  "measurements": [
+    {
+      "mode": "coronal",
+      "samples": 100,
+      "main_thread_input_update": {
+        "median_ms": 0.29999998211860657,
+        "p95_ms": 0.5,
+        "max_ms": 0.5999999940395355
+      },
+      "animation_frame_interval": {
+        "median_ms": 16.699999999999818,
+        "p95_ms": 16.799999999999955,
+        "max_ms": 16.800000000000182
+      }
+    },
+    {
+      "mode": "sagittal",
+      "samples": 100,
+      "main_thread_input_update": {
+        "median_ms": 0.4000000059604645,
+        "p95_ms": 0.5999999940395355,
+        "max_ms": 0.699999988079071
+      },
+      "animation_frame_interval": {
+        "median_ms": 16.699999999999818,
+        "p95_ms": 16.700000000000273,
+        "max_ms": 16.800000000000182
+      }
+    },
+    {
+      "mode": "axial",
+      "samples": 100,
+      "main_thread_input_update": {
+        "median_ms": 0.19999998807907104,
+        "p95_ms": 0.5,
+        "max_ms": 0.6000000238418579
+      },
+      "animation_frame_interval": {
+        "median_ms": 16.699999999999818,
+        "p95_ms": 16.799999999999727,
+        "max_ms": 16.800000000000182
+      }
+    },
+    {
+      "mode": "oblique",
+      "samples": 100,
+      "main_thread_input_update": {
+        "median_ms": 0.19999998807907104,
+        "p95_ms": 0.30000001192092896,
+        "max_ms": 0.30000001192092896
+      },
+      "animation_frame_interval": {
+        "median_ms": 16.699999999999818,
+        "p95_ms": 16.700000000000728,
+        "max_ms": 16.800000000000182
+      }
+    }
+  ],
+  "errors": []
+}
