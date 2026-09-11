@@ -1,4 +1,5 @@
 import { Matrix4 } from 'three';
+import { fetchPublished } from '../model/published-assets.js';
 
 /** Native array, x-fastest; inverse affine maps source RAS to voxel centers. */
 export class Volume {
@@ -48,7 +49,7 @@ async function digest(buffer) {
 }
 
 export async function loadVolume(metadata, baseUrl) {
-  const response = await fetch(new URL(metadata.file, baseUrl));
+  const response = await fetchPublished(new URL(metadata.file, baseUrl));
   if (!response.ok) throw new Error(`Volume download failed: HTTP ${response.status}`);
   const compressed = await response.arrayBuffer();
   if (await digest(compressed) !== metadata.sha256) throw new Error('Volume file checksum mismatch.');
@@ -68,7 +69,7 @@ export async function loadVolume(metadata, baseUrl) {
 }
 
 export async function loadVolumes(url) {
-  const response = await fetch(url);
+  const response = await fetchPublished(url);
   if (!response.ok) throw new Error(`Volume metadata failed: HTTP ${response.status}`);
   const metadata = await response.json();
   if (metadata.schema_version !== 1) throw new Error('Unsupported volume schema.');
