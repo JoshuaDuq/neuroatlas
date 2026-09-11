@@ -5,18 +5,27 @@ viewer. The user owns the eventual website interface.
 
 ## Scientific contract
 
-- FreeSurfer fsaverage, full native resolution: 163,842 vertices per hemisphere.
+- One FreeSurfer reconstruction at full native resolution, named by
+  `config/model.yaml`. As published that is the individual `bert`, at 133,103
+  (left) and 133,819 (right) pial vertices; the averaged `fsaverage` template is
+  declared alongside it and builds from the same code with no edit to it.
+  Whichever is selected, the reconstruction must be complete — a candidate
+  missing sulc, a Destrieux annotation or a conformed segmentation is refused
+  rather than worked around.
 - Preserve pial coordinates and triangle geometry; no smoothing, decimation,
   artistic deformation, or synthetic anatomy.
 - Separate Destrieux anatomical and HCP-MMP1.0 multimodal cortical layers.
-  HCP uses the published Mills projection to fsaverage, not native HCP geometry.
+  Destrieux is the selected brain's own FreeSurfer parcellation. HCP is the
+  published Mills projection to fsaverage, resampled onto a subject by nearest
+  vertex in FreeSurfer's registered spheres when that subject is not fsaverage,
+  and is native HCP geometry in neither case.
 - Region labels remain discrete. Mixed-label triangles are partitioned into
   barycentric vertex cells using edge midpoints and the face centroid. These
   cells are a documented visualization convention, not measured subvertex
   anatomical boundaries. The partition preserves the complete source surface.
 - Keep unknown/medial-wall faces explicitly identified as non-regions.
-- Extract internal structures, cerebellum and brainstem from the matching
-  fsaverage aseg volume at its actual voxel resolution, using marching cubes
+- Extract internal structures, cerebellum and brainstem from the same subject's
+  aseg volume at its actual voxel resolution, using marching cubes
   at 0.5 and its voxel-to-surface-RAS transform. No invented subnuclei.
 - glTF coordinates in meters: (x, y, z) = (R, S, -A) / 1000. This is a proper
   rotation and scale; origin unchanged. Never describe these as MNI152.
@@ -42,6 +51,7 @@ Integration validation compares every exported cortical triangle against its
 source parent, bounds numerical export error, and accounts for all source
 labels. Visually inspect the assembled model and test picking in a browser.
 
-These checks establish conversion fidelity, not clinical accuracy or exact
-individual anatomy. fsaverage is a reference template. HCP projection and
-voxel segmentation have uncertainty that is not removed by dense meshing.
+These checks establish conversion fidelity, not clinical accuracy. The anatomy
+is one published individual's, so it is exact for that person and nobody else.
+The HCP projection, the NextBrain warp and the voxel segmentation each carry
+uncertainty that dense meshing does not remove.

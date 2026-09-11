@@ -3,11 +3,16 @@
 import nibabel as nib
 import numpy as np
 import trimesh
-from nibabel.freesurfer.io import read_annot, read_geometry
+from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
 from . import nextbrain
 from .export import add_region, compact_region, write_scene
-from .geometry import extract_structure, partition_surface
+from .geometry import (
+    extract_structure,
+    partition_edges,
+    partition_surface,
+    partition_vertex_field,
+)
 from .shading import structure_normals
 from .sources import read_color_table, read_config, verify_sources, write_json
 from .tissue_labels import export_tissue_labels
@@ -30,18 +35,36 @@ def cortical_region(atlas, hemisphere, label, name):
     }
 
 
+def read_native_surface(source, prefix):
+    """The subject's own pial surface, with its native topology asserted.
+
+    fsaverage offered one constant vertex count to compare against; an
+    individual reconstruction offers none, so the check moves to the invariant
+    FreeSurfer's topology correction actually guarantees: a closed genus-zero
+    triangulation. That catches a partial or torn surface, not a decimated one.
+    Which reconstruction this is stays pinned by the checksums `verify_sources`
+    reads, not by a vertex count written here.
+    """
+    vertices, faces = read_geometry(source / "surf" / f"{prefix}.pial")
+    edges, _ = partition_edges(faces)
+    if len(vertices) - len(edges) + len(faces) != 2:
+        raise ValueError(f"{prefix}.pial is not a closed genus-zero native surface")
+    return vertices, faces
+
+
 def build_cortex(config, atlas):
     scene = trimesh.Scene()
     regions = []
     for prefix, hemisphere in HEMISPHERES.items():
         source = config["source_directory"]
-        vertices, faces = read_geometry(source / "surf" / f"{prefix}.pial")
+        vertices, faces = read_native_surface(source, prefix)
         labels, colors, names = read_annot(
             source / "label" / f"{prefix}.{atlas['annotation']}.annot"
         )
-        if len(vertices) != 163842 or len(faces) != 327680:
-            raise ValueError("Expected full-resolution native fsaverage topology")
         partition = partition_surface(vertices, faces, labels)
+        sulcal_depth = partition_vertex_field(
+            faces, labels, read_morph_data(source / "surf" / f"{prefix}.sulc")
+        )
         for label in np.unique(labels):
             name = "Unknown" if label == -1 else names[label].decode()
             color = [128, 128, 128] if label == -1 else colors[label, :3].tolist()
@@ -52,6 +75,8 @@ def build_cortex(config, atlas):
             region["source_vertex_count"] = int(np.count_nonzero(labels == label))
             geometry = compact_region(partition, label)
             mesh = add_region(scene, *geometry, region, color)
+            indices = np.unique(partition.faces[partition.labels == label])
+            mesh.vertex_attributes["_SULC"] = sulcal_depth[indices].astype(np.float32)
             region.update(
                 vertex_count=len(mesh.vertices),
                 triangle_count=len(mesh.faces),
@@ -69,6 +94,12 @@ def build_cortex(config, atlas):
         **atlas,
         "file": filename,
         "region_count": sum(r["kind"] == "cortex" for r in regions),
+        "surface_shading": {
+            "attribute": "_SULC",
+            "source": "FreeSurfer lh.sulc / rh.sulc",
+            "interpolation": "Linear on barycentric atlas partitions",
+            "meaning": "Sulcal-depth morphometry; positive values mark sulci",
+        },
     }, regions
 
 
@@ -208,9 +239,65 @@ def cut_atlases(config):
     return atlases
 
 
+def anatomy_record(config):
+    """What brain this is, taken from the reconstruction rather than restated.
+
+    The recon version is read from the subject's own build stamp rather than
+    from the config: a version written by hand could drift away from the files
+    it describes, and the stamp is the only copy the reconstruction itself
+    vouches for. Not every published reconstruction ships one, so its absence is
+    reported as absent instead of guessed at.
+
+    The fields are listed rather than spread, because the anatomy declaration
+    also carries local paths and unpacking instructions that are nobody's
+    business once the model is built.
+    """
+    anatomy = config["anatomy"]
+    stamp = config["source_directory"] / "scripts/build-stamp.txt"
+    return {
+        "id": anatomy["id"],
+        "subject": anatomy["subject"],
+        "display_name": anatomy["display_name"],
+        "label": anatomy["label"],
+        "individual": anatomy["individual"],
+        "source_url": anatomy["source_url"],
+        "reconstruction": stamp.read_text().strip() if stamp.exists() else None,
+        "hcp_projected_from": anatomy.get("project_hcp_from"),
+    }
+
+
+def anatomy_limitations(config):
+    """What is true of this brain in particular, rather than of the pipeline.
+
+    Derived from the anatomy's own declaration rather than written out per
+    brain, because a published limitation that quietly describes a different
+    model than the one built is worse than no limitation at all.
+    """
+    if config["anatomy"]["individual"]:
+        limitations = [
+            "One published individual's anatomy, not an averaged template: it is nobody else's brain, and no part of it is clinically validated.",
+            "Destrieux labels are this subject's own FreeSurfer parcellation.",
+        ]
+    else:
+        limitations = [
+            "An averaged reference template: it is nobody's anatomy, and no part of it is clinically validated.",
+            "Destrieux labels are the template parcellation; no individual brain was measured to place them.",
+        ]
+    if config["anatomy"].get("project_hcp_from"):
+        limitations.extend([
+            "HCP-MMP is the published Mills fsaverage projection, resampled again onto this brain through FreeSurfer's registered spheres: two registrations, and native HCP space is neither of them.",
+            "Labels projected between brains are bounded by that registration, not by the accuracy of the published parcellation.",
+        ])
+    else:
+        limitations.append(
+            "HCP-MMP is the published Mills fsaverage projection, not native HCP space."
+        )
+    return limitations
+
+
 def main():
     config = read_config()
-    provenance = verify_sources()
+    provenance = verify_sources(config)
     atlas_metadata = []
     regions = []
     for atlas in config["atlases"]:
@@ -237,7 +324,8 @@ def main():
         "volumes": {"file": "volumes.json"},
         "tissues": {"file": "tissue-labels.json"},
         "schema_version": 1,
-        "template": "FreeSurfer fsaverage (FreeSurfer 6)",
+        "appearance": config["appearance"],
+        "anatomy": anatomy_record(config),
         "coordinate_system": {
             "units": "meters",
             "x": "right",
@@ -257,15 +345,14 @@ def main():
         "regions": regions,
         "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
         "limitations": [
-            "Reference template anatomy; not individual anatomy or clinical validation.",
+            *anatomy_limitations(config),
             "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
-            "HCP-MMP is the published Mills fsaverage projection, not native HCP space.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
             "Internal structures use an unsmoothed 1 mm label volume; fine nuclei and cerebellar folia are unresolved.",
             "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
             "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
             "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",
-            "Some fine-level nuclei are fragmented by that warp and their surfaces are not closed; validation reports which, and no mesh volume is claimed for them.",
+            "Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; validation counts those edges, and the volume each surface encloses stays definite.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             "Cortical regions are surface patches, not closed anatomical solids.",
         ],

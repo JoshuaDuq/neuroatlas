@@ -1,13 +1,114 @@
 # NeuroAtlas model
 
-A source-faithful, selectable brain model with GPU-rendered labelled tissue cuts and an optional MRI reference. The full-resolution FreeSurfer fsaverage cortex is preserved; atlas boundaries divide existing triangles without moving their anatomical surface.
+A source-faithful, selectable brain model with GPU-rendered labelled tissue cuts and an optional MRI reference. The anatomy is one person's: FreeSurfer's published `bert` reconstruction at full native resolution, not an averaged template. Atlas boundaries divide existing triangles without moving their anatomical surface.
 
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
-- **Internal anatomy:** 35 structures from the same fsaverage segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
-- **Histological detail:** 487 NextBrain regions. 309 of them are solid nuclei in a second internal-anatomy detail level; the remaining 178 stay cut labels. Optional.
+- **Internal anatomy:** 35 structures from the same subject's segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
+- **Histological detail:** 483 NextBrain regions. 298 of them are solid nuclei in a second internal-anatomy detail level; the remaining 185 stay cut labels. Optional.
 - **Cuts:** sagittal/parasagittal, midsagittal, coronal, axial/transverse, and arbitrary oblique orientation. Reverse the retained side and move the plane numerically. A persistent GPU plane samples native 3D tissue labels at the cut; moving it does not rebuild geometry or upload another slice image.
 - **MRI:** three linked orthogonal sections, shared crosshair, native label readout, contrast window/center, segmentation overlay and PNG export.
+
+## Whose brain this is
+
+As published, FreeSurfer's `bert` subject: one person's T1 scan and the reconstruction
+FreeSurfer distributes with it as its own worked example. It has an individual's
+folding pattern, an individual's ventricles and an individual's asymmetries, and
+it is nobody else's brain. `scripts/prepare_subject.py` extracts it from the
+published archive by checksum.
+
+Each atlas reaches that anatomy by a different route, and the route is what
+bounds how much the labels can be trusted.
+
+- **Destrieux** is this subject's own `aparc.a2009s`, drawn on these surfaces by
+  the recon that produced them. Nothing is projected.
+- **HCP-MMP1.0** arrives through two registrations, not one. It is published in
+  the HCP's own `fs_LR` space; the Mills projection carries it to fsaverage, and
+  `scripts/prepare_subject.py` resamples it again onto this subject, each vertex
+  taking the label of the nearest fsaverage vertex in FreeSurfer's registered
+  spherical space (`sphere.reg`) — `mri_surf2surf`'s forward nearest-neighbour
+  rule. No coordinate moves and no label is interpolated; only labels travel.
+  It is the loosest of the three surface routes.
+- **NextBrain** is warped volumetrically, and is described below.
+
+### Switching brains
+
+`config/model.yaml` declares each anatomy and selects one. Change the selection,
+rebuild, and the other is published; no conversion step knows which brain it is
+reading.
+
+```yaml
+anatomy: bert        # or: fsaverage
+```
+
+Two are declared.
+
+| `anatomy` | What it is | Reconstruction | Cortical labels |
+| --- | --- | --- | --- |
+| `bert` | FreeSurfer's published worked example: one ordinary 1 mm T1 | 5.2.0, Jan 2013 | its own Destrieux; HCP resampled on |
+| `fsaverage` | FreeSurfer's averaged template | 6 | template Destrieux; HCP already native |
+
+An anatomy's entry carries everything that differs — where its files live, which
+archive to unpack and its checksum, which brain to resample HCP from, which
+NextBrain warp belongs to it. `data/sources.json` tags every input with the
+anatomy whose build reads it, so a checkout holding one brain's data still
+verifies cleanly, and the manifest publishes only the sources that built it.
+
+Preparing a brain does not require selecting it first:
+
+```sh
+uv run python scripts/prepare_subject.py --anatomy fsaverage
+uv run python scripts/warp_nextbrain.py --anatomy fsaverage --atlas ... --record
+```
+
+### What is not declared, and why
+
+Every step reads a complete `recon-all` output: pial, white, sulc and sphere.reg
+per hemisphere, a Destrieux `.annot` per hemisphere, and orig, aseg, ribbon and
+aparc.a2009s+aseg on FreeSurfer's conformed 256³ grid. That requirement, not
+taste, is what excludes the more recent candidates:
+
+- **FreeSurfer Maintenance Dataset** — OpenNeuro `ds004958`, CC0, collected by
+  Greve and Fischl to test FreeSurfer itself. The best modern acquisition found:
+  multi-echo MPRAGE with volumetric navigators, MP2RAGE, T2-SPACE. Raw BIDS
+  only, no reconstruction, so it needs a `recon-all` this repository does not
+  run.
+- **Penn LEAD anatomical derivatives** — OpenNeuro `ds007089`, CC0, fMRIPrep
+  25.0.0, processed May 2025, and the most recent reconstructions found
+  anywhere. Its surfaces are GIFTI in fsnative while its volumes are in T1w
+  space, and it publishes no cortical parcellation at all — three-tissue
+  segmentations only, since fMRIPrep exports no FreeSurfer `.annot`. Using it
+  means regenerating annotations and reconciling two grids, and reconciling
+  grids quietly is the one thing this package refuses to do.
+- **Mindboggle-101** — CC0, 101 brains whose cortical labels were drawn by hand
+  under a published protocol. Those are the most valid cortical labels obtainable
+  anywhere, and they are unusable here: the distribution is VTK surfaces carrying
+  DKT labels, with no FreeSurfer subject directories, no registered spheres and
+  no volumes. Its protocol is DKT, not Destrieux.
+- **FreeSurfer's 2018 tutorial subjects** — incomplete, missing `sulc`, `aseg`
+  and `aparc.a2009s+aseg`, and distributed without stated licence terms.
+- **FreeSurfer 8.2 itself** (March 2026) — it ships no reconstruction to take.
+  `distribution/subjects/CMakeLists.txt` in the source tree installs exactly
+  three things: a `README`, `sample-001.mgz` and `sample-002.mgz`. The README
+  tells you to run `recon-all` on those samples yourself. `bert.recon.tgz` and
+  `ernie.recon.tgz` are present in that directory only as git-annex symlinks —
+  test fixtures, not installed. That annexed bert is a different file from the
+  published one (226,599,110 bytes against 352,245,116) and its annex log goes
+  back to 2016, so it is not a modern reconstruction either; it has no public
+  download route, as the annex branch registers no web URLs and no special
+  remotes.
+
+So bert's 2013 date is a ceiling, not an oversight: FreeSurfer has published no
+complete reconstruction since, and its current release distributes raw samples
+rather than a recon. *Most recent* and *usable as published* do not meet.
+
+The published limitations, the colophon and the slice note all follow the
+selection rather than being written for one brain.
+
+These are not interchangeable, and the switch is a comparison tool rather than
+a preference. An individual has real folds and a real scan and is nobody else's
+brain. A template is nobody's anatomy, and is the space published parcellations
+and group results are reported in.
 
 ## Use the viewer
 
@@ -16,7 +117,7 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. The **Anatomical cuts** controls are in the right panel. **Open linked MRI slices** displays the three source-MRI sections. The model remains interactive when clipped. The MRI dialog shows the full reference volume independently of surface visibility.
+Open the URL printed by Vite. The brain opens in neutral gray with matte tissue shading and source-derived fold relief. Enable **Atlas colours** in Display to show the region palette; selection and isolation work in either appearance. Reset restores the neutral view. The **Anatomical cuts** controls are in the right panel. **Open linked MRI slices** displays the three source-MRI sections. The model remains interactive when clipped. The MRI dialog shows the full reference volume independently of surface visibility.
 
 ## Model assets
 
@@ -33,30 +134,29 @@ atlas need not have a surface. NextBrain has none: it is a volumetric
 histological atlas.
 
 Internal anatomy has two **detail levels**, and exactly one is drawn: the coarse
-level is FreeSurfer's 35 structures, the fine level NextBrain's 309 nuclei. Both
+level is FreeSurfer's 35 structures, the fine level NextBrain's 298 nuclei. Both
 segment the same anatomy, so drawing them together would put two thalami in the
-same place. 178 further ROIs stay cut labels only — NextBrain's white matter, its
+same place. 185 further ROIs stay cut labels only — NextBrain's white matter, its
 cerebellar cortical layers and its cortical parcels are excluded from geometry
 because the first two enclose everything else and the third is already published
 as real surfaces by the Destrieux and HCP-MMP layers, while anything under
-`minimum_mesh_voxels` is too small for a surface to mean anything. All 487 remain
+`minimum_mesh_voxels` is too small for a surface to mean anything. All 483 remain
 named, searchable and selectable on a cut face.
 
 Its labels are **not** produced by this package. `scripts/warp_nextbrain.py` runs
-once, registering the MNI152 template NextBrain was segmented on to fsaverage
-with ANTs (`pip install antspyx`) and resampling the label volume along that
-transform with `genericLabel`. Only the template is registered, so no label value
-is ever interpolated. The result is committed as a checksummed optional entry in
-`data/sources.json`; a checkout without it builds every other asset unchanged.
+once, registering the MNI152 template NextBrain was segmented on to this
+subject's `orig.mgz` with ANTs (`pip install antspyx`) and resampling the label
+volume along that transform with `genericLabel`. Only the template is registered,
+so no label value is ever interpolated. The result is committed as a checksummed
+optional entry in `data/sources.json`; a checkout without it builds every other
+asset unchanged.
 
-487 of the published 496 ROIs survive resampling to the 1 mm grid. 30 of the 309
-solid nuclei are fragmented by the warp into components that touch only at
-corners, so their surfaces are not closed; `validation.json` reports which, and
-no mesh volume is claimed for them. Their segmentation volumes, which are counted
-from voxels, remain exact. Both the
-template and fsaverage are averaged brains, so the warp is much better than an
-affine and still not subject-level: registration error, not the published
-histological delineation, bounds what these labels can support. NextBrain names
+483 of the published 496 ROIs survive resampling to the 1 mm grid. This is the
+loosest join in the model, and in the harder direction: an averaged template is
+registered onto one individual, so the nuclei land where that inter-subject warp
+puts them, not where a histological delineation of this brain would. The warp is
+far better than an affine and nowhere near subject-level. Registration error, not
+the published histological delineation, bounds what these labels can support. NextBrain names
 every cortical parcel `ctx-rh-` on both sides, an artefact of the reused
 FreeSurfer label block; the hemisphere field is authoritative, and the fragment
 is dropped from display names while `source_published_name` retains the original.
@@ -102,14 +202,15 @@ Use `sections.pick()` for cut views: it accounts for discarded surfaces and samp
 
 ## Fidelity and validation
 
-The surface model preserves all 327,684 source vertices and 655,360 source triangles across both hemispheres before region-boundary partitioning. Internal structure shading uses segmentation-gradient normals; it does not smooth or displace their geometry. Clipping changes rendered visibility, not mesh coordinates, indices or atlas boundaries.
+The surface model preserves every source vertex and triangle across both hemispheres before region-boundary partitioning — 266,922 and 533,836 for the published `bert` build, 327,684 and 655,360 for `fsaverage`. Internal structure shading uses segmentation-gradient normals; it does not smooth or displace their geometry. Clipping changes rendered visibility, not mesh coordinates, indices or atlas boundaries.
 
 MRI intensities are interpolated trilinearly. Segmentation labels use nearest-neighbour sampling, so intermediate label IDs are never invented. The categorical 3D cut also uses nearest-neighbour sampling; tissue boundaries remain faithful to the 1 mm grid. No MRI intensity image is painted onto the cut. L/R and anatomical directions are explicitly marked. The 2D coronal and axial views use neurological orientation (patient left on screen left); 3D labels follow the actual camera direction.
 
-**Limits:** this is reference-template anatomy, not patient-specific anatomy or a clinically validated model. The MRI and segmentation have a 1 mm source grid. Fractional slice positions and 512-pixel renderings do not increase source anatomical resolution. The template MRI is spatially averaged and looks softer than a single-subject scan. Fine cerebellar folia and tiny nuclei are not resolved by the internal segmentation. The detailed cortical surface and the native voxel segmentation do not coincide exactly; small edge discrepancies and voxel steps remain visible. Smoothing categorical boundaries would imply unsupported spatial precision. Cortical GLB regions remain surface patches; their cut labels are supplied by the separate labelled volume. HCP-MMP1.0 uses the published Mills fsaverage projection. Mixed-label triangle boundaries are a documented visualization convention. Two native degenerate pial triangles per hemisphere are retained and reported in source-faithful exports. The cut renderer does not alter surface topology.
+**Limits** (as published, with `anatomy: bert`): this is one published individual's anatomy — exact for that person, nobody else's, and not a clinically validated model. The MRI and segmentation have a 1 mm source grid. Fractional slice positions and 512-pixel renderings do not increase source anatomical resolution. Being a single scan rather than an average, the MRI carries that acquisition's own noise and partial-volume effects instead of a template's smoothness. Fine cerebellar folia and tiny nuclei are not resolved by the internal segmentation. The detailed cortical surface and the native voxel segmentation do not coincide exactly; small edge discrepancies and voxel steps remain visible. Smoothing categorical boundaries would imply unsupported spatial precision. Cortical GLB regions remain surface patches; their cut labels are supplied by the separate labelled volume. HCP-MMP1.0 uses the published Mills fsaverage projection, resampled again here through registered spheres: two registrations away from native HCP space. Mixed-label triangle boundaries are a documented visualization convention. Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; 34 of the 333 solid structures do, `validation.json` counts the edges, and the volume each surface encloses stays definite. The cut renderer does not alter surface topology.
 
 ```sh
 uv sync --locked
+uv run python scripts/prepare_subject.py   # once per anatomy; a no-op for fsaverage
 uv run python -m brain_model.build
 uv run python -m brain_model.validate
 uv run python -m pytest -q

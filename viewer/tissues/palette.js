@@ -1,4 +1,5 @@
 import { Color } from 'three';
+import { tissueColor } from '../render/materials.js';
 
 export function labelVisible(label, state) {
   if (label.source_label_id === 0 && label.kind !== 'cortex') return false;
@@ -16,14 +17,16 @@ export function labelVisible(label, state) {
 }
 
 /** Palette is independent of slice position, so dragging never rebuilds it. */
-export function createPalette(labels, state) {
+export function createPalette(labels, state, tissuePalette) {
   const palette = new Float32Array(labels.length * 4);
   const color = new Color();
   for (const [code, label] of labels.entries()) {
     // Match the linear baseColorFactor stored in the exported glTF materials.
     color.setRGB(...label.color.map((value) => value / 255));
-    if (!state.atlasColors) color.setHex(label.kind === 'cortex' ? 0xd6cfc2 : 0xc7beb0);
-    if (label.kind === 'cortex' && !label.region_id) color.setHex(0xb0aca5);
+    if (!state.atlasColors) {
+      color.set(tissueColor({ ...label, source_name: label.name }, tissuePalette));
+    }
+    if (label.kind === 'cortex' && !label.region_id) color.set(tissuePalette.unlabelled);
     palette.set([color.r, color.g, color.b, Number(labelVisible(label, state))], code * 4);
   }
   return palette;

@@ -12,8 +12,8 @@
     "order": "F",
     "compression": "gzip",
     "byte_length": 16777216,
-    "sha256": "a8057bfea43ca608f5149eb536abc2a231b7a713686e63831c50f0de1b339edf",
-    "decoded_sha256": "21282b5064d185ce7ab4271a6168c35ec552ad861fc5f20e0496b10fbc8d3e11",
+    "sha256": "4966c0a501a3e8059a3933238a3aaf1161f13f17bd9d1d35738e6f48e3e6c806",
+    "decoded_sha256": "dbabbedbee0de74ce1d604c15c9884cab842d5cdd481c7cd96004670961522ae",
     "voxel_to_surface_ras_mm": [
       [
         -1.0,
@@ -57,8 +57,8 @@
     "order": "F",
     "compression": "gzip",
     "byte_length": 33554432,
-    "sha256": "2cc938d684ad4d5f22fbdeb4f51bb2058d32bde029a93e9c5ce9205def36934a",
-    "decoded_sha256": "493c315efe15a27ec35e7f7c55deb603919091dc4472cdf22223b920ff731e41",
+    "sha256": "8bac4c3ca0dd2ad2caf132104ce5e9c5f8906940fc24260cb59971a24750cb31",
+    "decoded_sha256": "cd0e8495678ea74a4a75771b97234d6de90e5f130bd41a254f821a7f50def2f0",
     "voxel_to_surface_ras_mm": [
       [
         -1.0,
@@ -388,12 +388,28 @@
         221
       ]
     },
+    "72": {
+      "name": "5th-Ventricle",
+      "color": [
+        120,
+        190,
+        150
+      ]
+    },
     "77": {
       "name": "WM-hypointensities",
       "color": [
         200,
         70,
         255
+      ]
+    },
+    "80": {
+      "name": "non-WM-hypointensities",
+      "color": [
+        164,
+        108,
+        226
       ]
     },
     "85": {
@@ -452,7 +468,7 @@
     "window_width": 180
   },
   "limitations": [
-    "Reference-template MRI and 1 mm segmentation; not individual anatomy.",
+    "One individual's 1 mm MRI and segmentation; not the viewer's anatomy.",
     "Trilinear MRI interpolation does not increase source resolution.",
     "Segmentation is sampled with nearest neighbour; cortical surface atlases are not extended into the volume."
   ]

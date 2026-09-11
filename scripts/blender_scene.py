@@ -111,7 +111,13 @@ def main():
     scene.view_settings.view_transform = "AgX"
     scene.render.film_transparent = False
     scene["coordinate_convention"] = "Blender RAS meters: +X right, +Y anterior, +Z superior"
-    scene["scientific_scope"] = "fsaverage reference template; conversion fidelity, not clinical accuracy"
+    # Read from the manifest rather than restated: which brain is in these GLBs
+    # is a build-time choice, and a scene that says otherwise outlives it.
+    anatomy = json.loads((ROOT / "public/models/manifest.json").read_text())["anatomy"]
+    scene["anatomy"] = anatomy["label"]
+    scene["scientific_scope"] = (
+        f"{anatomy['label']}; conversion fidelity, not clinical accuracy"
+    )
     readme = bpy.data.texts.new("READ ME · Brain model")
     readme.write(
         "SOURCE-DERIVED BRAIN\n\n"

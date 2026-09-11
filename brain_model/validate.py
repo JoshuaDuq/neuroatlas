@@ -5,12 +5,18 @@ import json
 import nibabel as nib
 import numpy as np
 import trimesh
-from nibabel.freesurfer.io import read_annot, read_geometry
+from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import map_coordinates
 
 from . import nextbrain
 from .export import compact_region
-from .geometry import extract_structure, normalize, partition_surface, to_gltf
+from .geometry import (
+    extract_structure,
+    normalize,
+    partition_surface,
+    partition_vertex_field,
+    to_gltf,
+)
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .validate_volumes import validate_volumes
 
@@ -191,6 +197,7 @@ def validate_atlas(config, atlas):
     reports = {}
     max_error = 0.0
     normal_error = 0.0
+    sulcal_error = 0.0
     expected_ids = set()
     for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
         vertices, faces = read_geometry(
@@ -202,12 +209,23 @@ def validate_atlas(config, atlas):
             / f"{prefix}.{atlas['annotation']}.annot"
         )
         partition = partition_surface(vertices, faces, labels)
+        sulcal_depth = partition_vertex_field(
+            faces, labels,
+            read_morph_data(config["source_directory"] / "surf" / f"{prefix}.sulc"),
+        )
         reports[hemisphere] = validate_partition(vertices, faces, labels, partition)
         for label in np.unique(labels):
             region_id = f"{atlas['id']}:{hemisphere}:{label}"
             expected_ids.add(region_id)
             actual = meshes[region_id]
             points, triangles, normals = compact_region(partition, label)
+            indices = np.unique(partition.faces[partition.labels == label])
+            depth = actual.vertex_attributes.get("_SULC")
+            if depth is None or depth.size != len(points) or not np.isfinite(depth).all():
+                raise ValueError(f"Missing or invalid sulcal depth: {region_id}")
+            sulcal_error = max(
+                sulcal_error, float(np.abs(depth.ravel() - sulcal_depth[indices]).max())
+            )
             error = (
                 np.linalg.norm(actual.vertices - to_gltf(points), axis=1).max() * 1000
             )
@@ -230,6 +248,7 @@ def validate_atlas(config, atlas):
     if (
         max_error > config["validation"]["coordinate_tolerance_mm"]
         or normal_error > 1e-6
+        or sulcal_error > 1e-6
     ):
         raise ValueError("GLB export exceeds coordinate or normal tolerance")
     return {
@@ -239,10 +258,32 @@ def validate_atlas(config, atlas):
         "hemispheres": reports,
         "maximum_glb_coordinate_error_mm": max_error,
         "maximum_normal_component_error": normal_error,
+        "maximum_sulcal_depth_error": sulcal_error,
     }
 
 
-def validate_structure_layer(path, volume, affine, labels, tolerance, require_closed=True):
+def surface_closure(mesh):
+    """How the exported surface encloses its label, reported and not repaired.
+
+    Marching cubes over a voxel mask does not leave holes. What a ragged
+    segmentation leaves instead is a pinch: an edge where two sheets of the same
+    structure meet because the voxels touch along that edge alone. No closed
+    two-manifold surface exists over such a mask, yet the surface still encloses
+    a definite volume, so the pinch is published rather than mended — mending it
+    would move the vertices this export exists to preserve.
+
+    A boundary edge is a different thing. It is a hole, it leaves the enclosed
+    volume undefined, and nothing that came from marching cubes should have one.
+    """
+    edges = np.sort(mesh.faces[:, [[0, 1], [1, 2], [2, 0]]], axis=2).reshape(-1, 2)
+    _, counts = np.unique(edges, axis=0, return_counts=True)
+    return {
+        "boundary_edges": int(np.count_nonzero(counts == 1)),
+        "pinch_edges": int(np.count_nonzero(counts > 2)),
+    }
+
+
+def validate_structure_layer(path, volume, affine, labels, tolerance):
     """Every vertex of every mesh must sit on its own label's isosurface.
 
     Shared by both detail levels: the check is a property of marching cubes over
@@ -278,15 +319,18 @@ def validate_structure_layer(path, volume, affine, labels, tolerance, require_cl
             )
         if not np.array_equal(reference.faces, mesh.faces):
             raise ValueError(f"Structure export changed triangle topology: {region_id}")
-        # Observed, not assumed. A coarse structure is a coherent solid and
-        # must be closed. A fine one need not be: the warped 1 mm parcellation
-        # leaves fragments that touch only at corners, and no closed surface
-        # exists over them. Repairing that would move vertices the export
-        # exists to preserve, so it is reported instead.
-        closed = bool(mesh.is_watertight and mesh.volume > 0)
-        if require_closed and not closed:
+        # Observed, not assumed, and the same demand at either detail level: a
+        # structure must enclose its own label, with its outside facing out.
+        # Where its voxels pinch, they pinch; that costs the surface its
+        # two-manifold property, not the volume it encloses.
+        closure = surface_closure(mesh)
+        if (
+            closure["boundary_edges"]
+            or not mesh.is_winding_consistent
+            or mesh.volume <= 0
+        ):
             raise ValueError(
-                f"Structure must be closed and outward oriented: {region_id}"
+                f"Structure must enclose its label, outward oriented: {region_id}"
             )
         hemisphere = mesh.metadata["hemisphere"]
         if hemisphere == "left" and mesh.centroid[0] >= 0:
@@ -296,15 +340,14 @@ def validate_structure_layer(path, volume, affine, labels, tolerance, require_cl
         reports.append(
             {
                 "id": region_id,
-                "closed": closed,
+                **closure,
                 "maximum_edge_vertex_isovalue_error": level_error,
                 "marching_cubes_auxiliary_center_vertices": int(centers.sum()),
                 "maximum_glb_coordinate_error_mm": coordinate_error,
                 "maximum_trilinear_isovalue_deviation": float(
                     np.abs(values - 0.5).max()
                 ),
-                # Meaningless on an unclosed surface, so it is not reported.
-                "mesh_volume_mm3": float(mesh.volume * 1e9) if closed else None,
+                "mesh_volume_mm3": float(mesh.volume * 1e9),
             }
         )
     if found != set(labels):
@@ -332,7 +375,6 @@ def validate_nextbrain_structures(config):
         image.header.get_vox2ras_tkr(),
         nextbrain.meshed_indices(labels, table, minimum),
         config["validation"]["coordinate_tolerance_mm"],
-        require_closed=False,
     )
 
 
@@ -479,6 +521,12 @@ def validate_manifest(config, manifest):
             **atlas,
             "file": filename,
             "region_count": sum(r["kind"] == "cortex" for r in expected.values()),
+            "surface_shading": {
+                "attribute": "_SULC",
+                "source": "FreeSurfer lh.sulc / rh.sulc",
+                "interpolation": "Linear on barycentric atlas partitions",
+                "meaning": "Sulcal-depth morphometry; positive values mark sulci",
+            },
         }
         if atlas_records[atlas["id"]] != metadata:
             raise ValueError(f"Manifest atlas metadata mismatch: {atlas['id']}")
@@ -533,7 +581,7 @@ def validate_manifest(config, manifest):
 
 def main():
     config = read_config()
-    verify_sources()
+    verify_sources(config)
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     validate_manifest(config, manifest)
     report = {

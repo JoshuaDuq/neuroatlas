@@ -149,15 +149,23 @@ def export_tissue_labels(config, manifest):
         "source_sha256": sha256(source_path),
         "atlases": atlases,
         "limitations": [
-            "Native 1 mm reference-template tissue labels; no claim of subvoxel anatomical accuracy.",
+            "Native 1 mm tissue labels from one individual's own segmentation; no claim of subvoxel anatomical accuracy."
+            if config["anatomy"]["individual"]
+            else "Native 1 mm tissue labels from an averaged segmentation; no claim of subvoxel anatomical accuracy.",
             "HCP cortical volume labels are a derived ribbon-restricted projection, not a published native HCP volumetric atlas.",
             "Native voxel boundaries and high-resolution cortical surfaces may not coincide exactly.",
         ],
     }
     if nextbrain.ATLAS_ID in atlases:
         metadata["limitations"].append(
-            "NextBrain labels were nonlinearly warped from MNI152 to fsaverage; "
-            "registration error, not the published delineation, bounds their accuracy."
+            "NextBrain labels were nonlinearly warped from the MNI152 template to "
+            + (
+                "this individual; registration between an averaged template and one "
+                "brain, not the published delineation, bounds their accuracy."
+                if config["anatomy"]["individual"]
+                else "this template; registration between two averaged brains, not "
+                "the published delineation, bounds their accuracy."
+            )
         )
     write_json(config["output_directory"] / "tissue-labels.json", metadata)
     return metadata
@@ -165,6 +173,6 @@ def export_tissue_labels(config, manifest):
 
 if __name__ == "__main__":
     config = read_config()
-    verify_sources()
+    verify_sources(config)
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     export_tissue_labels(config, manifest)

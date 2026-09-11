@@ -10,6 +10,23 @@ const modelState = {
 
 const session = () => createSession({ views: VIEWS });
 
+test('clinical navigation preserves anatomical search and selection independently', () => {
+  const s = session();
+  s.setQuery('hippocampus');
+  s.setExplorer('deficits');
+  s.setClinicalQuery('memory');
+  s.setDeficit('amnesia');
+  const snapshot = s.assemble(modelState);
+  assert.equal(snapshot.explorer, 'deficits');
+  assert.equal(snapshot.query, 'hippocampus');
+  assert.equal(snapshot.clinicalQuery, 'memory');
+  assert.equal(snapshot.selectedDeficit, 'amnesia');
+  assert.equal(snapshot.selectedRegion, null);
+  s.setExplorer('anatomy');
+  assert.equal(s.assemble(modelState).selectedDeficit, 'amnesia');
+  assert.throws(() => s.setExplorer('unknown'), /Unknown explorer/);
+});
+
 test('assembly merges model state and view state into one snapshot', () => {
   const s = session();
   s.setView('left');

@@ -39,7 +39,7 @@ test('cut palettes match every corresponding exported surface material', async (
       atlasColors: true,
       cortexVisible: true,
       cortexOpacity: 1,
-    });
+    }, manifest.appearance.tissue);
     for (const [code, label] of record.labels.entries()) {
       if (!label.region_id || meshless.has(label.region_id)) continue;
       const expected = materials.get(label.region_id);
@@ -52,6 +52,7 @@ test('cut palettes match every corresponding exported surface material', async (
 });
 
 test('cut-only palettes carry their published table colour unchanged', async () => {
+  const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
   const metadata = JSON.parse(await readFile(new URL('tissue-labels.json', directory), 'utf8'));
   const record = metadata.atlases.nextbrain;
   if (!record) return; // The warped volume is an optional source.
@@ -60,7 +61,7 @@ test('cut-only palettes carry their published table colour unchanged', async () 
     atlasColors: true,
     cortexVisible: true,
     cortexOpacity: 1,
-  });
+  }, manifest.appearance.tissue);
   for (const [code, label] of record.labels.entries()) {
     label.color.forEach((component, axis) =>
       assert.ok(

@@ -76,3 +76,25 @@ test('translations dictionary returns valid sections and falls back safely', () 
   assert.ok(t('en', 'header').languageSwitch === 'Language');
   assert.ok(t('unknown', 'header').languageSwitch === 'Language');
 });
+
+test('the colophon and slice note name whichever brain was actually built', () => {
+  // The viewer publishes one model at a time and must describe that one. A
+  // sentence hardcoded to a subject outlives the build that made it true.
+  const subject = { subject: 'bert', display_name: 'FreeSurfer “bert”', individual: true };
+  const template = { subject: 'fsaverage', display_name: 'FreeSurfer fsaverage', individual: false };
+
+  for (const lang of ['en', 'fr']) {
+    const { colophon } = t(lang, 'footer');
+    assert.match(colophon(subject), /bert/);
+    assert.match(colophon(template), /fsaverage/);
+    assert.notEqual(colophon(subject), colophon(template));
+    // Neither description may survive into the other brain's colophon.
+    assert.doesNotMatch(colophon(template), /bert/);
+
+    const { note } = t(lang, 'mpr');
+    assert.match(note(subject), /1 mm/);
+    assert.notEqual(note(subject), note(template));
+  }
+
+  assert.notEqual(t('en', 'footer').colophon(subject), t('fr', 'footer').colophon(subject));
+});

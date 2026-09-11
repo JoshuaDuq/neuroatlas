@@ -132,7 +132,7 @@ export const TRANSLATIONS = {
       positionLabel: name => `${name} position (mm)`,
       sliceAria: name => `${name} MRI. Click to place crosshair; arrow keys change slice.`,
       sliderAria: name => `${name} MRI position`,
-      note: '1 mm reference-template grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.',
+      note: anatomy => `1 mm ${anatomy.individual ? 'single-subject' : 'averaged-template'} grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.`,
       readout: (r, a, s, name, labelId) => `R ${r} · A ${a} · S ${s} mm — ${name} (label ${labelId})`,
     },
     shortcuts: {
@@ -159,7 +159,7 @@ export const TRANSLATIONS = {
       retry: 'Retry',
     },
     footer: {
-      colophon: 'FreeSurfer fsaverage reference template · not individual or clinical anatomy',
+      colophon: anatomy => `${anatomy.display_name} · ${anatomy.individual ? 'one individual’s MRI reconstruction' : 'averaged reference template'} · not clinical anatomy`,
       provenance: 'Provenance',
     },
     app: {
@@ -306,7 +306,7 @@ export const TRANSLATIONS = {
         const adj = { Sagittal: 'sagittale', Coronal: 'coronale', Axial: 'axiale' }[name] ?? name;
         return `Position IRM ${adj}`;
       },
-      note: 'Grille du gabarit de référence 1 mm · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.',
+      note: anatomy => `Grille 1 mm ${anatomy.individual ? 'd’un sujet unique' : 'd’un gabarit moyenné'} · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.`,
       readout: (r, a, s, name, labelId) => `D ${r} · A ${a} · S ${s} mm — ${name} (étiquette ${labelId})`,
     },
     shortcuts: {
@@ -333,7 +333,7 @@ export const TRANSLATIONS = {
       retry: 'Réessayer',
     },
     footer: {
-      colophon: 'Gabarit de référence FreeSurfer fsaverage · pas une anatomie individuelle ou clinique',
+      colophon: anatomy => `${anatomy.display_name} · ${anatomy.individual ? 'reconstruction IRM d’un individu' : 'gabarit de référence moyenné'} · pas une anatomie clinique`,
       provenance: 'Provenance',
     },
     app: {

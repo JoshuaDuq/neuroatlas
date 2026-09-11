@@ -1,0 +1,58 @@
+.explorer-head { padding-bottom: 0; }
+#explorer-switch button { flex: 1; }
+.clinical-intro { padding-top: var(--space-4); }
+.clinical-intro p { color: var(--text-secondary); line-height: 1.5; }
+#deficit-search { margin-top: var(--space-4); }
+
+.clinical-deficit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: 62px;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--text-body);
+}
+.clinical-deficit[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-wash);
+  box-shadow: inset 2px 0 var(--accent);
+}
+.clinical-note { color: var(--text-secondary); font-size: var(--text-micro); line-height: 1.5; }
+#clinical-coverage { padding-top: var(--space-5); }
+.clinical-content { font-size: var(--text-ui); line-height: 1.55; overflow-wrap: anywhere; }
+.clinical-content > p + p { margin-top: var(--space-3); }
+.clinical-content h3 { font-size: var(--text-body); font-weight: 600; line-height: 1.4; }
+.clinical-content .clinical-profile-name { font-size: var(--text-title); margin-bottom: var(--space-2); }
+.clinical-content h4 { font-size: var(--text-micro); font-weight: 600; margin: var(--space-3) 0 var(--space-1); }
+.clinical-association { margin: var(--space-5) 0; padding-top: var(--space-4); border-top: 1px solid var(--border-subtle); }
+.clinical-association > p { margin-top: var(--space-2); }
+.clinical-regions { margin-top: var(--space-3); display: grid; gap: var(--space-2); }
+.clinical-region-link {
+  height: auto;
+  min-height: var(--control-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  text-align: left;
+  font-size: var(--text-ui);
+  color: var(--accent);
+  border-color: var(--border-subtle);
+}
+.clinical-arrow { margin-left: auto; }
+.clinical-evidence { margin-top: var(--space-4); }
+.clinical-evidence summary { cursor: pointer; color: var(--accent); padding: var(--space-1) 0; }
+.clinical-publication { padding: var(--space-3) 0; }
+.clinical-publication + .clinical-publication { border-top: 1px solid var(--border-subtle); }
+.clinical-publication > * + * { margin-top: var(--space-2); }
+.clinical-content a { display: inline-block; color: var(--accent); text-underline-offset: 3px; }
+#clinical-region .clinical-deficit { padding: var(--space-2) 0; min-height: 44px; }
+.clinical-action-status { margin-top: var(--space-3); }
+.clinical-action-status[data-error="true"] { color: var(--danger); }

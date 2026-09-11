@@ -1,0 +1,315 @@
+revised: '2026-09-11'
+
+deficits:
+  - id: aphasia
+    name: {en: Aphasia, fr: Aphasie}
+    domain: {en: Language, fr: Langage}
+    summary:
+      en: Acquired language difficulties. This profile starts with evidence about understanding words and sentences.
+      fr: Difficultés acquises du langage. Ce profil présente d’abord les données sur la compréhension des mots et des phrases.
+    aliases:
+      en: [language comprehension, understanding speech, word comprehension, sentence comprehension]
+      fr: [compréhension du langage, compréhension orale, compréhension des mots, compréhension des phrases]
+
+  - id: amnesia
+    name: {en: Amnesia, fr: Amnésie}
+    domain: {en: Memory, fr: Mémoire}
+    summary:
+      en: Difficulty learning or recalling information. The initial evidence concerns acquired anterograde memory impairment.
+      fr: Difficulté à apprendre ou à rappeler des informations. Les premières données concernent l’amnésie antérograde acquise.
+    aliases:
+      en: [memory loss, forgetfulness, anterograde amnesia, learning, hippocampus]
+      fr: [perte de mémoire, oubli, amnésie antérograde, apprentissage, hippocampe]
+
+  - id: neglect
+    name: {en: Hemispatial neglect, fr: Négligence spatiale}
+    domain: {en: Spatial attention, fr: Attention spatiale}
+    summary:
+      en: Reduced attention or response to one side of space. Perceptual and exploratory components can have different anatomical associations.
+      fr: Diminution de l’attention ou des réponses à un côté de l’espace. Les composantes perceptives et exploratoires peuvent avoir des associations anatomiques différentes.
+    aliases:
+      en: [neglect, inattention, unilateral neglect, visuospatial, visual exploration]
+      fr: [héminégligence, négligence unilatérale, inattention, visuospatial, exploration visuelle]
+
+  - id: apraxia
+    name: {en: Limb apraxia, fr: Apraxie gestuelle}
+    domain: {en: Praxis, fr: Praxies}
+    summary:
+      en: Difficulty performing learned or imitated gestures beyond primary weakness. This profile examines meaningless hand and finger imitation.
+      fr: Difficulté à réaliser des gestes appris ou imités au-delà d’une faiblesse motrice primaire. Ce profil examine l’imitation de postures manuelles et digitales sans signification.
+    aliases:
+      en: [apraxia, gesture imitation, hand postures, finger postures, ideomotor]
+      fr: [apraxie, imitation de gestes, postures de la main, postures des doigts, idéomotrice]
+
+  - id: agnosia
+    name: {en: Visual agnosia, fr: Agnosie visuelle}
+    domain: {en: Visual recognition, fr: Reconnaissance visuelle}
+    summary:
+      en: Difficulty recognizing visual stimuli. The initial profile covers facial configuration processing in acquired prosopagnosia.
+      fr: Difficulté à reconnaître des stimuli visuels. Le profil initial porte sur le traitement de la configuration faciale dans la prosopagnosie acquise.
+    aliases:
+      en: [agnosia, prosopagnosia, face blindness, face recognition, facial configuration]
+      fr: [agnosie, prosopagnosie, reconnaissance des visages, configuration faciale]
+
+  - id: executive
+    name: {en: Executive dysfunction, fr: Dysfonction exécutive}
+    domain: {en: Cognitive control, fr: Contrôle cognitif}
+    summary:
+      en: Difficulties regulating goal-directed behavior. This profile focuses on inhibition, conflict monitoring, and switching.
+      fr: Difficultés à réguler les comportements orientés vers un but. Ce profil porte sur l’inhibition, le suivi des conflits et la flexibilité cognitive.
+    aliases:
+      en: [dysexecutive, inhibition, set shifting, cognitive flexibility, switching, executive function]
+      fr: [dysexécutif, inhibition, flexibilité cognitive, alternance, fonctions exécutives]
+
+references:
+  - id: dronkers-2004
+    title: Lesion analysis of the brain areas involved in language comprehension
+    authors: Dronkers NF, Wilkins DP, Van Valin RD Jr, Redfern BB, Jaeger JJ
+    year: 2004
+    journal: Cognition
+    doi: 10.1016/j.cognition.2003.11.002
+    pmid: '15037129'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 64 people with chronic left-hemisphere stroke; right-stroke and healthy comparison groups.
+      fr: 64 personnes ayant un AVC gauche chronique; groupes comparatifs avec AVC droit et témoins sains.
+
+  - id: zola-morgan-1986
+    title: 'Human amnesia and the medial temporal region: enduring memory impairment following a bilateral lesion limited to field CA1 of the hippocampus'
+    authors: Zola-Morgan S, Squire LR, Amaral DG
+    year: 1986
+    journal: Journal of Neuroscience
+    doi: 10.1523/JNEUROSCI.06-10-02950.1986
+    pmid: '3760943'
+    method: case-report
+    scope: abstract
+    population:
+      en: Patient R.B., studied after an ischemic episode with subsequent neuropathological examination.
+      fr: Patient R.B., étudié après un épisode ischémique, avec examen neuropathologique ultérieur.
+
+  - id: verdon-2010
+    title: 'Neuroanatomy of hemispatial neglect and its functional components: a study using voxel-based lesion-symptom mapping'
+    authors: Verdon V, Schwartz S, Lovblad KO, Hauert CA, Vuilleumier P
+    year: 2010
+    journal: Brain
+    doi: 10.1093/brain/awp305
+    pmid: '20028714'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 80 people with focal right-hemisphere stroke.
+      fr: 80 personnes ayant un AVC focal de l’hémisphère droit.
+
+  - id: goldenberg-2006
+    title: The neural basis of imitation is body part specific
+    authors: Goldenberg G, Karnath HO
+    year: 2006
+    journal: Journal of Neuroscience
+    doi: 10.1523/JNEUROSCI.0638-06.2006
+    pmid: '16763035'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: People with left-hemisphere lesions, tested on meaningless gesture imitation.
+      fr: Personnes avec lésions de l’hémisphère gauche, évaluées en imitation de gestes sans signification.
+
+  - id: achilles-2017
+    title: Using multi-level Bayesian lesion-symptom mapping to probe the body-part-specificity of gesture imitation skills
+    authors: Achilles EIS, Weiss PH, Fink GR, Binder E, Price CJ, Hope TMH
+    year: 2017
+    journal: NeuroImage
+    doi: 10.1016/j.neuroimage.2017.08.036
+    pmid: '28822751'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 257 people with left-hemisphere stroke; Bayesian analyses at three spatial levels.
+      fr: 257 personnes ayant un AVC gauche; analyses bayésiennes à trois niveaux spatiaux.
+
+  - id: barton-2002
+    title: Lesions of the fusiform face area impair perception of facial configuration in prosopagnosia
+    authors: Barton JJS, Press DZ, Keenan JP, O’Connor M
+    year: 2002
+    journal: Neurology
+    doi: 10.1212/WNL.58.1.71
+    pmid: '11781408'
+    method: case-series
+    scope: abstract
+    population:
+      en: Five people with acquired prosopagnosia.
+      fr: Cinq personnes avec prosopagnosie acquise.
+
+  - id: glascher-2012
+    title: Lesion mapping of cognitive control and value-based decision making in the prefrontal cortex
+    authors: Gläscher J, Adolphs R, Damasio H, Bechara A, Rudrauf D, Calamia M, Paul LK, Tranel D
+    year: 2012
+    journal: Proceedings of the National Academy of Sciences
+    doi: 10.1073/pnas.1206608109
+    pmid: '22908286'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 344 people with focal lesions, including 165 with prefrontal involvement.
+      fr: 344 personnes avec lésions focales, dont 165 avec atteinte préfrontale.
+
+associations:
+  - id: aphasia-comprehension
+    deficit: aphasia
+    title: {en: Word and sentence comprehension, fr: Compréhension des mots et des phrases}
+    network: {en: Left temporal language system, fr: Système langagier temporal gauche}
+    laterality: left
+    finding:
+      en: Posterior middle temporal damage was associated with impaired comprehension; other left temporal and frontal sites also contributed.
+      fr: Les lésions temporales moyennes postérieures étaient associées à une compréhension altérée; d’autres sites temporaux et frontaux gauches contribuaient aussi.
+    limitation:
+      en: Task-specific findings in chronic stroke; this does not localize every aphasia subtype or establish individual language dominance.
+      fr: Résultats liés aux tâches dans l’AVC chronique; ils ne localisent pas tous les sous-types d’aphasie ni la dominance langagière individuelle.
+    mapping_note:
+      en: The whole middle temporal parcel is shown as an anatomical guide. The study implicated its posterior portion and underlying white matter.
+      fr: La parcelle temporale moyenne entière sert de repère anatomique. L’étude impliquait sa portion postérieure et la substance blanche sous-jacente.
+    mappings:
+      - {region: 'destrieux:left:38', source_name: G_temporal_middle}
+    evidence:
+      - {reference: dronkers-2004, role: supporting}
+
+  - id: hippocampal-amnesia
+    deficit: amnesia
+    title: {en: Learning new information, fr: Apprentissage de nouvelles informations}
+    network: {en: Bilateral hippocampal memory system, fr: Système mnésique hippocampique bilatéral}
+    laterality: bilateral
+    finding:
+      en: R.B. had persistent anterograde amnesia and bilateral CA1 injury, with little retrograde loss.
+      fr: R.B. présentait une amnésie antérograde persistante et une atteinte bilatérale de CA1, avec peu de perte rétrograde.
+    limitation:
+      en: A single clinicopathological case; it does not establish the effects of isolated unilateral injury or all causes of amnesia.
+      fr: Cas clinicopathologique unique; il ne définit ni les effets d’une atteinte unilatérale isolée ni toutes les causes d’amnésie.
+    mapping_note:
+      en: Both whole hippocampi are available as anatomical guides. These coarse structures do not delineate the reported CA1 lesion.
+      fr: Les deux hippocampes entiers servent de repères anatomiques. Ces structures globales ne délimitent pas la lésion de CA1 rapportée.
+    mappings:
+      - {region: 'aseg:left:17', source_name: Left-Hippocampus}
+      - {region: 'aseg:right:53', source_name: Right-Hippocampus}
+    evidence:
+      - {reference: zola-morgan-1986, role: supporting}
+
+  - id: neglect-perceptual
+    deficit: neglect
+    title: {en: Perceptual and visuospatial neglect, fr: Négligence perceptive et visuospatiale}
+    network: {en: Right parietal spatial attention system, fr: Système attentionnel spatial pariétal droit}
+    laterality: right
+    finding:
+      en: The perceptual/visuospatial component was associated with right inferior parietal injury.
+      fr: La composante perceptive/visuospatiale était associée à une atteinte pariétale inférieure droite.
+    limitation:
+      en: One component of neglect; exploratory, object-centered, and disconnection effects need separate interpretation.
+      fr: Une composante de la négligence; exploration, traitement centré sur l’objet et déconnexion demandent une interprétation distincte.
+    mapping_note:
+      en: Angular and supramarginal parcels approximate the inferior parietal lobule; their boundaries are not the study’s lesion map.
+      fr: Les parcelles angulaire et supramarginale représentent approximativement le lobule pariétal inférieur; leurs limites ne sont pas la carte lésionnelle de l’étude.
+    mappings:
+      - {region: 'destrieux:right:25', source_name: G_pariet_inf-Angular}
+      - {region: 'destrieux:right:26', source_name: G_pariet_inf-Supramar}
+    evidence:
+      - {reference: verdon-2010, role: supporting}
+
+  - id: neglect-exploratory
+    deficit: neglect
+    title: {en: Exploratory and visuomotor neglect, fr: Négligence exploratoire et visuomotrice}
+    network: {en: Right frontal spatial exploration system, fr: Système d’exploration spatiale frontal droit}
+    laterality: right
+    finding:
+      en: Exploratory/visuomotor deficits were associated with right dorsolateral prefrontal injury.
+      fr: Les déficits exploratoires/visuomoteurs étaient associés à une atteinte préfrontale dorsolatérale droite.
+    limitation:
+      en: Component-specific association in right-hemisphere stroke, not a complete neglect network.
+      fr: Association propre à une composante dans l’AVC droit, sans délimitation d’un réseau complet de négligence.
+    mapping_note:
+      en: The middle frontal gyrus is a broad anatomical guide to dorsolateral prefrontal cortex, not an equivalent functional boundary.
+      fr: Le gyrus frontal moyen est un repère anatomique large du cortex préfrontal dorsolatéral, sans équivalence des limites fonctionnelles.
+    mappings:
+      - {region: 'destrieux:right:15', source_name: G_front_middle}
+    evidence:
+      - {reference: verdon-2010, role: supporting}
+
+  - id: apraxia-hand
+    deficit: apraxia
+    title: {en: Imitating hand postures, fr: Imitation de postures manuelles}
+    network: {en: Left parietal praxis system, fr: Système praxique pariétal gauche}
+    laterality: left
+    finding:
+      en: Hand imitation impairment was associated with inferior parietal and temporoparieto-occipital injury.
+      fr: L’imitation manuelle altérée était associée à une atteinte pariétale inférieure et temporopariéto-occipitale.
+    limitation:
+      en: Achilles et al. found no consistent hand/finger anatomical dissociation in a larger sample. Body-part specificity remains disputed.
+      fr: Achilles et al. n’ont pas trouvé de dissociation anatomique main/doigts cohérente dans un échantillon plus large. Cette spécificité reste discutée.
+    mapping_note:
+      en: The inferior parietal parcels provide approximate landmarks; the reported lesions extend beyond these parcels.
+      fr: Les parcelles pariétales inférieures fournissent des repères approximatifs; les lésions rapportées dépassent ces parcelles.
+    mappings:
+      - {region: 'destrieux:left:25', source_name: G_pariet_inf-Angular}
+      - {region: 'destrieux:left:26', source_name: G_pariet_inf-Supramar}
+    evidence:
+      - {reference: goldenberg-2006, role: supporting}
+      - {reference: achilles-2017, role: qualifying}
+
+  - id: apraxia-finger
+    deficit: apraxia
+    title: {en: Imitating finger postures, fr: Imitation de postures digitales}
+    network: {en: Left frontal praxis system, fr: Système praxique frontal gauche}
+    laterality: left
+    finding:
+      en: Finger imitation impairment was associated with anterior lesions including the inferior frontal operculum.
+      fr: L’imitation digitale altérée était associée à des lésions antérieures incluant l’opercule frontal inférieur.
+    limitation:
+      en: The larger Achilles study challenges a selective hand/finger dissociation. This finding is not a universal apraxia localization.
+      fr: L’étude plus large d’Achilles remet en question une dissociation sélective main/doigts. Ce résultat ne localise pas universellement l’apraxie.
+    mapping_note:
+      en: The opercular parcel is an anatomical landmark, not a reconstruction of the individual lesions.
+      fr: La parcelle operculaire est un repère anatomique, sans reconstruction des lésions individuelles.
+    mappings:
+      - {region: 'destrieux:left:12', source_name: G_front_inf-Opercular}
+    evidence:
+      - {reference: goldenberg-2006, role: supporting}
+      - {reference: achilles-2017, role: qualifying}
+
+  - id: agnosia-face
+    deficit: agnosia
+    title: {en: Facial configuration in prosopagnosia, fr: Configuration faciale dans la prosopagnosie}
+    network: {en: Right ventral visual recognition system, fr: Système de reconnaissance visuelle ventral droit}
+    laterality: right
+    finding:
+      en: Four patients with right fusiform face-area involvement had impaired discrimination of facial feature positions.
+      fr: Quatre patients avec atteinte de l’aire fusiforme des visages discriminaient mal la position des traits du visage.
+    limitation:
+      en: Small case series about one aspect of acquired face perception; it does not explain all visual agnosias or developmental prosopagnosia.
+      fr: Petite série sur un aspect de la perception faciale acquise; elle n’explique ni toutes les agnosies visuelles ni la prosopagnosie développementale.
+    mapping_note:
+      en: The whole fusiform parcel is shown. The functionally defined face area occupies only part of it and varies between individuals.
+      fr: La parcelle fusiforme entière est affichée. L’aire fonctionnelle des visages n’en occupe qu’une partie et varie selon les individus.
+    mappings:
+      - {region: 'destrieux:right:21', source_name: G_oc-temp_lat-fusifor}
+    evidence:
+      - {reference: barton-2002, role: supporting}
+
+  - id: executive-control
+    deficit: executive
+    title: {en: Inhibition and set shifting, fr: Inhibition et flexibilité cognitive}
+    network: {en: Prefrontal and cingulate cognitive control system, fr: Système de contrôle cognitif préfrontal et cingulaire}
+    laterality: bilateral
+    finding:
+      en: Cognitive-control impairments implicated dorsolateral prefrontal and anterior cingulate regions, distinct from ventral valuation findings.
+      fr: Les déficits de contrôle cognitif impliquaient des régions préfrontales dorsolatérales et cingulaires antérieures, distinctes des résultats ventraux liés à la valeur.
+    limitation:
+      en: Test and subregion effects differ; neither hemisphere’s entire frontal cortex is a single executive center.
+      fr: Les effets diffèrent selon le test et la sous-région; le cortex frontal entier d’aucun hémisphère ne constitue un centre exécutif unique.
+    mapping_note:
+      en: Bilateral middle frontal and anterior cingulate parcels are broad navigation landmarks. They do not reproduce task-specific lesion clusters or imply symmetric effects.
+      fr: Les parcelles frontales moyennes et cingulaires antérieures bilatérales sont des repères larges. Elles ne reproduisent pas les foyers lésionnels par tâche ni des effets symétriques.
+    mappings:
+      - {region: 'destrieux:left:15', source_name: G_front_middle}
+      - {region: 'destrieux:right:15', source_name: G_front_middle}
+      - {region: 'destrieux:left:6', source_name: G_and_S_cingul-Ant}
+      - {region: 'destrieux:right:6', source_name: G_and_S_cingul-Ant}
+    evidence:
+      - {reference: glascher-2012, role: supporting}

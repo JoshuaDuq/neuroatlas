@@ -51,7 +51,7 @@ def load_on_grid(config, path):
     """
     image = nib.load(path)
     if not np.array_equal(image.header.get_vox2ras_tkr(), reference_grid(config)):
-        raise ValueError(f"Volume is not registered to the fsaverage grid: {path}")
+        raise ValueError(f"Volume is not registered to the subject grid: {path}")
     return image
 
 
@@ -77,7 +77,9 @@ def export_volumes(config):
         },
         "display": config["sections"],
         "limitations": [
-            "Reference-template MRI and 1 mm segmentation; not individual anatomy.",
+            "One individual's 1 mm MRI and segmentation; not the viewer's anatomy."
+            if config["anatomy"]["individual"]
+            else "An averaged 1 mm MRI and segmentation; nobody's individual anatomy.",
             "Trilinear MRI interpolation does not increase source resolution.",
             "Segmentation is sampled with nearest neighbour; cortical surface atlases are not extended into the volume.",
         ],
@@ -87,8 +89,9 @@ def export_volumes(config):
 
 
 def main():
-    verify_sources()
-    record = export_volumes(read_config())
+    config = read_config()
+    verify_sources(config)
+    record = export_volumes(config)
     print(f"Exported lossless MRI and segmentation: {record['mri']['shape']}")
 
 

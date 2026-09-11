@@ -18,6 +18,12 @@ test('everything that differs from the default survives a round trip', () => {
   assert.deepEqual(decodeState(encodeState(state)), state);
 });
 
+test('atlas colors explicitly survive reload over the neutral default', () => {
+  const saved = encodeState({ atlasColors: true });
+  assert.equal(saved, 'colors=1');
+  assert.equal({ atlasColors: false, ...decodeState(saved) }.atlasColors, true);
+});
+
 test('a leading hash is accepted, because that is what location.hash gives', () => {
   assert.deepEqual(decodeState('#atlas=destrieux'), { atlas: 'destrieux' });
 });

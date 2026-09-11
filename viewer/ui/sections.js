@@ -36,7 +36,7 @@ const TISSUE_NAMES_EN = {
 };
 
 /** Cut controls and linked MRI sections; the controller owns all coordinates. */
-export function createSectionControls(sections, { cutAtlases, onFaceView, onSelect }) {
+export function createSectionControls(sections, { anatomy, cutAtlases, onFaceView, onSelect }) {
   const mode = document.getElementById('cut-mode');
   const cutAtlas = document.getElementById('cut-atlas');
   const cutAtlasLabel = document.getElementById('cut-atlas-label');
@@ -173,7 +173,7 @@ export function createSectionControls(sections, { cutAtlases, onFaceView, onSele
     });
     listen(exportButton, 'click', () => {
       const link = document.createElement('a');
-      link.download = `fsaverage-${name}-${sections.state.crosshair[axis].toFixed(1)}mm.png`;
+      link.download = `${anatomy.subject}-${name}-${sections.state.crosshair[axis].toFixed(1)}mm.png`;
       link.href = canvas.toDataURL('image/png'); link.click();
     });
   }
@@ -276,7 +276,7 @@ export function createSectionControls(sections, { cutAtlases, onFaceView, onSele
     if (mriWidthText) mriWidthText.textContent = mprI18n.contrastWindow;
     if (mriCenterText) mriCenterText.textContent = mprI18n.windowCenter;
     if (mprOverlayText) mprOverlayText.textContent = mprI18n.segmentationOverlay;
-    if (mprNote) mprNote.textContent = mprI18n.note;
+    if (mprNote) mprNote.textContent = mprI18n.note(anatomy);
 
     for (const [name, panel] of panels) {
       const planeName = mprI18n.labels[name] ?? name;

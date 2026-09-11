@@ -6,6 +6,30 @@ from brain_model.geometry import extract_structure
 from brain_model.shading import structure_normals
 
 
+def test_partitioned_scalar_field_is_continuous_and_preserves_source_values():
+    from brain_model.geometry import partition_surface, partition_vertex_field
+
+    vertices = np.array([[0., 0, 0], [4., 0, 0], [0., 3, 0], [4., 3, 0]])
+    faces = np.array([[0, 1, 2], [1, 3, 2]])
+    labels = np.array([1, 2, 3, 2])
+    values = vertices[:, 0] + 2 * vertices[:, 1] - 3
+    partition = partition_surface(vertices, faces, labels)
+    result = partition_vertex_field(faces, labels, values)
+    np.testing.assert_array_equal(result[:4], values)
+    np.testing.assert_allclose(
+        result, partition.vertices[:, 0] + 2 * partition.vertices[:, 1] - 3
+    )
+    assert len(result) == len(partition.vertices)
+
+
+@pytest.mark.parametrize("values", [np.array([1., np.nan, 2.]), np.ones(2)])
+def test_partitioned_scalar_field_rejects_invalid_source_data(values):
+    from brain_model.geometry import partition_vertex_field
+
+    with pytest.raises(ValueError, match="field"):
+        partition_vertex_field(np.array([[0, 1, 2]]), np.array([1, 2, 3]), values)
+
+
 def test_gradient_normals_are_outward_and_leave_anatomy_untouched():
     grid = np.indices((25, 25, 25)).transpose(1, 2, 3, 0)
     volume = (np.linalg.norm(grid - 12, axis=-1) < 8).astype(np.int32)

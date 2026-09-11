@@ -1,5 +1,72 @@
-source_directory: data/fsaverage
+# Which brain this build publishes. The two differ in kind, not in quality: one
+# individual has real folds and a real scan but is nobody else's brain, while an
+# averaged template is the space published parcellations and group results are
+# reported in. Switching is this one line plus a rebuild; no conversion step
+# reads anything subject-specific of its own.
+anatomy: bert
+
+anatomies:
+  bert:
+    subject: bert
+    # `display_name` is what the viewer shows. It is a proper noun, so it is not
+    # translated, and it is not derivable from `subject`: this one is
+    # FreeSurfer's brain, the next is MNI's with a FreeSurfer reconstruction.
+    display_name: FreeSurfer “bert”
+    label: FreeSurfer bert single-subject reconstruction
+    individual: true
+    directory: data/bert
+    source_url: https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz
+    # Not redistributed here. `archive` is what tells scripts/prepare_subject.py
+    # there is something to unpack, and pins which bytes it may unpack.
+    archive:
+      sha256: a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908
+      member_prefix: bert/
+    # HCP-MMP1.0 is published on fsaverage only, so it is resampled onto this
+    # subject through the registered spheres both reconstructions carry.
+    project_hcp_from: fsaverage
+    nextbrain:
+      directory: data/nextbrain-bert
+      volume: nextbrain-bert.mgz
+  fsaverage:
+    subject: fsaverage
+    display_name: FreeSurfer fsaverage
+    label: FreeSurfer fsaverage averaged template
+    individual: false
+    directory: data/fsaverage
+    source_url: https://osf.io/download/3bxqt?version=2
+    # No `archive`: these files are committed. No `project_hcp_from`: HCP-MMP1.0
+    # is already published in this space, so nothing is resampled onto it.
+    nextbrain:
+      directory: data/nextbrain
+      volume: nextbrain-fsaverage.mgz
+
 output_directory: public/models
+appearance:
+  tissue:
+    cortex: '#b9b7b3'
+    gray: '#a6a39f'
+    white: '#dedbd3'
+    fluid: '#98b9c4'
+    unlabelled: '#b9b7b3'
+    roughness: 0.82
+    clearcoat: 0.02
+    clearcoat_roughness: 0.6
+  folds:
+    low: -0.5
+    high: 1.8
+    direct_strength: 0.4
+    indirect_strength: 0.65
+  lighting:
+    environment: 0.3
+    hemisphere: 0.28
+    key: 2.2
+    fill: 0.65
+    rim: 0.7
+  occlusion:
+    radius: 0.004
+    thickness: 0.008
+    samples: 24
+    intensity: 0.65
 atlases:
   - id: destrieux
     label: Destrieux anatomical atlas
@@ -11,11 +78,11 @@ atlases:
     citation: https://doi.org/10.1038/nature18933
 # A cut-label atlas with no cortical surface counterpart. Optional: the volume
 # is produced once by scripts/warp_nextbrain.py, which needs ANTs.
+# `directory` and `volume` come from the selected anatomy: the warp targets one
+# brain, everything else here describes the published atlas itself.
 nextbrain:
   label: NextBrain histological atlas
   citation: https://doi.org/10.1038/s41586-025-09708-2
-  directory: data/nextbrain
-  volume: nextbrain-fsaverage.mgz
   lut: nextbrain-lut.txt
   # Below this, an ROI stays a cut label: a marching-cubes surface over a few
   # voxels claims a shape the warped 1 mm grid cannot support.
