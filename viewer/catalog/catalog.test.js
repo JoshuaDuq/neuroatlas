@@ -21,7 +21,7 @@ const manifest = {
 };
 
 const settings = (over = {}) => ({
-  atlas: 'destrieux', hemisphere: 'both', cortexVisible: true,
+  atlas: 'destrieux', detail: 'aseg', hemisphere: 'both', cortexVisible: true,
   cortexOpacity: 1, isolatedRegion: null, ...over,
 });
 
@@ -129,8 +129,8 @@ test('cut-only regions are grouped by the cut atlas, not the surface atlas', () 
   };
   const catalog = createCatalog(manifest);
   const settings = {
-    atlas: 'destrieux', cutAtlas: 'nextbrain', cutActive: true, hemisphere: 'both',
-    cortexVisible: true, cortexOpacity: 1, isolatedRegion: null,
+    atlas: 'destrieux', cutAtlas: 'nextbrain', cutActive: true, detail: 'aseg',
+    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, isolatedRegion: null,
   };
   const kinds = catalog.groups(settings).map(group => group.kind);
   assert.ok(kinds.includes('tissue'), 'a cut-only section is offered');

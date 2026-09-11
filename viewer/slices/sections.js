@@ -269,6 +269,9 @@ export class BrainSections extends EventTarget {
     this.emit();
   }
   emit() {
+    // The model owns display state; the plane is ours, so we report it there
+    // rather than have visibility reach across for it.
+    this.model.setCutState({ atlas: this.state.cutAtlas, active: this.active });
     this.dispatchEvent(new Event('change'));
   }
 

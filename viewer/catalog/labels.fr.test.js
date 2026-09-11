@@ -100,7 +100,7 @@ test('catalog searches with and without accents in French', async () => {
     await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
   const catalog = createCatalog(manifest, 'fr');
   const settings = {
-    atlas: 'destrieux', cutAtlas: 'destrieux', cutActive: false,
+    atlas: 'destrieux', cutAtlas: 'destrieux', cutActive: false, detail: 'aseg',
     hemisphere: 'both', cortexVisible: true,
     cortexOpacity: 1, isolatedRegion: null, lang: 'fr',
   };
@@ -148,4 +148,32 @@ test('exact 1:1 key parity between English and French subcortical structure tabl
     assert.ok(fr.system && fr.system.length > 0, `Missing French system for ${key}`);
   }
 });
+
+test('NextBrain source names with French entries expand to their verified French names', () => {
+  const cases = {
+    head_of_caudate: { name: 'Tête du noyau caudé', group: 'Ganglions de la base' },
+    optic_chiasm: { name: 'Chiasma optique', group: 'Voies visuelles' },
+    pineal_body: { name: 'Corps pinéal', group: 'Diencéphale' },
+    substantia_nigra__compact_part: { name: 'Substance noire, partie compacte', group: 'Tronc cérébral' },
+    rostral_subiculum: { name: 'Subiculum rostral', group: 'Hippocampe' },
+    cuneus: { name: 'Cunéus', group: 'Occipital' },
+  };
+  for (const [source_name, expected] of Object.entries(cases)) {
+    const r = { kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'left', source_name };
+    const label = labelOf(r, 'fr');
+    assert.equal(label.name, expected.name);
+    assert.equal(label.group, expected.group);
+  }
+});
+
+test('NextBrain regions without a French entry fall back to published English', () => {
+  const r = {
+    kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'right',
+    source_name: 'periaqueductal_gray_substance',
+  };
+  const label = labelOf(r, 'fr');
+  assert.equal(label.name, 'periaqueductal gray substance');
+  assert.equal(label.group, 'P–R');
+});
+
 

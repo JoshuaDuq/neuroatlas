@@ -15,7 +15,12 @@ test('cut palettes match every corresponding exported surface material', async (
     manifest.regions.filter((region) => region.kind === 'tissue-region').map((r) => r.id),
   );
   const materials = new Map();
-  for (const file of ['cortex-destrieux.glb', 'cortex-hcp-mmp.glb', 'structures.glb']) {
+  // nextbrain.glb is optional: it exists only where the warped volume does.
+  const files = ['cortex-destrieux.glb', 'cortex-hcp-mmp.glb', 'structures.glb'];
+  if (manifest.detail_levels.some((level) => level.file === 'nextbrain.glb')) {
+    files.push('nextbrain.glb');
+  }
+  for (const file of files) {
     const bytes = await readFile(new URL(file, directory));
     const { scene } = await new GLTFLoader().parseAsync(
       bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),

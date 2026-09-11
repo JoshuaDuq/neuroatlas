@@ -17,6 +17,7 @@ export const TRANSLATIONS = {
       'cortex-hidden': 'cortex off',
       isolated: 'isolated',
       'no-cut': 'needs a cut',
+      'other-detail': 'other detail level',
       fallback: 'hidden',
     },
     views: {
@@ -113,6 +114,7 @@ export const TRANSLATIONS = {
       both: 'Both',
       left: 'Left',
       right: 'Right',
+      internalAnatomy: 'Internal anatomy',
       showCortex: 'Show cortex',
       cortexOpacity: 'Cortex opacity',
       atlasColors: 'Atlas colours',
@@ -180,6 +182,7 @@ export const TRANSLATIONS = {
       'cortex-hidden': 'cortex masqué',
       isolated: 'isolé',
       'no-cut': 'nécessite une coupe',
+      'other-detail': 'autre niveau de détail',
       fallback: 'masqué',
     },
     views: {
@@ -276,6 +279,7 @@ export const TRANSLATIONS = {
       both: 'Les deux',
       left: 'Gauche',
       right: 'Droite',
+      internalAnatomy: 'Anatomie interne',
       showCortex: 'Afficher le cortex',
       cortexOpacity: 'Opacité du cortex',
       atlasColors: 'Couleurs de l’atlas',

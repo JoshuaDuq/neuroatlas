@@ -108,7 +108,7 @@ def manifest_assets(tmp_path):
     atlas = {"id": "test", "label": "Test atlas", "annotation": "test"}
     manifest = {
         "atlases": [{**atlas, "file": "cortex-test.glb", "region_count": 2}],
-        "structures": {"file": "structures.glb", "region_count": 1},
+        "detail_levels": [{"id": "aseg", "file": "structures.glb", "region_count": 1}],
         "regions": [],
     }
     config = {
@@ -158,7 +158,7 @@ def manifest_assets(tmp_path):
     volume[1, 1, 1] = 10
     image = nib.MGHImage(volume, np.eye(4))
     nib.save(image, source / "mri/aseg.mgz")
-    manifest["structures"]["voxel_to_surface_ras_mm"] = (
+    manifest["detail_levels"][0]["voxel_to_surface_ras_mm"] = (
         image.header.get_vox2ras_tkr().tolist()
     )
     region = {
@@ -232,7 +232,7 @@ def test_manifest_rejects_incomplete_region_sets_and_counts(manifest_assets, dam
     elif damage == "atlas_count":
         manifest["atlases"][0]["region_count"] += 1
     else:
-        manifest["structures"]["region_count"] += 1
+        manifest["detail_levels"][0]["region_count"] += 1
     with pytest.raises(ValueError, match="Manifest"):
         validate.validate_manifest(config, manifest)
 

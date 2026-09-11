@@ -135,6 +135,32 @@ export async function startApp() {
     sections.setCutAtlas(id).catch(() => {});
   }
 
+  /**
+   * Choose which segmentation of the internal anatomy is drawn.
+   *
+   * Loading the fine level is a download, so it reports progress the way an
+   * atlas switch does and leaves the model on screen while it arrives.
+   */
+  async function setDetail(id) {
+    if (id === model.state.detail) return;
+    session.setSwitching(null);
+    render();
+    try {
+      await model.setDetail(id, progress => {
+        if (progress?.total) {
+          session.setSwitching({ loaded: progress.loaded, total: progress.total });
+          render();
+        }
+      });
+      session.setStatus('ready');
+    } catch (error) {
+      // The control reflects model.state.detail, so it reverts on this render.
+      const level = model.manifest.detail_levels.find(level => level.id === id);
+      session.failSwitch(level?.label ?? id, error);
+    }
+    render();
+  }
+
   /** Undo whatever is hiding a region, then select it. */
   function reveal(reason, id) {
     if (reason === 'cortex-hidden') model.setCortexVisible(true);
@@ -143,6 +169,7 @@ export async function startApp() {
     // A cut-only region is nowhere until a plane exists. Coronal is the
     // conventional default, and the panel moves it from there.
     if (reason === 'no-cut') sections.setMode('coronal').catch(() => {});
+    if (reason === 'other-detail') setDetail(id.split(':')[0] === 'aseg' ? 'aseg' : 'nextbrain');
     select(id);
   }
 
@@ -188,6 +215,8 @@ export async function startApp() {
   });
 
   const display_ = createDisplay({
+    detailLevels: model.manifest.detail_levels,
+    onDetail: setDetail,
     onHemisphere: value => display(() => model.setHemisphere(value)),
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
@@ -227,10 +256,7 @@ export async function startApp() {
   let announced = null;
 
   function render() {
-    const state = session.assemble(model.state, {
-      atlas: sections.state.cutAtlas,
-      active: sections.active,
-    });
+    const state = session.assemble(model.state);
     catalog.setLanguage(state.lang);
     document.documentElement.lang = state.lang;
     root.dataset.status = state.status;
@@ -355,6 +381,7 @@ export async function startApp() {
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
   if (wanted.atlasColors !== undefined) model.setAtlasColors(wanted.atlasColors);
   if (wanted.cutAtlas) setCutAtlas(wanted.cutAtlas);
+  if (wanted.detail) await setDetail(wanted.detail);
   if (wanted.view) applyView(wanted.view, { immediate: true });
   if (wanted.selectedRegion && catalog.get(wanted.selectedRegion)) {
     try {

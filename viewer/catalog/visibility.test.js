@@ -6,7 +6,7 @@ const region = (over = {}) =>
   ({ id: 'a:left:1', atlas: 'a', hemisphere: 'left', kind: 'cortex', ...over });
 
 const base = {
-  atlas: 'a', cutAtlas: 'a', cutActive: true, hemisphere: 'both',
+  atlas: 'a', cutAtlas: 'a', cutActive: true, detail: 'aseg', hemisphere: 'both',
   cortexVisible: true, cortexOpacity: 1, isolatedRegion: null,
 };
 const settings = (over = {}) => ({ ...base, ...over });
@@ -20,9 +20,23 @@ test('cortex belonging to a different atlas is hidden', () => {
     { visible: false, reason: 'other-atlas' });
 });
 
-test('structures are shared, so the active atlas never hides them', () => {
+test('the surface atlas never hides a structure, but the detail level does', () => {
   const stem = region({ atlas: 'aseg', hemisphere: 'midline', kind: 'structure' });
-  assert.equal(visibilityOf(stem, settings()).visible, true);
+  assert.equal(visibilityOf(stem, settings({ atlas: 'b' })).visible, true);
+  assert.deepEqual(visibilityOf(stem, settings({ detail: 'n' })),
+    { visible: false, reason: 'other-detail' });
+});
+
+test('a structure of the inactive detail level is on screen while the cut paints it', () => {
+  // Two segmentations of one anatomy: only one is drawn as geometry, but a
+  // label the cut is sampling is visible whichever level that is.
+  const nucleus = region({ atlas: 'n', hemisphere: 'left', kind: 'structure' });
+  assert.equal(
+    visibilityOf(nucleus, settings({ detail: 'aseg', cutAtlas: 'n', cutActive: true })).visible,
+    true);
+  assert.equal(
+    visibilityOf(nucleus, settings({ detail: 'aseg', cutAtlas: 'n', cutActive: false })).reason,
+    'other-detail');
 });
 
 test('a hemisphere filter hides the opposite hemisphere but keeps midline', () => {

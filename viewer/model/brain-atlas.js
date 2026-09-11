@@ -5,7 +5,7 @@ import { visibilityOf } from '../catalog/visibility.js';
 
 function validateManifest(manifest) {
   if (manifest.schema_version !== 1 || !manifest.atlases?.length ||
-      !Array.isArray(manifest.regions) || !manifest.structures?.file) {
+      !Array.isArray(manifest.regions) || !manifest.detail_levels?.length) {
     throw new Error('Invalid brain model manifest: expected schema version 1.');
   }
   const ids = new Set();
@@ -71,6 +71,11 @@ export class BrainAtlas extends EventTarget {
     this.layers = new Map();
     this.pending = new Map();
     this.atlasId = null;
+    this.detailId = null;
+    // Pushed in by the sections, which own the plane. Keeping it here is what
+    // lets `settings` be the whole display state, so visibility reads one place.
+    this.cutAtlasId = null;
+    this.cutActive = false;
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
@@ -84,7 +89,7 @@ export class BrainAtlas extends EventTarget {
   }
 
   async initialize(atlasId = this.manifest.atlases[0].id, onProgress) {
-    await this.loadLayer('structures', this.manifest.structures.file, onProgress);
+    await this.setDetail(this.manifest.detail_levels[0].id, onProgress);
     await this.setAtlas(atlasId, onProgress);
   }
 
@@ -149,6 +154,31 @@ export class BrainAtlas extends EventTarget {
   }
 
   /**
+   * Choose which segmentation of the internal anatomy is drawn.
+   *
+   * Exactly one level is ever visible: both describe the same anatomy, so
+   * drawing them together would put two thalami in the same place. A selection
+   * belonging to the level being left is dropped by `update`.
+   */
+  async setDetail(id, onProgress) {
+    const level = this.manifest.detail_levels.find(level => level.id === id);
+    if (!level) throw new Error(`Unknown detail level: ${id}`);
+    const request = ++this.requestNumber;
+    await this.loadLayer(id, level.file, onProgress);
+    if (request !== this.requestNumber) return;
+    this.detailId = id;
+    this.update();
+  }
+
+  /** What the cut is doing, reported by the sections that own the plane. */
+  setCutState({ atlas, active }) {
+    if (atlas === this.cutAtlasId && active === this.cutActive) return;
+    this.cutAtlasId = atlas;
+    this.cutActive = active;
+    this.update();
+  }
+
+  /**
    * The display settings, as a plain object. Cheap: it walks nothing.
    *
    * Kept separate from `state` because the visibility rule needs these, and
@@ -158,6 +188,9 @@ export class BrainAtlas extends EventTarget {
   get settings() {
     return {
       atlas: this.atlasId,
+      detail: this.detailId,
+      cutAtlas: this.cutAtlasId,
+      cutActive: this.cutActive,
       hemisphere: this.hemisphere,
       cortexVisible: this.cortexVisible,
       cortexOpacity: this.cortexOpacity,
@@ -183,10 +216,10 @@ export class BrainAtlas extends EventTarget {
   update() {
     const settings = this.settings;
     for (const [id, layer] of this.layers) {
-      layer.scene.visible = id === 'structures' || id === this.atlasId;
+      layer.scene.visible = id === this.detailId || id === this.atlasId;
       for (const mesh of layer.meshes) {
         const region = this.regions.get(mesh.userData.region_id);
-        const cortex = id !== 'structures';
+        const cortex = region.kind === 'cortex' || region.kind === 'non-region';
         mesh.visible = visibilityOf(region, settings).visible;
         const material = mesh.material;
         if (material.clippingPlanes !== this.clippingPlanes) {
@@ -247,22 +280,15 @@ export class BrainAtlas extends EventTarget {
   /**
    * Whether a region can be the selection right now.
    *
-   * A meshed region is judged by what is actually drawn. A cut-only region has
-   * no mesh to look for, and whether a cut is showing it is known to the
-   * sections rather than here, so the cut is taken as given while the
-   * constraints this class does own still apply.
+   * The shared rule answers it, because a region may be drawn as geometry, as
+   * a cut label, or both, and `settings` now carries all three displays.
    *
    * `select` and `update` must ask the same question. Two answers would let a
    * selection be accepted and then dropped again on the same call, which is
    * silent by construction.
    */
   canSelect(region) {
-    if (region.kind === 'tissue-region') {
-      return visibilityOf(region, {
-        ...this.settings, cutAtlas: region.atlas, cutActive: true,
-      }).visible;
-    }
-    return this.visibleMeshes.some(mesh => mesh.userData.region_id === region.id);
+    return visibilityOf(region, this.settings).visible;
   }
 
   select(id) {

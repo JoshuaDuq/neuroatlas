@@ -19,7 +19,7 @@ function fixture() {
   const manifest = {
     schema_version: 1,
     atlases: [{ id: 'a', label: 'Atlas A', file: 'a.glb' }, { id: 'b', label: 'Atlas B', file: 'b.glb' }],
-    structures: { file: 'structures.glb' },
+    detail_levels: [{ id: 'aseg', label: 'Coarse', file: 'structures.glb' }],
     regions,
   };
   const loads = [];
@@ -168,7 +168,8 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   const { atlas } = fixture();
   await atlas.initialize('a');
   assert.deepEqual(atlas.settings, {
-    atlas: 'a', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
+    atlas: 'a', detail: 'aseg', cutAtlas: null, cutActive: false,
+    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
     atlasColors: true, isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
@@ -243,6 +244,7 @@ test('a cut-only region can be selected and is not dropped on the next update', 
   // raised nothing, so the selection simply vanished.
   const { atlas } = fixture();
   await atlas.initialize('a');
+  atlas.setCutState({ atlas: 'n', active: true });
   const dropped = [];
   atlas.addEventListener('selectionchange', event => dropped.push(event.detail));
 
@@ -256,6 +258,7 @@ test('a cut-only region can be selected and is not dropped on the next update', 
 test('a cut-only region still obeys the constraints the model does own', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
+  atlas.setCutState({ atlas: 'n', active: true });
   atlas.setHemisphere('right');
   assert.throws(() => atlas.select('n-left'), /not visible/);
 
@@ -264,4 +267,16 @@ test('a cut-only region still obeys the constraints the model does own', async (
   atlas.select('n-left');
   atlas.setHemisphere('right');
   assert.equal(atlas.state.selectedRegion, null);
+});
+
+test('a cut-only region is unselectable once the cut stops showing it', () => {
+  // It has no mesh, so the cut is the only thing that can put it on screen.
+  const { atlas } = fixture();
+  return atlas.initialize('a').then(() => {
+    atlas.setCutState({ atlas: 'n', active: true });
+    atlas.select('n-left');
+    atlas.setCutState({ atlas: 'n', active: false });
+    assert.equal(atlas.state.selectedRegion, null);
+    assert.throws(() => atlas.select('n-left'), /not visible/);
+  });
 });

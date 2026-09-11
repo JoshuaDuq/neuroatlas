@@ -17,6 +17,9 @@ nextbrain:
   directory: data/nextbrain
   volume: nextbrain-fsaverage.mgz
   lut: nextbrain-lut.txt
+  # Below this, an ROI stays a cut label: a marching-cubes surface over a few
+  # voxels claims a shape the warped 1 mm grid cannot support.
+  minimum_mesh_voxels: 10
 structures:
   shading_sigma_voxels: 0.8
   labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28, 31,

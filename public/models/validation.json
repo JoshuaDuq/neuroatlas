@@ -383,6 +383,2793 @@
       }
     ]
   },
+  "nextbrain_structures": {
+    "file": "nextbrain.glb",
+    "sha256": "9ad188c5e9dee937053a114a0963115f97f1c91353d45c242ab2f7f6ae0be164",
+    "regions": [
+      {
+        "id": "nextbrain:right:10752",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0563602447509766e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.971970376565549e-06,
+        "maximum_trilinear_isovalue_deviation": 2.0563602447509766e-06,
+        "mesh_volume_mm3": 49.66667413184214
+      },
+      {
+        "id": "nextbrain:right:10751",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6987323760986328e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.937208266510845e-06,
+        "maximum_trilinear_isovalue_deviation": 1.6987323760986328e-06,
+        "mesh_volume_mm3": 16.166665342015154
+      },
+      {
+        "id": "nextbrain:right:10721",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.682209014892578e-06,
+        "marching_cubes_auxiliary_center_vertices": 15,
+        "maximum_glb_coordinate_error_mm": 2.665767344690962e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 283.29165874548124
+      },
+      {
+        "id": "nextbrain:right:10697",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.473592758178711e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.559748863996769e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": 61.916653806964035
+      },
+      {
+        "id": "nextbrain:right:10662",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.682209014892578e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.574798199713263e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 1208.1249650020852
+      },
+      {
+        "id": "nextbrain:right:10580",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.6226043701171875e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 2.70122338255122e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 5430.708399236488
+      },
+      {
+        "id": "nextbrain:right:10578",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0686634637382353e-06,
+        "maximum_trilinear_isovalue_deviation": 1.7881393432617188e-06,
+        "mesh_volume_mm3": 8.083323770086997
+      },
+      {
+        "id": "nextbrain:right:10576",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.2351741790771484e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.041439539285457e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 203.7916885943805
+      },
+      {
+        "id": "nextbrain:right:10575",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.7746776260089166e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 27.083333137368967
+      },
+      {
+        "id": "nextbrain:right:10573",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9073486328125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.9664487464862206e-06,
+        "maximum_trilinear_isovalue_deviation": 1.9073486328125e-06,
+        "mesh_volume_mm3": 9.666667044858572
+      },
+      {
+        "id": "nextbrain:right:10565",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.140223856281971e-06,
+        "maximum_trilinear_isovalue_deviation": 2.0265579223632812e-06,
+        "mesh_volume_mm3": 3.499999974850033
+      },
+      {
+        "id": "nextbrain:right:10564",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.7418136596679688e-06,
+        "marching_cubes_auxiliary_center_vertices": 11,
+        "maximum_glb_coordinate_error_mm": 2.6209105093384567e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 122.20833955181713
+      },
+      {
+        "id": "nextbrain:right:10563",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.205371856689453e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.1291590277150906e-06,
+        "maximum_trilinear_isovalue_deviation": 2.205371856689453e-06,
+        "mesh_volume_mm3": 3.250000123553885
+      },
+      {
+        "id": "nextbrain:right:10562",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.4437904357910156e-06,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 2.1792916405890917e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10561",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.8978160446178754e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 13.125002151551405
+      },
+      {
+        "id": "nextbrain:right:10558",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.2649765014648438e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.9574229379650392e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": 54.8749975213593
+      },
+      {
+        "id": "nextbrain:right:10541",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.473592758178711e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.0743278104939173e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 111.70836453528283
+      },
+      {
+        "id": "nextbrain:right:10531",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.205371856689453e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.399885095936198e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 181.7916528584092
+      },
+      {
+        "id": "nextbrain:right:10521",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.904935125870467e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 65.00000028346949
+      },
+      {
+        "id": "nextbrain:right:10519",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.024286550707878e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 55.29168125373979
+      },
+      {
+        "id": "nextbrain:right:10517",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.0548825890009934e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 201.54166161952492
+      },
+      {
+        "id": "nextbrain:right:10508",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 773.250045392235
+      },
+      {
+        "id": "nextbrain:right:10496",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.5532193490881452e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 52.45833326065081
+      },
+      {
+        "id": "nextbrain:right:10492",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2451647860210493e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 12.875001271914858
+      },
+      {
+        "id": "nextbrain:right:10484",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7342416710797688e-06,
+        "maximum_trilinear_isovalue_deviation": 1.6689300537109375e-06,
+        "mesh_volume_mm3": 274.37499789986646
+      },
+      {
+        "id": "nextbrain:right:10479",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 8.943378717080141e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 7.416668315262728
+      },
+      {
+        "id": "nextbrain:right:10478",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2798527456437931e-06,
+        "maximum_trilinear_isovalue_deviation": 1.043081283569336e-06,
+        "mesh_volume_mm3": 113.9999986654153
+      },
+      {
+        "id": "nextbrain:right:10465",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.2649765014648438e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.042288268110802e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 283.04166522909264
+      },
+      {
+        "id": "nextbrain:right:10461",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.091530722133443e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 92.58332739483595
+      },
+      {
+        "id": "nextbrain:right:10458",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.342759171255685e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 587.0000227772049
+      },
+      {
+        "id": "nextbrain:right:10454",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2798527456437931e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 181.00002241992303
+      },
+      {
+        "id": "nextbrain:right:10441",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 343.4166505926611
+      },
+      {
+        "id": "nextbrain:right:10435",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 1.2865286809637945e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 161.66666781200195
+      },
+      {
+        "id": "nextbrain:right:10432",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.6536202735107973e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 144.6666436636249
+      },
+      {
+        "id": "nextbrain:right:10425",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.272196181922644e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10424",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.289156340629004e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 72.79167265394481
+      },
+      {
+        "id": "nextbrain:right:10423",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0110371984057705e-06,
+        "maximum_trilinear_isovalue_deviation": 9.238719940185547e-07,
+        "mesh_volume_mm3": 8.958330962147164
+      },
+      {
+        "id": "nextbrain:right:10421",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.016232284973007e-06,
+        "maximum_trilinear_isovalue_deviation": 1.7583370208740234e-06,
+        "mesh_volume_mm3": 9.00000198092529
+      },
+      {
+        "id": "nextbrain:right:10420",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0563602447509766e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.1560163866703043e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 26.958336772086543
+      },
+      {
+        "id": "nextbrain:right:10418",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.9802852742928172e-06,
+        "maximum_trilinear_isovalue_deviation": 2.0265579223632812e-06,
+        "mesh_volume_mm3": 16.41666076953378
+      },
+      {
+        "id": "nextbrain:right:10414",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 52,
+        "maximum_glb_coordinate_error_mm": 2.6124672288051168e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10410",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.1075531492515973e-06,
+        "maximum_trilinear_isovalue_deviation": 1.7881393432617188e-06,
+        "mesh_volume_mm3": 4.166666387272791
+      },
+      {
+        "id": "nextbrain:right:10408",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.616543770635892e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499964237213135,
+        "mesh_volume_mm3": 18.29167616584716
+      },
+      {
+        "id": "nextbrain:right:10407",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.2351741790771484e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 2.6184763147611987e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 147.58334633986627
+      },
+      {
+        "id": "nextbrain:right:10404",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.4437904357910156e-06,
+        "marching_cubes_auxiliary_center_vertices": 23,
+        "maximum_glb_coordinate_error_mm": 2.4367385539487534e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10399",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.493717959610543e-07,
+        "maximum_trilinear_isovalue_deviation": 1.043081283569336e-06,
+        "mesh_volume_mm3": 61.33333005783266
+      },
+      {
+        "id": "nextbrain:right:10398",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.71465430204603e-07,
+        "maximum_trilinear_isovalue_deviation": 8.940696716308594e-07,
+        "mesh_volume_mm3": 6.624998038479345
+      },
+      {
+        "id": "nextbrain:right:10397",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 9.71465430204603e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 56.45832253833534
+      },
+      {
+        "id": "nextbrain:right:10396",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 9.264689122470738e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 32.45833520323505
+      },
+      {
+        "id": "nextbrain:right:10394",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.2373572895931564e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 297.0416866895959
+      },
+      {
+        "id": "nextbrain:right:10393",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.652406692504883e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 2.3949908422609217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10385",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.055276838014681e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1026859283447266e-06,
+        "mesh_volume_mm3": 172.8750076900877
+      },
+      {
+        "id": "nextbrain:right:10384",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.384185791015625e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 2378.416691154465
+      },
+      {
+        "id": "nextbrain:right:10382",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0852301988621428e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 162.12500306358442
+      },
+      {
+        "id": "nextbrain:right:10381",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3526651676351724e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3709068298339844e-06,
+        "mesh_volume_mm3": 219.54167012156074
+      },
+      {
+        "id": "nextbrain:right:10380",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.1031892310905217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 232.49999837949767
+      },
+      {
+        "id": "nextbrain:right:10379",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.0381736426562284e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 139.66668785351837
+      },
+      {
+        "id": "nextbrain:right:10378",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.1658432732993521e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 190.54164586883772
+      },
+      {
+        "id": "nextbrain:right:10377",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0889280925840206e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 504.45834605155125
+      },
+      {
+        "id": "nextbrain:right:10375",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3629472347830681e-06,
+        "maximum_trilinear_isovalue_deviation": 1.5497207641601562e-06,
+        "mesh_volume_mm3": 3.87500272039367
+      },
+      {
+        "id": "nextbrain:right:10374",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6093254089355469e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.460693879197358e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 36.45834311222811
+      },
+      {
+        "id": "nextbrain:right:10372",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3275421007598868e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 9.291668053716709
+      },
+      {
+        "id": "nextbrain:right:10370",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.5831738692871839e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10369",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3715545533900084e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4901161193847656e-06,
+        "mesh_volume_mm3": 3.5833320685974392
+      },
+      {
+        "id": "nextbrain:right:10368",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.4552111177317275e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 57.20832557013577
+      },
+      {
+        "id": "nextbrain:right:10367",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3563331271497737e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 13.333337367513545
+      },
+      {
+        "id": "nextbrain:right:10364",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.393079268040686e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 14.875000484906993
+      },
+      {
+        "id": "nextbrain:right:10354",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.592802047729492e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 2.403952661541008e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10352",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.067177013742559e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 108.2083399773876
+      },
+      {
+        "id": "nextbrain:right:10350",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3715545533900084e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4901161193847656e-06,
+        "mesh_volume_mm3": 240.4999902450185
+      },
+      {
+        "id": "nextbrain:right:10349",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.996755599975586e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.074220763607056e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10347",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 13,
+        "maximum_glb_coordinate_error_mm": 2.0889280925840206e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 888.0832963439932
+      },
+      {
+        "id": "nextbrain:right:10346",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.4437904357910156e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.4368866254436763e-06,
+        "maximum_trilinear_isovalue_deviation": 2.4437904357910156e-06,
+        "mesh_volume_mm3": 13.000003365795624
+      },
+      {
+        "id": "nextbrain:right:10345",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.8014183044433594e-06,
+        "marching_cubes_auxiliary_center_vertices": 23,
+        "maximum_glb_coordinate_error_mm": 2.636463506996524e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": 427.6250152839602
+      },
+      {
+        "id": "nextbrain:right:10344",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.4437904357910156e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.405141585750601e-06,
+        "maximum_trilinear_isovalue_deviation": 2.4437904357910156e-06,
+        "mesh_volume_mm3": 21.416666449049597
+      },
+      {
+        "id": "nextbrain:right:10343",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.592802047729492e-06,
+        "marching_cubes_auxiliary_center_vertices": 39,
+        "maximum_glb_coordinate_error_mm": 2.6536202735107973e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500065565109253,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10341",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.7416040923318821e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 230.45835892018266
+      },
+      {
+        "id": "nextbrain:right:10340",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.35108426720493e-06,
+        "maximum_trilinear_isovalue_deviation": 1.5795230865478516e-06,
+        "mesh_volume_mm3": 5.499998746439253
+      },
+      {
+        "id": "nextbrain:right:10339",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 1.6785481797951832e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10326",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.319762627211112e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 60.41666723322045
+      },
+      {
+        "id": "nextbrain:right:10322",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.43657744487833e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 7.000000667602946
+      },
+      {
+        "id": "nextbrain:right:10321",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.055276838014681e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 31.208334787438144
+      },
+      {
+        "id": "nextbrain:right:10316",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 9.914382646638621e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 33.416663919497495
+      },
+      {
+        "id": "nextbrain:right:10315",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.055276838014681e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 22.58332806266835
+      },
+      {
+        "id": "nextbrain:right:10314",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3068921535778462e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 226.08334693658435
+      },
+      {
+        "id": "nextbrain:right:10313",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.526719229864186e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 520.4583256013385
+      },
+      {
+        "id": "nextbrain:right:10310",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0728836059570312e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.1275020507063548e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 148.79167277800443
+      },
+      {
+        "id": "nextbrain:right:10309",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.131696562039818e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 33.625005766283834
+      },
+      {
+        "id": "nextbrain:right:10306",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.42350672998744e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 10.499994821692045
+      },
+      {
+        "id": "nextbrain:right:10305",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.450580596923828e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.42350672998744e-07,
+        "maximum_trilinear_isovalue_deviation": 0.1249997615814209,
+        "mesh_volume_mm3": 6.000001631056571
+      },
+      {
+        "id": "nextbrain:right:10301",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2912524688774306e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 11.20833752552564
+      },
+      {
+        "id": "nextbrain:right:10298",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.684379225181604e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 12.208330595788192
+      },
+      {
+        "id": "nextbrain:right:10297",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 6.708833089167135e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 93.45834355087382
+      },
+      {
+        "id": "nextbrain:right:10295",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.1075531492515973e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10285",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.0568274990616527e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10283",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 1.0329202905668838e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10282",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.0381736426562284e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 500.3749885089155
+      },
+      {
+        "id": "nextbrain:right:10279",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.016260285880321e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1249997615814209,
+        "mesh_volume_mm3": 36.12500360018184
+      },
+      {
+        "id": "nextbrain:right:10277",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.840691201482204e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 29.041672604468932
+      },
+      {
+        "id": "nextbrain:right:10276",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.882262624921165e-07,
+        "maximum_trilinear_isovalue_deviation": 5.662441253662109e-07,
+        "mesh_volume_mm3": 19.500002773750257
+      },
+      {
+        "id": "nextbrain:right:10275",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 6.39647097700707e-07,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 145.74999787324603
+      },
+      {
+        "id": "nextbrain:right:10274",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 6.999997757220199
+      },
+      {
+        "id": "nextbrain:right:10256",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.708833089167135e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 42.124993880745805
+      },
+      {
+        "id": "nextbrain:right:10255",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.205285094591549e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 11.083333137289697
+      },
+      {
+        "id": "nextbrain:right:10254",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 12,
+        "maximum_glb_coordinate_error_mm": 1.9958414435621903e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10253",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 8.069446584063012e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 47.4999961648908
+      },
+      {
+        "id": "nextbrain:right:10246",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.04766918856169e-07,
+        "maximum_trilinear_isovalue_deviation": 4.76837158203125e-07,
+        "mesh_volume_mm3": 11.541666307951967
+      },
+      {
+        "id": "nextbrain:right:10245",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.504456016911575e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 12.958334578317745
+      },
+      {
+        "id": "nextbrain:right:10242",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.341787303518477e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 201.79166054434947
+      },
+      {
+        "id": "nextbrain:right:10238",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2288391110374226e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 15.791667573230082
+      },
+      {
+        "id": "nextbrain:right:10232",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.046627044677734e-07,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 9.614208531852645e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 49.666669620744024
+      },
+      {
+        "id": "nextbrain:right:10230",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 9.09405854847596e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10228",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.846637039040777e-07,
+        "maximum_trilinear_isovalue_deviation": 5.066394805908203e-07,
+        "mesh_volume_mm3": 10.083333707841344
+      },
+      {
+        "id": "nextbrain:right:10226",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 1.3067681219840679e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10225",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 9.487302203925951e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 128.4166659505578
+      },
+      {
+        "id": "nextbrain:right:10223",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.017339925713508e-07,
+        "maximum_trilinear_isovalue_deviation": 5.662441253662109e-07,
+        "mesh_volume_mm3": 25.750001224456245
+      },
+      {
+        "id": "nextbrain:right:10222",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0783798529013884e-06,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 817.6666695274548
+      },
+      {
+        "id": "nextbrain:right:10221",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.121774608462879e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 5.291666552424381
+      },
+      {
+        "id": "nextbrain:right:10220",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.04860139404292e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 155.08333159548522
+      },
+      {
+        "id": "nextbrain:right:10218",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 14,
+        "maximum_glb_coordinate_error_mm": 1.406167560021708e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10217",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.341787303518477e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 320.8749904249559
+      },
+      {
+        "id": "nextbrain:right:10216",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3406284136234152e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 586.7500019905426
+      },
+      {
+        "id": "nextbrain:right:10215",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.0614593251251697e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 163.9583369200833
+      },
+      {
+        "id": "nextbrain:right:10214",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.2654586878753988e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 105.33334350644084
+      },
+      {
+        "id": "nextbrain:right:10208",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.2730031570636853e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10207",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 8.069446584063012e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 6.3333338816878255
+      },
+      {
+        "id": "nextbrain:right:10206",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1787232941480167e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 798.7082734757562
+      },
+      {
+        "id": "nextbrain:right:10201",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.34334600944497e-07,
+        "maximum_trilinear_isovalue_deviation": 5.662441253662109e-07,
+        "mesh_volume_mm3": 26.625000723404682
+      },
+      {
+        "id": "nextbrain:right:10199",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2859160356199452e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1920928955078125e-06,
+        "mesh_volume_mm3": 132.75000434453926
+      },
+      {
+        "id": "nextbrain:right:10196",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 8.533487987390939e-07,
+        "maximum_trilinear_isovalue_deviation": 5.662441253662109e-07,
+        "mesh_volume_mm3": 11.12499704502995
+      },
+      {
+        "id": "nextbrain:right:10194",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 3.5762786865234375e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.343941593142705e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 42.3749977532232
+      },
+      {
+        "id": "nextbrain:right:10192",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.470348358154297e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 4.846637039040777e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 8.833334451347246
+      },
+      {
+        "id": "nextbrain:right:10191",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.153648312812924e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 4.916667304195859
+      },
+      {
+        "id": "nextbrain:right:10190",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 4.6510309052514993e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 7.29166762806322
+      },
+      {
+        "id": "nextbrain:right:10184",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 2.1582005647094946e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 171.24998539784414
+      },
+      {
+        "id": "nextbrain:right:10181",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 9.493717959610543e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 43.50000227425187
+      },
+      {
+        "id": "nextbrain:right:10174",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9073486328125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0686634637382353e-06,
+        "maximum_trilinear_isovalue_deviation": 1.9073486328125e-06,
+        "mesh_volume_mm3": 120.12500966631836
+      },
+      {
+        "id": "nextbrain:right:10157",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.265174895103547e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 14.958334805094978
+      },
+      {
+        "id": "nextbrain:right:10149",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 6.325538538930155e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 25.625000794340316
+      },
+      {
+        "id": "nextbrain:right:10147",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.001609771100335e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 34.750000052464706
+      },
+      {
+        "id": "nextbrain:right:10130",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.77690001009316e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 162.91666904270272
+      },
+      {
+        "id": "nextbrain:right:10128",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 11,
+        "maximum_glb_coordinate_error_mm": 1.0256462321971177e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 428.3333302712187
+      },
+      {
+        "id": "nextbrain:right:10125",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.230248567696888e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 137.16666841972722
+      },
+      {
+        "id": "nextbrain:right:10119",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.272196181922644e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 1705.750025966014
+      },
+      {
+        "id": "nextbrain:right:10118",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 2.1792916405890917e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 1765.8334455243264
+      },
+      {
+        "id": "nextbrain:right:10117",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 5.981382529862612e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 107.83333608224817
+      },
+      {
+        "id": "nextbrain:right:10103",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 6.39647097700707e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 63.916662847351596
+      },
+      {
+        "id": "nextbrain:right:10102",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.8477439880371094e-06,
+        "marching_cubes_auxiliary_center_vertices": 23,
+        "maximum_glb_coordinate_error_mm": 2.0813140554665065e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:right:10101",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.2037703650367682e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 606.9999992153275
+      },
+      {
+        "id": "nextbrain:right:10099",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3208347591186307e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1622905731201172e-06,
+        "mesh_volume_mm3": 15.958329480919016
+      },
+      {
+        "id": "nextbrain:right:10079",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 2.0706851118056522e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 6036.083499433669
+      },
+      {
+        "id": "nextbrain:right:10048",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.5831738692871839e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 3514.833395342656
+      },
+      {
+        "id": "nextbrain:left:813",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.9069784325425047e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4007091522216797e-06,
+        "mesh_volume_mm3": 4.083332198049609
+      },
+      {
+        "id": "nextbrain:left:752",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.086162567138672e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.9972003612239966e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499946355819702,
+        "mesh_volume_mm3": 55.83334202645029
+      },
+      {
+        "id": "nextbrain:left:751",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.8933419165752753e-06,
+        "maximum_trilinear_isovalue_deviation": 2.1457672119140625e-06,
+        "mesh_volume_mm3": 24.6250071614069
+      },
+      {
+        "id": "nextbrain:left:721",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 3.3974647521972656e-06,
+        "marching_cubes_auxiliary_center_vertices": 32,
+        "maximum_glb_coordinate_error_mm": 3.891486104368363e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500083446502686,
+        "mesh_volume_mm3": 415.9583947627344
+      },
+      {
+        "id": "nextbrain:left:697",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.7120113372802734e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.4159304617911926e-06,
+        "maximum_trilinear_isovalue_deviation": 2.7120113372802734e-06,
+        "mesh_volume_mm3": 49.70832355072276
+      },
+      {
+        "id": "nextbrain:left:662",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.562999725341797e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.579235616137839e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499964237213135,
+        "mesh_volume_mm3": 1119.8749963544844
+      },
+      {
+        "id": "nextbrain:left:580",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.562999725341797e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 2.627890647986213e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 6318.250114052666
+      },
+      {
+        "id": "nextbrain:left:578",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9669532775878906e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.8074415973268212e-06,
+        "maximum_trilinear_isovalue_deviation": 1.9669532775878906e-06,
+        "mesh_volume_mm3": 20.12500382323364
+      },
+      {
+        "id": "nextbrain:left:576",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.039394854518999e-06,
+        "maximum_trilinear_isovalue_deviation": 2.294778823852539e-06,
+        "mesh_volume_mm3": 187.49997789078887
+      },
+      {
+        "id": "nextbrain:left:575",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.996755599975586e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.8404689646833522e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 20.791663173119357
+      },
+      {
+        "id": "nextbrain:left:573",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9371509552001953e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.8243209108984634e-06,
+        "maximum_trilinear_isovalue_deviation": 1.9371509552001953e-06,
+        "mesh_volume_mm3": 7.2916688213190515
+      },
+      {
+        "id": "nextbrain:left:565",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.3543834686279297e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0484761299620927e-06,
+        "maximum_trilinear_isovalue_deviation": 2.3543834686279297e-06,
+        "mesh_volume_mm3": 3.5000006733448217
+      },
+      {
+        "id": "nextbrain:left:564",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 2.162170812688683e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:563",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.1291590277150906e-06,
+        "maximum_trilinear_isovalue_deviation": 1.7881393432617188e-06,
+        "mesh_volume_mm3": 2.999996081304327
+      },
+      {
+        "id": "nextbrain:left:562",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.024488782102153e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 29.91667008069773
+      },
+      {
+        "id": "nextbrain:left:561",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.175569534301758e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.988105623594029e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1249997615814209,
+        "mesh_volume_mm3": 17.291678836722884
+      },
+      {
+        "id": "nextbrain:left:558",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.2649765014648438e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.041439539285457e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 64.75002178953729
+      },
+      {
+        "id": "nextbrain:left:541",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.039894950100695e-06,
+        "maximum_trilinear_isovalue_deviation": 2.294778823852539e-06,
+        "mesh_volume_mm3": 94.62501223672666
+      },
+      {
+        "id": "nextbrain:left:531",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.086162567138672e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 218.0000192665861
+      },
+      {
+        "id": "nextbrain:left:521",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.175569534301758e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 2.0151659937072187e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 64.49998829420404
+      },
+      {
+        "id": "nextbrain:left:519",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9073486328125e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.0614593251251697e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499970197677612,
+        "mesh_volume_mm3": 78.70833134037647
+      },
+      {
+        "id": "nextbrain:left:517",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 219.79169522528426
+      },
+      {
+        "id": "nextbrain:left:508",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9073486328125e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 704.7499954051613
+      },
+      {
+        "id": "nextbrain:left:504",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0728836059570312e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2697120665119307e-06,
+        "maximum_trilinear_isovalue_deviation": 1.0728836059570312e-06,
+        "mesh_volume_mm3": 8.208333896627797
+      },
+      {
+        "id": "nextbrain:left:496",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.0728836059570312e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.5914022013604896e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 43.49999636132136
+      },
+      {
+        "id": "nextbrain:left:492",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.84564344176038e-07,
+        "maximum_trilinear_isovalue_deviation": 9.5367431640625e-07,
+        "mesh_volume_mm3": 12.958331934718858
+      },
+      {
+        "id": "nextbrain:left:484",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3024671902306174e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 274.4583373956885
+      },
+      {
+        "id": "nextbrain:left:478",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7062018295991355e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1920928955078125e-06,
+        "mesh_volume_mm3": 87.12500313052374
+      },
+      {
+        "id": "nextbrain:left:465",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.086162567138672e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.039394854518999e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 270.87500951318987
+      },
+      {
+        "id": "nextbrain:left:461",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 2.0490586703477814e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 92.83335164969228
+      },
+      {
+        "id": "nextbrain:left:458",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.284960576135522e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 558.4166519112614
+      },
+      {
+        "id": "nextbrain:left:454",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.0318448917427102e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 172.50001334100358
+      },
+      {
+        "id": "nextbrain:left:441",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 411.00000245217814
+      },
+      {
+        "id": "nextbrain:left:435",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.2865286809637945e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 238.04167649266302
+      },
+      {
+        "id": "nextbrain:left:432",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 2.1710869131611926e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 114.37501687479684
+      },
+      {
+        "id": "nextbrain:left:425",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.0346386037373513e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 55.9166653793467
+      },
+      {
+        "id": "nextbrain:left:424",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.225439325668878e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 60.95832854435609
+      },
+      {
+        "id": "nextbrain:left:423",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.005113963598807e-07,
+        "maximum_trilinear_isovalue_deviation": 8.940696716308594e-07,
+        "mesh_volume_mm3": 7.7499965786692355
+      },
+      {
+        "id": "nextbrain:left:421",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6987323760986328e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0553341841896955e-06,
+        "maximum_trilinear_isovalue_deviation": 1.6987323760986328e-06,
+        "mesh_volume_mm3": 9.749998158773963
+      },
+      {
+        "id": "nextbrain:left:420",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.079392842082788e-06,
+        "maximum_trilinear_isovalue_deviation": 2.1457672119140625e-06,
+        "mesh_volume_mm3": 25.916669360356675
+      },
+      {
+        "id": "nextbrain:left:418",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0503180171846325e-06,
+        "maximum_trilinear_isovalue_deviation": 2.1457672119140625e-06,
+        "mesh_volume_mm3": 12.291665881246285
+      },
+      {
+        "id": "nextbrain:left:414",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 59,
+        "maximum_glb_coordinate_error_mm": 2.5893849465592166e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:408",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.4367385539487534e-06,
+        "maximum_trilinear_isovalue_deviation": 2.1457672119140625e-06,
+        "mesh_volume_mm3": 8.49999471133189
+      },
+      {
+        "id": "nextbrain:left:407",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.205371856689453e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 2.4367385539487534e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 149.12501306614067
+      },
+      {
+        "id": "nextbrain:left:404",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.294778823852539e-06,
+        "marching_cubes_auxiliary_center_vertices": 13,
+        "maximum_glb_coordinate_error_mm": 2.4367385539487534e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": 239.99996155500125
+      },
+      {
+        "id": "nextbrain:left:399",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 9.493717959610543e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 56.58333721477535
+      },
+      {
+        "id": "nextbrain:left:397",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.210328244943871e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 55.87499725640164
+      },
+      {
+        "id": "nextbrain:left:396",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 9.409658548142808e-07,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 24.45832995480593
+      },
+      {
+        "id": "nextbrain:left:394",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.2000755424321225e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 200.9583690308913
+      },
+      {
+        "id": "nextbrain:left:393",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.175569534301758e-06,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 2.4003823556257943e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 93.83332173276663
+      },
+      {
+        "id": "nextbrain:left:385",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.757985330332104e-07,
+        "maximum_trilinear_isovalue_deviation": 9.238719940185547e-07,
+        "mesh_volume_mm3": 148.25000298310545
+      },
+      {
+        "id": "nextbrain:left:384",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.3245811462402344e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:382",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.067177013742559e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 92.45834418448234
+      },
+      {
+        "id": "nextbrain:left:381",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3526651676351724e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 168.37499622224945
+      },
+      {
+        "id": "nextbrain:left:380",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.0458715193616927e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:379",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0346386037373513e-06,
+        "maximum_trilinear_isovalue_deviation": 9.238719940185547e-07,
+        "mesh_volume_mm3": 106.91668346337936
+      },
+      {
+        "id": "nextbrain:left:378",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.1196713086467505e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 198.8333211287785
+      },
+      {
+        "id": "nextbrain:left:377",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.8477439880371094e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.026900291448536e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 443.8750296484213
+      },
+      {
+        "id": "nextbrain:left:375",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2898760501316627e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4007091522216797e-06,
+        "mesh_volume_mm3": 3.2500016369549205
+      },
+      {
+        "id": "nextbrain:left:374",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.370096744772505e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3709068298339844e-06,
+        "mesh_volume_mm3": 29.791672352391167
+      },
+      {
+        "id": "nextbrain:left:372",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2642298312610628e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4901161193847656e-06,
+        "mesh_volume_mm3": 6.583334125888149
+      },
+      {
+        "id": "nextbrain:left:371",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 7.958331658817337
+      },
+      {
+        "id": "nextbrain:left:370",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 60.875008708174846
+      },
+      {
+        "id": "nextbrain:left:369",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3321338080541497e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4901161193847656e-06,
+        "mesh_volume_mm3": 2.8333340280996113
+      },
+      {
+        "id": "nextbrain:left:368",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.5831738692871839e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 53.95832133324166
+      },
+      {
+        "id": "nextbrain:left:367",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2647566302968827e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 11.458333302290919
+      },
+      {
+        "id": "nextbrain:left:364",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.4142764231806604e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 20.833337601895426
+      },
+      {
+        "id": "nextbrain:left:354",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.9206275939941406e-06,
+        "marching_cubes_auxiliary_center_vertices": 19,
+        "maximum_glb_coordinate_error_mm": 2.6209105093384567e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:352",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.067177013742559e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 101.04167762522758
+      },
+      {
+        "id": "nextbrain:left:350",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.4015015430483218e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 226.95832840570435
+      },
+      {
+        "id": "nextbrain:left:349",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.1075531492515973e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 43.04167669484389
+      },
+      {
+        "id": "nextbrain:left:347",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9371509552001953e-06,
+        "marching_cubes_auxiliary_center_vertices": 12,
+        "maximum_glb_coordinate_error_mm": 2.0267907396335495e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 910.9999764139393
+      },
+      {
+        "id": "nextbrain:left:346",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.473592758178711e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.6462045765427485e-06,
+        "maximum_trilinear_isovalue_deviation": 2.473592758178711e-06,
+        "mesh_volume_mm3": 8.000000053393606
+      },
+      {
+        "id": "nextbrain:left:345",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.771615982055664e-06,
+        "marching_cubes_auxiliary_center_vertices": 26,
+        "maximum_glb_coordinate_error_mm": 2.636463506996524e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:344",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 2.2649765014648438e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.6536202735107973e-06,
+        "maximum_trilinear_isovalue_deviation": 2.2649765014648438e-06,
+        "mesh_volume_mm3": 16.58333458068652
+      },
+      {
+        "id": "nextbrain:left:343",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 2.2649765014648438e-06,
+        "marching_cubes_auxiliary_center_vertices": 37,
+        "maximum_glb_coordinate_error_mm": 2.6536202735107973e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:342",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3563331271497737e-06,
+        "maximum_trilinear_isovalue_deviation": 1.5795230865478516e-06,
+        "mesh_volume_mm3": 4.166667629033013
+      },
+      {
+        "id": "nextbrain:left:341",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 1.4552111177317275e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 285.333375698584
+      },
+      {
+        "id": "nextbrain:left:339",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.6093254089355469e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 1.406167560021708e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:326",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.319762627211112e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 94.74998908303826
+      },
+      {
+        "id": "nextbrain:left:322",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.102559916967238e-07,
+        "maximum_trilinear_isovalue_deviation": 4.76837158203125e-07,
+        "mesh_volume_mm3": 8.041666789057869
+      },
+      {
+        "id": "nextbrain:left:321",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.055276838014681e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 38.49999985921298
+      },
+      {
+        "id": "nextbrain:left:316",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.038948668458557e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 32.0416624575566
+      },
+      {
+        "id": "nextbrain:left:315",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.055276838014681e-06,
+        "maximum_trilinear_isovalue_deviation": 1.043081283569336e-06,
+        "mesh_volume_mm3": 26.083330482244
+      },
+      {
+        "id": "nextbrain:left:314",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.2037703650367682e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 170.9166639689744
+      },
+      {
+        "id": "nextbrain:left:313",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 14,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 432.58335618744786
+      },
+      {
+        "id": "nextbrain:left:310",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.067177013742559e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 156.45833557005923
+      },
+      {
+        "id": "nextbrain:left:309",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 6.084894236652678e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 36.916669278560875
+      },
+      {
+        "id": "nextbrain:left:305",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.015738297701933e-07,
+        "maximum_trilinear_isovalue_deviation": 7.152557373046875e-07,
+        "mesh_volume_mm3": 9.541667710989898
+      },
+      {
+        "id": "nextbrain:left:301",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2823659166067937e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3113021850585938e-06,
+        "mesh_volume_mm3": 12.125000102755417
+      },
+      {
+        "id": "nextbrain:left:298",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.604699116258301e-07,
+        "maximum_trilinear_isovalue_deviation": 4.76837158203125e-07,
+        "mesh_volume_mm3": 12.33332743643267
+      },
+      {
+        "id": "nextbrain:left:297",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 7.41772560158589e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 119.33333859887652
+      },
+      {
+        "id": "nextbrain:left:295",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.648667195051366e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 36.58332780686305
+      },
+      {
+        "id": "nextbrain:left:286",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.739882959899899e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 6.166667516265751
+      },
+      {
+        "id": "nextbrain:left:285",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.034236130230958e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 57.83333518099962
+      },
+      {
+        "id": "nextbrain:left:283",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 271.16667905418933
+      },
+      {
+        "id": "nextbrain:left:282",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 434.0416496186533
+      },
+      {
+        "id": "nextbrain:left:279",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.0286119494093846e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 28.791663284721775
+      },
+      {
+        "id": "nextbrain:left:277",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.294132688473965e-07,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 14.083336688578575
+      },
+      {
+        "id": "nextbrain:left:276",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 7.721422420846543e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 30.791661255953965
+      },
+      {
+        "id": "nextbrain:left:275",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.450580596923828e-07,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 7.775266310107747e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 162.62499667863176
+      },
+      {
+        "id": "nextbrain:left:274",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0340117671212854e-06,
+        "maximum_trilinear_isovalue_deviation": 8.940696716308594e-07,
+        "mesh_volume_mm3": 5.66666511186315
+      },
+      {
+        "id": "nextbrain:left:256",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 7.41772560158589e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 38.58332506505159
+      },
+      {
+        "id": "nextbrain:left:255",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 7.721422420846543e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 14.541665231731459
+      },
+      {
+        "id": "nextbrain:left:254",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 13,
+        "maximum_glb_coordinate_error_mm": 2.040646563849763e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 228.5000230910629
+      },
+      {
+        "id": "nextbrain:left:253",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.493717959610543e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 60.29166922357445
+      },
+      {
+        "id": "nextbrain:left:252",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.10336833055574e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 4.749997824663442
+      },
+      {
+        "id": "nextbrain:left:246",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.106366174894098e-07,
+        "maximum_trilinear_isovalue_deviation": 4.172325134277344e-07,
+        "mesh_volume_mm3": 14.79166729977185
+      },
+      {
+        "id": "nextbrain:left:245",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 8.069446584063012e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 16.95833674899732
+      },
+      {
+        "id": "nextbrain:left:244",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.102559916967238e-07,
+        "maximum_trilinear_isovalue_deviation": 5.662441253662109e-07,
+        "mesh_volume_mm3": 6.3333304134818205
+      },
+      {
+        "id": "nextbrain:left:243",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.095659784210662e-07,
+        "maximum_trilinear_isovalue_deviation": 5.066394805908203e-07,
+        "mesh_volume_mm3": 7.875001214289389
+      },
+      {
+        "id": "nextbrain:left:242",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.3208347591186307e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 223.83332652462636
+      },
+      {
+        "id": "nextbrain:left:238",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2859160356199452e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 5.833334523485674
+      },
+      {
+        "id": "nextbrain:left:232",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 9.593038439992786e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 49.9166735174757
+      },
+      {
+        "id": "nextbrain:left:230",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 6.684379225181604e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 36.91666898752284
+      },
+      {
+        "id": "nextbrain:left:228",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.017339925713508e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 27.124998995064054
+      },
+      {
+        "id": "nextbrain:left:227",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.810747638122559e-07,
+        "maximum_trilinear_isovalue_deviation": 4.172325134277344e-07,
+        "mesh_volume_mm3": 8.416667235394227
+      },
+      {
+        "id": "nextbrain:left:226",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.1886945449644515e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:225",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 9.435038894408823e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 199.54167068171446
+      },
+      {
+        "id": "nextbrain:left:223",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.084338924020623e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 33.62499305276058
+      },
+      {
+        "id": "nextbrain:left:222",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1196713086467505e-06,
+        "maximum_trilinear_isovalue_deviation": 9.238719940185547e-07,
+        "mesh_volume_mm3": 722.1250031293547
+      },
+      {
+        "id": "nextbrain:left:220",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 8.432332631728788e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 150.37500384372316
+      },
+      {
+        "id": "nextbrain:left:219",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.04766918856169e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 6.999999605312965
+      },
+      {
+        "id": "nextbrain:left:218",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 1.4934651172598373e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:217",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2870325375610104e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3709068298339844e-06,
+        "mesh_volume_mm3": 282.91665623760474
+      },
+      {
+        "id": "nextbrain:left:216",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.3468045060930635e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 691.0416775953462
+      },
+      {
+        "id": "nextbrain:left:215",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.7735864155598011e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 132.5833235339146
+      },
+      {
+        "id": "nextbrain:left:214",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.2561742963010917e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 87.41668116014057
+      },
+      {
+        "id": "nextbrain:left:208",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.2898760501316627e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 98.08334514607485
+      },
+      {
+        "id": "nextbrain:left:206",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.239805490946599e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 750.7499658759122
+      },
+      {
+        "id": "nextbrain:left:201",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.341603853981173e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 22.833333220565525
+      },
+      {
+        "id": "nextbrain:left:199",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.289156340629004e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 180.75000336979755
+      },
+      {
+        "id": "nextbrain:left:196",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.877582597462372e-07,
+        "maximum_trilinear_isovalue_deviation": 6.258487701416016e-07,
+        "mesh_volume_mm3": 6.1666629663666175
+      },
+      {
+        "id": "nextbrain:left:194",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 4.810747638122559e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 20.37499926045208
+      },
+      {
+        "id": "nextbrain:left:192",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.776304871346635e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 12.833331266922503
+      },
+      {
+        "id": "nextbrain:left:190",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 3.2782554626464844e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.8869535196074803e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 13.08333391218916
+      },
+      {
+        "id": "nextbrain:left:184",
+        "closed": false,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 2.153668904980285e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": null
+      },
+      {
+        "id": "nextbrain:left:181",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 9.350051937824857e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 60.20833613545001
+      },
+      {
+        "id": "nextbrain:left:174",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0686634637382353e-06,
+        "maximum_trilinear_isovalue_deviation": 1.817941665649414e-06,
+        "mesh_volume_mm3": 96.00002510737144
+      },
+      {
+        "id": "nextbrain:left:157",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2451647860210493e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 10.58333537009693
+      },
+      {
+        "id": "nextbrain:left:149",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 5.362679602672279e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 37.9166715747369
+      },
+      {
+        "id": "nextbrain:left:147",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 7.67599659299285e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 26.00000163357847
+      },
+      {
+        "id": "nextbrain:left:130",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 209.1249919831368
+      },
+      {
+        "id": "nextbrain:left:128",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 1.0659278790806558e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 402.4166455779917
+      },
+      {
+        "id": "nextbrain:left:125",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.2859160356199452e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 146.8333371477588
+      },
+      {
+        "id": "nextbrain:left:120",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.42461633623012e-07,
+        "maximum_trilinear_isovalue_deviation": 6.556510925292969e-07,
+        "mesh_volume_mm3": 10.416667491275001
+      },
+      {
+        "id": "nextbrain:left:119",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.272196181922644e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 1580.8750400118638
+      },
+      {
+        "id": "nextbrain:left:118",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9371509552001953e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.9684202691350736e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 1738.9167704966162
+      },
+      {
+        "id": "nextbrain:left:117",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 5.343941593142705e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 120.75000210106363
+      },
+      {
+        "id": "nextbrain:left:113",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3077466975375617e-06,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 5.833332951878679
+      },
+      {
+        "id": "nextbrain:left:111",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.808663078896894e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 9.749996271876403
+      },
+      {
+        "id": "nextbrain:left:103",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.727573259738892e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 128.37500269765408
+      },
+      {
+        "id": "nextbrain:left:102",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.9073486328125e-06,
+        "marching_cubes_auxiliary_center_vertices": 15,
+        "maximum_glb_coordinate_error_mm": 2.116856672519908e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 721.666804301981
+      },
+      {
+        "id": "nextbrain:left:101",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.067177013742559e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 655.2916597634727
+      },
+      {
+        "id": "nextbrain:left:99",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3208347591186307e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 22.541664606037497
+      },
+      {
+        "id": "nextbrain:left:79",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.0660555377527493e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 6047.749969880951
+      },
+      {
+        "id": "nextbrain:left:48",
+        "closed": true,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.5831738692871839e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 3904.0001510241564
+      }
+    ]
+  },
   "volumes": {
     "mri": {
       "file": "mri.volume",
