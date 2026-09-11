@@ -1,5 +1,7 @@
 import { Box3 } from 'three';
 import { createCatalog } from './catalog/catalog.js';
+import { loadClinicalCatalog } from './clinical/load.js';
+import { openClinicalRegion } from './clinical/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
 import { VIEW_DIRECTIONS, frameTo, upFor } from './render/camera-views.js';
 import { createPicker } from './render/picking.js';
@@ -13,6 +15,7 @@ import { createSectionControls } from './ui/sections.js';
 import { createDisplay } from './ui/display.js';
 import { createHeader } from './ui/header.js';
 import { createInspector } from './ui/inspector.js';
+import { createClinicalExplorer } from './ui/clinical.js';
 import { createNavigator } from './ui/navigator.js';
 import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
@@ -55,6 +58,8 @@ export async function startApp() {
   });
 
   const catalog = createCatalog(model.manifest, initialLang);
+  const clinicalCatalog = loadClinicalCatalog(model.manifest);
+  scene.setAppearance(model.manifest.appearance);
   const bounds = new Box3().setFromObject(model.group);
   scene.scene.add(model.group);
   scene.transparencyProbe = () =>
@@ -214,6 +219,23 @@ export async function startApp() {
     }),
   });
 
+  const clinicalExplorer = createClinicalExplorer({
+    clinical: clinicalCatalog,
+    anatomy: catalog,
+    onExplorer: value => { session.setExplorer(value); render(); },
+    onQuery: query => { session.setClinicalQuery(query); render(); },
+    onDeficit: id => {
+      clinicalCatalog.get(id);
+      session.setDeficit(id);
+      session.setExplorer('deficits');
+      render();
+    },
+    onRegion: async id => {
+      await openClinicalRegion(model, sections, id);
+      focusSelection();
+    },
+  });
+
   const display_ = createDisplay({
     detailLevels: model.manifest.detail_levels,
     onDetail: setDetail,
@@ -240,6 +262,7 @@ export async function startApp() {
   }
 
   const sectionControls = createSectionControls(sections, {
+    anatomy: model.manifest.anatomy,
     cutAtlases: model.manifest.cut_atlases,
     onFaceView: faceCut,
     onSelect: select,
@@ -265,6 +288,7 @@ export async function startApp() {
     header.update(state, { visibleCount });
     navigator.update(state);
     inspector.update(state);
+    clinicalExplorer.update(state);
     display_.update(state);
     sectionControls.update(state);
     chrome.update(state);
@@ -273,7 +297,9 @@ export async function startApp() {
     syncUrl(state);
 
     const colophonText = document.getElementById('colophon-text');
-    if (colophonText) colophonText.textContent = t(state.lang, 'footer').colophon;
+    if (colophonText) {
+      colophonText.textContent = t(state.lang, 'footer').colophon(model.manifest.anatomy);
+    }
     const provenanceLink = document.getElementById('provenance');
     if (provenanceLink) provenanceLink.textContent = t(state.lang, 'footer').provenance;
 
@@ -351,7 +377,14 @@ export async function startApp() {
     if (!shortcutsAllowed(event.target)) return;
     if (event.key === '?') { event.preventDefault(); return shortcuts.toggle(); }
     if (shortcuts.isOpen) return;
-    if (event.key === '/') { event.preventDefault(); navigator.focusSearch(); return; }
+    if (event.key === '/') {
+      event.preventDefault();
+      if (session.assemble(model.state).explorer === 'deficits') clinicalExplorer.focusSearch();
+      else navigator.focusSearch();
+      return;
+    }
+    if (session.assemble(model.state).explorer === 'deficits'
+      && ['ArrowDown', 'ArrowUp'].includes(event.key)) return;
     if (event.key === 'ArrowDown') { event.preventDefault(); navigator.moveFocus(1); return; }
     if (event.key === 'ArrowUp') { event.preventDefault(); navigator.moveFocus(-1); return; }
     if (event.key === '0') return applyView('oblique');
@@ -411,6 +444,7 @@ export async function startApp() {
       chrome.dispose();
       display_.dispose();
       inspector.dispose();
+      clinicalExplorer.dispose();
       navigator.dispose();
       header.dispose();
       model.dispose();

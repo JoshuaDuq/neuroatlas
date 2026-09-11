@@ -1,5 +1,5 @@
 import {
-  ACESFilmicToneMapping, Color, DirectionalLight, HalfFloatType, HemisphereLight,
+  ACESFilmicToneMapping, Color, HalfFloatType,
   PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -8,6 +8,7 @@ import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { createAnatomicalLighting } from './lighting.js';
 
 const TRANSITION_MS = 240;
 
@@ -39,13 +40,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     'Brain model. Drag to rotate, scroll to zoom, click a region to select.');
   host.prepend(renderer.domElement);
 
-  scene.add(new HemisphereLight(0xf1f5ff, 0xa2a297, 1.0));
-  const keyLight = new DirectionalLight(0xfff3df, 2.8);
-  keyLight.position.set(-0.3, 0.45, -0.35);
-  scene.add(keyLight);
-  const fillLight = new DirectionalLight(0xe2ebf3, 0.55);
-  fillLight.position.set(0.35, 0.12, 0.25);
-  scene.add(fillLight);
+  scene.add(camera);
+  let lighting = null;
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -57,9 +53,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   composer.addPass(new RenderPass(scene, camera));
 
   const occlusion = new GTAOPass(scene, camera, 1, 1);
-  occlusion.updateGtaoMaterial({ radius: 0.006, thickness: 0.012, samples: 16 });
   occlusion.updatePdMaterial({ depthPhi: 0.002, normalPhi: 8, radius: 4 });
-  occlusion.blendIntensity = 0.8;
   composer.addPass(occlusion);
 
   /*
@@ -86,6 +80,16 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   let hasTransparency = () => false;
   let hasSections = () => false;
   const invalidate = () => { dirty = true; };
+
+  function setAppearance(appearance) {
+    lighting?.dispose();
+    lighting = createAnatomicalLighting(renderer, camera, appearance.lighting);
+    scene.environment = lighting.texture;
+    scene.environmentIntensity = appearance.lighting.environment;
+    occlusion.updateGtaoMaterial(appearance.occlusion);
+    occlusion.blendIntensity = appearance.occlusion.intensity;
+    invalidate();
+  }
 
   function applyTheme() {
     scene.background = new Color(token('--scene-background'));
@@ -197,7 +201,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   return {
     scene, camera, controls,
     domElement: renderer.domElement,
-    applyTheme, setSize, setOutlined, moveTo, invalidate,
+    applyTheme, setAppearance, setSize, setOutlined, moveTo, invalidate,
     set sectionsProbe(probe) { hasSections = probe; },
     set transparencyProbe(probe) { hasTransparency = probe; },
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
@@ -210,6 +214,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       renderer.domElement.removeEventListener('webglcontextlost', handleLost);
       renderer.domElement.removeEventListener('webglcontextrestored', handleRestored);
       controls.dispose();
+      lighting?.dispose();
       for (const pass of composer.passes) pass.dispose?.();
       composer.dispose();
       renderer.dispose();

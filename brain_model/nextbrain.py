@@ -1,11 +1,11 @@
-"""Published NextBrain histological labels, warped once into the fsaverage grid.
+"""Published NextBrain histological labels, warped once into the subject grid.
 
 NextBrain is purely volumetric: it delineates deep nuclei that no cortical
 surface annotation describes, and it has no surface counterpart. It therefore
 enters this model as a cut-label source only, contributing regions that carry
 measured volumes but no mesh.
 
-The warp from MNI152 to fsaverage is deliberately not reproducible from this
+The warp from MNI152 to this subject is deliberately not reproducible from this
 package. It needs ANTs and runs for minutes, so `scripts/warp_nextbrain.py`
 performs it once and records the result in `data/sources.json` as a checksummed
 derived source, which `verify_sources` then guards like any downloaded input.
@@ -88,7 +88,7 @@ def is_available(config):
 
 
 def load(config):
-    """The warped labels on the fsaverage grid, with their published names.
+    """The warped labels on the subject grid, with their published names.
 
     `load_on_grid` carries the whole guarantee of this module: labels that do
     not share the reference voxel-to-RAS mapping exactly would be drawn at the
@@ -215,7 +215,7 @@ def export_atlas(config, regions):
     )
     record["labels"] = entries
     record["label_method"] = (
-        "Published NextBrain MNI152 labels, nonlinearly warped to fsaverage and "
+        "Published NextBrain MNI152 labels, nonlinearly warped to this subject and "
         "resampled with nearest neighbour; no label value is interpolated or invented"
     )
     return record

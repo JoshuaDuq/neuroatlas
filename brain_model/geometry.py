@@ -47,6 +47,24 @@ def validate_surface(vertices, faces, labels):
         raise ValueError("One integer annotation is required per vertex")
 
 
+def partition_edges(mixed_faces):
+    edges = np.sort(mixed_faces[:, [[0, 1], [1, 2], [2, 0]]], axis=2)
+    return np.unique(edges.reshape(-1, 2), axis=0, return_inverse=True)
+
+
+def partition_vertex_field(faces, labels, values):
+    """Interpolate a continuous field on the same barycentric atlas partition."""
+    if values.shape != labels.shape or values.ndim != 1:
+        raise ValueError("A scalar field value is required for each source vertex")
+    if not np.isfinite(values).all():
+        raise ValueError("Surface field values must be finite")
+    mixed_faces = faces[np.any(labels[faces] != labels[faces[:, :1]], axis=1)]
+    edges, _ = partition_edges(mixed_faces)
+    return np.concatenate(
+        [values, values[edges].mean(axis=1), values[mixed_faces].mean(axis=1)]
+    )
+
+
 def partition_surface(vertices, faces, labels):
     """Partition mixed-label faces into six barycentric subtriangles.
 
@@ -61,8 +79,7 @@ def partition_surface(vertices, faces, labels):
     uniform = np.all(face_labels == face_labels[:, :1], axis=1)
     mixed_faces = faces[~uniform]
 
-    edges = np.sort(mixed_faces[:, [[0, 1], [1, 2], [2, 0]]], axis=2)
-    edges, edge_inverse = np.unique(edges.reshape(-1, 2), axis=0, return_inverse=True)
+    edges, edge_inverse = partition_edges(mixed_faces)
     midpoint_indices = edge_inverse.reshape(-1, 3) + len(vertices)
     center_indices = np.arange(len(mixed_faces)) + len(vertices) + len(edges)
     points = np.vstack(

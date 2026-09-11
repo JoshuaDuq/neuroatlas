@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { parse } from 'yaml';
 import { Raycaster, Vector3 } from 'three';
 import { centeredFrame, rasToWorld } from '../slices/coordinates.js';
 import { Volume } from '../slices/volume.js';
 import { TissueSections } from './gpu-sections.js';
+
+const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 
 function fixture() {
   const region = { id: 'destrieux:left:1' };
@@ -36,6 +40,7 @@ function fixture() {
   };
   const volume = new Volume(metadata, new Uint16Array(8).fill(1));
   const model = {
+    manifest: { appearance },
     state: {
       atlas: 'destrieux',
       hemisphere: 'both',

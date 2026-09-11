@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 import { visibilityOf } from '../catalog/visibility.js';
 import { fetchPublished, REVALIDATE_HEADER } from './published-assets.js';
+import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -13,6 +14,9 @@ function validateManifest(manifest) {
     ['atlases', manifest.atlases?.length > 0],
     ['regions', Array.isArray(manifest.regions)],
     ['detail_levels', manifest.detail_levels?.length > 0],
+    ['appearance', Boolean(manifest.appearance?.tissue && manifest.appearance?.folds)],
+    ['anatomy', Boolean(manifest.anatomy?.subject && manifest.anatomy?.display_name)
+      && typeof manifest.anatomy.individual === 'boolean'],
   ].filter(([, present]) => !present).map(([field]) => field);
   if (missing.length) {
     throw new Error(
@@ -93,7 +97,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
-    this.atlasColors = true;
+    this.atlasColors = false;
     this.sourceColors = new WeakMap();
     this.selectedId = null;
     this.isolatedId = null;
@@ -135,7 +139,7 @@ export class BrainAtlas extends EventTarget {
           // Indirect indexing preserves the scientific source triangle order.
           mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
           mesh.raycast = acceleratedRaycast;
-          mesh.material = mesh.material.clone();
+          mesh.material = createAnatomicalMaterial(mesh, region, this.manifest.appearance);
           this.sourceColors.set(mesh, mesh.material.color.clone());
           meshes.push(mesh);
         });
@@ -241,8 +245,9 @@ export class BrainAtlas extends EventTarget {
           material.needsUpdate = true;
         }
         material.color.copy(this.sourceColors.get(mesh));
-        if (!this.atlasColors) material.color.setHex(cortex ? 0xd6cfc2 : 0xc7beb0);
-        if (region.kind === 'non-region') material.color.setHex(0xb0aca5);
+        if (!this.atlasColors || region.kind === 'non-region') {
+          material.color.set(tissueColor(region, this.manifest.appearance.tissue));
+        }
         // Selection is drawn by the outline pass. Tinting the material would
         // alter a region's atlas colour, which is the datum being displayed.
         material.opacity = cortex ? this.cortexOpacity : 1;
@@ -364,7 +369,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
-    this.atlasColors = true;
+    this.atlasColors = false;
     this.isolatedId = null;
     this.select(null);
   }

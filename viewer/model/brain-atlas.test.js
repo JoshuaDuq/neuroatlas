@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { BoxGeometry, DoubleSide, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
+import { readFileSync } from 'node:fs';
+import { parse } from 'yaml';
+import { BoxGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
 import { visibilityOf } from '../catalog/visibility.js';
 import { BrainAtlas } from './brain-atlas.js';
+
+const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 
 const regions = [
   { id: 'a-left', label: 'A left', hemisphere: 'left', atlas: 'a', source_label_id: 1, kind: 'cortex' },
@@ -18,6 +22,8 @@ const regions = [
 function fixture() {
   const manifest = {
     schema_version: 1,
+    appearance,
+    anatomy: { id: 'bert', subject: 'bert', display_name: 'Subject', individual: true },
     atlases: [{ id: 'a', label: 'Atlas A', file: 'a.glb' }, { id: 'b', label: 'Atlas B', file: 'b.glb' }],
     detail_levels: [{ id: 'aseg', label: 'Coarse', file: 'structures.glb' }],
     regions,
@@ -32,6 +38,8 @@ function fixture() {
       const atlasId = file === 'structures.glb' ? 'aseg' : file[0];
       for (const [index, region] of regions.filter(region => region.atlas === atlasId).entries()) {
         const mesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshStandardMaterial({ side: DoubleSide }));
+        mesh.geometry.setAttribute('_sulc', new Float32BufferAttribute(
+          new Float32Array(mesh.geometry.attributes.position.count), 1));
         mesh.position.x = index * 0.03;
         mesh.userData = { ...region, region_id: region.id };
         scene.add(mesh);
@@ -74,24 +82,44 @@ test('selection events carry source metadata; medial wall cannot become a region
   atlas.dispose();
 });
 
-test('starts with atlas colors active and toggles neutral cortex without geometry changes', async () => {
+test('neutral anatomy preserves picking and isolation through atlas color changes', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
-  assert.equal(atlas.state.atlasColors, true);
-  const mesh = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-left');
-  const geometry = mesh.geometry;
-  const colored = mesh.material.color.getHex();
-  assert.equal(colored, 0xffffff);
-  const structure = atlas.visibleMeshes.find(mesh => mesh.userData.kind === 'structure');
-  assert.equal(structure.material.color.getHex(), 0xffffff);
-  atlas.setAtlasColors(false);
+  assert.equal(atlas.state.atlasColors, false);
+  const mesh = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-right');
+  const positions = mesh.geometry.attributes.position.array.slice();
+  const indices = mesh.geometry.index.array.slice();
+  const ray = new Raycaster(new Vector3(0.03, 0, 0.1), new Vector3(0, 0, -1));
   const neutral = mesh.material.color.getHex();
-  assert.notEqual(neutral, 0xffffff);
-  assert.notEqual(structure.material.color.getHex(), 0xffffff);
-  assert.equal(mesh.geometry, geometry);
-  atlas.setAtlasColors(true);
-  assert.equal(mesh.material.color.getHex(), colored);
-  assert.equal(structure.material.color.getHex(), 0xffffff);
+  assert.equal(mesh.material.color.getHexString(), appearance.tissue.cortex.slice(1));
+  atlas.select(atlas.pick(ray).id);
+  atlas.isolate();
+  for (const enabled of [true, false, true]) {
+    atlas.setAtlasColors(enabled);
+    assert.equal(mesh.material.color.getHex(), enabled ? 0xffffff : neutral);
+    assert.equal(atlas.pick(ray).id, 'a-right');
+    assert.equal(atlas.state.selectedRegion.id, 'a-right');
+    assert.deepEqual(atlas.visibleMeshes, [mesh]);
+    assert.deepEqual(mesh.geometry.attributes.position.array, positions);
+    assert.deepEqual(mesh.geometry.index.array, indices);
+  }
+  atlas.reset();
+  assert.equal(atlas.state.atlasColors, false);
+  assert.equal(mesh.material.color.getHex(), neutral);
+  atlas.dispose();
+});
+
+test('rejects cortex missing source morphometry instead of silently losing relief', async () => {
+  const { atlas } = fixture();
+  const load = atlas.loader.loadAsync;
+  atlas.loader.loadAsync = async file => {
+    const result = await load(file);
+    result.scene.traverse(mesh => {
+      if (mesh.isMesh) mesh.geometry.deleteAttribute('_sulc');
+    });
+    return result;
+  };
+  await assert.rejects(atlas.initialize('a'), /sulcal-depth/);
   atlas.dispose();
 });
 
@@ -170,7 +198,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
-    atlasColors: true, isolatedRegion: null,
+    atlasColors: false, isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
   assert.equal(atlas.state.visibleMeshCount, 4);
@@ -297,6 +325,14 @@ test('an out-of-date manifest names the field it is missing, not the schema', ()
   assert.throws(() => new BrainAtlas({ ...good, atlases: [] }, loader), /atlases/);
   assert.throws(() => new BrainAtlas({ ...good, schema_version: 2 }, loader),
     /schema_version 1/);
+  // The viewer names the subject whose brain this is, so a manifest that has
+  // stopped saying which brain it is cannot be shown under the old label.
+  assert.throws(() => new BrainAtlas({ ...good, anatomy: { id: 'bert' } }, loader),
+    /anatomy/);
+  // `individual` decides how the viewer describes the brain, so a manifest that
+  // omits it would silently describe it as the other kind.
+  assert.throws(() => new BrainAtlas(
+    { ...good, anatomy: { subject: 'bert', display_name: 'Subject' } }, loader), /anatomy/);
   // And it says what to do about it.
   assert.throws(() => new BrainAtlas(stale, loader), /cache/i);
 });

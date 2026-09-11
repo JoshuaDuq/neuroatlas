@@ -34,6 +34,9 @@ export function createSession({ views, theme = 'light', lang = 'en' }) {
   let state = {
     view: 'oblique',
     query: '',
+    explorer: 'anatomy',
+    clinicalQuery: '',
+    selectedDeficit: null,
     expanded: new Set(),
     theme,
     lang: ['en', 'fr'].includes(lang) ? lang : 'en',
@@ -56,6 +59,16 @@ export function createSession({ views, theme = 'light', lang = 'en' }) {
     },
 
     setQuery: query => act({ query }),
+
+    setExplorer(explorer) {
+      if (!['anatomy', 'deficits'].includes(explorer)) {
+        throw new Error(`Unknown explorer: ${explorer}`);
+      }
+      return act({ explorer });
+    },
+
+    setClinicalQuery: clinicalQuery => act({ clinicalQuery }),
+    setDeficit: selectedDeficit => act({ selectedDeficit }),
 
     toggleGroup(name) {
       const expanded = new Set(state.expanded);

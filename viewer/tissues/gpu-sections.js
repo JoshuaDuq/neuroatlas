@@ -132,7 +132,9 @@ export class TissueSections {
       state.isolatedRegion,
     ]);
     if (key !== layer.paletteKey) {
-      layer.palette.image.data = createPalette(layer.metadata.labels, state);
+      layer.palette.image.data = createPalette(
+        layer.metadata.labels, state, this.model.manifest.appearance.tissue,
+      );
       layer.palette.needsUpdate = true;
       layer.paletteKey = key;
     }

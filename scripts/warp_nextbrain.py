@@ -1,4 +1,4 @@
-"""Warp the published NextBrain atlas into the fsaverage grid, once.
+"""Warp the published NextBrain atlas into the subject grid, once.
 
 This is the one step the package build cannot reproduce: it needs ANTs and runs
 for tens of minutes. Run it once, let `--record` register the checksummed result
@@ -21,9 +21,10 @@ Inputs:
                   tpl-MNI152NLin6Asym_res-01_T1w.nii.gz.
 
 The template is registered and the label volume merely resampled, so no label
-value is ever interpolated. Both are averaged templates, which bounds the
-achievable accuracy: the warp is much better than an affine, and still not
-subject-level.
+value is ever interpolated. What bounds the achievable accuracy is the other
+side of the pair: an averaged template is registered onto one individual's
+brain, so the nuclei land where that inter-subject warp puts them, not where a
+histological delineation of this subject would.
 """
 
 import argparse
@@ -44,10 +45,13 @@ from brain_model.sources import ROOT, read_config, sha256
 SOURCE_URL = "https://github.com/compneurobilbao/nextbrain-mni-atlas"
 TEMPLATE_URL = "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym"
 CITATION = "https://doi.org/10.1038/s41586-025-09708-2"
-PROCEDURE = (
-    "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 "
-    "to fsaverage orig.mgz, then genericLabel resampling of the label volume"
-)
+def procedure(config):
+    """Name the brain that was registered to, not just the script that did it."""
+    return (
+        "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 "
+        f"to {config['anatomy']['id']} orig.mgz, then genericLabel resampling of "
+        "the label volume"
+    )
 
 VERIFY_SAMPLES = 2000
 
@@ -124,8 +128,9 @@ def warp_labels(ants, template, atlas, fixed, work):
         fixed=target,
         moving=ants.image_read(str(template)),
         type_of_transform="SyNRA",
+        random_seed=0,
         reg_iterations=REGISTRATION_LEVELS,
-        outprefix=str(work / "mni152-to-fsaverage-"),
+        outprefix=str(work / "mni152-to-subject-"),
         verbose=True,
     )
     warped = ants.apply_transforms(
@@ -140,7 +145,7 @@ def warp_labels(ants, template, atlas, fixed, work):
 
 
 def write_on_grid(warped, reference, destination):
-    """Rewrap the warped labels with fsaverage's grid and a label-safe dtype.
+    """Rewrap the warped labels with subject's grid and a label-safe dtype.
 
     Registration preserved the voxel grid, so this restores the FreeSurfer
     header that `get_vox2ras_tkr` reads rather than converting any coordinate.
@@ -165,7 +170,7 @@ def write_on_grid(warped, reference, destination):
         raise SystemExit(f"Writing {destination.name} did not preserve every label id.")
 
 
-def record_sources(entries):
+def record_sources(config, entries):
     """Register the derived artefacts, replacing any entry for the same path."""
     manifest = ROOT / "data/sources.json"
     provenance = json.loads(manifest.read_text())
@@ -176,9 +181,10 @@ def record_sources(entries):
         ] + [{
             "path": relative,
             "sha256": sha256(path),
+            "anatomy": config["anatomy"]["id"],
             "optional": True,
             "derived_from": derived_from,
-            "procedure": PROCEDURE,
+            "procedure": procedure(config),
             "citation": CITATION,
         }]
         print(f"recorded {relative}")
@@ -191,11 +197,12 @@ def main():
     parser.add_argument("--lut", type=Path, required=True, help="NextBrain label table")
     parser.add_argument("--template", type=Path, required=True, help="MNI152 T1 the atlas was segmented on")
     parser.add_argument("--work", type=Path, default=ROOT / "data/cache/nextbrain")
+    parser.add_argument("--anatomy", help="warp onto this declared anatomy instead of the selected one")
     parser.add_argument("--record", action="store_true", help="add the results to data/sources.json")
     args = parser.parse_args()
 
     ants = require_ants()
-    config = read_config()
+    config = read_config(args.anatomy)
     volume_path, lut_path = nextbrain.paths(config)
     args.work.mkdir(parents=True, exist_ok=True)
 
@@ -205,7 +212,7 @@ def main():
         args.work / "template-on-atlas-grid.nii.gz",
     )
     reference = nib.load(config["source_directory"] / "mri/orig.mgz")
-    fixed = as_nifti(reference, args.work / "fsaverage-orig.nii.gz")
+    fixed = as_nifti(reference, args.work / "subject-orig.nii.gz")
 
     warped = warp_labels(ants, template, args.atlas, fixed, args.work)
     write_on_grid(warped, reference, volume_path)
@@ -219,7 +226,7 @@ def main():
     print(f"\n{volume_path.relative_to(ROOT)}: {len(regions)} regions, {kept:,} labelled voxels")
 
     if args.record:
-        record_sources([(volume_path, SOURCE_URL), (lut_path, SOURCE_URL)])
+        record_sources(config, [(volume_path, SOURCE_URL), (lut_path, SOURCE_URL)])
     else:
         print("Re-run with --record to register these files in data/sources.json.")
 

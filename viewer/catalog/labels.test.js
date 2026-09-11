@@ -78,7 +78,18 @@ test('every region in the published manifest resolves to a name and a group', as
     if (!label?.name?.trim() || !label?.group?.trim()) unresolved.push(r.source_name);
   }
   assert.deepEqual(unresolved, [], `${unresolved.length} region(s) without a label`);
-  assert.equal(manifest.regions.length, 1034);
+  // Not a fixed total: the published catalogue changes with the subject and with
+  // whether the optional warp ran, so a pinned number would only ever report
+  // that. What must hold is that nothing was truncated — every count the
+  // manifest publishes is met by the regions that actually arrived.
+  for (const atlas of manifest.atlases) {
+    const published = manifest.regions.filter(r => r.atlas === atlas.id && r.kind === 'cortex');
+    assert.equal(published.length, atlas.region_count, atlas.id);
+  }
+  for (const level of manifest.detail_levels) {
+    const published = manifest.regions.filter(r => r.atlas === level.id && r.kind === 'structure');
+    assert.equal(published.length, level.region_count, level.id);
+  }
 });
 
 test('NextBrain names are read from the published table, never invented', () => {

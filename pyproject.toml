@@ -1,7 +1,7 @@
 [project]
 name = "brain-model"
 version = "0.1.0"
-description = "Source-faithful selectable fsaverage brain assets"
+description = "Source-faithful selectable single-subject brain assets"
 requires-python = ">=3.12,<3.14"
 dependencies = [
   "numpy>=2.2,<2.5",

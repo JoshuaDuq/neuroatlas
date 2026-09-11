@@ -97,7 +97,7 @@ def test_a_volume_off_the_reference_grid_is_refused(config, tmp_path):
                            "volume": "smaller.mgz", "lut": "lut.txt"}
     (tmp_path / "lut.txt").write_text("0 Unknown 0 0 0 0\n")
 
-    with pytest.raises(ValueError, match="not registered to the fsaverage grid"):
+    with pytest.raises(ValueError, match="not registered to the subject grid"):
         nextbrain.load(config)
 
 

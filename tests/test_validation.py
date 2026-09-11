@@ -107,7 +107,13 @@ def manifest_assets(tmp_path):
     (source / "mri").mkdir()
     atlas = {"id": "test", "label": "Test atlas", "annotation": "test"}
     manifest = {
-        "atlases": [{**atlas, "file": "cortex-test.glb", "region_count": 2}],
+        "atlases": [{**atlas, "file": "cortex-test.glb", "region_count": 2,
+                     "surface_shading": {
+                         "attribute": "_SULC",
+                         "source": "FreeSurfer lh.sulc / rh.sulc",
+                         "interpolation": "Linear on barycentric atlas partitions",
+                         "meaning": "Sulcal-depth morphometry; positive values mark sulci",
+                     }}],
         "detail_levels": [{"id": "aseg", "file": "structures.glb", "region_count": 1}],
         "regions": [],
     }
@@ -254,3 +260,45 @@ def test_metadata_is_checked_against_source_when_manifest_and_glb_agree(
     write_scene(scene, path)
     with pytest.raises(ValueError, match="metadata"):
         validate.validate_manifest(config, manifest)
+
+
+def test_a_solid_block_surface_encloses_its_label_without_pinching():
+    from brain_model.geometry import extract_structure
+    from brain_model.validate import surface_closure
+
+    volume = np.zeros((4, 4, 4), dtype=np.int32)
+    volume[1:3, 1:3, 1:3] = 7
+    mesh = extract_structure(volume, 7, np.eye(4))
+    assert surface_closure(mesh) == {"boundary_edges": 0, "pinch_edges": 0}
+    assert mesh.is_winding_consistent and mesh.volume > 0
+
+
+def test_a_diagonal_staircase_of_voxels_pinches_but_still_encloses_a_volume():
+    # The smallest arrangement that pinches, reduced from the one this subject's
+    # right cerebellar cortex actually contains: a staircase whose middle two
+    # voxels meet at a corner. No closed two-manifold surface exists over it, so
+    # the pinch is published rather than mended; the surface still has no hole,
+    # which is what leaves the volume it encloses defined at all.
+    from brain_model.geometry import extract_structure
+    from brain_model.validate import surface_closure
+
+    volume = np.zeros((5, 5, 6), dtype=np.int32)
+    for x, y, z in [(0, 0, 0), (0, 1, 1), (1, 0, 1), (1, 1, 2)]:
+        volume[x + 2, y + 2, z + 2] = 7
+    mesh = extract_structure(volume, 7, np.eye(4))
+    closure = surface_closure(mesh)
+    assert closure["boundary_edges"] == 0
+    assert closure["pinch_edges"] > 0
+    assert not mesh.is_watertight
+    assert mesh.is_winding_consistent and mesh.volume > 0
+
+
+def test_a_hole_is_reported_as_a_boundary_edge_and_never_as_a_pinch():
+    import trimesh
+
+    from brain_model.validate import surface_closure
+
+    box = trimesh.creation.box()
+    assert surface_closure(box)["boundary_edges"] == 0
+    punctured = trimesh.Trimesh(box.vertices, box.faces[1:], process=False)
+    assert surface_closure(punctured) == {"boundary_edges": 3, "pinch_edges": 0}
