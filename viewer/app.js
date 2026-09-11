@@ -16,6 +16,7 @@ import { createInspector } from './ui/inspector.js';
 import { createNavigator } from './ui/navigator.js';
 import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
+import { t } from './i18n/translations.js';
 
 const VIEW_KEYS = ['left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 
@@ -31,7 +32,10 @@ export async function startApp() {
   const announcer = document.getElementById('announcer');
 
   const wanted = decodeState(globalThis.location.hash);
-  const session = createSession({ views: Object.keys(VIEW_DIRECTIONS) });
+  let savedLang = null;
+  try { savedLang = localStorage.getItem('neuroatlas-lang'); } catch {}
+  const initialLang = wanted.lang ?? (savedLang === 'fr' ? 'fr' : 'en');
+  const session = createSession({ views: Object.keys(VIEW_DIRECTIONS), lang: initialLang });
   // Declared before the scene: its resize observer can fire during the model
   // download, which is long, and would otherwise hit a dead zone.
   let chrome = null;
@@ -50,7 +54,7 @@ export async function startApp() {
     }
   });
 
-  const catalog = createCatalog(model.manifest);
+  const catalog = createCatalog(model.manifest, initialLang);
   const bounds = new Box3().setFromObject(model.group);
   scene.scene.add(model.group);
   scene.transparencyProbe = () =>
@@ -67,7 +71,8 @@ export async function startApp() {
     const had = model.state.selectedRegion;
     change();
     if (had && !model.state.selectedRegion) {
-      session.notify(`Selection cleared — ${had.label ?? 'region'} is no longer shown.`);
+      const state = session.assemble(model.state);
+      session.notify(t(state.lang, 'app').selectionCleared(had.label ?? 'region'));
     }
     render();
   }
@@ -127,12 +132,20 @@ export async function startApp() {
     select(id);
   }
 
+  function setLang(lang) {
+    session.setLang(lang);
+    try { localStorage.setItem('neuroatlas-lang', lang); } catch {}
+    shortcuts.setLanguage(lang);
+    render();
+  }
+
   // ---- panels -----------------------------------------------------------
 
   const header = createHeader({
     atlases: model.manifest.atlases,
     onAtlas: setAtlas,
     onTheme: () => { theme.toggle(); session.setTheme(theme.current); render(); },
+    onLang: setLang,
   });
 
   const navigator = createNavigator({
@@ -182,7 +195,7 @@ export async function startApp() {
   }
 
   const sectionControls = createSectionControls(sections, { onFaceView: faceCut, onSelect: select });
-  const shortcuts = createShortcuts();
+  const shortcuts = createShortcuts(initialLang);
 
   chrome = createViewportChrome({
     onView: applyView,
@@ -195,6 +208,8 @@ export async function startApp() {
 
   function render() {
     const state = session.assemble(model.state);
+    catalog.setLanguage(state.lang);
+    document.documentElement.lang = state.lang;
     root.dataset.status = state.status;
     const visibleCount = catalog.visibleCount(state);
 
@@ -202,14 +217,25 @@ export async function startApp() {
     navigator.update(state);
     inspector.update(state);
     display_.update(state);
-    sectionControls.update();
+    sectionControls.update(state);
     chrome.update(state);
+    shortcuts.setLanguage(state.lang);
     outline();
     syncUrl(state);
 
+    const colophonText = document.getElementById('colophon-text');
+    if (colophonText) colophonText.textContent = t(state.lang, 'footer').colophon;
+    const provenanceLink = document.getElementById('provenance');
+    if (provenanceLink) provenanceLink.textContent = t(state.lang, 'footer').provenance;
+
     // The text state is the product for a reader who cannot see the render.
     const region = state.selectedRegion;
-    const spoken = region ? `Selected: ${catalog.get(region.id).label.name}, ${region.hemisphere}` : null;
+    const spoken = region
+      ? t(state.lang, 'app').spoken(
+          catalog.get(region.id).label.name,
+          t(state.lang, 'sides').words[region.hemisphere] ?? region.hemisphere,
+        )
+      : null;
     if (spoken !== announced) {
       announced = spoken;
       announcer.textContent = spoken ?? '';
@@ -312,7 +338,8 @@ export async function startApp() {
       // Isolation depends on a selection, so it is restored after one.
       if (wanted.isolatedRegion === wanted.selectedRegion) model.isolate();
     } catch {
-      session.notify('That region is not shown in this view.');
+      const state = session.assemble(model.state);
+      session.notify(t(state.lang, 'app').regionNotShown);
     }
   }
   session.setStatus('ready');

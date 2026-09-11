@@ -1,13 +1,5 @@
 import { count } from './format.js';
-
-const REASON_TEXT = {
-  hemisphere: 'hemisphere hidden',
-  'cortex-hidden': 'cortex off',
-  isolated: 'isolated',
-};
-
-const SIDE = { left: 'L', right: 'R', midline: 'mid' };
-const SIDE_WORD = { left: 'left', right: 'right', midline: 'midline' };
+import { t } from '../i18n/translations.js';
 
 /**
  * Find a region: search, or browse the anatomy.
@@ -30,6 +22,8 @@ export function createNavigator({
   const results = document.getElementById('results');
   const tree = document.getElementById('tree');
   const notice = document.getElementById('rail-notice');
+  const searchLabel = document.getElementById('search-label');
+  const navRail = document.getElementById('navigator');
   let structureKey = null;
   let activeIndex = -1;
 
@@ -41,7 +35,12 @@ export function createNavigator({
     else onReveal(row.dataset.reason, row.dataset.regionId);
   }
 
-  function buildRow(row, { role, level }) {
+  function buildRow(row, { role, level, lang }) {
+    const i18n = t(lang, 'navigator');
+    const reasons = t(lang, 'reasons');
+    const sideGlyphs = t(lang, 'sides').glyphs;
+    const sideWords = t(lang, 'sides').words;
+
     const item = document.createElement('div');
     item.id = `row-${role}-${row.region.id}`.replaceAll(':', '-');
     item.className = role === 'treeitem' ? 'row row-indent' : 'row';
@@ -57,11 +56,11 @@ export function createNavigator({
     name.textContent = row.label.name;
     item.append(name);
 
-    const side = SIDE_WORD[row.region.hemisphere] ?? row.region.hemisphere;
+    const side = sideWords[row.region.hemisphere] ?? row.region.hemisphere;
     const tail = document.createElement('span');
     if (row.visible) {
       tail.className = 'row-side';
-      tail.textContent = SIDE[row.region.hemisphere] ?? '';
+      tail.textContent = sideGlyphs[row.region.hemisphere] ?? '';
       // The glyph is "L"; the name says "left". Laterality is never a glyph alone,
       // and it is what distinguishes two otherwise identical rows.
       item.setAttribute('aria-label', `${row.label.name}, ${side}`);
@@ -69,10 +68,9 @@ export function createNavigator({
       item.dataset.hidden = 'true';
       item.dataset.reason = row.reason;
       tail.className = 'row-reason';
-      tail.textContent = REASON_TEXT[row.reason] ?? 'hidden';
+      tail.textContent = reasons[row.reason] ?? reasons.fallback;
       // Spoken as part of the row, so the state is never colour-only.
-      item.setAttribute('aria-label',
-        `${row.label.name}, ${side}, hidden: ${tail.textContent}. Activate to reveal.`);
+      item.setAttribute('aria-label', i18n.rowHiddenAria(row.label.name, side, tail.textContent));
     }
     item.append(tail);
     item.addEventListener('click', () => activate(item));
@@ -80,6 +78,8 @@ export function createNavigator({
   }
 
   function renderResults(state) {
+    const i18n = t(state.lang, 'navigator');
+    const atlasDict = t(state.lang, 'atlases');
     const found = catalog.search(state.query, state);
     const here = found.rows.filter(row => row.reason !== 'other-atlas');
     const elsewhere = found.rows.filter(row => row.reason === 'other-atlas');
@@ -88,32 +88,32 @@ export function createNavigator({
     activeIndex = -1;
     search.removeAttribute('aria-activedescendant');
 
-    for (const row of here) results.append(buildRow(row, { role: 'option' }));
+    for (const row of here) results.append(buildRow(row, { role: 'option', lang: state.lang }));
 
     if (!here.length) {
       const empty = document.createElement('p');
       empty.className = 'empty';
-      empty.textContent = `No match for “${state.query}”.`;
+      empty.textContent = i18n.noMatch(state.query);
       results.append(empty);
     }
 
     if (capped > 0) {
       const more = document.createElement('p');
       more.className = 'empty';
-      more.textContent =
-        `Showing ${here.length} of ${count(found.total, 'match')}. Refine the search to narrow it.`;
+      more.textContent = i18n.showingCapped(here.length, count(found.total, 'match', state.lang));
       results.append(more);
     }
 
     // Matches in the other parcellation are reported, not dropped.
     if (elsewhere.length) {
       const other = atlases.find(atlas => atlas.id !== state.atlas);
+      const otherLabel = atlasDict[other?.id] ?? other?.label ?? '';
       const line = document.createElement('p');
       line.className = 'empty';
-      line.textContent = `${count(elsewhere.length, 'match')} in ${other.label}. `;
+      line.textContent = i18n.matchesInOther(count(elsewhere.length, 'match', state.lang), otherLabel);
       const switchTo = document.createElement('button');
       switchTo.type = 'button';
-      switchTo.textContent = 'Switch atlas';
+      switchTo.textContent = i18n.switchAtlas;
       switchTo.addEventListener('click', () => onAtlas(other.id));
       line.append(switchTo);
       results.append(line);
@@ -121,6 +121,7 @@ export function createNavigator({
   }
 
   function renderTree(state) {
+    const i18n = t(state.lang, 'navigator');
     tree.replaceChildren();
     let section = null;
     for (const group of catalog.groups(state)) {
@@ -130,7 +131,7 @@ export function createNavigator({
         section = group.kind;
         const heading = document.createElement('p');
         heading.className = 'section-label';
-        heading.textContent = section === 'cortex' ? 'Cortex' : 'Subcortical';
+        heading.textContent = section === 'cortex' ? i18n.cortex : i18n.subcortical;
         tree.append(heading);
       }
 
@@ -154,7 +155,7 @@ export function createNavigator({
       badge.className = 'group-count';
       badge.textContent = String(group.rows.length);
       header.append(marker, name, badge);
-      header.setAttribute('aria-label', `${group.name}, ${count(group.rows.length, 'region')}`);
+      header.setAttribute('aria-label', `${group.name}, ${count(group.rows.length, 'region', state.lang)}`);
       header.addEventListener('click', () => onToggleGroup(group.key));
       tree.append(header);
 
@@ -163,7 +164,7 @@ export function createNavigator({
       const children = document.createElement('div');
       children.setAttribute('role', 'group');
       for (const row of group.rows) {
-        children.append(buildRow(row, { role: 'treeitem', level: 2 }));
+        children.append(buildRow(row, { role: 'treeitem', level: 2, lang: state.lang }));
       }
       tree.append(children);
     }
@@ -244,15 +245,21 @@ export function createNavigator({
 
   return {
     update(state) {
+      const i18n = t(state.lang, 'navigator');
       const searching = state.query.trim().length > 0;
       results.hidden = !searching;
       tree.hidden = searching;
       search.setAttribute('aria-expanded', String(searching));
+      search.placeholder = i18n.searchPlaceholder;
+      if (searchLabel) searchLabel.textContent = i18n.searchPlaceholder;
+      if (navRail) navRail.setAttribute('aria-label', i18n.findRegion);
+      results.setAttribute('aria-label', i18n.searchResults);
+      tree.setAttribute('aria-label', i18n.browseAnatomy);
       if (document.activeElement !== search) search.value = state.query;
 
       // Rebuild only when the structure could have changed.
       const key = [
-        state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity > 0,
+        state.atlas, state.lang, state.hemisphere, state.cortexVisible, state.cortexOpacity > 0,
         state.isolatedRegion, state.query, [...state.expanded].sort().join(),
       ].join('|');
       if (key !== structureKey) {

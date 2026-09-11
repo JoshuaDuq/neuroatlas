@@ -1,3 +1,5 @@
+import { t } from '../i18n/translations.js';
+
 /** How the model is drawn: hemisphere, cortex, opacity, atlas colours. */
 export function createDisplay(handlers) {
   const hemisphere = document.getElementById('hemisphere');
@@ -6,6 +8,11 @@ export function createDisplay(handlers) {
   const opacityValue = document.getElementById('opacity-value');
   const atlasColors = document.getElementById('atlas-colors');
   const reset = document.getElementById('reset');
+  const labelDisplay = document.getElementById('label-display');
+  const hemiLabel = document.getElementById('display-hemisphere-label');
+  const cortexText = document.getElementById('cortex-text');
+  const opacityText = document.getElementById('opacity-text');
+  const atlasColorsText = document.getElementById('atlas-colors-text');
 
   const listeners = [
     [hemisphere, 'change', event => handlers.onHemisphere(event.target.value)],
@@ -20,6 +27,21 @@ export function createDisplay(handlers) {
 
   return {
     update(state) {
+      const i18n = t(state.lang, 'display');
+      if (labelDisplay) labelDisplay.textContent = i18n.sectionHeading;
+      if (hemiLabel) hemiLabel.textContent = i18n.hemisphere;
+      const optBoth = hemisphere.querySelector('option[value="both"]');
+      const optLeft = hemisphere.querySelector('option[value="left"]');
+      const optRight = hemisphere.querySelector('option[value="right"]');
+      if (optBoth) optBoth.textContent = i18n.both;
+      if (optLeft) optLeft.textContent = i18n.left;
+      if (optRight) optRight.textContent = i18n.right;
+
+      if (cortexText) cortexText.textContent = i18n.showCortex;
+      if (opacityText) opacityText.textContent = i18n.cortexOpacity;
+      if (atlasColorsText) atlasColorsText.textContent = i18n.atlasColors;
+      reset.textContent = i18n.resetView;
+
       hemisphere.value = state.hemisphere;
       cortex.checked = state.cortexVisible;
       atlasColors.checked = state.atlasColors;

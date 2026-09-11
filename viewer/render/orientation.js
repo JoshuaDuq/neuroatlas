@@ -45,8 +45,19 @@ function letterFor([x, y, z]) {
   return best.letter;
 }
 
-export function edgeLabels(camera) {
+const FR_LETTERS = { R: 'D', L: 'G', S: 'S', I: 'I', P: 'P', A: 'A' };
+
+export function edgeLabels(camera, lang = 'en') {
   const right = letterFor(basis(camera, 0));
   const top = letterFor(basis(camera, 1));
-  return { right, left: OPPOSITE[right], top, bottom: OPPOSITE[top] };
+  const raw = { right, left: OPPOSITE[right], top, bottom: OPPOSITE[top] };
+  if (lang === 'fr') {
+    return {
+      right: FR_LETTERS[raw.right],
+      left: FR_LETTERS[raw.left],
+      top: FR_LETTERS[raw.top],
+      bottom: FR_LETTERS[raw.bottom],
+    };
+  }
+  return raw;
 }

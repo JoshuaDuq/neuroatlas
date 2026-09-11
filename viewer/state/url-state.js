@@ -18,6 +18,7 @@ const DEFAULTS = {
   view: 'oblique',
   selectedRegion: null,
   isolatedRegion: null,
+  lang: 'en',
 };
 
 const HEMISPHERES = ['both', 'left', 'right'];
@@ -57,6 +58,11 @@ const FIELDS = [
       return Number.isFinite(number) && number >= 0 && number <= 1 ? number : undefined;
     },
     write: value => String(Math.round(value * 100) / 100),
+  },
+  {
+    key: 'lang',
+    param: 'lang',
+    read: value => (['en', 'fr'].includes(value) ? value : undefined),
   },
 ];
 

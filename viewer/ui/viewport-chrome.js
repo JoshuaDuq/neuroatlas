@@ -1,15 +1,8 @@
 import { edgeLabels } from '../render/orientation.js';
 import { scaleBar } from '../render/scale-bar.js';
+import { t } from '../i18n/translations.js';
 
-// Oblique is included so the control always has an answer. A segmented
-// control with nothing selected reads as broken rather than as a default.
-const VIEW_LABELS = {
-  oblique: 'Oblique',
-  left: 'Left', right: 'Right', anterior: 'Front', posterior: 'Back',
-  superior: 'Top', inferior: 'Bottom',
-};
-
-const megabytes = bytes => (bytes / 1_048_576).toFixed(1);
+const VIEW_KEYS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 
 /**
  * Everything drawn over the canvas: anatomical orientation, the scale bar,
@@ -33,11 +26,12 @@ export function createViewportChrome({ onView, onRetry }) {
   const stageProgress = document.getElementById('stage-progress');
   const stageBar = document.getElementById('stage-bar');
   const retry = document.getElementById('stage-retry');
+  let currentLang = 'en';
+  let lastCameraArgs = null;
 
-  const buttons = Object.entries(VIEW_LABELS).map(([view, label]) => {
+  const buttons = VIEW_KEYS.map(view => {
     const button = document.createElement('button');
     button.type = 'button';
-    button.textContent = label;
     button.dataset.view = view;
     button.addEventListener('click', () => onView(view));
     views.append(button);
@@ -48,12 +42,23 @@ export function createViewportChrome({ onView, onRetry }) {
 
   return {
     update(state) {
+      currentLang = state.lang;
+      const i18nViewport = t(state.lang, 'viewport');
+      const viewLabels = t(state.lang, 'views');
+      views.setAttribute('aria-label', i18nViewport.viewAria);
+
       for (const button of buttons) {
+        button.textContent = viewLabels[button.dataset.view] ?? button.dataset.view;
         button.setAttribute('aria-pressed', String(button.dataset.view === state.view));
       }
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       if (!ready) bar.hidden = true;
+
+      if (lastCameraArgs) {
+        const labels = edgeLabels(lastCameraArgs.camera, currentLang);
+        for (const [edge, node] of Object.entries(edges)) node.textContent = labels[edge];
+      }
 
       if (state.status === 'context-lost') {
         stageMessage.textContent = state.error.message;
@@ -62,28 +67,30 @@ export function createViewportChrome({ onView, onRetry }) {
         return;
       }
       if (state.status === 'error') {
-        stageMessage.textContent = state.error?.message ?? 'Something went wrong.';
+        stageMessage.textContent = state.error?.message ?? i18nViewport.error;
         stageProgress.hidden = true;
         retry.hidden = false;
+        retry.textContent = i18nViewport.retry;
         return;
       }
       retry.hidden = true;
+      retry.textContent = i18nViewport.retry;
       if (state.status === 'loading') {
         const { loaded, total } = state.progress ?? {};
         stageProgress.hidden = !total;
         if (total) {
           stageBar.style.width = `${Math.round((loaded / total) * 100)}%`;
-          stageMessage.textContent =
-            `Loading anatomy · ${megabytes(loaded)} / ${megabytes(total)} MB`;
+          stageMessage.textContent = i18nViewport.loadingWithTotal(loaded, total);
         } else {
-          stageMessage.textContent = 'Loading anatomy…';
+          stageMessage.textContent = i18nViewport.loadingAnatomy;
         }
       }
     },
 
     /** Called when the camera moves or the viewport resizes, outside the state loop. */
     updateCamera(camera, distance, viewportHeight) {
-      const labels = edgeLabels(camera);
+      lastCameraArgs = { camera, distance, viewportHeight };
+      const labels = edgeLabels(camera, currentLang);
       for (const [edge, node] of Object.entries(edges)) node.textContent = labels[edge];
       const measured = scaleBar(camera.fov, distance, viewportHeight);
       bar.hidden = !measured;

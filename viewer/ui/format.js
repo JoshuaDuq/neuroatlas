@@ -13,8 +13,19 @@ const grouped = value => {
 /** English adds -es after a sibilant: one match, two matches. */
 const plural = noun => (/(?:s|x|z|ch|sh)$/.test(noun) ? `${noun}es` : `${noun}s`);
 
+const FRENCH_NOUNS = {
+  region: { one: 'région', other: 'régions' },
+  match: { one: 'correspondance', other: 'correspondances' },
+  région: { one: 'région', other: 'régions' },
+  correspondance: { one: 'correspondance', other: 'correspondances' },
+};
+
 /** A count and its noun, in agreement. "1 regions" is how software looks unfinished. */
-export function count(value, noun) {
+export function count(value, noun, lang = 'en') {
+  if (lang === 'fr' && FRENCH_NOUNS[noun]) {
+    const form = value === 1 ? FRENCH_NOUNS[noun].one : FRENCH_NOUNS[noun].other;
+    return `${grouped(value)} ${form}`;
+  }
   return `${grouped(value)} ${value === 1 ? noun : plural(noun)}`;
 }
 
