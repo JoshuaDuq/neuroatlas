@@ -129,6 +129,7 @@ export const TRANSLATIONS = {
       windowCenter: 'Window center',
       segmentationOverlay: 'Segmentation overlay',
       labels: { sagittal: 'Sagittal', coronal: 'Coronal', axial: 'Axial' },
+      planes: 'Section plane',
       positionLabel: name => `${name} position (mm)`,
       sliceAria: name => `${name} MRI. Click to place crosshair; arrow keys change slice.`,
       sliderAria: name => `${name} MRI position`,
@@ -157,11 +158,29 @@ export const TRANSLATIONS = {
       error: 'Something went wrong.',
       contextLost: 'The 3D view was interrupted by the graphics driver. Restoring…',
       retry: 'Retry',
+      reticleAria: 'Region under the crosshair',
+      reticleEmpty: 'Move the brain under the crosshair',
+      reticleAction: 'Select',
     },
     footer: {
       colophon: anatomy => `${anatomy.display_name} · ${anatomy.individual ? 'one individual’s MRI reconstruction' : 'averaged reference template'} · not clinical anatomy`,
       provenance: 'Provenance',
     },
+
+    /* The phone shell: the two rails as one sheet over the anatomy. */
+    sheet: {
+      tabs: { find: 'Find', region: 'Region', cuts: 'Cuts', display: 'Display' },
+      tabsAria: 'Panels',
+      expand: 'Expand panel',
+      collapse: 'Collapse panel',
+      disclaimer: 'Reference anatomy · not clinical anatomy',
+    },
+
+    menu: {
+      more: 'More settings',
+      close: 'Close settings',
+    },
+
     app: {
       spoken: (name, side) => `Selected: ${name}, ${side}`,
       selectionCleared: name => `Selection cleared — ${name} is no longer shown.`,
@@ -294,6 +313,7 @@ export const TRANSLATIONS = {
       windowCenter: 'Centre de la fenêtre',
       segmentationOverlay: 'Superposition de segmentation',
       labels: { sagittal: 'Sagittal', coronal: 'Coronal', axial: 'Axial' },
+      planes: 'Plan de coupe',
       positionLabel: name => {
         const adj = { Sagittal: 'sagittale', Coronal: 'coronale', Axial: 'axiale' }[name] ?? name;
         return `Position ${adj} (mm)`;
@@ -331,11 +351,28 @@ export const TRANSLATIONS = {
       error: 'Une erreur est survenue.',
       contextLost: 'La vue 3D a été interrompue par le pilote graphique. Restauration…',
       retry: 'Réessayer',
+      reticleAria: 'Région sous le réticule',
+      reticleEmpty: 'Amenez le cerveau sous le réticule',
+      reticleAction: 'Sélectionner',
     },
     footer: {
       colophon: anatomy => `${anatomy.display_name} · ${anatomy.individual ? 'reconstruction IRM d’un individu' : 'gabarit de référence moyenné'} · pas une anatomie clinique`,
       provenance: 'Provenance',
     },
+
+    sheet: {
+      tabs: { find: 'Trouver', region: 'Région', cuts: 'Coupes', display: 'Affichage' },
+      tabsAria: 'Panneaux',
+      expand: 'Déplier le panneau',
+      collapse: 'Replier le panneau',
+      disclaimer: 'Anatomie de référence · pas une anatomie clinique',
+    },
+
+    menu: {
+      more: 'Plus de réglages',
+      close: 'Fermer les réglages',
+    },
+
     app: {
       spoken: (name, side) => `Sélectionné : ${name}, ${side}`,
       selectionCleared: name => `Sélection effacée — ${name} n’est plus visible.`,

@@ -1,6 +1,17 @@
 import { Raycaster, Vector2 } from 'three';
 
-const CLICK_SLOP_PX = 5;
+/*
+ * How far a press may travel and still count as a tap.
+ *
+ * A mouse is held still; a fingertip rolls. Measured on the built viewer, a
+ * touch that drifted six pixels selected nothing at all — it was read as a
+ * drag, so it nudged the camera and cleared the press, and the reader saw no
+ * response to a deliberate tap. Five pixels is a mouse threshold; the touch
+ * figure is near the platform's own hit-slop.
+ */
+const CLICK_SLOP_PX = { mouse: 5, touch: 12 };
+
+const slopFor = pointerType => CLICK_SLOP_PX[pointerType === 'touch' ? 'touch' : 'mouse'];
 
 /**
  * Turns pointer events over the canvas into region hover and selection.
@@ -19,30 +30,41 @@ export function createPicker({ domElement, camera, model, onHover, onSelect }) {
   let pressed = null;
   let frame = null;
 
-  function regionAt(event) {
+  /** Cast through a point given relative to the canvas, in CSS pixels. */
+  function regionAtPoint(x, y) {
     const rect = domElement.getBoundingClientRect();
-    pointer.set(
-      ((event.clientX - rect.left) / rect.width) * 2 - 1,
-      -((event.clientY - rect.top) / rect.height) * 2 + 1,
-    );
+    if (!rect.width || !rect.height) return null;
+    pointer.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
     camera.updateMatrixWorld();
     raycaster.setFromCamera(pointer, camera);
     return model().pick(raycaster);
   }
 
+  function regionAt(event) {
+    const rect = domElement.getBoundingClientRect();
+    return regionAtPoint(event.clientX - rect.left, event.clientY - rect.top);
+  }
+
   const onPointerDown = event => {
-    pressed = { x: event.clientX, y: event.clientY, button: event.button };
+    pressed = {
+      x: event.clientX, y: event.clientY,
+      button: event.button, pointerType: event.pointerType,
+    };
   };
 
   const onPointerUp = event => {
     const isClick = pressed?.button === 0 &&
-      Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y) < CLICK_SLOP_PX;
+      Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y)
+        < slopFor(pressed.pointerType);
     pressed = null;
     if (isClick) onSelect(regionAt(event)?.id ?? null);
   };
 
   const onPointerMove = event => {
-    if (event.buttons || frame !== null) return;
+    // A finger has no hover: it is either pressing or absent, and a stale
+    // label left behind by the last tap would name a region the reader is no
+    // longer pointing at. The reticle carries identification on touch.
+    if (event.pointerType === 'touch' || event.buttons || frame !== null) return;
     const { clientX, clientY } = event;
     frame = requestAnimationFrame(() => {
       frame = null;
@@ -67,6 +89,17 @@ export function createPicker({ domElement, camera, model, onHover, onSelect }) {
   domElement.addEventListener('pointermove', onPointerMove);
 
   return {
+    /**
+     * What lies under a point on the canvas, in CSS pixels from its top left.
+     *
+     * The reticle reads this on every camera change. It is deliberately not
+     * routed through the state loop, for the same reason hover is not: it
+     * fires once per frame of an orbit.
+     */
+    pickAt(x, y) {
+      return regionAtPoint(x, y);
+    },
+
     dispose() {
       if (frame !== null) cancelAnimationFrame(frame);
       domElement.removeEventListener('pointerdown', onPointerDown);

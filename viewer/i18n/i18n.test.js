@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { createSession } from '../state/session.js';
 import { decodeState, encodeState } from '../state/url-state.js';
 import { count } from '../ui/format.js';
 import { edgeLabels } from '../render/orientation.js';
-import { t } from './translations.js';
+import { TRANSLATIONS, t } from './translations.js';
 
 test('session accepts and toggles language', () => {
   const session = createSession({ views: ['oblique', 'left'], lang: 'en' });
@@ -97,4 +98,39 @@ test('the colophon and slice note name whichever brain was actually built', () =
   }
 
   assert.notEqual(t('en', 'footer').colophon(subject), t('fr', 'footer').colophon(subject));
+});
+
+/**
+ * A duplicate key in an object literal is not an error in JavaScript: the
+ * later one simply wins. Adding a second `mpr` block beside the first silently
+ * removed every string in it, and only an unrelated assertion caught it.
+ */
+test('no translation block is declared twice', async () => {
+  const source = await readFile(new URL('./translations.js', import.meta.url), 'utf8');
+  const offences = [];
+  for (const lang of ['en', 'fr']) {
+    // Blocks are declared at a fixed indent inside each language.
+    const start = source.indexOf(`\n  ${lang}: {`);
+    assert.ok(start > -1, `${lang} block not found`);
+    const next = source.indexOf('\n  },', start);
+    const block = source.slice(start, next);
+    const seen = new Set();
+    for (const [, key] of block.matchAll(/^ {4}(\w+): \{/gm)) {
+      if (seen.has(key)) offences.push(`${lang}.${key} is declared more than once`);
+      seen.add(key);
+    }
+  }
+  assert.deepEqual(offences, []);
+});
+
+test('every English string has a French counterpart', () => {
+  const paths = (object, prefix = '') => Object.entries(object).flatMap(([key, value]) =>
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? paths(value, `${prefix}${key}.`)
+      : [`${prefix}${key}`]);
+
+  const en = paths(TRANSLATIONS.en);
+  const fr = paths(TRANSLATIONS.fr);
+  assert.deepEqual(en.filter(key => !fr.includes(key)), [], 'missing French strings');
+  assert.deepEqual(fr.filter(key => !en.includes(key)), [], 'French strings with no English');
 });

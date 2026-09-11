@@ -19,6 +19,8 @@ import { createClinicalExplorer } from './ui/clinical.js';
 import { createNavigator } from './ui/navigator.js';
 import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
+import { createSheet } from './ui/sheet.js';
+import { isCoarse } from './render/device.js';
 import { t } from './i18n/translations.js';
 
 const VIEW_KEYS = ['left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
@@ -40,8 +42,11 @@ export async function startApp() {
   const initialLang = wanted.lang ?? (savedLang === 'fr' ? 'fr' : 'en');
   const session = createSession({ views: Object.keys(VIEW_DIRECTIONS), lang: initialLang });
   // Declared before the scene: its resize observer can fire during the model
-  // download, which is long, and would otherwise hit a dead zone.
+  // download, which is long, and would otherwise hit a dead zone. The picker
+  // is declared here for the same reason: the sheet reports its insets while
+  // it is being constructed, and the crosshair reads the picker from there.
   let chrome = null;
+  let picker = null;
   const scene = createScene(viewport, {
     onContextLost: () => { session.setContextLost(); render(); },
     onContextRestored: () => { session.setStatus('ready'); render(); },
@@ -84,15 +89,26 @@ export async function startApp() {
 
   let framed = false;
 
-  function applyView(view, { immediate = false } = {}) {
-    if (!session.setView(view)) return;
+  /**
+   * Frame the current view against the part of the canvas the interface is
+   * not covering. Separate from `applyView` because the sheet reframes
+   * without changing which view is chosen.
+   */
+  function frameCurrent({ immediate = false } = {}) {
+    const { view } = session.assemble(model.state);
     scene.camera.up.copy(upFor(view));
     scene.moveTo(
-      planFraming(scene.camera, scene.controls, bounds, VIEW_DIRECTIONS[view], frameTo),
+      planFraming(scene.camera, scene.controls, bounds, VIEW_DIRECTIONS[view], frameTo,
+        scene.viewportFit),
       { immediate: immediate || !framed },
     );
     framed = true;
     render();
+  }
+
+  function applyView(view, { immediate = false } = {}) {
+    if (!session.setView(view)) return;
+    frameCurrent({ immediate });
   }
 
   function focusSelection() {
@@ -101,7 +117,8 @@ export async function startApp() {
     if (!mesh) return;
     const direction = scene.camera.position.clone().sub(scene.controls.target).normalize();
     scene.moveTo(planFraming(
-      scene.camera, scene.controls, new Box3().setFromObject(mesh), direction, frameTo));
+      scene.camera, scene.controls, new Box3().setFromObject(mesh), direction, frameTo,
+      scene.viewportFit));
   }
 
   function select(id) {
@@ -257,7 +274,8 @@ export async function startApp() {
     }[sections.state.mode][Number(sections.state.reverse)];
     session.setView(namedView);
     scene.camera.up.copy(rasToWorld(frame.v.toArray()).normalize());
-    scene.moveTo(planFraming(scene.camera, scene.controls, bounds, direction, frameTo));
+    scene.moveTo(planFraming(scene.camera, scene.controls, bounds, direction, frameTo,
+      scene.viewportFit));
     render();
   }
 
@@ -272,6 +290,24 @@ export async function startApp() {
   chrome = createViewportChrome({
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
+    onReticleSelect: select,
+  });
+
+  /*
+   * The phone shell. It reports how much of the canvas it covers rather than
+   * resizing it, and everything that must agree about where the viewport is —
+   * framing, the crosshair, the markers, the presets — reads that one
+   * rectangle back from the scene.
+   */
+  const sheet = createSheet({
+    onInsets: insets => {
+      scene.setChromeInsets(insets);
+      chrome?.setViewport(scene.visibleRect);
+      updateReticle();
+    },
+    // Reframing during a drag would fight the finger; on arrival the camera
+    // eases to the new rectangle, which is the one thing allowed to animate.
+    onDetent: () => { if (framed) frameCurrent(); },
   });
 
   // ---- the single render path -------------------------------------------
@@ -288,6 +324,13 @@ export async function startApp() {
     header.update(state, { visibleCount });
     navigator.update(state);
     inspector.update(state);
+    const selected = state.selectedRegion;
+    sheet.update(state, selected
+      ? {
+          label: catalog.get(selected.id)?.label.name ?? selected.label,
+          side: t(state.lang, 'sides').glyphs[selected.hemisphere] ?? '',
+        }
+      : {});
     clinicalExplorer.update(state);
     display_.update(state);
     sectionControls.update(state);
@@ -342,7 +385,7 @@ export async function startApp() {
     }, 250);
   }
 
-  const picker = createPicker({
+  picker = createPicker({
     domElement: scene.domElement,
     camera: scene.camera,
     model: () => sections,
@@ -354,11 +397,31 @@ export async function startApp() {
     onSelect: select,
   });
 
+  /*
+   * What the crosshair is over. Kept out of the state loop for the same
+   * reason hover is: it answers once per frame of an orbit, and a full
+   * re-render would rebuild every panel that often.
+   */
+  let reticleFrame = null;
+  function updateReticle() {
+    if (!chrome || !picker || reticleFrame !== null) return;
+    reticleFrame = requestAnimationFrame(() => {
+      reticleFrame = null;
+      if (!isCoarse()) return;
+      const rect = scene.visibleRect;
+      if (!rect.width || !rect.height) return;
+      const region = picker.pickAt(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      chrome.showReticleRegion(region, region ? catalog.get(region.id)?.label.name : null);
+    });
+  }
+
   // Declared as a function so the scene's resize callback, wired above before
   // the chrome exists, can reach it.
   function onCameraChange() {
     if (!chrome) return;
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
+    chrome.setViewport(scene.visibleRect);
+    updateReticle();
   }
   scene.controls.addEventListener('change', onCameraChange);
 
@@ -427,6 +490,9 @@ export async function startApp() {
     }
   }
   session.setStatus('ready');
+  // A finger has no hover, so the crosshair carries identification instead.
+  chrome.setReticle(isCoarse());
+  chrome.setViewport(scene.visibleRect);
   onCameraChange();
   render();
 
@@ -435,6 +501,8 @@ export async function startApp() {
       globalThis.removeEventListener('keydown', onKeyDown);
       scene.controls.removeEventListener('change', onCameraChange);
       clearTimeout(urlTimer);
+      if (reticleFrame !== null) cancelAnimationFrame(reticleFrame);
+      sheet.dispose();
       sections.removeEventListener('change', render);
       model.removeEventListener('change', render);
       sectionControls.dispose();

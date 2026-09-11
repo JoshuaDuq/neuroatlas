@@ -42,13 +42,25 @@ export function cameraConstraints(bounds) {
   };
 }
 
-/** Fit a perspective camera to unchanged world bounds, with a small screen margin. */
-export function frameBounds(camera, bounds, direction) {
+/**
+ * Fit a perspective camera to unchanged world bounds, with a small screen margin.
+ *
+ * `fit` is the fraction of each axis the reader can actually see, from
+ * `effective-viewport.js`. On a phone the sheet covers the lower canvas, so
+ * fitting to the whole frustum would place half the anatomy behind it. The
+ * slopes narrow instead, which pushes the camera back until the brain fits
+ * the uncovered rectangle. It defaults to the whole canvas, so every desktop
+ * caller is unaffected.
+ */
+export function frameBounds(camera, bounds, direction, fit = {}) {
+  const horizontalFit = fit.horizontal ?? 1;
+  const verticalFit = fit.vertical ?? 1;
   const center = bounds.getCenter(new Vector3());
   const right = new Vector3().crossVectors(camera.up, direction).normalize();
   const up = new Vector3().crossVectors(direction, right).normalize();
-  const verticalSlope = Math.tan(camera.fov * Math.PI / 360) * 0.92;
-  const horizontalSlope = verticalSlope * camera.aspect;
+  const verticalSlope = Math.tan(camera.fov * Math.PI / 360) * 0.92 * verticalFit;
+  const horizontalSlope = Math.tan(camera.fov * Math.PI / 360) * 0.92
+    * camera.aspect * horizontalFit;
   let distance = 0;
   for (const x of [bounds.min.x, bounds.max.x]) {
     for (const y of [bounds.min.y, bounds.max.y]) {
@@ -71,13 +83,13 @@ export function frameBounds(camera, bounds, direction) {
  * Frame bounds and apply the matching constraints in one step, so the two can
  * never be applied separately and drift apart.
  */
-export function frameTo(camera, controls, bounds, direction) {
+export function frameTo(camera, controls, bounds, direction, fit) {
   const { near, far, minDistance, maxDistance } = cameraConstraints(bounds);
   camera.near = near;
   camera.far = far;
   controls.minDistance = minDistance;
   controls.maxDistance = maxDistance;
-  const center = frameBounds(camera, bounds, direction);
+  const center = frameBounds(camera, bounds, direction, fit);
   camera.updateProjectionMatrix();
   controls.target.copy(center);
   controls.update();
