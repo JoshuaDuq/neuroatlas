@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { Mesh, Raycaster, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { acceleratedRaycast } from 'three-mesh-bvh';
-import { BrainAtlas } from '../viewer/brain-atlas.js';
+import { BrainAtlas } from '../viewer/model/brain-atlas.js';
 
 const directory = new URL('../public/models/', import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));

@@ -9,6 +9,7 @@ from .export import add_region, compact_region, write_scene
 from .geometry import extract_structure, partition_surface
 from .shading import structure_normals
 from .sources import read_color_table, read_config, verify_sources, write_json
+from .volumes import export_volumes
 
 HEMISPHERES = {"lh": "left", "rh": "right"}
 
@@ -98,12 +99,12 @@ def build_structures(config):
         }
         mesh = extract_structure(volume, label, affine)
         normals = structure_normals(
-            volume == label, affine, mesh.vertices,
+            volume == label,
+            affine,
+            mesh.vertices,
             config["structures"]["shading_sigma_voxels"],
         )
-        exported = add_region(
-            scene, mesh.vertices, mesh.faces, normals, region, color
-        )
+        exported = add_region(scene, mesh.vertices, mesh.faces, normals, region, color)
         region.update(
             vertex_count=len(exported.vertices),
             triangle_count=len(exported.faces),
@@ -137,7 +138,9 @@ def main():
         regions.extend(cortex)
     structures, internal = build_structures(config)
     regions.extend(internal)
+    export_volumes(config)
     manifest = {
+        "volumes": {"file": "volumes.json"},
         "schema_version": 1,
         "template": "FreeSurfer fsaverage (FreeSurfer 6)",
         "coordinate_system": {

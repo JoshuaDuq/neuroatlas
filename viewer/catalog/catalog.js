@@ -113,12 +113,11 @@ export function createCatalog(manifest) {
     },
 
     /**
-     * How many meshes the model will show. Mesh and region are one to one, so
-     * this is derivable without walking the scene graph.
+     * Selectable regions; the two unlabelled medial surfaces are not regions.
      */
     visibleCount(settings) {
       let count = 0;
-      for (const entry of entries) {
+      for (const entry of selectable) {
         if (visibilityOf(entry.region, settings).visible) count += 1;
       }
       return count;

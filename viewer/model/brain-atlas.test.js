@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
+import { BoxGeometry, DoubleSide, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
 import { visibilityOf } from '../catalog/visibility.js';
 import { BrainAtlas } from './brain-atlas.js';
 
@@ -28,7 +28,7 @@ function fixture() {
       const scene = new Group();
       const atlasId = file === 'structures.glb' ? 'aseg' : file[0];
       for (const [index, region] of regions.filter(region => region.atlas === atlasId).entries()) {
-        const mesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshStandardMaterial());
+        const mesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshStandardMaterial({ side: DoubleSide }));
         mesh.position.x = index * 0.03;
         mesh.userData = { ...region, region_id: region.id };
         scene.add(mesh);
@@ -208,5 +208,28 @@ test('isolation can be released without disturbing any other setting', async () 
   assert.equal(atlas.state.selectedRegion.id, 'a-right', 'selection survives');
   assert.equal(atlas.state.cortexOpacity, 0.5, 'other settings are untouched');
   assert.equal(atlas.visibleMeshes.length, 4);
+  atlas.dispose();
+});
+
+test('cut picking skips discarded front faces and finds the retained back face', async () => {
+  const { Plane } = await import('three');
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const mesh = atlas.visibleMeshes.find(m => m.userData.region_id === 'a-right');
+  const positions = mesh.geometry.attributes.position.array.slice();
+  const indices = mesh.geometry.index.array.slice();
+  const ray = new Raycaster(new Vector3(.03, 0, .1), new Vector3(0, 0, -1));
+  ray.firstHitOnly = true;
+  atlas.setClippingPlanes([new Plane(new Vector3(0, 0, -1), 0)]);
+  assert.equal(atlas.pick(ray).id, 'a-right', 'discarded nearest face must not mask the retained face');
+  assert.equal(ray.firstHitOnly, true, 'caller ray configuration survives');
+  atlas.setClippingPlanes([new Plane(new Vector3(0, 0, -1), -.02)]);
+  assert.equal(atlas.pick(ray), null, 'fully discarded mesh must not be clickable');
+  await atlas.setAtlas('b');
+  assert.equal(atlas.visibleMeshes[0].material.clippingPlanes.length, 1);
+  atlas.reset();
+  assert.equal(atlas.clippingPlanes.length, 0);
+  assert.deepEqual(mesh.geometry.attributes.position.array, positions);
+  assert.deepEqual(mesh.geometry.index.array, indices);
   atlas.dispose();
 });

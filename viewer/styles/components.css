@@ -229,3 +229,37 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #shortcuts-list dt { color: var(--text-tertiary); }
 #shortcuts-close { width: 100%; }
 #shortcuts-open { width: var(--control-height); padding: 0; }
+
+/* Registered sections ---------------------------------------------------- */
+.section-controls input[type="range"] { width: 100%; accent-color: var(--accent); }
+.cut-position-row { display: flex; align-items: center; gap: var(--space-2); }
+.cut-position-row input[type="number"] {
+  width: 76px; padding: 5px; border: 1px solid var(--border-control);
+  border-radius: var(--radius-control); background: var(--surface-base); color: var(--text-primary);
+}
+#cut-oblique { margin-top: var(--space-3); }
+#cut-oblique label { margin-top: var(--space-2); }
+#cut-status { color: var(--text-tertiary); font-size: var(--text-micro); margin-top: var(--space-2); }
+#mpr-open { width: 100%; margin-top: var(--space-3); }
+#mpr-dialog {
+  width: min(1180px, 96vw); max-height: 94dvh; margin: auto; padding: var(--space-5);
+  border: 1px solid var(--border-control); border-radius: var(--radius-panel);
+  background: var(--surface-base); color: var(--text-primary); overflow: auto;
+}
+#mpr-dialog::backdrop { background: rgb(0 0 0 / .6); }
+.mpr-header { display: flex; align-items: start; justify-content: space-between; gap: var(--space-4); }
+.mpr-header h2 { font-size: var(--text-title); }
+.mpr-header p, .mpr-note { font-size: var(--text-ui); color: var(--text-secondary); margin-top: var(--space-2); }
+#mpr-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
+#mpr-grid h3 { font-size: var(--text-ui); font-weight: 500; margin-bottom: var(--space-2); }
+#mpr-grid canvas { display: block; width: 100%; height: auto; background: #000; cursor: crosshair; }
+#mpr-grid label { margin: var(--space-2) 0; }
+#mpr-grid input { width: 100%; accent-color: var(--accent); }
+#mpr-grid output { display: block; font-size: var(--text-micro); }
+#mpr-readout { font-size: var(--text-ui); }
+.mpr-display { display: flex; align-items: center; gap: var(--space-5); margin: var(--space-4) 0; }
+.mpr-display input[type="range"] { display: block; accent-color: var(--accent); }
+@media (max-width: 700px) {
+  #mpr-grid { grid-template-columns: 1fr; }
+  .mpr-display { flex-wrap: wrap; }
+}

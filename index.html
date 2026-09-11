@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="A precise, source-faithful atlas of the human brain built on the FreeSurfer fsaverage reference template." />
     <title>NeuroAtlas</title>
+    <link rel="icon" href="data:," />
   </head>
   <body>
     <div id="app" data-status="loading">
@@ -73,6 +74,39 @@
             </div>
           </div>
 
+          <p class="section-label">Anatomical cuts</p>
+          <div class="panel-body section-controls">
+            <label for="cut-mode">Cutting plane</label>
+            <select id="cut-mode">
+              <option value="off">Full brain</option>
+              <option value="sagittal">Sagittal</option>
+              <option value="coronal">Coronal</option>
+              <option value="axial">Axial / transverse</option>
+              <option value="oblique">Oblique</option>
+            </select>
+            <label id="cut-axis" for="cut-position">Position (mm)</label>
+            <div class="cut-position-row">
+              <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
+              <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
+            </div>
+            <div id="cut-oblique" hidden>
+              <label for="cut-tilt">Tilt from axial</label>
+              <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
+              <label for="cut-azimuth">Rotation around superior axis</label>
+              <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
+              <output id="cut-angles" class="measure"></output>
+            </div>
+            <label class="check"><input id="cut-reverse" type="checkbox" disabled /> Reverse retained side</label>
+            <label class="check"><input id="cut-mri" type="checkbox" checked disabled /> MRI on cut face</label>
+            <label class="check"><input id="cut-overlay" type="checkbox" /> Segmentation overlay</label>
+            <div class="actions">
+              <button id="cut-midline" type="button">Midsagittal</button>
+              <button id="cut-face-view" type="button" disabled>Face cut</button>
+            </div>
+            <button id="mpr-open" type="button">Open linked MRI slices</button>
+            <p id="cut-status" role="status">Full brain · no cut</p>
+          </div>
+
           <p class="section-label">Display</p>
           <div class="panel-body">
             <label for="hemisphere">Hemisphere</label>
@@ -105,6 +139,25 @@
         <a id="provenance" href="models/manifest.json" target="_blank" rel="noreferrer">Provenance</a>
       </footer>
     </div>
+
+    <dialog id="mpr-dialog" aria-labelledby="mpr-title">
+      <div class="mpr-header">
+        <div><h2 id="mpr-title">Linked MRI sections</h2>
+          <p>Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
+        <button id="mpr-close" type="button">Close slices</button>
+      </div>
+      <div id="mpr-grid"></div>
+      <p id="mpr-readout" class="measure" role="status"></p>
+      <div class="mpr-display">
+        <label for="mri-window-width">Contrast window
+          <input id="mri-window-width" type="range" min="10" max="255" value="180" /></label>
+        <label for="mri-window-center">Window center
+          <input id="mri-window-center" type="range" min="0" max="255" value="90" /></label>
+        <label class="check"><input id="mpr-overlay" type="checkbox" /> Segmentation overlay</label>
+      </div>
+      <p class="mpr-note">1 mm reference-template grid · surface RAS coordinates · L/R explicitly marked.
+        MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.</p>
+    </dialog>
 
     <dialog id="shortcuts" aria-labelledby="shortcuts-title">
       <h2 id="shortcuts-title">Keyboard shortcuts</h2>

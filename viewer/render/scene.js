@@ -31,6 +31,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
   const renderer = new WebGLRenderer({ antialias: true });
+  renderer.localClippingEnabled = true;
   renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio, 2));
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.domElement.tabIndex = 0;
@@ -83,6 +84,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   let dirty = true;
   let transition = null;
   let hasTransparency = () => false;
+  let hasSections = () => false;
   const invalidate = () => { dirty = true; };
 
   function applyTheme() {
@@ -168,7 +170,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     controls.update();
     if (!dirty) return;
     // A single opaque depth buffer cannot represent translucent cortex.
-    occlusion.enabled = !hasTransparency();
+    // Override depth/normal passes do not preserve local material clipping.
+    occlusion.enabled = !hasTransparency() && !hasSections();
     composer.render();
     dirty = false;
   });
@@ -195,6 +198,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     scene, camera, controls,
     domElement: renderer.domElement,
     applyTheme, setSize, setOutlined, moveTo, invalidate,
+    set sectionsProbe(probe) { hasSections = probe; },
     set transparencyProbe(probe) { hasTransparency = probe; },
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
     get viewportHeight() { return host.getBoundingClientRect().height; },
