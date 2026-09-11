@@ -1,8 +1,8 @@
 /**
  * The shareable part of the viewer's state, encoded into the URL hash.
  *
- * Only durable, meaningful state travels: which atlas, which region, and how
- * the model is displayed. The live camera position does not — it changes
+ * Only durable, meaningful state travels: which atlas, which cut labels, which
+ * region, and how the model is displayed. The live camera position does not — it changes
  * continuously, and the named view already records the user's intent.
  *
  * This module deliberately knows nothing about which atlases, regions or
@@ -30,6 +30,7 @@ const identifier = value => (typeof value === 'object' ? value.id : value);
 
 const FIELDS = [
   { key: 'atlas', param: 'atlas', read: value => value || undefined },
+  { key: 'cutAtlas', param: 'cuts', read: value => value || undefined },
   {
     key: 'selectedRegion',
     param: 'region',

@@ -78,5 +78,26 @@ test('every region in the published manifest resolves to a name and a group', as
     if (!label?.name?.trim() || !label?.group?.trim()) unresolved.push(r.source_name);
   }
   assert.deepEqual(unresolved, [], `${unresolved.length} region(s) without a label`);
-  assert.equal(manifest.regions.length, 547);
+  assert.equal(manifest.regions.length, 1034);
+});
+
+test('NextBrain names are read from the published table, never invented', () => {
+  const region = {
+    kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'left',
+    source_name: 'head_of_caudate', source_published_name: 'Left-head_of_caudate',
+  };
+  const label = labelOf(region);
+  assert.equal(label.name, 'head of caudate');
+  assert.equal(label.code, null);
+  // No curated table, so navigation falls back to the alphabetical buckets
+  // HCP-MMP already uses rather than to an invented anatomical system.
+  assert.equal(label.group, 'G–I');
+});
+
+test('a NextBrain name without a French entry keeps its published English', () => {
+  const region = {
+    kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'right',
+    source_name: 'periaqueductal_gray_substance',
+  };
+  assert.equal(labelOf(region, 'fr').name, labelOf(region, 'en').name);
 });

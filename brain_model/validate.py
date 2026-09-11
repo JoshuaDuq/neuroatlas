@@ -8,6 +8,7 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry
 from scipy.ndimage import map_coordinates
 
+from . import nextbrain
 from .export import compact_region
 from .geometry import extract_structure, normalize, partition_surface, to_gltf
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
@@ -376,6 +377,31 @@ def validate_region_metadata(region, mesh, expected, tolerance):
         raise ValueError(f"Manifest surface area mismatch: {expected['id']}")
 
 
+def validate_cut_only_regions(config, regions):
+    """Check every mesh-less region against the label volume that carries it.
+
+    These regions publish a measurement without a mesh to measure, so the volume
+    is the only thing that can confirm them. A build without the optional warp
+    has none to check.
+    """
+    cut_only = {
+        region_id: region
+        for region_id, region in regions.items()
+        if region["kind"] == "tissue-region"
+    }
+    if not cut_only:
+        return
+    _, labels, _ = nextbrain.load(config)
+    indices, counts = np.unique(labels, return_counts=True)
+    present = dict(zip(indices.tolist(), counts.tolist()))
+    for region_id, region in cut_only.items():
+        count = present.get(region["source_label_id"])
+        if count is None:
+            raise ValueError(f"Cut-only region is not in the label volume: {region_id}")
+        if region["voxel_count"] != count:
+            raise ValueError(f"Cut-only region voxel count disagrees: {region_id}")
+
+
 def validate_manifest(config, manifest):
     records = manifest["regions"]
     regions = {region["id"]: region for region in records}
@@ -409,8 +435,16 @@ def validate_manifest(config, manifest):
         if manifest["structures"].get(field) != value:
             raise ValueError(f"Manifest structures metadata mismatch: {field}")
     expected_ids = {region_id for group in groups.values() for region_id in group}
-    if set(regions) != expected_ids:
+    # Cut-only regions have no mesh by construction, so they belong to no GLB.
+    # They are verified against the label volume that does carry them instead.
+    meshed = {
+        region_id
+        for region_id, region in regions.items()
+        if region["kind"] != "tissue-region"
+    }
+    if meshed != expected_ids:
         raise ValueError("Manifest has missing or unexpected region IDs")
+    validate_cut_only_regions(config, regions)
     tolerance = config["validation"]["relative_area_tolerance"]
     for filename, expected in groups.items():
         meshes = read_meshes(config["output_directory"] / filename)

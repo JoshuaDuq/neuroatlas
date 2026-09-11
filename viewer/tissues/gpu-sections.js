@@ -51,10 +51,10 @@ export class TissueSections {
     return this.metadataLoading;
   }
 
-  async load() {
+  /** Load one named label volume. The caller owns which atlas the cut samples. */
+  async load(atlas) {
     if (this.disposed) throw new Error('Tissue sections disposed.');
     await this.loadMetadata();
-    const atlas = this.model.state.atlas;
     if (this.layers.has(atlas)) return;
     if (this.pending.has(atlas)) return this.pending.get(atlas);
     const metadata = this.metadata.atlases[atlas];
@@ -111,9 +111,9 @@ export class TissueSections {
     return { metadata, volume, texture, palette, mesh, paletteKey: null };
   }
 
-  update(frame) {
-    const layer = this.layers.get(this.model.state.atlas);
-    if (!layer) throw new Error('Current tissue atlas has not loaded.');
+  update(frame, atlas) {
+    const layer = this.layers.get(atlas);
+    if (!layer) throw new Error(`Tissue atlas has not loaded: ${atlas}`);
     this.current = layer;
     this.frame = frame;
     for (const candidate of this.layers.values()) candidate.mesh.visible = candidate === layer;

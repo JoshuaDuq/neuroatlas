@@ -13,6 +13,7 @@ def read_config():
     config = yaml.safe_load((ROOT / "config/model.yaml").read_text())
     config["source_directory"] = ROOT / config["source_directory"]
     config["output_directory"] = ROOT / config["output_directory"]
+    config["nextbrain"]["directory"] = ROOT / config["nextbrain"]["directory"]
     return config
 
 
@@ -24,6 +25,11 @@ def verify_sources():
     provenance = json.loads((ROOT / "data/sources.json").read_text())
     for source in provenance["sources"]:
         path = ROOT / source["path"]
+        # A derived source is produced by a documented one-off procedure that
+        # this package cannot run, so a checkout without it still builds every
+        # asset that needs no warp. Present, it is checked like any download.
+        if source.get("optional") and not path.exists():
+            continue
         if sha256(path) != source["sha256"]:
             raise ValueError(f"Source checksum mismatch: {path}")
     return provenance

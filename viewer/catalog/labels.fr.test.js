@@ -92,7 +92,7 @@ test('every region in the published manifest resolves to a French name and group
     if (!label?.name?.trim() || !label?.group?.trim()) unresolved.push(r.source_name);
   }
   assert.deepEqual(unresolved, [], `${unresolved.length} region(s) without a French label`);
-  assert.equal(manifest.regions.length, 547);
+  assert.equal(manifest.regions.length, 1034);
 });
 
 test('catalog searches with and without accents in French', async () => {
@@ -100,19 +100,22 @@ test('catalog searches with and without accents in French', async () => {
     await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
   const catalog = createCatalog(manifest, 'fr');
   const settings = {
-    atlas: 'destrieux', hemisphere: 'both', cortexVisible: true,
+    atlas: 'destrieux', cutAtlas: 'destrieux', cutActive: false,
+    hemisphere: 'both', cortexVisible: true,
     cortexOpacity: 1, isolatedRegion: null, lang: 'fr',
   };
 
+  // NextBrain publishes a cuneus parcel of its own, so this asserts that both
+  // spellings reach the Destrieux region rather than which one ranks first.
+  const destrieuxCuneus = rows => rows.find(row => row.label.name === 'Cunéus');
+
   // User typing with accents
   const withAccents = catalog.search('cunéus', settings);
-  assert.ok(withAccents.rows.length > 0);
-  assert.equal(withAccents.rows[0].label.name, 'Cunéus');
+  assert.ok(destrieuxCuneus(withAccents.rows), 'accented query finds Cunéus');
 
   // User typing without accents
   const withoutAccents = catalog.search('cuneus', settings);
-  assert.ok(withoutAccents.rows.length > 0);
-  assert.equal(withoutAccents.rows[0].label.name, 'Cunéus');
+  assert.ok(destrieuxCuneus(withoutAccents.rows), 'unaccented query finds Cunéus');
 
   // User searching by alias
   const byAlias = catalog.search('Broca', settings);

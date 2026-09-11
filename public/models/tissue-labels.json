@@ -9049,11 +9049,5916 @@
         }
       ],
       "label_method": "Derived nearest pial/white vertex labels, restricted to published cortical voxels AND native gray ribbon; other tissues unchanged"
+    },
+    "nextbrain": {
+      "file": "tissues-nextbrain.volume",
+      "shape": [
+        256,
+        256,
+        256
+      ],
+      "dtype": "<u2",
+      "order": "F",
+      "compression": "gzip",
+      "byte_length": 33554432,
+      "sha256": "a7313c50963ffe9630d9d6c875e9d64c64645af24c7e31d5491ddc8162e6b1ce",
+      "decoded_sha256": "5d2f8be578fab51bc9fa11b0bdece75cca77b69ed3a52495fe46334207e549c3",
+      "voxel_to_surface_ras_mm": [
+        [
+          -1.0,
+          0.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -128.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels": [
+        {
+          "source_label_id": 0,
+          "name": "Unknown",
+          "color": [
+            0,
+            0,
+            0
+          ],
+          "hemisphere": "midline",
+          "kind": "tissue",
+          "region_id": null
+        },
+        {
+          "source_label_id": 7,
+          "name": "Left-white_matter_of_forebrain",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:7"
+        },
+        {
+          "source_label_id": 48,
+          "name": "Left-head_of_caudate",
+          "color": [
+            145,
+            160,
+            110
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:48"
+        },
+        {
+          "source_label_id": 79,
+          "name": "Left-putamen",
+          "color": [
+            168,
+            180,
+            133
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:79"
+        },
+        {
+          "source_label_id": 99,
+          "name": "Left-anterior_olfactory_nucleus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:99"
+        },
+        {
+          "source_label_id": 101,
+          "name": "Left-core_of_nucleus_accumbens",
+          "color": [
+            145,
+            160,
+            110
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:101"
+        },
+        {
+          "source_label_id": 102,
+          "name": "Left-claustrum",
+          "color": [
+            170,
+            219,
+            206
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:102"
+        },
+        {
+          "source_label_id": 103,
+          "name": "Left-medial_septal_nucleus",
+          "color": [
+            195,
+            194,
+            134
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:103"
+        },
+        {
+          "source_label_id": 108,
+          "name": "Left-basal_nucleus_of_meynert",
+          "color": [
+            143,
+            142,
+            66
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:108"
+        },
+        {
+          "source_label_id": 111,
+          "name": "Left-diagonal_band",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:111"
+        },
+        {
+          "source_label_id": 113,
+          "name": "Left-lateral_olfactory_stria",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:113"
+        },
+        {
+          "source_label_id": 117,
+          "name": "Left-bed_nucleus_of_stria_terminalis",
+          "color": [
+            169,
+            215,
+            174
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:117"
+        },
+        {
+          "source_label_id": 118,
+          "name": "Left-body_of_caudate",
+          "color": [
+            153,
+            166,
+            119
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:118"
+        },
+        {
+          "source_label_id": 119,
+          "name": "Left-external_segment_of_globus_pallidus",
+          "color": [
+            215,
+            224,
+            191
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:119"
+        },
+        {
+          "source_label_id": 120,
+          "name": "Left-ventral_pallidus",
+          "color": [
+            193,
+            206,
+            167
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:120"
+        },
+        {
+          "source_label_id": 125,
+          "name": "Left-lateral_olfactory_area",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:125"
+        },
+        {
+          "source_label_id": 128,
+          "name": "Left-substantia_innominata",
+          "color": [
+            202,
+            202,
+            146
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:128"
+        },
+        {
+          "source_label_id": 130,
+          "name": "Left-anterior_commissure",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:130"
+        },
+        {
+          "source_label_id": 147,
+          "name": "Left-preoptic_region_of_hth",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:147"
+        },
+        {
+          "source_label_id": 149,
+          "name": "Left-lateral_preoptic_area",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:149"
+        },
+        {
+          "source_label_id": 150,
+          "name": "Left-median_preoptic_nucleus",
+          "color": [
+            193,
+            120,
+            162
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:150"
+        },
+        {
+          "source_label_id": 157,
+          "name": "Left-layer_iii_of_piriform_cortex",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:157"
+        },
+        {
+          "source_label_id": 161,
+          "name": "Left-optic_chiasm",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:161"
+        },
+        {
+          "source_label_id": 174,
+          "name": "Left-temporal_claustrum",
+          "color": [
+            102,
+            196,
+            175
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:174"
+        },
+        {
+          "source_label_id": 181,
+          "name": "Left-supraoptic_region_of_hth",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:181"
+        },
+        {
+          "source_label_id": 184,
+          "name": "Left-stria_terminalis",
+          "color": [
+            199,
+            199,
+            199
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:184"
+        },
+        {
+          "source_label_id": 190,
+          "name": "Left-magnocellular_division_of_reticular_nucleus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:190"
+        },
+        {
+          "source_label_id": 191,
+          "name": "Left-parvocellular_division_of_reticular_nucleus_(perireticular_nucleus)",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:191"
+        },
+        {
+          "source_label_id": 192,
+          "name": "Left-medial_preoptic_nucleus",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:192"
+        },
+        {
+          "source_label_id": 193,
+          "name": "Left-anterior_hypothalamic_nucleus",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:193"
+        },
+        {
+          "source_label_id": 194,
+          "name": "Left-paraventricular_nucleus_of_hypothalamus",
+          "color": [
+            166,
+            107,
+            142
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:194"
+        },
+        {
+          "source_label_id": 196,
+          "name": "Left-supraoptic_nucleus",
+          "color": [
+            125,
+            82,
+            111
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:196"
+        },
+        {
+          "source_label_id": 199,
+          "name": "Left-fornix",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:199"
+        },
+        {
+          "source_label_id": 201,
+          "name": "Left-stria_medullaris_of_thalamus",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:201"
+        },
+        {
+          "source_label_id": 206,
+          "name": "Left-internal_segment_of_globus_pallidus",
+          "color": [
+            208,
+            217,
+            178
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:206"
+        },
+        {
+          "source_label_id": 207,
+          "name": "Left-periventricular_nucleus__supraoptic_portion",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:207"
+        },
+        {
+          "source_label_id": 208,
+          "name": "Left-optic_tract",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:208"
+        },
+        {
+          "source_label_id": 214,
+          "name": "Left-amygdaloid_complex",
+          "color": [
+            201,
+            226,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:214"
+        },
+        {
+          "source_label_id": 215,
+          "name": "Left-anterior_amygdaloid_area",
+          "color": [
+            192,
+            221,
+            157
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:215"
+        },
+        {
+          "source_label_id": 216,
+          "name": "Left-basolateral_nucleus_(basal_nucleus)",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:216"
+        },
+        {
+          "source_label_id": 217,
+          "name": "Left-ventral_division_of_basomedial_nucleus",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:217"
+        },
+        {
+          "source_label_id": 218,
+          "name": "Left-thalamus",
+          "color": [
+            228,
+            204,
+            227
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:218"
+        },
+        {
+          "source_label_id": 219,
+          "name": "Left-anterodorsal_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:219"
+        },
+        {
+          "source_label_id": 220,
+          "name": "Left-anteroventral_nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:220"
+        },
+        {
+          "source_label_id": 221,
+          "name": "Left-parataenial_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:221"
+        },
+        {
+          "source_label_id": 222,
+          "name": "Left-parvocellular_division_of_va",
+          "color": [
+            165,
+            84,
+            160
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:222"
+        },
+        {
+          "source_label_id": 223,
+          "name": "Left-fasciculosus_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:223"
+        },
+        {
+          "source_label_id": 224,
+          "name": "Left-rhomboid_(central)_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:224"
+        },
+        {
+          "source_label_id": 225,
+          "name": "Left-paraventricular_nucleus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:225"
+        },
+        {
+          "source_label_id": 226,
+          "name": "Left-zona_incerta",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:226"
+        },
+        {
+          "source_label_id": 227,
+          "name": "Left-periventricular_nucleus__tuberal_portion",
+          "color": [
+            221,
+            181,
+            206
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:227"
+        },
+        {
+          "source_label_id": 228,
+          "name": "Left-juxtaparaventricular_lateral_hypothalamic_area",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:228"
+        },
+        {
+          "source_label_id": 229,
+          "name": "Left-dorsomedial_hypothalamic_nucleus",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:229"
+        },
+        {
+          "source_label_id": 230,
+          "name": "Left-lateral_hypothalamic_area__tuberal_part",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:230"
+        },
+        {
+          "source_label_id": 232,
+          "name": "Left-pallidohypothalamic_area",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:232"
+        },
+        {
+          "source_label_id": 234,
+          "name": "Left-medial_corticohypothalamic_tract",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:234"
+        },
+        {
+          "source_label_id": 238,
+          "name": "Left-ventral_subdivision_of_coa",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:238"
+        },
+        {
+          "source_label_id": 240,
+          "name": "Left-paralaminar_nucleus",
+          "color": [
+            146,
+            200,
+            81
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:240"
+        },
+        {
+          "source_label_id": 242,
+          "name": "Left-amygdalocortical_(corticoamygdaloid)_transition_area",
+          "color": [
+            227,
+            158,
+            103
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:242"
+        },
+        {
+          "source_label_id": 243,
+          "name": "Left-dorsal_part_of_ventromedial_hypothalamic_nucleus",
+          "color": [
+            193,
+            120,
+            162
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:243"
+        },
+        {
+          "source_label_id": 244,
+          "name": "Left-ventral_part_of_ventromedial_hypothalamic_nucleus",
+          "color": [
+            166,
+            107,
+            142
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:244"
+        },
+        {
+          "source_label_id": 245,
+          "name": "Left-arcuate_nucleus_of_hypothalamus",
+          "color": [
+            196,
+            132,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:245"
+        },
+        {
+          "source_label_id": 246,
+          "name": "Left-inferior_thalamic_peduncle",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:246"
+        },
+        {
+          "source_label_id": 252,
+          "name": "Left-anteromedial_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:252"
+        },
+        {
+          "source_label_id": 253,
+          "name": "Left-reuniens_nucleus_(medioventral_nucleus)_of_thalamus",
+          "color": [
+            149,
+            73,
+            138
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:253"
+        },
+        {
+          "source_label_id": 254,
+          "name": "Left-reticular_nucleus_of_thalamus",
+          "color": [
+            165,
+            84,
+            160
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:254"
+        },
+        {
+          "source_label_id": 255,
+          "name": "Left-central_part_of_ventromedial_hypothalamic_nucleus",
+          "color": [
+            181,
+            113,
+            151
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:255"
+        },
+        {
+          "source_label_id": 256,
+          "name": "Left-tuberomammillary_nucleus",
+          "color": [
+            181,
+            113,
+            151
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:256"
+        },
+        {
+          "source_label_id": 268,
+          "name": "Left-lateral_tuberal_nuclei",
+          "color": [
+            145,
+            94,
+            126
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:268"
+        },
+        {
+          "source_label_id": 274,
+          "name": "Left-ventral_medial_nucleus_of_thalamus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:274"
+        },
+        {
+          "source_label_id": 275,
+          "name": "Left-posterior_hypothalamic_nucleus",
+          "color": [
+            214,
+            146,
+            186
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:275"
+        },
+        {
+          "source_label_id": 276,
+          "name": "Left-mammillothalamic_tract",
+          "color": [
+            190,
+            190,
+            190
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:276"
+        },
+        {
+          "source_label_id": 277,
+          "name": "Left-medial_subdivision_of_central_nucleus",
+          "color": [
+            175,
+            213,
+            138
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:277"
+        },
+        {
+          "source_label_id": 278,
+          "name": "Left-lateral_subdivision_of_central_nucleus",
+          "color": [
+            175,
+            213,
+            138
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:278"
+        },
+        {
+          "source_label_id": 279,
+          "name": "Left-rostral_subdivision_of_medial_nucleus",
+          "color": [
+            156,
+            204,
+            102
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:279"
+        },
+        {
+          "source_label_id": 282,
+          "name": "Left-magnocellular_(medial)_division_of_md",
+          "color": [
+            165,
+            84,
+            160
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:282"
+        },
+        {
+          "source_label_id": 283,
+          "name": "Left-magnocellular_division_of_va",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:283"
+        },
+        {
+          "source_label_id": 284,
+          "name": "Left-central_medial_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:284"
+        },
+        {
+          "source_label_id": 285,
+          "name": "Left-paracentral_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:285"
+        },
+        {
+          "source_label_id": 286,
+          "name": "Left-intermediodorsal__nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:286"
+        },
+        {
+          "source_label_id": 295,
+          "name": "Left-amygdalostriatal_transition_area",
+          "color": [
+            227,
+            166,
+            117
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:295"
+        },
+        {
+          "source_label_id": 297,
+          "name": "Left-lateral__hypothalamic_area__posterior_part",
+          "color": [
+            196,
+            132,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:297"
+        },
+        {
+          "source_label_id": 298,
+          "name": "Left-mammillary_peduncle",
+          "color": [
+            110,
+            110,
+            110
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:298"
+        },
+        {
+          "source_label_id": 301,
+          "name": "Left-amygdalohippocampal_area",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:301"
+        },
+        {
+          "source_label_id": 303,
+          "name": "Left-central_dorsal_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:303"
+        },
+        {
+          "source_label_id": 304,
+          "name": "Left-supramammillary_nucleus",
+          "color": [
+            166,
+            107,
+            142
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:304"
+        },
+        {
+          "source_label_id": 305,
+          "name": "Left-lateral_part_of_medial_mammillary_nucleus",
+          "color": [
+            156,
+            106,
+            134
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:305"
+        },
+        {
+          "source_label_id": 306,
+          "name": "Left-medial_part_of_medial_mammillary_nucleus",
+          "color": [
+            181,
+            113,
+            151
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:306"
+        },
+        {
+          "source_label_id": 307,
+          "name": "Left-basal_division_of_medial_mammillary_nucleus",
+          "color": [
+            160,
+            90,
+            130
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:307"
+        },
+        {
+          "source_label_id": 308,
+          "name": "Left-lateral_mammillary_nucleus",
+          "color": [
+            157,
+            101,
+            133
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:308"
+        },
+        {
+          "source_label_id": 309,
+          "name": "Left-lenticular_fasciculus",
+          "color": [
+            135,
+            135,
+            135
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:309"
+        },
+        {
+          "source_label_id": 310,
+          "name": "Left-substantia_nigra__reticular_part",
+          "color": [
+            108,
+            169,
+            191
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:310"
+        },
+        {
+          "source_label_id": 313,
+          "name": "Left-parvocellular_(central)_division_of_md",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:313"
+        },
+        {
+          "source_label_id": 314,
+          "name": "Left-rostral_division_of_vl",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:314"
+        },
+        {
+          "source_label_id": 315,
+          "name": "Left-medial_portion_of_sth",
+          "color": [
+            167,
+            141,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:315"
+        },
+        {
+          "source_label_id": 316,
+          "name": "Left-laterodorsal_portion_of_sth",
+          "color": [
+            152,
+            129,
+            165
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:316"
+        },
+        {
+          "source_label_id": 320,
+          "name": "Left-amygdalohippocampal_transition_area",
+          "color": [
+            231,
+            176,
+            128
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:320"
+        },
+        {
+          "source_label_id": 321,
+          "name": "Left-lateroventral_portion_of_sth",
+          "color": [
+            138,
+            117,
+            149
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:321"
+        },
+        {
+          "source_label_id": 322,
+          "name": "Left-thalamic_fasciculus",
+          "color": [
+            170,
+            170,
+            170
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:322"
+        },
+        {
+          "source_label_id": 326,
+          "name": "Left-uncal_subiculum",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:326"
+        },
+        {
+          "source_label_id": 339,
+          "name": "Left-stratum_lacunosum-moleculare_of_uncal_ca1",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:339"
+        },
+        {
+          "source_label_id": 340,
+          "name": "Left-stratum_radiatum_of_uncal_ca1",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:340"
+        },
+        {
+          "source_label_id": 341,
+          "name": "Left-stratum_pyramidale_of_uncal_ca1",
+          "color": [
+            105,
+            79,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:341"
+        },
+        {
+          "source_label_id": 342,
+          "name": "Left-stratum_oriens_of_uncal_ca1",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:342"
+        },
+        {
+          "source_label_id": 343,
+          "name": "Left-stratum_lacunosum-moleculare_of_rostral_ca1",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:343"
+        },
+        {
+          "source_label_id": 344,
+          "name": "Left-stratum_radiatum_of_rostral_ca1",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:344"
+        },
+        {
+          "source_label_id": 345,
+          "name": "Left-stratum_pyramidale_of_rostral_ca1",
+          "color": [
+            105,
+            79,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:345"
+        },
+        {
+          "source_label_id": 346,
+          "name": "Left-stratum_oriens_of_rostral_ca1",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:346"
+        },
+        {
+          "source_label_id": 347,
+          "name": "Left-rostral_subiculum",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:347"
+        },
+        {
+          "source_label_id": 349,
+          "name": "Left-posteroventral_putamen",
+          "color": [
+            168,
+            180,
+            133
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:349"
+        },
+        {
+          "source_label_id": 350,
+          "name": "Left-dorsal_subdivision_of_vlc",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:350"
+        },
+        {
+          "source_label_id": 352,
+          "name": "Left-substantia_nigra__compact_part",
+          "color": [
+            67,
+            128,
+            143
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:352"
+        },
+        {
+          "source_label_id": 354,
+          "name": "Left-alveus",
+          "color": [
+            207,
+            207,
+            207
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:354"
+        },
+        {
+          "source_label_id": 364,
+          "name": "Left-molecular_layer_of_uncal_dentate_gyrus",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:364"
+        },
+        {
+          "source_label_id": 367,
+          "name": "Left-polyform_layer_of_uncal_dentate_gyrus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:367"
+        },
+        {
+          "source_label_id": 368,
+          "name": "Left-stratum_lacunosum-moleculare_of_uncal_ca2",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:368"
+        },
+        {
+          "source_label_id": 369,
+          "name": "Left-stratum_radiatum_of_uncal_ca2",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:369"
+        },
+        {
+          "source_label_id": 370,
+          "name": "Left-stratum_pyramidale_of_uncal_ca2",
+          "color": [
+            93,
+            69,
+            127
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:370"
+        },
+        {
+          "source_label_id": 371,
+          "name": "Left-stratum_oriens_of_uncal_ca2",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:371"
+        },
+        {
+          "source_label_id": 372,
+          "name": "Left-stratum_lacunosum-moleculare_of_uncal_ca3",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:372"
+        },
+        {
+          "source_label_id": 373,
+          "name": "Left-stratum_lucidum__of_uncal_ca3",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:373"
+        },
+        {
+          "source_label_id": 374,
+          "name": "Left-stratum_pyramidale_of_uncal_ca3",
+          "color": [
+            97,
+            72,
+            132
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:374"
+        },
+        {
+          "source_label_id": 375,
+          "name": "Left-stratum_oriens_of_uncal_ca3",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:375"
+        },
+        {
+          "source_label_id": 377,
+          "name": "Left-lateral_nucleus",
+          "color": [
+            166,
+            209,
+            122
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:377"
+        },
+        {
+          "source_label_id": 378,
+          "name": "Left-lateral_dorsal_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:378"
+        },
+        {
+          "source_label_id": 379,
+          "name": "Left-densocelllular_(paralamellar)_division_of_md",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:379"
+        },
+        {
+          "source_label_id": 380,
+          "name": "Left-multiform_(lateral)_division_of_md",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:380"
+        },
+        {
+          "source_label_id": 381,
+          "name": "Left-ventral_subdivision_of_vlc",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:381"
+        },
+        {
+          "source_label_id": 382,
+          "name": "Left-medial_subdivision_of_vlc_(area_x)",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:382"
+        },
+        {
+          "source_label_id": 384,
+          "name": "Left-midbrain_(mesencephalon)",
+          "color": [
+            175,
+            208,
+            221
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:384"
+        },
+        {
+          "source_label_id": 385,
+          "name": "Left-red_nucleus",
+          "color": [
+            108,
+            169,
+            191
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:385"
+        },
+        {
+          "source_label_id": 393,
+          "name": "Left-tail_of_caudate",
+          "color": [
+            145,
+            160,
+            110
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:393"
+        },
+        {
+          "source_label_id": 394,
+          "name": "Left-rostral_division_of_ventral_posterior_lateral_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:394"
+        },
+        {
+          "source_label_id": 395,
+          "name": "Left-parvocellular_division_of_vpm",
+          "color": [
+            140,
+            70,
+            133
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:395"
+        },
+        {
+          "source_label_id": 396,
+          "name": "Left-lateral_division_of_centromedian_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:396"
+        },
+        {
+          "source_label_id": 397,
+          "name": "Left-medial_division_of_centromedian_nucleus_of_thalamus",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:397"
+        },
+        {
+          "source_label_id": 398,
+          "name": "Left-parafascicular_nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:398"
+        },
+        {
+          "source_label_id": 399,
+          "name": "Left-periventricular_area_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:399"
+        },
+        {
+          "source_label_id": 400,
+          "name": "Left-nucleus_of_the_field_of_forel",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:400"
+        },
+        {
+          "source_label_id": 404,
+          "name": "Left-molecular_layer_of_rostral_dentate_gyrus",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:404"
+        },
+        {
+          "source_label_id": 405,
+          "name": "Left-granular_layer_of_rostral_dentate_gyrus",
+          "color": [
+            84,
+            62,
+            116
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:405"
+        },
+        {
+          "source_label_id": 407,
+          "name": "Left-polyform_layer_of_rostral_dentate_gyrus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:407"
+        },
+        {
+          "source_label_id": 408,
+          "name": "Left-stratum_lacunosum-moleculare_of_rostral_ca2",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:408"
+        },
+        {
+          "source_label_id": 409,
+          "name": "Left-stratum_radiatum_of_rostral_ca2",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:409"
+        },
+        {
+          "source_label_id": 410,
+          "name": "Left-stratum_pyramidale_of_rostral_ca2",
+          "color": [
+            93,
+            69,
+            127
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:410"
+        },
+        {
+          "source_label_id": 412,
+          "name": "Left-fasciculus_retroflexus_(habenuno-interpeduncular_tract)",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:412"
+        },
+        {
+          "source_label_id": 414,
+          "name": "Left-pontine_nucleus",
+          "color": [
+            101,
+            134,
+            191
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:414"
+        },
+        {
+          "source_label_id": 418,
+          "name": "Left-stratum_lacunosum-moleculare_of_rostral_ca3",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:418"
+        },
+        {
+          "source_label_id": 419,
+          "name": "Left-stratum_lucidum__of_rostral_ca3",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:419"
+        },
+        {
+          "source_label_id": 420,
+          "name": "Left-stratum_pyramidale_of_rostral_ca3",
+          "color": [
+            97,
+            72,
+            132
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:420"
+        },
+        {
+          "source_label_id": 421,
+          "name": "Left-stratum_oriens_of_rostral_ca3",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:421"
+        },
+        {
+          "source_label_id": 422,
+          "name": "Left-pyramidal_cells_of_uncal_ca4",
+          "color": [
+            114,
+            83,
+            152
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:422"
+        },
+        {
+          "source_label_id": 423,
+          "name": "Left-ventral_posterior_medial_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:423"
+        },
+        {
+          "source_label_id": 424,
+          "name": "Left-ventral_posterior_inferior_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:424"
+        },
+        {
+          "source_label_id": 425,
+          "name": "Left-lateral_division_of_central_lateral_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:425"
+        },
+        {
+          "source_label_id": 426,
+          "name": "Left-subparafascicular_nucleus_of_thalamus",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:426"
+        },
+        {
+          "source_label_id": 430,
+          "name": "Left-lateral_habenular_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:430"
+        },
+        {
+          "source_label_id": 432,
+          "name": "Left-pyramidal_cells_of_rostral_ca4",
+          "color": [
+            114,
+            83,
+            152
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:432"
+        },
+        {
+          "source_label_id": 435,
+          "name": "Left-ventral_tegmental_area",
+          "color": [
+            126,
+            179,
+            201
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:435"
+        },
+        {
+          "source_label_id": 441,
+          "name": "Left-lateral_posterior_nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:441"
+        },
+        {
+          "source_label_id": 442,
+          "name": "Left-basal_ventral_medial_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:442"
+        },
+        {
+          "source_label_id": 454,
+          "name": "Left-anterior_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:454"
+        },
+        {
+          "source_label_id": 458,
+          "name": "Left-caudal_division_of_ventral_posterior_lateral_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:458"
+        },
+        {
+          "source_label_id": 461,
+          "name": "Left-fimbria",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:461"
+        },
+        {
+          "source_label_id": 465,
+          "name": "Left-periaqueductal_gray_substance",
+          "color": [
+            142,
+            189,
+            205
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:465"
+        },
+        {
+          "source_label_id": 478,
+          "name": "Left-posterior_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:478"
+        },
+        {
+          "source_label_id": 479,
+          "name": "Left-centromedian_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:479"
+        },
+        {
+          "source_label_id": 484,
+          "name": "Left-dorsal_lateral_geniculate_nucleus",
+          "color": [
+            140,
+            70,
+            133
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:484"
+        },
+        {
+          "source_label_id": 492,
+          "name": "Left-limitans_nucleus",
+          "color": [
+            149,
+            73,
+            138
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:492"
+        },
+        {
+          "source_label_id": 496,
+          "name": "Left-pretectal_region",
+          "color": [
+            160,
+            199,
+            213
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:496"
+        },
+        {
+          "source_label_id": 498,
+          "name": "Left-peripeduncular_nucleus",
+          "color": [
+            86,
+            161,
+            187
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:498"
+        },
+        {
+          "source_label_id": 504,
+          "name": "Left-dorsal_medial_geniculate_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:504"
+        },
+        {
+          "source_label_id": 506,
+          "name": "Left-pineal_body",
+          "color": [
+            119,
+            54,
+            113
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:506"
+        },
+        {
+          "source_label_id": 508,
+          "name": "Left-medial_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:508"
+        },
+        {
+          "source_label_id": 517,
+          "name": "Left-lateral_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:517"
+        },
+        {
+          "source_label_id": 519,
+          "name": "Left-inferior_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:519"
+        },
+        {
+          "source_label_id": 521,
+          "name": "Left-dorsal_raphe_nucleus",
+          "color": [
+            108,
+            169,
+            191
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:521"
+        },
+        {
+          "source_label_id": 531,
+          "name": "Left-superior_cerebellar_peduncle_(brachium_conjunctivum)",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:531"
+        },
+        {
+          "source_label_id": 541,
+          "name": "Left-central_nucleus_of_inferior_colliculus",
+          "color": [
+            82,
+            152,
+            174
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:541"
+        },
+        {
+          "source_label_id": 558,
+          "name": "Left-molecular_layer_of_caudal_dentate_gyrus",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:558"
+        },
+        {
+          "source_label_id": 559,
+          "name": "Left-granular_layer_of_caudal_dentate_gyrus",
+          "color": [
+            84,
+            62,
+            116
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:559"
+        },
+        {
+          "source_label_id": 561,
+          "name": "Left-polyform_layer_of_caudal_dentate_gyrus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:561"
+        },
+        {
+          "source_label_id": 562,
+          "name": "Left-stratum_lacunosum-moleculare_of_caudal_ca1",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:562"
+        },
+        {
+          "source_label_id": 563,
+          "name": "Left-stratum_radiatum_of_caudal_ca1",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:563"
+        },
+        {
+          "source_label_id": 564,
+          "name": "Left-stratum_pyramidale_of_caudal_ca1",
+          "color": [
+            105,
+            79,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:564"
+        },
+        {
+          "source_label_id": 565,
+          "name": "Left-stratum_oriens_of_caudal_ca1",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:565"
+        },
+        {
+          "source_label_id": 566,
+          "name": "Left-stratum_lacunosum-moleculare_of_caudal_ca2",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:566"
+        },
+        {
+          "source_label_id": 567,
+          "name": "Left-stratum_radiatum_of_caudal_ca2",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:567"
+        },
+        {
+          "source_label_id": 568,
+          "name": "Left-stratum_pyramidale_of_caudal_ca2",
+          "color": [
+            97,
+            72,
+            132
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:568"
+        },
+        {
+          "source_label_id": 571,
+          "name": "Left-stratum_lacunosum-moleculare_of_caudal_ca3",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:571"
+        },
+        {
+          "source_label_id": 573,
+          "name": "Left-stratum_pyramidale_of_caudal_ca3",
+          "color": [
+            93,
+            69,
+            127
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:573"
+        },
+        {
+          "source_label_id": 574,
+          "name": "Left-stratum_oriens_of_caudal_ca3",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:574"
+        },
+        {
+          "source_label_id": 575,
+          "name": "Left-pyramidal_cells_of_caudal_ca4",
+          "color": [
+            114,
+            83,
+            152
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:575"
+        },
+        {
+          "source_label_id": 576,
+          "name": "Left-caudal_subiculum",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:576"
+        },
+        {
+          "source_label_id": 578,
+          "name": "Left-pulvinar_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:578"
+        },
+        {
+          "source_label_id": 580,
+          "name": "Left-pons",
+          "color": [
+            175,
+            195,
+            219
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:580"
+        },
+        {
+          "source_label_id": 595,
+          "name": "Left-molecular_layer_of_pva",
+          "color": [
+            225,
+            232,
+            246
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:595"
+        },
+        {
+          "source_label_id": 597,
+          "name": "Left-granular_cell_layer_of_pva",
+          "color": [
+            6,
+            79,
+            136
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:597"
+        },
+        {
+          "source_label_id": 611,
+          "name": "Left-white_matter_of_hindbrain",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:611"
+        },
+        {
+          "source_label_id": 654,
+          "name": "Left-inferior_olive__principal_nucleus",
+          "color": [
+            62,
+            77,
+            137
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:654"
+        },
+        {
+          "source_label_id": 662,
+          "name": "Left-myelencephalon_(medulla_oblongata)",
+          "color": [
+            209,
+            215,
+            232
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:662"
+        },
+        {
+          "source_label_id": 697,
+          "name": "Left-inferior_cerebellar_peduncle",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:697"
+        },
+        {
+          "source_label_id": 715,
+          "name": "Left-fastigial_(medial)_nucleus",
+          "color": [
+            50,
+            114,
+            174
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:715"
+        },
+        {
+          "source_label_id": 721,
+          "name": "Left-dentate_(lateral)_nucleus",
+          "color": [
+            25,
+            69,
+            126
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:721"
+        },
+        {
+          "source_label_id": 751,
+          "name": "Left-medial_interpositus_(globose)_nucleus",
+          "color": [
+            17,
+            90,
+            149
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:751"
+        },
+        {
+          "source_label_id": 752,
+          "name": "Left-lateral_interpositus_(emboliform)_nucleus",
+          "color": [
+            17,
+            90,
+            149
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:752"
+        },
+        {
+          "source_label_id": 765,
+          "name": "Left-central_gray_of_medulla_oblongata",
+          "color": [
+            93,
+            108,
+            178
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:765"
+        },
+        {
+          "source_label_id": 811,
+          "name": "Left-superficial_pulvinar_nucleus",
+          "color": [
+            0,
+            128,
+            128
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:811"
+        },
+        {
+          "source_label_id": 813,
+          "name": "Left-diffuse_pulvinar_nucleus",
+          "color": [
+            255,
+            105,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:813"
+        },
+        {
+          "source_label_id": 843,
+          "name": "Left-infundibular_stalk",
+          "color": [
+            1,
+            138,
+            65
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:843"
+        },
+        {
+          "source_label_id": 846,
+          "name": "Left-white_matter_of_the_cerebellum",
+          "color": [
+            250,
+            250,
+            250
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:846"
+        },
+        {
+          "source_label_id": 2001,
+          "name": "Left-ctx-rh-bankssts",
+          "color": [
+            25,
+            100,
+            40
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2001"
+        },
+        {
+          "source_label_id": 2002,
+          "name": "Left-ctx-rh-caudalanteriorcingulate",
+          "color": [
+            125,
+            100,
+            160
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2002"
+        },
+        {
+          "source_label_id": 2003,
+          "name": "Left-ctx-rh-caudalmiddlefrontal",
+          "color": [
+            100,
+            25,
+            0
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2003"
+        },
+        {
+          "source_label_id": 2005,
+          "name": "Left-ctx-rh-cuneus",
+          "color": [
+            220,
+            20,
+            100
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2005"
+        },
+        {
+          "source_label_id": 2006,
+          "name": "Left-ctx-rh-entorhinal",
+          "color": [
+            220,
+            20,
+            10
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2006"
+        },
+        {
+          "source_label_id": 2007,
+          "name": "Left-ctx-rh-fusiform",
+          "color": [
+            180,
+            220,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2007"
+        },
+        {
+          "source_label_id": 2008,
+          "name": "Left-ctx-rh-inferiorparietal",
+          "color": [
+            220,
+            60,
+            220
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2008"
+        },
+        {
+          "source_label_id": 2009,
+          "name": "Left-ctx-rh-inferiortemporal",
+          "color": [
+            180,
+            40,
+            120
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2009"
+        },
+        {
+          "source_label_id": 2010,
+          "name": "Left-ctx-rh-isthmuscingulate",
+          "color": [
+            140,
+            20,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2010"
+        },
+        {
+          "source_label_id": 2011,
+          "name": "Left-ctx-rh-lateraloccipital",
+          "color": [
+            20,
+            30,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2011"
+        },
+        {
+          "source_label_id": 2012,
+          "name": "Left-ctx-rh-lateralorbitofrontal",
+          "color": [
+            35,
+            75,
+            50
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2012"
+        },
+        {
+          "source_label_id": 2013,
+          "name": "Left-ctx-rh-lingual",
+          "color": [
+            225,
+            140,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2013"
+        },
+        {
+          "source_label_id": 2014,
+          "name": "Left-ctx-rh-medialorbitofrontal",
+          "color": [
+            200,
+            35,
+            75
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2014"
+        },
+        {
+          "source_label_id": 2015,
+          "name": "Left-ctx-rh-middletemporal",
+          "color": [
+            160,
+            100,
+            50
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2015"
+        },
+        {
+          "source_label_id": 2016,
+          "name": "Left-ctx-rh-parahippocampal",
+          "color": [
+            20,
+            220,
+            60
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2016"
+        },
+        {
+          "source_label_id": 2017,
+          "name": "Left-ctx-rh-paracentral",
+          "color": [
+            60,
+            220,
+            60
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2017"
+        },
+        {
+          "source_label_id": 2018,
+          "name": "Left-ctx-rh-parsopercularis",
+          "color": [
+            220,
+            180,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2018"
+        },
+        {
+          "source_label_id": 2019,
+          "name": "Left-ctx-rh-parsorbitalis",
+          "color": [
+            20,
+            100,
+            50
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2019"
+        },
+        {
+          "source_label_id": 2020,
+          "name": "Left-ctx-rh-parstriangularis",
+          "color": [
+            220,
+            60,
+            20
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2020"
+        },
+        {
+          "source_label_id": 2021,
+          "name": "Left-ctx-rh-pericalcarine",
+          "color": [
+            120,
+            100,
+            60
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2021"
+        },
+        {
+          "source_label_id": 2022,
+          "name": "Left-ctx-rh-postcentral",
+          "color": [
+            220,
+            20,
+            20
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2022"
+        },
+        {
+          "source_label_id": 2023,
+          "name": "Left-ctx-rh-posteriorcingulate",
+          "color": [
+            220,
+            180,
+            220
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2023"
+        },
+        {
+          "source_label_id": 2024,
+          "name": "Left-ctx-rh-precentral",
+          "color": [
+            60,
+            20,
+            220
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2024"
+        },
+        {
+          "source_label_id": 2025,
+          "name": "Left-ctx-rh-precuneus",
+          "color": [
+            160,
+            140,
+            180
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2025"
+        },
+        {
+          "source_label_id": 2026,
+          "name": "Left-ctx-rh-rostralanteriorcingulate",
+          "color": [
+            80,
+            20,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2026"
+        },
+        {
+          "source_label_id": 2027,
+          "name": "Left-ctx-rh-rostralmiddlefrontal",
+          "color": [
+            75,
+            50,
+            125
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2027"
+        },
+        {
+          "source_label_id": 2028,
+          "name": "Left-ctx-rh-superiorfrontal",
+          "color": [
+            20,
+            220,
+            160
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2028"
+        },
+        {
+          "source_label_id": 2029,
+          "name": "Left-ctx-rh-superiorparietal",
+          "color": [
+            20,
+            180,
+            140
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2029"
+        },
+        {
+          "source_label_id": 2030,
+          "name": "Left-ctx-rh-superiortemporal",
+          "color": [
+            140,
+            220,
+            220
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2030"
+        },
+        {
+          "source_label_id": 2031,
+          "name": "Left-ctx-rh-supramarginal",
+          "color": [
+            80,
+            160,
+            20
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2031"
+        },
+        {
+          "source_label_id": 2032,
+          "name": "Left-ctx-rh-frontalpole",
+          "color": [
+            100,
+            0,
+            100
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2032"
+        },
+        {
+          "source_label_id": 2033,
+          "name": "Left-ctx-rh-temporalpole",
+          "color": [
+            7,
+            70,
+            70
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2033"
+        },
+        {
+          "source_label_id": 2034,
+          "name": "Left-ctx-rh-transversetemporal",
+          "color": [
+            150,
+            150,
+            200
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2034"
+        },
+        {
+          "source_label_id": 2035,
+          "name": "Left-ctx-rh-insula",
+          "color": [
+            255,
+            192,
+            32
+          ],
+          "hemisphere": "left",
+          "kind": "tissue",
+          "region_id": "nextbrain:left:2035"
+        },
+        {
+          "source_label_id": 10007,
+          "name": "Right-white_matter_of_forebrain",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10007"
+        },
+        {
+          "source_label_id": 10048,
+          "name": "Right-head_of_caudate",
+          "color": [
+            145,
+            160,
+            110
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10048"
+        },
+        {
+          "source_label_id": 10068,
+          "name": "Right-septum_pellucidum",
+          "color": [
+            109,
+            110,
+            112
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10068"
+        },
+        {
+          "source_label_id": 10079,
+          "name": "Right-putamen",
+          "color": [
+            168,
+            180,
+            133
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10079"
+        },
+        {
+          "source_label_id": 10099,
+          "name": "Right-anterior_olfactory_nucleus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10099"
+        },
+        {
+          "source_label_id": 10101,
+          "name": "Right-core_of_nucleus_accumbens",
+          "color": [
+            145,
+            160,
+            110
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10101"
+        },
+        {
+          "source_label_id": 10102,
+          "name": "Right-claustrum",
+          "color": [
+            170,
+            219,
+            206
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10102"
+        },
+        {
+          "source_label_id": 10103,
+          "name": "Right-medial_septal_nucleus",
+          "color": [
+            195,
+            194,
+            134
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10103"
+        },
+        {
+          "source_label_id": 10108,
+          "name": "Right-basal_nucleus_of_meynert",
+          "color": [
+            143,
+            142,
+            66
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10108"
+        },
+        {
+          "source_label_id": 10111,
+          "name": "Right-diagonal_band",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10111"
+        },
+        {
+          "source_label_id": 10113,
+          "name": "Right-lateral_olfactory_stria",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10113"
+        },
+        {
+          "source_label_id": 10117,
+          "name": "Right-bed_nucleus_of_stria_terminalis",
+          "color": [
+            169,
+            215,
+            174
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10117"
+        },
+        {
+          "source_label_id": 10118,
+          "name": "Right-body_of_caudate",
+          "color": [
+            153,
+            166,
+            119
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10118"
+        },
+        {
+          "source_label_id": 10119,
+          "name": "Right-external_segment_of_globus_pallidus",
+          "color": [
+            215,
+            224,
+            191
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10119"
+        },
+        {
+          "source_label_id": 10120,
+          "name": "Right-ventral_pallidus",
+          "color": [
+            193,
+            206,
+            167
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10120"
+        },
+        {
+          "source_label_id": 10125,
+          "name": "Right-lateral_olfactory_area",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10125"
+        },
+        {
+          "source_label_id": 10128,
+          "name": "Right-substantia_innominata",
+          "color": [
+            202,
+            202,
+            146
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10128"
+        },
+        {
+          "source_label_id": 10130,
+          "name": "Right-anterior_commissure",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10130"
+        },
+        {
+          "source_label_id": 10147,
+          "name": "Right-preoptic_region_of_hth",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10147"
+        },
+        {
+          "source_label_id": 10149,
+          "name": "Right-lateral_preoptic_area",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10149"
+        },
+        {
+          "source_label_id": 10150,
+          "name": "Right-median_preoptic_nucleus",
+          "color": [
+            193,
+            120,
+            162
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10150"
+        },
+        {
+          "source_label_id": 10157,
+          "name": "Right-layer_iii_of_piriform_cortex",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10157"
+        },
+        {
+          "source_label_id": 10161,
+          "name": "Right-optic_chiasm",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10161"
+        },
+        {
+          "source_label_id": 10174,
+          "name": "Right-temporal_claustrum",
+          "color": [
+            102,
+            196,
+            175
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10174"
+        },
+        {
+          "source_label_id": 10181,
+          "name": "Right-supraoptic_region_of_hth",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10181"
+        },
+        {
+          "source_label_id": 10184,
+          "name": "Right-stria_terminalis",
+          "color": [
+            199,
+            199,
+            199
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10184"
+        },
+        {
+          "source_label_id": 10190,
+          "name": "Right-magnocellular_division_of_reticular_nucleus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10190"
+        },
+        {
+          "source_label_id": 10191,
+          "name": "Right-parvocellular_division_of_reticular_nucleus_(perireticular_nucleus)",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10191"
+        },
+        {
+          "source_label_id": 10192,
+          "name": "Right-medial_preoptic_nucleus",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10192"
+        },
+        {
+          "source_label_id": 10193,
+          "name": "Right-anterior_hypothalamic_nucleus",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10193"
+        },
+        {
+          "source_label_id": 10194,
+          "name": "Right-paraventricular_nucleus_of_hypothalamus",
+          "color": [
+            166,
+            107,
+            142
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10194"
+        },
+        {
+          "source_label_id": 10196,
+          "name": "Right-supraoptic_nucleus",
+          "color": [
+            125,
+            82,
+            111
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10196"
+        },
+        {
+          "source_label_id": 10199,
+          "name": "Right-fornix",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10199"
+        },
+        {
+          "source_label_id": 10201,
+          "name": "Right-stria_medullaris_of_thalamus",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10201"
+        },
+        {
+          "source_label_id": 10206,
+          "name": "Right-internal_segment_of_globus_pallidus",
+          "color": [
+            208,
+            217,
+            178
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10206"
+        },
+        {
+          "source_label_id": 10207,
+          "name": "Right-periventricular_nucleus__supraoptic_portion",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10207"
+        },
+        {
+          "source_label_id": 10208,
+          "name": "Right-optic_tract",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10208"
+        },
+        {
+          "source_label_id": 10214,
+          "name": "Right-amygdaloid_complex",
+          "color": [
+            201,
+            226,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10214"
+        },
+        {
+          "source_label_id": 10215,
+          "name": "Right-anterior_amygdaloid_area",
+          "color": [
+            192,
+            221,
+            157
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10215"
+        },
+        {
+          "source_label_id": 10216,
+          "name": "Right-basolateral_nucleus_(basal_nucleus)",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10216"
+        },
+        {
+          "source_label_id": 10217,
+          "name": "Right-ventral_division_of_basomedial_nucleus",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10217"
+        },
+        {
+          "source_label_id": 10218,
+          "name": "Right-thalamus",
+          "color": [
+            228,
+            204,
+            227
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10218"
+        },
+        {
+          "source_label_id": 10219,
+          "name": "Right-anterodorsal_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10219"
+        },
+        {
+          "source_label_id": 10220,
+          "name": "Right-anteroventral_nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10220"
+        },
+        {
+          "source_label_id": 10221,
+          "name": "Right-parataenial_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10221"
+        },
+        {
+          "source_label_id": 10222,
+          "name": "Right-parvocellular_division_of_va",
+          "color": [
+            165,
+            84,
+            160
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10222"
+        },
+        {
+          "source_label_id": 10223,
+          "name": "Right-fasciculosus_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10223"
+        },
+        {
+          "source_label_id": 10224,
+          "name": "Right-rhomboid_(central)_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10224"
+        },
+        {
+          "source_label_id": 10225,
+          "name": "Right-paraventricular_nucleus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10225"
+        },
+        {
+          "source_label_id": 10226,
+          "name": "Right-zona_incerta",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10226"
+        },
+        {
+          "source_label_id": 10227,
+          "name": "Right-periventricular_nucleus__tuberal_portion",
+          "color": [
+            221,
+            181,
+            206
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10227"
+        },
+        {
+          "source_label_id": 10228,
+          "name": "Right-juxtaparaventricular_lateral_hypothalamic_area",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10228"
+        },
+        {
+          "source_label_id": 10229,
+          "name": "Right-dorsomedial_hypothalamic_nucleus",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10229"
+        },
+        {
+          "source_label_id": 10230,
+          "name": "Right-lateral_hypothalamic_area__tuberal_part",
+          "color": [
+            219,
+            171,
+            200
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10230"
+        },
+        {
+          "source_label_id": 10232,
+          "name": "Right-pallidohypothalamic_area",
+          "color": [
+            207,
+            151,
+            185
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10232"
+        },
+        {
+          "source_label_id": 10234,
+          "name": "Right-medial_corticohypothalamic_tract",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10234"
+        },
+        {
+          "source_label_id": 10238,
+          "name": "Right-ventral_subdivision_of_coa",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10238"
+        },
+        {
+          "source_label_id": 10240,
+          "name": "Right-paralaminar_nucleus",
+          "color": [
+            146,
+            200,
+            81
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10240"
+        },
+        {
+          "source_label_id": 10242,
+          "name": "Right-amygdalocortical_(corticoamygdaloid)_transition_area",
+          "color": [
+            227,
+            158,
+            103
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10242"
+        },
+        {
+          "source_label_id": 10243,
+          "name": "Right-dorsal_part_of_ventromedial_hypothalamic_nucleus",
+          "color": [
+            193,
+            120,
+            162
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10243"
+        },
+        {
+          "source_label_id": 10244,
+          "name": "Right-ventral_part_of_ventromedial_hypothalamic_nucleus",
+          "color": [
+            166,
+            107,
+            142
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10244"
+        },
+        {
+          "source_label_id": 10245,
+          "name": "Right-arcuate_nucleus_of_hypothalamus",
+          "color": [
+            196,
+            132,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10245"
+        },
+        {
+          "source_label_id": 10246,
+          "name": "Right-inferior_thalamic_peduncle",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10246"
+        },
+        {
+          "source_label_id": 10252,
+          "name": "Right-anteromedial_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10252"
+        },
+        {
+          "source_label_id": 10253,
+          "name": "Right-reuniens_nucleus_(medioventral_nucleus)_of_thalamus",
+          "color": [
+            149,
+            73,
+            138
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10253"
+        },
+        {
+          "source_label_id": 10254,
+          "name": "Right-reticular_nucleus_of_thalamus",
+          "color": [
+            165,
+            84,
+            160
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10254"
+        },
+        {
+          "source_label_id": 10255,
+          "name": "Right-central_part_of_ventromedial_hypothalamic_nucleus",
+          "color": [
+            181,
+            113,
+            151
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10255"
+        },
+        {
+          "source_label_id": 10256,
+          "name": "Right-tuberomammillary_nucleus",
+          "color": [
+            181,
+            113,
+            151
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10256"
+        },
+        {
+          "source_label_id": 10268,
+          "name": "Right-lateral_tuberal_nuclei",
+          "color": [
+            145,
+            94,
+            126
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10268"
+        },
+        {
+          "source_label_id": 10274,
+          "name": "Right-ventral_medial_nucleus_of_thalamus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10274"
+        },
+        {
+          "source_label_id": 10275,
+          "name": "Right-posterior_hypothalamic_nucleus",
+          "color": [
+            214,
+            146,
+            186
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10275"
+        },
+        {
+          "source_label_id": 10276,
+          "name": "Right-mammillothalamic_tract",
+          "color": [
+            190,
+            190,
+            190
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10276"
+        },
+        {
+          "source_label_id": 10277,
+          "name": "Right-medial_subdivision_of_central_nucleus",
+          "color": [
+            175,
+            213,
+            138
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10277"
+        },
+        {
+          "source_label_id": 10278,
+          "name": "Right-lateral_subdivision_of_central_nucleus",
+          "color": [
+            175,
+            213,
+            138
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10278"
+        },
+        {
+          "source_label_id": 10279,
+          "name": "Right-rostral_subdivision_of_medial_nucleus",
+          "color": [
+            156,
+            204,
+            102
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10279"
+        },
+        {
+          "source_label_id": 10282,
+          "name": "Right-magnocellular_(medial)_division_of_md",
+          "color": [
+            165,
+            84,
+            160
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10282"
+        },
+        {
+          "source_label_id": 10283,
+          "name": "Right-magnocellular_division_of_va",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10283"
+        },
+        {
+          "source_label_id": 10285,
+          "name": "Right-paracentral_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10285"
+        },
+        {
+          "source_label_id": 10286,
+          "name": "Right-intermediodorsal__nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10286"
+        },
+        {
+          "source_label_id": 10295,
+          "name": "Right-amygdalostriatal_transition_area",
+          "color": [
+            227,
+            166,
+            117
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10295"
+        },
+        {
+          "source_label_id": 10297,
+          "name": "Right-lateral__hypothalamic_area__posterior_part",
+          "color": [
+            196,
+            132,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10297"
+        },
+        {
+          "source_label_id": 10298,
+          "name": "Right-mammillary_peduncle",
+          "color": [
+            110,
+            110,
+            110
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10298"
+        },
+        {
+          "source_label_id": 10301,
+          "name": "Right-amygdalohippocampal_area",
+          "color": [
+            137,
+            186,
+            70
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10301"
+        },
+        {
+          "source_label_id": 10305,
+          "name": "Right-lateral_part_of_medial_mammillary_nucleus",
+          "color": [
+            156,
+            106,
+            134
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10305"
+        },
+        {
+          "source_label_id": 10306,
+          "name": "Right-medial_part_of_medial_mammillary_nucleus",
+          "color": [
+            181,
+            113,
+            151
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10306"
+        },
+        {
+          "source_label_id": 10307,
+          "name": "Right-basal_division_of_medial_mammillary_nucleus",
+          "color": [
+            160,
+            90,
+            130
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10307"
+        },
+        {
+          "source_label_id": 10308,
+          "name": "Right-lateral_mammillary_nucleus",
+          "color": [
+            157,
+            101,
+            133
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10308"
+        },
+        {
+          "source_label_id": 10309,
+          "name": "Right-lenticular_fasciculus",
+          "color": [
+            135,
+            135,
+            135
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10309"
+        },
+        {
+          "source_label_id": 10310,
+          "name": "Right-substantia_nigra__reticular_part",
+          "color": [
+            108,
+            169,
+            191
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10310"
+        },
+        {
+          "source_label_id": 10312,
+          "name": "Right-central_part_of_medial_division_of_md",
+          "color": [
+            159,
+            77,
+            149
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10312"
+        },
+        {
+          "source_label_id": 10313,
+          "name": "Right-parvocellular_(central)_division_of_md",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10313"
+        },
+        {
+          "source_label_id": 10314,
+          "name": "Right-rostral_division_of_vl",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10314"
+        },
+        {
+          "source_label_id": 10315,
+          "name": "Right-medial_portion_of_sth",
+          "color": [
+            167,
+            141,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10315"
+        },
+        {
+          "source_label_id": 10316,
+          "name": "Right-laterodorsal_portion_of_sth",
+          "color": [
+            152,
+            129,
+            165
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10316"
+        },
+        {
+          "source_label_id": 10320,
+          "name": "Right-amygdalohippocampal_transition_area",
+          "color": [
+            231,
+            176,
+            128
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10320"
+        },
+        {
+          "source_label_id": 10321,
+          "name": "Right-lateroventral_portion_of_sth",
+          "color": [
+            138,
+            117,
+            149
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10321"
+        },
+        {
+          "source_label_id": 10322,
+          "name": "Right-thalamic_fasciculus",
+          "color": [
+            170,
+            170,
+            170
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10322"
+        },
+        {
+          "source_label_id": 10326,
+          "name": "Right-uncal_subiculum",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10326"
+        },
+        {
+          "source_label_id": 10339,
+          "name": "Right-stratum_lacunosum-moleculare_of_uncal_ca1",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10339"
+        },
+        {
+          "source_label_id": 10340,
+          "name": "Right-stratum_radiatum_of_uncal_ca1",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10340"
+        },
+        {
+          "source_label_id": 10341,
+          "name": "Right-stratum_pyramidale_of_uncal_ca1",
+          "color": [
+            105,
+            79,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10341"
+        },
+        {
+          "source_label_id": 10342,
+          "name": "Right-stratum_oriens_of_uncal_ca1",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10342"
+        },
+        {
+          "source_label_id": 10343,
+          "name": "Right-stratum_lacunosum-moleculare_of_rostral_ca1",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10343"
+        },
+        {
+          "source_label_id": 10344,
+          "name": "Right-stratum_radiatum_of_rostral_ca1",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10344"
+        },
+        {
+          "source_label_id": 10345,
+          "name": "Right-stratum_pyramidale_of_rostral_ca1",
+          "color": [
+            105,
+            79,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10345"
+        },
+        {
+          "source_label_id": 10346,
+          "name": "Right-stratum_oriens_of_rostral_ca1",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10346"
+        },
+        {
+          "source_label_id": 10347,
+          "name": "Right-rostral_subiculum",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10347"
+        },
+        {
+          "source_label_id": 10349,
+          "name": "Right-posteroventral_putamen",
+          "color": [
+            168,
+            180,
+            133
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10349"
+        },
+        {
+          "source_label_id": 10350,
+          "name": "Right-dorsal_subdivision_of_vlc",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10350"
+        },
+        {
+          "source_label_id": 10352,
+          "name": "Right-substantia_nigra__compact_part",
+          "color": [
+            67,
+            128,
+            143
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10352"
+        },
+        {
+          "source_label_id": 10354,
+          "name": "Right-alveus",
+          "color": [
+            207,
+            207,
+            207
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10354"
+        },
+        {
+          "source_label_id": 10364,
+          "name": "Right-molecular_layer_of_uncal_dentate_gyrus",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10364"
+        },
+        {
+          "source_label_id": 10365,
+          "name": "Right-granular_layer_of_uncal_dentate_gyrus",
+          "color": [
+            84,
+            62,
+            116
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10365"
+        },
+        {
+          "source_label_id": 10367,
+          "name": "Right-polyform_layer_of_uncal_dentate_gyrus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10367"
+        },
+        {
+          "source_label_id": 10368,
+          "name": "Right-stratum_lacunosum-moleculare_of_uncal_ca2",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10368"
+        },
+        {
+          "source_label_id": 10369,
+          "name": "Right-stratum_radiatum_of_uncal_ca2",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10369"
+        },
+        {
+          "source_label_id": 10370,
+          "name": "Right-stratum_pyramidale_of_uncal_ca2",
+          "color": [
+            93,
+            69,
+            127
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10370"
+        },
+        {
+          "source_label_id": 10371,
+          "name": "Right-stratum_oriens_of_uncal_ca2",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10371"
+        },
+        {
+          "source_label_id": 10372,
+          "name": "Right-stratum_lacunosum-moleculare_of_uncal_ca3",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10372"
+        },
+        {
+          "source_label_id": 10373,
+          "name": "Right-stratum_lucidum__of_uncal_ca3",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10373"
+        },
+        {
+          "source_label_id": 10374,
+          "name": "Right-stratum_pyramidale_of_uncal_ca3",
+          "color": [
+            97,
+            72,
+            132
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10374"
+        },
+        {
+          "source_label_id": 10375,
+          "name": "Right-stratum_oriens_of_uncal_ca3",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10375"
+        },
+        {
+          "source_label_id": 10377,
+          "name": "Right-lateral_nucleus",
+          "color": [
+            166,
+            209,
+            122
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10377"
+        },
+        {
+          "source_label_id": 10378,
+          "name": "Right-lateral_dorsal_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10378"
+        },
+        {
+          "source_label_id": 10379,
+          "name": "Right-densocelllular_(paralamellar)_division_of_md",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10379"
+        },
+        {
+          "source_label_id": 10380,
+          "name": "Right-multiform_(lateral)_division_of_md",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10380"
+        },
+        {
+          "source_label_id": 10381,
+          "name": "Right-ventral_subdivision_of_vlc",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10381"
+        },
+        {
+          "source_label_id": 10382,
+          "name": "Right-medial_subdivision_of_vlc_(area_x)",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10382"
+        },
+        {
+          "source_label_id": 10384,
+          "name": "Right-midbrain_(mesencephalon)",
+          "color": [
+            175,
+            208,
+            221
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10384"
+        },
+        {
+          "source_label_id": 10385,
+          "name": "Right-red_nucleus",
+          "color": [
+            108,
+            169,
+            191
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10385"
+        },
+        {
+          "source_label_id": 10393,
+          "name": "Right-tail_of_caudate",
+          "color": [
+            145,
+            160,
+            110
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10393"
+        },
+        {
+          "source_label_id": 10394,
+          "name": "Right-rostral_division_of_ventral_posterior_lateral_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10394"
+        },
+        {
+          "source_label_id": 10395,
+          "name": "Right-parvocellular_division_of_vpm",
+          "color": [
+            140,
+            70,
+            133
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10395"
+        },
+        {
+          "source_label_id": 10396,
+          "name": "Right-lateral_division_of_centromedian_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10396"
+        },
+        {
+          "source_label_id": 10397,
+          "name": "Right-medial_division_of_centromedian_nucleus_of_thalamus",
+          "color": [
+            191,
+            137,
+            188
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10397"
+        },
+        {
+          "source_label_id": 10398,
+          "name": "Right-parafascicular_nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10398"
+        },
+        {
+          "source_label_id": 10399,
+          "name": "Right-periventricular_area_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10399"
+        },
+        {
+          "source_label_id": 10400,
+          "name": "Right-nucleus_of_the_field_of_forel",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10400"
+        },
+        {
+          "source_label_id": 10404,
+          "name": "Right-molecular_layer_of_rostral_dentate_gyrus",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10404"
+        },
+        {
+          "source_label_id": 10405,
+          "name": "Right-granular_layer_of_rostral_dentate_gyrus",
+          "color": [
+            84,
+            62,
+            116
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10405"
+        },
+        {
+          "source_label_id": 10407,
+          "name": "Right-polyform_layer_of_rostral_dentate_gyrus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10407"
+        },
+        {
+          "source_label_id": 10408,
+          "name": "Right-stratum_lacunosum-moleculare_of_rostral_ca2",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10408"
+        },
+        {
+          "source_label_id": 10410,
+          "name": "Right-stratum_pyramidale_of_rostral_ca2",
+          "color": [
+            93,
+            69,
+            127
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10410"
+        },
+        {
+          "source_label_id": 10411,
+          "name": "Right-stratum_oriens_of_rostral_ca2",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10411"
+        },
+        {
+          "source_label_id": 10412,
+          "name": "Right-fasciculus_retroflexus_(habenuno-interpeduncular_tract)",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10412"
+        },
+        {
+          "source_label_id": 10414,
+          "name": "Right-pontine_nucleus",
+          "color": [
+            101,
+            134,
+            191
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10414"
+        },
+        {
+          "source_label_id": 10418,
+          "name": "Right-stratum_lacunosum-moleculare_of_rostral_ca3",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10418"
+        },
+        {
+          "source_label_id": 10419,
+          "name": "Right-stratum_lucidum__of_rostral_ca3",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10419"
+        },
+        {
+          "source_label_id": 10420,
+          "name": "Right-stratum_pyramidale_of_rostral_ca3",
+          "color": [
+            97,
+            72,
+            132
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10420"
+        },
+        {
+          "source_label_id": 10421,
+          "name": "Right-stratum_oriens_of_rostral_ca3",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10421"
+        },
+        {
+          "source_label_id": 10422,
+          "name": "Right-pyramidal_cells_of_uncal_ca4",
+          "color": [
+            114,
+            83,
+            152
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10422"
+        },
+        {
+          "source_label_id": 10423,
+          "name": "Right-ventral_posterior_medial_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10423"
+        },
+        {
+          "source_label_id": 10424,
+          "name": "Right-ventral_posterior_inferior_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10424"
+        },
+        {
+          "source_label_id": 10425,
+          "name": "Right-lateral_division_of_central_lateral_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10425"
+        },
+        {
+          "source_label_id": 10430,
+          "name": "Right-lateral_habenular_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10430"
+        },
+        {
+          "source_label_id": 10432,
+          "name": "Right-pyramidal_cells_of_rostral_ca4",
+          "color": [
+            114,
+            83,
+            152
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10432"
+        },
+        {
+          "source_label_id": 10435,
+          "name": "Right-ventral_tegmental_area",
+          "color": [
+            126,
+            179,
+            201
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10435"
+        },
+        {
+          "source_label_id": 10441,
+          "name": "Right-lateral_posterior_nucleus_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10441"
+        },
+        {
+          "source_label_id": 10442,
+          "name": "Right-basal_ventral_medial_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10442"
+        },
+        {
+          "source_label_id": 10443,
+          "name": "Right-dorsal_division_of_central_lateral_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10443"
+        },
+        {
+          "source_label_id": 10454,
+          "name": "Right-anterior_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10454"
+        },
+        {
+          "source_label_id": 10458,
+          "name": "Right-caudal_division_of_ventral_posterior_lateral_nucleus",
+          "color": [
+            158,
+            76,
+            148
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10458"
+        },
+        {
+          "source_label_id": 10461,
+          "name": "Right-fimbria",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10461"
+        },
+        {
+          "source_label_id": 10465,
+          "name": "Right-periaqueductal_gray_substance",
+          "color": [
+            142,
+            189,
+            205
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10465"
+        },
+        {
+          "source_label_id": 10478,
+          "name": "Right-posterior_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10478"
+        },
+        {
+          "source_label_id": 10479,
+          "name": "Right-centromedian_nucleus_of_thalamus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10479"
+        },
+        {
+          "source_label_id": 10484,
+          "name": "Right-dorsal_lateral_geniculate_nucleus",
+          "color": [
+            140,
+            70,
+            133
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10484"
+        },
+        {
+          "source_label_id": 10492,
+          "name": "Right-limitans_nucleus",
+          "color": [
+            149,
+            73,
+            138
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10492"
+        },
+        {
+          "source_label_id": 10496,
+          "name": "Right-pretectal_region",
+          "color": [
+            160,
+            199,
+            213
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10496"
+        },
+        {
+          "source_label_id": 10498,
+          "name": "Right-peripeduncular_nucleus",
+          "color": [
+            86,
+            161,
+            187
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10498"
+        },
+        {
+          "source_label_id": 10504,
+          "name": "Right-dorsal_medial_geniculate_nucleus",
+          "color": [
+            182,
+            123,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10504"
+        },
+        {
+          "source_label_id": 10508,
+          "name": "Right-medial_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10508"
+        },
+        {
+          "source_label_id": 10517,
+          "name": "Right-lateral_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10517"
+        },
+        {
+          "source_label_id": 10519,
+          "name": "Right-inferior_nucleus_of_pulvinar",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10519"
+        },
+        {
+          "source_label_id": 10521,
+          "name": "Right-dorsal_raphe_nucleus",
+          "color": [
+            108,
+            169,
+            191
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10521"
+        },
+        {
+          "source_label_id": 10531,
+          "name": "Right-superior_cerebellar_peduncle_(brachium_conjunctivum)",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10531"
+        },
+        {
+          "source_label_id": 10541,
+          "name": "Right-central_nucleus_of_inferior_colliculus",
+          "color": [
+            82,
+            152,
+            174
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10541"
+        },
+        {
+          "source_label_id": 10558,
+          "name": "Right-molecular_layer_of_caudal_dentate_gyrus",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10558"
+        },
+        {
+          "source_label_id": 10559,
+          "name": "Right-granular_layer_of_caudal_dentate_gyrus",
+          "color": [
+            84,
+            62,
+            116
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10559"
+        },
+        {
+          "source_label_id": 10561,
+          "name": "Right-polyform_layer_of_caudal_dentate_gyrus",
+          "color": [
+            170,
+            157,
+            198
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10561"
+        },
+        {
+          "source_label_id": 10562,
+          "name": "Right-stratum_lacunosum-moleculare_of_caudal_ca1",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10562"
+        },
+        {
+          "source_label_id": 10563,
+          "name": "Right-stratum_radiatum_of_caudal_ca1",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10563"
+        },
+        {
+          "source_label_id": 10564,
+          "name": "Right-stratum_pyramidale_of_caudal_ca1",
+          "color": [
+            105,
+            79,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10564"
+        },
+        {
+          "source_label_id": 10565,
+          "name": "Right-stratum_oriens_of_caudal_ca1",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10565"
+        },
+        {
+          "source_label_id": 10566,
+          "name": "Right-stratum_lacunosum-moleculare_of_caudal_ca2",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10566"
+        },
+        {
+          "source_label_id": 10568,
+          "name": "Right-stratum_pyramidale_of_caudal_ca2",
+          "color": [
+            97,
+            72,
+            132
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10568"
+        },
+        {
+          "source_label_id": 10571,
+          "name": "Right-stratum_lacunosum-moleculare_of_caudal_ca3",
+          "color": [
+            209,
+            206,
+            226
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10571"
+        },
+        {
+          "source_label_id": 10572,
+          "name": "Right-stratum_lucidum__of_caudal_ca3",
+          "color": [
+            230,
+            230,
+            236
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10572"
+        },
+        {
+          "source_label_id": 10573,
+          "name": "Right-stratum_pyramidale_of_caudal_ca3",
+          "color": [
+            93,
+            69,
+            127
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10573"
+        },
+        {
+          "source_label_id": 10574,
+          "name": "Right-stratum_oriens_of_caudal_ca3",
+          "color": [
+            138,
+            122,
+            177
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10574"
+        },
+        {
+          "source_label_id": 10575,
+          "name": "Right-pyramidal_cells_of_caudal_ca4",
+          "color": [
+            114,
+            83,
+            152
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10575"
+        },
+        {
+          "source_label_id": 10576,
+          "name": "Right-caudal_subiculum",
+          "color": [
+            153,
+            136,
+            187
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10576"
+        },
+        {
+          "source_label_id": 10578,
+          "name": "Right-pulvinar_of_thalamus",
+          "color": [
+            176,
+            103,
+            169
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10578"
+        },
+        {
+          "source_label_id": 10580,
+          "name": "Right-pons",
+          "color": [
+            175,
+            195,
+            219
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10580"
+        },
+        {
+          "source_label_id": 10595,
+          "name": "Right-molecular_layer_of_pva",
+          "color": [
+            225,
+            232,
+            246
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10595"
+        },
+        {
+          "source_label_id": 10597,
+          "name": "Right-granular_cell_layer_of_pva",
+          "color": [
+            6,
+            79,
+            136
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10597"
+        },
+        {
+          "source_label_id": 10611,
+          "name": "Right-white_matter_of_hindbrain",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10611"
+        },
+        {
+          "source_label_id": 10654,
+          "name": "Right-inferior_olive__principal_nucleus",
+          "color": [
+            62,
+            77,
+            137
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10654"
+        },
+        {
+          "source_label_id": 10662,
+          "name": "Right-myelencephalon_(medulla_oblongata)",
+          "color": [
+            209,
+            215,
+            232
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10662"
+        },
+        {
+          "source_label_id": 10697,
+          "name": "Right-inferior_cerebellar_peduncle",
+          "color": [
+            242,
+            241,
+            240
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10697"
+        },
+        {
+          "source_label_id": 10715,
+          "name": "Right-fastigial_(medial)_nucleus",
+          "color": [
+            50,
+            114,
+            174
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10715"
+        },
+        {
+          "source_label_id": 10721,
+          "name": "Right-dentate_(lateral)_nucleus",
+          "color": [
+            25,
+            69,
+            126
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10721"
+        },
+        {
+          "source_label_id": 10751,
+          "name": "Right-medial_interpositus_(globose)_nucleus",
+          "color": [
+            17,
+            90,
+            149
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10751"
+        },
+        {
+          "source_label_id": 10752,
+          "name": "Right-lateral_interpositus_(emboliform)_nucleus",
+          "color": [
+            17,
+            90,
+            149
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10752"
+        },
+        {
+          "source_label_id": 10765,
+          "name": "Right-central_gray_of_medulla_oblongata",
+          "color": [
+            93,
+            108,
+            178
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10765"
+        },
+        {
+          "source_label_id": 10811,
+          "name": "Right-superficial_pulvinar_nucleus",
+          "color": [
+            0,
+            128,
+            128
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10811"
+        },
+        {
+          "source_label_id": 10813,
+          "name": "Right-diffuse_pulvinar_nucleus",
+          "color": [
+            255,
+            105,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10813"
+        },
+        {
+          "source_label_id": 10843,
+          "name": "Right-infundibular_stalk",
+          "color": [
+            1,
+            138,
+            65
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10843"
+        },
+        {
+          "source_label_id": 10846,
+          "name": "Right-white_matter_of_the_cerebellum",
+          "color": [
+            250,
+            250,
+            250
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:10846"
+        },
+        {
+          "source_label_id": 12001,
+          "name": "Right-ctx-rh-bankssts",
+          "color": [
+            25,
+            100,
+            40
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12001"
+        },
+        {
+          "source_label_id": 12002,
+          "name": "Right-ctx-rh-caudalanteriorcingulate",
+          "color": [
+            125,
+            100,
+            160
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12002"
+        },
+        {
+          "source_label_id": 12003,
+          "name": "Right-ctx-rh-caudalmiddlefrontal",
+          "color": [
+            100,
+            25,
+            0
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12003"
+        },
+        {
+          "source_label_id": 12005,
+          "name": "Right-ctx-rh-cuneus",
+          "color": [
+            220,
+            20,
+            100
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12005"
+        },
+        {
+          "source_label_id": 12006,
+          "name": "Right-ctx-rh-entorhinal",
+          "color": [
+            220,
+            20,
+            10
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12006"
+        },
+        {
+          "source_label_id": 12007,
+          "name": "Right-ctx-rh-fusiform",
+          "color": [
+            180,
+            220,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12007"
+        },
+        {
+          "source_label_id": 12008,
+          "name": "Right-ctx-rh-inferiorparietal",
+          "color": [
+            220,
+            60,
+            220
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12008"
+        },
+        {
+          "source_label_id": 12009,
+          "name": "Right-ctx-rh-inferiortemporal",
+          "color": [
+            180,
+            40,
+            120
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12009"
+        },
+        {
+          "source_label_id": 12010,
+          "name": "Right-ctx-rh-isthmuscingulate",
+          "color": [
+            140,
+            20,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12010"
+        },
+        {
+          "source_label_id": 12011,
+          "name": "Right-ctx-rh-lateraloccipital",
+          "color": [
+            20,
+            30,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12011"
+        },
+        {
+          "source_label_id": 12012,
+          "name": "Right-ctx-rh-lateralorbitofrontal",
+          "color": [
+            35,
+            75,
+            50
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12012"
+        },
+        {
+          "source_label_id": 12013,
+          "name": "Right-ctx-rh-lingual",
+          "color": [
+            225,
+            140,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12013"
+        },
+        {
+          "source_label_id": 12014,
+          "name": "Right-ctx-rh-medialorbitofrontal",
+          "color": [
+            200,
+            35,
+            75
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12014"
+        },
+        {
+          "source_label_id": 12015,
+          "name": "Right-ctx-rh-middletemporal",
+          "color": [
+            160,
+            100,
+            50
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12015"
+        },
+        {
+          "source_label_id": 12016,
+          "name": "Right-ctx-rh-parahippocampal",
+          "color": [
+            20,
+            220,
+            60
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12016"
+        },
+        {
+          "source_label_id": 12017,
+          "name": "Right-ctx-rh-paracentral",
+          "color": [
+            60,
+            220,
+            60
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12017"
+        },
+        {
+          "source_label_id": 12018,
+          "name": "Right-ctx-rh-parsopercularis",
+          "color": [
+            220,
+            180,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12018"
+        },
+        {
+          "source_label_id": 12019,
+          "name": "Right-ctx-rh-parsorbitalis",
+          "color": [
+            20,
+            100,
+            50
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12019"
+        },
+        {
+          "source_label_id": 12020,
+          "name": "Right-ctx-rh-parstriangularis",
+          "color": [
+            220,
+            60,
+            20
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12020"
+        },
+        {
+          "source_label_id": 12021,
+          "name": "Right-ctx-rh-pericalcarine",
+          "color": [
+            120,
+            100,
+            60
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12021"
+        },
+        {
+          "source_label_id": 12022,
+          "name": "Right-ctx-rh-postcentral",
+          "color": [
+            220,
+            20,
+            20
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12022"
+        },
+        {
+          "source_label_id": 12023,
+          "name": "Right-ctx-rh-posteriorcingulate",
+          "color": [
+            220,
+            180,
+            220
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12023"
+        },
+        {
+          "source_label_id": 12024,
+          "name": "Right-ctx-rh-precentral",
+          "color": [
+            60,
+            20,
+            220
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12024"
+        },
+        {
+          "source_label_id": 12025,
+          "name": "Right-ctx-rh-precuneus",
+          "color": [
+            160,
+            140,
+            180
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12025"
+        },
+        {
+          "source_label_id": 12026,
+          "name": "Right-ctx-rh-rostralanteriorcingulate",
+          "color": [
+            80,
+            20,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12026"
+        },
+        {
+          "source_label_id": 12027,
+          "name": "Right-ctx-rh-rostralmiddlefrontal",
+          "color": [
+            75,
+            50,
+            125
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12027"
+        },
+        {
+          "source_label_id": 12028,
+          "name": "Right-ctx-rh-superiorfrontal",
+          "color": [
+            20,
+            220,
+            160
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12028"
+        },
+        {
+          "source_label_id": 12029,
+          "name": "Right-ctx-rh-superiorparietal",
+          "color": [
+            20,
+            180,
+            140
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12029"
+        },
+        {
+          "source_label_id": 12030,
+          "name": "Right-ctx-rh-superiortemporal",
+          "color": [
+            140,
+            220,
+            220
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12030"
+        },
+        {
+          "source_label_id": 12031,
+          "name": "Right-ctx-rh-supramarginal",
+          "color": [
+            80,
+            160,
+            20
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12031"
+        },
+        {
+          "source_label_id": 12032,
+          "name": "Right-ctx-rh-frontalpole",
+          "color": [
+            100,
+            0,
+            100
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12032"
+        },
+        {
+          "source_label_id": 12033,
+          "name": "Right-ctx-rh-temporalpole",
+          "color": [
+            7,
+            70,
+            70
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12033"
+        },
+        {
+          "source_label_id": 12034,
+          "name": "Right-ctx-rh-transversetemporal",
+          "color": [
+            150,
+            150,
+            200
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12034"
+        },
+        {
+          "source_label_id": 12035,
+          "name": "Right-ctx-rh-insula",
+          "color": [
+            255,
+            192,
+            32
+          ],
+          "hemisphere": "right",
+          "kind": "tissue",
+          "region_id": "nextbrain:right:12035"
+        }
+      ],
+      "label_method": "Published NextBrain MNI152 labels, nonlinearly warped to fsaverage and resampled with nearest neighbour; no label value is interpolated or invented"
     }
   },
   "limitations": [
     "Native 1 mm reference-template tissue labels; no claim of subvoxel anatomical accuracy.",
     "HCP cortical volume labels are a derived ribbon-restricted projection, not a published native HCP volumetric atlas.",
-    "Native voxel boundaries and high-resolution cortical surfaces may not coincide exactly."
+    "Native voxel boundaries and high-resolution cortical surfaces may not coincide exactly.",
+    "NextBrain labels were nonlinearly warped from MNI152 to fsaverage; registration error, not the published delineation, bounds their accuracy."
   ]
 }

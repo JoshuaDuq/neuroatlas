@@ -49,7 +49,7 @@ function fixture() {
   const sections = new TissueSections(model, new URL('https://example.invalid/'));
   const layer = sections.createLayer(metadata, volume);
   sections.layers.set('destrieux', layer);
-  sections.update(centeredFrame('coronal', [0, 0, 0]));
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
   return { sections, model, layer, region };
 }
 
@@ -61,7 +61,7 @@ test('moving every cut orientation reuses geometry, volume and palette without u
   const versions = [layer.palette.version, layer.texture.version];
   for (const mode of ['coronal', 'sagittal', 'axial', 'oblique']) {
     for (let offset = -50; offset <= 50; offset += 0.5) {
-      sections.update(centeredFrame(mode, [offset, offset, offset], { tilt: 30, azimuth: 45 }));
+      sections.update(centeredFrame(mode, [offset, offset, offset], { tilt: 30, azimuth: 45 }), 'destrieux');
     }
   }
   assert.equal(layer.mesh.geometry, geometry);
@@ -92,7 +92,7 @@ test('cut picking returns the visible voxel label and respects hemisphere and is
   const ray = new Raycaster(new Vector3(0.0002, 0.0002, -0.1), new Vector3(0, 0, 1));
   assert.equal(sections.intersect(ray).region, region);
   model.state.hemisphere = 'right';
-  sections.update(centeredFrame('coronal', [0, 0, 0]));
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
   assert.equal(sections.intersect(ray), null);
   model.state.hemisphere = 'both';
   model.state.isolatedRegion = 'another-region';

@@ -9,6 +9,14 @@ atlases:
     label: HCP-MMP1.0 multimodal atlas
     annotation: HCPMMP1
     citation: https://doi.org/10.1038/nature18933
+# A cut-label atlas with no cortical surface counterpart. Optional: the volume
+# is produced once by scripts/warp_nextbrain.py, which needs ANTs.
+nextbrain:
+  label: NextBrain histological atlas
+  citation: https://doi.org/10.1038/s41586-025-09708-2
+  directory: data/nextbrain
+  volume: nextbrain-fsaverage.mgz
+  lut: nextbrain-lut.txt
 structures:
   shading_sigma_voxels: 0.8
   labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28, 31,

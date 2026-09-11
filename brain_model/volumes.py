@@ -36,6 +36,25 @@ def encode_volume(image, path, dtype):
     }
 
 
+def reference_grid(config):
+    """The voxel-to-surface-RAS mapping every published label grid must share."""
+    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
+    return image.header.get_vox2ras_tkr()
+
+
+def load_on_grid(config, path):
+    """Load a volume that is required to sit exactly on the reference grid.
+
+    Registration is asserted rather than corrected. A volume that arrived on a
+    different grid is a warp that went wrong, and resampling it here would hide
+    that behind plausible-looking anatomy.
+    """
+    image = nib.load(path)
+    if not np.array_equal(image.header.get_vox2ras_tkr(), reference_grid(config)):
+        raise ValueError(f"Volume is not registered to the fsaverage grid: {path}")
+    return image
+
+
 def export_volumes(config):
     directory = config["source_directory"] / "mri"
     output = config["output_directory"]

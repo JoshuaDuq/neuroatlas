@@ -6,8 +6,8 @@ const region = (over = {}) =>
   ({ id: 'a:left:1', atlas: 'a', hemisphere: 'left', kind: 'cortex', ...over });
 
 const base = {
-  atlas: 'a', hemisphere: 'both', cortexVisible: true,
-  cortexOpacity: 1, isolatedRegion: null,
+  atlas: 'a', cutAtlas: 'a', cutActive: true, hemisphere: 'both',
+  cortexVisible: true, cortexOpacity: 1, isolatedRegion: null,
 };
 const settings = (over = {}) => ({ ...base, ...over });
 
@@ -68,4 +68,50 @@ test('reasons are reported in a fixed precedence, most fundamental first', () =>
   assert.equal(visibilityOf(region(), everything).reason, 'hemisphere');
   assert.equal(visibilityOf(region({ hemisphere: 'midline' }), everything).reason,
     'cortex-hidden');
+});
+
+// --- cut-only regions: no mesh, drawn only where the plane samples them ------
+
+const tissue = (over = {}) =>
+  region({ atlas: 'n', kind: 'tissue-region', id: 'n:left:7', ...over });
+
+test('a cut-only region is visible when its atlas is the active cut atlas', () => {
+  assert.deepEqual(visibilityOf(tissue(), settings({ cutAtlas: 'n' })),
+    { visible: true, reason: null });
+});
+
+test('the surface atlas never hides a cut-only region', () => {
+  // 'a' is the surface atlas and 'n' has no surface at all; only cutAtlas counts.
+  assert.equal(visibilityOf(tissue(), settings({ atlas: 'a', cutAtlas: 'n' })).visible, true);
+});
+
+test('a cut-only region of another cut atlas reports its own reason', () => {
+  assert.deepEqual(visibilityOf(tissue(), settings({ cutAtlas: 'a' })),
+    { visible: false, reason: 'other-cut-atlas' });
+});
+
+test('with no cut on screen a cut-only region is nowhere, and says so', () => {
+  assert.deepEqual(visibilityOf(tissue(), settings({ cutAtlas: 'n', cutActive: false })),
+    { visible: false, reason: 'no-cut' });
+});
+
+test('hiding the cortex leaves cut-only regions alone', () => {
+  const hidden = settings({ cutAtlas: 'n', cortexVisible: false });
+  assert.equal(visibilityOf(tissue(), hidden).visible, true);
+  assert.equal(visibilityOf(region(), hidden).reason, 'cortex-hidden');
+});
+
+test('hemisphere and isolation still apply to cut-only regions', () => {
+  const cut = settings({ cutAtlas: 'n' });
+  assert.equal(
+    visibilityOf(tissue(), { ...cut, hemisphere: 'right' }).reason, 'hemisphere');
+  assert.equal(
+    visibilityOf(tissue(), { ...cut, isolatedRegion: 'other' }).reason, 'isolated');
+  assert.equal(
+    visibilityOf(tissue(), { ...cut, isolatedRegion: 'n:left:7' }).visible, true);
+});
+
+test('a missing cut atlas hides cut-only regions rather than showing them', () => {
+  // An older caller that assembles no cut state must not leak them on screen.
+  assert.equal(visibilityOf(tissue(), { ...base, cutAtlas: undefined }).visible, false);
 });
