@@ -1,0 +1,32 @@
+{
+  "checks": [
+    "coronal: labelled tissue cut, fractional position, both retained sides",
+    "sagittal: labelled tissue cut, fractional position, both retained sides",
+    "axial: labelled tissue cut, fractional position, both retained sides",
+    "oblique: labelled tissue cut, fractional position, both retained sides",
+    "No optional MRI reference asset requested for any 3D cut",
+    "Midsagittal, hemisphere changes, cortex visibility",
+    "Isolate and reveal retain labelled cut",
+    "Separate functional atlas works with labelled tissue cuts",
+    "Optional MRI reference remains independently accessible"
+  ],
+  "timings": [
+    {
+      "mode": "coronal",
+      "initial_cut_ms": 74
+    },
+    {
+      "mode": "sagittal",
+      "initial_cut_ms": 3
+    },
+    {
+      "mode": "axial",
+      "initial_cut_ms": 2
+    },
+    {
+      "mode": "oblique",
+      "initial_cut_ms": 3
+    }
+  ],
+  "errors": []
+}

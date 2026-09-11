@@ -47,7 +47,7 @@ async function digest(buffer) {
     .map(value => value.toString(16).padStart(2,'0')).join('');
 }
 
-async function loadVolume(metadata, baseUrl) {
+export async function loadVolume(metadata, baseUrl) {
   const response = await fetch(new URL(metadata.file, baseUrl));
   if (!response.ok) throw new Error(`Volume download failed: HTTP ${response.status}`);
   const compressed = await response.arrayBuffer();

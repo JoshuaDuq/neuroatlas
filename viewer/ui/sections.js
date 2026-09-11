@@ -10,8 +10,6 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
   const position = document.getElementById('cut-position');
   const number = document.getElementById('cut-number');
   const reverse = document.getElementById('cut-reverse');
-  const mri = document.getElementById('cut-mri');
-  const overlay = document.getElementById('cut-overlay');
   const tilt = document.getElementById('cut-tilt');
   const azimuth = document.getElementById('cut-azimuth');
   const oblique = document.getElementById('cut-oblique');
@@ -53,8 +51,6 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
   listen(position, 'input', () => schedule(() => sections.setOffset(Number(position.value))));
   listen(number, 'change', () => sections.setOffset(Number(number.value)));
   listen(reverse, 'change', () => { sections.setDisplay({ reverse: reverse.checked }); onFaceView(); });
-  listen(mri, 'change', () => sections.setDisplay({ showMRI: mri.checked }));
-  listen(overlay, 'change', () => sections.setDisplay({ overlay: overlay.checked }));
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
   listen(tilt, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
   listen(azimuth, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
@@ -163,16 +159,16 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
     const offset = new Vector3(...state.crosshair).dot(sections.frame.normal);
     if (document.activeElement !== position) position.value = String(offset);
     if (document.activeElement !== number) number.value = offset.toFixed(1);
-    reverse.checked = state.reverse; mri.checked = state.showMRI;
-    overlay.checked = state.overlay; mprOverlay.checked = state.overlay;
+    reverse.checked = state.reverse;
+    mprOverlay.checked = state.overlay;
     oblique.hidden = state.mode !== 'oblique';
     tilt.value = state.tilt; azimuth.value = state.azimuth;
     document.getElementById('cut-angles').textContent = `${state.tilt}° / ${state.azimuth}°`;
-    for (const element of [position,number,reverse,mri,document.getElementById('cut-face-view')]) {
+    for (const element of [position,number,reverse,document.getElementById('cut-face-view')]) {
       element.disabled = !sections.active;
     }
-    status.textContent = state.status === 'loading' ? 'Loading source MRI…'
-      : state.error || (sections.active ? `Cut at ${offset.toFixed(1)} mm · source grid 1 mm` : 'Full brain · no cut');
+    status.textContent = state.status === 'loading' ? 'Preparing anatomy…'
+      : state.error || (sections.active ? `Tissue cut at ${offset.toFixed(1)} mm · 1 mm · ${sections.model.state.atlas === 'hcp-mmp' ? 'derived HCP labels' : 'native Destrieux labels'}` : 'Full brain · no cut');
     if (!dialog.open || !sections.volumes) return;
     width.value = sections.display.windowWidth; center.value = sections.display.windowCenter;
     const sample = sections.sample(state.crosshair);
