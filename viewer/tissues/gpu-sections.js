@@ -16,6 +16,7 @@ import {
   Vector3,
 } from 'three';
 import { rasToWorld, worldToRas } from '../slices/coordinates.js';
+import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
 import { createPalette, labelVisible } from './palette.js';
 import { vertexShader, fragmentShader } from './shader.js';
@@ -40,7 +41,7 @@ export class TissueSections {
     if (this.metadata) return;
     if (this.metadataLoading) return this.metadataLoading;
     this.metadataLoading = (async () => {
-      const response = await fetch(new URL('tissue-labels.json', this.baseUrl));
+      const response = await fetchPublished(new URL('tissue-labels.json', this.baseUrl));
       if (!response.ok) throw new Error(`Tissue metadata request failed: HTTP ${response.status}`);
       const metadata = await response.json();
       if (metadata.schema_version !== 1) throw new Error('Unsupported tissue label schema.');

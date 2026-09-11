@@ -280,3 +280,23 @@ test('a cut-only region is unselectable once the cut stops showing it', () => {
     assert.throws(() => atlas.select('n-left'), /not visible/);
   });
 });
+
+test('an out-of-date manifest names the field it is missing, not the schema', () => {
+  // The failure this actually reports is a manifest cached from an earlier
+  // deploy, so the message has to point at the field that is gone.
+  const good = {
+    schema_version: 1,
+    atlases: [{ id: 'a', label: 'A', file: 'a.glb' }],
+    detail_levels: [{ id: 'aseg', label: 'Coarse', file: 'structures.glb' }],
+    regions: [],
+  };
+  const loader = { async loadAsync() { return { scene: new Group() }; } };
+
+  const { detail_levels, ...stale } = good;
+  assert.throws(() => new BrainAtlas(stale, loader), /detail_levels/);
+  assert.throws(() => new BrainAtlas({ ...good, atlases: [] }, loader), /atlases/);
+  assert.throws(() => new BrainAtlas({ ...good, schema_version: 2 }, loader),
+    /schema_version 1/);
+  // And it says what to do about it.
+  assert.throws(() => new BrainAtlas(stale, loader), /cache/i);
+});

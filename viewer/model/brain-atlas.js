@@ -2,11 +2,23 @@ import { Group } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 import { visibilityOf } from '../catalog/visibility.js';
+import { fetchPublished, REVALIDATE_HEADER } from './published-assets.js';
 
 function validateManifest(manifest) {
-  if (manifest.schema_version !== 1 || !manifest.atlases?.length ||
-      !Array.isArray(manifest.regions) || !manifest.detail_levels?.length) {
-    throw new Error('Invalid brain model manifest: expected schema version 1.');
+  // Named individually because these fail together for one boring reason — a
+  // manifest cached from an earlier deploy — and "expected schema version 1"
+  // sends the reader to look at the version, which was never the problem.
+  const missing = [
+    ['schema_version 1', manifest.schema_version === 1],
+    ['atlases', manifest.atlases?.length > 0],
+    ['regions', Array.isArray(manifest.regions)],
+    ['detail_levels', manifest.detail_levels?.length > 0],
+  ].filter(([, present]) => !present).map(([field]) => field);
+  if (missing.length) {
+    throw new Error(
+      `Invalid brain model manifest: missing or invalid ${missing.join(', ')}. ` +
+      'A stale cached copy will do this; reload ignoring the cache.',
+    );
   }
   const ids = new Set();
   for (const region of manifest.regions) {
@@ -46,10 +58,12 @@ function disposeScene(scene) {
 export class BrainAtlas extends EventTarget {
   static async load(manifestUrl, atlasId) {
     const url = new URL(manifestUrl, globalThis.location.href);
-    const response = await fetch(url);
+    const response = await fetchPublished(url);
     if (!response.ok) throw new Error(`Manifest request failed: HTTP ${response.status}`);
     const manifest = await response.json();
-    const loader = new GLTFLoader().setPath(new URL('.', url).href);
+    const loader = new GLTFLoader()
+      .setPath(new URL('.', url).href)
+      .setRequestHeader(REVALIDATE_HEADER);
     const model = new BrainAtlas(manifest, loader);
     try {
       await model.initialize(atlasId);
