@@ -24,6 +24,9 @@ export class BrainSections extends EventTarget {
     this.clipPlane = new Plane();
     this.state = {
       mode: 'off',
+      // Which label volume the cut samples. It starts at the surface atlas and
+      // then moves independently: a cut atlas need not have a surface at all.
+      cutAtlas: model.state.atlas,
       crosshair: [0, 0, 0],
       reverse: false,
       overlay: false,
@@ -36,7 +39,6 @@ export class BrainSections extends EventTarget {
     this.onModelChange = () => {
       const s = model.state;
       const key = JSON.stringify([
-        s.atlas,
         s.hemisphere,
         s.cortexVisible,
         s.cortexOpacity,
@@ -46,7 +48,7 @@ export class BrainSections extends EventTarget {
       if (key === this.visibilityKey) return;
       this.visibilityKey = key;
       if (this.active) {
-        if (this.tissues.layers.has(s.atlas)) this.update();
+        if (this.tissues.layers.has(this.state.cutAtlas)) this.update();
         else {
           this.group.visible = false;
           this.setMode(this.state.mode).catch((error) => this.report(error));
@@ -96,14 +98,29 @@ export class BrainSections extends EventTarget {
     return this.pending;
   }
 
+  /**
+   * Load whatever the cut currently needs, and only then let it draw.
+   *
+   * The chosen atlas can change while a load is in flight, so the choice is
+   * re-read after every await: resuming with a stale one would draw from a
+   * layer that was never loaded. `update` may assume the current layer exists.
+   */
+  async prepare() {
+    this.state.status = 'loading';
+    this.emit();
+    let loaded = null;
+    while (loaded !== this.state.cutAtlas) {
+      loaded = this.state.cutAtlas;
+      await this.tissues.load(loaded);
+    }
+  }
+
   async setMode(mode) {
     if (!MODES.includes(mode)) throw new Error(`Unknown cut mode: ${mode}`);
     const request = ++this.requestNumber;
     if (mode !== 'off') {
-      this.state.status = 'loading';
-      this.emit();
       try {
-        await this.tissues.load();
+        await this.prepare();
       } catch (error) {
         this.report(error);
         throw error;
@@ -134,6 +151,31 @@ export class BrainSections extends EventTarget {
     if (this.state.mode === 'oblique') crosshair.copy(frame.normal).multiplyScalar(offset);
     else crosshair.addScaledVector(frame.normal, offset - crosshair.dot(frame.normal));
     this.setCrosshair(crosshair.toArray());
+  }
+
+  /**
+   * Choose the label volume the cut samples, leaving the cortical surface as it
+   * is. On failure the previous choice is restored, because the control renders
+   * from this state and must not show an atlas that did not load.
+   */
+  async setCutAtlas(atlas) {
+    if (atlas === this.state.cutAtlas) return;
+    const previous = this.state.cutAtlas;
+    this.state.cutAtlas = atlas;
+    if (!this.active) {
+      this.emit();
+      return;
+    }
+    const request = ++this.requestNumber;
+    try {
+      await this.prepare();
+    } catch (error) {
+      this.state.cutAtlas = previous;
+      this.report(error);
+      throw error;
+    }
+    if (request !== this.requestNumber || this.disposed) return;
+    this.update();
   }
 
   setAngles(tilt, azimuth) {
@@ -172,7 +214,7 @@ export class BrainSections extends EventTarget {
       reverse = this.state.reverse;
 
     try {
-      this.tissues.update(frame);
+      this.tissues.update(frame, this.state.cutAtlas);
       if (this.disposed) return;
       this.group.visible = true;
       this.clipPlane.copy(clippingPlane(frame, reverse));

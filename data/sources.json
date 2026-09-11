@@ -102,6 +102,22 @@
       "url": "https://osf.io/download/3bxqt?version=2",
       "archive_md5": "5133fe92b7b8f03ae19219d5f46e4177",
       "archive_member": "fsaverage/mri/ribbon.mgz"
+    },
+    {
+      "path": "data/nextbrain/nextbrain-fsaverage.mgz",
+      "sha256": "7061543d763cc9a4c5e3f7c5fa5e2dbd9d949f037a969b18f849b1bb6d6fbd04",
+      "optional": true,
+      "derived_from": "https://github.com/compneurobilbao/nextbrain-mni-atlas",
+      "procedure": "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 to fsaverage orig.mgz, then genericLabel resampling of the label volume",
+      "citation": "https://doi.org/10.1038/s41586-025-09708-2"
+    },
+    {
+      "path": "data/nextbrain/nextbrain-lut.txt",
+      "sha256": "607b55566ec38c9af2a6b6fa29f014265a5a80025cb89c301ccd59ccc9f4f78c",
+      "optional": true,
+      "derived_from": "https://github.com/compneurobilbao/nextbrain-mni-atlas",
+      "procedure": "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 to fsaverage orig.mgz, then genericLabel resampling of the label volume",
+      "citation": "https://doi.org/10.1038/s41586-025-09708-2"
     }
   ]
 }

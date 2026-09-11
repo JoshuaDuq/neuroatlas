@@ -16,6 +16,7 @@ export const TRANSLATIONS = {
       hemisphere: 'hemisphere hidden',
       'cortex-hidden': 'cortex off',
       isolated: 'isolated',
+      'no-cut': 'needs a cut',
       fallback: 'hidden',
     },
     views: {
@@ -31,6 +32,7 @@ export const TRANSLATIONS = {
       destrieux: 'Destrieux anatomical atlas',
       'hcp-mmp': 'HCP-MMP1.0 multimodal atlas',
       aseg: 'FreeSurfer subcortical segmentation',
+      nextbrain: 'NextBrain histological atlas',
     },
     header: {
       atlasSwitch: 'Cortical atlas',
@@ -50,10 +52,13 @@ export const TRANSLATIONS = {
       browseAnatomy: 'Browse anatomy',
       cortex: 'Cortex',
       subcortical: 'Subcortical',
+      cutOnly: 'Cut labels only',
       noMatch: q => `No match for “${q}”.`,
       showingCapped: (shown, total) => `Showing ${shown} of ${total}. Refine the search to narrow it.`,
       matchesInOther: (countText, atlas) => `${countText} in ${atlas}. `,
       switchAtlas: 'Switch atlas',
+      matchesInOtherCut: (countText, atlas) => `${countText} in ${atlas}, which labels cuts only. `,
+      switchCutAtlas: 'Switch cut labels',
       rowHiddenAria: (name, side, reason) => `${name}, ${side}, hidden: ${reason}. Activate to reveal.`,
     },
     inspector: {
@@ -99,6 +104,8 @@ export const TRANSLATIONS = {
       statusActive: (offset, label) => `Tissue cut at ${offset} mm · 1 mm · ${label}`,
       hcpDerived: 'derived HCP labels',
       destrieuxNative: 'native Destrieux labels',
+      nextbrainWarped: 'warped NextBrain labels',
+      cutLabels: 'Cut labels',
     },
     display: {
       sectionHeading: 'Display',
@@ -172,6 +179,7 @@ export const TRANSLATIONS = {
       hemisphere: 'hémisphère masqué',
       'cortex-hidden': 'cortex masqué',
       isolated: 'isolé',
+      'no-cut': 'nécessite une coupe',
       fallback: 'masqué',
     },
     views: {
@@ -187,6 +195,7 @@ export const TRANSLATIONS = {
       destrieux: 'Atlas anatomique de Destrieux',
       'hcp-mmp': 'Atlas multimodal HCP-MMP1.0',
       aseg: 'Segmentation sous-corticale FreeSurfer',
+      nextbrain: 'Atlas histologique NextBrain',
     },
     header: {
       atlasSwitch: 'Atlas cortical',
@@ -206,10 +215,13 @@ export const TRANSLATIONS = {
       browseAnatomy: 'Parcourir l’anatomie',
       cortex: 'Cortex',
       subcortical: 'Sous-cortical',
+      cutOnly: 'Étiquettes de coupe seulement',
       noMatch: q => `Aucun résultat pour « ${q} ».`,
       showingCapped: (shown, total) => `Affichage de ${shown} sur ${total}. Affinez la recherche pour restreindre.`,
       matchesInOther: (countText, atlas) => `${countText} dans ${atlas}. `,
       switchAtlas: 'Changer d’atlas',
+      matchesInOtherCut: (countText, atlas) => `${countText} dans ${atlas}, qui n’étiquette que les coupes. `,
+      switchCutAtlas: 'Changer les étiquettes de coupe',
       rowHiddenAria: (name, side, reason) => `${name}, ${side}, masqué : ${reason}. Activer pour afficher.`,
     },
     inspector: {
@@ -255,6 +267,8 @@ export const TRANSLATIONS = {
       statusActive: (offset, label) => `Coupe tissulaire à ${offset} mm · 1 mm · étiquettes ${label}`,
       hcpDerived: 'HCP dérivées',
       destrieuxNative: 'Destrieux natives',
+      nextbrainWarped: 'NextBrain recalées',
+      cutLabels: 'Étiquettes de coupe',
     },
     display: {
       sectionHeading: 'Affichage',

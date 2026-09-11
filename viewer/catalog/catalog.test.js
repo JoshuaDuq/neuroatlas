@@ -117,3 +117,28 @@ test('a capped result set reports the true total, never a silent cut', async () 
   assert.equal(found.rows.length, 50);
   assert.ok(found.total > 50, `expected more than 50 matches, got ${found.total}`);
 });
+
+test('cut-only regions are grouped by the cut atlas, not the surface atlas', () => {
+  const manifest = {
+    regions: [
+      { id: 'destrieux:left:1', kind: 'cortex', atlas: 'destrieux', hemisphere: 'left',
+        source_name: 'G_cuneus' },
+      { id: 'nextbrain:left:48', kind: 'tissue-region', atlas: 'nextbrain',
+        hemisphere: 'left', source_name: 'head_of_caudate' },
+    ],
+  };
+  const catalog = createCatalog(manifest);
+  const settings = {
+    atlas: 'destrieux', cutAtlas: 'nextbrain', cutActive: true, hemisphere: 'both',
+    cortexVisible: true, cortexOpacity: 1, isolatedRegion: null,
+  };
+  const kinds = catalog.groups(settings).map(group => group.kind);
+  assert.ok(kinds.includes('tissue'), 'a cut-only section is offered');
+
+  // Switching the cut atlas away must drop the section entirely, while the
+  // surface atlas choice leaves it alone.
+  const other = catalog.groups({ ...settings, cutAtlas: 'destrieux' });
+  assert.equal(other.some(group => group.kind === 'tissue'), false);
+  const otherSurface = catalog.groups({ ...settings, atlas: 'hcp-mmp' });
+  assert.equal(otherSurface.some(group => group.kind === 'tissue'), true);
+});

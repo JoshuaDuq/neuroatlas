@@ -1,6 +1,9 @@
 import { count } from './format.js';
 import { t } from '../i18n/translations.js';
 
+/** Reasons that mean "in a different atlas" rather than "hidden here". */
+const OTHER_ATLAS = new Set(['other-atlas', 'other-cut-atlas']);
+
 /**
  * Find a region: search, or browse the anatomy.
  *
@@ -16,7 +19,7 @@ import { t } from '../i18n/translations.js';
  * broken.
  */
 export function createNavigator({
-  catalog, atlases, onSelect, onToggleGroup, onQuery, onReveal, onAtlas,
+  catalog, atlases, cutAtlases, onSelect, onToggleGroup, onQuery, onReveal, onAtlas, onCutAtlas,
 }) {
   const search = document.getElementById('search');
   const results = document.getElementById('results');
@@ -81,8 +84,12 @@ export function createNavigator({
     const i18n = t(state.lang, 'navigator');
     const atlasDict = t(state.lang, 'atlases');
     const found = catalog.search(state.query, state);
-    const here = found.rows.filter(row => row.reason !== 'other-atlas');
+    // A row hidden by an atlas mismatch is not absent, it is elsewhere — and the
+    // two kinds are separated because switching a surface atlas and switching
+    // the cut labels are different controls.
+    const here = found.rows.filter(row => !OTHER_ATLAS.has(row.reason));
     const elsewhere = found.rows.filter(row => row.reason === 'other-atlas');
+    const elsewhereCut = found.rows.filter(row => row.reason === 'other-cut-atlas');
     const capped = found.total - found.rows.length;
     results.replaceChildren();
     activeIndex = -1;
@@ -118,6 +125,22 @@ export function createNavigator({
       line.append(switchTo);
       results.append(line);
     }
+
+    if (elsewhereCut.length) {
+      const other = cutAtlases.find(atlas => atlas.id !== state.cutAtlas);
+      const otherLabel = atlasDict[other?.id] ?? other?.label ?? '';
+      const line = document.createElement('p');
+      line.className = 'empty';
+      line.textContent = i18n.matchesInOtherCut(
+        count(elsewhereCut.length, 'match', state.lang), otherLabel,
+      );
+      const switchTo = document.createElement('button');
+      switchTo.type = 'button';
+      switchTo.textContent = i18n.switchCutAtlas;
+      switchTo.addEventListener('click', () => onCutAtlas(other.id));
+      line.append(switchTo);
+      results.append(line);
+    }
   }
 
   function renderTree(state) {
@@ -131,7 +154,9 @@ export function createNavigator({
         section = group.kind;
         const heading = document.createElement('p');
         heading.className = 'section-label';
-        heading.textContent = section === 'cortex' ? i18n.cortex : i18n.subcortical;
+        heading.textContent = section === 'cortex' ? i18n.cortex
+          : section === 'tissue' ? i18n.cutOnly
+          : i18n.subcortical;
         tree.append(heading);
       }
 
@@ -259,7 +284,8 @@ export function createNavigator({
 
       // Rebuild only when the structure could have changed.
       const key = [
-        state.atlas, state.lang, state.hemisphere, state.cortexVisible, state.cortexOpacity > 0,
+        state.atlas, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
+        state.cortexVisible, state.cortexOpacity > 0,
         state.isolatedRegion, state.query, [...state.expanded].sort().join(),
       ].join('|');
       if (key !== structureKey) {

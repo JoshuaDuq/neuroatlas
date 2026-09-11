@@ -122,8 +122,15 @@ export function createSession({ views, theme = 'light', lang = 'en' }) {
      * groups, visible counts — are computed by the catalog at render time and
      * deliberately absent here.
      */
-    assemble(modelState) {
-      return { ...modelState, ...state };
+    assemble(modelState, cut = {}) {
+      return {
+        ...modelState,
+        ...state,
+        // Two named fields, not a spread: the cut carries a `status` and `error`
+        // of its own, which must never shadow the session's.
+        cutAtlas: cut.atlas ?? modelState.atlas,
+        cutActive: cut.active === true,
+      };
     },
   };
 }

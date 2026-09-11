@@ -10,6 +10,9 @@ const regions = [
   { id: 'a-wall', label: 'Unlabeled', hemisphere: 'left', atlas: 'a', source_label_id: 0, kind: 'non-region' },
   { id: 'b-left', label: 'B left', hemisphere: 'left', atlas: 'b', source_label_id: 1, kind: 'cortex' },
   { id: 'stem', label: 'Brainstem', hemisphere: 'midline', atlas: 'aseg', source_label_id: 16, kind: 'structure' },
+  // Cut-only: it belongs to no GLB, so the loader never makes a mesh for it.
+  { id: 'n-left', label: 'N left', hemisphere: 'left', atlas: 'n', source_label_id: 48,
+    kind: 'tissue-region' },
 ];
 
 function fixture() {
@@ -232,4 +235,33 @@ test('cut picking skips discarded front faces and finds the retained back face',
   assert.deepEqual(mesh.geometry.attributes.position.array, positions);
   assert.deepEqual(mesh.geometry.index.array, indices);
   atlas.dispose();
+});
+
+test('a cut-only region can be selected and is not dropped on the next update', async () => {
+  // Regression: `select` accepted it and `update` immediately cleared it again,
+  // because only one of the two knew that these regions have no mesh. The drop
+  // raised nothing, so the selection simply vanished.
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const dropped = [];
+  atlas.addEventListener('selectionchange', event => dropped.push(event.detail));
+
+  atlas.select('n-left');
+  assert.equal(atlas.state.selectedRegion?.id, 'n-left');
+  atlas.update();
+  assert.equal(atlas.state.selectedRegion?.id, 'n-left', 'survives a redraw');
+  assert.deepEqual(dropped.filter(detail => detail === null), []);
+});
+
+test('a cut-only region still obeys the constraints the model does own', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.setHemisphere('right');
+  assert.throws(() => atlas.select('n-left'), /not visible/);
+
+  // And an existing selection is dropped when one of those constraints changes.
+  atlas.setHemisphere('both');
+  atlas.select('n-left');
+  atlas.setHemisphere('right');
+  assert.equal(atlas.state.selectedRegion, null);
 });

@@ -36,8 +36,10 @@ const TISSUE_NAMES_EN = {
 };
 
 /** Cut controls and linked MRI sections; the controller owns all coordinates. */
-export function createSectionControls(sections, { onFaceView, onSelect }) {
+export function createSectionControls(sections, { cutAtlases, onFaceView, onSelect }) {
   const mode = document.getElementById('cut-mode');
+  const cutAtlas = document.getElementById('cut-atlas');
+  const cutAtlasLabel = document.getElementById('cut-atlas-label');
   const position = document.getElementById('cut-position');
   const number = document.getElementById('cut-number');
   const reverse = document.getElementById('cut-reverse');
@@ -90,10 +92,20 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
     });
   }
 
+  // Populated from the manifest: a build without the optional NextBrain volume
+  // simply offers fewer choices, with no code path of its own.
+  for (const atlas of cutAtlases) {
+    const option = document.createElement('option');
+    option.value = atlas.id;
+    option.textContent = atlas.label;
+    cutAtlas.append(option);
+  }
+
   listen(mode, 'change', async () => {
     await sections.setMode(mode.value);
     if (sections.active) onFaceView();
   });
+  listen(cutAtlas, 'change', () => sections.setCutAtlas(cutAtlas.value));
   listen(position, 'input', () => schedule(() => sections.setOffset(Number(position.value))));
   listen(number, 'change', () => sections.setOffset(Number(number.value)));
   listen(reverse, 'change', () => { sections.setDisplay({ reverse: reverse.checked }); onFaceView(); });
@@ -244,7 +256,17 @@ export function createSectionControls(sections, { onFaceView, onSelect }) {
       element.disabled = !sections.active;
     }
 
-    const atlasLabel = sections.model.state.atlas === 'hcp-mmp' ? cutsI18n.hcpDerived : cutsI18n.destrieuxNative;
+    if (cutAtlasLabel) cutAtlasLabel.textContent = cutsI18n.cutLabels;
+    const atlasDict = t(currentLang, 'atlases');
+    for (const option of cutAtlas.options) {
+      option.textContent = atlasDict[option.value] ?? option.textContent;
+    }
+    cutAtlas.value = state.cutAtlas;
+    const atlasLabel = {
+      'hcp-mmp': cutsI18n.hcpDerived,
+      destrieux: cutsI18n.destrieuxNative,
+      nextbrain: cutsI18n.nextbrainWarped,
+    }[state.cutAtlas] ?? state.cutAtlas;
     status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
       : state.error || (sections.active ? cutsI18n.statusActive(offset.toFixed(1), atlasLabel) : cutsI18n.statusFull);
 

@@ -5,6 +5,7 @@ A source-faithful, selectable brain model with GPU-rendered labelled tissue cuts
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
 - **Internal anatomy:** 35 structures from the same fsaverage segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
+- **Histological cut labels:** 487 NextBrain regions, selected independently of the surface atlas. Optional, and cut-only: they have no mesh.
 - **Cuts:** sagittal/parasagittal, midsagittal, coronal, axial/transverse, and arbitrary oblique orientation. Reverse the retained side and move the plane numerically. A persistent GPU plane samples native 3D tissue labels at the cut; moving it does not rebuild geometry or upload another slice image.
 - **MRI:** three linked orthogonal sections, shared crosshair, native label readout, contrast window/center, segmentation overlay and PNG export.
 
@@ -21,9 +22,31 @@ Open the URL printed by Vite. The **Anatomical cuts** controls are in the right 
 
 `public/models/cortex-destrieux.glb`, `cortex-hcp-mmp.glb` and `structures.glb` are standard glTF 2.0 binary assets. Each region has a stable ID and source metadata. `manifest.json` links regions to their source atlas and scientific measurements. `deliverables/Brain-Atlas.blend`, when present, contains the editable full-resolution scene.
 
-`tissue-labels.json` and `tissues-{destrieux,hcp-mmp}.volume` provide compact categorical 3D grids for cut faces. WebGL 2 integer textures preserve discrete label IDs. The active atlas loads on first use; subsequent movement updates the plane transform and clipping equation, while the volume and palette remain on the GPU. Each atlas needs 32 MiB for its GPU label texture, plus the CPU copy used for picking. Switching atlases caches the second texture.
+`tissue-labels.json` and `tissues-{destrieux,hcp-mmp,nextbrain}.volume` provide compact categorical 3D grids for cut faces. WebGL 2 integer textures preserve discrete label IDs. The active atlas loads on first use; subsequent movement updates the plane transform and clipping equation, while the volume and palette remain on the GPU. Each atlas needs 32 MiB for its GPU label texture, plus the CPU copy used for picking. Switching atlases caches the second texture.
 
 Destrieux cuts decode the original published `aparc.a2009s+aseg.mgz` volume without changing any voxel label. HCP cut labels are **derived**: each cortical voxel in the native gray ribbon receives its nearest pial/white vertex's HCP label in the same hemisphere. Cortical voxels outside that ribbon remain unlabelled; white matter and deep tissues retain their original labels. This follows the nearest-cortical-vertex principle documented by [FreeSurfer's aparc-to-aseg mapping](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_aparc2aseg), but is not a native HCP volumetric atlas or a reproduction of that command's complete algorithm.
+
+### NextBrain
+
+The cut atlas is chosen separately from the cortical surface atlas, because a cut
+atlas need not have a surface. NextBrain has none: it is a volumetric
+histological atlas, so its regions are selectable, searchable and isolatable but
+carry no geometry, and they appear only on a cut face.
+
+Its labels are **not** produced by this package. `scripts/warp_nextbrain.py` runs
+once, registering the MNI152 template NextBrain was segmented on to fsaverage
+with ANTs (`pip install antspyx`) and resampling the label volume along that
+transform with `genericLabel`. Only the template is registered, so no label value
+is ever interpolated. The result is committed as a checksummed optional entry in
+`data/sources.json`; a checkout without it builds every other asset unchanged.
+
+487 of the published 496 ROIs survive resampling to the 1 mm grid. Both the
+template and fsaverage are averaged brains, so the warp is much better than an
+affine and still not subject-level: registration error, not the published
+histological delineation, bounds what these labels can support. NextBrain names
+every cortical parcel `ctx-rh-` on both sides, an artefact of the reused
+FreeSurfer label block; the hemisphere field is authoritative, and the fragment
+is dropped from display names while `source_published_name` retains the original.
 
 `volumes.json`, `mri.volume` and `aseg.volume` provide native MRI and segmentation arrays for the separate MRI reference views. These optional assets are not loaded for 3D cuts. The `.volume` files contain gzip payloads; their opaque extension prevents static servers from mistaking file compression for HTTP content encoding. Both compressed and decoded payloads are checksummed in the browser. Loading errors are surfaced.
 
@@ -42,6 +65,7 @@ scene.add(brain.group, sections.group);
 renderer.localClippingEnabled = true;
 
 await sections.setMode('coronal');
+await sections.setCutAtlas('nextbrain');   // independent of the surface atlas
 sections.setOffset(-20);                 // A = −20 mm: posterior to the origin
 sections.setDisplay({ reverse: false });
 // Other modes: sagittal, axial, oblique, off.

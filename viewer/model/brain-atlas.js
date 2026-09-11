@@ -12,7 +12,7 @@ function validateManifest(manifest) {
   for (const region of manifest.regions) {
     if (!region.id || ids.has(region.id) || !region.label ||
         !['left', 'right', 'midline'].includes(region.hemisphere) ||
-        !['cortex', 'structure', 'non-region'].includes(region.kind)) {
+        !['cortex', 'structure', 'non-region', 'tissue-region'].includes(region.kind)) {
       throw new Error(`Invalid or duplicate region metadata: ${region.id}`);
     }
     ids.add(region.id);
@@ -207,7 +207,8 @@ export class BrainAtlas extends EventTarget {
         material.depthWrite = !transparent;
       }
     }
-    if (this.selectedId && !this.visibleMeshes.some(mesh => mesh.userData.region_id === this.selectedId)) {
+    const selected = this.selectedId ? this.regions.get(this.selectedId) : null;
+    if (selected && !this.canSelect(selected)) {
       this.selectedId = null;
       this.dispatchEvent(new CustomEvent('selectionchange', { detail: null }));
     }
@@ -243,14 +244,33 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
+  /**
+   * Whether a region can be the selection right now.
+   *
+   * A meshed region is judged by what is actually drawn. A cut-only region has
+   * no mesh to look for, and whether a cut is showing it is known to the
+   * sections rather than here, so the cut is taken as given while the
+   * constraints this class does own still apply.
+   *
+   * `select` and `update` must ask the same question. Two answers would let a
+   * selection be accepted and then dropped again on the same call, which is
+   * silent by construction.
+   */
+  canSelect(region) {
+    if (region.kind === 'tissue-region') {
+      return visibilityOf(region, {
+        ...this.settings, cutAtlas: region.atlas, cutActive: true,
+      }).visible;
+    }
+    return this.visibleMeshes.some(mesh => mesh.userData.region_id === region.id);
+  }
+
   select(id) {
     if (id !== null) {
       const region = this.regions.get(id);
       if (!region) throw new Error(`Unknown region: ${id}`);
       if (region.kind === 'non-region') throw new Error(`Cannot select a non-region: ${id}`);
-      if (!this.visibleMeshes.some(mesh => mesh.userData.region_id === id)) {
-        throw new Error(`Region is not visible: ${id}`);
-      }
+      if (!this.canSelect(region)) throw new Error(`Region is not visible: ${id}`);
     }
     this.selectedId = id;
     this.update();

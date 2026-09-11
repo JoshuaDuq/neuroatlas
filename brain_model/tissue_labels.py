@@ -7,6 +7,7 @@ import numpy as np
 from nibabel.freesurfer.io import read_annot, read_geometry
 from scipy.spatial import cKDTree
 
+from . import nextbrain
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .volumes import encode_volume
 
@@ -136,6 +137,10 @@ def export_tissue_labels(config, manifest):
             else "Derived nearest pial/white vertex labels, restricted to published cortical voxels AND native gray ribbon; other tissues unchanged"
         )
         atlases[atlas] = record
+    if nextbrain.is_available(config):
+        atlases[nextbrain.ATLAS_ID] = nextbrain.export_atlas(
+            config, manifest["regions"]
+        )
     metadata = {
         "schema_version": 1,
         "source_sha256": sha256(source_path),
@@ -146,6 +151,11 @@ def export_tissue_labels(config, manifest):
             "Native voxel boundaries and high-resolution cortical surfaces may not coincide exactly.",
         ],
     }
+    if nextbrain.ATLAS_ID in atlases:
+        metadata["limitations"].append(
+            "NextBrain labels were nonlinearly warped from MNI152 to fsaverage; "
+            "registration error, not the published delineation, bounds their accuracy."
+        )
     write_json(config["output_directory"] / "tissue-labels.json", metadata)
     return metadata
 

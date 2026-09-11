@@ -5,6 +5,7 @@ import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry
 
+from . import nextbrain
 from .export import add_region, compact_region, write_scene
 from .geometry import extract_structure, partition_surface
 from .shading import structure_normals
@@ -128,6 +129,30 @@ def build_structures(config):
     }, regions
 
 
+def cut_atlases(config):
+    """Which label volumes a cut may sample, and whether each has a surface.
+
+    Every surface atlas also publishes a cut volume. NextBrain publishes only a
+    cut volume, so `surface` is what tells the viewer that selecting it must
+    leave the cortical layer alone.
+    """
+    atlases = [
+        {"id": a["id"], "label": a["label"], "citation": a["citation"], "surface": True}
+        for a in config["atlases"]
+    ]
+    if nextbrain.is_available(config):
+        settings = config[nextbrain.ATLAS_ID]
+        atlases.append(
+            {
+                "id": nextbrain.ATLAS_ID,
+                "label": settings["label"],
+                "citation": settings["citation"],
+                "surface": False,
+            }
+        )
+    return atlases
+
+
 def main():
     config = read_config()
     provenance = verify_sources()
@@ -139,6 +164,8 @@ def main():
         regions.extend(cortex)
     structures, internal = build_structures(config)
     regions.extend(internal)
+    if nextbrain.is_available(config):
+        regions.extend(nextbrain.build_regions(config))
     export_volumes(config)
     manifest = {
         "volumes": {"file": "volumes.json"},
@@ -159,6 +186,7 @@ def main():
             ],
         },
         "atlases": atlas_metadata,
+        "cut_atlases": cut_atlases(config),
         "structures": structures,
         "regions": regions,
         "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
@@ -168,6 +196,8 @@ def main():
             "HCP-MMP is the published Mills fsaverage projection, not native HCP space.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
             "Internal structures use an unsmoothed 1 mm label volume; fine nuclei and cerebellar folia are unresolved.",
+            "NextBrain regions are cut labels only: they have no mesh, and no surface or solid geometry is published for them.",
+            "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             "Cortical regions are surface patches, not closed anatomical solids.",
         ],
         "provenance": provenance,

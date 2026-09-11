@@ -124,11 +124,25 @@ export async function startApp() {
     render();
   }
 
+  /**
+   * Choose the label volume the cut samples. The cortical surface is untouched:
+   * a cut atlas need not have a surface, and NextBrain has none.
+   *
+   * `sections` emits on success and on failure and reports its own error into
+   * the cuts panel, so there is nothing to add but keeping the rejection in.
+   */
+  function setCutAtlas(id) {
+    sections.setCutAtlas(id).catch(() => {});
+  }
+
   /** Undo whatever is hiding a region, then select it. */
   function reveal(reason, id) {
     if (reason === 'cortex-hidden') model.setCortexVisible(true);
     if (reason === 'hemisphere') model.setHemisphere('both');
     if (reason === 'isolated') model.clearIsolation();
+    // A cut-only region is nowhere until a plane exists. Coronal is the
+    // conventional default, and the panel moves it from there.
+    if (reason === 'no-cut') sections.setMode('coronal').catch(() => {});
     select(id);
   }
 
@@ -151,11 +165,13 @@ export async function startApp() {
   const navigator = createNavigator({
     catalog,
     atlases: model.manifest.atlases,
+    cutAtlases: model.manifest.cut_atlases,
     onSelect: select,
     onToggleGroup: name => { session.toggleGroup(name); render(); },
     onQuery: query => { session.setQuery(query); render(); },
     onReveal: reveal,
     onAtlas: setAtlas,
+    onCutAtlas: setCutAtlas,
   });
 
   const inspector = createInspector({
@@ -194,7 +210,11 @@ export async function startApp() {
     render();
   }
 
-  const sectionControls = createSectionControls(sections, { onFaceView: faceCut, onSelect: select });
+  const sectionControls = createSectionControls(sections, {
+    cutAtlases: model.manifest.cut_atlases,
+    onFaceView: faceCut,
+    onSelect: select,
+  });
   const shortcuts = createShortcuts(initialLang);
 
   chrome = createViewportChrome({
@@ -207,7 +227,10 @@ export async function startApp() {
   let announced = null;
 
   function render() {
-    const state = session.assemble(model.state);
+    const state = session.assemble(model.state, {
+      atlas: sections.state.cutAtlas,
+      active: sections.active,
+    });
     catalog.setLanguage(state.lang);
     document.documentElement.lang = state.lang;
     root.dataset.status = state.status;
@@ -331,6 +354,7 @@ export async function startApp() {
   if (wanted.cortexVisible !== undefined) model.setCortexVisible(wanted.cortexVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
   if (wanted.atlasColors !== undefined) model.setAtlasColors(wanted.atlasColors);
+  if (wanted.cutAtlas) setCutAtlas(wanted.cutAtlas);
   if (wanted.view) applyView(wanted.view, { immediate: true });
   if (wanted.selectedRegion && catalog.get(wanted.selectedRegion)) {
     try {
