@@ -37,14 +37,9 @@ export function labelOf(region, lang = 'en') {
   const isFr = lang === 'fr';
   if (region.kind === 'non-region') return isFr ? UNLABELLED.fr : UNLABELLED.en;
 
-  if (region.kind === 'structure') {
-    const table = isFr ? STRUCTURE_LABELS_FR : STRUCTURE_LABELS;
-    const entry = table[region.source_name] ?? STRUCTURE_LABELS[region.source_name];
-    if (!entry) return null;
-    return { name: entry.name, code: null, group: entry.system, aliases: [] };
-  }
-
-  if (region.kind === 'tissue-region') {
+  // NextBrain names are published for both its solid nuclei and its cut-only
+  // regions, so the atlas decides this before the kind does.
+  if (region.atlas === 'nextbrain') {
     const entry = isFr ? NEXTBRAIN_LABELS_FR[region.source_name] : undefined;
     const name = entry?.name ?? readable(region.source_name);
     return {
@@ -53,6 +48,13 @@ export function labelOf(region, lang = 'en') {
       group: entry?.group ?? alphabeticalBucket(name),
       aliases: entry?.aliases ?? [],
     };
+  }
+
+  if (region.kind === 'structure') {
+    const table = isFr ? STRUCTURE_LABELS_FR : STRUCTURE_LABELS;
+    const entry = table[region.source_name] ?? STRUCTURE_LABELS[region.source_name];
+    if (!entry) return null;
+    return { name: entry.name, code: null, group: entry.system, aliases: [] };
   }
 
   if (region.atlas === 'hcp-mmp') {

@@ -5,7 +5,7 @@ A source-faithful, selectable brain model with GPU-rendered labelled tissue cuts
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
 - **Internal anatomy:** 35 structures from the same fsaverage segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
-- **Histological cut labels:** 487 NextBrain regions, selected independently of the surface atlas. Optional, and cut-only: they have no mesh.
+- **Histological detail:** 487 NextBrain regions. 309 of them are solid nuclei in a second internal-anatomy detail level; the remaining 178 stay cut labels. Optional.
 - **Cuts:** sagittal/parasagittal, midsagittal, coronal, axial/transverse, and arbitrary oblique orientation. Reverse the retained side and move the plane numerically. A persistent GPU plane samples native 3D tissue labels at the cut; moving it does not rebuild geometry or upload another slice image.
 - **MRI:** three linked orthogonal sections, shared crosshair, native label readout, contrast window/center, segmentation overlay and PNG export.
 
@@ -20,7 +20,7 @@ Open the URL printed by Vite. The **Anatomical cuts** controls are in the right 
 
 ## Model assets
 
-`public/models/cortex-destrieux.glb`, `cortex-hcp-mmp.glb` and `structures.glb` are standard glTF 2.0 binary assets. Each region has a stable ID and source metadata. `manifest.json` links regions to their source atlas and scientific measurements. `deliverables/Brain-Atlas.blend`, when present, contains the editable full-resolution scene.
+`public/models/cortex-destrieux.glb`, `cortex-hcp-mmp.glb`, `structures.glb` and the optional `nextbrain.glb` are standard glTF 2.0 binary assets. Each region has a stable ID and source metadata. `manifest.json` links regions to their source atlas and scientific measurements. `deliverables/Brain-Atlas.blend`, when present, contains the editable full-resolution scene.
 
 `tissue-labels.json` and `tissues-{destrieux,hcp-mmp,nextbrain}.volume` provide compact categorical 3D grids for cut faces. WebGL 2 integer textures preserve discrete label IDs. The active atlas loads on first use; subsequent movement updates the plane transform and clipping equation, while the volume and palette remain on the GPU. Each atlas needs 32 MiB for its GPU label texture, plus the CPU copy used for picking. Switching atlases caches the second texture.
 
@@ -30,8 +30,17 @@ Destrieux cuts decode the original published `aparc.a2009s+aseg.mgz` volume with
 
 The cut atlas is chosen separately from the cortical surface atlas, because a cut
 atlas need not have a surface. NextBrain has none: it is a volumetric
-histological atlas, so its regions are selectable, searchable and isolatable but
-carry no geometry, and they appear only on a cut face.
+histological atlas.
+
+Internal anatomy has two **detail levels**, and exactly one is drawn: the coarse
+level is FreeSurfer's 35 structures, the fine level NextBrain's 309 nuclei. Both
+segment the same anatomy, so drawing them together would put two thalami in the
+same place. 178 further ROIs stay cut labels only — NextBrain's white matter, its
+cerebellar cortical layers and its cortical parcels are excluded from geometry
+because the first two enclose everything else and the third is already published
+as real surfaces by the Destrieux and HCP-MMP layers, while anything under
+`minimum_mesh_voxels` is too small for a surface to mean anything. All 487 remain
+named, searchable and selectable on a cut face.
 
 Its labels are **not** produced by this package. `scripts/warp_nextbrain.py` runs
 once, registering the MNI152 template NextBrain was segmented on to fsaverage
@@ -40,7 +49,11 @@ transform with `genericLabel`. Only the template is registered, so no label valu
 is ever interpolated. The result is committed as a checksummed optional entry in
 `data/sources.json`; a checkout without it builds every other asset unchanged.
 
-487 of the published 496 ROIs survive resampling to the 1 mm grid. Both the
+487 of the published 496 ROIs survive resampling to the 1 mm grid. 30 of the 309
+solid nuclei are fragmented by the warp into components that touch only at
+corners, so their surfaces are not closed; `validation.json` reports which, and
+no mesh volume is claimed for them. Their segmentation volumes, which are counted
+from voxels, remain exact. Both the
 template and fsaverage are averaged brains, so the warp is much better than an
 affine and still not subject-level: registration error, not the published
 histological delineation, bounds what these labels can support. NextBrain names
@@ -66,6 +79,7 @@ renderer.localClippingEnabled = true;
 
 await sections.setMode('coronal');
 await sections.setCutAtlas('nextbrain');   // independent of the surface atlas
+await brain.setDetail('nextbrain');        // solid nuclei instead of the 35 aseg structures
 sections.setOffset(-20);                 // A = −20 mm: posterior to the origin
 sections.setDisplay({ reverse: false });
 // Other modes: sagittal, axial, oblique, off.

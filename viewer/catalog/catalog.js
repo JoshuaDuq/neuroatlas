@@ -115,11 +115,12 @@ export function createCatalog(manifest, defaultLang = 'en') {
     },
 
     /**
-     * Cortical groups of the active atlas, the shared structure systems, then
-     * the cut-only regions of the active cut atlas.
+     * Cortical groups of the active atlas, the structures of the active detail
+     * level, then the cut-only regions of the active cut atlas.
      *
-     * Each family is filtered by the atlas that actually selects it: surfaces by
-     * the surface atlas, tissue regions by the cut atlas, structures by neither.
+     * Each family is filtered by the control that actually selects it: surfaces
+     * by the surface atlas, structures by the detail level, tissue regions by
+     * the cut atlas.
      */
     groups(settings) {
       if (settings?.lang) ensureLang(settings.lang);
@@ -131,8 +132,10 @@ export function createCatalog(manifest, defaultLang = 'en') {
         const into = kind === 'structure' ? structural
           : kind === 'tissue-region' ? volumetric
           : cortical;
-        const selects = into === volumetric ? settings.cutAtlas : settings.atlas;
-        if (into !== structural && atlas !== selects) continue;
+        const selects = into === volumetric ? settings.cutAtlas
+          : into === structural ? settings.detail
+          : settings.atlas;
+        if (atlas !== selects) continue;
         if (!into.has(entry.label.group)) into.set(entry.label.group, []);
         into.get(entry.label.group).push(entry);
       }

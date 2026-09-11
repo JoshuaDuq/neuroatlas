@@ -72,33 +72,26 @@ def build_cortex(config, atlas):
     }, regions
 
 
-def build_structures(config):
-    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
+def build_structure_layer(config, image, labels, describe, filename):
+    """Marching-cubes meshes for one labelled volume, exported as a glTF layer.
+
+    Everything geometric is identical between the coarse and fine layers, so
+    they share this; `describe` supplies only what differs, the region record
+    and its published colour.
+    """
     volume = np.asarray(image.dataobj)
     if not np.all(volume == np.rint(volume)):
-        raise ValueError("aseg must contain integer-valued segmentation labels")
+        raise ValueError(f"{filename}: segmentation must hold integer labels")
     affine = image.header.get_vox2ras_tkr()
-    table = read_color_table()
+    voxel_volume = float(abs(np.linalg.det(affine[:3, :3])))
     scene = trimesh.Scene()
     regions = []
-    for label in config["structures"]["labels"]:
-        name, color = table[label]
-        hemisphere = "midline"
-        if name.startswith("Left-"):
-            hemisphere = "left"
-        elif name.startswith("Right-"):
-            hemisphere = "right"
-        region = {
-            "id": f"aseg:{hemisphere}:{label}",
-            "label": name.replace("-", " "),
-            "source_name": name,
-            "atlas": "aseg",
-            "hemisphere": hemisphere,
-            "source_label_id": label,
-            "kind": "structure",
-            "voxel_count": int(np.count_nonzero(volume == label)),
-            "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
-        }
+    for label in labels:
+        region, color = describe(label)
+        region.update(
+            voxel_count=int(np.count_nonzero(volume == label)),
+            voxel_size_mm=[float(x) for x in image.header.get_zooms()[:3]],
+        )
         mesh = extract_structure(volume, label, affine)
         normals = structure_normals(
             volume == label,
@@ -111,12 +104,9 @@ def build_structures(config):
             vertex_count=len(exported.vertices),
             triangle_count=len(exported.faces),
             surface_area_mm2=float(mesh.area),
-            segmentation_volume_mm3=float(
-                region["voxel_count"] * abs(np.linalg.det(affine[:3, :3]))
-            ),
+            segmentation_volume_mm3=float(region["voxel_count"] * voxel_volume),
         )
         regions.append(region)
-    filename = "structures.glb"
     write_scene(scene, config["output_directory"] / filename)
     return {
         "file": filename,
@@ -127,6 +117,71 @@ def build_structures(config):
             "sigma_voxels": config["structures"]["shading_sigma_voxels"],
         },
     }, regions
+
+
+def build_structures(config):
+    """The coarse detail level: 35 native FreeSurfer structures."""
+    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
+    table = read_color_table()
+
+    def describe(label):
+        name, color = table[label]
+        hemisphere = "midline"
+        if name.startswith("Left-"):
+            hemisphere = "left"
+        elif name.startswith("Right-"):
+            hemisphere = "right"
+        return {
+            "id": f"aseg:{hemisphere}:{label}",
+            "label": name.replace("-", " "),
+            "source_name": name,
+            "atlas": "aseg",
+            "hemisphere": hemisphere,
+            "source_label_id": label,
+            "kind": "structure",
+        }, color
+
+    return build_structure_layer(
+        config, image, config["structures"]["labels"], describe, "structures.glb"
+    )
+
+
+def build_nextbrain_structures(config):
+    """The fine detail level: NextBrain nuclei resolved well enough to have a shape."""
+    image, labels, table = nextbrain.load(config)
+    settings = config[nextbrain.ATLAS_ID]
+    chosen = nextbrain.meshed_indices(labels, table, settings["minimum_mesh_voxels"])
+
+    def describe(index):
+        published, color = table[index]
+        name = nextbrain.structure_name_of(published)
+        hemisphere = nextbrain.hemisphere_of(index)
+        return {
+            "id": nextbrain.region_id_of(index),
+            "label": f"{name.replace('_', ' ')} · {hemisphere}",
+            "source_name": name,
+            "source_published_name": published,
+            "atlas": nextbrain.ATLAS_ID,
+            "hemisphere": hemisphere,
+            "source_label_id": index,
+            "kind": "structure",
+        }, color
+
+    return build_structure_layer(config, image, chosen, describe, "nextbrain.glb")
+
+
+def detail_levels(config):
+    """The internal-anatomy layers, coarse first.
+
+    Exactly one is drawn at a time: both segment the same anatomy, so drawing
+    them together would put two thalami in the same place.
+    """
+    levels = [{"id": "aseg", "label": "FreeSurfer subcortical segmentation"}]
+    if nextbrain.is_available(config):
+        levels.append(
+            {"id": nextbrain.ATLAS_ID, "label": config[nextbrain.ATLAS_ID]["label"]}
+        )
+    return levels
 
 
 def cut_atlases(config):
@@ -162,10 +217,21 @@ def main():
         metadata, cortex = build_cortex(config, atlas)
         atlas_metadata.append(metadata)
         regions.extend(cortex)
-    structures, internal = build_structures(config)
+    coarse, internal = build_structures(config)
     regions.extend(internal)
+    levels = [{**level} for level in detail_levels(config)]
+    levels[0].update(coarse)
     if nextbrain.is_available(config):
-        regions.extend(nextbrain.build_regions(config))
+        fine, nuclei = build_nextbrain_structures(config)
+        levels[1].update(fine)
+        regions.extend(nuclei)
+        # Whatever earned geometry is published as a structure, so it must not
+        # also be published as a cut-only region under the same identifier.
+        regions.extend(
+            nextbrain.build_regions(
+                config, skip=[region["source_label_id"] for region in nuclei]
+            )
+        )
     export_volumes(config)
     manifest = {
         "volumes": {"file": "volumes.json"},
@@ -187,7 +253,7 @@ def main():
         },
         "atlases": atlas_metadata,
         "cut_atlases": cut_atlases(config),
-        "structures": structures,
+        "detail_levels": levels,
         "regions": regions,
         "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
         "limitations": [
@@ -196,7 +262,10 @@ def main():
             "HCP-MMP is the published Mills fsaverage projection, not native HCP space.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
             "Internal structures use an unsmoothed 1 mm label volume; fine nuclei and cerebellar folia are unresolved.",
-            "NextBrain regions are cut labels only: they have no mesh, and no surface or solid geometry is published for them.",
+            "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
+            "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
+            "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",
+            "Some fine-level nuclei are fragmented by that warp and their surfaces are not closed; validation reports which, and no mesh volume is claimed for them.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             "Cortical regions are surface patches, not closed anatomical solids.",
         ],

@@ -242,12 +242,14 @@ def validate_atlas(config, atlas):
     }
 
 
-def validate_structures(config):
-    path = config["output_directory"] / "structures.glb"
+def validate_structure_layer(path, volume, affine, labels, tolerance, require_closed=True):
+    """Every vertex of every mesh must sit on its own label's isosurface.
+
+    Shared by both detail levels: the check is a property of marching cubes over
+    a label mask, not of which segmentation supplied the mask.
+    """
     meshes = read_meshes(path)
-    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
-    volume = np.asarray(image.dataobj)
-    inverse = np.linalg.inv(image.header.get_vox2ras_tkr())
+    inverse = np.linalg.inv(affine)
     reports = []
     found = set()
     for region_id, mesh in meshes.items():
@@ -268,15 +270,21 @@ def validate_structures(config):
             raise ValueError(
                 f"Structure edge vertices left the source isosurface: {region_id}"
             )
-        reference = extract_structure(volume, label, image.header.get_vox2ras_tkr())
+        reference = extract_structure(volume, label, affine)
         coordinate_error = float(np.linalg.norm(ras - reference.vertices, axis=1).max())
-        if coordinate_error > config["validation"]["coordinate_tolerance_mm"]:
+        if coordinate_error > tolerance:
             raise ValueError(
                 f"Structure export moved source-derived vertices: {region_id}"
             )
         if not np.array_equal(reference.faces, mesh.faces):
             raise ValueError(f"Structure export changed triangle topology: {region_id}")
-        if not mesh.is_watertight or mesh.volume <= 0:
+        # Observed, not assumed. A coarse structure is a coherent solid and
+        # must be closed. A fine one need not be: the warped 1 mm parcellation
+        # leaves fragments that touch only at corners, and no closed surface
+        # exists over them. Repairing that would move vertices the export
+        # exists to preserve, so it is reported instead.
+        closed = bool(mesh.is_watertight and mesh.volume > 0)
+        if require_closed and not closed:
             raise ValueError(
                 f"Structure must be closed and outward oriented: {region_id}"
             )
@@ -288,19 +296,69 @@ def validate_structures(config):
         reports.append(
             {
                 "id": region_id,
-                "closed": True,
+                "closed": closed,
                 "maximum_edge_vertex_isovalue_error": level_error,
                 "marching_cubes_auxiliary_center_vertices": int(centers.sum()),
                 "maximum_glb_coordinate_error_mm": coordinate_error,
                 "maximum_trilinear_isovalue_deviation": float(
                     np.abs(values - 0.5).max()
                 ),
-                "mesh_volume_mm3": float(mesh.volume * 1e9),
+                # Meaningless on an unclosed surface, so it is not reported.
+                "mesh_volume_mm3": float(mesh.volume * 1e9) if closed else None,
             }
         )
-    if found != set(config["structures"]["labels"]):
-        raise ValueError("Missing or unexpected internal anatomy")
+    if found != set(labels):
+        raise ValueError(f"Missing or unexpected internal anatomy: {path.name}")
     return {"file": path.name, "sha256": sha256(path), "regions": reports}
+
+
+def validate_structures(config):
+    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
+    return validate_structure_layer(
+        config["output_directory"] / "structures.glb",
+        np.asarray(image.dataobj),
+        image.header.get_vox2ras_tkr(),
+        config["structures"]["labels"],
+        config["validation"]["coordinate_tolerance_mm"],
+    )
+
+
+def validate_nextbrain_structures(config):
+    image, labels, table = nextbrain.load(config)
+    minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_voxels"]
+    return validate_structure_layer(
+        config["output_directory"] / "nextbrain.glb",
+        labels,
+        image.header.get_vox2ras_tkr(),
+        nextbrain.meshed_indices(labels, table, minimum),
+        config["validation"]["coordinate_tolerance_mm"],
+        require_closed=False,
+    )
+
+
+def expected_nextbrain_metadata(config):
+    """Recompute, independently of the build, what the fine level must contain."""
+    image, labels, table = nextbrain.load(config)
+    minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_voxels"]
+    regions = {}
+    for index in nextbrain.meshed_indices(labels, table, minimum):
+        published = table[index][0]
+        name = nextbrain.structure_name_of(published)
+        hemisphere = nextbrain.hemisphere_of(index)
+        region_id = nextbrain.region_id_of(index)
+        regions[region_id] = {
+            "id": region_id,
+            "atlas": nextbrain.ATLAS_ID,
+            "hemisphere": hemisphere,
+            "source_label_id": index,
+            "source_name": name,
+            "source_published_name": published,
+            "label": f"{name.replace('_', ' ')} · {hemisphere}",
+            "kind": "structure",
+            "voxel_count": int(np.count_nonzero(labels == index)),
+            "voxel_size_mm": [float(size) for size in image.header.get_zooms()[:3]],
+        }
+    return regions, image.header.get_vox2ras_tkr()
 
 
 def expected_cortical_metadata(config, atlas):
@@ -424,16 +482,24 @@ def validate_manifest(config, manifest):
         }
         if atlas_records[atlas["id"]] != metadata:
             raise ValueError(f"Manifest atlas metadata mismatch: {atlas['id']}")
-    structures, affine = expected_structure_metadata(config)
-    groups["structures.glb"] = structures
-    expected_structures = {
-        "file": "structures.glb",
-        "region_count": len(structures),
-        "voxel_to_surface_ras_mm": affine.tolist(),
-    }
-    for field, value in expected_structures.items():
-        if manifest["structures"].get(field) != value:
-            raise ValueError(f"Manifest structures metadata mismatch: {field}")
+    coarse, affine = expected_structure_metadata(config)
+    groups["structures.glb"] = coarse
+    expected_levels = {"aseg": ("structures.glb", coarse, affine)}
+    if nextbrain.is_available(config):
+        fine, fine_affine = expected_nextbrain_metadata(config)
+        groups["nextbrain.glb"] = fine
+        expected_levels[nextbrain.ATLAS_ID] = ("nextbrain.glb", fine, fine_affine)
+    levels = {level["id"]: level for level in manifest["detail_levels"]}
+    if set(levels) != set(expected_levels):
+        raise ValueError("Manifest detail level set mismatch")
+    for level_id, (filename, expected, level_affine) in expected_levels.items():
+        for field, value in {
+            "file": filename,
+            "region_count": len(expected),
+            "voxel_to_surface_ras_mm": level_affine.tolist(),
+        }.items():
+            if levels[level_id].get(field) != value:
+                raise ValueError(f"Manifest detail level mismatch: {level_id}.{field}")
     expected_ids = {region_id for group in groups.values() for region_id in group}
     # Cut-only regions have no mesh by construction, so they belong to no GLB.
     # They are verified against the label volume that does carry them instead.
@@ -455,7 +521,7 @@ def validate_manifest(config, manifest):
                 regions[region_id], meshes[region_id], metadata, tolerance
             )
     voxel_volume = abs(np.linalg.det(affine[:3, :3]))
-    for region_id, metadata in structures.items():
+    for region_id, metadata in coarse.items():
         if not np.isclose(
             regions[region_id]["segmentation_volume_mm3"],
             metadata["voxel_count"] * voxel_volume,
@@ -476,6 +542,11 @@ def main():
         "clinical_accuracy_validated": False,
         "atlases": [validate_atlas(config, atlas) for atlas in config["atlases"]],
         "structures": validate_structures(config),
+        **(
+            {"nextbrain_structures": validate_nextbrain_structures(config)}
+            if nextbrain.is_available(config)
+            else {}
+        ),
         "volumes": validate_volumes(config),
     }
     write_json(config["output_directory"] / "validation.json", report)

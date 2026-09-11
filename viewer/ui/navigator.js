@@ -284,7 +284,7 @@ export function createNavigator({
 
       // Rebuild only when the structure could have changed.
       const key = [
-        state.atlas, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
+        state.atlas, state.detail, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
         state.cortexVisible, state.cortexOpacity > 0,
         state.isolatedRegion, state.query, [...state.expanded].sort().join(),
       ].join('|');

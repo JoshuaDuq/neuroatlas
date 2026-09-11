@@ -81,7 +81,9 @@ def paths(config):
 
 
 def is_available(config):
-    """Whether the one-off warp has been run in this checkout."""
+    """Whether this checkout is configured for the warp and has run it."""
+    if ATLAS_ID not in config:
+        return False
     return all(path.exists() for path in paths(config))
 
 
@@ -105,21 +107,55 @@ def load(config):
     return image, labels, table
 
 
-def build_regions(config):
+# Excluded from solid geometry however large they are. White matter and the
+# cerebellar cortical layers are vast, convoluted and enclose everything else,
+# so they consume most of the geometry budget and hide the nuclei the fine level
+# exists to show. The cortical parcels are already published as real surfaces by
+# the Destrieux and HCP-MMP layers.
+BULK_TISSUE = ("white_matter", "_of_pva")
+
+
+def is_bulk(published):
+    if "ctx-" in published:
+        return True
+    return any(token in published for token in BULK_TISSUE)
+
+
+def meshed_indices(labels, table, minimum):
+    """Which ROIs get a mesh, in label order.
+
+    Below `minimum` voxels a marching-cubes surface asserts a shape the warped
+    1 mm grid cannot support: several ROIs survive resampling as a single voxel,
+    and a 1 mm cube is not anatomy. Everything excluded here remains a cut label,
+    so it is still named, searchable and selectable on a cut face.
+    """
+    indices, counts = np.unique(labels, return_counts=True)
+    return [
+        int(index)
+        for index, count in zip(indices.tolist(), counts.tolist())
+        if index != BACKGROUND
+        and count >= minimum
+        and not is_bulk(table[index][0])
+    ]
+
+
+def build_regions(config, skip=()):
     """One selectable, mesh-less region per delineated ROI present in the warp.
 
     ROIs the LUT names but the resampled volume does not contain are omitted
     rather than published as empty regions: the atlas states that small regions
     do not survive resampling to 1 mm, and an empty region would misreport that
-    documented loss as anatomy.
+    documented loss as anatomy. `skip` carries the ROIs that were given solid
+    geometry instead, which are published as structures rather than here.
     """
     image, labels, table = load(config)
     # float32 from the MGH header; the manifest is strict JSON with no NaN.
     voxel_volume = float(abs(np.linalg.det(image.header.get_vox2ras_tkr()[:3, :3])))
     indices, counts = np.unique(labels, return_counts=True)
     regions = []
+    skipped = set(skip)
     for index, count in zip(indices.tolist(), counts.tolist()):
-        if index == BACKGROUND:
+        if index == BACKGROUND or index in skipped:
             continue
         published, _ = table[index]
         name = structure_name_of(published)

@@ -17,6 +17,9 @@ function fixture() {
     clippingPlanes: [],
     state: { atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1 },
     regions: new Map([[region.id, region]]),
+    setCutState(cut) {
+      this.cut = cut;
+    },
     setClippingPlanes(planes) {
       this.clippingPlanes = planes;
       this.dispatchEvent(new Event('change'));

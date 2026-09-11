@@ -33,6 +33,9 @@ def describe_source_label(value, table, regions):
         )
         or (
             not cortex
+            # Atlas-qualified: the fine detail level publishes structures too,
+            # and its published indices overlap these FreeSurfer label ids.
+            and region["atlas"] == "aseg"
             and region["kind"] == "structure"
             and region["source_label_id"] == value
         )

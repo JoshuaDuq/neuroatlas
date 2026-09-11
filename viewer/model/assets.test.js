@@ -31,7 +31,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
     assert.equal(atlas.state.selectedRegion.atlas, entry.id);
   }
   atlas.setCortexVisible(false);
-  assert.equal(atlas.visibleMeshes.length, manifest.structures.region_count);
+  assert.equal(atlas.visibleMeshes.length, manifest.detail_levels[0].region_count);
   atlas.select(atlas.visibleMeshes[0].userData.region_id);
   assert.equal(atlas.state.selectedRegion.kind, 'structure');
   atlas.dispose();
