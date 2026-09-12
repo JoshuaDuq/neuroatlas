@@ -10,13 +10,13 @@ const CHROME_GUTTERS_PX = 48;
 
 /**
  * Everything drawn over the canvas: anatomical orientation, the scale bar,
- * the view presets, the hover label, and the loading and error stage.
+ * the view presets, and the loading and error stage.
  *
  * Overlays sit on near-opaque chips because the geometry beneath them runs
  * from near-black crevices to near-white speculars, so no fixed text colour
  * would be legible against all of it.
  */
-export function createViewportChrome({ networks, onView, onRetry, onReticleSelect }) {
+export function createViewportChrome({ networks, onView, onRetry }) {
   const orientation = document.getElementById('orientation');
   const edges = Object.fromEntries(
     [...orientation.children].map(node => [node.dataset.edge, node]));
@@ -24,16 +24,8 @@ export function createViewportChrome({ networks, onView, onRetry, onReticleSelec
   const bar = document.getElementById('scale-bar');
   const barRule = bar.querySelector('.scale-bar-rule');
   const barText = bar.querySelector('.measure');
-  const hover = document.getElementById('hover-label');
   const legend = document.getElementById('network-legend');
   const host = document.getElementById('viewport');
-  const reticle = document.getElementById('reticle');
-  const readout = document.getElementById('reticle-readout');
-  const readoutName = document.createElement('span');
-  readoutName.className = 'reticle-readout-name';
-  const readoutAction = document.createElement('span');
-  readoutAction.className = 'reticle-readout-action';
-  readout.append(readoutName, readoutAction);
   const stage = document.getElementById('stage');
   const stageMessage = document.getElementById('stage-message');
   const stageProgress = document.getElementById('stage-progress');
@@ -42,8 +34,6 @@ export function createViewportChrome({ networks, onView, onRetry, onReticleSelec
   let currentLang = 'en';
   let lastCameraArgs = null;
   let lastRect = null;
-  let reticleRegion = null;
-  let reticleEnabled = false;
 
   /*
    * Do the presets and the scale bar still fit on one line? Asked of the
@@ -86,11 +76,6 @@ export function createViewportChrome({ networks, onView, onRetry, onReticleSelec
     }));
   }
 
-  const onReadout = () => {
-    if (reticleRegion) onReticleSelect?.(reticleRegion.id);
-  };
-  readout.addEventListener('click', onReadout);
-
   const buttons = VIEW_KEYS.map(view => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -123,31 +108,6 @@ export function createViewportChrome({ networks, onView, onRetry, onReticleSelec
       fitChrome();
     },
 
-    /**
-     * Turn the crosshair on for touch. It replaces hover rather than adding a
-     * second way to select: a finger has no hover, and a Destrieux sulcal
-     * band is narrower than the finger that would have to land on it.
-     */
-    setReticle(enabled) {
-      reticleEnabled = enabled;
-      reticle.hidden = !enabled;
-      readout.hidden = !enabled;
-      if (!enabled) reticleRegion = null;
-    },
-
-    /** What the crosshair is over now. Called on every camera change. */
-    showReticleRegion(region, label) {
-      if (!reticleEnabled) return;
-      reticleRegion = region;
-      const copy = t(currentLang, 'viewport');
-      readoutName.textContent = label ?? copy.reticleEmpty;
-      readoutAction.textContent = region ? copy.reticleAction : '';
-      readout.dataset.empty = String(!region);
-      readout.disabled = !region;
-      readout.setAttribute('aria-label',
-        region ? `${copy.reticleAria}: ${label}` : copy.reticleEmpty);
-    },
-
     update(state) {
       currentLang = state.lang;
       const i18nViewport = t(state.lang, 'viewport');
@@ -162,10 +122,6 @@ export function createViewportChrome({ networks, onView, onRetry, onReticleSelec
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       if (!ready) bar.hidden = true;
-      if (reticleEnabled) {
-        reticle.hidden = !ready;
-        readout.hidden = !ready;
-      }
 
       if (lastCameraArgs) {
         const labels = edgeLabels(lastCameraArgs.camera, currentLang);
@@ -212,24 +168,8 @@ export function createViewportChrome({ networks, onView, onRetry, onReticleSelec
       fitChrome();
     },
 
-    showHover(label, position) {
-      if (!label || !position) {
-        hover.hidden = true;
-        return;
-      }
-      hover.hidden = false;
-      hover.textContent = label;
-      const bounds = hover.parentElement.getBoundingClientRect();
-      hover.style.left =
-        `${Math.min(position.x + 14, bounds.width - hover.offsetWidth - 8)}px`;
-      hover.style.top =
-        `${Math.min(position.y + 14, bounds.height - hover.offsetHeight - 8)}px`;
-    },
-
     dispose() {
       retry.removeEventListener('click', onRetry);
-      readout.removeEventListener('click', onReadout);
-      readout.replaceChildren();
       views.replaceChildren();
       legend?.replaceChildren();
     },
