@@ -1,6 +1,6 @@
 # NeuroAtlas model
 
-A source-faithful, selectable brain model with GPU-rendered labelled tissue cuts and an optional MRI reference. The anatomy is one person's: FreeSurfer's published `bert` reconstruction at full native resolution, not an averaged template. Atlas boundaries divide existing triangles without moving their anatomical surface.
+A source-faithful, selectable brain model with GPU-rendered labelled tissue cuts with registered MRI variation and an optional MRI reference. The anatomy is one person's: FreeSurfer's published `bert` reconstruction at full native resolution, not an averaged template. Atlas boundaries divide existing triangles without moving their anatomical surface.
 
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
@@ -117,7 +117,7 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. The brain opens in neutral gray with matte tissue shading and source-derived fold relief. Enable **Atlas colours** in Display to show the region palette; selection and isolation work in either appearance. Reset restores the neutral view. The **Anatomical cuts** controls are in the right panel. **Open linked MRI slices** displays the three source-MRI sections. The model remains interactive when clipped. The MRI dialog shows the full reference volume independently of surface visibility.
+Open the URL printed by Vite. The brain opens in warm tissue colours with soft specular highlights, MRI-derived variation and source-derived fold relief. Enable **Atlas colours** in Display to show the region palette; selection and isolation work in either appearance. Reset restores the neutral view. The **Anatomical cuts** controls are in the right panel. **Open linked MRI slices** displays the three source-MRI sections. The model remains interactive when clipped. The MRI dialog shows the full reference volume independently of surface visibility.
 
 ## Model assets
 
@@ -126,6 +126,38 @@ Open the URL printed by Vite. The brain opens in neutral gray with matte tissue 
 `tissue-labels.json` and `tissues-{destrieux,hcp-mmp,nextbrain}.volume` provide compact categorical 3D grids for cut faces. WebGL 2 integer textures preserve discrete label IDs. The active atlas loads on first use; subsequent movement updates the plane transform and clipping equation, while the volume and palette remain on the GPU. Each atlas needs 32 MiB for its GPU label texture, plus the CPU copy used for picking. Switching atlases caches the second texture.
 
 Destrieux cuts decode the original published `aparc.a2009s+aseg.mgz` volume without changing any voxel label. HCP cut labels are **derived**: each cortical voxel in the native gray ribbon receives its nearest pial/white vertex's HCP label in the same hemisphere. Cortical voxels outside that ribbon remain unlabelled; white matter and deep tissues retain their original labels. This follows the nearest-cortical-vertex principle documented by [FreeSurfer's aparc-to-aseg mapping](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_aparc2aseg), but is not a native HCP volumetric atlas or a reproduction of that command's complete algorithm.
+
+### Functional networks
+
+Every cortical vertex carries the Yeo resting-state network it falls in, as a
+`_NETWORK` attribute beside `_SULC` and `_T1`, and every cortical region in
+`manifest.json` reports the share of its own source vertices each network holds.
+Networks cut across gyri and across areal boundaries, so this is a layer under
+both atlases rather than a third atlas: Destrieux keeps naming folds, HCP-MMP
+keeps naming areas, and each reports what it is made of.
+
+The source is [Schaefer2018](https://doi.org/10.1093/cercor/bhx179), whose
+parcels are already matched to [Yeo's seven
+networks](https://doi.org/10.1152/jn.00338.2011) and which is published on full
+`fsaverage` — so it travels to a subject through the same registered spheres
+HCP-MMP already does, with no extra machinery. The layer is optional: a checkout
+without the annotation builds every other asset.
+
+*Surface colour* in the viewer paints the cortex with the published Yeo palette,
+which `manifest.json` carries and the build checks the annotation still agrees
+with. Colour is applied per vertex rather than per region, so a network boundary
+crossing the middle of a gyrus is drawn where it falls; the index itself is never
+interpolated, because a triangle spanning Visual and Default would otherwise
+sweep through five networks it does not touch. Cortex in no network — the medial
+wall — keeps its tissue colour, and so does a cut face: a cut is sampled from a
+label volume, and this layer has no volumetric counterpart.
+
+A network share says which networks a region's surface falls in, not what the
+region does. The networks are a group average of 1000 subjects; on an individual
+reconstruction they are projected onto that person's folds and are not their
+measured networks. Shares count source vertices, so they follow vertex density
+rather than surface area, and shares below 5% are dropped in the interface as
+registration spill. `manifest.json` states each of these beside the data.
 
 ### NextBrain
 
@@ -161,7 +193,7 @@ every cortical parcel `ctx-rh-` on both sides, an artefact of the reused
 FreeSurfer label block; the hemisphere field is authoritative, and the fragment
 is dropped from display names while `source_published_name` retains the original.
 
-`volumes.json`, `mri.volume` and `aseg.volume` provide native MRI and segmentation arrays for the separate MRI reference views. These optional assets are not loaded for 3D cuts. The `.volume` files contain gzip payloads; their opaque extension prevents static servers from mistaking file compression for HTTP content encoding. Both compressed and decoded payloads are checksummed in the browser. Loading errors are surfaced.
+`volumes.json`, `mri.volume` and `aseg.volume` provide native MRI and segmentation arrays for the separate MRI reference views. The native MRI supplies brightness variation for 3D cuts. The MRI reference views remain optional. The `.volume` files contain gzip payloads; their opaque extension prevents static servers from mistaking file compression for HTTP content encoding. The MRI is loaded once into a shared 16 MiB R8 GPU texture when a cut is first requested; opening the separate MRI reference also loads its segmentation. Both compressed and decoded payloads are checksummed in the browser. Loading errors are surfaced.
 
 The exported glTF frame is in **meters**: X right, Y superior, Z posterior. The conversion from FreeSurfer surface RAS millimeters is `(R, A, S) → (R, S, −A) / 1000`. Model vertices and internal structures are never independently recentered. Slice positions are in **surface RAS millimeters**, not scanner RAS or MNI coordinates.
 
@@ -202,11 +234,11 @@ Use `sections.pick()` for cut views: it accounts for discarded surfaces and samp
 
 ## Fidelity and validation
 
-The surface model preserves every source vertex and triangle across both hemispheres before region-boundary partitioning — 266,922 and 533,836 for the published `bert` build, 327,684 and 655,360 for `fsaverage`. Internal structure shading uses segmentation-gradient normals; it does not smooth or displace their geometry. Clipping changes rendered visibility, not mesh coordinates, indices or atlas boundaries.
+The surface model preserves every source vertex and triangle across both hemispheres before region-boundary partitioning — 266,922 and 533,836 for the published `bert` build, 327,684 and 655,360 for `fsaverage`. Cortical shading carries three continuous fields, interpolated across atlas partitions: source sulcal depth, dimensionless pial concavity, and T1 sampled at the midpoint of corresponding pial/white vertices. Concavity is calculated on each intact hemisphere and averaged only as a shading field. T1 brightness and tissue colours are illustrative, not measured optical properties; no vessels or unresolved anatomy are synthesized. Internal structure shading uses segmentation-gradient normals; it does not smooth or displace their geometry. Clipping changes rendered visibility, not mesh coordinates, indices or atlas boundaries.
 
-MRI intensities are interpolated trilinearly. Segmentation labels use nearest-neighbour sampling, so intermediate label IDs are never invented. The categorical 3D cut also uses nearest-neighbour sampling; tissue boundaries remain faithful to the 1 mm grid. No MRI intensity image is painted onto the cut. L/R and anatomical directions are explicitly marked. The 2D coronal and axial views use neurological orientation (patient left on screen left); 3D labels follow the actual camera direction.
+MRI intensities are interpolated trilinearly. Segmentation labels use nearest-neighbour sampling, so intermediate label IDs are never invented. The categorical 3D cut also uses nearest-neighbour sampling; tissue boundaries remain faithful to the 1 mm grid. In tissue-colour mode, registered, trilinearly sampled T1 intensity modulates cut brightness without changing tissue membership or label IDs. The cut uses the same physical material and lighting as the surface. Atlas-colour mode disables T1 modulation. L/R and anatomical directions are explicitly marked. The 2D coronal and axial views use neurological orientation (patient left on screen left); 3D labels follow the actual camera direction.
 
-**Limits** (as published, with `anatomy: bert`): this is one published individual's anatomy — exact for that person, nobody else's, and not a clinically validated model. The MRI and segmentation have a 1 mm source grid. Fractional slice positions and 512-pixel renderings do not increase source anatomical resolution. Being a single scan rather than an average, the MRI carries that acquisition's own noise and partial-volume effects instead of a template's smoothness. Fine cerebellar folia and tiny nuclei are not resolved by the internal segmentation. The detailed cortical surface and the native voxel segmentation do not coincide exactly; small edge discrepancies and voxel steps remain visible. Smoothing categorical boundaries would imply unsupported spatial precision. Cortical GLB regions remain surface patches; their cut labels are supplied by the separate labelled volume. HCP-MMP1.0 uses the published Mills fsaverage projection, resampled again here through registered spheres: two registrations away from native HCP space. Mixed-label triangle boundaries are a documented visualization convention. Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; 34 of the 333 solid structures do, `validation.json` counts the edges, and the volume each surface encloses stays definite. The cut renderer does not alter surface topology.
+**Limits** (as published, with `anatomy: bert`): this is one published individual's anatomy — exact for that person, nobody else's, and not a clinically validated model. The MRI and segmentation have a 1 mm source grid. White/gray boundaries on cuts remain native categorical voxel boundaries, including visible steps; shading does not claim finer anatomical resolution. Fractional slice positions and 512-pixel renderings do not increase source anatomical resolution. Being a single scan rather than an average, the MRI carries that acquisition's own noise and partial-volume effects instead of a template's smoothness. Fine cerebellar folia and tiny nuclei are not resolved by the internal segmentation. The detailed cortical surface and the native voxel segmentation do not coincide exactly; small edge discrepancies and voxel steps remain visible. Smoothing categorical boundaries would imply unsupported spatial precision. Cortical GLB regions remain surface patches; their cut labels are supplied by the separate labelled volume. HCP-MMP1.0 uses the published Mills fsaverage projection, resampled again here through registered spheres: two registrations away from native HCP space. Mixed-label triangle boundaries are a documented visualization convention. Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; 34 of the 333 solid structures do, `validation.json` counts the edges, and the volume each surface encloses stays definite. The cut renderer does not alter surface topology.
 
 ```sh
 uv sync --locked
@@ -233,7 +265,11 @@ The full terms are included in [FreeSurferSoftwareLicense](public/models/license
 - [FreeSurfer coordinate systems](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)
 - [Destrieux et al., 2010](https://doi.org/10.1016/j.neuroimage.2010.06.010)
 - [Glasser et al., 2016, HCP-MMP1.0](https://doi.org/10.1038/nature18933)
+- [Yeo et al., 2011, cortical networks](https://doi.org/10.1152/jn.00338.2011)
+- [Schaefer et al., 2018, local-global parcellation](https://doi.org/10.1093/cercor/bhx179) — MIT, via [ThomasYeoLab/CBIG](https://github.com/ThomasYeoLab/CBIG)
 - [NiBabel FreeSurfer readers](https://nipy.org/nibabel/reference/nibabel.freesurfer.html)
 - [Three.js material clipping](https://threejs.org/docs/#Material.clippingPlanes)
+- [Trimesh sparse Laplacian operator](https://trimesh.org/trimesh.smoothing.html#trimesh.smoothing.laplacian_calculation)
+- [SciPy trilinear coordinate sampling](https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.map_coordinates.html)
 
 GPU volume sampling uses [Three.js Data3DTexture](https://threejs.org/docs/#Data3DTexture). The renderer requires WebGL 2; there is no geometry-worker fallback.

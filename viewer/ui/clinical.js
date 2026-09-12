@@ -11,8 +11,12 @@ function deficitButton(deficit, lang) {
   const button = element('button', null, 'clinical-deficit');
   button.type = 'button';
   button.dataset.deficit = deficit.id;
-  button.append(element('span', deficit.name[lang]),
+  const text = element('span', null, 'clinical-deficit-text');
+  text.append(element('span', deficit.name[lang]),
     element('span', deficit.domain[lang], 'clinical-note'));
+  const chevron = element('span', '\u203a', 'clinical-deficit-chevron');
+  chevron.setAttribute('aria-hidden', 'true');
+  button.append(text, chevron);
   return button;
 }
 

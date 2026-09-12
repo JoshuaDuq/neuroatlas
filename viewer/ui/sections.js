@@ -67,6 +67,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const mprSubtitle = document.getElementById('mpr-subtitle');
   const mriWidthText = document.getElementById('mri-window-width-text');
   const mriCenterText = document.getElementById('mri-window-center-text');
+  const mriWidthValue = document.getElementById('mri-window-width-value');
+  const mriCenterValue = document.getElementById('mri-window-center-value');
   const mprOverlayText = document.getElementById('mpr-overlay-text');
   const mprNote = document.getElementById('mpr-note');
   const listeners = [];
@@ -331,6 +333,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
     if (!dialog.open || !sections.volumes) return;
     width.value = sections.display.windowWidth; center.value = sections.display.windowCenter;
+    if (mriWidthValue) mriWidthValue.textContent = Math.round(sections.display.windowWidth);
+    if (mriCenterValue) mriCenterValue.textContent = Math.round(sections.display.windowCenter);
     const sample = sections.sample(state.crosshair);
     const displayName = sampleDisplayName(sample);
     readout.textContent = mprI18n.readout(

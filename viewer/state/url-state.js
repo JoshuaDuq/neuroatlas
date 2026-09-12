@@ -14,7 +14,7 @@ const DEFAULTS = {
   hemisphere: 'both',
   cortexVisible: true,
   cortexOpacity: 1,
-  atlasColors: false,
+  surfaceColor: 'tissue',
   view: 'oblique',
   selectedRegion: null,
   isolatedRegion: null,
@@ -22,6 +22,18 @@ const DEFAULTS = {
 };
 
 const HEMISPHERES = ['both', 'left', 'right'];
+const SURFACE_COLORS = ['tissue', 'atlas', 'network'];
+
+/**
+ * `colors` was a flag before the surface could be coloured three ways. Links
+ * carrying the old one still mean what they meant, so they are read rather
+ * than dropped; nothing writes them any more.
+ */
+const surfaceColor = value => {
+  if (value === '1') return 'atlas';
+  if (value === '0') return 'tissue';
+  return SURFACE_COLORS.includes(value) ? value : undefined;
+};
 
 const flag = value => (value === '1' ? true : value === '0' ? false : undefined);
 
@@ -51,7 +63,7 @@ const FIELDS = [
     read: value => (HEMISPHERES.includes(value) ? value : undefined),
   },
   { key: 'cortexVisible', param: 'cortex', read: flag, write: value => (value ? '1' : '0') },
-  { key: 'atlasColors', param: 'colors', read: flag, write: value => (value ? '1' : '0') },
+  { key: 'surfaceColor', param: 'colors', read: surfaceColor },
   {
     key: 'cortexOpacity',
     param: 'opacity',

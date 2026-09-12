@@ -1,4 +1,5 @@
 import { DESTRIEUX_LABELS } from './destrieux-labels.js';
+import { dominantNetwork, networkName } from './networks.js';
 import { DESTRIEUX_LABELS_FR } from './destrieux-labels.fr.js';
 import { NEXTBRAIN_LABELS_FR } from './nextbrain-labels.fr.js';
 import { STRUCTURE_LABELS } from './structure-groups.js';
@@ -32,6 +33,11 @@ function alphabeticalBucket(code) {
  * being given invented expansions. NextBrain follows the same rule: its French
  * table is filled in as terms are verified, and every name it does not cover
  * falls back to the published English one.
+ *
+ * HCP-MMP's 360 codes group by the network they mostly fall in. Alphabetical
+ * buckets ordered them without telling a reader anything, and the network is
+ * measured on this surface rather than asserted. Destrieux keeps its lobes:
+ * those name where a fold is, which is what that atlas is for.
  */
 export function labelOf(region, lang = 'en') {
   const isFr = lang === 'fr';
@@ -59,7 +65,13 @@ export function labelOf(region, lang = 'en') {
 
   if (region.atlas === 'hcp-mmp') {
     const code = hcpCode(region.source_name);
-    return { name: code, code, group: alphabeticalBucket(code), aliases: [] };
+    const network = dominantNetwork(region);
+    return {
+      name: code,
+      code,
+      group: network ? networkName(network, lang) : alphabeticalBucket(code),
+      aliases: [],
+    };
   }
 
   const table = isFr ? DESTRIEUX_LABELS_FR : DESTRIEUX_LABELS;

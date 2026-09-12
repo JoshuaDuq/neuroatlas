@@ -1,25 +1,32 @@
 import {
   Data3DTexture,
   DataTexture,
-  DoubleSide,
   FloatType,
-  GLSL3,
   Group,
+  LinearFilter,
   Matrix4,
   Mesh,
   NearestFilter,
   PlaneGeometry,
+  RedFormat,
   RedIntegerFormat,
   RGBAFormat,
-  ShaderMaterial,
+  UnsignedByteType,
   UnsignedShortType,
   Vector3,
 } from 'three';
 import { rasToWorld, worldToRas } from '../slices/coordinates.js';
 import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
-import { createPalette, labelVisible } from './palette.js';
-import { vertexShader, fragmentShader } from './shader.js';
+import { createPalette, labelVisible, usesAtlasColors } from './palette.js';
+import { createCutMaterial } from './shader.js';
+
+function worldToVoxelMatrix(volume) {
+  const worldToSource = new Matrix4().set(
+    1000, 0, 0, 0, 0, 0, -1000, 0, 0, 1000, 0, 0, 0, 0, 0, 1,
+  );
+  return new Matrix4().fromArray(volume.inverse).multiply(worldToSource);
+}
 
 /** One persistent GPU plane reads categorical tissue IDs from the native 3D grid. */
 export class TissueSections {
@@ -35,6 +42,8 @@ export class TissueSections {
     this.current = null;
     this.disposed = false;
     this.frame = null;
+    this.anatomy = null;
+    this.anatomyLoading = null;
   }
 
   async loadMetadata() {
@@ -52,10 +61,39 @@ export class TissueSections {
     return this.metadataLoading;
   }
 
+  async loadAnatomy() {
+    if (this.anatomy) return;
+    if (this.anatomyLoading) return this.anatomyLoading;
+    this.anatomyLoading = (async () => {
+      const url = new URL('volumes.json', this.baseUrl);
+      const response = await fetchPublished(url);
+      if (!response.ok) throw new Error(`MRI metadata request failed: HTTP ${response.status}`);
+      const metadata = await response.json();
+      if (metadata.schema_version !== 1) throw new Error('Unsupported MRI schema.');
+      const volume = await loadVolume(metadata.mri, url);
+      if (this.disposed) throw new Error('Tissue sections disposed during MRI loading.');
+      this.anatomy = this.createAnatomy(volume);
+    })().finally(() => { this.anatomyLoading = null; });
+    return this.anatomyLoading;
+  }
+
+  createAnatomy(volume) {
+    if (!(volume.data instanceof Uint8Array)) throw new Error('Expected native uint8 MRI.');
+    const texture = new Data3DTexture(volume.data, ...volume.shape);
+    texture.format = RedFormat;
+    texture.type = UnsignedByteType;
+    texture.internalFormat = 'R8';
+    texture.minFilter = LinearFilter;
+    texture.magFilter = LinearFilter;
+    texture.unpackAlignment = 1;
+    texture.needsUpdate = true;
+    return { texture, volume, worldToVoxel: worldToVoxelMatrix(volume) };
+  }
+
   /** Load one named label volume. The caller owns which atlas the cut samples. */
   async load(atlas) {
     if (this.disposed) throw new Error('Tissue sections disposed.');
-    await this.loadMetadata();
+    await Promise.all([this.loadMetadata(), this.loadAnatomy()]);
     if (this.layers.has(atlas)) return;
     if (this.pending.has(atlas)) return this.pending.get(atlas);
     const metadata = this.metadata.atlases[atlas];
@@ -72,6 +110,7 @@ export class TissueSections {
   }
 
   createLayer(metadata, volume) {
+    if (!this.anatomy) throw new Error('MRI must load before creating tissue sections.');
     const texture = new Data3DTexture(volume.data, ...volume.shape);
     texture.format = RedIntegerFormat;
     texture.type = UnsignedShortType;
@@ -88,28 +127,24 @@ export class TissueSections {
       FloatType,
     );
     palette.needsUpdate = true;
-    const worldToRas = new Matrix4().set(1000, 0, 0, 0, 0, 0, -1000, 0, 0, 1000, 0, 0, 0, 0, 0, 1);
-    const worldToVoxel = new Matrix4().fromArray(volume.inverse).multiply(worldToRas);
-    const material = new ShaderMaterial({
-      glslVersion: GLSL3,
-      vertexShader,
-      fragmentShader,
-      side: DoubleSide,
-      uniforms: {
-        labelVolume: { value: texture },
-        labelPalette: { value: palette },
-        worldToVoxel: { value: worldToVoxel },
-        volumeShape: { value: new Vector3(...volume.shape) },
-      },
-      polygonOffset: true,
-      polygonOffsetFactor: -1,
-      polygonOffsetUnits: -1,
-    });
+    const { intensity, tissue } = this.model.manifest.appearance;
+    const uniforms = {
+      labelVolume: { value: texture },
+      labelPalette: { value: palette },
+      worldToVoxel: { value: worldToVoxelMatrix(volume) },
+      volumeShape: { value: new Vector3(...volume.shape) },
+      mriVolume: { value: this.anatomy.texture },
+      worldToMri: { value: this.anatomy.worldToVoxel },
+      mriShape: { value: new Vector3(...this.anatomy.volume.shape) },
+      t1Range: { value: [intensity.low, intensity.high] },
+      tissueVariation: { value: intensity.cut_strength },
+    };
+    const material = createCutMaterial(uniforms, tissue);
     const mesh = new Mesh(new PlaneGeometry(0.5, 0.5), material);
     mesh.name = 'Native labelled tissue cut';
     mesh.visible = false;
     this.group.add(mesh);
-    return { metadata, volume, texture, palette, mesh, paletteKey: null };
+    return { metadata, volume, texture, palette, mesh, uniforms, paletteKey: null };
   }
 
   update(frame, atlas) {
@@ -124,8 +159,10 @@ export class TissueSections {
     layer.mesh.quaternion.setFromRotationMatrix(new Matrix4().makeBasis(u, v, normal));
     layer.mesh.position.copy(rasToWorld(frame.center.toArray()));
     const state = this.model.state;
+    layer.uniforms.tissueVariation.value = usesAtlasColors(state)
+      ? 0 : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
-      state.atlasColors,
+      state.surfaceColor,
       state.hemisphere,
       state.cortexVisible,
       state.cortexOpacity,
@@ -161,6 +198,8 @@ export class TissueSections {
       layer.mesh.geometry.dispose();
       layer.mesh.material.dispose();
     }
+    this.anatomy?.texture.dispose();
+    this.anatomy = null;
     this.layers.clear();
     this.group.removeFromParent();
   }

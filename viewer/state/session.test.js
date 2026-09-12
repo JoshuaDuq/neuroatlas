@@ -5,7 +5,7 @@ import { createSession, shortcutsAllowed } from './session.js';
 const VIEWS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 const modelState = {
   atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
-  atlasColors: false, selectedRegion: null, isolatedRegion: null,
+  surfaceColor: 'tissue', selectedRegion: null, isolatedRegion: null,
 };
 
 const session = () => createSession({ views: VIEWS });

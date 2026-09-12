@@ -61,7 +61,7 @@ test('GPU cut plane preserves fractional coordinates and reverse-side clipping',
   sections.dispose();
 });
 
-test('cut picking uses categorical source region IDs without loading MRI', async () => {
+test('cut picking uses categorical source region IDs without opening the MRI reference', async () => {
   const { sections, tissues, region } = fixture();
   const mesh = new Mesh(
     new PlaneGeometry(0.02, 0.02),

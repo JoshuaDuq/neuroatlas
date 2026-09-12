@@ -4,6 +4,17 @@ import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 import { visibilityOf } from '../catalog/visibility.js';
 import { fetchPublished, REVALIDATE_HEADER } from './published-assets.js';
 import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
+import { attachNetworkColors } from '../render/network-colors.js';
+
+/**
+ * What the cortical surface is coloured by.
+ *
+ * `tissue` is the modelled tissue class, `atlas` the parcellation's own
+ * published colours, and `network` the Yeo palette carried per vertex. They
+ * are one setting rather than several toggles because the surface can only
+ * show one of them at a time.
+ */
+export const SURFACE_COLORS = ['tissue', 'atlas', 'network'];
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -97,7 +108,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
-    this.atlasColors = false;
+    this.surfaceColor = 'tissue';
     this.sourceColors = new WeakMap();
     this.selectedId = null;
     this.isolatedId = null;
@@ -139,6 +150,9 @@ export class BrainAtlas extends EventTarget {
           // Indirect indexing preserves the scientific source triangle order.
           mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
           mesh.raycast = acceleratedRaycast;
+          if (this.manifest.networks) {
+            attachNetworkColors(mesh.geometry, this.manifest.networks);
+          }
           mesh.material = createAnatomicalMaterial(mesh, region, this.manifest.appearance);
           this.sourceColors.set(mesh, mesh.material.color.clone());
           meshes.push(mesh);
@@ -212,7 +226,7 @@ export class BrainAtlas extends EventTarget {
       hemisphere: this.hemisphere,
       cortexVisible: this.cortexVisible,
       cortexOpacity: this.cortexOpacity,
-      atlasColors: this.atlasColors,
+      surfaceColor: this.surfaceColor,
       isolatedRegion: this.isolatedId,
     };
   }
@@ -240,12 +254,24 @@ export class BrainAtlas extends EventTarget {
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
         mesh.visible = visibilityOf(region, settings).visible;
         const material = mesh.material;
+        if (cortex) {
+          // Only tissue colour carries the T1 brightness it was tuned against;
+          // under a published palette that modulation would distort the datum.
+          material.userData.tissueVariation.value = this.surfaceColor === 'tissue'
+            ? this.manifest.appearance.intensity.surface_strength : 0;
+          if (material.userData.networkMix) {
+            material.userData.networkMix.value =
+              this.surfaceColor === 'network' ? 1 : 0;
+          }
+        }
         if (material.clippingPlanes !== this.clippingPlanes) {
           material.clippingPlanes = this.clippingPlanes;
           material.needsUpdate = true;
         }
+        // Under network colour this shows only where no network reaches: the
+        // medial wall keeps the tissue it always had.
         material.color.copy(this.sourceColors.get(mesh));
-        if (!this.atlasColors || region.kind === 'non-region') {
+        if (this.surfaceColor !== 'atlas' || region.kind === 'non-region') {
           material.color.set(tissueColor(region, this.manifest.appearance.tissue));
         }
         // Selection is drawn by the outline pass. Tinting the material would
@@ -346,9 +372,14 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
-  setAtlasColors(enabled) {
-    if (typeof enabled !== 'boolean') throw new TypeError('Atlas colors must be boolean.');
-    this.atlasColors = enabled;
+  setSurfaceColor(mode) {
+    if (!SURFACE_COLORS.includes(mode)) {
+      throw new TypeError(`Unknown surface colour: ${mode}`);
+    }
+    if (mode === 'network' && !this.manifest.networks) {
+      throw new Error('This model carries no network layer.');
+    }
+    this.surfaceColor = mode;
     this.update();
   }
 
@@ -369,7 +400,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
-    this.atlasColors = false;
+    this.surfaceColor = 'tissue';
     this.isolatedId = null;
     this.select(null);
   }

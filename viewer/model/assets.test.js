@@ -24,6 +24,13 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
     assert.equal(corticalMeshes.length, entry.region_count);
     for (const mesh of atlas.visibleMeshes) {
       assert.ok(mesh.geometry.getAttribute('normal'));
+      if (['cortex', 'non-region'].includes(mesh.userData.kind)) {
+        for (const name of ['_sulc', '_concavity', '_t1']) {
+          const field = mesh.geometry.getAttribute(name);
+          assert.equal(field.count, mesh.geometry.attributes.position.count);
+          assert.ok(field.array.every(Number.isFinite));
+        }
+      }
       assert.deepEqual(mesh.position.toArray(), [0, 0, 0]);
       assert.deepEqual(mesh.scale.toArray(), [1, 1, 1]);
     }

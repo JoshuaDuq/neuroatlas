@@ -41,8 +41,63 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #opacity { width: 100%; margin: var(--space-1) 0 0; accent-color: var(--accent); }
 #opacity-value { float: right; color: var(--text-tertiary); }
 
+/*
+ * Rank, so six outlined boxes stop reading as six equal choices. One filled
+ * action in the interface — opening the linked MRI. --accent on
+ * --surface-base is white on deep blue in light, dark on pale blue in dark.
+ * Reset view discards the reader's settings, so it stays recessive.
+ */
+.button-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface-base);
+  font-weight: 500;
+}
+.button-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.button-quiet {
+  background: none;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+.button-quiet:hover:not(:disabled) {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+
 .actions { display: flex; gap: var(--space-2); margin-top: var(--space-4); }
 .actions button { flex: 1; font-size: var(--text-ui); }
+
+/* The panel switch. Shared with the phone sheet: one tab bar, two shells. */
+.rail-tabs { display: flex; flex: none; }
+.rail-tabs button {
+  flex: 1;
+  min-width: 0;
+  height: var(--control-height);
+  padding: 0 var(--space-1);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: var(--text-ui);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rail-tabs button:hover { color: var(--text-primary); }
+.rail-tabs button[aria-selected="true"] {
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+#inspector-tabs { border-bottom: 1px solid var(--border-subtle); }
+
+/* The tab already names the panel; the heading under it is the same word. */
+#inspector-tabs:not([hidden]) ~ .rail-body { padding-top: var(--space-3); }
+#inspector-tabs:not([hidden]) ~ .rail-body > .tab-group > .section-label:first-child {
+  display: none;
+}
 #isolate[aria-pressed="true"] {
   background: var(--accent-wash);
   border-color: var(--accent);
@@ -69,6 +124,44 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 #selected-facts dt { color: var(--text-tertiary); }
 #selected-facts dd { overflow-wrap: anywhere; }
+
+/* Functional networks ----------------------------------------------------- */
+/*
+ * A measured composition, so the bar is a reading and not an accent: chrome
+ * stays achromatic and the share is set in the same mono the other
+ * measurements use.
+ */
+.network-list, .network-legend { margin: 0; padding: 0; list-style: none; }
+.network-legend { margin-top: var(--space-3); display: grid; gap: var(--space-1); }
+.network-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-ui);
+  color: var(--text-secondary);
+}
+/* The one place colour is the datum, so the swatch is the published colour. */
+.network-swatch { width: 10px; height: 10px; flex: none; border-radius: 1px; }
+.network-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px 36px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  font-size: var(--text-ui);
+}
+.network-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.network-bar { height: 4px; background: var(--border-subtle); }
+.network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
+/* Coloured to match the model wherever the model is showing these colours. */
+.network-row[data-colored="true"] .network-bar > span { background: var(--network-color); }
+.network-share { text-align: right; color: var(--text-secondary); }
+.network-note {
+  margin-top: var(--space-3);
+  font-size: var(--text-micro);
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
 
 /* Navigator -------------------------------------------------------------- */
 .row {
@@ -149,16 +242,20 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   pointer-events: none;
 }
 
+/*
+ * L/R/A/P/S/I are the picture's own markings, so they are type on the stage
+ * rather than plates over it. The halo does what the plate was really for:
+ * the geometry runs from near-black crevices to near-white speculars, and no
+ * flat colour is legible against all of it.
+ */
 .orientation > span {
   position: absolute;
   z-index: 2;
   font-size: var(--text-micro);
-  font-weight: 500;
-  color: var(--text-secondary);
-  padding: 2px 5px;
-  background: color-mix(in srgb, var(--surface-base) 90%, transparent);
-  backdrop-filter: blur(6px);
-  border-radius: var(--radius-control);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--overlay-ink);
+  text-shadow: 0 0 2px var(--overlay-halo), 0 1px 3px var(--overlay-halo);
 }
 .orientation [data-edge="top"] { top: var(--space-3); left: 50%; transform: translateX(-50%); }
 .orientation [data-edge="bottom"] { bottom: var(--space-3); left: 50%; transform: translateX(-50%); }
@@ -185,31 +282,58 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .views button:last-child { border-radius: 0 var(--radius-control) var(--radius-control) 0; }
 .views button[aria-pressed="true"] { background: var(--accent-wash); border-color: var(--accent); color: var(--accent); z-index: 1; }
 
+/* A measurement on the picture, marked the same way the orientation is. */
 .scale-bar {
+  position: absolute;
+  z-index: 2;
   right: calc(var(--vis-right) + var(--space-4));
   bottom: calc(var(--vis-bottom) + var(--space-4));
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  color: var(--text-secondary);
+  pointer-events: none;
+  font-size: var(--text-micro);
+  color: var(--overlay-ink);
+  text-shadow: 0 0 2px var(--overlay-halo), 0 1px 3px var(--overlay-halo);
 }
 .scale-bar-rule {
   height: 6px;
-  border: 1px solid var(--text-secondary);
+  border: 1px solid var(--overlay-ink);
   border-top: 0;
+  filter: drop-shadow(0 0 1px var(--overlay-halo));
 }
 
 .hover-label { max-width: 280px; color: var(--text-primary); }
 
 /*
- * Narrow viewports cannot fit the view presets and the scale bar on one line,
- * so the bar moves up rather than being overlapped or dropped: it is a
- * measurement, not decoration.
+ * When the presets and the bar cannot share the bottom line the bar moves up
+ * rather than being overlapped: it is a measurement, not decoration. The flag
+ * comes from viewport-chrome.js, which measures the stage. The media query
+ * this replaces asked about the window, so two 320px rails left a 1100px
+ * window a 460px stage and the bar was painted over Top and Bottom.
  */
-@media (max-width: 700px) {
-  .scale-bar { top: calc(var(--vis-top) + var(--space-3)); bottom: auto; }
-  .views { right: calc(var(--vis-right) + var(--space-4)); overflow-x: auto; scrollbar-width: none; }
-  .views::-webkit-scrollbar { display: none; }
+#viewport[data-chrome="tight"] .scale-bar {
+  top: calc(var(--vis-top) + var(--space-3));
+  bottom: auto;
+}
+#viewport[data-chrome="tight"] .views {
+  right: calc(var(--vis-right) + var(--space-4));
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#viewport[data-chrome="tight"] .views::-webkit-scrollbar { display: none; }
+
+/*
+ * On a narrow stage the bar takes the top line and the presets take the whole
+ * bottom one, so the centred markers move out of both lanes rather than being
+ * drawn through. An orientation marker is the last thing allowed to be
+ * ambiguous.
+ */
+#viewport[data-chrome="tight"] .orientation [data-edge="top"] {
+  top: calc(var(--space-3) + 24px);
+}
+#viewport[data-chrome="tight"] .orientation [data-edge="bottom"] {
+  bottom: calc(var(--space-3) + 34px);
 }
 
 .stage {
@@ -222,18 +346,20 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   gap: var(--space-3);
   padding: var(--space-8);
   text-align: center;
-  background: var(--surface-canvas);
-  color: var(--text-secondary);
+  /* The stage covers the canvas, so it is lit like the canvas, not the rails. */
+  background: var(--scene-background);
+  color: var(--overlay-ink-muted);
   font-size: var(--text-ui);
 }
 .stage { display: none; }
 #app[data-status="loading"] .stage,
 #app[data-status="error"] .stage,
 #app[data-status="context-lost"] .stage { display: grid; }
-#app[data-status="error"] .stage { color: var(--danger); }
+#app[data-status="error"] .stage { color: var(--overlay-danger); }
+.stage button { color: var(--text-primary); }
 
-.progress { width: 220px; height: 3px; background: var(--border-subtle); }
-.progress span { display: block; height: 100%; background: var(--accent); }
+.progress { width: 220px; height: 3px; background: rgb(255 255 255 / 0.16); }
+.progress span { display: block; height: 100%; background: var(--overlay-ink); }
 
 /* Shortcut sheet ---------------------------------------------------------- */
 #shortcuts {
@@ -248,12 +374,27 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #shortcuts h2 { font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
 #shortcuts-list {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-2) var(--space-4);
   margin: var(--space-4) 0 var(--space-5);
   font-size: var(--text-ui);
 }
-#shortcuts-list dt { color: var(--text-tertiary); }
+#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
+/* A key is a thing you press, so it is drawn as one rather than quoted. */
+kbd {
+  min-width: 22px;
+  padding: 3px 5px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  line-height: 1.1;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-bottom-color: var(--border-control);
+  border-radius: var(--radius-control);
+}
+.key-range { color: var(--text-tertiary); font-size: var(--text-micro); }
 #shortcuts-close { width: 100%; }
 #shortcuts-open { width: var(--control-height); padding: 0; }
 
@@ -285,6 +426,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #mpr-grid output { display: block; font-size: var(--text-micro); }
 #mpr-readout { font-size: var(--text-ui); }
 .mpr-display { display: flex; align-items: center; gap: var(--space-5); margin: var(--space-4) 0; }
+.mpr-display output { float: right; color: var(--text-tertiary); }
 .mpr-display input[type="range"] { display: block; accent-color: var(--accent); }
 @media (max-width: 700px) {
   #mpr-grid { grid-template-columns: 1fr; }

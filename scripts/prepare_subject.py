@@ -11,11 +11,12 @@ download it from the anatomy's `source_url` into `data/cache/`, and nothing is
 unpacked until those bytes match the recorded SHA256. An anatomy whose files are
 committed declares no archive and skips this.
 
-`project_hcp_from` means HCP-MMP1.0 is not published in this brain's space and
-must be resampled onto it, through the registered spheres FreeSurfer produced
-for both. No physical vertex moves and no label is interpolated: each target
-vertex adopts the label of the source vertex nearest to it on the sphere. An
-anatomy that HCP-MMP1.0 is already published on declares no source and skips it.
+`project_hcp_from` names the brain whose published fsaverage annotations are not
+in this brain's space and must be resampled onto it, through the registered
+spheres FreeSurfer produced for both. No physical vertex moves and no label is
+interpolated: each target vertex adopts the label of the source vertex nearest to
+it on the sphere. An anatomy those annotations are already published on declares
+no source and skips this.
 """
 
 import argparse
@@ -29,12 +30,13 @@ from nibabel.freesurfer.io import read_annot, read_geometry, write_annot
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from brain_model import networks
 from brain_model.registration import resample_surface_labels
 from brain_model.sources import ROOT, read_config, sha256, write_json
 
 CACHE = ROOT / "data/cache"
 PROCEDURE = (
-    "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg HCP transfer"
+    "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
 )
 CITATION = "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
 
@@ -59,6 +61,14 @@ SUBJECT_FILES = [
 
 # Deterministic, and enough of them to catch a wrong tree rather than a tie.
 VERIFY_SAMPLES = 512
+
+# Published annotations that live in the projection source's label directory
+# and travel to this brain the same way, each with the report it writes. The
+# network layer is optional, so a source tree without it projects the rest.
+PROJECTED_ANNOTATIONS = [
+    ("HCPMMP1", "hcp-registration.json"),
+    (networks.ANNOTATION, "network-registration.json"),
+]
 
 
 def record_source(provenance, path, **metadata):
@@ -100,8 +110,8 @@ def extract_subject(config, provenance):
             )
 
 
-def transfer_hcp(config, provenance):
-    """Resample the published HCP annotation onto this brain's own vertices.
+def transfer_annotation(config, provenance, annotation_name, report_name):
+    """Resample one published annotation onto this brain's own vertices.
 
     The written annotation is read back and compared, then a sample of its
     labels is re-derived from exhaustive distances rather than from the tree
@@ -113,22 +123,22 @@ def transfer_hcp(config, provenance):
     that projects from them.
     """
     anatomy = config["anatomy"]
-    if "project_hcp_from" not in anatomy:
-        print(f"{anatomy['id']}: HCP-MMP1.0 is published here, nothing to project")
-        return {}
     source = anatomy["hcp_source_directory"]
     target = config["source_directory"]
     reports = {}
     for hemisphere in ("lh", "rh"):
+        annotation = source / "label" / f"{hemisphere}.{annotation_name}.annot"
+        if not annotation.exists():
+            print(f"{anatomy['id']}: {annotation.name} is not present, skipping")
+            return {}
         source_path = source / "surf" / f"{hemisphere}.sphere.reg"
         target_path = target / "surf" / f"{hemisphere}.sphere.reg"
         source_sphere, _ = read_geometry(source_path)
         target_sphere, _ = read_geometry(target_path)
-        annotation = source / "label" / f"{hemisphere}.HCPMMP1.annot"
         labels, colors, names = read_annot(annotation)
         mapped = resample_surface_labels(source_sphere, target_sphere, labels)
         if set(mapped) != set(labels):
-            raise SystemExit(f"HCP label coverage changed in {hemisphere}")
+            raise SystemExit(f"{annotation_name} label coverage changed in {hemisphere}")
 
         destination = target / "label" / annotation.name
         write_annot(destination, mapped, colors, names, fill_ctab=False)
@@ -161,10 +171,22 @@ def transfer_hcp(config, provenance):
             procedure=PROCEDURE,
             citation=CITATION,
         )
-    report_path = target / "hcp-registration.json"
+    report_path = target / report_name
     write_json(report_path, reports)
     record_source(provenance, report_path, anatomy=anatomy["id"], procedure=PROCEDURE)
     return reports
+
+
+def transfer_annotations(config, provenance):
+    """Project every published annotation this brain does not already carry."""
+    anatomy = config["anatomy"]
+    if "project_hcp_from" not in anatomy:
+        print(f"{anatomy['id']}: published annotations are in this space already")
+        return {}
+    return {
+        name: transfer_annotation(config, provenance, name, report)
+        for name, report in PROJECTED_ANNOTATIONS
+    }
 
 
 def main():
@@ -177,7 +199,7 @@ def main():
     provenance_path = ROOT / "data/sources.json"
     provenance = json.loads(provenance_path.read_text())
     extract_subject(config, provenance)
-    reports = transfer_hcp(config, provenance)
+    reports = transfer_annotations(config, provenance)
     write_json(provenance_path, provenance)
     print(json.dumps(reports, indent=2))
 

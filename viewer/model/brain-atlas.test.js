@@ -38,8 +38,10 @@ function fixture() {
       const atlasId = file === 'structures.glb' ? 'aseg' : file[0];
       for (const [index, region] of regions.filter(region => region.atlas === atlasId).entries()) {
         const mesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshStandardMaterial({ side: DoubleSide }));
-        mesh.geometry.setAttribute('_sulc', new Float32BufferAttribute(
-          new Float32Array(mesh.geometry.attributes.position.count), 1));
+        for (const name of ['_sulc', '_concavity', '_t1']) {
+          mesh.geometry.setAttribute(name, new Float32BufferAttribute(
+            new Float32Array(mesh.geometry.attributes.position.count), 1));
+        }
         mesh.position.x = index * 0.03;
         mesh.userData = { ...region, region_id: region.id };
         scene.add(mesh);
@@ -85,7 +87,7 @@ test('selection events carry source metadata; medial wall cannot become a region
 test('neutral anatomy preserves picking and isolation through atlas color changes', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
-  assert.equal(atlas.state.atlasColors, false);
+  assert.equal(atlas.state.surfaceColor, 'tissue');
   const mesh = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-right');
   const positions = mesh.geometry.attributes.position.array.slice();
   const indices = mesh.geometry.index.array.slice();
@@ -94,9 +96,11 @@ test('neutral anatomy preserves picking and isolation through atlas color change
   assert.equal(mesh.material.color.getHexString(), appearance.tissue.cortex.slice(1));
   atlas.select(atlas.pick(ray).id);
   atlas.isolate();
-  for (const enabled of [true, false, true]) {
-    atlas.setAtlasColors(enabled);
-    assert.equal(mesh.material.color.getHex(), enabled ? 0xffffff : neutral);
+  for (const mode of ['atlas', 'tissue', 'atlas']) {
+    atlas.setSurfaceColor(mode);
+    assert.equal(mesh.material.userData.tissueVariation.value,
+      mode === 'tissue' ? appearance.intensity.surface_strength : 0);
+    assert.equal(mesh.material.color.getHex(), mode === 'atlas' ? 0xffffff : neutral);
     assert.equal(atlas.pick(ray).id, 'a-right');
     assert.equal(atlas.state.selectedRegion.id, 'a-right');
     assert.deepEqual(atlas.visibleMeshes, [mesh]);
@@ -104,7 +108,7 @@ test('neutral anatomy preserves picking and isolation through atlas color change
     assert.deepEqual(mesh.geometry.index.array, indices);
   }
   atlas.reset();
-  assert.equal(atlas.state.atlasColors, false);
+  assert.equal(atlas.state.surfaceColor, 'tissue');
   assert.equal(mesh.material.color.getHex(), neutral);
   atlas.dispose();
 });
@@ -119,7 +123,7 @@ test('rejects cortex missing source morphometry instead of silently losing relie
     });
     return result;
   };
-  await assert.rejects(atlas.initialize('a'), /sulcal-depth/);
+  await assert.rejects(atlas.initialize('a'), /_sulc/);
   atlas.dispose();
 });
 
@@ -178,7 +182,7 @@ test('selection leaves the material untouched, so atlas colour stays the datum',
   // by the outline pass alone.
   const { atlas } = fixture();
   await atlas.initialize('a');
-  atlas.setAtlasColors(true);
+  atlas.setSurfaceColor('atlas');
   const mesh = atlas.visibleMeshes.find(m => m.userData.region_id === 'a-left');
   const before = {
     colour: mesh.material.color.getHex(),
@@ -198,7 +202,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
-    atlasColors: false, isolatedRegion: null,
+    surfaceColor: 'tissue', isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
   assert.equal(atlas.state.visibleMeshCount, 4);

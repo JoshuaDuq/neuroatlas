@@ -5,15 +5,16 @@ import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
-from . import nextbrain
+from . import networks, nextbrain
 from .export import add_region, compact_region, write_scene
 from .geometry import (
     extract_structure,
     partition_edges,
     partition_surface,
     partition_vertex_field,
+    partition_vertex_labels,
 )
-from .shading import structure_normals
+from .shading import cortical_concavity, ribbon_intensity, structure_normals
 from .sources import read_color_table, read_config, verify_sources, write_json
 from .tissue_labels import export_tissue_labels
 from .volumes import export_volumes
@@ -52,18 +53,50 @@ def read_native_surface(source, prefix):
     return vertices, faces
 
 
+def read_networks(config, prefix, vertex_count):
+    """This hemisphere's network index per source vertex, or None if absent.
+
+    Read per hemisphere rather than cached across atlases: both atlases
+    partition the same surface, so each gets the same field and neither has to
+    know the other exists.
+    """
+    if not networks.is_available(config):
+        return None
+    path = networks.annotation_path(config["source_directory"], prefix)
+    labels, colors, names = read_annot(path)
+    if len(labels) != vertex_count:
+        raise ValueError(f"{path.name} does not describe this surface's vertices")
+    networks.verify_palette(colors, names)
+    return networks.network_indices(labels, names)
+
+
 def build_cortex(config, atlas):
     scene = trimesh.Scene()
     regions = []
+    source = config["source_directory"]
+    mri = nib.load(source / "mri/orig.mgz")
     for prefix, hemisphere in HEMISPHERES.items():
-        source = config["source_directory"]
         vertices, faces = read_native_surface(source, prefix)
+        white, white_faces = read_geometry(source / "surf" / f"{prefix}.white")
+        if not np.array_equal(faces, white_faces):
+            raise ValueError(f"{prefix}: pial/white topology must correspond")
         labels, colors, names = read_annot(
             source / "label" / f"{prefix}.{atlas['annotation']}.annot"
         )
         partition = partition_surface(vertices, faces, labels)
         sulcal_depth = partition_vertex_field(
             faces, labels, read_morph_data(source / "surf" / f"{prefix}.sulc")
+        )
+        concavity = partition_vertex_field(faces, labels, cortical_concavity(
+            trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+        ))
+        intensity = partition_vertex_field(faces, labels, ribbon_intensity(
+            np.asarray(mri.dataobj), mri.header.get_vox2ras_tkr(), vertices, white
+        ))
+        network_ids = read_networks(config, prefix, len(vertices))
+        network_field = (
+            None if network_ids is None
+            else partition_vertex_labels(faces, labels, network_ids)
         )
         for label in np.unique(labels):
             name = "Unknown" if label == -1 else names[label].decode()
@@ -77,6 +110,13 @@ def build_cortex(config, atlas):
             mesh = add_region(scene, *geometry, region, color)
             indices = np.unique(partition.faces[partition.labels == label])
             mesh.vertex_attributes["_SULC"] = sulcal_depth[indices].astype(np.float32)
+            mesh.vertex_attributes["_CONCAVITY"] = concavity[indices].astype(np.float32)
+            mesh.vertex_attributes["_T1"] = intensity[indices].astype(np.float32)
+            if network_field is not None:
+                mesh.vertex_attributes["_NETWORK"] = (
+                    network_field[indices].astype(np.float32)
+                )
+                region["networks"] = networks.composition(network_ids[labels == label])
             region.update(
                 vertex_count=len(mesh.vertices),
                 triangle_count=len(mesh.faces),
@@ -99,6 +139,8 @@ def build_cortex(config, atlas):
             "source": "FreeSurfer lh.sulc / rh.sulc",
             "interpolation": "Linear on barycentric atlas partitions",
             "meaning": "Sulcal-depth morphometry; positive values mark sulci",
+            "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+            "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo",
         },
     }, regions
 
@@ -295,6 +337,31 @@ def anatomy_limitations(config):
     return limitations
 
 
+def network_limitations(config):
+    """What a network share does and does not say, stated where it is published.
+
+    Network membership is group data. On an individual it is where a
+    group-average network falls on this person's folds, which is not a
+    measurement of their networks; on a template no projection happens and the
+    claim is only the weaker one about the template itself.
+    """
+    if not networks.is_available(config):
+        return []
+    limitations = [
+        "Networks are resting-state functional connectivity from 1000 subjects: a region's share says which networks its surface falls in, not what the region does.",
+        "Network shares are computed over a region's own source vertices, so they follow vertex density rather than surface area.",
+    ]
+    if config["anatomy"]["individual"]:
+        limitations.append(
+            "Networks are a group average projected onto one person's folds through registered spheres; they are not this individual's measured networks."
+        )
+    else:
+        limitations.append(
+            "Networks are published in this template's space and are not resampled, but they remain a group average of other brains."
+        )
+    return limitations
+
+
 def main():
     config = read_config()
     provenance = verify_sources(config)
@@ -340,6 +407,7 @@ def main():
             ],
         },
         "atlases": atlas_metadata,
+        "networks": networks.metadata() if networks.is_available(config) else None,
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
@@ -355,6 +423,7 @@ def main():
             "Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; validation counts those edges, and the volume each surface encloses stays definite.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             "Cortical regions are surface patches, not closed anatomical solids.",
+            *network_limitations(config),
         ],
         "provenance": provenance,
     }

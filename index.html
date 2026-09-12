@@ -51,7 +51,7 @@
         </div>
         <button id="reticle-readout" class="chip reticle-readout" type="button" hidden></button>
         <div id="views" class="views" role="group" aria-label="Anatomical view"></div>
-        <div id="scale-bar" class="chip scale-bar" aria-hidden="true">
+        <div id="scale-bar" class="scale-bar" aria-hidden="true">
           <span class="scale-bar-rule"></span>
           <span class="measure"></span>
         </div>
@@ -80,7 +80,7 @@
             <span id="sheet-selection-side" class="sheet-selection-side measure"></span>
             <span class="sheet-selection-chevron" aria-hidden="true">›</span>
           </button>
-          <div id="sheet-tabs" class="sheet-tabs" role="tablist" aria-label="Panels"></div>
+          <div id="sheet-tabs" class="rail-tabs sheet-tabs" role="tablist" aria-label="Panels"></div>
           <p id="sheet-disclaimer" class="sheet-disclaimer"></p>
         </div>
 
@@ -114,6 +114,17 @@
         </aside>
 
         <aside id="inspector" aria-label="Selection and display">
+          <!--
+            Desktop only; on a phone the sheet carries its own selection strip
+            and its own tabs, and both of these stay hidden. The readout keeps
+            its height whether or not anything is selected, so choosing a
+            region never shifts the controls under the cursor.
+          -->
+          <p id="inspector-selection" class="inspector-selection" hidden>
+            <span id="inspector-selection-name" class="inspector-selection-name"></span>
+            <span id="inspector-selection-side" class="inspector-selection-side measure"></span>
+          </p>
+          <div id="inspector-tabs" class="rail-tabs" role="tablist" aria-label="Panels" hidden></div>
           <div class="rail-body">
             <div class="tab-group" data-tab="region">
               <p id="label-selected" class="section-label">Selected</p>
@@ -132,6 +143,18 @@
                   <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
                 </div>
               </div>
+
+              <!--
+                Measured on this surface, so it sits with the other measured
+                facts rather than with the clinical associations below it.
+              -->
+              <section id="region-networks" hidden>
+                <p id="label-networks" class="section-label">Functional networks</p>
+                <div class="panel-body">
+                  <ul id="network-list" class="network-list"></ul>
+                  <p id="network-note" class="network-note"></p>
+                </div>
+              </section>
 
               <section id="clinical-region" hidden></section>
               <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
@@ -167,7 +190,7 @@
                   <button id="cut-midline" type="button">Midsagittal</button>
                   <button id="cut-face-view" type="button" disabled>Face cut</button>
                 </div>
-                <button id="mpr-open" type="button">Open linked MRI slices</button>
+                <button id="mpr-open" class="button-primary" type="button">Open linked MRI slices</button>
                 <p id="cut-status" role="status">Full brain · no cut</p>
               </div>
             </div>
@@ -175,10 +198,9 @@
             <div class="tab-group" data-tab="display">
               <p id="label-display" class="section-label">Display</p>
               <div class="panel-body">
-                <label id="display-hemisphere-label" for="hemisphere">Hemisphere</label>
                 <label id="detail-label" for="detail">Internal anatomy</label>
                 <select id="detail"></select>
-                <label id="hemisphere-label-el" for="hemisphere">Hemisphere</label>
+                <label id="display-hemisphere-label" for="hemisphere">Hemisphere</label>
                 <select id="hemisphere">
                   <option value="both">Both</option>
                   <option value="left">Left</option>
@@ -194,11 +216,21 @@
                 </label>
                 <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
 
-                <label class="check">
-                  <input id="atlas-colors" type="checkbox" /> <span id="atlas-colors-text">Atlas colours</span>
-                </label>
+                <!--
+                  One control, not three toggles: the surface can only be
+                  coloured one way at a time. The network option is removed
+                  when the model carries no network layer.
+                -->
+                <label id="surface-color-label" for="surface-color">Surface colour</label>
+                <select id="surface-color">
+                  <option value="tissue">Tissue</option>
+                  <option value="atlas">Atlas colours</option>
+                  <option value="network">Functional networks</option>
+                </select>
+                <!-- Colour on the model is unreadable without its key. -->
+                <ul id="network-legend" class="network-legend" hidden></ul>
 
-                <button id="reset" type="button">Reset view</button>
+                <button id="reset" class="button-quiet" type="button">Reset view</button>
               </div>
             </div>
           </div>
@@ -227,8 +259,10 @@
       <p id="mpr-readout" class="measure" role="status"></p>
       <div class="mpr-display">
         <label for="mri-window-width"><span id="mri-window-width-text">Contrast window</span>
+          <output id="mri-window-width-value" class="measure"></output>
           <input id="mri-window-width" type="range" min="10" max="255" value="180" /></label>
         <label for="mri-window-center"><span id="mri-window-center-text">Window center</span>
+          <output id="mri-window-center-value" class="measure"></output>
           <input id="mri-window-center" type="range" min="0" max="255" value="90" /></label>
         <label class="check"><input id="mpr-overlay" type="checkbox" /> <span id="mpr-overlay-text">Segmentation overlay</span></label>
       </div>

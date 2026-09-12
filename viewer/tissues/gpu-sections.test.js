@@ -46,12 +46,13 @@ function fixture() {
       hemisphere: 'both',
       cortexVisible: true,
       cortexOpacity: 1,
-      atlasColors: true,
+      surfaceColor: 'atlas',
       isolatedRegion: null,
     },
     regions: new Map([[region.id, region]]),
   };
   const sections = new TissueSections(model, new URL('https://example.invalid/'));
+  sections.anatomy = sections.createAnatomy(new Volume(metadata, new Uint8Array(8).fill(100)));
   const layer = sections.createLayer(metadata, volume);
   sections.layers.set('destrieux', layer);
   sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
@@ -79,7 +80,7 @@ test('moving every cut orientation reuses geometry, volume and palette without u
 
 test('GPU world-to-voxel transform agrees with CPU sampling in every voxel', () => {
   const { sections, layer } = fixture();
-  const matrix = layer.mesh.material.uniforms.worldToVoxel.value;
+  const matrix = layer.uniforms.worldToVoxel.value;
   for (let r = -0.25; r < 1.5; r += 0.25) {
     for (let a = -1.25; a < 0.5; a += 0.25) {
       for (let s = -0.25; s < 1.5; s += 0.25) {
@@ -103,4 +104,36 @@ test('cut picking returns the visible voxel label and respects hemisphere and is
   model.state.isolatedRegion = 'another-region';
   assert.equal(sections.intersect(ray), null);
   sections.dispose();
+});
+
+test('MRI texture uses its own affine and interpolation without changing labels', () => {
+  const { sections, model, layer } = fixture();
+  const mri = new Volume({ shape: [2, 2, 2], order: 'F',
+    voxel_to_surface_ras_mm: [[2, 0, 0, -1], [0, 3, 0, 2],
+      [0, 0, 4, -3], [0, 0, 0, 1]],
+  }, new Uint8Array([0, 20, 40, 60, 80, 100, 120, 140]));
+  const before = layer.volume.data.slice();
+  const anatomy = sections.createAnatomy(mri);
+  sections.anatomy.texture.dispose();
+  sections.anatomy = anatomy;
+  const next = sections.createLayer(layer.metadata, layer.volume);
+  const shader = { uniforms: {}, vertexShader: '#include <begin_vertex>',
+    fragmentShader: '#include <color_fragment>' };
+  next.mesh.material.onBeforeCompile(shader);
+  assert.equal(shader.uniforms.mriVolume.value, anatomy.texture);
+  const actual = rasToWorld([1, 5, 1]).applyMatrix4(shader.uniforms.worldToMri.value);
+  actual.toArray().forEach(value => assert.ok(Math.abs(value - 1) < 1e-12));
+  assert.equal(next.mesh.material.isMeshPhysicalMaterial, true);
+  assert.deepEqual(layer.volume.data, before);
+  sections.layers.set('second', next);
+  model.state.surfaceColor = 'atlas';
+  sections.update(centeredFrame('oblique', [0, 0, 0], { tilt: 30, azimuth: 45 }), 'second');
+  assert.equal(shader.uniforms.tissueVariation.value, 0);
+  model.state.surfaceColor = 'tissue';
+  sections.update(centeredFrame('axial', [0, 0, 0]), 'second');
+  assert.ok(shader.uniforms.tissueVariation.value > 0);
+  let disposed = 0;
+  anatomy.texture.addEventListener('dispose', () => disposed++);
+  sections.dispose();
+  assert.equal(disposed, 1);
 });

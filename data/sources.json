@@ -34,164 +34,6 @@
       "archive_member": "fsaverage/surf/rh.sphere.reg"
     },
     {
-      "path": "data/bert/hcp-registration.json",
-      "sha256": "5da282c9e3e833d49d935ed8c6b96e88825ee3d3a153ac1a2f0f5e0c2aaab7b2",
-      "anatomy": "bert",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg HCP transfer"
-    },
-    {
-      "path": "data/bert/label/lh.HCPMMP1.annot",
-      "sha256": "8ae6a9c497ffab5af29ede3443b6c8c2f15b6afc797d84d39a0143659b472e70",
-      "anatomy": "bert",
-      "derived_from": [
-        "data/fsaverage/label/lh.HCPMMP1.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/bert/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg HCP transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/bert/label/lh.aparc.a2009s.annot",
-      "sha256": "09c1ca584c68934c9fc1272ddd1d5198b7fa8ff315569445c63b460504e8a13c",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/label/lh.aparc.a2009s.annot"
-    },
-    {
-      "path": "data/bert/label/rh.HCPMMP1.annot",
-      "sha256": "5ed681dff01676fcdbdabd9140da83c6043d0f20f0960fa4ef72270447f382d6",
-      "anatomy": "bert",
-      "derived_from": [
-        "data/fsaverage/label/rh.HCPMMP1.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/bert/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg HCP transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/bert/label/rh.aparc.a2009s.annot",
-      "sha256": "17bddf30ae264299e2e2ff81536755bd7d88a6da41e9901001e26a03e7fd54da",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/label/rh.aparc.a2009s.annot"
-    },
-    {
-      "path": "data/bert/mri/aparc.a2009s+aseg.mgz",
-      "sha256": "4684f83dbcea1001afa60fa36641240c3df68a519d9c356fc32d80f0e81b50ea",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/aparc.a2009s+aseg.mgz"
-    },
-    {
-      "path": "data/bert/mri/aseg.mgz",
-      "sha256": "9f5ac7681752483e8e1a6d9b4653d59c1037bdb0e6685b9fd48a8b02781ada0d",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/aseg.mgz"
-    },
-    {
-      "path": "data/bert/mri/brain.mgz",
-      "sha256": "180f6d846446e2d4b6e3e89efc6826a0146d2ca15949df7a328e98c76839a310",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/brain.mgz"
-    },
-    {
-      "path": "data/bert/mri/orig.mgz",
-      "sha256": "80c30d6cf9a2356bfeb2c59023572005fbae34224126121df6e6526de1bcebdf",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/orig.mgz"
-    },
-    {
-      "path": "data/bert/mri/ribbon.mgz",
-      "sha256": "50fe080bac8fdeb2116e9ea11bac135ae82c62d8475193bbb12b8fd75ed2ee2c",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/ribbon.mgz"
-    },
-    {
-      "path": "data/bert/scripts/build-stamp.txt",
-      "sha256": "029f07b4c0da720c62ea17ef12c4901b4995e1658202f5d6c3c4b5d706d09e60",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/scripts/build-stamp.txt"
-    },
-    {
-      "path": "data/bert/surf/lh.pial",
-      "sha256": "d2adfa3691f72437e1c66ef06a46736154edf9227ef528730e8bec389e3c36d9",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.pial"
-    },
-    {
-      "path": "data/bert/surf/lh.sphere.reg",
-      "sha256": "c3756f9af1b37bcecc45dc9294d0ae4390b2f7ca2dd0e750ba08fb89ba332458",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.sphere.reg"
-    },
-    {
-      "path": "data/bert/surf/lh.sulc",
-      "sha256": "8fd3e3b3d7e72fd4c50db6907d99dcd9459bd51568ff7620f4fa8963b377682a",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.sulc"
-    },
-    {
-      "path": "data/bert/surf/lh.white",
-      "sha256": "07226a5b2ec8c576769c1ff8156e3539ca9fe64fa2c057b3f58bebd2e7fbc473",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.white"
-    },
-    {
-      "path": "data/bert/surf/rh.pial",
-      "sha256": "dde11169c863d1683aa4e3ec1ec4d91d5ab379be67ec2a939f0908d95d44d6c0",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.pial"
-    },
-    {
-      "path": "data/bert/surf/rh.sphere.reg",
-      "sha256": "80e7256f1e56a90a20451a47efda79e397ef285e625b3ee1987872e900dbc542",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.sphere.reg"
-    },
-    {
-      "path": "data/bert/surf/rh.sulc",
-      "sha256": "7350c3870b02f283bbe04309a7abc0d9695fc94204bb877702ebd9c95987f411",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.sulc"
-    },
-    {
-      "path": "data/bert/surf/rh.white",
-      "sha256": "d052d9fcacd44ea317db1359e962ca1a01e1e9a7cd3b308a5f56b9ebea7dd5f7",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.white"
-    },
-    {
       "path": "data/nextbrain-bert/nextbrain-bert.mgz",
       "sha256": "2aaaa9c84680f8df232536ee791285ea85192169226d238e2d87796d38b4a706",
       "anatomy": "bert",
@@ -322,6 +164,210 @@
       "derived_from": "https://github.com/compneurobilbao/nextbrain-mni-atlas",
       "procedure": "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 to fsaverage orig.mgz, then genericLabel resampling of the label volume",
       "citation": "https://doi.org/10.1038/s41586-025-09708-2"
+    },
+    {
+      "path": "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "351848da486c2b178ef825640c076fcbcf054095bed0c91d5854d2c593e5c1ee",
+      "url": "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/Parcellations/FreeSurfer5.3/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "citation": "https://doi.org/10.1093/cercor/bhx179",
+      "license": "MIT (ThomasYeoLab/CBIG)",
+      "optional": true
+    },
+    {
+      "path": "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "595444aecc3b59a8a6838b2e5c7f2052e88e25b1c5f833c5a6bdb984e3fa978f",
+      "url": "https://raw.githubusercontent.com/ThomasYeoLab/CBIG/master/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal/Parcellations/FreeSurfer5.3/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "citation": "https://doi.org/10.1093/cercor/bhx179",
+      "license": "MIT (ThomasYeoLab/CBIG)",
+      "optional": true
+    },
+    {
+      "path": "data/bert/mri/orig.mgz",
+      "sha256": "80c30d6cf9a2356bfeb2c59023572005fbae34224126121df6e6526de1bcebdf",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/mri/orig.mgz"
+    },
+    {
+      "path": "data/bert/mri/aseg.mgz",
+      "sha256": "9f5ac7681752483e8e1a6d9b4653d59c1037bdb0e6685b9fd48a8b02781ada0d",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/mri/aseg.mgz"
+    },
+    {
+      "path": "data/bert/mri/aparc.a2009s+aseg.mgz",
+      "sha256": "4684f83dbcea1001afa60fa36641240c3df68a519d9c356fc32d80f0e81b50ea",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/mri/aparc.a2009s+aseg.mgz"
+    },
+    {
+      "path": "data/bert/mri/ribbon.mgz",
+      "sha256": "50fe080bac8fdeb2116e9ea11bac135ae82c62d8475193bbb12b8fd75ed2ee2c",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/mri/ribbon.mgz"
+    },
+    {
+      "path": "data/bert/mri/brain.mgz",
+      "sha256": "180f6d846446e2d4b6e3e89efc6826a0146d2ca15949df7a328e98c76839a310",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/mri/brain.mgz"
+    },
+    {
+      "path": "data/bert/scripts/build-stamp.txt",
+      "sha256": "029f07b4c0da720c62ea17ef12c4901b4995e1658202f5d6c3c4b5d706d09e60",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/scripts/build-stamp.txt"
+    },
+    {
+      "path": "data/bert/surf/lh.pial",
+      "sha256": "d2adfa3691f72437e1c66ef06a46736154edf9227ef528730e8bec389e3c36d9",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/lh.pial"
+    },
+    {
+      "path": "data/bert/surf/lh.white",
+      "sha256": "07226a5b2ec8c576769c1ff8156e3539ca9fe64fa2c057b3f58bebd2e7fbc473",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/lh.white"
+    },
+    {
+      "path": "data/bert/surf/lh.sulc",
+      "sha256": "8fd3e3b3d7e72fd4c50db6907d99dcd9459bd51568ff7620f4fa8963b377682a",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/lh.sulc"
+    },
+    {
+      "path": "data/bert/surf/lh.sphere.reg",
+      "sha256": "c3756f9af1b37bcecc45dc9294d0ae4390b2f7ca2dd0e750ba08fb89ba332458",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/lh.sphere.reg"
+    },
+    {
+      "path": "data/bert/label/lh.aparc.a2009s.annot",
+      "sha256": "09c1ca584c68934c9fc1272ddd1d5198b7fa8ff315569445c63b460504e8a13c",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/label/lh.aparc.a2009s.annot"
+    },
+    {
+      "path": "data/bert/surf/rh.pial",
+      "sha256": "dde11169c863d1683aa4e3ec1ec4d91d5ab379be67ec2a939f0908d95d44d6c0",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/rh.pial"
+    },
+    {
+      "path": "data/bert/surf/rh.white",
+      "sha256": "d052d9fcacd44ea317db1359e962ca1a01e1e9a7cd3b308a5f56b9ebea7dd5f7",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/rh.white"
+    },
+    {
+      "path": "data/bert/surf/rh.sulc",
+      "sha256": "7350c3870b02f283bbe04309a7abc0d9695fc94204bb877702ebd9c95987f411",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/rh.sulc"
+    },
+    {
+      "path": "data/bert/surf/rh.sphere.reg",
+      "sha256": "80e7256f1e56a90a20451a47efda79e397ef285e625b3ee1987872e900dbc542",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/surf/rh.sphere.reg"
+    },
+    {
+      "path": "data/bert/label/rh.aparc.a2009s.annot",
+      "sha256": "17bddf30ae264299e2e2ff81536755bd7d88a6da41e9901001e26a03e7fd54da",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/label/rh.aparc.a2009s.annot"
+    },
+    {
+      "path": "data/bert/label/lh.HCPMMP1.annot",
+      "sha256": "8ae6a9c497ffab5af29ede3443b6c8c2f15b6afc797d84d39a0143659b472e70",
+      "anatomy": "bert",
+      "derived_from": [
+        "data/fsaverage/label/lh.HCPMMP1.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/bert/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/bert/label/rh.HCPMMP1.annot",
+      "sha256": "5ed681dff01676fcdbdabd9140da83c6043d0f20f0960fa4ef72270447f382d6",
+      "anatomy": "bert",
+      "derived_from": [
+        "data/fsaverage/label/rh.HCPMMP1.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/bert/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/bert/hcp-registration.json",
+      "sha256": "5da282c9e3e833d49d935ed8c6b96e88825ee3d3a153ac1a2f0f5e0c2aaab7b2",
+      "anatomy": "bert",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/bert/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "c31c668b9bd494ce1b20d83cc131946be51e07c9ee0cdeddb415d0a34e8a3a77",
+      "anatomy": "bert",
+      "derived_from": [
+        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/bert/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/bert/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "93d157f8bf07f4c7e8871bf34dec707e88bd495e739f6659bc6691326cb83108",
+      "anatomy": "bert",
+      "derived_from": [
+        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/bert/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/bert/network-registration.json",
+      "sha256": "03349c9c8f2923afd789cbac5c21ce17795d9c91195e823f67fd01024d4dd646",
+      "anatomy": "bert",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
     }
   ]
 }

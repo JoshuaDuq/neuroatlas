@@ -62,6 +62,12 @@ export const TRANSLATIONS = {
       switchCutAtlas: 'Switch cut labels',
       rowHiddenAria: (name, side, reason) => `${name}, ${side}, hidden: ${reason}. Activate to reveal.`,
     },
+    networks: {
+      heading: 'Functional networks',
+      share: fraction => `${Math.round(fraction * 100)}%`,
+      note: 'Share of this region’s surface, from resting-state networks in 1000 subjects. Membership, not function.',
+      unavailable: 'No network data for this region.',
+    },
     inspector: {
       panelLabel: 'Selection and display',
       selectedHeading: 'Selected',
@@ -117,7 +123,12 @@ export const TRANSLATIONS = {
       internalAnatomy: 'Internal anatomy',
       showCortex: 'Show cortex',
       cortexOpacity: 'Cortex opacity',
-      atlasColors: 'Atlas colours',
+      surfaceColor: 'Surface colour',
+      surfaceColors: {
+        tissue: 'Tissue',
+        atlas: 'Atlas colours',
+        network: 'Functional networks',
+      },
       resetView: 'Reset view',
     },
     mpr: {
@@ -246,6 +257,12 @@ export const TRANSLATIONS = {
       switchCutAtlas: 'Changer les étiquettes de coupe',
       rowHiddenAria: (name, side, reason) => `${name}, ${side}, masqué : ${reason}. Activer pour afficher.`,
     },
+    networks: {
+      heading: 'Réseaux fonctionnels',
+      share: fraction => `${Math.round(fraction * 100)} %`,
+      note: 'Part de la surface de cette région, d’après les réseaux de repos de 1000 sujets. Appartenance, non fonction.',
+      unavailable: 'Aucune donnée de réseau pour cette région.',
+    },
     inspector: {
       panelLabel: 'Sélection et affichage',
       selectedHeading: 'Sélection',
@@ -301,7 +318,12 @@ export const TRANSLATIONS = {
       internalAnatomy: 'Anatomie interne',
       showCortex: 'Afficher le cortex',
       cortexOpacity: 'Opacité du cortex',
-      atlasColors: 'Couleurs de l’atlas',
+      surfaceColor: 'Couleur de surface',
+      surfaceColors: {
+        tissue: 'Tissu',
+        atlas: 'Couleurs de l’atlas',
+        network: 'Réseaux fonctionnels',
+      },
       resetView: 'Réinitialiser la vue',
     },
     mpr: {

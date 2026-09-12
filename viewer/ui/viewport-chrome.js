@@ -4,6 +4,9 @@ import { t } from '../i18n/translations.js';
 
 const VIEW_KEYS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 
+/** Both margins plus the least gap allowed between the presets and the bar. */
+const CHROME_GUTTERS_PX = 48;
+
 /**
  * Everything drawn over the canvas: anatomical orientation, the scale bar,
  * the view presets, the hover label, and the loading and error stage.
@@ -36,8 +39,21 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
   const retry = document.getElementById('stage-retry');
   let currentLang = 'en';
   let lastCameraArgs = null;
+  let lastRect = null;
   let reticleRegion = null;
   let reticleEnabled = false;
+
+  /*
+   * Do the presets and the scale bar still fit on one line? Asked of the
+   * rectangle the reader can see, not the window: two 320px rails leave a
+   * 1100px window a 460px stage, and the bar was painted over the presets
+   * there. Natural content widths, so applying the answer cannot change it.
+   */
+  function fitChrome() {
+    if (!lastRect?.width) return;
+    const needed = views.scrollWidth + (bar.hidden ? 0 : bar.scrollWidth) + CHROME_GUTTERS_PX;
+    host.dataset.chrome = needed > lastRect.width ? 'tight' : 'wide';
+  }
 
   const onReadout = () => {
     if (reticleRegion) onReticleSelect?.(reticleRegion.id);
@@ -66,12 +82,14 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
     setViewport(rect) {
       const { width, height } = host.getBoundingClientRect();
       if (!width || !height || !rect) return;
+      lastRect = rect;
       host.style.setProperty('--vis-top', `${Math.round(rect.y)}px`);
       host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
       host.style.setProperty('--vis-right', `${Math.round(width - rect.x - rect.width)}px`);
       host.style.setProperty('--vis-bottom', `${Math.round(height - rect.y - rect.height)}px`);
       host.style.setProperty('--vis-cx', `${Math.round(rect.x + rect.width / 2)}px`);
       host.style.setProperty('--vis-cy', `${Math.round(rect.y + rect.height / 2)}px`);
+      fitChrome();
     },
 
     /**
@@ -159,6 +177,7 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
       if (!measured) return;
       barRule.style.width = `${Math.round(measured.pixels)}px`;
       barText.textContent = `${measured.millimetres} mm`;
+      fitChrome();
     },
 
     showHover(label, position) {
