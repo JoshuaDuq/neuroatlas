@@ -21,7 +21,6 @@ import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
 import { createSheet } from './ui/sheet.js';
 import { createInspectorTabs } from './ui/inspector-tabs.js';
-import { isCoarse } from './render/device.js';
 import { qualityProfile } from './render/quality.js';
 import { t } from './i18n/translations.js';
 
@@ -61,9 +60,7 @@ export async function startApp() {
   const initialLang = wanted.lang ?? (savedLang === 'fr' ? 'fr' : 'en');
   const session = createSession({ views: Object.keys(VIEW_DIRECTIONS), lang: initialLang });
   // Declared before the scene: its resize observer can fire during the model
-  // download, which is long, and would otherwise hit a dead zone. The picker
-  // is declared here for the same reason: the sheet reports its insets while
-  // it is being constructed, and the crosshair reads the picker from there.
+  // download, which is long, and would otherwise hit a dead zone.
   let chrome = null;
   let picker = null;
   let refitViewport = null;
@@ -348,7 +345,6 @@ export async function startApp() {
     networks: model.manifest.networks,
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
-    onReticleSelect: select,
   });
 
   // Built before the sheet: the sheet decides on construction which shell owns
@@ -358,7 +354,7 @@ export async function startApp() {
   /*
    * The phone shell. It reports how much of the canvas it covers rather than
    * resizing it, and everything that must agree about where the viewport is —
-   * framing, the crosshair, the markers, the presets — reads that one
+   * framing, the markers, the presets — reads that one
    * rectangle back from the scene.
    */
   const sheet = createSheet({
@@ -428,19 +424,11 @@ export async function startApp() {
     }
   }
 
-  let hovered = null;
-
   function outline() {
     if (sections.active) { scene.setOutlined(); return; }
-    const ids = {
-      selected: model.state.selectedRegion?.id,
-      hovered: hovered?.id,
-    };
-    const meshFor = id => id && model.visibleMeshes.find(m => m.userData.region_id === id);
-    scene.setOutlined({
-      selected: [meshFor(ids.selected)].filter(Boolean),
-      hovered: [meshFor(ids.hovered)].filter(Boolean),
-    });
+    const id = model.state.selectedRegion?.id;
+    const mesh = id && model.visibleMeshes.find(m => m.userData.region_id === id);
+    scene.setOutlined({ selected: mesh ? [mesh] : [] });
   }
 
   let urlTimer = null;
@@ -457,31 +445,8 @@ export async function startApp() {
     domElement: scene.domElement,
     camera: scene.camera,
     model: () => sections,
-    onHover: (region, position) => {
-      hovered = region;
-      chrome.showHover(region ? catalog.get(region.id).label.name : null, position);
-      outline();
-    },
     onSelect: select,
   });
-
-  /*
-   * What the crosshair is over. Kept out of the state loop for the same
-   * reason hover is: it answers once per frame of an orbit, and a full
-   * re-render would rebuild every panel that often.
-   */
-  let reticleFrame = null;
-  function updateReticle() {
-    if (!chrome || !picker || reticleFrame !== null) return;
-    reticleFrame = requestAnimationFrame(() => {
-      reticleFrame = null;
-      if (!isCoarse()) return;
-      const rect = scene.visibleRect;
-      if (!rect.width || !rect.height) return;
-      const region = picker.pickAt(rect.x + rect.width / 2, rect.y + rect.height / 2);
-      chrome.showReticleRegion(region, region ? catalog.get(region.id)?.label.name : null);
-    });
-  }
 
   // Declared as a function so the scene's resize callback, wired above before
   // the chrome exists, can reach it.
@@ -491,7 +456,6 @@ export async function startApp() {
     if (fitted > 0) zoom = scene.distanceToTarget / fitted;
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
     chrome.setViewport(scene.visibleRect);
-    updateReticle();
   }
   scene.controls.addEventListener('change', onCameraChange);
 
@@ -563,8 +527,6 @@ export async function startApp() {
     }
   }
   session.setStatus('ready');
-  // A finger has no hover, so the crosshair carries identification instead.
-  chrome.setReticle(isCoarse());
   chrome.setViewport(scene.visibleRect);
   onCameraChange();
   render();
@@ -575,7 +537,6 @@ export async function startApp() {
       globalThis.removeEventListener('keydown', onKeyDown);
       scene.controls.removeEventListener('change', onCameraChange);
       clearTimeout(urlTimer);
-      if (reticleFrame !== null) cancelAnimationFrame(reticleFrame);
       sheet.dispose();
       inspectorTabs.dispose();
       sections.removeEventListener('change', render);
