@@ -77,10 +77,14 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   const composer = new EffectComposer(renderer, renderTarget);
   composer.addPass(new RenderPass(scene, camera));
 
-  const occlusion = new GTAOPass(scene, camera, 1, 1);
-  occlusion.updatePdMaterial({ depthPhi: 0.002, normalPhi: 8, radius: 4 });
-  occlusion.enabled = quality.occlusion;
-  composer.addPass(occlusion);
+  // Tablets and phones skip this pass entirely. A disabled GTAOPass still
+  // allocates full-resolution targets on resize, which is the memory that
+  // makes an iPad hitch even when the pass never draws.
+  const occlusion = quality.occlusion ? new GTAOPass(scene, camera, 1, 1) : null;
+  if (occlusion) {
+    occlusion.updatePdMaterial({ depthPhi: 0.002, normalPhi: 8, radius: 4 });
+    composer.addPass(occlusion);
+  }
 
   /*
    * Two passes make one two-tone outline. No single colour clears 3:1 against
@@ -116,11 +120,13 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     lighting = createAnatomicalLighting(renderer, camera, appearance.lighting);
     scene.environment = lighting.texture;
     scene.environmentIntensity = appearance.lighting.environment;
-    occlusion.updateGtaoMaterial({
-      ...appearance.occlusion,
-      samples: Math.min(appearance.occlusion.samples, quality.occlusionSamples),
-    });
-    occlusion.blendIntensity = appearance.occlusion.intensity;
+    if (occlusion) {
+      occlusion.updateGtaoMaterial({
+        ...appearance.occlusion,
+        samples: Math.min(appearance.occlusion.samples, quality.occlusionSamples),
+      });
+      occlusion.blendIntensity = appearance.occlusion.intensity;
+    }
     invalidate();
   }
 
@@ -167,7 +173,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
     renderer.setSize(width, height);
     composer.setSize(width, height);
-    if (quality.occlusion && quality.occlusionScale !== 1) {
+    if (occlusion && quality.occlusionScale !== 1) {
       occlusion.setSize(
         Math.max(1, Math.round(width * quality.occlusionScale)),
         Math.max(1, Math.round(height * quality.occlusionScale)),
@@ -241,14 +247,16 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     step(now);
     controls.update();
     const transparent = hasTransparency();
-    const wantAO = occlusionActive({
-      enabled: quality.occlusion,
-      transparent,
-      sections: hasSections(),
-    });
-    if (occlusion.enabled !== wantAO) {
-      occlusion.enabled = wantAO;
-      dirty = true;
+    if (occlusion) {
+      const wantAO = occlusionActive({
+        enabled: quality.occlusion,
+        transparent,
+        sections: hasSections(),
+      });
+      if (occlusion.enabled !== wantAO) {
+        occlusion.enabled = wantAO;
+        dirty = true;
+      }
     }
     renderer.sortObjects = transparent;
     if (!dirty && !transition) {

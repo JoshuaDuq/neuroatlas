@@ -13,6 +13,20 @@ test('a phone does not run ambient occlusion and caps pixel ratio at 1.5', () =>
   assert.equal(quality.prefetchLayers, false);
 });
 
+test('a tablet drops ambient occlusion and caps pixel ratio at 1.5', () => {
+  // An iPad is wider than the phone layout query, so it was taking the
+  // desktop path: full-resolution GTAO, 4x MSAA, and a 2× pixel ratio over
+  // a thousand CSS pixels. That is what made the orbit feel stuck.
+  const quality = qualityProfile({
+    phone: false, coarse: true, saveData: false, pixelRatio: 3,
+    deviceMemory: 8, hardwareConcurrency: 8,
+  });
+  assert.equal(quality.occlusion, false);
+  assert.equal(quality.pixelRatio, 1.5);
+  assert.equal(quality.msaaSamples, 2);
+  assert.equal(quality.prefetchLayers, false);
+});
+
 test('a desktop workstation keeps occlusion and caps pixel ratio at 2', () => {
   const quality = qualityProfile({
     phone: false, coarse: false, saveData: false, pixelRatio: 3,
