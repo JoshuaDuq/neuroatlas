@@ -540,12 +540,21 @@ def validate_cut_only_regions(config, regions):
     _, labels, _ = nextbrain.load(config)
     indices, counts = np.unique(labels, return_counts=True)
     present = dict(zip(indices.tolist(), counts.tolist()))
+    shares = nextbrain.cortical_network_compositions(config)
     for region_id, region in cut_only.items():
         count = present.get(region["source_label_id"])
         if count is None:
             raise ValueError(f"Cut-only region is not in the label volume: {region_id}")
         if region["voxel_count"] != count:
             raise ValueError(f"Cut-only region voxel count disagrees: {region_id}")
+        expected = shares.get(region_id)
+        if expected is not None:
+            if region.get("networks", []) != expected:
+                raise ValueError(
+                    f"Cut-only region network composition disagrees: {region_id}"
+                )
+        elif region.get("networks"):
+            raise ValueError(f"Non-cortical cut-only region has networks: {region_id}")
 
 
 def validate_manifest(config, manifest):

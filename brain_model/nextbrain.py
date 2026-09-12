@@ -139,6 +139,55 @@ def meshed_indices(labels, table, minimum):
     ]
 
 
+def cortical_network_compositions(config):
+    """Network shares for each NextBrain cortical ROI, from nearest surface vertex.
+
+    NextBrain's cortex is volumetric Desikan-Killiany parcels. Networks live on
+    the pial and white vertices. Each voxel takes the network of the nearest
+    vertex in the same hemisphere — the same rule as the HCP cut labels — and
+    the parcel reports the composition of those votes. Nuclei are not measured.
+    """
+    from nibabel.freesurfer.io import read_annot, read_geometry
+    from scipy.spatial import cKDTree
+
+    from . import networks as yeo
+
+    if not yeo.is_available(config):
+        return {}
+    image, labels, table = load(config)
+    affine = image.header.get_vox2ras_tkr()
+    source = config["source_directory"]
+    compositions = {}
+    for prefix, hemisphere in (("lh", "left"), ("rh", "right")):
+        ctx_ids = [
+            int(index)
+            for index in np.unique(labels)
+            if hemisphere_of(int(index)) == hemisphere
+            and "ctx-" in table[int(index)][0]
+        ]
+        if not ctx_ids:
+            continue
+        pial, _ = read_geometry(source / "surf" / f"{prefix}.pial")
+        white, _ = read_geometry(source / "surf" / f"{prefix}.white")
+        path = yeo.annotation_path(source, prefix)
+        annot_labels, colors, names = read_annot(path)
+        if len(annot_labels) != len(pial):
+            raise ValueError(f"{path.name} does not describe this surface's vertices")
+        yeo.verify_palette(colors, names)
+        network_ids = yeo.network_indices(annot_labels, names)
+        mask = np.isin(labels, ctx_ids)
+        coordinates = np.argwhere(mask)
+        points = nib.affines.apply_affine(affine, coordinates)
+        nearest = cKDTree(np.vstack([pial, white])).query(points)[1] % len(pial)
+        votes = network_ids[nearest]
+        voxel_labels = labels[tuple(coordinates.T)]
+        for index in ctx_ids:
+            compositions[region_id_of(index)] = yeo.composition(
+                votes[voxel_labels == index]
+            )
+    return compositions
+
+
 def build_regions(config, skip=()):
     """One selectable, mesh-less region per delineated ROI present in the warp.
 
@@ -152,6 +201,7 @@ def build_regions(config, skip=()):
     # float32 from the MGH header; the manifest is strict JSON with no NaN.
     voxel_volume = float(abs(np.linalg.det(image.header.get_vox2ras_tkr()[:3, :3])))
     indices, counts = np.unique(labels, return_counts=True)
+    shares = cortical_network_compositions(config)
     regions = []
     skipped = set(skip)
     for index, count in zip(indices.tolist(), counts.tolist()):
@@ -160,21 +210,23 @@ def build_regions(config, skip=()):
         published, _ = table[index]
         name = structure_name_of(published)
         hemisphere = hemisphere_of(index)
-        regions.append(
-            {
-                "id": region_id_of(index),
-                "label": f"{name.replace('_', ' ')} · {hemisphere}",
-                "source_name": name,
-                "source_published_name": published,
-                "atlas": ATLAS_ID,
-                "hemisphere": hemisphere,
-                "source_label_id": index,
-                "kind": "tissue-region",
-                "voxel_count": count,
-                "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
-                "segmentation_volume_mm3": count * voxel_volume,
-            }
-        )
+        region = {
+            "id": region_id_of(index),
+            "label": f"{name.replace('_', ' ')} · {hemisphere}",
+            "source_name": name,
+            "source_published_name": published,
+            "atlas": ATLAS_ID,
+            "hemisphere": hemisphere,
+            "source_label_id": index,
+            "kind": "tissue-region",
+            "voxel_count": count,
+            "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
+            "segmentation_volume_mm3": count * voxel_volume,
+        }
+        composition = shares.get(region["id"])
+        if composition is not None:
+            region["networks"] = composition
+        regions.append(region)
     return regions
 
 

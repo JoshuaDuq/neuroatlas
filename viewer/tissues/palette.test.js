@@ -83,6 +83,81 @@ test('a cut carries the same network colour the surface carries', () => {
   }
 });
 
+test('a NextBrain cortical cut parcel carries the network colour of its region', () => {
+  // NextBrain cut labels are kind `tissue` — they have no surface — but its
+  // cortical parcels still have a region record, and that record can carry
+  // the same network shares the Destrieux/HCP surfaces publish.
+  const nextbrainLabels = [
+    { source_label_id: 0, region_id: null, kind: 'tissue', hemisphere: 'midline',
+      color: [0, 0, 0], name: 'Unknown' },
+    {
+      source_label_id: 2001,
+      region_id: 'nextbrain:left:2001',
+      kind: 'tissue',
+      hemisphere: 'left',
+      color: [25, 100, 40],
+      name: 'Left-ctx-rh-bankssts',
+    },
+    {
+      source_label_id: 48,
+      region_id: 'nextbrain:left:48',
+      kind: 'tissue',
+      hemisphere: 'left',
+      color: [10, 20, 30],
+      name: 'Left-head_of_caudate',
+    },
+  ];
+  const networks = { colors: { Default: [205, 62, 78] } };
+  const regions = new Map([
+    ['nextbrain:left:2001', {
+      kind: 'tissue-region',
+      networks: [{ network: 'Default', fraction: 0.8 }, { network: 'Vis', fraction: 0.15 }],
+    }],
+    ['nextbrain:left:48', { kind: 'tissue-region' }],
+  ]);
+  const palette = createPalette(
+    nextbrainLabels, { ...state, surfaceColor: 'network' },
+    appearance.tissue, { regions, networks },
+  );
+  const expected = new Color().setRGB(205 / 255, 62 / 255, 78 / 255, SRGBColorSpace);
+  for (const [channel, value] of expected.toArray().entries()) {
+    assert.ok(Math.abs(palette[4 + channel] - value) < 1e-7);
+  }
+  const nucleus = new Color(tissueColor(
+    { kind: 'tissue', source_name: 'Left-head_of_caudate' }, appearance.tissue,
+  ));
+  for (const [channel, value] of nucleus.toArray().entries()) {
+    assert.ok(Math.abs(palette[8 + channel] - value) < 1e-7);
+  }
+});
+
+test('published NextBrain cortical cut labels take network colour', () => {
+  const metadata = JSON.parse(readFileSync(new URL('../../public/models/tissue-labels.json', import.meta.url), 'utf8'));
+  const manifest = JSON.parse(readFileSync(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+  const record = metadata.atlases.nextbrain;
+  if (!record || !manifest.networks) return;
+  const regions = new Map(manifest.regions.map(region => [region.id, region]));
+  const palette = createPalette(
+    record.labels, { ...state, surfaceColor: 'network' },
+    manifest.appearance.tissue, { regions, networks: manifest.networks },
+  );
+  const cortical = record.labels
+    .map((label, code) => ({ label, code }))
+    .filter(({ label }) => label.name?.includes('ctx-'));
+  assert.ok(cortical.length > 0);
+  let painted = 0;
+  for (const { label, code } of cortical) {
+    const tissue = new Color(tissueColor(
+      { ...label, source_name: label.name }, manifest.appearance.tissue,
+    ));
+    const rgb = palette.slice(code * 4, code * 4 + 3);
+    if (rgb.some((value, channel) => Math.abs(value - tissue.toArray()[channel]) > 1e-5)) {
+      painted += 1;
+    }
+  }
+  assert.ok(painted > 0, 'NextBrain cortical parcels should not all stay tissue-coloured');
+});
+
 test('a region in no network is not given one on a cut', () => {
   const regions = new Map([['destrieux:left:1', { networks: [] }]]);
   const palette = createPalette(labels, { ...state, surfaceColor: 'network' },

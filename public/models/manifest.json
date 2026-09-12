@@ -20799,7 +20799,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2020.0
+      "segmentation_volume_mm3": 2020.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.9846534653465346
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.00891089108910891
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.006435643564356435
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2002",
@@ -20816,7 +20830,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3307.0
+      "segmentation_volume_mm3": 3307.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.611381618989653
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.3457090687766281
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.042909312233718806
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2003",
@@ -20833,7 +20861,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 6389.0
+      "segmentation_volume_mm3": 6389.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.5700422601346063
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.3501330411645015
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.07982469870089216
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2005",
@@ -20850,7 +20892,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 4660.0
+      "segmentation_volume_mm3": 4660.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.9933476394849785
+        },
+        {
+          "network": "Default",
+          "fraction": 0.006652360515021459
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2006",
@@ -20867,7 +20919,13 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2927.0
+      "segmentation_volume_mm3": 2927.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 1.0
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2007",
@@ -20884,7 +20942,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 13588.0
+      "segmentation_volume_mm3": 13588.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.6010450397409479
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.2873123344127171
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.111642625846335
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2008",
@@ -20901,7 +20973,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 14670.0
+      "segmentation_volume_mm3": 14670.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.41083844580777096
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.3224948875255624
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.16987048398091342
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.09427402862985686
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.0012951601908657124
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.001226993865030675
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2009",
@@ -20918,7 +21016,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 15315.0
+      "segmentation_volume_mm3": 15315.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.3721841332027424
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.3147241266731962
+        },
+        {
+          "network": "Default",
+          "fraction": 0.18981390793339864
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.0673196212863206
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.03238654913483513
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.023571661769507018
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2010",
@@ -20935,7 +21059,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3201.0
+      "segmentation_volume_mm3": 3201.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.7834250566526384
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.1757850437034639
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.040789899643897704
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2011",
@@ -20952,7 +21090,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 12339.0
+      "segmentation_volume_mm3": 12339.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.8772185752492099
+        },
+        {
+          "network": "Default",
+          "fraction": 0.10738309425399141
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.015398330496798769
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2012",
@@ -20969,7 +21121,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 10209.0
+      "segmentation_volume_mm3": 10209.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.5830192422138465
+        },
+        {
+          "network": "Default",
+          "fraction": 0.24608212656219003
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.11218012299146994
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.058718508232493555
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2013",
@@ -20986,7 +21156,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 7075.0
+      "segmentation_volume_mm3": 7075.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.999434628975265
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0005653710247349824
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2014",
@@ -21003,7 +21183,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 8075.0
+      "segmentation_volume_mm3": 8075.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.5692150083237291
+        },
+        {
+          "network": "Default",
+          "fraction": 0.430784991676271
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2015",
@@ -21020,7 +21210,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 14791.0
+      "segmentation_volume_mm3": 14791.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.7403150564532486
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.1568521398147522
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.06044216077344331
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.036914339801230475
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.005408694476370766
+        },
+        {
+          "network": "Vis",
+          "fraction": 6.760868095463458e-05
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2016",
@@ -21037,7 +21253,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2749.0
+      "segmentation_volume_mm3": 2749.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.7820983125458547
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.21716801173881145
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0007336757153338225
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2017",
@@ -21054,7 +21284,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 5350.0
+      "segmentation_volume_mm3": 5350.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.825607476635514
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.16579439252336448
+        },
+        {
+          "network": "Default",
+          "fraction": 0.008037383177570093
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.0005607476635514019
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2018",
@@ -21071,7 +21319,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 4795.0
+      "segmentation_volume_mm3": 4795.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.564963503649635
+        },
+        {
+          "network": "Default",
+          "fraction": 0.2183524504692388
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.18185610010427528
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.03482794577685089
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2019",
@@ -21088,7 +21354,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2753.0
+      "segmentation_volume_mm3": 2753.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.8779513258263713
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.12095895386850708
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.0010897203051216855
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2020",
@@ -21105,7 +21385,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 5986.0
+      "segmentation_volume_mm3": 5986.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.4530571333110591
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.4131306381556966
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.13381222853324423
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2021",
@@ -21122,7 +21416,13 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2815.0
+      "segmentation_volume_mm3": 2815.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 1.0
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2022",
@@ -21139,7 +21439,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 10479.0
+      "segmentation_volume_mm3": 10479.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.8790915163660654
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.06794541463880141
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.02738810955243821
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.025574959442694913
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2023",
@@ -21156,7 +21474,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3396.0
+      "segmentation_volume_mm3": 3396.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.4155455904334828
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.3333333333333333
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.20298953662182362
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.04813153961136024
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2024",
@@ -21173,7 +21509,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 16470.0
+      "segmentation_volume_mm3": 16470.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.6060716454159077
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.23017607771706133
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.10485731633272617
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0403157255616272
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.018579234972677595
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2025",
@@ -21190,7 +21548,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 12025.0
+      "segmentation_volume_mm3": 12025.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.5373804573804574
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.16274428274428274
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.13255717255717256
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.09654885654885655
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.06345114345114346
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.007318087318087318
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2026",
@@ -21207,7 +21591,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3214.0
+      "segmentation_volume_mm3": 3214.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.9658909786420147
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.03410902135798534
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2027",
@@ -21224,7 +21618,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 16992.0
+      "segmentation_volume_mm3": 16992.0,
+      "networks": [
+        {
+          "network": "Cont",
+          "fraction": 0.5375470809792844
+        },
+        {
+          "network": "Default",
+          "fraction": 0.2873116760828625
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.11664312617702448
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.058498116760828625
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2028",
@@ -21241,7 +21653,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 25599.0
+      "segmentation_volume_mm3": 25599.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.703074338841361
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.12984882221961797
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.08031563732958319
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.04664244697058479
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.03359506230712137
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.006523692331731708
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2029",
@@ -21258,7 +21696,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 10048.0
+      "segmentation_volume_mm3": 10048.0,
+      "networks": [
+        {
+          "network": "DorsAttn",
+          "fraction": 0.5970342356687898
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.2314888535031847
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.11753582802547771
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.026970541401273886
+        },
+        {
+          "network": "Default",
+          "fraction": 0.024582006369426753
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.0023885350318471337
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2030",
@@ -21275,7 +21739,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 13795.0
+      "segmentation_volume_mm3": 13795.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.41118444911873503
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.2835279611227968
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.17828389062160005
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.12700369913686807
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2031",
@@ -21292,7 +21774,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 13574.0
+      "segmentation_volume_mm3": 13574.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.3757919552084868
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.21231766612641814
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.19471047590982762
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.13150139973478708
+        },
+        {
+          "network": "Default",
+          "fraction": 0.08567850302048033
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2032",
@@ -21309,7 +21813,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 1235.0
+      "segmentation_volume_mm3": 1235.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.968421052631579
+        },
+        {
+          "network": "Default",
+          "fraction": 0.031578947368421054
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2033",
@@ -21326,7 +21840,13 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2291.0
+      "segmentation_volume_mm3": 2291.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 1.0
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2034",
@@ -21343,7 +21863,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 1163.0
+      "segmentation_volume_mm3": 1163.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.9845227858985383
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.015477214101461736
+        }
+      ]
     },
     {
       "id": "nextbrain:left:2035",
@@ -21360,7 +21890,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 9690.0
+      "segmentation_volume_mm3": 9690.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.6212733427978595
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.2617669542426559
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.0833242328273452
+        },
+        {
+          "network": "Default",
+          "fraction": 0.021732008299661463
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.011903461832477886
+        }
+      ]
     },
     {
       "id": "nextbrain:right:10007",
@@ -22312,7 +22864,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2663.0
+      "segmentation_volume_mm3": 2663.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.5279759669545625
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.31656027037176115
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.1528351483289523
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.0026286143447239955
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12002",
@@ -22329,7 +22899,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3026.0
+      "segmentation_volume_mm3": 3026.0,
+      "networks": [
+        {
+          "network": "Cont",
+          "fraction": 0.39648767308341776
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.32860520094562645
+        },
+        {
+          "network": "Default",
+          "fraction": 0.27490712597095573
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12003",
@@ -22346,7 +22930,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 6367.0
+      "segmentation_volume_mm3": 6367.0,
+      "networks": [
+        {
+          "network": "Cont",
+          "fraction": 0.6244699230406785
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.19820951782629181
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.11732370032982567
+        },
+        {
+          "network": "Default",
+          "fraction": 0.05999685880320402
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12005",
@@ -22363,7 +22965,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3464.0
+      "segmentation_volume_mm3": 3464.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.9393764434180139
+        },
+        {
+          "network": "Default",
+          "fraction": 0.04387990762124711
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.01674364896073903
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12006",
@@ -22380,7 +22996,13 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 1677.0
+      "segmentation_volume_mm3": 1677.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 1.0
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12007",
@@ -22397,7 +23019,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 12790.0
+      "segmentation_volume_mm3": 12790.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.6179599499374218
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.29106695869837296
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.09097309136420526
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12008",
@@ -22414,7 +23050,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 16597.0
+      "segmentation_volume_mm3": 16597.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.33608483460866423
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.2923419895161776
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.24968367777309153
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.06260167500150629
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.05922757124781587
+        },
+        {
+          "network": "SomMot",
+          "fraction": 6.0251852744471894e-05
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12009",
@@ -22431,7 +23093,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 13142.0
+      "segmentation_volume_mm3": 13142.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.3478922538426419
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.2666260843098463
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.1802617562014914
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.12410591995130117
+        },
+        {
+          "network": "Default",
+          "fraction": 0.08111398569471923
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12010",
@@ -22448,7 +23132,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3076.0
+      "segmentation_volume_mm3": 3076.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.7233229058046576
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.1786583246437261
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.08202989224887035
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.015988877302745917
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12011",
@@ -22465,7 +23167,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 16144.0
+      "segmentation_volume_mm3": 16144.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.9588701684836471
+        },
+        {
+          "network": "Default",
+          "fraction": 0.025210604558969278
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.01591922695738355
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12012",
@@ -22482,7 +23198,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 10380.0
+      "segmentation_volume_mm3": 10380.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.6059666795815576
+        },
+        {
+          "network": "Default",
+          "fraction": 0.23886090662533901
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.13783417280123983
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.01733824099186362
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12013",
@@ -22499,7 +23233,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 7293.0
+      "segmentation_volume_mm3": 7293.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.9946524064171123
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0053475935828877
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12014",
@@ -22516,7 +23260,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 8650.0
+      "segmentation_volume_mm3": 8650.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.5424015462672143
+        },
+        {
+          "network": "Default",
+          "fraction": 0.4575984537327857
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12015",
@@ -22533,7 +23287,37 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 12688.0
+      "segmentation_volume_mm3": 12688.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.644624842370744
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.1921500630517024
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.06998738965952081
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.05249054224464061
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.03641235813366961
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.0033890290037831023
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.0009457755359394704
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12016",
@@ -22550,7 +23334,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3259.0
+      "segmentation_volume_mm3": 3259.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.6326026551404754
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.3673973448595245
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12017",
@@ -22567,7 +23361,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 5123.0
+      "segmentation_volume_mm3": 5123.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.6978333008003124
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.29865313292992385
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0035135662697638103
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12018",
@@ -22584,7 +23392,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 4215.0
+      "segmentation_volume_mm3": 4215.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.568920521945433
+        },
+        {
+          "network": "Default",
+          "fraction": 0.2185053380782918
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.14780545670225387
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.06476868327402135
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12019",
@@ -22601,7 +23427,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3303.0
+      "segmentation_volume_mm3": 3303.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.8543748107780805
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.13290947623372693
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.012715712988192553
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12020",
@@ -22618,7 +23458,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 4010.0
+      "segmentation_volume_mm3": 4010.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.628927680798005
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.21546134663341646
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.15561097256857856
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12021",
@@ -22635,7 +23489,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3164.0
+      "segmentation_volume_mm3": 3164.0,
+      "networks": [
+        {
+          "network": "Vis",
+          "fraction": 0.9987357774968394
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0012642225031605564
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12022",
@@ -22652,7 +23516,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 9213.0
+      "segmentation_volume_mm3": 9213.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.9335721263432106
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.0538369694996201
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.012590904157169217
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12023",
@@ -22669,7 +23547,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 3653.0
+      "segmentation_volume_mm3": 3653.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.35165140160976965
+        },
+        {
+          "network": "Default",
+          "fraction": 0.3405495420482931
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.20149875104079934
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.10630030530113795
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12024",
@@ -22686,7 +23582,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 14095.0
+      "segmentation_volume_mm3": 14095.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.6627882227740334
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.1712664065271373
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.15168499467896418
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.0142603760198652
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12025",
@@ -22703,7 +23617,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 10889.0
+      "segmentation_volume_mm3": 10889.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.5378822665074846
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.16420240609789696
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.13132519055928002
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.09229497658187161
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.06051979061438149
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.013775369639085315
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12026",
@@ -22720,7 +23660,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2683.0
+      "segmentation_volume_mm3": 2683.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.9954441913439636
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.004555808656036446
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12027",
@@ -22737,7 +23687,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 18437.0
+      "segmentation_volume_mm3": 18437.0,
+      "networks": [
+        {
+          "network": "Cont",
+          "fraction": 0.8172153821120572
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.10647068395075121
+        },
+        {
+          "network": "Default",
+          "fraction": 0.05385908770407333
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.014156316103487552
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.008298530129630634
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12028",
@@ -22754,7 +23726,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 26699.0
+      "segmentation_volume_mm3": 26699.0,
+      "networks": [
+        {
+          "network": "Default",
+          "fraction": 0.6331697816397618
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.16592381737143713
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.15768380838233642
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.027491666354545113
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.0153938349750927
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.00033709127682684744
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12029",
@@ -22771,7 +23769,33 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 15288.0
+      "segmentation_volume_mm3": 15288.0,
+      "networks": [
+        {
+          "network": "DorsAttn",
+          "fraction": 0.6081240188383046
+        },
+        {
+          "network": "Vis",
+          "fraction": 0.19760596546310832
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.1404369440083726
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.03865777080062795
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.01347462061747776
+        },
+        {
+          "network": "Default",
+          "fraction": 0.0017006802721088435
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12030",
@@ -22788,7 +23812,25 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 11282.0
+      "segmentation_volume_mm3": 11282.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.5071371575494281
+        },
+        {
+          "network": "Default",
+          "fraction": 0.3440907881904424
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.09894494192747584
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.049827112332653606
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12031",
@@ -22805,7 +23847,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 11849.0
+      "segmentation_volume_mm3": 11849.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.3992742003544603
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.3289729091062537
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.11925056966832644
+        },
+        {
+          "network": "DorsAttn",
+          "fraction": 0.11216136382817116
+        },
+        {
+          "network": "Default",
+          "fraction": 0.04034095704278842
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12032",
@@ -22822,7 +23886,21 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 1215.0
+      "segmentation_volume_mm3": 1215.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 0.776954732510288
+        },
+        {
+          "network": "Default",
+          "fraction": 0.12345679012345678
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.09958847736625515
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12033",
@@ -22839,7 +23917,13 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 2242.0
+      "segmentation_volume_mm3": 2242.0,
+      "networks": [
+        {
+          "network": "Limbic",
+          "fraction": 1.0
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12034",
@@ -22856,7 +23940,17 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 803.0
+      "segmentation_volume_mm3": 803.0,
+      "networks": [
+        {
+          "network": "SomMot",
+          "fraction": 0.9987546699875467
+        },
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.0012453300124533001
+        }
+      ]
     },
     {
       "id": "nextbrain:right:12035",
@@ -22873,7 +23967,29 @@
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 8362.0
+      "segmentation_volume_mm3": 8362.0,
+      "networks": [
+        {
+          "network": "SalVentAttn",
+          "fraction": 0.6724182004089979
+        },
+        {
+          "network": "SomMot",
+          "fraction": 0.2116564417177914
+        },
+        {
+          "network": "Cont",
+          "fraction": 0.07131901840490798
+        },
+        {
+          "network": "Default",
+          "fraction": 0.03425357873210634
+        },
+        {
+          "network": "Limbic",
+          "fraction": 0.010352760736196318
+        }
+      ]
     }
   ],
   "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
