@@ -7,9 +7,20 @@ const switchProgress = (progress, lang) => {
   return progress?.total ? i18n.loadingProgress(progress) : i18n.loadingAtlas;
 };
 
-/** Atlas choice, visible region count, language switch, and theme switch. */
-export function createHeader({ atlases, onAtlas, onTheme, onLang }) {
+const SURFACE_MODES = ['tissue', 'atlas', 'network'];
+
+/**
+ * Atlas choice, what the surface is coloured by, visible region count,
+ * language and theme.
+ *
+ * The two segmented controls are siblings on purpose: one says which
+ * parcellation the cortex carries, the other what the cortex is showing. Both
+ * answer "what am I looking at", so both are in the masthead rather than one
+ * of them behind a panel tab.
+ */
+export function createHeader({ atlases, networks, onAtlas, onSurfaceColor, onTheme, onLang }) {
   const container = document.getElementById('atlas-switch');
+  const surfaceContainer = document.getElementById('surface-switch');
   const regionCount = document.getElementById('region-count');
   const themeButton = document.getElementById('theme-toggle');
   const themeLabel = document.getElementById('theme-label');
@@ -81,6 +92,19 @@ export function createHeader({ atlases, onAtlas, onTheme, onLang }) {
     return button;
   });
 
+  // A build without the network layer must not offer to colour by it. Absent
+  // rather than disabled: an option that can never be chosen is not a choice.
+  const surfaceButtons = SURFACE_MODES
+    .filter(mode => mode !== 'network' || networks)
+    .map(mode => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.surface = mode;
+      button.addEventListener('click', () => onSurfaceColor(mode));
+      surfaceContainer.append(button);
+      return button;
+    });
+
   const langButtons = langContainer ? [...langContainer.querySelectorAll('button')] : [];
   const onLangClicks = langButtons.map(btn => {
     const handler = () => onLang?.(btn.dataset.lang);
@@ -98,6 +122,7 @@ export function createHeader({ atlases, onAtlas, onTheme, onLang }) {
       const switching = state.status === 'switching';
 
       container.setAttribute('aria-label', i18n.atlasSwitch);
+      surfaceContainer.setAttribute('aria-label', t(state.lang, 'display').surfaceColor);
       if (langContainer) langContainer.setAttribute('aria-label', i18n.languageSwitch);
       if (shortcutsButton) shortcutsButton.setAttribute('aria-label', i18n.shortcuts);
       moreButton.setAttribute('aria-label', t(state.lang, 'menu').more);
@@ -114,6 +139,14 @@ export function createHeader({ atlases, onAtlas, onTheme, onLang }) {
         button.setAttribute('aria-pressed', String(active));
         button.disabled = state.status === 'loading' || switching;
         button.dataset.loading = String(switching && !active);
+      }
+
+      const surfaces = t(state.lang, 'display');
+      for (const button of surfaceButtons) {
+        const mode = button.dataset.surface;
+        button.textContent = surfaces.surfaceColors[mode] ?? mode;
+        button.title = surfaces.surfaceColorTitles[mode] ?? '';
+        button.setAttribute('aria-pressed', String(mode === state.surfaceColor));
       }
 
       regionCount.textContent = switching
@@ -136,6 +169,7 @@ export function createHeader({ atlases, onAtlas, onTheme, onLang }) {
         btn.removeEventListener('click', handler);
       }
       container.replaceChildren();
+      surfaceContainer.replaceChildren();
     },
   };
 }

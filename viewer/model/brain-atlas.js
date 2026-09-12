@@ -1,10 +1,16 @@
 import { Group } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 import { visibilityOf } from '../catalog/visibility.js';
-import { fetchPublished, REVALIDATE_HEADER } from './published-assets.js';
+import { fetchAsset } from './asset-cache.js';
+import { combineProgress } from './progress.js';
+import { REVALIDATE_HEADER } from './published-assets.js';
 import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 import { attachNetworkColors } from '../render/network-colors.js';
+
+function asOptions(onProgressOrOptions) {
+  if (typeof onProgressOrOptions === 'function') return { onProgress: onProgressOrOptions };
+  return onProgressOrOptions ?? {};
+}
 
 /**
  * What the cortical surface is coloured by.
@@ -71,17 +77,26 @@ function disposeScene(scene) {
 
 /** Asset-only controller. Add .group to your scene; coordinates remain untouched. */
 export class BrainAtlas extends EventTarget {
-  static async load(manifestUrl, atlasId) {
+  static async load(manifestUrl, atlasId, onProgressOrOptions) {
+    const options = asOptions(onProgressOrOptions);
     const url = new URL(manifestUrl, globalThis.location.href);
-    const response = await fetchPublished(url);
-    if (!response.ok) throw new Error(`Manifest request failed: HTTP ${response.status}`);
-    const manifest = await response.json();
+    const bytes = await fetchAsset(url.href);
+    const manifest = JSON.parse(new TextDecoder().decode(bytes));
     const loader = new GLTFLoader()
       .setPath(new URL('.', url).href)
       .setRequestHeader(REVALIDATE_HEADER);
+    loader.loadAsync = async (file, onProgress) => {
+      const asset = new URL(file, loader.path).href;
+      const buffer = await fetchAsset(asset, { onProgress });
+      return loader.parseAsync(buffer, loader.path);
+    };
     const model = new BrainAtlas(manifest, loader);
     try {
-      await model.initialize(atlasId);
+      const known = id => model.manifest.detail_levels.some(level => level.id === id);
+      await model.initialize(atlasId, {
+        ...options,
+        detail: known(options.detail) ? options.detail : undefined,
+      });
       return model;
     } catch (error) {
       model.dispose();
@@ -117,16 +132,42 @@ export class BrainAtlas extends EventTarget {
     this.clippingPlanes = [];
   }
 
-  async initialize(atlasId = this.manifest.atlases[0].id, onProgress) {
-    await this.setDetail(this.manifest.detail_levels[0].id, onProgress);
-    await this.setAtlas(atlasId, onProgress);
+  /**
+   * The internal anatomy shown on load: the histological level when the build
+   * has it, since that is the one worth arriving at, and whatever the manifest
+   * lists first otherwise.
+   */
+  get defaultDetail() {
+    const levels = this.manifest.detail_levels;
+    return (levels.find(level => level.id === 'nextbrain') ?? levels[0]).id;
+  }
+
+  async initialize(atlasId = this.manifest.atlases[0].id, onProgressOrOptions) {
+    const options = asOptions(onProgressOrOptions);
+    const atlas = this.manifest.atlases.find(entry => entry.id === atlasId);
+    if (!atlas) throw new Error(`Unknown atlas: ${atlasId}`);
+    const detailId = options.detail ?? this.defaultDetail;
+    const level = this.manifest.detail_levels.find(entry => entry.id === detailId);
+    if (!level) throw new Error(`Unknown detail level: ${detailId}`);
+    const progress = combineProgress(['detail', 'atlas'], options.onProgress);
+    await Promise.all([
+      this.loadLayer(level.id, level.file, progress.track('detail')),
+      this.loadLayer(atlas.id, atlas.file, progress.track('atlas')),
+    ]);
+    this.detailId = level.id;
+    this.atlasId = atlas.id;
+    this.isolatedId = null;
+    this.select(null);
   }
 
   async loadLayer(id, file, onProgress) {
     if (this.disposed) throw new Error('BrainAtlas has been disposed.');
     if (this.layers.has(id)) return this.layers.get(id);
     if (this.pending.has(id)) return this.pending.get(id);
-    const loading = this.loader.loadAsync(file, onProgress).then(({ scene }) => {
+    const loading = Promise.all([
+      this.loader.loadAsync(file, onProgress),
+      import('three-mesh-bvh'),
+    ]).then(([{ scene }, { MeshBVH, acceleratedRaycast }]) => {
       if (this.disposed) {
         disposeScene(scene);
         throw new Error('BrainAtlas was disposed during loading.');
@@ -155,6 +196,10 @@ export class BrainAtlas extends EventTarget {
           }
           mesh.material = createAnatomicalMaterial(mesh, region, this.manifest.appearance);
           this.sourceColors.set(mesh, mesh.material.color.clone());
+          // Region meshes never move after load. Skipping per-frame matrix
+          // updates is free on 400+ nuclei.
+          mesh.matrixAutoUpdate = false;
+          mesh.updateMatrix();
           meshes.push(mesh);
         });
         if (!meshes.length) throw new Error(`Empty brain model layer: ${id}`);

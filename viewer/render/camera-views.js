@@ -42,8 +42,21 @@ export function cameraConstraints(bounds) {
   };
 }
 
+/*
+ * Screen axes for a camera looking along `direction`. An orbit can bring the
+ * view onto the up axis, where the cross product collapses; any perpendicular
+ * serves there, and returning one keeps the fit finite instead of NaN.
+ */
+function viewBasis(up, direction) {
+  const right = new Vector3().crossVectors(up, direction);
+  if (right.lengthSq() < 1e-12) right.crossVectors(new Vector3(0, 0, 1), direction);
+  if (right.lengthSq() < 1e-12) right.crossVectors(new Vector3(1, 0, 0), direction);
+  right.normalize();
+  return { right, up: new Vector3().crossVectors(direction, right).normalize() };
+}
+
 /**
- * Fit a perspective camera to unchanged world bounds, with a small screen margin.
+ * How far back the camera must sit for `bounds` to fit the visible frustum.
  *
  * `fit` is the fraction of each axis the reader can actually see, from
  * `effective-viewport.js`. On a phone the sheet covers the lower canvas, so
@@ -52,15 +65,12 @@ export function cameraConstraints(bounds) {
  * the uncovered rectangle. It defaults to the whole canvas, so every desktop
  * caller is unaffected.
  */
-export function frameBounds(camera, bounds, direction, fit = {}) {
-  const horizontalFit = fit.horizontal ?? 1;
-  const verticalFit = fit.vertical ?? 1;
+export function fitDistance(camera, bounds, direction, fit = {}) {
   const center = bounds.getCenter(new Vector3());
-  const right = new Vector3().crossVectors(camera.up, direction).normalize();
-  const up = new Vector3().crossVectors(direction, right).normalize();
-  const verticalSlope = Math.tan(camera.fov * Math.PI / 360) * 0.92 * verticalFit;
-  const horizontalSlope = Math.tan(camera.fov * Math.PI / 360) * 0.92
-    * camera.aspect * horizontalFit;
+  const { right, up } = viewBasis(camera.up, direction);
+  const halfAngle = Math.tan(camera.fov * Math.PI / 360) * 0.92;
+  const verticalSlope = halfAngle * (fit.vertical ?? 1);
+  const horizontalSlope = halfAngle * camera.aspect * (fit.horizontal ?? 1);
   let distance = 0;
   for (const x of [bounds.min.x, bounds.max.x]) {
     for (const y of [bounds.min.y, bounds.max.y]) {
@@ -73,7 +83,14 @@ export function frameBounds(camera, bounds, direction, fit = {}) {
       }
     }
   }
-  camera.position.copy(center).addScaledVector(direction, distance);
+  return distance;
+}
+
+/** Fit a perspective camera to unchanged world bounds, with a small screen margin. */
+export function frameBounds(camera, bounds, direction, fit = {}) {
+  const center = bounds.getCenter(new Vector3());
+  camera.position.copy(center)
+    .addScaledVector(direction, fitDistance(camera, bounds, direction, fit));
   camera.lookAt(center);
   camera.updateMatrixWorld();
   return center;

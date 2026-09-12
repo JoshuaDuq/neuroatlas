@@ -66,6 +66,8 @@ export const TRANSLATIONS = {
       heading: 'Functional networks',
       share: fraction => `${Math.round(fraction * 100)}%`,
       note: 'Share of this region’s surface, from resting-state networks in 1000 subjects. Membership, not function.',
+      cortexHeading: 'Cortex by network',
+      cortexNote: 'Share of the cortical surface of this atlas, weighted by measured area. Select a region for its own composition.',
       unavailable: 'No network data for this region.',
     },
     inspector: {
@@ -109,6 +111,7 @@ export const TRANSLATIONS = {
       statusFull: 'Full brain · no cut',
       statusPreparing: 'Preparing anatomy…',
       statusActive: (offset, label) => `Tissue cut at ${offset} mm · 1 mm · ${label}`,
+      networkByRegion: 'networks by each region’s dominant share',
       hcpDerived: 'derived HCP labels',
       destrieuxNative: 'native Destrieux labels',
       nextbrainWarped: 'warped NextBrain labels',
@@ -124,10 +127,17 @@ export const TRANSLATIONS = {
       showCortex: 'Show cortex',
       cortexOpacity: 'Cortex opacity',
       surfaceColor: 'Surface colour',
+      // Short enough to stay whole in the masthead, and on a phone row; the
+      // full sense is on the title, which is where a reader looks for it.
       surfaceColors: {
         tissue: 'Tissue',
-        atlas: 'Atlas colours',
-        network: 'Functional networks',
+        atlas: 'Regions',
+        network: 'Networks',
+      },
+      surfaceColorTitles: {
+        tissue: 'Tissue appearance',
+        atlas: 'Atlas region colours',
+        network: 'Functional networks (Yeo 7)',
       },
       resetView: 'Reset view',
     },
@@ -261,6 +271,8 @@ export const TRANSLATIONS = {
       heading: 'Réseaux fonctionnels',
       share: fraction => `${Math.round(fraction * 100)} %`,
       note: 'Part de la surface de cette région, d’après les réseaux de repos de 1000 sujets. Appartenance, non fonction.',
+      cortexHeading: 'Cortex par réseau',
+      cortexNote: 'Part de la surface corticale de cet atlas, pondérée par l’aire mesurée. Sélectionnez une région pour sa composition propre.',
       unavailable: 'Aucune donnée de réseau pour cette région.',
     },
     inspector: {
@@ -304,6 +316,7 @@ export const TRANSLATIONS = {
       statusFull: 'Cerveau entier · aucune coupe',
       statusPreparing: 'Préparation de l’anatomie…',
       statusActive: (offset, label) => `Coupe tissulaire à ${offset} mm · 1 mm · étiquettes ${label}`,
+      networkByRegion: 'réseaux par part dominante de chaque région',
       hcpDerived: 'HCP dérivées',
       destrieuxNative: 'Destrieux natives',
       nextbrainWarped: 'NextBrain recalées',
@@ -321,8 +334,13 @@ export const TRANSLATIONS = {
       surfaceColor: 'Couleur de surface',
       surfaceColors: {
         tissue: 'Tissu',
-        atlas: 'Couleurs de l’atlas',
-        network: 'Réseaux fonctionnels',
+        atlas: 'Régions',
+        network: 'Réseaux',
+      },
+      surfaceColorTitles: {
+        tissue: 'Aspect des tissus',
+        atlas: 'Couleurs des régions de l’atlas',
+        network: 'Réseaux fonctionnels (Yeo 7)',
       },
       resetView: 'Réinitialiser la vue',
     },

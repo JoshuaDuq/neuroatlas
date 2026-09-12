@@ -131,20 +131,18 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
  * stays achromatic and the share is set in the same mono the other
  * measurements use.
  */
-.network-list, .network-legend { margin: 0; padding: 0; list-style: none; }
-.network-legend { margin-top: var(--space-3); display: grid; gap: var(--space-1); }
-.network-legend li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-ui);
-  color: var(--text-secondary);
-}
+.network-list { margin: 0; padding: 0; list-style: none; }
 /* The one place colour is the datum, so the swatch is the published colour. */
 .network-swatch { width: 10px; height: 10px; flex: none; border-radius: 1px; }
+/*
+ * Swatch names the network, bar measures it. The bar used to carry the colour
+ * too, which left the reader matching a 4px tint against the model; the
+ * swatch is the same token the legend on the stage uses, so the rail and the
+ * picture name a network the same way.
+ */
 .network-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 56px 36px;
+  grid-template-columns: 10px minmax(0, 1fr) 44px 34px;
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-1) 0;
@@ -153,8 +151,6 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .network-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .network-bar { height: 4px; background: var(--border-subtle); }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
-/* Coloured to match the model wherever the model is showing these colours. */
-.network-row[data-colored="true"] .network-bar > span { background: var(--network-color); }
 .network-share { text-align: right; color: var(--text-secondary); }
 .network-note {
   margin-top: var(--space-3);
@@ -209,17 +205,26 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 
 /* Viewport chrome -------------------------------------------------------- */
+/*
+ * Anything drawn on the stage is lit by the stage, in both themes: the ground
+ * under it is near-black either way, and a plate taken from the rails put a
+ * white toolbar on black in light mode.
+ */
 .chip {
   position: absolute;
   z-index: 2;
   padding: var(--space-1) var(--space-2);
-  background: color-mix(in srgb, var(--surface-base) 90%, transparent);
+  background: var(--overlay-plate);
   backdrop-filter: blur(6px);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--overlay-border);
   border-radius: var(--radius-control);
+  color: var(--overlay-ink);
   font-size: var(--text-micro);
   pointer-events: none;
 }
+
+/* --accent is measured against a rail; on the stage it is the light value. */
+#viewport :focus-visible { outline-color: var(--overlay-accent); }
 
 /*
  * Chrome is placed against the rectangle the reader can see, not the canvas.
@@ -270,17 +275,30 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   display: flex;
 }
 .views button {
+  /* Never squashed: a truncated preset is a view the reader cannot name, and
+     a row measured while squashed cannot be measured back to its full size. */
+  flex: none;
   height: 26px;
   padding: 0 var(--space-2);
   font-size: var(--text-micro);
   border-radius: 0;
   margin-left: -1px;
-  background: color-mix(in srgb, var(--surface-base) 90%, transparent);
+  background: var(--overlay-plate);
   backdrop-filter: blur(6px);
+  border-color: var(--overlay-border);
+  color: var(--overlay-ink);
 }
 .views button:first-child { margin-left: 0; border-radius: var(--radius-control) 0 0 var(--radius-control); }
 .views button:last-child { border-radius: 0 var(--radius-control) var(--radius-control) 0; }
-.views button[aria-pressed="true"] { background: var(--accent-wash); border-color: var(--accent); color: var(--accent); z-index: 1; }
+.views button[aria-pressed="true"] {
+  background: var(--overlay-accent-wash);
+  border-color: var(--overlay-accent);
+  color: var(--overlay-accent);
+  z-index: 1;
+}
+/* After the pressed rule and excluding it: hover must not grey out the view
+   the reader is already looking from. */
+.views button:hover:not([aria-pressed="true"]) { background: var(--overlay-plate-hover); }
 
 /* A measurement on the picture, marked the same way the orientation is. */
 .scale-bar {
@@ -303,7 +321,37 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   filter: drop-shadow(0 0 1px var(--overlay-halo));
 }
 
-.hover-label { max-width: 280px; color: var(--text-primary); }
+.hover-label { max-width: 280px; }
+
+/*
+ * The key to the colours on the model, on the stage rather than in a panel.
+ * Top right: the presets hold the bottom left, and in every default view the
+ * anatomy reaches the upper left first — the frontal pole sat behind this
+ * when it was over there, selection outline and all.
+ */
+.network-legend {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--vis-top) + var(--space-4));
+  right: calc(var(--vis-right) + var(--space-4));
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  list-style: none;
+  background: var(--overlay-plate);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+  color: var(--overlay-ink);
+  font-size: var(--text-micro);
+  pointer-events: none;
+}
+.network-legend li { display: flex; align-items: center; gap: var(--space-2); }
+/* A tight stage puts the scale bar on the top line; the key sits under it. */
+#viewport[data-chrome="tight"] .network-legend {
+  top: calc(var(--vis-top) + var(--space-3) + 26px);
+}
 
 /*
  * When the presets and the bar cannot share the bottom line the bar moves up
@@ -356,7 +404,12 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #app[data-status="error"] .stage,
 #app[data-status="context-lost"] .stage { display: grid; }
 #app[data-status="error"] .stage { color: var(--overlay-danger); }
-.stage button { color: var(--text-primary); }
+.stage button {
+  background: var(--overlay-plate);
+  border-color: var(--overlay-border);
+  color: var(--overlay-ink);
+}
+.stage button:hover:not(:disabled) { background: var(--overlay-plate-hover); }
 
 .progress { width: 220px; height: 3px; background: rgb(255 255 255 / 0.16); }
 .progress span { display: block; height: 100%; background: var(--overlay-ink); }
@@ -492,10 +545,10 @@ kbd {
   padding: var(--space-1) var(--space-3);
   pointer-events: auto;
   cursor: pointer;
-  color: var(--text-primary);
   text-align: left;
 }
-.reticle-readout[data-empty="true"] { color: var(--text-tertiary); }
+.reticle-readout:hover:not(:disabled) { background: var(--overlay-plate-hover); }
+.reticle-readout[data-empty="true"] { color: var(--overlay-ink-muted); }
 .reticle-readout .reticle-readout-name {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -503,6 +556,6 @@ kbd {
 }
 .reticle-readout .reticle-readout-action {
   flex: none;
-  color: var(--accent);
+  color: var(--overlay-accent);
   font-size: var(--text-micro);
 }

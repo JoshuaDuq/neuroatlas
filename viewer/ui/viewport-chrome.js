@@ -1,5 +1,6 @@
 import { edgeLabels } from '../render/orientation.js';
 import { scaleBar } from '../render/scale-bar.js';
+import { networkCss, networkName } from '../catalog/networks.js';
 import { t } from '../i18n/translations.js';
 
 const VIEW_KEYS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
@@ -15,7 +16,7 @@ const CHROME_GUTTERS_PX = 48;
  * from near-black crevices to near-white speculars, so no fixed text colour
  * would be legible against all of it.
  */
-export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
+export function createViewportChrome({ networks, onView, onRetry, onReticleSelect }) {
   const orientation = document.getElementById('orientation');
   const edges = Object.fromEntries(
     [...orientation.children].map(node => [node.dataset.edge, node]));
@@ -24,6 +25,7 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
   const barRule = bar.querySelector('.scale-bar-rule');
   const barText = bar.querySelector('.measure');
   const hover = document.getElementById('hover-label');
+  const legend = document.getElementById('network-legend');
   const host = document.getElementById('viewport');
   const reticle = document.getElementById('reticle');
   const readout = document.getElementById('reticle-readout');
@@ -47,12 +49,41 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
    * Do the presets and the scale bar still fit on one line? Asked of the
    * rectangle the reader can see, not the window: two 320px rails leave a
    * 1100px window a 460px stage, and the bar was painted over the presets
-   * there. Natural content widths, so applying the answer cannot change it.
+   * there.
+   *
+   * Measured from the buttons, never from the row that holds them. The tight
+   * rule stretches that row across the stage, so its own width reports the
+   * stretch rather than the content: once tight was entered it could never be
+   * left, and a 1440px window kept the bar pinned to the top edge.
    */
   function fitChrome() {
     if (!lastRect?.width) return;
-    const needed = views.scrollWidth + (bar.hidden ? 0 : bar.scrollWidth) + CHROME_GUTTERS_PX;
+    const presets = buttons.reduce((total, button) => total + button.offsetWidth, 0)
+      - Math.max(0, buttons.length - 1); // the buttons overlap by their shared border
+    const needed = presets + (bar.hidden ? 0 : bar.scrollWidth) + CHROME_GUTTERS_PX;
     host.dataset.chrome = needed > lastRect.width ? 'tight' : 'wide';
+  }
+
+  /*
+   * The key to the colours on the model. On the stage rather than in a panel:
+   * a key that is not beside the picture it explains is not a key, and the
+   * reader would have to leave the anatomy to read it.
+   */
+  function showLegend(state) {
+    if (!legend) return;
+    legend.hidden = !networks || state.surfaceColor !== 'network'
+      || !(state.status === 'ready' || state.status === 'switching');
+    if (legend.hidden) return;
+    legend.replaceChildren(...networks.networks.map(key => {
+      const row = document.createElement('li');
+      const swatch = document.createElement('span');
+      swatch.className = 'network-swatch';
+      swatch.style.background = networkCss(networks.colors[key]);
+      const label = document.createElement('span');
+      label.textContent = networkName(key, state.lang);
+      row.append(swatch, label);
+      return row;
+    }));
   }
 
   const onReadout = () => {
@@ -127,6 +158,7 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
         button.textContent = viewLabels[button.dataset.view] ?? button.dataset.view;
         button.setAttribute('aria-pressed', String(button.dataset.view === state.view));
       }
+      showLegend(state);
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       if (!ready) bar.hidden = true;
@@ -199,6 +231,7 @@ export function createViewportChrome({ onView, onRetry, onReticleSelect }) {
       readout.removeEventListener('click', onReadout);
       readout.replaceChildren();
       views.replaceChildren();
+      legend?.replaceChildren();
     },
   };
 }

@@ -307,8 +307,15 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       destrieux: cutsI18n.destrieuxNative,
       nextbrain: cutsI18n.nextbrainWarped,
     }[state.cutAtlas] ?? state.cutAtlas;
+    // A cut is sampled from a label volume, so its network colour is per parcel
+    // while the surface's is per vertex. Said here rather than left to be found.
+    // `state` in this function is the cut's own state; the surface mode is on
+    // the app state, which some callers do not pass at all.
+    const byNetwork = appState?.surfaceColor === 'network';
+    const activeStatus = cutsI18n.statusActive(offset.toFixed(1), atlasLabel)
+      + (byNetwork ? ` · ${cutsI18n.networkByRegion}` : '');
     status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
-      : state.error || (sections.active ? cutsI18n.statusActive(offset.toFixed(1), atlasLabel) : cutsI18n.statusFull);
+      : state.error || (sections.active ? activeStatus : cutsI18n.statusFull);
 
     if (mprTitle) mprTitle.textContent = mprI18n.title;
     if (mprSubtitle) mprSubtitle.textContent = mprI18n.subtitle;

@@ -1,5 +1,6 @@
-import { Color } from 'three';
+import { Color, SRGBColorSpace } from 'three';
 import { tissueColor } from '../render/materials.js';
+import { dominantNetwork } from '../catalog/networks.js';
 
 export function labelVisible(label, state) {
   if (label.source_label_id === 0 && label.kind !== 'cortex') return false;
@@ -16,18 +17,30 @@ export function labelVisible(label, state) {
   return true;
 }
 
-/**
- * Whether a cut face shows the parcellation's own published colours.
- *
- * A cut face is sampled from a label volume, and the network layer is a
- * surface field with no volumetric counterpart — so networks cannot reach a
- * cut, and under that mode the face falls back to tissue rather than showing
- * a parcellation the surface is no longer showing.
- */
+/** Whether a cut face shows the parcellation's own published colours. */
 export const usesAtlasColors = state => state.surfaceColor === 'atlas';
 
+/** Whether a cut face carries the network colours the surface is carrying. */
+export const usesNetworkColors = state => state.surfaceColor === 'network';
+
+/*
+ * The network a cut voxel is painted with.
+ *
+ * The surface field is per vertex; a label volume has one code per parcel, so
+ * a cut can only be coloured by the network that holds most of that parcel.
+ * A region split between two networks therefore reads as one colour on the
+ * cut and as both on the surface — the cut status says so. A region in no
+ * network, and everything that is not cortex, keeps its tissue colour, which
+ * is the same rule the medial wall follows on the surface.
+ */
+function networkColor(label, { regions, networks } = {}) {
+  if (label.kind !== 'cortex' || !label.region_id) return null;
+  const name = dominantNetwork(regions?.get(label.region_id));
+  return name ? networks?.colors?.[name] ?? null : null;
+}
+
 /** Palette is independent of slice position, so dragging never rebuilds it. */
-export function createPalette(labels, state, tissuePalette) {
+export function createPalette(labels, state, tissuePalette, lookup) {
   const palette = new Float32Array(labels.length * 4);
   const color = new Color();
   for (const [code, label] of labels.entries()) {
@@ -35,6 +48,12 @@ export function createPalette(labels, state, tissuePalette) {
     color.setRGB(...label.color.map((value) => value / 255));
     if (!usesAtlasColors(state)) {
       color.set(tissueColor({ ...label, source_name: label.name }, tissuePalette));
+    }
+    if (usesNetworkColors(state)) {
+      const channels = networkColor(label, lookup);
+      // Published sRGB, converted the same way the surface converts it, so a
+      // parcel reads as one colour whether it is met on the cut or the surface.
+      if (channels) color.setRGB(...channels.map(value => value / 255), SRGBColorSpace);
     }
     if (label.kind === 'cortex' && !label.region_id) color.set(tissuePalette.unlabelled);
     palette.set([color.r, color.g, color.b, Number(labelVisible(label, state))], code * 4);

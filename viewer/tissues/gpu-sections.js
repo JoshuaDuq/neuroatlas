@@ -18,7 +18,7 @@ import {
 import { rasToWorld, worldToRas } from '../slices/coordinates.js';
 import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
-import { createPalette, labelVisible, usesAtlasColors } from './palette.js';
+import { createPalette, labelVisible, usesAtlasColors, usesNetworkColors } from './palette.js';
 import { createCutMaterial } from './shader.js';
 
 function worldToVoxelMatrix(volume) {
@@ -159,7 +159,11 @@ export class TissueSections {
     layer.mesh.quaternion.setFromRotationMatrix(new Matrix4().makeBasis(u, v, normal));
     layer.mesh.position.copy(rasToWorld(frame.center.toArray()));
     const state = this.model.state;
-    layer.uniforms.tissueVariation.value = usesAtlasColors(state)
+    // Only tissue colour carries the T1 brightness it was tuned against; under
+    // a published palette — atlas or network — that modulation would distort
+    // the datum, and the cut would no longer match its key.
+    const published = usesAtlasColors(state) || usesNetworkColors(state);
+    layer.uniforms.tissueVariation.value = published
       ? 0 : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
       state.surfaceColor,
@@ -171,6 +175,7 @@ export class TissueSections {
     if (key !== layer.paletteKey) {
       layer.palette.image.data = createPalette(
         layer.metadata.labels, state, this.model.manifest.appearance.tissue,
+        { regions: this.model.regions, networks: this.model.manifest.networks },
       );
       layer.palette.needsUpdate = true;
       layer.paletteKey = key;

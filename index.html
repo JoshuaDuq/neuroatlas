@@ -6,12 +6,35 @@
     <meta name="description" content="A precise, source-faithful atlas of the human brain built on a full-resolution FreeSurfer reconstruction." />
     <title>NeuroAtlas</title>
     <link rel="icon" href="data:," />
+    <!--
+      Start the anatomy download before the module graph has parsed. The
+      filenames match `startup-assets.js`; `fetchAsset` consumes these Response
+      promises so the loader never opens a second 25 MB request.
+    -->
+    <script>
+      window.__neuroatlasAssets = window.__neuroatlasAssets || {};
+      (function () {
+        var params = new URLSearchParams(location.hash.replace(/^#/, ''));
+        var atlas = params.get('atlas') === 'hcp-mmp' ? 'cortex-hcp-mmp.glb' : 'cortex-destrieux.glb';
+        var detail = params.get('detail') === 'aseg' ? 'structures.glb' : 'nextbrain.glb';
+        // Same prefix as vite.config.js `base`, so a missing trailing slash
+        // on the page URL cannot send 25 MB at the site root.
+        var root = '/neuroatlas/';
+        ['models/manifest.json', 'models/' + atlas, 'models/' + detail].forEach(function (file) {
+          var url = new URL(root + file, location.origin).href;
+          if (!window.__neuroatlasAssets[url]) {
+            window.__neuroatlasAssets[url] = fetch(url, { cache: 'no-cache', priority: 'high' });
+          }
+        });
+      })();
+    </script>
   </head>
   <body>
     <div id="app" data-status="loading">
       <header id="masthead">
         <h1 class="brand">NeuroAtlas</h1>
         <div id="atlas-switch" class="segmented" role="group" aria-label="Cortical atlas"></div>
+        <div id="surface-switch" class="segmented" role="group" aria-label="Surface colour"></div>
         <div class="masthead-end">
           <!--
             On a phone these four are settings, not instruments, and the row
@@ -55,6 +78,7 @@
           <span class="scale-bar-rule"></span>
           <span class="measure"></span>
         </div>
+        <ul id="network-legend" class="network-legend" aria-label="Network colours" hidden></ul>
         <div id="hover-label" class="chip hover-label" aria-hidden="true" hidden></div>
         <div id="stage" class="stage" role="status">
           <p id="stage-message">Loading anatomy…</p>
@@ -215,20 +239,6 @@
                   <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
                 </label>
                 <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
-
-                <!--
-                  One control, not three toggles: the surface can only be
-                  coloured one way at a time. The network option is removed
-                  when the model carries no network layer.
-                -->
-                <label id="surface-color-label" for="surface-color">Surface colour</label>
-                <select id="surface-color">
-                  <option value="tissue">Tissue</option>
-                  <option value="atlas">Atlas colours</option>
-                  <option value="network">Functional networks</option>
-                </select>
-                <!-- Colour on the model is unreadable without its key. -->
-                <ul id="network-legend" class="network-legend" hidden></ul>
 
                 <button id="reset" class="button-quiet" type="button">Reset view</button>
               </div>

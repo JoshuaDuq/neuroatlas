@@ -227,8 +227,38 @@ test('mesh visibility agrees with the shared rule for every region', async () =>
 test('load progress is reported while a layer downloads', async () => {
   const seen = [];
   const { atlas } = fixture();
-  await atlas.initialize('a', event => seen.push(event.loaded));
-  assert.deepEqual(seen, [10, 20, 10, 20], "structures and the atlas each report");
+  await atlas.initialize('a', event => seen.push({ loaded: event.loaded, total: event.total }));
+  assert.deepEqual(seen.at(-1), { loaded: 40, total: 40 }, 'both layers share one bar');
+  assert.ok(seen.some(event => event.loaded === 10 && event.total === 20));
+  atlas.dispose();
+});
+
+test('initialize fetches the atlas and internal anatomy together', async () => {
+  const { atlas, loads } = fixture();
+  const original = atlas.loader.loadAsync;
+  let started = 0;
+  let released;
+  const gate = new Promise(resolve => { released = resolve; });
+  atlas.loader.loadAsync = async (file, onProgress) => {
+    started += 1;
+    await gate;
+    return original(file, onProgress);
+  };
+  const pending = atlas.initialize('a');
+  await Promise.resolve();
+  assert.equal(started, 2, 'both downloads must have started before either finishes');
+  released();
+  await pending;
+  assert.deepEqual(loads.sort(), ['a.glb', 'structures.glb']);
+  atlas.dispose();
+});
+
+test('initialize can open a named detail level without fetching another', async () => {
+  const { atlas, loads } = fixture();
+  atlas.manifest.detail_levels.push({ id: 'nextbrain', label: 'Fine', file: 'nextbrain.glb' });
+  await atlas.initialize('a', { detail: 'aseg' });
+  assert.equal(atlas.state.detail, 'aseg');
+  assert.ok(!loads.includes('nextbrain.glb'));
   atlas.dispose();
 });
 

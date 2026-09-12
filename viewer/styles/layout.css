@@ -4,7 +4,10 @@
  */
 #app {
   display: grid;
-  grid-template-columns: var(--rail-width) minmax(0, 1fr) var(--rail-width);
+  grid-template-columns:
+    minmax(0, var(--rail-width))
+    minmax(var(--stage-min), 1fr)
+    minmax(0, var(--rail-width));
   grid-template-rows: var(--header-height) minmax(0, 1fr) var(--footer-height);
   height: 100dvh;
   min-height: 560px;
@@ -17,9 +20,9 @@
  * leaving the viewport 188px of a 812px screen. Naming the cells means moving
  * markup cannot silently move the anatomy again.
  */
-#navigator { grid-column: 1; grid-row: 2; }
-#viewport  { grid-column: 2; grid-row: 2; }
-#inspector { grid-column: 3; grid-row: 2; }
+#navigator { grid-column: 1; grid-row: 2; contain: layout paint; }
+#viewport  { grid-column: 2; grid-row: 2; contain: layout; }
+#inspector { grid-column: 3; grid-row: 2; contain: layout paint; }
 
 /* The rails are grid items in their own right until the phone layout claims them. */
 #sheet { display: contents; }
@@ -56,6 +59,14 @@
  */
 #masthead-menu { display: contents; }
 
+/*
+ * The two instrument controls, kept together and ahead of the settings: which
+ * parcellation the cortex carries, and what the cortex is showing. Neither
+ * shrinks below its labels — a truncated mode is a mode the reader cannot
+ * name — so the masthead wraps instead.
+ */
+#atlas-switch, #surface-switch { flex: none; }
+
 #region-count { font-size: var(--text-micro); color: var(--text-tertiary); }
 
 #navigator, #inspector {
@@ -68,7 +79,13 @@
 #inspector { border-left: 1px solid var(--border-subtle); }
 
 .rail-head { padding: var(--space-3) var(--space-4); }
-.rail-body { flex: 1; min-height: 0; overflow-y: auto; }
+.rail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-control) transparent;
+}
 .panel-body { padding: var(--space-2) var(--space-4) var(--space-4); }
 
 /*
