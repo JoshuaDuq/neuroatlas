@@ -365,7 +365,6 @@ export async function startApp() {
     onInsets: insets => {
       scene.setChromeInsets(insets);
       chrome?.setViewport(scene.visibleRect);
-      updateReticle();
     },
     // Reframing during a drag would fight the finger; on arrival the camera
     // eases to the new rectangle, which is the one thing allowed to animate.
