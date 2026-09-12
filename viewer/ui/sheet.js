@@ -23,7 +23,7 @@ const DRAG_THRESHOLD_PX = 8;
  * out of the task they were in, so the strip sits above the tabs and is
  * always visible.
  */
-export function createSheet({ onInsets, onDetent } = {}) {
+export function createSheet({ onInsets, onDetent, onShell } = {}) {
   const sheet = document.getElementById('sheet');
   const grip = document.getElementById('sheet-grip');
   const handle = document.getElementById('sheet-handle');
@@ -192,7 +192,7 @@ export function createSheet({ onInsets, onDetent } = {}) {
 
   // ---- mode -------------------------------------------------------------
 
-  /** Hand the rails back to the grid, exactly as they were. */
+  /** Hand the rails back to the grid, and the panels to the inspector tabs. */
   function teardown() {
     grip.hidden = true;
     navigator_.hidden = false;
@@ -206,9 +206,11 @@ export function createSheet({ onInsets, onDetent } = {}) {
     sheet.style.removeProperty('--sheet-top');
     delete sheet.dataset.detent;
     report(0);
+    onShell?.('rails');
   }
 
   function setup() {
+    onShell?.('sheet');
     grip.hidden = false;
     sheet.dataset.dragging = 'false';
     setTab(active);

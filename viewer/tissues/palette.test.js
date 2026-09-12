@@ -15,7 +15,7 @@ test('neutral cut and surface colours agree for gray matter, white matter and CS
     { kind: 'tissue', source_name: 'Left-Lateral-Ventricle', name: 'Left-Lateral-Ventricle' },
   ].map(label => ({ ...label, region_id: 'region', source_label_id: 1,
     hemisphere: 'left', color: [1, 2, 3] }));
-  const palette = createPalette(tissues, { ...state, atlasColors: false }, appearance.tissue);
+  const palette = createPalette(tissues, { ...state, surfaceColor: 'tissue' }, appearance.tissue);
   for (const [index, label] of tissues.entries()) {
     const expected = new Color(tissueColor(label, appearance.tissue));
     const actual = palette.slice(index * 4, index * 4 + 3);
@@ -45,7 +45,7 @@ const labels = [
 ];
 const state = {
   atlas: 'destrieux',
-  atlasColors: true,
+  surfaceColor: 'atlas',
   cortexVisible: true,
   cortexOpacity: 1,
   hemisphere: 'both',
@@ -65,4 +65,17 @@ test('hemisphere and isolation hide samples rather than relabeling them', () => 
   assert.equal(labelVisible(labels[1], { ...state, hemisphere: 'right' }), false);
   assert.equal(labelVisible(labels[1], { ...state, isolatedRegion: 'destrieux:left:1' }), true);
   assert.equal(labelVisible(labels[2], { ...state, isolatedRegion: 'destrieux:left:1' }), false);
+});
+
+test('periventricular and paraventricular nuclei remain gray matter, not CSF', () => {
+  for (const name of ['Left-paraventricular_nucleus_of_hypothalamus',
+    'Right-periventricular_nucleus__supraoptic_portion',
+    'Left-juxtaparaventricular_lateral_hypothalamic_area']) {
+    assert.equal(tissueColor({ kind: 'structure', source_name: name }, appearance.tissue),
+      appearance.tissue.gray, name);
+  }
+  for (const name of ['Left-Lateral-Ventricle', 'Right-Inf-Lat-Vent', '3rd-Ventricle', 'CSF']) {
+    assert.equal(tissueColor({ kind: 'structure', source_name: name }, appearance.tissue),
+      appearance.tissue.fluid, name);
+  }
 });

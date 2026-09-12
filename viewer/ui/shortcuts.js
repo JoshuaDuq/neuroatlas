@@ -1,16 +1,17 @@
-const SHORTCUTS = [
-  ['/', 'Focus the search field'],
-  ['Esc', 'Clear the search, or the selection'],
-  ['↑ ↓', 'Move through results or the tree'],
-  ['Enter', 'Select the focused region'],
-  ['1 – 6', 'Left, right, front, back, top, bottom view'],
-  ['0', 'Return to the default oblique view'],
-  ['C', 'Show or hide the cortex'],
-  ['H', 'Cycle hemisphere: both, left, right'],
-  ['?', 'Open this list'],
-];
-
 import { t } from '../i18n/translations.js';
+
+/** A dash between two keys is a range, not a key to press. */
+const isRange = token => /^[\u2013\u2014-]$/.test(token);
+
+/** `1 – 6` is three tokens: two keys and the range between them. */
+function keyCaps(keys) {
+  return keys.split(' ').filter(Boolean).map(token => {
+    const node = document.createElement(isRange(token) ? 'span' : 'kbd');
+    if (isRange(token)) node.className = 'key-range';
+    node.textContent = token;
+    return node;
+  });
+}
 
 /**
  * The shortcut sheet.
@@ -32,8 +33,7 @@ export function createShortcuts(initialLang = 'en') {
     list.replaceChildren();
     for (const [keys, description] of i18n.items) {
       const dt = document.createElement('dt');
-      dt.className = 'measure';
-      dt.textContent = keys;
+      dt.replaceChildren(...keyCaps(keys));
       const dd = document.createElement('dd');
       dd.textContent = description;
       list.append(dt, dd);

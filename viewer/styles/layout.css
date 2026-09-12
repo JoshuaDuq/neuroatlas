@@ -48,6 +48,14 @@
   gap: var(--space-4);
 }
 
+/*
+ * Above the phone breakpoint the settings are the masthead row, not a panel
+ * in it. Without this the plain block div stacks its four children into an
+ * 81px column inside a 52px masthead: the region count is clipped off the top
+ * of the window and the theme toggle overflows into the rails.
+ */
+#masthead-menu { display: contents; }
+
 #region-count { font-size: var(--text-micro); color: var(--text-tertiary); }
 
 #navigator, #inspector {
@@ -63,6 +71,35 @@
 .rail-body { flex: 1; min-height: 0; overflow-y: auto; }
 .panel-body { padding: var(--space-2) var(--space-4) var(--space-4); }
 
+/*
+ * The inspector's header: what is selected, then which panel is showing.
+ * Selected, Cuts and Display are three modes, not three sections; stacked
+ * they were a ~900px scroll in a 320px column. The readout keeps its height
+ * whether or not anything is selected, so a selection never shifts the
+ * controls under the cursor.
+ */
+.inspector-selection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  height: var(--row-height);
+  padding: 0 var(--space-4);
+  font-size: var(--text-ui);
+  color: var(--text-secondary);
+}
+.inspector-selection-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.inspector-selection-side {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--text-micro);
+  color: var(--text-tertiary);
+}
+
 .rail-notice {
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--border-subtle);
@@ -70,11 +107,12 @@
   color: var(--text-secondary);
 }
 
+/* The letterboxing matches what the renderer clears to, in both themes. */
 #viewport {
   position: relative;
   min-width: 0;
   overflow: hidden;
-  background: var(--surface-canvas);
+  background: var(--scene-background);
 }
 #viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 
@@ -93,25 +131,28 @@
 #colophon a { color: var(--accent); text-underline-offset: 2px; }
 
 /*
- * Below this width the rails stack under the viewport as plain panels. The
- * viewport is named as the tall row so it keeps the screen it deserves; the
- * rails follow it rather than pushing it under the fold.
+ * Between the phone sheet and the three-column desktop the rails move under
+ * the viewport, side by side rather than stacked.
+ *
+ * Stacked, they made the page a document: 820 by 900 gave a 1415px scroll with
+ * the inspector at y=1194, so clicking a region put the answer three hundred
+ * pixels below the fold behind a 620px tree that did not scroll either. Two
+ * rails of --rail-width fit from 640px up, which is exactly where the sheet
+ * hands over, and the shell stays a fixed frame with only the panels scrolling.
  */
 @media (max-width: 1000px) {
   #app {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 58dvh auto auto var(--footer-height);
-    height: auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 52dvh minmax(0, 1fr) var(--footer-height);
+    height: 100dvh;
   }
-  #viewport  { grid-column: 1; grid-row: 2; }
+  #viewport  { grid-column: 1 / -1; grid-row: 2; }
   #navigator { grid-column: 1; grid-row: 3; }
-  #inspector { grid-column: 1; grid-row: 4; }
-  #navigator, #inspector {
-    border-left: 0;
-    border-right: 0;
-    border-top: 1px solid var(--border-subtle);
-  }
-  .rail-body { overflow-y: visible; }
+  #inspector { grid-column: 2; grid-row: 3; }
+  /* The inspector's left border is the divider between the rails; the
+     navigator's right border would sit against it and read as two. */
+  #navigator, #inspector { border-top: 1px solid var(--border-subtle); }
+  #navigator { border-right: 0; }
   /*
    * The masthead is free to grow here. It was pinned to --header-height while
    * its contents wrapped, so the wrapped row overflowed and was painted over

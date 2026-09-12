@@ -5,7 +5,7 @@
   "atlases": [
     {
       "file": "cortex-destrieux.glb",
-      "sha256": "f676ccacbf1ccd7cbb18440ce9962a4b7df13f63646ec213f4b131ff709d3ff1",
+      "sha256": "ab159a45755311558774aaa710a403f9698d5f616168d5e30904f2b01b8b45f2",
       "mesh_count": 150,
       "hemispheres": {
         "left": {
@@ -31,11 +31,12 @@
       },
       "maximum_glb_coordinate_error_mm": 4.478685229098672e-06,
       "maximum_normal_component_error": 2.9802225021136053e-08,
-      "maximum_sulcal_depth_error": 0.0
+      "maximum_sulcal_depth_error": 0.0,
+      "maximum_ribbon_T1_error": 7.629370770700916e-06
     },
     {
       "file": "cortex-hcp-mmp.glb",
-      "sha256": "a993609c1594b7814107ab7be87b4156307b0d869540808a84ae02a6a3d3a3ce",
+      "sha256": "b9a44781cac196cacdf98e5248d72cdbf3a4038f962c3cd82afe042db4711098",
       "mesh_count": 362,
       "hemispheres": {
         "left": {
@@ -61,7 +62,8 @@
       },
       "maximum_glb_coordinate_error_mm": 4.478685229098672e-06,
       "maximum_normal_component_error": 2.9802294521097394e-08,
-      "maximum_sulcal_depth_error": 0.0
+      "maximum_sulcal_depth_error": 0.0,
+      "maximum_ribbon_T1_error": 7.629370770700916e-06
     }
   ],
   "structures": {

@@ -36,7 +36,7 @@ test('cut palettes match every corresponding exported surface material', async (
   for (const record of Object.values(metadata.atlases)) {
     const palette = createPalette(record.labels, {
       hemisphere: 'both',
-      atlasColors: true,
+      surfaceColor: 'atlas',
       cortexVisible: true,
       cortexOpacity: 1,
     }, manifest.appearance.tissue);
@@ -58,7 +58,7 @@ test('cut-only palettes carry their published table colour unchanged', async () 
   if (!record) return; // The warped volume is an optional source.
   const palette = createPalette(record.labels, {
     hemisphere: 'both',
-    atlasColors: true,
+    surfaceColor: 'atlas',
     cortexVisible: true,
     cortexOpacity: 1,
   }, manifest.appearance.tissue);

@@ -16,6 +16,16 @@ export function labelVisible(label, state) {
   return true;
 }
 
+/**
+ * Whether a cut face shows the parcellation's own published colours.
+ *
+ * A cut face is sampled from a label volume, and the network layer is a
+ * surface field with no volumetric counterpart — so networks cannot reach a
+ * cut, and under that mode the face falls back to tissue rather than showing
+ * a parcellation the surface is no longer showing.
+ */
+export const usesAtlasColors = state => state.surfaceColor === 'atlas';
+
 /** Palette is independent of slice position, so dragging never rebuilds it. */
 export function createPalette(labels, state, tissuePalette) {
   const palette = new Float32Array(labels.length * 4);
@@ -23,7 +33,7 @@ export function createPalette(labels, state, tissuePalette) {
   for (const [code, label] of labels.entries()) {
     // Match the linear baseColorFactor stored in the exported glTF materials.
     color.setRGB(...label.color.map((value) => value / 255));
-    if (!state.atlasColors) {
+    if (!usesAtlasColors(state)) {
       color.set(tissueColor({ ...label, source_name: label.name }, tissuePalette));
     }
     if (label.kind === 'cortex' && !label.region_id) color.set(tissuePalette.unlabelled);

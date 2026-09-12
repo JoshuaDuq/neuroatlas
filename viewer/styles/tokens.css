@@ -3,9 +3,9 @@
  * docs/superpowers/specs/2026-09-10-viewer-interface-design.md section 7.1.
  *
  * Colour carries meaning and chrome is achromatic: --accent appears only on
- * the focus ring, the selected row, the active segment and links. The scene
- * tokens are read from here by render/scene.js, so a colour is changed in
- * exactly one place.
+ * the focus ring, the selected row, the active segment, the one primary
+ * action and links. The scene tokens are read from here by render/scene.js,
+ * so a colour is changed in exactly one place.
  */
 :root {
   color-scheme: light;
@@ -25,15 +25,31 @@
   --border-subtle: #e4e7eb;
   --border-control: #828d99;
 
-  /* Read by the renderer. Kept beside the interface palette on purpose. */
-  --scene-background: #eef0f2;
-  --scene-cortex: #d6cfc2;
-  --scene-structure: #c7beb0;
-  --scene-nonregion: #b0aca5;
+  /*
+   * The image stage does not have a theme. Light mode was showing #d6cfc2
+   * tissue on a #eef0f2 ground — twelve points of lightness apart, which
+   * costs contrast on the anatomy itself. The chrome switches; the stage
+   * does not, so these are one set rather than two.
+   */
+  --scene-background: #0e1116;
+  --scene-cortex: #dcd5c8;
+  --scene-structure: #cfc6b8;
+  --scene-nonregion: #6e6a63;
   --scene-outline-core: #0b1114;
   --scene-outline-halo: #f2f6fa;
-  --scene-outline-hidden: #6f7a86;
-  --scene-exposure: 0.98;
+  --scene-outline-hidden: #46505e;
+  --scene-exposure: 1.12;
+
+  /*
+   * Markings drawn straight onto the stage: orientation letters, the scale
+   * bar, the loading and error text. Theme-independent for the same reason
+   * the stage is.
+   */
+  --overlay-ink: #f2f6fa;
+  --overlay-ink-muted: #aab4c0;
+  --overlay-halo: rgb(6 9 13 / 0.85);
+  /* --danger is measured against a light rail; a failure on the stage is not. */
+  --overlay-danger: #f1928f;
 
   --font-ui: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
@@ -82,12 +98,6 @@
     --surface-canvas: #0e1116;
     --border-subtle: #262c35;
     --border-control: #5f6b7d;
-    --scene-background: #0e1116;
-    --scene-cortex: #dcd5c8;
-    --scene-structure: #cfc6b8;
-    --scene-nonregion: #6e6a63;
-    --scene-outline-hidden: #46505e;
-    --scene-exposure: 1.12;
   }
 }
 
@@ -106,12 +116,6 @@
   --surface-canvas: #0e1116;
   --border-subtle: #262c35;
   --border-control: #5f6b7d;
-  --scene-background: #0e1116;
-  --scene-cortex: #dcd5c8;
-  --scene-structure: #cfc6b8;
-  --scene-nonregion: #6e6a63;
-  --scene-outline-hidden: #46505e;
-  --scene-exposure: 1.12;
 }
 
 @media (prefers-contrast: more) {
@@ -119,5 +123,7 @@
     --text-tertiary: var(--text-secondary);
     --border-control: var(--text-primary);
     --border-subtle: var(--border-control);
+    --overlay-ink-muted: var(--overlay-ink);
+    --overlay-halo: rgb(6 9 13 / 0.95);
   }
 }

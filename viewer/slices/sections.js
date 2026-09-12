@@ -43,7 +43,7 @@ export class BrainSections extends EventTarget {
         s.cortexVisible,
         s.cortexOpacity,
         s.isolatedRegion,
-        s.atlasColors,
+        s.surfaceColor,
       ]);
       if (key === this.visibilityKey) return;
       this.visibilityKey = key;

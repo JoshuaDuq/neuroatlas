@@ -8,13 +8,14 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import map_coordinates
 
-from . import nextbrain
+from . import networks, nextbrain
 from .export import compact_region
 from .geometry import (
     extract_structure,
     normalize,
     partition_surface,
     partition_vertex_field,
+    partition_vertex_labels,
     to_gltf,
 )
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
@@ -191,13 +192,32 @@ def read_meshes(path):
     return meshes
 
 
-def validate_atlas(config, atlas):
+def read_network_field(config, prefix, faces, labels):
+    """The network field re-derived from the annotation, not from the build.
+
+    Returns the field carried onto the atlas partition and the per-source-vertex
+    indices the composition is counted from, or a pair of Nones where the layer
+    is absent.
+    """
+    if not networks.is_available(config):
+        return None, None
+    path = networks.annotation_path(config["source_directory"], prefix)
+    network_labels, _, names = read_annot(path)
+    indices = networks.network_indices(network_labels, names)
+    return partition_vertex_labels(faces, labels, indices), indices
+
+
+def validate_atlas(config, atlas, records):
     path = config["output_directory"] / f"cortex-{atlas['id']}.glb"
     meshes = read_meshes(path)
+    published = {record["id"]: record for record in records}
     reports = {}
     max_error = 0.0
     normal_error = 0.0
     sulcal_error = 0.0
+    intensity_error = 0.0
+    mri = nib.load(config["source_directory"] / "mri/orig.mgz")
+    mri_data = np.asarray(mri.dataobj).astype(float)
     expected_ids = set()
     for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
         vertices, faces = read_geometry(
@@ -213,6 +233,14 @@ def validate_atlas(config, atlas):
             faces, labels,
             read_morph_data(config["source_directory"] / "surf" / f"{prefix}.sulc"),
         )
+        white, _ = read_geometry(config["source_directory"] / "surf" / f"{prefix}.white")
+        coordinates = nib.affines.apply_affine(
+            np.linalg.inv(mri.header.get_vox2ras_tkr()), (vertices + white) / 2
+        )
+        intensity = partition_vertex_field(faces, labels, map_coordinates(
+            mri_data, coordinates.T, order=1, prefilter=False
+        ))
+        network_field, network_ids = read_network_field(config, prefix, faces, labels)
         reports[hemisphere] = validate_partition(vertices, faces, labels, partition)
         for label in np.unique(labels):
             region_id = f"{atlas['id']}:{hemisphere}:{label}"
@@ -220,6 +248,22 @@ def validate_atlas(config, atlas):
             actual = meshes[region_id]
             points, triangles, normals = compact_region(partition, label)
             indices = np.unique(partition.faces[partition.labels == label])
+            for attribute in ("_CONCAVITY", "_T1"):
+                field = actual.vertex_attributes.get(attribute)
+                if field is None or field.size != len(points) or not np.isfinite(field).all():
+                    raise ValueError(f"Missing or invalid {attribute}: {region_id}")
+            intensity_error = max(intensity_error, float(np.abs(
+                actual.vertex_attributes["_T1"].ravel() - intensity[indices]
+            ).max()))
+            if network_field is not None:
+                carried = actual.vertex_attributes.get("_NETWORK")
+                if carried is None or carried.size != len(points):
+                    raise ValueError(f"Missing network field: {region_id}")
+                if not np.array_equal(carried.ravel(), network_field[indices]):
+                    raise ValueError(f"Network field changed: {region_id}")
+                expected = networks.composition(network_ids[labels == label])
+                if published[region_id].get("networks", []) != expected:
+                    raise ValueError(f"Network composition changed: {region_id}")
             depth = actual.vertex_attributes.get("_SULC")
             if depth is None or depth.size != len(points) or not np.isfinite(depth).all():
                 raise ValueError(f"Missing or invalid sulcal depth: {region_id}")
@@ -249,6 +293,7 @@ def validate_atlas(config, atlas):
         max_error > config["validation"]["coordinate_tolerance_mm"]
         or normal_error > 1e-6
         or sulcal_error > 1e-6
+        or intensity_error > 2e-5
     ):
         raise ValueError("GLB export exceeds coordinate or normal tolerance")
     return {
@@ -259,6 +304,7 @@ def validate_atlas(config, atlas):
         "maximum_glb_coordinate_error_mm": max_error,
         "maximum_normal_component_error": normal_error,
         "maximum_sulcal_depth_error": sulcal_error,
+        "maximum_ribbon_T1_error": intensity_error,
     }
 
 
@@ -526,6 +572,8 @@ def validate_manifest(config, manifest):
                 "source": "FreeSurfer lh.sulc / rh.sulc",
                 "interpolation": "Linear on barycentric atlas partitions",
                 "meaning": "Sulcal-depth morphometry; positive values mark sulci",
+                "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+                "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo",
             },
         }
         if atlas_records[atlas["id"]] != metadata:
@@ -588,7 +636,10 @@ def main():
         "status": "passed",
         "scope": "Source-to-asset conversion fidelity",
         "clinical_accuracy_validated": False,
-        "atlases": [validate_atlas(config, atlas) for atlas in config["atlases"]],
+        "atlases": [
+            validate_atlas(config, atlas, manifest["regions"])
+            for atlas in config["atlases"]
+        ],
         "structures": validate_structures(config),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config)}

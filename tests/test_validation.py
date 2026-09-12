@@ -113,6 +113,8 @@ def manifest_assets(tmp_path):
                          "source": "FreeSurfer lh.sulc / rh.sulc",
                          "interpolation": "Linear on barycentric atlas partitions",
                          "meaning": "Sulcal-depth morphometry; positive values mark sulci",
+                "concavity": "_CONCAVITY: normal-projected one-ring displacement / mean edge length; one field-only averaging pass on the intact pial hemisphere",
+                "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo",
                      }}],
         "detail_levels": [{"id": "aseg", "file": "structures.glb", "region_count": 1}],
         "regions": [],

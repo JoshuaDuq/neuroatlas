@@ -43,30 +43,39 @@ anatomies:
 output_directory: public/models
 appearance:
   tissue:
-    cortex: '#b9b7b3'
-    gray: '#a6a39f'
-    white: '#dedbd3'
-    fluid: '#98b9c4'
-    unlabelled: '#b9b7b3'
-    roughness: 0.82
-    clearcoat: 0.02
-    clearcoat_roughness: 0.6
+    cortex: '#c4a897'
+    gray: '#a68d80'
+    white: '#e5dbc5'
+    fluid: '#67777c'
+    unlabelled: '#c4a897'
+    roughness: 0.62
+    clearcoat: 0.08
+    clearcoat_roughness: 0.45
+    ior: 1.38
+    specular_intensity: 0.55
+  intensity:
+    low: 85
+    high: 180
+    surface_strength: 0.28
+    cut_strength: 0.5
   folds:
     low: -0.5
     high: 1.8
-    direct_strength: 0.4
-    indirect_strength: 0.65
+    concavity_low: -0.08
+    concavity_high: 0.04
+    direct_strength: 0.48
+    indirect_strength: 0.78
   lighting:
     environment: 0.3
     hemisphere: 0.28
-    key: 2.2
-    fill: 0.65
+    key: 1.8
+    fill: 0.5
     rim: 0.7
   occlusion:
-    radius: 0.004
-    thickness: 0.008
-    samples: 24
-    intensity: 0.65
+    radius: 0.012
+    thickness: 0.025
+    samples: 32
+    intensity: 0.9
 atlases:
   - id: destrieux
     label: Destrieux anatomical atlas

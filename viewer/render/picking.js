@@ -71,6 +71,8 @@ export function createPicker({ domElement, camera, model, onHover, onSelect }) {
       const region = regionAt({ clientX, clientY });
       const rect = domElement.getBoundingClientRect();
       onHover(region, { x: clientX - rect.left, y: clientY - rect.top });
+      // OrbitControls writes this inline too, so a stylesheet cannot reach it;
+      // `grab` is the resting cursor it is configured with in scene.js.
       domElement.style.cursor = region ? 'pointer' : 'grab';
     });
   };

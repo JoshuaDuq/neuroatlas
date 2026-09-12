@@ -65,6 +65,36 @@ def partition_vertex_field(faces, labels, values):
     )
 
 
+def _majority(values):
+    """The most common value in each row; the lowest wins a tie."""
+    ordered = np.sort(values, axis=1)
+    winner = ordered[:, 0]
+    if ordered.shape[1] == 3:
+        pair = (ordered[:, 1] == ordered[:, 2]) & (ordered[:, 0] != ordered[:, 1])
+        winner = np.where(pair, ordered[:, 1], winner)
+    return winner
+
+
+def partition_vertex_labels(faces, labels, values):
+    """Carry a categorical field onto the same barycentric atlas partition.
+
+    The continuous twin of this averages; an average of two network ids is not
+    a network, so the points a mixed face adds take the most common value among
+    the source vertices that formed them instead. Two-vertex midpoints are a tie
+    whenever their ends disagree, and the lowest id takes them — a deterministic
+    choice at a scale below the one the field itself resolves.
+    """
+    if values.shape != labels.shape or values.ndim != 1:
+        raise ValueError("A categorical value is required for each source vertex")
+    if values.dtype.kind not in "iu":
+        raise ValueError("Categorical surface fields must be integers")
+    mixed_faces = faces[np.any(labels[faces] != labels[faces[:, :1]], axis=1)]
+    edges, _ = partition_edges(mixed_faces)
+    return np.concatenate(
+        [values, _majority(values[edges]), _majority(values[mixed_faces])]
+    )
+
+
 def partition_surface(vertices, faces, labels):
     """Partition mixed-label faces into six barycentric subtriangles.
 

@@ -46,6 +46,11 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   let lighting = null;
 
   const controls = new OrbitControls(camera, renderer.domElement);
+  // The anatomy is draggable and said so only once a pointer had moved over
+  // it: picking wrote the cursor, and before that the canvas rested on `auto`.
+  // The controls own this inline, including `grabbing` for the duration of an
+  // orbit, which nothing else was providing.
+  controls.cursorStyle = 'grab';
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
   controls.listenToKeyEvents(renderer.domElement);

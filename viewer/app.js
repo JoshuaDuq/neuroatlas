@@ -20,6 +20,7 @@ import { createNavigator } from './ui/navigator.js';
 import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
 import { createSheet } from './ui/sheet.js';
+import { createInspectorTabs } from './ui/inspector-tabs.js';
 import { isCoarse } from './render/device.js';
 import { t } from './i18n/translations.js';
 
@@ -225,6 +226,7 @@ export async function startApp() {
 
   const inspector = createInspector({
     catalog,
+    networks: model.manifest.networks,
     atlases: model.manifest.atlases,
     onFocus: focusSelection,
     onIsolate: () => display(() => {
@@ -255,11 +257,12 @@ export async function startApp() {
 
   const display_ = createDisplay({
     detailLevels: model.manifest.detail_levels,
+    networks: model.manifest.networks,
     onDetail: setDetail,
     onHemisphere: value => display(() => model.setHemisphere(value)),
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
-    onAtlasColors: value => display(() => model.setAtlasColors(value)),
+    onSurfaceColor: value => display(() => model.setSurfaceColor(value)),
     onReset: () => display(() => { sections.setMode('off'); model.reset(); applyView('oblique'); }),
   });
 
@@ -293,6 +296,10 @@ export async function startApp() {
     onReticleSelect: select,
   });
 
+  // Built before the sheet: the sheet decides on construction which shell owns
+  // the panels, and hands them over through onShell.
+  const inspectorTabs = createInspectorTabs();
+
   /*
    * The phone shell. It reports how much of the canvas it covers rather than
    * resizing it, and everything that must agree about where the viewport is —
@@ -300,6 +307,10 @@ export async function startApp() {
    * rectangle back from the scene.
    */
   const sheet = createSheet({
+    onShell: shell => {
+      if (shell === 'sheet') inspectorTabs.deactivate();
+      else inspectorTabs.activate();
+    },
     onInsets: insets => {
       scene.setChromeInsets(insets);
       chrome?.setViewport(scene.visibleRect);
@@ -325,12 +336,14 @@ export async function startApp() {
     navigator.update(state);
     inspector.update(state);
     const selected = state.selectedRegion;
-    sheet.update(state, selected
+    const strip = selected
       ? {
           label: catalog.get(selected.id)?.label.name ?? selected.label,
           side: t(state.lang, 'sides').glyphs[selected.hemisphere] ?? '',
         }
-      : {});
+      : {};
+    sheet.update(state, strip);
+    inspectorTabs.update(state, strip);
     clinicalExplorer.update(state);
     display_.update(state);
     sectionControls.update(state);
@@ -475,7 +488,10 @@ export async function startApp() {
   if (wanted.hemisphere) model.setHemisphere(wanted.hemisphere);
   if (wanted.cortexVisible !== undefined) model.setCortexVisible(wanted.cortexVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
-  if (wanted.atlasColors !== undefined) model.setAtlasColors(wanted.atlasColors);
+  // A shared link may name a layer this build does not carry.
+  if (wanted.surfaceColor && (wanted.surfaceColor !== 'network' || model.manifest.networks)) {
+    model.setSurfaceColor(wanted.surfaceColor);
+  }
   if (wanted.cutAtlas) setCutAtlas(wanted.cutAtlas);
   if (wanted.detail) await setDetail(wanted.detail);
   if (wanted.view) applyView(wanted.view, { immediate: true });
@@ -503,6 +519,7 @@ export async function startApp() {
       clearTimeout(urlTimer);
       if (reticleFrame !== null) cancelAnimationFrame(reticleFrame);
       sheet.dispose();
+      inspectorTabs.dispose();
       sections.removeEventListener('change', render);
       model.removeEventListener('change', render);
       sectionControls.dispose();
