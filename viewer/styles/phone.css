@@ -26,7 +26,8 @@
   #masthead {
     grid-column: 1;
     grid-row: 1;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
     height: auto;
     gap: var(--space-3);
     padding: max(var(--space-2), env(safe-area-inset-top)) var(--space-3) var(--space-2);
@@ -34,8 +35,8 @@
     padding-right: max(var(--space-3), env(safe-area-inset-right));
   }
   .brand { font-size: var(--text-ui); margin-right: 0; flex: none; }
-  #atlas-switch { min-width: 0; flex: 1; }
-  #atlas-switch button {
+  #atlas-switch, #surface-switch { min-width: 0; flex: 1; }
+  #atlas-switch button, #surface-switch button {
     min-width: 0;
     flex: 1;
     padding: 0 var(--space-2);
@@ -68,6 +69,7 @@
 
   /* The colophon's disclaimer moves into the sheet, where it stays visible. */
   #colophon { display: none; }
+
 
   /* ---- viewport ------------------------------------------------------- */
   #viewport {
@@ -217,6 +219,21 @@
   .mpr-header { position: sticky; top: 0; background: var(--surface-base); }
   #shortcuts-list { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
   #shortcuts-list dt { margin-top: var(--space-2); }
+}
+
+/*
+ * Portrait has no room for two segmented controls on one line: 375px less the
+ * wordmark and the overflow button leaves each about 118px, which truncates
+ * both. The surface control takes the second row on its own, where its three
+ * modes are full-width tap targets. A landscape phone is 812px across and
+ * keeps everything on one line, so this is deliberately not in the shared
+ * phone query.
+ */
+@media (max-width: 640px) {
+  /* Ordered last so the wrapped row is the switch alone. Left in source order
+     it broke the line before itself and pushed the overflow button onto a
+     third row of its own. */
+  #surface-switch { order: 1; flex: 1 0 100%; }
 }
 
 /*

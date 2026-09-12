@@ -17,11 +17,14 @@ button, input, select, output { font: inherit; color: inherit; }
 
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
 
-/* One ring, on every surface, in both themes. Never removed, only restyled. */
+/*
+ * One ring, on every surface, in both themes. Never removed, only restyled.
+ * The ring follows whatever radius the element already has; setting one here
+ * rounded the element itself, which clipped the corners of a selected row.
+ */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: var(--radius-control);
 }
 :focus:not(:focus-visible) { outline: none; }
 

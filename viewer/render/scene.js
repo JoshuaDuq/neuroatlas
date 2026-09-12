@@ -10,7 +10,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
-import { pixelRatioCap } from './device.js';
+import { occlusionActive, qualityProfile } from './quality.js';
 
 const TRANSITION_MS = 240;
 
@@ -31,11 +31,17 @@ const token = name =>
  * model never has to alter a material to show them.
  */
 export function createScene(host, { onContextLost, onContextRestored, onResize } = {}) {
+  const quality = qualityProfile();
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
-  const renderer = new WebGLRenderer({ antialias: true });
+  // The composer owns MSAA. Asking the default framebuffer for it as well
+  // would allocate a second multisampled buffer that this path never draws.
+  const renderer = new WebGLRenderer({
+    antialias: false,
+    powerPreference: 'high-performance',
+  });
   renderer.localClippingEnabled = true;
-  renderer.setPixelRatio(pixelRatioCap());
+  renderer.setPixelRatio(quality.pixelRatio);
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label',
@@ -64,12 +70,16 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
    */
   let chromeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 
-  const renderTarget = new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 });
+  const renderTarget = new WebGLRenderTarget(1, 1, {
+    type: HalfFloatType,
+    samples: quality.msaaSamples,
+  });
   const composer = new EffectComposer(renderer, renderTarget);
   composer.addPass(new RenderPass(scene, camera));
 
   const occlusion = new GTAOPass(scene, camera, 1, 1);
   occlusion.updatePdMaterial({ depthPhi: 0.002, normalPhi: 8, radius: 4 });
+  occlusion.enabled = quality.occlusion;
   composer.addPass(occlusion);
 
   /*
@@ -92,17 +102,24 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   composer.addPass(new OutputPass());
 
   let dirty = true;
+  let looping = false;
   let transition = null;
   let hasTransparency = () => false;
   let hasSections = () => false;
-  const invalidate = () => { dirty = true; };
+  const invalidate = () => {
+    dirty = true;
+    if (!looping) startLoop();
+  };
 
   function setAppearance(appearance) {
     lighting?.dispose();
     lighting = createAnatomicalLighting(renderer, camera, appearance.lighting);
     scene.environment = lighting.texture;
     scene.environmentIntensity = appearance.lighting.environment;
-    occlusion.updateGtaoMaterial(appearance.occlusion);
+    occlusion.updateGtaoMaterial({
+      ...appearance.occlusion,
+      samples: Math.min(appearance.occlusion.samples, quality.occlusionSamples),
+    });
     occlusion.blendIntensity = appearance.occlusion.intensity;
     invalidate();
   }
@@ -146,17 +163,23 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   function setSize() {
     const { width, height } = host.getBoundingClientRect();
     if (!width || !height) return;
-    const ratio = pixelRatioCap();
+    const ratio = quality.pixelRatio;
     if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
     renderer.setSize(width, height);
     composer.setSize(width, height);
+    if (quality.occlusion && quality.occlusionScale !== 1) {
+      occlusion.setSize(
+        Math.max(1, Math.round(width * quality.occlusionScale)),
+        Math.max(1, Math.round(height * quality.occlusionScale)),
+      );
+    }
     camera.aspect = width / height;
     applyViewOffset();
     camera.updateProjectionMatrix();
     invalidate();
     // The scale bar is derived from the viewport height, so it is stale the
     // moment the viewport changes and cannot wait for the camera to move.
-    onResize?.();
+    onResize?.({ canvasChanged: true });
   }
 
   /** Selection gets both tones; hover gets the halo alone. */
@@ -214,16 +237,35 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     invalidate();
   }
 
-  renderer.setAnimationLoop(now => {
+  function tick(now) {
     step(now);
     controls.update();
+    const transparent = hasTransparency();
+    const wantAO = occlusionActive({
+      enabled: quality.occlusion,
+      transparent,
+      sections: hasSections(),
+    });
+    if (occlusion.enabled !== wantAO) {
+      occlusion.enabled = wantAO;
+      dirty = true;
+    }
+    renderer.sortObjects = transparent;
+    if (!dirty && !transition) {
+      renderer.setAnimationLoop(null);
+      looping = false;
+      return;
+    }
     if (!dirty) return;
-    // A single opaque depth buffer cannot represent translucent cortex.
-    // Override depth/normal passes do not preserve local material clipping.
-    occlusion.enabled = !hasTransparency() && !hasSections();
     composer.render();
     dirty = false;
-  });
+  }
+
+  function startLoop() {
+    looping = true;
+    renderer.setAnimationLoop(tick);
+  }
+  startLoop();
 
   // Reported upward rather than written to the DOM: the app owns status, and
   // a status written here would be overwritten by the next render.
@@ -259,7 +301,10 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       if (same) return;
       chromeInsets = merged;
       applyViewOffset();
-      onResize?.();
+      // Not a canvas resize: the sheet reports this on every frame of a drag,
+      // and refitting there would fight the finger. The sheet reframes itself
+      // when it settles on a detent.
+      onResize?.({ canvasChanged: false });
     },
 
     /** The canvas rectangle the interface leaves uncovered, in CSS pixels. */
@@ -278,6 +323,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
     dispose() {
       renderer.setAnimationLoop(null);
+      looping = false;
       observer.disconnect();
       controls.removeEventListener('change', invalidate);
       renderer.domElement.removeEventListener('webglcontextlost', handleLost);

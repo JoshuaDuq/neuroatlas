@@ -17,7 +17,10 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   };
   const atlas = new BrainAtlas(manifest, loader);
   await atlas.initialize('destrieux');
-  assert.equal(atlas.visibleMeshes.length, 185);
+  const detail = manifest.detail_levels.find(level => level.id === atlas.defaultDetail);
+  assert.equal(atlas.state.detail, 'nextbrain');
+  // 148 Destrieux parcels plus the two non-region surfaces.
+  assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count);
   for (const entry of manifest.atlases) {
     await atlas.setAtlas(entry.id);
     const corticalMeshes = atlas.visibleMeshes.filter(mesh => mesh.userData.kind === 'cortex');
@@ -38,7 +41,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
     assert.equal(atlas.state.selectedRegion.atlas, entry.id);
   }
   atlas.setCortexVisible(false);
-  assert.equal(atlas.visibleMeshes.length, manifest.detail_levels[0].region_count);
+  assert.equal(atlas.visibleMeshes.length, detail.region_count);
   atlas.select(atlas.visibleMeshes[0].userData.region_id);
   assert.equal(atlas.state.selectedRegion.kind, 'structure');
   atlas.dispose();

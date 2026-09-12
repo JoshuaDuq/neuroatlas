@@ -3,7 +3,7 @@ import { createCatalog } from './catalog/catalog.js';
 import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion } from './clinical/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
-import { VIEW_DIRECTIONS, frameTo, upFor } from './render/camera-views.js';
+import { VIEW_DIRECTIONS, fitDistance, frameTo, upFor } from './render/camera-views.js';
 import { createPicker } from './render/picking.js';
 import { createScene, planFraming } from './render/scene.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
@@ -22,9 +22,27 @@ import { createViewportChrome } from './ui/viewport-chrome.js';
 import { createSheet } from './ui/sheet.js';
 import { createInspectorTabs } from './ui/inspector-tabs.js';
 import { isCoarse } from './render/device.js';
+import { qualityProfile } from './render/quality.js';
 import { t } from './i18n/translations.js';
 
 const VIEW_KEYS = ['left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
+
+/**
+ * After the first atlas is on screen, pull the others in while the reader is
+ * looking. Switching then does not wait on another 20 MB download. Phones and
+ * Save-Data connections skip this: the extra decoded layers would evict the
+ * one they are using.
+ */
+function prefetchIdleLayers(model) {
+  if (!qualityProfile().prefetchLayers) return;
+  const idle = globalThis.requestIdleCallback ?? (fn => setTimeout(fn, 1500));
+  idle(() => {
+    for (const entry of [...model.manifest.atlases, ...model.manifest.detail_levels]) {
+      if (entry.id === model.state.atlas || entry.id === model.state.detail) continue;
+      model.loadLayer(entry.id, entry.file).catch(() => {});
+    }
+  });
+}
 
 /**
  * The composition root: it constructs the layers and connects them, and does
@@ -48,19 +66,31 @@ export async function startApp() {
   // it is being constructed, and the crosshair reads the picker from there.
   let chrome = null;
   let picker = null;
+  let refitViewport = null;
   const scene = createScene(viewport, {
     onContextLost: () => { session.setContextLost(); render(); },
     onContextRestored: () => { session.setStatus('ready'); render(); },
-    onResize: () => onCameraChange(),
+    onResize: ({ canvasChanged } = {}) => {
+      if (canvasChanged) refitViewport?.();
+      onCameraChange();
+    },
   });
   const theme = createTheme(() => scene.applyTheme());
 
   const manifestUrl = `${import.meta.env.BASE_URL}models/manifest.json`;
-  const model = await BrainAtlas.load(manifestUrl, wanted.atlas, progress => {
-    if (progress?.total) {
+  const model = await BrainAtlas.load(manifestUrl, wanted.atlas, {
+    detail: wanted.detail,
+    onProgress: progress => {
+      if (!progress?.total) return;
       session.setProgress({ loaded: progress.loaded, total: progress.total });
-      render();
-    }
+      const bar = document.getElementById('stage-bar');
+      const message = document.getElementById('stage-message');
+      const track = document.getElementById('stage-progress');
+      track.hidden = false;
+      bar.style.width = `${Math.round((progress.loaded / progress.total) * 100)}%`;
+      message.textContent = t(initialLang, 'viewport')
+        .loadingWithTotal(progress.loaded, progress.total);
+    },
   });
 
   const catalog = createCatalog(model.manifest, initialLang);
@@ -89,6 +119,29 @@ export async function startApp() {
   }
 
   let framed = false;
+
+  /*
+   * The reader's magnification, as a multiple of the distance at which the
+   * whole brain just fills the stage. Held across a resize so that a stage
+   * which changes shape re-fits instead of clipping the anatomy off its sides
+   * or stranding it in the middle of a much larger field.
+   */
+  let zoom = 1;
+  const viewDirection = () =>
+    scene.camera.position.clone().sub(scene.controls.target).normalize();
+  const fittedDistance = direction =>
+    fitDistance(scene.camera, bounds, direction, scene.viewportFit);
+
+  refitViewport = () => {
+    if (!framed) return;
+    const direction = viewDirection();
+    const fitted = fittedDistance(direction);
+    if (!(fitted > 0)) return;
+    scene.camera.position.copy(scene.controls.target)
+      .addScaledVector(direction, fitted * zoom);
+    scene.controls.update();
+    scene.invalidate();
+  };
 
   /**
    * Frame the current view against the part of the canvas the interface is
@@ -207,7 +260,9 @@ export async function startApp() {
 
   const header = createHeader({
     atlases: model.manifest.atlases,
+    networks: model.manifest.networks,
     onAtlas: setAtlas,
+    onSurfaceColor: value => display(() => model.setSurfaceColor(value)),
     onTheme: () => { theme.toggle(); session.setTheme(theme.current); render(); },
     onLang: setLang,
   });
@@ -226,6 +281,7 @@ export async function startApp() {
 
   const inspector = createInspector({
     catalog,
+    regions: model.manifest.regions,
     networks: model.manifest.networks,
     atlases: model.manifest.atlases,
     onFocus: focusSelection,
@@ -257,12 +313,10 @@ export async function startApp() {
 
   const display_ = createDisplay({
     detailLevels: model.manifest.detail_levels,
-    networks: model.manifest.networks,
     onDetail: setDetail,
     onHemisphere: value => display(() => model.setHemisphere(value)),
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
-    onSurfaceColor: value => display(() => model.setSurfaceColor(value)),
     onReset: () => display(() => { sections.setMode('off'); model.reset(); applyView('oblique'); }),
   });
 
@@ -291,6 +345,7 @@ export async function startApp() {
   const shortcuts = createShortcuts(initialLang);
 
   chrome = createViewportChrome({
+    networks: model.manifest.networks,
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
     onReticleSelect: select,
@@ -432,6 +487,8 @@ export async function startApp() {
   // the chrome exists, can reach it.
   function onCameraChange() {
     if (!chrome) return;
+    const fitted = fittedDistance(viewDirection());
+    if (fitted > 0) zoom = scene.distanceToTarget / fitted;
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
     chrome.setViewport(scene.visibleRect);
     updateReticle();
@@ -511,6 +568,7 @@ export async function startApp() {
   chrome.setViewport(scene.visibleRect);
   onCameraChange();
   render();
+  prefetchIdleLayers(model);
 
   return {
     dispose() {

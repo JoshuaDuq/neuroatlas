@@ -11,7 +11,7 @@
  * Revalidating costs one conditional request per asset and returns 304 when
  * nothing changed, which is cheap next to being wrong about what is on screen.
  */
-export const REVALIDATE = { cache: 'no-cache' };
+export const REVALIDATE = { cache: 'no-cache', priority: 'high' };
 
 export const fetchPublished = (url, options) => fetch(url, { ...REVALIDATE, ...options });
 
