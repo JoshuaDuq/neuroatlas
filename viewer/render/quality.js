@@ -1,4 +1,4 @@
-import { isPhone, pixelRatioCap } from './device.js';
+import { isCoarse, isPhone, pixelRatioCap } from './device.js';
 
 /**
  * How much GPU work this device can take without dropping frames.
@@ -6,17 +6,23 @@ import { isPhone, pixelRatioCap } from './device.js';
  * The anatomy stays full resolution on every device. Only the presentation
  * — pixel ratio, MSAA, ambient occlusion, whether to prefetch the other
  * atlas — scales. Labels, coordinates and triangle counts do not.
+ *
+ * A tablet is not a phone for layout, but it is for fill rate: GTAO is a
+ * full extra pass over every region mesh, and an iPad at 2× is more pixels
+ * than a laptop. Coarse pointer is the test, not width.
  */
 export function qualityProfile(input = {}) {
   const connection = globalThis.navigator?.connection;
   const phone = input.phone ?? isPhone();
+  const coarse = input.coarse ?? isCoarse();
   const saveData = input.saveData ?? Boolean(connection?.saveData);
   const pixelRatio = input.pixelRatio ?? (globalThis.devicePixelRatio ?? 1);
   const deviceMemory = input.deviceMemory ?? (globalThis.navigator?.deviceMemory ?? 8);
-  const constrained = phone || saveData || deviceMemory <= 4;
+  const handheld = phone || coarse;
+  const constrained = handheld || saveData || deviceMemory <= 4;
   return {
     pixelRatio: input.pixelRatio !== undefined
-      ? Math.min(pixelRatio, phone ? 1.5 : 2)
+      ? Math.min(pixelRatio, handheld ? 1.5 : 2)
       : pixelRatioCap(),
     msaaSamples: constrained ? 2 : 4,
     occlusion: !constrained,
