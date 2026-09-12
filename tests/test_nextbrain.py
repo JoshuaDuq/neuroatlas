@@ -67,6 +67,39 @@ def test_regions_cover_only_delineated_rois_and_measure_what_they_contain(config
         assert "vertex_count" not in region
 
 
+def test_cortical_cut_parcels_carry_network_composition(config):
+    """Yeo membership is measured on the surface; NextBrain cortex is a volume.
+
+    The cut can only paint one colour per parcel, so each cortical ROI reports
+    the network that holds most of the nearest pial/white vertices — the same
+    nearest-vertex rule the HCP cut labels already use. Nuclei have no cortical
+    surface and must not be given a network.
+    """
+    from brain_model import networks as yeo
+
+    if not yeo.is_available(config):
+        pytest.skip("network annotation is optional")
+    regions = {region["id"]: region for region in nextbrain.build_regions(config)}
+    cortex = [
+        region for region in regions.values()
+        if "ctx-" in region["source_published_name"]
+    ]
+    assert cortex, "NextBrain cortical parcels should survive resampling"
+    for region in cortex:
+        assert region.get("networks"), region["id"]
+        assert region["networks"][0]["network"] in yeo.NETWORKS
+    assert "networks" not in regions["nextbrain:left:48"]
+
+
+def test_pericalcarine_cortex_is_visual(config):
+    from brain_model import networks as yeo
+
+    if not yeo.is_available(config):
+        pytest.skip("network annotation is optional")
+    regions = {region["id"]: region for region in nextbrain.build_regions(config)}
+    assert regions["nextbrain:left:2021"]["networks"][0]["network"] == "Vis"
+
+
 def test_hemisphere_comes_from_the_index_not_the_published_name(config):
     """NextBrain names every cortical parcel `ctx-rh-` on both sides."""
     regions = {region["id"]: region for region in nextbrain.build_regions(config)}

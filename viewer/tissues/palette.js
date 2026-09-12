@@ -29,12 +29,15 @@ export const usesNetworkColors = state => state.surfaceColor === 'network';
  * The surface field is per vertex; a label volume has one code per parcel, so
  * a cut can only be coloured by the network that holds most of that parcel.
  * A region split between two networks therefore reads as one colour on the
- * cut and as both on the surface — the cut status says so. A region in no
- * network, and everything that is not cortex, keeps its tissue colour, which
- * is the same rule the medial wall follows on the surface.
+ * cut and as both on the surface — the cut status says so.
+ *
+ * Kind is not the test: NextBrain cortical parcels are cut-only tissue
+ * labels, but they still have a region record and, when the build has
+ * measured them, the same network shares. A region in no network — nuclei,
+ * white matter, the medial wall — keeps its tissue colour.
  */
 function networkColor(label, { regions, networks } = {}) {
-  if (label.kind !== 'cortex' || !label.region_id) return null;
+  if (!label.region_id) return null;
   const name = dominantNetwork(regions?.get(label.region_id));
   return name ? networks?.colors?.[name] ?? null : null;
 }
