@@ -286,7 +286,7 @@ export function createNavigator({
       const key = [
         state.atlas, state.detail, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
         state.cortexVisible, state.cortexOpacity > 0,
-        state.isolatedRegion, state.query, [...state.expanded].sort().join(),
+        state.isolatedRegion, state.internalSystem, state.query, [...state.expanded].sort().join(),
       ].join('|');
       if (key !== structureKey) {
         structureKey = key;

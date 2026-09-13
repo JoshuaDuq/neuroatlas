@@ -108,6 +108,7 @@ def manifest_assets(tmp_path):
     atlas = {"id": "test", "label": "Test atlas", "annotation": "test"}
     manifest = {
         "atlases": [{**atlas, "file": "cortex-test.glb", "region_count": 2,
+                     "ribbon_labels": {"file": "ribbons-test.labels"},
                      "surface_shading": {
                          "attribute": "_SULC",
                          "source": "FreeSurfer lh.sulc / rh.sulc",

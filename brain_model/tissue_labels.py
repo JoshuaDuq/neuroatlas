@@ -7,7 +7,7 @@ import numpy as np
 from nibabel.freesurfer.io import read_annot, read_geometry
 from scipy.spatial import cKDTree
 
-from . import nextbrain
+from . import nextbrain, white_matter
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .volumes import encode_volume
 
@@ -167,6 +167,11 @@ def export_tissue_labels(config, manifest):
                 "the published delineation, bounds their accuracy."
             )
         )
+    if white_matter.is_available(config):
+        metadata["white_matter"] = white_matter.export_volume(
+            config, manifest["regions"]
+        )
+        metadata["limitations"].extend(white_matter.limitations(config))
     write_json(config["output_directory"] / "tissue-labels.json", metadata)
     return metadata
 

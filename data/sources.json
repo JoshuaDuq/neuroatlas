@@ -222,6 +222,14 @@
       "archive_member": "bert/mri/brain.mgz"
     },
     {
+      "path": "data/bert/mri/wmparc.mgz",
+      "sha256": "3721ac792dd05a1b3bb0ab9b1f6798b6d34563b553d68d2754d8fce2ed5bb68e",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/mri/wmparc.mgz"
+    },
+    {
       "path": "data/bert/scripts/build-stamp.txt",
       "sha256": "029f07b4c0da720c62ea17ef12c4901b4995e1658202f5d6c3c4b5d706d09e60",
       "anatomy": "bert",

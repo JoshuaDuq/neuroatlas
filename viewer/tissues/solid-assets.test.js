@@ -2,8 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
-import { Color, MeshBasicMaterial } from 'three';
-import { indexLabels, paintSolids } from './solid-assets.js';
+import { BoxGeometry, Color, Matrix4, Mesh, MeshBasicMaterial } from 'three';
+import { Volume } from '../slices/volume.js';
+import { BANDS, addSolidSources, indexLabels, paintSolids } from './solid-assets.js';
+import { SolidSections } from './solid-sections.js';
+import { createWhiteMatter } from './white-matter.js';
 
 const { appearance } = parse(
   readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'),
@@ -149,4 +152,72 @@ test('a wedge the cut atlas never labelled answers for no region', () => {
 test('a nucleus the cut atlas never labelled still answers for itself', () => {
   const nucleus = solid({ hemisphere: 'left', detail: 'aseg', region_id: 'aseg:left:17' });
   assert.equal(paint([nucleus])[0].region, 'aseg:left:17');
+});
+
+const WHITE_MATTER_PARCEL = 'wmparc:left:3024';
+
+function whiteMatter() {
+  const record = {
+    shape: [1, 1, 1], order: 'F', applies_to: ['destrieux'],
+    voxel_to_surface_ras_mm: [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]],
+    labels: [
+      { source_label_id: 0, region_id: null },
+      { source_label_id: 3024, region_id: WHITE_MATTER_PARCEL },
+    ],
+  };
+  return createWhiteMatter(record, new Volume(record, new Uint8Array([1])));
+}
+
+test('isolating a white-matter parcel keeps its own hemisphere’s white envelope standing', () => {
+  const lookup = { ...LOOKUP, regions: new Map([[WHITE_MATTER_PARCEL, { hemisphere: 'left' }]]) };
+  const left = solid({ hemisphere: 'left', boundary: 'white' });
+  const right = solid({ hemisphere: 'right', boundary: 'white' });
+  paintSolids({ solids: [left, right] }, {
+    labels: LABELS, state: { ...STATE, isolatedRegion: WHITE_MATTER_PARCEL },
+    atlas: 'destrieux', detail: 'aseg', wedged: true, appearance, lookup,
+    whiteMatter: whiteMatter(),
+  });
+  assert.equal(left.visible, true);
+  assert.equal(right.visible, false);
+});
+
+test('only the white envelope cap samples gyral white matter', () => {
+  const solids = new SolidSections();
+  const envelope = boundary => {
+    const mesh = new Mesh(new BoxGeometry(0.1, 0.1, 0.1));
+    mesh.userData = { hemisphere: 'left', boundary };
+    return mesh;
+  };
+  const anatomy = { texture: null, worldToVoxel: new Matrix4(), volume: { shape: [1, 1, 1] } };
+  addSolidSources(solids, [envelope('pial'), envelope('white')], anatomy, appearance,
+    BANDS.envelope, whiteMatter());
+  const [pial, white] = solids.solids.map(({ cap }) => {
+    const shader = {
+      uniforms: {},
+      vertexShader: '#include <begin_vertex>',
+      fragmentShader: '#include <color_fragment>',
+    };
+    cap.material.onBeforeCompile(shader);
+    return shader.uniforms;
+  });
+  assert.equal(pial.whiteMatterVolume, undefined);
+  assert.equal(white.whiteMatterVolume.value.isData3DTexture, true);
+  solids.dispose();
+});
+
+test('learning caps obey system filtering and remain visible during isolation', () => {
+  const id = 'learning:left:caudate';
+  const record = { id, atlas: 'learning', kind: 'structure', hemisphere: 'left',
+    source_name: 'Caudate', display_names: { en: 'Caudate' },
+    system_names: { en: 'Basal ganglia' } };
+  const cap = solid({ ...record, region_id: id, detail: 'learning' });
+  const options = { labels: LABELS, atlas: 'destrieux', detail: 'learning', wedged: true,
+    appearance, lookup: { regions: new Map([[id, record]]) } };
+  paintSolids({ solids: [cap] }, { ...options,
+    state: { ...STATE, detail: 'learning', internalSystem: 'Brainstem' } });
+  assert.equal(cap.visible, false);
+  paintSolids({ solids: [cap] }, { ...options,
+    state: { ...STATE, detail: 'learning', internalSystem: 'Basal ganglia', isolatedRegion: id } });
+  assert.equal(cap.visible, true);
+  assert.equal(cap.region, id);
 });

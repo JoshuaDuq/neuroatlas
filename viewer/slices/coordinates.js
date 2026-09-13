@@ -1,8 +1,15 @@
-import { Plane, Vector3 } from 'three';
+import { Matrix4, Plane, Vector3 } from 'three';
 
 export const rasToWorld = ([right, anterior, superior]) =>
   new Vector3(right / 1000, superior / 1000, -anterior / 1000);
 export const worldToRas = point => [point.x * 1000, -point.z * 1000, point.y * 1000];
+
+export function worldToVoxelMatrix(volume) {
+  const worldToSource = new Matrix4().set(
+    1000, 0, 0, 0, 0, 0, -1000, 0, 0, 1000, 0, 0, 0, 0, 0, 1,
+  );
+  return new Matrix4().fromArray(volume.inverse).multiply(worldToSource);
+}
 
 const BASES = {
   sagittal: { normal: [1,0,0], u: [0,-1,0], v: [0,0,1], edges: ['S','P','I','A'] },

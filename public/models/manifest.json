@@ -814,6 +814,45 @@
         "method": "Gaussian segmentation gradient normals; geometry unchanged",
         "sigma_voxels": 0.8
       }
+    },
+    {
+      "id": "learning",
+      "label": "Learning anatomy",
+      "file": "learning.glb",
+      "region_count": 75,
+      "voxel_to_surface_ras_mm": [
+        [
+          -1.0,
+          0.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -128.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "palette_method": "Distinct teaching colours for display units, not the source LUT",
+      "display_geometry": {
+        "method": "Explicit source-label unions; bounded Taubin display smoothing",
+        "iterations": 16,
+        "maximum_displacement_mm": 0.6,
+        "source_volumes_unchanged": true
+      }
     }
   ],
   "regions": [
@@ -24530,6 +24569,5044 @@
           "fraction": 0.010352760736196318
         }
       ]
+    },
+    {
+      "id": "wmparc:left:3001",
+      "label": "bankssts white matter \u00b7 left",
+      "source_name": "bankssts",
+      "source_published_name": "wm-lh-bankssts",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3001,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 2809,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2809.0
+    },
+    {
+      "id": "wmparc:left:3002",
+      "label": "caudalanteriorcingulate white matter \u00b7 left",
+      "source_name": "caudalanteriorcingulate",
+      "source_published_name": "wm-lh-caudalanteriorcingulate",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3002,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 2933,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2933.0
+    },
+    {
+      "id": "wmparc:left:3003",
+      "label": "caudalmiddlefrontal white matter \u00b7 left",
+      "source_name": "caudalmiddlefrontal",
+      "source_published_name": "wm-lh-caudalmiddlefrontal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3003,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 5690,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5690.0
+    },
+    {
+      "id": "wmparc:left:3005",
+      "label": "cuneus white matter \u00b7 left",
+      "source_name": "cuneus",
+      "source_published_name": "wm-lh-cuneus",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3005,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 2583,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2583.0
+    },
+    {
+      "id": "wmparc:left:3006",
+      "label": "entorhinal white matter \u00b7 left",
+      "source_name": "entorhinal",
+      "source_published_name": "wm-lh-entorhinal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3006,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 859,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 859.0
+    },
+    {
+      "id": "wmparc:left:3007",
+      "label": "fusiform white matter \u00b7 left",
+      "source_name": "fusiform",
+      "source_published_name": "wm-lh-fusiform",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3007,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6408,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6408.0
+    },
+    {
+      "id": "wmparc:left:3008",
+      "label": "inferiorparietal white matter \u00b7 left",
+      "source_name": "inferiorparietal",
+      "source_published_name": "wm-lh-inferiorparietal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3008,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 9896,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 9896.0
+    },
+    {
+      "id": "wmparc:left:3009",
+      "label": "inferiortemporal white matter \u00b7 left",
+      "source_name": "inferiortemporal",
+      "source_published_name": "wm-lh-inferiortemporal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3009,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6407,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6407.0
+    },
+    {
+      "id": "wmparc:left:3010",
+      "label": "isthmuscingulate white matter \u00b7 left",
+      "source_name": "isthmuscingulate",
+      "source_published_name": "wm-lh-isthmuscingulate",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3010,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3557,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3557.0
+    },
+    {
+      "id": "wmparc:left:3011",
+      "label": "lateraloccipital white matter \u00b7 left",
+      "source_name": "lateraloccipital",
+      "source_published_name": "wm-lh-lateraloccipital",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3011,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 8780,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 8780.0
+    },
+    {
+      "id": "wmparc:left:3012",
+      "label": "lateralorbitofrontal white matter \u00b7 left",
+      "source_name": "lateralorbitofrontal",
+      "source_published_name": "wm-lh-lateralorbitofrontal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3012,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6766,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6766.0
+    },
+    {
+      "id": "wmparc:left:3013",
+      "label": "lingual white matter \u00b7 left",
+      "source_name": "lingual",
+      "source_published_name": "wm-lh-lingual",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3013,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 5267,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5267.0
+    },
+    {
+      "id": "wmparc:left:3014",
+      "label": "medialorbitofrontal white matter \u00b7 left",
+      "source_name": "medialorbitofrontal",
+      "source_published_name": "wm-lh-medialorbitofrontal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3014,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3859,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3859.0
+    },
+    {
+      "id": "wmparc:left:3015",
+      "label": "middletemporal white matter \u00b7 left",
+      "source_name": "middletemporal",
+      "source_published_name": "wm-lh-middletemporal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3015,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 5134,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5134.0
+    },
+    {
+      "id": "wmparc:left:3016",
+      "label": "parahippocampal white matter \u00b7 left",
+      "source_name": "parahippocampal",
+      "source_published_name": "wm-lh-parahippocampal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3016,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 1630,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1630.0
+    },
+    {
+      "id": "wmparc:left:3017",
+      "label": "paracentral white matter \u00b7 left",
+      "source_name": "paracentral",
+      "source_published_name": "wm-lh-paracentral",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3017,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 4062,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4062.0
+    },
+    {
+      "id": "wmparc:left:3018",
+      "label": "parsopercularis white matter \u00b7 left",
+      "source_name": "parsopercularis",
+      "source_published_name": "wm-lh-parsopercularis",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3018,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3972,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3972.0
+    },
+    {
+      "id": "wmparc:left:3019",
+      "label": "parsorbitalis white matter \u00b7 left",
+      "source_name": "parsorbitalis",
+      "source_published_name": "wm-lh-parsorbitalis",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3019,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 801,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 801.0
+    },
+    {
+      "id": "wmparc:left:3020",
+      "label": "parstriangularis white matter \u00b7 left",
+      "source_name": "parstriangularis",
+      "source_published_name": "wm-lh-parstriangularis",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3020,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3540,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3540.0
+    },
+    {
+      "id": "wmparc:left:3021",
+      "label": "pericalcarine white matter \u00b7 left",
+      "source_name": "pericalcarine",
+      "source_published_name": "wm-lh-pericalcarine",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3021,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3188,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3188.0
+    },
+    {
+      "id": "wmparc:left:3022",
+      "label": "postcentral white matter \u00b7 left",
+      "source_name": "postcentral",
+      "source_published_name": "wm-lh-postcentral",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3022,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6592,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6592.0
+    },
+    {
+      "id": "wmparc:left:3023",
+      "label": "posteriorcingulate white matter \u00b7 left",
+      "source_name": "posteriorcingulate",
+      "source_published_name": "wm-lh-posteriorcingulate",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3023,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 4288,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4288.0
+    },
+    {
+      "id": "wmparc:left:3024",
+      "label": "precentral white matter \u00b7 left",
+      "source_name": "precentral",
+      "source_published_name": "wm-lh-precentral",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3024,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 13025,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 13025.0
+    },
+    {
+      "id": "wmparc:left:3025",
+      "label": "precuneus white matter \u00b7 left",
+      "source_name": "precuneus",
+      "source_published_name": "wm-lh-precuneus",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3025,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 10215,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10215.0
+    },
+    {
+      "id": "wmparc:left:3026",
+      "label": "rostralanteriorcingulate white matter \u00b7 left",
+      "source_name": "rostralanteriorcingulate",
+      "source_published_name": "wm-lh-rostralanteriorcingulate",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3026,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3322,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3322.0
+    },
+    {
+      "id": "wmparc:left:3027",
+      "label": "rostralmiddlefrontal white matter \u00b7 left",
+      "source_name": "rostralmiddlefrontal",
+      "source_published_name": "wm-lh-rostralmiddlefrontal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3027,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 13645,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 13645.0
+    },
+    {
+      "id": "wmparc:left:3028",
+      "label": "superiorfrontal white matter \u00b7 left",
+      "source_name": "superiorfrontal",
+      "source_published_name": "wm-lh-superiorfrontal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3028,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 17826,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 17826.0
+    },
+    {
+      "id": "wmparc:left:3029",
+      "label": "superiorparietal white matter \u00b7 left",
+      "source_name": "superiorparietal",
+      "source_published_name": "wm-lh-superiorparietal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3029,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 11915,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 11915.0
+    },
+    {
+      "id": "wmparc:left:3030",
+      "label": "superiortemporal white matter \u00b7 left",
+      "source_name": "superiortemporal",
+      "source_published_name": "wm-lh-superiortemporal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3030,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 7687,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 7687.0
+    },
+    {
+      "id": "wmparc:left:3031",
+      "label": "supramarginal white matter \u00b7 left",
+      "source_name": "supramarginal",
+      "source_published_name": "wm-lh-supramarginal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3031,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 10202,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10202.0
+    },
+    {
+      "id": "wmparc:left:3032",
+      "label": "frontalpole white matter \u00b7 left",
+      "source_name": "frontalpole",
+      "source_published_name": "wm-lh-frontalpole",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3032,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 170,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 170.0
+    },
+    {
+      "id": "wmparc:left:3033",
+      "label": "temporalpole white matter \u00b7 left",
+      "source_name": "temporalpole",
+      "source_published_name": "wm-lh-temporalpole",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3033,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 611,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 611.0
+    },
+    {
+      "id": "wmparc:left:3034",
+      "label": "transversetemporal white matter \u00b7 left",
+      "source_name": "transversetemporal",
+      "source_published_name": "wm-lh-transversetemporal",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3034,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 931,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 931.0
+    },
+    {
+      "id": "wmparc:left:3035",
+      "label": "insula white matter \u00b7 left",
+      "source_name": "insula",
+      "source_published_name": "wm-lh-insula",
+      "atlas": "wmparc",
+      "hemisphere": "left",
+      "source_label_id": 3035,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 9591,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 9591.0
+    },
+    {
+      "id": "wmparc:right:4001",
+      "label": "bankssts white matter \u00b7 right",
+      "source_name": "bankssts",
+      "source_published_name": "wm-rh-bankssts",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4001,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 2367,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2367.0
+    },
+    {
+      "id": "wmparc:right:4002",
+      "label": "caudalanteriorcingulate white matter \u00b7 right",
+      "source_name": "caudalanteriorcingulate",
+      "source_published_name": "wm-rh-caudalanteriorcingulate",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4002,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3348,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3348.0
+    },
+    {
+      "id": "wmparc:right:4003",
+      "label": "caudalmiddlefrontal white matter \u00b7 right",
+      "source_name": "caudalmiddlefrontal",
+      "source_published_name": "wm-rh-caudalmiddlefrontal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4003,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 5739,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5739.0
+    },
+    {
+      "id": "wmparc:right:4005",
+      "label": "cuneus white matter \u00b7 right",
+      "source_name": "cuneus",
+      "source_published_name": "wm-rh-cuneus",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4005,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 2121,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2121.0
+    },
+    {
+      "id": "wmparc:right:4006",
+      "label": "entorhinal white matter \u00b7 right",
+      "source_name": "entorhinal",
+      "source_published_name": "wm-rh-entorhinal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4006,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 472,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 472.0
+    },
+    {
+      "id": "wmparc:right:4007",
+      "label": "fusiform white matter \u00b7 right",
+      "source_name": "fusiform",
+      "source_published_name": "wm-rh-fusiform",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4007,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6678,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6678.0
+    },
+    {
+      "id": "wmparc:right:4008",
+      "label": "inferiorparietal white matter \u00b7 right",
+      "source_name": "inferiorparietal",
+      "source_published_name": "wm-rh-inferiorparietal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4008,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 9899,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 9899.0
+    },
+    {
+      "id": "wmparc:right:4009",
+      "label": "inferiortemporal white matter \u00b7 right",
+      "source_name": "inferiortemporal",
+      "source_published_name": "wm-rh-inferiortemporal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4009,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 5071,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5071.0
+    },
+    {
+      "id": "wmparc:right:4010",
+      "label": "isthmuscingulate white matter \u00b7 right",
+      "source_name": "isthmuscingulate",
+      "source_published_name": "wm-rh-isthmuscingulate",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4010,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3085,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3085.0
+    },
+    {
+      "id": "wmparc:right:4011",
+      "label": "lateraloccipital white matter \u00b7 right",
+      "source_name": "lateraloccipital",
+      "source_published_name": "wm-rh-lateraloccipital",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4011,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 10442,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10442.0
+    },
+    {
+      "id": "wmparc:right:4012",
+      "label": "lateralorbitofrontal white matter \u00b7 right",
+      "source_name": "lateralorbitofrontal",
+      "source_published_name": "wm-rh-lateralorbitofrontal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4012,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 7094,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 7094.0
+    },
+    {
+      "id": "wmparc:right:4013",
+      "label": "lingual white matter \u00b7 right",
+      "source_name": "lingual",
+      "source_published_name": "wm-rh-lingual",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4013,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 5137,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5137.0
+    },
+    {
+      "id": "wmparc:right:4014",
+      "label": "medialorbitofrontal white matter \u00b7 right",
+      "source_name": "medialorbitofrontal",
+      "source_published_name": "wm-rh-medialorbitofrontal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4014,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 4491,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4491.0
+    },
+    {
+      "id": "wmparc:right:4015",
+      "label": "middletemporal white matter \u00b7 right",
+      "source_name": "middletemporal",
+      "source_published_name": "wm-rh-middletemporal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4015,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6305,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6305.0
+    },
+    {
+      "id": "wmparc:right:4016",
+      "label": "parahippocampal white matter \u00b7 right",
+      "source_name": "parahippocampal",
+      "source_published_name": "wm-rh-parahippocampal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4016,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 1873,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1873.0
+    },
+    {
+      "id": "wmparc:right:4017",
+      "label": "paracentral white matter \u00b7 right",
+      "source_name": "paracentral",
+      "source_published_name": "wm-rh-paracentral",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4017,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 4719,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4719.0
+    },
+    {
+      "id": "wmparc:right:4018",
+      "label": "parsopercularis white matter \u00b7 right",
+      "source_name": "parsopercularis",
+      "source_published_name": "wm-rh-parsopercularis",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4018,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3270,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3270.0
+    },
+    {
+      "id": "wmparc:right:4019",
+      "label": "parsorbitalis white matter \u00b7 right",
+      "source_name": "parsorbitalis",
+      "source_published_name": "wm-rh-parsorbitalis",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4019,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 1575,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1575.0
+    },
+    {
+      "id": "wmparc:right:4020",
+      "label": "parstriangularis white matter \u00b7 right",
+      "source_name": "parstriangularis",
+      "source_published_name": "wm-rh-parstriangularis",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4020,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 4242,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4242.0
+    },
+    {
+      "id": "wmparc:right:4021",
+      "label": "pericalcarine white matter \u00b7 right",
+      "source_name": "pericalcarine",
+      "source_published_name": "wm-rh-pericalcarine",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4021,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 3185,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3185.0
+    },
+    {
+      "id": "wmparc:right:4022",
+      "label": "postcentral white matter \u00b7 right",
+      "source_name": "postcentral",
+      "source_published_name": "wm-rh-postcentral",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4022,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 7289,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 7289.0
+    },
+    {
+      "id": "wmparc:right:4023",
+      "label": "posteriorcingulate white matter \u00b7 right",
+      "source_name": "posteriorcingulate",
+      "source_published_name": "wm-rh-posteriorcingulate",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4023,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 4900,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4900.0
+    },
+    {
+      "id": "wmparc:right:4024",
+      "label": "precentral white matter \u00b7 right",
+      "source_name": "precentral",
+      "source_published_name": "wm-rh-precentral",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4024,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 13765,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 13765.0
+    },
+    {
+      "id": "wmparc:right:4025",
+      "label": "precuneus white matter \u00b7 right",
+      "source_name": "precuneus",
+      "source_published_name": "wm-rh-precuneus",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4025,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 10409,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10409.0
+    },
+    {
+      "id": "wmparc:right:4026",
+      "label": "rostralanteriorcingulate white matter \u00b7 right",
+      "source_name": "rostralanteriorcingulate",
+      "source_published_name": "wm-rh-rostralanteriorcingulate",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4026,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 2582,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2582.0
+    },
+    {
+      "id": "wmparc:right:4027",
+      "label": "rostralmiddlefrontal white matter \u00b7 right",
+      "source_name": "rostralmiddlefrontal",
+      "source_published_name": "wm-rh-rostralmiddlefrontal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4027,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 12390,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 12390.0
+    },
+    {
+      "id": "wmparc:right:4028",
+      "label": "superiorfrontal white matter \u00b7 right",
+      "source_name": "superiorfrontal",
+      "source_published_name": "wm-rh-superiorfrontal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4028,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 16889,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 16889.0
+    },
+    {
+      "id": "wmparc:right:4029",
+      "label": "superiorparietal white matter \u00b7 right",
+      "source_name": "superiorparietal",
+      "source_published_name": "wm-rh-superiorparietal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4029,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 11820,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 11820.0
+    },
+    {
+      "id": "wmparc:right:4030",
+      "label": "superiortemporal white matter \u00b7 right",
+      "source_name": "superiortemporal",
+      "source_published_name": "wm-rh-superiortemporal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4030,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 6702,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6702.0
+    },
+    {
+      "id": "wmparc:right:4031",
+      "label": "supramarginal white matter \u00b7 right",
+      "source_name": "supramarginal",
+      "source_published_name": "wm-rh-supramarginal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4031,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 9853,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 9853.0
+    },
+    {
+      "id": "wmparc:right:4032",
+      "label": "frontalpole white matter \u00b7 right",
+      "source_name": "frontalpole",
+      "source_published_name": "wm-rh-frontalpole",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4032,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 452,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 452.0
+    },
+    {
+      "id": "wmparc:right:4033",
+      "label": "temporalpole white matter \u00b7 right",
+      "source_name": "temporalpole",
+      "source_published_name": "wm-rh-temporalpole",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4033,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 475,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 475.0
+    },
+    {
+      "id": "wmparc:right:4034",
+      "label": "transversetemporal white matter \u00b7 right",
+      "source_name": "transversetemporal",
+      "source_published_name": "wm-rh-transversetemporal",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4034,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 618,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 618.0
+    },
+    {
+      "id": "wmparc:right:4035",
+      "label": "insula white matter \u00b7 right",
+      "source_name": "insula",
+      "source_published_name": "wm-rh-insula",
+      "atlas": "wmparc",
+      "hemisphere": "right",
+      "source_label_id": 4035,
+      "kind": "tissue-region",
+      "cut_atlases": [
+        "destrieux",
+        "hcp-mmp"
+      ],
+      "voxel_count": 10725,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10725.0
+    },
+    {
+      "id": "learning:left:caudate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Caudate nucleus \u00b7 left",
+      "source_name": "Caudate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        48,
+        118,
+        393
+      ],
+      "constituent_regions": [
+        "nextbrain:left:48",
+        "nextbrain:left:118",
+        "nextbrain:left:393"
+      ],
+      "display_names": {
+        "en": "Caudate nucleus",
+        "fr": "Noyau caud\u00e9"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        64,
+        142,
+        172
+      ],
+      "voxel_count": 4329,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4329.0,
+      "display_maximum_displacement_mm": 0.6000000000000038,
+      "vertex_count": 3725,
+      "triangle_count": 7478,
+      "surface_area_mm2": 2394.6592062079526
+    },
+    {
+      "id": "learning:right:caudate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Caudate nucleus \u00b7 right",
+      "source_name": "Caudate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10048,
+        10118,
+        10393
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10048",
+        "nextbrain:right:10118",
+        "nextbrain:right:10393"
+      ],
+      "display_names": {
+        "en": "Caudate nucleus",
+        "fr": "Noyau caud\u00e9"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        64,
+        142,
+        172
+      ],
+      "voxel_count": 3996,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3996.0,
+      "display_maximum_displacement_mm": 0.6000000000000031,
+      "vertex_count": 3667,
+      "triangle_count": 7386,
+      "surface_area_mm2": 2329.7729677409816
+    },
+    {
+      "id": "learning:left:putamen",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Putamen \u00b7 left",
+      "source_name": "Putamen",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        79,
+        349
+      ],
+      "constituent_regions": [
+        "nextbrain:left:79",
+        "nextbrain:left:349"
+      ],
+      "display_names": {
+        "en": "Putamen",
+        "fr": "Putamen"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        210,
+        150,
+        67
+      ],
+      "voxel_count": 6304,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6304.0,
+      "display_maximum_displacement_mm": 0.5399797409875241,
+      "vertex_count": 3781,
+      "triangle_count": 7546,
+      "surface_area_mm2": 2488.8168882010004
+    },
+    {
+      "id": "learning:right:putamen",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Putamen \u00b7 right",
+      "source_name": "Putamen",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10079,
+        10349
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10079",
+        "nextbrain:right:10349"
+      ],
+      "display_names": {
+        "en": "Putamen",
+        "fr": "Putamen"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        210,
+        150,
+        67
+      ],
+      "voxel_count": 6066,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6066.0,
+      "display_maximum_displacement_mm": 0.5270126529608149,
+      "vertex_count": 3762,
+      "triangle_count": 7508,
+      "surface_area_mm2": 2419.8561442232167
+    },
+    {
+      "id": "learning:left:pallidum-external",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Globus pallidus \u2014 external \u00b7 left",
+      "source_name": "Globus pallidus \u2014 external",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        119
+      ],
+      "constituent_regions": [
+        "nextbrain:left:119"
+      ],
+      "display_names": {
+        "en": "Globus pallidus \u2014 external",
+        "fr": "Globus pallidus externe"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        132,
+        110,
+        180
+      ],
+      "voxel_count": 1222,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1222.0,
+      "display_maximum_displacement_mm": 0.4923799293257447,
+      "vertex_count": 1501,
+      "triangle_count": 3058,
+      "surface_area_mm2": 964.5305881638083
+    },
+    {
+      "id": "learning:right:pallidum-external",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Globus pallidus \u2014 external \u00b7 right",
+      "source_name": "Globus pallidus \u2014 external",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10119
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10119"
+      ],
+      "display_names": {
+        "en": "Globus pallidus \u2014 external",
+        "fr": "Globus pallidus externe"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        132,
+        110,
+        180
+      ],
+      "voxel_count": 1455,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1455.0,
+      "display_maximum_displacement_mm": 0.49771534981225435,
+      "vertex_count": 1603,
+      "triangle_count": 3222,
+      "surface_area_mm2": 1018.173555054574
+    },
+    {
+      "id": "learning:left:pallidum-internal",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Globus pallidus \u2014 internal \u00b7 left",
+      "source_name": "Globus pallidus \u2014 internal",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        206
+      ],
+      "constituent_regions": [
+        "nextbrain:left:206"
+      ],
+      "display_names": {
+        "en": "Globus pallidus \u2014 internal",
+        "fr": "Globus pallidus interne"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        180,
+        91,
+        131
+      ],
+      "voxel_count": 650,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 650.0,
+      "display_maximum_displacement_mm": 0.4705776859532351,
+      "vertex_count": 780,
+      "triangle_count": 1552,
+      "surface_area_mm2": 501.79194953994715
+    },
+    {
+      "id": "learning:right:pallidum-internal",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Globus pallidus \u2014 internal \u00b7 right",
+      "source_name": "Globus pallidus \u2014 internal",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10206
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10206"
+      ],
+      "display_names": {
+        "en": "Globus pallidus \u2014 internal",
+        "fr": "Globus pallidus interne"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        180,
+        91,
+        131
+      ],
+      "voxel_count": 706,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 706.0,
+      "display_maximum_displacement_mm": 0.4847737802977477,
+      "vertex_count": 805,
+      "triangle_count": 1610,
+      "surface_area_mm2": 526.9424876590974
+    },
+    {
+      "id": "learning:left:accumbens",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Nucleus accumbens core \u00b7 left",
+      "source_name": "Nucleus accumbens core",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        101
+      ],
+      "constituent_regions": [
+        "nextbrain:left:101"
+      ],
+      "display_names": {
+        "en": "Nucleus accumbens core",
+        "fr": "C\u0153ur du noyau accumbens"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        96,
+        159,
+        105
+      ],
+      "voxel_count": 640,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 640.0,
+      "display_maximum_displacement_mm": 0.4635725188112857,
+      "vertex_count": 688,
+      "triangle_count": 1380,
+      "surface_area_mm2": 463.9162190541606
+    },
+    {
+      "id": "learning:right:accumbens",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Nucleus accumbens core \u00b7 right",
+      "source_name": "Nucleus accumbens core",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10101
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10101"
+      ],
+      "display_names": {
+        "en": "Nucleus accumbens core",
+        "fr": "C\u0153ur du noyau accumbens"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        96,
+        159,
+        105
+      ],
+      "voxel_count": 605,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 605.0,
+      "display_maximum_displacement_mm": 0.5050084044056096,
+      "vertex_count": 765,
+      "triangle_count": 1538,
+      "surface_area_mm2": 489.4436715270708
+    },
+    {
+      "id": "learning:left:subthalamic",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Subthalamic nucleus \u00b7 left",
+      "source_name": "Subthalamic nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        315,
+        316,
+        321
+      ],
+      "constituent_regions": [
+        "nextbrain:left:315",
+        "nextbrain:left:316",
+        "nextbrain:left:321"
+      ],
+      "display_names": {
+        "en": "Subthalamic nucleus",
+        "fr": "Noyau sous-thalamique"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        209,
+        112,
+        65
+      ],
+      "voxel_count": 89,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 89.0,
+      "display_maximum_displacement_mm": 0.441559151265413,
+      "vertex_count": 222,
+      "triangle_count": 436,
+      "surface_area_mm2": 139.5771395643056
+    },
+    {
+      "id": "learning:right:subthalamic",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Subthalamic nucleus \u00b7 right",
+      "source_name": "Subthalamic nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10315,
+        10316,
+        10321
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10315",
+        "nextbrain:right:10316",
+        "nextbrain:right:10321"
+      ],
+      "display_names": {
+        "en": "Subthalamic nucleus",
+        "fr": "Noyau sous-thalamique"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        209,
+        112,
+        65
+      ],
+      "voxel_count": 100,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 100.0,
+      "display_maximum_displacement_mm": 0.4903356307563174,
+      "vertex_count": 258,
+      "triangle_count": 516,
+      "surface_area_mm2": 155.68355072017619
+    },
+    {
+      "id": "learning:left:substantia-nigra",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Substantia nigra \u00b7 left",
+      "source_name": "Substantia nigra",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        310,
+        352
+      ],
+      "constituent_regions": [
+        "nextbrain:left:310",
+        "nextbrain:left:352"
+      ],
+      "display_names": {
+        "en": "Substantia nigra",
+        "fr": "Substance noire"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        83,
+        106,
+        143
+      ],
+      "voxel_count": 242,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 242.0,
+      "display_maximum_displacement_mm": 0.4705538377554559,
+      "vertex_count": 441,
+      "triangle_count": 882,
+      "surface_area_mm2": 279.7461574985822
+    },
+    {
+      "id": "learning:right:substantia-nigra",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Substantia nigra \u00b7 right",
+      "source_name": "Substantia nigra",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10310,
+        10352
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10310",
+        "nextbrain:right:10352"
+      ],
+      "display_names": {
+        "en": "Substantia nigra",
+        "fr": "Substance noire"
+      },
+      "system_names": {
+        "en": "Basal ganglia",
+        "fr": "Ganglions de la base"
+      },
+      "display_color": [
+        83,
+        106,
+        143
+      ],
+      "voxel_count": 255,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 255.0,
+      "display_maximum_displacement_mm": 0.5323805727544711,
+      "vertex_count": 465,
+      "triangle_count": 930,
+      "surface_area_mm2": 295.75160761784673
+    },
+    {
+      "id": "learning:left:claustrum",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Claustrum \u00b7 left",
+      "source_name": "Claustrum",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        102,
+        174
+      ],
+      "constituent_regions": [
+        "nextbrain:left:102",
+        "nextbrain:left:174"
+      ],
+      "display_names": {
+        "en": "Claustrum",
+        "fr": "Claustrum"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        135,
+        166,
+        104
+      ],
+      "voxel_count": 864,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 864.0,
+      "display_maximum_displacement_mm": 0.5334035569370252,
+      "vertex_count": 2273,
+      "triangle_count": 4622,
+      "surface_area_mm2": 1430.582217566654
+    },
+    {
+      "id": "learning:right:claustrum",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Claustrum \u00b7 right",
+      "source_name": "Claustrum",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10102,
+        10174
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10102",
+        "nextbrain:right:10174"
+      ],
+      "display_names": {
+        "en": "Claustrum",
+        "fr": "Claustrum"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        135,
+        166,
+        104
+      ],
+      "voxel_count": 918,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 918.0,
+      "display_maximum_displacement_mm": 0.6000000000000028,
+      "vertex_count": 2445,
+      "triangle_count": 5030,
+      "surface_area_mm2": 1509.748514018403
+    },
+    {
+      "id": "learning:left:ventral-pallidum",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Ventral pallidum \u00b7 left",
+      "source_name": "Ventral pallidum",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        120
+      ],
+      "constituent_regions": [
+        "nextbrain:left:120"
+      ],
+      "display_names": {
+        "en": "Ventral pallidum",
+        "fr": "Pallidum ventral"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        184,
+        136,
+        83
+      ],
+      "voxel_count": 13,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 13.0,
+      "display_maximum_displacement_mm": 0.4976539358639745,
+      "vertex_count": 64,
+      "triangle_count": 120,
+      "surface_area_mm2": 24.350233120309277
+    },
+    {
+      "id": "learning:right:ventral-pallidum",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Ventral pallidum \u00b7 right",
+      "source_name": "Ventral pallidum",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10120
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10120"
+      ],
+      "display_names": {
+        "en": "Ventral pallidum",
+        "fr": "Pallidum ventral"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        184,
+        136,
+        83
+      ],
+      "voxel_count": 5,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5.0,
+      "display_maximum_displacement_mm": 0.44135088196749983,
+      "vertex_count": 28,
+      "triangle_count": 40,
+      "surface_area_mm2": 0.9816147292391505
+    },
+    {
+      "id": "learning:left:septal",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Septal and diagonal band nuclei \u00b7 left",
+      "source_name": "Septal and diagonal band nuclei",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        103,
+        111
+      ],
+      "constituent_regions": [
+        "nextbrain:left:103",
+        "nextbrain:left:111"
+      ],
+      "display_names": {
+        "en": "Septal and diagonal band nuclei",
+        "fr": "Noyaux septal et de la bande diagonale"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        98,
+        164,
+        154
+      ],
+      "voxel_count": 152,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 152.0,
+      "display_maximum_displacement_mm": 0.48632429837872354,
+      "vertex_count": 437,
+      "triangle_count": 882,
+      "surface_area_mm2": 260.00366172473156
+    },
+    {
+      "id": "learning:right:septal",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Septal and diagonal band nuclei \u00b7 right",
+      "source_name": "Septal and diagonal band nuclei",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10103,
+        10111
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10103",
+        "nextbrain:right:10111"
+      ],
+      "display_names": {
+        "en": "Septal and diagonal band nuclei",
+        "fr": "Noyaux septal et de la bande diagonale"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        98,
+        164,
+        154
+      ],
+      "voxel_count": 100,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 100.0,
+      "display_maximum_displacement_mm": 0.5075746143166329,
+      "vertex_count": 313,
+      "triangle_count": 602,
+      "surface_area_mm2": 169.91715069631073
+    },
+    {
+      "id": "learning:left:innominata",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Substantia innominata and basal nucleus \u00b7 left",
+      "source_name": "Substantia innominata and basal nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        108,
+        128
+      ],
+      "constituent_regions": [
+        "nextbrain:left:108",
+        "nextbrain:left:128"
+      ],
+      "display_names": {
+        "en": "Substantia innominata and basal nucleus",
+        "fr": "Substance innomin\u00e9e et noyau basal"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        189,
+        127,
+        145
+      ],
+      "voxel_count": 422,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 422.0,
+      "display_maximum_displacement_mm": 0.488592169631828,
+      "vertex_count": 889,
+      "triangle_count": 1778,
+      "surface_area_mm2": 569.1176014000412
+    },
+    {
+      "id": "learning:right:innominata",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Substantia innominata and basal nucleus \u00b7 right",
+      "source_name": "Substantia innominata and basal nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10128
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10128"
+      ],
+      "display_names": {
+        "en": "Substantia innominata and basal nucleus",
+        "fr": "Substance innomin\u00e9e et noyau basal"
+      },
+      "system_names": {
+        "en": "Basal forebrain",
+        "fr": "Prosenc\u00e9phale basal"
+      },
+      "display_color": [
+        189,
+        127,
+        145
+      ],
+      "voxel_count": 423,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 423.0,
+      "display_maximum_displacement_mm": 0.5093917082251364,
+      "vertex_count": 885,
+      "triangle_count": 1786,
+      "surface_area_mm2": 556.59633527759
+    },
+    {
+      "id": "learning:left:thalamus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Thalamus \u00b7 left",
+      "source_name": "Thalamus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        190,
+        191,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        252,
+        253,
+        254,
+        274,
+        282,
+        283,
+        285,
+        286,
+        303,
+        312,
+        313,
+        314,
+        350,
+        378,
+        379,
+        380,
+        381,
+        382,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        423,
+        424,
+        425,
+        426,
+        441,
+        443,
+        454,
+        458,
+        478,
+        479,
+        492,
+        508,
+        517,
+        519,
+        578,
+        811,
+        813
+      ],
+      "constituent_regions": [
+        "nextbrain:left:190",
+        "nextbrain:left:191",
+        "nextbrain:left:218",
+        "nextbrain:left:219",
+        "nextbrain:left:220",
+        "nextbrain:left:221",
+        "nextbrain:left:222",
+        "nextbrain:left:223",
+        "nextbrain:left:224",
+        "nextbrain:left:225",
+        "nextbrain:left:252",
+        "nextbrain:left:253",
+        "nextbrain:left:254",
+        "nextbrain:left:274",
+        "nextbrain:left:282",
+        "nextbrain:left:283",
+        "nextbrain:left:285",
+        "nextbrain:left:286",
+        "nextbrain:left:303",
+        "nextbrain:left:312",
+        "nextbrain:left:313",
+        "nextbrain:left:314",
+        "nextbrain:left:350",
+        "nextbrain:left:378",
+        "nextbrain:left:379",
+        "nextbrain:left:380",
+        "nextbrain:left:381",
+        "nextbrain:left:382",
+        "nextbrain:left:394",
+        "nextbrain:left:395",
+        "nextbrain:left:396",
+        "nextbrain:left:397",
+        "nextbrain:left:398",
+        "nextbrain:left:399",
+        "nextbrain:left:423",
+        "nextbrain:left:424",
+        "nextbrain:left:425",
+        "nextbrain:left:426",
+        "nextbrain:left:441",
+        "nextbrain:left:443",
+        "nextbrain:left:454",
+        "nextbrain:left:458",
+        "nextbrain:left:478",
+        "nextbrain:left:479",
+        "nextbrain:left:492",
+        "nextbrain:left:508",
+        "nextbrain:left:517",
+        "nextbrain:left:519",
+        "nextbrain:left:578",
+        "nextbrain:left:811",
+        "nextbrain:left:813"
+      ],
+      "display_names": {
+        "en": "Thalamus",
+        "fr": "Thalamus"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        158,
+        119,
+        185
+      ],
+      "voxel_count": 7903,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 7903.0,
+      "display_maximum_displacement_mm": 0.52252985794287,
+      "vertex_count": 3992,
+      "triangle_count": 7952,
+      "surface_area_mm2": 2589.554849462652
+    },
+    {
+      "id": "learning:right:thalamus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Thalamus \u00b7 right",
+      "source_name": "Thalamus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10190,
+        10191,
+        10218,
+        10219,
+        10220,
+        10221,
+        10222,
+        10223,
+        10224,
+        10225,
+        10252,
+        10253,
+        10254,
+        10274,
+        10282,
+        10283,
+        10285,
+        10286,
+        10312,
+        10313,
+        10314,
+        10350,
+        10378,
+        10379,
+        10380,
+        10381,
+        10382,
+        10394,
+        10395,
+        10396,
+        10397,
+        10398,
+        10399,
+        10423,
+        10424,
+        10425,
+        10426,
+        10441,
+        10454,
+        10458,
+        10478,
+        10479,
+        10492,
+        10508,
+        10517,
+        10519,
+        10578,
+        10813
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10190",
+        "nextbrain:right:10191",
+        "nextbrain:right:10218",
+        "nextbrain:right:10219",
+        "nextbrain:right:10220",
+        "nextbrain:right:10221",
+        "nextbrain:right:10222",
+        "nextbrain:right:10223",
+        "nextbrain:right:10224",
+        "nextbrain:right:10225",
+        "nextbrain:right:10252",
+        "nextbrain:right:10253",
+        "nextbrain:right:10254",
+        "nextbrain:right:10274",
+        "nextbrain:right:10282",
+        "nextbrain:right:10283",
+        "nextbrain:right:10285",
+        "nextbrain:right:10286",
+        "nextbrain:right:10312",
+        "nextbrain:right:10313",
+        "nextbrain:right:10314",
+        "nextbrain:right:10350",
+        "nextbrain:right:10378",
+        "nextbrain:right:10379",
+        "nextbrain:right:10380",
+        "nextbrain:right:10381",
+        "nextbrain:right:10382",
+        "nextbrain:right:10394",
+        "nextbrain:right:10395",
+        "nextbrain:right:10396",
+        "nextbrain:right:10397",
+        "nextbrain:right:10398",
+        "nextbrain:right:10399",
+        "nextbrain:right:10423",
+        "nextbrain:right:10424",
+        "nextbrain:right:10425",
+        "nextbrain:right:10426",
+        "nextbrain:right:10441",
+        "nextbrain:right:10454",
+        "nextbrain:right:10458",
+        "nextbrain:right:10478",
+        "nextbrain:right:10479",
+        "nextbrain:right:10492",
+        "nextbrain:right:10508",
+        "nextbrain:right:10517",
+        "nextbrain:right:10519",
+        "nextbrain:right:10578",
+        "nextbrain:right:10813"
+      ],
+      "display_names": {
+        "en": "Thalamus",
+        "fr": "Thalamus"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        158,
+        119,
+        185
+      ],
+      "voxel_count": 8278,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 8278.0,
+      "display_maximum_displacement_mm": 0.521497546748821,
+      "vertex_count": 4078,
+      "triangle_count": 8148,
+      "surface_area_mm2": 2664.5288992222613
+    },
+    {
+      "id": "learning:left:hypothalamus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Hypothalamus (excluding mammillary nuclei) \u00b7 left",
+      "source_name": "Hypothalamus (excluding mammillary nuclei)",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        147,
+        149,
+        150,
+        181,
+        192,
+        193,
+        194,
+        196,
+        207,
+        227,
+        228,
+        229,
+        230,
+        232,
+        243,
+        244,
+        245,
+        255,
+        256,
+        268,
+        275,
+        297,
+        304
+      ],
+      "constituent_regions": [
+        "nextbrain:left:147",
+        "nextbrain:left:149",
+        "nextbrain:left:150",
+        "nextbrain:left:181",
+        "nextbrain:left:192",
+        "nextbrain:left:193",
+        "nextbrain:left:194",
+        "nextbrain:left:196",
+        "nextbrain:left:207",
+        "nextbrain:left:227",
+        "nextbrain:left:228",
+        "nextbrain:left:229",
+        "nextbrain:left:230",
+        "nextbrain:left:232",
+        "nextbrain:left:243",
+        "nextbrain:left:244",
+        "nextbrain:left:245",
+        "nextbrain:left:255",
+        "nextbrain:left:256",
+        "nextbrain:left:268",
+        "nextbrain:left:275",
+        "nextbrain:left:297",
+        "nextbrain:left:304"
+      ],
+      "display_names": {
+        "en": "Hypothalamus (excluding mammillary nuclei)",
+        "fr": "Hypothalamus (hors noyaux mamillaires)"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        210,
+        131,
+        94
+      ],
+      "voxel_count": 758,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 758.0,
+      "display_maximum_displacement_mm": 0.4920157160852945,
+      "vertex_count": 1153,
+      "triangle_count": 2318,
+      "surface_area_mm2": 694.0515831306883
+    },
+    {
+      "id": "learning:right:hypothalamus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Hypothalamus (excluding mammillary nuclei) \u00b7 right",
+      "source_name": "Hypothalamus (excluding mammillary nuclei)",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10147,
+        10149,
+        10150,
+        10181,
+        10192,
+        10193,
+        10194,
+        10196,
+        10207,
+        10227,
+        10228,
+        10229,
+        10230,
+        10232,
+        10243,
+        10244,
+        10245,
+        10255,
+        10256,
+        10268,
+        10275,
+        10297
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10147",
+        "nextbrain:right:10149",
+        "nextbrain:right:10150",
+        "nextbrain:right:10181",
+        "nextbrain:right:10192",
+        "nextbrain:right:10193",
+        "nextbrain:right:10194",
+        "nextbrain:right:10196",
+        "nextbrain:right:10207",
+        "nextbrain:right:10227",
+        "nextbrain:right:10228",
+        "nextbrain:right:10229",
+        "nextbrain:right:10230",
+        "nextbrain:right:10232",
+        "nextbrain:right:10243",
+        "nextbrain:right:10244",
+        "nextbrain:right:10245",
+        "nextbrain:right:10255",
+        "nextbrain:right:10256",
+        "nextbrain:right:10268",
+        "nextbrain:right:10275",
+        "nextbrain:right:10297"
+      ],
+      "display_names": {
+        "en": "Hypothalamus (excluding mammillary nuclei)",
+        "fr": "Hypothalamus (hors noyaux mamillaires)"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        210,
+        131,
+        94
+      ],
+      "voxel_count": 670,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 670.0,
+      "display_maximum_displacement_mm": 0.521633233517795,
+      "vertex_count": 1157,
+      "triangle_count": 2394,
+      "surface_area_mm2": 715.8484611902409
+    },
+    {
+      "id": "learning:left:mammillary",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Mammillary nuclei \u00b7 left",
+      "source_name": "Mammillary nuclei",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "constituent_regions": [
+        "nextbrain:left:305",
+        "nextbrain:left:306",
+        "nextbrain:left:307",
+        "nextbrain:left:308"
+      ],
+      "display_names": {
+        "en": "Mammillary nuclei",
+        "fr": "Noyaux mamillaires"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        225,
+        178,
+        87
+      ],
+      "voxel_count": 23,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 23.0,
+      "display_maximum_displacement_mm": 0.4920157160852945,
+      "vertex_count": 84,
+      "triangle_count": 156,
+      "surface_area_mm2": 37.454986643343545
+    },
+    {
+      "id": "learning:right:mammillary",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Mammillary nuclei \u00b7 right",
+      "source_name": "Mammillary nuclei",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10305,
+        10306,
+        10307,
+        10308
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10305",
+        "nextbrain:right:10306",
+        "nextbrain:right:10307",
+        "nextbrain:right:10308"
+      ],
+      "display_names": {
+        "en": "Mammillary nuclei",
+        "fr": "Noyaux mamillaires"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        225,
+        178,
+        87
+      ],
+      "voxel_count": 40,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 40.0,
+      "display_maximum_displacement_mm": 0.4238881649896457,
+      "vertex_count": 121,
+      "triangle_count": 242,
+      "surface_area_mm2": 66.33357934154871
+    },
+    {
+      "id": "learning:left:zona-incerta",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Zona incerta \u00b7 left",
+      "source_name": "Zona incerta",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        226
+      ],
+      "constituent_regions": [
+        "nextbrain:left:226"
+      ],
+      "display_names": {
+        "en": "Zona incerta",
+        "fr": "Zona incerta"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        116,
+        161,
+        147
+      ],
+      "voxel_count": 115,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 115.0,
+      "display_maximum_displacement_mm": 0.6000000000000014,
+      "vertex_count": 418,
+      "triangle_count": 872,
+      "surface_area_mm2": 245.65355178315394
+    },
+    {
+      "id": "learning:right:zona-incerta",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Zona incerta \u00b7 right",
+      "source_name": "Zona incerta",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10226
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10226"
+      ],
+      "display_names": {
+        "en": "Zona incerta",
+        "fr": "Zona incerta"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        116,
+        161,
+        147
+      ],
+      "voxel_count": 130,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 130.0,
+      "display_maximum_displacement_mm": 0.6000000000000008,
+      "vertex_count": 455,
+      "triangle_count": 946,
+      "surface_area_mm2": 265.7152823957075
+    },
+    {
+      "id": "learning:left:lateral-geniculate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lateral geniculate nucleus \u00b7 left",
+      "source_name": "Lateral geniculate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        484
+      ],
+      "constituent_regions": [
+        "nextbrain:left:484"
+      ],
+      "display_names": {
+        "en": "Lateral geniculate nucleus",
+        "fr": "Noyau g\u00e9nicul\u00e9 lat\u00e9ral"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        81,
+        147,
+        192
+      ],
+      "voxel_count": 304,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 304.0,
+      "display_maximum_displacement_mm": 0.45789876912913446,
+      "vertex_count": 489,
+      "triangle_count": 978,
+      "surface_area_mm2": 321.65581369737976
+    },
+    {
+      "id": "learning:right:lateral-geniculate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lateral geniculate nucleus \u00b7 right",
+      "source_name": "Lateral geniculate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10484
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10484"
+      ],
+      "display_names": {
+        "en": "Lateral geniculate nucleus",
+        "fr": "Noyau g\u00e9nicul\u00e9 lat\u00e9ral"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        81,
+        147,
+        192
+      ],
+      "voxel_count": 292,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 292.0,
+      "display_maximum_displacement_mm": 0.5032336216547307,
+      "vertex_count": 491,
+      "triangle_count": 990,
+      "surface_area_mm2": 322.64589713487
+    },
+    {
+      "id": "learning:left:medial-geniculate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Medial geniculate nucleus \u00b7 left",
+      "source_name": "Medial geniculate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        504
+      ],
+      "constituent_regions": [
+        "nextbrain:left:504"
+      ],
+      "display_names": {
+        "en": "Medial geniculate nucleus",
+        "fr": "Noyau g\u00e9nicul\u00e9 m\u00e9dial"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        153,
+        166,
+        88
+      ],
+      "voxel_count": 12,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 12.0,
+      "display_maximum_displacement_mm": 0.42851666890202034,
+      "vertex_count": 54,
+      "triangle_count": 100,
+      "surface_area_mm2": 20.966628680244956
+    },
+    {
+      "id": "learning:right:medial-geniculate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Medial geniculate nucleus \u00b7 right",
+      "source_name": "Medial geniculate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10504
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10504"
+      ],
+      "display_names": {
+        "en": "Medial geniculate nucleus",
+        "fr": "Noyau g\u00e9nicul\u00e9 m\u00e9dial"
+      },
+      "system_names": {
+        "en": "Diencephalon",
+        "fr": "Dienc\u00e9phale"
+      },
+      "display_color": [
+        153,
+        166,
+        88
+      ],
+      "voxel_count": 8,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 8.0,
+      "display_maximum_displacement_mm": 0.46689354889856927,
+      "vertex_count": 42,
+      "triangle_count": 72,
+      "surface_area_mm2": 6.979089922455872
+    },
+    {
+      "id": "learning:left:hippocampus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Hippocampal formation \u00b7 left",
+      "source_name": "Hippocampal formation",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        326,
+        339,
+        340,
+        341,
+        342,
+        343,
+        344,
+        345,
+        346,
+        347,
+        354,
+        364,
+        367,
+        368,
+        369,
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        404,
+        405,
+        407,
+        408,
+        409,
+        410,
+        411,
+        418,
+        419,
+        420,
+        421,
+        422,
+        432,
+        558,
+        561,
+        562,
+        563,
+        564,
+        565,
+        566,
+        567,
+        568,
+        571,
+        572,
+        573,
+        574,
+        575,
+        576
+      ],
+      "constituent_regions": [
+        "nextbrain:left:326",
+        "nextbrain:left:339",
+        "nextbrain:left:340",
+        "nextbrain:left:341",
+        "nextbrain:left:342",
+        "nextbrain:left:343",
+        "nextbrain:left:344",
+        "nextbrain:left:345",
+        "nextbrain:left:346",
+        "nextbrain:left:347",
+        "nextbrain:left:354",
+        "nextbrain:left:364",
+        "nextbrain:left:367",
+        "nextbrain:left:368",
+        "nextbrain:left:369",
+        "nextbrain:left:370",
+        "nextbrain:left:371",
+        "nextbrain:left:372",
+        "nextbrain:left:373",
+        "nextbrain:left:374",
+        "nextbrain:left:375",
+        "nextbrain:left:404",
+        "nextbrain:left:405",
+        "nextbrain:left:407",
+        "nextbrain:left:408",
+        "nextbrain:left:409",
+        "nextbrain:left:410",
+        "nextbrain:left:411",
+        "nextbrain:left:418",
+        "nextbrain:left:419",
+        "nextbrain:left:420",
+        "nextbrain:left:421",
+        "nextbrain:left:422",
+        "nextbrain:left:432",
+        "nextbrain:left:558",
+        "nextbrain:left:561",
+        "nextbrain:left:562",
+        "nextbrain:left:563",
+        "nextbrain:left:564",
+        "nextbrain:left:565",
+        "nextbrain:left:566",
+        "nextbrain:left:567",
+        "nextbrain:left:568",
+        "nextbrain:left:571",
+        "nextbrain:left:572",
+        "nextbrain:left:573",
+        "nextbrain:left:574",
+        "nextbrain:left:575",
+        "nextbrain:left:576"
+      ],
+      "display_names": {
+        "en": "Hippocampal formation",
+        "fr": "Formation hippocampique"
+      },
+      "system_names": {
+        "en": "Limbic",
+        "fr": "Limbique"
+      },
+      "display_color": [
+        94,
+        164,
+        158
+      ],
+      "voxel_count": 3886,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3886.0,
+      "display_maximum_displacement_mm": 0.6000000000000028,
+      "vertex_count": 3451,
+      "triangle_count": 6934,
+      "surface_area_mm2": 2201.789567520732
+    },
+    {
+      "id": "learning:right:hippocampus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Hippocampal formation \u00b7 right",
+      "source_name": "Hippocampal formation",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10326,
+        10339,
+        10340,
+        10341,
+        10342,
+        10343,
+        10344,
+        10345,
+        10346,
+        10347,
+        10354,
+        10364,
+        10367,
+        10368,
+        10369,
+        10370,
+        10371,
+        10372,
+        10373,
+        10374,
+        10375,
+        10404,
+        10405,
+        10407,
+        10408,
+        10410,
+        10411,
+        10418,
+        10419,
+        10420,
+        10421,
+        10422,
+        10432,
+        10558,
+        10559,
+        10561,
+        10562,
+        10563,
+        10564,
+        10565,
+        10566,
+        10568,
+        10571,
+        10573,
+        10574,
+        10575,
+        10576
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10326",
+        "nextbrain:right:10339",
+        "nextbrain:right:10340",
+        "nextbrain:right:10341",
+        "nextbrain:right:10342",
+        "nextbrain:right:10343",
+        "nextbrain:right:10344",
+        "nextbrain:right:10345",
+        "nextbrain:right:10346",
+        "nextbrain:right:10347",
+        "nextbrain:right:10354",
+        "nextbrain:right:10364",
+        "nextbrain:right:10367",
+        "nextbrain:right:10368",
+        "nextbrain:right:10369",
+        "nextbrain:right:10370",
+        "nextbrain:right:10371",
+        "nextbrain:right:10372",
+        "nextbrain:right:10373",
+        "nextbrain:right:10374",
+        "nextbrain:right:10375",
+        "nextbrain:right:10404",
+        "nextbrain:right:10405",
+        "nextbrain:right:10407",
+        "nextbrain:right:10408",
+        "nextbrain:right:10410",
+        "nextbrain:right:10411",
+        "nextbrain:right:10418",
+        "nextbrain:right:10419",
+        "nextbrain:right:10420",
+        "nextbrain:right:10421",
+        "nextbrain:right:10422",
+        "nextbrain:right:10432",
+        "nextbrain:right:10558",
+        "nextbrain:right:10559",
+        "nextbrain:right:10561",
+        "nextbrain:right:10562",
+        "nextbrain:right:10563",
+        "nextbrain:right:10564",
+        "nextbrain:right:10565",
+        "nextbrain:right:10566",
+        "nextbrain:right:10568",
+        "nextbrain:right:10571",
+        "nextbrain:right:10573",
+        "nextbrain:right:10574",
+        "nextbrain:right:10575",
+        "nextbrain:right:10576"
+      ],
+      "display_names": {
+        "en": "Hippocampal formation",
+        "fr": "Formation hippocampique"
+      },
+      "system_names": {
+        "en": "Limbic",
+        "fr": "Limbique"
+      },
+      "display_color": [
+        94,
+        164,
+        158
+      ],
+      "voxel_count": 3668,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3668.0,
+      "display_maximum_displacement_mm": 0.51477972033367,
+      "vertex_count": 3391,
+      "triangle_count": 6814,
+      "surface_area_mm2": 2161.2993913362047
+    },
+    {
+      "id": "learning:left:amygdala",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Amygdala and transition areas \u00b7 left",
+      "source_name": "Amygdala and transition areas",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        214,
+        215,
+        216,
+        217,
+        238,
+        240,
+        242,
+        277,
+        278,
+        279,
+        295,
+        301,
+        320,
+        377
+      ],
+      "constituent_regions": [
+        "nextbrain:left:214",
+        "nextbrain:left:215",
+        "nextbrain:left:216",
+        "nextbrain:left:217",
+        "nextbrain:left:238",
+        "nextbrain:left:240",
+        "nextbrain:left:242",
+        "nextbrain:left:277",
+        "nextbrain:left:278",
+        "nextbrain:left:279",
+        "nextbrain:left:295",
+        "nextbrain:left:301",
+        "nextbrain:left:320",
+        "nextbrain:left:377"
+      ],
+      "display_names": {
+        "en": "Amygdala and transition areas",
+        "fr": "Amygdale et aires de transition"
+      },
+      "system_names": {
+        "en": "Limbic",
+        "fr": "Limbique"
+      },
+      "display_color": [
+        196,
+        126,
+        147
+      ],
+      "voxel_count": 2033,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2033.0,
+      "display_maximum_displacement_mm": 0.5264149040631271,
+      "vertex_count": 1593,
+      "triangle_count": 3190,
+      "surface_area_mm2": 1023.5673637773189
+    },
+    {
+      "id": "learning:right:amygdala",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Amygdala and transition areas \u00b7 right",
+      "source_name": "Amygdala and transition areas",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10214,
+        10215,
+        10216,
+        10217,
+        10238,
+        10240,
+        10242,
+        10277,
+        10278,
+        10279,
+        10295,
+        10301,
+        10320,
+        10377
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10214",
+        "nextbrain:right:10215",
+        "nextbrain:right:10216",
+        "nextbrain:right:10217",
+        "nextbrain:right:10238",
+        "nextbrain:right:10240",
+        "nextbrain:right:10242",
+        "nextbrain:right:10277",
+        "nextbrain:right:10278",
+        "nextbrain:right:10279",
+        "nextbrain:right:10295",
+        "nextbrain:right:10301",
+        "nextbrain:right:10320",
+        "nextbrain:right:10377"
+      ],
+      "display_names": {
+        "en": "Amygdala and transition areas",
+        "fr": "Amygdale et aires de transition"
+      },
+      "system_names": {
+        "en": "Limbic",
+        "fr": "Limbique"
+      },
+      "display_color": [
+        196,
+        126,
+        147
+      ],
+      "voxel_count": 1837,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1837.0,
+      "display_maximum_displacement_mm": 0.4927651208994389,
+      "vertex_count": 1465,
+      "triangle_count": 2946,
+      "surface_area_mm2": 934.031451996803
+    },
+    {
+      "id": "learning:left:bnST",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Bed nucleus of stria terminalis \u00b7 left",
+      "source_name": "Bed nucleus of stria terminalis",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        117
+      ],
+      "constituent_regions": [
+        "nextbrain:left:117"
+      ],
+      "display_names": {
+        "en": "Bed nucleus of stria terminalis",
+        "fr": "Noyau du lit de la strie terminale"
+      },
+      "system_names": {
+        "en": "Limbic",
+        "fr": "Limbique"
+      },
+      "display_color": [
+        160,
+        150,
+        94
+      ],
+      "voxel_count": 116,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 116.0,
+      "display_maximum_displacement_mm": 0.4589858051900745,
+      "vertex_count": 299,
+      "triangle_count": 578,
+      "surface_area_mm2": 162.9981524764837
+    },
+    {
+      "id": "learning:right:bnST",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Bed nucleus of stria terminalis \u00b7 right",
+      "source_name": "Bed nucleus of stria terminalis",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10117
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10117"
+      ],
+      "display_names": {
+        "en": "Bed nucleus of stria terminalis",
+        "fr": "Noyau du lit de la strie terminale"
+      },
+      "system_names": {
+        "en": "Limbic",
+        "fr": "Limbique"
+      },
+      "display_color": [
+        160,
+        150,
+        94
+      ],
+      "voxel_count": 112,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 112.0,
+      "display_maximum_displacement_mm": 0.5195093571950129,
+      "vertex_count": 353,
+      "triangle_count": 742,
+      "surface_area_mm2": 210.4046020852328
+    },
+    {
+      "id": "learning:left:fornix",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Fornix \u00b7 left",
+      "source_name": "Fornix",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        199
+      ],
+      "constituent_regions": [
+        "nextbrain:left:199"
+      ],
+      "display_names": {
+        "en": "Fornix",
+        "fr": "Fornix"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        210,
+        188,
+        125
+      ],
+      "voxel_count": 210,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 210.0,
+      "display_maximum_displacement_mm": 0.5033830978559289,
+      "vertex_count": 566,
+      "triangle_count": 1096,
+      "surface_area_mm2": 307.2040735767172
+    },
+    {
+      "id": "learning:right:fornix",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Fornix \u00b7 right",
+      "source_name": "Fornix",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10199
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10199"
+      ],
+      "display_names": {
+        "en": "Fornix",
+        "fr": "Fornix"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        210,
+        188,
+        125
+      ],
+      "voxel_count": 144,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 144.0,
+      "display_maximum_displacement_mm": 0.5399797409875204,
+      "vertex_count": 504,
+      "triangle_count": 976,
+      "surface_area_mm2": 258.54263436339403
+    },
+    {
+      "id": "learning:left:fimbria",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Fimbria \u00b7 left",
+      "source_name": "Fimbria",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        461
+      ],
+      "constituent_regions": [
+        "nextbrain:left:461"
+      ],
+      "display_names": {
+        "en": "Fimbria",
+        "fr": "Fimbria"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        161,
+        180,
+        132
+      ],
+      "voxel_count": 110,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 110.0,
+      "display_maximum_displacement_mm": 0.46417157661732455,
+      "vertex_count": 439,
+      "triangle_count": 882,
+      "surface_area_mm2": 239.13991899764602
+    },
+    {
+      "id": "learning:right:fimbria",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Fimbria \u00b7 right",
+      "source_name": "Fimbria",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10461
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10461"
+      ],
+      "display_names": {
+        "en": "Fimbria",
+        "fr": "Fimbria"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        161,
+        180,
+        132
+      ],
+      "voxel_count": 118,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 118.0,
+      "display_maximum_displacement_mm": 0.5075694501508848,
+      "vertex_count": 458,
+      "triangle_count": 908,
+      "surface_area_mm2": 236.15285355798872
+    },
+    {
+      "id": "learning:left:anterior-commissure",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Anterior commissure \u00b7 left",
+      "source_name": "Anterior commissure",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        130
+      ],
+      "constituent_regions": [
+        "nextbrain:left:130"
+      ],
+      "display_names": {
+        "en": "Anterior commissure",
+        "fr": "Commissure ant\u00e9rieure"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        206,
+        149,
+        100
+      ],
+      "voxel_count": 279,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 279.0,
+      "display_maximum_displacement_mm": 0.5052632461126421,
+      "vertex_count": 585,
+      "triangle_count": 1178,
+      "surface_area_mm2": 382.6807005931856
+    },
+    {
+      "id": "learning:right:anterior-commissure",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Anterior commissure \u00b7 right",
+      "source_name": "Anterior commissure",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10130
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10130"
+      ],
+      "display_names": {
+        "en": "Anterior commissure",
+        "fr": "Commissure ant\u00e9rieure"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        206,
+        149,
+        100
+      ],
+      "voxel_count": 210,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 210.0,
+      "display_maximum_displacement_mm": 0.45870848097507344,
+      "vertex_count": 478,
+      "triangle_count": 964,
+      "surface_area_mm2": 299.42788323547114
+    },
+    {
+      "id": "learning:left:optic-tract",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Optic tract \u00b7 left",
+      "source_name": "Optic tract",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        208
+      ],
+      "constituent_regions": [
+        "nextbrain:left:208"
+      ],
+      "display_names": {
+        "en": "Optic tract",
+        "fr": "Tractus optique"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        111,
+        170,
+        194
+      ],
+      "voxel_count": 121,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 121.0,
+      "display_maximum_displacement_mm": 0.4966679079054208,
+      "vertex_count": 361,
+      "triangle_count": 718,
+      "surface_area_mm2": 209.82178937342726
+    },
+    {
+      "id": "learning:right:optic-tract",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Optic tract \u00b7 right",
+      "source_name": "Optic tract",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10208
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10208"
+      ],
+      "display_names": {
+        "en": "Optic tract",
+        "fr": "Tractus optique"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        111,
+        170,
+        194
+      ],
+      "voxel_count": 161,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 161.0,
+      "display_maximum_displacement_mm": 0.495703434371111,
+      "vertex_count": 463,
+      "triangle_count": 938,
+      "surface_area_mm2": 275.0698540940379
+    },
+    {
+      "id": "learning:left:optic-chiasm",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Optic chiasm \u00b7 left",
+      "source_name": "Optic chiasm",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        161
+      ],
+      "constituent_regions": [
+        "nextbrain:left:161"
+      ],
+      "display_names": {
+        "en": "Optic chiasm",
+        "fr": "Chiasma optique"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        115,
+        155,
+        190
+      ],
+      "voxel_count": 2,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2.0,
+      "display_maximum_displacement_mm": 0.4091092587831238,
+      "vertex_count": 10,
+      "triangle_count": 16,
+      "surface_area_mm2": 0.9101215114221411
+    },
+    {
+      "id": "learning:right:optic-chiasm",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Optic chiasm \u00b7 right",
+      "source_name": "Optic chiasm",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10161
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10161"
+      ],
+      "display_names": {
+        "en": "Optic chiasm",
+        "fr": "Chiasma optique"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        115,
+        155,
+        190
+      ],
+      "voxel_count": 2,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2.0,
+      "display_maximum_displacement_mm": 0.44135088196749983,
+      "vertex_count": 12,
+      "triangle_count": 16,
+      "surface_area_mm2": 0.047662145211340996
+    },
+    {
+      "id": "learning:left:stria-terminalis",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Stria terminalis \u00b7 left",
+      "source_name": "Stria terminalis",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        184
+      ],
+      "constituent_regions": [
+        "nextbrain:left:184"
+      ],
+      "display_names": {
+        "en": "Stria terminalis",
+        "fr": "Strie terminale"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        177,
+        145,
+        183
+      ],
+      "voxel_count": 128,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 128.0,
+      "display_maximum_displacement_mm": 0.5999999999999995,
+      "vertex_count": 581,
+      "triangle_count": 1134,
+      "surface_area_mm2": 238.23727444600706
+    },
+    {
+      "id": "learning:right:stria-terminalis",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Stria terminalis \u00b7 right",
+      "source_name": "Stria terminalis",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10184
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10184"
+      ],
+      "display_names": {
+        "en": "Stria terminalis",
+        "fr": "Strie terminale"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        177,
+        145,
+        183
+      ],
+      "voxel_count": 139,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 139.0,
+      "display_maximum_displacement_mm": 0.5080757626147792,
+      "vertex_count": 613,
+      "triangle_count": 1194,
+      "surface_area_mm2": 262.97519339402595
+    },
+    {
+      "id": "learning:left:mammillothalamic",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Mammillothalamic tract \u00b7 left",
+      "source_name": "Mammillothalamic tract",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        276
+      ],
+      "constituent_regions": [
+        "nextbrain:left:276"
+      ],
+      "display_names": {
+        "en": "Mammillothalamic tract",
+        "fr": "Faisceau mamillo-thalamique"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        204,
+        174,
+        96
+      ],
+      "voxel_count": 39,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 39.0,
+      "display_maximum_displacement_mm": 0.4628087937275804,
+      "vertex_count": 156,
+      "triangle_count": 304,
+      "surface_area_mm2": 76.91542880442165
+    },
+    {
+      "id": "learning:right:mammillothalamic",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Mammillothalamic tract \u00b7 right",
+      "source_name": "Mammillothalamic tract",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10276
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10276"
+      ],
+      "display_names": {
+        "en": "Mammillothalamic tract",
+        "fr": "Faisceau mamillo-thalamique"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        204,
+        174,
+        96
+      ],
+      "voxel_count": 33,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 33.0,
+      "display_maximum_displacement_mm": 0.4584676792035767,
+      "vertex_count": 140,
+      "triangle_count": 256,
+      "surface_area_mm2": 58.058362859358475
+    },
+    {
+      "id": "learning:left:midbrain",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Midbrain territory \u00b7 left",
+      "source_name": "Midbrain territory",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        384,
+        465,
+        496,
+        498,
+        521
+      ],
+      "constituent_regions": [
+        "nextbrain:left:384",
+        "nextbrain:left:465",
+        "nextbrain:left:496",
+        "nextbrain:left:498",
+        "nextbrain:left:521"
+      ],
+      "display_names": {
+        "en": "Midbrain territory",
+        "fr": "Territoire m\u00e9senc\u00e9phalique"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        112,
+        147,
+        173
+      ],
+      "voxel_count": 2295,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2295.0,
+      "display_maximum_displacement_mm": 0.6000000000000003,
+      "vertex_count": 2025,
+      "triangle_count": 4078,
+      "surface_area_mm2": 1360.5529535000787
+    },
+    {
+      "id": "learning:right:midbrain",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Midbrain territory \u00b7 right",
+      "source_name": "Midbrain territory",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10384,
+        10465,
+        10496,
+        10498,
+        10521
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10384",
+        "nextbrain:right:10465",
+        "nextbrain:right:10496",
+        "nextbrain:right:10498",
+        "nextbrain:right:10521"
+      ],
+      "display_names": {
+        "en": "Midbrain territory",
+        "fr": "Territoire m\u00e9senc\u00e9phalique"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        112,
+        147,
+        173
+      ],
+      "voxel_count": 2386,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2386.0,
+      "display_maximum_displacement_mm": 0.5266706835992638,
+      "vertex_count": 2141,
+      "triangle_count": 4294,
+      "surface_area_mm2": 1425.7714039053315
+    },
+    {
+      "id": "learning:left:pons",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Pontine territory \u00b7 left",
+      "source_name": "Pontine territory",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        580,
+        414
+      ],
+      "constituent_regions": [
+        "nextbrain:left:580",
+        "nextbrain:left:414"
+      ],
+      "display_names": {
+        "en": "Pontine territory",
+        "fr": "Territoire pontique"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        102,
+        174,
+        157
+      ],
+      "voxel_count": 7228,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 7228.0,
+      "display_maximum_displacement_mm": 0.48681942304547204,
+      "vertex_count": 3238,
+      "triangle_count": 6480,
+      "surface_area_mm2": 2273.2079140110523
+    },
+    {
+      "id": "learning:right:pons",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Pontine territory \u00b7 right",
+      "source_name": "Pontine territory",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10580,
+        10414
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10580",
+        "nextbrain:right:10414"
+      ],
+      "display_names": {
+        "en": "Pontine territory",
+        "fr": "Territoire pontique"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        102,
+        174,
+        157
+      ],
+      "voxel_count": 6241,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6241.0,
+      "display_maximum_displacement_mm": 0.5202383895565967,
+      "vertex_count": 2884,
+      "triangle_count": 5772,
+      "surface_area_mm2": 1968.9877727002322
+    },
+    {
+      "id": "learning:left:medulla",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Medullary territory \u00b7 left",
+      "source_name": "Medullary territory",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        662,
+        654,
+        765
+      ],
+      "constituent_regions": [
+        "nextbrain:left:662",
+        "nextbrain:left:654",
+        "nextbrain:left:765"
+      ],
+      "display_names": {
+        "en": "Medullary territory",
+        "fr": "Territoire bulbaire"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        151,
+        157,
+        185
+      ],
+      "voxel_count": 1611,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1611.0,
+      "display_maximum_displacement_mm": 0.466410532149604,
+      "vertex_count": 1136,
+      "triangle_count": 2272,
+      "surface_area_mm2": 800.0405497075697
+    },
+    {
+      "id": "learning:right:medulla",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Medullary territory \u00b7 right",
+      "source_name": "Medullary territory",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10662,
+        10654,
+        10765
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10662",
+        "nextbrain:right:10654",
+        "nextbrain:right:10765"
+      ],
+      "display_names": {
+        "en": "Medullary territory",
+        "fr": "Territoire bulbaire"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        151,
+        157,
+        185
+      ],
+      "voxel_count": 1741,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1741.0,
+      "display_maximum_displacement_mm": 0.5097617347209314,
+      "vertex_count": 1234,
+      "triangle_count": 2476,
+      "surface_area_mm2": 890.0179183700461
+    },
+    {
+      "id": "learning:left:red-nucleus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Red nucleus \u00b7 left",
+      "source_name": "Red nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        385
+      ],
+      "constituent_regions": [
+        "nextbrain:left:385"
+      ],
+      "display_names": {
+        "en": "Red nucleus",
+        "fr": "Noyau rouge"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        202,
+        102,
+        89
+      ],
+      "voxel_count": 145,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 145.0,
+      "display_maximum_displacement_mm": 0.4760618627687096,
+      "vertex_count": 200,
+      "triangle_count": 396,
+      "surface_area_mm2": 139.16318372418675
+    },
+    {
+      "id": "learning:right:red-nucleus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Red nucleus \u00b7 right",
+      "source_name": "Red nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10385
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10385"
+      ],
+      "display_names": {
+        "en": "Red nucleus",
+        "fr": "Noyau rouge"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        202,
+        102,
+        89
+      ],
+      "voxel_count": 179,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 179.0,
+      "display_maximum_displacement_mm": 0.4519999514652857,
+      "vertex_count": 242,
+      "triangle_count": 480,
+      "surface_area_mm2": 162.64569442416501
+    },
+    {
+      "id": "learning:left:vta",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Ventral tegmental area \u00b7 left",
+      "source_name": "Ventral tegmental area",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        435
+      ],
+      "constituent_regions": [
+        "nextbrain:left:435"
+      ],
+      "display_names": {
+        "en": "Ventral tegmental area",
+        "fr": "Aire tegmentale ventrale"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        211,
+        175,
+        77
+      ],
+      "voxel_count": 242,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 242.0,
+      "display_maximum_displacement_mm": 0.5109706103681229,
+      "vertex_count": 515,
+      "triangle_count": 1046,
+      "surface_area_mm2": 327.0651576239421
+    },
+    {
+      "id": "learning:right:vta",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Ventral tegmental area \u00b7 right",
+      "source_name": "Ventral tegmental area",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10435
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10435"
+      ],
+      "display_names": {
+        "en": "Ventral tegmental area",
+        "fr": "Aire tegmentale ventrale"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        211,
+        175,
+        77
+      ],
+      "voxel_count": 186,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 186.0,
+      "display_maximum_displacement_mm": 0.4615886710525567,
+      "vertex_count": 482,
+      "triangle_count": 988,
+      "surface_area_mm2": 307.9162581825997
+    },
+    {
+      "id": "learning:left:inferior-colliculus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Inferior colliculus central nucleus \u00b7 left",
+      "source_name": "Inferior colliculus central nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        541
+      ],
+      "constituent_regions": [
+        "nextbrain:left:541"
+      ],
+      "display_names": {
+        "en": "Inferior colliculus central nucleus",
+        "fr": "Noyau central du colliculus inf\u00e9rieur"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        126,
+        152,
+        94
+      ],
+      "voxel_count": 60,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 60.0,
+      "display_maximum_displacement_mm": 0.4818474737890299,
+      "vertex_count": 144,
+      "triangle_count": 284,
+      "surface_area_mm2": 89.89912056337499
+    },
+    {
+      "id": "learning:right:inferior-colliculus",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Inferior colliculus central nucleus \u00b7 right",
+      "source_name": "Inferior colliculus central nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10541
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10541"
+      ],
+      "display_names": {
+        "en": "Inferior colliculus central nucleus",
+        "fr": "Noyau central du colliculus inf\u00e9rieur"
+      },
+      "system_names": {
+        "en": "Brainstem",
+        "fr": "Tronc c\u00e9r\u00e9bral"
+      },
+      "display_color": [
+        126,
+        152,
+        94
+      ],
+      "voxel_count": 71,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 71.0,
+      "display_maximum_displacement_mm": 0.518296621326323,
+      "vertex_count": 169,
+      "triangle_count": 338,
+      "surface_area_mm2": 102.51200786231925
+    },
+    {
+      "id": "learning:left:dentate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Cerebellar dentate nucleus \u00b7 left",
+      "source_name": "Cerebellar dentate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        721
+      ],
+      "constituent_regions": [
+        "nextbrain:left:721"
+      ],
+      "display_names": {
+        "en": "Cerebellar dentate nucleus",
+        "fr": "Noyau dentel\u00e9 du cervelet"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        139,
+        139,
+        193
+      ],
+      "voxel_count": 1017,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1017.0,
+      "display_maximum_displacement_mm": 0.48264125230265026,
+      "vertex_count": 2039,
+      "triangle_count": 4246,
+      "surface_area_mm2": 1307.3762080431156
+    },
+    {
+      "id": "learning:right:dentate",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Cerebellar dentate nucleus \u00b7 right",
+      "source_name": "Cerebellar dentate nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10721
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10721"
+      ],
+      "display_names": {
+        "en": "Cerebellar dentate nucleus",
+        "fr": "Noyau dentel\u00e9 du cervelet"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        139,
+        139,
+        193
+      ],
+      "voxel_count": 722,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 722.0,
+      "display_maximum_displacement_mm": 0.4953986194038448,
+      "vertex_count": 1759,
+      "triangle_count": 3694,
+      "surface_area_mm2": 1127.0927520705332
+    },
+    {
+      "id": "learning:left:interposed",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Interposed nuclei \u00b7 left",
+      "source_name": "Interposed nuclei",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        751,
+        752
+      ],
+      "constituent_regions": [
+        "nextbrain:left:751",
+        "nextbrain:left:752"
+      ],
+      "display_names": {
+        "en": "Interposed nuclei",
+        "fr": "Noyaux interpos\u00e9s"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        187,
+        151,
+        103
+      ],
+      "voxel_count": 143,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 143.0,
+      "display_maximum_displacement_mm": 0.44635077525061895,
+      "vertex_count": 323,
+      "triangle_count": 650,
+      "surface_area_mm2": 201.88741450982593
+    },
+    {
+      "id": "learning:right:interposed",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Interposed nuclei \u00b7 right",
+      "source_name": "Interposed nuclei",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10751,
+        10752
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10751",
+        "nextbrain:right:10752"
+      ],
+      "display_names": {
+        "en": "Interposed nuclei",
+        "fr": "Noyaux interpos\u00e9s"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        187,
+        151,
+        103
+      ],
+      "voxel_count": 133,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 133.0,
+      "display_maximum_displacement_mm": 0.5066943336961836,
+      "vertex_count": 266,
+      "triangle_count": 536,
+      "surface_area_mm2": 174.4098708065989
+    },
+    {
+      "id": "learning:ventricles-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lateral ventricle \u00b7 left",
+      "source_name": "Lateral ventricle",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        4,
+        5
+      ],
+      "constituent_regions": [
+        "aseg:left:4",
+        "aseg:left:5"
+      ],
+      "display_names": {
+        "en": "Lateral ventricle",
+        "fr": "Ventricule lat\u00e9ral"
+      },
+      "system_names": {
+        "en": "Ventricles and CSF",
+        "fr": "Ventricules et LCR"
+      },
+      "display_color": [
+        87,
+        139,
+        194
+      ],
+      "voxel_count": 6407,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6407.0,
+      "display_maximum_displacement_mm": 0.4910560275375036,
+      "vertex_count": 6536,
+      "triangle_count": 13104,
+      "surface_area_mm2": 4534.173280411451
+    },
+    {
+      "id": "learning:ventricles-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lateral ventricle \u00b7 right",
+      "source_name": "Lateral ventricle",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        43,
+        44
+      ],
+      "constituent_regions": [
+        "aseg:right:43",
+        "aseg:right:44"
+      ],
+      "display_names": {
+        "en": "Lateral ventricle",
+        "fr": "Ventricule lat\u00e9ral"
+      },
+      "system_names": {
+        "en": "Ventricles and CSF",
+        "fr": "Ventricules et LCR"
+      },
+      "display_color": [
+        87,
+        139,
+        194
+      ],
+      "voxel_count": 5886,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5886.0,
+      "display_maximum_displacement_mm": 0.5385151904451548,
+      "vertex_count": 5736,
+      "triangle_count": 11508,
+      "surface_area_mm2": 3960.8028908647048
+    },
+    {
+      "id": "learning:third-ventricle",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Third ventricle \u00b7 midline",
+      "source_name": "Third ventricle",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        14
+      ],
+      "constituent_regions": [
+        "aseg:midline:14"
+      ],
+      "display_names": {
+        "en": "Third ventricle",
+        "fr": "Troisi\u00e8me ventricule"
+      },
+      "system_names": {
+        "en": "Ventricles and CSF",
+        "fr": "Ventricules et LCR"
+      },
+      "display_color": [
+        87,
+        139,
+        194
+      ],
+      "voxel_count": 945,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 945.0,
+      "display_maximum_displacement_mm": 0.49105374441451777,
+      "vertex_count": 1140,
+      "triangle_count": 2276,
+      "surface_area_mm2": 853.9283462961693
+    },
+    {
+      "id": "learning:fourth-ventricle",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Fourth ventricle \u00b7 midline",
+      "source_name": "Fourth ventricle",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        15
+      ],
+      "constituent_regions": [
+        "aseg:midline:15"
+      ],
+      "display_names": {
+        "en": "Fourth ventricle",
+        "fr": "Quatri\u00e8me ventricule"
+      },
+      "system_names": {
+        "en": "Ventricles and CSF",
+        "fr": "Ventricules et LCR"
+      },
+      "display_color": [
+        87,
+        139,
+        194
+      ],
+      "voxel_count": 1532,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1532.0,
+      "display_maximum_displacement_mm": 0.4820563761278059,
+      "vertex_count": 1789,
+      "triangle_count": 3578,
+      "surface_area_mm2": 1218.2162969742346
+    },
+    {
+      "id": "learning:corpus-callosum",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Corpus callosum \u00b7 midline",
+      "source_name": "Corpus callosum",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        251,
+        252,
+        253,
+        254,
+        255
+      ],
+      "constituent_regions": [
+        "aseg:midline:251",
+        "aseg:midline:252",
+        "aseg:midline:253",
+        "aseg:midline:254",
+        "aseg:midline:255"
+      ],
+      "display_names": {
+        "en": "Corpus callosum",
+        "fr": "Corps calleux"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        214,
+        197,
+        160
+      ],
+      "voxel_count": 3806,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3806.0,
+      "display_maximum_displacement_mm": 0.5097630357614978,
+      "vertex_count": 3130,
+      "triangle_count": 6264,
+      "surface_area_mm2": 2498.3027204237646
     }
   ],
   "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
@@ -24540,7 +29617,9 @@
     "Labels projected between brains are bounded by that registration, not by the accuracy of the published parcellation.",
     "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
     "Subvertex label boundaries are visualization conventions, not measured boundaries.",
-    "Internal structures use an unsmoothed 1 mm label volume; fine nuclei and cerebellar folia are unresolved.",
+    "Source internal segmentations use a 1 mm grid; fine nuclei and cerebellar folia are unresolved.",
+    "Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to 0.6 mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
+    "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
     "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
     "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
     "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",
@@ -24550,7 +29629,8 @@
     "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
     "Networks are resting-state functional connectivity from 1000 subjects: a region's share says which networks its surface falls in, not what the region does.",
     "Network shares are computed over a region's own source vertices, so they follow vertex density rather than surface area.",
-    "Networks are a group average projected onto one person's folds through registered spheres; they are not this individual's measured networks."
+    "Networks are a group average projected onto one person's folds through registered spheres; they are not this individual's measured networks.",
+    "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region."
   ],
   "provenance": {
     "sources": [
@@ -24660,6 +29740,14 @@
         "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
         "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
         "archive_member": "bert/mri/brain.mgz"
+      },
+      {
+        "path": "data/bert/mri/wmparc.mgz",
+        "sha256": "3721ac792dd05a1b3bb0ab9b1f6798b6d34563b553d68d2754d8fce2ed5bb68e",
+        "anatomy": "bert",
+        "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+        "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+        "archive_member": "bert/mri/wmparc.mgz"
       },
       {
         "path": "data/bert/scripts/build-stamp.txt",

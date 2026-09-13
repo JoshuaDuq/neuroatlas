@@ -1,5 +1,6 @@
 import { Group } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { labelOf } from '../catalog/labels.js';
 import { visibilityOf } from '../catalog/visibility.js';
 import { fetchAsset } from './asset-cache.js';
 import { combineProgress } from './progress.js';
@@ -120,6 +121,8 @@ export class BrainAtlas extends EventTarget {
     // lets `settings` be the whole display state, so visibility reads one place.
     this.cutAtlasId = null;
     this.cutActive = false;
+    this.internalSystem = null;
+    this.internalConstituents = new Set();
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
@@ -133,13 +136,11 @@ export class BrainAtlas extends EventTarget {
   }
 
   /**
-   * The internal anatomy shown on load: the histological level when the build
-   * has it, since that is the one worth arriving at, and whatever the manifest
-   * lists first otherwise.
+   * The grouped learning overview when published, otherwise the native segmentation.
    */
   get defaultDetail() {
     const levels = this.manifest.detail_levels;
-    return (levels.find(level => level.id === 'nextbrain') ?? levels[0]).id;
+    return (levels.find(level => level.id === 'learning') ?? levels[0]).id;
   }
 
   async initialize(atlasId = this.manifest.atlases[0].id, onProgressOrOptions) {
@@ -244,6 +245,9 @@ export class BrainAtlas extends EventTarget {
     await this.loadLayer(id, level.file, onProgress);
     if (request !== this.requestNumber) return;
     this.detailId = id;
+    this.internalSystem = null;
+    this.internalConstituents = new Set();
+    this.isolatedId = null;
     this.update();
   }
 
@@ -266,6 +270,8 @@ export class BrainAtlas extends EventTarget {
     return {
       atlas: this.atlasId,
       detail: this.detailId,
+      internalSystem: this.internalSystem,
+      internalConstituents: this.internalConstituents,
       cutAtlas: this.cutAtlasId,
       cutActive: this.cutActive,
       hemisphere: this.hemisphere,
@@ -393,6 +399,20 @@ export class BrainAtlas extends EventTarget {
     this.dispatchEvent(new CustomEvent('selectionchange', { detail: this.state.selectedRegion }));
   }
 
+  setInternalSystem(system) {
+    if (system !== null && !this.manifest.regions.some(region =>
+      region.kind === 'structure' && region.atlas === this.detailId &&
+      labelOf(region, 'en').group === system)) {
+      throw new Error(`Unknown internal anatomy system: ${system}`);
+    }
+    this.internalSystem = system;
+    this.internalConstituents = new Set(this.manifest.regions
+      .filter(region => region.atlas === 'learning' && region.system_names.en === system)
+      .flatMap(region => region.constituent_regions));
+    this.isolatedId = null;
+    this.update();
+  }
+
   setHemisphere(hemisphere) {
     if (!['both', 'left', 'right'].includes(hemisphere)) {
       throw new Error(`Invalid hemisphere: ${hemisphere}`);
@@ -442,6 +462,8 @@ export class BrainAtlas extends EventTarget {
 
   reset() {
     this.clippingPlanes = [];
+    this.internalSystem = null;
+    this.internalConstituents = new Set();
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;

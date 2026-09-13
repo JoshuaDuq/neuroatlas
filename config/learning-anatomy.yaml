@@ -1,0 +1,74 @@
+# Derived display units, not a new segmentation. Labels are explicit unions.
+# NextBrain indices below are the published base (left) labels; right = +10000.
+# No voxel is shared by two units from the same source.
+# Colours distinguish display units; they are not the source LUT or tissue colours.
+label: Learning anatomy
+smoothing:
+  iterations: 16
+  maximum_displacement_mm: 0.6
+nextbrain:
+  - {id: caudate, color: [64, 142, 172], name: Caudate nucleus, name_fr: Noyau caudé, system: Basal ganglia, system_fr: Ganglions de la base, labels: [48, 118, 393]}
+  - {id: putamen, color: [210, 150, 67], name: Putamen, name_fr: Putamen, system: Basal ganglia, system_fr: Ganglions de la base, labels: [79, 349]}
+  - {id: pallidum-external, color: [132, 110, 180], name: Globus pallidus — external, name_fr: Globus pallidus externe, system: Basal ganglia, system_fr: Ganglions de la base, labels: [119]}
+  - {id: pallidum-internal, color: [180, 91, 131], name: Globus pallidus — internal, name_fr: Globus pallidus interne, system: Basal ganglia, system_fr: Ganglions de la base, labels: [206]}
+  - {id: accumbens, color: [96, 159, 105], name: Nucleus accumbens core, name_fr: Cœur du noyau accumbens, system: Basal ganglia, system_fr: Ganglions de la base, labels: [101]}
+  - {id: subthalamic, color: [209, 112, 65], name: Subthalamic nucleus, name_fr: Noyau sous-thalamique, system: Basal ganglia, system_fr: Ganglions de la base, labels: [315, 316, 321]}
+  - {id: substantia-nigra, color: [83, 106, 143], name: Substantia nigra, name_fr: Substance noire, system: Basal ganglia, system_fr: Ganglions de la base, labels: [310, 352]}
+  - {id: claustrum, color: [135, 166, 104], name: Claustrum, name_fr: Claustrum, system: Basal forebrain, system_fr: Prosencéphale basal, labels: [102, 174]}
+  - {id: ventral-pallidum, color: [184, 136, 83], name: Ventral pallidum, name_fr: Pallidum ventral, system: Basal forebrain, system_fr: Prosencéphale basal, labels: [120]}
+  - {id: septal, color: [98, 164, 154], name: Septal and diagonal band nuclei, name_fr: Noyaux septal et de la bande diagonale, system: Basal forebrain, system_fr: Prosencéphale basal, labels: [103, 111]}
+  - {id: innominata, color: [189, 127, 145], name: Substantia innominata and basal nucleus, name_fr: Substance innominée et noyau basal, system: Basal forebrain, system_fr: Prosencéphale basal, labels: [108, 128]}
+  - id: thalamus
+    color: [158, 119, 185]
+    name: Thalamus
+    name_fr: Thalamus
+    system: Diencephalon
+    system_fr: Diencéphale
+    labels: [190, 191, 218, 219, 220, 221, 222, 223, 224, 225, 252, 253, 254, 274, 282, 283, 284, 285, 286, 303, 312, 313, 314, 350, 378, 379, 380, 381, 382, 394, 395, 396, 397, 398, 399, 423, 424, 425, 426, 441, 443, 454, 458, 478, 479, 492, 508, 517, 519, 578, 811, 813]
+  - id: hypothalamus
+    color: [210, 131, 94]
+    name: Hypothalamus (excluding mammillary nuclei)
+    name_fr: Hypothalamus (hors noyaux mamillaires)
+    system: Diencephalon
+    system_fr: Diencéphale
+    labels: [147, 149, 150, 181, 192, 193, 194, 196, 207, 227, 228, 229, 230, 232, 243, 244, 245, 255, 256, 268, 275, 297, 304]
+  - {id: mammillary, color: [225, 178, 87], name: Mammillary nuclei, name_fr: Noyaux mamillaires, system: Diencephalon, system_fr: Diencéphale, labels: [305, 306, 307, 308]}
+  - {id: zona-incerta, color: [116, 161, 147], name: Zona incerta, name_fr: Zona incerta, system: Diencephalon, system_fr: Diencéphale, labels: [226]}
+  - {id: lateral-geniculate, color: [81, 147, 192], name: Lateral geniculate nucleus, name_fr: Noyau géniculé latéral, system: Diencephalon, system_fr: Diencéphale, labels: [484]}
+  - {id: medial-geniculate, color: [153, 166, 88], name: Medial geniculate nucleus, name_fr: Noyau géniculé médial, system: Diencephalon, system_fr: Diencéphale, labels: [504]}
+  - id: hippocampus
+    color: [94, 164, 158]
+    name: Hippocampal formation
+    name_fr: Formation hippocampique
+    system: Limbic
+    system_fr: Limbique
+    labels: [326, 339, 340, 341, 342, 343, 344, 345, 346, 347, 354, 364, 365, 367, 368, 369, 370, 371, 372, 373, 374, 375, 404, 405, 407, 408, 409, 410, 411, 418, 419, 420, 421, 422, 432, 558, 559, 561, 562, 563, 564, 565, 566, 567, 568, 571, 572, 573, 574, 575, 576]
+  - id: amygdala
+    color: [196, 126, 147]
+    name: Amygdala and transition areas
+    name_fr: Amygdale et aires de transition
+    system: Limbic
+    system_fr: Limbique
+    labels: [214, 215, 216, 217, 238, 240, 242, 277, 278, 279, 295, 301, 320, 377]
+  - {id: bnST, color: [160, 150, 94], name: Bed nucleus of stria terminalis, name_fr: Noyau du lit de la strie terminale, system: Limbic, system_fr: Limbique, labels: [117]}
+  - {id: fornix, color: [210, 188, 125], name: Fornix, name_fr: Fornix, system: White matter pathways, system_fr: Voies de substance blanche, labels: [199]}
+  - {id: fimbria, color: [161, 180, 132], name: Fimbria, name_fr: Fimbria, system: White matter pathways, system_fr: Voies de substance blanche, labels: [461]}
+  - {id: anterior-commissure, color: [206, 149, 100], name: Anterior commissure, name_fr: Commissure antérieure, system: White matter pathways, system_fr: Voies de substance blanche, labels: [130]}
+  - {id: optic-tract, color: [111, 170, 194], name: Optic tract, name_fr: Tractus optique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [208]}
+  - {id: optic-chiasm, color: [115, 155, 190], name: Optic chiasm, name_fr: Chiasma optique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [161]}
+  - {id: stria-terminalis, color: [177, 145, 183], name: Stria terminalis, name_fr: Strie terminale, system: White matter pathways, system_fr: Voies de substance blanche, labels: [184]}
+  - {id: mammillothalamic, color: [204, 174, 96], name: Mammillothalamic tract, name_fr: Faisceau mamillo-thalamique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [276]}
+  - {id: midbrain, color: [112, 147, 173], name: Midbrain territory, name_fr: Territoire mésencéphalique, system: Brainstem, system_fr: Tronc cérébral, labels: [384, 465, 496, 498, 521]}
+  - {id: pons, color: [102, 174, 157], name: Pontine territory, name_fr: Territoire pontique, system: Brainstem, system_fr: Tronc cérébral, labels: [580, 414]}
+  - {id: medulla, color: [151, 157, 185], name: Medullary territory, name_fr: Territoire bulbaire, system: Brainstem, system_fr: Tronc cérébral, labels: [662, 654, 765]}
+  - {id: red-nucleus, color: [202, 102, 89], name: Red nucleus, name_fr: Noyau rouge, system: Brainstem, system_fr: Tronc cérébral, labels: [385]}
+  - {id: vta, color: [211, 175, 77], name: Ventral tegmental area, name_fr: Aire tegmentale ventrale, system: Brainstem, system_fr: Tronc cérébral, labels: [435]}
+  - {id: inferior-colliculus, color: [126, 152, 94], name: Inferior colliculus central nucleus, name_fr: Noyau central du colliculus inférieur, system: Brainstem, system_fr: Tronc cérébral, labels: [541]}
+  - {id: dentate, color: [139, 139, 193], name: Cerebellar dentate nucleus, name_fr: Noyau dentelé du cervelet, system: Cerebellum, system_fr: Cervelet, labels: [721]}
+  - {id: interposed, color: [187, 151, 103], name: Interposed nuclei, name_fr: Noyaux interposés, system: Cerebellum, system_fr: Cervelet, labels: [751, 752]}
+aseg:
+  - {id: ventricles-left, color: [87, 139, 194], hemisphere: left, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [4, 5]}
+  - {id: ventricles-right, color: [87, 139, 194], hemisphere: right, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [43, 44]}
+  - {id: third-ventricle, color: [87, 139, 194], hemisphere: midline, name: Third ventricle, name_fr: Troisième ventricule, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [14]}
+  - {id: fourth-ventricle, color: [87, 139, 194], hemisphere: midline, name: Fourth ventricle, name_fr: Quatrième ventricule, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [15]}
+  - {id: corpus-callosum, color: [214, 197, 160], hemisphere: midline, name: Corpus callosum, name_fr: Corps calleux, system: White matter pathways, system_fr: Voies de substance blanche, labels: [251, 252, 253, 254, 255]}

@@ -14959,6 +14959,335 @@
     "Native 1 mm tissue labels from one individual's own segmentation; no claim of subvoxel anatomical accuracy.",
     "HCP cortical volume labels are a derived ribbon-restricted projection, not a published native HCP volumetric atlas.",
     "Native voxel boundaries and high-resolution cortical surfaces may not coincide exactly.",
-    "NextBrain labels were nonlinearly warped from the MNI152 template to this individual; registration between an averaged template and one brain, not the published delineation, bounds their accuracy."
-  ]
+    "NextBrain labels were nonlinearly warped from the MNI152 template to this individual; registration between an averaged template and one brain, not the published delineation, bounds their accuracy.",
+    "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region."
+  ],
+  "white_matter": {
+    "file": "white-matter.volume",
+    "shape": [
+      121,
+      105,
+      178
+    ],
+    "dtype": "|u1",
+    "order": "F",
+    "compression": "gzip",
+    "byte_length": 2261490,
+    "sha256": "11ec13953b507e3249d153a73b473ca56095f8d4026ebe79d94b5de461388718",
+    "decoded_sha256": "84f43aa82fae4f93d5fe39dc4a50baf0a77ffb54c6b0e154beb2ce41a2c59d31",
+    "voxel_to_surface_ras_mm": [
+      [
+        -1.0,
+        0.0,
+        0.0,
+        61.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        -102.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        67.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "voxel_spacing_mm": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "labels": [
+      {
+        "source_label_id": 0,
+        "region_id": null
+      },
+      {
+        "source_label_id": 3001,
+        "region_id": "wmparc:left:3001"
+      },
+      {
+        "source_label_id": 3002,
+        "region_id": "wmparc:left:3002"
+      },
+      {
+        "source_label_id": 3003,
+        "region_id": "wmparc:left:3003"
+      },
+      {
+        "source_label_id": 3005,
+        "region_id": "wmparc:left:3005"
+      },
+      {
+        "source_label_id": 3006,
+        "region_id": "wmparc:left:3006"
+      },
+      {
+        "source_label_id": 3007,
+        "region_id": "wmparc:left:3007"
+      },
+      {
+        "source_label_id": 3008,
+        "region_id": "wmparc:left:3008"
+      },
+      {
+        "source_label_id": 3009,
+        "region_id": "wmparc:left:3009"
+      },
+      {
+        "source_label_id": 3010,
+        "region_id": "wmparc:left:3010"
+      },
+      {
+        "source_label_id": 3011,
+        "region_id": "wmparc:left:3011"
+      },
+      {
+        "source_label_id": 3012,
+        "region_id": "wmparc:left:3012"
+      },
+      {
+        "source_label_id": 3013,
+        "region_id": "wmparc:left:3013"
+      },
+      {
+        "source_label_id": 3014,
+        "region_id": "wmparc:left:3014"
+      },
+      {
+        "source_label_id": 3015,
+        "region_id": "wmparc:left:3015"
+      },
+      {
+        "source_label_id": 3016,
+        "region_id": "wmparc:left:3016"
+      },
+      {
+        "source_label_id": 3017,
+        "region_id": "wmparc:left:3017"
+      },
+      {
+        "source_label_id": 3018,
+        "region_id": "wmparc:left:3018"
+      },
+      {
+        "source_label_id": 3019,
+        "region_id": "wmparc:left:3019"
+      },
+      {
+        "source_label_id": 3020,
+        "region_id": "wmparc:left:3020"
+      },
+      {
+        "source_label_id": 3021,
+        "region_id": "wmparc:left:3021"
+      },
+      {
+        "source_label_id": 3022,
+        "region_id": "wmparc:left:3022"
+      },
+      {
+        "source_label_id": 3023,
+        "region_id": "wmparc:left:3023"
+      },
+      {
+        "source_label_id": 3024,
+        "region_id": "wmparc:left:3024"
+      },
+      {
+        "source_label_id": 3025,
+        "region_id": "wmparc:left:3025"
+      },
+      {
+        "source_label_id": 3026,
+        "region_id": "wmparc:left:3026"
+      },
+      {
+        "source_label_id": 3027,
+        "region_id": "wmparc:left:3027"
+      },
+      {
+        "source_label_id": 3028,
+        "region_id": "wmparc:left:3028"
+      },
+      {
+        "source_label_id": 3029,
+        "region_id": "wmparc:left:3029"
+      },
+      {
+        "source_label_id": 3030,
+        "region_id": "wmparc:left:3030"
+      },
+      {
+        "source_label_id": 3031,
+        "region_id": "wmparc:left:3031"
+      },
+      {
+        "source_label_id": 3032,
+        "region_id": "wmparc:left:3032"
+      },
+      {
+        "source_label_id": 3033,
+        "region_id": "wmparc:left:3033"
+      },
+      {
+        "source_label_id": 3034,
+        "region_id": "wmparc:left:3034"
+      },
+      {
+        "source_label_id": 3035,
+        "region_id": "wmparc:left:3035"
+      },
+      {
+        "source_label_id": 4001,
+        "region_id": "wmparc:right:4001"
+      },
+      {
+        "source_label_id": 4002,
+        "region_id": "wmparc:right:4002"
+      },
+      {
+        "source_label_id": 4003,
+        "region_id": "wmparc:right:4003"
+      },
+      {
+        "source_label_id": 4005,
+        "region_id": "wmparc:right:4005"
+      },
+      {
+        "source_label_id": 4006,
+        "region_id": "wmparc:right:4006"
+      },
+      {
+        "source_label_id": 4007,
+        "region_id": "wmparc:right:4007"
+      },
+      {
+        "source_label_id": 4008,
+        "region_id": "wmparc:right:4008"
+      },
+      {
+        "source_label_id": 4009,
+        "region_id": "wmparc:right:4009"
+      },
+      {
+        "source_label_id": 4010,
+        "region_id": "wmparc:right:4010"
+      },
+      {
+        "source_label_id": 4011,
+        "region_id": "wmparc:right:4011"
+      },
+      {
+        "source_label_id": 4012,
+        "region_id": "wmparc:right:4012"
+      },
+      {
+        "source_label_id": 4013,
+        "region_id": "wmparc:right:4013"
+      },
+      {
+        "source_label_id": 4014,
+        "region_id": "wmparc:right:4014"
+      },
+      {
+        "source_label_id": 4015,
+        "region_id": "wmparc:right:4015"
+      },
+      {
+        "source_label_id": 4016,
+        "region_id": "wmparc:right:4016"
+      },
+      {
+        "source_label_id": 4017,
+        "region_id": "wmparc:right:4017"
+      },
+      {
+        "source_label_id": 4018,
+        "region_id": "wmparc:right:4018"
+      },
+      {
+        "source_label_id": 4019,
+        "region_id": "wmparc:right:4019"
+      },
+      {
+        "source_label_id": 4020,
+        "region_id": "wmparc:right:4020"
+      },
+      {
+        "source_label_id": 4021,
+        "region_id": "wmparc:right:4021"
+      },
+      {
+        "source_label_id": 4022,
+        "region_id": "wmparc:right:4022"
+      },
+      {
+        "source_label_id": 4023,
+        "region_id": "wmparc:right:4023"
+      },
+      {
+        "source_label_id": 4024,
+        "region_id": "wmparc:right:4024"
+      },
+      {
+        "source_label_id": 4025,
+        "region_id": "wmparc:right:4025"
+      },
+      {
+        "source_label_id": 4026,
+        "region_id": "wmparc:right:4026"
+      },
+      {
+        "source_label_id": 4027,
+        "region_id": "wmparc:right:4027"
+      },
+      {
+        "source_label_id": 4028,
+        "region_id": "wmparc:right:4028"
+      },
+      {
+        "source_label_id": 4029,
+        "region_id": "wmparc:right:4029"
+      },
+      {
+        "source_label_id": 4030,
+        "region_id": "wmparc:right:4030"
+      },
+      {
+        "source_label_id": 4031,
+        "region_id": "wmparc:right:4031"
+      },
+      {
+        "source_label_id": 4032,
+        "region_id": "wmparc:right:4032"
+      },
+      {
+        "source_label_id": 4033,
+        "region_id": "wmparc:right:4033"
+      },
+      {
+        "source_label_id": 4034,
+        "region_id": "wmparc:right:4034"
+      },
+      {
+        "source_label_id": 4035,
+        "region_id": "wmparc:right:4035"
+      }
+    ],
+    "applies_to": [
+      "destrieux",
+      "hcp-mmp"
+    ],
+    "label_method": "FreeSurfer wmparc.mgz from this reconstruction (mri_aparc2aseg --labelwm): white matter within 5 mm of cortex carries the nearest Desikan cortical label, and unsegmented white matter is no parcel. Cropped to the parcels' bounding box; no label is changed."
+  }
 }

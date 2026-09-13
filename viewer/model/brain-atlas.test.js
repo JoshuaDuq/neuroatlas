@@ -200,7 +200,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   const { atlas } = fixture();
   await atlas.initialize('a');
   assert.deepEqual(atlas.settings, {
-    atlas: 'a', detail: 'aseg', cutAtlas: null, cutActive: false,
+    atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
     surfaceColor: 'tissue', isolatedRegion: null,
   });

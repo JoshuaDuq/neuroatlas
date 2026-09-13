@@ -12,6 +12,7 @@ export async function openClinicalRegion(model, sections, id) {
   }
   await sections.setMode('off');
   model.clearIsolation();
+  model.setInternalSystem(null);
   model.setHemisphere('both');
   model.setCortexVisible(region.kind === 'cortex');
   if (region.kind === 'cortex' && model.settings.cortexOpacity === 0) {

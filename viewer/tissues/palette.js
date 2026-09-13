@@ -1,8 +1,11 @@
+import { internalSystemAllows } from '../catalog/visibility.js';
 import { Color, SRGBColorSpace } from 'three';
 import { tissueColor } from '../render/materials.js';
 import { dominantNetwork } from '../catalog/networks.js';
 
-export function labelVisible(label, state) {
+export function labelVisible(label, state, lookup) {
+  const region = lookup?.regions?.get(label.region_id);
+  if (region && !internalSystemAllows(region, state)) return false;
   if (label.source_label_id === 0 && label.kind !== 'cortex') return false;
   if (state.isolatedRegion) return label.region_id === state.isolatedRegion;
   if (
@@ -61,7 +64,7 @@ export function labelAppearance(label, state, tissuePalette, lookup, color = new
     if (channels) color.setRGB(...channels.map(value => value / 255), SRGBColorSpace);
   }
   if (label.kind === 'cortex' && !label.region_id) color.set(tissuePalette.unlabelled);
-  return { color, visible: labelVisible(label, state) };
+  return { color, visible: labelVisible(label, state, lookup) };
 }
 
 /** Palette is independent of slice position, so dragging never rebuilds it. */

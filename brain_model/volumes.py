@@ -10,7 +10,17 @@ from .sources import read_color_table, read_config, sha256, verify_sources, writ
 
 
 def encode_volume(image, path, dtype):
-    data = np.asarray(image.dataobj)
+    return encode_array(
+        np.asarray(image.dataobj),
+        image.header.get_vox2ras_tkr(),
+        image.header.get_zooms()[:3],
+        path,
+        dtype,
+    )
+
+
+def encode_array(data, affine, spacing, path, dtype):
+    """Encode a grid that need not be a whole image, such as a crop of one."""
     if data.ndim != 3 or not np.isfinite(data).all():
         raise ValueError("Expected a finite three-dimensional source volume.")
     limits = np.iinfo(dtype)
@@ -31,8 +41,8 @@ def encode_volume(image, path, dtype):
         "byte_length": len(payload),
         "sha256": sha256(path),
         "decoded_sha256": hashlib.sha256(payload).hexdigest(),
-        "voxel_to_surface_ras_mm": image.header.get_vox2ras_tkr().tolist(),
-        "voxel_spacing_mm": list(map(float, image.header.get_zooms()[:3])),
+        "voxel_to_surface_ras_mm": np.asarray(affine).tolist(),
+        "voxel_spacing_mm": list(map(float, spacing)),
     }
 
 

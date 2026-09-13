@@ -1,3 +1,5 @@
+import { labelOf } from './labels.js';
+
 /**
  * Where a region's geometry lives, and therefore what can hide it.
  *
@@ -11,11 +13,25 @@
 const isSurface = region => region.kind === 'cortex' || region.kind === 'non-region';
 const isStructure = region => region.kind === 'structure';
 const isTissue = region => region.kind === 'tissue-region';
+// Gyral white matter is drawn on the white envelope's cut face, which the cortex controls hide.
+const followsCortex = region => isSurface(region) || region.atlas === 'wmparc';
+
+/** The cut atlases whose cuts draw a cut-only region. */
+export const cutAtlasesOf = region => region.cut_atlases ?? [region.atlas];
 
 const hemisphereAllows = (region, settings) =>
   settings.hemisphere === 'both' ||
   region.hemisphere === 'midline' ||
   region.hemisphere === settings.hemisphere;
+
+/** The overview's source constituents inherit its system, irrespective of atlas taxonomy. */
+export function internalSystemAllows(region, settings) {
+  if (!settings.internalSystem || isSurface(region)) return true;
+  if (settings.detail === 'learning' && region.atlas !== 'learning') {
+    return settings.internalConstituents.has(region.id);
+  }
+  return labelOf(region, 'en').group === settings.internalSystem;
+}
 
 /**
  * Whether a region is currently on screen, and if not, why.
@@ -32,15 +48,16 @@ export function visibilityOf(region, settings) {
   const onCut = region.atlas === settings.cutAtlas && settings.cutActive;
   if (isTissue(region)) {
     // Distinct reasons from 'other-atlas': the remedy is a different control.
-    if (region.atlas !== settings.cutAtlas) return hidden('other-cut-atlas');
+    if (!cutAtlasesOf(region).includes(settings.cutAtlas)) return hidden('other-cut-atlas');
     if (!settings.cutActive) return hidden('no-cut');
   } else if (isStructure(region)) {
     if (region.atlas !== settings.detail && !onCut) return hidden('other-detail');
   } else if (isSurface(region) && region.atlas !== settings.atlas) {
     return hidden('other-atlas');
   }
+  if (!internalSystemAllows(region, settings)) return hidden('other-system');
   if (!hemisphereAllows(region, settings)) return hidden('hemisphere');
-  if (isSurface(region) && !(settings.cortexVisible && settings.cortexOpacity > 0)) {
+  if (followsCortex(region) && !(settings.cortexVisible && settings.cortexOpacity > 0)) {
     return hidden('cortex-hidden');
   }
   if (settings.isolatedRegion && region.id !== settings.isolatedRegion) {

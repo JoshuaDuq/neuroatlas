@@ -5,8 +5,8 @@
 export const STRUCTURE_LABELS_FR = {
   'Left-Lateral-Ventricle': { name: 'Ventricule latéral', system: 'Ventricules et LCS' },
   'Right-Lateral-Ventricle': { name: 'Ventricule latéral', system: 'Ventricules et LCS' },
-  'Left-Inf-Lat-Vent': { name: 'Ventricule latéral inférieur', system: 'Ventricules et LCS' },
-  'Right-Inf-Lat-Vent': { name: 'Ventricule latéral inférieur', system: 'Ventricules et LCS' },
+  'Left-Inf-Lat-Vent': { name: 'Corne temporale du ventricule latéral', system: 'Ventricules et LCS' },
+  'Right-Inf-Lat-Vent': { name: 'Corne temporale du ventricule latéral', system: 'Ventricules et LCS' },
   '3rd-Ventricle': { name: 'Troisième ventricule', system: 'Ventricules et LCS' },
   '4th-Ventricle': { name: 'Quatrième ventricule', system: 'Ventricules et LCS' },
   'Left-choroid-plexus': { name: 'Plexus choroïde', system: 'Ventricules et LCS' },

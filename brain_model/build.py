@@ -5,7 +5,7 @@ import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
-from . import networks, nextbrain
+from . import learning, networks, nextbrain, white_matter
 from .export import add_region, compact_region, write_scene
 from .geometry import (
     extract_structure,
@@ -386,6 +386,9 @@ def main():
         fine, nuclei = build_nextbrain_structures(config)
         levels[1].update(fine)
         regions.extend(nuclei)
+        overview, learning_regions = learning.build(config)
+        levels.append(overview)
+        regions.extend(learning_regions)
         # Whatever earned geometry is published as a structure, so it must not
         # also be published as a cut-only region under the same identifier.
         regions.extend(
@@ -393,6 +396,8 @@ def main():
                 config, skip=[region["source_label_id"] for region in nuclei]
             )
         )
+    if white_matter.is_available(config):
+        regions.extend(white_matter.build_regions(config))
     export_volumes(config)
     manifest = {
         "volumes": {"file": "volumes.json"},
@@ -424,7 +429,9 @@ def main():
             *anatomy_limitations(config),
             "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
-            "Internal structures use an unsmoothed 1 mm label volume; fine nuclei and cerebellar folia are unresolved.",
+            "Source internal segmentations use a 1 mm grid; fine nuclei and cerebellar folia are unresolved.",
+            "Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to 0.6 mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
+            "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
             "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
             "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
             "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",
@@ -433,6 +440,7 @@ def main():
             "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
             "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
             *network_limitations(config),
+            *white_matter.limitations(config),
         ],
         "provenance": provenance,
     }

@@ -124,7 +124,7 @@ test('cut-only regions are grouped by the cut atlas, not the surface atlas', () 
       { id: 'destrieux:left:1', kind: 'cortex', atlas: 'destrieux', hemisphere: 'left',
         source_name: 'G_cuneus' },
       { id: 'nextbrain:left:48', kind: 'tissue-region', atlas: 'nextbrain',
-        hemisphere: 'left', source_name: 'head_of_caudate' },
+        hemisphere: 'left', source_label_id: 48, source_name: 'head_of_caudate' },
     ],
   };
   const catalog = createCatalog(manifest);
@@ -141,4 +141,17 @@ test('cut-only regions are grouped by the cut atlas, not the surface atlas', () 
   assert.equal(other.some(group => group.kind === 'tissue'), false);
   const otherSurface = catalog.groups({ ...settings, atlas: 'hcp-mmp' });
   assert.equal(otherSurface.some(group => group.kind === 'tissue'), true);
+});
+
+test('white matter is offered under every cut atlas that carries it', () => {
+  const catalog = createCatalog({ regions: [
+    { id: 'wmparc:left:3024', kind: 'tissue-region', atlas: 'wmparc', hemisphere: 'left',
+      source_name: 'precentral', cut_atlases: ['destrieux', 'hcp-mmp'] },
+  ] });
+  const rows = cutAtlas => catalog
+    .groups(settings({ cutAtlas, cutActive: true }))
+    .flatMap(group => group.rows.map(row => row.label.name));
+  assert.deepEqual(rows('destrieux'), ['White matter of the precentral gyrus']);
+  assert.deepEqual(rows('hcp-mmp'), ['White matter of the precentral gyrus']);
+  assert.deepEqual(rows('nextbrain'), []);
 });

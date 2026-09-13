@@ -559,3 +559,14 @@ kbd {
   color: var(--overlay-accent);
   font-size: var(--text-micro);
 }
+
+.internal-controls {
+  display: grid;
+  gap: 0.5rem;
+}
+.internal-controls label { font-size: 0.75rem; }
+.internal-controls select { width: 100%; min-width: 0; }
+.internal-note { font-size: 0.75rem; line-height: 1.5; color: var(--text-secondary); margin: 0; }
+.constituents-list { list-style: none; padding: 0; margin: 0.75rem 0 0; }
+.constituents-list li { font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.4rem; }
+.constituents-list button { width: 100%; text-align: left; white-space: normal; }

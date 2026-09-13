@@ -3434,6 +3434,480 @@
       }
     ]
   },
+  "learning_structures": {
+    "file": "learning.glb",
+    "sha256": "7864f052c4722571cfe86ad6e9a584f52f9a1636774c2361741eb22b830c9271",
+    "regions": [
+      {
+        "id": "learning:left:caudate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 4329,
+        "maximum_display_displacement_mm": 0.6000019382968842
+      },
+      {
+        "id": "learning:right:caudate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3996,
+        "maximum_display_displacement_mm": 0.6000017186854925
+      },
+      {
+        "id": "learning:left:putamen",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6304,
+        "maximum_display_displacement_mm": 0.5399801916074514
+      },
+      {
+        "id": "learning:right:putamen",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6066,
+        "maximum_display_displacement_mm": 0.5270123394735434
+      },
+      {
+        "id": "learning:left:pallidum-external",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1222,
+        "maximum_display_displacement_mm": 0.4923801975221108
+      },
+      {
+        "id": "learning:right:pallidum-external",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1455,
+        "maximum_display_displacement_mm": 0.49771569068871385
+      },
+      {
+        "id": "learning:left:pallidum-internal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 650,
+        "maximum_display_displacement_mm": 0.4705779505661376
+      },
+      {
+        "id": "learning:right:pallidum-internal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 706,
+        "maximum_display_displacement_mm": 0.4847738513788422
+      },
+      {
+        "id": "learning:left:accumbens",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 640,
+        "maximum_display_displacement_mm": 0.46357289969412196
+      },
+      {
+        "id": "learning:right:accumbens",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 605,
+        "maximum_display_displacement_mm": 0.5050080286991058
+      },
+      {
+        "id": "learning:left:subthalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 89,
+        "maximum_display_displacement_mm": 0.44155901554810933
+      },
+      {
+        "id": "learning:right:subthalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 100,
+        "maximum_display_displacement_mm": 0.49033535432406383
+      },
+      {
+        "id": "learning:left:substantia-nigra",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 242,
+        "maximum_display_displacement_mm": 0.4705534409888056
+      },
+      {
+        "id": "learning:right:substantia-nigra",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 255,
+        "maximum_display_displacement_mm": 0.5323806076661876
+      },
+      {
+        "id": "learning:left:claustrum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 864,
+        "maximum_display_displacement_mm": 0.5334032353311552
+      },
+      {
+        "id": "learning:right:claustrum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 918,
+        "maximum_display_displacement_mm": 0.6000015025929836
+      },
+      {
+        "id": "learning:left:ventral-pallidum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 13,
+        "maximum_display_displacement_mm": 0.49765350949099985
+      },
+      {
+        "id": "learning:right:ventral-pallidum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 5,
+        "maximum_display_displacement_mm": 0.4413516670467514
+      },
+      {
+        "id": "learning:left:septal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 152,
+        "maximum_display_displacement_mm": 0.48632451215601746
+      },
+      {
+        "id": "learning:right:septal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 100,
+        "maximum_display_displacement_mm": 0.5075745841389475
+      },
+      {
+        "id": "learning:left:innominata",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 422,
+        "maximum_display_displacement_mm": 0.4885921258450003
+      },
+      {
+        "id": "learning:right:innominata",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 423,
+        "maximum_display_displacement_mm": 0.5093920375852612
+      },
+      {
+        "id": "learning:left:thalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 7903,
+        "maximum_display_displacement_mm": 0.5225303120948097
+      },
+      {
+        "id": "learning:right:thalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 8278,
+        "maximum_display_displacement_mm": 0.5214965579801746
+      },
+      {
+        "id": "learning:left:hypothalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 758,
+        "maximum_display_displacement_mm": 0.49201575881063003
+      },
+      {
+        "id": "learning:right:hypothalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 670,
+        "maximum_display_displacement_mm": 0.5216332177607027
+      },
+      {
+        "id": "learning:left:mammillary",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 23,
+        "maximum_display_displacement_mm": 0.4920159040951577
+      },
+      {
+        "id": "learning:right:mammillary",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 40,
+        "maximum_display_displacement_mm": 0.4238881518495153
+      },
+      {
+        "id": "learning:left:zona-incerta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 115,
+        "maximum_display_displacement_mm": 0.6000006458933669
+      },
+      {
+        "id": "learning:right:zona-incerta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 130,
+        "maximum_display_displacement_mm": 0.6000002109007938
+      },
+      {
+        "id": "learning:left:lateral-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 304,
+        "maximum_display_displacement_mm": 0.4578987862864567
+      },
+      {
+        "id": "learning:right:lateral-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 292,
+        "maximum_display_displacement_mm": 0.5032339240313063
+      },
+      {
+        "id": "learning:left:medial-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 12,
+        "maximum_display_displacement_mm": 0.428516496440991
+      },
+      {
+        "id": "learning:right:medial-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 8,
+        "maximum_display_displacement_mm": 0.4668932318035289
+      },
+      {
+        "id": "learning:left:hippocampus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3886,
+        "maximum_display_displacement_mm": 0.6000016153318595
+      },
+      {
+        "id": "learning:right:hippocampus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3668,
+        "maximum_display_displacement_mm": 0.5147794698568671
+      },
+      {
+        "id": "learning:left:amygdala",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2033,
+        "maximum_display_displacement_mm": 0.5264151373422615
+      },
+      {
+        "id": "learning:right:amygdala",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1837,
+        "maximum_display_displacement_mm": 0.49276568416009914
+      },
+      {
+        "id": "learning:left:bnST",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 116,
+        "maximum_display_displacement_mm": 0.45898602867412897
+      },
+      {
+        "id": "learning:right:bnST",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 112,
+        "maximum_display_displacement_mm": 0.5195095668564171
+      },
+      {
+        "id": "learning:left:fornix",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 210,
+        "maximum_display_displacement_mm": 0.5033828827154166
+      },
+      {
+        "id": "learning:right:fornix",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 144,
+        "maximum_display_displacement_mm": 0.5399797696098122
+      },
+      {
+        "id": "learning:left:fimbria",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 110,
+        "maximum_display_displacement_mm": 0.4641714645316702
+      },
+      {
+        "id": "learning:right:fimbria",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 118,
+        "maximum_display_displacement_mm": 0.5075700074389154
+      },
+      {
+        "id": "learning:left:anterior-commissure",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 279,
+        "maximum_display_displacement_mm": 0.5052634846409111
+      },
+      {
+        "id": "learning:right:anterior-commissure",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 210,
+        "maximum_display_displacement_mm": 0.4587085892231597
+      },
+      {
+        "id": "learning:left:optic-tract",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 121,
+        "maximum_display_displacement_mm": 0.49666819316219163
+      },
+      {
+        "id": "learning:right:optic-tract",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 161,
+        "maximum_display_displacement_mm": 0.49570402227990856
+      },
+      {
+        "id": "learning:left:optic-chiasm",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2,
+        "maximum_display_displacement_mm": 0.40910961376355104
+      },
+      {
+        "id": "learning:right:optic-chiasm",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2,
+        "maximum_display_displacement_mm": 0.4413512721658405
+      },
+      {
+        "id": "learning:left:stria-terminalis",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 128,
+        "maximum_display_displacement_mm": 0.6000001956937254
+      },
+      {
+        "id": "learning:right:stria-terminalis",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 139,
+        "maximum_display_displacement_mm": 0.5080760020846105
+      },
+      {
+        "id": "learning:left:mammillothalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 39,
+        "maximum_display_displacement_mm": 0.46280885122796733
+      },
+      {
+        "id": "learning:right:mammillothalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 33,
+        "maximum_display_displacement_mm": 0.4584676255092539
+      },
+      {
+        "id": "learning:left:midbrain",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2295,
+        "maximum_display_displacement_mm": 0.60000012699648
+      },
+      {
+        "id": "learning:right:midbrain",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2386,
+        "maximum_display_displacement_mm": 0.5266709529525981
+      },
+      {
+        "id": "learning:left:pons",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 7228,
+        "maximum_display_displacement_mm": 0.48681916881057885
+      },
+      {
+        "id": "learning:right:pons",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6241,
+        "maximum_display_displacement_mm": 0.5202382675957241
+      },
+      {
+        "id": "learning:left:medulla",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1611,
+        "maximum_display_displacement_mm": 0.4664106908693275
+      },
+      {
+        "id": "learning:right:medulla",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1741,
+        "maximum_display_displacement_mm": 0.5097615575075587
+      },
+      {
+        "id": "learning:left:red-nucleus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 145,
+        "maximum_display_displacement_mm": 0.47606171128041674
+      },
+      {
+        "id": "learning:right:red-nucleus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 179,
+        "maximum_display_displacement_mm": 0.4519995915675283
+      },
+      {
+        "id": "learning:left:vta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 242,
+        "maximum_display_displacement_mm": 0.5109706248579774
+      },
+      {
+        "id": "learning:right:vta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 186,
+        "maximum_display_displacement_mm": 0.4615887321459657
+      },
+      {
+        "id": "learning:left:inferior-colliculus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 60,
+        "maximum_display_displacement_mm": 0.4818467886291262
+      },
+      {
+        "id": "learning:right:inferior-colliculus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 71,
+        "maximum_display_displacement_mm": 0.5182965520727107
+      },
+      {
+        "id": "learning:left:dentate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1017,
+        "maximum_display_displacement_mm": 0.4826419937340315
+      },
+      {
+        "id": "learning:right:dentate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 722,
+        "maximum_display_displacement_mm": 0.4954001334390995
+      },
+      {
+        "id": "learning:left:interposed",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 143,
+        "maximum_display_displacement_mm": 0.4463501988447028
+      },
+      {
+        "id": "learning:right:interposed",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 133,
+        "maximum_display_displacement_mm": 0.5066942145400621
+      },
+      {
+        "id": "learning:ventricles-left",
+        "source_atlas": "aseg",
+        "source_voxel_count": 6407,
+        "maximum_display_displacement_mm": 0.4910562633776792
+      },
+      {
+        "id": "learning:ventricles-right",
+        "source_atlas": "aseg",
+        "source_voxel_count": 5886,
+        "maximum_display_displacement_mm": 0.5385152081081127
+      },
+      {
+        "id": "learning:third-ventricle",
+        "source_atlas": "aseg",
+        "source_voxel_count": 945,
+        "maximum_display_displacement_mm": 0.4910536130957168
+      },
+      {
+        "id": "learning:fourth-ventricle",
+        "source_atlas": "aseg",
+        "source_voxel_count": 1532,
+        "maximum_display_displacement_mm": 0.482057055708628
+      },
+      {
+        "id": "learning:corpus-callosum",
+        "source_atlas": "aseg",
+        "source_voxel_count": 3806,
+        "maximum_display_displacement_mm": 0.5097638225012765
+      }
+    ],
+    "source_volumes_unchanged": true,
+    "maximum_allowed_displacement_mm": 0.6
+  },
+  "white_matter": {
+    "file": "white-matter.volume",
+    "sha256": "11ec13953b507e3249d153a73b473ca56095f8d4026ebe79d94b5de461388718",
+    "identical_parcel_voxels": true,
+    "crop_corner_voxel": [
+      67,
+      61,
+      26
+    ],
+    "shape": [
+      121,
+      105,
+      178
+    ],
+    "parcel_count": 68
+  },
   "volumes": {
     "mri": {
       "file": "mri.volume",

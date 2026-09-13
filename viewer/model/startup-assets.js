@@ -12,7 +12,7 @@ export function startupAssets(hash, base = '/') {
   const wanted = decodeState(hash);
   const root = base.endsWith('/') ? base : `${base}/`;
   const cortex = wanted.atlas === 'hcp-mmp' ? 'cortex-hcp-mmp.glb' : 'cortex-destrieux.glb';
-  const interior = wanted.detail === 'aseg' ? 'structures.glb' : 'nextbrain.glb';
+  const interior = { aseg: 'structures.glb', nextbrain: 'nextbrain.glb', learning: 'learning.glb' }[wanted.detail] ?? 'learning.glb';
   return [
     `${root}models/manifest.json`,
     `${root}models/${cortex}`,

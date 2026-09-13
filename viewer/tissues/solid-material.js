@@ -1,8 +1,9 @@
 import { DoubleSide, MeshPhysicalMaterial, Vector3 } from 'three';
 import { HIGHLIGHT_CHUNK } from './highlight.js';
+import { WHITE_MATTER_LIFT, WHITE_MATTER_UNIFORMS } from './white-matter.js';
 
 /** Registered MRI adds material variation; the solid geometry owns all boundaries. */
-export function createSolidMaterial(anatomy, appearance) {
+export function createSolidMaterial(anatomy, appearance, whiteMatter = null) {
   const { tissue, intensity } = appearance;
   const material = new MeshPhysicalMaterial({
     side: DoubleSide, roughness: tissue.roughness,
@@ -24,6 +25,7 @@ export function createSolidMaterial(anatomy, appearance) {
       tissueVariation: material.userData.tissueVariation,
       tissueRelief: { value: intensity.solid_relief_mm / 1000 },
       highlightLift: material.userData.highlightLift,
+      ...whiteMatter?.uniforms,
     });
     shader.vertexShader = `varying vec3 sourceWorld;\n${shader.vertexShader}`.replace(
       '#include <begin_vertex>', `#include <begin_vertex>
@@ -37,7 +39,7 @@ export function createSolidMaterial(anatomy, appearance) {
       uniform float tissueVariation;
       uniform float tissueRelief;
       uniform float highlightLift;
-      varying vec3 sourceWorld;
+      varying vec3 sourceWorld;${whiteMatter ? WHITE_MATTER_UNIFORMS : ''}
       ${HIGHLIGHT_CHUNK}
 
       float intensityAt(vec3 voxel) {
@@ -58,7 +60,8 @@ export function createSolidMaterial(anatomy, appearance) {
         vec3 mriVoxel = (worldToMri * vec4(sourceWorld, 1.0)).xyz;
         float intensity = intensityAt(mriVoxel);
         diffuseColor.rgb *= 1.0 + tissueVariation * (2.0 * intensity - 1.0);
-        diffuseColor.rgb = liftHighlight(diffuseColor.rgb, highlightLift);
+        float capLift = highlightLift;${whiteMatter ? WHITE_MATTER_LIFT : ''}
+        diffuseColor.rgb = liftHighlight(diffuseColor.rgb, capLift);
       `).replace('#include <normal_fragment_maps>', `
         #include <normal_fragment_maps>
         vec3 gradient = intensityGradient(mriVoxel);
@@ -71,6 +74,7 @@ export function createSolidMaterial(anatomy, appearance) {
         #endif
       `);
   };
-  material.customProgramCacheKey = () => 'native-solid-tissue-v2';
+  material.customProgramCacheKey = () =>
+    `native-solid-tissue-v2${whiteMatter ? '-white-matter' : ''}`;
   return material;
 }

@@ -69,3 +69,9 @@ test('the selected region encodes by id, even though state holds the object', ()
   assert.equal(encoded, 'atlas=destrieux&region=destrieux:left:29');
   assert.equal(decodeState(encoded).selectedRegion, 'destrieux:left:29');
 });
+
+test('a system study survives sharing a link', () => {
+  const decoded = decodeState(encodeState({ detail: 'learning', internalSystem: 'Basal ganglia' }));
+  assert.equal(decoded.detail, 'learning');
+  assert.equal(decoded.internalSystem, 'Basal ganglia');
+});

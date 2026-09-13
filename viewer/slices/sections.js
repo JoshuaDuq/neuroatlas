@@ -43,6 +43,7 @@ export class BrainSections extends EventTarget {
         s.cortexVisible,
         s.cortexOpacity,
         s.isolatedRegion,
+        s.internalSystem,
         s.surfaceColor,
         s.detail,
       ]);

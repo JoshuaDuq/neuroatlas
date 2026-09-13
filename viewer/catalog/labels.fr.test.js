@@ -18,6 +18,7 @@ test('Destrieux source names expand to their French anatomical names', () => {
     'G_temp_sup-G_T_transv': 'Gyrus temporal transverse (Heschl)',
     'G_oc-temp_lat-fusifor': 'Gyrus occipito-temporal latéral (fusiforme)',
     G_cuneus: 'Cunéus',
+    'G_cingul-Post-dorsal': 'Gyrus cingulaire postéro-dorsal',
     G_precentral: 'Gyrus précentral',
     G_postcentral: 'Gyrus postcentral',
   };
@@ -64,6 +65,11 @@ test('subcortical structures get French names and anatomical systems', () => {
     source_name: 'Left-Lateral-Ventricle' }), 'fr');
   assert.equal(vent.name, 'Ventricule latéral');
   assert.equal(vent.group, 'Ventricules et LCS');
+
+  const horn = labelOf(region({ atlas: 'aseg', kind: 'structure',
+    source_name: 'Left-Inf-Lat-Vent' }), 'fr');
+  assert.equal(horn.name, 'Corne temporale du ventricule latéral');
+  assert.equal(horn.group, 'Ventricules et LCS');
 
   const cc = labelOf(region({ atlas: 'aseg', kind: 'structure', hemisphere: 'midline',
     source_name: 'CC_Anterior' }), 'fr');
@@ -163,14 +169,23 @@ test('exact 1:1 key parity between English and French subcortical structure tabl
 test('NextBrain source names with French entries expand to their verified French names', () => {
   const cases = {
     head_of_caudate: { name: 'Tête du noyau caudé', group: 'Ganglions de la base' },
+    core_of_nucleus_accumbens: { name: 'Cœur du noyau accumbens', group: 'Ganglions de la base' },
     optic_chiasm: { name: 'Chiasma optique', group: 'Voies visuelles' },
     pineal_body: { name: 'Corps pinéal', group: 'Diencéphale' },
     substantia_nigra__compact_part: { name: 'Substance noire, partie compacte', group: 'Tronc cérébral' },
+    periaqueductal_gray_substance: { name: 'Substance grise périaqueducale', group: 'Tronc cérébral' },
+    'stratum_oriens_of_caudal_ca1': { name: 'Stratum oriens de CA1 caudal', group: 'Hippocampe' },
+    granular_layer_of_caudal_dentate_gyrus: { name: 'Couche granulaire du gyrus denté caudal', group: 'Hippocampe' },
     rostral_subiculum: { name: 'Subiculum rostral', group: 'Hippocampe' },
     cuneus: { name: 'Cunéus', group: 'Occipital' },
   };
   for (const [source_name, expected] of Object.entries(cases)) {
-    const r = { kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'left', source_name };
+    const ids = {head_of_caudate:48, core_of_nucleus_accumbens:101, optic_chiasm:161,
+      pineal_body:506, substantia_nigra__compact_part:352, periaqueductal_gray_substance:465,
+      stratum_oriens_of_caudal_ca1:565, granular_layer_of_caudal_dentate_gyrus:559,
+      rostral_subiculum:347, cuneus:2005};
+    const r = { kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'left',
+      source_name, source_label_id: ids[source_name] };
     const label = labelOf(r, 'fr');
     assert.equal(label.name, expected.name);
     assert.equal(label.group, expected.group);
@@ -180,11 +195,11 @@ test('NextBrain source names with French entries expand to their verified French
 test('NextBrain regions without a French entry fall back to published English', () => {
   const r = {
     kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'right',
-    source_name: 'periaqueductal_gray_substance',
+    source_name: 'medial_habenular_nucleus', source_label_id: 10444,
   };
   const label = labelOf(r, 'fr');
-  assert.equal(label.name, 'periaqueductal gray substance');
-  assert.equal(label.group, 'P–R');
+  assert.equal(label.name, 'medial habenular nucleus');
+  assert.equal(label.group, 'Épithalamus');
 });
 
 
