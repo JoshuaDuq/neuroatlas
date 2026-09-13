@@ -442,6 +442,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #viewport[data-chrome="tight"] .scale-bar {
   top: calc(var(--vis-top) + var(--space-3));
   bottom: auto;
+  /* The fullscreen and snapshot chips already hold the right of this line. */
+  right: calc(var(--vis-right) + var(--space-3) + 64px + var(--space-3));
 }
 #viewport[data-chrome="tight"] .views {
   right: calc(var(--vis-right) + var(--space-4));
