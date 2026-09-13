@@ -15,8 +15,8 @@ const DRAG_THRESHOLD_PX = 8;
  * the desktop layout never runs a line of this code.
  *
  * The sheet reports how much of the canvas it covers rather than resizing it.
- * Resizing would reallocate the composer target, the occlusion pass and both
- * outline passes on every frame of a drag; an inset costs a projection shift.
+ * Resizing would reallocate the composer target and both outline passes on every
+ * frame of a drag; an inset costs a projection shift.
  *
  * The selection strip is deliberately not a tab. Tapping the model while the
  * cuts panel is open should confirm what was hit without throwing the reader

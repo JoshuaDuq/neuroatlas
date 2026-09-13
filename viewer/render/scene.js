@@ -4,14 +4,13 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
 import { gpuRendererName, isIntegratedGpu } from './device.js';
-import { occlusionActive, qualityProfile } from './quality.js';
+import { qualityProfile } from './quality.js';
 
 const TRANSITION_MS = 240;
 
@@ -68,8 +67,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
    * How much of the canvas the interface is covering. On a phone the sheet
    * sits over the canvas rather than beside it, so the renderer is told what
    * the reader can see instead of being resized: resizing would reallocate
-   * the composer target, the occlusion pass and both outline passes on every
-   * frame of a drag.
+   * the composer target and both outline passes on every frame of a drag.
    */
   let chromeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -80,15 +78,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   });
   const composer = new EffectComposer(renderer, renderTarget);
   composer.addPass(new RenderPass(scene, camera));
-
-  // Tablets and phones skip this pass entirely. A disabled GTAOPass still
-  // allocates full-resolution targets on resize, which is the memory that
-  // makes an iPad hitch even when the pass never draws.
-  const occlusion = quality.occlusion ? new GTAOPass(scene, camera, 1, 1) : null;
-  if (occlusion) {
-    occlusion.updatePdMaterial({ depthPhi: 0.002, normalPhi: 8, radius: 4 });
-    composer.addPass(occlusion);
-  }
 
   /*
    * Two passes make one two-tone outline. No single colour clears 3:1 against
@@ -124,13 +113,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     lighting = createAnatomicalLighting(renderer, camera, appearance.lighting);
     scene.environment = lighting.texture;
     scene.environmentIntensity = appearance.lighting.environment;
-    if (occlusion) {
-      occlusion.updateGtaoMaterial({
-        ...appearance.occlusion,
-        samples: Math.min(appearance.occlusion.samples, quality.occlusionSamples),
-      });
-      occlusion.blendIntensity = appearance.occlusion.intensity;
-    }
     invalidate();
   }
 
@@ -177,12 +159,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
     renderer.setSize(width, height);
     composer.setSize(width, height);
-    if (occlusion && quality.occlusionScale !== 1) {
-      occlusion.setSize(
-        Math.max(1, Math.round(width * quality.occlusionScale)),
-        Math.max(1, Math.round(height * quality.occlusionScale)),
-      );
-    }
     camera.aspect = width / height;
     applyViewOffset();
     camera.updateProjectionMatrix();
@@ -250,18 +226,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   function tick(now) {
     step(now);
     controls.update();
-    const transparent = hasTransparency();
-    if (occlusion) {
-      const wantAO = occlusionActive({
-        enabled: quality.occlusion,
-        transparent,
-        sections: hasSections(),
-      });
-      if (occlusion.enabled !== wantAO) {
-        occlusion.enabled = wantAO;
-        dirty = true;
-      }
-    }
     // Solid cuts interleave winding masks and caps in a defined render order.
     renderer.sortObjects = true;
     if (!dirty && !transition) {
