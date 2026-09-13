@@ -56,3 +56,25 @@ test('returning to the whole brain restores the constraints focusing changed', (
   cameraConstraints(region);
   assert.deepEqual(cameraConstraints(brain), before);
 });
+
+test('elongated bounds permit close approach based on cross-section', () => {
+  const cord = new Box3(new Vector3(-0.006, -0.5, 0.02), new Vector3(0.006, 0, 0.04));
+  const { minDistance, near, far } = cameraConstraints(cord);
+  assert.ok(minDistance < 0.015, 'the camera must approach within 15 mm of the cord');
+  assert.ok(near < minDistance, 'near clipping plane sits ahead of the minimum distance');
+  assert.equal(Math.round(far / near), 10000);
+});
+
+test('camera maxDistance allows zooming out to view the full central nervous system', () => {
+  const { maxDistance } = cameraConstraints(brain);
+  assert.ok(maxDistance >= 2.0, 'maxDistance must provide zoom-out headroom for the full CNS');
+});
+
+test('framing spinal cord maintains scale-invariant precision and proper approach limits', () => {
+  const cord = new Box3(new Vector3(-0.006, -0.72, -0.015), new Vector3(0.006, -0.047, 0.015));
+  const constraints = cameraConstraints(cord);
+  assert.ok(constraints.minDistance <= 0.015, 'allows close inspection of spinal tracts');
+  assert.ok(constraints.maxDistance >= 2.0, 'allows zooming out to full view');
+  assert.equal(Math.round(constraints.far / constraints.near), 10000, 'depth ratio is preserved');
+});
+

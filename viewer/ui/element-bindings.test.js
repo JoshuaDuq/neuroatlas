@@ -34,3 +34,20 @@ test('no local shadows an element binding in any UI module', async () => {
   }
   assert.deepEqual(offences, []);
 });
+
+test('any UI module using t() imports t from translations', async () => {
+  const directory = new URL('./', import.meta.url);
+  const files = (await readdir(directory)).filter(
+    file => file.endsWith('.js') && !file.endsWith('.test.js'));
+
+  const offences = [];
+  for (const file of files) {
+    const source = await readFile(new URL(file, directory), 'utf8');
+    if (/\bt\s*\(/.test(source)) {
+      if (!/import\s+{[^}]*\bt\b[^}]*}\s+from\s+['"][^'"]*translations(?:\.js)?['"]/.test(source)) {
+        offences.push(`${file} calls t() without importing it from translations`);
+      }
+    }
+  }
+  assert.deepEqual(offences, []);
+});

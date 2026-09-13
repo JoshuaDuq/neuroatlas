@@ -63,6 +63,14 @@ test('groups expand and collapse independently', () => {
   assert.deepEqual([...s.assemble(modelState).expanded], ['Temporal']);
 });
 
+test('groups can be expanded or collapsed in bulk', () => {
+  const s = session();
+  s.setExpanded(['Frontal', 'Temporal', 'Parietal']);
+  assert.deepEqual([...s.assemble(modelState).expanded].sort(), ['Frontal', 'Parietal', 'Temporal']);
+  s.setExpanded([]);
+  assert.deepEqual([...s.assemble(modelState).expanded], []);
+});
+
 test('a notice survives until the next action, and is never timed out', () => {
   const s = session();
   s.notify('Selection cleared — cortex hidden.');

@@ -1,5 +1,5 @@
 import { labelOf } from './labels.js';
-import { cutAtlasesOf, visibilityOf } from './visibility.js';
+import { belongsToDetail, cutAtlasesOf, visibilityOf } from './visibility.js';
 
 const EXACT = 0, PREFIX = 1, WORD = 2, SUBSTRING = 3, NO_MATCH = 4;
 
@@ -74,6 +74,7 @@ export function createCatalog(manifest, defaultLang = 'en') {
   }
 
   const compare = (a, b) =>
+    ((a.region.family_order ?? 0) - (b.region.family_order ?? 0)) ||
     a.label.name.localeCompare(b.label.name, activeLang) ||
     a.region.hemisphere.localeCompare(b.region.hemisphere);
 
@@ -134,7 +135,8 @@ export function createCatalog(manifest, defaultLang = 'en') {
           : cortical;
         const shown = into === volumetric
           ? cutAtlasesOf(entry.region).includes(settings.cutAtlas)
-          : atlas === (into === structural ? settings.detail : settings.atlas);
+          : into === structural ? belongsToDetail(entry.region, settings.detail)
+          : atlas === settings.atlas;
         if (!shown) continue;
         if (into === structural && settings.internalSystem &&
             labelOf(entry.region, 'en').group !== settings.internalSystem) continue;
@@ -143,13 +145,15 @@ export function createCatalog(manifest, defaultLang = 'en') {
       }
       // A lobe and a system can share a name — Destrieux has a Limbic lobe and
       // aseg a Limbic system — so the key, not the name, identifies a group.
+      const inFamilyOrder = (a, b) =>
+        (a.region.family_order ?? -1) - (b.region.family_order ?? -1) || compare(a, b);
       const buildGroup = (map, kind) => [...map.entries()]
         .sort(([a], [b]) => a.localeCompare(b, activeLang))
         .map(([name, group]) => ({
           name,
           kind,
           key: `${kind}:${name}`,
-          rows: group.sort(compare).map(entry => row(entry, settings)),
+          rows: group.sort(inFamilyOrder).map(entry => row(entry, settings)),
         }));
       const cortex = buildGroup(cortical, 'cortex');
       const structures = buildGroup(structural, 'structure');

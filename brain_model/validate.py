@@ -8,7 +8,7 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import map_coordinates
 
-from . import networks, nextbrain, validate_learning, white_matter
+from . import networks, nextbrain, spinal_cord, validate_learning, white_matter
 from .export import compact_region
 from .geometry import (
     extract_structure,
@@ -575,6 +575,14 @@ def validate_manifest(config, manifest):
     }:
         raise ValueError("Manifest atlas set mismatch")
     groups = {}
+    if spinal_cord.is_available(config):
+        groups["spinal-cord.glb"] = {
+            region["id"]: region
+            for region in (
+                spinal_cord.describe(config, part["structure"], part["hemisphere"], part["mesh"])
+                for part in spinal_cord.parts(config)
+            )
+        }
     for atlas in config["atlases"]:
         filename = f"cortex-{atlas['id']}.glb"
         expected = expected_cortical_metadata(config, atlas)
@@ -667,6 +675,8 @@ def main():
             for atlas, published in zip(config["atlases"], manifest["atlases"])
         ],
         "structures": validate_structures(config),
+        **({"spinal_cord": spinal_cord.validate(config, manifest["supplemental_layers"][0])}
+           if spinal_cord.is_available(config) else {}),
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config),

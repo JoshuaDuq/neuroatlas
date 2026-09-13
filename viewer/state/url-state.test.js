@@ -75,3 +75,10 @@ test('a system study survives sharing a link', () => {
   assert.equal(decoded.detail, 'learning');
   assert.equal(decoded.internalSystem, 'Basal ganglia');
 });
+
+test('hiding the spinal cord survives sharing a link', () => {
+  const encoded = encodeState({ atlas: 'destrieux', spinalCordVisible: false });
+  assert.equal(encoded, 'atlas=destrieux&cord=0');
+  assert.equal(decodeState(encoded).spinalCordVisible, false);
+  assert.equal(decodeState('#atlas=destrieux&cord=1').spinalCordVisible, true);
+});

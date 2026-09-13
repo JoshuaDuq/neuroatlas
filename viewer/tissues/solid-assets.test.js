@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { BoxGeometry, Color, Matrix4, Mesh, MeshBasicMaterial } from 'three';
 import { Volume } from '../slices/volume.js';
-import { BANDS, addSolidSources, indexLabels, paintSolids } from './solid-assets.js';
+import { BANDS, addSolidSources, enclosingFirst, indexLabels, paintSolids } from './solid-assets.js';
 import { SolidSections } from './solid-sections.js';
 import { createWhiteMatter } from './white-matter.js';
 
@@ -220,4 +220,24 @@ test('learning caps obey system filtering and remain visible during isolation', 
     state: { ...STATE, detail: 'learning', internalSystem: 'Basal ganglia', isolatedRegion: id } });
   assert.equal(cap.visible, true);
   assert.equal(cap.region, id);
+});
+
+test('a reference cord cap is painted as the tissue its region declares, not by its name', () => {
+  const cap = (id, source_name, tissue) => solid({ hemisphere: 'left', supplemental: true,
+    mri_registered: false, region_id: `zanatomy:left:${id}`, source_name, tissue });
+  const [tract, nucleus, canal] = paint([
+    cap('lateral-corticospinal-tract', 'Lateral corticospinal tract', 'white'),
+    cap('nucleus-proprius', 'Nucleus proprius', 'gray'),
+    cap('central-canal', 'Central canal', 'fluid'),
+  ]);
+  assert.equal(tract.cap.material.color.getHexString(), appearance.tissue.white.slice(1));
+  assert.equal(nucleus.cap.material.color.getHexString(), appearance.tissue.gray.slice(1));
+  assert.equal(canal.cap.material.color.getHexString(), appearance.tissue.fluid.slice(1));
+});
+
+test('nested reference solids reach the cut after the solids that enclose them', () => {
+  const source = (id, volume) => ({ userData: { region_id: id, segmentation_volume_mm3: volume } });
+  const sources = [source('nucleus proprius', 73), source('cord', 45710), source('posterior horn', 1180)];
+  assert.deepEqual(enclosingFirst(sources).map(entry => entry.userData.region_id),
+    ['cord', 'posterior horn', 'nucleus proprius']);
 });

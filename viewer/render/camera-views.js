@@ -28,17 +28,19 @@ export function upFor(view) {
  * Derived from the framed radius rather than set once and mutated, so
  * focusing a small structure tightens the near plane and returning to the
  * whole brain restores it. The near-to-far ratio is constant, which is what
- * keeps depth precision the same at every scale; the previous code moved the
- * near plane to 50 um while leaving far at 10 m, a 200,000:1 ratio that
- * persisted for the rest of the session.
+ * keeps depth precision the same at every scale. Elongated structures like
+ * the spinal cord derive minDistance from their cross-section so the reader
+ * can approach fine details rather than being locked out by overall length.
  */
 export function cameraConstraints(bounds) {
   const radius = bounds.getBoundingSphere(new Sphere()).radius;
+  const size = bounds.getSize(new Vector3());
+  const minSpan = Math.min(size.x, size.y, size.z);
   return {
     near: radius * 0.01,
     far: radius * 100,
-    minDistance: radius * 0.25,
-    maxDistance: radius * 15,
+    minDistance: Math.min(radius * 0.25, Math.max(minSpan * 0.5, 0.005)),
+    maxDistance: radius * 25,
   };
 }
 

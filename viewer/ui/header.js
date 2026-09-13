@@ -28,6 +28,9 @@ export function createHeader({ atlases, networks, onAtlas, onSurfaceColor, onThe
   const shortcutsButton = document.getElementById('shortcuts-open');
   const moreButton = document.getElementById('masthead-more');
   const menu = document.getElementById('masthead-menu');
+  const shareButton = document.getElementById('share-button');
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
 
   /*
    * On a phone the region count, language, theme and shortcuts do not fit
@@ -115,11 +118,31 @@ export function createHeader({ atlases, networks, onAtlas, onSurfaceColor, onThe
   const onThemeClick = () => onTheme();
   themeButton.addEventListener('click', onThemeClick);
 
+  const onShareClick = async () => {
+    try {
+      await navigator.clipboard.writeText(globalThis.location.href);
+      if (toast) {
+        toast.textContent = t(document.documentElement.lang || 'en', 'header').linkCopied;
+        toast.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.hidden = true; }, 2000);
+      }
+    } catch {
+      // Ignore clipboard write failures
+    }
+  };
+  shareButton?.addEventListener('click', onShareClick);
+
   return {
     update(state, { visibleCount }) {
       const i18n = t(state.lang, 'header');
       const atlasDict = t(state.lang, 'atlases');
       const switching = state.status === 'switching';
+
+      if (shareButton) {
+        shareButton.textContent = i18n.share;
+        shareButton.setAttribute('aria-label', i18n.share);
+      }
 
       container.setAttribute('aria-label', i18n.atlasSwitch);
       surfaceContainer.setAttribute('aria-label', t(state.lang, 'display').surfaceColor);
@@ -165,6 +188,8 @@ export function createHeader({ atlases, networks, onAtlas, onSurfaceColor, onThe
       document.removeEventListener('keydown', onEscape);
       phoneQuery.removeEventListener('change', applyMode);
       themeButton.removeEventListener('click', onThemeClick);
+      shareButton?.removeEventListener('click', onShareClick);
+      clearTimeout(toastTimer);
       for (const [btn, handler] of onLangClicks) {
         btn.removeEventListener('click', handler);
       }

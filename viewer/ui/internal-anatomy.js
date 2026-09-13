@@ -1,4 +1,5 @@
 import { labelOf } from '../catalog/labels.js';
+import { belongsToDetail } from '../catalog/visibility.js';
 import { insideInternal } from '../state/internal-mode.js';
 
 const COPY = {
@@ -41,7 +42,7 @@ export function createInternalAnatomy({ manifest, onToggle, onSystem }) {
         key = nextKey;
         const systems = new Map();
         for (const region of manifest.regions) {
-          if (region.kind !== 'structure' || region.atlas !== state.detail) continue;
+          if (region.kind !== 'structure' || !belongsToDetail(region, state.detail)) continue;
           systems.set(labelOf(region, 'en').group, labelOf(region, state.lang).group);
         }
         system.replaceChildren(new Option(copy.all, ''), ...[...systems]

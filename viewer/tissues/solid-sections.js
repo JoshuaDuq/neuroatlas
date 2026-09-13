@@ -1,12 +1,16 @@
 import {
   AlwaysStencilFunc, BackSide, Box3, DecrementWrapStencilOp, DoubleSide, FrontSide, Group,
   IncrementWrapStencilOp, Matrix3, Mesh, MeshBasicMaterial, NotEqualStencilFunc,
-  Plane, PlaneGeometry, Raycaster, ReplaceStencilOp, Vector3,
+  Plane, PlaneGeometry, Quaternion, Raycaster, ReplaceStencilOp, Vector3,
 } from 'three';
 import { acceleratedRaycast, computeBoundsTree } from 'three-mesh-bvh';
 import { liftFor } from './highlight.js';
 
 const CAP_NORMAL = new Vector3(0, 0, 1);
+const BOUNDS_CENTER = new Vector3();
+const BOUNDS_SIZE = new Vector3();
+const PLANE_CENTER = new Vector3();
+const PLANE_ROTATION = new Quaternion();
 
 function stencilMaterial(plane, side, operation) {
   return new MeshBasicMaterial({
@@ -23,8 +27,9 @@ export class SolidSections {
     this.group = new Group();
     this.group.name = 'Solid anatomical tissue cuts';
     this.plane = new Plane();
-    this.geometry = new PlaneGeometry(0.5, 0.5);
+    this.geometry = new PlaneGeometry(1, 1);
     this.solids = [];
+    this.bounds = new Box3();
     this.probe = new Raycaster();
     this.probe.firstHitOnly = true;
   }
@@ -74,14 +79,33 @@ export class SolidSections {
    * Bands keep that answer independent of load order: an atlas's parcel solids
    * arrive after the envelopes and a detail level's nuclei can arrive after
    * either, but a nucleus still covers the ribbon reconstructed around it.
+   *
+   * Within the same band, larger enclosing solids draw before smaller nested
+   * solids, and each solid receives a tiered polygon offset so co-planar caps
+   * never z-fight.
    */
   reorder() {
-    this.solids.sort((a, b) => a.band - b.band);
-    for (const [at, solid] of this.solids.entries()) solid.group.renderOrder = at + 1;
+    this.bounds.makeEmpty();
+    for (const solid of this.solids) this.bounds.union(solid.bounds);
+    this.solids.sort((a, b) => {
+      if (a.band !== b.band) return a.band - b.band;
+      const volumeA = a.source.userData?.segmentation_volume_mm3 ?? 0;
+      const volumeB = b.source.userData?.segmentation_volume_mm3 ?? 0;
+      return volumeB - volumeA;
+    });
+    for (const [at, solid] of this.solids.entries()) {
+      solid.group.renderOrder = at + 1;
+      solid.cap.material.polygonOffset = true;
+      solid.cap.material.polygonOffsetFactor = -1;
+      solid.cap.material.polygonOffsetUnits = -1 - at;
+    }
   }
 
   /**
    * Place the caps on the plane.
+   *
+   * All caps share identical quad dimensions and orientation on the plane so
+   * GPU rasterization produces bit-identical depth values across nested caps.
    *
    * `visible` is whoever painted the solid last saying whether it belongs in
    * this cut; an atlas contributes hundreds of parcel solids, so the ones the
@@ -89,11 +113,16 @@ export class SolidSections {
    */
   update(plane) {
     this.plane.copy(plane);
+    this.bounds.getCenter(BOUNDS_CENTER);
+    const diameter = this.bounds.getSize(BOUNDS_SIZE).length() || 1;
+    plane.projectPoint(BOUNDS_CENTER, PLANE_CENTER);
+    PLANE_ROTATION.setFromUnitVectors(CAP_NORMAL, plane.normal);
     for (const { visible, bounds, group, cap } of this.solids) {
       group.visible = visible && plane.intersectsBox(bounds);
       if (!group.visible) continue;
-      plane.coplanarPoint(cap.position);
-      cap.quaternion.setFromUnitVectors(CAP_NORMAL, plane.normal);
+      cap.position.copy(PLANE_CENTER);
+      cap.quaternion.copy(PLANE_ROTATION);
+      cap.scale.set(diameter, diameter, 1);
     }
   }
 
@@ -140,6 +169,7 @@ export class SolidSections {
     }
     this.geometry.dispose();
     this.solids.length = 0;
+    this.bounds.makeEmpty();
     this.group.removeFromParent();
   }
 }

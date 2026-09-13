@@ -101,10 +101,11 @@ test('visible region count excludes unlabelled medial surfaces', async () => {
   const real = JSON.parse(
     await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
   const full = createCatalog(real);
-  // 148 Destrieux regions + 35 structures; two medial surfaces are non-regions.
-  assert.equal(full.visibleCount(settings()), 183);
-  assert.equal(full.visibleCount(settings({ atlas: 'hcp-mmp' })), 395);
-  assert.equal(full.visibleCount(settings({ cortexVisible: false })), 35);
+  // Cortex + 35 native structures + the 58-part reference cord; medial walls
+  // are non-regions.
+  assert.equal(full.visibleCount(settings()), 241);
+  assert.equal(full.visibleCount(settings({ atlas: 'hcp-mmp' })), 453);
+  assert.equal(full.visibleCount(settings({ cortexVisible: false })), 93);
 });
 
 test('a capped result set reports the true total, never a silent cut', async () => {
@@ -154,4 +155,38 @@ test('white matter is offered under every cut atlas that carries it', () => {
   assert.deepEqual(rows('destrieux'), ['White matter of the precentral gyrus']);
   assert.deepEqual(rows('hcp-mmp'), ['White matter of the precentral gyrus']);
   assert.deepEqual(rows('nextbrain'), []);
+});
+
+const cordRegion = (id, hemisphere, name, family, order, aliases = { en: [], fr: [] }) => ({
+  id: `zanatomy:${hemisphere}:${id}`, atlas: 'zanatomy', kind: 'structure', hemisphere,
+  supplemental: true, source_name: name, display_names: { en: name, fr: name },
+  system_names: { en: 'Spinal cord', fr: 'Moelle épinière' },
+  family: family.toLowerCase(), family_names: { en: family, fr: family }, family_order: order, aliases,
+});
+
+test('spinal cord rows sit under their family, in the order the model publishes', () => {
+  const cord = createCatalog({ regions: [
+    cordRegion('cauda-equina', 'midline', 'Cauda equina', 'Roots and ganglia', 9),
+    cordRegion('gracile-fasciculus', 'right', 'Gracile fasciculus', 'Posterior funiculus', 1),
+    cordRegion('anterior-horn', 'left', 'Anterior horn of spinal cord', 'Anterior horn', 7),
+    cordRegion('cuneate-fasciculus', 'left', 'Cuneate fasciculus', 'Posterior funiculus', 1),
+    cordRegion('gracile-fasciculus', 'left', 'Gracile fasciculus', 'Posterior funiculus', 1),
+  ] });
+  const [group] = cord.groups(settings({ detail: 'learning' }));
+  assert.equal(group.name, 'Spinal cord');
+  assert.deepEqual(group.rows.map(row => [row.label.subgroup, row.label.name, row.region.hemisphere]), [
+    ['Posterior funiculus', 'Cuneate fasciculus', 'left'],
+    ['Posterior funiculus', 'Gracile fasciculus', 'left'],
+    ['Posterior funiculus', 'Gracile fasciculus', 'right'],
+    ['Anterior horn', 'Anterior horn of spinal cord', 'left'],
+    ['Roots and ganglia', 'Cauda equina', 'midline'],
+  ]);
+});
+
+test('spinal cord structures answer to the clinical aliases of each language', () => {
+  const tract = cordRegion('posterolateral-tract', 'left', 'Posterolateral tract', 'White matter', 0,
+    { en: ["Lissauer's tract"], fr: ['Faisceau de Lissauer'] });
+  const cord = createCatalog({ regions: [tract] });
+  assert.equal(cord.search('lissauer', settings()).rows[0]?.region.id, tract.id);
+  assert.equal(cord.search('faisceau de lissauer', settings({ lang: 'fr' })).rows[0]?.region.id, tract.id);
 });

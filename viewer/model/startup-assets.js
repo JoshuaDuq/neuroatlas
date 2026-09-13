@@ -17,5 +17,6 @@ export function startupAssets(hash, base = '/') {
     `${root}models/manifest.json`,
     `${root}models/${cortex}`,
     `${root}models/${interior}`,
+    `${root}models/spinal-cord.glb`,
   ];
 }

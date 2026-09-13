@@ -27,7 +27,7 @@ import { createCutMaterial } from './shader.js';
 import { SolidSections } from './solid-sections.js';
 import {
   BANDS, addSolidSources, indexLabels, loadRibbonSources, loadSolidSources,
-  loadStructureSources, paintSolids,
+  loadStructureSources, loadSupplementalSources, paintSolids,
 } from './solid-assets.js';
 import { createWhiteMatter } from './white-matter.js';
 
@@ -81,13 +81,14 @@ export class TissueSections {
       const metadata = await response.json();
       if (metadata.schema_version !== 1) throw new Error('Unsupported MRI schema.');
       const parcels = this.metadata.white_matter;
-      const [volume, sources, parcelVolume] = await Promise.all([
+      const [volume, sources, parcelVolume, supplemental] = await Promise.all([
         loadVolume(metadata.mri, url),
         loadSolidSources(this.model.manifest, this.baseUrl),
         parcels ? loadVolume(parcels, this.baseUrl) : null,
+        loadSupplementalSources(this.model.manifest, this.baseUrl),
       ]);
       if (this.disposed) {
-        for (const source of sources) {
+        for (const source of [...sources, ...supplemental]) {
           source.geometry.dispose();
           source.material.dispose();
         }
@@ -100,6 +101,8 @@ export class TissueSections {
         this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.envelope,
         this.whiteMatter,
       );
+      addSolidSources(this.solids, supplemental, this.anatomy,
+        this.model.manifest.appearance, BANDS.structure);
     })().finally(() => { this.anatomyLoading = null; });
     return this.anatomyLoading;
   }
@@ -220,9 +223,10 @@ export class TissueSections {
     // A cut-only atlas has no surface to cut parcels out of, so its published
     // colours still have to come from the label volume and its 1 mm steps.
     const solid = layer.wedged || state.surfaceColor === 'tissue';
-    this.solids.group.visible = solid;
+    const supplemental = this.solids.solids.some(entry => entry.source.userData.supplemental);
+    this.solids.group.visible = solid || supplemental;
     this.whiteMatter?.update({ atlas, isolatedRegion: state.isolatedRegion });
-    if (solid) {
+    if (this.solids.group.visible) {
       paintSolids(this.solids, {
         labels: layer.solidLabels,
         state,
@@ -233,6 +237,9 @@ export class TissueSections {
         lookup: { regions: this.model.regions, networks: this.model.manifest.networks },
         whiteMatter: this.whiteMatter?.active ? this.whiteMatter : null,
       });
+      if (!solid) {
+        for (const entry of this.solids.solids) entry.visible &&= entry.source.userData.supplemental === true;
+      }
       this.solids.update(clippingPlane(frame, reverse));
     }
     for (const candidate of this.layers.values()) {
@@ -291,9 +298,10 @@ export class TissueSections {
   intersect(raycaster) {
     if (!this.current) return null;
     this.group.updateMatrixWorld(true);
-    const solid = this.solids.group.visible;
-    const hit = solid ? this.solids.intersect(raycaster)
-      : raycaster.intersectObject(this.current.mesh)[0];
+    const cap = this.solids.group.visible ? this.solids.intersect(raycaster) : null;
+    const sampled = this.current.mesh.visible ? raycaster.intersectObject(this.current.mesh)[0] : null;
+    const hit = cap ?? sampled;
+    const solid = Boolean(cap);
     if (!hit) return null;
     // A cap was drawn from its own geometry, and only the atlas's own labels
     // are on the 1 mm grid: resampling it under a nucleus answers with

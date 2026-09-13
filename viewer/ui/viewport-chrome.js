@@ -16,7 +16,7 @@ const CHROME_GUTTERS_PX = 48;
  * from near-black crevices to near-white speculars, so no fixed text colour
  * would be legible against all of it.
  */
-export function createViewportChrome({ networks, onView, onRetry }) {
+export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) {
   const orientation = document.getElementById('orientation');
   const edges = Object.fromEntries(
     [...orientation.children].map(node => [node.dataset.edge, node]));
@@ -27,6 +27,8 @@ export function createViewportChrome({ networks, onView, onRetry }) {
   const hover = document.getElementById('hover-label');
   const legend = document.getElementById('network-legend');
   const host = document.getElementById('viewport');
+  const fullscreenButton = document.getElementById('viewport-fullscreen');
+  const snapshotButton = document.getElementById('viewport-snapshot');
   const stage = document.getElementById('stage');
   const stageMessage = document.getElementById('stage-message');
   const stageProgress = document.getElementById('stage-progress');
@@ -95,6 +97,16 @@ export function createViewportChrome({ networks, onView, onRetry }) {
   });
 
   retry.addEventListener('click', onRetry);
+  const onSnapshotClick = () => onSnapshot?.();
+  snapshotButton?.addEventListener('click', onSnapshotClick);
+  const onFullscreenClick = () => {
+    if (!document.fullscreenElement) {
+      host.requestFullscreen?.().catch(err => console.error('Fullscreen failed:', err));
+    } else {
+      document.exitFullscreen?.().catch(err => console.error('Exit fullscreen failed:', err));
+    }
+  };
+  fullscreenButton?.addEventListener('click', onFullscreenClick);
 
   return {
     /**
@@ -136,6 +148,16 @@ export function createViewportChrome({ networks, onView, onRetry }) {
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       if (!ready) bar.hidden = true;
+      if (snapshotButton) {
+        snapshotButton.setAttribute('aria-label', i18nViewport.snapshot);
+        snapshotButton.title = i18nViewport.snapshot;
+        snapshotButton.hidden = !ready;
+      }
+      if (fullscreenButton) {
+        fullscreenButton.setAttribute('aria-label', i18nViewport.fullscreen);
+        fullscreenButton.title = i18nViewport.fullscreen;
+        fullscreenButton.hidden = !ready;
+      }
 
       if (lastCameraArgs) {
         const labels = edgeLabels(lastCameraArgs.camera, currentLang);
@@ -215,6 +237,8 @@ export function createViewportChrome({ networks, onView, onRetry }) {
 
     dispose() {
       retry.removeEventListener('click', onRetry);
+      snapshotButton?.removeEventListener('click', onSnapshotClick);
+      fullscreenButton?.removeEventListener('click', onFullscreenClick);
       views.replaceChildren();
       legend?.replaceChildren();
     },

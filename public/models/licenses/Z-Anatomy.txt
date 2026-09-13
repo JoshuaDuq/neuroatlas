@@ -1,0 +1,54 @@
+Z-Anatomy — attribution and terms for the reference spinal cord
+==============================================================
+
+What is derived from it here
+----------------------------
+
+public/models/spinal-cord.glb contains 58 surfaces derived from 35 objects of
+the Z-Anatomy Blender scene (Startup.blend): the spinal cord's white matter,
+19 white-matter tracts and fasciculi, the anterior and posterior grey horns and
+five further grey-matter zones and nuclei, the central canal, the anterior and
+posterior roots of the spinal nerves on both sides, the spinal ganglia on both
+sides, and the cauda equina.
+
+They are derivatives, not copies. scripts/extract_spinal_cord.py evaluates the
+Array, Curve and Mirror modifiers that generate the cord, removes the interior
+sagittal septum left where the mirrored halves meet, fills the open ends the
+sweep leaves behind, recomputes outward face normals, converts the result from
+Blender world metres to RAS millimetres, and translates the whole assembly so
+its upper end meets this subject's brainstem. An object whose two mirrored
+halves do not touch is published as a left and a right surface; no triangle is
+cut. No source vertex is moved relative to any other; the only spatial change
+is that one rigid translation.
+
+Terms
+-----
+
+Z-Anatomy publishes its anatomical content under the Creative Commons
+Attribution-ShareAlike 4.0 International licence (CC BY-SA 4.0). Its geometry
+derives in turn from BodyParts3D, © The Database Center for Life Science,
+licensed CC BY-SA 2.1 Japan.
+
+    https://www.z-anatomy.com/
+    https://creativecommons.org/licenses/by-sa/4.0/
+    https://lifesciencedb.jp/bp3d/
+
+Note on verification: the downloaded Startup.blend distribution carries no
+licence file of its own. The GNU GPL v3 headers inside its bundled Blender
+add-on (__init__.py, Anatomy-shortcuts.py) cover that add-on's source code, not
+the anatomical data, and the terms above are the ones the project states for
+the data. Confirm them against the upstream project before redistributing.
+
+What ShareAlike means for this bundle
+-------------------------------------
+
+CC BY-SA 4.0 is a copyleft licence. Redistributing spinal-cord.glb, or any
+adaptation of it, requires attribution as above and requires that the
+redistributed material be offered under CC BY-SA 4.0 or a compatible licence.
+
+That obligation attaches to this derived work. The other assets in
+public/models/ are derived from different sources under different terms
+(FreeSurfer, HCP, NextBrain); see the other files in this directory and
+data/sources.json. spinal-cord.glb is a separate file for this reason, and the
+manifest records its licence and attribution on its own supplemental layer
+entry so a consumer can tell the layers apart.

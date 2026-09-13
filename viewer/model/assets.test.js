@@ -18,9 +18,10 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   const atlas = new BrainAtlas(manifest, loader);
   await atlas.initialize('destrieux');
   const detail = manifest.detail_levels.find(level => level.id === atlas.defaultDetail);
+  const supplemental = manifest.supplemental_layers.reduce((count, layer) => count + layer.region_count, 0);
   assert.equal(atlas.state.detail, 'learning');
   // 148 Destrieux parcels plus the two non-region surfaces.
-  assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count);
+  assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + supplemental);
   for (const entry of manifest.atlases) {
     await atlas.setAtlas(entry.id);
     const corticalMeshes = atlas.visibleMeshes.filter(mesh => mesh.userData.kind === 'cortex');
@@ -41,7 +42,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
     assert.equal(atlas.state.selectedRegion.atlas, entry.id);
   }
   atlas.setCortexVisible(false);
-  assert.equal(atlas.visibleMeshes.length, detail.region_count);
+  assert.equal(atlas.visibleMeshes.length, detail.region_count + supplemental);
   atlas.select(atlas.visibleMeshes[0].userData.region_id);
   assert.equal(atlas.state.selectedRegion.kind, 'structure');
   atlas.setInternalSystem('Basal ganglia');

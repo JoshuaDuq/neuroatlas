@@ -5,7 +5,7 @@ import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
-from . import learning, networks, nextbrain, white_matter
+from . import learning, networks, nextbrain, spinal_cord, white_matter
 from .export import add_region, compact_region, write_scene
 from .geometry import (
     extract_structure,
@@ -399,7 +399,13 @@ def main():
     if white_matter.is_available(config):
         regions.extend(white_matter.build_regions(config))
     export_volumes(config)
+    cord_layers, cord_regions = [], []
+    if spinal_cord.is_available(config):
+        layer, cord_regions = spinal_cord.build(config)
+        cord_layers = [layer]
+        regions.extend(cord_regions)
     manifest = {
+        "supplemental_layers": cord_layers,
         "volumes": {"file": "volumes.json"},
         "tissues": {"file": "tissue-labels.json"},
         "solid_envelopes": export_solid_envelopes(config),
@@ -426,6 +432,7 @@ def main():
         "regions": regions,
         "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
         "limitations": [
+            *(spinal_cord.limitations(config) if cord_regions else []),
             *anatomy_limitations(config),
             "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",

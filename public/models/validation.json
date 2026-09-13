@@ -442,6 +442,17 @@
       }
     ]
   },
+  "spinal_cord": {
+    "source_shape_preserved": true,
+    "watertight": true,
+    "mri_registered": false,
+    "structure_count": 35,
+    "region_count": 58,
+    "triangle_count": 277236,
+    "volume_method": "Enclosed volume of the published closed surface",
+    "placement": "Rigid translation onto the brainstem; no rotation or scaling",
+    "division": "Mirrored objects publish their two disconnected halves; no triangle is cut"
+  },
   "solid_envelopes": {
     "file": "tissue-envelopes.glb",
     "sha256": "2e52c7710994f3ed5a00cb7683beeca32541c0a37a439b284fc0bb9cece37cd7",

@@ -78,6 +78,29 @@ test('translations dictionary returns valid sections and falls back safely', () 
   assert.ok(t('unknown', 'header').languageSwitch === 'Language');
 });
 
+test('UI actions and shortcuts are fully translated in English and French', () => {
+  for (const lang of ['en', 'fr']) {
+    const header = t(lang, 'header');
+    assert.ok(header.share);
+    assert.ok(header.linkCopied);
+
+    const nav = t(lang, 'navigator');
+    assert.ok(nav.clearSearch);
+
+    const insp = t(lang, 'inspector');
+    assert.ok(insp.centroid);
+
+    const vp = t(lang, 'viewport');
+    assert.ok(vp.snapshot);
+
+    const shortcuts = t(lang, 'shortcuts');
+    const keys = shortcuts.items.map(([k]) => k);
+    for (const expectedKey of ['F', 'I', 'M', 'C', 'S', 'H', '0', '1 – 6', '/', 'Esc']) {
+      assert.ok(keys.includes(expectedKey), `Missing shortcut ${expectedKey} in ${lang}`);
+    }
+  }
+});
+
 test('the colophon and slice note name whichever brain was actually built', () => {
   // The viewer publishes one model at a time and must describe that one. A
   // sentence hardcoded to a subject outlives the build that made it true.

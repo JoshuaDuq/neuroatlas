@@ -1,3 +1,4 @@
+import { t } from '../i18n/translations.js';
 import { CLINICAL_TEXT } from '../clinical/translations.js';
 
 function element(tag, text, className) {
@@ -75,6 +76,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
   const anatomyBrowser = document.getElementById('anatomy-browser');
   const deficitBrowser = document.getElementById('deficit-browser');
   const search = document.getElementById('deficit-search');
+  const deficitSearchClear = document.getElementById('deficit-search-clear');
   const searchLabel = document.getElementById('deficit-search-label');
   const introduction = document.getElementById('clinical-introduction');
   const coverage = document.getElementById('clinical-coverage');
@@ -194,6 +196,13 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
   switcher.addEventListener('click', onSwitch);
   search.addEventListener('input', onInput);
   search.addEventListener('keydown', onSearchKey);
+  const onClearDeficitSearch = () => {
+    search.value = '';
+    if (deficitSearchClear) deficitSearchClear.hidden = true;
+    onQuery('');
+    search.focus();
+  };
+  deficitSearchClear?.addEventListener('click', onClearDeficitSearch);
   list.addEventListener('click', onDeficitClick);
   list.addEventListener('keydown', onListKey);
   related.addEventListener('click', onDeficitClick);
@@ -215,6 +224,10 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       }
       search.placeholder = text.search;
       searchLabel.textContent = text.search;
+      if (deficitSearchClear) {
+        deficitSearchClear.hidden = !state.clinicalQuery?.trim();
+        deficitSearchClear.setAttribute('aria-label', t(language, 'navigator').clearSearch);
+      }
       if (document.activeElement !== search) search.value = state.clinicalQuery;
       introduction.textContent = text.introduction;
       coverage.textContent = text.coverage;
@@ -247,6 +260,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       switcher.removeEventListener('click', onSwitch);
       search.removeEventListener('input', onInput);
       search.removeEventListener('keydown', onSearchKey);
+      deficitSearchClear?.removeEventListener('click', onClearDeficitSearch);
       list.removeEventListener('click', onDeficitClick);
       list.removeEventListener('keydown', onListKey);
       related.removeEventListener('click', onDeficitClick);

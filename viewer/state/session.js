@@ -76,6 +76,10 @@ export function createSession({ views, theme = 'light', lang = 'en' }) {
       return act({ expanded });
     },
 
+    setExpanded(expanded) {
+      return act({ expanded: new Set(expanded) });
+    },
+
     setTheme: value => act({ theme: value }),
 
     setLang: value => act({ lang: ['en', 'fr'].includes(value) ? value : 'en' }),

@@ -146,3 +146,12 @@ test('white matter is drawn with the cortex, so hiding the cortex hides it', () 
   assert.deepEqual(visibilityOf(whiteMatter(), settings({ cortexOpacity: 0 })),
     { visible: false, reason: 'cortex-hidden' });
 });
+
+test('hiding the spinal cord hides spinal cord regions but leaves other structures alone', () => {
+  const cord = region({ atlas: 'zanatomy', hemisphere: 'midline', kind: 'structure', supplemental: true });
+  assert.equal(visibilityOf(cord, settings()).visible, true);
+  assert.deepEqual(visibilityOf(cord, settings({ spinalCordVisible: false })),
+    { visible: false, reason: 'spinal-cord-hidden' });
+  const stem = region({ atlas: 'aseg', hemisphere: 'midline', kind: 'structure' });
+  assert.equal(visibilityOf(stem, settings({ spinalCordVisible: false })).visible, true);
+});

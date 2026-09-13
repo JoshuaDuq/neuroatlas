@@ -2,7 +2,7 @@
 #explorer-switch button { flex: 1; }
 .clinical-intro { padding-top: var(--space-4); }
 .clinical-intro p { color: var(--text-secondary); line-height: 1.5; }
-#deficit-search { margin-top: var(--space-4); }
+.clinical-intro .search-box { margin-top: var(--space-4); }
 
 .clinical-deficit {
   display: flex;
