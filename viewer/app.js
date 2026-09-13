@@ -423,11 +423,39 @@ export async function startApp() {
     }
   }
 
+  /*
+   * What the pointer is over, and where. Kept out of the state loop: it is
+   * answered once per frame of a pointer move, and a full re-render would
+   * rebuild every panel that often.
+   */
+  let hovered = null;
+
+  /** Mark what the pointer is on — a cut face lights, a surface outlines — and name it. */
+  function highlight() {
+    const region = hovered?.region;
+    sections.setHighlight({
+      hovered: region?.id,
+      selected: model.state.selectedRegion?.id,
+    });
+    chrome?.showHover(
+      region ? catalog.get(region.id)?.label.name ?? region.label : null, hovered?.position);
+    scene.invalidate();
+  }
+
   function outline() {
+    highlight();
+    // An outline is drawn from an unclipped depth render, so on a cut it would
+    // ring the whole solid rather than the face. The cut lights its faces
+    // instead, which is what `highlight` just did.
     if (sections.active) { scene.setOutlined(); return; }
-    const id = model.state.selectedRegion?.id;
-    const mesh = id && model.visibleMeshes.find(m => m.userData.region_id === id);
-    scene.setOutlined({ selected: mesh ? [mesh] : [] });
+    const meshFor = id => {
+      const mesh = id && model.visibleMeshes.find(m => m.userData.region_id === id);
+      return mesh ? [mesh] : [];
+    };
+    scene.setOutlined({
+      selected: meshFor(model.state.selectedRegion?.id),
+      hovered: meshFor(hovered?.region?.id),
+    });
   }
 
   let urlTimer = null;
@@ -444,6 +472,13 @@ export async function startApp() {
     domElement: scene.domElement,
     camera: scene.camera,
     model: () => sections,
+    onHover: (region, position) => {
+      hovered = region ? { region, position } : null;
+      // Not the state loop: a pointer answers this once a frame, and a full
+      // render would rebuild every panel that often. The cut lights its own
+      // faces; a surface needs the outline pass, which only `outline` drives.
+      if (sections.active) highlight(); else outline();
+    },
     onSelect: select,
   });
 

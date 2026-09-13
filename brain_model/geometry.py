@@ -65,7 +65,7 @@ def partition_vertex_field(faces, labels, values):
     )
 
 
-def _majority(values):
+def majority(values):
     """The most common value in each row; the lowest wins a tie."""
     ordered = np.sort(values, axis=1)
     winner = ordered[:, 0]
@@ -91,7 +91,7 @@ def partition_vertex_labels(faces, labels, values):
     mixed_faces = faces[np.any(labels[faces] != labels[faces[:, :1]], axis=1)]
     edges, _ = partition_edges(mixed_faces)
     return np.concatenate(
-        [values, _majority(values[edges]), _majority(values[mixed_faces])]
+        [values, majority(values[edges]), majority(values[mixed_faces])]
     )
 
 

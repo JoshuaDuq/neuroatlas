@@ -13,13 +13,20 @@ import {
   RGBAFormat,
   UnsignedByteType,
   UnsignedShortType,
+  Vector2,
   Vector3,
 } from 'three';
-import { rasToWorld, worldToRas } from '../slices/coordinates.js';
+import { clippingPlane, rasToWorld, worldToRas } from '../slices/coordinates.js';
 import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
+import { codeIndex, liftFor } from './highlight.js';
 import { createPalette, labelVisible, usesAtlasColors, usesNetworkColors } from './palette.js';
 import { createCutMaterial } from './shader.js';
+import { SolidSections } from './solid-sections.js';
+import {
+  BANDS, addSolidSources, indexLabels, loadRibbonSources, loadSolidSources,
+  loadStructureSources, paintSolids,
+} from './solid-assets.js';
 
 function worldToVoxelMatrix(volume) {
   const worldToSource = new Matrix4().set(
@@ -44,6 +51,11 @@ export class TissueSections {
     this.frame = null;
     this.anatomy = null;
     this.anatomyLoading = null;
+    this.envelopes = [];
+    this.details = new Map();
+    this.detailsLoading = new Map();
+    this.solids = new SolidSections();
+    this.group.add(this.solids.group);
   }
 
   async loadMetadata() {
@@ -62,19 +74,53 @@ export class TissueSections {
   }
 
   async loadAnatomy() {
-    if (this.anatomy) return;
     if (this.anatomyLoading) return this.anatomyLoading;
+    if (this.anatomy) return;
     this.anatomyLoading = (async () => {
       const url = new URL('volumes.json', this.baseUrl);
       const response = await fetchPublished(url);
       if (!response.ok) throw new Error(`MRI metadata request failed: HTTP ${response.status}`);
       const metadata = await response.json();
       if (metadata.schema_version !== 1) throw new Error('Unsupported MRI schema.');
-      const volume = await loadVolume(metadata.mri, url);
-      if (this.disposed) throw new Error('Tissue sections disposed during MRI loading.');
+      const [volume, sources] = await Promise.all([
+        loadVolume(metadata.mri, url),
+        loadSolidSources(this.model.manifest, this.baseUrl),
+      ]);
+      if (this.disposed) {
+        for (const source of sources) {
+          source.geometry.dispose();
+          source.material.dispose();
+        }
+        throw new Error('Tissue sections disposed during MRI loading.');
+      }
       this.anatomy = this.createAnatomy(volume);
+      this.envelopes = sources;
+      addSolidSources(
+        this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.envelope,
+      );
     })().finally(() => { this.anatomyLoading = null; });
     return this.anatomyLoading;
+  }
+
+  hasDetail(detail) {
+    return this.details.has(detail);
+  }
+
+  /** Cap the internal anatomy the viewer is showing; both levels segment the same. */
+  async loadDetail(detail) {
+    if (this.details.has(detail)) return;
+    if (this.detailsLoading.has(detail)) return this.detailsLoading.get(detail);
+    const pending = loadStructureSources(this.model.manifest, this.baseUrl, detail)
+      .then(sources => {
+        if (this.disposed) throw new Error('Tissue sections disposed during loading.');
+        addSolidSources(
+          this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.structure,
+        );
+        this.details.set(detail, sources.length);
+      })
+      .finally(() => this.detailsLoading.delete(detail));
+    this.detailsLoading.set(detail, pending);
+    return pending;
   }
 
   createAnatomy(volume) {
@@ -94,14 +140,22 @@ export class TissueSections {
   async load(atlas) {
     if (this.disposed) throw new Error('Tissue sections disposed.');
     await Promise.all([this.loadMetadata(), this.loadAnatomy()]);
+    await this.loadDetail(this.model.state.detail);
     if (this.layers.has(atlas)) return;
     if (this.pending.has(atlas)) return this.pending.get(atlas);
     const metadata = this.metadata.atlases[atlas];
     if (!metadata) throw new Error(`Missing tissue atlas: ${atlas}`);
-    const pending = loadVolume(metadata, this.baseUrl)
-      .then((volume) => {
+    const pending = Promise.all([
+      loadVolume(metadata, this.baseUrl),
+      loadRibbonSources(this.model.manifest, this.baseUrl, atlas, this.envelopes),
+    ])
+      .then(([volume, wedges]) => {
         if (this.disposed) throw new Error('Tissue sections disposed during loading.');
         const layer = this.createLayer(metadata, volume);
+        addSolidSources(
+          this.solids, wedges, this.anatomy, this.model.manifest.appearance, BANDS.ribbon,
+        );
+        layer.wedged = wedges.length > 0;
         this.layers.set(atlas, layer);
       })
       .finally(() => this.pending.delete(atlas));
@@ -138,27 +192,53 @@ export class TissueSections {
       mriShape: { value: new Vector3(...this.anatomy.volume.shape) },
       t1Range: { value: [intensity.low, intensity.high] },
       tissueVariation: { value: intensity.cut_strength },
+      // A sampled face is one mesh for every label, so it compares the
+      // pointed-at and chosen codes rather than carrying a lift of its own.
+      highlightCodes: { value: new Vector2(-1, -1) },
+      highlightLifts: { value: new Vector2(0, 0) },
     };
     const material = createCutMaterial(uniforms, tissue);
     const mesh = new Mesh(new PlaneGeometry(0.5, 0.5), material);
     mesh.name = 'Native labelled tissue cut';
     mesh.visible = false;
     this.group.add(mesh);
-    return { metadata, volume, texture, palette, mesh, uniforms, paletteKey: null };
+    return {
+      metadata, volume, texture, palette, mesh, uniforms, paletteKey: null,
+      solidLabels: indexLabels(metadata.labels), codes: codeIndex(metadata.labels),
+      wedged: false,
+    };
   }
 
-  update(frame, atlas) {
+  update(frame, atlas, reverse = false) {
     const layer = this.layers.get(atlas);
     if (!layer) throw new Error(`Tissue atlas has not loaded: ${atlas}`);
     this.current = layer;
     this.frame = frame;
-    for (const candidate of this.layers.values()) candidate.mesh.visible = candidate === layer;
+    const state = this.model.state;
+    // A cut-only atlas has no surface to cut parcels out of, so its published
+    // colours still have to come from the label volume and its 1 mm steps.
+    const solid = layer.wedged || state.surfaceColor === 'tissue';
+    this.solids.group.visible = solid;
+    if (solid) {
+      paintSolids(this.solids, {
+        labels: layer.solidLabels,
+        state,
+        atlas,
+        detail: state.detail,
+        wedged: layer.wedged,
+        appearance: this.model.manifest.appearance,
+        lookup: { regions: this.model.regions, networks: this.model.manifest.networks },
+      });
+      this.solids.update(clippingPlane(frame, reverse));
+    }
+    for (const candidate of this.layers.values()) {
+      candidate.mesh.visible = candidate === layer && !solid;
+    }
     const u = rasToWorld(frame.u.toArray()).normalize();
     const v = rasToWorld(frame.v.toArray()).normalize();
     const normal = new Vector3().crossVectors(u, v);
     layer.mesh.quaternion.setFromRotationMatrix(new Matrix4().makeBasis(u, v, normal));
     layer.mesh.position.copy(rasToWorld(frame.center.toArray()));
-    const state = this.model.state;
     // Only tissue colour carries the T1 brightness it was tuned against; under
     // a published palette — atlas or network — that modulation would distort
     // the datum, and the cut would no longer match its key.
@@ -183,20 +263,53 @@ export class TissueSections {
     return true;
   }
 
+  /**
+   * Light the cut faces of the pointed-at and the chosen region.
+   *
+   * Off the state loop on purpose: a pointer answers this once a frame,
+   * and a full render would rebuild every panel that often.
+   */
+  setHighlight(highlight = {}) {
+    this.solids.highlight(highlight);
+    for (const layer of this.layers.values()) {
+      const code = region => layer.codes.get(region) ?? -1;
+      layer.uniforms.highlightCodes.value.set(
+        code(highlight.hovered), code(highlight.selected));
+      layer.uniforms.highlightLifts.value.set(
+        liftFor(highlight.hovered, highlight), liftFor(highlight.selected, highlight));
+    }
+  }
+
   /** CPU picking uses the exact same nearest-cell rule as the GPU shader. */
   intersect(raycaster) {
     if (!this.current) return null;
     this.group.updateMatrixWorld(true);
-    const hit = raycaster.intersectObject(this.current.mesh)[0];
+    const solid = this.solids.group.visible;
+    const hit = solid ? this.solids.intersect(raycaster)
+      : raycaster.intersectObject(this.current.mesh)[0];
     if (!hit) return null;
+    // A cap was drawn from its own geometry, and only the atlas's own labels
+    // are on the 1 mm grid: resampling it under a nucleus answers with
+    // whatever the segmentation put there, which is a different detail
+    // level's region entirely. What was drawn is what was pointed at.
+    if (hit.region) return { ...hit, region: this.model.regions.get(hit.region) ?? null };
     const code = this.current.volume.nearest(worldToRas(hit.point));
     const label = this.current.metadata.labels[code];
+    if (solid) {
+      // The solid that was hit is the anatomy drawn there, and it is the one
+      // the viewer is showing: resampling the label grid here could name a
+      // region from a detail level that is not on screen, or a parcel across
+      // the boundary the cap just drew.
+      const id = hit.source.userData.region_id ?? label?.region_id ?? null;
+      return { ...hit, region: this.model.regions.get(id) ?? null, label };
+    }
     if (!labelVisible(label, this.model.state)) return null;
     return { ...hit, region: this.model.regions.get(label.region_id) ?? null, label };
   }
 
   dispose() {
     this.disposed = true;
+    this.solids.dispose();
     for (const layer of this.layers.values()) {
       layer.texture.dispose();
       layer.palette.dispose();

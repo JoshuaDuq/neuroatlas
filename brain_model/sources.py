@@ -8,6 +8,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
+HEMISPHERES = {"lh": "left", "rh": "right"}
+
 
 def resolve_config(document):
     """Fold the one selected anatomy into the shape every build step reads.

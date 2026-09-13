@@ -58,6 +58,7 @@ appearance:
     high: 180
     surface_strength: 0.28
     cut_strength: 0.5
+    solid_relief_mm: 1.2
   folds:
     low: -0.5
     high: 1.8

@@ -10,7 +10,7 @@ const CHROME_GUTTERS_PX = 48;
 
 /**
  * Everything drawn over the canvas: anatomical orientation, the scale bar,
- * the view presets, and the loading and error stage.
+ * the view presets, the hover label, and the loading and error stage.
  *
  * Overlays sit on near-opaque chips because the geometry beneath them runs
  * from near-black crevices to near-white speculars, so no fixed text colour
@@ -24,6 +24,7 @@ export function createViewportChrome({ networks, onView, onRetry }) {
   const bar = document.getElementById('scale-bar');
   const barRule = bar.querySelector('.scale-bar-rule');
   const barText = bar.querySelector('.measure');
+  const hover = document.getElementById('hover-label');
   const legend = document.getElementById('network-legend');
   const host = document.getElementById('viewport');
   const stage = document.getElementById('stage');
@@ -166,6 +167,27 @@ export function createViewportChrome({ networks, onView, onRetry }) {
       barRule.style.width = `${Math.round(measured.pixels)}px`;
       barText.textContent = `${measured.millimetres} mm`;
       fitChrome();
+    },
+
+    /**
+     * Name what the pointer is over, beside the pointer.
+     *
+     * On the chip rather than in a rail: the reader is reading the cut face,
+     * and a name that appears at the far edge of the screen is a name they
+     * have to leave the anatomy to find.
+     */
+    showHover(label, position) {
+      if (!label || !position) {
+        hover.hidden = true;
+        return;
+      }
+      hover.hidden = false;
+      hover.textContent = label;
+      const bounds = hover.parentElement.getBoundingClientRect();
+      hover.style.left =
+        `${Math.min(position.x + 14, bounds.width - hover.offsetWidth - 8)}px`;
+      hover.style.top =
+        `${Math.min(position.y + 14, bounds.height - hover.offsetHeight - 8)}px`;
     },
 
     dispose() {

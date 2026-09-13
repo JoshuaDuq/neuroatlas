@@ -136,3 +136,11 @@ test('an unselectable tissue cut blocks selecting a surface behind it', async ()
   assert.equal(sections.pick(new Raycaster()), region);
   sections.dispose();
 });
+
+test('a highlight reaches the tissue that draws the cut faces', () => {
+  const { sections, tissues } = fixture();
+  const seen = [];
+  tissues.setHighlight = highlight => seen.push(highlight);
+  sections.setHighlight({ hovered: 'aseg:left:10' });
+  assert.deepEqual(seen, [{ hovered: 'aseg:left:10' }]);
+});
