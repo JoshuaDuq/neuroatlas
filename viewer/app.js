@@ -1,4 +1,4 @@
-import { Box3 } from 'three';
+import { Box3, Vector3 } from 'three';
 import { createCatalog } from './catalog/catalog.js';
 import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion } from './clinical/navigation.js';
@@ -341,8 +341,9 @@ export async function startApp() {
   });
 
   const onToggleAllGroups = () => {
-    const groups = catalog.groups(session.assemble(model.state));
-    const allExpanded = groups.length > 0 && groups.every(g => session.state.expanded.has(g.key));
+    const state = session.assemble(model.state);
+    const groups = catalog.groups(state);
+    const allExpanded = groups.length > 0 && groups.every(g => state.expanded.has(g.key));
     if (allExpanded) {
       session.setExpanded([]);
     } else {
@@ -373,7 +374,7 @@ export async function startApp() {
   });
 
   const onSliceTo = async () => {
-    const region = session.state.selectedRegion;
+    const region = model.state.selectedRegion;
     if (!region) return;
     const coords = model.centroidOf(region.id);
     if (!coords) return;
@@ -551,7 +552,7 @@ export async function startApp() {
     cutAtlases: model.manifest.cut_atlases,
     onFaceView: faceCut,
     onSelect: select,
-    getSelectedRegion: () => session.state.selectedRegion,
+    getSelectedRegion: () => model.state.selectedRegion,
     centroidOf: id => model.centroidOf(id),
   });
   const shortcuts = createShortcuts(initialLang);

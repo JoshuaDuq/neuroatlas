@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readdir, readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { createSession, shortcutsAllowed } from './session.js';
 
@@ -151,4 +152,32 @@ test('a failure message names the atlas, not the parser that gave up', () => {
   const notice = s.assemble(modelState).notice;
   assert.ok(!notice.includes('Unexpected token'), notice);
   assert.ok(!notice.includes('doctype'), notice);
+});
+
+/**
+ * The session keeps its state in closure scope and exposes it only through
+ * `assemble`, so `session.state` is undefined and every read of it throws.
+ *
+ * This silently broke Slice here, Expand all, and Open linked MRI slices:
+ * the handlers threw on their first line, so the buttons did nothing. The
+ * selection lives on the model, the view state on the session, and both are
+ * reachable only from the assembled snapshot.
+ */
+test('no viewer module reads session.state, which the session never exposes', async () => {
+  assert.equal(session().state, undefined);
+
+  const viewer = new URL('../', import.meta.url);
+  const sources = [];
+  for (const entry of await readdir(viewer, { recursive: true })) {
+    if (entry.endsWith('.js') && !entry.endsWith('.test.js')) sources.push(entry);
+  }
+
+  const offences = [];
+  for (const file of sources) {
+    const source = await readFile(new URL(file, viewer), 'utf8');
+    for (const line of source.split('\n')) {
+      if (/\bsession\.state\b/.test(line)) offences.push(`${file}: ${line.trim()}`);
+    }
+  }
+  assert.deepEqual(offences, []);
 });
