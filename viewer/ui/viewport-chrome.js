@@ -47,12 +47,20 @@ export function createViewportChrome({ networks, onView, onRetry }) {
    * stretch rather than the content: once tight was entered it could never be
    * left, and a 1440px window kept the bar pinned to the top edge.
    */
+  let cachedPresetsWidth = null;
+  function presetsWidth() {
+    if (cachedPresetsWidth === null) {
+      cachedPresetsWidth = buttons.reduce((total, button) => total + button.offsetWidth, 0)
+        - Math.max(0, buttons.length - 1); // the buttons overlap by their shared border
+    }
+    return cachedPresetsWidth;
+  }
+
   function fitChrome() {
     if (!lastRect?.width) return;
-    const presets = buttons.reduce((total, button) => total + button.offsetWidth, 0)
-      - Math.max(0, buttons.length - 1); // the buttons overlap by their shared border
-    const needed = presets + (bar.hidden ? 0 : bar.scrollWidth) + CHROME_GUTTERS_PX;
-    host.dataset.chrome = needed > lastRect.width ? 'tight' : 'wide';
+    const needed = presetsWidth() + (bar.hidden ? 0 : bar.scrollWidth) + CHROME_GUTTERS_PX;
+    const mode = needed > lastRect.width ? 'tight' : 'wide';
+    if (host.dataset.chrome !== mode) host.dataset.chrome = mode;
   }
 
   /*
@@ -99,6 +107,10 @@ export function createViewportChrome({ networks, onView, onRetry }) {
     setViewport(rect) {
       const { width, height } = host.getBoundingClientRect();
       if (!width || !height || !rect) return;
+      if (lastRect && lastRect.x === rect.x && lastRect.y === rect.y &&
+          lastRect.width === rect.width && lastRect.height === rect.height) {
+        return;
+      }
       lastRect = rect;
       host.style.setProperty('--vis-top', `${Math.round(rect.y)}px`);
       host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
@@ -110,6 +122,7 @@ export function createViewportChrome({ networks, onView, onRetry }) {
     },
 
     update(state) {
+      if (currentLang !== state.lang) cachedPresetsWidth = null;
       currentLang = state.lang;
       const i18nViewport = t(state.lang, 'viewport');
       const viewLabels = t(state.lang, 'views');
@@ -126,7 +139,9 @@ export function createViewportChrome({ networks, onView, onRetry }) {
 
       if (lastCameraArgs) {
         const labels = edgeLabels(lastCameraArgs.camera, currentLang);
-        for (const [edge, node] of Object.entries(edges)) node.textContent = labels[edge];
+        for (const [edge, node] of Object.entries(edges)) {
+          if (node.textContent !== labels[edge]) node.textContent = labels[edge];
+        }
       }
 
       if (state.status === 'context-lost') {
@@ -160,13 +175,21 @@ export function createViewportChrome({ networks, onView, onRetry }) {
     updateCamera(camera, distance, viewportHeight) {
       lastCameraArgs = { camera, distance, viewportHeight };
       const labels = edgeLabels(camera, currentLang);
-      for (const [edge, node] of Object.entries(edges)) node.textContent = labels[edge];
+      for (const [edge, node] of Object.entries(edges)) {
+        if (node.textContent !== labels[edge]) node.textContent = labels[edge];
+      }
       const measured = scaleBar(camera.fov, distance, viewportHeight);
+      const wasHidden = bar.hidden;
       bar.hidden = !measured;
-      if (!measured) return;
-      barRule.style.width = `${Math.round(measured.pixels)}px`;
-      barText.textContent = `${measured.millimetres} mm`;
-      fitChrome();
+      if (!measured) {
+        if (!wasHidden) fitChrome();
+        return;
+      }
+      const pixels = `${Math.round(measured.pixels)}px`;
+      if (barRule.style.width !== pixels) barRule.style.width = pixels;
+      const text = `${measured.millimetres} mm`;
+      if (barText.textContent !== text) barText.textContent = text;
+      if (wasHidden) fitChrome();
     },
 
     /**
