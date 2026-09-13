@@ -129,3 +129,20 @@ test('a missing cut atlas hides cut-only regions rather than showing them', () =
   // An older caller that assembles no cut state must not leak them on screen.
   assert.equal(visibilityOf(tissue(), { ...base, cutAtlas: undefined }).visible, false);
 });
+
+const whiteMatter = () =>
+  tissue({ id: 'wmparc:left:3024', atlas: 'wmparc', cut_atlases: ['a', 'b'] });
+
+test('white matter is on the cut of every atlas it lists', () => {
+  assert.equal(visibilityOf(whiteMatter(), settings({ cutAtlas: 'a' })).visible, true);
+  assert.equal(visibilityOf(whiteMatter(), settings({ cutAtlas: 'b' })).visible, true);
+  assert.deepEqual(visibilityOf(whiteMatter(), settings({ cutAtlas: 'n' })),
+    { visible: false, reason: 'other-cut-atlas' });
+});
+
+test('white matter is drawn with the cortex, so hiding the cortex hides it', () => {
+  assert.deepEqual(visibilityOf(whiteMatter(), settings({ cortexVisible: false })),
+    { visible: false, reason: 'cortex-hidden' });
+  assert.deepEqual(visibilityOf(whiteMatter(), settings({ cortexOpacity: 0 })),
+    { visible: false, reason: 'cortex-hidden' });
+});

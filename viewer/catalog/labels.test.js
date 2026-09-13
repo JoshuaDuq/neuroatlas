@@ -95,20 +95,48 @@ test('every region in the published manifest resolves to a name and a group', as
 test('NextBrain names are read from the published table, never invented', () => {
   const region = {
     kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'left',
-    source_name: 'head_of_caudate', source_published_name: 'Left-head_of_caudate',
+    source_label_id: 48, source_name: 'head_of_caudate', source_published_name: 'Left-head_of_caudate',
   };
   const label = labelOf(region);
   assert.equal(label.name, 'head of caudate');
   assert.equal(label.code, null);
-  // No curated table, so navigation falls back to the alphabetical buckets
-  // HCP-MMP already uses rather than to an invented anatomical system.
-  assert.equal(label.group, 'G–I');
+  assert.equal(label.group, 'Basal ganglia');
 });
 
 test('a NextBrain name without a French entry keeps its published English', () => {
   const region = {
     kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'right',
-    source_name: 'periaqueductal_gray_substance',
+    source_label_id: 10444, source_name: 'medial_habenular_nucleus',
   };
   assert.equal(labelOf(region, 'fr').name, labelOf(region, 'en').name);
+});
+
+const whiteMatter = source_name =>
+  ({ kind: 'tissue-region', atlas: 'wmparc', hemisphere: 'left', source_name });
+
+test('gyral white matter is named for its Desikan gyrus and grouped by lobe', () => {
+  const precentral = labelOf(whiteMatter('precentral'));
+  assert.equal(precentral.name, 'White matter of the precentral gyrus');
+  assert.equal(precentral.group, 'Central white matter');
+  const insula = labelOf(whiteMatter('insula'), 'fr');
+  assert.equal(insula.name, 'Substance blanche de l’insula');
+  assert.equal(insula.group, 'Substance blanche insulaire');
+});
+
+test('every gyral white-matter parcel wmparc publishes has its own French name', () => {
+  const desikan = [
+    'bankssts', 'caudalanteriorcingulate', 'caudalmiddlefrontal', 'cuneus', 'entorhinal',
+    'fusiform', 'inferiorparietal', 'inferiortemporal', 'isthmuscingulate',
+    'lateraloccipital', 'lateralorbitofrontal', 'lingual', 'medialorbitofrontal',
+    'middletemporal', 'parahippocampal', 'paracentral', 'parsopercularis', 'parsorbitalis',
+    'parstriangularis', 'pericalcarine', 'postcentral', 'posteriorcingulate', 'precentral',
+    'precuneus', 'rostralanteriorcingulate', 'rostralmiddlefrontal', 'superiorfrontal',
+    'superiorparietal', 'superiortemporal', 'supramarginal', 'frontalpole', 'temporalpole',
+    'transversetemporal', 'insula',
+  ];
+  const untranslated = desikan.filter(name => {
+    const [en, fr] = ['en', 'fr'].map(lang => labelOf(whiteMatter(name), lang));
+    return !en || !fr || fr.name === en.name || fr.group === en.group;
+  });
+  assert.deepEqual(untranslated, []);
 });

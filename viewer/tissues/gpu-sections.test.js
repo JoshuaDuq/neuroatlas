@@ -8,6 +8,7 @@ import { Volume } from '../slices/volume.js';
 import { HIGHLIGHT_LIFT } from './highlight.js';
 import { BANDS, addSolidSources } from './solid-assets.js';
 import { TissueSections } from './gpu-sections.js';
+import { createWhiteMatter } from './white-matter.js';
 
 const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 
@@ -211,5 +212,64 @@ test('a cap answers for the anatomy it was drawn from, not the voxel under it', 
   // The voxel grid under that point carries a Destrieux parcel; the solid the
   // viewer actually drew there is a NextBrain nucleus, and it is what was hit.
   assert.equal(sections.intersect(ray).region, drawn);
+  sections.dispose();
+});
+
+function whiteMatterFixture() {
+  const { sections, model, layer } = fixture();
+  const parcels = { precentral: 'wmparc:left:3024', insula: 'wmparc:left:3035' };
+  for (const id of Object.values(parcels)) model.regions.set(id, { id, hemisphere: 'left' });
+  const record = {
+    ...layer.metadata,
+    applies_to: ['destrieux'],
+    labels: [
+      { source_label_id: 0, region_id: null },
+      { source_label_id: 3024, region_id: parcels.precentral },
+      { source_label_id: 3035, region_id: parcels.insula },
+    ],
+  };
+  // The ray every test casts meets voxel (1, 1, 1), the last one: insula.
+  const codes = new Uint8Array(8);
+  codes[7] = 2;
+  sections.whiteMatter = createWhiteMatter(record, new Volume(record, codes));
+  const white = new Mesh(new BoxGeometry(0.1, 0.1, 0.1), new MeshBasicMaterial({ side: DoubleSide }));
+  white.userData = { hemisphere: 'left', boundary: 'white' };
+  addSolidSources(sections.solids, [white], sections.anatomy, appearance, BANDS.envelope,
+    sections.whiteMatter);
+  model.state.surfaceColor = 'tissue';
+  const ray = new Raycaster(new Vector3(0.0002, 0.0002, -0.1), new Vector3(0, 0, 1));
+  return { sections, model, layer, parcels, ray, frame: centeredFrame('coronal', [0, 0, 0]) };
+}
+
+test('a cut through gyral white matter answers with the parcel under the pointer', () => {
+  const { sections, parcels, ray, frame } = whiteMatterFixture();
+  sections.update(frame, 'destrieux');
+  assert.equal(sections.intersect(ray).region.id, parcels.insula);
+  sections.dispose();
+});
+
+test('white matter stays plain on the cut of an atlas it does not serve', () => {
+  const { sections, layer, ray, frame } = whiteMatterFixture();
+  sections.layers.set('nextbrain', layer);
+  sections.update(frame, 'nextbrain');
+  assert.equal(sections.intersect(ray).region.id, 'destrieux:left:1');
+  sections.dispose();
+});
+
+test('an isolated white-matter parcel is the only white matter left to pick', () => {
+  const { sections, model, parcels, ray, frame } = whiteMatterFixture();
+  model.state.isolatedRegion = parcels.precentral;
+  sections.update(frame, 'destrieux');
+  assert.equal(sections.intersect(ray), null);
+  model.state.isolatedRegion = parcels.insula;
+  sections.update(frame, 'destrieux');
+  assert.equal(sections.intersect(ray).region.id, parcels.insula);
+  sections.dispose();
+});
+
+test('pointing at white matter lifts its parcel code on the cap', () => {
+  const { sections, parcels } = whiteMatterFixture();
+  sections.setHighlight({ selected: parcels.insula });
+  assert.deepEqual(sections.whiteMatter.uniforms.whiteMatterCodes.value.toArray(), [-1, 2]);
   sections.dispose();
 });

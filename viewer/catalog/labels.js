@@ -1,9 +1,12 @@
+import { nextbrainSystem } from './nextbrain-systems.js';
 import { DESTRIEUX_LABELS } from './destrieux-labels.js';
 import { dominantNetwork, networkName } from './networks.js';
 import { DESTRIEUX_LABELS_FR } from './destrieux-labels.fr.js';
 import { NEXTBRAIN_LABELS_FR } from './nextbrain-labels.fr.js';
 import { STRUCTURE_LABELS } from './structure-groups.js';
 import { STRUCTURE_LABELS_FR } from './structure-groups.fr.js';
+import { WHITE_MATTER_LABELS } from './white-matter-labels.js';
+import { WHITE_MATTER_LABELS_FR } from './white-matter-labels.fr.js';
 
 const UNLABELLED = {
   en: { name: 'Unlabelled', code: null, group: 'Unlabelled', aliases: [] },
@@ -43,6 +46,11 @@ export function labelOf(region, lang = 'en') {
   const isFr = lang === 'fr';
   if (region.kind === 'non-region') return isFr ? UNLABELLED.fr : UNLABELLED.en;
 
+  if (region.atlas === 'learning') {
+    return { name: region.display_names[lang], code: null,
+      group: region.system_names[lang], aliases: [region.source_name] };
+  }
+
   // NextBrain names are published for both its solid nuclei and its cut-only
   // regions, so the atlas decides this before the kind does.
   if (region.atlas === 'nextbrain') {
@@ -51,9 +59,16 @@ export function labelOf(region, lang = 'en') {
     return {
       name,
       code: null,
-      group: entry?.group ?? alphabeticalBucket(name),
+      group: nextbrainSystem(region, lang),
       aliases: entry?.aliases ?? [],
     };
+  }
+
+  if (region.atlas === 'wmparc') {
+    const entry = (isFr ? WHITE_MATTER_LABELS_FR[region.source_name] : undefined)
+      ?? WHITE_MATTER_LABELS[region.source_name];
+    if (!entry) return null;
+    return { name: entry.name, code: null, group: entry.group, aliases: entry.aliases };
   }
 
   if (region.kind === 'structure') {

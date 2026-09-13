@@ -18,6 +18,7 @@ const DEFAULTS = {
   view: 'oblique',
   selectedRegion: null,
   isolatedRegion: null,
+  internalSystem: null,
   lang: 'en',
 };
 
@@ -43,6 +44,7 @@ const identifier = value => (typeof value === 'object' ? value.id : value);
 const FIELDS = [
   { key: 'atlas', param: 'atlas', read: value => value || undefined },
   { key: 'cutAtlas', param: 'cuts', read: value => value || undefined },
+  { key: 'internalSystem', param: 'system', read: value => value || undefined },
   { key: 'detail', param: 'detail', read: value => value || undefined },
   {
     key: 'selectedRegion',

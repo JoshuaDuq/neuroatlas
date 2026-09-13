@@ -48,6 +48,7 @@ SUBJECT_FILES = [
     "mri/aparc.a2009s+aseg.mgz",
     "mri/ribbon.mgz",
     "mri/brain.mgz",
+    "mri/wmparc.mgz",
     "scripts/build-stamp.txt",
     *(
         f"{directory}/{hemisphere}.{name}"

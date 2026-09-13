@@ -18,7 +18,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   const atlas = new BrainAtlas(manifest, loader);
   await atlas.initialize('destrieux');
   const detail = manifest.detail_levels.find(level => level.id === atlas.defaultDetail);
-  assert.equal(atlas.state.detail, 'nextbrain');
+  assert.equal(atlas.state.detail, 'learning');
   // 148 Destrieux parcels plus the two non-region surfaces.
   assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count);
   for (const entry of manifest.atlases) {
@@ -44,5 +44,19 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   assert.equal(atlas.visibleMeshes.length, detail.region_count);
   atlas.select(atlas.visibleMeshes[0].userData.region_id);
   assert.equal(atlas.state.selectedRegion.kind, 'structure');
+  atlas.setInternalSystem('Basal ganglia');
+  assert.ok(atlas.visibleMeshes.length > 5);
+  assert.ok(atlas.visibleMeshes.every(mesh =>
+    atlas.regions.get(mesh.userData.region_id).system_names.en === 'Basal ganglia'));
+  assert.throws(() => atlas.setInternalSystem('Imaginary system'), /Unknown internal/);
+  const caudate = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'learning:left:caudate');
+  atlas.select(caudate.userData.region_id);
+  atlas.isolate();
+  assert.equal(atlas.visibleMeshes.length, 1);
+  atlas.setInternalSystem('Brainstem');
+  assert.equal(atlas.state.selectedRegion, null);
+  assert.equal(atlas.state.isolatedRegion, null);
+  atlas.reset();
+  assert.equal(atlas.state.internalSystem, null);
   atlas.dispose();
 });

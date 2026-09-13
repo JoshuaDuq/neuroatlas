@@ -4,8 +4,10 @@ A source-faithful, selectable brain model with solid anatomical tissue cuts, reg
 
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
+- **Learning anatomy:** 75 derived overview structures, with distinct teaching colours, bounded display smoothing, anatomical-system exploration and links to constituent source regions.
 - **Internal anatomy:** 35 structures from the same subject's segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
 - **Histological detail:** 483 NextBrain regions. 298 of them are solid nuclei in a second internal-anatomy detail level; the remaining 185 stay cut labels. Optional.
+- **Gyral white matter:** 68 parcels of the white matter nearest each Desikan gyrus, from the same subject's `wmparc.mgz`. Named, selectable and isolatable on Destrieux and HCP-MMP cuts.
 - **Cuts:** sagittal/parasagittal, midsagittal, coronal, axial/transverse, and arbitrary oblique orientation. Reverse the retained side and move the plane numerically. GPU stencil caps fill closed anatomical surfaces at the cut: the pial and white-matter envelopes, the deep structures of the selected detail level, and — for an atlas with a cortical surface — one closed solid per parcel, cut from the ribbon between the native envelopes. Atlas colours, network colours and isolated parcels are therefore bounded by the reconstruction rather than by the label grid. A cut atlas with no surface of its own still samples exact native 3D labels. Moving either cut does not rebuild geometry or upload another slice image.
 - **MRI:** three linked orthogonal sections, shared crosshair, native label readout, contrast window/center, segmentation overlay and PNG export.
 
@@ -161,13 +163,61 @@ measured networks. Shares count source vertices, so they follow vertex density
 rather than surface area, and shares below 5% are dropped in the interface as
 registration spill. `manifest.json` states each of these beside the data.
 
+### Gyral white matter
+
+Destrieux and HCP-MMP cuts divide the white matter into FreeSurfer's gyral
+parcels: `wmparc.mgz`, written by this subject's own recon with
+`mri_aparc2aseg --labelwm`. Each white-matter voxel within 5 mm of cortex carries
+the nearest Desikan cortical label, so parcels are named for Desikan gyri
+whichever surface atlas is shown. Deeper white matter is unsegmented and stays
+plain white matter. Nothing is projected or resampled.
+
+The parcels have no geometry. `white-matter.volume` holds one code per voxel,
+cropped to the parcels' bounding box (121×105×178 voxels for `bert`, 2.2 MiB on
+the GPU), and the white envelope's cut face samples it: a parcel is named on
+hover, lit when chosen and left alone when isolated, while white matter keeps
+its tissue colour in every colour mode. NextBrain cuts keep their own labels.
+`fsaverage` ships no `wmparc.mgz`, so that build has no white-matter parcels.
+
+### Learning internal anatomy
+
+Choose **Explore internal anatomy** to reveal and frame the interior, then use
+**Study a system** to study basal ganglia, diencephalon, limbic structures,
+brainstem, basal forebrain, cerebellar nuclei, ventricles or white-matter pathways.
+Selecting a system narrows the navigation tree and frames those structures.
+Selection, Focus, Isolate, hemisphere controls and cuts remain available. A shared
+link preserves the chosen system. English and French use anatomical groups.
+
+The 75 overview structures combine explicit constituent labels from NextBrain;
+aseg supplies the ventricles and corpus callosum. This makes larger structures
+such as thalamus, caudate and hippocampal formation readable while retaining
+hypothalamus, mammillary nuclei, subthalamic nucleus, substantia nigra, red nucleus,
+geniculate nuclei, fornix and other available pathways. The inspector lists the
+source atlas and constituent IDs, with links to members that have a 3D surface.
+The original 35 aseg structures and 298 NextBrain surfaces remain reference levels.
+
+`config/learning-anatomy.yaml` defines each union, bilingual name and teaching
+colour. `brain_model/learning.py` extracts its union surface and applies
+[Trimesh Taubin smoothing](https://trimesh.org/trimesh.smoothing.html#trimesh.smoothing.filter_taubin),
+bounding every vertex's displacement to 0.6 mm. No label volume is changed;
+reported volumes count original voxels. The teaching palette distinguishes units
+and is not the published source LUT. `learning.glb` and the manifest record this
+provenance, and `validation.json` independently checks source membership,
+constituent references, topology, colour and displacement for every overview mesh.
+
+This is a display interpretation of the existing 1 mm data. It does not recover
+missing nuclei, close segmentation gaps, resolve fibres, or fix registration
+error. The brainstem territories omit separately drawn nuclei and pathways and
+are not complete subdivisions. Only selected cerebellar nuclei appear in the
+overview; FreeSurfer's cerebellar cortex remains in its reference level.
+
 ### NextBrain
 
 The cut atlas is chosen separately from the cortical surface atlas, because a cut
 atlas need not have a surface. NextBrain has none: it is a volumetric
 histological atlas.
 
-Internal anatomy has two **detail levels**, and exactly one is drawn: the coarse
+Internal anatomy has three **detail levels**, and exactly one is drawn. Learning anatomy is the default overview described below; the two original reference levels remain available: the coarse
 level is FreeSurfer's 35 structures, the fine level NextBrain's 298 nuclei. Both
 segment the same anatomy, so drawing them together would put two thalami in the
 same place. 185 further ROIs stay cut labels only — NextBrain's white matter, its
@@ -236,11 +286,11 @@ Use `sections.pick()` for cut views: it accounts for discarded surfaces, tests s
 
 ## Fidelity and validation
 
-The surface model preserves every source vertex and triangle across both hemispheres before region-boundary partitioning — 266,922 and 533,836 for the published `bert` build, 327,684 and 655,360 for `fsaverage`. Cortical shading carries three continuous fields, interpolated across atlas partitions: source sulcal depth, dimensionless pial concavity, and T1 sampled at the midpoint of corresponding pial/white vertices. Concavity is calculated on each intact hemisphere and averaged only as a shading field. T1 brightness and tissue colours are illustrative, not measured optical properties; no vessels or unresolved anatomy are synthesized. Internal structure shading uses segmentation-gradient normals; it does not smooth or displace their geometry. Clipping changes rendered visibility, not mesh coordinates, indices or atlas boundaries.
+The surface model preserves every source vertex and triangle across both hemispheres before region-boundary partitioning — 266,922 and 533,836 for the published `bert` build, 327,684 and 655,360 for `fsaverage`. Cortical shading carries three continuous fields, interpolated across atlas partitions: source sulcal depth, dimensionless pial concavity, and T1 sampled at the midpoint of corresponding pial/white vertices. Concavity is calculated on each intact hemisphere and averaged only as a shading field. T1 brightness and tissue colours are illustrative, not measured optical properties; no vessels or unresolved anatomy are synthesized. The original internal reference layers use segmentation-gradient normals without moving geometry. The separate learning overview uses bounded display smoothing. Clipping changes rendered visibility, not mesh coordinates, indices or atlas boundaries.
 
 MRI intensities are interpolated trilinearly. Segmentation labels use nearest-neighbour sampling, so intermediate label IDs are never invented. Atlas-colour cuts and isolated parcels use nearest-neighbour sampling; their label boundaries remain faithful to the 1 mm grid. Normal tissue cuts instead follow the native pial/white and internal structure geometry, while picking still reports the original voxel label. In tissue-colour mode, registered, trilinearly sampled T1 intensity modulates cut brightness without changing tissue membership or label IDs. The solid cut uses the same physical material and lighting as the surface, with native-resolution T1 gradients perturbing lighting normals only. This relief is illustrative material shading, not measured tissue topography. Atlas-colour mode disables T1 modulation. L/R and anatomical directions are explicitly marked. The 2D coronal and axial views use neurological orientation (patient left on screen left); 3D labels follow the actual camera direction.
 
-**Limits** (as published, with `anatomy: bert`): this is one published individual's anatomy — exact for that person, nobody else's, and not a clinically validated model. The MRI and segmentation have a 1 mm source grid. White/gray contours in tissue mode follow the native reconstructed surfaces. Atlas-colour boundaries and isolated parcels follow the same native surfaces; a cut atlas published without a cortical surface, such as NextBrain, keeps the native voxel steps. Shading does not claim finer anatomical resolution. Fractional slice positions and 512-pixel renderings do not increase source anatomical resolution. Being a single scan rather than an average, the MRI carries that acquisition's own noise and partial-volume effects instead of a template's smoothness. Fine cerebellar folia and tiny nuclei are not resolved by the internal segmentation. The detailed cortical surface and the native voxel segmentation do not coincide exactly; small edge discrepancies and voxel steps remain visible. Surface-defined tissue contours do not smooth or reassign categorical atlas boundaries. Cortical GLB regions remain surface patches; the solids a cut caps them with are closed by extruding each patch to the corresponding white-surface vertices, and a source triangle joins the parcel holding most of its vertices, so a cut boundary can sit up to one triangle from the surface's own barycentric boundary. HCP-MMP1.0 uses the published Mills fsaverage projection, resampled again here through registered spheres: two registrations away from native HCP space. Mixed-label triangle boundaries are a documented visualization convention. Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; 34 of the 333 solid structures do, `validation.json` counts the edges, and the volume each surface encloses stays definite. The cut renderer does not alter surface topology.
+**Limits** (as published, with `anatomy: bert`): this is one published individual's anatomy — exact for that person, nobody else's, and not a clinically validated model. The MRI and segmentation have a 1 mm source grid. White/gray contours in tissue mode follow the native reconstructed surfaces. Atlas-colour boundaries and isolated parcels follow the same native surfaces; a cut atlas published without a cortical surface, such as NextBrain, keeps the native voxel steps. Shading does not claim finer anatomical resolution. Fractional slice positions and 512-pixel renderings do not increase source anatomical resolution. Being a single scan rather than an average, the MRI carries that acquisition's own noise and partial-volume effects instead of a template's smoothness. Fine cerebellar folia and tiny nuclei are not resolved by the internal segmentation. The detailed cortical surface and the native voxel segmentation do not coincide exactly; small edge discrepancies and voxel steps remain visible. Surface-defined tissue contours do not smooth or reassign categorical atlas boundaries. Cortical GLB regions remain surface patches; the solids a cut caps them with are closed by extruding each patch to the corresponding white-surface vertices, and a source triangle joins the parcel holding most of its vertices, so a cut boundary can sit up to one triangle from the surface's own barycentric boundary. HCP-MMP1.0 uses the published Mills fsaverage projection, resampled again here through registered spheres: two registrations away from native HCP space. Mixed-label triangle boundaries are a documented visualization convention. Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; 34 of the 333 solid structures do, `validation.json` counts the edges, and the volume each surface encloses stays definite. The cut renderer does not alter surface topology. Gyral white-matter parcels divide white matter by distance to the nearest Desikan cortical label on the 1 mm grid; they are not fibre tracts.
 
 ```sh
 uv sync --locked
@@ -252,7 +302,7 @@ npm test
 npm run build
 ```
 
-`public/models/validation.json` records independent source comparisons, region metadata reconciliation and actual GLB round trips. Native MRI volume checks compare every voxel and the full tkregister affine. Tissue tests decode every Destrieux voxel back to its published source ID, verify unchanged noncortical HCP labels, and independently check HCP projection samples and ribbon exclusion. Numerical coordinate conversion error is not a biological accuracy estimate.
+`public/models/validation.json` records independent source comparisons, region metadata reconciliation and actual GLB round trips. Native MRI volume checks compare every voxel and the full tkregister affine. Tissue tests decode every Destrieux voxel back to its published source ID, verify unchanged noncortical HCP labels, and independently check HCP projection samples and ribbon exclusion. Validation decodes every white-matter code back to its `wmparc.mgz` label and checks that no parcel voxel lies outside the published crop. Numerical coordinate conversion error is not a biological accuracy estimate.
 
 `deliverables/gpu-browser-qa.json` records browser checks of all cut orientations, atlas switching, filtering, isolation and optional MRI loading. `deliverables/gpu-cut-performance.json` records local continuous-drag measurements. JavaScript tests check GPU/CPU coordinate agreement, cut selection, surface/cut color consistency, and reuse of geometry, textures and clipping planes throughout dragging.
 

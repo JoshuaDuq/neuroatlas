@@ -18,6 +18,7 @@ export const TRANSLATIONS = {
       isolated: 'isolated',
       'no-cut': 'needs a cut',
       'other-detail': 'other detail level',
+      'other-system': 'other system',
       fallback: 'hidden',
     },
     views: {
@@ -32,8 +33,10 @@ export const TRANSLATIONS = {
     atlases: {
       destrieux: 'Destrieux anatomical atlas',
       'hcp-mmp': 'HCP-MMP1.0 multimodal atlas',
+      learning: 'Learning anatomy · grouped structures',
       aseg: 'FreeSurfer subcortical segmentation',
       nextbrain: 'NextBrain histological atlas',
+      wmparc: 'FreeSurfer white-matter parcellation',
     },
     header: {
       atlasSwitch: 'Cortical atlas',
@@ -223,6 +226,7 @@ export const TRANSLATIONS = {
       isolated: 'isolé',
       'no-cut': 'nécessite une coupe',
       'other-detail': 'autre niveau de détail',
+      'other-system': 'autre système',
       fallback: 'masqué',
     },
     views: {
@@ -237,8 +241,10 @@ export const TRANSLATIONS = {
     atlases: {
       destrieux: 'Atlas anatomique de Destrieux',
       'hcp-mmp': 'Atlas multimodal HCP-MMP1.0',
+      learning: 'Anatomie pédagogique · structures regroupées',
       aseg: 'Segmentation sous-corticale FreeSurfer',
       nextbrain: 'Atlas histologique NextBrain',
+      wmparc: 'Parcellisation de la substance blanche FreeSurfer',
     },
     header: {
       atlasSwitch: 'Atlas cortical',

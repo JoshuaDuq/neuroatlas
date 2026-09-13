@@ -129,7 +129,8 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
         // While a deficit is being explored that profile is the subject, and
         // a cortex-wide summary above it answers a question nobody asked.
         if (quiet) networkSection.hidden = true;
-        else showNetworks(null, state);
+        else if (state.cortexVisible) showNetworks(null, state);
+        else networkSection.hidden = true;
         focus.disabled = true;
         isolate.disabled = true;
         isolate.setAttribute('aria-pressed', 'false');
@@ -146,12 +147,14 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
         ? `${sourceName} · ${label.code}`
         : sourceName;
 
-      const isStructure = region.kind === 'structure';
-      metricLabel.textContent = isStructure ? i18n.volume : i18n.surfaceArea;
-      metric.textContent = isStructure
+      const measuredByVolume = region.kind === 'structure' || region.kind === 'tissue-region';
+      metricLabel.textContent = measuredByVolume ? i18n.volume : i18n.surfaceArea;
+      metric.textContent = measuredByVolume
         ? quantity(region.segmentation_volume_mm3, 'mm³')
         : quantity(region.surface_area_mm2, 'mm²');
-      source.textContent = String(region.source_label_id ?? '—');
+      source.textContent = region.source_label_ids
+        ? `${region.source_atlas}: ${region.source_label_ids.join(', ')}`
+        : String(region.source_label_id ?? '—');
       showNetworks(region, state);
 
       focus.disabled = false;

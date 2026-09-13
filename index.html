@@ -16,7 +16,7 @@
       (function () {
         var params = new URLSearchParams(location.hash.replace(/^#/, ''));
         var atlas = params.get('atlas') === 'hcp-mmp' ? 'cortex-hcp-mmp.glb' : 'cortex-destrieux.glb';
-        var detail = params.get('detail') === 'aseg' ? 'structures.glb' : 'nextbrain.glb';
+        var detail = { aseg: 'structures.glb', nextbrain: 'nextbrain.glb', learning: 'learning.glb' }[params.get('detail')] || 'learning.glb';
         // Same prefix as vite.config.js `base`, so a missing trailing slash
         // on the page URL cannot send 25 MB at the site root.
         var root = '/neuroatlas/';
@@ -121,6 +121,12 @@
                    placeholder="Search regions" role="combobox" aria-expanded="false"
                    aria-controls="results" aria-autocomplete="list" />
           </div>
+          <div id="internal-anatomy" class="rail-head internal-controls">
+            <button id="explore-internal" type="button" class="button-primary">Explore internal anatomy</button>
+            <label id="internal-system-label" for="internal-system">Study a system</label>
+            <select id="internal-system"></select>
+            <p id="internal-note" class="internal-note"></p>
+          </div>
           <div id="anatomy-browser" class="rail-body">
             <div id="results" role="listbox" aria-label="Search results" hidden></div>
             <div id="tree" role="tree" aria-label="Browse anatomy"></div>
@@ -172,6 +178,11 @@
                 Measured on this surface, so it sits with the other measured
                 facts rather than with the clinical associations below it.
               -->
+              <section id="region-constituents" class="panel-body" hidden>
+                <p id="constituents-title" class="section-label"></p>
+                <p id="constituents-note" class="internal-note"></p>
+                <ul id="constituents-list" class="constituents-list"></ul>
+              </section>
               <section id="region-networks" hidden>
                 <p id="label-networks" class="section-label">Functional networks</p>
                 <div class="panel-body">

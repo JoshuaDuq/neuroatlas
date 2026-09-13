@@ -8,7 +8,7 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import map_coordinates
 
-from . import networks, nextbrain
+from . import networks, nextbrain, validate_learning, white_matter
 from .export import compact_region
 from .geometry import (
     extract_structure,
@@ -529,16 +529,21 @@ def validate_cut_only_regions(config, regions):
     """Check every mesh-less region against the label volume that carries it.
 
     These regions publish a measurement without a mesh to measure, so the volume
-    is the only thing that can confirm them. A build without the optional warp
-    has none to check.
+    is the only thing that can confirm them.
     """
-    cut_only = {
-        region_id: region
-        for region_id, region in regions.items()
-        if region["kind"] == "tissue-region"
-    }
-    if not cut_only:
-        return
+    by_source = {}
+    for region_id, region in regions.items():
+        if region["kind"] == "tissue-region":
+            by_source.setdefault(region["atlas"], {})[region_id] = region
+    unknown = sorted(set(by_source) - {nextbrain.ATLAS_ID, white_matter.ATLAS_ID})
+    if unknown:
+        raise ValueError(f"Cut-only regions from an unknown source: {unknown}")
+    white_matter.validate_regions(config, by_source.get(white_matter.ATLAS_ID, {}))
+    if nextbrain.ATLAS_ID in by_source:
+        validate_nextbrain_regions(config, by_source[nextbrain.ATLAS_ID])
+
+
+def validate_nextbrain_regions(config, cut_only):
     _, labels, _ = nextbrain.load(config)
     indices, counts = np.unique(labels, return_counts=True)
     present = dict(zip(indices.tolist(), counts.tolist()))
@@ -598,6 +603,9 @@ def validate_manifest(config, manifest):
         fine, fine_affine = expected_nextbrain_metadata(config)
         groups["nextbrain.glb"] = fine
         expected_levels[nextbrain.ATLAS_ID] = ("nextbrain.glb", fine, fine_affine)
+        overview, overview_affine = validate_learning.expected_metadata(config)
+        groups["learning.glb"] = overview
+        expected_levels["learning"] = ("learning.glb", overview, overview_affine)
     levels = {level["id"]: level for level in manifest["detail_levels"]}
     if set(levels) != set(expected_levels):
         raise ValueError("Manifest detail level set mismatch")
@@ -644,6 +652,7 @@ def main():
     config = read_config()
     verify_sources(config)
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
+    tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
     validate_manifest(config, manifest)
     report = {
         "status": "passed",
@@ -660,8 +669,14 @@ def main():
         "structures": validate_structures(config),
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         **(
-            {"nextbrain_structures": validate_nextbrain_structures(config)}
+            {"nextbrain_structures": validate_nextbrain_structures(config),
+             "learning_structures": validate_learning.validate(config, manifest)}
             if nextbrain.is_available(config)
+            else {}
+        ),
+        **(
+            {"white_matter": white_matter.validate_volume(config, tissues["white_matter"])}
+            if white_matter.is_available(config)
             else {}
         ),
         "volumes": validate_volumes(config),

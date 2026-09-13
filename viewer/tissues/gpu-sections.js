@@ -16,7 +16,9 @@ import {
   Vector2,
   Vector3,
 } from 'three';
-import { clippingPlane, rasToWorld, worldToRas } from '../slices/coordinates.js';
+import {
+  clippingPlane, rasToWorld, worldToRas, worldToVoxelMatrix,
+} from '../slices/coordinates.js';
 import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
 import { codeIndex, liftFor } from './highlight.js';
@@ -27,13 +29,7 @@ import {
   BANDS, addSolidSources, indexLabels, loadRibbonSources, loadSolidSources,
   loadStructureSources, paintSolids,
 } from './solid-assets.js';
-
-function worldToVoxelMatrix(volume) {
-  const worldToSource = new Matrix4().set(
-    1000, 0, 0, 0, 0, 0, -1000, 0, 0, 1000, 0, 0, 0, 0, 0, 1,
-  );
-  return new Matrix4().fromArray(volume.inverse).multiply(worldToSource);
-}
+import { createWhiteMatter } from './white-matter.js';
 
 /** One persistent GPU plane reads categorical tissue IDs from the native 3D grid. */
 export class TissueSections {
@@ -54,6 +50,7 @@ export class TissueSections {
     this.envelopes = [];
     this.details = new Map();
     this.detailsLoading = new Map();
+    this.whiteMatter = null;
     this.solids = new SolidSections();
     this.group.add(this.solids.group);
   }
@@ -77,14 +74,17 @@ export class TissueSections {
     if (this.anatomyLoading) return this.anatomyLoading;
     if (this.anatomy) return;
     this.anatomyLoading = (async () => {
+      await this.loadMetadata();
       const url = new URL('volumes.json', this.baseUrl);
       const response = await fetchPublished(url);
       if (!response.ok) throw new Error(`MRI metadata request failed: HTTP ${response.status}`);
       const metadata = await response.json();
       if (metadata.schema_version !== 1) throw new Error('Unsupported MRI schema.');
-      const [volume, sources] = await Promise.all([
+      const parcels = this.metadata.white_matter;
+      const [volume, sources, parcelVolume] = await Promise.all([
         loadVolume(metadata.mri, url),
         loadSolidSources(this.model.manifest, this.baseUrl),
+        parcels ? loadVolume(parcels, this.baseUrl) : null,
       ]);
       if (this.disposed) {
         for (const source of sources) {
@@ -94,9 +94,11 @@ export class TissueSections {
         throw new Error('Tissue sections disposed during MRI loading.');
       }
       this.anatomy = this.createAnatomy(volume);
+      this.whiteMatter = parcelVolume && createWhiteMatter(parcels, parcelVolume);
       this.envelopes = sources;
       addSolidSources(
         this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.envelope,
+        this.whiteMatter,
       );
     })().finally(() => { this.anatomyLoading = null; });
     return this.anatomyLoading;
@@ -219,6 +221,7 @@ export class TissueSections {
     // colours still have to come from the label volume and its 1 mm steps.
     const solid = layer.wedged || state.surfaceColor === 'tissue';
     this.solids.group.visible = solid;
+    this.whiteMatter?.update({ atlas, isolatedRegion: state.isolatedRegion });
     if (solid) {
       paintSolids(this.solids, {
         labels: layer.solidLabels,
@@ -228,6 +231,7 @@ export class TissueSections {
         wedged: layer.wedged,
         appearance: this.model.manifest.appearance,
         lookup: { regions: this.model.regions, networks: this.model.manifest.networks },
+        whiteMatter: this.whiteMatter?.active ? this.whiteMatter : null,
       });
       this.solids.update(clippingPlane(frame, reverse));
     }
@@ -251,6 +255,8 @@ export class TissueSections {
       state.cortexVisible,
       state.cortexOpacity,
       state.isolatedRegion,
+      state.internalSystem,
+      state.detail,
     ]);
     if (key !== layer.paletteKey) {
       layer.palette.image.data = createPalette(
@@ -271,6 +277,7 @@ export class TissueSections {
    */
   setHighlight(highlight = {}) {
     this.solids.highlight(highlight);
+    this.whiteMatter?.setHighlight(highlight);
     for (const layer of this.layers.values()) {
       const code = region => layer.codes.get(region) ?? -1;
       layer.uniforms.highlightCodes.value.set(
@@ -300,16 +307,29 @@ export class TissueSections {
       // the viewer is showing: resampling the label grid here could name a
       // region from a detail level that is not on screen, or a parcel across
       // the boundary the cap just drew.
-      const id = hit.source.userData.region_id ?? label?.region_id ?? null;
+      const parcel = this.whiteMatterAt(hit);
+      const isolated = this.model.state.isolatedRegion;
+      // While a parcel is isolated its cap discards every other parcel.
+      if (parcel !== undefined && this.whiteMatter.holds(isolated) && parcel !== isolated) {
+        return null;
+      }
+      const id = hit.source.userData.region_id ?? parcel ?? label?.region_id ?? null;
       return { ...hit, region: this.model.regions.get(id) ?? null, label };
     }
-    if (!labelVisible(label, this.model.state)) return null;
+    if (!labelVisible(label, this.model.state, { regions: this.model.regions })) return null;
     return { ...hit, region: this.model.regions.get(label.region_id) ?? null, label };
+  }
+
+  /** The gyral white-matter parcel a white-envelope cap draws at a hit, if it samples one. */
+  whiteMatterAt(hit) {
+    if (hit.source.userData.boundary !== 'white' || !this.whiteMatter?.active) return undefined;
+    return this.whiteMatter.regionAt(worldToRas(hit.point));
   }
 
   dispose() {
     this.disposed = true;
     this.solids.dispose();
+    this.whiteMatter?.dispose();
     for (const layer of this.layers.values()) {
       layer.texture.dispose();
       layer.palette.dispose();

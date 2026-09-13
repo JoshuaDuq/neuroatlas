@@ -1,3 +1,4 @@
+import { visibilityOf } from '../catalog/visibility.js';
 import { DoubleSide, Mesh } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { fetchAsset } from '../model/asset-cache.js';
@@ -82,9 +83,11 @@ export async function loadRibbonSources(manifest, baseUrl, atlas, envelopes) {
   return sources;
 }
 
-export function addSolidSources(sections, sources, anatomy, appearance, band) {
+export function addSolidSources(sections, sources, anatomy, appearance, band, whiteMatter = null) {
   for (const source of sources) {
-    sections.add(source, createSolidMaterial(anatomy, appearance), band);
+    // Only the white envelope's cap lies across gyral white matter.
+    const sampled = source.userData.boundary === 'white' ? whiteMatter : null;
+    sections.add(source, createSolidMaterial(anatomy, appearance, sampled), band);
   }
 }
 
@@ -129,6 +132,13 @@ function partOfCut(source, { atlas, detail, wedged }) {
   return true;
 }
 
+/** An isolated parcel keeps its hemisphere's white envelope up; the cap discards the rest. */
+function holdsIsolatedWhiteMatter(source, state, lookup, whiteMatter) {
+  const { boundary, hemisphere } = source.userData;
+  return boundary === 'white' && Boolean(whiteMatter?.holds(state.isolatedRegion))
+    && lookup?.regions?.get(state.isolatedRegion)?.hemisphere === hemisphere;
+}
+
 function tissueVisible(source, state) {
   const { hemisphere, boundary } = source.userData;
   if (state.isolatedRegion) return false;
@@ -143,7 +153,9 @@ function tissueVisible(source, state) {
  * Reading the same function is what keeps a parcel one colour whether the cut
  * face was sampled from the label volume or capped from its own geometry.
  */
-export function paintSolids(sections, { labels, state, atlas, detail, wedged, appearance, lookup }) {
+export function paintSolids(sections, {
+  labels, state, atlas, detail, wedged, appearance, lookup, whiteMatter,
+}) {
   // Only tissue colour carries the T1 brightness it was tuned against; under a
   // published palette that modulation would distort the datum, exactly as it
   // would on a voxel cut face. Relief is lighting, not colour, so it stays.
@@ -161,9 +173,13 @@ export function paintSolids(sections, { labels, state, atlas, detail, wedged, ap
     // always what its mesh was built from: an envelope borrows a tissue label,
     // and a medial wall borrows one carrying no region at all.
     solid.region = (label ? label.region_id : source.userData.region_id) ?? null;
+    const isolatedWhiteMatter = holdsIsolatedWhiteMatter(source, state, lookup, whiteMatter);
     if (!label) {
       const { boundary } = source.userData;
-      solid.visible = tissueVisible(source, state);
+      const record = lookup?.regions?.get(source.userData.region_id);
+      solid.visible = (record?.kind === 'structure'
+        ? visibilityOf(record, { ...state, detail }).visible : tissueVisible(source, state))
+        || isolatedWhiteMatter;
       if (boundary) {
         cap.material.color.set(appearance.tissue[boundary === 'pial' ? 'cortex' : 'white']);
       } else if (published && !usesNetworkColors(state)) {
@@ -176,7 +192,8 @@ export function paintSolids(sections, { labels, state, atlas, detail, wedged, ap
       continue;
     }
     const { color, visible } = labelAppearance(label, state, appearance.tissue, lookup);
-    solid.visible = visible;
+    const record = lookup?.regions?.get(source.userData.region_id);
+    solid.visible = (visible && (record?.kind !== 'structure' || visibilityOf(record, { ...state, detail }).visible)) || isolatedWhiteMatter;
     cap.material.color.copy(color);
   }
 }

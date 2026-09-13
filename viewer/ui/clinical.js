@@ -132,7 +132,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
     const deficits = new Set(clinical.forRegion(state.selectedRegion.id).map(a => a.deficit));
     for (const id of deficits) body.append(deficitButton(clinical.get(id), state.lang));
     if (!deficits.size) {
-      const fineAtlas = ['hcp-mmp', 'nextbrain'].includes(state.selectedRegion.atlas);
+      const fineAtlas = ['hcp-mmp', 'nextbrain', 'wmparc'].includes(state.selectedRegion.atlas);
       body.append(element('p', fineAtlas ? text.noAtlasCoverage : text.noCoverage, 'clinical-note'));
     }
     related.append(body);

@@ -1,5 +1,5 @@
 import { labelOf } from './labels.js';
-import { visibilityOf } from './visibility.js';
+import { cutAtlasesOf, visibilityOf } from './visibility.js';
 
 const EXACT = 0, PREFIX = 1, WORD = 2, SUBSTRING = 3, NO_MATCH = 4;
 
@@ -132,10 +132,12 @@ export function createCatalog(manifest, defaultLang = 'en') {
         const into = kind === 'structure' ? structural
           : kind === 'tissue-region' ? volumetric
           : cortical;
-        const selects = into === volumetric ? settings.cutAtlas
-          : into === structural ? settings.detail
-          : settings.atlas;
-        if (atlas !== selects) continue;
+        const shown = into === volumetric
+          ? cutAtlasesOf(entry.region).includes(settings.cutAtlas)
+          : atlas === (into === structural ? settings.detail : settings.atlas);
+        if (!shown) continue;
+        if (into === structural && settings.internalSystem &&
+            labelOf(entry.region, 'en').group !== settings.internalSystem) continue;
         if (!into.has(entry.label.group)) into.set(entry.label.group, []);
         into.get(entry.label.group).push(entry);
       }
@@ -149,9 +151,10 @@ export function createCatalog(manifest, defaultLang = 'en') {
           key: `${kind}:${name}`,
           rows: group.sort(compare).map(entry => row(entry, settings)),
         }));
+      const cortex = buildGroup(cortical, 'cortex');
+      const structures = buildGroup(structural, 'structure');
       return [
-        ...buildGroup(cortical, 'cortex'),
-        ...buildGroup(structural, 'structure'),
+        ...(settings.cortexVisible ? [...cortex, ...structures] : [...structures, ...cortex]),
         ...buildGroup(volumetric, 'tissue'),
       ];
     },

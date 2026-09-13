@@ -12,6 +12,8 @@ import { decodeState, encodeState } from './state/url-state.js';
 import { BrainSections } from './slices/sections.js';
 import { rasToWorld } from './slices/coordinates.js';
 import { createSectionControls } from './ui/sections.js';
+import { createInternalAnatomy } from './ui/internal-anatomy.js';
+import { createConstituents } from './ui/constituents.js';
 import { createDisplay } from './ui/display.js';
 import { createHeader } from './ui/header.js';
 import { createInspector } from './ui/inspector.js';
@@ -126,8 +128,14 @@ export async function startApp() {
   let zoom = 1;
   const viewDirection = () =>
     scene.camera.position.clone().sub(scene.controls.target).normalize();
+  const framingBounds = () => {
+    if (model.state.cortexVisible && !model.state.isolatedRegion) return bounds;
+    const visible = new Box3();
+    for (const mesh of model.visibleMeshes) visible.expandByObject(mesh);
+    return visible.isEmpty() ? bounds : visible;
+  };
   const fittedDistance = direction =>
-    fitDistance(scene.camera, bounds, direction, scene.viewportFit);
+    fitDistance(scene.camera, framingBounds(), direction, scene.viewportFit);
 
   refitViewport = () => {
     if (!framed) return;
@@ -149,7 +157,7 @@ export async function startApp() {
     const { view } = session.assemble(model.state);
     scene.camera.up.copy(upFor(view));
     scene.moveTo(
-      planFraming(scene.camera, scene.controls, bounds, VIEW_DIRECTIONS[view], frameTo,
+      planFraming(scene.camera, scene.controls, framingBounds(), VIEW_DIRECTIONS[view], frameTo,
         scene.viewportFit),
       { immediate: immediate || !framed },
     );
@@ -234,15 +242,16 @@ export async function startApp() {
     render();
   }
 
-  /** Undo whatever is hiding a region, then select it. */
-  function reveal(reason, id) {
-    if (reason === 'cortex-hidden') model.setCortexVisible(true);
+  /** Undo whatever is hiding a region, then select it after loading completes. */
+  async function reveal(reason, id) {
+    if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
     if (reason === 'hemisphere') model.setHemisphere('both');
     if (reason === 'isolated') model.clearIsolation();
     // A cut-only region is nowhere until a plane exists. Coronal is the
     // conventional default, and the panel moves it from there.
-    if (reason === 'no-cut') sections.setMode('coronal').catch(() => {});
-    if (reason === 'other-detail') setDetail(id.split(':')[0] === 'aseg' ? 'aseg' : 'nextbrain');
+    if (reason === 'no-cut') await sections.setMode('coronal');
+    if (reason === 'other-detail') await setDetail(model.regions.get(id).atlas);
+    if (reason === 'other-system') model.setInternalSystem(null);
     select(id);
   }
 
@@ -303,6 +312,50 @@ export async function startApp() {
       render();
     },
     onRegion: async id => {
+      await openClinicalRegion(model, sections, id);
+      focusSelection();
+    },
+  });
+
+  function frameInternal() {
+    const internalBounds = new Box3();
+    for (const mesh of model.visibleMeshes) {
+      if (mesh.userData.kind === 'structure') internalBounds.expandByObject(mesh);
+    }
+    if (internalBounds.isEmpty()) return;
+    scene.moveTo(planFraming(scene.camera, scene.controls, internalBounds,
+      viewDirection(), frameTo, scene.viewportFit));
+  }
+
+  const internalAnatomy = createInternalAnatomy({
+    manifest: model.manifest,
+    onExplore: async () => {
+      await sections.setMode('off');
+      await setDetail(model.defaultDetail);
+      model.setInternalSystem(null);
+      model.setCortexVisible(false);
+      model.setSurfaceColor('atlas');
+      session.setQuery('');
+      frameInternal();
+      render();
+    },
+    onSystem: system => {
+      model.setCortexVisible(false);
+      model.setInternalSystem(system);
+      session.setQuery('');
+      const group = catalog.groups(session.assemble(model.state)).find(entry => entry.kind === 'structure');
+      if (system && group && !session.assemble(model.state).expanded.has(group.key)) {
+        session.toggleGroup(group.key);
+      }
+      frameInternal();
+      render();
+    },
+  });
+
+  const constituents = createConstituents({
+    catalog,
+    onRegion: async id => {
+      model.setInternalSystem(null);
       await openClinicalRegion(model, sections, id);
       focusSelection();
     },
@@ -396,6 +449,8 @@ export async function startApp() {
     inspectorTabs.update(state, strip);
     clinicalExplorer.update(state);
     display_.update(state);
+    internalAnatomy.update(state);
+    constituents.update(state);
     sectionControls.update(state);
     chrome.update(state);
     shortcuts.setLanguage(state.lang);
@@ -549,6 +604,8 @@ export async function startApp() {
   }
   if (wanted.cutAtlas) setCutAtlas(wanted.cutAtlas);
   if (wanted.detail) await setDetail(wanted.detail);
+  if (wanted.internalSystem) model.setInternalSystem(wanted.internalSystem);
+  if (wanted.cortexVisible === false) frameCurrent({ immediate: true });
   if (wanted.view) applyView(wanted.view, { immediate: true });
   if (wanted.selectedRegion && catalog.get(wanted.selectedRegion)) {
     try {
@@ -581,6 +638,8 @@ export async function startApp() {
       picker.dispose();
       chrome.dispose();
       display_.dispose();
+      internalAnatomy.dispose();
+      constituents.dispose();
       inspector.dispose();
       clinicalExplorer.dispose();
       navigator.dispose();
