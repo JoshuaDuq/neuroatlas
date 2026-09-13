@@ -19,15 +19,16 @@ const slopFor = pointerType => CLICK_SLOP_PX[pointerType === 'touch' ? 'touch' :
  * Dependencies are injected rather than imported, so this never reaches for
  * the scene module and the dependency graph stays acyclic.
  *
- * Identification is click-only. Naming a region on pointermove fought the
- * orbit (a raycast every frame, and a chip that stole the drag) and told
- * the reader something they had not asked for.
+ * Hover names what the pointer is over; a click chooses it. What made hover
+ * worth removing once was the raycast it cost on every frame of an orbit, so
+ * hover answers at most once a frame and never while a button is down.
  */
-export function createPicker({ domElement, camera, model, onSelect }) {
+export function createPicker({ domElement, camera, model, onHover, onSelect }) {
   const raycaster = new Raycaster();
   raycaster.firstHitOnly = true;
   const pointer = new Vector2();
   let pressed = null;
+  let frame = null;
 
   /** Cast through a point given relative to the canvas, in CSS pixels. */
   function regionAtPoint(x, y) {
@@ -59,19 +60,44 @@ export function createPicker({ domElement, camera, model, onSelect }) {
     if (isClick) onSelect(regionAt(event)?.id ?? null);
   };
 
-  const clearPress = () => { pressed = null; };
+  const onPointerMove = event => {
+    // A finger has no hover: it is either pressing or absent, and a stale
+    // label left behind by the last tap would name a region the reader is no
+    // longer pointing at. Held buttons are an orbit, which hover must not cost.
+    if (event.pointerType === 'touch' || event.buttons || frame !== null) return;
+    const { clientX, clientY } = event;
+    frame = requestAnimationFrame(() => {
+      frame = null;
+      const region = regionAt({ clientX, clientY });
+      const rect = domElement.getBoundingClientRect();
+      onHover?.(region, { x: clientX - rect.left, y: clientY - rect.top });
+      // OrbitControls writes this inline too, so a stylesheet cannot reach it;
+      // `grab` is the resting cursor it is configured with in scene.js.
+      domElement.style.cursor = region ? 'pointer' : 'grab';
+    });
+  };
+
+  const clearPress = () => {
+    if (frame !== null) cancelAnimationFrame(frame);
+    frame = null;
+    pressed = null;
+    onHover?.(null, null);
+  };
 
   domElement.addEventListener('pointerdown', onPointerDown);
   domElement.addEventListener('pointerup', onPointerUp);
   domElement.addEventListener('pointercancel', clearPress);
   domElement.addEventListener('pointerleave', clearPress);
+  domElement.addEventListener('pointermove', onPointerMove);
 
   return {
     dispose() {
+      if (frame !== null) cancelAnimationFrame(frame);
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointerup', onPointerUp);
       domElement.removeEventListener('pointercancel', clearPress);
       domElement.removeEventListener('pointerleave', clearPress);
+      domElement.removeEventListener('pointermove', onPointerMove);
     },
   };
 }

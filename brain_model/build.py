@@ -14,12 +14,18 @@ from .geometry import (
     partition_vertex_field,
     partition_vertex_labels,
 )
+from .ribbons import export_ribbon_labels
 from .shading import cortical_concavity, ribbon_intensity, structure_normals
-from .sources import read_color_table, read_config, verify_sources, write_json
+from .solids import export_solid_envelopes
+from .sources import (
+    HEMISPHERES,
+    read_color_table,
+    read_config,
+    verify_sources,
+    write_json,
+)
 from .tissue_labels import export_tissue_labels
 from .volumes import export_volumes
-
-HEMISPHERES = {"lh": "left", "rh": "right"}
 
 
 def cortical_region(atlas, hemisphere, label, name):
@@ -369,6 +375,7 @@ def main():
     regions = []
     for atlas in config["atlases"]:
         metadata, cortex = build_cortex(config, atlas)
+        metadata["ribbon_labels"] = export_ribbon_labels(config, atlas, cortex)
         atlas_metadata.append(metadata)
         regions.extend(cortex)
     coarse, internal = build_structures(config)
@@ -390,6 +397,7 @@ def main():
     manifest = {
         "volumes": {"file": "volumes.json"},
         "tissues": {"file": "tissue-labels.json"},
+        "solid_envelopes": export_solid_envelopes(config),
         "schema_version": 1,
         "appearance": config["appearance"],
         "anatomy": anatomy_record(config),
@@ -422,7 +430,8 @@ def main():
             "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",
             "Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; validation counts those edges, and the volume each surface encloses stays definite.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
-            "Cortical regions are surface patches, not closed anatomical solids.",
+            "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
+            "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
             *network_limitations(config),
         ],
         "provenance": provenance,

@@ -66,6 +66,26 @@
       "maximum_ribbon_T1_error": 7.629370770700916e-06
     }
   ],
+  "ribbon_labels": [
+    {
+      "file": "ribbon-destrieux.labels",
+      "sha256": "e2928f00c1543bffdfaf31d98e2ec780a886850582b96ce9bda4db7d25eb626c",
+      "vertex_count": 266922,
+      "region_count": 150,
+      "wedges": 150,
+      "holes": 0,
+      "pinches": 99
+    },
+    {
+      "file": "ribbon-hcp-mmp.labels",
+      "sha256": "6e0649e689730f10856133e6d66cc48064a899c0431a1c25432bff45f0fa5a70",
+      "vertex_count": 266922,
+      "region_count": 362,
+      "wedges": 362,
+      "holes": 0,
+      "pinches": 311
+    }
+  ],
   "structures": {
     "file": "structures.glb",
     "sha256": "3f048ced1a4746657a842de8711eb1b831d5f8b45e47d9e6bdc3b920cf69e7a1",
@@ -421,6 +441,12 @@
         "mesh_volume_mm3": 6135.916717606535
       }
     ]
+  },
+  "solid_envelopes": {
+    "file": "tissue-envelopes.glb",
+    "sha256": "2e52c7710994f3ed5a00cb7683beeca32541c0a37a439b284fc0bb9cece37cd7",
+    "identical_native_topology": true,
+    "maximum_coordinate_error_mm": 3.6954879850670252e-06
   },
   "nextbrain_structures": {
     "file": "nextbrain.glb",

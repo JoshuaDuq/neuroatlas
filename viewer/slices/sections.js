@@ -44,11 +44,13 @@ export class BrainSections extends EventTarget {
         s.cortexOpacity,
         s.isolatedRegion,
         s.surfaceColor,
+        s.detail,
       ]);
       if (key === this.visibilityKey) return;
       this.visibilityKey = key;
       if (this.active) {
-        if (this.tissues.layers.has(this.state.cutAtlas)) this.update();
+        if (this.tissues.layers.has(this.state.cutAtlas) &&
+            this.tissues.hasDetail(s.detail)) this.update();
         else {
           this.group.visible = false;
           this.setMode(this.state.mode).catch((error) => this.report(error));
@@ -214,7 +216,7 @@ export class BrainSections extends EventTarget {
       reverse = this.state.reverse;
 
     try {
-      this.tissues.update(frame, this.state.cutAtlas);
+      this.tissues.update(frame, this.state.cutAtlas, reverse);
       if (this.disposed) return;
       this.group.visible = true;
       this.clipPlane.copy(clippingPlane(frame, reverse));
@@ -245,6 +247,11 @@ export class BrainSections extends EventTarget {
       intensity: this.volumes.mri.linear(point),
       ras: point,
     };
+  }
+
+  /** Light the cut faces of the pointed-at and the chosen region. */
+  setHighlight(highlight) {
+    this.tissues.setHighlight(highlight);
   }
 
   /** Pick the nearest visible surface or categorical cut-face label. */

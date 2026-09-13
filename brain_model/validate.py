@@ -18,6 +18,8 @@ from .geometry import (
     partition_vertex_labels,
     to_gltf,
 )
+from .ribbons import validate_ribbon_labels
+from .solids import validate_solid_envelopes
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .validate_volumes import validate_volumes
 
@@ -585,7 +587,9 @@ def validate_manifest(config, manifest):
                 "intensity": "_T1: trilinear orig.mgz at corresponding pial/white midpoints in tkregister RAS; illustrative brightness, not measured optical albedo",
             },
         }
-        if atlas_records[atlas["id"]] != metadata:
+        # The ribbon labels are a published file; validate_ribbon_labels checks it.
+        published = dict(atlas_records[atlas["id"]])
+        if published.pop("ribbon_labels", None) is None or published != metadata:
             raise ValueError(f"Manifest atlas metadata mismatch: {atlas['id']}")
     coarse, affine = expected_structure_metadata(config)
     groups["structures.glb"] = coarse
@@ -649,7 +653,12 @@ def main():
             validate_atlas(config, atlas, manifest["regions"])
             for atlas in config["atlases"]
         ],
+        "ribbon_labels": [
+            validate_ribbon_labels(config, atlas, published["ribbon_labels"])
+            for atlas, published in zip(config["atlases"], manifest["atlases"])
+        ],
         "structures": validate_structures(config),
+        "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config)}
             if nextbrain.is_available(config)

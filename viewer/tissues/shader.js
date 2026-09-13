@@ -1,4 +1,5 @@
 import { DoubleSide, MeshPhysicalMaterial } from 'three';
+import { HIGHLIGHT_CHUNK } from './highlight.js';
 
 /** Light the cut as tissue; sample categorical identity before continuous T1. */
 export function createCutMaterial(uniforms, tissue) {
@@ -31,7 +32,10 @@ export function createCutMaterial(uniforms, tissue) {
       uniform vec3 mriShape;
       uniform vec2 t1Range;
       uniform float tissueVariation;
+      uniform vec2 highlightCodes;
+      uniform vec2 highlightLifts;
       varying vec3 sourceWorld;
+      ${HIGHLIGHT_CHUNK}
       ${shader.fragmentShader}`.replace('#include <color_fragment>', `
         #include <color_fragment>
         vec3 voxel = (worldToVoxel * vec4(sourceWorld, 1.0)).xyz;
@@ -45,10 +49,14 @@ export function createCutMaterial(uniforms, tissue) {
         // Texture coordinates address voxel centers, not voxel corners.
         float t1 = texture(mriVolume, (mriVoxel + 0.5) / mriShape).r * 255.0;
         float intensity = clamp((t1 - t1Range.x) / (t1Range.y - t1Range.x), 0.0, 1.0);
-        diffuseColor = vec4(tissue.rgb *
-          (1.0 + tissueVariation * (2.0 * intensity - 1.0)), 1.0);
+        vec3 lit = tissue.rgb * (1.0 + tissueVariation * (2.0 * intensity - 1.0));
+        // Codes are small integers, so equality on them is exact in a float.
+        float here = float(code);
+        float lift = here == highlightCodes.y ? highlightLifts.y
+          : here == highlightCodes.x ? highlightLifts.x : 0.0;
+        diffuseColor = vec4(liftHighlight(lit, lift), 1.0);
       `);
   };
-  material.customProgramCacheKey = () => 'registered-tissue-cut-v2';
+  material.customProgramCacheKey = () => 'registered-tissue-cut-v3';
   return material;
 }

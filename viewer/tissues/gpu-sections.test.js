@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
-import { Raycaster, Vector3 } from 'three';
+import { BoxGeometry, DoubleSide, Mesh, MeshBasicMaterial, Raycaster, Vector3 } from 'three';
 import { centeredFrame, rasToWorld } from '../slices/coordinates.js';
 import { Volume } from '../slices/volume.js';
+import { HIGHLIGHT_LIFT } from './highlight.js';
+import { BANDS, addSolidSources } from './solid-assets.js';
 import { TissueSections } from './gpu-sections.js';
 
 const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
@@ -136,4 +138,78 @@ test('MRI texture uses its own affine and interpolation without changing labels'
   anatomy.texture.addEventListener('dispose', () => disposed++);
   sections.dispose();
   assert.equal(disposed, 1);
+});
+
+test('a surfaceless atlas keeps the label volume for published colours', () => {
+  const { sections, model, layer } = fixture();
+  const labels = layer.volume.data.slice();
+  for (const color of ['tissue', 'atlas', 'network']) {
+    model.state.surfaceColor = color;
+    sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+    // Without parcel solids only tissue colour can be capped from geometry.
+    assert.equal(sections.solids.group.visible, color === 'tissue');
+    assert.equal(layer.mesh.visible, color !== 'tissue');
+    assert.deepEqual(layer.volume.data, labels);
+  }
+  sections.dispose();
+});
+
+test('an atlas with parcel solids caps every colour mode, isolation included', () => {
+  const { sections, model, layer, region } = fixture();
+  layer.wedged = true;
+  for (const color of ['tissue', 'atlas', 'network']) {
+    model.state.surfaceColor = color;
+    sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+    assert.equal(sections.solids.group.visible, true);
+    assert.equal(layer.mesh.visible, false);
+  }
+  model.state.isolatedRegion = region.id;
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  assert.equal(sections.solids.group.visible, true);
+  assert.equal(layer.mesh.visible, false);
+  sections.dispose();
+});
+
+test('a sampled cut face lifts the code its pointed-at region is painted from', () => {
+  const { sections, layer, region } = fixture();
+  sections.setHighlight({ hovered: region.id });
+  assert.deepEqual(layer.uniforms.highlightCodes.value.toArray(), [1, -1]);
+  assert.deepEqual(layer.uniforms.highlightLifts.value.toArray(), [HIGHLIGHT_LIFT.hovered, 0]);
+  sections.dispose();
+});
+
+test('a sampled cut face goes back when the pointer leaves it', () => {
+  const { sections, layer, region } = fixture();
+  sections.setHighlight({ hovered: region.id });
+  sections.setHighlight({});
+  assert.deepEqual(layer.uniforms.highlightCodes.value.toArray(), [-1, -1]);
+  assert.equal(layer.uniforms.highlightLifts.value.x, 0);
+  sections.dispose();
+});
+
+test('a repaint leaves the highlight where the pointer left it', () => {
+  const { sections, layer, region } = fixture();
+  sections.setHighlight({ selected: region.id });
+  sections.update(centeredFrame('coronal', [0, 0, 4]), 'destrieux');
+  assert.deepEqual(layer.uniforms.highlightCodes.value.toArray(), [-1, 1]);
+  assert.equal(layer.uniforms.highlightLifts.value.y, HIGHLIGHT_LIFT.selected);
+  sections.dispose();
+});
+
+test('a cap answers for the anatomy it was drawn from, not the voxel under it', () => {
+  const { sections, model, layer } = fixture();
+  layer.wedged = true;
+  const drawn = { id: 'nextbrain:right:10119' };
+  model.regions.set(drawn.id, drawn);
+  model.state.detail = 'nextbrain';
+  const source = new Mesh(new BoxGeometry(0.1, 0.1, 0.1),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.userData = { hemisphere: 'right', detail: 'nextbrain', region_id: drawn.id };
+  addSolidSources(sections.solids, [source], sections.anatomy, appearance, BANDS.structure);
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  const ray = new Raycaster(new Vector3(0.0002, 0.0002, -0.1), new Vector3(0, 0, 1));
+  // The voxel grid under that point carries a Destrieux parcel; the solid the
+  // viewer actually drew there is a NextBrain nucleus, and it is what was hit.
+  assert.equal(sections.intersect(ray).region, drawn);
+  sections.dispose();
 });

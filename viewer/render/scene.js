@@ -72,6 +72,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   const renderTarget = new WebGLRenderTarget(1, 1, {
     type: HalfFloatType,
+    stencilBuffer: true,
     samples: quality.msaaSamples,
   });
   const composer = new EffectComposer(renderer, renderTarget);
@@ -258,7 +259,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
         dirty = true;
       }
     }
-    renderer.sortObjects = transparent;
+    // Solid cuts interleave winding masks and caps in a defined render order.
+    renderer.sortObjects = true;
     if (!dirty && !transition) {
       renderer.setAnimationLoop(null);
       looping = false;
