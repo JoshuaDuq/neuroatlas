@@ -22,6 +22,42 @@ export const isLandscape = () =>
   globalThis.matchMedia?.('(orientation: landscape)').matches ?? false;
 
 /**
+ * Whether this WebGL renderer is an integrated / unified GPU.
+ *
+ * Discrete cards are named. Everything else — Apple Silicon, Intel iGPU,
+ * a blocked UNMASKED_RENDERER, an empty string — is treated as integrated,
+ * because that is the machine the fill-rate budget has to survive on.
+ */
+export function isIntegratedGpu(renderer = '') {
+  const name = renderer.toLowerCase();
+  if (!name) return true;
+  if (/\bapple\b/.test(name)) return true;
+  if (/\bnvidia\b|\bgeforce\b|\bquadro\b|\brtx\b|\bgtx\b/.test(name)) return false;
+  if (/\bradeon\s+rx\b|\bradeon\s+pro\b/.test(name)) return false;
+  if (/\bintel\s+arc\b/.test(name)) return false;
+  return true;
+}
+
+/** The GPU name the driver reports, or empty when the browser withholds it. */
+export function gpuRendererName(gl) {
+  const info = gl?.getExtension?.('WEBGL_debug_renderer_info');
+  if (!info) return '';
+  return String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? '');
+}
+
+export function detectIntegratedGpu() {
+  if (typeof document === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2', { powerPreference: 'high-performance' })
+      ?? canvas.getContext('webgl', { powerPreference: 'high-performance' });
+    return isIntegratedGpu(gpuRendererName(gl));
+  } catch {
+    return true;
+  }
+}
+
+/**
  * Device pixels per CSS pixel to render at.
  *
  * Two is the point past which more pixels stop being visible on any display.
@@ -31,7 +67,7 @@ export const isLandscape = () =>
  * than 2 for a softening that is hard to see at arm's length and easy to
  * feel in the hand.
  */
-export function pixelRatioCap() {
+export function pixelRatioCap(integrated = false) {
   const device = globalThis.devicePixelRatio ?? 1;
-  return Math.min(device, (isPhone() || isCoarse()) ? 1.5 : 2);
+  return Math.min(device, (isPhone() || isCoarse() || integrated) ? 1.5 : 2);
 }
