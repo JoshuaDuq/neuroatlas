@@ -83,3 +83,22 @@ test('leaving the canvas takes the name with it', () => {
   domElement.emit('pointerleave', {});
   assert.deepEqual(hovered.at(-1), [null, null]);
 });
+
+test('double clicking a point triggers focus on that 3D coordinate', () => {
+  const domElement = canvas();
+  const targetPoint = { x: 0, y: -0.25, z: 0.05 };
+  let focused = null;
+  createPicker({
+    domElement,
+    camera: new PerspectiveCamera(),
+    model: () => ({
+      pick: () => null,
+      intersect: () => ({ point: targetPoint }),
+    }),
+    onHover: () => {},
+    onSelect: () => {},
+    onFocusPoint: point => { focused = point; },
+  });
+  domElement.emit('dblclick', { clientX: 100, clientY: 50 });
+  assert.deepEqual(focused, targetPoint);
+});

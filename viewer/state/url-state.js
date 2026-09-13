@@ -14,6 +14,7 @@ const DEFAULTS = {
   hemisphere: 'both',
   cortexVisible: true,
   cortexOpacity: 1,
+  spinalCordVisible: true,
   surfaceColor: 'tissue',
   view: 'oblique',
   selectedRegion: null,
@@ -65,6 +66,7 @@ const FIELDS = [
     read: value => (HEMISPHERES.includes(value) ? value : undefined),
   },
   { key: 'cortexVisible', param: 'cortex', read: flag, write: value => (value ? '1' : '0') },
+  { key: 'spinalCordVisible', param: 'cord', read: flag, write: value => (value ? '1' : '0') },
   { key: 'surfaceColor', param: 'colors', read: surfaceColor },
   {
     key: 'cortexOpacity',

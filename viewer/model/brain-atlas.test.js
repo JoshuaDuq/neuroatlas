@@ -201,7 +201,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   await atlas.initialize('a');
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
-    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
+    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, spinalCordVisible: true,
     surfaceColor: 'tissue', isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
@@ -369,4 +369,16 @@ test('an out-of-date manifest names the field it is missing, not the schema', ()
     { ...good, anatomy: { subject: 'bert', display_name: 'Subject' } }, loader), /anatomy/);
   // And it says what to do about it.
   assert.throws(() => new BrainAtlas(stale, loader), /cache/i);
+});
+
+test('centroidOf computes and caches surface RAS millimeter coordinates', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const coords = atlas.centroidOf('a-left');
+  assert.ok(Array.isArray(coords) && coords.length === 3);
+  assert.ok(coords.every(Number.isFinite));
+  // Cached on subsequent access
+  assert.strictEqual(atlas.centroidOf('a-left'), coords);
+  assert.strictEqual(atlas.centroidOf('nonexistent'), null);
+  atlas.dispose();
 });

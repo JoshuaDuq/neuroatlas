@@ -69,6 +69,27 @@ export class BrainSections extends EventTarget {
     return centeredFrame(this.active ? this.state.mode : 'axial', this.state.crosshair, this.state);
   }
 
+  get coordinateBounds() {
+    const bounds = [[-128, -128, -128], [128, 128, 128]];
+    for (const layer of this.model.manifest?.supplemental_layers ?? []) {
+      for (let axis = 0; axis < 3; axis++) {
+        bounds[0][axis] = Math.floor(Math.min(bounds[0][axis], layer.bounds_ras_mm[0][axis]));
+        bounds[1][axis] = Math.ceil(Math.max(bounds[1][axis], layer.bounds_ras_mm[1][axis]));
+      }
+    }
+    return bounds;
+  }
+
+  get coordinateLimit() {
+    return Math.max(...this.coordinateBounds.flat().map(Math.abs));
+  }
+
+  get offsetRange() {
+    if (this.state.mode === 'oblique') return [-this.coordinateLimit, this.coordinateLimit];
+    const axis = { sagittal: 0, coronal: 1, axial: 2, off: 2 }[this.state.mode];
+    return this.coordinateBounds.map(bound => bound[axis]);
+  }
+
   /** Load native MRI only when the separate reference views are requested. */
   async load() {
     if (this.disposed) throw new Error('BrainSections is disposed.');
@@ -138,17 +159,18 @@ export class BrainSections extends EventTarget {
     if (
       !Array.isArray(point) ||
       point.length !== 3 ||
-      point.some((value) => !Number.isFinite(value) || Math.abs(value) > 128)
+      point.some((value) => !Number.isFinite(value) || Math.abs(value) > this.coordinateLimit)
     ) {
-      throw new RangeError('RAS crosshair must be within ±128 mm.');
+      throw new RangeError(`RAS crosshair must be within ±${this.coordinateLimit} mm.`);
     }
     this.state.crosshair = [...point];
     this.update();
   }
 
   setOffset(offset) {
-    if (!Number.isFinite(offset) || Math.abs(offset) > 128)
-      throw new RangeError('Cut position must be within ±128 mm.');
+    const [minimum, maximum] = this.offsetRange;
+    if (!Number.isFinite(offset) || offset < minimum || offset > maximum)
+      throw new RangeError(`Cut position must be between ${minimum} and ${maximum} mm.`);
     const frame = this.frame;
     const crosshair = new Vector3(...this.state.crosshair);
     if (this.state.mode === 'oblique') crosshair.copy(frame.normal).multiplyScalar(offset);
@@ -255,18 +277,26 @@ export class BrainSections extends EventTarget {
     this.tissues.setHighlight(highlight);
   }
 
-  /** Pick the nearest visible surface or categorical cut-face label. */
-  pick(raycaster) {
+  /** Intersect the nearest visible surface or categorical cut-face. */
+  intersect(raycaster) {
     const surfaceHit = this.model.intersect(raycaster);
     if (this.group.visible) {
       this.group.updateMatrixWorld(true);
       const cap = this.tissues.intersect(raycaster);
       if (cap && (!surfaceHit || cap.distance < surfaceHit.distance + 1e-9)) {
-        return cap.region;
+        return cap;
       }
     }
-    return surfaceHit && surfaceHit.object.userData.kind !== 'non-region'
-      ? this.model.regions.get(surfaceHit.object.userData.region_id)
+    return surfaceHit;
+  }
+
+  /** Pick the nearest visible surface or categorical cut-face label. */
+  pick(raycaster) {
+    const hit = this.intersect(raycaster);
+    if (!hit) return null;
+    if (hit.region !== undefined) return hit.region;
+    return hit.object?.userData?.kind !== 'non-region'
+      ? this.model.regions.get(hit.object.userData.region_id)
       : null;
   }
 

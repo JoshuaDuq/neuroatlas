@@ -18,10 +18,39 @@ const OTHER_ATLAS = new Set(['other-atlas', 'other-cut-atlas']);
  * and an action that reveals it. Silent absence is what makes a tool feel
  * broken.
  */
+function highlightMatch(text, query) {
+  if (!query) {
+    const span = document.createElement('span');
+    span.textContent = text;
+    return span;
+  }
+  const normText = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const normQuery = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const idx = normText.indexOf(normQuery);
+  const container = document.createDocumentFragment();
+  if (idx === -1) {
+    container.append(document.createTextNode(text));
+    return container;
+  }
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + query.length);
+  const after = text.slice(idx + query.length);
+  if (before) container.append(document.createTextNode(before));
+  const mark = document.createElement('mark');
+  mark.className = 'query-match';
+  mark.textContent = match;
+  container.append(mark);
+  if (after) container.append(document.createTextNode(after));
+  return container;
+}
+
 export function createNavigator({
-  catalog, atlases, cutAtlases, onSelect, onToggleGroup, onQuery, onReveal, onAtlas, onCutAtlas,
+  catalog, atlases, cutAtlases, onSelect, onToggleGroup, onToggleAllGroups, onQuery, onReveal, onAtlas, onCutAtlas,
 }) {
   const search = document.getElementById('search');
+  const searchClear = document.getElementById('search-clear');
+  const treeHeader = document.getElementById('tree-header');
+  const treeToggleAll = document.getElementById('tree-toggle-all');
   const results = document.getElementById('results');
   const tree = document.getElementById('tree');
   const notice = document.getElementById('rail-notice');
@@ -29,6 +58,7 @@ export function createNavigator({
   const navRail = document.getElementById('navigator');
   let structureKey = null;
   let activeIndex = -1;
+  let lastScrolledRegionId = null;
 
   const options = () => [...results.querySelectorAll('[role="option"]')];
   const treeItems = () => [...tree.querySelectorAll('[role="treeitem"]')];
@@ -38,7 +68,7 @@ export function createNavigator({
     else onReveal(row.dataset.reason, row.dataset.regionId);
   }
 
-  function buildRow(row, { role, level, lang }) {
+  function buildRow(row, { role, level, lang, query }) {
     const i18n = t(lang, 'navigator');
     const reasons = t(lang, 'reasons');
     const sideGlyphs = t(lang, 'sides').glyphs;
@@ -56,7 +86,37 @@ export function createNavigator({
 
     const name = document.createElement('span');
     name.className = 'row-name';
-    name.textContent = row.label.name;
+    if (role === 'option' && query) {
+      name.append(highlightMatch(row.label.name, query));
+      const normQuery = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const normName = row.label.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      if (!normName.includes(normQuery)) {
+        let matchedAlias = null;
+        if (row.label.code) {
+          const normCode = row.label.code.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+          if (normCode.includes(normQuery)) matchedAlias = row.label.code;
+        }
+        if (!matchedAlias && row.label.aliases) {
+          for (const a of row.label.aliases) {
+            const normA = a.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            if (normA.includes(normQuery)) {
+              matchedAlias = a;
+              break;
+            }
+          }
+        }
+        if (matchedAlias) {
+          const aliasSpan = document.createElement('span');
+          aliasSpan.className = 'row-alias';
+          aliasSpan.append('(');
+          aliasSpan.append(highlightMatch(matchedAlias, query));
+          aliasSpan.append(')');
+          name.append(aliasSpan);
+        }
+      }
+    } else {
+      name.textContent = row.label.name;
+    }
     item.append(name);
 
     const side = sideWords[row.region.hemisphere] ?? row.region.hemisphere;
@@ -95,7 +155,7 @@ export function createNavigator({
     activeIndex = -1;
     search.removeAttribute('aria-activedescendant');
 
-    for (const row of here) results.append(buildRow(row, { role: 'option', lang: state.lang }));
+    for (const row of here) results.append(buildRow(row, { role: 'option', lang: state.lang, query: state.query.trim() }));
 
     if (!here.length) {
       const empty = document.createElement('p');
@@ -199,6 +259,7 @@ export function createNavigator({
 
   function markSelection(state) {
     const id = state.selectedRegion?.id ?? null;
+    let selectedItem = null;
     for (const item of [...options(), ...treeItems()]) {
       if (!item.dataset.regionId) continue;
       const selected = item.dataset.regionId === id;
@@ -208,6 +269,13 @@ export function createNavigator({
       } else {
         item.setAttribute('aria-current', selected ? 'true' : 'false');
       }
+      if (selected) selectedItem = item;
+    }
+    if (id && id !== lastScrolledRegionId && selectedItem) {
+      lastScrolledRegionId = id;
+      selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } else if (!id) {
+      lastScrolledRegionId = null;
     }
   }
 
@@ -264,8 +332,17 @@ export function createNavigator({
   };
 
   const onInput = event => onQuery(event.target.value);
+  const onClearSearch = () => {
+    search.value = '';
+    if (searchClear) searchClear.hidden = true;
+    onQuery('');
+    search.focus();
+  };
+  const onToggleAll = () => onToggleAllGroups?.();
   search.addEventListener('input', onInput);
   search.addEventListener('keydown', onSearchKey);
+  searchClear?.addEventListener('click', onClearSearch);
+  treeToggleAll?.addEventListener('click', onToggleAll);
   tree.addEventListener('keydown', onTreeKey);
 
   return {
@@ -274,6 +351,16 @@ export function createNavigator({
       const searching = state.query.trim().length > 0;
       results.hidden = !searching;
       tree.hidden = searching;
+      if (treeHeader) treeHeader.hidden = searching;
+      if (treeToggleAll && !searching) {
+        const groups = catalog.groups(state);
+        const allExpanded = groups.length > 0 && groups.every(g => state.expanded.has(g.key));
+        treeToggleAll.textContent = allExpanded ? i18n.collapseAll : i18n.expandAll;
+      }
+      if (searchClear) {
+        searchClear.hidden = !searching;
+        searchClear.setAttribute('aria-label', i18n.clearSearch);
+      }
       search.setAttribute('aria-expanded', String(searching));
       search.placeholder = i18n.searchPlaceholder;
       if (searchLabel) searchLabel.textContent = i18n.searchPlaceholder;
@@ -309,6 +396,8 @@ export function createNavigator({
     dispose() {
       search.removeEventListener('input', onInput);
       search.removeEventListener('keydown', onSearchKey);
+      searchClear?.removeEventListener('click', onClearSearch);
+      treeToggleAll?.removeEventListener('click', onToggleAll);
       tree.removeEventListener('keydown', onTreeKey);
       results.replaceChildren();
       tree.replaceChildren();

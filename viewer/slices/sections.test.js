@@ -61,6 +61,21 @@ test('GPU cut plane preserves fractional coordinates and reverse-side clipping',
   sections.dispose();
 });
 
+test('cut coordinates cover supplemental anatomy beyond the brain MRI', async () => {
+  const { sections, model } = fixture();
+  model.manifest = { supplemental_layers: [{ bounds_ras_mm: [[-5, -50, -550], [8, -30, -60]] }] };
+  await sections.setMode('axial');
+  assert.deepEqual(sections.offsetRange, [-550, 128]);
+  sections.setOffset(-500);
+  assert.equal(sections.state.crosshair[2], -500);
+  assert.throws(() => sections.setOffset(-551), RangeError);
+  await sections.setMode('sagittal');
+  assert.deepEqual(sections.offsetRange, [-128, 128]);
+  sections.setOffset(0);
+  assert.equal(sections.state.crosshair[2], -500);
+  sections.dispose();
+});
+
 test('cut picking uses categorical source region IDs without opening the MRI reference', async () => {
   const { sections, tissues, region } = fixture();
   const mesh = new Mesh(

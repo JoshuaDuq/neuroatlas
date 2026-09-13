@@ -33,13 +33,25 @@ export async function loadSolidSources(manifest, baseUrl) {
   return loadMeshes(new URL(envelope.file, baseUrl));
 }
 
+export function enclosingFirst(sources) {
+  return [...sources].sort((a, b) =>
+    (b.userData?.segmentation_volume_mm3 ?? 0) - (a.userData?.segmentation_volume_mm3 ?? 0),
+  );
+}
+
+export async function loadSupplementalSources(manifest, baseUrl) {
+  const layers = manifest.supplemental_layers ?? [];
+  return enclosingFirst((await Promise.all(layers.map(layer =>
+    loadMeshes(new URL(layer.file, baseUrl))))).flat());
+}
+
 /** The cut caps the internal anatomy the viewer is showing, not a fixed layer. */
 export async function loadStructureSources(manifest, baseUrl, detail) {
   const level = manifest.detail_levels.find(entry => entry.id === detail);
   if (!level?.file) throw new Error(`Missing solid structures for detail level: ${detail}`);
   const sources = await loadMeshes(new URL(level.file, baseUrl));
   for (const source of sources) source.userData.detail = detail;
-  return sources;
+  return enclosingFirst(sources);
 }
 
 function envelopeSurface(sources, hemisphere, boundary) {
@@ -87,7 +99,9 @@ export function addSolidSources(sections, sources, anatomy, appearance, band, wh
   for (const source of sources) {
     // Only the white envelope's cap lies across gyral white matter.
     const sampled = source.userData.boundary === 'white' ? whiteMatter : null;
-    sections.add(source, createSolidMaterial(anatomy, appearance, sampled), band);
+    const material = createSolidMaterial(anatomy, appearance, sampled);
+    if (source.userData.mri_registered === false) material.userData.tissueRelief.value = 0;
+    sections.add(source, material, band);
   }
 }
 
@@ -162,7 +176,8 @@ export function paintSolids(sections, {
   const published = usesAtlasColors(state) || usesNetworkColors(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
   for (const solid of sections.solids) {
-    solid.cap.material.userData.tissueVariation.value = variation;
+    solid.cap.material.userData.tissueVariation.value =
+      solid.source.userData.mri_registered === false ? 0 : variation;
     const { source, cap } = solid;
     if (!partOfCut(source, { atlas, detail, wedged })) {
       solid.visible = false;

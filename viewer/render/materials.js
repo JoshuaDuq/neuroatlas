@@ -2,6 +2,7 @@ import { MeshPhysicalMaterial, MeshStandardMaterial } from 'three';
 
 /** Display colours describe tissue classes, never a measured tissue albedo. */
 export function tissueColor(region, palette) {
+  if (region.tissue && palette[region.tissue]) return palette[region.tissue];
   if (region.kind === 'non-region') return palette.unlabelled;
   if (region.kind === 'cortex') return palette.cortex;
   const name = region.source_name;

@@ -376,6 +376,14 @@
       "sha256": "03349c9c8f2923afd789cbac5c21ce17795d9c91195e823f67fd01024d4dd646",
       "anatomy": "bert",
       "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/z-anatomy/spinal-cord.npz",
+      "sha256": "7857f095bd44b74d4c4ce0ef6ee2059b02e1c1a478aa08116d1c6f5364fdcb51",
+      "optional": true,
+      "derived_from": "https://www.z-anatomy.com/",
+      "procedure": "scripts/extract_spinal_cord.py: evaluated Blender modifiers, interior sheets dropped, open sweep ends filled",
+      "citation": "https://www.z-anatomy.com/"
     }
   ]
 }

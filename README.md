@@ -8,6 +8,7 @@ A source-faithful, selectable brain model with solid anatomical tissue cuts, reg
 - **Internal anatomy:** 35 structures from the same subject's segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
 - **Histological detail:** 483 NextBrain regions. 298 of them are solid nuclei in a second internal-anatomy detail level; the remaining 185 stay cut labels. Optional.
 - **Gyral white matter:** 68 parcels of the white matter nearest each Desikan gyrus, from the same subject's `wmparc.mgz`. Named, selectable and isolatable on Destrieux and HCP-MMP cuts.
+- **Spinal cord reference:** 58 surfaces from the Z-Anatomy scene: the cord, 19 white-matter tracts and fasciculi, the grey horns with their zones and nuclei, the central canal, roots, ganglia and the cauda equina. Tracts and grey matter are published per side. The assembly is seated below the brainstem by translation and is not registered to this subject; its cross-section is Z-Anatomy's schematic one at every level.
 - **Cuts:** sagittal/parasagittal, midsagittal, coronal, axial/transverse, and arbitrary oblique orientation. Reverse the retained side and move the plane numerically. GPU stencil caps fill closed anatomical surfaces at the cut: the pial and white-matter envelopes, the deep structures of the selected detail level, and — for an atlas with a cortical surface — one closed solid per parcel, cut from the ribbon between the native envelopes. Atlas colours, network colours and isolated parcels are therefore bounded by the reconstruction rather than by the label grid. A cut atlas with no surface of its own still samples exact native 3D labels. Moving either cut does not rebuild geometry or upload another slice image.
 - **MRI:** three linked orthogonal sections, shared crosshair, native label readout, contrast window/center, segmentation overlay and PNG export.
 
@@ -313,6 +314,8 @@ The generated mesh assets are modified derivatives of FreeSurfer data.
 “All or portions of this licensed product (such portions are the "Software") have been obtained under license from The General Hospital Corporation and are subject to the following terms and conditions:”
 
 The full terms are included in [FreeSurferSoftwareLicense](public/models/licenses/FreeSurfer.html). See the included [FreeSurfer terms](public/models/licenses/FreeSurfer.html) and [HCP data-use terms](public/models/licenses/HCP-Data-Use-Terms.txt) before redistributing source or derived data. Provenance and checksums are recorded in `data/sources.json` and the model manifest.
+
+`spinal-cord.glb` stands apart from the rest of the bundle: it is derived from the [Z-Anatomy](https://www.z-anatomy.com/) scene, which publishes its anatomy under CC BY-SA 4.0 (after BodyParts3D, CC BY-SA 2.1 JP). ShareAlike is copyleft, so redistributing that file or an adaptation of it carries the attribution and licence obligations set out in [Z-Anatomy terms](public/models/licenses/Z-Anatomy.txt). It is kept as its own asset, and its manifest layer records its licence and attribution, so the layers can be told apart.
 
 - [FreeSurfer coordinate systems](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)
 - [Destrieux et al., 2010](https://doi.org/10.1016/j.neuroimage.2010.06.010)

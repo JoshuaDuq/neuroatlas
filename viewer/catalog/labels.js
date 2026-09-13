@@ -46,9 +46,17 @@ export function labelOf(region, lang = 'en') {
   const isFr = lang === 'fr';
   if (region.kind === 'non-region') return isFr ? UNLABELLED.fr : UNLABELLED.en;
 
-  if (region.atlas === 'learning') {
-    return { name: region.display_names[lang], code: null,
-      group: region.system_names[lang], aliases: [region.source_name] };
+  if (region.atlas === 'learning' || region.supplemental) {
+    return {
+      name: region.display_names[lang],
+      code: null,
+      group: region.system_names[lang],
+      subgroup: region.family_names?.[lang] ?? region.family ?? null,
+      aliases: [
+        region.source_name,
+        ...(region.aliases?.[lang] ?? []),
+      ].filter(Boolean),
+    };
   }
 
   // NextBrain names are published for both its solid nuclei and its cut-only

@@ -47,6 +47,7 @@
                   aria-controls="masthead-menu" aria-label="More settings" hidden>⋯</button>
           <div id="masthead-menu">
             <span id="region-count" class="measure"></span>
+            <button id="share-button" type="button" aria-label="Share permalink">Share</button>
             <div id="lang-switch" class="segmented" role="group" aria-label="Language">
               <button type="button" data-lang="en" aria-pressed="true">EN</button>
               <button type="button" data-lang="fr" aria-pressed="false">FR</button>
@@ -64,6 +65,12 @@
           <span data-edge="top"></span><span data-edge="right"></span>
           <span data-edge="bottom"></span><span data-edge="left"></span>
         </div>
+        <button id="viewport-fullscreen" class="chip fullscreen-button" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+        </button>
+        <button id="viewport-snapshot" class="chip snapshot-button" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </button>
         <!--
           The touch replacement for hover. A fingertip covers far more of the
           canvas than a Destrieux sulcal band, so the reader lines a region up
@@ -117,9 +124,12 @@
           </div>
           <div id="anatomy-search" class="rail-head">
             <label id="search-label" class="visually-hidden" for="search">Search regions</label>
-            <input id="search" type="search" autocomplete="off" spellcheck="false"
-                   placeholder="Search regions" role="combobox" aria-expanded="false"
-                   aria-controls="results" aria-autocomplete="list" />
+            <div class="search-box">
+              <input id="search" type="search" autocomplete="off" spellcheck="false"
+                     placeholder="Search regions" role="combobox" aria-expanded="false"
+                     aria-controls="results" aria-autocomplete="list" />
+              <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
+            </div>
           </div>
           <div id="internal-anatomy" class="rail-head internal-controls">
             <button id="explore-internal" type="button" class="button-primary"
@@ -129,6 +139,9 @@
             <p id="internal-note" class="internal-note"></p>
           </div>
           <div id="anatomy-browser" class="rail-body">
+            <div id="tree-header" class="tree-header">
+              <button id="tree-toggle-all" class="button-quiet tree-toggle-all" type="button">Collapse all</button>
+            </div>
             <div id="results" role="listbox" aria-label="Search results" hidden></div>
             <div id="tree" role="tree" aria-label="Browse anatomy"></div>
           </div>
@@ -136,7 +149,10 @@
             <div class="panel-body clinical-intro">
               <p id="clinical-introduction"></p>
               <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
-              <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
+              <div class="search-box">
+                <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
+                <button id="deficit-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
+              </div>
             </div>
             <div id="deficit-list" aria-label="Deficits"></div>
             <p id="clinical-coverage" class="clinical-note panel-body"></p>
@@ -165,13 +181,17 @@
                 <dl id="selected-facts" hidden>
                   <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
                   <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
+                  <dt id="fact-group-label">Lobe / System</dt><dd id="fact-group"></dd>
                   <dt id="fact-metric-label">Surface area</dt>
                   <dd id="fact-metric" class="measure"></dd>
+                  <dt id="fact-coords-label">Centroid (RAS)</dt>
+                  <dd id="fact-coords" class="measure"></dd>
                   <dt id="fact-source-label">Source label</dt><dd id="fact-source" class="measure"></dd>
                 </dl>
                 <div class="actions">
                   <button id="focus" type="button" disabled>Focus</button>
                   <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
+                  <button id="slice-to" type="button" disabled>Slice here</button>
                 </div>
               </div>
 
@@ -252,6 +272,10 @@
                 </label>
                 <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
 
+                <label id="spinal-cord-label" class="check">
+                  <input id="spinal-cord" type="checkbox" checked /> <span id="spinal-cord-text">Show spinal cord</span>
+                </label>
+
                 <button id="reset" class="button-quiet" type="button">Reset view</button>
               </div>
             </div>
@@ -298,6 +322,7 @@
       <button id="shortcuts-close" type="button">Close</button>
     </dialog>
 
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
     <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>
     <script type="module" src="/viewer/main.js"></script>
   </body>

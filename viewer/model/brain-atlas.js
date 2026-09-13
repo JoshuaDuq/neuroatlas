@@ -1,7 +1,8 @@
-import { Group } from 'three';
+import { Box3, Group, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { labelOf } from '../catalog/labels.js';
-import { visibilityOf } from '../catalog/visibility.js';
+import { belongsToDetail, visibilityOf } from '../catalog/visibility.js';
+import { worldToRas } from '../slices/coordinates.js';
 import { fetchAsset } from './asset-cache.js';
 import { combineProgress } from './progress.js';
 import { REVALIDATE_HEADER } from './published-assets.js';
@@ -126,6 +127,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
+    this.spinalCordVisible = true;
     this.surfaceColor = 'tissue';
     this.sourceColors = new WeakMap();
     this.selectedId = null;
@@ -133,6 +135,7 @@ export class BrainAtlas extends EventTarget {
     this.requestNumber = 0;
     this.disposed = false;
     this.clippingPlanes = [];
+    this.centroids = new Map();
   }
 
   /**
@@ -150,10 +153,12 @@ export class BrainAtlas extends EventTarget {
     const detailId = options.detail ?? this.defaultDetail;
     const level = this.manifest.detail_levels.find(entry => entry.id === detailId);
     if (!level) throw new Error(`Unknown detail level: ${detailId}`);
-    const progress = combineProgress(['detail', 'atlas'], options.onProgress);
+    const supplemental = this.manifest.supplemental_layers ?? [];
+    const progress = combineProgress(['detail', 'atlas', ...supplemental.map(layer => layer.id)], options.onProgress);
     await Promise.all([
       this.loadLayer(level.id, level.file, progress.track('detail')),
       this.loadLayer(atlas.id, atlas.file, progress.track('atlas')),
+      ...supplemental.map(layer => this.loadLayer(layer.id, layer.file, progress.track(layer.id))),
     ]);
     this.detailId = level.id;
     this.atlasId = atlas.id;
@@ -277,6 +282,7 @@ export class BrainAtlas extends EventTarget {
       hemisphere: this.hemisphere,
       cortexVisible: this.cortexVisible,
       cortexOpacity: this.cortexOpacity,
+      spinalCordVisible: this.spinalCordVisible,
       surfaceColor: this.surfaceColor,
       isolatedRegion: this.isolatedId,
     };
@@ -299,7 +305,8 @@ export class BrainAtlas extends EventTarget {
   update() {
     const settings = this.settings;
     for (const [id, layer] of this.layers) {
-      layer.scene.visible = id === this.detailId || id === this.atlasId;
+      layer.scene.visible = id === this.detailId || id === this.atlasId ||
+        (this.manifest.supplemental_layers ?? []).some(entry => entry.id === id);
       for (const mesh of layer.meshes) {
         const region = this.regions.get(mesh.userData.region_id);
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
@@ -364,6 +371,25 @@ export class BrainAtlas extends EventTarget {
     return this.regions.get(hit.object.userData.region_id);
   }
 
+  centroidOf(regionId) {
+    if (!regionId) return null;
+    if (this.centroids.has(regionId)) return this.centroids.get(regionId);
+    const box = new Box3();
+    for (const layer of this.layers.values()) {
+      for (const mesh of layer.meshes) {
+        if (mesh.userData.region_id === regionId) {
+          if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+          box.expandByObject(mesh);
+        }
+      }
+    }
+    if (box.isEmpty()) return null;
+    const center = box.getCenter(new Vector3());
+    const ras = worldToRas(center).map(v => Math.round(v * 10) / 10);
+    this.centroids.set(regionId, ras);
+    return ras;
+  }
+
   setClippingPlanes(planes) {
     if (!Array.isArray(planes) || planes.some(plane => !plane.isPlane ||
         !Number.isFinite(plane.constant) || !plane.normal.toArray().every(Number.isFinite) || Math.abs(plane.normal.length() - 1) > 1e-6)) {
@@ -401,7 +427,7 @@ export class BrainAtlas extends EventTarget {
 
   setInternalSystem(system) {
     if (system !== null && !this.manifest.regions.some(region =>
-      region.kind === 'structure' && region.atlas === this.detailId &&
+      region.kind === 'structure' && belongsToDetail(region, this.detailId) &&
       labelOf(region, 'en').group === system)) {
       throw new Error(`Unknown internal anatomy system: ${system}`);
     }
@@ -437,6 +463,13 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
+  setSpinalCordVisible(visible) {
+    if (typeof visible !== 'boolean') throw new TypeError('Spinal cord visibility must be boolean.');
+    this.spinalCordVisible = visible;
+    this.isolatedId = null;
+    this.update();
+  }
+
   setSurfaceColor(mode) {
     if (!SURFACE_COLORS.includes(mode)) {
       throw new TypeError(`Unknown surface colour: ${mode}`);
@@ -467,6 +500,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
+    this.spinalCordVisible = true;
     this.surfaceColor = 'tissue';
     this.isolatedId = null;
     this.select(null);
@@ -477,6 +511,7 @@ export class BrainAtlas extends EventTarget {
     this.requestNumber += 1;
     for (const layer of this.layers.values()) disposeScene(layer.scene);
     this.layers.clear();
+    this.centroids.clear();
     this.group.removeFromParent();
   }
 }

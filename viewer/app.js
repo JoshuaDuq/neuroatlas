@@ -97,7 +97,15 @@ export async function startApp() {
   const catalog = createCatalog(model.manifest, initialLang);
   const clinicalCatalog = loadClinicalCatalog(model.manifest);
   scene.setAppearance(model.manifest.appearance);
-  const bounds = new Box3().setFromObject(model.group);
+  const brainBounds = () => {
+    const box = new Box3();
+    for (const [id, layer] of model.layers) {
+      if (model.manifest.supplemental_layers?.some(l => l.id === id)) continue;
+      for (const mesh of layer.meshes) box.expandByObject(mesh);
+    }
+    return box.isEmpty() ? new Box3().setFromObject(model.group) : box;
+  };
+  const bounds = brainBounds();
   scene.scene.add(model.group);
   scene.transparencyProbe = () =>
     model.visibleMeshes.some(mesh => mesh.material.transparent);
@@ -132,16 +140,38 @@ export async function startApp() {
     scene.camera.position.clone().sub(scene.controls.target).normalize();
   let cachedFramingBounds = null;
   const framingBounds = () => {
-    if (model.state.cortexVisible && !model.state.isolatedRegion) return bounds;
+    if (model.state.isolatedRegion) {
+      if (!cachedFramingBounds) {
+        const visible = new Box3();
+        for (const mesh of model.visibleMeshes) visible.expandByObject(mesh);
+        cachedFramingBounds = visible.isEmpty() ? bounds : visible;
+      }
+      return cachedFramingBounds;
+    }
+    if (model.state.internalSystem === 'Spinal cord') {
+      if (!cachedFramingBounds) {
+        const cordBox = new Box3();
+        for (const mesh of model.visibleMeshes) {
+          if (mesh.userData.atlas === 'zanatomy') cordBox.expandByObject(mesh);
+        }
+        cachedFramingBounds = cordBox.isEmpty() ? bounds : cordBox;
+      }
+      return cachedFramingBounds;
+    }
+    if (model.state.cortexVisible) return bounds;
     if (!cachedFramingBounds) {
       const visible = new Box3();
-      for (const mesh of model.visibleMeshes) visible.expandByObject(mesh);
+      for (const mesh of model.visibleMeshes) {
+        if (mesh.userData.atlas !== 'zanatomy') visible.expandByObject(mesh);
+      }
       cachedFramingBounds = visible.isEmpty() ? bounds : visible;
     }
     return cachedFramingBounds;
   };
   const fittedDistance = direction =>
     fitDistance(scene.camera, framingBounds(), direction, scene.viewportFit);
+  const isTargetingSpine = () =>
+    Boolean(model.state.spinalCordVisible && (scene.controls.target.y < bounds.min.y || model.state.internalSystem === 'Spinal cord'));
 
   refitViewport = () => {
     if (!framed) return;
@@ -162,11 +192,31 @@ export async function startApp() {
   function frameCurrent({ immediate = false } = {}) {
     const { view } = session.assemble(model.state);
     scene.camera.up.copy(upFor(view));
-    scene.moveTo(
-      planFraming(scene.camera, scene.controls, framingBounds(), VIEW_DIRECTIONS[view], frameTo,
-        scene.viewportFit),
-      { immediate: immediate || !framed },
-    );
+    if (isTargetingSpine()) {
+      const direction = VIEW_DIRECTIONS[view];
+      const target = scene.controls.target.clone();
+      const distance = scene.distanceToTarget > 0
+        ? scene.distanceToTarget
+        : fittedDistance(direction);
+      const position = target.clone().addScaledVector(direction, distance);
+      scene.moveTo(
+        {
+          position,
+          target,
+          near: scene.camera.near,
+          far: scene.camera.far,
+          minDistance: scene.controls.minDistance,
+          maxDistance: scene.controls.maxDistance,
+        },
+        { immediate: immediate || !framed },
+      );
+    } else {
+      scene.moveTo(
+        planFraming(scene.camera, scene.controls, framingBounds(), VIEW_DIRECTIONS[view], frameTo,
+          scene.viewportFit),
+        { immediate: immediate || !framed },
+      );
+    }
     framed = true;
     render();
   }
@@ -178,16 +228,26 @@ export async function startApp() {
 
   function focusSelection() {
     const id = model.state.selectedRegion?.id;
-    const mesh = id && model.visibleMeshes.find(m => m.userData.region_id === id);
-    if (!mesh) return;
+    if (!id) return;
+    const meshes = model.visibleMeshes.filter(m => m.userData.region_id === id);
+    if (!meshes.length) return;
+    const box = new Box3();
+    for (const mesh of meshes) box.expandByObject(mesh);
     const direction = scene.camera.position.clone().sub(scene.controls.target).normalize();
     scene.moveTo(planFraming(
-      scene.camera, scene.controls, new Box3().setFromObject(mesh), direction, frameTo,
+      scene.camera, scene.controls, box, direction, frameTo,
       scene.viewportFit));
   }
 
   function select(id) {
     model.select(id);
+    if (id) {
+      const current = session.assemble(model.state);
+      const group = catalog.groups(current).find(g => g.rows.some(r => r.region.id === id));
+      if (group && !current.expanded.has(group.key)) {
+        session.toggleGroup(group.key);
+      }
+    }
     render();
   }
 
@@ -251,6 +311,7 @@ export async function startApp() {
   /** Undo whatever is hiding a region, then select it after loading completes. */
   async function reveal(reason, id) {
     if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
+    if (reason === 'spinal-cord-hidden') model.setSpinalCordVisible(true);
     if (reason === 'hemisphere') model.setHemisphere('both');
     if (reason === 'isolated') model.clearIsolation();
     // A cut-only region is nowhere until a plane exists. Coronal is the
@@ -279,17 +340,50 @@ export async function startApp() {
     onLang: setLang,
   });
 
+  const onToggleAllGroups = () => {
+    const groups = catalog.groups(session.assemble(model.state));
+    const allExpanded = groups.length > 0 && groups.every(g => session.state.expanded.has(g.key));
+    if (allExpanded) {
+      session.setExpanded([]);
+    } else {
+      session.setExpanded(groups.map(g => g.key));
+    }
+    render();
+  };
+
   const navigator = createNavigator({
     catalog,
     atlases: model.manifest.atlases,
     cutAtlases: model.manifest.cut_atlases,
     onSelect: select,
     onToggleGroup: name => { session.toggleGroup(name); render(); },
+    onToggleAllGroups,
     onQuery: query => { session.setQuery(query); render(); },
     onReveal: reveal,
     onAtlas: setAtlas,
     onCutAtlas: setCutAtlas,
   });
+
+  const isolateSelection = () => display(() => {
+    if (model.state.isolatedRegion) model.clearIsolation();
+    else {
+      model.isolate();
+      focusSelection();
+    }
+  });
+
+  const onSliceTo = async () => {
+    const region = session.state.selectedRegion;
+    if (!region) return;
+    const coords = model.centroidOf(region.id);
+    if (!coords) return;
+    sections.setCrosshair(coords);
+    if (!sections.active) {
+      await sections.setMode('axial');
+    }
+    faceCut();
+    render();
+  };
 
   const inspector = createInspector({
     catalog,
@@ -297,13 +391,9 @@ export async function startApp() {
     networks: model.manifest.networks,
     atlases: model.manifest.atlases,
     onFocus: focusSelection,
-    onIsolate: () => display(() => {
-      if (model.state.isolatedRegion) model.clearIsolation();
-      else {
-        model.isolate();
-        focusSelection();
-      }
-    }),
+    onIsolate: isolateSelection,
+    onSliceTo,
+    centroidOf: id => model.centroidOf(id),
   });
 
   const clinicalExplorer = createClinicalExplorer({
@@ -325,8 +415,16 @@ export async function startApp() {
 
   function frameInternal() {
     const internalBounds = new Box3();
+    const isCord = model.state.internalSystem === 'Spinal cord';
     for (const mesh of model.visibleMeshes) {
-      if (mesh.userData.kind === 'structure') internalBounds.expandByObject(mesh);
+      if (mesh.userData.kind !== 'structure') continue;
+      if (!isCord && mesh.userData.atlas === 'zanatomy') continue;
+      internalBounds.expandByObject(mesh);
+    }
+    if (internalBounds.isEmpty()) {
+      for (const mesh of model.visibleMeshes) {
+        if (mesh.userData.kind === 'structure') internalBounds.expandByObject(mesh);
+      }
     }
     if (internalBounds.isEmpty()) return;
     scene.moveTo(planFraming(scene.camera, scene.controls, internalBounds,
@@ -399,18 +497,39 @@ export async function startApp() {
     },
   });
 
+  const hasSpinalCord = (model.manifest.supplemental_layers ?? [])
+    .some(layer => layer.id === 'zanatomy');
+
+  function setSpinalCordVisible(visible) {
+    display(() => {
+      model.setSpinalCordVisible(visible);
+      if (!visible && scene.controls.target.y < bounds.min.y) {
+        scene.controls.target.copy(bounds.getCenter(new Vector3()));
+        frameCurrent();
+      }
+    });
+  }
+
   const display_ = createDisplay({
     detailLevels: model.manifest.detail_levels,
+    hasSpinalCord,
     onDetail: setDetail,
     onHemisphere: value => display(() => model.setHemisphere(value)),
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
-    onReset: () => display(() => { sections.setMode('off'); model.reset(); applyView('oblique'); }),
+    onSpinalCordVisible: setSpinalCordVisible,
+    onReset: () => display(() => {
+      sections.setMode('off');
+      model.reset();
+      scene.controls.target.copy(bounds.getCenter(new Vector3()));
+      applyView('oblique');
+    }),
   });
 
   function faceCut() {
     if (!sections.active) return;
     const frame = sections.frame;
+    const sliceWorldCenter = rasToWorld(frame.center.toArray());
     const direction = rasToWorld(frame.normal.toArray()).normalize()
       .multiplyScalar(sections.state.reverse ? -1 : 1);
     const namedView = {
@@ -419,7 +538,10 @@ export async function startApp() {
     }[sections.state.mode][Number(sections.state.reverse)];
     session.setView(namedView);
     scene.camera.up.copy(rasToWorld(frame.v.toArray()).normalize());
-    scene.moveTo(planFraming(scene.camera, scene.controls, bounds, direction, frameTo,
+    const cutBounds = sliceWorldCenter.y < bounds.min.y
+      ? new Box3(sliceWorldCenter.clone().subScalar(0.04), sliceWorldCenter.clone().addScalar(0.04))
+      : bounds;
+    scene.moveTo(planFraming(scene.camera, scene.controls, cutBounds, direction, frameTo,
       scene.viewportFit));
     render();
   }
@@ -429,13 +551,28 @@ export async function startApp() {
     cutAtlases: model.manifest.cut_atlases,
     onFaceView: faceCut,
     onSelect: select,
+    getSelectedRegion: () => session.state.selectedRegion,
+    centroidOf: id => model.centroidOf(id),
   });
   const shortcuts = createShortcuts(initialLang);
+
+  const onSnapshot = () => {
+    try {
+      const dataUrl = scene.captureSnapshot();
+      const link = document.createElement('a');
+      link.download = `neuroatlas-${model.state.atlas ?? 'brain'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to capture snapshot:', err);
+    }
+  };
 
   chrome = createViewportChrome({
     networks: model.manifest.networks,
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
+    onSnapshot,
   });
   chrome.setViewport(scene.visibleRect);
 
@@ -563,6 +700,21 @@ export async function startApp() {
     }, 250);
   }
 
+  function focusPoint(point) {
+    const delta = point.clone().sub(scene.controls.target);
+    const minDistance = point.y < bounds.min.y
+      ? Math.min(scene.controls.minDistance, 0.015)
+      : scene.controls.minDistance;
+    scene.moveTo({
+      position: scene.camera.position.clone().add(delta),
+      target: point.clone(),
+      near: scene.camera.near,
+      far: scene.camera.far,
+      minDistance,
+      maxDistance: scene.controls.maxDistance,
+    });
+  }
+
   picker = createPicker({
     domElement: scene.domElement,
     camera: scene.camera,
@@ -578,6 +730,7 @@ export async function startApp() {
       }
     },
     onSelect: select,
+    onFocusPoint: focusPoint,
   });
 
   // Declared as a function so the scene's resize callback, wired above before
@@ -593,7 +746,15 @@ export async function startApp() {
   });
 
   const onKeyDown = event => {
-    if (event.defaultPrevented || document.getElementById('mpr-dialog').open) return;
+    if (event.defaultPrevented) return;
+    const mprDialog = document.getElementById('mpr-dialog');
+    if (mprDialog?.open) {
+      if (event.key.toLowerCase() === 'm' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault();
+        mprDialog.close();
+      }
+      return;
+    }
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.key === 'Escape') {
       if (document.activeElement === document.getElementById('search')) {
@@ -620,13 +781,35 @@ export async function startApp() {
     if (event.key === '0') return applyView('oblique');
     const index = Number(event.key) - 1;
     if (VIEW_KEYS[index]) return applyView(VIEW_KEYS[index]);
+    if (event.key.toLowerCase() === 'f') {
+      if (model.state.selectedRegion) {
+        event.preventDefault();
+        focusSelection();
+      }
+      return;
+    }
+    if (event.key.toLowerCase() === 'i') {
+      if (model.state.selectedRegion) {
+        event.preventDefault();
+        isolateSelection();
+      }
+      return;
+    }
     if (event.key.toLowerCase() === 'c') {
       return display(() => model.setCortexVisible(!model.state.cortexVisible));
+    }
+    if (event.key.toLowerCase() === 's') {
+      return setSpinalCordVisible(!model.state.spinalCordVisible);
     }
     if (event.key.toLowerCase() === 'h') {
       const order = ['both', 'left', 'right'];
       const next = order[(order.indexOf(model.state.hemisphere) + 1) % order.length];
       return display(() => model.setHemisphere(next));
+    }
+    if (event.key.toLowerCase() === 'm') {
+      event.preventDefault();
+      document.getElementById('mpr-open')?.click();
+      return;
     }
   };
   globalThis.addEventListener('keydown', onKeyDown);
@@ -641,6 +824,7 @@ export async function startApp() {
   applyView(session.assemble(model.state).view, { immediate: true });
   if (wanted.hemisphere) model.setHemisphere(wanted.hemisphere);
   if (wanted.cortexVisible !== undefined) model.setCortexVisible(wanted.cortexVisible);
+  if (wanted.spinalCordVisible !== undefined) model.setSpinalCordVisible(wanted.spinalCordVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
   // A shared link may name a layer this build does not carry.
   if (wanted.surfaceColor && (wanted.surfaceColor !== 'network' || model.manifest.networks)) {

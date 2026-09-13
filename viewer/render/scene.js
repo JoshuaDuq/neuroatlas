@@ -62,6 +62,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
   controls.listenToKeyEvents(renderer.domElement);
+  controls.zoomToCursor = true;
 
   /*
    * How much of the canvas the interface is covering. On a phone the sheet
@@ -299,6 +300,11 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     set transparencyProbe(probe) { hasTransparency = probe; },
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
     get viewportHeight() { return host.getBoundingClientRect().height; },
+
+    captureSnapshot() {
+      composer.render();
+      return renderer.domElement.toDataURL('image/png');
+    },
 
     dispose() {
       renderer.setAnimationLoop(null);

@@ -11,6 +11,41 @@ button:hover:not(:disabled) { background: var(--surface-sunken); }
 button:disabled { color: var(--text-tertiary); cursor: default; }
 select { width: 100%; }
 input[type="search"] { width: 100%; background: var(--surface-sunken); }
+input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.search-box input[type="search"] {
+  width: 100%;
+  padding-right: var(--space-6);
+}
+.search-clear {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 1.125rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+.search-clear:hover {
+  color: var(--text-primary);
+  background: var(--surface-sunken);
+}
 
 /* Two atlases: a segmented control shows both rather than hiding one. */
 .segmented { display: flex; }
@@ -192,6 +227,28 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .group-count { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
 .disclosure { width: 10px; color: var(--text-tertiary); }
 
+.tree-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tree-toggle-all {
+  font-size: var(--text-micro);
+  padding: 2px var(--space-2);
+}
+.query-match {
+  background: var(--accent-wash);
+  color: var(--accent);
+  font-weight: 600;
+  border-radius: 2px;
+}
+.row-alias {
+  color: var(--text-tertiary);
+  font-size: var(--text-micro);
+  margin-left: var(--space-1);
+}
+
 .empty {
   padding: var(--space-4);
   font-size: var(--text-ui);
@@ -221,6 +278,28 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--overlay-ink);
   font-size: var(--text-micro);
   pointer-events: none;
+}
+.fullscreen-button,
+.snapshot-button {
+  top: calc(var(--vis-top) + var(--space-3));
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.fullscreen-button {
+  right: calc(var(--vis-right) + var(--space-3) + 28px + var(--space-2));
+}
+.snapshot-button {
+  right: calc(var(--vis-right) + var(--space-3));
+}
+.fullscreen-button:hover:not(:disabled),
+.snapshot-button:hover:not(:disabled) {
+  background: var(--overlay-plate-hover);
 }
 
 /* --accent is measured against a rail; on the stage it is the light value. */
@@ -570,3 +649,19 @@ kbd {
 .constituents-list { list-style: none; padding: 0; margin: 0.75rem 0 0; }
 .constituents-list li { font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.4rem; }
 .constituents-list button { width: 100%; text-align: left; white-space: normal; }
+
+/* Toast notification ----------------------------------------------------- */
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-base);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font-size: var(--text-ui);
+  pointer-events: none;
+}

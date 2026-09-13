@@ -11,6 +11,7 @@ export function createSolidMaterial(anatomy, appearance, whiteMatter = null) {
     ior: tissue.ior, specularIntensity: tissue.specular_intensity,
   });
   material.userData.tissueVariation = { value: intensity.cut_strength };
+  material.userData.tissueRelief = { value: intensity.solid_relief_mm / 1000 };
   // One solid is one region, so a cap carries its own lift rather than
   // comparing an identity the way a sampled face has to.
   material.userData.highlightLift = { value: 0 };
@@ -23,7 +24,7 @@ export function createSolidMaterial(anatomy, appearance, whiteMatter = null) {
       // A cut face carries the T1 contrast the cut was tuned against, not the
       // surface's; a published palette gets none, as the voxel cut gets none.
       tissueVariation: material.userData.tissueVariation,
-      tissueRelief: { value: intensity.solid_relief_mm / 1000 },
+      tissueRelief: material.userData.tissueRelief,
       highlightLift: material.userData.highlightLift,
       ...whiteMatter?.uniforms,
     });

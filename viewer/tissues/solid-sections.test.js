@@ -18,6 +18,26 @@ function fixture() {
 
 const plane = new Plane(new Vector3(0, 0, -1), 0);
 
+test('caps reach the lower spinal cord in every orientation and retained side', () => {
+  const source = new Mesh(new BoxGeometry(0.012, 0.48, 0.01),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.position.set(0.002, -0.3, 0.038);
+  source.userData.region_id = 'zanatomy:midline:cord';
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 2);
+  const point = new Vector3(0.002, -0.5, 0.038);
+  for (const normal of [new Vector3(1, 0, 0), new Vector3(0, 1, 0),
+    new Vector3(0, 0, 1), new Vector3(1, 1, 1).normalize()]) {
+    for (const side of [-1, 1]) {
+      const direction = normal.clone().multiplyScalar(side);
+      sections.update(new Plane().setFromNormalAndCoplanarPoint(direction, point));
+      const ray = new Raycaster(point.clone().addScaledVector(direction, 0.1), direction.negate());
+      assert.equal(sections.intersect(ray)?.region, 'zanatomy:midline:cord');
+    }
+  }
+  sections.dispose();
+});
+
 test('solid caps use the exact source geometry and ordered stencil passes', () => {
   const { sections, source } = fixture();
   const [solid] = sections.solids;
@@ -110,3 +130,32 @@ test('a cut hit names the region its cap was painted as', () => {
   assert.equal(hit.region, 'nextbrain:right:10119');
   sections.dispose();
 });
+
+test('nested solids order enclosing first with tiered polygon offsets and bit-identical cap planes', () => {
+  const outer = new Mesh(new BoxGeometry(0.2, 0.2, 0.2), new MeshBasicMaterial({ side: DoubleSide }));
+  outer.userData = { segmentation_volume_mm3: 8000, region_id: 'cord' };
+  const inner = new Mesh(new BoxGeometry(0.05, 0.05, 0.05), new MeshBasicMaterial({ side: DoubleSide }));
+  inner.userData = { segmentation_volume_mm3: 125, region_id: 'tract' };
+
+  const sections = new SolidSections();
+  sections.add(inner, new MeshBasicMaterial(), 2);
+  sections.add(outer, new MeshBasicMaterial(), 2);
+
+  assert.equal(sections.solids[0].region, 'cord');
+  assert.equal(sections.solids[1].region, 'tract');
+
+  assert.equal(sections.solids[0].group.renderOrder, 1);
+  assert.equal(sections.solids[1].group.renderOrder, 2);
+  assert.equal(sections.solids[0].cap.material.polygonOffsetUnits, -1);
+  assert.equal(sections.solids[1].cap.material.polygonOffsetUnits, -2);
+  assert.ok(sections.solids[1].cap.material.polygonOffsetUnits < sections.solids[0].cap.material.polygonOffsetUnits);
+
+  sections.update(plane);
+  const [solidOuter, solidInner] = sections.solids;
+  assert.ok(solidOuter.cap.position.equals(solidInner.cap.position));
+  assert.ok(solidOuter.cap.quaternion.equals(solidInner.cap.quaternion));
+  assert.ok(solidOuter.cap.scale.equals(solidInner.cap.scale));
+
+  sections.dispose();
+});
+

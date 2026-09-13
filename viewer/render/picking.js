@@ -23,7 +23,7 @@ const slopFor = pointerType => CLICK_SLOP_PX[pointerType === 'touch' ? 'touch' :
  * worth removing once was the raycast it cost on every frame of an orbit, so
  * hover answers at most once a frame and never while a button is down.
  */
-export function createPicker({ domElement, camera, model, onHover, onSelect }) {
+export function createPicker({ domElement, camera, model, onHover, onSelect, onFocusPoint }) {
   const raycaster = new Raycaster();
   raycaster.firstHitOnly = true;
   const pointer = new Vector2();
@@ -38,6 +38,15 @@ export function createPicker({ domElement, camera, model, onHover, onSelect }) {
     camera.updateMatrixWorld();
     raycaster.setFromCamera(pointer, camera);
     return model().pick(raycaster);
+  }
+
+  function intersectAtPoint(x, y) {
+    const rect = domElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    pointer.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
+    camera.updateMatrixWorld();
+    raycaster.setFromCamera(pointer, camera);
+    return model().intersect?.(raycaster) ?? null;
   }
 
   function regionAt(event) {
@@ -84,11 +93,19 @@ export function createPicker({ domElement, camera, model, onHover, onSelect }) {
     onHover?.(null, null);
   };
 
+  const onDblClick = event => {
+    if (!onFocusPoint) return;
+    const rect = domElement.getBoundingClientRect();
+    const hit = intersectAtPoint(event.clientX - rect.left, event.clientY - rect.top);
+    if (hit?.point) onFocusPoint(hit.point);
+  };
+
   domElement.addEventListener('pointerdown', onPointerDown);
   domElement.addEventListener('pointerup', onPointerUp);
   domElement.addEventListener('pointercancel', clearPress);
   domElement.addEventListener('pointerleave', clearPress);
   domElement.addEventListener('pointermove', onPointerMove);
+  domElement.addEventListener('dblclick', onDblClick);
 
   return {
     dispose() {
@@ -98,6 +115,7 @@ export function createPicker({ domElement, camera, model, onHover, onSelect }) {
       domElement.removeEventListener('pointercancel', clearPress);
       domElement.removeEventListener('pointerleave', clearPress);
       domElement.removeEventListener('pointermove', onPointerMove);
+      domElement.removeEventListener('dblclick', onDblClick);
     },
   };
 }

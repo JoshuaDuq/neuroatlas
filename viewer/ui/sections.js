@@ -37,7 +37,7 @@ const TISSUE_NAMES_EN = {
 };
 
 /** Cut controls and linked MRI sections; the controller owns all coordinates. */
-export function createSectionControls(sections, { anatomy, cutAtlases, onFaceView, onSelect }) {
+export function createSectionControls(sections, { anatomy, cutAtlases, onFaceView, onSelect, getSelectedRegion, centroidOf }) {
   const mode = document.getElementById('cut-mode');
   const cutAtlas = document.getElementById('cut-atlas');
   const cutAtlasLabel = document.getElementById('cut-atlas-label');
@@ -79,13 +79,13 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
   function reportError(error) { status.textContent = error.message; console.error(error); }
 
-  function listen(element, type, callback) {
+  function listen(element, type, callback, options) {
     const listener = async event => {
       try { await callback(event); }
       catch (error) { reportError(error); }
     };
-    element.addEventListener(type, listener);
-    listeners.push([element, type, listener]);
+    element.addEventListener(type, listener, options);
+    listeners.push([element, type, listener, options]);
   }
 
   function schedule(callback) {
@@ -124,6 +124,16 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   });
   listen(mprOpenBtn, 'click', async () => {
     await sections.load();
+    const region = getSelectedRegion?.();
+    if (region) {
+      const coords = centroidOf?.(region.id);
+      if (coords) {
+        const [x, y, z] = sections.state.crosshair;
+        if (Math.abs(x) < 1e-3 && Math.abs(y) < 1e-3 && Math.abs(z) < 1e-3) {
+          sections.setCrosshair(coords);
+        }
+      }
+    }
     dialog.showModal();
     previousImage = null;
     update();
@@ -168,6 +178,13 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       selectPoint(pointOnFrame(frame, (event.clientX-rect.left)/rect.width,
         (event.clientY-rect.top)/rect.height, sections.display.fieldOfView));
     });
+    listen(canvas, 'wheel', event => {
+      event.preventDefault();
+      const delta = Math.sign(event.deltaY);
+      const point = [...sections.state.crosshair];
+      point[axis] = Math.max(-128, Math.min(128, point[axis] - delta));
+      selectPoint(point);
+    }, { passive: false });
     listen(canvas, 'keydown', event => {
       if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key)) return;
       event.preventDefault();
@@ -277,6 +294,9 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     mode.value = state.mode;
     document.getElementById('cut-axis').textContent = cutsI18n.axes[state.mode] ?? cutsI18n.axes.off;
     const offset = new Vector3(...state.crosshair).dot(sections.frame.normal);
+    for (const control of [position, number]) {
+      [control.min, control.max] = sections.offsetRange.map(String);
+    }
     if (document.activeElement !== position) position.value = String(offset);
     if (document.activeElement !== number) number.value = offset.toFixed(1);
     number.setAttribute('aria-label', cutsI18n.exactPositionAria);
@@ -369,7 +389,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (animation !== null) cancelAnimationFrame(animation);
     phoneQuery.removeEventListener('change', applyPlaneMode);
     planeSwitch.replaceChildren();
-    for (const [element,type,listener] of listeners) element.removeEventListener(type,listener);
+    for (const [element,type,listener,options] of listeners) element.removeEventListener(type,listener,options);
     grid.replaceChildren();
     dialog.close();
   } };

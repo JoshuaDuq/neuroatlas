@@ -6,13 +6,16 @@ import { t } from '../i18n/translations.js';
  * What the surface is coloured by is a masthead control, not one of these:
  * it says what the picture means rather than how much of it is showing.
  */
-export function createDisplay({ detailLevels, ...handlers }) {
+export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers }) {
   const detail = document.getElementById('detail');
   const detailLabel = document.getElementById('detail-label');
   const hemisphere = document.getElementById('hemisphere');
   const cortex = document.getElementById('cortex');
   const opacity = document.getElementById('opacity');
   const opacityValue = document.getElementById('opacity-value');
+  const spinalCord = document.getElementById('spinal-cord');
+  const spinalCordText = document.getElementById('spinal-cord-text');
+  const spinalCordLabel = document.getElementById('spinal-cord-label');
   const reset = document.getElementById('reset');
   const labelDisplay = document.getElementById('label-display');
   const hemiLabel = document.getElementById('display-hemisphere-label');
@@ -33,6 +36,9 @@ export function createDisplay({ detailLevels, ...handlers }) {
     [hemisphere, 'change', event => handlers.onHemisphere(event.target.value)],
     [cortex, 'change', event => handlers.onCortexVisible(event.target.checked)],
     [opacity, 'input', event => handlers.onCortexOpacity(Number(event.target.value))],
+    ...(spinalCord && handlers.onSpinalCordVisible ? [
+      [spinalCord, 'change', event => handlers.onSpinalCordVisible(event.target.checked)],
+    ] : []),
     [reset, 'click', handlers.onReset],
   ];
   for (const [element, type, listener] of listeners) {
@@ -61,10 +67,13 @@ export function createDisplay({ detailLevels, ...handlers }) {
 
       if (cortexText) cortexText.textContent = i18n.showCortex;
       if (opacityText) opacityText.textContent = i18n.cortexOpacity;
+      if (spinalCordText) spinalCordText.textContent = i18n.showSpinalCord;
+      if (spinalCordLabel) spinalCordLabel.hidden = !hasSpinalCord;
       reset.textContent = i18n.resetView;
 
       hemisphere.value = state.hemisphere;
       cortex.checked = state.cortexVisible;
+      if (spinalCord) spinalCord.checked = state.spinalCordVisible !== false;
       // Do not fight the reader's thumb while they are dragging the slider.
       if (document.activeElement !== opacity) opacity.value = String(state.cortexOpacity);
       opacityValue.value = `${Math.round(state.cortexOpacity * 100)}%`;

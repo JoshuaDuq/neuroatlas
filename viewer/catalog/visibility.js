@@ -13,6 +13,7 @@ import { labelOf } from './labels.js';
 const isSurface = region => region.kind === 'cortex' || region.kind === 'non-region';
 const isStructure = region => region.kind === 'structure';
 const isTissue = region => region.kind === 'tissue-region';
+export const belongsToDetail = (region, detail) => region.supplemental === true || region.atlas === detail;
 // Gyral white matter is drawn on the white envelope's cut face, which the cortex controls hide.
 const followsCortex = region => isSurface(region) || region.atlas === 'wmparc';
 
@@ -27,7 +28,7 @@ const hemisphereAllows = (region, settings) =>
 /** The overview's source constituents inherit its system, irrespective of atlas taxonomy. */
 export function internalSystemAllows(region, settings) {
   if (!settings.internalSystem || isSurface(region)) return true;
-  if (settings.detail === 'learning' && region.atlas !== 'learning') {
+  if (settings.detail === 'learning' && region.atlas !== 'learning' && !region.supplemental) {
     return settings.internalConstituents.has(region.id);
   }
   return labelOf(region, 'en').group === settings.internalSystem;
@@ -51,7 +52,7 @@ export function visibilityOf(region, settings) {
     if (!cutAtlasesOf(region).includes(settings.cutAtlas)) return hidden('other-cut-atlas');
     if (!settings.cutActive) return hidden('no-cut');
   } else if (isStructure(region)) {
-    if (region.atlas !== settings.detail && !onCut) return hidden('other-detail');
+    if (!belongsToDetail(region, settings.detail) && !onCut) return hidden('other-detail');
   } else if (isSurface(region) && region.atlas !== settings.atlas) {
     return hidden('other-atlas');
   }
@@ -59,6 +60,9 @@ export function visibilityOf(region, settings) {
   if (!hemisphereAllows(region, settings)) return hidden('hemisphere');
   if (followsCortex(region) && !(settings.cortexVisible && settings.cortexOpacity > 0)) {
     return hidden('cortex-hidden');
+  }
+  if (region.atlas === 'zanatomy' && settings.spinalCordVisible === false) {
+    return hidden('spinal-cord-hidden');
   }
   if (settings.isolatedRegion && region.id !== settings.isolatedRegion) {
     return hidden('isolated');

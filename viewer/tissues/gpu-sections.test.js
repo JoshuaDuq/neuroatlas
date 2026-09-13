@@ -155,6 +155,34 @@ test('a surfaceless atlas keeps the label volume for published colours', () => {
   sections.dispose();
 });
 
+test('a surfaceless cut atlas still caps and picks supplemental anatomy outside its volume', () => {
+  const { sections, model, layer } = fixture();
+  const cord = { id: 'zanatomy:midline:cord', atlas: 'zanatomy', kind: 'structure',
+    supplemental: true, hemisphere: 'midline', source_name: 'White matter of spinal cord' };
+  model.regions.set(cord.id, cord);
+  const source = new Mesh(new BoxGeometry(.012, .48, .01),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.position.set(0, -.3, .04);
+  source.userData = { ...cord, region_id: cord.id, mri_registered: false };
+  addSolidSources(sections.solids, [source], sections.anatomy, appearance, BANDS.structure);
+  for (const surfaceColor of ['tissue', 'atlas', 'network']) {
+    model.state.surfaceColor = surfaceColor;
+    model.state.isolatedRegion = cord.id;
+    sections.update(centeredFrame('coronal', [0, -40, -500]), 'destrieux');
+    assert.equal(sections.solids.group.visible, true);
+    assert.equal(sections.solids.solids[0].group.visible, true);
+    const ray = new Raycaster(new Vector3(0, -.5, .2), new Vector3(0, 0, -1));
+    assert.equal(sections.intersect(ray)?.region.id, cord.id);
+    assert.equal(layer.mesh.visible, surfaceColor !== 'tissue');
+  }
+  model.state.surfaceColor = 'atlas';
+  model.state.isolatedRegion = null;
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  const brainRay = new Raycaster(new Vector3(0, 0, .1), new Vector3(0, 0, -1));
+  assert.equal(sections.intersect(brainRay)?.region.id, 'destrieux:left:1');
+  sections.dispose();
+});
+
 test('an atlas with parcel solids caps every colour mode, isolation included', () => {
   const { sections, model, layer, region } = fixture();
   layer.wedged = true;

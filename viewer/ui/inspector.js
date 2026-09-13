@@ -3,22 +3,27 @@ import { networkCss, networkName, networksOf } from '../catalog/networks.js';
 import { t } from '../i18n/translations.js';
 
 /** The selected region: what it is, and what is measured about it. */
-export function createInspector({ catalog, regions, atlases, networks, onFocus, onIsolate }) {
+export function createInspector({ catalog, regions, atlases, networks, onFocus, onIsolate, onSliceTo, centroidOf }) {
   const inspectorPanel = document.getElementById('inspector');
   const labelSelected = document.getElementById('label-selected');
   const factHemiLabel = document.getElementById('fact-hemisphere-label');
   const factAtlasLabel = document.getElementById('fact-atlas-label');
+  const factGroupLabel = document.getElementById('fact-group-label');
+  const factCoordsLabel = document.getElementById('fact-coords-label');
   const factSourceLabel = document.getElementById('fact-source-label');
   const name = document.getElementById('selected-name');
   const hint = document.getElementById('selected-hint');
   const facts = document.getElementById('selected-facts');
   const hemisphere = document.getElementById('fact-hemisphere');
   const atlasName = document.getElementById('fact-atlas');
+  const factGroup = document.getElementById('fact-group');
   const metricLabel = document.getElementById('fact-metric-label');
   const metric = document.getElementById('fact-metric');
+  const factCoords = document.getElementById('fact-coords');
   const source = document.getElementById('fact-source');
   const focus = document.getElementById('focus');
   const isolate = document.getElementById('isolate');
+  const sliceTo = document.getElementById('slice-to');
   const actions = focus.closest('.actions');
   const networkSection = document.getElementById('region-networks');
   const networkHeading = document.getElementById('label-networks');
@@ -27,6 +32,8 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
 
   focus.addEventListener('click', onFocus);
   isolate.addEventListener('click', onIsolate);
+  const onSliceToClick = () => onSliceTo?.();
+  sliceTo?.addEventListener('click', onSliceToClick);
 
   /*
    * How the whole cortex divides between the networks, weighted by measured
@@ -107,9 +114,12 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
       if (labelSelected) labelSelected.textContent = i18n.selectedHeading;
       if (factHemiLabel) factHemiLabel.textContent = i18n.hemisphere;
       if (factAtlasLabel) factAtlasLabel.textContent = i18n.atlas;
+      if (factGroupLabel) factGroupLabel.textContent = i18n.group;
+      if (factCoordsLabel) factCoordsLabel.textContent = i18n.centroid;
       if (factSourceLabel) factSourceLabel.textContent = i18n.sourceLabel;
       focus.textContent = i18n.focus;
       isolate.textContent = i18n.isolate;
+      if (sliceTo) sliceTo.textContent = i18n.sliceTo;
 
       const region = state.selectedRegion;
       // While a deficit is being explored the panel already leads with it, so
@@ -126,6 +136,8 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
         hint.hidden = quiet;
         hint.textContent = state.cortexVisible ? i18n.hintCortex : i18n.hintStructures;
         facts.hidden = true;
+        if (factGroup) factGroup.textContent = '';
+        if (factCoords) factCoords.textContent = '';
         // While a deficit is being explored that profile is the subject, and
         // a cortex-wide summary above it answers a question nobody asked.
         if (quiet) networkSection.hidden = true;
@@ -133,25 +145,40 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
         else networkSection.hidden = true;
         focus.disabled = true;
         isolate.disabled = true;
+        if (sliceTo) sliceTo.disabled = true;
         isolate.setAttribute('aria-pressed', 'false');
         return;
       }
 
       const label = catalog.get(region.id).label;
       name.textContent = label.name;
-      hint.hidden = true;
+      hint.hidden = !region.notes;
+      hint.textContent = region.notes?.[state.lang] ?? '';
       facts.hidden = false;
       hemisphere.textContent = sideWords[region.hemisphere] ?? region.hemisphere;
       const sourceName = atlasDict[region.atlas] ?? atlasDict.aseg;
       atlasName.textContent = label.code
         ? `${sourceName} · ${label.code}`
         : sourceName;
+      if (factGroup) factGroup.textContent = label.group ?? '—';
 
       const measuredByVolume = region.kind === 'structure' || region.kind === 'tissue-region';
       metricLabel.textContent = measuredByVolume ? i18n.volume : i18n.surfaceArea;
       metric.textContent = measuredByVolume
         ? quantity(region.segmentation_volume_mm3, 'mm³')
         : quantity(region.surface_area_mm2, 'mm²');
+
+      if (factCoords) {
+        const coords = centroidOf?.(region.id);
+        if (coords) {
+          const [r, a, s] = coords;
+          const formatRas = n => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
+          factCoords.textContent = `R ${formatRas(r)} · A ${formatRas(a)} · S ${formatRas(s)} mm`;
+        } else {
+          factCoords.textContent = '—';
+        }
+      }
+
       source.textContent = region.source_label_ids
         ? `${region.source_atlas}: ${region.source_label_ids.join(', ')}`
         : String(region.source_label_id ?? '—');
@@ -160,10 +187,12 @@ export function createInspector({ catalog, regions, atlases, networks, onFocus, 
       focus.disabled = false;
       isolate.disabled = false;
       isolate.setAttribute('aria-pressed', String(Boolean(state.isolatedRegion)));
+      if (sliceTo) sliceTo.disabled = !centroidOf?.(region.id);
     },
     dispose() {
       focus.removeEventListener('click', onFocus);
       isolate.removeEventListener('click', onIsolate);
+      sliceTo?.removeEventListener('click', onSliceToClick);
     },
   };
 }

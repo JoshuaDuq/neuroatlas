@@ -1,3 +1,5 @@
+import { belongsToDetail } from '../catalog/visibility.js';
+
 /** Reveal the cited anatomical landmark without inheriting a misleading cut. */
 export async function openClinicalRegion(model, sections, id) {
   const region = model.regions.get(id);
@@ -7,7 +9,7 @@ export async function openClinicalRegion(model, sections, id) {
   if (region.kind === 'cortex' && model.settings.atlas !== region.atlas) {
     await model.setAtlas(region.atlas);
   }
-  if (region.kind === 'structure' && model.settings.detail !== region.atlas) {
+  if (region.kind === 'structure' && !belongsToDetail(region, model.settings.detail)) {
     await model.setDetail(region.atlas);
   }
   await sections.setMode('off');
