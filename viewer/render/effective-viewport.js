@@ -3,7 +3,7 @@
  *
  * On a phone the sheet sits over the canvas rather than beside it, so the
  * canvas is full-bleed while only part of it is visible. Resizing the canvas
- * as the sheet moves would reallocate the composer target, the occlusion pass
+ * as the sheet moves would reallocate the composer target
  * and both outline passes on every drag frame, so the canvas keeps its size
  * and the camera is told where the reader can actually see instead.
  *
