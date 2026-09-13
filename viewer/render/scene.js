@@ -90,10 +90,12 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   halo.edgeStrength = 6;
   halo.edgeThickness = 3;
   halo.edgeGlow = 0;
+  halo.enabled = false;
   const core = new OutlinePass(new Vector2(1, 1), scene, camera);
   core.edgeStrength = 6;
   core.edgeThickness = 1;
   core.edgeGlow = 0;
+  core.enabled = false;
   composer.addPass(halo);
   composer.addPass(core);
   composer.addPass(new OutputPass());

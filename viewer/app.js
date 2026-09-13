@@ -7,6 +7,7 @@ import { VIEW_DIRECTIONS, fitDistance, frameTo, upFor } from './render/camera-vi
 import { createPicker } from './render/picking.js';
 import { createScene, planFraming } from './render/scene.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
+import { captureBeforeInternal, insideInternal, leaveInternal } from './state/internal-mode.js';
 import { createTheme } from './state/theme.js';
 import { decodeState, encodeState } from './state/url-state.js';
 import { BrainSections } from './slices/sections.js';
@@ -70,6 +71,7 @@ export async function startApp() {
     onContextLost: () => { session.setContextLost(); render(); },
     onContextRestored: () => { session.setStatus('ready'); render(); },
     onResize: ({ canvasChanged } = {}) => {
+      chrome?.setViewport(scene.visibleRect);
       if (canvasChanged) refitViewport?.();
       onCameraChange();
     },
@@ -128,11 +130,15 @@ export async function startApp() {
   let zoom = 1;
   const viewDirection = () =>
     scene.camera.position.clone().sub(scene.controls.target).normalize();
+  let cachedFramingBounds = null;
   const framingBounds = () => {
     if (model.state.cortexVisible && !model.state.isolatedRegion) return bounds;
-    const visible = new Box3();
-    for (const mesh of model.visibleMeshes) visible.expandByObject(mesh);
-    return visible.isEmpty() ? bounds : visible;
+    if (!cachedFramingBounds) {
+      const visible = new Box3();
+      for (const mesh of model.visibleMeshes) visible.expandByObject(mesh);
+      cachedFramingBounds = visible.isEmpty() ? bounds : visible;
+    }
+    return cachedFramingBounds;
   };
   const fittedDistance = direction =>
     fitDistance(scene.camera, framingBounds(), direction, scene.viewportFit);
@@ -327,20 +333,52 @@ export async function startApp() {
       viewDirection(), frameTo, scene.viewportFit));
   }
 
+  /** Pull back to the whole brain along the direction the reader already has. */
+  function frameWhole() {
+    scene.moveTo(planFraming(scene.camera, scene.controls, framingBounds(),
+      viewDirection(), frameTo, scene.viewportFit));
+  }
+
+  // Taken at each of the two doors in, and spent on the way out.
+  let beforeInternal = null;
+
+  async function enterInternal() {
+    beforeInternal = captureBeforeInternal(model.state, model.defaultDetail);
+    await sections.setMode('off');
+    await setDetail(model.defaultDetail);
+    model.setInternalSystem(null);
+    model.setCortexVisible(false);
+    model.setSurfaceColor('atlas');
+    session.setQuery('');
+    frameInternal();
+    render();
+  }
+
+  async function leaveInternalAnatomy() {
+    const changes = leaveInternal(beforeInternal, model.state);
+    beforeInternal = null;
+    // Both setters release isolation, which would otherwise hold the cortex
+    // hidden behind whichever single structure the reader had isolated.
+    model.setInternalSystem(changes.internalSystem);
+    model.setCortexVisible(changes.cortexVisible);
+    model.setSurfaceColor(changes.surfaceColor);
+    if (changes.detail) await setDetail(changes.detail);
+    session.setQuery('');
+    frameWhole();
+    render();
+  }
+
   const internalAnatomy = createInternalAnatomy({
     manifest: model.manifest,
-    onExplore: async () => {
-      await sections.setMode('off');
-      await setDetail(model.defaultDetail);
-      model.setInternalSystem(null);
-      model.setCortexVisible(false);
-      model.setSurfaceColor('atlas');
-      session.setQuery('');
-      frameInternal();
-      render();
-    },
+    onToggle: () => (insideInternal(model.state) ? leaveInternalAnatomy() : enterInternal()),
     onSystem: system => {
-      model.setCortexVisible(false);
+      // The other door in, and it has to land the reader where the button does:
+      // otherwise a network legend is left over a cortex that is not drawn.
+      if (!insideInternal(model.state)) {
+        beforeInternal = captureBeforeInternal(model.state, model.state.detail);
+        model.setSurfaceColor('atlas');
+        model.setCortexVisible(false);
+      }
       model.setInternalSystem(system);
       session.setQuery('');
       const group = catalog.groups(session.assemble(model.state)).find(entry => entry.kind === 'structure');
@@ -399,6 +437,7 @@ export async function startApp() {
     onView: applyView,
     onRetry: () => globalThis.location.reload(),
   });
+  chrome.setViewport(scene.visibleRect);
 
   // Built before the sheet: the sheet decides on construction which shell owns
   // the panels, and hands them over through onShell.
@@ -429,6 +468,7 @@ export async function startApp() {
   let announced = null;
 
   function render() {
+    cachedFramingBounds = null;
     const state = session.assemble(model.state);
     catalog.setLanguage(state.lang);
     document.documentElement.lang = state.lang;
@@ -528,11 +568,14 @@ export async function startApp() {
     camera: scene.camera,
     model: () => sections,
     onHover: (region, position) => {
+      const regionChanged = region?.id !== hovered?.region?.id;
       hovered = region ? { region, position } : null;
-      // Not the state loop: a pointer answers this once a frame, and a full
-      // render would rebuild every panel that often. The cut lights its own
-      // faces; a surface needs the outline pass, which only `outline` drives.
-      if (sections.active) highlight(); else outline();
+      if (regionChanged) {
+        if (sections.active) highlight(); else outline();
+      } else if (position) {
+        chrome?.showHover(
+          region ? catalog.get(region.id)?.label.name ?? region.label : null, position);
+      }
     },
     onSelect: select,
   });
@@ -541,12 +584,13 @@ export async function startApp() {
   // the chrome exists, can reach it.
   function onCameraChange() {
     if (!chrome) return;
-    const fitted = fittedDistance(viewDirection());
-    if (fitted > 0) zoom = scene.distanceToTarget / fitted;
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
-    chrome.setViewport(scene.visibleRect);
   }
   scene.controls.addEventListener('change', onCameraChange);
+  scene.controls.addEventListener('end', () => {
+    const fitted = fittedDistance(viewDirection());
+    if (fitted > 0) zoom = scene.distanceToTarget / fitted;
+  });
 
   const onKeyDown = event => {
     if (event.defaultPrevented || document.getElementById('mpr-dialog').open) return;
