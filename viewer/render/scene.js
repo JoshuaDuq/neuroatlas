@@ -10,6 +10,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
+import { gpuRendererName, isIntegratedGpu } from './device.js';
 import { occlusionActive, qualityProfile } from './quality.js';
 
 const TRANSITION_MS = 240;
@@ -31,7 +32,6 @@ const token = name =>
  * model never has to alter a material to show them.
  */
 export function createScene(host, { onContextLost, onContextRestored, onResize } = {}) {
-  const quality = qualityProfile();
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
   // The composer owns MSAA. Asking the default framebuffer for it as well
@@ -39,6 +39,9 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   const renderer = new WebGLRenderer({
     antialias: false,
     powerPreference: 'high-performance',
+  });
+  const quality = qualityProfile({
+    integrated: isIntegratedGpu(gpuRendererName(renderer.getContext())),
   });
   renderer.localClippingEnabled = true;
   renderer.setPixelRatio(quality.pixelRatio);
