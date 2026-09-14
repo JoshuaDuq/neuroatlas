@@ -87,16 +87,16 @@ test('selection events carry source metadata; medial wall cannot become a region
 test('neutral anatomy preserves picking and isolation through atlas color changes', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
-  assert.equal(atlas.state.surfaceColor, 'tissue');
+  assert.equal(atlas.state.surfaceColor, 'atlas');
   const mesh = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-right');
   const positions = mesh.geometry.attributes.position.array.slice();
   const indices = mesh.geometry.index.array.slice();
   const ray = new Raycaster(new Vector3(0.03, 0, 0.1), new Vector3(0, 0, -1));
-  const neutral = mesh.material.color.getHex();
-  assert.equal(mesh.material.color.getHexString(), appearance.tissue.cortex.slice(1));
+  const neutral = parseInt(appearance.tissue.cortex.slice(1), 16);
+  assert.equal(mesh.material.color.getHex(), 0xffffff);
   atlas.select(atlas.pick(ray).id);
   atlas.isolate();
-  for (const mode of ['atlas', 'tissue', 'atlas']) {
+  for (const mode of ['tissue', 'atlas', 'tissue']) {
     atlas.setSurfaceColor(mode);
     assert.equal(mesh.material.userData.tissueVariation.value,
       mode === 'tissue' ? appearance.intensity.surface_strength : 0);
@@ -108,8 +108,8 @@ test('neutral anatomy preserves picking and isolation through atlas color change
     assert.deepEqual(mesh.geometry.index.array, indices);
   }
   atlas.reset();
-  assert.equal(atlas.state.surfaceColor, 'tissue');
-  assert.equal(mesh.material.color.getHex(), neutral);
+  assert.equal(atlas.state.surfaceColor, 'atlas');
+  assert.equal(mesh.material.color.getHex(), 0xffffff);
   atlas.dispose();
 });
 
@@ -202,7 +202,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, spinalCordVisible: true,
-    surfaceColor: 'tissue', isolatedRegion: null,
+    surfaceColor: 'atlas', isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
   assert.equal(atlas.state.visibleMeshCount, 4);

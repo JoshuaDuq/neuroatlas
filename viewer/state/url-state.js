@@ -15,7 +15,7 @@ const DEFAULTS = {
   cortexVisible: true,
   cortexOpacity: 1,
   spinalCordVisible: true,
-  surfaceColor: 'tissue',
+  surfaceColor: 'atlas',
   view: 'oblique',
   selectedRegion: null,
   isolatedRegion: null,

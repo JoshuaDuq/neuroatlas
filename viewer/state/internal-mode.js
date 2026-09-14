@@ -6,7 +6,7 @@
  * Free of the DOM and of Three.js, so all of it is unit tested.
  */
 
-const WHOLE_BRAIN_COLOUR = 'tissue';
+const WHOLE_BRAIN_COLOUR = 'atlas';
 
 /** The cortex being hidden is what makes the reader "inside": nothing else marks it. */
 export const insideInternal = state => state.cortexVisible === false;

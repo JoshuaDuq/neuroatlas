@@ -30,7 +30,7 @@ test('session notifies in French when in French mode', () => {
 test('url-state encodes and decodes lang', () => {
   const stateEn = {
     atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
-    surfaceColor: 'tissue', view: 'oblique', selectedRegion: null, isolatedRegion: null,
+    surfaceColor: 'atlas', view: 'oblique', selectedRegion: null, isolatedRegion: null,
     lang: 'en',
   };
   // Default lang is omitted to keep URLs clean

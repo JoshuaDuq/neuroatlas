@@ -120,7 +120,7 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. The brain opens in warm tissue colours with soft specular highlights, MRI-derived variation and source-derived fold relief. Enable **Atlas colours** in Display to show the region palette; selection and isolation work in either appearance. Reset restores the neutral view. The **Anatomical cuts** controls are in the right panel. **Open linked MRI slices** displays the three source-MRI sections. The model remains interactive when clipped. The MRI dialog shows the full reference volume independently of surface visibility.
+Open the URL printed by Vite. The brain opens with atlas region colours enabled by default, with soft specular highlights and source-derived fold relief. Switch to **Tissue** in the masthead for warm neutral tissue colours with MRI-derived variation; selection and isolation work in either appearance. Reset restores the default view. The **Anatomical cuts** controls are in the right panel. **Open linked MRI slices** displays the three source-MRI sections. The model remains interactive when clipped. The MRI dialog shows the full reference volume independently of surface visibility.
 
 ## Model assets
 
