@@ -36,7 +36,7 @@ test('leaving clears the system filter, which means nothing with the cortex draw
 test('a session that opened with the cortex already hidden still has a way out', () => {
   const changes = leaveInternal(null, inside);
   assert.equal(changes.cortexVisible, true);
-  assert.equal(changes.surfaceColor, 'tissue');
+  assert.equal(changes.surfaceColor, 'atlas');
   assert.equal(changes.detail, null);
 });
 

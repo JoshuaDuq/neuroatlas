@@ -128,7 +128,7 @@ export class BrainAtlas extends EventTarget {
     this.cortexVisible = true;
     this.cortexOpacity = 1;
     this.spinalCordVisible = true;
-    this.surfaceColor = 'tissue';
+    this.surfaceColor = 'atlas';
     this.sourceColors = new WeakMap();
     this.selectedId = null;
     this.isolatedId = null;
@@ -501,7 +501,7 @@ export class BrainAtlas extends EventTarget {
     this.cortexVisible = true;
     this.cortexOpacity = 1;
     this.spinalCordVisible = true;
-    this.surfaceColor = 'tissue';
+    this.surfaceColor = 'atlas';
     this.isolatedId = null;
     this.select(null);
   }

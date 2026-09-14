@@ -5,7 +5,7 @@ import { decodeState, encodeState } from './url-state.js';
 test('a default view produces a bare URL carrying only the atlas', () => {
   assert.equal(encodeState({
     atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
-    surfaceColor: 'tissue', view: 'oblique', selectedRegion: null, isolatedRegion: null,
+    surfaceColor: 'atlas', view: 'oblique', selectedRegion: null, isolatedRegion: null,
   }), 'atlas=destrieux');
 });
 
@@ -18,10 +18,10 @@ test('everything that differs from the default survives a round trip', () => {
   assert.deepEqual(decodeState(encodeState(state)), state);
 });
 
-test('atlas colors explicitly survive reload over the neutral default', () => {
-  const saved = encodeState({ surfaceColor: 'atlas' });
-  assert.equal(saved, 'colors=atlas');
-  assert.equal({ surfaceColor: 'tissue', ...decodeState(saved) }.surfaceColor, 'atlas');
+test('tissue colors explicitly survive reload over the region default', () => {
+  const saved = encodeState({ surfaceColor: 'tissue' });
+  assert.equal(saved, 'colors=tissue');
+  assert.equal({ surfaceColor: 'atlas', ...decodeState(saved) }.surfaceColor, 'tissue');
 });
 
 test('a leading hash is accepted, because that is what location.hash gives', () => {
