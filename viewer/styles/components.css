@@ -204,6 +204,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-color: var(--accent-hover);
   color: var(--surface-base);
 }
+#mpr-open { width: 100%; margin-top: var(--space-3); }
 
 /* The panel switch. Shared with the phone sheet: one tab bar, two shells. */
 .rail-tabs { display: flex; flex: none; }
