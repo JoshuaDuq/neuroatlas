@@ -59,8 +59,6 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const cutTiltLabel = document.getElementById('cut-tilt-label');
   const cutAzimuthLabel = document.getElementById('cut-azimuth-label');
   const cutReverseText = document.getElementById('cut-reverse-text');
-  const cutMidlineBtn = document.getElementById('cut-midline');
-  const cutFaceBtn = document.getElementById('cut-face-view');
   const mprOpenBtn = document.getElementById('mpr-open');
   const regionMpr = document.getElementById('region-mpr');
   const mprCloseBtn = document.getElementById('mpr-close');
@@ -120,12 +118,6 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
   listen(tilt, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
   listen(azimuth, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
-  listen(cutFaceBtn, 'click', onFaceView);
-  listen(cutMidlineBtn, 'click', async () => {
-    sections.setCrosshair([0, sections.state.crosshair[1], sections.state.crosshair[2]]);
-    await sections.setMode('sagittal');
-    onFaceView();
-  });
   async function openMpr({ atRegion = false } = {}) {
     const region = getSelectedRegion?.();
     if (atRegion && region) {
@@ -318,8 +310,6 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (cutTiltLabel) cutTiltLabel.textContent = cutsI18n.tilt;
     if (cutAzimuthLabel) cutAzimuthLabel.textContent = cutsI18n.azimuth;
     if (cutReverseText) cutReverseText.textContent = cutsI18n.reverseSide;
-    if (cutMidlineBtn) cutMidlineBtn.textContent = cutsI18n.midsagittal;
-    if (cutFaceBtn) cutFaceBtn.textContent = cutsI18n.faceCut;
     if (mprOpenBtn) {
       mprOpenBtn.textContent = cutsI18n.openMpr;
       mprOpenBtn.title = cutsI18n.openMprTitle;
@@ -333,7 +323,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
     tilt.value = state.tilt; azimuth.value = state.azimuth;
     document.getElementById('cut-angles').textContent = `${state.tilt}° / ${state.azimuth}°`;
-    for (const element of [position,number,reverse,cutFaceBtn]) {
+    for (const element of [position, number, reverse]) {
       element.disabled = !sections.active;
     }
 

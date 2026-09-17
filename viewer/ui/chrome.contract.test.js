@@ -115,9 +115,12 @@ test('linked MRI is the filled member of the actions row, not a second banner', 
   const regionActions = html.match(/<div class="actions">\s*<button id="focus"[\s\S]*?<\/div>/);
   assert.ok(regionActions, 'expected the region actions row');
   assert.match(regionActions[0], /id="region-mpr"/);
-  const cutsActions = html.match(/<div class="actions">\s*<button id="cut-midline"[\s\S]*?<\/div>/);
-  assert.ok(cutsActions, 'expected the cuts actions row');
-  assert.match(cutsActions[0], /id="mpr-open"/);
+  assert.match(html, /id="mpr-open"[^>]*button-primary/);
+});
+
+test('cuts panel has no midsagittal or face-cut shortcuts', () => {
+  assert.equal(/id="cut-midline"/.test(html), false);
+  assert.equal(/id="cut-face-view"/.test(html), false);
 });
 
 test('a selected region shows the title, facts and actions', () => {
