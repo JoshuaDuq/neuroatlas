@@ -76,9 +76,13 @@ test('a system study survives sharing a link', () => {
   assert.equal(decoded.internalSystem, 'Basal ganglia');
 });
 
-test('hiding the spinal cord survives sharing a link', () => {
-  const encoded = encodeState({ atlas: 'destrieux', spinalCordVisible: false });
-  assert.equal(encoded, 'atlas=destrieux&cord=0');
-  assert.equal(decodeState(encoded).spinalCordVisible, false);
-  assert.equal(decodeState('#atlas=destrieux&cord=1').spinalCordVisible, true);
+test('showing the spinal cord survives sharing a link', () => {
+  const encoded = encodeState({ atlas: 'destrieux', spinalCordVisible: true });
+  assert.equal(encoded, 'atlas=destrieux&cord=1');
+  assert.equal(decodeState(encoded).spinalCordVisible, true);
+  assert.equal(decodeState('#atlas=destrieux&cord=0').spinalCordVisible, false);
+});
+
+test('a default view omits the cord flag, because the cord is off', () => {
+  assert.equal(encodeState({ atlas: 'destrieux', spinalCordVisible: false }), 'atlas=destrieux');
 });

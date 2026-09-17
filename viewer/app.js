@@ -128,6 +128,7 @@ export async function startApp() {
   }
 
   let framed = false;
+  let sheet;
 
   /*
    * The reader's magnification, as a multiple of the distance at which the
@@ -249,6 +250,7 @@ export async function startApp() {
       }
     }
     render();
+    if (id) sheet?.revealOnSelect();
   }
 
   async function setAtlas(id) {
@@ -334,6 +336,7 @@ export async function startApp() {
   const header = createHeader({
     atlases: model.manifest.atlases,
     networks: model.manifest.networks,
+    anatomy: model.manifest.anatomy,
     onAtlas: setAtlas,
     onSurfaceColor: value => display(() => model.setSurfaceColor(value)),
     onTheme: () => { theme.toggle(); session.setTheme(theme.current); render(); },
@@ -388,9 +391,7 @@ export async function startApp() {
 
   const inspector = createInspector({
     catalog,
-    regions: model.manifest.regions,
     networks: model.manifest.networks,
-    atlases: model.manifest.atlases,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
     onSliceTo,
@@ -587,7 +588,7 @@ export async function startApp() {
    * framing, the markers, the presets — reads that one
    * rectangle back from the scene.
    */
-  const sheet = createSheet({
+  sheet = createSheet({
     onShell: shell => {
       if (shell === 'sheet') inspectorTabs.deactivate();
       else inspectorTabs.activate();
@@ -615,7 +616,7 @@ export async function startApp() {
 
     header.update(state, { visibleCount });
     navigator.update(state);
-    inspector.update(state);
+    inspector.update(state, { cutMode: sections.state.mode });
     const selected = state.selectedRegion;
     const strip = selected
       ? {

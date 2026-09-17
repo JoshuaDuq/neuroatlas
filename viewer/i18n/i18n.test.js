@@ -6,7 +6,7 @@ import { createSession } from '../state/session.js';
 import { decodeState, encodeState } from '../state/url-state.js';
 import { count } from '../ui/format.js';
 import { edgeLabels } from '../render/orientation.js';
-import { TRANSLATIONS, t } from './translations.js';
+import { TRANSLATIONS, atlasSwitchLabel, t } from './translations.js';
 
 test('session accepts and toggles language', () => {
   const session = createSession({ views: ['oblique', 'left'], lang: 'en' });
@@ -78,11 +78,20 @@ test('translations dictionary returns valid sections and falls back safely', () 
   assert.ok(t('unknown', 'header').languageSwitch === 'Language');
 });
 
+test('atlas switch labels are short names, not the full atlas title', () => {
+  assert.equal(atlasSwitchLabel('destrieux', 'en'), 'Destrieux');
+  assert.equal(atlasSwitchLabel('hcp-mmp', 'en'), 'HCP-MMP');
+  assert.equal(atlasSwitchLabel('hcp-mmp', 'fr'), 'HCP-MMP');
+  assert.equal(atlasSwitchLabel('destrieux', 'fr'), 'Destrieux');
+  assert.equal(atlasSwitchLabel('nextbrain', 'en'), 'NextBrain');
+  assert.equal(atlasSwitchLabel('learning', 'en'), 'Learning');
+  assert.equal(atlasSwitchLabel('learning', 'fr'), 'Pédagogique');
+});
+
 test('UI actions and shortcuts are fully translated in English and French', () => {
   for (const lang of ['en', 'fr']) {
     const header = t(lang, 'header');
-    assert.ok(header.share);
-    assert.ok(header.linkCopied);
+    assert.ok(header.atlasSwitch);
 
     const nav = t(lang, 'navigator');
     assert.ok(nav.clearSearch);

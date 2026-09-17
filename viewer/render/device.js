@@ -11,6 +11,13 @@
  */
 export const PHONE_QUERY = '(max-width: 640px), (max-height: 480px) and (orientation: landscape)';
 
+/**
+ * Below this width the masthead cannot hold atlas, surface colour, and the
+ * settings row at once. Settings collapse behind one button; the two
+ * instruments stay visible. CSS repeats this query in layout.css.
+ */
+export const MASTHEAD_MENU_QUERY = '(max-width: 1100px)';
+
 /** A phone-shaped viewport, in either orientation. */
 export const isPhone = () => globalThis.matchMedia?.(PHONE_QUERY).matches ?? false;
 

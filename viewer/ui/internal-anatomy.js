@@ -3,14 +3,10 @@ import { belongsToDetail } from '../catalog/visibility.js';
 import { insideInternal } from '../state/internal-mode.js';
 
 const COPY = {
-  en: { explore: 'Explore internal anatomy', leave: 'Show the whole brain',
-    system: 'Study a system', all: 'All internal structures',
-    outside: 'Hides the cortex so you can look at the structures beneath it.',
-    inside: 'Select a structure, then isolate it or explore its constituent regions.' },
-  fr: { explore: 'Explorer l’anatomie interne', leave: 'Revenir au cerveau entier',
-    system: 'Étudier un système', all: 'Toutes les structures internes',
-    outside: 'Masque le cortex pour observer les structures sous-jacentes.',
-    inside: 'Sélectionnez une structure, puis isolez-la ou explorez ses régions constitutives.' },
+  en: { explore: 'Internal anatomy', leave: 'Whole brain',
+    system: 'System', all: 'All internal structures' },
+  fr: { explore: 'Anatomie interne', leave: 'Cerveau entier',
+    system: 'Système', all: 'Toutes les structures internes' },
 };
 
 /** The way into internal anatomy, and — on the same control — the way back out. */
@@ -28,15 +24,14 @@ export function createInternalAnatomy({ manifest, onToggle, onSystem }) {
     update(state) {
       const copy = COPY[state.lang];
       const leaving = insideInternal(state);
-      panel.hidden = state.explorer !== 'anatomy';
+      const anatomy = state.explorer === 'anatomy';
+      explore.hidden = !anatomy;
+      panel.hidden = !anatomy || !leaving;
       explore.textContent = leaving ? copy.leave : copy.explore;
-      // Inside, the exit is the one control the reader must be able to find
-      // again, but it has no reason to compete with the anatomy for attention.
-      explore.classList.toggle('button-primary', !leaving);
       explore.setAttribute('aria-pressed', String(leaving));
       explore.disabled = state.status === 'switching';
       systemLabel.textContent = copy.system;
-      note.textContent = leaving ? copy.inside : copy.outside;
+      if (note) note.hidden = true;
       const nextKey = `${state.detail}:${state.lang}`;
       if (nextKey !== key) {
         key = nextKey;

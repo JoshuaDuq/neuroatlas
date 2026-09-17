@@ -1,15 +1,14 @@
-.explorer-head { padding-bottom: 0; }
 #explorer-switch button { flex: 1; }
-.clinical-intro { padding-top: var(--space-4); }
+.clinical-intro { padding-top: var(--space-3); }
 .clinical-intro p { color: var(--text-secondary); line-height: 1.5; }
-.clinical-intro .search-box { margin-top: var(--space-4); }
+.clinical-intro .search-box { margin-top: var(--space-3); }
 
 .clinical-deficit {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  min-height: 56px;
+  min-height: 48px;
   height: auto;
   border: 0;
   border-radius: 0;

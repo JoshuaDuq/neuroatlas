@@ -30,18 +30,37 @@
 #masthead {
   grid-column: 1 / -1;
   display: flex;
-  align-items: center;
-  gap: var(--space-5);
+  align-items: stretch;
+  gap: var(--space-3);
   padding: 0 var(--space-4);
   background: var(--surface-base);
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.identity {
+  display: flex;
+  align-items: baseline;
+  align-self: center;
+  gap: var(--space-2);
+  flex: none;
+  min-width: 0;
+  padding-right: var(--space-4);
+  margin-right: var(--space-1);
+  border-right: 1px solid var(--border-subtle);
+}
+
 .brand {
-  font-size: var(--text-body);
+  font-size: var(--text-ui);
   font-weight: 600;
-  letter-spacing: -0.01em;
-  margin-right: var(--space-2);
+  letter-spacing: 0.01em;
+}
+
+.study-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 400;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
 }
 
 .masthead-end {
@@ -51,6 +70,11 @@
   gap: var(--space-4);
 }
 
+#masthead .segmented button {
+  height: auto;
+  padding: 0 var(--space-3);
+}
+
 /*
  * Above the phone breakpoint the settings are the masthead row, not a panel
  * in it. Without this the plain block div stacks its four children into an
@@ -58,6 +82,84 @@
  * of the window and the theme toggle overflows into the rails.
  */
 #masthead-menu { display: contents; }
+#masthead-more { display: none; }
+
+/*
+ * Settings, not instruments: no box of their own. The segmented language
+ * switch keeps its border because it is two exclusive states.
+ */
+#theme-toggle,
+#shortcuts-open,
+#masthead-more {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+#theme-toggle:hover:not(:disabled),
+#shortcuts-open:hover:not(:disabled),
+#masthead-more:hover:not(:disabled) {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+
+/*
+ * Same query as MASTHEAD_MENU_QUERY in render/device.js. Settings collapse
+ * so the atlas and surface switches stay whole on a 1000–1100px window.
+ */
+@media (max-width: 1100px) {
+  #masthead { position: relative; }
+  #masthead-more {
+    display: block;
+    flex: none;
+    width: var(--control-height);
+    padding: 0;
+  }
+  #masthead-menu {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% - var(--space-1));
+    right: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    min-width: 180px;
+    padding: var(--space-3);
+    background: var(--surface-base);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-panel);
+  }
+  #masthead-menu[hidden] { display: none !important; }
+  #masthead-menu #region-count { color: var(--text-secondary); }
+  #masthead-menu > button,
+  #masthead-menu #theme-toggle,
+  #masthead-menu #shortcuts-open {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: var(--text-primary);
+    text-align: left;
+    padding: 0 var(--space-2);
+  }
+  #masthead-menu > button:hover:not(:disabled),
+  #masthead-menu #theme-toggle:hover:not(:disabled),
+  #masthead-menu #shortcuts-open:hover:not(:disabled) {
+    background: var(--surface-sunken);
+  }
+  #masthead-menu .segmented {
+    width: 100%;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  #masthead-menu .segmented button {
+    flex: 1;
+    height: var(--control-height);
+    justify-content: center;
+  }
+  #masthead-menu #shortcuts-open { width: 100%; }
+}
 
 /*
  * The two instrument controls, kept together and ahead of the settings: which
@@ -66,6 +168,10 @@
  * name — so the masthead wraps instead.
  */
 #atlas-switch, #surface-switch { flex: none; }
+#surface-switch {
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--border-subtle);
+}
 
 #region-count { font-size: var(--text-micro); color: var(--text-tertiary); }
 
@@ -78,7 +184,7 @@
 #navigator { border-right: 1px solid var(--border-subtle); }
 #inspector { border-left: 1px solid var(--border-subtle); }
 
-.rail-head { padding: var(--space-3) var(--space-4); }
+.rail-head { padding: var(--space-2) var(--space-4); }
 .rail-body {
   flex: 1;
   min-height: 0;
@@ -87,6 +193,20 @@
   scrollbar-color: var(--border-control) transparent;
 }
 .panel-body { padding: var(--space-2) var(--space-4) var(--space-4); }
+
+.explorer-head {
+  padding: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+#explorer-switch {
+  width: 100%;
+}
+#explorer-switch button { flex: 1; }
+
+#anatomy-search.rail-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
 /*
  * The inspector's header: what is selected, then which panel is showing.
@@ -118,10 +238,14 @@
 }
 
 .rail-notice {
-  padding: var(--space-3) var(--space-4);
+  flex: none;
+  padding: var(--space-2) var(--space-4);
   border-top: 1px solid var(--border-subtle);
   font-size: var(--text-micro);
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* The letterboxing matches what the renderer clears to, in both themes. */

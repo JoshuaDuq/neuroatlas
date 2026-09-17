@@ -60,6 +60,7 @@ test('the whole cord assembly is published as one supplemental system', () => {
 test('reference cord is searchable, selectable and isolatable in every detail level', async () => {
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
+  model.setSpinalCordVisible(true);
   const catalog = createCatalog(manifest);
   for (const level of manifest.detail_levels) {
     await model.setDetail(level.id);
@@ -85,6 +86,7 @@ test('reference cord is searchable, selectable and isolatable in every detail le
 test('a lateral root follows the hemisphere filter its own side declares', async () => {
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
+  model.setSpinalCordVisible(true);
   const left = assembly.find(region => region.id === 'zanatomy:left:anterior-root');
   const right = assembly.find(region => region.id === 'zanatomy:right:anterior-root');
   model.setHemisphere('left');
@@ -100,7 +102,10 @@ test('a lateral root follows the hemisphere filter its own side declares', async
 test('spinal cord visibility toggle hides meshes and prevents selection', async () => {
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
-  assert.equal(model.settings.spinalCordVisible, true);
+  assert.equal(model.settings.spinalCordVisible, false);
+  assert.ok(!model.visibleMeshes.some(mesh => mesh.userData.atlas === 'zanatomy'));
+
+  model.setSpinalCordVisible(true);
   assert.ok(model.visibleMeshes.some(mesh => mesh.userData.region_id === cord.id));
 
   model.setSpinalCordVisible(false);

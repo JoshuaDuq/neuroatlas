@@ -201,7 +201,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   await atlas.initialize('a');
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
-    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, spinalCordVisible: true,
+    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, spinalCordVisible: false,
     surfaceColor: 'atlas', isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));

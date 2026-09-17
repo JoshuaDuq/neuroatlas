@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 import { centeredFrame, pointOnFrame } from '../slices/coordinates.js';
-import { t } from '../i18n/translations.js';
+import { atlasSwitchLabel, t } from '../i18n/translations.js';
 import { PHONE_QUERY } from '../render/device.js';
 import { STRUCTURE_LABELS } from '../catalog/structure-groups.js';
 import { STRUCTURE_LABELS_FR } from '../catalog/structure-groups.fr.js';
@@ -62,6 +62,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const cutMidlineBtn = document.getElementById('cut-midline');
   const cutFaceBtn = document.getElementById('cut-face-view');
   const mprOpenBtn = document.getElementById('mpr-open');
+  const regionMpr = document.getElementById('region-mpr');
   const mprCloseBtn = document.getElementById('mpr-close');
   const mprTitle = document.getElementById('mpr-title');
   const mprSubtitle = document.getElementById('mpr-subtitle');
@@ -101,12 +102,15 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   for (const atlas of cutAtlases) {
     const option = document.createElement('option');
     option.value = atlas.id;
-    option.textContent = atlas.label;
+    option.textContent = atlasSwitchLabel(atlas.id);
+    option.title = atlas.label;
     cutAtlas.append(option);
   }
 
-  listen(mode, 'change', async () => {
-    await sections.setMode(mode.value);
+  listen(mode, 'click', async event => {
+    const button = event.target.closest('[data-cut-mode]');
+    if (!button || button.dataset.cutMode === sections.state.mode) return;
+    await sections.setMode(button.dataset.cutMode);
     if (sections.active) onFaceView();
   });
   listen(cutAtlas, 'change', () => sections.setCutAtlas(cutAtlas.value));
@@ -122,10 +126,12 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     await sections.setMode('sagittal');
     onFaceView();
   });
-  listen(mprOpenBtn, 'click', async () => {
-    await sections.load();
+  async function openMpr({ atRegion = false } = {}) {
     const region = getSelectedRegion?.();
-    if (region) {
+    if (atRegion && region) {
+      const coords = centroidOf?.(region.id);
+      if (coords) sections.setCrosshair(coords);
+    } else if (region) {
       const coords = centroidOf?.(region.id);
       if (coords) {
         const [x, y, z] = sections.state.crosshair;
@@ -134,10 +140,13 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
         }
       }
     }
+    await sections.load();
     dialog.showModal();
     previousImage = null;
     update();
-  });
+  }
+  listen(mprOpenBtn, 'click', () => openMpr());
+  if (regionMpr) listen(regionMpr, 'click', () => openMpr({ atRegion: true }));
   listen(mprCloseBtn, 'click', () => dialog.close());
   listen(width, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
   listen(center, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
@@ -288,10 +297,13 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const state = sections.state;
 
     if (cutModeLabel) cutModeLabel.textContent = cutsI18n.cuttingPlane;
-    for (const opt of mode.options) {
-      if (cutsI18n.modes[opt.value]) opt.textContent = cutsI18n.modes[opt.value];
+    if (cutModeLabel) mode.setAttribute('aria-labelledby', cutModeLabel.id);
+    for (const button of mode.querySelectorAll('[data-cut-mode]')) {
+      const id = button.dataset.cutMode;
+      button.textContent = cutsI18n.modeShort[id] ?? cutsI18n.modes[id] ?? id;
+      button.title = cutsI18n.modes[id] ?? id;
+      button.setAttribute('aria-pressed', String(id === state.mode));
     }
-    mode.value = state.mode;
     document.getElementById('cut-axis').textContent = cutsI18n.axes[state.mode] ?? cutsI18n.axes.off;
     const offset = new Vector3(...state.crosshair).dot(sections.frame.normal);
     for (const control of [position, number]) {
@@ -308,7 +320,16 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (cutReverseText) cutReverseText.textContent = cutsI18n.reverseSide;
     if (cutMidlineBtn) cutMidlineBtn.textContent = cutsI18n.midsagittal;
     if (cutFaceBtn) cutFaceBtn.textContent = cutsI18n.faceCut;
-    if (mprOpenBtn) mprOpenBtn.textContent = cutsI18n.openMpr;
+    if (mprOpenBtn) {
+      mprOpenBtn.textContent = cutsI18n.openMpr;
+      mprOpenBtn.title = cutsI18n.openMprTitle;
+      mprOpenBtn.setAttribute('aria-label', cutsI18n.openMprTitle);
+    }
+    if (regionMpr) {
+      regionMpr.textContent = cutsI18n.openMpr;
+      regionMpr.title = cutsI18n.openMprTitle;
+      regionMpr.setAttribute('aria-label', cutsI18n.openMprTitle);
+    }
 
     tilt.value = state.tilt; azimuth.value = state.azimuth;
     document.getElementById('cut-angles').textContent = `${state.tilt}° / ${state.azimuth}°`;
@@ -319,7 +340,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (cutAtlasLabel) cutAtlasLabel.textContent = cutsI18n.cutLabels;
     const atlasDict = t(currentLang, 'atlases');
     for (const option of cutAtlas.options) {
-      option.textContent = atlasDict[option.value] ?? option.textContent;
+      option.textContent = atlasSwitchLabel(option.value, currentLang);
+      option.title = atlasDict[option.value] ?? option.textContent;
     }
     cutAtlas.value = state.cutAtlas;
     const atlasLabel = {

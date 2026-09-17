@@ -14,7 +14,7 @@ const DEFAULTS = {
   hemisphere: 'both',
   cortexVisible: true,
   cortexOpacity: 1,
-  spinalCordVisible: true,
+  spinalCordVisible: false,
   surfaceColor: 'atlas',
   view: 'oblique',
   selectedRegion: null,

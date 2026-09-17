@@ -32,22 +32,22 @@
   <body>
     <div id="app" data-status="loading">
       <header id="masthead">
-        <h1 class="brand">NeuroAtlas</h1>
-        <div id="atlas-switch" class="segmented" role="group" aria-label="Cortical atlas"></div>
-        <div id="surface-switch" class="segmented" role="group" aria-label="Surface colour"></div>
+        <div class="identity">
+          <h1 class="brand">NeuroAtlas</h1>
+          <p id="study-name" class="study-name" hidden></p>
+        </div>
+        <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
+        <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
         <div class="masthead-end">
           <!--
-            On a phone these four are settings, not instruments, and the row
-            they sit in does not fit beside the atlas switch. They collapse
-            behind one button there and sit in the masthead everywhere else;
-            the panel is display:contents above the phone breakpoint, so the
-            desktop masthead is unchanged.
+            Region count, language, theme and shortcuts are settings, not
+            instruments. Below 1100px they collapse behind one button; above
+            it the panel is display:contents and they sit in the masthead row.
           -->
           <button id="masthead-more" type="button" aria-expanded="false"
                   aria-controls="masthead-menu" aria-label="More settings" hidden>⋯</button>
           <div id="masthead-menu">
             <span id="region-count" class="measure"></span>
-            <button id="share-button" type="button" aria-label="Share permalink">Share</button>
             <div id="lang-switch" class="segmented" role="group" aria-label="Language">
               <button type="button" data-lang="en" aria-pressed="true">EN</button>
               <button type="button" data-lang="fr" aria-pressed="false">FR</button>
@@ -111,13 +111,13 @@
             <span id="sheet-selection-side" class="sheet-selection-side measure"></span>
             <span class="sheet-selection-chevron" aria-hidden="true">›</span>
           </button>
-          <div id="sheet-tabs" class="rail-tabs sheet-tabs" role="tablist" aria-label="Panels"></div>
           <p id="sheet-disclaimer" class="sheet-disclaimer"></p>
+          <div id="sheet-tabs" class="rail-tabs sheet-tabs" role="tablist" aria-label="Panels"></div>
         </div>
 
         <aside id="navigator" aria-label="Find a region" data-tab="find">
           <div class="rail-head explorer-head">
-            <div id="explorer-switch" class="segmented" role="group" aria-label="Explore the atlas">
+            <div id="explorer-switch" class="segmented instrument" role="group" aria-label="Explore the atlas">
               <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
               <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
             </div>
@@ -125,21 +125,25 @@
           <div id="anatomy-search" class="rail-head">
             <label id="search-label" class="visually-hidden" for="search">Search regions</label>
             <div class="search-box">
+              <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+              </svg>
               <input id="search" type="search" autocomplete="off" spellcheck="false"
                      placeholder="Search regions" role="combobox" aria-expanded="false"
                      aria-controls="results" aria-autocomplete="list" />
               <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
             </div>
           </div>
-          <div id="internal-anatomy" class="rail-head internal-controls">
-            <button id="explore-internal" type="button" class="button-primary"
-                    aria-pressed="false">Explore internal anatomy</button>
+          <div id="internal-anatomy" class="rail-head internal-controls" hidden>
             <label id="internal-system-label" for="internal-system">Study a system</label>
             <select id="internal-system"></select>
-            <p id="internal-note" class="internal-note"></p>
+            <p id="internal-note" class="internal-note" hidden></p>
           </div>
           <div id="anatomy-browser" class="rail-body">
             <div id="tree-header" class="tree-header">
+              <button id="explore-internal" type="button" class="button-quiet tree-internal"
+                      aria-pressed="false">Internal anatomy</button>
               <button id="tree-toggle-all" class="button-quiet tree-toggle-all" type="button">Collapse all</button>
             </div>
             <div id="results" role="listbox" aria-label="Search results" hidden></div>
@@ -150,6 +154,10 @@
               <p id="clinical-introduction"></p>
               <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
               <div class="search-box">
+                <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+                </svg>
                 <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
                 <button id="deficit-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
               </div>
@@ -172,13 +180,27 @@
             <span id="inspector-selection-side" class="inspector-selection-side measure"></span>
           </p>
           <div id="inspector-tabs" class="rail-tabs" role="tablist" aria-label="Panels" hidden></div>
+          <p id="cut-mode-label" class="visually-hidden">Cutting plane</p>
+          <div id="cut-mode" class="segmented instrument inspector-cut" role="group" aria-labelledby="cut-mode-label">
+            <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
+            <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
+            <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
+            <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
+            <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
+          </div>
           <div class="rail-body">
             <div class="tab-group" data-tab="region">
               <p id="label-selected" class="section-label">Selected</p>
               <div class="panel-body">
                 <h2 id="selected-name">No region selected</h2>
                 <p id="selected-hint">Click the model, or search on the left.</p>
-                <dl id="selected-facts" hidden>
+                <dl id="view-status" class="datasheet">
+                  <dt id="view-atlas-label">Atlas</dt><dd id="view-atlas"></dd>
+                  <dt id="view-surface-label">Surface</dt><dd id="view-surface"></dd>
+                  <dt id="view-hemi-label">Hemisphere</dt><dd id="view-hemi"></dd>
+                  <dt id="view-cut-label">Cut</dt><dd id="view-cut"></dd>
+                </dl>
+                <dl id="selected-facts" class="datasheet" hidden>
                   <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
                   <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
                   <dt id="fact-group-label">Lobe / System</dt><dd id="fact-group"></dd>
@@ -193,6 +215,7 @@
                   <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
                   <button id="slice-to" type="button" disabled>Slice here</button>
                 </div>
+                <button id="region-mpr" class="button-primary" type="button" hidden>Linked MRI</button>
               </div>
 
               <!--
@@ -219,14 +242,6 @@
             <div class="tab-group" data-tab="cuts">
               <p id="label-cuts" class="section-label">Anatomical cuts</p>
               <div class="panel-body section-controls">
-                <label id="cut-mode-label" for="cut-mode">Cutting plane</label>
-                <select id="cut-mode">
-                  <option value="off">Full brain</option>
-                  <option value="sagittal">Sagittal</option>
-                  <option value="coronal">Coronal</option>
-                  <option value="axial">Axial / transverse</option>
-                  <option value="oblique">Oblique</option>
-                </select>
                 <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
                 <select id="cut-atlas"></select>
                 <label id="cut-axis" for="cut-position">Position (mm)</label>
@@ -246,7 +261,7 @@
                   <button id="cut-midline" type="button">Midsagittal</button>
                   <button id="cut-face-view" type="button" disabled>Face cut</button>
                 </div>
-                <button id="mpr-open" class="button-primary" type="button">Open linked MRI slices</button>
+                <button id="mpr-open" class="button-primary" type="button">Linked MRI</button>
                 <p id="cut-status" role="status">Full brain · no cut</p>
               </div>
             </div>
@@ -256,12 +271,12 @@
               <div class="panel-body">
                 <label id="detail-label" for="detail">Internal anatomy</label>
                 <select id="detail"></select>
-                <label id="display-hemisphere-label" for="hemisphere">Hemisphere</label>
-                <select id="hemisphere">
-                  <option value="both">Both</option>
-                  <option value="left">Left</option>
-                  <option value="right">Right</option>
-                </select>
+                <label id="display-hemisphere-label">Hemisphere</label>
+                <div id="hemisphere" class="segmented instrument" role="group" aria-labelledby="display-hemisphere-label">
+                  <button type="button" data-hemisphere="both" aria-pressed="true">Both</button>
+                  <button type="button" data-hemisphere="left" aria-pressed="false">Left</button>
+                  <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
+                </div>
 
                 <label class="check">
                   <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
@@ -293,7 +308,7 @@
       <div class="mpr-header">
         <div><h2 id="mpr-title">Linked MRI sections</h2>
           <p id="mpr-subtitle">Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
-        <button id="mpr-close" type="button">Close slices</button>
+        <button id="mpr-close" class="button-quiet" type="button">Close slices</button>
       </div>
       <!--
         Three sections stacked at 375px would be a very long scroll with the
@@ -322,7 +337,6 @@
       <button id="shortcuts-close" type="button">Close</button>
     </dialog>
 
-    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
     <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>
     <script type="module" src="/viewer/main.js"></script>
   </body>

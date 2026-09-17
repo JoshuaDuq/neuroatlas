@@ -20,6 +20,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   const detail = manifest.detail_levels.find(level => level.id === atlas.defaultDetail);
   const supplemental = manifest.supplemental_layers.reduce((count, layer) => count + layer.region_count, 0);
   assert.equal(atlas.state.detail, 'learning');
+  atlas.setSpinalCordVisible(true);
   // 148 Destrieux parcels plus the two non-region surfaces.
   assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + supplemental);
   for (const entry of manifest.atlases) {

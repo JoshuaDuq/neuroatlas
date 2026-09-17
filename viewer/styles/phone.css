@@ -34,7 +34,14 @@
     padding-left: max(var(--space-3), env(safe-area-inset-left));
     padding-right: max(var(--space-3), env(safe-area-inset-right));
   }
+  .identity {
+    border-right: 0;
+    padding-right: 0;
+    margin-right: 0;
+    align-self: center;
+  }
   .brand { font-size: var(--text-ui); margin-right: 0; flex: none; }
+  .study-name { display: none; }
   #atlas-switch, #surface-switch { min-width: 0; flex: 1; }
   #atlas-switch button, #surface-switch button {
     min-width: 0;
@@ -45,27 +52,7 @@
     white-space: nowrap;
   }
 
-  /* The settings collapse behind one button; the panel becomes a popup. */
-  #masthead-more { display: block; flex: none; width: var(--control-height); padding: 0; }
-  #masthead-menu {
-    position: absolute;
-    z-index: 40;
-    top: calc(100% - var(--space-1));
-    right: var(--space-3);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-3);
-    min-width: 180px;
-    padding: var(--space-3);
-    background: var(--surface-base);
-    border: 1px solid var(--border-control);
-    border-radius: var(--radius-panel);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
-  }
-  #masthead-menu[hidden] { display: none !important; }
-  #masthead-menu #region-count { color: var(--text-secondary); }
-  #masthead { position: relative; }
+  /* Settings collapse is layout.css @ 1100px; the phone only wraps surface. */
 
   /* The colophon's disclaimer moves into the sheet, where it stays visible. */
   #colophon { display: none; }
@@ -91,11 +78,29 @@
     background: var(--surface-base);
     border-top: 1px solid var(--border-subtle);
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
-    box-shadow: 0 -6px 24px rgb(0 0 0 / 0.16);
     overscroll-behavior: contain;
   }
   /* Only a settled sheet animates; a dragged one tracks the finger exactly. */
   #sheet[data-dragging="false"] { transition: height var(--camera-transition) ease; }
+  /* Hug the grip. The 132px rest is a drag target, not empty padding. */
+  #sheet[data-detent="peek"]:not([data-dragging="true"]) { height: fit-content; }
+
+  /*
+   * Peek is the grip: handle, selection, tabs, disclaimer. Anatomy/Deficits
+   * sitting in the leftover 28px read as a third tab bar, not as a panel.
+   */
+  #sheet[data-detent="peek"] #navigator,
+  #sheet[data-detent="peek"] #inspector {
+    visibility: hidden;
+    pointer-events: none;
+    flex: 0 0 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* The sheet strip already names the region; the panel heading repeats it. */
+  #selected-name { display: none; }
+  #inspector .tab-group > .section-label:first-child { display: none; }
 
   .sheet-grip {
     display: block;
@@ -152,8 +157,10 @@
 
   /*
    * "Not clinical anatomy" is a safety statement, so it is not allowed into
-   * the overflow menu with the settings. It stays under the tab bar, visible
-   * at every sheet height including the lowest.
+   * the overflow menu with the settings. It sits under the selection and
+   * above the tabs, visible at every sheet height including the lowest. The
+   * tabs then meet the panel they control, instead of sandwiching a line of
+   * legal copy between two tab bars.
    */
   .sheet-disclaimer {
     padding: var(--space-1) var(--space-4);
@@ -199,6 +206,21 @@
   #reticle { display: block; }
   .reticle-readout { max-width: min(280px, calc(100% - var(--space-8))); }
 
+  /*
+   * The presets take the whole bottom line. The scale bar would sit on
+   * Bottom there, so it moves to the top left — chips hold the top right
+   * and S sits in the middle.
+   */
+  .scale-bar {
+    top: calc(var(--vis-top) + var(--space-3));
+    bottom: auto;
+    left: calc(var(--vis-left) + var(--space-3));
+    right: auto;
+  }
+  .orientation [data-edge="top"] {
+    top: calc(var(--space-3) + 22px);
+  }
+
   /* ---- dialogs -------------------------------------------------------- */
   /* A phone has no room for a dialog inset from the screen. */
   #mpr-dialog, #shortcuts {
@@ -233,7 +255,12 @@
   /* Ordered last so the wrapped row is the switch alone. Left in source order
      it broke the line before itself and pushed the overflow button onto a
      third row of its own. */
-  #surface-switch { order: 1; flex: 1 0 100%; }
+  #surface-switch {
+    order: 1;
+    flex: 1 0 100%;
+    padding-left: 0;
+    border-left: 0;
+  }
 }
 
 /*
@@ -254,7 +281,6 @@
     border-top: 0;
     border-right: 1px solid var(--border-subtle);
     border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
-    box-shadow: 6px 0 24px rgb(0 0 0 / 0.16);
     padding-left: max(0px, env(safe-area-inset-left));
   }
   #sheet[data-dragging="false"] { transition: width var(--camera-transition) ease; }
@@ -281,5 +307,10 @@
   .cut-position-row input[type="number"] { height: var(--control-height); width: 88px; }
   /* A 16px field is the threshold below which iOS zooms the page on focus. */
   input[type="search"], input[type="number"], select { font-size: 1rem; }
-  input[type="range"] { height: 32px; }
+  input[type="range"] {
+    height: 2px;
+    margin: 15px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; }
+  input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; }
 }

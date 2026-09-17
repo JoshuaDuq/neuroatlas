@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
   Group,
@@ -10,6 +11,10 @@ import {
   Vector3,
 } from 'three';
 import { BrainSections } from './sections.js';
+
+const manifest = JSON.parse(
+  await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'),
+);
 
 function fixture() {
   const region = { id: 'aseg:left:10', kind: 'structure', source_label_id: 10 };
@@ -158,4 +163,30 @@ test('a highlight reaches the tissue that draws the cut faces', () => {
   tissues.setHighlight = highlight => seen.push(highlight);
   sections.setHighlight({ hovered: 'aseg:left:10' });
   assert.deepEqual(seen, [{ hovered: 'aseg:left:10' }]);
+});
+
+test('oblique cut position range projects all anatomical bounds onto the normal', async () => {
+  const { sections, model } = fixture();
+  model.manifest = manifest;
+  await sections.setMode('oblique');
+  sections.setAngles(15, 30);
+
+  const [min, max] = sections.coordinateBounds;
+  const corners = [
+    [min[0], min[1], min[2]],
+    [min[0], min[1], max[2]],
+    [min[0], max[1], min[2]],
+    [min[0], max[1], max[2]],
+    [max[0], min[1], min[2]],
+    [max[0], min[1], max[2]],
+    [max[0], max[1], min[2]],
+    [max[0], max[1], max[2]],
+  ];
+  const normal = sections.frame.normal;
+  const projections = corners.map(([x, y, z]) => x * normal.x + y * normal.y + z * normal.z);
+  const expected = [Math.min(...projections), Math.max(...projections)];
+
+  assert.ok(sections.offsetRange[0] < -720);
+  assert.deepEqual(sections.offsetRange, expected);
+  sections.dispose();
 });
