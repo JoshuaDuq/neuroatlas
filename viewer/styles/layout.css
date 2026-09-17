@@ -72,7 +72,7 @@
 
 #masthead .segmented button {
   height: auto;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
 }
 
 /*
@@ -90,16 +90,35 @@
  */
 #theme-toggle,
 #shortcuts-open,
-#masthead-more {
+#masthead-more,
+#viewport-fullscreen,
+#viewport-snapshot {
   background: transparent;
   border-color: transparent;
   color: var(--text-secondary);
 }
 #theme-toggle:hover:not(:disabled),
 #shortcuts-open:hover:not(:disabled),
-#masthead-more:hover:not(:disabled) {
+#masthead-more:hover:not(:disabled),
+#viewport-fullscreen:hover:not(:disabled),
+#viewport-snapshot:hover:not(:disabled) {
   background: var(--surface-sunken);
   color: var(--text-primary);
+}
+#viewport-fullscreen,
+#viewport-snapshot {
+  width: var(--control-height);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.masthead-action-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 
 /*
@@ -133,10 +152,13 @@
   #masthead-menu #region-count { color: var(--text-secondary); }
   #masthead-menu > button,
   #masthead-menu #theme-toggle,
-  #masthead-menu #shortcuts-open {
+  #masthead-menu #shortcuts-open,
+  #masthead-menu #viewport-fullscreen,
+  #masthead-menu #viewport-snapshot {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    width: 100%;
     background: transparent;
     border: 0;
     border-radius: 0;
@@ -146,9 +168,20 @@
   }
   #masthead-menu > button:hover:not(:disabled),
   #masthead-menu #theme-toggle:hover:not(:disabled),
-  #masthead-menu #shortcuts-open:hover:not(:disabled) {
+  #masthead-menu #shortcuts-open:hover:not(:disabled),
+  #masthead-menu #viewport-fullscreen:hover:not(:disabled),
+  #masthead-menu #viewport-snapshot:hover:not(:disabled) {
     background: var(--surface-sunken);
   }
+  #masthead-menu .masthead-action-label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+  #masthead-menu #viewport-fullscreen svg,
+  #masthead-menu #viewport-snapshot svg { display: none; }
   #masthead-menu .segmented {
     width: 100%;
     border-bottom: 1px solid var(--border-subtle);
@@ -173,7 +206,27 @@
   border-left: 1px solid var(--border-subtle);
 }
 
-#region-count { font-size: var(--text-micro); color: var(--text-tertiary); }
+.identity #anatomy-switch {
+  field-sizing: content;
+  width: auto;
+  max-width: 10rem;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0 1.15em 0 0;
+  border: 0;
+  background-color: transparent;
+  background-position: right 0.1em center;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+#region-count {
+  font-size: var(--text-micro);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
 
 #navigator, #inspector {
   display: flex;
@@ -198,10 +251,7 @@
   padding: 0;
   border-bottom: 1px solid var(--border-subtle);
 }
-#explorer-switch {
-  width: 100%;
-}
-#explorer-switch button { flex: 1; }
+#explorer-switch { width: 100%; }
 
 #anatomy-search.rail-head {
   padding-top: 0;

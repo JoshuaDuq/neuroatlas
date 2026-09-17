@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { createCatalog } from './catalog.js';
 
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 const cortex = (id, hemisphere, source_name, atlas = 'destrieux') =>
   ({ id, atlas, hemisphere, kind: 'cortex', source_name });
 
@@ -99,7 +101,7 @@ test('switching atlas switches which cortical groups exist', () => {
 
 test('visible region count excludes unlabelled medial surfaces', async () => {
   const real = JSON.parse(
-    await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+    await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const full = createCatalog(real);
   // Cortex + 35 native structures + the 58-part reference cord; medial walls
   // are non-regions.
@@ -112,7 +114,7 @@ test('a capped result set reports the true total, never a silent cut', async () 
   // "s" matches hundreds of regions. Returning 50 without saying so is the
   // silent absence this navigator exists to avoid.
   const real = JSON.parse(
-    await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+    await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const full = createCatalog(real);
   const found = full.search('s', settings(), 50);
   assert.equal(found.rows.length, 50);

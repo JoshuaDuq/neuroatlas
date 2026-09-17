@@ -4,8 +4,10 @@ import test from 'node:test';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { BrainAtlas } from './brain-atlas.js';
 
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 test('published GLBs load in Three.js with manifest metadata and unchanged geometry', async () => {
-  const directory = new URL('../../public/models/', import.meta.url);
+  const directory = new URL(`../../public/models/${published}/`, import.meta.url);
   const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
   const gltfLoader = new GLTFLoader();
   const loader = {

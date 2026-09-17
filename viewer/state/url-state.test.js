@@ -86,3 +86,23 @@ test('showing the spinal cord survives sharing a link', () => {
 test('a default view omits the cord flag, because the cord is off', () => {
   assert.equal(encodeState({ atlas: 'destrieux', spinalCordVisible: false }), 'atlas=destrieux');
 });
+
+test('which brain travels in the link', () => {
+  // Region ids are shared between brains on purpose: destrieux:left:6 names
+  // the same parcel in each. A link that carries the region but not the brain
+  // therefore opens the right region on someone else's anatomy.
+  const encoded = encodeState({
+    atlas: 'destrieux', anatomy: 'aomic', selectedRegion: 'destrieux:left:6',
+  });
+  assert.ok(encoded.includes('anatomy=aomic'));
+  const back = decodeState(encoded);
+  assert.equal(back.anatomy, 'aomic');
+  assert.equal(back.selectedRegion, 'destrieux:left:6');
+});
+
+test('a link naming no brain leaves the choice to the published default', () => {
+  // Undefined, not a guess: the index decides, and it is read before anything
+  // of a brain is fetched.
+  assert.equal(decodeState('#atlas=destrieux').anatomy, undefined);
+  assert.ok(!encodeState({ atlas: 'destrieux' }).includes('anatomy'));
+});

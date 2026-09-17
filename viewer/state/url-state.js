@@ -20,6 +20,7 @@ const DEFAULTS = {
   selectedRegion: null,
   isolatedRegion: null,
   internalSystem: null,
+  anatomy: null,
   lang: 'en',
 };
 
@@ -43,6 +44,12 @@ const flag = value => (value === '1' ? true : value === '0' ? false : undefined)
 const identifier = value => (typeof value === 'object' ? value.id : value);
 
 const FIELDS = [
+  /**
+   * Which brain. Region ids are shared between brains by design — the same id
+   * names the same region in each — so a link without this would open the
+   * right region on whichever brain happened to load.
+   */
+  { key: 'anatomy', param: 'anatomy', read: value => value || undefined },
   { key: 'atlas', param: 'atlas', read: value => value || undefined },
   { key: 'cutAtlas', param: 'cuts', read: value => value || undefined },
   { key: 'internalSystem', param: 'system', read: value => value || undefined },

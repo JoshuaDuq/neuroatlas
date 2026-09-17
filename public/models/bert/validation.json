@@ -3447,7 +3447,7 @@
   },
   "learning_structures": {
     "file": "learning.glb",
-    "sha256": "7864f052c4722571cfe86ad6e9a584f52f9a1636774c2361741eb22b830c9271",
+    "sha256": "b2ae110495027debb4e59cc0e3f6e9a32140b5eafedc8405e7512d3125820a40",
     "regions": [
       {
         "id": "learning:left:caudate",
@@ -3738,15 +3738,9 @@
         "maximum_display_displacement_mm": 0.49570402227990856
       },
       {
-        "id": "learning:left:optic-chiasm",
+        "id": "learning:midline:optic-chiasm",
         "source_atlas": "nextbrain",
-        "source_voxel_count": 2,
-        "maximum_display_displacement_mm": 0.40910961376355104
-      },
-      {
-        "id": "learning:right:optic-chiasm",
-        "source_atlas": "nextbrain",
-        "source_voxel_count": 2,
+        "source_voxel_count": 4,
         "maximum_display_displacement_mm": 0.4413512721658405
       },
       {

@@ -20,12 +20,28 @@
         // Same prefix as vite.config.js `base`, so a missing trailing slash
         // on the page URL cannot send 25 MB at the site root.
         var root = '/neuroatlas/';
-        ['models/manifest.json', 'models/' + atlas, 'models/' + detail].forEach(function (file) {
+        function start(file) {
           var url = new URL(root + file, location.origin).href;
           if (!window.__neuroatlasAssets[url]) {
             window.__neuroatlasAssets[url] = fetch(url, { cache: 'no-cache', priority: 'high' });
           }
-        });
+          return window.__neuroatlasAssets[url];
+        }
+        // Each brain publishes its own directory, so which one must be known
+        // before anything of it is worth fetching. A link may name it; if not,
+        // the index does, and it is small enough to wait for.
+        function warm(brain) {
+          ['manifest.json', atlas, detail].forEach(function (file) {
+            start('models/' + brain + '/' + file);
+          });
+        }
+        var named = params.get('anatomy');
+        var index = start('models/anatomies.json');
+        if (named) warm(named);
+        else index
+          .then(function (response) { return response.clone().json(); })
+          .then(function (published) { warm(published.default); })
+          .catch(function () {});
       })();
     </script>
   </head>
@@ -35,6 +51,7 @@
         <div class="identity">
           <h1 class="brand">NeuroAtlas</h1>
           <p id="study-name" class="study-name" hidden></p>
+          <select id="anatomy-switch" hidden></select>
         </div>
         <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
         <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
@@ -56,6 +73,14 @@
               <span id="theme-label">Dark</span>
             </button>
             <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
+            <button id="viewport-fullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+              <span class="masthead-action-label"></span>
+            </button>
+            <button id="viewport-snapshot" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              <span class="masthead-action-label"></span>
+            </button>
           </div>
         </div>
       </header>
@@ -65,12 +90,6 @@
           <span data-edge="top"></span><span data-edge="right"></span>
           <span data-edge="bottom"></span><span data-edge="left"></span>
         </div>
-        <button id="viewport-fullscreen" class="chip fullscreen-button" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-        </button>
-        <button id="viewport-snapshot" class="chip snapshot-button" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-        </button>
         <!--
           The touch replacement for hover. A fingertip covers far more of the
           canvas than a Destrieux sulcal band, so the reader lines a region up
@@ -117,7 +136,7 @@
 
         <aside id="navigator" aria-label="Find a region" data-tab="find">
           <div class="rail-head explorer-head">
-            <div id="explorer-switch" class="segmented instrument" role="group" aria-label="Explore the atlas">
+            <div id="explorer-switch" class="rail-tabs" role="group" aria-label="Explore the atlas">
               <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
               <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
             </div>
@@ -180,26 +199,12 @@
             <span id="inspector-selection-side" class="inspector-selection-side measure"></span>
           </p>
           <div id="inspector-tabs" class="rail-tabs" role="tablist" aria-label="Panels" hidden></div>
-          <p id="cut-mode-label" class="visually-hidden">Cutting plane</p>
-          <div id="cut-mode" class="segmented instrument inspector-cut" role="group" aria-labelledby="cut-mode-label">
-            <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
-            <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
-            <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
-            <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
-            <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
-          </div>
           <div class="rail-body">
             <div class="tab-group" data-tab="region">
               <p id="label-selected" class="section-label">Selected</p>
               <div class="panel-body">
                 <h2 id="selected-name">No region selected</h2>
-                <p id="selected-hint">Click the model, or search on the left.</p>
-                <dl id="view-status" class="datasheet">
-                  <dt id="view-atlas-label">Atlas</dt><dd id="view-atlas"></dd>
-                  <dt id="view-surface-label">Surface</dt><dd id="view-surface"></dd>
-                  <dt id="view-hemi-label">Hemisphere</dt><dd id="view-hemi"></dd>
-                  <dt id="view-cut-label">Cut</dt><dd id="view-cut"></dd>
-                </dl>
+                <p id="selected-hint">Select a region on the model or from the list.</p>
                 <dl id="selected-facts" class="datasheet" hidden>
                   <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
                   <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
@@ -214,8 +219,8 @@
                   <button id="focus" type="button" disabled>Focus</button>
                   <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
                   <button id="slice-to" type="button" disabled>Slice here</button>
+                  <button id="region-mpr" class="button-primary" type="button" hidden>MRI</button>
                 </div>
-                <button id="region-mpr" class="button-primary" type="button" hidden>Linked MRI</button>
               </div>
 
               <!--
@@ -242,6 +247,14 @@
             <div class="tab-group" data-tab="cuts">
               <p id="label-cuts" class="section-label">Anatomical cuts</p>
               <div class="panel-body section-controls">
+                <label id="cut-mode-label">Cutting plane</label>
+                <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
+                  <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
+                  <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
+                  <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
+                  <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
+                  <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
+                </div>
                 <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
                 <select id="cut-atlas"></select>
                 <label id="cut-axis" for="cut-position">Position (mm)</label>
@@ -260,8 +273,8 @@
                 <div class="actions">
                   <button id="cut-midline" type="button">Midsagittal</button>
                   <button id="cut-face-view" type="button" disabled>Face cut</button>
+                  <button id="mpr-open" class="button-primary" type="button">MRI</button>
                 </div>
-                <button id="mpr-open" class="button-primary" type="button">Linked MRI</button>
                 <p id="cut-status" role="status">Full brain · no cut</p>
               </div>
             </div>
@@ -272,7 +285,7 @@
                 <label id="detail-label" for="detail">Internal anatomy</label>
                 <select id="detail"></select>
                 <label id="display-hemisphere-label">Hemisphere</label>
-                <div id="hemisphere" class="segmented instrument" role="group" aria-labelledby="display-hemisphere-label">
+                <div id="hemisphere" class="segmented" role="group" aria-labelledby="display-hemisphere-label">
                   <button type="button" data-hemisphere="both" aria-pressed="true">Both</button>
                   <button type="button" data-hemisphere="left" aria-pressed="false">Left</button>
                   <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
@@ -288,7 +301,7 @@
                 <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
 
                 <label id="spinal-cord-label" class="check">
-                  <input id="spinal-cord" type="checkbox" checked /> <span id="spinal-cord-text">Show spinal cord</span>
+                  <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
                 </label>
 
                 <button id="reset" class="button-quiet" type="button">Reset view</button>
@@ -300,7 +313,7 @@
 
       <footer id="colophon">
         <span id="colophon-text">FreeSurfer reference anatomy · not clinical anatomy</span>
-        <a id="provenance" href="models/manifest.json" target="_blank" rel="noreferrer">Provenance</a>
+        <a id="provenance" href="models/anatomies.json" target="_blank" rel="noreferrer">Provenance</a>
       </footer>
     </div>
 

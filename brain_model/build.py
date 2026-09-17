@@ -1,12 +1,15 @@
 """Build full-resolution, selectable reference anatomy from frozen inputs."""
 
+import argparse
+import json
+
 import nibabel as nib
 import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
 from . import learning, networks, nextbrain, spinal_cord, white_matter
-from .export import add_region, compact_region, write_scene
+from .export import add_region, compact_region, published_area_mm2, write_scene
 from .geometry import (
     extract_structure,
     partition_edges,
@@ -126,7 +129,7 @@ def build_cortex(config, atlas):
             region.update(
                 vertex_count=len(mesh.vertices),
                 triangle_count=len(mesh.faces),
-                surface_area_mm2=float(mesh.area * 1e6),
+                surface_area_mm2=published_area_mm2(mesh.vertices, mesh.faces),
             )
             regions.append(region)
         print(
@@ -182,7 +185,7 @@ def build_structure_layer(config, image, labels, describe, filename):
         region.update(
             vertex_count=len(exported.vertices),
             triangle_count=len(exported.faces),
-            surface_area_mm2=float(mesh.area),
+            surface_area_mm2=published_area_mm2(exported.vertices, exported.faces),
             segmentation_volume_mm3=float(region["voxel_count"] * voxel_volume),
         )
         regions.append(region)
@@ -368,8 +371,36 @@ def network_limitations(config):
     return limitations
 
 
+def write_anatomy_index(config):
+    """List the brains published beside this one, for the viewer to offer.
+
+    Built by reading the manifests actually on disk rather than the
+    declarations, so the index can never offer a brain whose assets are not
+    there. Each entry is what that brain's own manifest says about itself.
+    """
+    published = config["output_directory"].parent
+    entries = []
+    for path in sorted(published.glob("*/manifest.json")):
+        anatomy = json.loads(path.read_text())["anatomy"]
+        entries.append(
+            {
+                field: anatomy[field]
+                for field in ("id", "display_name", "label", "individual")
+            }
+        )
+    write_json(
+        published / "anatomies.json",
+        {"default": config["default_anatomy"], "anatomies": entries},
+    )
+    return entries
+
+
 def main():
-    config = read_config()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--anatomy", help="build this declared anatomy instead of the selected one"
+    )
+    config = read_config(parser.parse_args().anatomy)
     provenance = verify_sources(config)
     atlas_metadata = []
     regions = []
@@ -453,7 +484,9 @@ def main():
     }
     export_tissue_labels(config, manifest)
     write_json(config["output_directory"] / "manifest.json", manifest)
+    published = write_anatomy_index(config)
     print(f"Exported {len(regions)} meshes including explicit non-region surfaces.")
+    print(f"Published anatomies: {', '.join(entry['id'] for entry in published)}")
 
 
 if __name__ == "__main__":

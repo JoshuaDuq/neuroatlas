@@ -55,7 +55,7 @@ nextbrain:
   - {id: fimbria, color: [161, 180, 132], name: Fimbria, name_fr: Fimbria, system: White matter pathways, system_fr: Voies de substance blanche, labels: [461]}
   - {id: anterior-commissure, color: [206, 149, 100], name: Anterior commissure, name_fr: Commissure antérieure, system: White matter pathways, system_fr: Voies de substance blanche, labels: [130]}
   - {id: optic-tract, color: [111, 170, 194], name: Optic tract, name_fr: Tractus optique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [208]}
-  - {id: optic-chiasm, color: [115, 155, 190], name: Optic chiasm, name_fr: Chiasma optique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [161]}
+  - {id: optic-chiasm, hemisphere: midline, color: [115, 155, 190], name: Optic chiasm, name_fr: Chiasma optique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [161]}
   - {id: stria-terminalis, color: [177, 145, 183], name: Stria terminalis, name_fr: Strie terminale, system: White matter pathways, system_fr: Voies de substance blanche, labels: [184]}
   - {id: mammillothalamic, color: [204, 174, 96], name: Mammillothalamic tract, name_fr: Faisceau mamillo-thalamique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [276]}
   - {id: midbrain, color: [112, 147, 173], name: Midbrain territory, name_fr: Territoire mésencéphalique, system: Brainstem, system_fr: Tronc cérébral, labels: [384, 465, 496, 498, 521]}

@@ -12,8 +12,10 @@ import {
 } from 'three';
 import { BrainSections } from './sections.js';
 
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 const manifest = JSON.parse(
-  await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'),
+  await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'),
 );
 
 function fixture() {

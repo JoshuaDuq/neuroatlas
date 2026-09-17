@@ -4,7 +4,7 @@ import nibabel as nib
 import numpy as np
 import trimesh
 
-from .export import add_region, write_scene
+from .export import add_region, published_area_mm2, write_scene
 from .geometry import to_gltf
 from .sources import ROOT, sha256
 
@@ -74,7 +74,7 @@ def describe(config, structure, hemisphere, mesh):
         # segmented from. This one has no segmentation behind it, so the figure
         # under the same name is the volume its published closed surface encloses.
         "segmentation_volume_mm3": float(mesh.volume),
-        "surface_area_mm2": float(mesh.area),
+        "surface_area_mm2": published_area_mm2(to_gltf(mesh.vertices), mesh.faces),
     }
     if "tissue" in structure:
         region["tissue"] = structure["tissue"]

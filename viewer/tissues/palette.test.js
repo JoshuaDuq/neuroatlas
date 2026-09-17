@@ -6,6 +6,8 @@ import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { tissueColor } from '../render/materials.js';
 
+const published = JSON.parse(readFileSync(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 
 test('neutral cut and surface colours agree for gray matter, white matter and CSF', () => {
@@ -132,8 +134,8 @@ test('a NextBrain cortical cut parcel carries the network colour of its region',
 });
 
 test('published NextBrain cortical cut labels take network colour', () => {
-  const metadata = JSON.parse(readFileSync(new URL('../../public/models/tissue-labels.json', import.meta.url), 'utf8'));
-  const manifest = JSON.parse(readFileSync(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+  const metadata = JSON.parse(readFileSync(new URL(`../../public/models/${published}/tissue-labels.json`, import.meta.url), 'utf8'));
+  const manifest = JSON.parse(readFileSync(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const record = metadata.atlases.nextbrain;
   if (!record || !manifest.networks) return;
   const regions = new Map(manifest.regions.map(region => [region.id, region]));

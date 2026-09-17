@@ -1,8 +1,9 @@
-# Which brain this build publishes. The two differ in kind, not in quality: one
+# Which brain this build publishes. They differ in kind, not in quality: an
 # individual has real folds and a real scan but is nobody else's brain, while an
 # averaged template is the space published parcellations and group results are
-# reported in. Switching is this one line plus a rebuild; no conversion step
-# reads anything subject-specific of its own.
+# reported in. Two individuals differ again in who published them and under what
+# terms. Switching is this one line plus a rebuild; no conversion step reads
+# anything subject-specific of its own.
 anatomy: bert
 
 anatomies:
@@ -39,6 +40,23 @@ anatomies:
     nextbrain:
       directory: data/nextbrain
       volume: nextbrain-fsaverage.mgz
+  aomic:
+    subject: sub-0022
+    display_name: AOMIC-PIOP1 “sub-0022”
+    label: AOMIC-PIOP1 single-subject reconstruction
+    individual: true
+    directory: data/aomic
+    source_url: https://openneuro.org/datasets/ds002785
+    # Published as individual files rather than one archive, so `download`
+    # stands where bert declares `archive`. Nothing is pinned in advance: the
+    # checksum of every fetched file is recorded in data/sources.json on the
+    # first run and verified on every later one.
+    download:
+      base_url: https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022
+    project_hcp_from: fsaverage
+    nextbrain:
+      directory: data/nextbrain-aomic
+      volume: nextbrain-aomic.mgz
 
 output_directory: public/models
 spinal_cord:

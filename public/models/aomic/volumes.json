@@ -1,0 +1,459 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "FreeSurfer surface RAS (tkregister), millimeters",
+  "mri": {
+    "file": "mri.volume",
+    "shape": [
+      256,
+      256,
+      256
+    ],
+    "dtype": "|u1",
+    "order": "F",
+    "compression": "gzip",
+    "byte_length": 16777216,
+    "sha256": "f4a5ca5cbb9112c076a5502b361bd83b8370bcc4222bbd6dd6ab07a02256f618",
+    "decoded_sha256": "e5b6adc030e154fcd4824f50549b9118a1397d1b55884b695f327c8c1a2f5537",
+    "voxel_to_surface_ras_mm": [
+      [
+        -1.0,
+        0.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        -128.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "voxel_spacing_mm": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "segmentation": {
+    "file": "aseg.volume",
+    "shape": [
+      256,
+      256,
+      256
+    ],
+    "dtype": "<u2",
+    "order": "F",
+    "compression": "gzip",
+    "byte_length": 33554432,
+    "sha256": "4d9ca51a0208c74e4cacb9039ac33b311f0bf68b732e32b2dbfd7ec0a629b848",
+    "decoded_sha256": "f900b6f91cdeb8ebd9ab9ca395e8095a3f6f11c1584239790e92a23fb7e57b35",
+    "voxel_to_surface_ras_mm": [
+      [
+        -1.0,
+        0.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        -128.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "voxel_spacing_mm": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "labels": {
+    "0": {
+      "name": "Unknown",
+      "color": [
+        0,
+        0,
+        0
+      ]
+    },
+    "2": {
+      "name": "Left-Cerebral-White-Matter",
+      "color": [
+        245,
+        245,
+        245
+      ]
+    },
+    "3": {
+      "name": "Left-Cerebral-Cortex",
+      "color": [
+        205,
+        62,
+        78
+      ]
+    },
+    "4": {
+      "name": "Left-Lateral-Ventricle",
+      "color": [
+        120,
+        18,
+        134
+      ]
+    },
+    "5": {
+      "name": "Left-Inf-Lat-Vent",
+      "color": [
+        196,
+        58,
+        250
+      ]
+    },
+    "7": {
+      "name": "Left-Cerebellum-White-Matter",
+      "color": [
+        220,
+        248,
+        164
+      ]
+    },
+    "8": {
+      "name": "Left-Cerebellum-Cortex",
+      "color": [
+        230,
+        148,
+        34
+      ]
+    },
+    "10": {
+      "name": "Left-Thalamus-Proper",
+      "color": [
+        0,
+        118,
+        14
+      ]
+    },
+    "11": {
+      "name": "Left-Caudate",
+      "color": [
+        122,
+        186,
+        220
+      ]
+    },
+    "12": {
+      "name": "Left-Putamen",
+      "color": [
+        236,
+        13,
+        176
+      ]
+    },
+    "13": {
+      "name": "Left-Pallidum",
+      "color": [
+        12,
+        48,
+        255
+      ]
+    },
+    "14": {
+      "name": "3rd-Ventricle",
+      "color": [
+        204,
+        182,
+        142
+      ]
+    },
+    "15": {
+      "name": "4th-Ventricle",
+      "color": [
+        42,
+        204,
+        164
+      ]
+    },
+    "16": {
+      "name": "Brain-Stem",
+      "color": [
+        119,
+        159,
+        176
+      ]
+    },
+    "17": {
+      "name": "Left-Hippocampus",
+      "color": [
+        220,
+        216,
+        20
+      ]
+    },
+    "18": {
+      "name": "Left-Amygdala",
+      "color": [
+        103,
+        255,
+        255
+      ]
+    },
+    "24": {
+      "name": "CSF",
+      "color": [
+        60,
+        60,
+        60
+      ]
+    },
+    "26": {
+      "name": "Left-Accumbens-area",
+      "color": [
+        255,
+        165,
+        0
+      ]
+    },
+    "28": {
+      "name": "Left-VentralDC",
+      "color": [
+        165,
+        42,
+        42
+      ]
+    },
+    "30": {
+      "name": "Left-vessel",
+      "color": [
+        160,
+        32,
+        240
+      ]
+    },
+    "31": {
+      "name": "Left-choroid-plexus",
+      "color": [
+        0,
+        200,
+        200
+      ]
+    },
+    "41": {
+      "name": "Right-Cerebral-White-Matter",
+      "color": [
+        0,
+        225,
+        0
+      ]
+    },
+    "42": {
+      "name": "Right-Cerebral-Cortex",
+      "color": [
+        205,
+        62,
+        78
+      ]
+    },
+    "43": {
+      "name": "Right-Lateral-Ventricle",
+      "color": [
+        120,
+        18,
+        134
+      ]
+    },
+    "44": {
+      "name": "Right-Inf-Lat-Vent",
+      "color": [
+        196,
+        58,
+        250
+      ]
+    },
+    "46": {
+      "name": "Right-Cerebellum-White-Matter",
+      "color": [
+        220,
+        248,
+        164
+      ]
+    },
+    "47": {
+      "name": "Right-Cerebellum-Cortex",
+      "color": [
+        230,
+        148,
+        34
+      ]
+    },
+    "49": {
+      "name": "Right-Thalamus-Proper",
+      "color": [
+        0,
+        118,
+        14
+      ]
+    },
+    "50": {
+      "name": "Right-Caudate",
+      "color": [
+        122,
+        186,
+        220
+      ]
+    },
+    "51": {
+      "name": "Right-Putamen",
+      "color": [
+        236,
+        13,
+        176
+      ]
+    },
+    "52": {
+      "name": "Right-Pallidum",
+      "color": [
+        13,
+        48,
+        255
+      ]
+    },
+    "53": {
+      "name": "Right-Hippocampus",
+      "color": [
+        220,
+        216,
+        20
+      ]
+    },
+    "54": {
+      "name": "Right-Amygdala",
+      "color": [
+        103,
+        255,
+        255
+      ]
+    },
+    "58": {
+      "name": "Right-Accumbens-area",
+      "color": [
+        255,
+        165,
+        0
+      ]
+    },
+    "60": {
+      "name": "Right-VentralDC",
+      "color": [
+        165,
+        42,
+        42
+      ]
+    },
+    "62": {
+      "name": "Right-vessel",
+      "color": [
+        160,
+        32,
+        240
+      ]
+    },
+    "63": {
+      "name": "Right-choroid-plexus",
+      "color": [
+        0,
+        200,
+        221
+      ]
+    },
+    "77": {
+      "name": "WM-hypointensities",
+      "color": [
+        200,
+        70,
+        255
+      ]
+    },
+    "85": {
+      "name": "Optic-Chiasm",
+      "color": [
+        234,
+        169,
+        30
+      ]
+    },
+    "251": {
+      "name": "CC_Posterior",
+      "color": [
+        0,
+        0,
+        64
+      ]
+    },
+    "252": {
+      "name": "CC_Mid_Posterior",
+      "color": [
+        0,
+        0,
+        112
+      ]
+    },
+    "253": {
+      "name": "CC_Central",
+      "color": [
+        0,
+        0,
+        160
+      ]
+    },
+    "254": {
+      "name": "CC_Mid_Anterior",
+      "color": [
+        0,
+        0,
+        208
+      ]
+    },
+    "255": {
+      "name": "CC_Anterior",
+      "color": [
+        0,
+        0,
+        255
+      ]
+    }
+  },
+  "display": {
+    "field_of_view_mm": 256,
+    "texture_size": 512,
+    "window_center": 90,
+    "window_width": 180
+  },
+  "limitations": [
+    "One individual's 1 mm MRI and segmentation; not the viewer's anatomy.",
+    "Trilinear MRI interpolation does not increase source resolution.",
+    "Segmentation is sampled with nearest neighbour; cortical surface atlases are not extended into the volume."
+  ]
+}

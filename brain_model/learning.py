@@ -6,7 +6,7 @@ import yaml
 from trimesh.smoothing import filter_taubin
 
 from . import nextbrain
-from .export import add_region, write_scene
+from .export import add_region, published_area_mm2, write_scene
 from .geometry import extract_structure
 from .sources import ROOT, read_color_table
 from .volumes import load_on_grid
@@ -60,13 +60,37 @@ def smooth_display(source, settings):
 
 
 def expand_nextbrain(groups, table):
+    """One unit per side, except where the structure has no sides.
+
+    NextBrain labels every ROI on both halves of its own grid, so the default
+    is a left and a right unit. A structure that crosses the midline has no
+    left and right half to publish: halving it invents a boundary where the
+    anatomy is the crossing, and leaves each half small enough that whether it
+    survives a warp is arbitrary. Such a unit declares `hemisphere: midline`
+    and takes both of NextBrain's copies as one structure, the way the aseg
+    units already do for the ventricles and the corpus callosum.
+    """
     expanded = []
     base_labels = {index % nextbrain.HEMISPHERE_OFFSET for index in table}
     for group in groups:
         unknown = set(group["labels"]) - base_labels
         if unknown:
             raise ValueError(f"Unknown NextBrain constituent labels: {unknown}")
-        for side, offset in (("left", 0), ("right", 10000)):
+        if group.get("hemisphere") == "midline":
+            expanded.append(
+                {
+                    **group,
+                    "id": f"midline:{group['id']}",
+                    "hemisphere": "midline",
+                    "labels": [
+                        label + offset
+                        for label in group["labels"]
+                        for offset in (0, nextbrain.HEMISPHERE_OFFSET)
+                    ],
+                }
+            )
+            continue
+        for side, offset in (("left", 0), ("right", nextbrain.HEMISPHERE_OFFSET)):
             expanded.append(
                 {
                     **group,
@@ -96,6 +120,18 @@ def source_groups(config):
     yield "aseg", image, np.asarray(image.dataobj), table, definition["aseg"]
 
 
+def constituent_id(source, side, label):
+    """The published region one of a unit's member labels belongs to.
+
+    A NextBrain member names the side its own label encodes, which is not
+    always the unit's: a midline unit holds both of NextBrain's copies, and
+    each is published under its own hemisphere. Shared with validation so the
+    two cannot disagree about what a unit is made of.
+    """
+    hemisphere = nextbrain.hemisphere_of(label) if source == "nextbrain" else side
+    return f"{source}:{hemisphere}:{label}"
+
+
 def region_record(group, source, volume):
     members = [label for label in group["labels"] if np.any(volume == label)]
     side = group["hemisphere"]
@@ -111,8 +147,7 @@ def region_record(group, source, volume):
         "source_atlas": source,
         "source_label_ids": members,
         "constituent_regions": [
-            f"{source}:{nextbrain.hemisphere_of(label) if source == 'nextbrain' else side}:{label}"
-            for label in members
+            constituent_id(source, side, label) for label in members
         ],
         "display_names": {"en": group["name"], "fr": group["name_fr"]},
         "system_names": {"en": group["system"], "fr": group["system_fr"]},
@@ -153,7 +188,7 @@ def build(config):
             region.update(
                 vertex_count=len(exported.vertices),
                 triangle_count=len(exported.faces),
-                surface_area_mm2=float(mesh.area),
+                surface_area_mm2=published_area_mm2(exported.vertices, exported.faces),
             )
             regions.append(region)
     write_scene(scene, config["output_directory"] / "learning.glb")

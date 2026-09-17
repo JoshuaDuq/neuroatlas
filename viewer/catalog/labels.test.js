@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { labelOf } from './labels.js';
 
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 const region = over => ({ kind: 'cortex', hemisphere: 'left', ...over });
 
 test('Destrieux source names expand to their published anatomical names', () => {
@@ -71,7 +73,7 @@ test('unlabelled cortex is named plainly rather than left blank', () => {
 
 test('every region in the published manifest resolves to a name and a group', async () => {
   const manifest = JSON.parse(
-    await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+    await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const unresolved = [];
   for (const r of manifest.regions) {
     const label = labelOf(r);
@@ -139,4 +141,34 @@ test('every gyral white-matter parcel wmparc publishes has its own French name',
     return !en || !fr || fr.name === en.name || fr.group === en.group;
   });
   assert.deepEqual(untranslated, []);
+});
+
+test('a Destrieux name spelled either way finds the same label', async () => {
+  // FreeSurfer 5 wrote `_and_`, 6 writes `&`. Which spelling a brain carries
+  // is a fact about its recon, not about the parcel, so both must resolve.
+  const five = { id: 'destrieux:left:1', atlas: 'destrieux', hemisphere: 'left',
+    kind: 'cortex', source_name: 'G_and_S_frontomargin' };
+  const six = { ...five, source_name: 'G&S_frontomargin' };
+  assert.equal(labelOf(six, 'en').name, labelOf(five, 'en').name);
+  assert.equal(labelOf(six, 'fr').name, labelOf(five, 'fr').name);
+
+  // The ampersand also appears mid-name, not only after a leading G.
+  const mid = { ...five, id: 'destrieux:left:57', source_name: 'S_intrapariet&P_trans' };
+  const spelled = { ...mid, source_name: 'S_intrapariet_and_P_trans' };
+  assert.equal(labelOf(mid, 'en').name, labelOf(spelled, 'en').name);
+});
+
+test('every published Destrieux region resolves a label in both brains', async () => {
+  const models = new URL('../../public/models/', import.meta.url);
+  const { anatomies } = JSON.parse(
+    await readFile(new URL('anatomies.json', models), 'utf8'));
+  for (const { id } of anatomies) {
+    const manifest = JSON.parse(
+      await readFile(new URL(`${id}/manifest.json`, models), 'utf8'));
+    for (const region of manifest.regions) {
+      for (const lang of ['en', 'fr']) {
+        assert.ok(labelOf(region, lang), `${id}: ${region.id} has no ${lang} label`);
+      }
+    }
+  }
 });

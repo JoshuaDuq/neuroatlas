@@ -68,6 +68,10 @@ export function createInspectorTabs() {
       button.tabIndex = selected ? 0 : -1;
     }
     if (!owned) return;
+    // The name lives in the Region panel itself. On Cuts and Display the
+    // strip confirms what is selected without moving the controls: its
+    // height stays reserved there, and only there.
+    strip.hidden = active === 'region';
     for (const group of groups) group.hidden = group.dataset.tab !== active;
   }
 
@@ -97,7 +101,6 @@ export function createInspectorTabs() {
       if (query.matches) return;
       owned = true;
       bar.hidden = false;
-      strip.hidden = false;
       apply();
     },
 

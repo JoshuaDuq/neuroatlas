@@ -2,6 +2,23 @@ import { quantity } from './format.js';
 import { networkCss, networkName, networksOf } from '../catalog/networks.js';
 import { atlasSwitchLabel, t } from '../i18n/translations.js';
 
+/**
+ * What the inspector shows when a region is or is not selected.
+ *
+ * The empty anatomy panel is a hint. It does not repeat atlas, surface,
+ * hemisphere or cut — those already live on the masthead and the plane row.
+ */
+export function inspectorEmptyChrome({ selectedRegion, explorer }) {
+  const hasRegion = Boolean(selectedRegion);
+  const quiet = !hasRegion && explorer === 'deficits';
+  return {
+    hideTitle: !hasRegion,
+    hideHint: quiet,
+    hideFacts: !hasRegion,
+    hideActions: !hasRegion,
+  };
+}
+
 /** The selected region: what it is, and what is measured about it. */
 export function createInspector({ catalog, networks, onFocus, onIsolate, onSliceTo, centroidOf }) {
   const inspectorPanel = document.getElementById('inspector');
@@ -26,15 +43,6 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
   const sliceTo = document.getElementById('slice-to');
   const actions = focus.closest('.actions');
   const regionMpr = document.getElementById('region-mpr');
-  const viewStatus = document.getElementById('view-status');
-  const viewAtlas = document.getElementById('view-atlas');
-  const viewSurface = document.getElementById('view-surface');
-  const viewHemi = document.getElementById('view-hemi');
-  const viewCut = document.getElementById('view-cut');
-  const viewAtlasLabel = document.getElementById('view-atlas-label');
-  const viewSurfaceLabel = document.getElementById('view-surface-label');
-  const viewHemiLabel = document.getElementById('view-hemi-label');
-  const viewCutLabel = document.getElementById('view-cut-label');
   const networkSection = document.getElementById('region-networks');
   const networkHeading = document.getElementById('label-networks');
   const networkList = document.getElementById('network-list');
@@ -87,12 +95,11 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
   }
 
   return {
-    update(state, { cutMode } = {}) {
+    update(state) {
       const i18n = t(state.lang, 'inspector');
       const atlasDict = t(state.lang, 'atlases');
-      const displayI18n = t(state.lang, 'display');
-      const cutsI18n = t(state.lang, 'cuts');
       const sideWords = t(state.lang, 'sides').capitalized;
+      const chrome = inspectorEmptyChrome(state);
 
       if (inspectorPanel) inspectorPanel.setAttribute('aria-label', i18n.panelLabel);
       if (labelSelected) labelSelected.textContent = i18n.selectedHeading;
@@ -106,40 +113,16 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
       if (sliceTo) sliceTo.textContent = i18n.sliceTo;
 
       const region = state.selectedRegion;
-      // While a deficit is being explored the panel already leads with it, so
-      // an empty selection block above that answers a question nobody asked.
-      const quiet = !region && state.explorer === 'deficits';
-      // An empty instrument does not title its emptiness. The hint is the
-      // instruction; the 17px name is reserved for a region.
-      name.hidden = quiet || !region;
-      // Focus and Isolate act on a selection; greyed out with none they are
-      // the dead weight at the top of an otherwise empty rail.
-      if (actions) actions.hidden = quiet || !region;
-      if (regionMpr) regionMpr.hidden = quiet || !region;
-      if (labelSelected) labelSelected.hidden = quiet;
-      if (viewStatus) viewStatus.hidden = quiet || !!region;
+      name.hidden = chrome.hideTitle;
+      if (actions) actions.hidden = chrome.hideActions;
+      if (regionMpr) regionMpr.hidden = chrome.hideActions;
+      if (labelSelected) labelSelected.hidden = chrome.hideHint;
 
       if (!region) {
         name.textContent = i18n.noRegionSelected;
-        hint.hidden = quiet;
+        hint.hidden = chrome.hideHint;
         hint.textContent = state.cortexVisible ? i18n.hintCortex : i18n.hintStructures;
-        facts.hidden = true;
-        if (viewStatus && !viewStatus.hidden) {
-          if (viewAtlasLabel) viewAtlasLabel.textContent = i18n.atlas;
-          if (viewSurfaceLabel) viewSurfaceLabel.textContent = i18n.viewSurface;
-          if (viewHemiLabel) viewHemiLabel.textContent = i18n.hemisphere;
-          if (viewCutLabel) viewCutLabel.textContent = i18n.viewCut;
-          if (viewAtlas) viewAtlas.textContent = atlasSwitchLabel(state.atlas, state.lang);
-          if (viewSurface) {
-            viewSurface.textContent = displayI18n.surfaceColors[state.surfaceColor]
-              ?? state.surfaceColor;
-          }
-          if (viewHemi) viewHemi.textContent = displayI18n[state.hemisphere] ?? state.hemisphere;
-          if (viewCut) {
-            const plane = cutMode ?? 'off';
-            viewCut.textContent = cutsI18n.modes[plane] ?? plane;
-          }
-        }
+        facts.hidden = chrome.hideFacts;
         if (factGroup) factGroup.textContent = '';
         if (factCoords) factCoords.textContent = '';
         if (networkSection) networkSection.hidden = true;
