@@ -4,7 +4,9 @@ import test from 'node:test';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createPalette } from './palette.js';
 
-const directory = new URL('../../public/models/', import.meta.url);
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
+const directory = new URL(`../../public/models/${published}/`, import.meta.url);
 
 test('cut palettes match every corresponding exported surface material', async () => {
   const metadata = JSON.parse(await readFile(new URL('tissue-labels.json', directory), 'utf8'));

@@ -78,7 +78,19 @@ export async function startApp() {
   });
   const theme = createTheme(() => scene.applyTheme());
 
-  const manifestUrl = `${import.meta.env.BASE_URL}models/manifest.json`;
+  // Which brain, before anything of it is loaded. A link may name one; if it
+  // does not, the index names the default. Only one brain is ever live, so
+  // region ids shared between brains cannot be mixed.
+  const modelsUrl = `${import.meta.env.BASE_URL}models`;
+  const published = await fetch(`${modelsUrl}/anatomies.json`).then(r => r.json());
+  const anatomies = published.anatomies;
+  const anatomy = anatomies.some(entry => entry.id === wanted.anatomy)
+    ? wanted.anatomy
+    : published.default;
+  const manifestUrl = `${modelsUrl}/${anatomy}/manifest.json`;
+  // The colophon links the manifest of the brain actually on screen, which is
+  // not knowable until the index has been read.
+  document.getElementById('provenance')?.setAttribute('href', manifestUrl);
   const model = await BrainAtlas.load(manifestUrl, wanted.atlas, {
     detail: wanted.detail,
     onProgress: progress => {
@@ -337,10 +349,24 @@ export async function startApp() {
     atlases: model.manifest.atlases,
     networks: model.manifest.networks,
     anatomy: model.manifest.anatomy,
+    anatomies,
     onAtlas: setAtlas,
     onSurfaceColor: value => display(() => model.setSurfaceColor(value)),
     onTheme: () => { theme.toggle(); session.setTheme(theme.current); render(); },
     onLang: setLang,
+    // Another brain is another set of assets, so this re-enters through the
+    // URL rather than mutating the model in place. The rest of the state rides
+    // along: the reader keeps their atlas, cut and language across the change.
+    // Selection does not — a region id means a different parcel on each brain.
+    onAnatomy: id => {
+      if (id === anatomy) return;
+      const state = session.assemble(model.state);
+      const hash = encodeState({
+        ...state, anatomy: id, selectedRegion: null, isolatedRegion: null,
+      });
+      globalThis.location.hash = hash;
+      globalThis.location.reload();
+    },
   });
 
   const onToggleAllGroups = () => {
@@ -386,6 +412,8 @@ export async function startApp() {
       await sections.setMode('axial');
     }
     faceCut();
+    inspectorTabs.show('cuts');
+    sheet.show('cuts');
     render();
   };
 
@@ -616,7 +644,7 @@ export async function startApp() {
 
     header.update(state, { visibleCount });
     navigator.update(state);
-    inspector.update(state, { cutMode: sections.state.mode });
+    inspector.update(state);
     const selected = state.selectedRegion;
     const strip = selected
       ? {
@@ -696,7 +724,10 @@ export async function startApp() {
   function syncUrl(state) {
     clearTimeout(urlTimer);
     urlTimer = setTimeout(() => {
-      const hash = encodeState(state);
+      // The brain is fixed for the life of the page, so it is not session
+      // state — but it has to be in the link. Region ids are shared between
+      // brains, so a link without it reopens someone else's anatomy.
+      const hash = encodeState({ ...state, anatomy });
       // replaceState, not push: the back button is not a camera undo stack.
       history.replaceState(null, '', hash ? `#${hash}` : globalThis.location.pathname);
     }, 250);

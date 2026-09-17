@@ -69,6 +69,11 @@ function associationSection(association, clinical, anatomy, lang) {
   return section;
 }
 
+/** A region inspector does not title a Neuropsychology section that has nothing to report. */
+export function relatedRegionVisible(selectedRegion, deficitCount) {
+  return Boolean(selectedRegion) && deficitCount > 0;
+}
+
 /** Deficit navigation and evidence share the existing session render cycle. */
 export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery, onDeficit, onRegion }) {
   const switcher = document.getElementById('explorer-switch');
@@ -126,17 +131,15 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
 
   function renderRelated(state) {
     related.replaceChildren();
-    related.hidden = !state.selectedRegion;
-    if (!state.selectedRegion) return;
+    const deficits = state.selectedRegion
+      ? new Set(clinical.forRegion(state.selectedRegion.id).map(a => a.deficit))
+      : new Set();
+    related.hidden = !relatedRegionVisible(state.selectedRegion, deficits.size);
+    if (related.hidden) return;
     const text = CLINICAL_TEXT[state.lang];
     related.append(element('h2', text.related, 'section-label'));
     const body = element('div', null, 'panel-body clinical-content');
-    const deficits = new Set(clinical.forRegion(state.selectedRegion.id).map(a => a.deficit));
     for (const id of deficits) body.append(deficitButton(clinical.get(id), state.lang));
-    if (!deficits.size) {
-      const fineAtlas = ['hcp-mmp', 'nextbrain', 'wmparc'].includes(state.selectedRegion.atlas);
-      body.append(element('p', fineAtlas ? text.noAtlasCoverage : text.noCoverage, 'clinical-note'));
-    }
     related.append(body);
   }
 

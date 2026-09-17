@@ -1,3 +1,5 @@
+import { canonicalSourceName } from '../catalog/source-names.js';
+
 const LANGUAGES = ['en', 'fr'];
 const METHODS = new Set(['lesion-mapping', 'meta-analysis', 'case-report', 'case-series']);
 
@@ -68,7 +70,10 @@ function validateAssociation(association, indexes) {
   for (const mapping of association.mappings) {
     const region = regions.get(mapping.region);
     requireValue(region && region.kind !== 'non-region', `${context}: unknown region ${mapping.region}`);
-    requireValue(region.source_name === mapping.source_name,
+    // Compared canonically: the catalog names a parcel, and two recons spell
+    // some parcel names differently. A genuine re-pointing still fails here.
+    requireValue(
+      canonicalSourceName(region.source_name) === canonicalSourceName(mapping.source_name),
       `${context}: source_name disagrees with ${mapping.region}`);
     requireValue(association.laterality === 'bilateral'
       || association.laterality === region.hemisphere, `${context}: hemisphere mismatch`);

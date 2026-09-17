@@ -251,6 +251,16 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
       if (detent === 'peek') setDetent('half');
     },
 
+    /**
+     * Open a named panel. A no-op on desktop, where the inspector tabs own
+     * the rails; on a phone this is the only writer of sheet visibility.
+     */
+    show(name) {
+      if (!phone || !TABS.includes(name)) return;
+      setTab(name);
+      if (detent === 'peek') setDetent('half');
+    },
+
     update(state, { label, side } = {}) {
       lang = state.lang;
       const copy = t(state.lang, 'sheet');

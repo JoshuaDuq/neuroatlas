@@ -384,6 +384,186 @@
       "derived_from": "https://www.z-anatomy.com/",
       "procedure": "scripts/extract_spinal_cord.py: evaluated Blender modifiers, interior sheets dropped, open sweep ends filled",
       "citation": "https://www.z-anatomy.com/"
+    },
+    {
+      "path": "data/aomic/mri/orig.mgz",
+      "sha256": "eeb0465eac7fc7acdb34ee2b90ec6c0028dbbc380d4cb2b1c561cb7fd0849808",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/orig.mgz"
+    },
+    {
+      "path": "data/aomic/mri/aseg.mgz",
+      "sha256": "d56c9b5c7cd25bd7a18aa9fe8cbba2caca2f0be65ccab059207182d74cc0c607",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/aseg.mgz"
+    },
+    {
+      "path": "data/aomic/mri/aparc.a2009s+aseg.mgz",
+      "sha256": "d6a1e2ffc2e12434a525f5bf39a366923f24a4bd31f685c2029bbc76b859bd98",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/aparc.a2009s%2Baseg.mgz"
+    },
+    {
+      "path": "data/aomic/mri/ribbon.mgz",
+      "sha256": "7c228a82904def46455c24ae9f75469b67d37cd316441b07b4cfc75176059d87",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/ribbon.mgz"
+    },
+    {
+      "path": "data/aomic/mri/brain.mgz",
+      "sha256": "aa85b761f9aa787339bfac6f37caad04a265959b5197aa6986ddd36d223b0165",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/brain.mgz"
+    },
+    {
+      "path": "data/aomic/mri/wmparc.mgz",
+      "sha256": "891c54dfdcc2e72994564f003c1b049ad897fc2cd3d007481e93f5d2f04354e7",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/wmparc.mgz"
+    },
+    {
+      "path": "data/aomic/scripts/build-stamp.txt",
+      "sha256": "8ed8477aaa24bb885e8aefeb14b03c0ec1bc2d11ccdfe6ea932433888947c0da",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/scripts/build-stamp.txt"
+    },
+    {
+      "path": "data/aomic/surf/lh.pial",
+      "sha256": "4aa6132c59e891bd1e0b6b92d64c9caf7b27a322a11d2b22ae6fb65f3c928f00",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.pial"
+    },
+    {
+      "path": "data/aomic/surf/lh.white",
+      "sha256": "1a8a41425ed098ece8383d4ac90d54ab380e638441da9182b59cc3edd9f9652e",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.white"
+    },
+    {
+      "path": "data/aomic/surf/lh.sulc",
+      "sha256": "f719fbf5d32e23ed12db7fe7f8fcdee6672293f645d74f9400117687034804c4",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.sulc"
+    },
+    {
+      "path": "data/aomic/surf/lh.sphere.reg",
+      "sha256": "f7cdb356d8ca07daa1aaa492c62c11b0192927a1bcf0b382de4ddd115ef601fe",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.sphere.reg"
+    },
+    {
+      "path": "data/aomic/label/lh.aparc.a2009s.annot",
+      "sha256": "b5390f48e75c58221c11bfe3366b96325683e5181b0b947e2fb654afadb9d8d4",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/label/lh.aparc.a2009s.annot"
+    },
+    {
+      "path": "data/aomic/surf/rh.pial",
+      "sha256": "3a7dfc82af882cd9fd8aad3441130727b5270ff12fdda40872f144ff6bded6bd",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.pial"
+    },
+    {
+      "path": "data/aomic/surf/rh.white",
+      "sha256": "242822c758f3cd92be80f5be9779f8a8940fff59cbbbbdae847bef4a6dbe0b64",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.white"
+    },
+    {
+      "path": "data/aomic/surf/rh.sulc",
+      "sha256": "b8f3e722ae6bfa3d632a20dbe86ecc2312d2b42e05f346bdf5ebafe5416c63d4",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.sulc"
+    },
+    {
+      "path": "data/aomic/surf/rh.sphere.reg",
+      "sha256": "cae83bb669a9be29bb2ebc2e602993f116a04e742b55bce7ae0b2f08511f7bc5",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.sphere.reg"
+    },
+    {
+      "path": "data/aomic/label/rh.aparc.a2009s.annot",
+      "sha256": "6f00a832faea5b79a716ed01c33815b477684f2f8547fa1da02f0e063dd55994",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/label/rh.aparc.a2009s.annot"
+    },
+    {
+      "path": "data/aomic/label/lh.HCPMMP1.annot",
+      "sha256": "04adc7e7f8f75d33df9bb65ad380fb02c1acd77e77be6aaa7d0825f9f0b7a05c",
+      "anatomy": "aomic",
+      "derived_from": [
+        "data/fsaverage/label/lh.HCPMMP1.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/aomic/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/aomic/label/rh.HCPMMP1.annot",
+      "sha256": "d821790e13cef659d279de322d37271626549ae660b70d6dd7f4d90c1d79f61d",
+      "anatomy": "aomic",
+      "derived_from": [
+        "data/fsaverage/label/rh.HCPMMP1.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/aomic/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/aomic/hcp-registration.json",
+      "sha256": "1c82e50e4081dbcef0107be8303c46eaf4cb39d96601180b921cfc317dc18b72",
+      "anatomy": "aomic",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/aomic/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "9119240b6dd612753568843e7490ea1f12922a70384dd8b0ba2191125e373ea8",
+      "anatomy": "aomic",
+      "derived_from": [
+        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/aomic/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/aomic/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "618d199e32e02c2c5cf8fd6a4affc1331a6488deb9316a0e32f7ffd8e84bfe5b",
+      "anatomy": "aomic",
+      "derived_from": [
+        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/aomic/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/aomic/network-registration.json",
+      "sha256": "c0a1bd2df4f93a0d1b148b6869f1e5eacd07c3bc822e784f5afa1b2a2d66699d",
+      "anatomy": "aomic",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/nextbrain-aomic/nextbrain-aomic.mgz",
+      "sha256": "54a0f854a57a9ba243a917b54a9a76683e472f485274cefb9af6de275d49f258",
+      "anatomy": "aomic",
+      "optional": true,
+      "derived_from": "https://github.com/compneurobilbao/nextbrain-mni-atlas",
+      "procedure": "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 to aomic orig.mgz, then genericLabel resampling of the label volume",
+      "citation": "https://doi.org/10.1038/s41586-025-09708-2"
+    },
+    {
+      "path": "data/nextbrain-aomic/nextbrain-lut.txt",
+      "sha256": "607b55566ec38c9af2a6b6fa29f014265a5a80025cb89c301ccd59ccc9f4f78c",
+      "anatomy": "aomic",
+      "optional": true,
+      "derived_from": "https://github.com/compneurobilbao/nextbrain-mni-atlas",
+      "procedure": "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 to aomic orig.mgz, then genericLabel resampling of the label volume",
+      "citation": "https://doi.org/10.1038/s41586-025-09708-2"
     }
   ]
 }

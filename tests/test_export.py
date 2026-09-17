@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import trimesh
 
 from brain_model.export import add_region, write_scene
@@ -30,3 +31,34 @@ def test_glb_retains_geometry_normals_and_selectable_region_metadata(tmp_path):
     assert mesh.metadata["source_label_id"] == 1
     assert mesh.metadata["hemisphere"] == "left"
     assert mesh.faces.tolist() == faces.tolist()
+
+
+def test_recorded_area_is_the_area_glTF_actually_stores():
+    # The manifest is checked against the mesh read back from the file, whose
+    # vertices are float32. Measuring the source in float64 would describe
+    # geometry the file does not contain.
+    from brain_model.export import published_area_mm2
+
+    vertices = np.array(
+        [[0.0, 0.0, 0.0], [1e-3, 0.0, 0.0], [0.0, 1e-3, 0.0]], dtype=np.float64
+    )
+    faces = np.array([[0, 1, 2]])
+    quantized = vertices.astype(np.float32).astype(np.float64)
+    expected = trimesh.Trimesh(quantized, faces, process=False).area * 1e6
+    assert published_area_mm2(vertices, faces) == pytest.approx(expected, rel=0, abs=0)
+
+
+def test_a_sliver_records_an_area_that_round_trips_within_the_manifest_tolerance():
+    # A few-voxel structure is exactly where float64 and float32 areas diverge
+    # past 1e-6. Recording the published figure is what lets such a structure be
+    # published at all rather than dropped for failing its own checksum.
+    from brain_model.export import published_area_mm2
+
+    rng = np.random.default_rng(0)
+    vertices = rng.normal(scale=2e-5, size=(18, 3)) + np.array([0.05, -0.03, 0.02])
+    faces = np.array([[i, (i + 1) % 18, (i + 2) % 18] for i in range(18)])
+    recorded = published_area_mm2(vertices, faces)
+    stored = trimesh.Trimesh(
+        vertices.astype(np.float32).astype(np.float64), faces, process=False
+    )
+    assert abs(recorded - stored.area * 1e6) / recorded < 1e-6

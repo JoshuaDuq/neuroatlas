@@ -1,6 +1,7 @@
 """Which brain gets published is a configuration choice, not a code path."""
 
 import json
+from urllib.parse import quote
 
 import pytest
 import yaml
@@ -96,7 +97,10 @@ def test_every_declared_anatomy_resolves_and_every_source_tag_names_one():
     for name in names:
         resolved = resolve_config({**declared, "anatomy": name})
         assert resolved["anatomy"]["id"] == name
-        assert resolved["source_directory"].is_dir() or "archive" in resolved["anatomy"]
+        # A brain whose files this repository does not redistribute is absent
+        # from a fresh checkout until prepare_subject.py fetches it.
+        obtainable = {"archive", "download"} & set(resolved["anatomy"])
+        assert resolved["source_directory"].is_dir() or obtainable
     tagged = {
         source.get("anatomy")
         for source in json.loads((ROOT / "data/sources.json").read_text())["sources"]
@@ -128,3 +132,76 @@ def test_a_brain_can_be_prepared_without_being_the_selected_one():
     other = "fsaverage" if selected["anatomy"]["id"] != "fsaverage" else "bert"
     assert read_config(other)["anatomy"]["id"] == other
     assert read_config()["anatomy"]["id"] == selected["anatomy"]["id"]
+
+
+def load_prepare_subject():
+    """scripts/ is not a package, so the script is loaded by path."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "prepare_subject", ROOT / "scripts/prepare_subject.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class Response:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def read(self):
+        return self.payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exception):
+        return False
+
+
+def downloadable(tmp_path, monkeypatch, files):
+    """A `download` anatomy whose files are served from memory."""
+    prepare = load_prepare_subject()
+    base = "https://example.invalid/sub-0001"
+    served = {f"{base}/{quote(name)}": data for name, data in files.items()}
+    monkeypatch.setattr(prepare, "ROOT", tmp_path)
+    monkeypatch.setattr(prepare, "SUBJECT_FILES", list(files))
+    monkeypatch.setattr(prepare, "urlopen", lambda url: Response(served[url]))
+    config = {
+        "source_directory": tmp_path / "data/example",
+        "anatomy": {"id": "example", "download": {"base_url": base}},
+    }
+    return prepare, config
+
+
+def test_a_downloaded_reconstruction_records_a_checksum_for_every_file(tmp_path, monkeypatch):
+    # The `+` in aparc.a2009s+aseg.mgz is a real path character, and an S3 key
+    # that leaves it unescaped is a 404 rather than a wrong file.
+    files = {"mri/aparc.a2009s+aseg.mgz": b"labels", "surf/lh.pial": b"surface"}
+    prepare, config = downloadable(tmp_path, monkeypatch, files)
+    provenance = {"sources": []}
+
+    prepare.download_subject(config, provenance)
+
+    written = {
+        source["path"]: source for source in provenance["sources"]
+    }
+    assert set(written) == {"data/example/mri/aparc.a2009s+aseg.mgz", "data/example/surf/lh.pial"}
+    for record in written.values():
+        assert record["anatomy"] == "example"
+        assert len(record["sha256"]) == 64
+    assert (config["source_directory"] / "surf/lh.pial").read_bytes() == b"surface"
+
+
+def test_a_downloaded_file_whose_bytes_changed_is_refused_rather_than_rebuilt(tmp_path, monkeypatch):
+    files = {"surf/lh.pial": b"surface"}
+    prepare, config = downloadable(tmp_path, monkeypatch, files)
+    provenance = {"sources": []}
+    prepare.download_subject(config, provenance)
+
+    # An already-present file is never re-fetched, so tampering must be caught
+    # by the recorded checksum or it would be built from silently.
+    (config["source_directory"] / "surf/lh.pial").write_bytes(b"tampered")
+    with pytest.raises(SystemExit, match="recorded checksum"):
+        prepare.download_subject(config, provenance)

@@ -39,7 +39,9 @@ def resolve_config(document):
         anatomy["hcp_source_directory"] = ROOT / anatomies[projected_from]["directory"]
     config["anatomy"] = anatomy
     config["source_directory"] = ROOT / anatomy["directory"]
-    config["output_directory"] = ROOT / config["output_directory"]
+    # Each brain publishes into its own directory, so one can be built without
+    # overwriting another and the viewer can offer the choice at runtime.
+    config["output_directory"] = ROOT / config["output_directory"] / anatomy["id"]
     # The warp is anatomy-specific; everything else about it is not.
     config["nextbrain"] = {**config["nextbrain"], **anatomy["nextbrain"]}
     config["nextbrain"]["directory"] = ROOT / config["nextbrain"]["directory"]
@@ -54,9 +56,14 @@ def read_config(anatomy=None):
     that do that work. The build itself never passes one.
     """
     document = yaml.safe_load((ROOT / "config/model.yaml").read_text())
+    # What the file selects, kept across an override so that building a second
+    # brain does not change which one the viewer opens by default.
+    selected = document["anatomy"]
     if anatomy is not None:
         document = {**document, "anatomy": anatomy}
-    return resolve_config(document)
+    config = resolve_config(document)
+    config["default_anatomy"] = selected
+    return config
 
 
 def sha256(path):

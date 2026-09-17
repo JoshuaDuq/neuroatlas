@@ -4,7 +4,7 @@ import numpy as np
 import trimesh
 
 from .geometry import extract_structure
-from .learning import read_definition, source_groups
+from .learning import constituent_id, read_definition, source_groups
 from .sources import sha256
 
 
@@ -37,7 +37,7 @@ def expected_metadata(config):
                 "segmentation_volume_mm3": count * voxel_volume,
                 "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
                 "constituent_regions": [
-                    f"{source}:{side}:{label}" for label in members
+                    constituent_id(source, side, label) for label in members
                 ],
             }
     return records, affine

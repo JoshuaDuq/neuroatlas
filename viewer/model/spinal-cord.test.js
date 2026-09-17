@@ -9,7 +9,9 @@ import { visibilityOf } from '../catalog/visibility.js';
 import { SolidSections } from '../tissues/solid-sections.js';
 import { addSolidSources, indexLabels, paintSolids } from '../tissues/solid-assets.js';
 
-const directory = new URL('../../public/models/', import.meta.url);
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
+const directory = new URL(`../../public/models/${published}/`, import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
 const assembly = manifest.regions.filter(region => region.atlas === 'zanatomy');
 const cord = assembly.find(region => region.id === 'zanatomy:midline:cord');

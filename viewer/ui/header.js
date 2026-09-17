@@ -9,6 +9,12 @@ const switchProgress = (progress, lang) => {
 
 const SURFACE_MODES = ['tissue', 'atlas', 'network'];
 
+/** Short name for the identity switch: the specimen, not the reconstruction title. */
+export function anatomySwitchLabel(entry) {
+  const quoted = String(entry?.display_name ?? '').match(/[“"]([^”"]+)[”"]/);
+  return quoted?.[1] ?? entry?.subject ?? entry?.id ?? '';
+}
+
 /**
  * Atlas choice, what the surface is coloured by, visible region count,
  * language and theme.
@@ -18,7 +24,7 @@ const SURFACE_MODES = ['tissue', 'atlas', 'network'];
  * answer "what am I looking at", so both are in the masthead rather than one
  * of them behind a panel tab.
  */
-export function createHeader({ atlases, networks, anatomy, onAtlas, onSurfaceColor, onTheme, onLang }) {
+export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtlas, onSurfaceColor, onTheme, onLang, onAnatomy }) {
   const container = document.getElementById('atlas-switch');
   const surfaceContainer = document.getElementById('surface-switch');
   const regionCount = document.getElementById('region-count');
@@ -29,11 +35,36 @@ export function createHeader({ atlases, networks, anatomy, onAtlas, onSurfaceCol
   const moreButton = document.getElementById('masthead-more');
   const menu = document.getElementById('masthead-menu');
   const studyName = document.getElementById('study-name');
+  const anatomySwitch = document.getElementById('anatomy-switch');
 
+  /*
+   * Which brain. A dropdown rather than a segmented control: the names are
+   * long, and unlike the atlas switch this one replaces every asset on the
+   * page, so it should read as a deliberate choice rather than a toggle. With
+   * only one brain published there is nothing to choose, and the control stays
+   * hidden — an option that can never be taken is not a choice.
+   *
+   * When there is a choice it replaces the static study name in the identity
+   * cluster. Showing both named the same specimen twice.
+   */
+  const offerAnatomies = anatomies.length > 1;
+  const onAnatomyChange = event => onAnatomy?.(event.target.value);
   if (studyName && anatomy?.subject) {
     studyName.textContent = anatomy.subject;
     studyName.title = anatomy.label || anatomy.display_name || anatomy.subject;
-    studyName.hidden = false;
+    studyName.hidden = offerAnatomies;
+  }
+  if (anatomySwitch && offerAnatomies) {
+    for (const entry of anatomies) {
+      const option = document.createElement('option');
+      option.value = entry.id;
+      option.textContent = anatomySwitchLabel(entry);
+      option.title = entry.display_name ?? entry.id;
+      option.selected = entry.id === anatomy?.id;
+      anatomySwitch.append(option);
+    }
+    anatomySwitch.hidden = false;
+    anatomySwitch.addEventListener('change', onAnatomyChange);
   }
 
   /*
@@ -137,6 +168,11 @@ export function createHeader({ atlases, networks, anatomy, onAtlas, onSurfaceCol
       container.setAttribute('aria-label', i18n.atlasSwitch);
       surfaceContainer.setAttribute('aria-label', t(state.lang, 'display').surfaceColor);
       if (langContainer) langContainer.setAttribute('aria-label', i18n.languageSwitch);
+      if (anatomySwitch && offerAnatomies) {
+        anatomySwitch.setAttribute('aria-label', i18n.anatomySwitch);
+        anatomySwitch.title = anatomySwitch.selectedOptions[0]?.title || i18n.anatomySwitch;
+        anatomySwitch.disabled = state.status === 'loading' || switching;
+      }
       if (shortcutsButton) shortcutsButton.setAttribute('aria-label', i18n.shortcuts);
       paintShortcuts(menuQuery.matches);
       moreButton.setAttribute('aria-label', t(state.lang, 'menu').more);
@@ -183,6 +219,7 @@ export function createHeader({ atlases, networks, anatomy, onAtlas, onSurfaceCol
       for (const [btn, handler] of onLangClicks) {
         btn.removeEventListener('click', handler);
       }
+      anatomySwitch?.removeEventListener('change', onAnatomyChange);
       container.replaceChildren();
       surfaceContainer.replaceChildren();
     },

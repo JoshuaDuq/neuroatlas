@@ -44,16 +44,13 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
    * 1100px window a 460px stage, and the bar was painted over the presets
    * there.
    *
-   * Measured from the buttons, never from the row that holds them. The tight
-   * rule stretches that row across the stage, so its own width reports the
-   * stretch rather than the content: once tight was entered it could never be
-   * left, and a 1440px window kept the bar pinned to the top edge.
+   * Measured from the buttons, never from the row that holds them. A max-width
+   * on the plate can clip it, and scrollWidth would then report the clip.
    */
   let cachedPresetsWidth = null;
   function presetsWidth() {
     if (cachedPresetsWidth === null) {
-      cachedPresetsWidth = buttons.reduce((total, button) => total + button.offsetWidth, 0)
-        - Math.max(0, buttons.length - 1); // the buttons overlap by their shared border
+      cachedPresetsWidth = buttons.reduce((total, button) => total + button.offsetWidth, 0);
     }
     return cachedPresetsWidth;
   }
@@ -151,12 +148,16 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
       if (snapshotButton) {
         snapshotButton.setAttribute('aria-label', i18nViewport.snapshot);
         snapshotButton.title = i18nViewport.snapshot;
-        snapshotButton.hidden = !ready;
+        snapshotButton.disabled = !ready;
+        const label = snapshotButton.querySelector('.masthead-action-label');
+        if (label) label.textContent = i18nViewport.snapshot;
       }
       if (fullscreenButton) {
         fullscreenButton.setAttribute('aria-label', i18nViewport.fullscreen);
         fullscreenButton.title = i18nViewport.fullscreen;
-        fullscreenButton.hidden = !ready;
+        fullscreenButton.disabled = !ready;
+        const label = fullscreenButton.querySelector('.masthead-action-label');
+        if (label) label.textContent = i18nViewport.fullscreen;
       }
 
       if (lastCameraArgs) {

@@ -7,6 +7,7 @@ import { STRUCTURE_LABELS } from './structure-groups.js';
 import { STRUCTURE_LABELS_FR } from './structure-groups.fr.js';
 import { WHITE_MATTER_LABELS } from './white-matter-labels.js';
 import { WHITE_MATTER_LABELS_FR } from './white-matter-labels.fr.js';
+import { canonicalSourceName } from './source-names.js';
 
 const UNLABELLED = {
   en: { name: 'Unlabelled', code: null, group: 'Unlabelled', aliases: [] },
@@ -97,8 +98,9 @@ export function labelOf(region, lang = 'en') {
     };
   }
 
+  const key = canonicalSourceName(region.source_name);
   const table = isFr ? DESTRIEUX_LABELS_FR : DESTRIEUX_LABELS;
-  const entry = table[region.source_name] ?? DESTRIEUX_LABELS[region.source_name];
+  const entry = table[key] ?? DESTRIEUX_LABELS[key];
   if (!entry) return null;
   return {
     name: entry.name, code: null, group: entry.lobe, aliases: entry.aliases ?? [],

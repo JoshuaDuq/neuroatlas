@@ -4,7 +4,7 @@ A source-faithful, selectable brain model with solid anatomical tissue cuts, reg
 
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
-- **Learning anatomy:** 75 derived overview structures, with distinct teaching colours, bounded display smoothing, anatomical-system exploration and links to constituent source regions.
+- **Learning anatomy:** 74 derived overview structures, with distinct teaching colours, bounded display smoothing, anatomical-system exploration and links to constituent source regions.
 - **Internal anatomy:** 35 structures from the same subject's segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
 - **Histological detail:** 483 NextBrain regions. 298 of them are solid nuclei in a second internal-anatomy detail level; the remaining 185 stay cut labels. Optional.
 - **Gyral white matter:** 68 parcels of the white matter nearest each Desikan gyrus, from the same subject's `wmparc.mgz`. Named, selectable and isolatable on Destrieux and HCP-MMP cuts.
@@ -36,20 +36,45 @@ bounds how much the labels can be trusted.
 
 ### Switching brains
 
-`config/model.yaml` declares each anatomy and selects one. Change the selection,
-rebuild, and the other is published; no conversion step knows which brain it is
-reading.
+`config/model.yaml` declares each anatomy and selects one. Every brain built
+publishes into its own directory under `public/models/`, so building a second
+does not overwrite the first, and the viewer offers whichever are present.
 
 ```yaml
-anatomy: bert        # or: fsaverage
+anatomy: bert        # the default a link without one opens
 ```
 
-Two are declared.
+```sh
+uv run python -m brain_model.build                   # the selected brain
+uv run python -m brain_model.build --anatomy aomic   # another declared one
+```
+
+`models/anatomies.json` records what was built and which is the default; a
+`#anatomy=` in the link chooses between them. That parameter is not optional
+decoration: region ids are shared between brains on purpose — `destrieux:left:6`
+names the same parcel in each — so a link without it would open the right region
+on whichever brain happened to load. Only one brain is ever live at a time, so
+nothing can mix them.
+
+Three are declared.
 
 | `anatomy` | What it is | Reconstruction | Cortical labels |
 | --- | --- | --- | --- |
 | `bert` | FreeSurfer's published worked example: one ordinary 1 mm T1 | 5.2.0, Jan 2013 | its own Destrieux; HCP resampled on |
 | `fsaverage` | FreeSurfer's averaged template | 6 | template Destrieux; HCP already native |
+| `aomic` | AOMIC-PIOP1 `sub-0022`, one 3T T1 released CC0 | 6.0.1 | its own Destrieux; HCP resampled on |
+
+`aomic` is the most permissively licensed of the three: [OpenNeuro
+ds002785](https://openneuro.org/datasets/ds002785) is released CC0, where bert
+carries FreeSurfer's own terms. It publishes a complete `recon-all` output per
+subject, so nothing here reconstructs anything — the same files bert's archive
+supplies are fetched individually and pinned by checksum.
+
+Which of its 216 subjects is a decision the dataset itself answers. `sub-0022`
+has the lowest coefficient of joint variation (0.258 against a 0.326 median) and
+the highest contrast-to-noise ratio (4.714) of all 216 in the MRIQC group table
+the dataset publishes, so it is the best-quality T1 by the measures its own
+authors released rather than the first one in the list.
 
 An anatomy's entry carries everything that differs — where its files live, which
 archive to unpack and its checksum, which brain to resample HCP from, which
@@ -64,12 +89,20 @@ uv run python scripts/prepare_subject.py --anatomy fsaverage
 uv run python scripts/warp_nextbrain.py --anatomy fsaverage --atlas ... --record
 ```
 
+`aomic` needs no download step of its own: its files are fetched individually
+from the URL its entry declares, checksummed into `data/sources.json` on that
+first run and enforced against it afterwards.
+
+```sh
+uv run python scripts/prepare_subject.py --anatomy aomic
+```
+
 ### What is not declared, and why
 
 Every step reads a complete `recon-all` output: pial, white, sulc and sphere.reg
 per hemisphere, a Destrieux `.annot` per hemisphere, and orig, aseg, ribbon and
 aparc.a2009s+aseg on FreeSurfer's conformed 256³ grid. That requirement, not
-taste, is what excludes the more recent candidates:
+taste, is what admits `aomic` and excludes the other recent candidates:
 
 - **FreeSurfer Maintenance Dataset** — OpenNeuro `ds004958`, CC0, collected by
   Greve and Fischl to test FreeSurfer itself. The best modern acquisition found:
@@ -101,9 +134,11 @@ taste, is what excludes the more recent candidates:
   download route, as the annex branch registers no web URLs and no special
   remotes.
 
-So bert's 2013 date is a ceiling, not an oversight: FreeSurfer has published no
-complete reconstruction since, and its current release distributes raw samples
-rather than a recon. *Most recent* and *usable as published* do not meet.
+So bert's 2013 date is a ceiling on what *FreeSurfer* has published, not an
+oversight: it has released no complete reconstruction since, and its current
+release distributes raw samples rather than a recon. `aomic` is how the ceiling
+is escaped without lowering the requirement — a 2021 `recon-all` 6.0.1 output
+someone else published complete, taken as published.
 
 The published limitations, the colophon and the slice note all follow the
 selection rather than being written for one brain.
@@ -189,7 +224,7 @@ Selecting a system narrows the navigation tree and frames those structures.
 Selection, Focus, Isolate, hemisphere controls and cuts remain available. A shared
 link preserves the chosen system. English and French use anatomical groups.
 
-The 75 overview structures combine explicit constituent labels from NextBrain;
+The 74 overview structures combine explicit constituent labels from NextBrain;
 aseg supplies the ventricles and corpus callosum. This makes larger structures
 such as thalamus, caudate and hippocampal formation readable while retaining
 hypothalamus, mammillary nuclei, subthalamic nucleus, substantia nigra, red nucleus,
@@ -200,8 +235,17 @@ The original 35 aseg structures and 298 NextBrain surfaces remain reference leve
 `config/learning-anatomy.yaml` defines each union, bilingual name and teaching
 colour. `brain_model/learning.py` extracts its union surface and applies
 [Trimesh Taubin smoothing](https://trimesh.org/trimesh.smoothing.html#trimesh.smoothing.filter_taubin),
-bounding every vertex's displacement to 0.6 mm. No label volume is changed;
-reported volumes count original voxels. The teaching palette distinguishes units
+bounding every vertex's displacement to 0.6 mm. Every union a subject's
+segmentation supports is published, however few voxels it holds: a structure
+present in one brain and absent from another is a fact about those brains, not a
+reason to withhold it. A structure that crosses the midline declares
+`hemisphere: midline` and is published once rather than halved — NextBrain
+labels each ROI on both sides of its own grid, and halving the optic chiasm
+invents a boundary where the anatomy is the crossing, leaving each half small
+enough that surviving the warp is arbitrary. Reported areas are measured on the float32 vertices glTF
+stores rather than on the float64 source, so a unit a few voxels across still
+matches the geometry the file contains. No label volume is changed; reported
+volumes count original voxels. The teaching palette distinguishes units
 and is not the published source LUT. `learning.glb` and the manifest record this
 provenance, and `validation.json` independently checks source membership,
 constituent references, topology, colour and displacement for every overview mesh.
@@ -314,6 +358,8 @@ The generated mesh assets are modified derivatives of FreeSurfer data.
 “All or portions of this licensed product (such portions are the "Software") have been obtained under license from The General Hospital Corporation and are subject to the following terms and conditions:”
 
 The full terms are included in [FreeSurferSoftwareLicense](public/models/licenses/FreeSurfer.html). See the included [FreeSurfer terms](public/models/licenses/FreeSurfer.html) and [HCP data-use terms](public/models/licenses/HCP-Data-Use-Terms.txt) before redistributing source or derived data. Provenance and checksums are recorded in `data/sources.json` and the model manifest.
+
+That first sentence follows the selected anatomy. `bert` and `fsaverage` are data FreeSurfer distributes, so a build of either carries the terms above. `aomic` is not: its reconstruction is the AOMIC authors' own output from their own scan, released under [CC0](https://openneuro.org/datasets/ds002785) — a public-domain dedication. Running FreeSurfer to produce it binds the software's licence, not this repository's use of the result. An `aomic` build still carries HCP data-use terms wherever the HCP-MMP layer is present, because that annotation is resampled onto it rather than produced by it. These are the terms each publisher states; confirm them before redistributing.
 
 `spinal-cord.glb` stands apart from the rest of the bundle: it is derived from the [Z-Anatomy](https://www.z-anatomy.com/) scene, which publishes its anatomy under CC BY-SA 4.0 (after BodyParts3D, CC BY-SA 2.1 JP). ShareAlike is copyleft, so redistributing that file or an adaptation of it carries the attribution and licence obligations set out in [Z-Anatomy terms](public/models/licenses/Z-Anatomy.txt). It is kept as its own asset, and its manifest layer records its licence and attribution, so the layers can be told apart.
 

@@ -5,7 +5,7 @@ from itertools import pairwise
 import numpy as np
 import pytest
 import trimesh
-from scipy.spatial import Delaunay, cKDTree
+from scipy.spatial import cKDTree
 
 from brain_model import spinal_cord
 from brain_model.geometry import to_gltf

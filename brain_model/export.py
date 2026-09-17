@@ -8,6 +8,20 @@ from trimesh.visual.material import PBRMaterial
 from .geometry import normalize, to_gltf
 
 
+def published_area_mm2(vertices, faces):
+    """Surface area of the geometry as glTF stores it, in square millimetres.
+
+    `vertices` are already in the export frame, where glTF writes them as
+    float32. Measuring in float64 would describe geometry the file does not
+    contain: negligible for an ordinary structure, but on a sliver a few voxels
+    across the difference exceeds the manifest's area tolerance. Recording what
+    is published keeps that tolerance tight without withholding the structure.
+    """
+    quantized = np.asarray(vertices, dtype=np.float32).astype(np.float64)
+    mesh = trimesh.Trimesh(quantized, faces, process=False)
+    return float(mesh.area * 1e6)
+
+
 def add_region(scene, vertices, faces, normals, region, color):
     metadata = {**region, "region_id": region["id"]}
     material = PBRMaterial(

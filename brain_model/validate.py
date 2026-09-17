@@ -1,5 +1,6 @@
 """Independent numerical invariants plus actual GLB round-trip checks."""
 
+import argparse
 import json
 
 import nibabel as nib
@@ -657,7 +658,11 @@ def validate_manifest(config, manifest):
 
 
 def main():
-    config = read_config()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--anatomy", help="validate this declared anatomy instead of the selected one"
+    )
+    config = read_config(parser.parse_args().anatomy)
     verify_sources(config)
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())

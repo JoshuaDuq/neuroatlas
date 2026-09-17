@@ -1,0 +1,3882 @@
+{
+  "status": "passed",
+  "scope": "Source-to-asset conversion fidelity",
+  "clinical_accuracy_validated": false,
+  "atlases": [
+    {
+      "file": "cortex-destrieux.glb",
+      "sha256": "4396878c08547f25fb33e0b8dd9f9c51edf12573827fd5c91058febf44f11a6d",
+      "mesh_count": 150,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 135472,
+          "source_triangles": 270940,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 353490,
+          "maximum_parent_plane_error_mm": 5.412337245047638e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 116503.43839735058,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 135537,
+          "source_triangles": 271070,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 355865,
+          "maximum_parent_plane_error_mm": 5.162537064506978e-15,
+          "maximum_parent_area_error_mm2": 4.440892098500626e-16,
+          "source_surface_area_mm2": 118834.09458624505,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "maximum_glb_coordinate_error_mm": 4.404900197833609e-06,
+      "maximum_normal_component_error": 2.980209323766303e-08,
+      "maximum_sulcal_depth_error": 0.0,
+      "maximum_ribbon_T1_error": 7.629339563663962e-06
+    },
+    {
+      "file": "cortex-hcp-mmp.glb",
+      "sha256": "adb8d2bc7a0a796fffaeb8cb672e353a909106d6cb7ef706328cfabda1e5d306",
+      "mesh_count": 362,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 135472,
+          "source_triangles": 270940,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 402455,
+          "maximum_parent_plane_error_mm": 5.773159728050814e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 116503.43839735058,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 135537,
+          "source_triangles": 271070,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 404385,
+          "maximum_parent_plane_error_mm": 5.440092820663267e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 118834.09458624505,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "maximum_glb_coordinate_error_mm": 4.441034935730908e-06,
+      "maximum_normal_component_error": 2.980226454507573e-08,
+      "maximum_sulcal_depth_error": 0.0,
+      "maximum_ribbon_T1_error": 7.629339563663962e-06
+    }
+  ],
+  "ribbon_labels": [
+    {
+      "file": "ribbon-destrieux.labels",
+      "sha256": "7a494e14d5e384ece541b2f0b51fbf6ba522e89b046ce49d25d41f1de32c8ac9",
+      "vertex_count": 271009,
+      "region_count": 150,
+      "wedges": 150,
+      "holes": 0,
+      "pinches": 109
+    },
+    {
+      "file": "ribbon-hcp-mmp.labels",
+      "sha256": "3500f1e1cb75a0e1a255bee83d2d6d40f7c6296d994f5621db5b1746cc4dc1f9",
+      "vertex_count": 271009,
+      "region_count": 362,
+      "wedges": 362,
+      "holes": 0,
+      "pinches": 252
+    }
+  ],
+  "structures": {
+    "file": "structures.glb",
+    "sha256": "a11582823327c357a8ba924a356a4d559f34f69c9177e5d366260cd1368fc739",
+    "regions": [
+      {
+        "id": "aseg:midline:255",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.115964889526367e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.90746504458183e-06,
+        "maximum_trilinear_isovalue_deviation": 2.115964889526367e-06,
+        "mesh_volume_mm3": 658.7917130759431
+      },
+      {
+        "id": "aseg:midline:254",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.311011114449459e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1920928955078125e-06,
+        "mesh_volume_mm3": 566.4166794095627
+      },
+      {
+        "id": "aseg:midline:253",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.0033763583610588e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 464.54167293066587
+      },
+      {
+        "id": "aseg:midline:252",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 626.0833643086545
+      },
+      {
+        "id": "aseg:midline:251",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.811212586532147e-07,
+        "maximum_trilinear_isovalue_deviation": 9.238719940185547e-07,
+        "mesh_volume_mm3": 914.9166886526302
+      },
+      {
+        "id": "aseg:midline:85",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2346625951901074e-06,
+        "maximum_trilinear_isovalue_deviation": 1.0132789611816406e-06,
+        "mesh_volume_mm3": 177.4583509848808
+      },
+      {
+        "id": "aseg:right:63",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.115964889526367e-06,
+        "marching_cubes_auxiliary_center_vertices": 15,
+        "maximum_glb_coordinate_error_mm": 2.095309389977755e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 540.4999971804656
+      },
+      {
+        "id": "aseg:right:60",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.3068921535778462e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 4168.999930531791
+      },
+      {
+        "id": "aseg:right:58",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.16705681378849e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 742.291644836658
+      },
+      {
+        "id": "aseg:right:54",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.8038561893129507e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 1762.2499920102955
+      },
+      {
+        "id": "aseg:right:53",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.095309389977755e-06,
+        "maximum_trilinear_isovalue_deviation": 1.817941665649414e-06,
+        "mesh_volume_mm3": 4419.541729829039
+      },
+      {
+        "id": "aseg:right:52",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.311011114449459e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1920928955078125e-06,
+        "mesh_volume_mm3": 1796.083270346549
+      },
+      {
+        "id": "aseg:right:51",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.6351266274825023e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 4330.583351136226
+      },
+      {
+        "id": "aseg:right:50",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0665961891273924e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 4216.833441486545
+      },
+      {
+        "id": "aseg:right:49",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3526651676351724e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4901161193847656e-06,
+        "mesh_volume_mm3": 7187.375186401929
+      },
+      {
+        "id": "aseg:right:47",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.589557647705078e-06,
+        "marching_cubes_auxiliary_center_vertices": 36,
+        "maximum_glb_coordinate_error_mm": 4.513945184241893e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500065565109253,
+        "mesh_volume_mm3": 60440.208662311066
+      },
+      {
+        "id": "aseg:right:46",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.069639205932617e-06,
+        "marching_cubes_auxiliary_center_vertices": 41,
+        "maximum_glb_coordinate_error_mm": 3.115019941384624e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500059604644775,
+        "mesh_volume_mm3": 13123.29163847869
+      },
+      {
+        "id": "aseg:right:44",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.064025993354464e-06,
+        "maximum_trilinear_isovalue_deviation": 2.0265579223632812e-06,
+        "mesh_volume_mm3": 363.1666780723741
+      },
+      {
+        "id": "aseg:right:43",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.086162567138672e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.4286607184266252e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 8117.833428932014
+      },
+      {
+        "id": "aseg:left:31",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 2.024200853344747e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 419.54165382439555
+      },
+      {
+        "id": "aseg:left:28",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.319762627211112e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 4102.666672186392
+      },
+      {
+        "id": "aseg:left:26",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1031892310905217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 949.1250072492568
+      },
+      {
+        "id": "aseg:left:18",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.5491475365599425e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499970197677612,
+        "mesh_volume_mm3": 1619.5416832396306
+      },
+      {
+        "id": "aseg:left:17",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.0889280925840206e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 4294.208204013662
+      },
+      {
+        "id": "aseg:midline:16",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.6954879760742188e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 3.821450652286471e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": 21811.083680587537
+      },
+      {
+        "id": "aseg:midline:15",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.4570693969726562e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 3.4093408243241608e-06,
+        "maximum_trilinear_isovalue_deviation": 3.4570693969726562e-06,
+        "mesh_volume_mm3": 2028.7081488894257
+      },
+      {
+        "id": "aseg:midline:14",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 7.90434625738031e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 839.2916657985579
+      },
+      {
+        "id": "aseg:left:13",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2118593222705997e-06,
+        "maximum_trilinear_isovalue_deviation": 1.043081283569336e-06,
+        "mesh_volume_mm3": 1812.7916320116108
+      },
+      {
+        "id": "aseg:left:12",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.5914022013604896e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 4234.708351939372
+      },
+      {
+        "id": "aseg:left:11",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6093254089355469e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.9530187463007587e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 3795.708421002451
+      },
+      {
+        "id": "aseg:left:10",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3715545533900084e-06,
+        "maximum_trilinear_isovalue_deviation": 1.341104507446289e-06,
+        "mesh_volume_mm3": 7264.250079854164
+      },
+      {
+        "id": "aseg:left:8",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.6193599700927734e-06,
+        "marching_cubes_auxiliary_center_vertices": 18,
+        "maximum_glb_coordinate_error_mm": 4.651549686106206e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500089406967163,
+        "mesh_volume_mm3": 61597.4997488394
+      },
+      {
+        "id": "aseg:left:7",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.904104232788086e-06,
+        "marching_cubes_auxiliary_center_vertices": 15,
+        "maximum_glb_coordinate_error_mm": 3.941378262126095e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500065565109253,
+        "mesh_volume_mm3": 13793.167004135652
+      },
+      {
+        "id": "aseg:left:5",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.9371509552001953e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.1420386822302828e-06,
+        "maximum_trilinear_isovalue_deviation": 1.9371509552001953e-06,
+        "mesh_volume_mm3": 307.12503764145913
+      },
+      {
+        "id": "aseg:left:4",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.0563602447509766e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.405926184609711e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 6910.208392342733
+      }
+    ]
+  },
+  "spinal_cord": {
+    "source_shape_preserved": true,
+    "watertight": true,
+    "mri_registered": false,
+    "structure_count": 35,
+    "region_count": 58,
+    "triangle_count": 277236,
+    "volume_method": "Enclosed volume of the published closed surface",
+    "placement": "Rigid translation onto the brainstem; no rotation or scaling",
+    "division": "Mirrored objects publish their two disconnected halves; no triangle is cut"
+  },
+  "solid_envelopes": {
+    "file": "tissue-envelopes.glb",
+    "sha256": "edf722cf6819edfb98e191121d7f11c33eb84caffa8c09633635767110670e54",
+    "identical_native_topology": true,
+    "maximum_coordinate_error_mm": 3.6954879711892374e-06
+  },
+  "nextbrain_structures": {
+    "file": "nextbrain.glb",
+    "sha256": "11421df8e1a268f3391d931c06392fd1b21de44782e4624b3c03ad82181a6538",
+    "regions": [
+      {
+        "id": "nextbrain:right:10752",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.562999725341797e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.6011064228933303e-06,
+        "maximum_trilinear_isovalue_deviation": 2.562999725341797e-06,
+        "mesh_volume_mm3": 146.41667380261123
+      },
+      {
+        "id": "nextbrain:right:10751",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.3738752928871764e-06,
+        "maximum_trilinear_isovalue_deviation": 2.1457672119140625e-06,
+        "mesh_volume_mm3": 55.33333840454333
+      },
+      {
+        "id": "nextbrain:right:10721",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 2.9802322387695312e-06,
+        "marching_cubes_auxiliary_center_vertices": 36,
+        "maximum_glb_coordinate_error_mm": 2.605957059705159e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500077486038208,
+        "mesh_volume_mm3": 733.7917225695944
+      },
+      {
+        "id": "nextbrain:right:10697",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.9669532775878906e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 2.0196743035853815e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 70.54166848678022
+      },
+      {
+        "id": "nextbrain:right:10662",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.814697265625e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 3.482718592041979e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 1690.333519109076
+      },
+      {
+        "id": "nextbrain:right:10580",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 11,
+        "maximum_glb_coordinate_error_mm": 2.0357544099109833e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 4832.37499666687
+      },
+      {
+        "id": "nextbrain:right:10578",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.342759171255685e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4007091522216797e-06,
+        "mesh_volume_mm3": 3.9999944387632116
+      },
+      {
+        "id": "nextbrain:right:10576",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3563331271497737e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 174.4583118250543
+      },
+      {
+        "id": "nextbrain:right:10575",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1255309779159944e-06,
+        "maximum_trilinear_isovalue_deviation": 1.341104507446289e-06,
+        "mesh_volume_mm3": 21.249994461732804
+      },
+      {
+        "id": "nextbrain:right:10573",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1097364056682357e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 5.333335529081776
+      },
+      {
+        "id": "nextbrain:right:10565",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6987323760986328e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.4640343477327733e-06,
+        "maximum_trilinear_isovalue_deviation": 1.6987323760986328e-06,
+        "mesh_volume_mm3": 4.833332683269861
+      },
+      {
+        "id": "nextbrain:right:10564",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6093254089355469e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.4042713898457104e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 85.7500084449245
+      },
+      {
+        "id": "nextbrain:right:10563",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2721089107044366e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2814998626708984e-06,
+        "mesh_volume_mm3": 2.1666658694541066
+      },
+      {
+        "id": "nextbrain:right:10562",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.1999830261044646e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 36.37499347856741
+      },
+      {
+        "id": "nextbrain:right:10561",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2827338124668395e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4603137969970703e-06,
+        "mesh_volume_mm3": 11.333334948246515
+      },
+      {
+        "id": "nextbrain:right:10558",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.2449382885816945e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 45.708325115033674
+      },
+      {
+        "id": "nextbrain:right:10541",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1834057634851962e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 51.41664333226309
+      },
+      {
+        "id": "nextbrain:right:10531",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.2351741790771484e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 2.0614593251251697e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 135.6666910621952
+      },
+      {
+        "id": "nextbrain:right:10521",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.245567955753118e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 36.83334048325112
+      },
+      {
+        "id": "nextbrain:right:10519",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.385807991027832e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 46.41666291002239
+      },
+      {
+        "id": "nextbrain:right:10517",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.342759171255685e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 225.12502101428385
+      },
+      {
+        "id": "nextbrain:right:10508",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.1019809183170987e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 519.9167152704114
+      },
+      {
+        "id": "nextbrain:right:10496",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 9.914382646638621e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 21.291668939017292
+      },
+      {
+        "id": "nextbrain:right:10492",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.786387955690758e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 13.083331540227105
+      },
+      {
+        "id": "nextbrain:right:10484",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.342759171255685e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 279.8333283778462
+      },
+      {
+        "id": "nextbrain:right:10478",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.1196713086467505e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 115.62499769885548
+      },
+      {
+        "id": "nextbrain:right:10465",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3067681219840679e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 127.29166229779189
+      },
+      {
+        "id": "nextbrain:right:10461",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3321338080541497e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 79.5833320519869
+      },
+      {
+        "id": "nextbrain:right:10458",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3134171217334454e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 677.0833754853817
+      },
+      {
+        "id": "nextbrain:right:10454",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.055276838014681e-06,
+        "maximum_trilinear_isovalue_deviation": 8.344650268554688e-07,
+        "mesh_volume_mm3": 168.49999918439613
+      },
+      {
+        "id": "nextbrain:right:10441",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.311011114449459e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 286.54166095963996
+      },
+      {
+        "id": "nextbrain:right:10435",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 9.628920633447323e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 136.08333318094523
+      },
+      {
+        "id": "nextbrain:right:10432",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3507555362348074e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 133.75001823373952
+      },
+      {
+        "id": "nextbrain:right:10425",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 50.00000800743489
+      },
+      {
+        "id": "nextbrain:right:10424",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.450580596923828e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.700644492363808e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 88.95832573839915
+      },
+      {
+        "id": "nextbrain:right:10423",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.404466382515908e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 8.249999885292713
+      },
+      {
+        "id": "nextbrain:right:10421",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3321338080541497e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2516975402832031e-06,
+        "mesh_volume_mm3": 9.583333665700376
+      },
+      {
+        "id": "nextbrain:right:10420",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6093254089355469e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.7609869256706556e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 33.208329115836406
+      },
+      {
+        "id": "nextbrain:right:10418",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2663411920001592e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 12.58333722668947
+      },
+      {
+        "id": "nextbrain:right:10414",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_edge_vertex_isovalue_error": 2.115964889526367e-06,
+        "marching_cubes_auxiliary_center_vertices": 21,
+        "maximum_glb_coordinate_error_mm": 2.007292056719604e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500053644180298,
+        "mesh_volume_mm3": 538.2083394859235
+      },
+      {
+        "id": "nextbrain:right:10410",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7609869256706556e-06,
+        "maximum_trilinear_isovalue_deviation": 1.341104507446289e-06,
+        "mesh_volume_mm3": 2.8333325923113426
+      },
+      {
+        "id": "nextbrain:right:10408",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7837256358450347e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3709068298339844e-06,
+        "mesh_volume_mm3": 13.833322833484258
+      },
+      {
+        "id": "nextbrain:right:10407",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3014652348485418e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 110.95830827742282
+      },
+      {
+        "id": "nextbrain:right:10404",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 1.8128198101415637e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 194.1666687904668
+      },
+      {
+        "id": "nextbrain:right:10399",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.534062546123628e-07,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 25.58332781590664
+      },
+      {
+        "id": "nextbrain:right:10397",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.321258928017437e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 58.62500424512442
+      },
+      {
+        "id": "nextbrain:right:10396",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 6.404466382515908e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 37.62500045727919
+      },
+      {
+        "id": "nextbrain:right:10394",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.350107596926784e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 379.66666499362333
+      },
+      {
+        "id": "nextbrain:right:10393",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.9371509552001953e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.0749030928916733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 59.66670151739122
+      },
+      {
+        "id": "nextbrain:right:10385",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 1.0132789611816406e-06,
+        "mesh_volume_mm3": 181.50000060023757
+      },
+      {
+        "id": "nextbrain:right:10384",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.341787303518477e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 1978.7500388087976
+      },
+      {
+        "id": "nextbrain:right:10382",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.028988457961055e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 188.16666044127982
+      },
+      {
+        "id": "nextbrain:right:10381",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.684379225181604e-07,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 255.58334751182733
+      },
+      {
+        "id": "nextbrain:right:10380",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.0340117671212854e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 194.7499940772546
+      },
+      {
+        "id": "nextbrain:right:10379",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.44211236200217e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 78.20833618283109
+      },
+      {
+        "id": "nextbrain:right:10378",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 1.0076273288312071e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 109.74999290844528
+      },
+      {
+        "id": "nextbrain:right:10377",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.519918441772461e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.6645337426001736e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 407.0833429011271
+      },
+      {
+        "id": "nextbrain:right:10374",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.1772521508420151e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 24.25000259202508
+      },
+      {
+        "id": "nextbrain:right:10372",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1078630078583385e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1622905731201172e-06,
+        "mesh_volume_mm3": 4.666667700279617
+      },
+      {
+        "id": "nextbrain:right:10371",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1778576184579371e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1920928955078125e-06,
+        "mesh_volume_mm3": 5.083334799816963
+      },
+      {
+        "id": "nextbrain:right:10370",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2865286809637945e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3709068298339844e-06,
+        "mesh_volume_mm3": 45.37499473674688
+      },
+      {
+        "id": "nextbrain:right:10369",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1785264382428289e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 3.5833336984110544
+      },
+      {
+        "id": "nextbrain:right:10368",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.311011114449459e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 49.33333803950166
+      },
+      {
+        "id": "nextbrain:right:10367",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2865286809637945e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 8.416665460059619
+      },
+      {
+        "id": "nextbrain:right:10364",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.1869259542909274e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 15.666664548023103
+      },
+      {
+        "id": "nextbrain:right:10354",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.817941665649414e-06,
+        "marching_cubes_auxiliary_center_vertices": 8,
+        "maximum_glb_coordinate_error_mm": 2.0614593251251697e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 272.12505813947354
+      },
+      {
+        "id": "nextbrain:right:10352",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 80.29166712577094
+      },
+      {
+        "id": "nextbrain:right:10350",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 9.914382646638621e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 174.45832516431454
+      },
+      {
+        "id": "nextbrain:right:10349",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.519918441772461e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.2872535655576386e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 42.499994026337426
+      },
+      {
+        "id": "nextbrain:right:10347",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 24,
+        "maximum_glb_coordinate_error_mm": 1.4967324473962074e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 751.2500485583781
+      },
+      {
+        "id": "nextbrain:right:10346",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0159106927562986e-06,
+        "maximum_trilinear_isovalue_deviation": 1.7583370208740234e-06,
+        "mesh_volume_mm3": 18.33332903838459
+      },
+      {
+        "id": "nextbrain:right:10345",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.8477439880371094e-06,
+        "marching_cubes_auxiliary_center_vertices": 24,
+        "maximum_glb_coordinate_error_mm": 2.0548825890009934e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 373.4583257794981
+      },
+      {
+        "id": "nextbrain:right:10344",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7635738314492879e-06,
+        "maximum_trilinear_isovalue_deviation": 1.6689300537109375e-06,
+        "mesh_volume_mm3": 15.83333428949023
+      },
+      {
+        "id": "nextbrain:right:10343",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.6987323760986328e-06,
+        "marching_cubes_auxiliary_center_vertices": 32,
+        "maximum_glb_coordinate_error_mm": 1.8128198101415637e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 248.29165821597022
+      },
+      {
+        "id": "nextbrain:right:10341",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.2996138523230885e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 157.6666383516253
+      },
+      {
+        "id": "nextbrain:right:10340",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1787232941480167e-06,
+        "maximum_trilinear_isovalue_deviation": 1.341104507446289e-06,
+        "mesh_volume_mm3": 5.0833338539426975
+      },
+      {
+        "id": "nextbrain:right:10339",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.2996138523230885e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 79.62500845012357
+      },
+      {
+        "id": "nextbrain:right:10326",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.342759171255685e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499964237213135,
+        "mesh_volume_mm3": 51.66666362900453
+      },
+      {
+        "id": "nextbrain:right:10322",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.118310272425007e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 7.583329873703137
+      },
+      {
+        "id": "nextbrain:right:10321",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.131696562039818e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 27.666671879822506
+      },
+      {
+        "id": "nextbrain:right:10316",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.275870423882109e-07,
+        "maximum_trilinear_isovalue_deviation": 7.152557373046875e-07,
+        "mesh_volume_mm3": 31.541663079950567
+      },
+      {
+        "id": "nextbrain:right:10315",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.102559916967238e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 24.5833366859006
+      },
+      {
+        "id": "nextbrain:right:10314",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 5.106366174894098e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 261.04167154330406
+      },
+      {
+        "id": "nextbrain:right:10313",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 341.95834911909583
+      },
+      {
+        "id": "nextbrain:right:10312",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.272133456339689e-07,
+        "maximum_trilinear_isovalue_deviation": 1.4901161193847656e-07,
+        "mesh_volume_mm3": 8.41666705107006
+      },
+      {
+        "id": "nextbrain:right:10310",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 133.87500226870281
+      },
+      {
+        "id": "nextbrain:right:10309",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.131696562039818e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 22.62499974598094
+      },
+      {
+        "id": "nextbrain:right:10306",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.020375985847115e-06,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 8.749997744647091
+      },
+      {
+        "id": "nextbrain:right:10305",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.038948668458557e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 6.250001443549639
+      },
+      {
+        "id": "nextbrain:right:10301",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0659278790806558e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3113021850585938e-06,
+        "mesh_volume_mm3": 11.708332455096404
+      },
+      {
+        "id": "nextbrain:right:10298",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.038948668458557e-06,
+        "maximum_trilinear_isovalue_deviation": 8.344650268554688e-07,
+        "mesh_volume_mm3": 6.374998749854301
+      },
+      {
+        "id": "nextbrain:right:10297",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.034236130230958e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 86.33332724155306
+      },
+      {
+        "id": "nextbrain:right:10295",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.2663411920001592e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 33.25000539270555
+      },
+      {
+        "id": "nextbrain:right:10285",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 4.882262624921165e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 77.45833468867957
+      },
+      {
+        "id": "nextbrain:right:10283",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 5.118310272425007e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 342.1666790769672
+      },
+      {
+        "id": "nextbrain:right:10282",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 5.218897708933549e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 285.375000350099
+      },
+      {
+        "id": "nextbrain:right:10279",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.93368059721394e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 45.79165944006913
+      },
+      {
+        "id": "nextbrain:right:10277",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1229943060672762e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 31.08332599482309
+      },
+      {
+        "id": "nextbrain:right:10276",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.118310272425007e-07,
+        "maximum_trilinear_isovalue_deviation": 6.258487701416016e-07,
+        "mesh_volume_mm3": 16.000000271713212
+      },
+      {
+        "id": "nextbrain:right:10275",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 74.41666476552602
+      },
+      {
+        "id": "nextbrain:right:10256",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.700644492363808e-07,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 34.37500654254111
+      },
+      {
+        "id": "nextbrain:right:10255",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 8.954345695718298e-07,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 15.375004708301546
+      },
+      {
+        "id": "nextbrain:right:10254",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 16,
+        "maximum_glb_coordinate_error_mm": 1.3126772815012356e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 210.91666545831362
+      },
+      {
+        "id": "nextbrain:right:10253",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.470348358154297e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.846637039040777e-07,
+        "maximum_trilinear_isovalue_deviation": 4.470348358154297e-07,
+        "mesh_volume_mm3": 23.37499793199836
+      },
+      {
+        "id": "nextbrain:right:10246",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.44211236200217e-07,
+        "maximum_trilinear_isovalue_deviation": 4.76837158203125e-07,
+        "mesh_volume_mm3": 6.749998856646089
+      },
+      {
+        "id": "nextbrain:right:10245",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.497079473214264e-07,
+        "maximum_trilinear_isovalue_deviation": 7.152557373046875e-07,
+        "mesh_volume_mm3": 8.16666667590255
+      },
+      {
+        "id": "nextbrain:right:10242",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 197.70834363065583
+      },
+      {
+        "id": "nextbrain:right:10238",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3563331271497737e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 16.499996142305882
+      },
+      {
+        "id": "nextbrain:right:10232",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 9.169966842094324e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 51.75000133008416
+      },
+      {
+        "id": "nextbrain:right:10230",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1196713086467505e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 33.99999840309236
+      },
+      {
+        "id": "nextbrain:right:10228",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.138335460474239e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 5.916667587356745
+      },
+      {
+        "id": "nextbrain:right:10226",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 10,
+        "maximum_glb_coordinate_error_mm": 8.963330250358929e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 117.75000406494988
+      },
+      {
+        "id": "nextbrain:right:10225",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.810747638122559e-07,
+        "maximum_trilinear_isovalue_deviation": 4.76837158203125e-07,
+        "mesh_volume_mm3": 26.666667556079897
+      },
+      {
+        "id": "nextbrain:right:10223",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.106366174894098e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 14.666665273795628
+      },
+      {
+        "id": "nextbrain:right:10222",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 7.086281634524261e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 700.9999937842745
+      },
+      {
+        "id": "nextbrain:right:10220",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.44211236200217e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 81.54166940421185
+      },
+      {
+        "id": "nextbrain:right:10218",
+        "boundary_edges": 0,
+        "pinch_edges": 18,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 19,
+        "maximum_glb_coordinate_error_mm": 1.1031892310905217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 295.4999865181749
+      },
+      {
+        "id": "nextbrain:right:10217",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 363.6666874229007
+      },
+      {
+        "id": "nextbrain:right:10216",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 521.4166593477066
+      },
+      {
+        "id": "nextbrain:right:10215",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.7881393432617188e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.6894263380527582e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 163.04167027802472
+      },
+      {
+        "id": "nextbrain:right:10214",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3468045060930635e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 126.58332177189648
+      },
+      {
+        "id": "nextbrain:right:10208",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.2996138523230885e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 151.29167343497662
+      },
+      {
+        "id": "nextbrain:right:10206",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1026859283447266e-06,
+        "mesh_volume_mm3": 754.2083546112599
+      },
+      {
+        "id": "nextbrain:right:10201",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.121774608462879e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 24.24999852234008
+      },
+      {
+        "id": "nextbrain:right:10199",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 9.051324736708271e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 79.45833978549827
+      },
+      {
+        "id": "nextbrain:right:10196",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1698123354422998e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 10.33333538783084
+      },
+      {
+        "id": "nextbrain:right:10194",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.568156404182472e-07,
+        "maximum_trilinear_isovalue_deviation": 5.662441253662109e-07,
+        "mesh_volume_mm3": 8.166668266911584
+      },
+      {
+        "id": "nextbrain:right:10192",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.439035847276395e-07,
+        "maximum_trilinear_isovalue_deviation": 7.152557373046875e-07,
+        "mesh_volume_mm3": 7.999999122073079
+      },
+      {
+        "id": "nextbrain:right:10191",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.321258928017437e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 5.083332583074482
+      },
+      {
+        "id": "nextbrain:right:10190",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.00021147598953e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 7.749997771927451
+      },
+      {
+        "id": "nextbrain:right:10184",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.7046042649392144e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 92.41664892222137
+      },
+      {
+        "id": "nextbrain:right:10181",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.1196713086467505e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 44.08333153370892
+      },
+      {
+        "id": "nextbrain:right:10174",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6987323760986328e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 2.074220763607056e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 89.66668530304487
+      },
+      {
+        "id": "nextbrain:right:10157",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.114503261525342e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1324882507324219e-06,
+        "mesh_volume_mm3": 12.333331986328863
+      },
+      {
+        "id": "nextbrain:right:10149",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.450580596923828e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 8.747375083827479e-07,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 14.54166522203055
+      },
+      {
+        "id": "nextbrain:right:10147",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.537688991650073e-07,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 24.12500263727251
+      },
+      {
+        "id": "nextbrain:right:10130",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.385807991027832e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 141.62499372024615
+      },
+      {
+        "id": "nextbrain:right:10128",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3526651676351724e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 384.5417046971096
+      },
+      {
+        "id": "nextbrain:right:10125",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.3563331271497737e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 91.54166884037176
+      },
+      {
+        "id": "nextbrain:right:10119",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.385807991027832e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 1480.6666511109759
+      },
+      {
+        "id": "nextbrain:right:10118",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.3715545533900084e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 1296.8333747567053
+      },
+      {
+        "id": "nextbrain:right:10117",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.1031892310905217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 89.12500487070105
+      },
+      {
+        "id": "nextbrain:right:10103",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 9.683748642698437e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 55.4166689460796
+      },
+      {
+        "id": "nextbrain:right:10102",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 21,
+        "maximum_glb_coordinate_error_mm": 1.9421450036011057e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 550.3749455652459
+      },
+      {
+        "id": "nextbrain:right:10101",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.207729692337044e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 483.8333374082983
+      },
+      {
+        "id": "nextbrain:right:10099",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7884031985241421e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4007091522216797e-06,
+        "mesh_volume_mm3": 3.3333326441547135
+      },
+      {
+        "id": "nextbrain:right:10079",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.9047894167762533e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 5115.62501633987
+      },
+      {
+        "id": "nextbrain:right:10048",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6689300537109375e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.8047176444506744e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 2985.958383001505
+      },
+      {
+        "id": "nextbrain:left:752",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.771615982055664e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.44043764608941e-06,
+        "maximum_trilinear_isovalue_deviation": 2.771615982055664e-06,
+        "mesh_volume_mm3": 169.7500054549194
+      },
+      {
+        "id": "nextbrain:left:751",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.6226043701171875e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.5719103130755726e-06,
+        "maximum_trilinear_isovalue_deviation": 2.6226043701171875e-06,
+        "mesh_volume_mm3": 58.58333002978088
+      },
+      {
+        "id": "nextbrain:left:721",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.0100345611572266e-06,
+        "marching_cubes_auxiliary_center_vertices": 36,
+        "maximum_glb_coordinate_error_mm": 2.637126661018007e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250007152557373,
+        "mesh_volume_mm3": 1275.541635997591
+      },
+      {
+        "id": "nextbrain:left:697",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.0265579223632812e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.967097909488459e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 69.20833899919297
+      },
+      {
+        "id": "nextbrain:left:662",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 3.814697265625e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 3.809338396764016e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 1485.6249646811355
+      },
+      {
+        "id": "nextbrain:left:580",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 15,
+        "maximum_glb_coordinate_error_mm": 2.0659770832778444e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 5880.000029365191
+      },
+      {
+        "id": "nextbrain:left:578",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3049368088800565e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4603137969970703e-06,
+        "mesh_volume_mm3": 12.833336655981821
+      },
+      {
+        "id": "nextbrain:left:576",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3286497357487525e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 118.41664437608172
+      },
+      {
+        "id": "nextbrain:left:575",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2527836121059983e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 11.291658094154
+      },
+      {
+        "id": "nextbrain:left:565",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3024671902306174e-06,
+        "maximum_trilinear_isovalue_deviation": 1.5497207641601562e-06,
+        "mesh_volume_mm3": 3.666666839892426
+      },
+      {
+        "id": "nextbrain:left:564",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.5491475365599425e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 67.16665898853168
+      },
+      {
+        "id": "nextbrain:left:562",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6987323760986328e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.4640343477327733e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 17.916665620480494
+      },
+      {
+        "id": "nextbrain:left:561",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.342759171255685e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3709068298339844e-06,
+        "mesh_volume_mm3": 13.874992076925864
+      },
+      {
+        "id": "nextbrain:left:558",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3049368088800565e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499970197677612,
+        "mesh_volume_mm3": 27.958322634300934
+      },
+      {
+        "id": "nextbrain:left:541",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.087033389611893e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 38.541652644440596
+      },
+      {
+        "id": "nextbrain:left:531",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.0563602447509766e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 2.056198269228316e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 141.83335594941622
+      },
+      {
+        "id": "nextbrain:left:521",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.934893869534207e-06,
+        "maximum_trilinear_isovalue_deviation": 1.5497207641601562e-06,
+        "mesh_volume_mm3": 24.58333657918556
+      },
+      {
+        "id": "nextbrain:left:519",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3308830953494657e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 63.666660371862385
+      },
+      {
+        "id": "nextbrain:left:517",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.341787303518477e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 231.58336685605673
+      },
+      {
+        "id": "nextbrain:left:508",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.1019809183170987e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 455.000034954089
+      },
+      {
+        "id": "nextbrain:left:504",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.659009025024845e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 8.54166818937889
+      },
+      {
+        "id": "nextbrain:left:496",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 9.669119965316617e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 20.333334193409787
+      },
+      {
+        "id": "nextbrain:left:492",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 7.893748618817736e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 9.375000729535973
+      },
+      {
+        "id": "nextbrain:left:484",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3049368088800565e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 280.41667236383927
+      },
+      {
+        "id": "nextbrain:left:478",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0945255386338754e-06,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 79.37501392482649
+      },
+      {
+        "id": "nextbrain:left:465",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.2471337779965505e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 117.50000081820437
+      },
+      {
+        "id": "nextbrain:left:461",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.4934651172598373e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 76.16667760714658
+      },
+      {
+        "id": "nextbrain:left:458",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3134171217334454e-06,
+        "maximum_trilinear_isovalue_deviation": 1.043081283569336e-06,
+        "mesh_volume_mm3": 667.1250130116597
+      },
+      {
+        "id": "nextbrain:left:454",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.038948668458557e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 155.24999132038414
+      },
+      {
+        "id": "nextbrain:left:441",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.3067681219840679e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 359.0416819520398
+      },
+      {
+        "id": "nextbrain:left:435",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.0329202905668838e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 186.37499859793175
+      },
+      {
+        "id": "nextbrain:left:432",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3654700829954085e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 104.58331709455976
+      },
+      {
+        "id": "nextbrain:left:425",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.713798720455903e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 42.416664741118254
+      },
+      {
+        "id": "nextbrain:left:424",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 7.126510524897706e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 85.41666392702668
+      },
+      {
+        "id": "nextbrain:left:423",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.429984870669668e-07,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 6.000000117656999
+      },
+      {
+        "id": "nextbrain:left:421",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.343503105108276e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 8.916668820039211
+      },
+      {
+        "id": "nextbrain:left:420",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.296657914984649e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3113021850585938e-06,
+        "mesh_volume_mm3": 19.95833178256438
+      },
+      {
+        "id": "nextbrain:left:418",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2218952178955078e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3187317186497203e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2218952178955078e-06,
+        "mesh_volume_mm3": 9.58333502873054
+      },
+      {
+        "id": "nextbrain:left:414",
+        "boundary_edges": 0,
+        "pinch_edges": 78,
+        "maximum_edge_vertex_isovalue_error": 2.1457672119140625e-06,
+        "marching_cubes_auxiliary_center_vertices": 23,
+        "maximum_glb_coordinate_error_mm": 1.9168274801989157e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 574.7500186791148
+      },
+      {
+        "id": "nextbrain:left:410",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.6372979311230754e-06,
+        "maximum_trilinear_isovalue_deviation": 1.430511474609375e-06,
+        "mesh_volume_mm3": 3.4166674445536946
+      },
+      {
+        "id": "nextbrain:left:408",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.267562527545496e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3113021850585938e-06,
+        "mesh_volume_mm3": 6.0833348113426675
+      },
+      {
+        "id": "nextbrain:left:407",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.4496310361642014e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 128.9999987218813
+      },
+      {
+        "id": "nextbrain:left:404",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 168.45831946842318
+      },
+      {
+        "id": "nextbrain:left:399",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.05634709381396e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 20.24999496437804
+      },
+      {
+        "id": "nextbrain:left:397",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.131696562039818e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499988079071045,
+        "mesh_volume_mm3": 47.6249981569128
+      },
+      {
+        "id": "nextbrain:left:396",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 6.131696562039818e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 24.66666818301485
+      },
+      {
+        "id": "nextbrain:left:394",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.450580596923828e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.537076813347363e-07,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 247.500005493642
+      },
+      {
+        "id": "nextbrain:left:393",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.7416040923318821e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499994039535522,
+        "mesh_volume_mm3": 54.62499454139855
+      },
+      {
+        "id": "nextbrain:left:385",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0502478054025634e-06,
+        "maximum_trilinear_isovalue_deviation": 1.0132789611816406e-06,
+        "mesh_volume_mm3": 165.58331950501704
+      },
+      {
+        "id": "nextbrain:left:384",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 13,
+        "maximum_glb_coordinate_error_mm": 1.341787303518477e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 1956.5833495033885
+      },
+      {
+        "id": "nextbrain:left:382",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 6.321258928017437e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 107.58333930140364
+      },
+      {
+        "id": "nextbrain:left:381",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.39647097700707e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 193.1249943065133
+      },
+      {
+        "id": "nextbrain:left:380",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.642673492431641e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 8.897206833301924e-07,
+        "maximum_trilinear_isovalue_deviation": 8.642673492431641e-07,
+        "mesh_volume_mm3": 205.00000639837873
+      },
+      {
+        "id": "nextbrain:left:379",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.76837158203125e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.343941593142705e-07,
+        "maximum_trilinear_isovalue_deviation": 4.76837158203125e-07,
+        "mesh_volume_mm3": 72.58333169967689
+      },
+      {
+        "id": "nextbrain:left:378",
+        "boundary_edges": 0,
+        "pinch_edges": 21,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 9.350181808547293e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 95.49999327414429
+      },
+      {
+        "id": "nextbrain:left:377",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.4432603503185828e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 361.4166787688942
+      },
+      {
+        "id": "nextbrain:left:374",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2859160356199452e-06,
+        "maximum_trilinear_isovalue_deviation": 1.1622905731201172e-06,
+        "mesh_volume_mm3": 18.91666616557648
+      },
+      {
+        "id": "nextbrain:left:372",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1869259542909274e-06,
+        "maximum_trilinear_isovalue_deviation": 1.341104507446289e-06,
+        "mesh_volume_mm3": 5.416667714986235
+      },
+      {
+        "id": "nextbrain:left:370",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.289156340629004e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 34.49999973065374
+      },
+      {
+        "id": "nextbrain:left:368",
+        "boundary_edges": 0,
+        "pinch_edges": 12,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.2260821902196115e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1249997615814209,
+        "mesh_volume_mm3": 34.79166235949201
+      },
+      {
+        "id": "nextbrain:left:367",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.341104507446289e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.289156340629004e-06,
+        "maximum_trilinear_isovalue_deviation": 1.341104507446289e-06,
+        "mesh_volume_mm3": 6.666666447611601
+      },
+      {
+        "id": "nextbrain:left:364",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1734132243758458e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2814998626708984e-06,
+        "mesh_volume_mm3": 9.666667457165744
+      },
+      {
+        "id": "nextbrain:left:354",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_edge_vertex_isovalue_error": 1.7583370208740234e-06,
+        "marching_cubes_auxiliary_center_vertices": 15,
+        "maximum_glb_coordinate_error_mm": 1.8038561893129507e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250004768371582,
+        "mesh_volume_mm3": 288.08335503380704
+      },
+      {
+        "id": "nextbrain:left:352",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 11,
+        "maximum_glb_coordinate_error_mm": 1.0332494075814215e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 94.20833781757256
+      },
+      {
+        "id": "nextbrain:left:350",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.0256462321971177e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 141.04165814041144
+      },
+      {
+        "id": "nextbrain:left:349",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.519918441772461e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3024671902306174e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 36.875006413708455
+      },
+      {
+        "id": "nextbrain:left:347",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6391277313232422e-06,
+        "marching_cubes_auxiliary_center_vertices": 17,
+        "maximum_glb_coordinate_error_mm": 1.4967324473962074e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 771.0833184726439
+      },
+      {
+        "id": "nextbrain:left:346",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.8477439880371094e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.8054403341842842e-06,
+        "maximum_trilinear_isovalue_deviation": 1.8477439880371094e-06,
+        "mesh_volume_mm3": 8.583334420575216
+      },
+      {
+        "id": "nextbrain:left:345",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.8477439880371094e-06,
+        "marching_cubes_auxiliary_center_vertices": 21,
+        "maximum_glb_coordinate_error_mm": 1.8038561893129507e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 417.2499834939374
+      },
+      {
+        "id": "nextbrain:left:344",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3713116929094167e-06,
+        "maximum_trilinear_isovalue_deviation": 1.5497207641601562e-06,
+        "mesh_volume_mm3": 9.749999124052582
+      },
+      {
+        "id": "nextbrain:left:343",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_edge_vertex_isovalue_error": 1.7285346984863281e-06,
+        "marching_cubes_auxiliary_center_vertices": 33,
+        "maximum_glb_coordinate_error_mm": 1.501102478440169e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500041723251343,
+        "mesh_volume_mm3": 258.5416654002699
+      },
+      {
+        "id": "nextbrain:left:341",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.430511474609375e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3036812943535783e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 167.29165609887616
+      },
+      {
+        "id": "nextbrain:left:339",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 9,
+        "maximum_glb_coordinate_error_mm": 1.3468045060930635e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 111.83333466830666
+      },
+      {
+        "id": "nextbrain:left:326",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3126772815012356e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 76.25000338535793
+      },
+      {
+        "id": "nextbrain:left:322",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.106366174894098e-07,
+        "maximum_trilinear_isovalue_deviation": 5.960464477539062e-07,
+        "mesh_volume_mm3": 5.58333238268584
+      },
+      {
+        "id": "nextbrain:left:321",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.205285094591549e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 38.58334200348143
+      },
+      {
+        "id": "nextbrain:left:316",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.321258928017437e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 28.50000360992333
+      },
+      {
+        "id": "nextbrain:left:315",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 6.604699116258301e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 27.333325004515824
+      },
+      {
+        "id": "nextbrain:left:314",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.084894236652678e-07,
+        "maximum_trilinear_isovalue_deviation": 7.152557373046875e-07,
+        "mesh_volume_mm3": 214.37499774678113
+      },
+      {
+        "id": "nextbrain:left:313",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.038948668458557e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 285.8333429989097
+      },
+      {
+        "id": "nextbrain:left:312",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.086162567138672e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.7107206785874404e-07,
+        "maximum_trilinear_isovalue_deviation": 2.086162567138672e-07,
+        "mesh_volume_mm3": 5.750000198449314
+      },
+      {
+        "id": "nextbrain:left:310",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 1.038948668458557e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 154.0416633543007
+      },
+      {
+        "id": "nextbrain:left:309",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.556510925292969e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 6.034625339363324e-07,
+        "maximum_trilinear_isovalue_deviation": 6.556510925292969e-07,
+        "mesh_volume_mm3": 29.250000103066697
+      },
+      {
+        "id": "nextbrain:left:305",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 7.375001618406064
+      },
+      {
+        "id": "nextbrain:left:301",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.799708752308716e-07,
+        "maximum_trilinear_isovalue_deviation": 9.5367431640625e-07,
+        "mesh_volume_mm3": 8.833333835315942
+      },
+      {
+        "id": "nextbrain:left:298",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.037279305773911e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 8.333331508522827
+      },
+      {
+        "id": "nextbrain:left:297",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.5367431640625e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.1031892310905217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 100.20833268199016
+      },
+      {
+        "id": "nextbrain:left:295",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.519918441772461e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3002704076654284e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 30.66666924169642
+      },
+      {
+        "id": "nextbrain:left:285",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 3.617945475035603e-07,
+        "maximum_trilinear_isovalue_deviation": 4.172325134277344e-07,
+        "mesh_volume_mm3": 56.625001069158245
+      },
+      {
+        "id": "nextbrain:left:283",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.343941593142705e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 304.8750084158966
+      },
+      {
+        "id": "nextbrain:left:282",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 5.205285094591549e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 213.12499935370093
+      },
+      {
+        "id": "nextbrain:left:279",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.0132789611816406e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.3068921535778462e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 23.249994785524553
+      },
+      {
+        "id": "nextbrain:left:278",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.284960576135522e-06,
+        "maximum_trilinear_isovalue_deviation": 1.2516975402832031e-06,
+        "mesh_volume_mm3": 8.958328502874961
+      },
+      {
+        "id": "nextbrain:left:277",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.2859160356199452e-06,
+        "maximum_trilinear_isovalue_deviation": 1.4603137969970703e-06,
+        "mesh_volume_mm3": 22.250003684621003
+      },
+      {
+        "id": "nextbrain:left:276",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.739882959899899e-07,
+        "maximum_trilinear_isovalue_deviation": 4.172325134277344e-07,
+        "mesh_volume_mm3": 18.58333087844466
+      },
+      {
+        "id": "nextbrain:left:275",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 8.342534775579524e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 91.62500171506967
+      },
+      {
+        "id": "nextbrain:left:256",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1026859283447266e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.1031892310905217e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 36.1666769230128
+      },
+      {
+        "id": "nextbrain:left:255",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0256462321971177e-06,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 14.500003487375754
+      },
+      {
+        "id": "nextbrain:left:254",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_edge_vertex_isovalue_error": 1.1622905731201172e-06,
+        "marching_cubes_auxiliary_center_vertices": 18,
+        "maximum_glb_coordinate_error_mm": 1.3126772815012356e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 209.83334167188966
+      },
+      {
+        "id": "nextbrain:left:253",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.084338924020623e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 30.8749993935927
+      },
+      {
+        "id": "nextbrain:left:246",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.218897708933549e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 12.958333389911413
+      },
+      {
+        "id": "nextbrain:left:245",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.748603820800781e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.394695409901993e-07,
+        "maximum_trilinear_isovalue_deviation": 7.748603820800781e-07,
+        "mesh_volume_mm3": 6.583334203499093
+      },
+      {
+        "id": "nextbrain:left:244",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.344650268554688e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.0214702522983868e-06,
+        "maximum_trilinear_isovalue_deviation": 8.344650268554688e-07,
+        "mesh_volume_mm3": 6.500001236641103
+      },
+      {
+        "id": "nextbrain:left:242",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5795230865478516e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.5344578816719056e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 181.4583471262224
+      },
+      {
+        "id": "nextbrain:left:232",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.046627044677734e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 9.817818647640427e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 43.624997645148845
+      },
+      {
+        "id": "nextbrain:left:230",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.794609311139458e-07,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 37.54167250598216
+      },
+      {
+        "id": "nextbrain:left:228",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 4.172325134277344e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.121774608462879e-07,
+        "maximum_trilinear_isovalue_deviation": 4.172325134277344e-07,
+        "mesh_volume_mm3": 10.041667505749437
+      },
+      {
+        "id": "nextbrain:left:226",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.046627044677734e-07,
+        "marching_cubes_auxiliary_center_vertices": 12,
+        "maximum_glb_coordinate_error_mm": 6.87071197235495e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 108.33333367966706
+      },
+      {
+        "id": "nextbrain:left:225",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 5.017339925713508e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 101.00000615049319
+      },
+      {
+        "id": "nextbrain:left:223",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.364418029785156e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 4.739882959899899e-07,
+        "maximum_trilinear_isovalue_deviation": 5.364418029785156e-07,
+        "mesh_volume_mm3": 16.666663773745935
+      },
+      {
+        "id": "nextbrain:left:222",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 7.126510524897706e-07,
+        "maximum_trilinear_isovalue_deviation": 6.854534149169922e-07,
+        "mesh_volume_mm3": 548.0000278089415
+      },
+      {
+        "id": "nextbrain:left:220",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 5,
+        "maximum_glb_coordinate_error_mm": 6.04766918856169e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 82.70833167266849
+      },
+      {
+        "id": "nextbrain:left:219",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 3.8743019104003906e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 3.2341039658966375e-07,
+        "maximum_trilinear_isovalue_deviation": 3.8743019104003906e-07,
+        "mesh_volume_mm3": 3.7499997533936265
+      },
+      {
+        "id": "nextbrain:left:218",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.043081283569336e-06,
+        "marching_cubes_auxiliary_center_vertices": 7,
+        "maximum_glb_coordinate_error_mm": 1.085592295061741e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 248.0000091349562
+      },
+      {
+        "id": "nextbrain:left:217",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.519918441772461e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.5344578816719056e-06,
+        "maximum_trilinear_isovalue_deviation": 1.519918441772461e-06,
+        "mesh_volume_mm3": 246.37502920332824
+      },
+      {
+        "id": "nextbrain:left:216",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.5344578816719056e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 598.4166144790796
+      },
+      {
+        "id": "nextbrain:left:215",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.519918441772461e-06,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.5327204311637629e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500035762786865,
+        "mesh_volume_mm3": 133.62500866502128
+      },
+      {
+        "id": "nextbrain:left:214",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3286497357487525e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 79.33333423795753
+      },
+      {
+        "id": "nextbrain:left:208",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3709068298339844e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.385807991027832e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 96.25001020302662
+      },
+      {
+        "id": "nextbrain:left:206",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.834766387939453e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.1196713086467505e-06,
+        "maximum_trilinear_isovalue_deviation": 9.834766387939453e-07,
+        "mesh_volume_mm3": 696.3750215451435
+      },
+      {
+        "id": "nextbrain:left:201",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.854534149169922e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 6.00021147598953e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 28.95833546121153
+      },
+      {
+        "id": "nextbrain:left:199",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.662441253662109e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 8.069446584063012e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 151.5000089322764
+      },
+      {
+        "id": "nextbrain:left:196",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 9.289054498379648e-07,
+        "maximum_trilinear_isovalue_deviation": 9.238719940185547e-07,
+        "mesh_volume_mm3": 5.791665168477658
+      },
+      {
+        "id": "nextbrain:left:192",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.960464477539062e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 7.838931654313937e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 8.874999925843586
+      },
+      {
+        "id": "nextbrain:left:190",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 5.066394805908203e-07,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 5.343941593142705e-07,
+        "maximum_trilinear_isovalue_deviation": 5.066394805908203e-07,
+        "mesh_volume_mm3": 10.08333106424364
+      },
+      {
+        "id": "nextbrain:left:184",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_edge_vertex_isovalue_error": 1.2814998626708984e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.3321338080541497e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12499982118606567,
+        "mesh_volume_mm3": 60.75000119613251
+      },
+      {
+        "id": "nextbrain:left:181",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 9.238719940185547e-07,
+        "marching_cubes_auxiliary_center_vertices": 4,
+        "maximum_glb_coordinate_error_mm": 1.0381736426562284e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 43.999991431562464
+      },
+      {
+        "id": "nextbrain:left:174",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.5327204311637629e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 84.12499192978015
+      },
+      {
+        "id": "nextbrain:left:157",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4901161193847656e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.5831738692871839e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 8.333335180456947
+      },
+      {
+        "id": "nextbrain:left:149",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 6.258487701416016e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 8.533487987390939e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 22.500000984485663
+      },
+      {
+        "id": "nextbrain:left:147",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 7.152557373046875e-07,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 8.204317585943749e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 18.666664587449812
+      },
+      {
+        "id": "nextbrain:left:130",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.2516975402832031e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.2823659166067937e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 204.54166342457356
+      },
+      {
+        "id": "nextbrain:left:128",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4603137969970703e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.3715545533900084e-06,
+        "maximum_trilinear_isovalue_deviation": 0.1250002384185791,
+        "mesh_volume_mm3": 347.41665659534493
+      },
+      {
+        "id": "nextbrain:left:125",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 1.3715545533900084e-06,
+        "maximum_trilinear_isovalue_deviation": 1.3113021850585938e-06,
+        "mesh_volume_mm3": 109.91666223760917
+      },
+      {
+        "id": "nextbrain:left:120",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.046627044677734e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 9.74887901366288e-07,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 8.125004810281444
+      },
+      {
+        "id": "nextbrain:left:119",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.3113021850585938e-06,
+        "marching_cubes_auxiliary_center_vertices": 6,
+        "maximum_glb_coordinate_error_mm": 1.3077466975375617e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500029802322388,
+        "mesh_volume_mm3": 1361.6666353718908
+      },
+      {
+        "id": "nextbrain:left:118",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1324882507324219e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.3134171217334454e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500005960464478,
+        "mesh_volume_mm3": 1199.4583451799972
+      },
+      {
+        "id": "nextbrain:left:117",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 8.943975146795707e-07,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 78.54166915620866
+      },
+      {
+        "id": "nextbrain:left:103",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 8.940696716308594e-07,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.0329202905668838e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 96.50000559658946
+      },
+      {
+        "id": "nextbrain:left:102",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.5497207641601562e-06,
+        "marching_cubes_auxiliary_center_vertices": 13,
+        "maximum_glb_coordinate_error_mm": 1.611049157216716e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 493.33331462034187
+      },
+      {
+        "id": "nextbrain:left:101",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.1920928955078125e-06,
+        "marching_cubes_auxiliary_center_vertices": 2,
+        "maximum_glb_coordinate_error_mm": 1.0612566830559844e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500017881393433,
+        "mesh_volume_mm3": 544.7499851113298
+      },
+      {
+        "id": "nextbrain:left:99",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 2.0563602447509766e-06,
+        "marching_cubes_auxiliary_center_vertices": 0,
+        "maximum_glb_coordinate_error_mm": 2.0883035104789834e-06,
+        "maximum_trilinear_isovalue_deviation": 2.0563602447509766e-06,
+        "mesh_volume_mm3": 9.458336897817192
+      },
+      {
+        "id": "nextbrain:left:79",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.4007091522216797e-06,
+        "marching_cubes_auxiliary_center_vertices": 1,
+        "maximum_glb_coordinate_error_mm": 1.5914022013604896e-06,
+        "maximum_trilinear_isovalue_deviation": 0.125,
+        "mesh_volume_mm3": 5211.833369057412
+      },
+      {
+        "id": "nextbrain:left:48",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_edge_vertex_isovalue_error": 1.6093254089355469e-06,
+        "marching_cubes_auxiliary_center_vertices": 3,
+        "maximum_glb_coordinate_error_mm": 1.9065481094832077e-06,
+        "maximum_trilinear_isovalue_deviation": 0.12500011920928955,
+        "mesh_volume_mm3": 2963.8333807219824
+      }
+    ]
+  },
+  "learning_structures": {
+    "file": "learning.glb",
+    "sha256": "7b8f7ba95d20c734e8f66eb4e0e32f85875d3c18ace94f2db3e23bf4d4515cea",
+    "regions": [
+      {
+        "id": "learning:left:caudate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 4301,
+        "maximum_display_displacement_mm": 0.6000009414975493
+      },
+      {
+        "id": "learning:right:caudate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 4428,
+        "maximum_display_displacement_mm": 0.5261835792344614
+      },
+      {
+        "id": "learning:left:putamen",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 5292,
+        "maximum_display_displacement_mm": 0.5399802019140422
+      },
+      {
+        "id": "learning:right:putamen",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 5204,
+        "maximum_display_displacement_mm": 0.5430228707436754
+      },
+      {
+        "id": "learning:left:pallidum-external",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1386,
+        "maximum_display_displacement_mm": 0.5157636179198295
+      },
+      {
+        "id": "learning:right:pallidum-external",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1504,
+        "maximum_display_displacement_mm": 0.47294970615710263
+      },
+      {
+        "id": "learning:left:pallidum-internal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 711,
+        "maximum_display_displacement_mm": 0.5116354981516397
+      },
+      {
+        "id": "learning:right:pallidum-internal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 771,
+        "maximum_display_displacement_mm": 0.5012768493190023
+      },
+      {
+        "id": "learning:left:accumbens",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 560,
+        "maximum_display_displacement_mm": 0.49140905777549687
+      },
+      {
+        "id": "learning:right:accumbens",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 501,
+        "maximum_display_displacement_mm": 0.4857387572729917
+      },
+      {
+        "id": "learning:left:subthalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 118,
+        "maximum_display_displacement_mm": 0.4918458191768632
+      },
+      {
+        "id": "learning:right:subthalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 104,
+        "maximum_display_displacement_mm": 0.5156856418322882
+      },
+      {
+        "id": "learning:left:substantia-nigra",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 276,
+        "maximum_display_displacement_mm": 0.534385448874916
+      },
+      {
+        "id": "learning:right:substantia-nigra",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 240,
+        "maximum_display_displacement_mm": 0.4558395174285511
+      },
+      {
+        "id": "learning:left:claustrum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 657,
+        "maximum_display_displacement_mm": 0.4842826759153205
+      },
+      {
+        "id": "learning:right:claustrum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 723,
+        "maximum_display_displacement_mm": 0.5399804035707362
+      },
+      {
+        "id": "learning:left:ventral-pallidum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 14,
+        "maximum_display_displacement_mm": 0.4413516521454454
+      },
+      {
+        "id": "learning:right:ventral-pallidum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3,
+        "maximum_display_displacement_mm": 0.44135165214635674
+      },
+      {
+        "id": "learning:left:septal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 123,
+        "maximum_display_displacement_mm": 0.5111228078253337
+      },
+      {
+        "id": "learning:right:septal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 78,
+        "maximum_display_displacement_mm": 0.46876313603034336
+      },
+      {
+        "id": "learning:left:innominata",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 376,
+        "maximum_display_displacement_mm": 0.46405036264280825
+      },
+      {
+        "id": "learning:right:innominata",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 408,
+        "maximum_display_displacement_mm": 0.49763942128981214
+      },
+      {
+        "id": "learning:left:thalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6311,
+        "maximum_display_displacement_mm": 0.5252997738477767
+      },
+      {
+        "id": "learning:right:thalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 7075,
+        "maximum_display_displacement_mm": 0.5717418464864035
+      },
+      {
+        "id": "learning:left:hypothalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 578,
+        "maximum_display_displacement_mm": 0.5305377158982144
+      },
+      {
+        "id": "learning:right:hypothalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 574,
+        "maximum_display_displacement_mm": 0.5982705509145789
+      },
+      {
+        "id": "learning:left:mammillary",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 22,
+        "maximum_display_displacement_mm": 0.486209498705486
+      },
+      {
+        "id": "learning:right:mammillary",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 29,
+        "maximum_display_displacement_mm": 0.44135166704656414
+      },
+      {
+        "id": "learning:left:zona-incerta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 135,
+        "maximum_display_displacement_mm": 0.49201610105022575
+      },
+      {
+        "id": "learning:right:zona-incerta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 141,
+        "maximum_display_displacement_mm": 0.6000003611136151
+      },
+      {
+        "id": "learning:left:lateral-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 293,
+        "maximum_display_displacement_mm": 0.47328275892476657
+      },
+      {
+        "id": "learning:right:lateral-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 293,
+        "maximum_display_displacement_mm": 0.45501713481772843
+      },
+      {
+        "id": "learning:left:medial-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 12,
+        "maximum_display_displacement_mm": 0.4230342278442143
+      },
+      {
+        "id": "learning:right:medial-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 7,
+        "maximum_display_displacement_mm": 0.4413516670474128
+      },
+      {
+        "id": "learning:left:hippocampus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3668,
+        "maximum_display_displacement_mm": 0.5526385912401718
+      },
+      {
+        "id": "learning:right:hippocampus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3816,
+        "maximum_display_displacement_mm": 0.5433690487412404
+      },
+      {
+        "id": "learning:left:amygdala",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1815,
+        "maximum_display_displacement_mm": 0.513197342909521
+      },
+      {
+        "id": "learning:right:amygdala",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2055,
+        "maximum_display_displacement_mm": 0.6000008560161453
+      },
+      {
+        "id": "learning:left:bnST",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 93,
+        "maximum_display_displacement_mm": 0.5556865685458344
+      },
+      {
+        "id": "learning:right:bnST",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 106,
+        "maximum_display_displacement_mm": 0.6000004803324538
+      },
+      {
+        "id": "learning:left:fornix",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 181,
+        "maximum_display_displacement_mm": 0.5132871333596329
+      },
+      {
+        "id": "learning:right:fornix",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 110,
+        "maximum_display_displacement_mm": 0.6000001922594969
+      },
+      {
+        "id": "learning:left:fimbria",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 103,
+        "maximum_display_displacement_mm": 0.5399796277206007
+      },
+      {
+        "id": "learning:right:fimbria",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 108,
+        "maximum_display_displacement_mm": 0.49201604340534855
+      },
+      {
+        "id": "learning:left:anterior-commissure",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 228,
+        "maximum_display_displacement_mm": 0.4873290801810879
+      },
+      {
+        "id": "learning:right:anterior-commissure",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 162,
+        "maximum_display_displacement_mm": 0.4780713215052835
+      },
+      {
+        "id": "learning:left:optic-tract",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 114,
+        "maximum_display_displacement_mm": 0.5663838623872621
+      },
+      {
+        "id": "learning:right:optic-tract",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 173,
+        "maximum_display_displacement_mm": 0.48927162536220375
+      },
+      {
+        "id": "learning:midline:optic-chiasm",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1,
+        "maximum_display_displacement_mm": 0.4413516670467616
+      },
+      {
+        "id": "learning:left:stria-terminalis",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 107,
+        "maximum_display_displacement_mm": 0.6000010662547591
+      },
+      {
+        "id": "learning:right:stria-terminalis",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 147,
+        "maximum_display_displacement_mm": 0.5826735386142129
+      },
+      {
+        "id": "learning:left:mammillothalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 30,
+        "maximum_display_displacement_mm": 0.5399797957992251
+      },
+      {
+        "id": "learning:right:mammillothalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 27,
+        "maximum_display_displacement_mm": 0.5399798540525912
+      },
+      {
+        "id": "learning:left:midbrain",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2180,
+        "maximum_display_displacement_mm": 0.50926661499552
+      },
+      {
+        "id": "learning:right:midbrain",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2225,
+        "maximum_display_displacement_mm": 0.48907112482846016
+      },
+      {
+        "id": "learning:left:pons",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6593,
+        "maximum_display_displacement_mm": 0.5083730886723025
+      },
+      {
+        "id": "learning:right:pons",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 5491,
+        "maximum_display_displacement_mm": 0.5114697779335333
+      },
+      {
+        "id": "learning:left:medulla",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1515,
+        "maximum_display_displacement_mm": 0.6000018325087821
+      },
+      {
+        "id": "learning:right:medulla",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1721,
+        "maximum_display_displacement_mm": 0.5033194493611477
+      },
+      {
+        "id": "learning:left:red-nucleus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 173,
+        "maximum_display_displacement_mm": 0.43578126988799126
+      },
+      {
+        "id": "learning:right:red-nucleus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 189,
+        "maximum_display_displacement_mm": 0.4890797114488034
+      },
+      {
+        "id": "learning:left:vta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 207,
+        "maximum_display_displacement_mm": 0.5270054507695416
+      },
+      {
+        "id": "learning:right:vta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 154,
+        "maximum_display_displacement_mm": 0.6000008071839825
+      },
+      {
+        "id": "learning:left:inferior-colliculus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 45,
+        "maximum_display_displacement_mm": 0.4488674643928037
+      },
+      {
+        "id": "learning:right:inferior-colliculus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 58,
+        "maximum_display_displacement_mm": 0.48055683056882187
+      },
+      {
+        "id": "learning:left:dentate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1312,
+        "maximum_display_displacement_mm": 0.49837889205877706
+      },
+      {
+        "id": "learning:right:dentate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 771,
+        "maximum_display_displacement_mm": 0.6000018174624351
+      },
+      {
+        "id": "learning:left:interposed",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 245,
+        "maximum_display_displacement_mm": 0.48978553196573354
+      },
+      {
+        "id": "learning:right:interposed",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 220,
+        "maximum_display_displacement_mm": 0.48801125018444047
+      },
+      {
+        "id": "learning:ventricles-left",
+        "source_atlas": "aseg",
+        "source_voxel_count": 7316,
+        "maximum_display_displacement_mm": 0.4980294833890371
+      },
+      {
+        "id": "learning:ventricles-right",
+        "source_atlas": "aseg",
+        "source_voxel_count": 8574,
+        "maximum_display_displacement_mm": 0.5064935057351654
+      },
+      {
+        "id": "learning:third-ventricle",
+        "source_atlas": "aseg",
+        "source_voxel_count": 862,
+        "maximum_display_displacement_mm": 0.4991025580917967
+      },
+      {
+        "id": "learning:fourth-ventricle",
+        "source_atlas": "aseg",
+        "source_voxel_count": 2060,
+        "maximum_display_displacement_mm": 0.5386639040917242
+      },
+      {
+        "id": "learning:corpus-callosum",
+        "source_atlas": "aseg",
+        "source_voxel_count": 3307,
+        "maximum_display_displacement_mm": 0.4994930903593753
+      }
+    ],
+    "source_volumes_unchanged": true,
+    "maximum_allowed_displacement_mm": 0.6
+  },
+  "white_matter": {
+    "file": "white-matter.volume",
+    "sha256": "97d46b812ba04ee47502c34b0063eb25eb55929c977674c63c143f38638638d2",
+    "identical_parcel_voxels": true,
+    "crop_corner_voxel": [
+      63,
+      68,
+      41
+    ],
+    "shape": [
+      130,
+      107,
+      163
+    ],
+    "parcel_count": 68
+  },
+  "volumes": {
+    "mri": {
+      "file": "mri.volume",
+      "sha256": "f4a5ca5cbb9112c076a5502b361bd83b8370bcc4222bbd6dd6ab07a02256f618",
+      "identical_voxels": true,
+      "identical_tkregister_affine": true,
+      "voxel_count": 16777216,
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "segmentation": {
+      "file": "aseg.volume",
+      "sha256": "4d9ca51a0208c74e4cacb9039ac33b311f0bf68b732e32b2dbfd7ec0a629b848",
+      "identical_voxels": true,
+      "identical_tkregister_affine": true,
+      "voxel_count": 16777216,
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  }
+}

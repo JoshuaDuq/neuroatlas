@@ -8,6 +8,8 @@ import { DESTRIEUX_LABELS_FR } from './destrieux-labels.fr.js';
 import { STRUCTURE_LABELS } from './structure-groups.js';
 import { STRUCTURE_LABELS_FR } from './structure-groups.fr.js';
 
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 const region = over => ({ kind: 'cortex', hemisphere: 'left', ...over });
 
 test('Destrieux source names expand to their French anatomical names', () => {
@@ -91,7 +93,7 @@ test('unlabelled cortex is named in French plainly rather than left blank', () =
 
 test('every region in the published manifest resolves to a French name and group', async () => {
   const manifest = JSON.parse(
-    await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+    await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const unresolved = [];
   for (const r of manifest.regions) {
     const label = labelOf(r, 'fr');
@@ -114,7 +116,7 @@ test('every region in the published manifest resolves to a French name and group
 
 test('catalog searches with and without accents in French', async () => {
   const manifest = JSON.parse(
-    await readFile(new URL('../../public/models/manifest.json', import.meta.url), 'utf8'));
+    await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const catalog = createCatalog(manifest, 'fr');
   const settings = {
     atlas: 'destrieux', cutAtlas: 'destrieux', cutActive: false, detail: 'aseg',

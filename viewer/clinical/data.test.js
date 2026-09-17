@@ -4,9 +4,11 @@ import test from 'node:test';
 import { parse } from 'yaml';
 import { createClinicalCatalog } from './catalog.js';
 
+const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+
 test('published clinical content resolves to the actual atlas and cited evidence', async () => {
   const data = parse(await readFile(new URL('../../data/neuropsychology.yaml', import.meta.url), 'utf8'));
-  const manifest = JSON.parse(await readFile(new URL('../../public/models/manifest.json', import.meta.url)));
+  const manifest = JSON.parse(await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url)));
   const catalog = createClinicalCatalog(data, manifest);
   assert.deepEqual(catalog.search('', 'en').map(d => d.id).sort(),
     ['agnosia', 'amnesia', 'aphasia', 'apraxia', 'executive', 'neglect']);

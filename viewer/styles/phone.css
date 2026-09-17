@@ -42,14 +42,18 @@
   }
   .brand { font-size: var(--text-ui); margin-right: 0; flex: none; }
   .study-name { display: none; }
-  #atlas-switch, #surface-switch { min-width: 0; flex: 1; }
-  #atlas-switch button, #surface-switch button {
-    min-width: 0;
-    flex: 1;
+  .identity #anatomy-switch { max-width: 8rem; }
+  /* Atlas sits with the wordmark; stretching it opened a gap the width of
+     the leftover row. Surface keeps the second row as tap targets. */
+  #atlas-switch { min-width: 0; flex: none; }
+  #atlas-switch button {
+    flex: none;
     padding: 0 var(--space-2);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  }
+  #surface-switch { min-width: 0; justify-content: flex-start; }
+  #surface-switch button {
+    flex: none;
+    padding: 0 var(--space-4);
   }
 
   /* Settings collapse is layout.css @ 1100px; the phone only wraps surface. */
@@ -196,7 +200,7 @@
   /* Presets scroll rather than wrap, and clear the sheet. */
   .views {
     left: calc(var(--vis-left) + var(--space-3));
-    right: calc(var(--vis-right) + var(--space-3));
+    max-width: calc(100% - var(--vis-left) - var(--vis-right) - var(--space-6));
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -214,11 +218,12 @@
   .scale-bar {
     top: calc(var(--vis-top) + var(--space-3));
     bottom: auto;
-    left: calc(var(--vis-left) + var(--space-3));
-    right: auto;
+    left: auto;
+    right: calc(var(--vis-right) + var(--space-3));
   }
-  .orientation [data-edge="top"] {
-    top: calc(var(--space-3) + 22px);
+  /* The view plate holds the bottom-left. I must not sit on Top. */
+  .orientation [data-edge="bottom"] {
+    bottom: calc(var(--space-3) + 36px);
   }
 
   /* ---- dialogs -------------------------------------------------------- */

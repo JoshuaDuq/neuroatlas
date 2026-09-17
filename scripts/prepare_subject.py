@@ -11,6 +11,10 @@ download it from the anatomy's `source_url` into `data/cache/`, and nothing is
 unpacked until those bytes match the recorded SHA256. An anatomy whose files are
 committed declares no archive and skips this.
 
+`download` means the same thing for a reconstruction published as individual
+files rather than one archive: each file is fetched from that prefix, and its
+checksum is recorded on the first run and enforced on every later one.
+
 `project_hcp_from` names the brain whose published fsaverage annotations are not
 in this brain's space and must be resampled onto it, through the registered
 spheres FreeSurfer produced for both. No physical vertex moves and no label is
@@ -24,6 +28,8 @@ import json
 import sys
 import tarfile
 from pathlib import Path
+from urllib.parse import quote
+from urllib.request import urlopen
 
 import numpy as np
 from nibabel.freesurfer.io import read_annot, read_geometry, write_annot
@@ -83,12 +89,44 @@ def record_source(provenance, path, **metadata):
     )
 
 
+def obtain_subject(config, provenance):
+    """Put this anatomy's reconstruction on disk, however it is published."""
+    anatomy = config["anatomy"]
+    if "archive" in anatomy:
+        extract_subject(config, provenance)
+    elif "download" in anatomy:
+        download_subject(config, provenance)
+    else:
+        print(f"{anatomy['id']}: files are committed, nothing to fetch")
+
+
+def download_subject(config, provenance):
+    """Fetch a reconstruction published as individual files.
+
+    An archive pins its bytes before anything is unpacked. These have no such
+    pin, so the first run records each file's checksum and every later run
+    refuses a file whose bytes have changed underneath it.
+    """
+    anatomy = config["anatomy"]
+    base = anatomy["download"]["base_url"].rstrip("/")
+    recorded = {source["path"]: source.get("sha256") for source in provenance["sources"]}
+    for name in SUBJECT_FILES:
+        destination = config["source_directory"] / name
+        relative = str(destination.relative_to(ROOT))
+        url = f"{base}/{quote(name)}"
+        if not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with urlopen(url) as response:
+                destination.write_bytes(response.read())
+        expected = recorded.get(relative)
+        if expected is not None and sha256(destination) != expected:
+            raise SystemExit(f"{relative} does not match its recorded checksum.")
+        record_source(provenance, destination, anatomy=anatomy["id"], url=url)
+
+
 def extract_subject(config, provenance):
     """Unpack the reconstruction's own files, byte for byte, from its archive."""
     anatomy = config["anatomy"]
-    if "archive" not in anatomy:
-        print(f"{anatomy['id']}: files are committed, nothing to unpack")
-        return
     url, settings = anatomy["source_url"], anatomy["archive"]
     path = CACHE / url.rsplit("/", 1)[-1].split("?")[0]
     if not path.exists():
@@ -199,7 +237,7 @@ def main():
     config = read_config(parser.parse_args().anatomy)
     provenance_path = ROOT / "data/sources.json"
     provenance = json.loads(provenance_path.read_text())
-    extract_subject(config, provenance)
+    obtain_subject(config, provenance)
     reports = transfer_annotations(config, provenance)
     write_json(provenance_path, provenance)
     print(json.dumps(reports, indent=2))

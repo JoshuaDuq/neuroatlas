@@ -36,3 +36,43 @@ def test_smoothing_is_bounded_preserves_topology_and_does_not_mutate_source():
     assert smoothed.is_winding_consistent
     assert smoothed.volume > 0
     assert abs(smoothed.volume / original.volume - 1) < 0.05
+
+
+
+def test_a_midline_structure_is_published_once_rather_than_halved():
+    # NextBrain labels every ROI on both halves of its grid. For the optic
+    # chiasm — the crossing itself — halving it invents a boundary and leaves
+    # each half small enough that surviving a warp is a coin toss.
+    from brain_model.learning import expand_nextbrain
+
+    table = {161: ("optic_chiasm", [0, 0, 0]), 10161: ("optic_chiasm", [0, 0, 0])}
+    units = expand_nextbrain(
+        [
+            {"id": "caudate", "labels": [161]},
+            {"id": "optic-chiasm", "hemisphere": "midline", "labels": [161]},
+        ],
+        table,
+    )
+    by_id = {unit["id"]: unit for unit in units}
+
+    # A structure that is genuinely paired still gets its two sides.
+    assert by_id["left:caudate"]["labels"] == [161]
+    assert by_id["right:caudate"]["labels"] == [10161]
+
+    # The midline one is published once, holding both of NextBrain's copies.
+    assert "left:optic-chiasm" not in by_id and "right:optic-chiasm" not in by_id
+    chiasm = by_id["midline:optic-chiasm"]
+    assert chiasm["hemisphere"] == "midline"
+    assert sorted(chiasm["labels"]) == [161, 10161]
+
+
+def test_the_published_chiasm_is_one_structure_in_every_brain():
+    # The count that prompted this: one brain published a right chiasm and the
+    # other did not, because a 1-4 voxel sliver had been split in half.
+    import yaml
+
+    from brain_model.sources import ROOT
+
+    definition = yaml.safe_load((ROOT / "config/learning-anatomy.yaml").read_text())
+    chiasm = next(u for u in definition["nextbrain"] if u["id"] == "optic-chiasm")
+    assert chiasm["hemisphere"] == "midline"
