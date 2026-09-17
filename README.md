@@ -4,7 +4,7 @@ A source-faithful, selectable brain model with solid anatomical tissue cuts, reg
 
 - **Anatomical cortex:** 148 Destrieux regions, plus two explicitly unlabelled medial surfaces.
 - **Multimodal cortex:** 360 HCP-MMP1.0 areas, provided as a separate surface layer.
-- **Learning anatomy:** 74 derived overview structures, with distinct teaching colours, bounded display smoothing, anatomical-system exploration and links to constituent source regions.
+- **Learning anatomy:** 82 derived overview structures, with distinct teaching colours, bounded display smoothing, anatomical-system exploration and links to constituent source regions.
 - **Internal anatomy:** 35 structures from the same subject's segmentation, including cerebellum, brainstem, thalami, basal ganglia, hippocampi, amygdalae and ventricles.
 - **Histological detail:** 483 NextBrain regions. 298 of them are solid nuclei in a second internal-anatomy detail level; the remaining 185 stay cut labels. Optional.
 - **Gyral white matter:** 68 parcels of the white matter nearest each Desikan gyrus, from the same subject's `wmparc.mgz`. Named, selectable and isolatable on Destrieux and HCP-MMP cuts.
@@ -219,18 +219,23 @@ its tissue colour in every colour mode. NextBrain cuts keep their own labels.
 
 Choose **Explore internal anatomy** to reveal and frame the interior, then use
 **Study a system** to study basal ganglia, diencephalon, limbic structures,
-brainstem, basal forebrain, cerebellar nuclei, ventricles or white-matter pathways.
+brainstem, basal forebrain, cerebellum, ventricles or white-matter pathways.
 Selecting a system narrows the navigation tree and frames those structures.
 Selection, Focus, Isolate, hemisphere controls and cuts remain available. A shared
 link preserves the chosen system. English and French use anatomical groups.
 
-The 74 overview structures combine explicit constituent labels from NextBrain;
-aseg supplies the ventricles and corpus callosum. This makes larger structures
-such as thalamus, caudate and hippocampal formation readable while retaining
-hypothalamus, mammillary nuclei, subthalamic nucleus, substantia nigra, red nucleus,
-geniculate nuclei, fornix and other available pathways. The inspector lists the
-source atlas and constituent IDs, with links to members that have a 3D surface.
-The original 35 aseg structures and 298 NextBrain surfaces remain reference levels.
+The 82 overview structures combine explicit constituent labels from NextBrain;
+aseg supplies the ventricles, choroid plexus, corpus callosum and cerebellar
+cortex. This makes larger structures such as thalamus, caudate and hippocampal
+formation readable while retaining hypothalamus, mammillary nuclei, subthalamic
+nucleus, substantia nigra, red nucleus, geniculate nuclei, fornix and other
+available pathways. NextBrain has no cerebellar cortex, so the mantle is taken
+from aseg and the level shows a cerebellum rather than its deep nuclei alone;
+aseg's cerebellar white matter is deliberately left out, because the dentate and
+interposed nuclei sit inside that label and publishing it would enclose them.
+The inspector lists the source atlas and constituent IDs, with links to members
+that have a 3D surface. The original 35 aseg structures and 298 NextBrain
+surfaces remain reference levels.
 
 `config/learning-anatomy.yaml` defines each union, bilingual name and teaching
 colour. `brain_model/learning.py` extracts its union surface and applies

@@ -1,8 +1,11 @@
 import numpy as np
 import pytest
 
+from brain_model import nextbrain
 from brain_model.geometry import extract_structure
-from brain_model.learning import combine_labels, smooth_display
+from brain_model.learning import combine_labels, read_definition, smooth_display
+from brain_model.sources import read_config
+from brain_model.volumes import load_on_grid
 
 
 def test_unions_preserve_every_member_voxel_and_exclude_other_labels():
@@ -76,3 +79,43 @@ def test_the_published_chiasm_is_one_structure_in_every_brain():
     definition = yaml.safe_load((ROOT / "config/learning-anatomy.yaml").read_text())
     chiasm = next(u for u in definition["nextbrain"] if u["id"] == "optic-chiasm")
     assert chiasm["hemisphere"] == "midline"
+
+
+subject = pytest.mark.skipif(
+    not nextbrain.is_available(read_config())
+    or not (read_config()["source_directory"] / "mri/aseg.mgz").exists(),
+    reason="the subject volumes are fetched by scripts/prepare_subject.py",
+)
+
+
+def test_the_cerebellum_is_published_as_a_body_not_only_its_deep_nuclei():
+    # The overview drew the dentate and interposed nuclei with nothing around
+    # them: NextBrain has no cerebellar cortex, so on this level the cerebellum
+    # was two small bodies in open space. aseg has the mantle; it comes from
+    # there, the way the ventricles and corpus callosum already do.
+    definition = read_definition()
+    claimed = {label for unit in definition["aseg"] for label in unit["labels"]}
+    assert {8, 47} <= claimed
+
+
+@subject
+def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
+    # Why the mantle and not aseg's cerebellar white matter: the deep nuclei sit
+    # inside that label, so publishing it would enclose them completely. The two
+    # segmentations disagree along shared borders, which is ordinary; a unit that
+    # vanishes inside another is not.
+    config = read_config()
+    _, labels, _ = nextbrain.load(config)
+    aseg = np.asarray(load_on_grid(config, config["source_directory"] / "mri/aseg.mgz").dataobj)
+    definition = read_definition()
+    covered = np.isin(aseg, [label for unit in definition["aseg"] for label in unit["labels"]])
+    for unit in definition["nextbrain"]:
+        members = [
+            label + offset
+            for label in unit["labels"]
+            for offset in (0, nextbrain.HEMISPHERE_OFFSET)
+        ]
+        mask = np.isin(labels, members)
+        if not mask.any():
+            continue
+        assert (mask & covered).sum() / mask.sum() < 0.5, unit["id"]
