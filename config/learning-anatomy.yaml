@@ -58,6 +58,8 @@ nextbrain:
   - {id: optic-chiasm, hemisphere: midline, color: [115, 155, 190], name: Optic chiasm, name_fr: Chiasma optique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [161]}
   - {id: stria-terminalis, color: [177, 145, 183], name: Stria terminalis, name_fr: Strie terminale, system: White matter pathways, system_fr: Voies de substance blanche, labels: [184]}
   - {id: mammillothalamic, color: [204, 174, 96], name: Mammillothalamic tract, name_fr: Faisceau mamillo-thalamique, system: White matter pathways, system_fr: Voies de substance blanche, labels: [276]}
+  - {id: superior-cerebellar-peduncle, color: [152, 153, 119], name: Superior cerebellar peduncle, name_fr: Pédoncule cérébelleux supérieur, system: White matter pathways, system_fr: Voies de substance blanche, labels: [531]}
+  - {id: inferior-cerebellar-peduncle, color: [194, 156, 138], name: Inferior cerebellar peduncle, name_fr: Pédoncule cérébelleux inférieur, system: White matter pathways, system_fr: Voies de substance blanche, labels: [697]}
   - {id: midbrain, color: [112, 147, 173], name: Midbrain territory, name_fr: Territoire mésencéphalique, system: Brainstem, system_fr: Tronc cérébral, labels: [384, 465, 496, 498, 521]}
   - {id: pons, color: [102, 174, 157], name: Pontine territory, name_fr: Territoire pontique, system: Brainstem, system_fr: Tronc cérébral, labels: [580, 414]}
   - {id: medulla, color: [151, 157, 185], name: Medullary territory, name_fr: Territoire bulbaire, system: Brainstem, system_fr: Tronc cérébral, labels: [662, 654, 765]}
@@ -71,4 +73,10 @@ aseg:
   - {id: ventricles-right, color: [87, 139, 194], hemisphere: right, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [43, 44]}
   - {id: third-ventricle, color: [87, 139, 194], hemisphere: midline, name: Third ventricle, name_fr: Troisième ventricule, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [14]}
   - {id: fourth-ventricle, color: [87, 139, 194], hemisphere: midline, name: Fourth ventricle, name_fr: Quatrième ventricule, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [15]}
+  - {id: choroid-plexus-left, color: [171, 114, 155], hemisphere: left, name: Choroid plexus, name_fr: Plexus choroïde, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [31]}
+  - {id: choroid-plexus-right, color: [171, 114, 155], hemisphere: right, name: Choroid plexus, name_fr: Plexus choroïde, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [63]}
   - {id: corpus-callosum, color: [214, 197, 160], hemisphere: midline, name: Corpus callosum, name_fr: Corps calleux, system: White matter pathways, system_fr: Voies de substance blanche, labels: [251, 252, 253, 254, 255]}
+  # NextBrain has no cerebellar cortex, so the mantle comes from aseg. Its
+  # cerebellar white matter stays out: the deep nuclei sit inside that label.
+  - {id: cerebellar-cortex-left, color: [138, 122, 110], hemisphere: left, name: Cerebellar cortex, name_fr: Cortex cérébelleux, system: Cerebellum, system_fr: Cervelet, labels: [8]}
+  - {id: cerebellar-cortex-right, color: [138, 122, 110], hemisphere: right, name: Cerebellar cortex, name_fr: Cortex cérébelleux, system: Cerebellum, system_fr: Cervelet, labels: [47]}

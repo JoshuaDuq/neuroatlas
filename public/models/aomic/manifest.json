@@ -869,7 +869,7 @@
       "id": "learning",
       "label": "Learning anatomy",
       "file": "learning.glb",
-      "region_count": 74,
+      "region_count": 82,
       "voxel_to_surface_ras_mm": [
         [
           -1.0,
@@ -22926,6 +22926,166 @@
       "surface_area_mm2": 44.099453104497535
     },
     {
+      "id": "learning:left:superior-cerebellar-peduncle",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Superior cerebellar peduncle \u00b7 left",
+      "source_name": "Superior cerebellar peduncle",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        531
+      ],
+      "constituent_regions": [
+        "nextbrain:left:531"
+      ],
+      "display_names": {
+        "en": "Superior cerebellar peduncle",
+        "fr": "P\u00e9doncule c\u00e9r\u00e9belleux sup\u00e9rieur"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        152,
+        153,
+        119
+      ],
+      "voxel_count": 155,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 155.0,
+      "display_maximum_displacement_mm": 0.5022729144691301,
+      "vertex_count": 382,
+      "triangle_count": 780,
+      "surface_area_mm2": 237.60519102308265
+    },
+    {
+      "id": "learning:right:superior-cerebellar-peduncle",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Superior cerebellar peduncle \u00b7 right",
+      "source_name": "Superior cerebellar peduncle",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10531
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10531"
+      ],
+      "display_names": {
+        "en": "Superior cerebellar peduncle",
+        "fr": "P\u00e9doncule c\u00e9r\u00e9belleux sup\u00e9rieur"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        152,
+        153,
+        119
+      ],
+      "voxel_count": 150,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 150.0,
+      "display_maximum_displacement_mm": 0.48405774737358914,
+      "vertex_count": 378,
+      "triangle_count": 760,
+      "surface_area_mm2": 229.8360395672412
+    },
+    {
+      "id": "learning:left:inferior-cerebellar-peduncle",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Inferior cerebellar peduncle \u00b7 left",
+      "source_name": "Inferior cerebellar peduncle",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        697
+      ],
+      "constituent_regions": [
+        "nextbrain:left:697"
+      ],
+      "display_names": {
+        "en": "Inferior cerebellar peduncle",
+        "fr": "P\u00e9doncule c\u00e9r\u00e9belleux inf\u00e9rieur"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        194,
+        156,
+        138
+      ],
+      "voxel_count": 77,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 77.0,
+      "display_maximum_displacement_mm": 0.49232631066790167,
+      "vertex_count": 187,
+      "triangle_count": 374,
+      "surface_area_mm2": 122.88748491823769
+    },
+    {
+      "id": "learning:right:inferior-cerebellar-peduncle",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Inferior cerebellar peduncle \u00b7 right",
+      "source_name": "Inferior cerebellar peduncle",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10697
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10697"
+      ],
+      "display_names": {
+        "en": "Inferior cerebellar peduncle",
+        "fr": "P\u00e9doncule c\u00e9r\u00e9belleux inf\u00e9rieur"
+      },
+      "system_names": {
+        "en": "White matter pathways",
+        "fr": "Voies de substance blanche"
+      },
+      "display_color": [
+        194,
+        156,
+        138
+      ],
+      "voxel_count": 81,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 81.0,
+      "display_maximum_displacement_mm": 0.4575502512341924,
+      "vertex_count": 219,
+      "triangle_count": 446,
+      "surface_area_mm2": 136.7277369091674
+    },
+    {
       "id": "learning:left:midbrain",
       "atlas": "learning",
       "kind": "structure",
@@ -23762,6 +23922,86 @@
       "surface_area_mm2": 1289.8553748992156
     },
     {
+      "id": "learning:choroid-plexus-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Choroid plexus \u00b7 left",
+      "source_name": "Choroid plexus",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        31
+      ],
+      "constituent_regions": [
+        "aseg:left:31"
+      ],
+      "display_names": {
+        "en": "Choroid plexus",
+        "fr": "Plexus choro\u00efde"
+      },
+      "system_names": {
+        "en": "Ventricles and CSF",
+        "fr": "Ventricules et LCR"
+      },
+      "display_color": [
+        171,
+        114,
+        155
+      ],
+      "voxel_count": 466,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 466.0,
+      "display_maximum_displacement_mm": 0.4692750889084524,
+      "vertex_count": 1033,
+      "triangle_count": 2078,
+      "surface_area_mm2": 672.7125849929446
+    },
+    {
+      "id": "learning:choroid-plexus-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Choroid plexus \u00b7 right",
+      "source_name": "Choroid plexus",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        63
+      ],
+      "constituent_regions": [
+        "aseg:right:63"
+      ],
+      "display_names": {
+        "en": "Choroid plexus",
+        "fr": "Plexus choro\u00efde"
+      },
+      "system_names": {
+        "en": "Ventricles and CSF",
+        "fr": "Ventricules et LCR"
+      },
+      "display_color": [
+        171,
+        114,
+        155
+      ],
+      "voxel_count": 596,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 596.0,
+      "display_maximum_displacement_mm": 0.5157224896501926,
+      "vertex_count": 1315,
+      "triangle_count": 2666,
+      "surface_area_mm2": 837.4885565596423
+    },
+    {
       "id": "learning:corpus-callosum",
       "atlas": "learning",
       "kind": "structure",
@@ -23808,6 +24048,86 @@
       "vertex_count": 2812,
       "triangle_count": 5628,
       "surface_area_mm2": 2236.207714131836
+    },
+    {
+      "id": "learning:cerebellar-cortex-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Cerebellar cortex \u00b7 left",
+      "source_name": "Cerebellar cortex",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        8
+      ],
+      "constituent_regions": [
+        "aseg:left:8"
+      ],
+      "display_names": {
+        "en": "Cerebellar cortex",
+        "fr": "Cortex c\u00e9r\u00e9belleux"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        138,
+        122,
+        110
+      ],
+      "voxel_count": 61622,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 61622.0,
+      "display_maximum_displacement_mm": 0.5365156397153775,
+      "vertex_count": 23096,
+      "triangle_count": 46272,
+      "surface_area_mm2": 16027.445745623596
+    },
+    {
+      "id": "learning:cerebellar-cortex-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Cerebellar cortex \u00b7 right",
+      "source_name": "Cerebellar cortex",
+      "source_label_id": null,
+      "source_atlas": "aseg",
+      "source_label_ids": [
+        47
+      ],
+      "constituent_regions": [
+        "aseg:right:47"
+      ],
+      "display_names": {
+        "en": "Cerebellar cortex",
+        "fr": "Cortex c\u00e9r\u00e9belleux"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        138,
+        122,
+        110
+      ],
+      "voxel_count": 60436,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 60436.0,
+      "display_maximum_displacement_mm": 0.5424136863385374,
+      "vertex_count": 22762,
+      "triangle_count": 45716,
+      "surface_area_mm2": 15694.663115530084
     },
     {
       "id": "nextbrain:left:7",
@@ -31904,6 +32224,8 @@
     "Source internal segmentations use a 1 mm grid; fine nuclei and cerebellar folia are unresolved.",
     "Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to 0.6 mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
     "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
+    "Learning publishes the cerebellar cortical mantle and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
+    "Learning units come from two segmentations of the same brain, so an aseg-sourced and a NextBrain-sourced surface can overlap slightly where they meet.",
     "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
     "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
     "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",

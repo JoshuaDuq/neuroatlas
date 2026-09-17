@@ -470,6 +470,8 @@ def main():
             "Source internal segmentations use a 1 mm grid; fine nuclei and cerebellar folia are unresolved.",
             "Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to 0.6 mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
             "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
+            "Learning publishes the cerebellar cortical mantle and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
+            "Learning units come from two segmentations of the same brain, so an aseg-sourced and a NextBrain-sourced surface can overlap slightly where they meet.",
             "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
             "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
             "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",

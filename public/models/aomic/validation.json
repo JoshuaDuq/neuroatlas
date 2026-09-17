@@ -3387,7 +3387,7 @@
   },
   "learning_structures": {
     "file": "learning.glb",
-    "sha256": "7b8f7ba95d20c734e8f66eb4e0e32f85875d3c18ace94f2db3e23bf4d4515cea",
+    "sha256": "30b2a7a9416c04c98594dd016e84153bab4b53fe15831d2b23d2291d62d26c03",
     "regions": [
       {
         "id": "learning:left:caudate",
@@ -3708,6 +3708,30 @@
         "maximum_display_displacement_mm": 0.5399798540525912
       },
       {
+        "id": "learning:left:superior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 155,
+        "maximum_display_displacement_mm": 0.5022729860001262
+      },
+      {
+        "id": "learning:right:superior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 150,
+        "maximum_display_displacement_mm": 0.4840579979667302
+      },
+      {
+        "id": "learning:left:inferior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 77,
+        "maximum_display_displacement_mm": 0.49232655033909145
+      },
+      {
+        "id": "learning:right:inferior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 81,
+        "maximum_display_displacement_mm": 0.4575508798622138
+      },
+      {
         "id": "learning:left:midbrain",
         "source_atlas": "nextbrain",
         "source_voxel_count": 2180,
@@ -3828,10 +3852,34 @@
         "maximum_display_displacement_mm": 0.5386639040917242
       },
       {
+        "id": "learning:choroid-plexus-left",
+        "source_atlas": "aseg",
+        "source_voxel_count": 466,
+        "maximum_display_displacement_mm": 0.4692751761833111
+      },
+      {
+        "id": "learning:choroid-plexus-right",
+        "source_atlas": "aseg",
+        "source_voxel_count": 596,
+        "maximum_display_displacement_mm": 0.5157221540983354
+      },
+      {
         "id": "learning:corpus-callosum",
         "source_atlas": "aseg",
         "source_voxel_count": 3307,
         "maximum_display_displacement_mm": 0.4994930903593753
+      },
+      {
+        "id": "learning:cerebellar-cortex-left",
+        "source_atlas": "aseg",
+        "source_voxel_count": 61622,
+        "maximum_display_displacement_mm": 0.536516325670199
+      },
+      {
+        "id": "learning:cerebellar-cortex-right",
+        "source_atlas": "aseg",
+        "source_voxel_count": 60436,
+        "maximum_display_displacement_mm": 0.5424149878510449
       }
     ],
     "source_volumes_unchanged": true,
