@@ -88,9 +88,13 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
       onInsets?.({ top: 0, right: 0, bottom: 0, left: 0 });
       return;
     }
+    const rect = sheet.getBoundingClientRect();
+    const span = isSideways()
+      ? (rect.width || pixels)
+      : (rect.height || pixels);
     onInsets?.(isSideways()
-      ? { top: 0, right: 0, bottom: 0, left: pixels }
-      : { top: 0, right: 0, bottom: pixels, left: 0 });
+      ? { top: 0, right: 0, bottom: 0, left: span }
+      : { top: 0, right: 0, bottom: span, left: 0 });
   }
 
   function setDetent(next, { notify = true } = {}) {
@@ -233,6 +237,19 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   return {
     get isPhone() { return phone; },
     get detent() { return detent; },
+    get tab() { return active; },
+
+    /**
+     * A tap on the anatomy is a request to read it. At peek the sheet is
+     * only a name; open it. If the reader was browsing the tree, switch to
+     * the region panel. Leave Cuts and Display alone — they are already
+     * working on this view.
+     */
+    revealOnSelect() {
+      if (!phone) return;
+      if (active === 'find') setTab('region');
+      if (detent === 'peek') setDetent('half');
+    },
 
     update(state, { label, side } = {}) {
       lang = state.lang;

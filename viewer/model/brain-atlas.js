@@ -127,7 +127,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
-    this.spinalCordVisible = true;
+    this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
     this.sourceColors = new WeakMap();
     this.selectedId = null;
@@ -500,7 +500,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
-    this.spinalCordVisible = true;
+    this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
     this.isolatedId = null;
     this.select(null);

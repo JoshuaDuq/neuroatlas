@@ -34,7 +34,7 @@ export const TRANSLATIONS = {
     atlases: {
       destrieux: 'Destrieux anatomical atlas',
       'hcp-mmp': 'HCP-MMP1.0 multimodal atlas',
-      learning: 'Learning anatomy · grouped structures',
+      learning: 'Learning anatomy',
       aseg: 'FreeSurfer subcortical segmentation',
       nextbrain: 'NextBrain histological atlas',
       wmparc: 'FreeSurfer white-matter parcellation',
@@ -42,10 +42,17 @@ export const TRANSLATIONS = {
     },
     header: {
       atlasSwitch: 'Cortical atlas',
+      atlasShort: {
+        destrieux: 'Destrieux',
+        'hcp-mmp': 'HCP-MMP',
+        learning: 'Learning',
+        aseg: 'aseg',
+        nextbrain: 'NextBrain',
+        wmparc: 'wmparc',
+        zanatomy: 'Spinal cord',
+      },
       languageSwitch: 'Language',
       shortcuts: 'Keyboard shortcuts',
-      share: 'Share',
-      linkCopied: 'Link copied to clipboard',
       lightTheme: 'Light',
       darkTheme: 'Dark',
       switchToLight: 'Switch to light theme',
@@ -88,6 +95,8 @@ export const TRANSLATIONS = {
       hintStructures: 'Cortex is hidden — internal structures are selectable.',
       hemisphere: 'Hemisphere',
       atlas: 'Atlas',
+      viewSurface: 'Surface',
+      viewCut: 'Cut',
       group: 'Lobe / System',
       surfaceArea: 'Surface area',
       volume: 'Volume',
@@ -104,8 +113,15 @@ export const TRANSLATIONS = {
         off: 'Full brain',
         sagittal: 'Sagittal',
         coronal: 'Coronal',
-        axial: 'Axial / transverse',
+        axial: 'Axial',
         oblique: 'Oblique',
+      },
+      modeShort: {
+        off: 'Full',
+        sagittal: 'Sag',
+        coronal: 'Cor',
+        axial: 'Ax',
+        oblique: 'Obl',
       },
       axes: {
         off: 'Position (mm)',
@@ -120,7 +136,8 @@ export const TRANSLATIONS = {
       reverseSide: 'Reverse retained side',
       midsagittal: 'Midsagittal',
       faceCut: 'Face cut',
-      openMpr: 'Open linked MRI slices',
+      openMpr: 'Linked MRI',
+      openMprTitle: 'Open linked MRI slices',
       statusFull: 'Full brain · no cut',
       statusPreparing: 'Preparing anatomy…',
       statusActive: (offset, label) => `Tissue cut at ${offset} mm · 1 mm · ${label}`,
@@ -259,7 +276,7 @@ export const TRANSLATIONS = {
     atlases: {
       destrieux: 'Atlas anatomique de Destrieux',
       'hcp-mmp': 'Atlas multimodal HCP-MMP1.0',
-      learning: 'Anatomie pédagogique · structures regroupées',
+      learning: 'Anatomie pédagogique',
       aseg: 'Segmentation sous-corticale FreeSurfer',
       nextbrain: 'Atlas histologique NextBrain',
       wmparc: 'Parcellisation de la substance blanche FreeSurfer',
@@ -267,10 +284,17 @@ export const TRANSLATIONS = {
     },
     header: {
       atlasSwitch: 'Atlas cortical',
+      atlasShort: {
+        destrieux: 'Destrieux',
+        'hcp-mmp': 'HCP-MMP',
+        learning: 'Pédagogique',
+        aseg: 'aseg',
+        nextbrain: 'NextBrain',
+        wmparc: 'wmparc',
+        zanatomy: 'Moelle',
+      },
       languageSwitch: 'Langue',
       shortcuts: 'Raccourcis clavier',
-      share: 'Partager',
-      linkCopied: 'Lien copié dans le presse-papiers',
       lightTheme: 'Clair',
       darkTheme: 'Sombre',
       switchToLight: 'Basculer vers le thème clair',
@@ -313,6 +337,8 @@ export const TRANSLATIONS = {
       hintStructures: 'Le cortex est masqué — les structures internes sont sélectionnables.',
       hemisphere: 'Hémisphère',
       atlas: 'Atlas',
+      viewSurface: 'Surface',
+      viewCut: 'Coupe',
       group: 'Lobe / Système',
       surfaceArea: 'Surface',
       volume: 'Volume',
@@ -329,8 +355,15 @@ export const TRANSLATIONS = {
         off: 'Cerveau entier',
         sagittal: 'Sagittal',
         coronal: 'Coronal',
-        axial: 'Axial / transverse',
+        axial: 'Axial',
         oblique: 'Oblique',
+      },
+      modeShort: {
+        off: 'Tout',
+        sagittal: 'Sag',
+        coronal: 'Cor',
+        axial: 'Ax',
+        oblique: 'Obl',
       },
       axes: {
         off: 'Position (mm)',
@@ -345,7 +378,8 @@ export const TRANSLATIONS = {
       reverseSide: 'Inverser le côté conservé',
       midsagittal: 'Plan médiosagittal',
       faceCut: 'Vue en coupe',
-      openMpr: 'Ouvrir les coupes IRM liées',
+      openMpr: 'IRM liées',
+      openMprTitle: 'Ouvrir les coupes IRM liées',
       statusFull: 'Cerveau entier · aucune coupe',
       statusPreparing: 'Préparation de l’anatomie…',
       statusActive: (offset, label) => `Coupe tissulaire à ${offset} mm · 1 mm · étiquettes ${label}`,
@@ -463,3 +497,8 @@ export const TRANSLATIONS = {
 };
 
 export const t = (lang, section) => TRANSLATIONS[lang]?.[section] ?? TRANSLATIONS.en[section];
+
+/** Masthead atlas switch: a short name. The full title stays on the button’s title. */
+export function atlasSwitchLabel(id, lang = 'en') {
+  return t(lang, 'header').atlasShort?.[id] ?? t(lang, 'atlases')[id] ?? id;
+}

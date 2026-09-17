@@ -1,4 +1,4 @@
-import { t } from '../i18n/translations.js';
+import { atlasSwitchLabel, t } from '../i18n/translations.js';
 
 /**
  * How much of the model is drawn: detail level, hemisphere, cortex, opacity.
@@ -31,9 +31,14 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
     detail.append(option);
   }
 
+  const onHemisphereClick = event => {
+    const button = event.target.closest('[data-hemisphere]');
+    if (button) handlers.onHemisphere(button.dataset.hemisphere);
+  };
+
   const listeners = [
     [detail, 'change', event => handlers.onDetail(event.target.value)],
-    [hemisphere, 'change', event => handlers.onHemisphere(event.target.value)],
+    [hemisphere, 'click', onHemisphereClick],
     [cortex, 'change', event => handlers.onCortexVisible(event.target.checked)],
     [opacity, 'input', event => handlers.onCortexOpacity(Number(event.target.value))],
     ...(spinalCord && handlers.onSpinalCordVisible ? [
@@ -53,27 +58,26 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
       if (detailLabel) detailLabel.textContent = i18n.internalAnatomy;
       const atlasDict = t(state.lang, 'atlases');
       for (const option of detail.options) {
-        option.textContent = atlasDict[option.value] ?? option.textContent;
+        option.textContent = atlasSwitchLabel(option.value, state.lang);
+        option.title = atlasDict[option.value] ?? option.textContent;
       }
       if (state.detail) detail.value = state.detail;
       detail.hidden = detailLevels.length < 2;
       if (detailLabel) detailLabel.hidden = detailLevels.length < 2;
-      const optBoth = hemisphere.querySelector('option[value="both"]');
-      const optLeft = hemisphere.querySelector('option[value="left"]');
-      const optRight = hemisphere.querySelector('option[value="right"]');
-      if (optBoth) optBoth.textContent = i18n.both;
-      if (optLeft) optLeft.textContent = i18n.left;
-      if (optRight) optRight.textContent = i18n.right;
+      if (hemiLabel) hemisphere.setAttribute('aria-labelledby', hemiLabel.id);
+      for (const button of hemisphere.querySelectorAll('[data-hemisphere]')) {
+        const key = button.dataset.hemisphere;
+        button.textContent = i18n[key] ?? key;
+        button.setAttribute('aria-pressed', String(key === state.hemisphere));
+      }
 
       if (cortexText) cortexText.textContent = i18n.showCortex;
       if (opacityText) opacityText.textContent = i18n.cortexOpacity;
       if (spinalCordText) spinalCordText.textContent = i18n.showSpinalCord;
       if (spinalCordLabel) spinalCordLabel.hidden = !hasSpinalCord;
       reset.textContent = i18n.resetView;
-
-      hemisphere.value = state.hemisphere;
       cortex.checked = state.cortexVisible;
-      if (spinalCord) spinalCord.checked = state.spinalCordVisible !== false;
+      if (spinalCord) spinalCord.checked = state.spinalCordVisible === true;
       // Do not fight the reader's thumb while they are dragging the slider.
       if (document.activeElement !== opacity) opacity.value = String(state.cortexOpacity);
       opacityValue.value = `${Math.round(state.cortexOpacity * 100)}%`;

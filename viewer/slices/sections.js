@@ -6,6 +6,24 @@ import { loadVolumes } from './volume.js';
 
 const MODES = ['off', 'sagittal', 'coronal', 'axial', 'oblique'];
 
+function projectBounds(bounds, normal) {
+  const [min, max] = bounds;
+  const corners = [
+    [min[0], min[1], min[2]],
+    [min[0], min[1], max[2]],
+    [min[0], max[1], min[2]],
+    [min[0], max[1], max[2]],
+    [max[0], min[1], min[2]],
+    [max[0], min[1], max[2]],
+    [max[0], max[1], min[2]],
+    [max[0], max[1], max[2]],
+  ];
+  const projections = corners.map(
+    ([x, y, z]) => x * normal.x + y * normal.y + z * normal.z,
+  );
+  return [Math.min(...projections), Math.max(...projections)];
+}
+
 /** GPU categorical tissue cuts, with independent optional MRI reference views. */
 export class BrainSections extends EventTarget {
   constructor(model, metadataUrl, tissues = new TissueSections(model, metadataUrl)) {
@@ -85,7 +103,9 @@ export class BrainSections extends EventTarget {
   }
 
   get offsetRange() {
-    if (this.state.mode === 'oblique') return [-this.coordinateLimit, this.coordinateLimit];
+    if (this.state.mode === 'oblique') {
+      return projectBounds(this.coordinateBounds, this.frame.normal);
+    }
     const axis = { sagittal: 0, coronal: 1, axial: 2, off: 2 }[this.state.mode];
     return this.coordinateBounds.map(bound => bound[axis]);
   }

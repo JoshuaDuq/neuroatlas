@@ -58,8 +58,8 @@
    * against the plate rather than the rail, which is why --accent cannot be
    * reused: its light value is a dark blue.
    */
-  --overlay-plate: rgb(18 22 28 / 0.82);
-  --overlay-plate-hover: rgb(32 38 47 / 0.88);
+  --overlay-plate: rgb(12 15 20 / 0.92);
+  --overlay-plate-hover: rgb(28 34 42 / 0.96);
   --overlay-border: rgb(242 246 250 / 0.22);
   --overlay-accent: #4fb6e0;
   --overlay-accent-wash: rgb(79 182 224 / 0.16);
@@ -90,11 +90,11 @@
    * window was left a 384px stage; the rails give way before the picture does.
    */
   --stage-min: 520px;
-  --header-height: 52px;
-  --footer-height: 28px;
+  --header-height: 48px;
+  --footer-height: 26px;
 
-  --radius-control: 2px;
-  --radius-panel: 3px;
+  --radius-control: 1px;
+  --radius-panel: 2px;
 
   /* Only the camera animates. Interface state changes are instant. */
   --camera-transition: 240ms;
@@ -111,11 +111,11 @@
     --accent-hover: #7cc9e8;
     --accent-wash: #12303d;
     --danger: #f1928f;
-    --surface-base: #161a20;
-    --surface-sunken: #10141a;
+    --surface-base: #1c222b;
+    --surface-sunken: #13181e;
     --surface-canvas: #0e1116;
-    --border-subtle: #262c35;
-    --border-control: #5f6b7d;
+    --border-subtle: #303844;
+    --border-control: #6a7584;
   }
 }
 
@@ -129,11 +129,11 @@
   --accent-hover: #7cc9e8;
   --accent-wash: #12303d;
   --danger: #f1928f;
-  --surface-base: #161a20;
-  --surface-sunken: #10141a;
+  --surface-base: #1c222b;
+  --surface-sunken: #13181e;
   --surface-canvas: #0e1116;
-  --border-subtle: #262c35;
-  --border-control: #5f6b7d;
+  --border-subtle: #303844;
+  --border-control: #6a7584;
 }
 
 @media (prefers-contrast: more) {
