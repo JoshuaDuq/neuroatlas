@@ -19,45 +19,6 @@ The documentation is organized into six core modules:
 
 ---
 
-## System Overview
-
-```mermaid
-graph TD
-    subgraph S["1. Source Neuroimaging (FreeSurfer & BIDS)"]
-        S1["T1w MRI & Conformed Grid<br/>orig.mgz (256³)"]
-        S2["Cortical Surfaces<br/>pial & white (lh, rh)"]
-        S3["Parcellations<br/>Destrieux .annot, aseg, wmparc"]
-        S4["Template Warps & Projections<br/>HCP-MMP fs_LR, NextBrain ANTs"]
-    end
-
-    subgraph B["2. Python Build Pipeline (brain_model)"]
-        B1["Surface Tessellation & Partition<br/>Barycentric Region Partitioning"]
-        B2["Solid Ribbons & Envelopes<br/>Native Extrusion & Marching Cubes"]
-        B3["Quantization & Encoding<br/>KHR_mesh_quantization (int16/uint16)"]
-        B4["Volume Exporters<br/>Categorical .volume (gzip R8/R16)"]
-    end
-
-    subgraph D["3. Optimized Deliverables (public/models/)"]
-        D1["cortex-destrieux.glb & cortex-hcp-mmp.glb"]
-        D2["learning.glb, structures.glb, nextbrain.glb"]
-        D3["tissue-envelopes.glb & spinal-cord.glb"]
-        D4["Categorical 3D Textures & volumes.json"]
-    end
-
-    subgraph V["4. WebGL 2 Client Engine (Three.js)"]
-        V1["Multi-Layer BrainAtlas Scene Graph"]
-        V2["GPU Stencil Buffer Solid Capping"]
-        V3["Hardware Data3DTexture Label Sampling"]
-        V4["Linked Orthogonal 2D MRI Views"]
-    end
-
-    S --> B
-    B --> D
-    D --> V
-```
-
----
-
 ## Core Principles
 
 1. **Individual Source Fidelity**: Anatomy belongs to one published person (`bert` or `aomic` `sub-0022`), not an averaged synthetic template. Folds, ventricles, and asymmetries are real.
