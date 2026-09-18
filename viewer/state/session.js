@@ -29,7 +29,7 @@ export function shortcutsAllowed(target) {
   return true;
 }
 
-export function createSession({ views, theme = 'light', lang = 'en' }) {
+export function createSession({ views, theme = 'dark', lang = 'en' }) {
   const knownViews = new Set(views);
   let state = {
     view: 'oblique',

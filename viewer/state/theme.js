@@ -1,7 +1,5 @@
 const STORAGE_KEY = 'neuroatlas.theme';
 
-const systemPrefersDark = () =>
-  globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
 
 /**
  * Light or dark, stored per reader.
@@ -18,7 +16,7 @@ export function createTheme(onChange) {
   }
   let theme = stored === 'dark' || stored === 'light'
     ? stored
-    : (systemPrefersDark() ? 'dark' : 'light');
+    : 'dark';
 
   function apply() {
     document.documentElement.dataset.theme = theme;

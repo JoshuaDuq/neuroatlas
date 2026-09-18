@@ -14,6 +14,7 @@ const DEFAULTS = {
   hemisphere: 'both',
   cortexVisible: true,
   cortexOpacity: 1,
+  internalVisible: true,
   spinalCordVisible: false,
   surfaceColor: 'atlas',
   view: 'oblique',
@@ -73,6 +74,7 @@ const FIELDS = [
     read: value => (HEMISPHERES.includes(value) ? value : undefined),
   },
   { key: 'cortexVisible', param: 'cortex', read: flag, write: value => (value ? '1' : '0') },
+  { key: 'internalVisible', param: 'internal', read: flag, write: value => (value ? '1' : '0') },
   { key: 'spinalCordVisible', param: 'cord', read: flag, write: value => (value ? '1' : '0') },
   { key: 'surfaceColor', param: 'colors', read: surfaceColor },
   {

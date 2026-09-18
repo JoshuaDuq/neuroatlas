@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -22,9 +22,8 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="A full-resolution reconstruction of one person's cerebral cortex and cerebellum, lit from the left on a dark field, with every gyrus and sulcus of the source surface visible." />
     <meta name="twitter:card" content="summary_large_image" />
-    <!-- Matches --surface-base in each scheme, so the browser chrome meets the masthead. -->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c222b" />
+    <!-- Matches --surface-base in dark mode (default layout). -->
+    <meta name="theme-color" content="#1c222b" />
     <!--
       Start the anatomy download before the module graph has parsed. The
       filenames match `startup-assets.js`; `fetchAsset` consumes these Response
@@ -111,7 +110,7 @@
               <button type="button" data-lang="en" aria-pressed="true">EN</button>
               <button type="button" data-lang="fr" aria-pressed="false">FR</button>
             </div>
-            <button id="theme-toggle" type="button" aria-pressed="false">
+            <button id="theme-toggle" type="button" aria-pressed="true">
               <span id="theme-label">Dark</span>
             </button>
             <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
@@ -336,6 +335,10 @@
                   <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
                 </label>
                 <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+
+                <label id="internal-visible-label" class="check">
+                  <input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span>
+                </label>
 
                 <label id="spinal-cord-label" class="check">
                   <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
