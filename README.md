@@ -11,28 +11,6 @@
 
 ## Anatomical & Functional Layers
 
-```mermaid
-graph TD
-    subgraph S["Cortical Surface Layers"]
-        C1["Destrieux (a2009s)<br/>148 anatomical gyri & sulci"]
-        C2["HCP-MMP1.0<br/>360 multimodal cortical areas"]
-        C3["Yeo 7 Networks<br/>Resting-state functional systems"]
-    end
-
-    subgraph I["Subcortical & Deep Structures"]
-        I1["Learning Anatomy<br/>82 teaching solids across 8 systems"]
-        I2["Aseg Reference Level<br/>35 native marching-cubes structures"]
-        I3["NextBrain Histology<br/>483 regions (298 3D nuclei)"]
-        I4["Gyral White Matter<br/>68 Desikan-labeled subcortical parcels"]
-    end
-
-    subgraph R["Neuroaxis Reference"]
-        R1["Spinal Cord Assembly<br/>58 Z-Anatomy tracts, horns & roots"]
-    end
-
-    S --- I --- R
-```
-
 | Parcellation Layer | Granularity | Source Representation | Scientific Route |
 | :--- | :--- | :--- | :--- |
 | [**Destrieux (`aparc.a2009s`)**](docs/atlases.md#1-anatomical-cortex-destrieux-aparca2009s) | 148 parcels + 2 walls | Native FreeSurfer `.annot` | Native subject folding; zero projection |

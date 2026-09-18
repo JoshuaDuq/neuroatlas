@@ -82,20 +82,6 @@ When an anatomical cut plane clips closed surfaces (the pial and white matter en
 2. **Front-face Pass**: Front-facing geometry writes a decrement to the stencil buffer.
 3. **Cap Pass**: A full-screen proxy quad positioned on the clipping plane renders only where the stencil buffer is non-zero, filling the anatomical cut face seamlessly.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant GPU as WebGL Pipeline
-    participant SB as Stencil Buffer
-    participant CB as Color Buffer
-
-    Note over GPU,CB: Stencil Solid Cut Execution
-    GPU->>SB: 1. Render clipped back-faces (Stencil +1)
-    GPU->>SB: 2. Render clipped front-faces (Stencil -1)
-    GPU->>CB: 3. Render capping plane quad where Stencil != 0
-    Note over CB: Result: Watertight solid cut without rebuilding meshes
-```
-
 ### Hardware 3D Label Sampling (`Data3DTexture`)
 - Cut planes sample categorical atlas labels directly from 3D textures on the GPU.
 - WebGL 2 integer textures (`R16UI` or `R8UI`) preserve discrete anatomical identifiers without linear filtering artifacts.
