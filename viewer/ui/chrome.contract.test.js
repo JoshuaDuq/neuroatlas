@@ -54,14 +54,6 @@ test('hemisphere is a display setting, not a masthead instrument', () => {
   assert.equal(/\binstrument\b/.test(tag), false);
 });
 
-test('Slice here opens the cuts panel so the plane the reader just invoked is on screen', async () => {
-  const app = await readFile(new URL('../app.js', import.meta.url), 'utf8');
-  const slice = app.match(/const onSliceTo = async \(\) => \{([\s\S]*?)\n  \};/);
-  assert.ok(slice, 'expected onSliceTo in app.js');
-  assert.match(slice[1], /inspectorTabs\.show\(\s*'cuts'\s*\)/);
-  assert.match(slice[1], /sheet\.show\(\s*'cuts'\s*\)/);
-});
-
 test('empty inspector is a hint; the title and facts stay reserved for a region', () => {
   const empty = inspectorEmptyChrome({ selectedRegion: null, explorer: 'anatomy' });
   assert.deepEqual(empty, {

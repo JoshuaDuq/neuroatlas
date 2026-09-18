@@ -442,27 +442,11 @@ export async function startApp() {
     }
   });
 
-  const onSliceTo = async () => {
-    const region = model.state.selectedRegion;
-    if (!region) return;
-    const coords = model.centroidOf(region.id);
-    if (!coords) return;
-    sections.setCrosshair(coords);
-    if (!sections.active) {
-      await sections.setMode('axial');
-    }
-    faceCut();
-    inspectorTabs.show('cuts');
-    sheet.show('cuts');
-    render();
-  };
-
   const inspector = createInspector({
     catalog,
     networks: model.manifest.networks,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
-    onSliceTo,
     centroidOf: id => model.centroidOf(id),
   });
 

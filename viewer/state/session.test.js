@@ -158,7 +158,7 @@ test('a failure message names the atlas, not the parser that gave up', () => {
  * The session keeps its state in closure scope and exposes it only through
  * `assemble`, so `session.state` is undefined and every read of it throws.
  *
- * This silently broke Slice here, Expand all, and Open linked MRI slices:
+ * This silently broke Expand all and Open linked MRI slices:
  * the handlers threw on their first line, so the buttons did nothing. The
  * selection lives on the model, the view state on the session, and both are
  * reachable only from the assembled snapshot.

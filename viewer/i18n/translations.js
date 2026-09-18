@@ -105,7 +105,6 @@ export const TRANSLATIONS = {
       sourceLabel: 'Source label',
       focus: 'Focus',
       isolate: 'Isolate',
-      sliceTo: 'Slice here',
     },
     cuts: {
       sectionHeading: 'Anatomical cuts',
@@ -349,7 +348,6 @@ export const TRANSLATIONS = {
       sourceLabel: 'Étiquette source',
       focus: 'Cibler',
       isolate: 'Isoler',
-      sliceTo: 'Coupe ici',
     },
     cuts: {
       sectionHeading: 'Coupes anatomiques',

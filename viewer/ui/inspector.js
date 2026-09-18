@@ -20,7 +20,7 @@ export function inspectorEmptyChrome({ selectedRegion, explorer }) {
 }
 
 /** The selected region: what it is, and what is measured about it. */
-export function createInspector({ catalog, networks, onFocus, onIsolate, onSliceTo, centroidOf }) {
+export function createInspector({ catalog, networks, onFocus, onIsolate, centroidOf }) {
   const inspectorPanel = document.getElementById('inspector');
   const labelSelected = document.getElementById('label-selected');
   const factHemiLabel = document.getElementById('fact-hemisphere-label');
@@ -40,7 +40,6 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
   const source = document.getElementById('fact-source');
   const focus = document.getElementById('focus');
   const isolate = document.getElementById('isolate');
-  const sliceTo = document.getElementById('slice-to');
   const actions = focus.closest('.actions');
   const regionMpr = document.getElementById('region-mpr');
   const networkSection = document.getElementById('region-networks');
@@ -50,8 +49,6 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
 
   focus.addEventListener('click', onFocus);
   isolate.addEventListener('click', onIsolate);
-  const onSliceToClick = () => onSliceTo?.();
-  sliceTo?.addEventListener('click', onSliceToClick);
 
   function networkRow(share, lang, i18n) {
     const row = document.createElement('li');
@@ -110,7 +107,6 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
       if (factSourceLabel) factSourceLabel.textContent = i18n.sourceLabel;
       focus.textContent = i18n.focus;
       isolate.textContent = i18n.isolate;
-      if (sliceTo) sliceTo.textContent = i18n.sliceTo;
 
       const region = state.selectedRegion;
       name.hidden = chrome.hideTitle;
@@ -128,7 +124,6 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
         if (networkSection) networkSection.hidden = true;
         focus.disabled = true;
         isolate.disabled = true;
-        if (sliceTo) sliceTo.disabled = true;
         isolate.setAttribute('aria-pressed', 'false');
         return;
       }
@@ -181,12 +176,10 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onSlice
       focus.disabled = false;
       isolate.disabled = false;
       isolate.setAttribute('aria-pressed', String(Boolean(state.isolatedRegion)));
-      if (sliceTo) sliceTo.disabled = !centroidOf?.(region.id);
     },
     dispose() {
       focus.removeEventListener('click', onFocus);
       isolate.removeEventListener('click', onIsolate);
-      sliceTo?.removeEventListener('click', onSliceToClick);
     },
   };
 }
