@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Box3, PerspectiveCamera, Vector3 } from 'three';
-import { VIEW_DIRECTIONS, cameraConstraints, frameBounds, upFor } from './camera-views.js';
+import { VIEW_DIRECTIONS, cameraConstraints, fitDistance, frameBounds, upFor } from './camera-views.js';
 
 test('fits all anatomical bounds inside landscape and portrait viewports', () => {
   const bounds = new Box3(new Vector3(-0.08, -0.07, -0.1), new Vector3(0.08, 0.11, 0.1));
@@ -78,3 +78,75 @@ test('framing spinal cord maintains scale-invariant precision and proper approac
   assert.equal(Math.round(constraints.far / constraints.near), 10000, 'depth ratio is preserved');
 });
 
+
+test('fitting the silhouette never crops what fitting the box kept', () => {
+  // The point fit is an optimisation, and the one thing it must not do is
+  // pull the camera in past anatomy. Every point given to it lies inside the
+  // box, so its distance can only be shorter.
+  const camera = new PerspectiveCamera(50, 1.6, 0.01, 100);
+  const bounds = new Box3(new Vector3(-0.06, -0.05, -0.09), new Vector3(0.06, 0.07, 0.09));
+  const rng = (seed => () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648)(7);
+  const points = [];
+  const centre = bounds.getCenter(new Vector3());
+  const half = bounds.getSize(new Vector3()).multiplyScalar(0.5);
+  for (let i = 0; i < 4000; i++) {
+    // An ellipsoid inscribed in the box: the shape a brain actually has, and
+    // the shape whose corners the box invents.
+    const u = rng() * 2 - 1, v = rng() * 2 - 1, w = rng() * 2 - 1;
+    const length = Math.hypot(u, v, w) || 1;
+    points.push(
+      centre.x + half.x * u / length,
+      centre.y + half.y * v / length,
+      centre.z + half.z * w / length,
+    );
+  }
+  const cloud = new Float32Array(points);
+  for (const direction of Object.values(VIEW_DIRECTIONS)) {
+    const box = fitDistance(camera, bounds, direction);
+    const hull = fitDistance(camera, bounds, direction, {}, cloud);
+    assert.ok(hull <= box + 1e-9, `silhouette fit exceeded the box fit on ${direction.toArray()}`);
+    assert.ok(hull > 0);
+  }
+});
+
+test('handed the box its own corners, the two fits agree', () => {
+  const camera = new PerspectiveCamera(50, 1.6, 0.01, 100);
+  const bounds = new Box3(new Vector3(-0.06, -0.05, -0.09), new Vector3(0.06, 0.07, 0.09));
+  const corners = [];
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) corners.push(x, y, z);
+    }
+  }
+  for (const direction of Object.values(VIEW_DIRECTIONS)) {
+    const box = fitDistance(camera, bounds, direction);
+    const points = fitDistance(camera, bounds, direction, {}, new Float32Array(corners));
+    // Points arrive as float32, so they agree to that precision and no further.
+    assert.ok(Math.abs(points - box) < box * 1e-6);
+  }
+});
+
+test('an inscribed shape is framed closer than the box around it', () => {
+  // What the change is for: the oblique view opens on a corner the anatomy
+  // never reaches, and stands the camera off far enough to clear it.
+  const camera = new PerspectiveCamera(50, 1.6, 0.01, 100);
+  const bounds = new Box3(new Vector3(-0.06, -0.05, -0.09), new Vector3(0.06, 0.07, 0.09));
+  const centre = bounds.getCenter(new Vector3());
+  const half = bounds.getSize(new Vector3()).multiplyScalar(0.5);
+  const points = [];
+  for (let i = 0; i < 2000; i++) {
+    const u = Math.cos(i) * Math.sin(i * 0.7);
+    const v = Math.sin(i * 1.3);
+    const w = Math.cos(i * 0.31);
+    const length = Math.hypot(u, v, w) || 1;
+    points.push(
+      centre.x + half.x * u / length,
+      centre.y + half.y * v / length,
+      centre.z + half.z * w / length,
+    );
+  }
+  const cloud = new Float32Array(points);
+  const box = fitDistance(camera, bounds, VIEW_DIRECTIONS.oblique);
+  const hull = fitDistance(camera, bounds, VIEW_DIRECTIONS.oblique, {}, cloud);
+  assert.ok(hull < box * 0.95, `expected a closer fit, got ${hull} against ${box}`);
+});

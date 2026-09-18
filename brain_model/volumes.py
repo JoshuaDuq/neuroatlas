@@ -9,6 +9,34 @@ import numpy as np
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 
 
+def offset_by(corner):
+    matrix = np.eye(4)
+    matrix[:3, 3] = corner
+    return matrix
+
+
+def label_box(data):
+    occupied = np.argwhere(data != 0)
+    if not len(occupied):
+        return np.zeros(3, int), np.array(data.shape, int)
+    return occupied.min(axis=0), occupied.max(axis=0) + 1
+
+
+def place_crop(record, data, shape=None):
+    corner = np.array(record.get("crop_corner_voxel", [0, 0, 0]), int)
+    full = np.zeros(tuple(shape if shape is not None else record["source_shape"]), data.dtype)
+    full[tuple(slice(start, start + size) for start, size in zip(corner, data.shape))] = data
+    return full
+
+
+def read_published(record, path, shape=None):
+    payload = gzip.decompress(path.read_bytes())
+    data = np.frombuffer(payload, dtype=record["dtype"]).reshape(
+        record["shape"], order=record["order"]
+    )
+    return place_crop(record, data, shape)
+
+
 def encode_volume(image, path, dtype):
     return encode_array(
         np.asarray(image.dataobj),
@@ -19,8 +47,23 @@ def encode_volume(image, path, dtype):
     )
 
 
+def encode_cropped_volume(image, path, dtype):
+    data = np.asarray(image.dataobj)
+    corner, end = label_box(data)
+    box = tuple(slice(start, stop) for start, stop in zip(corner, end))
+    record = encode_array(
+        data[box],
+        image.header.get_vox2ras_tkr() @ offset_by(corner),
+        image.header.get_zooms()[:3],
+        path,
+        dtype,
+    )
+    record["source_shape"] = list(map(int, data.shape))
+    record["crop_corner_voxel"] = corner.tolist()
+    return record
+
+
 def encode_array(data, affine, spacing, path, dtype):
-    """Encode a grid that need not be a whole image, such as a crop of one."""
     if data.ndim != 3 or not np.isfinite(data).all():
         raise ValueError("Expected a finite three-dimensional source volume.")
     limits = np.iinfo(dtype)
@@ -47,18 +90,11 @@ def encode_array(data, affine, spacing, path, dtype):
 
 
 def reference_grid(config):
-    """The voxel-to-surface-RAS mapping every published label grid must share."""
     image = nib.load(config["source_directory"] / "mri/aseg.mgz")
     return image.header.get_vox2ras_tkr()
 
 
 def load_on_grid(config, path):
-    """Load a volume that is required to sit exactly on the reference grid.
-
-    Registration is asserted rather than corrected. A volume that arrived on a
-    different grid is a warp that went wrong, and resampling it here would hide
-    that behind plausible-looking anatomy.
-    """
     image = nib.load(path)
     if not np.array_equal(image.header.get_vox2ras_tkr(), reference_grid(config)):
         raise ValueError(f"Volume is not registered to the subject grid: {path}")
@@ -80,7 +116,9 @@ def export_volumes(config):
         "schema_version": 1,
         "coordinate_system": "FreeSurfer surface RAS (tkregister), millimeters",
         "mri": encode_volume(mri, output / "mri.volume", np.dtype("uint8")),
-        "segmentation": encode_volume(labels, output / "aseg.volume", np.dtype("<u2")),
+        "segmentation": encode_cropped_volume(
+            labels, output / "aseg.volume", np.dtype("<u2")
+        ),
         "labels": {
             str(label): {"name": table[label][0], "color": table[label][1]}
             for label in present

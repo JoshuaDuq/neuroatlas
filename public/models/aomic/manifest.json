@@ -5,7 +5,7 @@
       "label": "Z-Anatomy spinal cord reference",
       "file": "spinal-cord.glb",
       "region_count": 58,
-      "sha256": "d0a20804973bb1542724ced47937c6847aa183ba77c2f08cdc83f363c05f1cb2",
+      "sha256": "d256e53c457fd5df71522174ed1778bf0ab9feb13b1c644072d7df8b32ebfd6b",
       "citation": "https://www.z-anatomy.com/",
       "license": "CC BY-SA 4.0",
       "attribution": "Z-Anatomy, after BodyParts3D (CC BY-SA 2.1 JP)",
@@ -57,7 +57,7 @@
   },
   "solid_envelopes": {
     "file": "tissue-envelopes.glb",
-    "sha256": "edf722cf6819edfb98e191121d7f11c33eb84caffa8c09633635767110670e54",
+    "sha256": "ba85b03ae6d5021c8a2b4a1ed0e6c55cabca699d0a1330c8e592e42e7aef442b",
     "source": "Native lh/rh.pial and lh/rh.white; vertices and triangles unchanged"
   },
   "schema_version": 1,
@@ -101,6 +101,20 @@
       "thickness": 0.025,
       "samples": 32,
       "intensity": 0.9
+    },
+    "field_ranges": {
+      "_SULC": [
+        -14.113032341003418,
+        17.076505661010742
+      ],
+      "_CONCAVITY": [
+        -0.706669270992279,
+        0.6599987149238586
+      ],
+      "_T1": [
+        14.9016752243042,
+        253.00416564941406
+      ]
     }
   },
   "anatomy": {

@@ -1,27 +1,4 @@
-"""Prepare whichever reconstruction `config/model.yaml` selects.
-
-    uv run python scripts/prepare_subject.py
-
-Run once per anatomy. Both steps are declared by that anatomy rather than known
-here, so a different subject is a config entry and a download, not an edit to
-this file.
-
-`archive` means the reconstruction is not redistributed with this repository:
-download it from the anatomy's `source_url` into `data/cache/`, and nothing is
-unpacked until those bytes match the recorded SHA256. An anatomy whose files are
-committed declares no archive and skips this.
-
-`download` means the same thing for a reconstruction published as individual
-files rather than one archive: each file is fetched from that prefix, and its
-checksum is recorded on the first run and enforced on every later one.
-
-`project_hcp_from` names the brain whose published fsaverage annotations are not
-in this brain's space and must be resampled onto it, through the registered
-spheres FreeSurfer produced for both. No physical vertex moves and no label is
-interpolated: each target vertex adopts the label of the source vertex nearest to
-it on the sphere. An anatomy those annotations are already published on declares
-no source and skips this.
-"""
+"""Prepare whichever reconstruction config/model.yaml selects."""
 
 import argparse
 import json
@@ -79,7 +56,6 @@ PROJECTED_ANNOTATIONS = [
 
 
 def record_source(provenance, path, **metadata):
-    """Register one file, replacing any earlier entry for the same path."""
     relative = str(path.relative_to(ROOT))
     provenance["sources"] = [
         source for source in provenance["sources"] if source["path"] != relative
@@ -90,7 +66,6 @@ def record_source(provenance, path, **metadata):
 
 
 def obtain_subject(config, provenance):
-    """Put this anatomy's reconstruction on disk, however it is published."""
     anatomy = config["anatomy"]
     if "archive" in anatomy:
         extract_subject(config, provenance)
@@ -101,12 +76,6 @@ def obtain_subject(config, provenance):
 
 
 def download_subject(config, provenance):
-    """Fetch a reconstruction published as individual files.
-
-    An archive pins its bytes before anything is unpacked. These have no such
-    pin, so the first run records each file's checksum and every later run
-    refuses a file whose bytes have changed underneath it.
-    """
     anatomy = config["anatomy"]
     base = anatomy["download"]["base_url"].rstrip("/")
     recorded = {source["path"]: source.get("sha256") for source in provenance["sources"]}
@@ -125,7 +94,6 @@ def download_subject(config, provenance):
 
 
 def extract_subject(config, provenance):
-    """Unpack the reconstruction's own files, byte for byte, from its archive."""
     anatomy = config["anatomy"]
     url, settings = anatomy["source_url"], anatomy["archive"]
     path = CACHE / url.rsplit("/", 1)[-1].split("?")[0]
@@ -150,17 +118,6 @@ def extract_subject(config, provenance):
 
 
 def transfer_annotation(config, provenance, annotation_name, report_name):
-    """Resample one published annotation onto this brain's own vertices.
-
-    The written annotation is read back and compared, then a sample of its
-    labels is re-derived from exhaustive distances rather than from the tree
-    that produced them. Both checks exist because a silently mistransferred
-    parcellation still looks like a parcellation.
-
-    Only the results are recorded here. The annotation and spheres this reads
-    are inputs in their own right, recorded as such and shared by every brain
-    that projects from them.
-    """
     anatomy = config["anatomy"]
     source = anatomy["hcp_source_directory"]
     target = config["source_directory"]
@@ -217,7 +174,6 @@ def transfer_annotation(config, provenance, annotation_name, report_name):
 
 
 def transfer_annotations(config, provenance):
-    """Project every published annotation this brain does not already carry."""
     anatomy = config["anatomy"]
     if "project_hcp_from" not in anatomy:
         print(f"{anatomy['id']}: published annotations are in this space already")

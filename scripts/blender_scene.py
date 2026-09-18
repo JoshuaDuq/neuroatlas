@@ -1,8 +1,4 @@
-"""Assemble an editable, source-scale scene and render the reference anatomy.
-
-Run with Blender --background --python scripts/blender_scene.py.
-No modifiers, vertex relocation, decimation or generated anatomical detail.
-"""
+"""Assemble an editable, source-scale Blender scene and render the reference anatomy."""
 
 import json
 from pathlib import Path

@@ -47,7 +47,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label',
-    'Brain model. Drag to rotate, scroll to zoom, click a region to select.');
+    'Brain model. Drag or use the arrow keys to rotate, scroll or press plus '
+    + 'and minus to zoom, click a region to select.');
   host.prepend(renderer.domElement);
 
   scene.add(camera);
@@ -330,7 +331,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
  * from `scene.viewportFit`. It reaches `frameTo` unchanged, so framing fits
  * the anatomy to what the reader can see rather than to the whole canvas.
  */
-export function planFraming(camera, controls, bounds, direction, frameTo, fit) {
+export function planFraming(camera, controls, bounds, direction, frameTo, fit, points = null) {
   const start = {
     position: camera.position.clone(),
     target: controls.target.clone(),
@@ -339,7 +340,7 @@ export function planFraming(camera, controls, bounds, direction, frameTo, fit) {
     minDistance: controls.minDistance,
     maxDistance: controls.maxDistance,
   };
-  const target = frameTo(camera, controls, bounds, direction, fit);
+  const target = frameTo(camera, controls, bounds, direction, fit, points);
   const plan = {
     position: camera.position.clone(),
     target: target.clone(),

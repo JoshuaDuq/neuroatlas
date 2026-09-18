@@ -10,6 +10,13 @@ from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import map_coordinates
 
 from . import networks, nextbrain, spinal_cord, validate_learning, white_matter
+from .encode import (
+    decode_field,
+    decode_normals,
+    field_tolerance,
+    normal_tolerance,
+    published_field_ranges,
+)
 from .export import compact_region
 from .geometry import (
     extract_structure,
@@ -53,7 +60,6 @@ def validate_degenerate_parents(parents, triangles):
 
 
 def oriented_triangle_codes(nodes):
-    """Canonicalize cyclic order while retaining the triangle's winding."""
     starts = nodes.argmin(axis=1)
     ordered = np.take_along_axis(nodes, (starts[:, None] + np.arange(3)) % 3, axis=1)
     return ordered @ np.array([49, 7, 1])
@@ -196,12 +202,6 @@ def read_meshes(path):
 
 
 def read_network_field(config, prefix, faces, labels):
-    """The network field re-derived from the annotation, not from the build.
-
-    Returns the field carried onto the atlas partition and the per-source-vertex
-    indices the composition is counted from, or a pair of Nones where the layer
-    is absent.
-    """
     if not networks.is_available(config):
         return None, None
     path = networks.annotation_path(config["source_directory"], prefix)
@@ -213,6 +213,10 @@ def read_network_field(config, prefix, faces, labels):
 def validate_atlas(config, atlas, records):
     path = config["output_directory"] / f"cortex-{atlas['id']}.glb"
     meshes = read_meshes(path)
+    # The spans the file says its shading fields were quantized over. Reading
+    # them from the file rather than the manifest keeps this check independent
+    # of the metadata it is meant to corroborate.
+    ranges = published_field_ranges(path)
     published = {record["id"]: record for record in records}
     reports = {}
     max_error = 0.0
@@ -256,7 +260,8 @@ def validate_atlas(config, atlas, records):
                 if field is None or field.size != len(points) or not np.isfinite(field).all():
                     raise ValueError(f"Missing or invalid {attribute}: {region_id}")
             intensity_error = max(intensity_error, float(np.abs(
-                actual.vertex_attributes["_T1"].ravel() - intensity[indices]
+                decode_field(actual.vertex_attributes["_T1"].ravel(), ranges["_T1"])
+                - intensity[indices]
             ).max()))
             if network_field is not None:
                 carried = actual.vertex_attributes.get("_NETWORK")
@@ -270,9 +275,9 @@ def validate_atlas(config, atlas, records):
             depth = actual.vertex_attributes.get("_SULC")
             if depth is None or depth.size != len(points) or not np.isfinite(depth).all():
                 raise ValueError(f"Missing or invalid sulcal depth: {region_id}")
-            sulcal_error = max(
-                sulcal_error, float(np.abs(depth.ravel() - sulcal_depth[indices]).max())
-            )
+            sulcal_error = max(sulcal_error, float(np.abs(
+                decode_field(depth.ravel(), ranges["_SULC"]) - sulcal_depth[indices]
+            ).max()))
             error = (
                 np.linalg.norm(actual.vertices - to_gltf(points), axis=1).max() * 1000
             )
@@ -280,7 +285,10 @@ def validate_atlas(config, atlas, records):
             normal_error = max(
                 normal_error,
                 float(
-                    np.abs(actual.vertex_normals - normalize(to_gltf(normals))).max()
+                    np.abs(
+                        decode_normals(actual.vertex_normals)
+                        - normalize(to_gltf(normals))
+                    ).max()
                 ),
             )
             if not np.array_equal(actual.faces, triangles):
@@ -292,18 +300,31 @@ def validate_atlas(config, atlas, records):
                 raise ValueError(f"Exported surface area changed: {region_id}")
     if set(meshes) != expected_ids:
         raise ValueError("GLB has missing or unexpected region meshes")
-    if (
-        max_error > config["validation"]["coordinate_tolerance_mm"]
-        or normal_error > 1e-6
-        or sulcal_error > 1e-6
-        or intensity_error > 2e-5
-    ):
-        raise ValueError("GLB export exceeds coordinate or normal tolerance")
+    # Each bound is half a step of the encoding the file actually uses, so the
+    # check stays as tight as the published precision allows and would still
+    # catch a field that had been scrambled rather than merely rounded.
+    exceeded = {
+        name: (measured, bound)
+        for name, measured, bound in (
+            ("coordinate_mm", max_error, config["validation"]["coordinate_tolerance_mm"]),
+            ("normal_component", normal_error, normal_tolerance()),
+            ("sulcal_depth", sulcal_error, field_tolerance(ranges["_SULC"])),
+            ("ribbon_T1", intensity_error, field_tolerance(ranges["_T1"])),
+        )
+        if measured > bound
+    }
+    if exceeded:
+        detail = ", ".join(
+            f"{name} {measured:.3e} > {bound:.3e}"
+            for name, (measured, bound) in exceeded.items()
+        )
+        raise ValueError(f"{path.name} exceeds published precision: {detail}")
     return {
         "file": path.name,
         "sha256": sha256(path),
         "mesh_count": len(meshes),
         "hemispheres": reports,
+        "field_ranges": ranges,
         "maximum_glb_coordinate_error_mm": max_error,
         "maximum_normal_component_error": normal_error,
         "maximum_sulcal_depth_error": sulcal_error,
@@ -312,18 +333,6 @@ def validate_atlas(config, atlas, records):
 
 
 def surface_closure(mesh):
-    """How the exported surface encloses its label, reported and not repaired.
-
-    Marching cubes over a voxel mask does not leave holes. What a ragged
-    segmentation leaves instead is a pinch: an edge where two sheets of the same
-    structure meet because the voxels touch along that edge alone. No closed
-    two-manifold surface exists over such a mask, yet the surface still encloses
-    a definite volume, so the pinch is published rather than mended — mending it
-    would move the vertices this export exists to preserve.
-
-    A boundary edge is a different thing. It is a hole, it leaves the enclosed
-    volume undefined, and nothing that came from marching cubes should have one.
-    """
     edges = np.sort(mesh.faces[:, [[0, 1], [1, 2], [2, 0]]], axis=2).reshape(-1, 2)
     _, counts = np.unique(edges, axis=0, return_counts=True)
     return {
@@ -333,11 +342,6 @@ def surface_closure(mesh):
 
 
 def validate_structure_layer(path, volume, affine, labels, tolerance):
-    """Every vertex of every mesh must sit on its own label's isosurface.
-
-    Shared by both detail levels: the check is a property of marching cubes over
-    a label mask, not of which segmentation supplied the mask.
-    """
     meshes = read_meshes(path)
     inverse = np.linalg.inv(affine)
     reports = []
@@ -428,7 +432,6 @@ def validate_nextbrain_structures(config):
 
 
 def expected_nextbrain_metadata(config):
-    """Recompute, independently of the build, what the fine level must contain."""
     image, labels, table = nextbrain.load(config)
     minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_voxels"]
     regions = {}
@@ -527,11 +530,6 @@ def validate_region_metadata(region, mesh, expected, tolerance):
 
 
 def validate_cut_only_regions(config, regions):
-    """Check every mesh-less region against the label volume that carries it.
-
-    These regions publish a measurement without a mesh to measure, so the volume
-    is the only thing that can confirm them.
-    """
     by_source = {}
     for region_id, region in regions.items():
         if region["kind"] == "tissue-region":

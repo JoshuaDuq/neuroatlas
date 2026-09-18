@@ -18,7 +18,6 @@ class Partition:
 
 
 def to_gltf(coordinates):
-    """Convert surface RAS millimeters to right/superior/posterior meters."""
     coordinates = np.asarray(coordinates)
     if coordinates.ndim != 2 or coordinates.shape[1] != 3:
         raise ValueError("Coordinates must have shape (n, 3)")
@@ -53,7 +52,6 @@ def partition_edges(mixed_faces):
 
 
 def partition_vertex_field(faces, labels, values):
-    """Interpolate a continuous field on the same barycentric atlas partition."""
     if values.shape != labels.shape or values.ndim != 1:
         raise ValueError("A scalar field value is required for each source vertex")
     if not np.isfinite(values).all():
@@ -66,7 +64,6 @@ def partition_vertex_field(faces, labels, values):
 
 
 def majority(values):
-    """The most common value in each row; the lowest wins a tie."""
     ordered = np.sort(values, axis=1)
     winner = ordered[:, 0]
     if ordered.shape[1] == 3:
@@ -76,14 +73,6 @@ def majority(values):
 
 
 def partition_vertex_labels(faces, labels, values):
-    """Carry a categorical field onto the same barycentric atlas partition.
-
-    The continuous twin of this averages; an average of two network ids is not
-    a network, so the points a mixed face adds take the most common value among
-    the source vertices that formed them instead. Two-vertex midpoints are a tie
-    whenever their ends disagree, and the lowest id takes them — a deterministic
-    choice at a scale below the one the field itself resolves.
-    """
     if values.shape != labels.shape or values.ndim != 1:
         raise ValueError("A categorical value is required for each source vertex")
     if values.dtype.kind not in "iu":
@@ -96,12 +85,6 @@ def partition_vertex_labels(faces, labels, values):
 
 
 def partition_surface(vertices, faces, labels):
-    """Partition mixed-label faces into six barycentric subtriangles.
-
-    Each corner owns the quadrilateral joining itself, its two edge midpoints,
-    and the centroid. Uniform faces remain untouched. This conserves geometry
-    and all source vertex labels without pretending labels are continuous.
-    """
     validate_surface(vertices, faces, labels)
     source = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
     normals = source.vertex_normals
@@ -145,7 +128,6 @@ def partition_surface(vertices, faces, labels):
 
 
 def extract_structure(volume, label, voxel_to_surface):
-    """Extract the 0.5 isosurface of an unchanged segmentation label."""
     if volume.ndim != 3 or voxel_to_surface.shape != (4, 4):
         raise ValueError("A 3D volume and 4x4 affine are required")
     if not np.isfinite(voxel_to_surface).all():

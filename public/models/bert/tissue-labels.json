@@ -5,34 +5,34 @@
     "destrieux": {
       "file": "tissues-destrieux.volume",
       "shape": [
-        256,
-        256,
-        256
+        127,
+        138,
+        183
       ],
       "dtype": "<u2",
       "order": "F",
       "compression": "gzip",
-      "byte_length": 33554432,
-      "sha256": "bdb1c3750c3914e1067ef9d7cafcea4e13f09477a6ec8dae51b7ab8fb97f5c05",
-      "decoded_sha256": "0ac6d20405c1a259e28f946599101e2e85fa4098d9ae25e52d914b486eb06fff",
+      "byte_length": 6414516,
+      "sha256": "59aef1941435d92ca517af39287f511bd581bd5a513bccb6b965d0db88c0495d",
+      "decoded_sha256": "8dee40e444d8d91f99b7ede54337e5f64a2e42d4b7aa19ce0c64f98eb9398c85",
       "voxel_to_surface_ras_mm": [
         [
           -1.0,
           0.0,
           0.0,
-          128.0
+          64.0
         ],
         [
           0.0,
           0.0,
           1.0,
-          -128.0
+          -104.0
         ],
         [
           0.0,
           -1.0,
           0.0,
-          128.0
+          70.0
         ],
         [
           0.0,
@@ -45,6 +45,16 @@
         1.0,
         1.0,
         1.0
+      ],
+      "source_shape": [
+        256,
+        256,
+        256
+      ],
+      "crop_corner_voxel": [
+        64,
+        58,
+        24
       ],
       "labels": [
         {
@@ -2381,34 +2391,34 @@
     "hcp-mmp": {
       "file": "tissues-hcp-mmp.volume",
       "shape": [
-        256,
-        256,
-        256
+        127,
+        138,
+        183
       ],
       "dtype": "<u2",
       "order": "F",
       "compression": "gzip",
-      "byte_length": 33554432,
-      "sha256": "c061fca25a473de2e1653daddbf9035e04fd0a6005a06f60fcdafad85eabcc40",
-      "decoded_sha256": "14b5d5650a387f65673427b3086c8a9bb56784e04e259991b443b0be6fe25bd1",
+      "byte_length": 6414516,
+      "sha256": "177a777f86f68495c1e5721df9dc25f9bf66fb388344e49e0db91a7de9a1c103",
+      "decoded_sha256": "aad4712c878fc57964967bbe1badfb165d77b691e52530fdf78e5110fac42b8d",
       "voxel_to_surface_ras_mm": [
         [
           -1.0,
           0.0,
           0.0,
-          128.0
+          64.0
         ],
         [
           0.0,
           0.0,
           1.0,
-          -128.0
+          -104.0
         ],
         [
           0.0,
           -1.0,
           0.0,
-          128.0
+          70.0
         ],
         [
           0.0,
@@ -2421,6 +2431,16 @@
         1.0,
         1.0,
         1.0
+      ],
+      "source_shape": [
+        256,
+        256,
+        256
+      ],
+      "crop_corner_voxel": [
+        64,
+        58,
+        24
       ],
       "labels": [
         {
@@ -9101,34 +9121,34 @@
     "nextbrain": {
       "file": "tissues-nextbrain.volume",
       "shape": [
-        256,
-        256,
-        256
+        127,
+        131,
+        182
       ],
       "dtype": "<u2",
       "order": "F",
       "compression": "gzip",
-      "byte_length": 33554432,
-      "sha256": "e1f434ca6b380104a82213314e36d3a12606351390bd95015884633b2e45501c",
-      "decoded_sha256": "2450b2155d7c5a97120b63f5393b0bac2849618ac34a1089e13abde6c5b5827f",
+      "byte_length": 6055868,
+      "sha256": "8171ae097b671e51c5b28a12b4a236d7aae9cb2e615df058d2c9751360f9f53f",
+      "decoded_sha256": "2e66cc8f9bb360bd643b4df69036d8b9ccb4191e27e9981d6fdc6ab3b7c3a4b5",
       "voxel_to_surface_ras_mm": [
         [
           -1.0,
           0.0,
           0.0,
-          128.0
+          64.0
         ],
         [
           0.0,
           0.0,
           1.0,
-          -128.0
+          -104.0
         ],
         [
           0.0,
           -1.0,
           0.0,
-          128.0
+          70.0
         ],
         [
           0.0,
@@ -9141,6 +9161,16 @@
         1.0,
         1.0,
         1.0
+      ],
+      "source_shape": [
+        256,
+        256,
+        256
+      ],
+      "crop_corner_voxel": [
+        64,
+        58,
+        24
       ],
       "labels": [
         {

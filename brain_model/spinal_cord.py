@@ -29,7 +29,6 @@ SCHEMATIC = {
 
 
 def is_available(config):
-    """Whether this checkout has run the one-off Blender extraction."""
     return "spinal_cord" in config and (ROOT / config["spinal_cord"]["source"]).exists()
 
 
@@ -87,7 +86,7 @@ def read_structures(config):
     for structure in config["spinal_cord"]["structures"]:
         key = key_of(structure)
         mesh = trimesh.Trimesh(vertices=archive[f"{key}/vertices"],
-                               faces=archive[f"{key}/faces"], process=False)
+                                faces=archive[f"{key}/faces"], process=False)
         if not mesh.is_watertight or not mesh.is_winding_consistent or mesh.volume <= 0:
             raise ValueError(f"Reference cord structure {key!r} is not a closed outward solid")
         meshes[key] = mesh
@@ -95,11 +94,6 @@ def read_structures(config):
 
 
 def placement(config, cord):
-    """The one translation that seats the cord's upper end at the brainstem.
-
-    Every structure moves by it, so the roots keep the cord they leave and the
-    assembly stays exactly as Z-Anatomy posed it.
-    """
     settings = config["spinal_cord"]
     brain = nib.load(config["source_directory"] / "mri/aseg.mgz")
     stem = nib.affines.apply_affine(
@@ -133,7 +127,6 @@ def source_geometry(config):
 
 
 def split_faces(mesh, midline):
-    """The faces of each mirrored half of a structure Z-Anatomy models as one object."""
     groups = trimesh.graph.connected_components(mesh.face_adjacency, nodes=np.arange(len(mesh.faces)))
     if len(groups) != 2:
         raise ValueError(f"Expected two mirrored halves, found {len(groups)} pieces")
@@ -153,7 +146,6 @@ def compact(mesh, faces):
 
 
 def parts(config, meshes=None):
-    """Every published region with the surface it publishes, in publication order."""
     if meshes is None:
         meshes, _ = source_geometry(config)
     structures = config["spinal_cord"]["structures"]

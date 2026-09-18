@@ -8,6 +8,7 @@ from nibabel.freesurfer.io import read_annot, read_geometry
 
 from brain_model.sources import read_color_table, read_config
 from brain_model.tissue_labels import export_tissue_labels
+from brain_model.volumes import offset_by, read_published
 
 
 def test_published_anatomical_labels_survive_transport_and_match_region_names(tmp_path):
@@ -19,14 +20,17 @@ def test_published_anatomical_labels_survive_transport_and_match_region_names(tm
         nib.load(config["source_directory"] / "mri/aparc.a2009s+aseg.mgz").dataobj
     )
     record = meta["atlases"]["destrieux"]
-    payload = gzip.decompress((tmp_path / record["file"]).read_bytes())
-    codes = np.frombuffer(payload, dtype="<u2").reshape(source.shape, order="F")
+    codes = read_published(record, tmp_path / record["file"], source.shape)
     lut = np.array([label["source_label_id"] for label in record["labels"]])
     np.testing.assert_array_equal(lut[codes], source)
     image = nib.load(config["source_directory"] / "mri/aparc.a2009s+aseg.mgz")
-    np.testing.assert_array_equal(
-        record["voxel_to_surface_ras_mm"], image.header.get_vox2ras_tkr()
+    # The published affine is the crop's own: the source grid shifted to the
+    # box's corner, which is what puts every kept voxel back where it was.
+    np.testing.assert_allclose(
+        record["voxel_to_surface_ras_mm"],
+        image.header.get_vox2ras_tkr() @ offset_by(record["crop_corner_voxel"]),
     )
+    payload = gzip.decompress((tmp_path / record["file"]).read_bytes())
     assert hashlib.sha256(payload).hexdigest() == record["decoded_sha256"]
     assert (
         hashlib.sha256((tmp_path / record["file"]).read_bytes()).hexdigest()
@@ -52,9 +56,7 @@ def test_hcp_projection_never_relabels_white_matter_or_deep_structures(tmp_path)
         nib.load(config["source_directory"] / "mri/aparc.a2009s+aseg.mgz").dataobj
     )
     record = meta["atlases"]["hcp-mmp"]
-    data = np.frombuffer(
-        gzip.decompress((tmp_path / record["file"]).read_bytes()), dtype="<u2"
-    ).reshape(source.shape, order="F")
+    data = read_published(record, tmp_path / record["file"], source.shape)
     cortex = source >= 11100
     assert all(
         record["labels"][code]["kind"] != "cortex" for code in np.unique(data[~cortex])
@@ -64,8 +66,11 @@ def test_hcp_projection_never_relabels_white_matter_or_deep_structures(tmp_path)
 
     image = nib.load(config["source_directory"] / "mri/ribbon.mgz")
     ribbon = np.asarray(image.dataobj)
-    np.testing.assert_array_equal(
-        record["voxel_to_surface_ras_mm"], image.header.get_vox2ras_tkr()
+    # The published affine is the crop's own: the source grid shifted to the
+    # box's corner, which is what puts every kept voxel back where it was.
+    np.testing.assert_allclose(
+        record["voxel_to_surface_ras_mm"],
+        image.header.get_vox2ras_tkr() @ offset_by(record["crop_corner_voxel"]),
     )
     for prefix, lower, ribbon_label in [("lh", 11100, 3), ("rh", 12100, 42)]:
         mask = (source > lower) & (source < lower + 100)

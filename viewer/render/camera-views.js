@@ -67,21 +67,35 @@ function viewBasis(up, direction) {
  * the uncovered rectangle. It defaults to the whole canvas, so every desktop
  * caller is unaffected.
  */
-export function fitDistance(camera, bounds, direction, fit = {}) {
+export function fitDistance(camera, bounds, direction, fit = {}, points = null) {
   const center = bounds.getCenter(new Vector3());
   const { right, up } = viewBasis(camera.up, direction);
   const halfAngle = Math.tan(camera.fov * Math.PI / 360) * 0.92;
   const verticalSlope = halfAngle * (fit.vertical ?? 1);
   const horizontalSlope = halfAngle * camera.aspect * (fit.horizontal ?? 1);
   let distance = 0;
+  const offset = new Vector3();
+  const reach = () => {
+    const depth = offset.dot(direction);
+    distance = Math.max(distance,
+      depth + Math.abs(offset.dot(right)) / horizontalSlope,
+      depth + Math.abs(offset.dot(up)) / verticalSlope);
+  };
+  if (points) {
+    // The anatomy's own silhouette. A box's far corner sticks out past a brain
+    // that never reaches it, and on an oblique view — the one this opens on —
+    // that corner is what the camera was backing away from.
+    for (let i = 0; i < points.length; i += 3) {
+      offset.set(points[i], points[i + 1], points[i + 2]).sub(center);
+      reach();
+    }
+    return distance;
+  }
   for (const x of [bounds.min.x, bounds.max.x]) {
     for (const y of [bounds.min.y, bounds.max.y]) {
       for (const z of [bounds.min.z, bounds.max.z]) {
-        const corner = new Vector3(x, y, z).sub(center);
-        const depth = corner.dot(direction);
-        distance = Math.max(distance,
-          depth + Math.abs(corner.dot(right)) / horizontalSlope,
-          depth + Math.abs(corner.dot(up)) / verticalSlope);
+        offset.set(x, y, z).sub(center);
+        reach();
       }
     }
   }
@@ -89,10 +103,10 @@ export function fitDistance(camera, bounds, direction, fit = {}) {
 }
 
 /** Fit a perspective camera to unchanged world bounds, with a small screen margin. */
-export function frameBounds(camera, bounds, direction, fit = {}) {
+export function frameBounds(camera, bounds, direction, fit = {}, points = null) {
   const center = bounds.getCenter(new Vector3());
   camera.position.copy(center)
-    .addScaledVector(direction, fitDistance(camera, bounds, direction, fit));
+    .addScaledVector(direction, fitDistance(camera, bounds, direction, fit, points));
   camera.lookAt(center);
   camera.updateMatrixWorld();
   return center;
@@ -102,13 +116,13 @@ export function frameBounds(camera, bounds, direction, fit = {}) {
  * Frame bounds and apply the matching constraints in one step, so the two can
  * never be applied separately and drift apart.
  */
-export function frameTo(camera, controls, bounds, direction, fit) {
+export function frameTo(camera, controls, bounds, direction, fit, points = null) {
   const { near, far, minDistance, maxDistance } = cameraConstraints(bounds);
   camera.near = near;
   camera.far = far;
   controls.minDistance = minDistance;
   controls.maxDistance = maxDistance;
-  const center = frameBounds(camera, bounds, direction, fit);
+  const center = frameBounds(camera, bounds, direction, fit, points);
   camera.updateProjectionMatrix();
   controls.target.copy(center);
   controls.update();

@@ -6,7 +6,7 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from brain_model.volumes import encode_volume, export_volumes
+from brain_model.volumes import encode_volume, export_volumes, read_published
 
 
 def test_preserves_every_voxel_and_records_tkregister_affine(tmp_path):
@@ -38,11 +38,10 @@ def test_actual_source_round_trip(tmp_path):
     records = export_volumes(config)
     for name, source in [("mri", "orig"), ("segmentation", "aseg")]:
         record = records[name]
-        payload = gzip.decompress((tmp_path / record["file"]).read_bytes())
-        restored = np.frombuffer(payload, dtype=record["dtype"]).reshape(
-            record["shape"], order="F"
-        )
         image = nib.load(config["source_directory"] / "mri" / f"{source}.mgz")
+        # A label grid is published cropped to what it labels, so reading it
+        # back means placing it where its affine says it came from.
+        restored = read_published(record, tmp_path / record["file"], image.shape)
         np.testing.assert_array_equal(restored, np.asarray(image.dataobj))
 
 

@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import trimesh
 
+from brain_model.encode import decode_normals, normal_tolerance
 from brain_model.export import add_region, write_scene
 
 
@@ -26,7 +27,12 @@ def test_glb_retains_geometry_normals_and_selectable_region_metadata(tmp_path):
     np.testing.assert_allclose(
         mesh.vertices, [[0, 0, 0], [0.01, 0, 0], [0, 0, -0.01]], atol=1e-9
     )
-    np.testing.assert_allclose(mesh.vertex_normals, [[0, 1, 0]] * 3, atol=1e-7)
+    # Normals are published as normalized int16. trimesh hands back the stored
+    # integers rather than applying glTF's `normalized` flag, so the check
+    # decodes them and holds them to the encoding's own half-step bound.
+    np.testing.assert_allclose(
+        decode_normals(mesh.vertex_normals), [[0, 1, 0]] * 3, atol=normal_tolerance()
+    )
     assert mesh.metadata["region_id"] == region["id"]
     assert mesh.metadata["source_label_id"] == 1
     assert mesh.metadata["hemisphere"] == "left"

@@ -49,34 +49,34 @@
   "segmentation": {
     "file": "aseg.volume",
     "shape": [
-      256,
-      256,
-      256
+      127,
+      140,
+      183
     ],
     "dtype": "<u2",
     "order": "F",
     "compression": "gzip",
-    "byte_length": 33554432,
-    "sha256": "8bac4c3ca0dd2ad2caf132104ce5e9c5f8906940fc24260cb59971a24750cb31",
-    "decoded_sha256": "cd0e8495678ea74a4a75771b97234d6de90e5f130bd41a254f821a7f50def2f0",
+    "byte_length": 6507480,
+    "sha256": "c4c8ae6690f3f0534c2d87545aab292d00b0c81fbe1eb975497bb81d552172ab",
+    "decoded_sha256": "cb4940123deb7ea7f696b1c1f119b9e1bb582b775e3dec812a370199f8599fd6",
     "voxel_to_surface_ras_mm": [
       [
         -1.0,
         0.0,
         0.0,
-        128.0
+        64.0
       ],
       [
         0.0,
         0.0,
         1.0,
-        -128.0
+        -104.0
       ],
       [
         0.0,
         -1.0,
         0.0,
-        128.0
+        72.0
       ],
       [
         0.0,
@@ -89,6 +89,16 @@
       1.0,
       1.0,
       1.0
+    ],
+    "source_shape": [
+      256,
+      256,
+      256
+    ],
+    "crop_corner_voxel": [
+      64,
+      56,
+      24
     ]
   },
   "labels": {

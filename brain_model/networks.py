@@ -1,17 +1,4 @@
-"""Yeo resting-state networks, carried as a surface layer rather than an atlas.
-
-Networks do not respect gyral or areal boundaries, so this enters the model as a
-per-vertex field under every parcellation instead of as a parcellation of its
-own. Each region then reports which networks its own surface falls in.
-
-The source is Schaefer2018, whose parcels are already matched to Yeo's seven
-networks and whose name encodes the match. It is published on full fsaverage,
-the space this model's other projected annotation already comes from, so it
-needs no resampling that the pipeline does not already do.
-
-The layer is optional: a checkout without the annotation builds every asset that
-does not need it.
-"""
+"""Yeo resting-state networks, carried as a surface layer rather than an atlas."""
 
 import numpy as np
 
@@ -52,7 +39,6 @@ _PREFIX = "7Networks"
 
 
 def network_of(parcel_name):
-    """The network a Schaefer parcel belongs to, or None for the medial wall."""
     fields = parcel_name.split("_")
     if len(fields) < _NETWORK_FIELD + 2 or fields[0] != _PREFIX:
         return None
@@ -63,11 +49,6 @@ def network_of(parcel_name):
 
 
 def network_indices(labels, names):
-    """Map one hemisphere's parcel labels onto network indices, 0 where none.
-
-    `labels` indexes `names`, and FreeSurfer writes -1 for a vertex no parcel
-    claims; both that and the medial wall parcel become NONE.
-    """
     labels = np.asarray(labels)
     if labels.ndim != 1 or labels.dtype.kind not in "iu":
         raise ValueError("One integer parcel label is required per vertex")
@@ -82,17 +63,6 @@ def network_indices(labels, names):
 
 
 def composition(indices, minimum_fraction=0.0):
-    """What share of a region's source vertices each network holds.
-
-    Vertices, not area: the manifest already publishes `source_vertex_count`
-    beside this, so the two agree about what was counted. Unnetworked vertices
-    are excluded from the denominator rather than made an eighth network, so the
-    shares answer "of the cortex here that belongs to a network, how much is
-    each" and the medial wall does not dilute a real answer.
-
-    Returns networks ordered by share, largest first, ties broken by published
-    order so that the same region always reports the same list.
-    """
     indices = np.asarray(indices)
     counts = np.bincount(indices[indices != NONE], minlength=len(NETWORKS) + 1)
     total = int(counts.sum())
@@ -108,12 +78,6 @@ def composition(indices, minimum_fraction=0.0):
 
 
 def verify_palette(ctab, names):
-    """Fail the build if the annotation's colours left their declared network.
-
-    Colour is the only part of this layer a reader reads directly off the
-    model, so it is checked against the published palette rather than derived
-    from whatever the file happens to hold.
-    """
     for index, raw in enumerate(names):
         name = raw if isinstance(raw, str) else raw.decode()
         network = network_of(name)
@@ -133,7 +97,6 @@ def annotation_path(directory, hemisphere):
 
 
 def is_available(config):
-    """Whether this brain carries the network annotation for both hemispheres."""
     directory = config["source_directory"]
     return all(annotation_path(directory, h).exists() for h in ("lh", "rh"))
 

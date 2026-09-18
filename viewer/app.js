@@ -4,6 +4,7 @@ import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion } from './clinical/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
 import { VIEW_DIRECTIONS, fitDistance, frameTo, upFor } from './render/camera-views.js';
+import { DOLLY_KEYS, ORBIT_KEYS, dolliedPosition, orbitedPosition } from './render/keyboard-orbit.js';
 import { createPicker } from './render/picking.js';
 import { createScene, planFraming } from './render/scene.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
@@ -181,8 +182,47 @@ export async function startApp() {
     }
     return cachedFramingBounds;
   };
+  /*
+   * The vertices framing actually has to contain, in world space.
+   *
+   * A bounding box is the cheap answer and a loose one: its far corner sticks
+   * out past a brain that never reaches it, so an oblique view — the one this
+   * opens on — backs the camera away from a corner rather than from anatomy.
+   * Fitting the vertices themselves is exact rather than merely tighter, so it
+   * cannot crop anything the box would have kept.
+   *
+   * Recomputed only when the framed set changes, not per frame, and sampled
+   * where a layer is dense: one vertex in eight of a millimetre-spaced surface
+   * still bounds the silhouette far inside the screen margin.
+   */
+  let cachedFramingPoints = null;
+  const framingPoints = () => {
+    if (cachedFramingPoints) return cachedFramingPoints;
+    const box = framingBounds();
+    const meshes = model.visibleMeshes.filter(mesh =>
+      box.intersectsBox(new Box3().setFromObject(mesh)));
+    if (!meshes.length) return null;
+    const stride = meshes.reduce((total, mesh) =>
+      total + mesh.geometry.attributes.position.count, 0) > 60000 ? 8 : 1;
+    const kept = [];
+    const point = new Vector3();
+    for (const mesh of meshes) {
+      const position = mesh.geometry.attributes.position;
+      mesh.updateWorldMatrix(true, false);
+      for (let i = 0; i < position.count; i += stride) {
+        point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+        // Only what the box already framed. A long supplemental layer can
+        // reach into the box and far past it, and framing it would undo the
+        // choice of what to frame; this keeps the fit no looser than the box's.
+        if (box.containsPoint(point)) kept.push(point.x, point.y, point.z);
+      }
+    }
+    cachedFramingPoints = kept.length ? new Float32Array(kept) : null;
+    return cachedFramingPoints;
+  };
   const fittedDistance = direction =>
-    fitDistance(scene.camera, framingBounds(), direction, scene.viewportFit);
+    fitDistance(scene.camera, framingBounds(), direction, scene.viewportFit,
+      framingPoints());
   const isTargetingSpine = () =>
     Boolean(model.state.spinalCordVisible && (scene.controls.target.y < bounds.min.y || model.state.internalSystem === 'Spinal cord'));
 
@@ -636,6 +676,7 @@ export async function startApp() {
 
   function render() {
     cachedFramingBounds = null;
+    cachedFramingPoints = null;
     const state = session.assemble(model.state);
     catalog.setLanguage(state.lang);
     document.documentElement.lang = state.lang;
@@ -773,10 +814,36 @@ export async function startApp() {
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
   }
   scene.controls.addEventListener('change', onCameraChange);
-  scene.controls.addEventListener('end', () => {
+  function rememberZoom() {
     const fitted = fittedDistance(viewDirection());
     if (fitted > 0) zoom = scene.distanceToTarget / fitted;
-  });
+  }
+  scene.controls.addEventListener('end', rememberZoom);
+
+  /**
+   * The canvas is focusable and tells a reader it can be rotated and zoomed.
+   * With a pointer that was already true; these are the same two gestures for
+   * someone who has no pointer. They are handled only while the canvas itself
+   * holds focus, so the arrows keep walking the region tree everywhere else.
+   */
+  function orbitFromKeyboard(event) {
+    if (event.target !== scene.domElement) return false;
+    const turn = ORBIT_KEYS[event.key];
+    const dolly = DOLLY_KEYS[event.key];
+    if (!turn && !dolly) return false;
+    event.preventDefault();
+    scene.camera.position.copy(turn
+      ? orbitedPosition(
+        scene.camera.position, scene.controls.target, scene.camera.up, turn)
+      : dolliedPosition(
+        scene.camera.position, scene.controls.target, dolly,
+        { min: scene.controls.minDistance, max: scene.controls.maxDistance }));
+    scene.controls.update();
+    // A drag reports its zoom when the pointer lifts; a key press has no
+    // equivalent moment, so it reports its own.
+    rememberZoom();
+    return true;
+  }
 
   const onKeyDown = event => {
     if (event.defaultPrevented) return;
@@ -799,6 +866,7 @@ export async function startApp() {
       return;
     }
     if (!shortcutsAllowed(event.target)) return;
+    if (orbitFromKeyboard(event)) return;
     if (event.key === '?') { event.preventDefault(); return shortcuts.toggle(); }
     if (shortcuts.isOpen) return;
     if (event.key === '/') {

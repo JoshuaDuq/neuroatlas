@@ -8,6 +8,7 @@ import nibabel as nib
 import numpy as np
 
 from .sources import read_color_table, sha256
+from .volumes import offset_by, place_crop
 
 
 def validate_record(config, record, source_name):
@@ -26,12 +27,24 @@ def validate_record(config, record, source_name):
         record["shape"], order="F"
     )
     image = nib.load(config["source_directory"] / "mri" / f"{source_name}.mgz")
-    if not np.array_equal(restored, np.asarray(image.dataobj)):
-        raise ValueError(f"Source voxel mismatch: {source_name}")
-    if not np.array_equal(
-        record["voxel_to_surface_ras_mm"], image.header.get_vox2ras_tkr()
-    ):
+    source = np.asarray(image.dataobj)
+    grid = image.header.get_vox2ras_tkr()
+    cropped = "crop_corner_voxel" in record
+    if cropped:
+        # Rebuild the source grid from the crop and the affine the file
+        # publishes. Equality then proves three things at once: every labelled
+        # voxel was carried, nothing outside the box was labelled, and the
+        # affine puts the box back exactly where it was cut from.
+        corner = np.array(record["crop_corner_voxel"], int)
+        if list(source.shape) != record["source_shape"]:
+            raise ValueError(f"Crop records the wrong source shape: {source_name}")
+        if not np.allclose(record["voxel_to_surface_ras_mm"], grid @ offset_by(corner)):
+            raise ValueError(f"Crop affine does not place the box: {source_name}")
+        restored = place_crop(record, restored, source.shape)
+    elif not np.array_equal(record["voxel_to_surface_ras_mm"], grid):
         raise ValueError(f"Source affine mismatch: {source_name}")
+    if not np.array_equal(restored, source):
+        raise ValueError(f"Source voxel mismatch: {source_name}")
     if not np.array_equal(record["voxel_spacing_mm"], image.header.get_zooms()[:3]):
         raise ValueError(f"Source voxel spacing mismatch: {source_name}")
     return {
@@ -39,6 +52,8 @@ def validate_record(config, record, source_name):
         "sha256": record["sha256"],
         "identical_voxels": True,
         "identical_tkregister_affine": True,
+        "cropped_to_labels": cropped,
+        "published_shape": list(record["shape"]),
         "voxel_count": int(restored.size),
         "voxel_spacing_mm": record["voxel_spacing_mm"],
     }

@@ -154,16 +154,24 @@ export class BrainAtlas extends EventTarget {
     const level = this.manifest.detail_levels.find(entry => entry.id === detailId);
     if (!level) throw new Error(`Unknown detail level: ${detailId}`);
     const supplemental = this.manifest.supplemental_layers ?? [];
-    const progress = combineProgress(['detail', 'atlas', ...supplemental.map(layer => layer.id)], options.onProgress);
+    const progress = combineProgress(['detail', 'atlas'], options.onProgress);
     await Promise.all([
       this.loadLayer(level.id, level.file, progress.track('detail')),
       this.loadLayer(atlas.id, atlas.file, progress.track('atlas')),
-      ...supplemental.map(layer => this.loadLayer(layer.id, layer.file, progress.track(layer.id))),
     ]);
     this.detailId = level.id;
     this.atlasId = atlas.id;
     this.isolatedId = null;
     this.select(null);
+    // A reference layer is hidden until someone asks for it, so the first
+    // paint does not wait on one: the spinal cord alone is several megabytes
+    // of anatomy nobody has requested yet. They load behind the first frame
+    // and `update` reveals whichever was already asked for by a link.
+    this.supplementalReady = Promise.all(supplemental.map(
+      layer => this.loadLayer(layer.id, layer.file).catch(() => null),
+    )).then(() => {
+      if (!this.disposed) this.update();
+    });
   }
 
   async loadLayer(id, file, onProgress) {

@@ -1,0 +1,67 @@
+# NeuroAtlas Documentation Hub
+
+Welcome to the **NeuroAtlas** technical documentation. This repository provides an individual-specific, source-faithful 3D brain model featuring solid anatomical tissue cuts, categorical 3D label sampling, registered T1 material variation, multi-atlas parcellation layers, and linked orthogonal MRI reference views.
+
+---
+
+## Documentation Index
+
+The documentation is organized into six core modules:
+
+| Module | Focus Area | Key Contents |
+| :--- | :--- | :--- |
+| [**System Architecture**](architecture.md) | Rendering & Asset Pipelines | Coordinate frames, glTF 2.0 binary layout, GPU stencil capping, 3D volume texture sampling, mesh quantization |
+| [**Atlases & Parcellations**](atlases.md) | Anatomical & Functional Layers | Destrieux (148), HCP-MMP1.0 (360), Learning Anatomy (82), Aseg (35), NextBrain (483), Gyral White Matter (68), Spinal Cord (58), Yeo Networks (7) |
+| [**Subject Anatomies**](anatomies.md) | Multi-Anatomy Support & Rationale | Declared anatomies (`bert`, `fsaverage`, `aomic`), MRIQC selection metrics, subject preparation scripts, and excluded datasets |
+| [**Viewer & API Usage**](usage.md) | Interactive UI & Programmatic APIs | WebGL viewer controls, anatomical cuts, Three.js headless API (`BrainAtlas`, `BrainSections`), Python build CLI |
+| [**Validation & Invariants**](validation.md) | Numerical Fidelity & QA | Topological invariants, surface area conservation, quantization bounds, round-trip tests, and explicit scientific limitations |
+| [**References & Licensing**](references.md) | Bibliography & Legal Provenance | Academic citations (DOIs), dataset provenance, FreeSurfer terms, HCP Data Use Terms, CC0, and Z-Anatomy CC BY-SA 4.0 |
+
+---
+
+## System Overview
+
+```mermaid
+graph TD
+    subgraph S["1. Source Neuroimaging (FreeSurfer & BIDS)"]
+        S1["T1w MRI & Conformed Grid<br/>orig.mgz (256³)"]
+        S2["Cortical Surfaces<br/>pial & white (lh, rh)"]
+        S3["Parcellations<br/>Destrieux .annot, aseg, wmparc"]
+        S4["Template Warps & Projections<br/>HCP-MMP fs_LR, NextBrain ANTs"]
+    end
+
+    subgraph B["2. Python Build Pipeline (brain_model)"]
+        B1["Surface Tessellation & Partition<br/>Barycentric Region Partitioning"]
+        B2["Solid Ribbons & Envelopes<br/>Native Extrusion & Marching Cubes"]
+        B3["Quantization & Encoding<br/>KHR_mesh_quantization (int16/uint16)"]
+        B4["Volume Exporters<br/>Categorical .volume (gzip R8/R16)"]
+    end
+
+    subgraph D["3. Optimized Deliverables (public/models/)"]
+        D1["cortex-destrieux.glb & cortex-hcp-mmp.glb"]
+        D2["learning.glb, structures.glb, nextbrain.glb"]
+        D3["tissue-envelopes.glb & spinal-cord.glb"]
+        D4["Categorical 3D Textures & volumes.json"]
+    end
+
+    subgraph V["4. WebGL 2 Client Engine (Three.js)"]
+        V1["Multi-Layer BrainAtlas Scene Graph"]
+        V2["GPU Stencil Buffer Solid Capping"]
+        V3["Hardware Data3DTexture Label Sampling"]
+        V4["Linked Orthogonal 2D MRI Views"]
+    end
+
+    S --> B
+    B --> D
+    D --> V
+```
+
+---
+
+## Core Principles
+
+1. **Individual Source Fidelity**: Anatomy belongs to one published person (`bert` or `aomic` `sub-0022`), not an averaged synthetic template. Folds, ventricles, and asymmetries are real.
+2. **Zero Coordinate Interpolation**: Coordinates are never smoothed, decimated, or artistically deformed. Vertices and triangle topology are preserved from native FreeSurfer reconstructions.
+3. **Discrete Categorical Labeling**: Atlas boundaries never interpolate across integers. Mixed-label triangles are partitioned with deterministic barycentric vertex cells.
+4. **GPU Stencil Solid Capping**: Cuts through closed native envelopes are rendered in real time using GPU stencil buffers without generating ad-hoc cut geometry or rebuilding meshes.
+5. **Separation of Geometry and Labels**: Cortical meshes represent true anatomical surfaces, while cut faces sample 3D categorical label volumes (`Data3DTexture`) with nearest-cell precision.

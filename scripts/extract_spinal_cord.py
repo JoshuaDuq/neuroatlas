@@ -1,23 +1,4 @@
-"""Read the reference spinal cord out of the Z-Anatomy scene, once.
-
-This is a step the package build cannot reproduce. Z-Anatomy publishes its
-anatomy as a Blender scene, and the cord is not stored as geometry at all: a
-short profile is swept down a curve by an Array and a Curve modifier, so only
-Blender can evaluate it. This script evaluates it once and writes the result as
-a checksummed array that `verify_sources` then guards like any download.
-
-    /Applications/Blender.app/Contents/MacOS/Blender --background --disable-autoexec \
-        data/cache/z-anatomy/Z-Anatomy/Startup.blend \
-        --python scripts/extract_spinal_cord.py -- --record
-
-Input: https://www.z-anatomy.com/ (Startup.blend), unpacked under data/cache/.
-
-Why this source replaces PAM50: PAM50 is a straightened template, which is what
-makes it a template — its centreline deviates 1.5 mm over 475 mm, so it
-publishes as a rod. This scene carries the cord in its anatomical posture, with
-the sagittal curve, the conus taper and the roots that a straightened template
-has by construction thrown away.
-"""
+"""Extract the reference spinal cord out of the Z-Anatomy scene."""
 
 import argparse
 import json
@@ -101,7 +82,6 @@ def check_tissue(obj, tissue):
 
 
 def components(mesh):
-    """Group faces into sheets joined across edges that two faces share."""
     seen, groups = set(), []
     for face in mesh.faces:
         if face in seen:
@@ -121,21 +101,6 @@ def components(mesh):
 
 
 def interior_sheets(mesh):
-    """Faces welded inside another surface rather than bounding anything.
-
-    The cord carries a sagittal septum where its two mirrored halves meet: a
-    sheet hanging inside the tube along the anterior median fissure and the
-    posterior median sulcus, joined to the tube along edges that consequently
-    hold three faces. It is invisible from outside and encloses nothing, but the
-    viewer caps cuts by counting front and back faces, so a zero-thickness sheet
-    inside the solid makes every cut through the cord count wrong.
-
-    At each of those three-face edges the bounding surface passes straight
-    through, contributing two of the faces, and the intruding sheet contributes
-    the third. That majority is what identifies the sheet; it holds however the
-    sheet is shaped, and unlike a test on free edges it does not assume the
-    sheet is fully welded in, which this one is not.
-    """
     label = {face: at for at, group in enumerate(components(mesh)) for face in group}
     intruders = set()
     for edge in mesh.edges:
@@ -152,7 +117,6 @@ def interior_sheets(mesh):
 
 
 def surface(obj, depsgraph):
-    """One structure as a closed, outward-wound triangle mesh in world metres."""
     evaluated = obj.evaluated_get(depsgraph)
     mesh = bmesh.new()
     mesh.from_mesh(evaluated.to_mesh())
@@ -188,11 +152,6 @@ def surface(obj, depsgraph):
 
 
 def to_ras(coordinates):
-    """Blender world metres to RAS millimetres.
-
-    Left/posterior/superior to right/anterior/superior: a half turn about the
-    vertical, so the determinant is +1 and face winding carries over unchanged.
-    """
     return coordinates * np.array([-1000.0, -1000.0, 1000.0])
 
 
