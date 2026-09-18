@@ -83,6 +83,13 @@ test('showing the spinal cord survives sharing a link', () => {
   assert.equal(decodeState('#atlas=destrieux&cord=0').spinalCordVisible, false);
 });
 
+test('hiding internal anatomy survives sharing a link', () => {
+  const encoded = encodeState({ atlas: 'destrieux', internalVisible: false });
+  assert.equal(encoded, 'atlas=destrieux&internal=0');
+  assert.equal(decodeState(encoded).internalVisible, false);
+  assert.equal(decodeState('#atlas=destrieux&internal=1').internalVisible, true);
+});
+
 test('a default view omits the cord flag, because the cord is off', () => {
   assert.equal(encodeState({ atlas: 'destrieux', spinalCordVisible: false }), 'atlas=destrieux');
 });

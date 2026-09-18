@@ -13,6 +13,8 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
   const cortex = document.getElementById('cortex');
   const opacity = document.getElementById('opacity');
   const opacityValue = document.getElementById('opacity-value');
+  const internal = document.getElementById('internal-visible');
+  const internalText = document.getElementById('internal-visible-text');
   const spinalCord = document.getElementById('spinal-cord');
   const spinalCordText = document.getElementById('spinal-cord-text');
   const spinalCordLabel = document.getElementById('spinal-cord-label');
@@ -41,6 +43,9 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
     [hemisphere, 'click', onHemisphereClick],
     [cortex, 'change', event => handlers.onCortexVisible(event.target.checked)],
     [opacity, 'input', event => handlers.onCortexOpacity(Number(event.target.value))],
+    ...(internal && handlers.onInternalVisible ? [
+      [internal, 'change', event => handlers.onInternalVisible(event.target.checked)],
+    ] : []),
     ...(spinalCord && handlers.onSpinalCordVisible ? [
       [spinalCord, 'change', event => handlers.onSpinalCordVisible(event.target.checked)],
     ] : []),
@@ -73,15 +78,18 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
 
       if (cortexText) cortexText.textContent = i18n.showCortex;
       if (opacityText) opacityText.textContent = i18n.cortexOpacity;
+      if (internalText) internalText.textContent = i18n.showInternal;
       if (spinalCordText) spinalCordText.textContent = i18n.showSpinalCord;
       if (spinalCordLabel) spinalCordLabel.hidden = !hasSpinalCord;
       reset.textContent = i18n.resetView;
       cortex.checked = state.cortexVisible;
+      if (internal) internal.checked = state.internalVisible !== false;
       if (spinalCord) spinalCord.checked = state.spinalCordVisible === true;
       // Do not fight the reader's thumb while they are dragging the slider.
       if (document.activeElement !== opacity) opacity.value = String(state.cortexOpacity);
       opacityValue.value = `${Math.round(state.cortexOpacity * 100)}%`;
       opacity.disabled = !state.cortexVisible;
+      if (detail) detail.disabled = state.internalVisible === false;
     },
     dispose() {
       for (const [element, type, listener] of listeners) {

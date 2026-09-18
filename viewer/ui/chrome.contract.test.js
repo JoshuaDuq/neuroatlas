@@ -13,6 +13,11 @@ function tagWithId(id) {
   return match[0];
 }
 
+test('internal anatomy starts off checked, matching the model default', () => {
+  const input = tagWithId('internal-visible');
+  assert.match(input, /\schecked\b/);
+});
+
 test('spinal cord starts off in markup, matching the model default', () => {
   const input = tagWithId('spinal-cord');
   assert.equal(/\schecked\b/.test(input), false);

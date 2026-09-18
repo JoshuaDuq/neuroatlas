@@ -365,6 +365,7 @@ export async function startApp() {
   /** Undo whatever is hiding a region, then select it after loading completes. */
   async function reveal(reason, id) {
     if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
+    if (reason === 'internal-hidden') model.setInternalVisible(true);
     if (reason === 'spinal-cord-hidden') model.setSpinalCordVisible(true);
     if (reason === 'hemisphere') model.setHemisphere('both');
     if (reason === 'isolated') model.clearIsolation();
@@ -571,6 +572,7 @@ export async function startApp() {
     onHemisphere: value => display(() => model.setHemisphere(value)),
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
+    onInternalVisible: value => display(() => model.setInternalVisible(value)),
     onSpinalCordVisible: setSpinalCordVisible,
     onReset: () => display(() => {
       sections.setMode('off');
@@ -883,6 +885,9 @@ export async function startApp() {
     if (event.key.toLowerCase() === 'c') {
       return display(() => model.setCortexVisible(!model.state.cortexVisible));
     }
+    if (event.key.toLowerCase() === 'u') {
+      return display(() => model.setInternalVisible(!model.state.internalVisible));
+    }
     if (event.key.toLowerCase() === 's') {
       return setSpinalCordVisible(!model.state.spinalCordVisible);
     }
@@ -909,6 +914,7 @@ export async function startApp() {
   applyView(session.assemble(model.state).view, { immediate: true });
   if (wanted.hemisphere) model.setHemisphere(wanted.hemisphere);
   if (wanted.cortexVisible !== undefined) model.setCortexVisible(wanted.cortexVisible);
+  if (wanted.internalVisible !== undefined) model.setInternalVisible(wanted.internalVisible);
   if (wanted.spinalCordVisible !== undefined) model.setSpinalCordVisible(wanted.spinalCordVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
   // A shared link may name a layer this build does not carry.

@@ -127,6 +127,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
+    this.internalVisible = true;
     this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
     this.sourceColors = new WeakMap();
@@ -290,6 +291,7 @@ export class BrainAtlas extends EventTarget {
       hemisphere: this.hemisphere,
       cortexVisible: this.cortexVisible,
       cortexOpacity: this.cortexOpacity,
+      internalVisible: this.internalVisible,
       spinalCordVisible: this.spinalCordVisible,
       surfaceColor: this.surfaceColor,
       isolatedRegion: this.isolatedId,
@@ -471,6 +473,13 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
+  setInternalVisible(visible) {
+    if (typeof visible !== 'boolean') throw new TypeError('Internal anatomy visibility must be boolean.');
+    this.internalVisible = visible;
+    this.isolatedId = null;
+    this.update();
+  }
+
   setSpinalCordVisible(visible) {
     if (typeof visible !== 'boolean') throw new TypeError('Spinal cord visibility must be boolean.');
     this.spinalCordVisible = visible;
@@ -508,6 +517,7 @@ export class BrainAtlas extends EventTarget {
     this.hemisphere = 'both';
     this.cortexVisible = true;
     this.cortexOpacity = 1;
+    this.internalVisible = true;
     this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
     this.isolatedId = null;

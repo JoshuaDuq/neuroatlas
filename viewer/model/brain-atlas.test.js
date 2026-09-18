@@ -201,10 +201,18 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   await atlas.initialize('a');
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
-    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, spinalCordVisible: false,
+    hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false,
     surfaceColor: 'atlas', isolatedRegion: null,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
+  assert.equal(atlas.state.visibleMeshCount, 4);
+
+  atlas.setInternalVisible(false);
+  assert.equal(atlas.settings.internalVisible, false);
+  assert.equal(atlas.state.visibleMeshCount, 3);
+
+  atlas.setInternalVisible(true);
+  assert.equal(atlas.settings.internalVisible, true);
   assert.equal(atlas.state.visibleMeshCount, 4);
   atlas.dispose();
 });

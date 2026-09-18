@@ -15,6 +15,7 @@ export const TRANSLATIONS = {
     reasons: {
       hemisphere: 'hemisphere hidden',
       'cortex-hidden': 'cortex off',
+      'internal-hidden': 'internal anatomy off',
       'spinal-cord-hidden': 'spinal cord off',
       isolated: 'isolated',
       'no-cut': 'needs a cut',
@@ -154,6 +155,7 @@ export const TRANSLATIONS = {
       internalAnatomy: 'Internal anatomy',
       showCortex: 'Show cortex',
       cortexOpacity: 'Cortex opacity',
+      showInternal: 'Show internal anatomy',
       showSpinalCord: 'Show spinal cord',
       surfaceColor: 'Surface colour',
       // Short enough to stay whole in the masthead, and on a phone row; the
@@ -202,6 +204,7 @@ export const TRANSLATIONS = {
         ['F', 'Focus the selected region'],
         ['I', 'Isolate or restore the selected region'],
         ['C', 'Show or hide the cortex'],
+        ['U', 'Show or hide internal anatomy'],
         ['S', 'Show or hide the spinal cord'],
         ['H', 'Cycle hemisphere: both, left, right'],
         ['M', 'Open or close linked MRI slices'],
@@ -258,6 +261,7 @@ export const TRANSLATIONS = {
     reasons: {
       hemisphere: 'hémisphère masqué',
       'cortex-hidden': 'cortex masqué',
+      'internal-hidden': 'anatomie interne masquée',
       'spinal-cord-hidden': 'moelle épinière masquée',
       isolated: 'isolé',
       'no-cut': 'nécessite une coupe',
@@ -397,6 +401,7 @@ export const TRANSLATIONS = {
       internalAnatomy: 'Anatomie interne',
       showCortex: 'Afficher le cortex',
       cortexOpacity: 'Opacité du cortex',
+      showInternal: 'Afficher l’anatomie interne',
       showSpinalCord: 'Afficher la moelle épinière',
       surfaceColor: 'Couleur de surface',
       surfaceColors: {
@@ -452,6 +457,7 @@ export const TRANSLATIONS = {
         ['F', 'Cibler la région sélectionnée'],
         ['I', 'Isoler ou rétablir la région sélectionnée'],
         ['C', 'Afficher ou masquer le cortex'],
+        ['U', 'Afficher ou masquer l’anatomie interne'],
         ['S', 'Afficher ou masquer la moelle épinière'],
         ['H', 'Changer d’hémisphère : les deux, gauche, droite'],
         ['M', 'Ouvrir ou fermer les coupes IRM'],

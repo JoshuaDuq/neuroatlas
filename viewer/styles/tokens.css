@@ -8,22 +8,22 @@
  * so a colour is changed in exactly one place.
  */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  --text-primary: #1f2933;
-  --text-secondary: #52606d;
-  --text-tertiary: #616c7a;
-  --accent: #0b6e99;
-  --accent-hover: #095a7d;
-  --accent-wash: #e8f2f7;
-  --danger: #a61b1b;
+  --text-primary: #e8ecf1;
+  --text-secondary: #a7b0bc;
+  --text-tertiary: #8b95a3;
+  --accent: #4fb6e0;
+  --accent-hover: #7cc9e8;
+  --accent-wash: #12303d;
+  --danger: #f1928f;
 
-  --surface-base: #ffffff;
-  --surface-sunken: #f5f6f8;
-  --surface-canvas: #eef0f2;
+  --surface-base: #1c222b;
+  --surface-sunken: #13181e;
+  --surface-canvas: #0e1116;
 
-  --border-subtle: #e4e7eb;
-  --border-control: #828d99;
+  --border-subtle: #303844;
+  --border-control: #6a7584;
 
   /*
    * The image stage does not have a theme. Light mode was showing #d6cfc2
@@ -100,26 +100,24 @@
   --camera-transition: 240ms;
 }
 
-/* System preference, unless the reader has explicitly chosen light. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --text-primary: #e8ecf1;
-    --text-secondary: #a7b0bc;
-    --text-tertiary: #8b95a3;
-    --accent: #4fb6e0;
-    --accent-hover: #7cc9e8;
-    --accent-wash: #12303d;
-    --danger: #f1928f;
-    --surface-base: #1c222b;
-    --surface-sunken: #13181e;
-    --surface-canvas: #0e1116;
-    --border-subtle: #303844;
-    --border-control: #6a7584;
-  }
+/* An explicit light choice switches to the light theme. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --text-primary: #1f2933;
+  --text-secondary: #52606d;
+  --text-tertiary: #616c7a;
+  --accent: #0b6e99;
+  --accent-hover: #095a7d;
+  --accent-wash: #e8f2f7;
+  --danger: #a61b1b;
+  --surface-base: #ffffff;
+  --surface-sunken: #f5f6f8;
+  --surface-canvas: #eef0f2;
+  --border-subtle: #e4e7eb;
+  --border-control: #828d99;
 }
 
-/* An explicit choice wins in both directions. */
+/* Explicit dark theme */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --text-primary: #e8ecf1;

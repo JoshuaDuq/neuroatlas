@@ -61,6 +61,9 @@ export function visibilityOf(region, settings) {
   if (followsCortex(region) && !(settings.cortexVisible && settings.cortexOpacity > 0)) {
     return hidden('cortex-hidden');
   }
+  if (isStructure(region) && settings.internalVisible === false) {
+    return hidden('internal-hidden');
+  }
   if (region.atlas === 'zanatomy' && settings.spinalCordVisible === false) {
     return hidden('spinal-cord-hidden');
   }

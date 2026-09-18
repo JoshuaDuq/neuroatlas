@@ -154,11 +154,13 @@ function holdsIsolatedWhiteMatter(source, state, lookup, whiteMatter) {
 }
 
 function tissueVisible(source, state) {
-  const { hemisphere, boundary } = source.userData;
+  const { hemisphere, boundary, kind, detail } = source.userData;
   if (state.isolatedRegion) return false;
   if (state.hemisphere !== 'both' && hemisphere !== 'midline' &&
       hemisphere !== state.hemisphere) return false;
-  return !boundary || (state.cortexVisible && state.cortexOpacity > 0);
+  if (boundary) return state.cortexVisible && state.cortexOpacity > 0;
+  if ((kind === 'structure' || detail) && state.internalVisible === false) return false;
+  return true;
 }
 
 /**

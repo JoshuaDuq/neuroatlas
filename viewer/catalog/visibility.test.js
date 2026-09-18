@@ -53,6 +53,13 @@ test('hiding the cortex hides cortical regions but not structures', () => {
   assert.equal(visibilityOf(stem, settings({ cortexVisible: false })).visible, true);
 });
 
+test('hiding internal anatomy hides structures but keeps cortex', () => {
+  const stem = region({ atlas: 'aseg', hemisphere: 'midline', kind: 'structure' });
+  assert.deepEqual(visibilityOf(stem, settings({ internalVisible: false })),
+    { visible: false, reason: 'internal-hidden' });
+  assert.equal(visibilityOf(region(), settings({ internalVisible: false })).visible, true);
+});
+
 test('fully transparent cortex counts as hidden', () => {
   assert.deepEqual(visibilityOf(region(), settings({ cortexOpacity: 0 })),
     { visible: false, reason: 'cortex-hidden' });
