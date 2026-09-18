@@ -5,7 +5,7 @@
   "atlases": [
     {
       "file": "cortex-destrieux.glb",
-      "sha256": "4396878c08547f25fb33e0b8dd9f9c51edf12573827fd5c91058febf44f11a6d",
+      "sha256": "56013583ab51321b6bb75766c62e8e1e4f297b91108b472cc9f0e85cd28fb713",
       "mesh_count": 150,
       "hemispheres": {
         "left": {
@@ -29,14 +29,28 @@
           "source_vertex_labels_preserved": true
         }
       },
+      "field_ranges": {
+        "_SULC": [
+          -14.113032341003418,
+          17.076505661010742
+        ],
+        "_CONCAVITY": [
+          -0.706669270992279,
+          0.6599987149238586
+        ],
+        "_T1": [
+          14.9016752243042,
+          253.00416564941406
+        ]
+      },
       "maximum_glb_coordinate_error_mm": 4.404900197833609e-06,
-      "maximum_normal_component_error": 2.980209323766303e-08,
-      "maximum_sulcal_depth_error": 0.0,
-      "maximum_ribbon_T1_error": 7.629339563663962e-06
+      "maximum_normal_component_error": 1.5287142296815937e-05,
+      "maximum_sulcal_depth_error": 0.00023795979932650368,
+      "maximum_ribbon_T1_error": 0.0018233266457627906
     },
     {
       "file": "cortex-hcp-mmp.glb",
-      "sha256": "adb8d2bc7a0a796fffaeb8cb672e353a909106d6cb7ef706328cfabda1e5d306",
+      "sha256": "0f6cb64491a5157c5753d8b98cdb36175195fe1c9d9c50dc819642ca5d08ecbd",
       "mesh_count": 362,
       "hemispheres": {
         "left": {
@@ -60,10 +74,24 @@
           "source_vertex_labels_preserved": true
         }
       },
+      "field_ranges": {
+        "_SULC": [
+          -14.113032341003418,
+          17.076505661010742
+        ],
+        "_CONCAVITY": [
+          -0.706669270992279,
+          0.6599987149238586
+        ],
+        "_T1": [
+          14.9016752243042,
+          253.00416564941406
+        ]
+      },
       "maximum_glb_coordinate_error_mm": 4.441034935730908e-06,
-      "maximum_normal_component_error": 2.980226454507573e-08,
-      "maximum_sulcal_depth_error": 0.0,
-      "maximum_ribbon_T1_error": 7.629339563663962e-06
+      "maximum_normal_component_error": 1.5286981442597103e-05,
+      "maximum_sulcal_depth_error": 0.00023795925180181143,
+      "maximum_ribbon_T1_error": 0.0018233459357475112
     }
   ],
   "ribbon_labels": [
@@ -88,7 +116,7 @@
   ],
   "structures": {
     "file": "structures.glb",
-    "sha256": "a11582823327c357a8ba924a356a4d559f34f69c9177e5d366260cd1368fc739",
+    "sha256": "0f82c76245ea39e2ef3ee526fc6de32afd7da7225a4d60e330ea912f7b178453",
     "regions": [
       {
         "id": "aseg:midline:255",
@@ -455,13 +483,13 @@
   },
   "solid_envelopes": {
     "file": "tissue-envelopes.glb",
-    "sha256": "edf722cf6819edfb98e191121d7f11c33eb84caffa8c09633635767110670e54",
+    "sha256": "ba85b03ae6d5021c8a2b4a1ed0e6c55cabca699d0a1330c8e592e42e7aef442b",
     "identical_native_topology": true,
     "maximum_coordinate_error_mm": 3.6954879711892374e-06
   },
   "nextbrain_structures": {
     "file": "nextbrain.glb",
-    "sha256": "11421df8e1a268f3391d931c06392fd1b21de44782e4624b3c03ad82181a6538",
+    "sha256": "a9f5e54068b0659eb79b6e6f7899a62473f31297ec592bc6f5340582d867b0e9",
     "regions": [
       {
         "id": "nextbrain:right:10752",
@@ -3387,7 +3415,7 @@
   },
   "learning_structures": {
     "file": "learning.glb",
-    "sha256": "30b2a7a9416c04c98594dd016e84153bab4b53fe15831d2b23d2291d62d26c03",
+    "sha256": "4bc77b5f3a5905bd1c3e6f58ae2bba414fa52fb9c5bb0d5fe67a9592408ec727",
     "regions": [
       {
         "id": "learning:left:caudate",
@@ -3907,6 +3935,12 @@
       "sha256": "f4a5ca5cbb9112c076a5502b361bd83b8370bcc4222bbd6dd6ab07a02256f618",
       "identical_voxels": true,
       "identical_tkregister_affine": true,
+      "cropped_to_labels": false,
+      "published_shape": [
+        256,
+        256,
+        256
+      ],
       "voxel_count": 16777216,
       "voxel_spacing_mm": [
         1.0,
@@ -3916,9 +3950,15 @@
     },
     "segmentation": {
       "file": "aseg.volume",
-      "sha256": "4d9ca51a0208c74e4cacb9039ac33b311f0bf68b732e32b2dbfd7ec0a629b848",
+      "sha256": "8b4a46d5d8c0d81c55ab94b94b8154363c95b09afe50ac64eb424d14b6951ba4",
       "identical_voxels": true,
       "identical_tkregister_affine": true,
+      "cropped_to_labels": true,
+      "published_shape": [
+        137,
+        144,
+        168
+      ],
       "voxel_count": 16777216,
       "voxel_spacing_mm": [
         1.0,

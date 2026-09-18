@@ -19,7 +19,6 @@ def read_definition():
 
 
 def combine_labels(volume, groups):
-    """Map disjoint source label unions to compact unit codes, leaving input intact."""
     if volume.ndim != 3 or not np.all(volume == np.rint(volume)):
         raise ValueError("An integer 3D segmentation is required")
     if volume.size == 0 or volume.min() < 0:
@@ -40,7 +39,6 @@ def combine_labels(volume, groups):
 
 
 def smooth_display(source, settings):
-    """Smooth a copy without moving any vertex beyond the declared mm bound."""
     iterations = settings["iterations"]
     maximum = settings["maximum_displacement_mm"]
     if not isinstance(iterations, int) or iterations < 1:
@@ -60,16 +58,6 @@ def smooth_display(source, settings):
 
 
 def expand_nextbrain(groups, table):
-    """One unit per side, except where the structure has no sides.
-
-    NextBrain labels every ROI on both halves of its own grid, so the default
-    is a left and a right unit. A structure that crosses the midline has no
-    left and right half to publish: halving it invents a boundary where the
-    anatomy is the crossing, and leaves each half small enough that whether it
-    survives a warp is arbitrary. Such a unit declares `hemisphere: midline`
-    and takes both of NextBrain's copies as one structure, the way the aseg
-    units already do for the ventricles and the corpus callosum.
-    """
     expanded = []
     base_labels = {index % nextbrain.HEMISPHERE_OFFSET for index in table}
     for group in groups:
@@ -121,13 +109,6 @@ def source_groups(config):
 
 
 def constituent_id(source, side, label):
-    """The published region one of a unit's member labels belongs to.
-
-    A NextBrain member names the side its own label encodes, which is not
-    always the unit's: a midline unit holds both of NextBrain's copies, and
-    each is published under its own hemisphere. Shared with validation so the
-    two cannot disagree about what a unit is made of.
-    """
     hemisphere = nextbrain.hemisphere_of(label) if source == "nextbrain" else side
     return f"{source}:{hemisphere}:{label}"
 

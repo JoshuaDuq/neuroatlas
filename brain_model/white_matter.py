@@ -1,10 +1,4 @@
-"""FreeSurfer's gyral white-matter parcellation, published as cut-only regions.
-
-The recon's `wmparc.mgz` gives white matter within 5 mm of cortex the nearest
-Desikan cortical label and leaves deeper white matter unsegmented. It has no
-surface, so its parcels exist only on cuts, and every surface atlas's cut
-shares them rather than one cut atlas owning them.
-"""
+"""FreeSurfer's gyral white-matter parcellation, published as cut-only regions."""
 
 import gzip
 import hashlib
@@ -13,7 +7,7 @@ import re
 import numpy as np
 
 from .sources import read_color_table, sha256
-from .volumes import encode_array, load_on_grid
+from .volumes import encode_array, load_on_grid, offset_by
 
 ATLAS_ID = "wmparc"
 SOURCE = "mri/wmparc.mgz"
@@ -86,14 +80,7 @@ def build_regions(config):
     return regions
 
 
-def offset_by(corner):
-    matrix = np.eye(4)
-    matrix[:3, 3] = corner
-    return matrix
-
-
 def export_volume(config, regions):
-    """Parcel codes cropped to the parcels' bounding box, with that box's affine."""
     image, labels = load(config)
     parcels = is_parcel(labels)
     ids = np.unique(labels[parcels])
@@ -157,7 +144,6 @@ def validate_regions(config, regions):
 
 
 def validate_volume(config, record):
-    """Decode every published code back to its wmparc label, independently of the export."""
     published = config["output_directory"] / record["file"]
     if sha256(published) != record["sha256"]:
         raise ValueError("White-matter volume checksum mismatch")

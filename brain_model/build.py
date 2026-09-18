@@ -46,15 +46,6 @@ def cortical_region(atlas, hemisphere, label, name):
 
 
 def read_native_surface(source, prefix):
-    """The subject's own pial surface, with its native topology asserted.
-
-    fsaverage offered one constant vertex count to compare against; an
-    individual reconstruction offers none, so the check moves to the invariant
-    FreeSurfer's topology correction actually guarantees: a closed genus-zero
-    triangulation. That catches a partial or torn surface, not a decimated one.
-    Which reconstruction this is stays pinned by the checksums `verify_sources`
-    reads, not by a vertex count written here.
-    """
     vertices, faces = read_geometry(source / "surf" / f"{prefix}.pial")
     edges, _ = partition_edges(faces)
     if len(vertices) - len(edges) + len(faces) != 2:
@@ -63,12 +54,6 @@ def read_native_surface(source, prefix):
 
 
 def read_networks(config, prefix, vertex_count):
-    """This hemisphere's network index per source vertex, or None if absent.
-
-    Read per hemisphere rather than cached across atlases: both atlases
-    partition the same surface, so each gets the same field and neither has to
-    know the other exists.
-    """
     if not networks.is_available(config):
         return None
     path = networks.annotation_path(config["source_directory"], prefix)
@@ -79,7 +64,7 @@ def read_networks(config, prefix, vertex_count):
     return networks.network_indices(labels, names)
 
 
-def build_cortex(config, atlas):
+def build_cortex(config, atlas, field_ranges=None):
     scene = trimesh.Scene()
     regions = []
     source = config["source_directory"]
@@ -138,10 +123,13 @@ def build_cortex(config, atlas):
             flush=True,
         )
     filename = f"cortex-{atlas['id']}.glb"
-    write_scene(scene, config["output_directory"] / filename)
+    # The first cortical atlas measures the shading fields; the second is held
+    # to the same span, so one decode in the viewer serves both files.
+    ranges = write_scene(scene, config["output_directory"] / filename, ranges=field_ranges)
     return {
         **atlas,
         "file": filename,
+        "field_ranges": ranges,
         "region_count": sum(r["kind"] == "cortex" for r in regions),
         "surface_shading": {
             "attribute": "_SULC",
@@ -155,12 +143,6 @@ def build_cortex(config, atlas):
 
 
 def build_structure_layer(config, image, labels, describe, filename):
-    """Marching-cubes meshes for one labelled volume, exported as a glTF layer.
-
-    Everything geometric is identical between the coarse and fine layers, so
-    they share this; `describe` supplies only what differs, the region record
-    and its published colour.
-    """
     volume = np.asarray(image.dataobj)
     if not np.all(volume == np.rint(volume)):
         raise ValueError(f"{filename}: segmentation must hold integer labels")
@@ -202,7 +184,6 @@ def build_structure_layer(config, image, labels, describe, filename):
 
 
 def build_structures(config):
-    """The coarse detail level: 35 native FreeSurfer structures."""
     image = nib.load(config["source_directory"] / "mri/aseg.mgz")
     table = read_color_table()
 
@@ -229,7 +210,6 @@ def build_structures(config):
 
 
 def build_nextbrain_structures(config):
-    """The fine detail level: NextBrain nuclei resolved well enough to have a shape."""
     image, labels, table = nextbrain.load(config)
     settings = config[nextbrain.ATLAS_ID]
     chosen = nextbrain.meshed_indices(labels, table, settings["minimum_mesh_voxels"])
@@ -253,11 +233,6 @@ def build_nextbrain_structures(config):
 
 
 def detail_levels(config):
-    """The internal-anatomy layers, coarse first.
-
-    Exactly one is drawn at a time: both segment the same anatomy, so drawing
-    them together would put two thalami in the same place.
-    """
     levels = [{"id": "aseg", "label": "FreeSurfer subcortical segmentation"}]
     if nextbrain.is_available(config):
         levels.append(
@@ -267,12 +242,6 @@ def detail_levels(config):
 
 
 def cut_atlases(config):
-    """Which label volumes a cut may sample, and whether each has a surface.
-
-    Every surface atlas also publishes a cut volume. NextBrain publishes only a
-    cut volume, so `surface` is what tells the viewer that selecting it must
-    leave the cortical layer alone.
-    """
     atlases = [
         {"id": a["id"], "label": a["label"], "citation": a["citation"], "surface": True}
         for a in config["atlases"]
@@ -291,18 +260,6 @@ def cut_atlases(config):
 
 
 def anatomy_record(config):
-    """What brain this is, taken from the reconstruction rather than restated.
-
-    The recon version is read from the subject's own build stamp rather than
-    from the config: a version written by hand could drift away from the files
-    it describes, and the stamp is the only copy the reconstruction itself
-    vouches for. Not every published reconstruction ships one, so its absence is
-    reported as absent instead of guessed at.
-
-    The fields are listed rather than spread, because the anatomy declaration
-    also carries local paths and unpacking instructions that are nobody's
-    business once the model is built.
-    """
     anatomy = config["anatomy"]
     stamp = config["source_directory"] / "scripts/build-stamp.txt"
     return {
@@ -318,12 +275,6 @@ def anatomy_record(config):
 
 
 def anatomy_limitations(config):
-    """What is true of this brain in particular, rather than of the pipeline.
-
-    Derived from the anatomy's own declaration rather than written out per
-    brain, because a published limitation that quietly describes a different
-    model than the one built is worse than no limitation at all.
-    """
     if config["anatomy"]["individual"]:
         limitations = [
             "One published individual's anatomy, not an averaged template: it is nobody else's brain, and no part of it is clinically validated.",
@@ -347,13 +298,6 @@ def anatomy_limitations(config):
 
 
 def network_limitations(config):
-    """What a network share does and does not say, stated where it is published.
-
-    Network membership is group data. On an individual it is where a
-    group-average network falls on this person's folds, which is not a
-    measurement of their networks; on a template no projection happens and the
-    claim is only the weaker one about the template itself.
-    """
     if not networks.is_available(config):
         return []
     limitations = [
@@ -372,12 +316,6 @@ def network_limitations(config):
 
 
 def write_anatomy_index(config):
-    """List the brains published beside this one, for the viewer to offer.
-
-    Built by reading the manifests actually on disk rather than the
-    declarations, so the index can never offer a brain whose assets are not
-    there. Each entry is what that brain's own manifest says about itself.
-    """
     published = config["output_directory"].parent
     entries = []
     for path in sorted(published.glob("*/manifest.json")):
@@ -404,8 +342,10 @@ def main():
     provenance = verify_sources(config)
     atlas_metadata = []
     regions = []
+    field_ranges = None
     for atlas in config["atlases"]:
-        metadata, cortex = build_cortex(config, atlas)
+        metadata, cortex = build_cortex(config, atlas, field_ranges)
+        field_ranges = metadata.pop("field_ranges") or field_ranges
         metadata["ribbon_labels"] = export_ribbon_labels(config, atlas, cortex)
         atlas_metadata.append(metadata)
         regions.extend(cortex)
@@ -441,7 +381,7 @@ def main():
         "tissues": {"file": "tissue-labels.json"},
         "solid_envelopes": export_solid_envelopes(config),
         "schema_version": 1,
-        "appearance": config["appearance"],
+        "appearance": {**config["appearance"], "field_ranges": field_ranges or {}},
         "anatomy": anatomy_record(config),
         "coordinate_system": {
             "units": "meters",

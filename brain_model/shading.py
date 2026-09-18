@@ -9,11 +9,6 @@ from .geometry import normalize
 
 
 def cortical_concavity(mesh):
-    """Dimensionless normal-projected one-ring relief, not measured curvature.
-
-    Compute on the intact hemisphere, then smooth only this shading field.
-    Atlas partitioning happens afterward, so boundaries cannot create seams.
-    """
     operator = laplacian_calculation(mesh).tocsr()
     displacement = operator @ mesh.vertices - mesh.vertices
     edges = mesh.edges_unique
@@ -28,7 +23,6 @@ def cortical_concavity(mesh):
 
 
 def ribbon_intensity(data, affine, pial, white):
-    """Trilinear T1 at the midpoint of matched pial/white vertices in tkrRAS."""
     if pial.shape != white.shape or pial.ndim != 2 or pial.shape[1] != 3:
         raise ValueError("Pial and white vertices must correspond")
     if data.ndim != 3 or not np.isfinite(data).all():

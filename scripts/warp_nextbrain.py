@@ -1,31 +1,4 @@
-"""Warp the published NextBrain atlas into the subject grid, once.
-
-This is the one step the package build cannot reproduce: it needs ANTs and runs
-for tens of minutes. Run it once, let `--record` register the checksummed result
-in `data/sources.json`, and every later build verifies that artefact like any
-downloaded input.
-
-    pip install antspyx
-    python scripts/warp_nextbrain.py \
-        --atlas nextbrain_wholebrain_MNI152_1mm.nii.gz \
-        --lut nextbrain_wholebrain_MNI152_1mm_lut.txt \
-        --template tpl-MNI152NLin6Asym_res-01_T1w.nii.gz \
-        --record
-
-Inputs:
-
-  --atlas, --lut  https://github.com/compneurobilbao/nextbrain-mni-atlas
-                  (Casamitjana et al., Nature 2025)
-  --template      The MNI152 T1 the atlas was segmented on: FSL's
-                  MNI152_T1_1mm.nii.gz, redistributed openly by TemplateFlow as
-                  tpl-MNI152NLin6Asym_res-01_T1w.nii.gz.
-
-The template is registered and the label volume merely resampled, so no label
-value is ever interpolated. What bounds the achievable accuracy is the other
-side of the pair: an averaged template is registered onto one individual's
-brain, so the nuclei land where that inter-subject warp puts them, not where a
-histological delineation of this subject would.
-"""
+"""Warp the published NextBrain atlas into the subject grid."""
 
 import argparse
 import json
@@ -45,8 +18,9 @@ from brain_model.sources import ROOT, read_config, sha256
 SOURCE_URL = "https://github.com/compneurobilbao/nextbrain-mni-atlas"
 TEMPLATE_URL = "https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym"
 CITATION = "https://doi.org/10.1038/s41586-025-09708-2"
+
+
 def procedure(config):
-    """Name the brain that was registered to, not just the script that did it."""
     return (
         "scripts/warp_nextbrain.py: ANTs SyN registration of the MNI152NLin6Asym T1 "
         f"to {config['anatomy']['id']} orig.mgz, then genericLabel resampling of "
@@ -68,14 +42,6 @@ def require_ants():
 
 
 def align_voxel_order(image, grid):
-    """Reorder `image`'s voxels onto `grid`, when the two differ only by flips.
-
-    Templates are redistributed in varying voxel order: TemplateFlow stores
-    MNI152NLin6Asym stepping +x where FSL and the published atlas step −x. Those
-    describe identical world space, so matching them is an exact mirror rather
-    than a resample — and proving that is what keeps a silent left-right flip
-    from ever reaching the atlas.
-    """
     if image.shape != grid.shape:
         raise SystemExit(f"Cannot align grids of different shape: {image.shape} vs {grid.shape}")
     picks = []
@@ -107,7 +73,6 @@ def align_voxel_order(image, grid):
 
 
 def as_nifti(image, path):
-    """Write a NIfTI on the same voxel grid, which is what ANTsPy consumes."""
     nib.save(nib.Nifti1Image(np.asarray(image.dataobj), image.affine), path)
     return path
 
@@ -122,7 +87,6 @@ REGISTRATION_LEVELS = (100, 70, 50, 20)
 
 
 def warp_labels(ants, template, atlas, fixed, work):
-    """Register the template, then carry the labels along that transform."""
     target = ants.image_read(str(fixed))
     result = ants.registration(
         fixed=target,
@@ -145,15 +109,6 @@ def warp_labels(ants, template, atlas, fixed, work):
 
 
 def write_on_grid(warped, reference, destination):
-    """Rewrap the warped labels with subject's grid and a label-safe dtype.
-
-    Registration preserved the voxel grid, so this restores the FreeSurfer
-    header that `get_vox2ras_tkr` reads rather than converting any coordinate.
-    The datatype must be set deliberately: `reference` is an intensity volume
-    stored as uint8, and inheriting that silently wraps every label id above
-    255 into a different structure. The written file is read back and compared
-    so no such truncation can pass quietly again.
-    """
     labels = np.asarray(nib.load(warped).dataobj)
     if labels.shape != reference.shape:
         raise SystemExit(f"Warped labels are {labels.shape}, expected {reference.shape}.")
@@ -171,7 +126,6 @@ def write_on_grid(warped, reference, destination):
 
 
 def record_sources(config, entries):
-    """Register the derived artefacts, replacing any entry for the same path."""
     manifest = ROOT / "data/sources.json"
     provenance = json.loads(manifest.read_text())
     for path, derived_from in entries:

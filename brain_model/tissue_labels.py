@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 
 from . import nextbrain, white_matter
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
-from .volumes import encode_volume
+from .volumes import encode_cropped_volume
 
 
 def describe_source_label(value, table, regions):
@@ -128,7 +128,7 @@ def export_tissue_labels(config, manifest):
         encoded_image = nib.MGHImage(
             data.astype(np.int32), image.affine, header=image.header.copy()
         )
-        record = encode_volume(
+        record = encode_cropped_volume(
             encoded_image,
             config["output_directory"] / f"tissues-{atlas}.volume",
             np.dtype("<u2"),

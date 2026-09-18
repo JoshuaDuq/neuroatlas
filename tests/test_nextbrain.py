@@ -7,6 +7,7 @@ import pytest
 
 from brain_model import nextbrain
 from brain_model.sources import read_config
+from brain_model.volumes import offset_by, read_published
 
 
 @pytest.fixture
@@ -29,15 +30,20 @@ def test_published_labels_survive_transport_with_their_original_values(config):
     regions = nextbrain.build_regions(config)
     record = nextbrain.export_atlas(config, regions)
 
-    payload = gzip.decompress((config["output_directory"] / record["file"]).read_bytes())
-    codes = np.frombuffer(payload, dtype="<u2").reshape(source.shape, order="F")
+    codes = read_published(
+        record, config["output_directory"] / record["file"], source.shape
+    )
     lut = np.array([label["source_label_id"] for label in record["labels"]])
     np.testing.assert_array_equal(lut[codes], source)
 
+    payload = gzip.decompress((config["output_directory"] / record["file"]).read_bytes())
     assert hashlib.sha256(payload).hexdigest() == record["decoded_sha256"]
     image = nib.load(nextbrain.paths(config)[0])
-    np.testing.assert_array_equal(
-        record["voxel_to_surface_ras_mm"], image.header.get_vox2ras_tkr()
+    # The published affine is the crop's own: the source grid shifted to the
+    # box's corner, which is what puts every kept voxel back where it was.
+    np.testing.assert_allclose(
+        record["voxel_to_surface_ras_mm"],
+        image.header.get_vox2ras_tkr() @ offset_by(record["crop_corner_voxel"]),
     )
 
 

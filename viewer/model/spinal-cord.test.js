@@ -62,6 +62,7 @@ test('the whole cord assembly is published as one supplemental system', () => {
 test('reference cord is searchable, selectable and isolatable in every detail level', async () => {
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
+  await model.supplementalReady;
   model.setSpinalCordVisible(true);
   const catalog = createCatalog(manifest);
   for (const level of manifest.detail_levels) {
@@ -88,6 +89,7 @@ test('reference cord is searchable, selectable and isolatable in every detail le
 test('a lateral root follows the hemisphere filter its own side declares', async () => {
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
+  await model.supplementalReady;
   model.setSpinalCordVisible(true);
   const left = assembly.find(region => region.id === 'zanatomy:left:anterior-root');
   const right = assembly.find(region => region.id === 'zanatomy:right:anterior-root');
@@ -104,6 +106,9 @@ test('a lateral root follows the hemisphere filter its own side declares', async
 test('spinal cord visibility toggle hides meshes and prevents selection', async () => {
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
+  // The cord is a hidden reference layer and no longer holds up the first
+  // paint; it arrives behind it, and this is where it has landed.
+  await model.supplementalReady;
   assert.equal(model.settings.spinalCordVisible, false);
   assert.ok(!model.visibleMeshes.some(mesh => mesh.userData.atlas === 'zanatomy'));
 

@@ -12,13 +12,26 @@ export function tissueColor(region, palette) {
 }
 
 /**
+ * How to read one shading field back to its source units.
+ *
+ * The published files store these fields as normalized unsigned integers over
+ * a span the build measured and the manifest carries, so the attribute arrives
+ * in 0..1 rather than in millimetres of sulcal depth. A file written before
+ * that encoding carries no span and is read straight through.
+ */
+function fieldDecode(ranges, name) {
+  const span = ranges?.[name];
+  return span ? [span[0], span[1] - span[0]] : [0, 1];
+}
+
+/**
  * Source morphometry modulates illumination, independently of atlas colour.
  *
  * `withNetworks` is all-or-nothing across a build — either the network layer
  * was built and every cortical mesh carries it, or none does — so this adds at
  * most one program variant rather than one per mesh.
  */
-function addFoldShading(material, { folds, intensity }, withNetworks) {
+function addFoldShading(material, { folds, intensity, field_ranges: ranges }, withNetworks) {
   const variation = { value: intensity.surface_strength };
   const networkMix = { value: 0 };
   material.userData.tissueVariation = variation;
@@ -26,6 +39,9 @@ function addFoldShading(material, { folds, intensity }, withNetworks) {
   material.onBeforeCompile = shader => {
     shader.uniforms.tissueVariation = variation;
     if (withNetworks) shader.uniforms.networkMix = networkMix;
+    shader.uniforms.sulcDecode = { value: fieldDecode(ranges, '_SULC') };
+    shader.uniforms.concavityDecode = { value: fieldDecode(ranges, '_CONCAVITY') };
+    shader.uniforms.t1Decode = { value: fieldDecode(ranges, '_T1') };
     shader.uniforms.t1Range = { value: [intensity.low, intensity.high] };
     shader.uniforms.concavityRange = { value: [folds.concavity_low, folds.concavity_high] };
     shader.uniforms.foldRange = { value: [folds.low, folds.high] };
@@ -35,6 +51,9 @@ function addFoldShading(material, { folds, intensity }, withNetworks) {
     shader.vertexShader = `attribute float _sulc;
 attribute float _concavity;
 attribute float _t1;
+uniform vec2 sulcDecode;
+uniform vec2 concavityDecode;
+uniform vec2 t1Decode;
 varying float vConcavity;
 varying float vT1;
 varying float vSulcalDepth;
@@ -42,9 +61,9 @@ ${withNetworks ? 'attribute vec4 _networkColor;\nvarying vec4 vNetworkColor;' : 
 ${shader.vertexShader}`.replace(
       '#include <begin_vertex>',
       `#include <begin_vertex>
-vSulcalDepth = _sulc;
-vConcavity = _concavity;
-vT1 = _t1;
+vSulcalDepth = _sulc * sulcDecode.y + sulcDecode.x;
+vConcavity = _concavity * concavityDecode.y + concavityDecode.x;
+vT1 = _t1 * t1Decode.y + t1Decode.x;
 ${withNetworks ? 'vNetworkColor = _networkColor;' : ''}`,
     );
     shader.fragmentShader = `varying float vSulcalDepth;
@@ -78,7 +97,7 @@ ${shader.fragmentShader}`.replace(
     );
   };
   material.customProgramCacheKey = () =>
-    `source-tissue-relief-v3${withNetworks ? '-network' : ''}`;
+    `source-tissue-relief-v4${withNetworks ? '-network' : ''}`;
 }
 
 export function createAnatomicalMaterial(mesh, region, appearance) {

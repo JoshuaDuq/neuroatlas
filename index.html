@@ -7,6 +7,25 @@
     <title>NeuroAtlas</title>
     <link rel="icon" href="data:," />
     <!--
+      Every view here is a shareable link, so a share that renders as a bare
+      URL is a view nobody opens. The absolute URL is the published site: a
+      relative one resolves against the sharing service, not against this page.
+    -->
+    <link rel="canonical" href="https://joshuaduq.github.io/neuroatlas/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NeuroAtlas" />
+    <meta property="og:title" content="NeuroAtlas — one person's brain, at full resolution" />
+    <meta property="og:description" content="148 Destrieux regions, 360 HCP-MMP areas, 483 histological labels and solid anatomical cuts, on one individual's FreeSurfer reconstruction rather than a template." />
+    <meta property="og:url" content="https://joshuaduq.github.io/neuroatlas/" />
+    <meta property="og:image" content="https://joshuaduq.github.io/neuroatlas/preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A full-resolution reconstruction of one person's cerebral cortex and cerebellum, lit from the left on a dark field, with every gyrus and sulcus of the source surface visible." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Matches --surface-base in each scheme, so the browser chrome meets the masthead. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c222b" />
+    <!--
       Start the anatomy download before the module graph has parsed. The
       filenames match `startup-assets.js`; `fetchAsset` consumes these Response
       promises so the loader never opens a second 25 MB request.
@@ -46,6 +65,29 @@
     </script>
   </head>
   <body>
+    <!--
+      A reader without JavaScript gets a blank stage otherwise, and so does
+      anything that indexes the page without running it. This says what the
+      page is and where the data and its provenance live.
+    -->
+    <noscript>
+      <div class="noscript-notice">
+        <h1>NeuroAtlas</h1>
+        <p>
+          An interactive atlas of one person's brain, built on a full-resolution
+          FreeSurfer reconstruction: 148 Destrieux regions, 360 HCP-MMP areas,
+          483 histological labels, gyral white matter, and solid anatomical cuts
+          with exact source labels.
+        </p>
+        <p>
+          It renders the anatomy in your browser with WebGL 2, so it needs
+          JavaScript enabled. The published model assets and their provenance are
+          available without it:
+          <a href="models/anatomies.json">the anatomy index</a>,
+          and the source and method are documented in the project's README.
+        </p>
+      </div>
+    </noscript>
     <div id="app" data-status="loading">
       <header id="masthead">
         <div class="identity">

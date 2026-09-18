@@ -1,24 +1,11 @@
-"""Published NextBrain histological labels, warped once into the subject grid.
-
-NextBrain is purely volumetric: it delineates deep nuclei that no cortical
-surface annotation describes, and it has no surface counterpart. It therefore
-enters this model as a cut-label source only, contributing regions that carry
-measured volumes but no mesh.
-
-The warp from MNI152 to this subject is deliberately not reproducible from this
-package. It needs ANTs and runs for minutes, so `scripts/warp_nextbrain.py`
-performs it once and records the result in `data/sources.json` as a checksummed
-derived source, which `verify_sources` then guards like any downloaded input.
-Because that artefact is optional, a checkout without it still builds every
-atlas that needs no warp.
-"""
+"""Published NextBrain histological labels, warped once into the subject grid."""
 
 import re
 
 import nibabel as nib
 import numpy as np
 
-from .volumes import encode_volume, load_on_grid
+from .volumes import encode_cropped_volume, load_on_grid
 
 ATLAS_ID = "nextbrain"
 
@@ -45,15 +32,6 @@ def region_id_of(index):
 
 
 def structure_name_of(published):
-    """A published name reduced to the structure it actually identifies.
-
-    Two prefixes are dropped. `Left-`/`Right-` goes because laterality is carried
-    by `hemisphere` and displayed as its own field, matching the aseg and
-    Destrieux catalogues. `ctx-rh-` goes because it is an artefact of the reused
-    label block, and keeping it would contradict the hemisphere the same record
-    reports. `source_published_name` retains the original string for provenance,
-    and the cut labels keep it verbatim.
-    """
     for prefix in ("Left-", "Right-"):
         if published.startswith(prefix):
             published = published[len(prefix) :]
@@ -62,7 +40,6 @@ def structure_name_of(published):
 
 
 def read_lut(path):
-    """Parse the published `index name R G B A` table, ignoring alpha."""
     table = {}
     for line in path.read_text().splitlines():
         fields = line.split()
@@ -81,19 +58,12 @@ def paths(config):
 
 
 def is_available(config):
-    """Whether this checkout is configured for the warp and has run it."""
     if ATLAS_ID not in config:
         return False
     return all(path.exists() for path in paths(config))
 
 
 def load(config):
-    """The warped labels on the subject grid, with their published names.
-
-    `load_on_grid` carries the whole guarantee of this module: labels that do
-    not share the reference voxel-to-RAS mapping exactly would be drawn at the
-    wrong place on a cut, which is worse than not drawing them at all.
-    """
     volume_path, lut_path = paths(config)
     image = load_on_grid(config, volume_path)
     labels = np.asarray(image.dataobj)
@@ -122,13 +92,6 @@ def is_bulk(published):
 
 
 def meshed_indices(labels, table, minimum):
-    """Which ROIs get a mesh, in label order.
-
-    Below `minimum` voxels a marching-cubes surface asserts a shape the warped
-    1 mm grid cannot support: several ROIs survive resampling as a single voxel,
-    and a 1 mm cube is not anatomy. Everything excluded here remains a cut label,
-    so it is still named, searchable and selectable on a cut face.
-    """
     indices, counts = np.unique(labels, return_counts=True)
     return [
         int(index)
@@ -140,13 +103,6 @@ def meshed_indices(labels, table, minimum):
 
 
 def cortical_network_compositions(config):
-    """Network shares for each NextBrain cortical ROI, from nearest surface vertex.
-
-    NextBrain's cortex is volumetric Desikan-Killiany parcels. Networks live on
-    the pial and white vertices. Each voxel takes the network of the nearest
-    vertex in the same hemisphere — the same rule as the HCP cut labels — and
-    the parcel reports the composition of those votes. Nuclei are not measured.
-    """
     from nibabel.freesurfer.io import read_annot, read_geometry
     from scipy.spatial import cKDTree
 
@@ -189,14 +145,6 @@ def cortical_network_compositions(config):
 
 
 def build_regions(config, skip=()):
-    """One selectable, mesh-less region per delineated ROI present in the warp.
-
-    ROIs the LUT names but the resampled volume does not contain are omitted
-    rather than published as empty regions: the atlas states that small regions
-    do not survive resampling to 1 mm, and an empty region would misreport that
-    documented loss as anatomy. `skip` carries the ROIs that were given solid
-    geometry instead, which are published as structures rather than here.
-    """
     image, labels, table = load(config)
     # float32 from the MGH header; the manifest is strict JSON with no NaN.
     voxel_volume = float(abs(np.linalg.det(image.header.get_vox2ras_tkr()[:3, :3])))
@@ -231,12 +179,6 @@ def build_regions(config, skip=()):
 
 
 def export_atlas(config, regions):
-    """The compact label grid and palette for the GPU cut, as a tissue record.
-
-    Region ids are reconstructed rather than searched: both sides derive them
-    from the same LUT index, so a mismatch is a build error worth raising here
-    rather than a silently unselectable region in the viewer.
-    """
     image, labels, table = load(config)
     published = {region["id"] for region in regions if region["atlas"] == ATLAS_ID}
     values, inverse = np.unique(labels, return_inverse=True)
@@ -260,7 +202,7 @@ def export_atlas(config, regions):
     encoded = nib.MGHImage(
         codes.astype(np.int32), image.affine, header=image.header.copy()
     )
-    record = encode_volume(
+    record = encode_cropped_volume(
         encoded,
         config["output_directory"] / f"tissues-{ATLAS_ID}.volume",
         np.dtype("<u2"),

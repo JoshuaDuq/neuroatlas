@@ -1,9 +1,4 @@
-"""Per-vertex parcel labels that close the cortical ribbon into solid wedges.
-
-The viewer builds one closed solid per parcel from the native pial/white pair it
-already loads, so a cut's parcel boundary is geometry rather than a sampled 1 mm
-grid. Only the labels ship; the geometry is already published.
-"""
+"""Per-vertex parcel labels that close the cortical ribbon into solid wedges."""
 
 import numpy as np
 from nibabel.freesurfer.io import read_annot, read_geometry
@@ -15,12 +10,10 @@ LABEL_DTYPE = np.dtype("<u2")
 
 
 def triangle_owners(faces, labels):
-    """The parcel each triangle belongs to: its majority vertex, lowest on a tie."""
     return majority(labels[faces])
 
 
 def _wedge_faces(patch, count):
-    """A parcel's pial patch, its reversed white patch, and the wall between them."""
     directed = patch[:, [[0, 1], [1, 2], [2, 0]]].reshape(-1, 2)
     keys = directed[:, 0].astype(np.int64) * count + directed[:, 1]
     reverse = directed[:, 1].astype(np.int64) * count + directed[:, 0]
@@ -34,7 +27,6 @@ def _wedge_faces(patch, count):
 
 
 def wedge_defects(faces, labels):
-    """Count the edges that would leak (used once) or pinch (used more than twice)."""
     owners = triangle_owners(faces, labels)
     defects = {"wedges": 0, "holes": 0, "pinches": 0}
     for owner in np.unique(owners):
@@ -61,11 +53,6 @@ def _read_atlas(config, atlas, prefix):
 
 
 def export_ribbon_labels(config, atlas, regions):
-    """Write one region index per surface vertex, left hemisphere then right.
-
-    `regions` are the cortical records this atlas just published, so the file
-    names regions the manifest already carries rather than respelling their ids.
-    """
     published = {
         (region["hemisphere"], region["source_label_id"]): region["id"]
         for region in regions
