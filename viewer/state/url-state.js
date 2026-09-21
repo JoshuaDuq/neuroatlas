@@ -26,7 +26,7 @@ const DEFAULTS = {
 };
 
 const HEMISPHERES = ['both', 'left', 'right'];
-const SURFACE_COLORS = ['tissue', 'atlas', 'network'];
+const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network'];
 
 /**
  * `colors` was a flag before the surface could be coloured three ways. Links

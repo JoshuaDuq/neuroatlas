@@ -6,6 +6,8 @@ import { tissueColor } from '../render/materials.js';
 import { labelAppearance, usesAtlasColors, usesNetworkColors } from './palette.js';
 import { buildRibbonWedges } from './ribbon-wedges.js';
 import { createSolidMaterial } from './solid-material.js';
+import { addMriAppearance } from '../render/mri-material.js';
+import { addCapLabels } from './cap-labels.js';
 
 const HEMISPHERES = ['left', 'right'];
 const WHITE_MATTER = { left: 2, right: 41 };
@@ -100,6 +102,8 @@ export function addSolidSources(sections, sources, anatomy, appearance, band, wh
     // Only the white envelope's cap lies across gyral white matter.
     const sampled = source.userData.boundary === 'white' ? whiteMatter : null;
     const material = createSolidMaterial(anatomy, appearance, sampled);
+    addCapLabels(material, anatomy.capLabels);
+    addMriAppearance(material, anatomy.mriUniforms, 'capLift');
     if (source.userData.mri_registered === false) material.userData.tissueRelief.value = 0;
     sections.add(source, material, band);
   }
@@ -177,11 +181,15 @@ export function paintSolids(sections, {
   // would on a voxel cut face. Relief is lighting, not colour, so it stays.
   const published = usesAtlasColors(state) || usesNetworkColors(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
+  const sampledAtlas = state.surfaceColor === 'mri' && !wedged;
+  const sampledIsolation = sampledAtlas && labels.byRegion.has(state.isolatedRegion) &&
+    !sections.solids.some(solid => solid.source.userData.region_id === state.isolatedRegion);
   for (const solid of sections.solids) {
     solid.cap.material.userData.tissueVariation.value =
       solid.source.userData.mri_registered === false ? 0 : variation;
     const { source, cap } = solid;
-    if (!partOfCut(source, { atlas, detail, wedged })) {
+    if (!partOfCut(source, { atlas, detail, wedged }) ||
+        (state.surfaceColor === 'mri' && source.userData.mri_registered === false)) {
       solid.visible = false;
       continue;
     }
@@ -190,12 +198,16 @@ export function paintSolids(sections, {
     // always what its mesh was built from: an envelope borrows a tissue label,
     // and a medial wall borrows one carrying no region at all.
     solid.region = (label ? label.region_id : source.userData.region_id) ?? null;
+    const sampled = sampledAtlas && (!solid.region || sampledIsolation);
+    solid.cap.material.userData.sampledLabels.value = sampled;
+    const capState = sampledIsolation && sampled ? { ...state, isolatedRegion: null } : state;
+    if (sampled) solid.region = null;
     const isolatedWhiteMatter = holdsIsolatedWhiteMatter(source, state, lookup, whiteMatter);
     if (!label) {
       const { boundary } = source.userData;
       const record = lookup?.regions?.get(source.userData.region_id);
       solid.visible = (record?.kind === 'structure'
-        ? visibilityOf(record, { ...state, detail }).visible : tissueVisible(source, state))
+        ? visibilityOf(record, { ...capState, detail }).visible : tissueVisible(source, capState))
         || isolatedWhiteMatter;
       if (boundary) {
         cap.material.color.set(appearance.tissue[boundary === 'pial' ? 'cortex' : 'white']);
@@ -208,9 +220,9 @@ export function paintSolids(sections, {
       }
       continue;
     }
-    const { color, visible } = labelAppearance(label, state, appearance.tissue, lookup);
+    const { color, visible } = labelAppearance(label, capState, appearance.tissue, lookup);
     const record = lookup?.regions?.get(source.userData.region_id);
-    solid.visible = (visible && (record?.kind !== 'structure' || visibilityOf(record, { ...state, detail }).visible)) || isolatedWhiteMatter;
+    solid.visible = (visible && (record?.kind !== 'structure' || visibilityOf(record, { ...capState, detail }).visible)) || isolatedWhiteMatter;
     cap.material.color.copy(color);
   }
 }

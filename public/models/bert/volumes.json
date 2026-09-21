@@ -474,8 +474,8 @@
   "display": {
     "field_of_view_mm": 256,
     "texture_size": 512,
-    "window_center": 90,
-    "window_width": 180
+    "window_center": 96,
+    "window_width": 192
   },
   "limitations": [
     "One individual's 1 mm MRI and segmentation; not the viewer's anatomy.",

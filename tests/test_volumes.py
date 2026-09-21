@@ -61,3 +61,40 @@ def test_validation_rejects_an_affine_shift_even_when_payload_is_intact(tmp_path
     path.write_text(json.dumps(metadata))
     with pytest.raises(ValueError, match="affine"):
         validate_volumes(config)
+
+
+def displayed_signal(config):
+    mri = np.asarray(nib.load(config["source_directory"] / "mri/orig.mgz").dataobj)
+    labels = np.asarray(nib.load(config["source_directory"] / "mri/aseg.mgz").dataobj)
+    return mri[labels != 0]
+
+
+def published_window(anatomy, output):
+    from brain_model.sources import read_config
+
+    config = read_config(anatomy)
+    config["output_directory"] = output
+    return config, export_volumes(config)["display"]
+
+
+@pytest.mark.parametrize("anatomy", ["bert", "aomic"])
+def test_published_window_does_not_clip_the_measured_signal(anatomy, tmp_path):
+    config, display = published_window(anatomy, tmp_path)
+    high = display["window_center"] + display["window_width"] / 2
+    assert (displayed_signal(config) >= high).mean() < 0.005
+
+
+@pytest.mark.parametrize("anatomy", ["bert", "aomic"])
+def test_published_window_maps_signal_to_grey_proportionally(anatomy, tmp_path):
+    # Floor at zero, so a tissue twice as bright on T1 is twice as bright on
+    # screen. A raised floor would add an offset and break that on every
+    # surface and cut face at once.
+    _, display = published_window(anatomy, tmp_path)
+    assert display["window_center"] - display["window_width"] / 2 == 0
+
+
+def test_window_follows_the_subject_rather_than_the_configuration(tmp_path):
+    # orig.mgz is not intensity normalised, so one constant cannot serve two scans.
+    _, bert = published_window("bert", tmp_path / "bert")
+    _, aomic = published_window("aomic", tmp_path / "aomic")
+    assert bert["window_width"] != aomic["window_width"]

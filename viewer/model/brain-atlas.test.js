@@ -4,7 +4,46 @@ import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { BoxGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
 import { visibilityOf } from '../catalog/visibility.js';
-import { BrainAtlas } from './brain-atlas.js';
+import { BrainAtlas, SURFACE_COLORS } from './brain-atlas.js';
+import { TissueSections } from '../tissues/gpu-sections.js';
+import { Volume } from '../slices/volume.js';
+
+test('MRI is an explicit appearance and requires registered data', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  assert.ok(SURFACE_COLORS.includes('mri'));
+  assert.throws(() => atlas.setSurfaceColor('mri'), /MRI.*load/i);
+  atlas.dispose();
+});
+
+test('MRI preserves picking and shares its scan with later-loaded surface layers', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const sections = new TissueSections(atlas, new URL('https://example.invalid/'));
+  const volume = new Volume({ shape: [2, 2, 2], order: 'F',
+    voxel_to_surface_ras_mm: [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]],
+  }, new Uint8Array(8).fill(100));
+  sections.anatomy = sections.createAnatomy(volume);
+  sections.setWindow(90, 180);
+  atlas.setMriAnatomy(sections.anatomy);
+  const ray = new Raycaster(new Vector3(.03, 0, .1), new Vector3(0, 0, -1));
+  atlas.select('a-right');
+  atlas.setSurfaceColor('mri');
+  assert.equal(atlas.pick(ray).id, 'a-right');
+  assert.equal(atlas.state.selectedRegion.id, 'a-right');
+  await atlas.setAtlas('b');
+  for (const mesh of atlas.visibleMeshes) {
+    const shader = { uniforms: {}, vertexShader: '#include <begin_vertex>',
+      fragmentShader: '#include <opaque_fragment>' };
+    mesh.material.onBeforeCompile(shader);
+    assert.equal(shader.uniforms.scanEnabled.value, true);
+    assert.equal(shader.uniforms.scanVolume.value, sections.anatomy.texture);
+  }
+  atlas.setSurfaceColor('tissue');
+  assert.equal(sections.anatomy.mriUniforms.scanEnabled.value, false);
+  sections.dispose();
+  atlas.dispose();
+});
 
 const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 

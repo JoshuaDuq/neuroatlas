@@ -11,6 +11,14 @@ const base = {
 };
 const settings = (over = {}) => ({ ...base, ...over });
 
+test('unregistered reference anatomy is unavailable in MRI appearance', () => {
+  const cord = region({ atlas: 'zanatomy', kind: 'structure', supplemental: true,
+    mri_registered: false });
+  assert.deepEqual(visibilityOf(cord, settings({ surfaceColor: 'mri' })),
+    { visible: false, reason: 'no-mri' });
+  assert.equal(visibilityOf(cord, settings({ surfaceColor: 'tissue' })).visible, true);
+});
+
 test('a cortical region of the active atlas is visible by default', () => {
   assert.deepEqual(visibilityOf(region(), settings()), { visible: true, reason: null });
 });

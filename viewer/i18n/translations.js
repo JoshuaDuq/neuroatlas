@@ -13,6 +13,7 @@ export const TRANSLATIONS = {
       capitalized: { left: 'Left', right: 'Right', midline: 'Midline' },
     },
     reasons: {
+      'no-mri': 'not part of the MRI scan',
       hemisphere: 'hemisphere hidden',
       'cortex-hidden': 'cortex off',
       'internal-hidden': 'internal anatomy off',
@@ -140,6 +141,7 @@ export const TRANSLATIONS = {
       statusFull: 'Full brain · no cut',
       statusPreparing: 'Preparing anatomy…',
       statusActive: (offset, label) => `Tissue cut at ${offset} mm · 1 mm · ${label}`,
+      statusMri: (offset, label) => `MRI cut at ${offset} mm · 1 mm source · ${label}`,
       networkByRegion: 'networks by each region’s dominant share',
       hcpDerived: 'derived HCP labels',
       destrieuxNative: 'native Destrieux labels',
@@ -162,11 +164,13 @@ export const TRANSLATIONS = {
       // full sense is on the title, which is where a reader looks for it.
       surfaceColors: {
         tissue: 'Tissue',
+        mri: 'MRI',
         atlas: 'Regions',
         network: 'Networks',
       },
       surfaceColorTitles: {
         tissue: 'Tissue appearance',
+        mri: 'Registered T1 MRI · grayscale with region highlighting',
         atlas: 'Atlas region colours',
         network: 'Functional networks (Yeo 7)',
       },
@@ -259,6 +263,7 @@ export const TRANSLATIONS = {
       capitalized: { left: 'Gauche', right: 'Droite', midline: 'Ligne médiane' },
     },
     reasons: {
+      'no-mri': 'hors du volume IRM',
       hemisphere: 'hémisphère masqué',
       'cortex-hidden': 'cortex masqué',
       'internal-hidden': 'anatomie interne masquée',
@@ -386,6 +391,7 @@ export const TRANSLATIONS = {
       statusFull: 'Cerveau entier · aucune coupe',
       statusPreparing: 'Préparation de l’anatomie…',
       statusActive: (offset, label) => `Coupe tissulaire à ${offset} mm · 1 mm · étiquettes ${label}`,
+      statusMri: (offset, label) => `Coupe IRM à ${offset} mm · source 1 mm · étiquettes ${label}`,
       networkByRegion: 'réseaux par part dominante de chaque région',
       hcpDerived: 'HCP dérivées',
       destrieuxNative: 'Destrieux natives',
@@ -406,11 +412,13 @@ export const TRANSLATIONS = {
       surfaceColor: 'Couleur de surface',
       surfaceColors: {
         tissue: 'Tissu',
+        mri: 'IRM',
         atlas: 'Régions',
         network: 'Réseaux',
       },
       surfaceColorTitles: {
         tissue: 'Aspect des tissus',
+        mri: 'IRM T1 recalée · niveaux de gris et surbrillance des régions',
         atlas: 'Couleurs des régions de l’atlas',
         network: 'Réseaux fonctionnels (Yeo 7)',
       },

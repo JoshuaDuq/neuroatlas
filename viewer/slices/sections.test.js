@@ -53,6 +53,33 @@ function fixture() {
   };
 }
 
+test('a later appearance choice wins while MRI is loading', async () => {
+  const { model, tissues, sections } = fixture();
+  let finish;
+  tissues.loadAnatomy = () => new Promise(resolve => { finish = resolve; });
+  model.setSurfaceColor = mode => { model.state.surfaceColor = mode; };
+  model.setMriAnatomy = () => {};
+  const pending = sections.setSurfaceColor('mri');
+  await sections.setSurfaceColor('tissue');
+  finish();
+  await pending;
+  assert.equal(model.state.surfaceColor, 'tissue');
+  sections.dispose();
+});
+
+test('window changes reach the MRI renderer as well as the linked slices', () => {
+  const { sections, tissues } = fixture();
+  sections.display = { windowCenter: 90, windowWidth: 180 };
+  let window;
+  tissues.setWindow = (center, width) => { window = [center, width]; };
+  sections.setWindow(100, 120);
+  assert.deepEqual(window, [100, 120]);
+  assert.equal(sections.display.windowCenter, 100);
+  assert.equal(sections.display.windowWidth, 120);
+  assert.throws(() => sections.setWindow(100, 0), RangeError);
+  sections.dispose();
+});
+
 test('GPU cut plane preserves fractional coordinates and reverse-side clipping', async () => {
   const { sections, model } = fixture();
   await sections.setMode('coronal');

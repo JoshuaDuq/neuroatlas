@@ -364,6 +364,7 @@ export async function startApp() {
 
   /** Undo whatever is hiding a region, then select it after loading completes. */
   async function reveal(reason, id) {
+    if (reason === 'no-mri') await sections.setSurfaceColor('tissue');
     if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
     if (reason === 'internal-hidden') model.setInternalVisible(true);
     if (reason === 'spinal-cord-hidden') model.setSpinalCordVisible(true);
@@ -392,8 +393,16 @@ export async function startApp() {
     anatomy: model.manifest.anatomy,
     anatomies,
     onAtlas: setAtlas,
-    onSurfaceColor: value => display(() => model.setSurfaceColor(value)),
-    onTheme: () => { theme.toggle(); session.setTheme(theme.current); render(); },
+    onSurfaceColor: value => sections.setSurfaceColor(value).catch(error => {
+      session.notify(error.message);
+      render();
+    }),
+    onTheme: () => {
+      theme.toggle();
+      sections.applyTheme();
+      session.setTheme(theme.current);
+      render();
+    },
     onLang: setLang,
     // Another brain is another set of assets, so this re-enters through the
     // URL rather than mutating the model in place. The rest of the state rides
@@ -668,6 +677,7 @@ export async function startApp() {
     document.documentElement.lang = state.lang;
     root.dataset.status = state.status;
     const visibleCount = catalog.visibleCount(state);
+    scene.setMriAppearance(state.surfaceColor === 'mri');
 
     header.update(state, { visibleCount });
     navigator.update(state);
@@ -919,7 +929,7 @@ export async function startApp() {
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
   // A shared link may name a layer this build does not carry.
   if (wanted.surfaceColor && (wanted.surfaceColor !== 'network' || model.manifest.networks)) {
-    model.setSurfaceColor(wanted.surfaceColor);
+    await sections.setSurfaceColor(wanted.surfaceColor);
   }
   if (wanted.cutAtlas) setCutAtlas(wanted.cutAtlas);
   if (wanted.detail) await setDetail(wanted.detail);

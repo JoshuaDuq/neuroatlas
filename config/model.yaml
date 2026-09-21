@@ -419,5 +419,6 @@ validation:
 sections:
   field_of_view_mm: 256
   texture_size: 512
-  window_center: 90
-  window_width: 180
+  # No window here on purpose: it is measured per subject from the segmented
+  # voxels at build time, because orig.mgz carries no common intensity scale.
+  # The viewer's own contrast sliders start from whatever the build published.

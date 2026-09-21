@@ -12,6 +12,81 @@ import { createWhiteMatter } from './white-matter.js';
 
 const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 
+test('MRI uses smooth solids for every atlas and keeps cap picking and highlights', () => {
+  const { sections, model, layer, region } = fixture();
+  const source = new Mesh(new BoxGeometry(.01, .01, .01),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.userData = { hemisphere: 'left', region_id: region.id };
+  addSolidSources(sections.solids, [source], sections.anatomy, appearance, BANDS.structure);
+  const texture = sections.anatomy.texture;
+  const positions = source.geometry.attributes.position.array.slice();
+  model.state.surfaceColor = 'mri';
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  assert.equal(sections.solids.group.visible, true);
+  assert.equal(layer.mesh.visible, false);
+  const ray = new Raycaster(new Vector3(0, 0, -.1), new Vector3(0, 0, 1));
+  assert.equal(sections.intersect(ray)?.region.id, region.id);
+  sections.setHighlight({ hovered: region.id });
+  assert.equal(sections.solids.solids[0].cap.material.userData.highlightLift.value,
+    HIGHLIGHT_LIFT.hovered);
+  sections.setHighlight({});
+  assert.equal(sections.solids.solids[0].cap.material.userData.highlightLift.value, 0);
+  assert.equal(sections.anatomy.texture, texture);
+  assert.deepEqual(source.geometry.attributes.position.array, positions);
+  sections.dispose();
+});
+
+test('MRI cut-only labels highlight and isolate inside smooth envelopes', () => {
+  const { sections, model, layer, region } = fixture();
+  const source = new Mesh(new BoxGeometry(.01, .01, .01),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.userData = { hemisphere: 'left', boundary: 'pial' };
+  addSolidSources(sections.solids, [source], sections.anatomy, appearance, BANDS.envelope);
+  model.state.surfaceColor = 'mri';
+  model.state.isolatedRegion = region.id;
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  assert.equal(sections.solids.solids[0].group.visible, true);
+  assert.equal(layer.mesh.visible, false);
+  sections.setHighlight({ hovered: region.id });
+  const shader = { uniforms: {}, vertexShader: '#include <begin_vertex>',
+    fragmentShader: '#include <color_fragment>\n#include <opaque_fragment>' };
+  sections.solids.solids[0].cap.material.onBeforeCompile(shader);
+  assert.equal(shader.uniforms.capLabelsEnabled.value, true);
+  assert.equal(shader.uniforms.capLabelVolume.value, layer.texture);
+  assert.equal(shader.uniforms.capHighlightCodes.value, layer.uniforms.highlightCodes.value);
+  const ray = new Raycaster(new Vector3(.0002, .0002, -.1), new Vector3(0, 0, 1));
+  assert.equal(sections.intersect(ray)?.region.id, region.id);
+  model.state.isolatedRegion = 'another-region';
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  assert.equal(sections.intersect(ray), null);
+  sections.dispose();
+});
+
+test('a cut-only MRI atlas retains the displayed structure identity and isolation', () => {
+  const { sections, model, region } = fixture();
+  const nucleus = { id: 'learning:left:nucleus', kind: 'structure', atlas: 'learning',
+    hemisphere: 'left', source_name: 'Nucleus' };
+  model.regions.set(nucleus.id, nucleus);
+  model.state.detail = 'learning';
+  const source = new Mesh(new BoxGeometry(.01, .01, .01),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.userData = { ...nucleus, region_id: nucleus.id, detail: 'learning' };
+  addSolidSources(sections.solids, [source], sections.anatomy, appearance, BANDS.structure);
+  model.state.surfaceColor = 'mri';
+  model.state.isolatedRegion = nucleus.id;
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  const cap = sections.solids.solids[0];
+  assert.equal(cap.group.visible, true);
+  const ray = new Raycaster(new Vector3(.0002, .0002, -.1), new Vector3(0, 0, 1));
+  assert.equal(sections.intersect(ray)?.region.id, nucleus.id);
+  assert.equal(cap.cap.material.userData.sampledLabels.value, false);
+  model.state.isolatedRegion = region.id;
+  sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  assert.equal(cap.cap.material.userData.sampledLabels.value, true);
+  assert.equal(sections.intersect(ray)?.region.id, region.id);
+  sections.dispose();
+});
+
 function fixture() {
   const region = { id: 'destrieux:left:1' };
   const labels = [

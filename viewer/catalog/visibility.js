@@ -44,6 +44,7 @@ export function internalSystemAllows(region, settings) {
  */
 export function visibilityOf(region, settings) {
   const hidden = reason => ({ visible: false, reason });
+  if (settings.surfaceColor === 'mri' && region.mri_registered === false) return hidden('no-mri');
   // A region can be drawn as geometry, as a cut label, or both. A structure the
   // inactive detail level owns is still on screen while the cut is painting it.
   const onCut = region.atlas === settings.cutAtlas && settings.cutActive;

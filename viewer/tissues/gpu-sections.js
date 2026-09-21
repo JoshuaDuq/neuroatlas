@@ -30,6 +30,11 @@ import {
   loadStructureSources, loadSupplementalSources, paintSolids,
 } from './solid-assets.js';
 import { createWhiteMatter } from './white-matter.js';
+import {
+  addMriAppearance, createMriUniforms, setMriHighlight, setMriWindow,
+} from '../render/mri-material.js';
+import { token } from '../state/theme.js';
+import { createCapLabels, updateCapLabels } from './cap-labels.js';
 
 /** One persistent GPU plane reads categorical tissue IDs from the native 3D grid. */
 export class TissueSections {
@@ -95,6 +100,7 @@ export class TissueSections {
         throw new Error('Tissue sections disposed during MRI loading.');
       }
       this.anatomy = this.createAnatomy(volume);
+      this.setWindow(metadata.display.window_center, metadata.display.window_width);
       this.whiteMatter = parcelVolume && createWhiteMatter(parcels, parcelVolume);
       this.envelopes = sources;
       addSolidSources(
@@ -138,7 +144,27 @@ export class TissueSections {
     texture.magFilter = LinearFilter;
     texture.unpackAlignment = 1;
     texture.needsUpdate = true;
-    return { texture, volume, worldToVoxel: worldToVoxelMatrix(volume) };
+    const anatomy = { texture, volume, worldToVoxel: worldToVoxelMatrix(volume) };
+    anatomy.mriUniforms = createMriUniforms(anatomy);
+    anatomy.capLabels = createCapLabels();
+    this.markWith(anatomy.mriUniforms);
+    return anatomy;
+  }
+
+  /**
+   * Which colour marks a pointed-at or chosen cut face.
+   *
+   * The scan is achromatic, so the mark is the theme's one accent rather than
+   * a lift toward white, which bright tissue would drown. Called again when
+   * the theme changes, because the two palettes name different accents.
+   */
+  markWith(uniforms = this.anatomy?.mriUniforms) {
+    const accent = token('--accent');
+    if (uniforms && accent) setMriHighlight(uniforms, accent);
+  }
+
+  setWindow(center, width) {
+    if (this.anatomy) setMriWindow(this.anatomy.mriUniforms, center, width);
   }
 
   /** Load one named label volume. The caller owns which atlas the cut samples. */
@@ -203,6 +229,7 @@ export class TissueSections {
       highlightLifts: { value: new Vector2(0, 0) },
     };
     const material = createCutMaterial(uniforms, tissue);
+    addMriAppearance(material, this.anatomy.mriUniforms, 'lift');
     const mesh = new Mesh(new PlaneGeometry(0.5, 0.5), material);
     mesh.name = 'Native labelled tissue cut';
     mesh.visible = false;
@@ -222,7 +249,10 @@ export class TissueSections {
     const state = this.model.state;
     // A cut-only atlas has no surface to cut parcels out of, so its published
     // colours still have to come from the label volume and its 1 mm steps.
-    const solid = layer.wedged || state.surfaceColor === 'tissue';
+    const mri = state.surfaceColor === 'mri';
+    this.anatomy.mriUniforms.scanEnabled.value = mri;
+    updateCapLabels(this.anatomy.capLabels, layer, state);
+    const solid = layer.wedged || state.surfaceColor === 'tissue' || mri;
     const supplemental = this.solids.solids.some(entry => entry.source.userData.supplemental);
     this.solids.group.visible = solid || supplemental;
     this.whiteMatter?.update({ atlas, isolatedRegion: state.isolatedRegion });
@@ -303,6 +333,13 @@ export class TissueSections {
     const hit = cap ?? sampled;
     const solid = Boolean(cap);
     if (!hit) return null;
+    if (cap?.object.material.userData.sampledLabels.value) {
+      const code = this.current.volume.nearest(worldToRas(hit.point));
+      const label = this.current.metadata.labels[code];
+      const visible = label && labelVisible(label, this.model.state, { regions: this.model.regions });
+      if (!visible && (code !== 0 || this.model.state.isolatedRegion)) return null;
+      return { ...hit, region: visible ? this.model.regions.get(label.region_id) ?? null : null, label };
+    }
     // A cap was drawn from its own geometry, and only the atlas's own labels
     // are on the 1 mm grid: resampling it under a nucleus answers with
     // whatever the segmentation put there, which is a different detail
