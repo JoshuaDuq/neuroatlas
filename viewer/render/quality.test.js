@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+
+test('MRI preserves native display pixels even on an integrated GPU', () => {
+  const quality = qualityProfile({ integrated: true, pixelRatio: 2 });
+  assert.equal(quality.pixelRatio, 1.5);
+  assert.equal(quality.mriPixelRatio, 2);
+});
 import { qualityProfile } from './quality.js';
 
 test('a phone caps pixel ratio at 1.5 and reduces MSAA', () => {

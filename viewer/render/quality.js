@@ -19,6 +19,7 @@ export function qualityProfile(input = {}) {
   const constrained = handheld || saveData || deviceMemory <= 4;
   const fillBound = constrained || integrated;
   return {
+    mriPixelRatio: pixelRatio,
     pixelRatio: input.pixelRatio !== undefined
       ? Math.min(pixelRatio, handheld || integrated ? 1.5 : 2)
       : pixelRatioCap(integrated),

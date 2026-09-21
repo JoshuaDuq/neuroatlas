@@ -2,6 +2,7 @@
 
 import gzip
 import hashlib
+import math
 
 import nibabel as nib
 import numpy as np
@@ -89,6 +90,29 @@ def encode_array(data, affine, spacing, path, dtype):
     }
 
 
+def display_window(mri, labels, ceiling=99.9):
+    """The default contrast window, measured from the tissue the viewer draws.
+
+    orig.mgz is conformed but not intensity normalised, so white matter sits
+    wherever the scanner left it — 164 in bert, 176 in the AOMIC subject. One
+    constant ceiling clipped half of the brighter subject's white matter to
+    flat white, which is measured signal thrown away.
+
+    The floor stays at zero so displayed grey is proportional to T1 signal:
+    a raised floor would buy contrast by adding an offset, and surfaces and
+    cut faces would no longer report the same tissue at the same grey. Only
+    the ceiling is fitted, high enough to leave the bright tail intact.
+    """
+    signal = np.asarray(mri.dataobj)[np.asarray(labels.dataobj) != 0]
+    if not signal.size:
+        raise ValueError("Segmentation covers no voxels; cannot measure a window.")
+    # Even, so the window runs from exactly zero to an integer ceiling.
+    high = 2 * math.ceil(float(np.percentile(signal, ceiling)) / 2)
+    if high <= 0:
+        raise ValueError("Source MRI has no dynamic range inside the segmentation.")
+    return {"window_center": high // 2, "window_width": high}
+
+
 def reference_grid(config):
     image = nib.load(config["source_directory"] / "mri/aseg.mgz")
     return image.header.get_vox2ras_tkr()
@@ -123,7 +147,7 @@ def export_volumes(config):
             str(label): {"name": table[label][0], "color": table[label][1]}
             for label in present
         },
-        "display": config["sections"],
+        "display": {**config["sections"], **display_window(mri, labels)},
         "limitations": [
             "One individual's 1 mm MRI and segmentation; not the viewer's anatomy."
             if config["anatomy"]["individual"]

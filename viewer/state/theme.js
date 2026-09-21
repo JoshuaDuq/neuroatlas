@@ -1,5 +1,9 @@
 const STORAGE_KEY = 'neuroatlas.theme';
 
+/** A CSS custom property's current value; the token layer owns both palettes. */
+export const token = name => (typeof document === 'undefined' ? ''
+  : getComputedStyle(document.documentElement).getPropertyValue(name).trim());
+
 
 /**
  * Light or dark, stored per reader.

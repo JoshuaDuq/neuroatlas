@@ -344,7 +344,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     // `state` in this function is the cut's own state; the surface mode is on
     // the app state, which some callers do not pass at all.
     const byNetwork = appState?.surfaceColor === 'network';
-    const activeStatus = cutsI18n.statusActive(offset.toFixed(1), atlasLabel)
+    const describeCut = appState?.surfaceColor === 'mri' ? cutsI18n.statusMri : cutsI18n.statusActive;
+    const activeStatus = describeCut(offset.toFixed(1), atlasLabel)
       + (byNetwork ? ` · ${cutsI18n.networkByRegion}` : '');
     status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
       : state.error || (sections.active ? activeStatus : cutsI18n.statusFull);

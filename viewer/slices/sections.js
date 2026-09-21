@@ -39,6 +39,7 @@ export class BrainSections extends EventTarget {
     this.pending = null;
     this.disposed = false;
     this.requestNumber = 0;
+    this.appearanceRequest = 0;
     this.clipPlane = new Plane();
     this.state = {
       mode: 'off',
@@ -128,6 +129,7 @@ export class BrainSections extends EventTarget {
           windowCenter: d.window_center,
           windowWidth: d.window_width,
         };
+        this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
         this.state.status = 'ready';
         this.state.error = null;
         this.emit();
@@ -157,6 +159,28 @@ export class BrainSections extends EventTarget {
       loaded = this.state.cutAtlas;
       await this.tissues.load(loaded);
     }
+    if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
+  }
+
+  async setSurfaceColor(mode) {
+    const request = ++this.appearanceRequest;
+    if (mode === 'mri') {
+      this.state.status = 'loading';
+      this.emit();
+      try {
+        await this.tissues.loadAnatomy();
+      } catch (error) {
+        if (request === this.appearanceRequest && !this.disposed) this.report(error);
+        throw error;
+      }
+      if (request !== this.appearanceRequest || this.disposed) return;
+      if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
+      this.model.setMriAnatomy(this.tissues.anatomy);
+    }
+    this.model.setSurfaceColor(mode);
+    this.state.status = 'ready';
+    this.state.error = null;
+    this.emit();
   }
 
   async setMode(mode) {
@@ -238,12 +262,18 @@ export class BrainSections extends EventTarget {
     else this.emit();
   }
 
+  /** Re-read the accent that marks a chosen cut face. */
+  applyTheme() {
+    this.tissues.markWith();
+  }
+
   setWindow(center, width) {
     if (!this.display || !Number.isFinite(center) || !Number.isFinite(width) || width <= 0) {
       throw new RangeError('MRI window requires a finite center and positive width.');
     }
     this.display.windowCenter = center;
     this.display.windowWidth = width;
+    this.tissues.setWindow(center, width);
     this.emit();
   }
 

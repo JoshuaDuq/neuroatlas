@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { decodeState, encodeState } from './url-state.js';
 
+test('MRI appearance survives a shared URL', () => {
+  assert.deepEqual(decodeState(encodeState({ surfaceColor: 'mri' })), { surfaceColor: 'mri' });
+});
+
 test('a default view produces a bare URL carrying only the atlas', () => {
   assert.equal(encodeState({
     atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,

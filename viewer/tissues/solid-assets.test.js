@@ -32,6 +32,7 @@ const STATE = {
 function solid(userData) {
   const material = new MeshBasicMaterial();
   material.userData.tissueVariation = { value: 0 };
+  material.userData.sampledLabels = { value: false };
   return { source: { userData }, cap: { material }, visible: true };
 }
 

@@ -8,6 +8,7 @@ import { combineProgress } from './progress.js';
 import { REVALIDATE_HEADER } from './published-assets.js';
 import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 import { attachNetworkColors } from '../render/network-colors.js';
+import { addMriAppearance } from '../render/mri-material.js';
 
 function asOptions(onProgressOrOptions) {
   if (typeof onProgressOrOptions === 'function') return { onProgress: onProgressOrOptions };
@@ -22,7 +23,7 @@ function asOptions(onProgressOrOptions) {
  * are one setting rather than several toggles because the surface can only
  * show one of them at a time.
  */
-export const SURFACE_COLORS = ['tissue', 'atlas', 'network'];
+export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network'];
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -130,6 +131,7 @@ export class BrainAtlas extends EventTarget {
     this.internalVisible = true;
     this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
+    this.mriUniforms = null;
     this.sourceColors = new WeakMap();
     this.selectedId = null;
     this.isolatedId = null;
@@ -210,6 +212,7 @@ export class BrainAtlas extends EventTarget {
             attachNetworkColors(mesh.geometry, this.manifest.networks);
           }
           mesh.material = createAnatomicalMaterial(mesh, region, this.manifest.appearance);
+          if (this.mriUniforms) addMriAppearance(mesh.material, this.mriUniforms);
           this.sourceColors.set(mesh, mesh.material.color.clone());
           // Region meshes never move after load. Skipping per-frame matrix
           // updates is free on 400+ nuclei.
@@ -314,6 +317,8 @@ export class BrainAtlas extends EventTarget {
 
   update() {
     const settings = this.settings;
+    const mri = this.surfaceColor === 'mri';
+    if (this.mriUniforms) this.mriUniforms.scanEnabled.value = mri;
     for (const [id, layer] of this.layers) {
       layer.scene.visible = id === this.detailId || id === this.atlasId ||
         (this.manifest.supplemental_layers ?? []).some(entry => entry.id === id);
@@ -491,11 +496,23 @@ export class BrainAtlas extends EventTarget {
     if (!SURFACE_COLORS.includes(mode)) {
       throw new TypeError(`Unknown surface colour: ${mode}`);
     }
+    if (mode === 'mri' && !this.mriUniforms) {
+      throw new Error('MRI must load before selecting MRI appearance.');
+    }
     if (mode === 'network' && !this.manifest.networks) {
       throw new Error('This model carries no network layer.');
     }
     this.surfaceColor = mode;
     this.update();
+  }
+
+  setMriAnatomy(anatomy) {
+    if (this.mriUniforms === anatomy.mriUniforms) return;
+    if (this.mriUniforms) throw new Error('MRI anatomy is already attached.');
+    this.mriUniforms = anatomy.mriUniforms;
+    for (const layer of this.layers.values()) {
+      for (const mesh of layer.meshes) addMriAppearance(mesh.material, this.mriUniforms);
+    }
   }
 
   isolate() {

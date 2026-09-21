@@ -8,7 +8,7 @@ import nibabel as nib
 import numpy as np
 
 from .sources import read_color_table, sha256
-from .volumes import offset_by, place_crop
+from .volumes import display_window, offset_by, place_crop
 
 
 def validate_record(config, record, source_name):
@@ -76,6 +76,9 @@ def validate_volumes(config):
     }
     if metadata["labels"] != expected:
         raise ValueError("Volume label names or colors differ from the source LUT.")
-    if metadata["display"] != config["sections"]:
+    window = display_window(
+        nib.load(config["source_directory"] / "mri" / "orig.mgz"), image
+    )
+    if metadata["display"] != {**config["sections"], **window}:
         raise ValueError("Volume display metadata differs from build configuration.")
     return report

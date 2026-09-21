@@ -1,8 +1,9 @@
 import {
-  ACESFilmicToneMapping, Color, HalfFloatType,
+  ACESFilmicToneMapping, NoToneMapping, Color, HalfFloatType,
   PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { token } from '../state/theme.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
@@ -18,10 +19,6 @@ const easeInOut = t => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 const prefersReducedMotion = () =>
   globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-
-/** Read a scene colour from the CSS token layer, the single source of truth. */
-const token = name =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 /**
  * The renderer, its passes, and the camera transition.
@@ -53,6 +50,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   scene.add(camera);
   let lighting = null;
+  let mriAppearance = false;
 
   const controls = new OrbitControls(camera, renderer.domElement);
   // The anatomy is draggable and said so only once a pointer had moved over
@@ -130,6 +128,13 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     invalidate();
   }
 
+  function setMriAppearance(active) {
+    if (mriAppearance === active) return;
+    mriAppearance = active;
+    renderer.toneMapping = active ? NoToneMapping : ACESFilmicToneMapping;
+    setSize();
+  }
+
   /** The canvas rectangle the interface leaves uncovered. */
   function measureVisible() {
     const { width, height } = host.getBoundingClientRect();
@@ -159,8 +164,11 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   function setSize() {
     const { width, height } = host.getBoundingClientRect();
     if (!width || !height) return;
-    const ratio = quality.pixelRatio;
-    if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
+    const ratio = mriAppearance ? quality.mriPixelRatio : quality.pixelRatio;
+    if (renderer.getPixelRatio() !== ratio) {
+      renderer.setPixelRatio(ratio);
+      composer.setPixelRatio(ratio);
+    }
     renderer.setSize(width, height);
     composer.setSize(width, height);
     camera.aspect = width / height;
@@ -306,6 +314,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       composer.render();
       return renderer.domElement.toDataURL('image/png');
     },
+
+    setMriAppearance,
 
     dispose() {
       renderer.setAnimationLoop(null);

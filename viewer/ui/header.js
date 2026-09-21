@@ -7,7 +7,7 @@ const switchProgress = (progress, lang) => {
   return progress?.total ? i18n.loadingProgress(progress) : i18n.loadingAtlas;
 };
 
-const SURFACE_MODES = ['tissue', 'atlas', 'network'];
+const SURFACE_MODES = ['tissue', 'mri', 'atlas', 'network'];
 
 /** Short name for the identity switch: the specimen, not the reconstruction title. */
 export function anatomySwitchLabel(entry) {
