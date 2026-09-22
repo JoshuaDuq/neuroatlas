@@ -95,10 +95,12 @@ export class BrainAtlas extends EventTarget {
     };
     const model = new BrainAtlas(manifest, loader);
     try {
-      const known = id => model.manifest.detail_levels.some(level => level.id === id);
-      await model.initialize(atlasId, {
+      // A link may name a layer this build no longer publishes; it falls back
+      // to the defaults rather than leaving the reader a dead page.
+      const known = (entries, id) => entries.some(entry => entry.id === id);
+      await model.initialize(known(manifest.atlases, atlasId) ? atlasId : undefined, {
         ...options,
-        detail: known(options.detail) ? options.detail : undefined,
+        detail: known(manifest.detail_levels, options.detail) ? options.detail : undefined,
       });
       return model;
     } catch (error) {

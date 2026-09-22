@@ -107,8 +107,11 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     if (menu.contains(event.target) || moreButton.contains(event.target)) return;
     closeMenu();
   };
+  // Marked handled: the app's own Escape would otherwise go on to clear the selection.
   const onEscape = event => {
-    if (event.key === 'Escape' && menuQuery.matches && !menu.hidden) closeMenu();
+    if (event.key !== 'Escape' || !menuQuery.matches || menu.hidden) return;
+    event.preventDefault();
+    closeMenu();
   };
   // A setting chosen from the menu has been applied; leaving it open hides
   // the anatomy the reader just changed.

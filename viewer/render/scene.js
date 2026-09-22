@@ -282,7 +282,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     /**
      * Declare how much of the canvas the interface covers. Reported upward as
      * a resize, because everything derived from the viewport — framing, the
-     * reticle, the markers, the presets — is stale the moment it changes.
+     * markers, the presets — is stale the moment it changes.
      */
     setChromeInsets(next) {
       const merged = { top: 0, right: 0, bottom: 0, left: 0, ...next };

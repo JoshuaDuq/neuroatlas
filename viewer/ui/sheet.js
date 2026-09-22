@@ -80,18 +80,22 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   }
 
   /**
-   * Tell the renderer how much of the canvas is covered, so framing, the
-   * reticle and the viewport chrome all agree about where the viewport is.
+   * Tell the renderer how much of the canvas is covered, so framing and the
+   * viewport chrome agree about where the viewport is.
+   *
+   * The target span is reported, not the box: mid-transition the box is still
+   * moving, and the framing that follows a detent change has to fit where the
+   * sheet will land. Upright peek is the exception — it hugs the grip, so its
+   * height is only known by measuring.
    */
   function report(pixels) {
     if (!phone) {
       onInsets?.({ top: 0, right: 0, bottom: 0, left: 0 });
       return;
     }
-    const rect = sheet.getBoundingClientRect();
-    const span = isSideways()
-      ? (rect.width || pixels)
-      : (rect.height || pixels);
+    const span = !isSideways() && detent === 'peek'
+      ? sheet.getBoundingClientRect().height || pixels
+      : pixels;
     onInsets?.(isSideways()
       ? { top: 0, right: 0, bottom: 0, left: span }
       : { top: 0, right: 0, bottom: span, left: 0 });
@@ -194,6 +198,12 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   handle.addEventListener('click', onHandle);
   selection.addEventListener('click', onSelection);
 
+  // The grip is sized by its text, which arrives after setup; peek follows it.
+  const observer = globalThis.ResizeObserver ? new ResizeObserver(() => {
+    if (phone && detent === 'peek' && !press?.dragging) report(heights().peek);
+  }) : null;
+  observer?.observe(grip);
+
   // ---- mode -------------------------------------------------------------
 
   /** Hand the rails back to the grid, and the panels to the inspector tabs. */
@@ -276,6 +286,7 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
     },
 
     dispose() {
+      observer?.disconnect();
       grip.removeEventListener('pointerdown', onPointerDown);
       globalThis.removeEventListener('pointermove', onPointerMove);
       globalThis.removeEventListener('pointerup', onPointerUp);

@@ -135,7 +135,8 @@ export async function startApp() {
     change();
     if (had && !model.state.selectedRegion) {
       const state = session.assemble(model.state);
-      session.notify(t(state.lang, 'app').selectionCleared(had.label ?? 'region'));
+      const name = catalog.get(had.id)?.label.name ?? had.label;
+      session.notify(t(state.lang, 'app').selectionCleared(name));
     }
     render();
   }
@@ -292,15 +293,16 @@ export async function startApp() {
       scene.viewportFit));
   }
 
+  /** Open the tree branch that holds a region, so a selection is never out of sight. */
+  function revealInTree(id) {
+    const current = session.assemble(model.state);
+    const group = catalog.groups(current).find(g => g.rows.some(r => r.region.id === id));
+    if (group && !current.expanded.has(group.key)) session.toggleGroup(group.key);
+  }
+
   function select(id) {
     model.select(id);
-    if (id) {
-      const current = session.assemble(model.state);
-      const group = catalog.groups(current).find(g => g.rows.some(r => r.region.id === id));
-      if (group && !current.expanded.has(group.key)) {
-        session.toggleGroup(group.key);
-      }
-    }
+    if (id) revealInTree(id);
     render();
     if (id) sheet?.revealOnSelect();
   }
@@ -455,6 +457,7 @@ export async function startApp() {
   const inspector = createInspector({
     catalog,
     networks: model.manifest.networks,
+    regions: model.manifest.regions,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
     centroidOf: id => model.centroidOf(id),
@@ -853,6 +856,8 @@ export async function startApp() {
     }
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.key === 'Escape') {
+      // The dialog closes itself; the selection under it is not the target.
+      if (shortcuts.isOpen) return;
       if (document.activeElement === document.getElementById('search')) {
         session.setQuery('');
         render();
@@ -927,18 +932,25 @@ export async function startApp() {
   if (wanted.internalVisible !== undefined) model.setInternalVisible(wanted.internalVisible);
   if (wanted.spinalCordVisible !== undefined) model.setSpinalCordVisible(wanted.spinalCordVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
-  // A shared link may name a layer this build does not carry.
-  if (wanted.surfaceColor && (wanted.surfaceColor !== 'network' || model.manifest.networks)) {
-    await sections.setSurfaceColor(wanted.surfaceColor);
+  // A shared link is input, not a contract: a layer or system this build no
+  // longer carries is dropped, and the reader gets the default view of it.
+  const restore = async step => {
+    try { await step(); } catch (error) { console.warn('Ignored link state:', error.message); }
+  };
+  if (wanted.surfaceColor) await restore(() => sections.setSurfaceColor(wanted.surfaceColor));
+  const publishes = (entries, id) => entries.some(entry => entry.id === id);
+  if (publishes(model.manifest.cut_atlases, wanted.cutAtlas)) setCutAtlas(wanted.cutAtlas);
+  // An unknown level would otherwise be reported as a failed download.
+  if (publishes(model.manifest.detail_levels, wanted.detail)) {
+    await restore(() => setDetail(wanted.detail));
   }
-  if (wanted.cutAtlas) setCutAtlas(wanted.cutAtlas);
-  if (wanted.detail) await setDetail(wanted.detail);
-  if (wanted.internalSystem) model.setInternalSystem(wanted.internalSystem);
+  if (wanted.internalSystem) await restore(() => model.setInternalSystem(wanted.internalSystem));
   if (wanted.cortexVisible === false) frameCurrent({ immediate: true });
   if (wanted.view) applyView(wanted.view, { immediate: true });
   if (wanted.selectedRegion && catalog.get(wanted.selectedRegion)) {
     try {
       model.select(wanted.selectedRegion);
+      revealInTree(wanted.selectedRegion);
       // Isolation depends on a selection, so it is restored after one.
       if (wanted.isolatedRegion === wanted.selectedRegion) model.isolate();
     } catch {

@@ -145,8 +145,9 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .panel-body > label:first-child { margin-top: 0; }
 .check { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; }
 .check input { width: 15px; height: 15px; margin: 0; accent-color: var(--text-secondary); }
+/* A slider's reading sits at the end of its label, never on a line of its own. */
+.panel-body label > output { float: right; color: var(--text-tertiary); }
 #opacity { width: 100%; margin: var(--space-1) 0 0; }
-#opacity-value { float: right; color: var(--text-tertiary); }
 
 /*
  * Rank, so six outlined boxes stop reading as six equal choices. One filled
@@ -361,12 +362,17 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 .row[data-hidden="true"] { color: var(--text-tertiary); }
 .row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.row-side { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
-.row-reason { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
+/* The tail never wraps or shrinks; the name gives way instead. */
+.row-side, .row-reason, .group-count {
+  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-size: var(--text-micro);
+}
 .row-indent { padding-left: var(--space-8); }
 
 .group-row { font-weight: 500; }
-.group-count { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
 .disclosure { width: 10px; color: var(--text-tertiary); }
 #tree > .section-label:first-child { border-top: 0; padding-top: var(--space-2); }
 
@@ -405,6 +411,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   font-size: var(--text-ui);
   color: var(--text-secondary);
 }
+.empty + .empty { padding-top: 0; }
 .empty button {
   height: auto;
   margin-top: var(--space-2);
@@ -431,6 +438,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 /* --accent is measured against a rail; on the stage it is the light value. */
 #viewport :focus-visible { outline-color: var(--overlay-accent); }
+/* The canvas fills a clipped box, so its ring is drawn inside the edge or not at all. */
+#viewport canvas:focus-visible { outline-offset: -2px; }
 
 /*
  * Chrome is placed against the rectangle the reader can see, not the canvas.
@@ -443,8 +452,6 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   --vis-right: 0px;
   --vis-bottom: 0px;
   --vis-left: 0px;
-  --vis-cx: 50%;
-  --vis-cy: 50%;
 }
 
 .orientation {
@@ -693,80 +700,6 @@ kbd {
 @media (max-width: 700px) {
   #mpr-grid { grid-template-columns: 1fr; }
   .mpr-display { flex-wrap: wrap; }
-}
-
-/* Reticle ---------------------------------------------------------------- */
-/*
- * The touch replacement for hover. A fingertip covers far more of the canvas
- * than a Destrieux sulcal band, so identification stops being a matter of
- * aim: the reader moves the anatomy under a fixed mark and reads what is
- * under it. Hidden entirely where a cursor exists.
- */
-.reticle {
-  position: absolute;
-  z-index: 2;
-  left: var(--vis-cx);
-  top: var(--vis-cy);
-  width: 44px;
-  height: 44px;
-  margin: -22px 0 0 -22px;
-  pointer-events: none;
-  display: none;
-}
-.reticle-mark, .reticle-mark::before, .reticle-mark::after {
-  position: absolute;
-  background: var(--scene-outline-core);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--scene-outline-halo) 70%, transparent);
-}
-/* A gap at the centre: the mark must not hide the thing it is naming. */
-.reticle-mark {
-  inset: 0;
-  background: none;
-  box-shadow: none;
-}
-.reticle-mark::before {
-  content: "";
-  left: 50%; top: 0;
-  width: 1px; height: 14px;
-  transform: translateX(-50%);
-  box-shadow: 0 30px 0 0 var(--scene-outline-core);
-}
-.reticle-mark::after {
-  content: "";
-  top: 50%; left: 0;
-  height: 1px; width: 14px;
-  transform: translateY(-50%);
-  box-shadow: 30px 0 0 0 var(--scene-outline-core);
-}
-
-.reticle-readout {
-  position: absolute;
-  z-index: 3;
-  left: var(--vis-cx);
-  top: calc(var(--vis-cy) + 34px);
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: auto;
-  min-height: 28px;
-  max-width: 280px;
-  padding: var(--space-1) var(--space-3);
-  pointer-events: auto;
-  cursor: pointer;
-  text-align: left;
-}
-.reticle-readout:hover:not(:disabled) { background: var(--overlay-plate-hover); }
-.reticle-readout[data-empty="true"] { color: var(--overlay-ink-muted); }
-.reticle-readout .reticle-readout-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.reticle-readout .reticle-readout-action {
-  flex: none;
-  color: var(--overlay-accent);
-  font-size: var(--text-micro);
 }
 
 .internal-controls {

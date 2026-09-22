@@ -233,7 +233,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       }
       if (document.activeElement !== search) search.value = state.clinicalQuery;
       introduction.textContent = text.introduction;
-      coverage.textContent = text.coverage;
+      coverage.textContent = text.coverage.replace('{count}', String(clinical.search('', language).length));
       list.setAttribute('aria-label', text.deficits);
 
       const nextListKey = `${language}|${state.clinicalQuery}`;
