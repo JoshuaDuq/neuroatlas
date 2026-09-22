@@ -21,7 +21,7 @@ export const MASTHEAD_MENU_QUERY = '(max-width: 1100px)';
 /** A phone-shaped viewport, in either orientation. */
 export const isPhone = () => globalThis.matchMedia?.(PHONE_QUERY).matches ?? false;
 
-/** A finger rather than a mouse. Drives hit-target size and the reticle. */
+/** A finger rather than a mouse. Drives hit-target size. */
 export const isCoarse = () => globalThis.matchMedia?.('(pointer: coarse)').matches ?? false;
 
 /** A phone held sideways, where the sheet belongs at the side rather than the foot. */

@@ -110,8 +110,7 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
      * Place every overlay against the rectangle the reader can actually see.
      *
      * On a phone the sheet covers the lower canvas; markers pinned to the
-     * canvas edge would sit behind it, and the inferior marker would be
-     * invisible exactly when a reader needs to know which way is down.
+     * canvas edge would sit behind it.
      */
     setViewport(rect) {
       const { width, height } = host.getBoundingClientRect();
@@ -125,21 +124,29 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
       host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
       host.style.setProperty('--vis-right', `${Math.round(width - rect.x - rect.width)}px`);
       host.style.setProperty('--vis-bottom', `${Math.round(height - rect.y - rect.height)}px`);
-      host.style.setProperty('--vis-cx', `${Math.round(rect.x + rect.width / 2)}px`);
-      host.style.setProperty('--vis-cy', `${Math.round(rect.y + rect.height / 2)}px`);
       fitChrome();
     },
 
     update(state) {
-      if (currentLang !== state.lang) cachedPresetsWidth = null;
       currentLang = state.lang;
       const i18nViewport = t(state.lang, 'viewport');
       const viewLabels = t(state.lang, 'views');
       views.setAttribute('aria-label', i18nViewport.viewAria);
 
+      // The presets are measured for the chrome layout, so a relabelling —
+      // the first one included, from empty buttons — invalidates that measure.
+      let relabelled = false;
       for (const button of buttons) {
-        button.textContent = viewLabels[button.dataset.view] ?? button.dataset.view;
+        const label = viewLabels[button.dataset.view] ?? button.dataset.view;
+        if (button.textContent !== label) {
+          button.textContent = label;
+          relabelled = true;
+        }
         button.setAttribute('aria-pressed', String(button.dataset.view === state.view));
+      }
+      if (relabelled) {
+        cachedPresetsWidth = null;
+        fitChrome();
       }
       showLegend(state);
       const ready = state.status === 'ready' || state.status === 'switching';
@@ -208,11 +215,14 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
         if (!wasHidden) fitChrome();
         return;
       }
+      // The bar is as wide as the camera makes it, so the fit is asked again
+      // whenever it changes, not only when it appears.
       const pixels = `${Math.round(measured.pixels)}px`;
-      if (barRule.style.width !== pixels) barRule.style.width = pixels;
       const text = `${measured.millimetres} mm`;
+      const changed = wasHidden || barRule.style.width !== pixels || barText.textContent !== text;
+      if (barRule.style.width !== pixels) barRule.style.width = pixels;
       if (barText.textContent !== text) barText.textContent = text;
-      if (wasHidden) fitChrome();
+      if (changed) fitChrome();
     },
 
     /**

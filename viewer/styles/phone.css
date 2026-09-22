@@ -4,7 +4,7 @@
  * One rule governs it: the anatomy is the product, so the canvas is full
  * bleed and the interface sits over it rather than beside it. The sheet
  * rests at three heights; the renderer is told how much it covers, and
- * framing, the reticle and the viewport chrome all read that one rectangle.
+ * framing and the viewport chrome both read that one rectangle.
  *
  * The query matches a phone in either orientation. A landscape phone is 812
  * by 375, so a max-width alone would hand it the desktop layout — the shape
@@ -207,9 +207,6 @@
   .views::-webkit-scrollbar { display: none; }
   .hover-label { display: none; }
 
-  #reticle { display: block; }
-  .reticle-readout { max-width: min(280px, calc(100% - var(--space-8))); }
-
   /*
    * The presets take the whole bottom line. The scale bar would sit on
    * Bottom there, so it moves to the top left — chips hold the top right
@@ -242,7 +239,10 @@
   }
   #mpr-planes { display: flex; margin-bottom: var(--space-3); }
   #mpr-planes button { flex: 1; min-width: 0; }
+  /* The switch already names the one plane on screen. */
+  #mpr-planes:not([hidden]) ~ #mpr-grid h3 { display: none; }
   #mpr-grid article[hidden] { display: none !important; }
+  #mpr-close { flex: none; white-space: nowrap; }
   .mpr-header { position: sticky; top: 0; background: var(--surface-base); }
   #shortcuts-list { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
   #shortcuts-list dt { margin-top: var(--space-2); }
@@ -289,6 +289,8 @@
     padding-left: max(0px, env(safe-area-inset-left));
   }
   #sheet[data-dragging="false"] { transition: width var(--camera-transition) ease; }
+  /* Upright, peek hugs the grip; sideways the rail runs to the foot of the screen. */
+  #sheet[data-detent="peek"]:not([data-dragging="true"]) { height: auto; }
 
   #sheet-handle { width: 100%; height: 20px; }
   .sheet-handle-bar { width: 28px; }

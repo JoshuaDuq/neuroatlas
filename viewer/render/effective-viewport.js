@@ -8,8 +8,8 @@
  * and the camera is told where the reader can actually see instead.
  *
  * Everything that must agree about "where the viewport is" derives from
- * `visibleRect`: framing, the reticle, the orientation markers, the view
- * presets and the scale bar. One rectangle, one source of truth.
+ * `visibleRect`: framing, the orientation markers, the view presets and the
+ * scale bar. One rectangle, one source of truth.
  *
  * Pure: no DOM, no Three.js.
  */
@@ -28,8 +28,8 @@ export function visibleRect(canvas, insets = {}) {
 
   // A sheet dragged to full height would otherwise leave a zero or negative
   // rectangle, and every consumer would divide by it. A tenth of the canvas
-  // is kept on each axis; the framing stays finite and the reticle stays on
-  // screen even when the reader has covered the model.
+  // is kept on each axis, so the framing stays finite even when the reader
+  // has covered the model.
   const minimum = { x: width * 0.1, y: height * 0.1 };
   const scale = axis => {
     const [near, far, span, floor] = axis === 'x'

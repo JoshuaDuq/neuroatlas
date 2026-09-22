@@ -57,7 +57,9 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const mprOverlay = document.getElementById('mpr-overlay');
   const cutModeLabel = document.getElementById('cut-mode-label');
   const cutTiltLabel = document.getElementById('cut-tilt-label');
+  const cutTiltValue = document.getElementById('cut-tilt-value');
   const cutAzimuthLabel = document.getElementById('cut-azimuth-label');
+  const cutAzimuthValue = document.getElementById('cut-azimuth-value');
   const cutReverseText = document.getElementById('cut-reverse-text');
   const mprOpenBtn = document.getElementById('mpr-open');
   const regionMpr = document.getElementById('region-mpr');
@@ -322,7 +324,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     }
 
     tilt.value = state.tilt; azimuth.value = state.azimuth;
-    document.getElementById('cut-angles').textContent = `${state.tilt}° / ${state.azimuth}°`;
+    if (cutTiltValue) cutTiltValue.textContent = `${state.tilt}°`;
+    if (cutAzimuthValue) cutAzimuthValue.textContent = `${state.azimuth}°`;
     for (const element of [position, number, reverse]) {
       element.disabled = !sections.active;
     }

@@ -88,7 +88,6 @@ export const TRANSLATIONS = {
       note: 'Share of this region’s surface, from resting-state networks in 1000 subjects. Membership, not function.',
       cortexHeading: 'Cortex by network',
       cortexNote: 'Share of the cortical surface of this atlas, weighted by measured area. Select a region for its own composition.',
-      unavailable: 'No network data for this region.',
     },
     inspector: {
       panelLabel: 'Selection and display',
@@ -98,8 +97,6 @@ export const TRANSLATIONS = {
       hintStructures: 'Cortex is hidden — internal structures are selectable.',
       hemisphere: 'Hemisphere',
       atlas: 'Atlas',
-      viewSurface: 'Surface',
-      viewCut: 'Cut',
       group: 'Lobe / System',
       surfaceArea: 'Surface area',
       volume: 'Volume',
@@ -224,9 +221,6 @@ export const TRANSLATIONS = {
       error: 'Something went wrong.',
       contextLost: 'The 3D view was interrupted by the graphics driver. Restoring…',
       retry: 'Retry',
-      reticleAria: 'Region under the crosshair',
-      reticleEmpty: 'Move the brain under the crosshair',
-      reticleAction: 'Select',
     },
     footer: {
       colophon: anatomy => `${anatomy.display_name} · ${anatomy.individual ? 'one individual’s MRI reconstruction' : 'averaged reference template'} · not clinical anatomy`,
@@ -244,7 +238,6 @@ export const TRANSLATIONS = {
 
     menu: {
       more: 'More settings',
-      close: 'Close settings',
     },
 
     app: {
@@ -338,7 +331,6 @@ export const TRANSLATIONS = {
       note: 'Part de la surface de cette région, d’après les réseaux de repos de 1000 sujets. Appartenance, non fonction.',
       cortexHeading: 'Cortex par réseau',
       cortexNote: 'Part de la surface corticale de cet atlas, pondérée par l’aire mesurée. Sélectionnez une région pour sa composition propre.',
-      unavailable: 'Aucune donnée de réseau pour cette région.',
     },
     inspector: {
       panelLabel: 'Sélection et affichage',
@@ -348,8 +340,6 @@ export const TRANSLATIONS = {
       hintStructures: 'Le cortex est masqué — les structures internes sont sélectionnables.',
       hemisphere: 'Hémisphère',
       atlas: 'Atlas',
-      viewSurface: 'Surface',
-      viewCut: 'Coupe',
       group: 'Lobe / Système',
       surfaceArea: 'Surface',
       volume: 'Volume',
@@ -481,9 +471,6 @@ export const TRANSLATIONS = {
       error: 'Une erreur est survenue.',
       contextLost: 'La vue 3D a été interrompue par le pilote graphique. Restauration…',
       retry: 'Réessayer',
-      reticleAria: 'Région sous le réticule',
-      reticleEmpty: 'Amenez le cerveau sous le réticule',
-      reticleAction: 'Sélectionner',
     },
     footer: {
       colophon: anatomy => `${anatomy.display_name} · ${anatomy.individual ? 'reconstruction IRM d’un individu' : 'gabarit de référence moyenné'} · pas une anatomie clinique`,
@@ -500,7 +487,6 @@ export const TRANSLATIONS = {
 
     menu: {
       more: 'Plus de réglages',
-      close: 'Fermer les réglages',
     },
 
     app: {

@@ -216,7 +216,10 @@
   padding: 0 1.15em 0 0;
   border: 0;
   background-color: transparent;
-  background-position: right 0.1em center;
+  /* Two layers draw the chevron; one shared position stacked them into a wedge. */
+  background-position:
+    right 5px top calc(50% - 1.5px),
+    right 0 top calc(50% - 1.5px);
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: 0.04em;
@@ -287,15 +290,14 @@
   color: var(--text-tertiary);
 }
 
+/* A notice that is cut short says nothing; it wraps, and the tree above gives way. */
 .rail-notice {
   flex: none;
   padding: var(--space-2) var(--space-4);
   border-top: 1px solid var(--border-subtle);
   font-size: var(--text-micro);
+  line-height: 1.45;
   color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* The letterboxing matches what the renderer clears to, in both themes. */

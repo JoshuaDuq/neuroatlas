@@ -16,6 +16,7 @@ const plural = noun => (/(?:s|x|z|ch|sh)$/.test(noun) ? `${noun}es` : `${noun}s`
 const FRENCH_NOUNS = {
   region: { one: 'région', other: 'régions' },
   match: { one: 'correspondance', other: 'correspondances' },
+  label: { one: 'étiquette', other: 'étiquettes' },
   région: { one: 'région', other: 'régions' },
   correspondance: { one: 'correspondance', other: 'correspondances' },
 };

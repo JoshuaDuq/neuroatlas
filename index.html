@@ -104,7 +104,9 @@
           -->
           <button id="masthead-more" type="button" aria-expanded="false"
                   aria-controls="masthead-menu" aria-label="More settings" hidden>⋯</button>
-          <div id="masthead-menu">
+          <!-- Hidden until the header decides which layout it is in; otherwise a
+               narrow window shows it as an open dropdown for the whole download. -->
+          <div id="masthead-menu" hidden>
             <span id="region-count" class="measure"></span>
             <div id="lang-switch" class="segmented" role="group" aria-label="Language">
               <button type="button" data-lang="en" aria-pressed="true">EN</button>
@@ -131,15 +133,6 @@
           <span data-edge="top"></span><span data-edge="right"></span>
           <span data-edge="bottom"></span><span data-edge="left"></span>
         </div>
-        <!--
-          The touch replacement for hover. A fingertip covers far more of the
-          canvas than a Destrieux sulcal band, so the reader lines a region up
-          under a fixed crosshair and reads it, rather than aiming at it.
-        -->
-        <div id="reticle" class="reticle" aria-hidden="true" hidden>
-          <span class="reticle-mark"></span>
-        </div>
-        <button id="reticle-readout" class="chip reticle-readout" type="button" hidden></button>
         <div id="views" class="views" role="group" aria-label="Anatomical view"></div>
         <div id="scale-bar" class="scale-bar" aria-hidden="true">
           <span class="scale-bar-rule"></span>
@@ -267,10 +260,12 @@
                 Measured on this surface, so it sits with the other measured
                 facts rather than with the clinical associations below it.
               -->
-              <section id="region-constituents" class="panel-body" hidden>
+              <section id="region-constituents" hidden>
                 <p id="constituents-title" class="section-label"></p>
-                <p id="constituents-note" class="internal-note"></p>
-                <ul id="constituents-list" class="constituents-list"></ul>
+                <div class="panel-body">
+                  <p id="constituents-note" class="internal-note"></p>
+                  <ul id="constituents-list" class="constituents-list"></ul>
+                </div>
               </section>
               <section id="region-networks" hidden>
                 <p id="label-networks" class="section-label">Functional networks</p>
@@ -303,11 +298,16 @@
                   <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
                 </div>
                 <div id="cut-oblique" hidden>
-                  <label id="cut-tilt-label" for="cut-tilt">Tilt from axial</label>
+                  <label for="cut-tilt">
+                    <span id="cut-tilt-label">Tilt from axial</span>
+                    <output id="cut-tilt-value" class="measure"></output>
+                  </label>
                   <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
-                  <label id="cut-azimuth-label" for="cut-azimuth">Rotation around superior axis</label>
+                  <label for="cut-azimuth">
+                    <span id="cut-azimuth-label">Rotation around superior axis</span>
+                    <output id="cut-azimuth-value" class="measure"></output>
+                  </label>
                   <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
-                  <output id="cut-angles" class="measure"></output>
                 </div>
                 <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
                 <button id="mpr-open" class="button-primary" type="button">MRI</button>
