@@ -1,4 +1,5 @@
 import { Matrix4, Vector2, Vector3 } from 'three';
+import { LABEL_AT } from './label-sampling.js';
 
 /** Cut-only atlases identify regions inside smooth envelopes, without meshes. */
 export function createCapLabels() {
@@ -43,14 +44,11 @@ export function addCapLabels(material, uniforms) {
       uniform vec2 capHighlightCodes;
       uniform vec2 capHighlightLifts;
       uniform bool capIsolated;
+      ${LABEL_AT}
       ${shader.fragmentShader}`.replace('#include <opaque_fragment>', `
         if (capLabelsEnabled && capSampleLabels) {
-          ivec3 cell = ivec3(floor(
-            (capWorldToLabels * vec4(sourceWorld, 1.0)).xyz + 0.5));
-          uint code = uint(0);
-          if (all(greaterThanEqual(cell, ivec3(0))) && all(lessThan(cell, capLabelShape))) {
-            code = texelFetch(capLabelVolume, cell, 0).r;
-          }
+          uint code = labelAt(capLabelVolume, capLabelShape,
+            (capWorldToLabels * vec4(sourceWorld, 1.0)).xyz);
           float visible = texelFetch(capLabelPalette, ivec2(int(code), 0), 0).a;
           if ((code > uint(0) || capIsolated) && visible < 0.5) discard;
           float here = float(code);
@@ -60,5 +58,5 @@ export function addCapLabels(material, uniforms) {
         #include <opaque_fragment>
       `);
   };
-  material.customProgramCacheKey = () => `${key}-cap-labels`;
+  material.customProgramCacheKey = () => `${key}-cap-labels-v2`;
 }

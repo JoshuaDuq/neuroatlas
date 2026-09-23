@@ -63,8 +63,9 @@ Anatomies are staged independently without modifying source archives:
 uv run python scripts/prepare_subject.py --anatomy bert
 uv run python scripts/prepare_subject.py --anatomy aomic
 
-# 2. Warp NextBrain histological atlas via ANTs non-linear SyN registration
-uv run python scripts/warp_nextbrain.py --anatomy bert --record
+# 2. Segment NextBrain on each subject's own T1 (FreeSurfer 8.2, CPU, ~20 min each)
+uv run python scripts/segment_nextbrain.py --anatomy bert --record
+uv run python scripts/segment_nextbrain.py --anatomy aomic --record
 
 # 3. Compile optimized binary models for the selected anatomy
 uv run python -m brain_model.build --anatomy bert

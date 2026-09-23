@@ -135,8 +135,8 @@ uv sync --locked
 # Prepare subject files (verify hashes, extract recon-all)
 uv run python scripts/prepare_subject.py --anatomy bert
 
-# Register NextBrain histology template to native T1w MRI
-uv run python scripts/warp_nextbrain.py --anatomy bert --record
+# Segment NextBrain on the subject's own T1 (needs FreeSurfer 8.2; ~20 min on CPU)
+uv run python scripts/segment_nextbrain.py --anatomy bert --record
 
 # Compile glTF 2.0 meshes and 3D categorical textures
 uv run python -m brain_model.build --anatomy bert

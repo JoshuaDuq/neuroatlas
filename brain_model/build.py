@@ -16,9 +16,10 @@ from .geometry import (
     partition_surface,
     partition_vertex_field,
     partition_vertex_labels,
+    smooth_display,
 )
 from .ribbons import export_ribbon_labels
-from .shading import cortical_concavity, ribbon_intensity, structure_normals
+from .shading import cortical_concavity, ribbon_intensity
 from .solids import export_solid_envelopes
 from .sources import (
     HEMISPHERES,
@@ -28,7 +29,7 @@ from .sources import (
     write_json,
 )
 from .tissue_labels import export_tissue_labels
-from .volumes import export_volumes
+from .volumes import conformed_grid, export_volumes
 
 
 def cortical_region(atlas, hemisphere, label, name):
@@ -142,28 +143,29 @@ def build_cortex(config, atlas, field_ranges=None):
     }, regions
 
 
-def build_structure_layer(config, image, labels, describe, filename):
-    volume = np.asarray(image.dataobj)
+def build_structure_layer(config, grid, labels, describe, filename):
+    volume = grid.labels
     if not np.all(volume == np.rint(volume)):
         raise ValueError(f"{filename}: segmentation must hold integer labels")
-    affine = image.header.get_vox2ras_tkr()
-    voxel_volume = float(abs(np.linalg.det(affine[:3, :3])))
+    affine = grid.voxel_to_surface
+    voxel_volume = grid.voxel_volume_mm3
+    smoothing = config["structures"]["smoothing"]
     scene = trimesh.Scene()
     regions = []
     for label in labels:
         region, color = describe(label)
         region.update(
             voxel_count=int(np.count_nonzero(volume == label)),
-            voxel_size_mm=[float(x) for x in image.header.get_zooms()[:3]],
+            voxel_size_mm=grid.spacing_mm,
         )
-        mesh = extract_structure(volume, label, affine)
-        normals = structure_normals(
-            volume == label,
-            affine,
-            mesh.vertices,
-            config["structures"]["shading_sigma_voxels"],
+        source = extract_structure(volume, label, affine)
+        mesh = smooth_display(source, volume == label, affine, smoothing)
+        region["display_maximum_displacement_mm"] = float(
+            np.linalg.norm(mesh.vertices - source.vertices, axis=1).max()
         )
-        exported = add_region(scene, mesh.vertices, mesh.faces, normals, region, color)
+        exported = add_region(
+            scene, mesh.vertices, mesh.faces, mesh.vertex_normals, region, color
+        )
         region.update(
             vertex_count=len(exported.vertices),
             triangle_count=len(exported.faces),
@@ -176,15 +178,18 @@ def build_structure_layer(config, image, labels, describe, filename):
         "file": filename,
         "region_count": len(regions),
         "voxel_to_surface_ras_mm": affine.tolist(),
-        "shading": {
-            "method": "Gaussian segmentation gradient normals; geometry unchanged",
-            "sigma_voxels": config["structures"]["shading_sigma_voxels"],
+        "voxel_size_mm": grid.spacing_mm,
+        "display_geometry": {
+            "method": "Marching cubes, then bounded Taubin smoothing that moves "
+            "no voxel centre across the surface",
+            **smoothing,
+            "source_volumes_unchanged": True,
         },
     }, regions
 
 
 def build_structures(config):
-    image = nib.load(config["source_directory"] / "mri/aseg.mgz")
+    grid = conformed_grid(nib.load(config["source_directory"] / "mri/aseg.mgz"))
     table = read_color_table()
 
     def describe(label):
@@ -205,14 +210,14 @@ def build_structures(config):
         }, color
 
     return build_structure_layer(
-        config, image, config["structures"]["labels"], describe, "structures.glb"
+        config, grid, config["structures"]["labels"], describe, "structures.glb"
     )
 
 
 def build_nextbrain_structures(config):
-    image, labels, table = nextbrain.load(config)
+    grid, table = nextbrain.load(config)
     settings = config[nextbrain.ATLAS_ID]
-    chosen = nextbrain.meshed_indices(labels, table, settings["minimum_mesh_voxels"])
+    chosen = nextbrain.meshed_indices(grid, table, settings["minimum_mesh_volume_mm3"])
 
     def describe(index):
         published, color = table[index]
@@ -229,7 +234,7 @@ def build_nextbrain_structures(config):
             "kind": "structure",
         }, color
 
-    return build_structure_layer(config, image, chosen, describe, "nextbrain.glb")
+    return build_structure_layer(config, grid, chosen, describe, "nextbrain.glb")
 
 
 def detail_levels(config):
@@ -254,6 +259,7 @@ def cut_atlases(config):
                 "label": settings["label"],
                 "citation": settings["citation"],
                 "surface": False,
+                "procedure": settings["procedure"],
             }
         )
     return atlases
@@ -295,6 +301,22 @@ def anatomy_limitations(config):
             "HCP-MMP is the published Mills fsaverage projection, not native HCP space."
         )
     return limitations
+
+
+def resolution_limitations(config, fine):
+    aseg = "FreeSurfer's subcortical segmentation uses a 1 mm grid; fine nuclei and cerebellar folia are unresolved in it."
+    if fine is None:
+        return [aseg]
+    spacing = f"{fine['voxel_size_mm'][0]:g} mm"
+    if config[nextbrain.ATLAS_ID]["procedure"] != nextbrain.SUBJECT_SEGMENTATION:
+        return [
+            aseg,
+            f"NextBrain labels were warped from MNI152 onto this brain's {spacing} grid; the template's anatomy, not this brain's, sets their boundaries wherever the registration cannot.",
+        ]
+    return [
+        aseg,
+        f"NextBrain labels are this brain's own Bayesian segmentation at {spacing}, estimated from a 1 mm T1 with a histological atlas as prior: where neighbouring structures share their T1 contrast, the atlas rather than the scan places the boundary between them.",
+    ]
 
 
 def network_limitations(config):
@@ -340,6 +362,8 @@ def main():
     )
     config = read_config(parser.parse_args().anatomy)
     provenance = verify_sources(config)
+    if nextbrain.is_available(config):
+        nextbrain.verify_procedure(config, provenance)
     atlas_metadata = []
     regions = []
     field_ranges = None
@@ -353,6 +377,7 @@ def main():
     regions.extend(internal)
     levels = [{**level} for level in detail_levels(config)]
     levels[0].update(coarse)
+    fine = None
     if nextbrain.is_available(config):
         fine, nuclei = build_nextbrain_structures(config)
         levels[1].update(fine)
@@ -407,14 +432,14 @@ def main():
             *anatomy_limitations(config),
             "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
-            "Source internal segmentations use a 1 mm grid; fine nuclei and cerebellar folia are unresolved.",
+            *resolution_limitations(config, fine),
             "Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to 0.6 mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
             "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
             "Learning publishes the cerebellar cortical mantle and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
             "Learning units come from two segmentations of the same brain, so an aseg-sourced and a NextBrain-sourced surface can overlap slightly where they meet.",
             "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
             "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
-            "Solid nuclei are marching-cubes surfaces over a warped 1 mm grid, not measured boundaries.",
+            "Internal solids are marching-cubes surfaces smoothed for display by at most 0.6 mm and never across a voxel centre; between voxel centres their boundaries are a display convention, not a measurement.",
             "Where a segmented structure meets itself at a corner its surface pinches there and is not a two-manifold; validation counts those edges, and the volume each surface encloses stays definite.",
             "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
             "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
@@ -424,7 +449,9 @@ def main():
         ],
         "provenance": provenance,
     }
-    export_tissue_labels(config, manifest)
+    tissues = export_tissue_labels(config, manifest)
+    if nextbrain.ATLAS_ID in tissues["atlases"]:
+        nextbrain.mark_uncut(manifest["regions"], tissues["atlases"][nextbrain.ATLAS_ID])
     write_json(config["output_directory"] / "manifest.json", manifest)
     published = write_anatomy_index(config)
     print(f"Exported {len(regions)} meshes including explicit non-region surfaces.")

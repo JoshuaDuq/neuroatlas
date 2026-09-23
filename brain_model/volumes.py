@@ -3,11 +3,33 @@
 import gzip
 import hashlib
 import math
+from typing import NamedTuple
 
 import nibabel as nib
 import numpy as np
 
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
+
+
+class LabelGrid(NamedTuple):
+    """A label array and where its voxel centres sit in the subject's surface RAS."""
+
+    labels: np.ndarray
+    voxel_to_surface: np.ndarray
+    spacing_mm: list
+
+    @property
+    def voxel_volume_mm3(self):
+        return float(abs(np.linalg.det(self.voxel_to_surface[:3, :3])))
+
+
+def conformed_grid(image):
+    """Only a conformed subject volume's own tkregister matrix is surface RAS."""
+    return LabelGrid(
+        np.asarray(image.dataobj),
+        image.header.get_vox2ras_tkr(),
+        [float(x) for x in image.header.get_zooms()[:3]],
+    )
 
 
 def offset_by(corner):
@@ -49,19 +71,62 @@ def encode_volume(image, path, dtype):
 
 
 def encode_cropped_volume(image, path, dtype):
-    data = np.asarray(image.dataobj)
-    corner, end = label_box(data)
-    box = tuple(slice(start, stop) for start, stop in zip(corner, end))
-    record = encode_array(
-        data[box],
-        image.header.get_vox2ras_tkr() @ offset_by(corner),
+    return encode_cropped_array(
+        np.asarray(image.dataobj),
+        image.header.get_vox2ras_tkr(),
         image.header.get_zooms()[:3],
         path,
         dtype,
     )
+
+
+def encode_cropped_array(data, affine, spacing, path, dtype):
+    corner, end = label_box(data)
+    box = tuple(slice(start, stop) for start, stop in zip(corner, end))
+    record = encode_array(data[box], affine @ offset_by(corner), spacing, path, dtype)
     record["source_shape"] = list(map(int, data.shape))
     record["crop_corner_voxel"] = corner.tolist()
     return record
+
+
+def axis_lookup(source_to_surface, source_shape, target_to_surface, target_shape,
+                skew_voxels=0.01):
+    """Per-axis nearest-neighbour indices between grids whose axes are parallel.
+
+    Also returns the largest distance, in mm, from a target voxel centre to the
+    source centre it takes its value from.
+    """
+    m = np.linalg.inv(source_to_surface) @ target_to_surface
+    linear = m[:3, :3]
+    order = np.argmax(np.abs(linear), axis=1)
+    if sorted(order.tolist()) != [0, 1, 2]:
+        raise ValueError("Grids do not share axis directions.")
+    extent = np.array(target_shape) - 1
+    skew = max(
+        sum(abs(linear[b, a]) * extent[a] for a in range(3) if a != order[b])
+        for b in range(3)
+    )
+    if skew > skew_voxels:
+        raise ValueError(f"Grid axes are skewed by {skew:.3f} voxels.")
+    indices, valid, shift = [], [], []
+    for b in range(3):
+        exact = linear[b, order[b]] * np.arange(target_shape[order[b]]) + m[b, 3]
+        nearest = np.rint(exact).astype(int)
+        valid.append((nearest >= 0) & (nearest < source_shape[b]))
+        indices.append(np.clip(nearest, 0, source_shape[b] - 1))
+        spacing = np.linalg.norm(source_to_surface[:3, b])
+        shift.append(np.abs(exact - nearest)[valid[-1]].max(initial=0) * spacing)
+    return order, indices, valid, float(np.linalg.norm(shift))
+
+
+def resample_nearest(data, source_to_surface, target_to_surface, target_shape):
+    """Nearest-neighbour values on the target grid; background outside the source."""
+    order, indices, valid, shift = axis_lookup(
+        source_to_surface, data.shape, target_to_surface, target_shape
+    )
+    inside = valid[0][:, None, None] & valid[1][None, :, None] & valid[2][None, None, :]
+    values = np.where(inside, data[np.ix_(*indices)], 0)
+    return values.transpose(np.argsort(order)), shift
 
 
 def encode_array(data, affine, spacing, path, dtype):

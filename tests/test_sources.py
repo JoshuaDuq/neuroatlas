@@ -33,7 +33,7 @@ def document():
             },
         },
         "output_directory": "public/models",
-        "nextbrain": {"lut": "lut.txt", "minimum_mesh_voxels": 10},
+        "nextbrain": {"lut": "lut.txt", "minimum_mesh_volume_mm3": 10},
     }
 
 
@@ -45,7 +45,7 @@ def test_the_selected_anatomy_becomes_the_shape_every_build_step_reads():
     # Per-anatomy warp settings, folded onto the shared ones.
     assert config["nextbrain"]["directory"] == ROOT / "data/nb-second"
     assert config["nextbrain"]["volume"] == "second.mgz"
-    assert config["nextbrain"]["minimum_mesh_voxels"] == 10
+    assert config["nextbrain"]["minimum_mesh_volume_mm3"] == 10
     # The brain HCP is resampled from is resolved here too, so no later step
     # needs the declarations to find it.
     assert config["anatomy"]["hcp_source_directory"] == ROOT / "data/first"
@@ -205,3 +205,13 @@ def test_a_downloaded_file_whose_bytes_changed_is_refused_rather_than_rebuilt(tm
     (config["source_directory"] / "surf/lh.pial").write_bytes(b"tampered")
     with pytest.raises(SystemExit, match="recorded checksum"):
         prepare.download_subject(config, provenance)
+
+
+def test_both_hemispheres_white_matter_is_drawn_in_one_colour():
+    # The bundled 2012 table paints label 41 green, which turned one hemisphere's
+    # white matter green on every cut. FreeSurfer's current table corrected it.
+    from brain_model.sources import read_color_table
+
+    table = read_color_table()
+    assert table[41] == ("Right-Cerebral-White-Matter", [245, 245, 245])
+    assert table[2] == ("Left-Cerebral-White-Matter", [245, 245, 245])

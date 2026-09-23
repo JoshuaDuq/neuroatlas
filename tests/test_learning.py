@@ -2,10 +2,10 @@ import numpy as np
 import pytest
 
 from brain_model import nextbrain
-from brain_model.geometry import extract_structure
-from brain_model.learning import combine_labels, read_definition, smooth_display
+from brain_model.geometry import extract_structure, smooth_display
+from brain_model.learning import combine_labels, read_definition
 from brain_model.sources import read_config
-from brain_model.volumes import load_on_grid
+from brain_model.volumes import load_on_grid, resample_nearest
 
 
 def test_unions_preserve_every_member_voxel_and_exclude_other_labels():
@@ -29,7 +29,7 @@ def test_smoothing_is_bounded_preserves_topology_and_does_not_mutate_source():
     original = extract_structure(mask, 1, np.eye(4))
     vertices = original.vertices.copy()
     smoothed = smooth_display(
-        original, {"iterations": 12, "maximum_displacement_mm": 0.6}
+        original, mask, np.eye(4), {"iterations": 12, "maximum_displacement_mm": 0.6}
     )
     displacement = np.linalg.norm(smoothed.vertices - vertices, axis=1)
     assert 0.01 < displacement.max() <= 0.600001
@@ -105,8 +105,13 @@ def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
     # segmentations disagree along shared borders, which is ordinary; a unit that
     # vanishes inside another is not.
     config = read_config()
-    _, labels, _ = nextbrain.load(config)
-    aseg = np.asarray(load_on_grid(config, config["source_directory"] / "mri/aseg.mgz").dataobj)
+    grid, _ = nextbrain.load(config)
+    labels = grid.labels
+    image = load_on_grid(config, config["source_directory"] / "mri/aseg.mgz")
+    aseg, _ = resample_nearest(
+        np.asarray(image.dataobj), image.header.get_vox2ras_tkr(),
+        grid.voxel_to_surface, labels.shape,
+    )
     definition = read_definition()
     covered = np.isin(aseg, [label for unit in definition["aseg"] for label in unit["labels"]])
     for unit in definition["nextbrain"]:

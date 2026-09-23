@@ -15,7 +15,7 @@ export function renderSlice(volumes, frame, display) {
     point[0] = origin.x + step*(x*frame.u.x - y*frame.v.x);
     point[1] = origin.y + step*(x*frame.u.y - y*frame.v.y);
     point[2] = origin.z + step*(x*frame.u.z - y*frame.v.z);
-    const label = volumes.segmentation.nearest(point);
+    const label = volumes.segmentation.label(point);
     const gray = Math.max(0, Math.min(255,
       (volumes.mri.linear(point) - windowCenter + windowWidth/2) * 255/windowWidth));
     const index = (y*size+x)*4;

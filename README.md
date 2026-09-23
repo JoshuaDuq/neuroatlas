@@ -16,8 +16,8 @@
 | [**Destrieux (`aparc.a2009s`)**](docs/atlases.md#1-anatomical-cortex-destrieux-aparca2009s) | 148 parcels + 2 walls | Native FreeSurfer `.annot` | Native subject folding; zero projection |
 | [**HCP-MMP1.0**](docs/atlases.md#2-multimodal-cortex-hcp-mmp10) | 360 areas | `fs_LR` $\to$ `fsaverage` | Resampled via `sphere.reg` spherical nearest neighbor |
 | [**Learning Anatomy**](docs/atlases.md#3-learning-anatomy-82-overview-structures) | 82 teaching solids | NextBrain + Aseg unions | Taubin smoothed ($\le 0.6\text{ mm}$ bounded displacement) |
-| [**Aseg Reference Level**](docs/atlases.md#4-subcortical-reference-levels-aseg--nextbrain) | 35 structures | `aseg.mgz` volume | Native marching cubes ($0.5$ isovalue) |
-| [**NextBrain Histology**](docs/atlases.md#4-subcortical-reference-levels-aseg--nextbrain) | 483 ROIs (298 3D) | MNI152 histology template | ANTs non-linear SyN warp to `orig.mgz` |
+| [**Aseg Reference Level**](docs/atlases.md#4-subcortical-reference-levels-aseg--nextbrain) | 35 structures | `aseg.mgz` volume | Marching cubes, smoothed $\le 0.6\text{ mm}$ with every voxel centre kept on its side |
+| [**NextBrain Histology**](docs/atlases.md#4-subcortical-reference-levels-aseg--nextbrain) | 515 ROIs (328 3D) | Subject NextBrain segmentation, 0.4 mm | FreeSurfer 8.2 on `orig.mgz`; cut faces 0.8 mm |
 | [**Gyral White Matter**](docs/atlases.md#5-gyral-white-matter-wmparc) | 68 parcels | `wmparc.mgz` volume | Native 5 mm nearest Desikan gyrus boundary |
 | [**Spinal Cord**](docs/atlases.md#6-spinal-cord-neuroaxis-reference) | 58 tracts & horns | Z-Anatomy scene | Canonical schematic assembly seated below brainstem |
 | [**Yeo 7 Networks**](docs/atlases.md#7-functional-networks-yeo-7-resting-state-networks) | 7 networks | Schaefer 2018 on `fsaverage` | Vertex-level mapping across registered spheres |
@@ -52,9 +52,9 @@ Open the displayed URL (default `http://localhost:5173`) in any modern browser s
 # Synchronize exact Python environment
 uv sync --locked
 
-# Prepare subject files and compute non-linear NextBrain warp
+# Prepare subject files, then segment NextBrain on the subject (FreeSurfer 8.2, ~20 min CPU)
 uv run python scripts/prepare_subject.py --anatomy bert
-uv run python scripts/warp_nextbrain.py --anatomy bert --record
+uv run python scripts/segment_nextbrain.py --anatomy bert --record
 
 # Compile binary glTF and 3D volume textures
 uv run python -m brain_model.build --anatomy bert
@@ -95,9 +95,9 @@ Configured via [`config/model.yaml`](config/model.yaml) and selectable in the vi
 ## Scientific Rigor & Transparent Boundaries
 
 - **Single-Subject Individual Anatomy**: Reconstructions represent one human individual. Folding patterns, sulcal depths, and ventricular geometries are real features of that individual and are **not clinically normative**.
-- **1 mm Isotropic Grid**: All source MRI volumes and segmentations reside on a 1 mm isotropic grid; sub-voxel histological microstructures are not resolved.
+- **1 mm Scan, 0.4 mm NextBrain Labels**: The MRI and FreeSurfer segmentations are 1 mm isotropic. NextBrain is segmented at 0.4 mm, but from that 1 mm scan: where neighbouring structures share their T1 contrast, the histological atlas, not the image, places the boundary.
 - **Zero Coordinate Smoothing**: Cortical surfaces are preserved exactly as tessellated by FreeSurfer without post-hoc decimation or geometric smoothing.
-- **Explicit Limitations**: Read [Validation & Scientific Limits](docs/validation.md#4-scientific-limitations--boundaries) for detailed analysis of HCP spherical resampling distance, ANTs template warp registration uncertainty, and non-manifold corner contacts.
+- **Explicit Limitations**: Read [Validation & Scientific Limits](docs/validation.md#4-scientific-limitations--boundaries) for detailed analysis of HCP spherical resampling distance, what bounds the NextBrain segmentation, and non-manifold corner contacts.
 
 ---
 

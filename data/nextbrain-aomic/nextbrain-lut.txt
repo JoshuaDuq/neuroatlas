@@ -1,15 +1,21 @@
-# NextBrain whole brain LUT
+# NextBrain labels for both hemispheres, from FreeSurfer's per-hemisphere lut.txt
+# Right-hemisphere indices are offset by 10000
 # index  name  R  G  B  A
 0  Unknown  0  0  0  0
 7  Left-white_matter_of_forebrain  242 241 240 0
 10007  Right-white_matter_of_forebrain  242 241 240 0
 48  Left-head_of_caudate  145 160 110 0
 10048  Right-head_of_caudate  145 160 110 0
+50  Left-anterior_horn_of_lateral_ventricle  35 31 32 0
+10050  Right-anterior_horn_of_lateral_ventricle  35 31 32 0
+68  Left-septum_pellucidum  109 110 112 0
 10068  Right-septum_pellucidum  109 110 112 0
 79  Left-putamen  168 180 133 0
 10079  Right-putamen  168 180 133 0
 99  Left-anterior_olfactory_nucleus  170 157 198 0
 10099  Right-anterior_olfactory_nucleus  170 157 198 0
+100  Left-olfactory_tubercle  153 136 187 0
+10100  Right-olfactory_tubercle  153 136 187 0
 101  Left-core_of_nucleus_accumbens  145 160 110 0
 10101  Right-core_of_nucleus_accumbens  145 160 110 0
 102  Left-claustrum  170 219 206 0
@@ -22,6 +28,8 @@
 10111  Right-diagonal_band  242 241 240 0
 113  Left-lateral_olfactory_stria  242 241 240 0
 10113  Right-lateral_olfactory_stria  242 241 240 0
+114  Left-optic_nerve  242 241 240 0
+10114  Right-optic_nerve  242 241 240 0
 117  Left-bed_nucleus_of_stria_terminalis  169 215 174 0
 10117  Right-bed_nucleus_of_stria_terminalis  169 215 174 0
 118  Left-body_of_caudate  153 166 119 0
@@ -44,6 +52,8 @@
 10150  Right-median_preoptic_nucleus  193 120 162 0
 157  Left-layer_iii_of_piriform_cortex  153 136 187 0
 10157  Right-layer_iii_of_piriform_cortex  153 136 187 0
+160  Left-suprachiasmatic_nucleus  207 151 185 0
+10160  Right-suprachiasmatic_nucleus  207 151 185 0
 161  Left-optic_chiasm  242 241 240 0
 10161  Right-optic_chiasm  242 241 240 0
 174  Left-temporal_claustrum  102 196 175 0
@@ -74,6 +84,7 @@
 10207  Right-periventricular_nucleus__supraoptic_portion  219 171 200 0
 208  Left-optic_tract  242 241 240 0
 10208  Right-optic_tract  242 241 240 0
+209  Left-supraoptic_dicussation  242 241 240 0
 10209  Right-supraoptic_dicussation  242 241 240 0
 214  Left-amygdaloid_complex  201 226 177 0
 10214  Right-amygdaloid_complex  201 226 177 0
@@ -170,6 +181,7 @@
 301  Left-amygdalohippocampal_area  137 186 70 0
 10301  Right-amygdalohippocampal_area  137 186 70 0
 303  Left-central_dorsal_nucleus_of_thalamus  182 123 180 0
+10303  Right-central_dorsal_nucleus_of_thalamus  182 123 180 0
 304  Left-supramammillary_nucleus  166 107 142 0
 10304  Right-supramammillary_nucleus  166 107 142 0
 305  Left-lateral_part_of_medial_mammillary_nucleus  156 106 134 0
@@ -230,6 +242,7 @@
 10354  Right-alveus  207 207 207 0
 364  Left-molecular_layer_of_uncal_dentate_gyrus  230 230 236 0
 10364  Right-molecular_layer_of_uncal_dentate_gyrus  230 230 236 0
+365  Left-granular_layer_of_uncal_dentate_gyrus  84 62 116 0
 10365  Right-granular_layer_of_uncal_dentate_gyrus  84 62 116 0
 367  Left-polyform_layer_of_uncal_dentate_gyrus  170 157 198 0
 10367  Right-polyform_layer_of_uncal_dentate_gyrus  170 157 198 0
@@ -290,6 +303,7 @@
 408  Left-stratum_lacunosum-moleculare_of_rostral_ca2  209 206 226 0
 10408  Right-stratum_lacunosum-moleculare_of_rostral_ca2  209 206 226 0
 409  Left-stratum_radiatum_of_rostral_ca2  230 230 236 0
+10409  Right-stratum_radiatum_of_rostral_ca2  230 230 236 0
 410  Left-stratum_pyramidale_of_rostral_ca2  93 69 127 0
 10410  Right-stratum_pyramidale_of_rostral_ca2  93 69 127 0
 411  Left-stratum_oriens_of_rostral_ca2  138 122 177 0
@@ -320,6 +334,8 @@
 10430  Right-lateral_habenular_nucleus  182 123 180 0
 432  Left-pyramidal_cells_of_rostral_ca4  114 83 152 0
 10432  Right-pyramidal_cells_of_rostral_ca4  114 83 152 0
+433  Left-parasubthalamic_nucleus  191 137 188 0
+10433  Right-parasubthalamic_nucleus  191 137 188 0
 435  Left-ventral_tegmental_area  126 179 201 0
 10435  Right-ventral_tegmental_area  126 179 201 0
 441  Left-lateral_posterior_nucleus_of_thalamus  176 103 169 0
@@ -328,7 +344,10 @@
 10442  Right-basal_ventral_medial_nucleus  158 76 148 0
 443  Left-dorsal_division_of_central_lateral_nucleus  182 123 180 0
 10443  Right-dorsal_division_of_central_lateral_nucleus  182 123 180 0
+444  Left-medial_habenular_nucleus  158 76 148 0
 10444  Right-medial_habenular_nucleus  158 76 148 0
+451  Left-interstitial_nucleus_of_cajal  82 152 174 0
+10451  Right-interstitial_nucleus_of_cajal  82 152 174 0
 454  Left-anterior_nucleus_of_pulvinar  176 103 169 0
 10454  Right-anterior_nucleus_of_pulvinar  176 103 169 0
 458  Left-caudal_division_of_ventral_posterior_lateral_nucleus  158 76 148 0
@@ -345,6 +364,8 @@
 10484  Right-dorsal_lateral_geniculate_nucleus  140 70 133 0
 492  Left-limitans_nucleus  149 73 138 0
 10492  Right-limitans_nucleus  149 73 138 0
+493  Left-habenular_commissure  242 241 240 0
+10493  Right-habenular_commissure  242 241 240 0
 496  Left-pretectal_region  160 199 213 0
 10496  Right-pretectal_region  160 199 213 0
 498  Left-peripeduncular_nucleus  86 161 187 0
@@ -352,8 +373,13 @@
 504  Left-dorsal_medial_geniculate_nucleus  182 123 180 0
 10504  Right-dorsal_medial_geniculate_nucleus  182 123 180 0
 506  Left-pineal_body  119 54 113 0
+10506  Right-pineal_body  119 54 113 0
 508  Left-medial_nucleus_of_pulvinar  176 103 169 0
 10508  Right-medial_nucleus_of_pulvinar  176 103 169 0
+510  Left-magnocellular_(medial)_nucleus  176 103 169 0
+10510  Right-magnocellular_(medial)_nucleus  176 103 169 0
+512  Left-suprageniculate_nucleus_of_thalamus  149 73 138 0
+10512  Right-suprageniculate_nucleus_of_thalamus  149 73 138 0
 517  Left-lateral_nucleus_of_pulvinar  176 103 169 0
 10517  Right-lateral_nucleus_of_pulvinar  176 103 169 0
 519  Left-inferior_nucleus_of_pulvinar  176 103 169 0
@@ -381,8 +407,11 @@
 566  Left-stratum_lacunosum-moleculare_of_caudal_ca2  209 206 226 0
 10566  Right-stratum_lacunosum-moleculare_of_caudal_ca2  209 206 226 0
 567  Left-stratum_radiatum_of_caudal_ca2  230 230 236 0
+10567  Right-stratum_radiatum_of_caudal_ca2  230 230 236 0
 568  Left-stratum_pyramidale_of_caudal_ca2  97 72 132 0
 10568  Right-stratum_pyramidale_of_caudal_ca2  97 72 132 0
+569  Left-stratum_oriens_of_caudal_ca2  138 122 177 0
+10569  Right-stratum_oriens_of_caudal_ca2  138 122 177 0
 571  Left-stratum_lacunosum-moleculare_of_caudal_ca3  209 206 226 0
 10571  Right-stratum_lacunosum-moleculare_of_caudal_ca3  209 206 226 0
 572  Left-stratum_lucidum__of_caudal_ca3  230 230 236 0
@@ -409,6 +438,10 @@
 10654  Right-inferior_olive__principal_nucleus  62 77 137 0
 662  Left-myelencephalon_(medulla_oblongata)  209 215 232 0
 10662  Right-myelencephalon_(medulla_oblongata)  209 215 232 0
+666  Left-facial_nucleus  71 106 154 0
+10666  Right-facial_nucleus  71 106 154 0
+687  Left-solitary_tract  242 241 240 0
+10687  Right-solitary_tract  242 241 240 0
 697  Left-inferior_cerebellar_peduncle  242 241 240 0
 10697  Right-inferior_cerebellar_peduncle  242 241 240 0
 715  Left-fastigial_(medial)_nucleus  50 114 174 0

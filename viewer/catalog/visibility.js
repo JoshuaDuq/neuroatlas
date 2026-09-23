@@ -49,6 +49,8 @@ export function visibilityOf(region, settings) {
   // inactive detail level owns is still on screen while the cut is painting it.
   const onCut = region.atlas === settings.cutAtlas && settings.cutActive;
   if (isTissue(region)) {
+    // Measured in its source grid, but smaller than any block its cut samples.
+    if (!cutAtlasesOf(region).length) return hidden('below-cut-resolution');
     // Distinct reasons from 'other-atlas': the remedy is a different control.
     if (!cutAtlasesOf(region).includes(settings.cutAtlas)) return hidden('other-cut-atlas');
     if (!settings.cutActive) return hidden('no-cut');

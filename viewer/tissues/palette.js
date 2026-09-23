@@ -52,8 +52,8 @@ function networkColor(label, { regions, networks } = {}) {
  * cut face and another on a geometric one.
  */
 export function labelAppearance(label, state, tissuePalette, lookup, color = new Color()) {
-  // Match the linear baseColorFactor stored in the exported glTF materials.
-  color.setRGB(...label.color.map((value) => value / 255));
+  // Published colours are sRGB; the surfaces' glTF factors decode to the same.
+  color.setRGB(...label.color.map((value) => value / 255), SRGBColorSpace);
   if (!usesAtlasColors(state)) {
     color.set(tissueColor({ ...label, source_name: label.name }, tissuePalette));
   }

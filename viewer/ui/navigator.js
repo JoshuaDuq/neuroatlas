@@ -3,6 +3,8 @@ import { t } from '../i18n/translations.js';
 
 /** Reasons that mean "in a different atlas" rather than "hidden here". */
 const OTHER_ATLAS = new Set(['other-atlas', 'other-cut-atlas']);
+/** Reasons no control can undo: the row explains, and activating it does nothing. */
+const UNREVEALABLE = new Set(['below-cut-resolution']);
 
 /**
  * Find a region: search, or browse the anatomy.
@@ -65,7 +67,7 @@ export function createNavigator({
 
   function activate(row) {
     if (row.dataset.visible === 'true') onSelect(row.dataset.regionId);
-    else onReveal(row.dataset.reason, row.dataset.regionId);
+    else if (!UNREVEALABLE.has(row.dataset.reason)) onReveal(row.dataset.reason, row.dataset.regionId);
   }
 
   function buildRow(row, { role, level, lang, query }) {
@@ -133,7 +135,12 @@ export function createNavigator({
       tail.className = 'row-reason';
       tail.textContent = reasons[row.reason] ?? reasons.fallback;
       // Spoken as part of the row, so the state is never colour-only.
-      item.setAttribute('aria-label', i18n.rowHiddenAria(row.label.name, side, tail.textContent));
+      if (UNREVEALABLE.has(row.reason)) {
+        item.setAttribute('aria-disabled', 'true');
+        item.setAttribute('aria-label', i18n.rowUnavailableAria(row.label.name, side, tail.textContent));
+      } else {
+        item.setAttribute('aria-label', i18n.rowHiddenAria(row.label.name, side, tail.textContent));
+      }
     }
     item.append(tail);
     item.addEventListener('click', () => activate(item));

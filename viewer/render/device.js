@@ -45,6 +45,15 @@ export function isIntegratedGpu(renderer = '') {
   return true;
 }
 
+/**
+ * Apple silicon is integrated too, but draws a Mac display's full density:
+ * measured on an M5, orbiting holds 60 fps and a cut misses about one frame in
+ * twenty. MSAA stays at 2x, because 4x halved the frame rate of an MRI cut.
+ */
+export function isAppleSilicon(renderer = '') {
+  return /\bapple\b/i.test(renderer);
+}
+
 /** The GPU name the driver reports, or empty when the browser withholds it. */
 export function gpuRendererName(gl) {
   const info = gl?.getExtension?.('WEBGL_debug_renderer_info');

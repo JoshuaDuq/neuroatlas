@@ -3,6 +3,7 @@ import {
 } from 'three';
 import { worldToVoxelMatrix } from '../slices/coordinates.js';
 import { codeIndex, liftFor } from './highlight.js';
+import { LABEL_AT } from './label-sampling.js';
 
 export const WHITE_MATTER_UNIFORMS = `
       uniform highp usampler3D whiteMatterVolume;
@@ -11,17 +12,17 @@ export const WHITE_MATTER_UNIFORMS = `
       uniform bool whiteMatterActive;
       uniform float whiteMatterIsolated;
       uniform vec2 whiteMatterCodes;
-      uniform vec2 whiteMatterLifts;`;
+      uniform vec2 whiteMatterLifts;
+      ${LABEL_AT}`;
 
 /**
  * Lights the pointed-at or chosen parcel and, while one is isolated, discards the
- * rest. Reads the cell `regionAt` reads, by the voxel cut's nearest-cell rule.
+ * rest. Reads the label `regionAt` reads, by the rule every label cut draws with.
  */
 export const WHITE_MATTER_LIFT = `
         if (whiteMatterActive) {
-          ivec3 cell = ivec3(floor((whiteMatterToVoxel * vec4(sourceWorld, 1.0)).xyz + vec3(0.5)));
-          bool inside = all(greaterThanEqual(cell, ivec3(0))) && all(lessThan(cell, whiteMatterShape));
-          float code = inside ? float(texelFetch(whiteMatterVolume, cell, 0).r) : 0.0;
+          float code = float(labelAt(whiteMatterVolume, whiteMatterShape,
+            (whiteMatterToVoxel * vec4(sourceWorld, 1.0)).xyz));
           if (whiteMatterIsolated >= 0.0 && code != whiteMatterIsolated) discard;
           if (code > 0.0 && code == whiteMatterCodes.y) capLift = whiteMatterLifts.y;
           else if (code > 0.0 && code == whiteMatterCodes.x) capLift = whiteMatterLifts.x;
@@ -60,7 +61,7 @@ export function createWhiteMatter(record, volume) {
       return uniforms.whiteMatterActive.value;
     },
     holds: regionId => codes.has(regionId),
-    regionAt: point => record.labels[volume.nearest(point)]?.region_id ?? null,
+    regionAt: point => record.labels[volume.label(point)]?.region_id ?? null,
     update({ atlas, isolatedRegion }) {
       uniforms.whiteMatterActive.value = record.applies_to.includes(atlas);
       uniforms.whiteMatterIsolated.value = codeOf(isolatedRegion);

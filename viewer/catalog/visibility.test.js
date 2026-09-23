@@ -119,6 +119,11 @@ test('a cut-only region of another cut atlas reports its own reason', () => {
     { visible: false, reason: 'other-cut-atlas' });
 });
 
+test('a region smaller than every block of its cut says so rather than naming another atlas', () => {
+  assert.deepEqual(visibilityOf(tissue({ cut_atlases: [] }), settings({ cutAtlas: 'n' })),
+    { visible: false, reason: 'below-cut-resolution' });
+});
+
 test('with no cut on screen a cut-only region is nowhere, and says so', () => {
   assert.deepEqual(visibilityOf(tissue(), settings({ cutAtlas: 'n', cutActive: false })),
     { visible: false, reason: 'no-cut' });

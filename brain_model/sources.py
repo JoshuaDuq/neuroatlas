@@ -80,6 +80,12 @@ def verify_sources(config):
     return provenance
 
 
+# The pinned table (FreeSurfer's 2012 revision) paints right cerebral white
+# matter green. FreeSurfer's current table gives it the left's colour; only that
+# is taken from it, since its renamed labels would ripple through the catalog.
+CURRENT_FREESURFER_COLORS = {41: [245, 245, 245]}
+
+
 def read_color_table():
     table = {}
     for line in (ROOT / "data/FreeSurferColorLUT.txt").read_text().splitlines():
@@ -88,6 +94,8 @@ def read_color_table():
             continue
         label, name, red, green, blue = fields[:5]
         table[int(label)] = (name, [int(red), int(green), int(blue)])
+    for label, color in CURRENT_FREESURFER_COLORS.items():
+        table[label] = (table[label][0], list(color))
     return table
 
 

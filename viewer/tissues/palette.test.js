@@ -54,9 +54,10 @@ const state = {
   isolatedRegion: null,
 };
 
-test('cut palette preserves atlas label colors in linear rendering space', () => {
+test('a cut paints a label in the colour its published sRGB value names', () => {
   const palette = createPalette(labels, state);
-  const expected = new Color().setRGB(23 / 255, 220 / 255, 60 / 255);
+  // Published colours are sRGB, as the surfaces' decoded glTF factors are now.
+  const expected = new Color().setRGB(23 / 255, 220 / 255, 60 / 255, SRGBColorSpace);
   assert.ok(Math.abs(palette[4] - expected.r) < 1e-7);
   assert.ok(Math.abs(palette[5] - expected.g) < 1e-7);
   assert.equal(palette[7], 1);

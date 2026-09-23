@@ -248,7 +248,7 @@ export class TissueSections {
     this.frame = frame;
     const state = this.model.state;
     // A cut-only atlas has no surface to cut parcels out of, so its published
-    // colours still have to come from the label volume and its 1 mm steps.
+    // colours still have to come from the label volume.
     const mri = state.surfaceColor === 'mri';
     this.anatomy.mriUniforms.scanEnabled.value = mri;
     updateCapLabels(this.anatomy.capLabels, layer, state);
@@ -324,7 +324,7 @@ export class TissueSections {
     }
   }
 
-  /** CPU picking uses the exact same nearest-cell rule as the GPU shader. */
+  /** CPU picking uses the label rule the GPU shader draws with. */
   intersect(raycaster) {
     if (!this.current) return null;
     this.group.updateMatrixWorld(true);
@@ -334,7 +334,7 @@ export class TissueSections {
     const solid = Boolean(cap);
     if (!hit) return null;
     if (cap?.object.material.userData.sampledLabels.value) {
-      const code = this.current.volume.nearest(worldToRas(hit.point));
+      const code = this.current.volume.label(worldToRas(hit.point));
       const label = this.current.metadata.labels[code];
       const visible = label && labelVisible(label, this.model.state, { regions: this.model.regions });
       if (!visible && (code !== 0 || this.model.state.isolatedRegion)) return null;
@@ -345,7 +345,7 @@ export class TissueSections {
     // whatever the segmentation put there, which is a different detail
     // level's region entirely. What was drawn is what was pointed at.
     if (hit.region) return { ...hit, region: this.model.regions.get(hit.region) ?? null };
-    const code = this.current.volume.nearest(worldToRas(hit.point));
+    const code = this.current.volume.label(worldToRas(hit.point));
     const label = this.current.metadata.labels[code];
     if (solid) {
       // The solid that was hit is the anatomy drawn there, and it is the one

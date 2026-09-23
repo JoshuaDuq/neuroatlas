@@ -35,7 +35,8 @@ nextbrain:
   - {id: mammillary, color: [225, 178, 87], name: Mammillary nuclei, name_fr: Noyaux mamillaires, system: Diencephalon, system_fr: Diencéphale, labels: [305, 306, 307, 308]}
   - {id: zona-incerta, color: [116, 161, 147], name: Zona incerta, name_fr: Zona incerta, system: Diencephalon, system_fr: Diencéphale, labels: [226]}
   - {id: lateral-geniculate, color: [81, 147, 192], name: Lateral geniculate nucleus, name_fr: Noyau géniculé latéral, system: Diencephalon, system_fr: Diencéphale, labels: [484]}
-  - {id: medial-geniculate, color: [153, 166, 88], name: Medial geniculate nucleus, name_fr: Noyau géniculé médial, system: Diencephalon, system_fr: Diencéphale, labels: [504]}
+  # NextBrain delineates only the dorsal division of the medial geniculate body.
+  - {id: medial-geniculate, color: [153, 166, 88], name: Dorsal medial geniculate nucleus, name_fr: Noyau géniculé médial dorsal, system: Diencephalon, system_fr: Diencéphale, labels: [504]}
   - id: hippocampus
     color: [94, 164, 158]
     name: Hippocampal formation

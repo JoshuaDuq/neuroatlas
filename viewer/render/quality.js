@@ -15,14 +15,15 @@ export function qualityProfile(input = {}) {
   const pixelRatio = input.pixelRatio ?? (globalThis.devicePixelRatio ?? 1);
   const deviceMemory = input.deviceMemory ?? (globalThis.navigator?.deviceMemory ?? 8);
   const integrated = input.integrated ?? detectIntegratedGpu();
+  const fewerPixels = integrated && !input.appleSilicon;
   const handheld = phone || coarse;
   const constrained = handheld || saveData || deviceMemory <= 4;
   const fillBound = constrained || integrated;
   return {
     mriPixelRatio: pixelRatio,
     pixelRatio: input.pixelRatio !== undefined
-      ? Math.min(pixelRatio, handheld || integrated ? 1.5 : 2)
-      : pixelRatioCap(integrated),
+      ? Math.min(pixelRatio, handheld || fewerPixels ? 1.5 : 2)
+      : pixelRatioCap(fewerPixels),
     msaaSamples: fillBound ? 2 : 4,
     prefetchLayers: !fillBound,
   };

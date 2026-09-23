@@ -3,13 +3,12 @@
 import numpy as np
 import trimesh
 import yaml
-from trimesh.smoothing import filter_taubin
 
 from . import nextbrain
 from .export import add_region, published_area_mm2, write_scene
-from .geometry import extract_structure
+from .geometry import extract_structure, smooth_display
 from .sources import ROOT, read_color_table
-from .volumes import load_on_grid
+from .volumes import conformed_grid, load_on_grid
 
 ATLAS_ID = "learning"
 
@@ -36,25 +35,6 @@ def combine_labels(volume, groups):
             if label < len(lookup):
                 lookup[label] = code
     return lookup[volume.astype(np.int64)]
-
-
-def smooth_display(source, settings):
-    iterations = settings["iterations"]
-    maximum = settings["maximum_displacement_mm"]
-    if not isinstance(iterations, int) or iterations < 1:
-        raise ValueError("Smoothing iterations must be a positive integer")
-    if not np.isfinite(maximum) or maximum <= 0:
-        raise ValueError("Display displacement must be finite and positive")
-    mesh = source.copy()
-    filter_taubin(mesh, lamb=0.5, nu=0.53, iterations=iterations)
-    displacement = mesh.vertices - source.vertices
-    lengths = np.linalg.norm(displacement, axis=1)
-    scale = np.ones_like(lengths)
-    np.divide(maximum, lengths, out=scale, where=lengths > maximum)
-    mesh.vertices = source.vertices + displacement * scale[:, None]
-    if not np.isfinite(mesh.vertices).all() or mesh.volume <= 0:
-        raise ValueError("Display smoothing produced invalid geometry")
-    return mesh
 
 
 def expand_nextbrain(groups, table):
@@ -91,21 +71,26 @@ def expand_nextbrain(groups, table):
 
 
 def source_groups(config):
+    """Each source's label grid and display units; the two grids need not match."""
     definition = read_definition()
-    image, labels, table = nextbrain.load(config)
-    yield (
-        "nextbrain",
-        image,
-        labels,
-        table,
-        expand_nextbrain(definition["nextbrain"], table),
-    )
-    image = load_on_grid(config, config["source_directory"] / "mri/aseg.mgz")
+    grid, table = nextbrain.load(config)
+    yield "nextbrain", grid, table, expand_nextbrain(definition["nextbrain"], table)
+    grid = conformed_grid(load_on_grid(config, config["source_directory"] / "mri/aseg.mgz"))
     table = read_color_table()
     for group in definition["aseg"]:
         if set(group["labels"]) - set(table):
             raise ValueError(f"Unknown aseg constituent: {group['id']}")
-    yield "aseg", image, np.asarray(image.dataobj), table, definition["aseg"]
+    yield "aseg", grid, table, definition["aseg"]
+
+
+def source_grids(grids):
+    return {
+        source: {
+            "voxel_to_surface_ras_mm": grid.voxel_to_surface.tolist(),
+            "voxel_size_mm": grid.spacing_mm,
+        }
+        for source, grid in grids
+    }
 
 
 def constituent_id(source, side, label):
@@ -141,19 +126,22 @@ def build(config):
     definition = read_definition()
     scene = trimesh.Scene()
     regions = []
-    for source, image, volume, table, groups in source_groups(config):
+    grids = []
+    for source, grid, table, groups in source_groups(config):
+        grids.append((source, grid))
+        volume, affine = grid.labels, grid.voxel_to_surface
         combined = combine_labels(volume, groups)
-        affine = image.header.get_vox2ras_tkr()
-        voxel_volume = float(abs(np.linalg.det(affine[:3, :3])))
         for code, group in enumerate(groups, 1):
             if not np.any(combined == code):
                 continue
             region = region_record(group, source, volume)
             original = extract_structure(combined, code, affine)
-            mesh = smooth_display(original, definition["smoothing"])
+            mesh = smooth_display(
+                original, combined == code, affine, definition["smoothing"]
+            )
             region.update(
-                voxel_size_mm=[float(x) for x in image.header.get_zooms()[:3]],
-                segmentation_volume_mm3=region["voxel_count"] * voxel_volume,
+                voxel_size_mm=grid.spacing_mm,
+                segmentation_volume_mm3=region["voxel_count"] * grid.voxel_volume_mm3,
                 display_maximum_displacement_mm=float(
                     np.linalg.norm(mesh.vertices - original.vertices, axis=1).max()
                 ),
@@ -178,7 +166,7 @@ def build(config):
         "label": definition["label"],
         "file": "learning.glb",
         "region_count": len(regions),
-        "voxel_to_surface_ras_mm": affine.tolist(),
+        "source_grids": source_grids(grids),
         "palette_method": "Distinct teaching colours for display units, not the source LUT",
         "display_geometry": {
             "method": "Explicit source-label unions; bounded Taubin display smoothing",

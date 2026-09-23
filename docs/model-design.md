@@ -53,5 +53,5 @@ labels. Visually inspect the assembled model and test picking in a browser.
 
 These checks establish conversion fidelity, not clinical accuracy. The anatomy
 is one published individual's, so it is exact for that person and nobody else.
-The HCP projection, the NextBrain warp and the voxel segmentation each carry
-uncertainty that dense meshing does not remove.
+The HCP projection, the NextBrain segmentation and the voxel segmentation each
+carry uncertainty that dense meshing does not remove.

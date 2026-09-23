@@ -309,7 +309,7 @@ export class BrainSections extends EventTarget {
   }
 
   sample(point) {
-    const labelId = this.volumes.segmentation.nearest(point);
+    const labelId = this.volumes.segmentation.label(point);
     const region = [...this.model.regions.values()].find(
       (region) => region.kind === 'structure' && region.source_label_id === labelId,
     );
