@@ -9,12 +9,12 @@
  * a previous deploy paired with a freshly deployed bundle fails to start — and
  * the wrong one for a reader who opens the atlas twice in a lecture.
  *
- * So freshness is settled by the cache's *name* rather than by revalidating
- * each file. `MODEL_VERSION` is a hash of what the published manifests say, so
- * publishing a new brain opens a new cache and the old one is deleted, while
- * deploying a code change alone leaves the model cache exactly where it is.
- * Within one version the bytes cannot have changed, so serving them from
- * storage without asking is not a guess.
+ * So freshness is settled by the URL rather than by revalidating each file.
+ * The page asks for every model file with `?v=<model version>`, a hash of the
+ * published model files, and entries are keyed by that full URL. A worker left
+ * over from the previous deploy still controls the first load after a new one;
+ * keyed by path alone it answered the new manifest with the old geometry.
+ * Deploying a code change alone leaves the version, and the cache, alone.
  *
  * Nothing is precached. A first visit fetches what it always did, at the speed
  * it always did, and fills the cache as it goes.
@@ -44,20 +44,31 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET') return;
+  // The page carries the model version its requests ask for, and GitHub Pages
+  // lets the browser keep it ten minutes. A stale page asks for the previous
+  // deploy's anatomy by name and pairs it with the current manifest, so the
+  // page is always revalidated; offline, the stored copy still opens.
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request.url, { cache: 'no-cache', credentials: 'same-origin' })
+      .then(response => (response.redirected ? fetch(request) : response))
+      .catch(() => fetch(request)));
+    return;
+  }
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !CACHEABLE.test(url.pathname)) return;
 
   event.respondWith((async () => {
+    const key = url.pathname + url.search;
     const cache = await caches.open(MODEL_CACHE);
-    const stored = await cache.match(url.pathname);
+    const stored = await cache.match(key);
     if (stored) return stored;
-    // `no-cache` on the app's own request would defeat the point of storing
-    // this, and within a version there is nothing to revalidate against.
-    const response = await fetch(url.pathname, { cache: 'default' });
+    // Revalidate: the HTTP cache may still hold the previous deploy's bytes,
+    // and storing those under this version would pin them until the next one.
+    const response = await fetch(key, { cache: 'no-cache' });
     // A partial or failed response must not become the copy every later visit
     // gets; let the app see the error and try again next time.
     if (response.ok && response.status === 200) {
-      cache.put(url.pathname, response.clone()).catch(() => {});
+      cache.put(key, response.clone()).catch(() => {});
     }
     return response;
   })());

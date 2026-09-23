@@ -13,7 +13,35 @@
  */
 export const REVALIDATE = { cache: 'no-cache', priority: 'high' };
 
-export const fetchPublished = (url, options) => fetch(url, { ...REVALIDATE, ...options });
+/**
+ * Hash of the published model files, stamped in by the build. It rides on
+ * every request so the service worker and the CDN key each file by version.
+ */
+export const MODEL_VERSION = typeof __MODEL_VERSION__ === 'string' ? __MODEL_VERSION__ : '';
+
+export function versioned(url) {
+  if (!MODEL_VERSION) return String(url);
+  const pinned = new URL(url, globalThis.location?.href);
+  pinned.searchParams.set('v', MODEL_VERSION);
+  return pinned.href;
+}
+
+export const fetchPublished = (url, options) => fetch(versioned(url), { ...REVALIDATE, ...options });
+
+/**
+ * Reload without the stored anatomy. A retry follows a failure the reader
+ * cannot diagnose, and a bad stored copy would otherwise fail the same way.
+ */
+export async function reloadWithoutStoredModels() {
+  try {
+    for (const name of await caches.keys()) {
+      if (name.startsWith('neuroatlas-models-')) await caches.delete(name);
+    }
+  } catch {
+    // No Cache Storage (or blocked): a plain reload is all there is.
+  }
+  globalThis.location.reload();
+}
 
 /** The same instruction, for loaders that build their own request. */
 export const REVALIDATE_HEADER = { 'Cache-Control': 'no-cache' };

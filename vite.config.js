@@ -7,8 +7,29 @@ import { parse } from 'yaml';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 
+/*
+ * One hash over every published model file. Hashing only the manifests missed
+ * geometry: the cortex and interior layers carry no checksum of their own.
+ */
+function modelVersion() {
+  const models = resolve(root, 'public/models');
+  const digest = createHash('sha256');
+  const walk = dir => {
+    for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const path = resolve(dir, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else digest.update(entry.name).update(readFileSync(path));
+    }
+  };
+  if (existsSync(models)) walk(models);
+  return digest.digest('hex').slice(0, 16);
+}
+
+const MODEL_VERSION = modelVersion();
+
 export default defineConfig({
   base: '/neuroatlas/',
+  define: { __MODEL_VERSION__: JSON.stringify(MODEL_VERSION) },
   build: {
     target: 'es2022',
     rollupOptions: {
@@ -45,32 +66,16 @@ export default defineConfig({
       },
     },
     {
-      /*
-       * Emit the service worker, stamped with a version derived from what the
-       * published manifests say rather than from this build. A code-only
-       * deploy then leaves a reader's cached anatomy alone; republishing a
-       * brain replaces it.
-       */
+      name: 'model-version-in-html',
+      transformIndexHtml: html => html.replace('__MODEL_VERSION__', MODEL_VERSION),
+    },
+    {
+      // Emit the service worker, stamped with the same model version the page
+      // puts on its requests.
       name: 'model-service-worker',
       closeBundle() {
-        const models = resolve(root, 'dist/models');
-        if (!existsSync(models)) return;
-        const digest = createHash('sha256');
-        // The manifests carry a checksum per published file, so hashing them
-        // covers every asset without reading a hundred megabytes of geometry.
-        for (const name of readdirSync(models).sort()) {
-          for (const file of ['manifest.json', 'tissue-labels.json', 'volumes.json']) {
-            const path = resolve(models, name, file);
-            if (existsSync(path)) digest.update(readFileSync(path));
-          }
-        }
-        const index = resolve(root, 'dist/models/anatomies.json');
-        if (existsSync(index)) digest.update(readFileSync(index));
         const source = readFileSync(resolve(root, 'viewer/service-worker.js'), 'utf8');
-        writeFileSync(
-          resolve(root, 'dist/sw.js'),
-          source.replace('__MODEL_VERSION__', digest.digest('hex').slice(0, 16)),
-        );
+        writeFileSync(resolve(root, 'dist/sw.js'), source.replace('__MODEL_VERSION__', MODEL_VERSION));
       },
     },
   ],

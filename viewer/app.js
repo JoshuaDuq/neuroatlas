@@ -3,6 +3,7 @@ import { createCatalog } from './catalog/catalog.js';
 import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion } from './clinical/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
+import { reloadWithoutStoredModels } from './model/published-assets.js';
 import { VIEW_DIRECTIONS, fitDistance, frameTo, upFor } from './render/camera-views.js';
 import { DOLLY_KEYS, ORBIT_KEYS, dolliedPosition, orbitedPosition } from './render/keyboard-orbit.js';
 import { createPicker } from './render/picking.js';
@@ -92,10 +93,13 @@ export async function startApp() {
   // The colophon links the manifest of the brain actually on screen, which is
   // not knowable until the index has been read.
   document.getElementById('provenance')?.setAttribute('href', manifestUrl);
+  // The layers download in parallel. Once one has failed, the other's
+  // progress must not paint "Loading" back over the error.
+  let loadFailed = false;
   const model = await BrainAtlas.load(manifestUrl, wanted.atlas, {
     detail: wanted.detail,
     onProgress: progress => {
-      if (!progress?.total) return;
+      if (loadFailed || !progress?.total) return;
       session.setProgress({ loaded: progress.loaded, total: progress.total });
       const bar = document.getElementById('stage-bar');
       const message = document.getElementById('stage-message');
@@ -105,6 +109,9 @@ export async function startApp() {
       message.textContent = t(initialLang, 'viewport')
         .loadingWithTotal(progress.loaded, progress.total);
     },
+  }).catch(error => {
+    loadFailed = true;
+    throw error;
   });
 
   const catalog = createCatalog(model.manifest, initialLang);
@@ -639,7 +646,7 @@ export async function startApp() {
   chrome = createViewportChrome({
     networks: model.manifest.networks,
     onView: applyView,
-    onRetry: () => globalThis.location.reload(),
+    onRetry: reloadWithoutStoredModels,
     onSnapshot,
   });
   chrome.setViewport(scene.visibleRect);
