@@ -1,4 +1,5 @@
 import { startApp } from './app.js';
+import { reloadWithoutStoredModels } from './model/published-assets.js';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
@@ -31,7 +32,7 @@ function fail(message, { retryable }) {
   document.getElementById('stage-message').textContent = message;
   const retry = document.getElementById('stage-retry');
   retry.hidden = !retryable;
-  if (retryable) retry.addEventListener('click', () => globalThis.location.reload());
+  if (retryable) retry.addEventListener('click', reloadWithoutStoredModels);
 }
 
 /**

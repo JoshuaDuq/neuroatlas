@@ -38,8 +38,10 @@ function bootWorker({ version = 'testversion', origin = 'https://example.org' } 
   };
 
   const responses = new Map();
-  const fetchStub = async url => {
+  const fetchOptions = [];
+  const fetchStub = async (url, options) => {
     fetched.push(String(url));
+    fetchOptions.push(options);
     const made = responses.get(String(url))
       ?? { ok: true, status: 200, body: `bytes:${url}` };
     return { ...made, clone: () => ({ ...made }) };
@@ -49,14 +51,14 @@ function bootWorker({ version = 'testversion', origin = 'https://example.org' } 
   new Function('self', 'caches', 'fetch', 'URL',
     SOURCE.replace('__MODEL_VERSION__', version))(self, caches, fetchStub, URL);
 
-  const request = (url, method = 'GET') => {
+  const request = (url, method = 'GET', mode = 'cors') => {
     const handler = listeners.get('fetch');
     let answered;
-    handler({ request: { method, url }, respondWith: promise => { answered = promise; } });
+    handler({ request: { method, url, mode }, respondWith: promise => { answered = promise; } });
     return answered;
   };
 
-  return { self, listeners, storage, fetched, responses, request, caches };
+  return { self, listeners, storage, fetched, fetchOptions, responses, request, caches };
 }
 
 const modelUrl = (origin, file) => `${origin}/neuroatlas/models/bert/${file}`;
@@ -141,4 +143,30 @@ test('it takes over immediately rather than waiting for every tab to close', () 
   const worker = bootWorker();
   worker.listeners.get('install')({});
   assert.ok(worker.self.skipped);
+});
+
+test('a copy stored for one model version never answers a request for another', async () => {
+  const worker = bootWorker();
+  const url = modelUrl('https://example.org', 'cortex-destrieux.glb');
+  await worker.request(`${url}?v=old`);
+  await worker.request(`${url}?v=new`);
+  assert.deepEqual(worker.fetched, [
+    '/neuroatlas/models/bert/cortex-destrieux.glb?v=old',
+    '/neuroatlas/models/bert/cortex-destrieux.glb?v=new',
+  ]);
+});
+
+test('filling the cache revalidates instead of trusting the HTTP cache', async () => {
+  const worker = bootWorker();
+  await worker.request(modelUrl('https://example.org', 'learning.glb'));
+  assert.equal(worker.fetchOptions[0].cache, 'no-cache');
+});
+
+test('the page itself is always revalidated, so its model version is current', async () => {
+  const worker = bootWorker();
+  const answered = worker.request('https://example.org/neuroatlas/', 'GET', 'navigate');
+  assert.ok(answered, 'navigations are answered by the worker');
+  await answered;
+  assert.deepEqual(worker.fetched, ['https://example.org/neuroatlas/']);
+  assert.equal(worker.fetchOptions[0].cache, 'no-cache');
 });

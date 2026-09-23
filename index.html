@@ -20,7 +20,7 @@
     <meta property="og:image" content="https://joshuaduq.github.io/neuroatlas/preview.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="A full-resolution reconstruction of one person's cerebral cortex and cerebellum, lit from the left on a dark field, with every gyrus and sulcus of the source surface visible." />
+    <meta property="og:image:alt" content="A full-resolution reconstruction of one person's right cerebral hemisphere and cerebellum, seen from the side on a dark field, with each Destrieux cortical region in its own colour." />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- Matches --surface-base in dark mode (default layout). -->
     <meta name="theme-color" content="#1c222b" />
@@ -38,10 +38,12 @@
         // Same prefix as vite.config.js `base`, so a missing trailing slash
         // on the page URL cannot send 25 MB at the site root.
         var root = '/neuroatlas/';
+        // Keyed by the plain URL, fetched with the model version, as `fetchPublished` does.
+        var version = '__MODEL_VERSION__';
         function start(file) {
           var url = new URL(root + file, location.origin).href;
           if (!window.__neuroatlasAssets[url]) {
-            window.__neuroatlasAssets[url] = fetch(url, { cache: 'no-cache', priority: 'high' });
+            window.__neuroatlasAssets[url] = fetch(url + '?v=' + version, { cache: 'no-cache', priority: 'high' });
           }
           return window.__neuroatlasAssets[url];
         }
