@@ -79,3 +79,55 @@ def test_extract_structure_applies_voxel_affine_and_outward_winding():
 def test_missing_structure_is_an_error():
     with pytest.raises(ValueError, match="absent"):
         extract_structure(np.zeros((4, 4, 4), dtype=np.int32), 7, np.eye(4))
+
+
+TKR = np.array([[-1.0, 0, 0, 8], [0, 0, 1, -8], [0, -1, 0, 8], [0, 0, 0, 1]])
+
+
+def sphere_mask(shape=16, radius=5.2):
+    grid = np.indices((shape,) * 3) - (shape - 1) / 2
+    return (grid ** 2).sum(axis=0) < radius ** 2
+
+
+@pytest.mark.parametrize("affine", [np.eye(4), TKR])
+def test_a_raw_marching_cubes_surface_keeps_every_voxel_centre_on_its_side(affine):
+    from brain_model.geometry import misclassified_voxels
+
+    mask = sphere_mask()
+    mesh = extract_structure(mask, 1, affine)
+    assert len(misclassified_voxels(mesh.vertices, mesh.faces, mask, affine)) == 0
+
+
+def test_a_surface_moved_one_voxel_misplaces_the_two_slabs_it_crossed():
+    from brain_model.geometry import misclassified_voxels
+
+    mask = np.zeros((12, 12, 12), dtype=bool)
+    mask[4:8, 4:8, 4:8] = True
+    mesh = extract_structure(mask, 1, np.eye(4))
+    moved = mesh.vertices + [1.0, 0.0, 0.0]
+    misplaced = misclassified_voxels(moved, mesh.faces, mask, np.eye(4))
+    # The slab at x=4 is left behind and the one at x=8 is taken in: 2 x 16.
+    assert len(misplaced) == 32
+    assert sorted(set(misplaced[:, 0].tolist())) == [4, 8]
+
+
+# bert's warped left diagonal band: 15 voxels, one of them cut off. Taubin
+# smoothing alone carries its surface across two of these voxel centres.
+DIAGONAL_BAND = [[1, 1, 4], [3, 2, 4], [4, 2, 3], [4, 2, 4], [4, 3, 3], [5, 3, 3],
+                 [6, 3, 3], [7, 3, 2], [7, 3, 3], [8, 3, 1], [8, 3, 2], [8, 3, 3],
+                 [9, 3, 1], [9, 3, 2], [9, 3, 3]]
+
+
+@pytest.mark.parametrize("affine", [np.eye(4), TKR])
+def test_display_smoothing_keeps_every_voxel_centre_on_its_own_side(affine):
+    from brain_model.geometry import misclassified_voxels, smooth_display
+
+    mask = np.zeros((12, 6, 7), dtype=bool)
+    mask[tuple(np.array(DIAGONAL_BAND).T)] = True
+    source = extract_structure(mask, 1, affine)
+    smoothed = smooth_display(source, mask, affine,
+                              {"iterations": 16, "maximum_displacement_mm": 0.6})
+    displacement = np.linalg.norm(smoothed.vertices - source.vertices, axis=1)
+    assert 0.05 < displacement.max() <= 0.6 + 1e-9
+    assert len(misclassified_voxels(smoothed.vertices, smoothed.faces, mask, affine)) == 0
+    np.testing.assert_array_equal(smoothed.faces, source.faces)

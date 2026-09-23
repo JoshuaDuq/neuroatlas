@@ -68,3 +68,45 @@ def test_a_sliver_records_an_area_that_round_trips_within_the_manifest_tolerance
         vertices.astype(np.float32).astype(np.float64), faces, process=False
     )
     assert abs(recorded - stored.area * 1e6) / recorded < 1e-6
+
+
+def test_display_colours_are_published_as_the_linear_factors_gltf_defines(tmp_path):
+    # baseColorFactor is linear. Writing an sRGB display colour's bytes there
+    # rendered every region lighter and greyer than its published colour.
+    from brain_model.encode import _read_glb
+
+    vertices = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0], [0.0, 10.0, 0.0]])
+    faces = np.array([[0, 1, 2]])
+    normals = np.tile([0.0, 0.0, 1.0], (3, 1))
+    scene = trimesh.Scene()
+    for label, color in ((1, [210, 150, 67]), (2, [20, 20, 20])):
+        region = {"id": f"aseg:left:{label}", "label": "Test", "atlas": "aseg",
+                  "hemisphere": "left", "source_label_id": label, "kind": "structure"}
+        add_region(scene, vertices, faces, normals, region, color)
+    path = tmp_path / "colours.glb"
+    write_scene(scene, path)
+    gltf, _ = _read_glb(path.read_bytes())
+    factors = {
+        material["name"]: material["pbrMetallicRoughness"]["baseColorFactor"]
+        for material in gltf["materials"]
+    }
+    assert factors["aseg:left:1"] == pytest.approx([0.64448, 0.30499, 0.05613, 1.0], abs=1e-5)
+    # A dark colour is where an 8-bit linear factor would visibly shift it.
+    assert factors["aseg:left:2"] == pytest.approx([0.0069954] * 3 + [1.0], abs=1e-6)
+
+
+def test_a_published_colour_reads_back_as_the_display_colour_it_was_given(tmp_path):
+    # What validation compares against a palette: trimesh would round the
+    # linear factor to a byte, which no longer names the display colour.
+    from brain_model.encode import published_display_colors
+
+    vertices = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0], [0.0, 10.0, 0.0]])
+    region = {"id": "learning:left:putamen", "label": "Putamen", "atlas": "learning",
+              "hemisphere": "left", "source_label_id": None, "kind": "structure"}
+    scene = trimesh.Scene()
+    add_region(scene, vertices, np.array([[0, 1, 2]]), np.tile([0.0, 0.0, 1.0], (3, 1)),
+               region, [210, 150, 67])
+    path = tmp_path / "learning.glb"
+    write_scene(scene, path)
+    colors = published_display_colors(path)
+    assert colors["learning:left:putamen"] == pytest.approx([210, 150, 67], abs=1e-9)

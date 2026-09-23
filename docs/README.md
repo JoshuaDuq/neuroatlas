@@ -11,7 +11,7 @@ The documentation is organized into six core modules:
 | Module | Focus Area | Key Contents |
 | :--- | :--- | :--- |
 | [**System Architecture**](architecture.md) | Rendering & Asset Pipelines | Coordinate frames, glTF 2.0 binary layout, GPU stencil capping, 3D volume texture sampling, mesh quantization |
-| [**Atlases & Parcellations**](atlases.md) | Anatomical & Functional Layers | Destrieux (148), HCP-MMP1.0 (360), Learning Anatomy (82), Aseg (35), NextBrain (483), Gyral White Matter (68), Spinal Cord (58), Yeo Networks (7) |
+| [**Atlases & Parcellations**](atlases.md) | Anatomical & Functional Layers | Destrieux (148), HCP-MMP1.0 (360), Learning Anatomy (82), Aseg (35), NextBrain (515), Gyral White Matter (68), Spinal Cord (58), Yeo Networks (7) |
 | [**Subject Anatomies**](anatomies.md) | Multi-Anatomy Support & Rationale | Declared anatomies (`bert`, `fsaverage`, `aomic`), MRIQC selection metrics, subject preparation scripts, and excluded datasets |
 | [**Viewer & API Usage**](usage.md) | Interactive UI & Programmatic APIs | WebGL viewer controls, anatomical cuts, Three.js headless API (`BrainAtlas`, `BrainSections`), Python build CLI |
 | [**Validation & Invariants**](validation.md) | Numerical Fidelity & QA | Topological invariants, surface area conservation, quantization bounds, round-trip tests, and explicit scientific limitations |

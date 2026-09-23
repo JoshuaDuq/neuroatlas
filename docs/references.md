@@ -18,6 +18,8 @@ NeuroAtlas combines published neuroimaging datasets, peer-reviewed cortical atla
 - **FreeSurfer Automated Segmentation (`aseg`, `wmparc`)**:
   Fischl, B., Salat, D. H., Busa, E., Albert, M., Dieterich, M., Haselgrove, C., van der Kouwe, A., Killiany, R., Kennedy, D., Klaveness, S., Montillo, A., Makris, N., Rosen, B., & Dale, A. M. (2002). Whole brain segmentation: automated labeling of neuroanatomical structures in the human brain. *Neuron*, 33(3), 341–355. [DOI: 10.1016/S0896-6273(02)00569-X](https://doi.org/10.1016/S0896-6273(02)00569-X)
   Fischl, B., van der Kouwe, A., Destrieux, C., Halgren, E., Ségonne, F., Salat, D. H., Busa, E., Seidman, L. J., Goldstein, J., Kennedy, D., Caviness, V., Makris, N., Rosen, B., & Dale, A. M. (2004). Automatically parcellating the human cerebral cortex. *Cerebral Cortex*, 14(1), 11–22. [DOI: 10.1093/cercor/bhh079](https://doi.org/10.1093/cercor/bhh079)
+- **NextBrain Probabilistic Histological Atlas**:
+  Casamitjana, A., Mancini, M., Robinson, E., Peter, L., Annunziata, R., Althonayan, J., … Jaunmuktane, Z., & Iglesias, J. E. (2025). A probabilistic histological atlas of the human brain for MRI segmentation. *Nature*, 648(8094), 678–685. [DOI: 10.1038/s41586-025-09708-2](https://doi.org/10.1038/s41586-025-09708-2). Each brain's labels are its own segmentation with the atlas, run by `scripts/segment_nextbrain.py` through FreeSurfer 8.2's SuperSynth and `mri_histo_atlas_segment_fireants`.
 
 ### Reference Datasets & Tools
 - **Amsterdam Open MRI Collection (AOMIC-PIOP1)**:
@@ -38,6 +40,7 @@ Each asset layer carries specific legal obligations defined by its data origin:
 | bert / fsaverage assets      FreeSurfer Distribution   FreeSurfer Software License|
 | aomic assets (sub-0022)      OpenNeuro ds002785        CC0 1.0 (Public Domain)    |
 | cortex-hcp-mmp.glb           Human Connectome Project  HCP Open Access Terms      |
+| nextbrain / learning units   FreeSurfer 8.2 NextBrain  No separate licence named  |
 | spinal-cord.glb              Z-Anatomy / BodyParts3D   CC BY-SA 4.0 (Copyleft)    |
 | Viewer & Build Pipeline Code NeuroAtlas Repository     MIT License                |
 +-----------------------------------------------------------------------------------+
@@ -51,6 +54,11 @@ The complete license text is preserved at [`public/models/licenses/FreeSurfer.ht
 
 ### CC0 1.0 Universal (`aomic`)
 The `aomic` anatomy (`sub-0022`) is published under Creative Commons Zero (CC0). It is dedicated to the public domain and imposes no redistribution restrictions or proprietary license covenants.
+
+### NextBrain (`nextbrain.glb`, NextBrain-sourced `learning.glb` units, `tissues-nextbrain.volume`)
+The NextBrain atlas (`atlas_simplified.zip`) and the SuperSynth model are downloaded from FreeSurfer's distribution server, and the segmentation tool ships inside FreeSurfer 8.2. The NextBrain paper names no separate licence for the atlas: its code-availability statement says the segmentation tool "is integrated in our neuroimaging toolkit 'FreeSurfer'". NeuroAtlas therefore claims no terms for these files beyond FreeSurfer's own. The exact files used, with their SHA-256 checksums, are recorded in `data/sources.json`.
+
+The earlier 1 mm NextBrain source, `compneurobilbao/nextbrain-mni-atlas`, published no licence and is no longer used for `bert` or `aomic`. The unpublished `fsaverage` anatomy still carries a volume warped from it.
 
 ### HCP Data-Use Terms (`cortex-hcp-mmp.glb`)
 Redistribution of HCP-MMP1.0 annotations requires compliance with the Human Connectome Project Data Use Terms, requiring proper attribution and prohibiting any attempt to re-identify participants. Full terms are preserved at [`public/models/licenses/HCP-Data-Use-Terms.txt`](../public/models/licenses/HCP-Data-Use-Terms.txt).

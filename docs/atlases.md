@@ -11,8 +11,8 @@ NeuroAtlas integrates eight distinct anatomical, histological, and functional pa
 | **Destrieux (`aparc.a2009s`)** | Cortical Surface | 148 parcels + 2 walls | FreeSurfer `.annot` | Native subject folding; zero projection |
 | **HCP-MMP1.0** | Cortical Surface | 360 areas | `fs_LR` $\to$ `fsaverage` | Resampled via `sphere.reg` spherical nearest neighbor |
 | **Learning Anatomy** | Deep / Internal | 82 teaching solids | NextBrain + Aseg unions | Taubin smoothed ($\le 0.6\text{ mm}$ bounded displacement) |
-| **Aseg Reference** | Subcortical | 35 structures | `aseg.mgz` volume | Native marching cubes ($0.5$ isovalue) |
-| **NextBrain Histology** | Histological | 483 ROIs (298 3D) | MNI152 histology | ANTs non-linear SyN warp to `orig.mgz` |
+| **Aseg Reference** | Subcortical | 35 structures | `aseg.mgz` volume | Marching cubes, smoothed $\le 0.6\text{ mm}$ with every voxel centre kept on its side |
+| **NextBrain Histology** | Histological | 515 ROIs (328 3D) | Subject segmentation, 0.4 mm | FreeSurfer 8.2 NextBrain on `orig.mgz`; cut faces 0.8 mm |
 | **Gyral White Matter** | Subcortical Ribbon| 68 parcels | `wmparc.mgz` volume | Native 5 mm nearest Desikan gyrus boundary |
 | **Spinal Cord** | Neuroaxis Reference| 58 tracts & horns | Z-Anatomy mesh | Canonical schematic assembly translated below brainstem |
 | **Yeo 7 Networks** | Functional Network | 7 networks | Schaefer 2018 on `fsaverage`| Vertex-level mapping across registered spheres |
@@ -40,7 +40,7 @@ NeuroAtlas integrates eight distinct anatomical, histological, and functional pa
 
 ## 3. Learning Anatomy: 82 Overview Structures
 
-- **Pedagogical Goal**: Bridges the gap between coarse 35-structure segmentations and overwhelming 483-region histological atlases by organizing anatomy into **eight cohesive systems**:
+- **Pedagogical Goal**: Bridges the gap between coarse 35-structure segmentations and overwhelming 515-region histological atlases by organizing anatomy into **eight cohesive systems**:
   1. **Basal Ganglia**: Caudate, putamen, globus pallidus (GPi/GPe), subthalamic nucleus, substantia nigra.
   2. **Diencephalon**: Thalamic nuclei complexes, epithalamus, hypothalamus, mammillary bodies.
   3. **Limbic System**: Hippocampal formation, amygdaloid complex, fornix, cingulate connections.
@@ -63,14 +63,18 @@ NeuroAtlas supports three mutually exclusive internal detail levels:
 ```
 [Level 1: Learning Anatomy] ---> 82 pedagogical overview solids (Default)
 [Level 2: Aseg Reference]   ---> 35 FreeSurfer native segmentation structures
-[Level 3: NextBrain Detail]  ---> 298 solid histological nuclei
+[Level 3: NextBrain Detail]  ---> 328 solid histological nuclei
 ```
 
 - **Aseg (Level 2)**: Extracted from `aseg.mgz` at native $1\text{ mm}$ voxel resolution using marching cubes at an isovalue of $0.5$.
+- **Display smoothing (all three levels)**: The voxel staircase is smoothed with the same bounded Taubin filter as the learning solids: no vertex moves more than $0.6\text{ mm}$, and wherever smoothing would carry the surface across a voxel centre it is pulled back until none is crossed. Every source voxel therefore lies on the same side of the published surface as it does of the raw marching-cubes surface; validation re-voxelizes each solid to prove it.
 - **NextBrain (Level 3)**:
-  - 483 histological regions segmented on an ex-vivo MNI152 template.
-  - Resampled onto the subject's native T1w volume via ANTs non-linear SyN warping (`scripts/warp_nextbrain.py`) using `genericLabel` interpolation.
-  - 298 structures meet the `minimum_mesh_voxels` threshold and are rendered as 3D solids. The remaining 185 regions (e.g., thin lamina, deep white matter sheets) are preserved as interactive 3D cut labels.
+  - 515 histological regions from this brain's own NextBrain segmentation (bert). `scripts/segment_nextbrain.py` runs FreeSurfer 8.2's SuperSynth and then NextBrain's Bayesian segmentation (`mri_histo_atlas_segment_fireants`, `invivo` mode, CPU) on each hemisphere of `orig.mgz`, which takes about 20 minutes per brain.
+  - FreeSurfer writes each hemisphere on its own 0.4 mm grid. The two are joined by nearest neighbour onto one 0.4 mm grid in the subject's surface RAS, moving no label more than 0.25 mm. The few thousand midline voxels both sides label go to the side given by SuperSynth's MNI $x$, the rule FreeSurfer splits the hemispheres by.
+  - The build places the volume through `orig.mgz`'s scanner-to-surface transform, never through the volume's own header: an MGH header's tkregister matrix is centred on that volume, and it is surface RAS only for the conformed 256³ grid.
+  - 328 structures of at least $10\text{ mm}^3$ (`minimum_mesh_volume_mm3`) are meshed at 0.4 mm and rendered as 3D solids. The remaining 187 regions (white matter, cerebellar cortical layers, cortical parcels and smaller nuclei) are cut labels only.
+  - Cut faces sample a 0.8 mm copy: each $2 \times 2 \times 2$ block of source voxels takes its most frequent label, a tie going to the label rarer in the whole volume. This keeps the GPU label texture at 11 MiB, not 88 MiB. The cost is thin structures coarser on a cut than on their surfaces, and cut-only fragments of at most $4.5\text{ mm}^3$ that win no block (20 on bert, 29 on aomic). Search still finds them, marked as too small for the cut, and the manifest keeps their measured volumes.
+  - Workarounds needed to run FreeSurfer 8.2 on macOS arm64 live in `scripts/freesurfer/`. There are three: a sliced 3D convolution replacing torch's 90 GB im2col path, two earlier memory releases in SuperSynth, and a stand-in for an unused OpenCV import. None changes a computed value. `data/sources.json` records each one's justification, together with the FreeSurfer build, the model and atlas checksums, and the crop.
 
 ---
 

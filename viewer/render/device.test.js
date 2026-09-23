@@ -17,3 +17,12 @@ test('discrete NVIDIA, Radeon RX/Pro and Intel Arc are not integrated', () => {
   assert.equal(isIntegratedGpu('AMD Radeon Pro 5500M OpenGL Engine'), false);
   assert.equal(isIntegratedGpu('Intel Arc A770'), false);
 });
+
+test('Apple silicon is recognised from what WebGL reports', async () => {
+  const { isAppleSilicon } = await import('./device.js');
+  assert.equal(isAppleSilicon('ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)'), true);
+  assert.equal(isAppleSilicon('Apple M4 Pro'), true);
+  assert.equal(isAppleSilicon('Intel(R) UHD Graphics 770'), false);
+  assert.equal(isAppleSilicon('AMD Radeon Graphics'), false);
+  assert.equal(isAppleSilicon(''), false);
+});

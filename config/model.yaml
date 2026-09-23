@@ -28,6 +28,7 @@ anatomies:
     nextbrain:
       directory: data/nextbrain-bert
       volume: nextbrain-bert.mgz
+      procedure: subject-segmentation
   fsaverage:
     subject: fsaverage
     display_name: FreeSurfer fsaverage
@@ -40,6 +41,7 @@ anatomies:
     nextbrain:
       directory: data/nextbrain
       volume: nextbrain-fsaverage.mgz
+      procedure: mni152-warp
   aomic:
     subject: sub-0022
     display_name: AOMIC-PIOP1 “sub-0022”
@@ -57,6 +59,7 @@ anatomies:
     nextbrain:
       directory: data/nextbrain-aomic
       volume: nextbrain-aomic.mgz
+      procedure: subject-segmentation
 
 output_directory: public/models
 spinal_cord:
@@ -398,18 +401,27 @@ atlases:
     annotation: HCPMMP1
     citation: https://doi.org/10.1038/nature18933
 # A cut-label atlas with no cortical surface counterpart. Optional: the volume
-# is produced once by scripts/warp_nextbrain.py, which needs ANTs.
-# `directory` and `volume` come from the selected anatomy: the warp targets one
-# brain, everything else here describes the published atlas itself.
+# is produced once per brain by scripts/segment_nextbrain.py, which needs
+# FreeSurfer 8.2. `directory`, `volume` and `procedure` come from the selected
+# anatomy; everything else here describes the published atlas itself.
+# fsaverage keeps the 1 mm MNI152 warp it was built with; it is not published.
 nextbrain:
   label: NextBrain histological atlas
   citation: https://doi.org/10.1038/s41586-025-09708-2
   lut: nextbrain-lut.txt
   # Below this, an ROI stays a cut label: a marching-cubes surface over a few
-  # voxels claims a shape the warped 1 mm grid cannot support.
-  minimum_mesh_voxels: 10
+  # voxels claims a shape the grid cannot support. In mm³ so that it means the
+  # same whatever the grid.
+  minimum_mesh_volume_mm3: 10
+  # Cut faces sample blocks of source voxels at about this spacing, so the GPU
+  # label texture stays near its 1 mm size. Surfaces use the source grid.
+  cut_label_spacing_mm: 0.8
 structures:
-  shading_sigma_voxels: 0.8
+  # Display smoothing for the aseg and NextBrain solids, as for learning units.
+  # Validation holds each surface to this bound and to its source voxels.
+  smoothing:
+    iterations: 16
+    maximum_displacement_mm: 0.6
   labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28, 31,
            43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 58, 60, 63,
            85, 251, 252, 253, 254, 255]

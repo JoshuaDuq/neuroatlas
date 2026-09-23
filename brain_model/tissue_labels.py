@@ -103,6 +103,36 @@ def project_hcp(config, source, affine, codes, labels, regions):
     return projected
 
 
+def nextbrain_limitations(config, record):
+    if config[nextbrain.ATLAS_ID]["procedure"] != nextbrain.SUBJECT_SEGMENTATION:
+        return [
+            "NextBrain labels were nonlinearly warped from the MNI152 template to "
+            + (
+                "this individual; registration between an averaged template and one "
+                "brain, not the published delineation, bounds their accuracy."
+                if config["anatomy"]["individual"]
+                else "this template; registration between two averaged brains, not "
+                "the published delineation, bounds their accuracy."
+            )
+        ]
+    if record["block"] == 1:
+        return []
+    spacing = f"{record['voxel_spacing_mm'][0]:g} mm"
+    source = f"{record['source_voxel_spacing_mm'][0]:g} mm"
+    absent = len(record["labels_absent_from_cut"])
+    return [
+        f"NextBrain cut faces sample {spacing} blocks of the {source} labels, each "
+        "taking its most frequent label: thin structures are coarser on a cut than on "
+        "their surfaces"
+        + (
+            f", and {absent} label{'s' if absent != 1 else ''} too small to win any "
+            "block appear on no cut."
+            if absent
+            else "."
+        )
+    ]
+
+
 def export_tissue_labels(config, manifest):
     source_path = config["source_directory"] / "mri/aparc.a2009s+aseg.mgz"
     image = nib.load(source_path)
@@ -157,16 +187,7 @@ def export_tissue_labels(config, manifest):
         ],
     }
     if nextbrain.ATLAS_ID in atlases:
-        metadata["limitations"].append(
-            "NextBrain labels were nonlinearly warped from the MNI152 template to "
-            + (
-                "this individual; registration between an averaged template and one "
-                "brain, not the published delineation, bounds their accuracy."
-                if config["anatomy"]["individual"]
-                else "this template; registration between two averaged brains, not "
-                "the published delineation, bounds their accuracy."
-            )
-        )
+        metadata["limitations"].extend(nextbrain_limitations(config, atlases[nextbrain.ATLAS_ID]))
     if white_matter.is_available(config):
         metadata["white_matter"] = white_matter.export_volume(
             config, manifest["regions"]

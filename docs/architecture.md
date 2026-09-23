@@ -41,12 +41,12 @@ The compiled assets are stored in `public/models/{anatomy}/`:
 | :--- | :--- | :--- | :--- |
 | `cortex-destrieux.glb` | glTF 2.0 binary | 148 Destrieux parcels + medial walls | Native anatomical folding surface layer |
 | `cortex-hcp-mmp.glb` | glTF 2.0 binary | 360 HCP-MMP1.0 cortical areas | Multimodal surface layer resampled from `fs_LR` |
-| `learning.glb` | glTF 2.0 binary | 82 teaching overview structures | Smoothed union solids grouped into 8 anatomical systems |
-| `structures.glb` | glTF 2.0 binary | 35 FreeSurfer `aseg` subcortical structures | Native marching cubes deep anatomy reference level |
-| `nextbrain.glb` | glTF 2.0 binary | 298 solid histological nuclei | Fine detail subcortical reference level |
+| `learning.glb` | glTF 2.0 binary | 82 teaching overview structures (19 MB; NextBrain units at 0.4 mm) | Smoothed union solids grouped into 8 anatomical systems |
+| `structures.glb` | glTF 2.0 binary | 35 FreeSurfer `aseg` subcortical structures | Smoothed marching-cubes deep anatomy reference level |
+| `nextbrain.glb` | glTF 2.0 binary | 328 solid histological nuclei meshed at 0.4 mm (36 MB, loaded on demand) | Fine detail subcortical reference level |
 | `tissue-envelopes.glb` | glTF 2.0 binary | Native pial and white surface boundaries | Closed envelopes driving stencil solid cuts |
 | `spinal-cord.glb` | glTF 2.0 binary | 58 Z-Anatomy spinal structures | Reference anatomical assembly seated below brainstem |
-| `tissues-*.volume` | Gzip R16 binary | Categorical 3D label grids (256³) | 3D label decoding on GPU cut planes |
+| `tissues-*.volume` | Gzip R16 binary | Categorical 3D label grids (1 mm; NextBrain 0.8 mm blocks) | 3D label decoding on GPU cut planes |
 | `mri.volume` / `aseg.volume`| Gzip R8/R16 | Native T1w intensities & segmentations | Volumetric reference and T1 cut relief |
 | `manifest.json` | JSON | Regions, colors, networks, provenance | Master scene descriptor and metadata index |
 | `volumes.json` | JSON | Dimensions, affines, affine matrices | Volumetric header and coordinate mapping sidecar |
@@ -98,13 +98,13 @@ grid translated to the crop corner.
 | :--- | :--- | :--- | ---: |
 | `tissues-destrieux` | $256^3$ | $127 \times 138 \times 183$ | 6.12 MiB |
 | `tissues-hcp-mmp` | $256^3$ | $127 \times 138 \times 183$ | 6.12 MiB |
-| `tissues-nextbrain` | $256^3$ | $127 \times 131 \times 182$ | 5.78 MiB |
+| `tissues-nextbrain` | $323 \times 459 \times 323$ at 0.4 mm, cut in $0.8\text{ mm}$ blocks | $160 \times 228 \times 160$ | 11.13 MiB |
 | `aseg` | $256^3$ | $127 \times 140 \times 183$ | 6.21 MiB |
-| **Total** | **128.00 MiB** | | **24.23 MiB** |
+| **Total** | | | **29.57 MiB** |
 
 The saving is doubled in practice: each grid is also held on the CPU for
-picking, so two cut atlases live at once cost about 24 MiB rather than 128 MiB
-of RAM.
+picking, so the four label volumes cost about 30 MiB of RAM, where the uncropped
+grids at their source resolutions would take 187 MiB.
 
 No label changes and no voxel moves. Both readers were already general over
 shape and affine and already discarded out-of-range cells, so a voxel outside
@@ -116,6 +116,12 @@ Validation reconstructs the full source grid from the crop and its published
 affine and asserts equality, which proves in one comparison that every labelled
 voxel was carried, that nothing outside the box was labelled, and that the
 affine places the box exactly where it was cut from.
+
+NextBrain is the exception to "no label changes". Its source grid is 0.4 mm,
+and cropped it would still be $320 \times 456 \times 318$, or 88.5 MiB. The cut
+therefore samples $2 \times 2 \times 2$ blocks, each holding its most frequent
+label, while its surfaces and measurements keep the 0.4 mm grid. Validation
+recounts every block from the source (`nextbrain_cut_labels`).
 
 ### T1 Material Relief Shading
 - In **Tissue** mode, trilinearly interpolated T1w MRI intensity modulates the lighting normals of the cut face.

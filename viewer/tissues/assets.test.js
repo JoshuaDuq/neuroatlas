@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { Color, SRGBColorSpace } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createPalette } from './palette.js';
 
@@ -65,9 +66,10 @@ test('cut-only palettes carry their published table colour unchanged', async () 
     cortexOpacity: 1,
   }, manifest.appearance.tissue);
   for (const [code, label] of record.labels.entries()) {
-    label.color.forEach((component, axis) =>
+    const expected = new Color().setRGB(...label.color.map(value => value / 255), SRGBColorSpace);
+    expected.toArray().forEach((component, axis) =>
       assert.ok(
-        Math.abs(component / 255 - palette[code * 4 + axis]) < 1e-6,
+        Math.abs(component - palette[code * 4 + axis]) < 1e-6,
         `${label.name} channel ${axis}`,
       ),
     );

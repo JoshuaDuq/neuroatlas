@@ -7,7 +7,7 @@ import nibabel as nib
 import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
-from scipy.ndimage import map_coordinates
+from scipy.ndimage import center_of_mass, map_coordinates
 
 from . import networks, nextbrain, spinal_cord, validate_learning, white_matter
 from .encode import (
@@ -20,6 +20,7 @@ from .encode import (
 from .export import compact_region
 from .geometry import (
     extract_structure,
+    misclassified_voxels,
     normalize,
     partition_surface,
     partition_vertex_field,
@@ -30,6 +31,7 @@ from .ribbons import validate_ribbon_labels
 from .solids import validate_solid_envelopes
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .validate_volumes import validate_volumes
+from .volumes import conformed_grid
 
 
 def triangle_areas(triangles):
@@ -341,37 +343,57 @@ def surface_closure(mesh):
     }
 
 
-def validate_structure_layer(path, volume, affine, labels, tolerance):
+def validate_sides(sides, volume, affine, partner_of):
+    """Left of its own right copy, where the volume has one; else left of x = 0.
+
+    Surface RAS is centred on the conformed volume, not on the brain, so x = 0
+    is only near the midline: a structure lining the third ventricle can sit a
+    fraction of a millimetre past it and still be the left one of its pair.
+    The partner is placed by its voxels, since it may be too small to mesh;
+    the structure itself by its published mesh, so a flipped export still fails.
+    """
+    partners = {label: partner_of(label) for label in sides} if partner_of else {}
+    present = sorted({p for p in partners.values() if p is not None and np.any(volume == p)})
+    centres = dict(zip(present, center_of_mass(np.ones(volume.shape), volume, present)))
+    for label, (region_id, hemisphere, x) in sides.items():
+        other = partners.get(label)
+        if other in centres:
+            other_x = nib.affines.apply_affine(affine, centres[other])[0]
+            left, right = (x, other_x) if hemisphere == "left" else (other_x, x)
+            if left >= right:
+                raise ValueError(f"Structure's left and right copies are swapped: {region_id}")
+        elif (x < 0) != (hemisphere == "left"):
+            raise ValueError(f"{hemisphere.title()} structure on wrong side: {region_id}")
+
+
+def validate_structure_layer(path, volume, affine, labels, smoothing, tolerance, partner_of=None):
     meshes = read_meshes(path)
-    inverse = np.linalg.inv(affine)
+    maximum = smoothing["maximum_displacement_mm"]
     reports = []
     found = set()
+    sides = {}
     for region_id, mesh in meshes.items():
         label = mesh.metadata["source_label_id"]
         found.add(label)
         # Inverse of (R,S,-A)/1000; compare to the actual source segmentation.
         ras = mesh.vertices[:, [0, 2, 1]] * [1000, -1000, 1000]
-        voxels = nib.affines.apply_affine(inverse, ras)
-        values = map_coordinates(
-            (volume == label).astype(np.float32), voxels.T, order=1, prefilter=False
-        )
-        # Lewiner's ambiguity resolution adds cube-center vertices. They are
-        # topology support points, not necessarily on the trilinear 0.5 level.
-        fractions = np.mod(voxels, 1)
-        centers = np.all(np.abs(fractions - 0.5) < 1e-5, axis=1)
-        level_error = float(np.abs(values[~centers] - 0.5).max(initial=0))
-        if level_error > 0.0001:
-            raise ValueError(
-                f"Structure edge vertices left the source isosurface: {region_id}"
-            )
         reference = extract_structure(volume, label, affine)
-        coordinate_error = float(np.linalg.norm(ras - reference.vertices, axis=1).max())
-        if coordinate_error > tolerance:
-            raise ValueError(
-                f"Structure export moved source-derived vertices: {region_id}"
-            )
         if not np.array_equal(reference.faces, mesh.faces):
             raise ValueError(f"Structure export changed triangle topology: {region_id}")
+        displacement = float(np.linalg.norm(ras - reference.vertices, axis=1).max())
+        if displacement > maximum + tolerance:
+            raise ValueError(
+                f"Structure display exceeded its displacement bound: {region_id}"
+            )
+        if abs(displacement - mesh.metadata["display_maximum_displacement_mm"]) > tolerance:
+            raise ValueError(f"Structure displacement metadata mismatch: {region_id}")
+        # Smoothing may round the staircase off, never carry the surface across
+        # a voxel centre: every source voxel stays on the side it was on.
+        misplaced = len(misclassified_voxels(ras, mesh.faces, volume == label, affine))
+        if misplaced:
+            raise ValueError(
+                f"Structure display moved {misplaced} voxel centres across: {region_id}"
+            )
         # Observed, not assumed, and the same demand at either detail level: a
         # structure must enclose its own label, with its outside facing out.
         # Where its voxels pinch, they pinch; that costs the surface its
@@ -386,26 +408,38 @@ def validate_structure_layer(path, volume, affine, labels, tolerance):
                 f"Structure must enclose its label, outward oriented: {region_id}"
             )
         hemisphere = mesh.metadata["hemisphere"]
-        if hemisphere == "left" and mesh.centroid[0] >= 0:
-            raise ValueError(f"Left structure on wrong side: {region_id}")
-        if hemisphere == "right" and mesh.centroid[0] <= 0:
-            raise ValueError(f"Right structure on wrong side: {region_id}")
+        if hemisphere in ("left", "right"):
+            sides[label] = (region_id, hemisphere, float(ras[:, 0].mean()))
         reports.append(
             {
                 "id": region_id,
                 **closure,
-                "maximum_edge_vertex_isovalue_error": level_error,
-                "marching_cubes_auxiliary_center_vertices": int(centers.sum()),
-                "maximum_glb_coordinate_error_mm": coordinate_error,
-                "maximum_trilinear_isovalue_deviation": float(
-                    np.abs(values - 0.5).max()
-                ),
+                "maximum_display_displacement_mm": displacement,
+                "misclassified_voxel_centres": misplaced,
                 "mesh_volume_mm3": float(mesh.volume * 1e9),
             }
         )
     if found != set(labels):
         raise ValueError(f"Missing or unexpected internal anatomy: {path.name}")
-    return {"file": path.name, "sha256": sha256(path), "regions": reports}
+    validate_sides(sides, volume, affine, partner_of)
+    return {
+        "file": path.name,
+        "sha256": sha256(path),
+        "maximum_allowed_displacement_mm": maximum,
+        "regions": reports,
+    }
+
+
+def aseg_partner(table):
+    by_name = {name: label for label, (name, _) in table.items()}
+    swapped = {"Left-": "Right-", "Right-": "Left-"}
+
+    def partner_of(label):
+        name = table[label][0]
+        prefix = next((p for p in swapped if name.startswith(p)), None)
+        return by_name.get(swapped[prefix] + name[len(prefix):]) if prefix else None
+
+    return partner_of
 
 
 def validate_structures(config):
@@ -415,27 +449,32 @@ def validate_structures(config):
         np.asarray(image.dataobj),
         image.header.get_vox2ras_tkr(),
         config["structures"]["labels"],
+        config["structures"]["smoothing"],
         config["validation"]["coordinate_tolerance_mm"],
+        aseg_partner(read_color_table()),
     )
 
 
 def validate_nextbrain_structures(config):
-    image, labels, table = nextbrain.load(config)
-    minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_voxels"]
+    grid, table = nextbrain.load(config)
+    minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_volume_mm3"]
     return validate_structure_layer(
         config["output_directory"] / "nextbrain.glb",
-        labels,
-        image.header.get_vox2ras_tkr(),
-        nextbrain.meshed_indices(labels, table, minimum),
+        grid.labels,
+        grid.voxel_to_surface,
+        nextbrain.meshed_indices(grid, table, minimum),
+        config["structures"]["smoothing"],
         config["validation"]["coordinate_tolerance_mm"],
+        nextbrain.partner_of,
     )
 
 
 def expected_nextbrain_metadata(config):
-    image, labels, table = nextbrain.load(config)
-    minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_voxels"]
+    grid, table = nextbrain.load(config)
+    labels = grid.labels
+    minimum = config[nextbrain.ATLAS_ID]["minimum_mesh_volume_mm3"]
     regions = {}
-    for index in nextbrain.meshed_indices(labels, table, minimum):
+    for index in nextbrain.meshed_indices(grid, table, minimum):
         published = table[index][0]
         name = nextbrain.structure_name_of(published)
         hemisphere = nextbrain.hemisphere_of(index)
@@ -450,9 +489,9 @@ def expected_nextbrain_metadata(config):
             "label": f"{name.replace('_', ' ')} · {hemisphere}",
             "kind": "structure",
             "voxel_count": int(np.count_nonzero(labels == index)),
-            "voxel_size_mm": [float(size) for size in image.header.get_zooms()[:3]],
+            "voxel_size_mm": grid.spacing_mm,
         }
-    return regions, image.header.get_vox2ras_tkr()
+    return regions, grid
 
 
 def expected_cortical_metadata(config, atlas):
@@ -504,7 +543,7 @@ def expected_structure_metadata(config):
             "voxel_count": int(np.count_nonzero(volume == label)),
             "voxel_size_mm": [float(size) for size in image.header.get_zooms()[:3]],
         }
-    return regions, image.header.get_vox2ras_tkr()
+    return regions, conformed_grid(image)
 
 
 def validate_region_metadata(region, mesh, expected, tolerance):
@@ -543,7 +582,14 @@ def validate_cut_only_regions(config, regions):
 
 
 def validate_nextbrain_regions(config, cut_only):
-    _, labels, _ = nextbrain.load(config)
+    grid, _ = nextbrain.load(config)
+    labels = grid.labels
+    tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
+    absent = set(tissues["atlases"][nextbrain.ATLAS_ID]["labels_absent_from_cut"])
+    for region_id, region in cut_only.items():
+        drawn = region.get("cut_atlases", [nextbrain.ATLAS_ID])
+        if drawn != ([] if region["source_label_id"] in absent else [nextbrain.ATLAS_ID]):
+            raise ValueError(f"Cut-only region misreports which cuts draw it: {region_id}")
     indices, counts = np.unique(labels, return_counts=True)
     present = dict(zip(indices.tolist(), counts.tolist()))
     shares = nextbrain.cortical_network_compositions(config)
@@ -603,24 +649,34 @@ def validate_manifest(config, manifest):
         published = dict(atlas_records[atlas["id"]])
         if published.pop("ribbon_labels", None) is None or published != metadata:
             raise ValueError(f"Manifest atlas metadata mismatch: {atlas['id']}")
-    coarse, affine = expected_structure_metadata(config)
+    def grid_fields(grid):
+        return {
+            "voxel_to_surface_ras_mm": grid.voxel_to_surface.tolist(),
+            "voxel_size_mm": grid.spacing_mm,
+        }
+
+    coarse, coarse_grid = expected_structure_metadata(config)
     groups["structures.glb"] = coarse
-    expected_levels = {"aseg": ("structures.glb", coarse, affine)}
+    expected_levels = {"aseg": ("structures.glb", coarse, grid_fields(coarse_grid))}
+    measured = [(coarse, coarse_grid)]
     if nextbrain.is_available(config):
-        fine, fine_affine = expected_nextbrain_metadata(config)
+        fine, fine_grid = expected_nextbrain_metadata(config)
         groups["nextbrain.glb"] = fine
-        expected_levels[nextbrain.ATLAS_ID] = ("nextbrain.glb", fine, fine_affine)
-        overview, overview_affine = validate_learning.expected_metadata(config)
+        expected_levels[nextbrain.ATLAS_ID] = ("nextbrain.glb", fine, grid_fields(fine_grid))
+        measured.append((fine, fine_grid))
+        overview, overview_grids = validate_learning.expected_metadata(config)
         groups["learning.glb"] = overview
-        expected_levels["learning"] = ("learning.glb", overview, overview_affine)
+        expected_levels["learning"] = (
+            "learning.glb", overview, {"source_grids": overview_grids}
+        )
     levels = {level["id"]: level for level in manifest["detail_levels"]}
     if set(levels) != set(expected_levels):
         raise ValueError("Manifest detail level set mismatch")
-    for level_id, (filename, expected, level_affine) in expected_levels.items():
+    for level_id, (filename, expected, placement) in expected_levels.items():
         for field, value in {
             "file": filename,
             "region_count": len(expected),
-            "voxel_to_surface_ras_mm": level_affine.tolist(),
+            **placement,
         }.items():
             if levels[level_id].get(field) != value:
                 raise ValueError(f"Manifest detail level mismatch: {level_id}.{field}")
@@ -644,15 +700,15 @@ def validate_manifest(config, manifest):
             validate_region_metadata(
                 regions[region_id], meshes[region_id], metadata, tolerance
             )
-    voxel_volume = abs(np.linalg.det(affine[:3, :3]))
-    for region_id, metadata in coarse.items():
-        if not np.isclose(
-            regions[region_id]["segmentation_volume_mm3"],
-            metadata["voxel_count"] * voxel_volume,
-            rtol=1e-12,
-            atol=0,
-        ):
-            raise ValueError(f"Manifest segmentation volume mismatch: {region_id}")
+    for expected, grid in measured:
+        for region_id, metadata in expected.items():
+            if not np.isclose(
+                regions[region_id]["segmentation_volume_mm3"],
+                metadata["voxel_count"] * grid.voxel_volume_mm3,
+                rtol=1e-12,
+                atol=0,
+            ):
+                raise ValueError(f"Manifest segmentation volume mismatch: {region_id}")
 
 
 def main():
@@ -661,7 +717,9 @@ def main():
         "--anatomy", help="validate this declared anatomy instead of the selected one"
     )
     config = read_config(parser.parse_args().anatomy)
-    verify_sources(config)
+    provenance = verify_sources(config)
+    if nextbrain.is_available(config):
+        nextbrain.verify_procedure(config, provenance)
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
     validate_manifest(config, manifest)
@@ -683,6 +741,9 @@ def main():
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config),
+             "nextbrain_cut_labels": nextbrain.validate_volume(
+                 config, tissues["atlases"][nextbrain.ATLAS_ID]
+             ),
              "learning_structures": validate_learning.validate(config, manifest)}
             if nextbrain.is_available(config)
             else {}

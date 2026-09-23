@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
-import { BoxGeometry, Color, Matrix4, Mesh, MeshBasicMaterial } from 'three';
+import { BoxGeometry, Color, Matrix4, Mesh, MeshBasicMaterial, SRGBColorSpace } from 'three';
 import { Volume } from '../slices/volume.js';
 import { BANDS, addSolidSources, enclosingFirst, indexLabels, paintSolids } from './solid-assets.js';
 import { SolidSections } from './solid-sections.js';
@@ -45,12 +45,12 @@ function paint(solids, { detail = 'aseg', ...state } = {}, wedged = true) {
 }
 
 const wedge = () => solid({ hemisphere: 'left', atlas: 'destrieux', kind: 'ribbon', region_id: PARCEL });
-const linear = (r, g, b) => new Color().setRGB(r / 255, g / 255, b / 255);
+const published = (r, g, b) => new Color().setRGB(r / 255, g / 255, b / 255, SRGBColorSpace);
 
-test('a parcel solid takes the published atlas colour, unconverted', () => {
+test('a parcel solid takes the published atlas colour', () => {
   const [painted] = paint([wedge()], { surfaceColor: 'atlas' });
   assert.ok(painted.visible);
-  assert.ok(painted.cap.material.color.equals(linear(23, 220, 60)));
+  assert.ok(painted.cap.material.color.equals(published(23, 220, 60)));
 });
 
 test('a parcel solid takes its dominant network colour', () => {
@@ -98,7 +98,7 @@ test('isolation leaves only the isolated parcel standing', () => {
 test('the white envelope is painted by the white matter label, not a guess', () => {
   const white = solid({ hemisphere: 'left', boundary: 'white' });
   const [painted] = paint([white], { surfaceColor: 'atlas' });
-  assert.ok(painted.cap.material.color.equals(linear(245, 245, 245)));
+  assert.ok(painted.cap.material.color.equals(published(245, 245, 245)));
 });
 
 test('the pial envelope stands in only where an atlas has no parcel solids', () => {
@@ -125,11 +125,11 @@ test('the cut caps the detail level the viewer is showing, and only that one', (
 test('a nucleus the cut atlas never labelled keeps its own published colour', () => {
   const nucleus = () => {
     const entry = solid({ hemisphere: 'left', region_id: 'nextbrain:left:7', detail: 'nextbrain' });
-    entry.source.material = { color: linear(60, 180, 90) };
+    entry.source.material = { color: published(60, 180, 90) };
     return entry;
   };
   const [atlas] = paint([nucleus()], { detail: 'nextbrain', surfaceColor: 'atlas' });
-  assert.ok(atlas.cap.material.color.equals(linear(60, 180, 90)));
+  assert.ok(atlas.cap.material.color.equals(published(60, 180, 90)));
   const [tissue] = paint([nucleus()], { detail: 'nextbrain', surfaceColor: 'tissue' });
   assert.equal(tissue.cap.material.color.getHexString(), appearance.tissue.gray.slice(1));
 });

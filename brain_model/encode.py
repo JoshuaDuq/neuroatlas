@@ -98,6 +98,28 @@ def _accessor_array(gltf, buffer, index):
     return np.frombuffer(buffer, dtype=dtype, count=count, offset=start)
 
 
+def srgb_to_linear(values):
+    values = np.asarray(values, dtype=np.float64)
+    return np.where(values <= 0.04045, values / 12.92, ((values + 0.055) / 1.055) ** 2.4)
+
+
+def linear_to_srgb(values):
+    values = np.asarray(values, dtype=np.float64)
+    return np.where(
+        values <= 0.0031308, values * 12.92, 1.055 * values ** (1 / 2.4) - 0.055
+    )
+
+
+def linear_base_color(factor):
+    # trimesh keeps factors as bytes, so the sRGB display colour arrives as
+    # bytes/255 in a field glTF defines as linear. Converting here keeps dark
+    # colours exact; anything but bytes is refused, so nothing converts twice.
+    rgb = np.asarray(factor[:3], dtype=np.float64) * 255
+    if not np.allclose(rgb, np.rint(rgb), rtol=0, atol=1e-6):
+        raise ValueError("baseColorFactor does not hold a display colour's bytes")
+    return [*srgb_to_linear(np.rint(rgb) / 255).tolist(), factor[3]]
+
+
 def field_ranges(gltf, buffer):
     seen = {name: [] for name in QUANTIZED_FIELDS}
     for mesh in gltf.get("meshes", []):
@@ -227,6 +249,11 @@ def reencode(data, *, ranges=None, normals=True, fields=True):
                 )
                 written["indices", source_index, narrow] = primitive["indices"]
 
+    for material in gltf.get("materials", []):
+        pbr = material.get("pbrMetallicRoughness", {})
+        if "baseColorFactor" in pbr:
+            pbr["baseColorFactor"] = linear_base_color(pbr["baseColorFactor"])
+
     gltf["accessors"] = out.accessors
     gltf["bufferViews"] = out.views
     payload = b"".join(out.blobs)
@@ -247,6 +274,17 @@ def reencode(data, *, ranges=None, normals=True, fields=True):
         gltf.setdefault("extras", {})["field_ranges"] = ranges
 
     return _write_glb(gltf, payload), ranges
+
+
+def published_display_colors(path):
+    """Each material's sRGB display colour, 0–255, decoded from its linear factor."""
+    gltf, _ = _read_glb(path.read_bytes())
+    return {
+        material["name"]: (
+            linear_to_srgb(material["pbrMetallicRoughness"]["baseColorFactor"][:3]) * 255
+        ).tolist()
+        for material in gltf.get("materials", [])
+    }
 
 
 def published_field_ranges(path):

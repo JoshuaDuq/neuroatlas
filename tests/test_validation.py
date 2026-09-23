@@ -170,6 +170,7 @@ def manifest_assets(tmp_path):
     manifest["detail_levels"][0]["voxel_to_surface_ras_mm"] = (
         image.header.get_vox2ras_tkr().tolist()
     )
+    manifest["detail_levels"][0]["voxel_size_mm"] = [1.0, 1.0, 1.0]
     region = {
         "id": "aseg:left:10",
         "label": "Left Thalamus Proper",

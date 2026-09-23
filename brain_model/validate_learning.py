@@ -3,16 +3,18 @@
 import numpy as np
 import trimesh
 
-from .geometry import extract_structure
-from .learning import constituent_id, read_definition, source_groups
+from .encode import published_display_colors
+from .geometry import extract_structure, misclassified_voxels
+from .learning import constituent_id, read_definition, source_grids, source_groups
 from .sources import sha256
 
 
 def expected_metadata(config):
     records = {}
-    for source, image, volume, table, groups in source_groups(config):
-        affine = image.header.get_vox2ras_tkr()
-        voxel_volume = float(abs(np.linalg.det(affine[:3, :3])))
+    grids = []
+    for source, grid, table, groups in source_groups(config):
+        grids.append((source, grid))
+        volume = grid.labels
         for group in groups:
             members = [label for label in group["labels"] if np.any(volume == label)]
             if not members:
@@ -34,25 +36,26 @@ def expected_metadata(config):
                 "display_names": {"en": group["name"], "fr": group["name_fr"]},
                 "system_names": {"en": group["system"], "fr": group["system_fr"]},
                 "voxel_count": count,
-                "segmentation_volume_mm3": count * voxel_volume,
-                "voxel_size_mm": [float(x) for x in image.header.get_zooms()[:3]],
+                "segmentation_volume_mm3": count * grid.voxel_volume_mm3,
+                "voxel_size_mm": grid.spacing_mm,
                 "constituent_regions": [
                     constituent_id(source, side, label) for label in members
                 ],
             }
-    return records, affine
+    return records, source_grids(grids)
 
 
 def validate(config, manifest):
     path = config["output_directory"] / "learning.glb"
     scene = trimesh.load_scene(path, process=False)
     meshes = {mesh.metadata["region_id"]: mesh for mesh in scene.geometry.values()}
+    colors = published_display_colors(path)
     regions = {region["id"]: region for region in manifest["regions"]}
     maximum = read_definition()["smoothing"]["maximum_displacement_mm"]
     tolerance = config["validation"]["coordinate_tolerance_mm"]
     reports = []
-    for source, image, volume, table, groups in source_groups(config):
-        affine = image.header.get_vox2ras_tkr()
+    for source, grid, table, groups in source_groups(config):
+        volume, affine = grid.labels, grid.voxel_to_surface
         for group in groups:
             mask = np.isin(volume, group["labels"])
             if not mask.any():
@@ -60,9 +63,7 @@ def validate(config, manifest):
             region_id = f"learning:{group['id']}"
             mesh = meshes[region_id]
             record = regions[region_id]
-            if not np.array_equal(
-                mesh.visual.material.baseColorFactor[:3], group["color"]
-            ):
+            if not np.allclose(colors[region_id], group["color"], rtol=0, atol=1e-6):
                 raise ValueError(f"Learning palette mismatch: {region_id}")
             for member in record["constituent_regions"]:
                 if member not in regions:
@@ -84,6 +85,11 @@ def validate(config, manifest):
                 raise ValueError(
                     f"Learning displacement metadata mismatch: {region_id}"
                 )
+            misplaced = len(misclassified_voxels(ras, mesh.faces, mask, affine))
+            if misplaced:
+                raise ValueError(
+                    f"Learning display moved {misplaced} voxel centres across: {region_id}"
+                )
             if not mesh.is_winding_consistent or mesh.volume <= 0:
                 raise ValueError(f"Invalid learning display surface: {region_id}")
             if (
@@ -99,6 +105,7 @@ def validate(config, manifest):
                     "source_atlas": source,
                     "source_voxel_count": int(mask.sum()),
                     "maximum_display_displacement_mm": displacement,
+                    "misclassified_voxel_centres": misplaced,
                 }
             )
     if set(meshes) != {record["id"] for record in reports}:

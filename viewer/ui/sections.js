@@ -99,6 +99,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
   // Populated from the manifest: a build without the optional NextBrain volume
   // simply offers fewer choices, with no code path of its own.
+  const nextbrainSegmented =
+    cutAtlases.find(atlas => atlas.id === 'nextbrain')?.procedure === 'subject-segmentation';
   for (const atlas of cutAtlases) {
     const option = document.createElement('option');
     option.value = atlas.id;
@@ -340,15 +342,17 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const atlasLabel = {
       'hcp-mmp': cutsI18n.hcpDerived,
       destrieux: cutsI18n.destrieuxNative,
-      nextbrain: cutsI18n.nextbrainWarped,
+      nextbrain: nextbrainSegmented ? cutsI18n.nextbrainSegmented : cutsI18n.nextbrainWarped,
     }[state.cutAtlas] ?? state.cutAtlas;
+    // The label grid's own spacing: NextBrain's cut samples 0.8 mm blocks.
+    const spacing = sections.tissues?.metadata?.atlases?.[state.cutAtlas]?.voxel_spacing_mm?.[0] ?? 1;
     // A cut is sampled from a label volume, so its network colour is per parcel
     // while the surface's is per vertex. Said here rather than left to be found.
     // `state` in this function is the cut's own state; the surface mode is on
     // the app state, which some callers do not pass at all.
     const byNetwork = appState?.surfaceColor === 'network';
     const describeCut = appState?.surfaceColor === 'mri' ? cutsI18n.statusMri : cutsI18n.statusActive;
-    const activeStatus = describeCut(offset.toFixed(1), atlasLabel)
+    const activeStatus = describeCut(offset.toFixed(1), atlasLabel, +spacing.toFixed(2))
       + (byNetwork ? ` · ${cutsI18n.networkByRegion}` : '');
     status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
       : state.error || (sections.active ? activeStatus : cutsI18n.statusFull);

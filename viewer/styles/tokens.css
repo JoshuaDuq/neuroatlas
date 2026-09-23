@@ -38,7 +38,7 @@
   --scene-outline-core: #0b1114;
   --scene-outline-halo: #f2f6fa;
   --scene-outline-hidden: #46505e;
-  --scene-exposure: 1.12;
+  --scene-exposure: 1;
 
   /*
    * Markings drawn straight onto the stage: orientation letters, the scale

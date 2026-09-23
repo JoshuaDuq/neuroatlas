@@ -63,3 +63,21 @@ test('low-memory devices drop extra layer prefetch even on a wide screen', () =>
   });
   assert.equal(quality.prefetchLayers, false);
 });
+
+test('an Apple Silicon Mac renders at its display density but keeps 2x MSAA', () => {
+  // Measured on an M5: at 2x pixels an MRI cut misses ~2% of frames; 4x MSAA halves its rate.
+  const quality = qualityProfile({
+    phone: false, coarse: false, saveData: false, pixelRatio: 2,
+    deviceMemory: 16, integrated: true, appleSilicon: true,
+  });
+  assert.equal(quality.pixelRatio, 2);
+  assert.equal(quality.msaaSamples, 2);
+});
+
+test('an iPad keeps the handheld budget although its GPU is Apple silicon', () => {
+  const quality = qualityProfile({
+    phone: false, coarse: true, saveData: false, pixelRatio: 2,
+    deviceMemory: 8, integrated: true, appleSilicon: true,
+  });
+  assert.equal(quality.pixelRatio, 1.5);
+});

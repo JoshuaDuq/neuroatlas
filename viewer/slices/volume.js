@@ -23,10 +23,34 @@ export class Volume {
     return [m[0]*r+m[4]*a+m[8]*s+m[12], m[1]*r+m[5]*a+m[9]*s+m[13], m[2]*r+m[6]*a+m[10]*s+m[14]];
   }
 
-  nearest(point) {
-    const [x,y,z] = this.voxel(point).map(Math.round), [nx,ny,nz] = this.shape;
-    if (x < 0 || y < 0 || z < 0 || x >= nx || y >= ny || z >= nz) return 0;
-    return this.data[x + nx*(y + ny*z)];
+  /**
+   * The label whose trilinear weight over the eight surrounding voxels is
+   * largest (ANTs' genericLabel rule). Exact at every voxel centre and never a
+   * label absent from those eight; outside the grid weighs as background.
+   * LABEL_AT in tissues/label-sampling.js is this rule on the GPU, with the
+   * same corner order so that ties break alike.
+   */
+  label(point) {
+    const [x,y,z] = this.voxel(point), [nx,ny,nz] = this.shape;
+    const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+    const fx = x-ix, fy = y-iy, fz = z-iz;
+    const labels = this.candidates ??= new Float64Array(8);
+    const weights = this.weights ??= new Float64Array(8);
+    let count = 0;
+    for (let corner=0; corner<8; corner++) {
+      const i = corner & 1, j = (corner >> 1) & 1, k = (corner >> 2) & 1;
+      const cx = ix+i, cy = iy+j, cz = iz+k;
+      const inside = cx >= 0 && cy >= 0 && cz >= 0 && cx < nx && cy < ny && cz < nz;
+      const value = inside ? this.data[cx + nx*(cy + ny*cz)] : 0;
+      const weight = (i ? fx : 1-fx)*(j ? fy : 1-fy)*(k ? fz : 1-fz);
+      let seen = 0;
+      while (seen < count && labels[seen] !== value) seen++;
+      if (seen === count) { labels[count] = value; weights[count++] = weight; }
+      else weights[seen] += weight;
+    }
+    let best = 0;
+    for (let n=1; n<count; n++) if (weights[n] > weights[best]) best = n;
+    return labels[best];
   }
 
   linear(point) {

@@ -1,5 +1,6 @@
 import { DoubleSide, MeshPhysicalMaterial } from 'three';
 import { HIGHLIGHT_CHUNK } from './highlight.js';
+import { LABEL_AT } from './label-sampling.js';
 
 /** Light the cut as tissue; sample categorical identity before continuous T1. */
 export function createCutMaterial(uniforms, tissue) {
@@ -36,13 +37,11 @@ export function createCutMaterial(uniforms, tissue) {
       uniform vec2 highlightLifts;
       varying vec3 sourceWorld;
       ${HIGHLIGHT_CHUNK}
+      ${LABEL_AT}
       ${shader.fragmentShader}`.replace('#include <color_fragment>', `
         #include <color_fragment>
-        vec3 voxel = (worldToVoxel * vec4(sourceWorld, 1.0)).xyz;
-        ivec3 cell = ivec3(floor(voxel + vec3(0.5)));
-        if (any(lessThan(cell, ivec3(0))) ||
-            any(greaterThanEqual(cell, volumeShape))) discard;
-        uint code = texelFetch(labelVolume, cell, 0).r;
+        // Background outside the grid is invisible, so it discards below.
+        uint code = labelAt(labelVolume, volumeShape, (worldToVoxel * vec4(sourceWorld, 1.0)).xyz);
         vec4 tissue = texelFetch(labelPalette, ivec2(int(code), 0), 0);
         if (tissue.a < 0.5) discard;
         vec3 mriVoxel = (worldToMri * vec4(sourceWorld, 1.0)).xyz;
@@ -57,6 +56,6 @@ export function createCutMaterial(uniforms, tissue) {
         diffuseColor = vec4(liftHighlight(lit, lift), 1.0);
       `);
   };
-  material.customProgramCacheKey = () => 'registered-tissue-cut-v3';
+  material.customProgramCacheKey = () => 'registered-tissue-cut-v4';
   return material;
 }

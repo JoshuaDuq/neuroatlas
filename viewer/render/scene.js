@@ -1,5 +1,5 @@
 import {
-  ACESFilmicToneMapping, NoToneMapping, Color, HalfFloatType,
+  NeutralToneMapping, NoToneMapping, Color, HalfFloatType,
   PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -10,7 +10,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
-import { gpuRendererName, isIntegratedGpu } from './device.js';
+import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.js';
 import { qualityProfile } from './quality.js';
 
 const TRANSITION_MS = 240;
@@ -36,12 +36,16 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     antialias: false,
     powerPreference: 'high-performance',
   });
+  const gpu = gpuRendererName(renderer.getContext());
   const quality = qualityProfile({
-    integrated: isIntegratedGpu(gpuRendererName(renderer.getContext())),
+    integrated: isIntegratedGpu(gpu),
+    appleSilicon: isAppleSilicon(gpu),
   });
   renderer.localClippingEnabled = true;
   renderer.setPixelRatio(quality.pixelRatio);
-  renderer.toneMapping = ACESFilmicToneMapping;
+  // Khronos PBR Neutral: a surface lit squarely shows its published colour,
+  // where ACES shifted hues and bleached atlas and network colours alike.
+  renderer.toneMapping = NeutralToneMapping;
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label',
     'Brain model. Drag or use the arrow keys to rotate, scroll or press plus '
@@ -131,7 +135,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   function setMriAppearance(active) {
     if (mriAppearance === active) return;
     mriAppearance = active;
-    renderer.toneMapping = active ? NoToneMapping : ACESFilmicToneMapping;
+    renderer.toneMapping = active ? NoToneMapping : NeutralToneMapping;
     setSize();
   }
 
