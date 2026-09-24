@@ -218,7 +218,7 @@ export const TRANSLATIONS = {
       viewAria: 'Anatomical view',
       snapshot: 'Save image (PNG)',
       snapshotShort: 'PNG',
-      fullscreen: 'Toggle fullscreen',
+      fullscreen: 'Full screen',
       fullscreenShort: 'Full',
       loadingAnatomy: 'Loading anatomy…',
       loadingWithTotal: (l, t) => `Loading anatomy · ${megabytes(l)} / ${megabytes(t)} MB`,

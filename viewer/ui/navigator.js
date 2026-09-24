@@ -1,6 +1,23 @@
 import { count } from './format.js';
 import { t } from '../i18n/translations.js';
 
+/**
+ * The next row an arrow key can arm.
+ *
+ * Disabled rows explain themselves and do nothing, so the key moves past
+ * them. Past the ends of the list the armed row stays where it is.
+ */
+export function nextEnabledIndex(disabled, index, delta) {
+  const count = disabled.length;
+  if (!count || !delta) return index;
+  for (let step = 1; step <= count; step += 1) {
+    const next = index + delta * step;
+    if (next < 0 || next >= count) return index;
+    if (!disabled[next]) return next;
+  }
+  return index;
+}
+
 /** Reasons that mean "in a different atlas" rather than "hidden here". */
 const OTHER_ATLAS = new Set(['other-atlas', 'other-cut-atlas']);
 /** Reasons no control can undo: the row explains, and activating it does nothing. */
@@ -96,12 +113,15 @@ export function createNavigator({
 
     const name = document.createElement('span');
     name.className = 'row-name';
+    // The alias is why a row matched when the name itself does not contain
+    // the query. It stays outside the name: the name ellipsizes, and a match
+    // buried inside that ellipsis is a match the reader cannot see.
+    let matchedAlias = null;
     if (role === 'option' && query) {
       name.append(highlightMatch(row.label.name, query));
       const normQuery = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
       const normName = row.label.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
       if (!normName.includes(normQuery)) {
-        let matchedAlias = null;
         if (row.label.code) {
           const normCode = row.label.code.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
           if (normCode.includes(normQuery)) matchedAlias = row.label.code;
@@ -115,21 +135,22 @@ export function createNavigator({
             }
           }
         }
-        if (matchedAlias) {
-          const aliasSpan = document.createElement('span');
-          aliasSpan.className = 'row-alias';
-          aliasSpan.append('(');
-          aliasSpan.append(highlightMatch(matchedAlias, query));
-          aliasSpan.append(')');
-          name.append(aliasSpan);
-        }
       }
     } else {
       name.textContent = row.label.name;
     }
     item.append(name);
+    if (matchedAlias) {
+      const aliasSpan = document.createElement('span');
+      aliasSpan.className = 'row-alias';
+      aliasSpan.append('(');
+      aliasSpan.append(highlightMatch(matchedAlias, query));
+      aliasSpan.append(')');
+      item.append(aliasSpan);
+    }
 
     const side = sideWords[row.region.hemisphere] ?? row.region.hemisphere;
+    const heard = matchedAlias ? `${row.label.name}, ${matchedAlias}` : row.label.name;
     const tail = document.createElement('span');
     if (row.visible) {
       tail.className = 'row-side';
@@ -139,8 +160,8 @@ export function createNavigator({
       // parent group, so the lobe or system is named on the row itself.
       const place = role === 'option' ? row.label.group : '';
       item.setAttribute('aria-label', place
-        ? `${row.label.name}, ${side}, ${place}`
-        : `${row.label.name}, ${side}`);
+        ? `${heard}, ${side}, ${place}`
+        : `${heard}, ${side}`);
       if (place) {
         const group = document.createElement('span');
         group.className = 'row-group';
@@ -155,9 +176,9 @@ export function createNavigator({
       // Spoken as part of the row, so the state is never colour-only.
       if (UNREVEALABLE.has(row.reason)) {
         item.setAttribute('aria-disabled', 'true');
-        item.setAttribute('aria-label', i18n.rowUnavailableAria(row.label.name, side, tail.textContent));
+        item.setAttribute('aria-label', i18n.rowUnavailableAria(heard, side, tail.textContent));
       } else {
-        item.setAttribute('aria-label', i18n.rowHiddenAria(row.label.name, side, tail.textContent));
+        item.setAttribute('aria-label', i18n.rowHiddenAria(heard, side, tail.textContent));
       }
       // The reason is a status word. The label says the click will bring it back.
       item.title = item.getAttribute('aria-label');
@@ -320,8 +341,14 @@ export function createNavigator({
   function moveActiveOption(delta) {
     const list = options();
     if (!list.length) return;
+    const next = nextEnabledIndex(
+      list.map(option => option.getAttribute('aria-disabled') === 'true'),
+      activeIndex,
+      delta,
+    );
+    if (next === activeIndex) return;
     for (const option of list) delete option.dataset.active;
-    activeIndex = Math.max(0, Math.min(list.length - 1, activeIndex + delta));
+    activeIndex = next;
     const active = list[activeIndex];
     active.dataset.active = 'true';
     active.scrollIntoView({ block: 'nearest' });
