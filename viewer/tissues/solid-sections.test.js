@@ -38,18 +38,35 @@ test('caps reach the lower spinal cord in every orientation and retained side', 
   sections.dispose();
 });
 
-test('solid caps use the exact source geometry and ordered stencil passes', () => {
-  const { sections, source } = fixture();
-  const [solid] = sections.solids;
+function drawnTriangles(mesh) {
+  if (!mesh.visible) return 0;
+  const geometry = mesh.geometry;
+  const position = geometry.getAttribute('position');
+  const index = geometry.getIndex();
+  const range = geometry.drawRange;
+  const available = index ? index.count : position.count;
+  const count = range.count === Infinity ? available : Math.min(available - range.start, range.count);
+  return count / 3;
+}
+
+test('a cut draws the plane section instead of stencilling the whole solid', () => {
+  const source = new Mesh(new BoxGeometry(0.1, 0.1, 0.1, 18, 18, 18),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  source.userData = { hemisphere: 'left', boundary: 'pial' };
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 0);
   sections.update(plane);
-  assert.equal(solid.back.geometry, source.geometry);
-  assert.equal(solid.front.geometry, source.geometry);
-  assert.ok(solid.back.renderOrder < solid.front.renderOrder);
-  assert.ok(solid.front.renderOrder < solid.cap.renderOrder);
-  assert.equal(solid.back.material.colorWrite, false);
-  assert.equal(solid.back.material.depthWrite, false);
-  assert.equal(solid.back.material.clippingPlanes[0], sections.plane);
-  assert.equal(solid.cap.material.stencilWrite, true);
+  const [solid] = sections.solids;
+  const sourceTriangles = source.geometry.index.count / 3;
+  const drawn = drawnTriangles(solid.back) + drawnTriangles(solid.front) + drawnTriangles(solid.cap);
+  assert.equal(solid.back.visible, false);
+  assert.equal(solid.front.visible, false);
+  assert.equal(solid.cap.material.stencilWrite, false);
+  assert.ok(drawn > 0 && drawn < sourceTriangles / 5,
+    `drew ${drawn} triangles from a ${sourceTriangles}-triangle solid`);
+  assert.ok(sections.intersect(new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1))));
+  assert.equal(sections.intersect(new Raycaster(
+    new Vector3(0.08, 0, 0.2), new Vector3(0, 0, -1))), null);
   sections.dispose();
 });
 

@@ -74,18 +74,15 @@ Quantized normals are declared under `extensionsRequired` rather than `extension
 
 ## 4. GPU Real-Time Rendering Engine
 
-The client viewer is built on Three.js and WebGL 2, prioritizing continuous interaction without geometry re-tessellation.
+The client viewer is built on Three.js and WebGL 2. A cut keeps the published surfaces and label volumes as they are; only the cap, the flat face the plane opens, is rebuilt.
 
-### Stencil Buffer Solid Capping
-When an anatomical cut plane clips closed surfaces (the pial and white matter envelopes, or solid deep structures):
-1. **Back-face Pass**: Geometry behind the clipping plane writes an increment to the hardware stencil buffer.
-2. **Front-face Pass**: Front-facing geometry writes a decrement to the stencil buffer.
-3. **Cap Pass**: A full-screen proxy quad positioned on the clipping plane renders only where the stencil buffer is non-zero, filling the anatomical cut face seamlessly.
+### Cut caps
+A closed solid meets the plane in a polygon. That polygon is triangulated and drawn as the cap, so moving or turning the view does not rasterize every triangle of every parcel. The boundary is the mesh–plane intersection, holes included. A non-manifold intersection, which a pinch in the ribbon can produce, keeps the winding stencil cap: back faces increment, front faces decrement, and a quad fills where the stencil is non-zero.
 
 ### Hardware 3D Label Sampling (`Data3DTexture`)
 - Cut planes sample categorical atlas labels directly from 3D textures on the GPU.
 - WebGL 2 integer textures (`R16UI` or `R8UI`) preserve discrete anatomical identifiers without linear filtering artifacts.
-- When an atlas cut moves or tilts, only the plane equation uniform updates ($O(1)$ cost). The label texture remains static in VRAM.
+- The label texture stays in VRAM. Moving the plane rebuilds the cap polygons and leaves the volume untouched.
 
 #### Label grids are cropped to what they label
 

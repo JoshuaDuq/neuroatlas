@@ -26,7 +26,7 @@
 
 ## Core Capabilities
 
-- **Solid Anatomical Cuts**: Cut along sagittal/midsagittal, coronal, axial, or arbitrary oblique planes. GPU stencil caps fill closed anatomical envelopes at the cut interface in real time without generating ad-hoc meshes or re-uploading slices.
+- **Solid Anatomical Cuts**: Cut along sagittal/midsagittal, coronal, axial, or arbitrary oblique planes. Each closed solid is capped with the polygon where the plane meets it, so the face stays on the reconstruction while the view stays interactive.
 - **Categorical 3D Label Sampling**: Moving the cutting plane samples discrete label volumes (`Data3DTexture`) directly on the GPU, maintaining sub-millimeter label precision on cut faces.
 - **T1 Material Relief**: Trilinearly sampled T1 MRI intensities subtly modulate lighting normals across cut surfaces, providing realistic tissue relief without displacing geometry.
 - **Linked 2D/3D MRI Reference**: Interactive three-plane orthogonal sections synchronized with a 3D crosshair, contrast windowing, and voxel label readouts.
