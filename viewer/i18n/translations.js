@@ -88,14 +88,12 @@ export const TRANSLATIONS = {
       heading: 'Functional networks',
       share: fraction => `${Math.round(fraction * 100)}%`,
       note: 'Share of this region’s surface, from resting-state networks in 1000 subjects. Membership, not function.',
-      cortexHeading: 'Cortex by network',
-      cortexNote: 'Share of the cortical surface of this atlas, weighted by measured area. Select a region for its own composition.',
     },
     inspector: {
       panelLabel: 'Selection and display',
       selectedHeading: 'Selected',
       noRegionSelected: 'No region selected',
-      hintCortex: 'Select a region on the model or from the list.',
+      hintCortex: 'Select a region on the model or from the list. Drag to turn it.',
       hintStructures: 'Cortex is hidden — internal structures are selectable.',
       hemisphere: 'Hemisphere',
       atlas: 'Atlas',
@@ -106,6 +104,7 @@ export const TRANSLATIONS = {
       sourceLabel: 'Source label',
       focus: 'Focus',
       isolate: 'Isolate',
+      restore: 'Restore',
     },
     cuts: {
       sectionHeading: 'Anatomical cuts',
@@ -174,7 +173,7 @@ export const TRANSLATIONS = {
         atlas: 'Atlas region colours',
         network: 'Functional networks (Yeo 7)',
       },
-      resetView: 'Reset view',
+      resetView: 'Restore opening view',
     },
     mpr: {
       title: 'Linked MRI sections',
@@ -197,7 +196,7 @@ export const TRANSLATIONS = {
       close: 'Close',
       items: [
         ['/', 'Focus the search field'],
-        ['Esc', 'Clear the search, or the selection'],
+        ['Esc', 'Clear the search, then the selection, then the deficit'],
         ['↑ ↓', 'Move through results or the tree'],
         ['Tab', 'Move focus to the model'],
         ['← → ↑ ↓', 'Turn the model, once it has focus'],
@@ -218,7 +217,9 @@ export const TRANSLATIONS = {
     viewport: {
       viewAria: 'Anatomical view',
       snapshot: 'Save image (PNG)',
+      snapshotShort: 'PNG',
       fullscreen: 'Toggle fullscreen',
+      fullscreenShort: 'Full',
       loadingAnatomy: 'Loading anatomy…',
       loadingWithTotal: (l, t) => `Loading anatomy · ${megabytes(l)} / ${megabytes(t)} MB`,
       error: 'Something went wrong.',
@@ -334,14 +335,12 @@ export const TRANSLATIONS = {
       heading: 'Réseaux fonctionnels',
       share: fraction => `${Math.round(fraction * 100)} %`,
       note: 'Part de la surface de cette région, d’après les réseaux de repos de 1000 sujets. Appartenance, non fonction.',
-      cortexHeading: 'Cortex par réseau',
-      cortexNote: 'Part de la surface corticale de cet atlas, pondérée par l’aire mesurée. Sélectionnez une région pour sa composition propre.',
     },
     inspector: {
       panelLabel: 'Sélection et affichage',
       selectedHeading: 'Sélection',
       noRegionSelected: 'Aucune région sélectionnée',
-      hintCortex: 'Sélectionnez une région sur le modèle ou dans la liste.',
+      hintCortex: 'Sélectionnez une région sur le modèle ou dans la liste. Glissez pour le tourner.',
       hintStructures: 'Le cortex est masqué — les structures internes sont sélectionnables.',
       hemisphere: 'Hémisphère',
       atlas: 'Atlas',
@@ -352,6 +351,7 @@ export const TRANSLATIONS = {
       sourceLabel: 'Étiquette source',
       focus: 'Cibler',
       isolate: 'Isoler',
+      restore: 'Rétablir',
     },
     cuts: {
       sectionHeading: 'Coupes anatomiques',
@@ -418,7 +418,7 @@ export const TRANSLATIONS = {
         atlas: 'Couleurs des régions de l’atlas',
         network: 'Réseaux fonctionnels (Yeo 7)',
       },
-      resetView: 'Réinitialiser la vue',
+      resetView: 'Rétablir la vue d’ouverture',
     },
     mpr: {
       title: 'Coupes IRM liées',
@@ -450,7 +450,7 @@ export const TRANSLATIONS = {
       close: 'Fermer',
       items: [
         ['/', 'Activer le champ de recherche'],
-        ['Esc', 'Effacer la recherche ou la sélection'],
+        ['Esc', 'Effacer la recherche, puis la sélection, puis le déficit'],
         ['↑ ↓', 'Parcourir les résultats ou l’arborescence'],
         ['Tab', 'Placer le focus sur le modèle'],
         ['← → ↑ ↓', 'Faire tourner le modèle, une fois ciblé'],
@@ -471,7 +471,9 @@ export const TRANSLATIONS = {
     viewport: {
       viewAria: 'Vue anatomique',
       snapshot: 'Enregistrer l’image (PNG)',
+      snapshotShort: 'PNG',
       fullscreen: 'Plein écran',
+      fullscreenShort: 'Plein',
       loadingAnatomy: 'Chargement de l’anatomie…',
       loadingWithTotal: (l, t) => `Chargement de l’anatomie · ${megabytes(l)} / ${megabytes(t)} Mo`,
       error: 'Une erreur est survenue.',

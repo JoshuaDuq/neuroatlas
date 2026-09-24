@@ -158,6 +158,8 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
         snapshotButton.disabled = !ready;
         const label = snapshotButton.querySelector('.masthead-action-label');
         if (label) label.textContent = i18nViewport.snapshot;
+        const short = snapshotButton.querySelector('.masthead-action-short');
+        if (short) short.textContent = i18nViewport.snapshotShort;
       }
       if (fullscreenButton) {
         fullscreenButton.setAttribute('aria-label', i18nViewport.fullscreen);
@@ -165,6 +167,8 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
         fullscreenButton.disabled = !ready;
         const label = fullscreenButton.querySelector('.masthead-action-label');
         if (label) label.textContent = i18nViewport.fullscreen;
+        const short = fullscreenButton.querySelector('.masthead-action-short');
+        if (short) short.textContent = i18nViewport.fullscreenShort;
       }
 
       if (lastCameraArgs) {

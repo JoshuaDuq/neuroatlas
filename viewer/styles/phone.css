@@ -126,9 +126,9 @@
     background: none;
   }
   .sheet-handle-bar {
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
+    width: 28px;
+    height: 2px;
+    border-radius: 0;
     background: var(--border-control);
   }
 
@@ -212,11 +212,12 @@
    * Bottom there, so it moves to the top left — chips hold the top right
    * and S sits in the middle.
    */
-  .scale-bar {
+  .scale-bar,
+  #viewport[data-chrome="tight"] .scale-bar {
     top: calc(var(--vis-top) + var(--space-3));
     bottom: auto;
-    left: auto;
-    right: calc(var(--vis-right) + var(--space-3));
+    left: calc(var(--vis-left) + var(--space-3));
+    right: auto;
   }
   /* The view plate holds the bottom-left. I must not sit on Top. */
   .orientation [data-edge="bottom"] {

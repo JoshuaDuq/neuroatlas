@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createFrame, rasToWorld, worldToRas, clippingPlane } from './coordinates.js';
+import { createFrame, offsetThrough, rasToWorld, worldToRas, clippingPlane } from './coordinates.js';
 
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-10, `${a} != ${b}`);
 
@@ -8,6 +8,14 @@ test('source RAS millimeters round trip and preserve right/anterior/superior', (
   const world = rasToWorld([21, 37, 49]);
   assert.deepEqual(world.toArray(), [.021, .049, -.037]);
   assert.deepEqual(worldToRas(world), [21, 37, 49]);
+});
+
+test('a cut through a point uses that axis and stays inside the volume', () => {
+  const range = [-128, 128];
+  assert.equal(offsetThrough([30, -10, 20], { x: 1, y: 0, z: 0 }, range), 30);
+  assert.equal(offsetThrough([30, -10, 20], { x: 0, y: 1, z: 0 }, range), -10);
+  assert.equal(offsetThrough([200, 0, 0], { x: 1, y: 0, z: 0 }, range), 128);
+  assert.equal(offsetThrough([-200, 0, 0], { x: 1, y: 0, z: 0 }, range), -128);
 });
 
 test('standard sections pass through requested RAS point with correct normal', () => {

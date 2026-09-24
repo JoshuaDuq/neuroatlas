@@ -17,6 +17,19 @@ const BASES = {
   axial: { normal: [0,0,1], u: [1,0,0], v: [0,1,0], edges: ['A','R','P','L'] },
 };
 
+/**
+ * Where a plane with this normal must sit to pass through a RAS point.
+ * Clamped so a centroid just outside the volume still lands on a legal cut.
+ */
+export function offsetThrough(ras, normal, range) {
+  const offset = ras[0] * normal.x + ras[1] * normal.y + ras[2] * normal.z;
+  const [minimum, maximum] = range;
+  if (!Number.isFinite(offset) || !Number.isFinite(minimum) || !Number.isFinite(maximum)) {
+    throw new Error('A cut through a point needs finite coordinates and a finite range.');
+  }
+  return Math.min(maximum, Math.max(minimum, offset));
+}
+
 /** All frame vectors and positions are in source surface RAS millimeters. */
 export function createFrame(mode, crosshair, { tilt = 30, azimuth = 30 } = {}) {
   if (crosshair.length !== 3 || !crosshair.every(Number.isFinite)) {

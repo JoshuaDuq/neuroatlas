@@ -1,9 +1,10 @@
 /**
  * The shareable part of the viewer's state, encoded into the URL hash.
  *
- * Only durable, meaningful state travels: which atlas, which cut labels, which
- * detail level, which region, and how the model is displayed. The live camera position does not — it changes
- * continuously, and the named view already records the user's intent.
+ * Only durable, meaningful state travels: which atlas, which cut labels, where
+ * the plane sits, which detail level, which region, and how the model is
+ * displayed. The live camera position does not — it changes continuously, and
+ * the named view already records the user's intent.
  *
  * This module deliberately knows nothing about which atlases, regions or
  * views exist. It validates what is checkable without that knowledge and
@@ -18,6 +19,11 @@ const DEFAULTS = {
   spinalCordVisible: false,
   surfaceColor: 'atlas',
   view: 'oblique',
+  cut: 'off',
+  cutOffset: 0,
+  cutReverse: false,
+  cutTilt: 30,
+  cutAzimuth: 30,
   selectedRegion: null,
   isolatedRegion: null,
   internalSystem: null,
@@ -40,6 +46,20 @@ const surfaceColor = value => {
 };
 
 const flag = value => (value === '1' ? true : value === '0' ? false : undefined);
+
+const CUTS = ['sagittal', 'coronal', 'axial', 'oblique'];
+
+const millimetres = value => {
+  const number = Number(value);
+  if (!Number.isFinite(number) || Math.abs(number) > 512) return undefined;
+  return Math.round(number * 10) / 10;
+};
+
+const degrees = (value, minimum, maximum) => {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < minimum || number > maximum) return undefined;
+  return Math.round(number);
+};
 
 /** State carries the selected region as a record; the URL carries its id. */
 const identifier = value => (typeof value === 'object' ? value.id : value);
@@ -68,6 +88,11 @@ const FIELDS = [
     write: identifier,
   },
   { key: 'view', param: 'view', read: value => value || undefined },
+  { key: 'cut', param: 'cut', read: value => (CUTS.includes(value) ? value : undefined) },
+  { key: 'cutOffset', param: 'pos', read: millimetres },
+  { key: 'cutReverse', param: 'rev', read: flag, write: value => (value ? '1' : '0') },
+  { key: 'cutTilt', param: 'tilt', read: value => degrees(value, 0, 90) },
+  { key: 'cutAzimuth', param: 'az', read: value => degrees(value, -180, 180) },
   {
     key: 'hemisphere',
     param: 'hemi',

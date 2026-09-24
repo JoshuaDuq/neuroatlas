@@ -101,6 +101,8 @@ test('UI actions and shortcuts are fully translated in English and French', () =
 
     const vp = t(lang, 'viewport');
     assert.ok(vp.snapshot);
+    assert.ok(vp.snapshotShort);
+    assert.ok(vp.fullscreenShort);
 
     const shortcuts = t(lang, 'shortcuts');
     const keys = shortcuts.items.map(([k]) => k);

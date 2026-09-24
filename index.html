@@ -119,11 +119,11 @@
             </button>
             <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
             <button id="viewport-fullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+              <span class="masthead-action-short">Full</span>
               <span class="masthead-action-label"></span>
             </button>
             <button id="viewport-snapshot" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              <span class="masthead-action-short">PNG</span>
               <span class="masthead-action-label"></span>
             </button>
           </div>
@@ -190,6 +190,17 @@
               <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
             </div>
           </div>
+          <div id="deficit-search-head" class="rail-head" hidden>
+            <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
+            <div class="search-box">
+              <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+              </svg>
+              <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
+              <button id="deficit-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
+            </div>
+          </div>
           <div id="internal-anatomy" class="rail-head internal-controls" hidden>
             <label id="internal-system-label" for="internal-system">Study a system</label>
             <select id="internal-system"></select>
@@ -207,15 +218,6 @@
           <div id="deficit-browser" class="rail-body" hidden>
             <div class="panel-body clinical-intro">
               <p id="clinical-introduction"></p>
-              <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
-              <div class="search-box">
-                <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                  <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
-                </svg>
-                <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
-                <button id="deficit-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
-              </div>
             </div>
             <div id="deficit-list" aria-label="Deficits"></div>
             <p id="clinical-coverage" class="clinical-note panel-body"></p>
@@ -284,7 +286,7 @@
             <div class="tab-group" data-tab="cuts">
               <p id="label-cuts" class="section-label">Anatomical cuts</p>
               <div class="panel-body section-controls">
-                <label id="cut-mode-label">Cutting plane</label>
+                <label id="cut-mode-label" class="visually-hidden">Cutting plane</label>
                 <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
                   <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
                   <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
@@ -389,7 +391,7 @@
     <dialog id="shortcuts" aria-labelledby="shortcuts-title">
       <h2 id="shortcuts-title">Keyboard shortcuts</h2>
       <dl id="shortcuts-list"></dl>
-      <button id="shortcuts-close" type="button">Close</button>
+      <button id="shortcuts-close" class="button-quiet" type="button">Close</button>
     </dialog>
 
     <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>

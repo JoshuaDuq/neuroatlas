@@ -23,7 +23,7 @@ export function inspectorEmptyChrome({ selectedRegion, explorer }) {
 const MAX_LISTED_SOURCE_IDS = 8;
 
 /** The selected region: what it is, and what is measured about it. */
-export function createInspector({ catalog, networks, regions = [], onFocus, onIsolate, centroidOf }) {
+export function createInspector({ catalog, networks, onFocus, onIsolate, centroidOf }) {
   const inspectorPanel = document.getElementById('inspector');
   const labelSelected = document.getElementById('label-selected');
   const factHemiLabel = document.getElementById('fact-hemisphere-label');
@@ -76,44 +76,20 @@ export function createInspector({ catalog, networks, regions = [], onFocus, onIs
     return row;
   }
 
-  /** Each network's share of one atlas's cortical surface, weighted by measured area. */
-  const cortexSharesByAtlas = new Map();
-  function cortexShares(atlas) {
-    if (cortexSharesByAtlas.has(atlas)) return cortexSharesByAtlas.get(atlas);
-    const area = new Map();
-    let total = 0;
-    for (const region of regions) {
-      if (region.kind !== 'cortex' || region.atlas !== atlas) continue;
-      const surface = region.surface_area_mm2 ?? 0;
-      total += surface;
-      for (const { network, fraction } of region.networks ?? []) {
-        area.set(network, (area.get(network) ?? 0) + surface * fraction);
-      }
-    }
-    const shares = total > 0
-      ? [...area].map(([network, mm2]) => ({ network, fraction: mm2 / total }))
-        .sort((a, b) => b.fraction - a.fraction)
-      : [];
-    cortexSharesByAtlas.set(atlas, shares);
-    return shares;
-  }
-
   /**
-   * What share of the selected region's surface each network holds, or, with
-   * nothing selected, the composition of the whole cortex on screen. A region
-   * the build carried no network field for — every subcortical structure, and
-   * everything if the layer was not built — leaves the section hidden.
+   * What share of the selected region's surface each network holds.
+   * Nothing selected leaves the section hidden: the empty inspector is a
+   * hint, and a chart of the whole cortex is not a selection.
    */
   function showNetworks(state) {
     if (!networkSection) return;
     const i18n = t(state.lang, 'networks');
     const region = state.selectedRegion;
-    const wholeCortex = !region && state.explorer === 'anatomy' && state.cortexVisible;
-    const shares = region ? networksOf(region) : wholeCortex ? cortexShares(state.atlas) : [];
+    const shares = region ? networksOf(region) : [];
     networkSection.hidden = shares.length === 0;
     if (!shares.length) return;
-    networkHeading.textContent = region ? i18n.heading : i18n.cortexHeading;
-    networkNote.textContent = region ? i18n.note : i18n.cortexNote;
+    networkHeading.textContent = i18n.heading;
+    networkNote.textContent = i18n.note;
     networkList.replaceChildren(...shares.map(share => networkRow(share, state.lang, i18n)));
   }
 
@@ -132,7 +108,8 @@ export function createInspector({ catalog, networks, regions = [], onFocus, onIs
       if (factCoordsLabel) factCoordsLabel.textContent = i18n.centroid;
       if (factSourceLabel) factSourceLabel.textContent = i18n.sourceLabel;
       focus.textContent = i18n.focus;
-      isolate.textContent = i18n.isolate;
+      // Latched isolation otherwise reads as a button that did nothing.
+      isolate.textContent = state.isolatedRegion ? i18n.restore : i18n.isolate;
 
       const region = state.selectedRegion;
       name.hidden = chrome.hideTitle;

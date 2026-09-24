@@ -13,7 +13,7 @@ select {
   width: 100%;
   appearance: none;
   padding-right: var(--space-6);
-  background-color: var(--surface-sunken);
+  background-color: transparent;
   background-image:
     linear-gradient(45deg, transparent 50%, var(--text-tertiary) 50%),
     linear-gradient(135deg, var(--text-tertiary) 50%, transparent 50%);
@@ -205,7 +205,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-color: var(--accent-hover);
   color: var(--surface-base);
 }
-#mpr-open { width: 100%; margin-top: var(--space-3); }
+#mpr-open { width: auto; margin-top: var(--space-3); padding: 0 var(--space-4); }
 
 /* The panel switch. Shared with the phone sheet: one tab bar, two shells. */
 .rail-tabs { display: flex; flex: none; }
@@ -258,6 +258,10 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   white-space: nowrap;
 }
 #cut-mode button { padding: 0 var(--space-1); }
+#hemisphere button[aria-pressed="true"],
+#cut-mode button[aria-pressed="true"] {
+  box-shadow: inset 0 -1px 0 var(--text-primary);
+}
 
 /* Selection panel -------------------------------------------------------- */
 #selected-name {
@@ -320,7 +324,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
  */
 .network-row {
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr) 44px 34px;
+  grid-template-columns: 10px minmax(0, 1fr) minmax(48px, 72px) max-content;
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-1) 0;
@@ -329,7 +333,12 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .network-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .network-bar { height: 4px; background: var(--border-subtle); }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
-.network-share { text-align: right; color: var(--text-secondary); }
+.network-share {
+  text-align: right;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  padding-left: var(--space-2);
+}
 .network-note {
   margin-top: var(--space-3);
   font-size: var(--text-micro);
@@ -361,6 +370,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 .row[data-hidden="true"] { color: var(--text-tertiary); }
+.row[aria-disabled="true"] { cursor: default; }
 .row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* The tail never wraps or shrinks; the name gives way instead. */
 .row-side, .row-reason, .group-count {
@@ -370,6 +380,18 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--text-tertiary);
   font-size: var(--text-micro);
 }
+.row-group {
+  flex: none;
+  max-width: 42%;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-size: var(--text-micro);
+}
+.row-group + .row-side,
+.row-group + .row-reason { margin-left: var(--space-2); }
 .row-indent { padding-left: var(--space-8); }
 
 .group-row { font-weight: 500; }
@@ -392,7 +414,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .tree-toggle-all { margin-left: auto; }
 .tree-internal[aria-pressed="true"] {
   color: var(--accent);
-  background: var(--accent-wash);
+  background: transparent;
+  box-shadow: inset 0 -1px 0 var(--accent);
 }
 .query-match {
   background: var(--accent-wash);
@@ -476,7 +499,13 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   text-shadow: 0 0 2px var(--overlay-halo), 0 1px 3px var(--overlay-halo);
 }
 .orientation [data-edge="top"] { top: var(--space-3); left: 50%; transform: translateX(-50%); }
-.orientation [data-edge="bottom"] { bottom: var(--space-3); left: 50%; transform: translateX(-50%); }
+/* The view plate owns the bottom line. The letter sits above it, or a long
+   label in another language runs through the marker. */
+.orientation [data-edge="bottom"] {
+  bottom: calc(var(--space-4) + 28px);
+  left: 50%;
+  transform: translateX(-50%);
+}
 .orientation [data-edge="left"] { left: var(--space-3); top: 50%; transform: translateY(-50%); }
 .orientation [data-edge="right"] { right: var(--space-3); top: 50%; transform: translateY(-50%); }
 
@@ -654,13 +683,16 @@ kbd {
   line-height: 1.1;
   text-align: center;
   color: var(--text-secondary);
-  background: var(--surface-sunken);
+  background: transparent;
   border: 1px solid var(--border-subtle);
-  border-bottom-color: var(--border-control);
   border-radius: var(--radius-control);
 }
 .key-range { color: var(--text-tertiary); font-size: var(--text-micro); }
-#shortcuts-close { width: 100%; }
+#shortcuts-close {
+  width: auto;
+  margin-top: var(--space-2);
+  padding-left: 0;
+}
 #shortcuts-open { width: var(--control-height); padding: 0; }
 
 /* Registered sections ---------------------------------------------------- */
@@ -671,7 +703,7 @@ kbd {
   padding: 0 var(--space-2);
   font-variant-numeric: tabular-nums;
   font-family: var(--font-mono);
-  background: var(--surface-sunken);
+  background: transparent;
 }
 #cut-oblique { margin-top: var(--space-3); }
 #cut-oblique label { margin-top: var(--space-2); }
@@ -686,20 +718,43 @@ kbd {
 .mpr-header { display: flex; align-items: start; justify-content: space-between; gap: var(--space-4); }
 .mpr-header h2 { font-size: var(--text-title); }
 .mpr-header p, .mpr-note { font-size: var(--text-ui); color: var(--text-secondary); margin-top: var(--space-2); }
-#mpr-close { height: auto; padding: var(--space-1) var(--space-2); }
+#mpr-close {
+  height: auto;
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
+  border: 0;
+  background: transparent;
+}
 #mpr-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
 #mpr-grid h3 { font-size: var(--text-ui); font-weight: 500; margin-bottom: var(--space-2); }
 #mpr-grid canvas { display: block; width: 100%; height: auto; background: #000; cursor: crosshair; }
-#mpr-grid label { margin: var(--space-2) 0; }
-#mpr-grid input { width: 100%; }
-#mpr-grid output { display: block; font-size: var(--text-micro); }
+#mpr-grid label,
+.mpr-display > label:not(.check) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+}
+#mpr-grid label .measure,
+.mpr-display output { color: var(--text-tertiary); font-size: var(--text-micro); justify-self: end; }
+#mpr-grid input[type="range"],
+.mpr-display input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: var(--space-1) 0 0;
+}
+#mpr-grid .button-quiet { height: auto; margin-top: var(--space-2); padding: var(--space-1) 0; }
 #mpr-readout { font-size: var(--text-ui); }
-.mpr-display { display: flex; align-items: center; gap: var(--space-5); margin: var(--space-4) 0; }
-.mpr-display output { float: right; color: var(--text-tertiary); }
-.mpr-display input[type="range"] { display: block; }
+.mpr-display {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-3) var(--space-6);
+  margin: var(--space-4) 0;
+}
+.mpr-display .check { grid-column: 1 / -1; margin: 0; }
 @media (max-width: 700px) {
   #mpr-grid { grid-template-columns: 1fr; }
-  .mpr-display { flex-wrap: wrap; }
+  .mpr-display { grid-template-columns: 1fr; }
 }
 
 .internal-controls {

@@ -13,7 +13,7 @@ import { captureBeforeInternal, insideInternal, leaveInternal } from './state/in
 import { createTheme } from './state/theme.js';
 import { decodeState, encodeState } from './state/url-state.js';
 import { BrainSections } from './slices/sections.js';
-import { rasToWorld } from './slices/coordinates.js';
+import { offsetThrough, rasToWorld } from './slices/coordinates.js';
 import { createSectionControls } from './ui/sections.js';
 import { createInternalAnatomy } from './ui/internal-anatomy.js';
 import { createConstituents } from './ui/constituents.js';
@@ -177,6 +177,20 @@ export async function startApp() {
           if (mesh.userData.atlas === 'zanatomy') cordBox.expandByObject(mesh);
         }
         cachedFramingBounds = cordBox.isEmpty() ? bounds : cordBox;
+      }
+      return cachedFramingBounds;
+    }
+    // One hemisphere, or the cord added beneath the brain, is not the box the
+    // page opened with. Fit what is actually drawn, or the picture keeps a
+    // hole where the hidden half was and the cord stays below the frame.
+    if (model.state.cortexVisible && (model.state.hemisphere !== 'both' || model.state.spinalCordVisible)) {
+      if (!cachedFramingBounds) {
+        const visible = model.state.hemisphere === 'both' ? bounds.clone() : new Box3();
+        for (const mesh of model.visibleMeshes) {
+          if (model.state.hemisphere === 'both' && mesh.userData.atlas !== 'zanatomy') continue;
+          visible.expandByObject(mesh);
+        }
+        cachedFramingBounds = visible.isEmpty() ? bounds : visible;
       }
       return cachedFramingBounds;
     }
@@ -381,7 +395,13 @@ export async function startApp() {
     if (reason === 'isolated') model.clearIsolation();
     // A cut-only region is nowhere until a plane exists. Coronal is the
     // conventional default, and the panel moves it from there.
-    if (reason === 'no-cut') await sections.setMode('coronal');
+    if (reason === 'no-cut') {
+      await sections.setMode('coronal');
+      const coords = model.centroidOf(id);
+      if (coords && sections.active) {
+        sections.setOffset(offsetThrough(coords, sections.frame.normal, sections.offsetRange));
+      }
+    }
     if (reason === 'other-detail') await setDetail(model.regions.get(id).atlas);
     if (reason === 'other-system') model.setInternalSystem(null);
     select(id);
@@ -444,18 +464,30 @@ export async function startApp() {
     catalog,
     atlases: model.manifest.atlases,
     cutAtlases: model.manifest.cut_atlases,
-    onSelect: select,
+    // A name chosen from the list is a request to be shown. A click on the
+    // model is not: the reader is already looking at the place they hit, and
+    // moving the camera there would throw away the orbit they just made.
+    onSelect: id => {
+      const same = id != null && id === model.state.selectedRegion?.id;
+      select(id);
+      if (id && !same) focusSelection();
+    },
     onToggleGroup: name => { session.toggleGroup(name); render(); },
     onToggleAllGroups,
     onQuery: query => { session.setQuery(query); render(); },
-    onReveal: reveal,
+    onReveal: async (reason, id) => {
+      await reveal(reason, id);
+      if (id) focusSelection();
+    },
     onAtlas: setAtlas,
     onCutAtlas: setCutAtlas,
   });
 
   const isolateSelection = () => display(() => {
-    if (model.state.isolatedRegion) model.clearIsolation();
-    else {
+    if (model.state.isolatedRegion) {
+      model.clearIsolation();
+      frameWhole();
+    } else {
       model.isolate();
       focusSelection();
     }
@@ -464,7 +496,6 @@ export async function startApp() {
   const inspector = createInspector({
     catalog,
     networks: model.manifest.networks,
-    regions: model.manifest.regions,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
     centroidOf: id => model.centroidOf(id),
@@ -480,6 +511,9 @@ export async function startApp() {
       session.setDeficit(id);
       session.setExplorer('deficits');
       render();
+      // The write-up lives on the region panel. On a phone that panel is not
+      // the list the reader just tapped, so the tap has to open it.
+      showRegion();
     },
     onRegion: async id => {
       await openClinicalRegion(model, sections, id);
@@ -577,10 +611,7 @@ export async function startApp() {
   function setSpinalCordVisible(visible) {
     display(() => {
       model.setSpinalCordVisible(visible);
-      if (!visible && scene.controls.target.y < bounds.min.y) {
-        scene.controls.target.copy(bounds.getCenter(new Vector3()));
-        frameCurrent();
-      }
+      frameWhole();
     });
   }
 
@@ -588,17 +619,23 @@ export async function startApp() {
     detailLevels: model.manifest.detail_levels,
     hasSpinalCord,
     onDetail: setDetail,
-    onHemisphere: value => display(() => model.setHemisphere(value)),
+    onHemisphere: value => display(() => {
+      model.setHemisphere(value);
+      frameWhole();
+    }),
     onCortexVisible: value => display(() => model.setCortexVisible(value)),
     onCortexOpacity: value => display(() => model.setCortexOpacity(value)),
     onInternalVisible: value => display(() => model.setInternalVisible(value)),
     onSpinalCordVisible: setSpinalCordVisible,
-    onReset: () => display(() => {
+    onReset: () => {
+      // The opening picture: display, cut, camera, and the list. Not wrapped
+      // in display(), which would announce the cleared selection as a mishap.
+      session.setQuery('');
       sections.setMode('off');
       model.reset();
       scene.controls.target.copy(bounds.getCenter(new Vector3()));
       applyView('oblique');
-    }),
+    },
   });
 
   function faceCut() {
@@ -674,6 +711,12 @@ export async function startApp() {
     // eases to the new rectangle, which is the one thing allowed to animate.
     onDetent: () => { if (framed) frameCurrent(); },
   });
+
+  /** The region panel is where a selection or a deficit is read. */
+  function showRegion() {
+    if (sheet?.isPhone) sheet.show('region');
+    else inspectorTabs.show('region');
+  }
 
   // ---- the single render path -------------------------------------------
 
@@ -767,6 +810,22 @@ export async function startApp() {
     });
   }
 
+  const CUT_LINKS = new Set(['sagittal', 'coronal', 'axial', 'oblique']);
+
+  /** The plane is not session state. It still belongs in the link. */
+  function cutLink() {
+    const cut = sections.state;
+    if (!CUT_LINKS.has(cut.mode)) return {};
+    const offset = new Vector3(...cut.crosshair).dot(sections.frame.normal);
+    return {
+      cut: cut.mode,
+      cutOffset: Math.round(offset * 10) / 10,
+      cutReverse: cut.reverse,
+      cutTilt: cut.tilt,
+      cutAzimuth: cut.azimuth,
+    };
+  }
+
   let urlTimer = null;
   function syncUrl(state) {
     clearTimeout(urlTimer);
@@ -774,7 +833,7 @@ export async function startApp() {
       // The brain is fixed for the life of the page, so it is not session
       // state — but it has to be in the link. Region ids are shared between
       // brains, so a link without it reopens someone else's anatomy.
-      const hash = encodeState({ ...state, anatomy });
+      const hash = encodeState({ ...state, ...cutLink(), anatomy });
       // replaceState, not push: the back button is not a camera undo stack.
       history.replaceState(null, '', hash ? `#${hash}` : globalThis.location.pathname);
     }, 250);
@@ -864,12 +923,18 @@ export async function startApp() {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.key === 'Escape') {
       // The dialog closes itself; the selection under it is not the target.
+      // A search field gives up its text first. Once that is empty, Escape
+      // steps back through the region and then the deficit.
       if (shortcuts.isOpen) return;
-      if (document.activeElement === document.getElementById('search')) {
+      const view = session.assemble(model.state);
+      if (document.activeElement === document.getElementById('search') && view.query) {
         session.setQuery('');
         render();
       } else if (model.state.selectedRegion) {
         select(null);
+      } else if (view.selectedDeficit) {
+        session.setDeficit(null);
+        render();
       }
       return;
     }
@@ -954,6 +1019,16 @@ export async function startApp() {
   if (wanted.internalSystem) await restore(() => model.setInternalSystem(wanted.internalSystem));
   if (wanted.cortexVisible === false) frameCurrent({ immediate: true });
   if (wanted.view) applyView(wanted.view, { immediate: true });
+  if (['sagittal', 'coronal', 'axial', 'oblique'].includes(wanted.cut)) {
+    await restore(async () => {
+      if (wanted.cut === 'oblique') {
+        sections.setAngles(wanted.cutTilt ?? 30, wanted.cutAzimuth ?? 30);
+      }
+      await sections.setMode(wanted.cut);
+      if (wanted.cutReverse) sections.setDisplay({ reverse: true });
+      if (wanted.cutOffset) sections.setOffset(wanted.cutOffset);
+    });
+  }
   if (wanted.selectedRegion && catalog.get(wanted.selectedRegion)) {
     try {
       model.select(wanted.selectedRegion);

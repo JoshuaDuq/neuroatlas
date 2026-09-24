@@ -108,6 +108,30 @@ test('snapshot and fullscreen sit in the masthead, not on the anatomy', () => {
   assert.ok(snap > menu && snap < viewport);
 });
 
+test('snapshot and fullscreen are unmarked text, like theme and shortcuts', () => {
+  const menu = html.slice(html.indexOf('id="masthead-menu"'), html.indexOf('</header>'));
+  assert.equal(/<svg\b/.test(menu), false);
+  assert.equal((menu.match(/masthead-action-short/g) ?? []).length, 2);
+});
+
+test('deficit search is a flush rail field in the same slot as region search', () => {
+  const head = tagWithId('deficit-search-head');
+  assert.match(head, /\brail-head\b/);
+  const anatomy = html.indexOf('id="anatomy-search"');
+  const deficit = html.indexOf('id="deficit-search-head"');
+  const browser = html.indexOf('id="deficit-browser"');
+  assert.ok(anatomy !== -1 && deficit > anatomy && deficit < browser);
+});
+
+test('the cutting plane is named for assistive tech and not drawn as a form label', () => {
+  assert.match(tagWithId('cut-mode-label'), /visually-hidden/);
+});
+
+test('an empty inspector does not chart the whole cortex', async () => {
+  const source = await readFile(new URL('./inspector.js', import.meta.url), 'utf8');
+  assert.equal(/cortexShares|cortexHeading|wholeCortex/.test(source), false);
+});
+
 test('linked MRI is the filled member of the actions row, not a second banner', () => {
   const regionActions = html.match(/<div class="actions">\s*<button id="focus"[\s\S]*?<\/div>/);
   assert.ok(regionActions, 'expected the region actions row');
