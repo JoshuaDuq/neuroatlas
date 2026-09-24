@@ -54,12 +54,13 @@
   /*
    * Controls that sit on the stage belong to the stage. Lit from the rails
    * they became a white toolbar floating on black in light mode, which is the
-   * one place the interface stopped looking like an instrument. Measured
+   * one place the interface stopped looking like an instrument. The plate is
+   * opaque: a translucent one let the sulci through the type. Measured
    * against the plate rather than the rail, which is why --accent cannot be
    * reused: its light value is a dark blue.
    */
-  --overlay-plate: rgb(12 15 20 / 0.92);
-  --overlay-plate-hover: rgb(28 34 42 / 0.96);
+  --overlay-plate: #0c0f14;
+  --overlay-plate-hover: #1c222a;
   --overlay-border: rgb(242 246 250 / 0.22);
   --overlay-accent: #4fb6e0;
   --overlay-accent-wash: rgb(79 182 224 / 0.16);
@@ -141,8 +142,8 @@
     --border-subtle: var(--border-control);
     --overlay-ink-muted: var(--overlay-ink);
     --overlay-halo: rgb(6 9 13 / 0.95);
-    --overlay-plate: rgb(12 15 20 / 0.96);
-    --overlay-plate-hover: rgb(30 36 45 / 0.96);
+    --overlay-plate: #0c0f14;
+    --overlay-plate-hover: #1e242d;
     --overlay-border: var(--overlay-ink);
   }
 }

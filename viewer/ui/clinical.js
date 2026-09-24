@@ -15,9 +15,7 @@ function deficitButton(deficit, lang) {
   const text = element('span', null, 'clinical-deficit-text');
   text.append(element('span', deficit.name[lang]),
     element('span', deficit.domain[lang], 'clinical-note'));
-  const chevron = element('span', '\u203a', 'clinical-deficit-chevron');
-  chevron.setAttribute('aria-hidden', 'true');
-  button.append(text, chevron);
+  button.append(text);
   return button;
 }
 
@@ -56,7 +54,7 @@ function associationSection(association, clinical, anatomy, lang) {
     button.type = 'button';
     button.dataset.clinicalRegion = mapping.region;
     button.setAttribute('aria-label', `${text.openRegion}: ${label}`);
-    button.append(element('span', label), element('span', '↗', 'clinical-arrow'));
+    button.append(element('span', label));
     regions.append(button);
   }
   if (!association.mappings.length) regions.append(element('p', text.mappingEmpty, 'clinical-note'));
@@ -78,6 +76,7 @@ export function relatedRegionVisible(selectedRegion, deficitCount) {
 export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery, onDeficit, onRegion }) {
   const switcher = document.getElementById('explorer-switch');
   const anatomySearch = document.getElementById('anatomy-search');
+  const deficitSearchHead = document.getElementById('deficit-search-head');
   const anatomyBrowser = document.getElementById('anatomy-browser');
   const deficitBrowser = document.getElementById('deficit-browser');
   const search = document.getElementById('deficit-search');
@@ -97,7 +96,15 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
 
   function selectDeficit(id) {
     onDeficit(id);
-    document.getElementById('clinical-title').focus();
+    const heading = document.getElementById('clinical-title');
+    const name = heading?.parentElement?.querySelector('.clinical-profile-name');
+    const target = name ?? heading;
+    if (!target) return;
+    if (name) name.tabIndex = -1;
+    // The profile sits under the region facts. Bring the deficit just chosen
+    // to the top of the panel, then name it without scrolling again.
+    target.scrollIntoView({ block: 'start' });
+    target.focus({ preventScroll: true });
   }
 
   function renderProfile(state) {
@@ -158,7 +165,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
   };
   const onInput = event => onQuery(event.target.value);
   const onSearchKey = event => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && search.value) {
       event.preventDefault();
       onQuery('');
     }
@@ -217,6 +224,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       const text = CLINICAL_TEXT[language];
       const exploring = state.explorer === 'deficits';
       anatomySearch.hidden = exploring;
+      if (deficitSearchHead) deficitSearchHead.hidden = !exploring;
       anatomyBrowser.hidden = exploring;
       deficitBrowser.hidden = !exploring;
       profile.hidden = !exploring;
@@ -226,7 +234,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
         button.setAttribute('aria-pressed', String(button.dataset.explorer === state.explorer));
       }
       search.placeholder = text.search;
-      searchLabel.textContent = text.search;
+      searchLabel.textContent = text.searchLabel ?? text.search;
       if (deficitSearchClear) {
         deficitSearchClear.hidden = !state.clinicalQuery?.trim();
         deficitSearchClear.setAttribute('aria-label', t(language, 'navigator').clearSearch);

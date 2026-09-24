@@ -1,7 +1,8 @@
 export const CLINICAL_TEXT = {
   en: {
     anatomy: 'Anatomy', deficits: 'Deficits', explore: 'Explore the atlas',
-    search: 'Search deficits or cognitive functions',
+    search: 'Search deficits',
+    searchLabel: 'Search deficits or cognitive functions',
     introduction: 'Explore acquired deficits through anatomy and published evidence.',
     coverage: '{count} profiles · adult acquired deficits',
     noResults: 'No matching deficit in this collection.',
@@ -25,7 +26,8 @@ export const CLINICAL_TEXT = {
   },
   fr: {
     anatomy: 'Anatomie', deficits: 'Déficits', explore: 'Explorer l’atlas',
-    search: 'Rechercher un déficit ou une fonction cognitive',
+    search: 'Rechercher un déficit',
+    searchLabel: 'Rechercher un déficit ou une fonction cognitive',
     introduction: 'Explorer les déficits acquis à travers l’anatomie et les données publiées.',
     coverage: '{count} profils · déficits acquis de l’adulte',
     noResults: 'Aucun déficit correspondant dans cette collection.',

@@ -84,6 +84,34 @@ test('leaving the canvas takes the name with it', () => {
   assert.deepEqual(hovered.at(-1), [null, null]);
 });
 
+test('a click on a region selects it', () => {
+  const domElement = canvas();
+  const chosen = [];
+  createPicker({
+    domElement,
+    camera: new PerspectiveCamera(),
+    model: () => ({ pick: () => ({ id: 'destrieux:left:1' }) }),
+    onSelect: id => chosen.push(id),
+  });
+  domElement.emit('pointerdown', { button: 0 });
+  domElement.emit('pointerup', { button: 0 });
+  assert.deepEqual(chosen, ['destrieux:left:1']);
+});
+
+test('a click on the empty stage does not clear the selection', () => {
+  const domElement = canvas();
+  const chosen = [];
+  createPicker({
+    domElement,
+    camera: new PerspectiveCamera(),
+    model: () => ({ pick: () => null }),
+    onSelect: id => chosen.push(id),
+  });
+  domElement.emit('pointerdown', { button: 0 });
+  domElement.emit('pointerup', { button: 0 });
+  assert.deepEqual(chosen, []);
+});
+
 test('double clicking a point triggers focus on that 3D coordinate', () => {
   const domElement = canvas();
   const targetPoint = { x: 0, y: -0.25, z: 0.05 };

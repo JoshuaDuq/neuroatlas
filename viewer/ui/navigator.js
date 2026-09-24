@@ -66,8 +66,16 @@ export function createNavigator({
   const treeItems = () => [...tree.querySelectorAll('[role="treeitem"]')];
 
   function activate(row) {
-    if (row.dataset.visible === 'true') onSelect(row.dataset.regionId);
-    else if (!UNREVEALABLE.has(row.dataset.reason)) onReveal(row.dataset.reason, row.dataset.regionId);
+    const hidden = row.dataset.visible !== 'true';
+    if (hidden && UNREVEALABLE.has(row.dataset.reason)) return;
+    // A chosen hit belongs in the tree, beside its neighbours. Leaving the
+    // query up would keep the result list in front of that place.
+    if (search.value) {
+      search.value = '';
+      onQuery('');
+    }
+    if (hidden) onReveal(row.dataset.reason, row.dataset.regionId);
+    else onSelect(row.dataset.regionId);
   }
 
   function buildRow(row, { role, level, lang, query }) {
@@ -127,8 +135,18 @@ export function createNavigator({
       tail.className = 'row-side';
       tail.textContent = sideGlyphs[row.region.hemisphere] ?? '';
       // The glyph is "L"; the name says "left". Laterality is never a glyph alone,
-      // and it is what distinguishes two otherwise identical rows.
-      item.setAttribute('aria-label', `${row.label.name}, ${side}`);
+      // and it is what distinguishes two otherwise identical rows. Search has no
+      // parent group, so the lobe or system is named on the row itself.
+      const place = role === 'option' ? row.label.group : '';
+      item.setAttribute('aria-label', place
+        ? `${row.label.name}, ${side}, ${place}`
+        : `${row.label.name}, ${side}`);
+      if (place) {
+        const group = document.createElement('span');
+        group.className = 'row-group';
+        group.textContent = place;
+        item.append(group);
+      }
     } else {
       item.dataset.hidden = 'true';
       item.dataset.reason = row.reason;
@@ -141,6 +159,8 @@ export function createNavigator({
       } else {
         item.setAttribute('aria-label', i18n.rowHiddenAria(row.label.name, side, tail.textContent));
       }
+      // The reason is a status word. The label says the click will bring it back.
+      item.title = item.getAttribute('aria-label');
     }
     item.append(tail);
     item.addEventListener('click', () => activate(item));
@@ -207,6 +227,16 @@ export function createNavigator({
       switchTo.addEventListener('click', () => onCutAtlas(other.id));
       line.append(switchTo);
       results.append(line);
+    }
+
+    // Enter chooses this row. Arming it on the first keystroke means the
+    // reader does not have to press Down before the search will act.
+    const choices = options();
+    const index = choices.findIndex(option => option.getAttribute('aria-disabled') !== 'true');
+    if (index >= 0) {
+      activeIndex = index;
+      choices[index].dataset.active = 'true';
+      search.setAttribute('aria-activedescendant', choices[index].id);
     }
   }
 
@@ -280,7 +310,7 @@ export function createNavigator({
     }
     if (id && id !== lastScrolledRegionId && selectedItem) {
       lastScrolledRegionId = id;
-      selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      selectedItem.scrollIntoView({ block: 'nearest' });
     } else if (!id) {
       lastScrolledRegionId = null;
     }

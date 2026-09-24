@@ -74,6 +74,17 @@ test('the selected region encodes by id, even though state holds the object', ()
   assert.equal(decodeState(encoded).selectedRegion, 'destrieux:left:29');
 });
 
+test('a cut plane survives a shared link, and an uncut brain does not mention one', () => {
+  assert.equal(encodeState({ atlas: 'destrieux', cut: 'off' }).includes('cut='), false);
+  const sagittal = { atlas: 'destrieux', cut: 'sagittal', cutOffset: 12.5, cutReverse: true };
+  assert.deepEqual(decodeState(encodeState(sagittal)), sagittal);
+  const oblique = { cut: 'oblique', cutTilt: 10, cutAzimuth: -20 };
+  assert.deepEqual(decodeState(encodeState(oblique)), oblique);
+  assert.equal(decodeState('#cut=sideways').cut, undefined);
+  assert.equal(decodeState('#pos=9999').cutOffset, undefined);
+  assert.equal(decodeState('#tilt=91').cutTilt, undefined);
+});
+
 test('a system study survives sharing a link', () => {
   const decoded = decodeState(encodeState({ detail: 'learning', internalSystem: 'Basal ganglia' }));
   assert.equal(decoded.detail, 'learning');

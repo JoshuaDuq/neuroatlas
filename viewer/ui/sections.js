@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { centeredFrame, pointOnFrame } from '../slices/coordinates.js';
+import { centeredFrame, offsetThrough, pointOnFrame } from '../slices/coordinates.js';
 import { atlasSwitchLabel, t } from '../i18n/translations.js';
 import { PHONE_QUERY } from '../render/device.js';
 import { STRUCTURE_LABELS } from '../catalog/structure-groups.js';
@@ -15,6 +15,8 @@ const TISSUE_NAMES_FR = {
   '???': 'Non étiqueté',
   'Left-Cerebral-White-Matter': 'Substance blanche cérébrale',
   'Right-Cerebral-White-Matter': 'Substance blanche cérébrale',
+  'Left-Cerebral-Cortex': 'Cortex cérébral gauche',
+  'Right-Cerebral-Cortex': 'Cortex cérébral droit',
   CSF: 'Liquide cérébro-spinal (LCS)',
   'Left-vessel': 'Vaisseau cérébral',
   'Right-vessel': 'Vaisseau cérébral',
@@ -28,6 +30,8 @@ const TISSUE_NAMES_EN = {
   '???': 'Unlabelled',
   'Left-Cerebral-White-Matter': 'Cerebral white matter',
   'Right-Cerebral-White-Matter': 'Cerebral white matter',
+  'Left-Cerebral-Cortex': 'Left cerebral cortex',
+  'Right-Cerebral-Cortex': 'Right cerebral cortex',
   CSF: 'Cerebrospinal fluid (CSF)',
   'Left-vessel': 'Cerebral vessel',
   'Right-vessel': 'Cerebral vessel',
@@ -113,7 +117,16 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const button = event.target.closest('[data-cut-mode]');
     if (!button || button.dataset.cutMode === sections.state.mode) return;
     await sections.setMode(button.dataset.cutMode);
-    if (sections.active) onFaceView();
+    if (sections.active) {
+      // A region is already chosen. The new plane should meet it, not the
+      // midline the slider was left on.
+      const region = getSelectedRegion?.();
+      const coords = region && centroidOf?.(region.id);
+      if (coords) {
+        sections.setOffset(offsetThrough(coords, sections.frame.normal, sections.offsetRange));
+      }
+      onFaceView();
+    }
   });
   listen(cutAtlas, 'change', () => sections.setCutAtlas(cutAtlas.value));
   listen(position, 'input', () => schedule(() => sections.setOffset(Number(position.value))));
@@ -163,16 +176,18 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     canvas.tabIndex = 0;
     canvas.setAttribute('role', 'img');
     const label = document.createElement('label');
+    const caption = document.createElement('span');
     const slider = document.createElement('input');
     slider.type = 'range'; slider.min = '-128'; slider.max = '128'; slider.step = '1';
     const output = document.createElement('output');
     output.className = 'measure';
     const exportButton = document.createElement('button');
     exportButton.type = 'button';
-    label.append(slider, output);
+    exportButton.className = 'button-quiet';
+    label.append(caption, output, slider);
     article.append(heading, canvas, label, exportButton);
     grid.append(article);
-    panels.set(name, { article, heading, canvas, label, slider, output, exportButton });
+    panels.set(name, { article, heading, canvas, label, caption, slider, output, exportButton });
     listen(slider, 'input', () => schedule(() => {
       const point = [...sections.state.crosshair]; point[axis] = Number(slider.value);
       selectPoint(point);
@@ -256,15 +271,25 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const displacement = new Vector3(...sections.state.crosshair).sub(frame.center);
     const x = (displacement.dot(frame.u)/fieldOfView+.5)*size;
     const y = (.5-displacement.dot(frame.v)/fieldOfView)*size;
-    ctx.strokeStyle = '#6ce3da'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,size); ctx.moveTo(0,y); ctx.lineTo(size,y); ctx.stroke();
-    ctx.fillStyle = '#fff'; ctx.font = '16px system-ui'; ctx.textAlign = 'center';
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,size); ctx.moveTo(0,y); ctx.lineTo(size,y);
+    ctx.strokeStyle = '#0e1116'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.strokeStyle = '#4fb6e0'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.font = '600 15px ui-sans-serif, system-ui, sans-serif';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#0e1116';
+    ctx.fillStyle = '#f2f6fa';
     for (const [index, point] of [[size/2,22],[size-16,size/2],[size/2,size-14],[16,size/2]].entries()) {
       const edgeLetter = currentLang === 'fr' ? (FR_EDGE[frame.edges[index]] ?? frame.edges[index]) : frame.edges[index];
+      ctx.strokeText(edgeLetter, ...point);
       ctx.fillText(edgeLetter, ...point);
     }
-    ctx.font = '12px monospace'; ctx.textAlign = 'left';
-    ctx.fillText(`${planeName} ${sections.state.crosshair[AXES[name]].toFixed(1)} mm`, 10, size-12);
+    const annotation = `${planeName} ${sections.state.crosshair[AXES[name]].toFixed(1)} mm`;
+    ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.textAlign = 'left';
+    ctx.strokeStyle = '#0e1116';
+    ctx.strokeText(annotation, 10, size - 12);
+    ctx.fillText(annotation, 10, size - 12);
   }
 
   function sampleDisplayName(sample) {
@@ -369,7 +394,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       const planeName = mprI18n.labels[name] ?? name;
       panel.heading.textContent = planeName;
       panel.canvas.setAttribute('aria-label', mprI18n.sliceAria(planeName));
-      panel.label.childNodes[0].nodeValue = `${mprI18n.positionLabel(planeName)} `;
+      panel.caption.textContent = mprI18n.positionLabel(planeName);
       panel.slider.setAttribute('aria-label', mprI18n.sliderAria(planeName));
       panel.exportButton.textContent = mprI18n.savePng;
     }

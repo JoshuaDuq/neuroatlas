@@ -66,7 +66,11 @@ export function createPicker({ domElement, camera, model, onHover, onSelect, onF
       Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y)
         < slopFor(pressed.pointerType);
     pressed = null;
-    if (isClick) onSelect(regionAt(event)?.id ?? null);
+    // A miss is not a request to forget the region. The stage is mostly
+    // empty, and a sulcus is easy to miss; Escape is the deliberate clear.
+    if (!isClick) return;
+    const id = regionAt(event)?.id;
+    if (id) onSelect(id);
   };
 
   const onPointerMove = event => {

@@ -35,7 +35,10 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
 
   const onHemisphereClick = event => {
     const button = event.target.closest('[data-hemisphere]');
-    if (button) handlers.onHemisphere(button.dataset.hemisphere);
+    // The active side is already showing. A second click must not refit the
+    // camera and throw away the orbit the reader just made.
+    if (!button || button.getAttribute('aria-pressed') === 'true') return;
+    handlers.onHemisphere(button.dataset.hemisphere);
   };
 
   const listeners = [
