@@ -136,17 +136,20 @@
   #masthead-menu {
     position: absolute;
     z-index: 40;
-    top: calc(100% - var(--space-1));
-    right: var(--space-3);
+    top: 100%;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-3);
-    min-width: 180px;
-    padding: var(--space-3);
+    width: var(--settings-width, 220px);
+    max-width: 100vw;
+    padding: var(--space-3) var(--space-4);
     background: var(--surface-base);
     border: 1px solid var(--border-control);
-    border-radius: var(--radius-panel);
+    border-top: 0;
+    border-right: 0;
+    border-radius: 0;
   }
   #masthead-menu[hidden] { display: none !important; }
   #masthead-menu #region-count { color: var(--text-secondary); }

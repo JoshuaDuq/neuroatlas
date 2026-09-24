@@ -8,7 +8,7 @@ button, select, input[type="search"], input[type="number"] {
 }
 button { cursor: pointer; }
 button:hover:not(:disabled) { background: var(--surface-sunken); }
-button:disabled { color: var(--text-tertiary); cursor: default; }
+button:disabled, input:disabled, select:disabled { color: var(--text-tertiary); cursor: default; }
 select {
   width: 100%;
   appearance: none;
@@ -363,7 +363,12 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 .row { cursor: pointer; user-select: none; }
 .row:hover { background: var(--surface-sunken); }
-.row[data-active="true"] { background: var(--surface-sunken); }
+/* The armed search row is the one Enter will take. Sunken alone is the
+   hover colour, so the keyboard target also carries a hairline. */
+.row[data-active="true"] {
+  background: var(--surface-sunken);
+  box-shadow: inset 2px 0 0 var(--text-secondary);
+}
 .row[data-selected="true"] {
   background: var(--accent-wash);
   color: var(--accent);
@@ -424,6 +429,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-radius: 2px;
 }
 .row-alias {
+  flex: none;
+  white-space: nowrap;
   color: var(--text-tertiary);
   font-size: var(--text-micro);
   margin-left: var(--space-1);
@@ -589,41 +596,24 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   pointer-events: none;
 }
 .network-legend li { display: flex; align-items: center; gap: var(--space-2); }
-/* A tight stage puts the scale bar on the top line; the key sits under it. */
-#viewport[data-chrome="tight"] .network-legend {
-  top: calc(var(--vis-top) + var(--space-3) + 26px);
-}
 
 /*
- * When the presets and the bar cannot share the bottom line the bar moves up
- * rather than being overlapped: it is a measurement, not decoration. The flag
- * comes from viewport-chrome.js, which measures the stage. The media query
- * this replaces asked about the window, so two 320px rails left a 1100px
- * window a 460px stage and the bar was painted over Top and Bottom.
+ * When the presets and the bar cannot share the bottom line, the bar sits
+ * just above the view plate, still on the right. Putting it on the top line
+ * set the measurement beside the inspector tabs. The flag comes from
+ * viewport-chrome.js, which measures the stage.
  */
 #viewport[data-chrome="tight"] .scale-bar {
-  top: calc(var(--vis-top) + var(--space-3));
-  bottom: auto;
+  top: auto;
+  bottom: calc(var(--vis-bottom) + var(--space-4) + 30px);
   right: calc(var(--vis-right) + var(--space-3));
+  left: auto;
 }
 #viewport[data-chrome="tight"] .views {
   overflow-x: auto;
   scrollbar-width: none;
 }
 #viewport[data-chrome="tight"] .views::-webkit-scrollbar { display: none; }
-
-/*
- * On a narrow stage the bar takes the top line and the presets take the whole
- * bottom one, so the centred markers move out of both lanes rather than being
- * drawn through. An orientation marker is the last thing allowed to be
- * ambiguous.
- */
-#viewport[data-chrome="tight"] .orientation [data-edge="top"] {
-  top: calc(var(--space-3) + 24px);
-}
-#viewport[data-chrome="tight"] .orientation [data-edge="bottom"] {
-  bottom: calc(var(--space-3) + 32px);
-}
 
 .stage {
   position: absolute;
@@ -657,7 +647,10 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 
 /* Shortcut sheet ---------------------------------------------------------- */
 #shortcuts {
-  min-width: 320px;
+  min-width: min(320px, 100vw);
+  max-width: calc(100vw - var(--space-8));
+  max-height: calc(100dvh - var(--space-8));
+  overflow: auto;
   padding: var(--space-5);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-panel);

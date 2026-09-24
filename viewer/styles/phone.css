@@ -170,9 +170,6 @@
     padding: var(--space-1) var(--space-4);
     font-size: var(--text-micro);
     color: var(--text-tertiary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   /* ---- panels inside the sheet ---------------------------------------- */
@@ -197,20 +194,25 @@
   .sheet-panel-first > .section-label { border-top: 0; }
 
   /* ---- viewport chrome ------------------------------------------------ */
-  /* Presets scroll rather than wrap, and clear the sheet. */
+  /*
+   * Presets scroll rather than wrap, and clear the sheet. The tighter
+   * padding is what lets the seven French names fit on a 390px screen;
+   * a name cut in half is a view the reader cannot choose.
+   */
   .views {
     left: calc(var(--vis-left) + var(--space-3));
     max-width: calc(100% - var(--vis-left) - var(--vis-right) - var(--space-6));
     overflow-x: auto;
     scrollbar-width: none;
   }
+  .views button { padding: 0 var(--space-1); }
   .views::-webkit-scrollbar { display: none; }
   .hover-label { display: none; }
 
   /*
    * The presets take the whole bottom line. The scale bar would sit on
-   * Bottom there, so it moves to the top left — chips hold the top right
-   * and S sits in the middle.
+   * Bottom there, so it moves to the top left. Chips hold the top right,
+   * and S sits below the bar.
    */
   .scale-bar,
   #viewport[data-chrome="tight"] .scale-bar {
@@ -218,6 +220,10 @@
     bottom: auto;
     left: calc(var(--vis-left) + var(--space-3));
     right: auto;
+  }
+  /* The scale bar holds the top-left line. S sits under it, not through it. */
+  .orientation [data-edge="top"] {
+    top: calc(var(--space-3) + 24px);
   }
   /* The view plate holds the bottom-left. I must not sit on Top. */
   .orientation [data-edge="bottom"] {

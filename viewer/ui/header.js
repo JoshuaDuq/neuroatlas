@@ -87,6 +87,24 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     shortcutsButton.textContent = compact ? t(lastLang, 'header').shortcuts : '?';
   }
 
+  /*
+   * In the three-column shell the menu drops over the right rail. Matching
+   * that rail's width keeps its edge on the column boundary, rather than
+   * through the middle of a tab label. A sheet or a stacked rail is not
+   * that column, and the menu stays a compact list.
+   */
+  function placeMenu() {
+    const masthead = moreButton.closest('header');
+    const inspectorRail = document.getElementById('inspector');
+    const rail = inspectorRail?.getBoundingClientRect();
+    const head = masthead.getBoundingClientRect();
+    const coversRail = menuQuery.matches && rail && rail.width > 160
+      && Math.abs(rail.right - globalThis.innerWidth) < 2
+      && rail.top <= head.bottom + 1;
+    if (coversRail) masthead.style.setProperty('--settings-width', `${Math.round(rail.width)}px`);
+    else masthead.style.removeProperty('--settings-width');
+  }
+
   function applyMode() {
     const compact = menuQuery.matches;
     moreButton.hidden = !compact;
@@ -94,6 +112,7 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     menu.hidden = compact;
     moreButton.setAttribute('aria-expanded', 'false');
     paintShortcuts(compact);
+    placeMenu();
   }
 
   const onMore = event => {
@@ -101,7 +120,9 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     const open = menu.hidden;
     menu.hidden = !open;
     moreButton.setAttribute('aria-expanded', String(open));
+    if (open) placeMenu();
   };
+  const onResize = () => placeMenu();
   const onDocumentPointer = event => {
     if (!menuQuery.matches || menu.hidden) return;
     if (menu.contains(event.target) || moreButton.contains(event.target)) return;
@@ -123,6 +144,7 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
   menu.addEventListener('click', onMenuClick);
   document.addEventListener('pointerdown', onDocumentPointer);
   document.addEventListener('keydown', onEscape);
+  globalThis.addEventListener?.('resize', onResize);
   menuQuery.addEventListener('change', applyMode);
   applyMode();
 
@@ -217,6 +239,7 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
       menu.removeEventListener('click', onMenuClick);
       document.removeEventListener('pointerdown', onDocumentPointer);
       document.removeEventListener('keydown', onEscape);
+      globalThis.removeEventListener?.('resize', onResize);
       menuQuery.removeEventListener('change', applyMode);
       themeButton.removeEventListener('click', onThemeClick);
       for (const [btn, handler] of onLangClicks) {
