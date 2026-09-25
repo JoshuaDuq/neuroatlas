@@ -36,6 +36,20 @@ import {
 import { token } from '../state/theme.js';
 import { createCapLabels, updateCapLabels } from './cap-labels.js';
 
+const _poseU = new Vector3();
+const _poseV = new Vector3();
+const _poseN = new Vector3();
+const _poseBasis = new Matrix4();
+
+/** The sampled label plane is hidden while solids draw the cut, so a drag skips this. */
+function poseLabelPlane(mesh, frame) {
+  _poseU.copy(rasToWorld(frame.u.toArray())).normalize();
+  _poseV.copy(rasToWorld(frame.v.toArray())).normalize();
+  _poseN.crossVectors(_poseU, _poseV);
+  mesh.quaternion.setFromRotationMatrix(_poseBasis.makeBasis(_poseU, _poseV, _poseN));
+  mesh.position.copy(rasToWorld(frame.center.toArray()));
+}
+
 /** One persistent GPU plane reads categorical tissue IDs from the native 3D grid. */
 export class TissueSections {
   constructor(model, baseUrl) {
@@ -257,16 +271,29 @@ export class TissueSections {
     this.solids.group.visible = solid || supplemental;
     this.whiteMatter?.update({ atlas, isolatedRegion: state.isolatedRegion });
     if (this.solids.group.visible) {
-      paintSolids(this.solids, {
-        labels: layer.solidLabels,
-        state,
-        atlas,
-        detail: state.detail,
-        wedged: layer.wedged,
-        appearance: this.model.manifest.appearance,
-        lookup: { regions: this.model.regions, networks: this.model.manifest.networks },
-        whiteMatter: this.whiteMatter?.active ? this.whiteMatter : null,
-      });
+      // Colour does not depend on where the plane sits. A drag only moves the
+      // plane, and repainting every solid there is work the frame cannot spare.
+      const constituents = state.internalConstituents
+        ? [...state.internalConstituents].sort().join(',') : '';
+      const paintKey = [
+        state.surfaceColor, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
+        state.isolatedRegion, state.internalVisible, state.internalSystem, state.spinalCordVisible,
+        state.detail, state.cutAtlas, state.cutActive, constituents,
+        atlas, layer.wedged, this.whiteMatter?.active ?? false,
+      ].join('|');
+      if (paintKey !== this.paintKey) {
+        this.paintKey = paintKey;
+        paintSolids(this.solids, {
+          labels: layer.solidLabels,
+          state,
+          atlas,
+          detail: state.detail,
+          wedged: layer.wedged,
+          appearance: this.model.manifest.appearance,
+          lookup: { regions: this.model.regions, networks: this.model.manifest.networks },
+          whiteMatter: this.whiteMatter?.active ? this.whiteMatter : null,
+        });
+      }
       if (!solid) {
         for (const entry of this.solids.solids) entry.visible &&= entry.source.userData.supplemental === true;
       }
@@ -275,11 +302,7 @@ export class TissueSections {
     for (const candidate of this.layers.values()) {
       candidate.mesh.visible = candidate === layer && !solid;
     }
-    const u = rasToWorld(frame.u.toArray()).normalize();
-    const v = rasToWorld(frame.v.toArray()).normalize();
-    const normal = new Vector3().crossVectors(u, v);
-    layer.mesh.quaternion.setFromRotationMatrix(new Matrix4().makeBasis(u, v, normal));
-    layer.mesh.position.copy(rasToWorld(frame.center.toArray()));
+    if (!solid) poseLabelPlane(layer.mesh, frame);
     // Only tissue colour carries the T1 brightness it was tuned against; under
     // a published palette — atlas or network — that modulation would distort
     // the datum, and the cut would no longer match its key.

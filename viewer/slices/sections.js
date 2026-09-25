@@ -197,6 +197,7 @@ export class BrainSections extends EventTarget {
     if (request !== this.requestNumber || this.disposed) return;
     this.state.mode = mode;
     this.update();
+    if (mode !== 'off') this.tissues.solids?.warm();
   }
 
   setCrosshair(point) {
@@ -212,6 +213,28 @@ export class BrainSections extends EventTarget {
   }
 
   setOffset(offset) {
+    this.setCrosshair(this.crosshairFor(offset));
+  }
+
+  /**
+   * Move the plane without blocking the pointer. The picture stays on the last
+   * complete cut until the next caps are ready, then surface and cap land together.
+   */
+  async setOffsetReady(offset) {
+    const point = this.crosshairFor(offset);
+    await this.commitFrame(centeredFrame(this.state.mode, point, this.state), () => {
+      this.state.crosshair = point;
+    });
+  }
+
+  async setAnglesReady(tilt, azimuth) {
+    const frame = centeredFrame('oblique', this.state.crosshair, { tilt, azimuth });
+    await this.commitFrame(frame, () => {
+      Object.assign(this.state, { tilt, azimuth });
+    });
+  }
+
+  crosshairFor(offset) {
     const [minimum, maximum] = this.offsetRange;
     if (!Number.isFinite(offset) || offset < minimum || offset > maximum)
       throw new RangeError(`Cut position must be between ${minimum} and ${maximum} mm.`);
@@ -219,7 +242,35 @@ export class BrainSections extends EventTarget {
     const crosshair = new Vector3(...this.state.crosshair);
     if (this.state.mode === 'oblique') crosshair.copy(frame.normal).multiplyScalar(offset);
     else crosshair.addScaledVector(frame.normal, offset - crosshair.dot(frame.normal));
-    this.setCrosshair(crosshair.toArray());
+    const point = crosshair.toArray();
+    if (point.some(value => Math.abs(value) > this.coordinateLimit))
+      throw new RangeError(`RAS crosshair must be within ±${this.coordinateLimit} mm.`);
+    return point;
+  }
+
+  async commitFrame(frame, assign) {
+    if (!this.active) {
+      assign();
+      this.update();
+      return;
+    }
+    const plane = clippingPlane(frame, this.state.reverse);
+    const generation = this.tissues.solids.generation;
+    const built = await this.tissues.solids.build(plane);
+    if (this.disposed || generation !== this.tissues.solids.generation) return;
+    if (!built) {
+      assign();
+      this.update();
+      return;
+    }
+    assign();
+    if (!this.tissues.solids.applyBuild(plane, built, generation)) return;
+    this.group.visible = true;
+    this.clipPlane.copy(plane);
+    if (this.model.clippingPlanes[0] !== this.clipPlane) this.model.setClippingPlanes([this.clipPlane]);
+    this.state.status = 'ready';
+    this.state.error = null;
+    this.emit();
   }
 
   /**

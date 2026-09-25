@@ -77,7 +77,7 @@ Quantized normals are declared under `extensionsRequired` rather than `extension
 The client viewer is built on Three.js and WebGL 2. A cut keeps the published surfaces and label volumes as they are; only the cap, the flat face the plane opens, is rebuilt.
 
 ### Cut caps
-A closed solid meets the plane in a polygon. That polygon is triangulated and drawn as the cap, so moving or turning the view does not rasterize every triangle of every parcel. The boundary is the mesh–plane intersection, holes included. A non-manifold intersection, which a pinch in the ribbon can produce, keeps the winding stencil cap: back faces increment, front faces decrement, and a quad fills where the stencil is non-zero.
+A closed solid meets the plane in a polygon. That polygon is triangulated and drawn as the cap, so moving or turning the view does not rasterize every triangle of every parcel. The boundary is the mesh–plane intersection, holes included. A non-manifold intersection, which a pinch in the ribbon can produce, keeps the winding stencil cap: back faces increment, front faces decrement, and a quad fills where the stencil is non-zero. Dragging the plane builds the next caps off the pointer thread and shows them together with the moved surface, so the gesture itself does not stall.
 
 ### Hardware 3D Label Sampling (`Data3DTexture`)
 - Cut planes sample categorical atlas labels directly from 3D textures on the GPU.

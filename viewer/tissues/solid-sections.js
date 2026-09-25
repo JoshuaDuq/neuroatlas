@@ -66,6 +66,12 @@ export class SolidSections {
     this.bounds = new Box3();
     this.probe = new Raycaster();
     this.probe.firstHitOnly = true;
+    this.nextSolidId = 1;
+    this.generation = 0;
+    this.worker = null;
+    this.workerFailed = false;
+    this.builds = new Map();
+    this.buildToken = 0;
   }
 
   add(source, material, band) {
@@ -100,6 +106,7 @@ export class SolidSections {
     const bounds = source.geometry.boundingBox.clone().applyMatrix4(source.matrixWorld);
     this.solids.push({
       source, bounds, group, back, front, cap, band,
+      id: this.nextSolidId++,
       // Until the painter says otherwise: an envelope answers for no region
       // until it is painted as one, and a parcel wedge answers for its own.
       region: source.userData.region_id ?? null, visible: true,
@@ -148,30 +155,151 @@ export class SolidSections {
    * plane misses are dropped here rather than drawn empty.
    */
   update(plane) {
+    this.generation += 1;
     const moved = plane.constant !== this.plane.constant
       || plane.normal.distanceToSquared(this.plane.normal) > 0;
-    this.plane.copy(plane);
-    this.bounds.getCenter(BOUNDS_CENTER);
-    this.capDiameter = this.bounds.getSize(BOUNDS_SIZE).length() || 1;
-    plane.projectPoint(BOUNDS_CENTER, PLANE_CENTER);
-    PLANE_ROTATION.setFromUnitVectors(CAP_NORMAL, plane.normal);
+    this.orient(plane);
     for (const solid of this.solids) {
       const show = solid.visible && plane.intersectsBox(solid.bounds);
       if (!show) {
         solid.group.visible = false;
+        solid.cutShow = false;
+        solid.cutReady = true;
         continue;
       }
       if (!moved && solid.cutReady) {
         solid.group.visible = solid.cutShow;
         continue;
       }
-      const section = sectionTriangles(solid.source.geometry, solid.source.matrixWorld, this.plane);
-      solid.cutShow = Boolean(section.positions || section.fallback);
-      solid.cutReady = true;
-      solid.group.visible = solid.cutShow;
-      if (section.positions) this.presentSection(solid, section.positions);
-      else if (section.fallback) this.presentStencil(solid);
+      this.place(solid, sectionTriangles(solid.source.geometry, solid.source.matrixWorld, this.plane));
     }
+  }
+
+  /**
+   * Build caps off the pointer thread. Null means the caller should build here.
+   * A drag can then keep the last complete cut on screen until the next one is
+   * finished, instead of freezing the page inside the build.
+   */
+  build(plane) {
+    const worker = this.ensureWorker();
+    if (!worker) return Promise.resolve(null);
+    const jobs = [];
+    const local = [];
+    for (const solid of this.solids) {
+      if (!solid.visible || !plane.intersectsBox(solid.bounds)) continue;
+      if (!this.postSolid(solid)) {
+        local.push({
+          id: solid.id,
+          ...sectionTriangles(solid.source.geometry, solid.source.matrixWorld, plane),
+        });
+        continue;
+      }
+      jobs.push({ id: solid.id, matrix: Array.from(solid.source.matrixWorld.elements) });
+    }
+    if (!jobs.length) return Promise.resolve(local);
+    const token = ++this.buildToken;
+    return new Promise(resolve => {
+      this.builds.set(token, { resolve, local });
+      worker.postMessage({
+        type: 'cut',
+        token,
+        normal: [plane.normal.x, plane.normal.y, plane.normal.z],
+        constant: plane.constant,
+        jobs,
+      });
+    });
+  }
+
+  /** Install a build from `build`, dropping it when a synchronous update won. */
+  applyBuild(plane, sections, generation) {
+    if (generation !== this.generation) return false;
+    this.orient(plane);
+    const byId = new Map(sections.map(section => [section.id, section]));
+    for (const solid of this.solids) {
+      const show = solid.visible && plane.intersectsBox(solid.bounds);
+      if (!show) {
+        solid.group.visible = false;
+        solid.cutShow = false;
+        solid.cutReady = true;
+        continue;
+      }
+      this.place(solid, byId.get(solid.id) ?? { empty: true });
+    }
+    return true;
+  }
+
+  /** Copy geometry to the worker ahead of the first drag. */
+  warm() {
+    const run = () => {
+      if (!this.ensureWorker()) return;
+      for (const solid of this.solids) this.postSolid(solid);
+    };
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(run);
+    else setTimeout(run, 0);
+  }
+
+  orient(plane) {
+    this.plane.copy(plane);
+    this.bounds.getCenter(BOUNDS_CENTER);
+    this.capDiameter = this.bounds.getSize(BOUNDS_SIZE).length() || 1;
+    plane.projectPoint(BOUNDS_CENTER, PLANE_CENTER);
+    PLANE_ROTATION.setFromUnitVectors(CAP_NORMAL, plane.normal);
+  }
+
+  place(solid, section) {
+    solid.cutShow = Boolean(section?.positions || section?.fallback);
+    solid.cutReady = true;
+    solid.group.visible = solid.cutShow;
+    if (section?.positions) this.presentSection(solid, section.positions);
+    else if (section?.fallback) this.presentStencil(solid);
+  }
+
+  ensureWorker() {
+    if (this.workerFailed) return null;
+    if (this.worker) return this.worker;
+    if (typeof Worker === 'undefined') {
+      this.workerFailed = true;
+      return null;
+    }
+    try {
+      this.worker = new Worker(new URL('./section-worker.js', import.meta.url), { type: 'module' });
+    } catch {
+      this.workerFailed = true;
+      return null;
+    }
+    this.worker.onmessage = event => {
+      const pending = this.builds.get(event.data.token);
+      if (!pending) return;
+      this.builds.delete(event.data.token);
+      pending.resolve([...pending.local, ...event.data.results]);
+    };
+    this.worker.onerror = event => {
+      console.error(event.message || 'Cut build failed');
+      this.workerFailed = true;
+      for (const pending of this.builds.values()) pending.resolve(null);
+      this.builds.clear();
+      this.worker = null;
+    };
+    return this.worker;
+  }
+
+  /** False when this solid has to be cut on the caller side. */
+  postSolid(solid) {
+    if (solid.workerPosted) return true;
+    const position = solid.source.geometry.getAttribute('position');
+    const index = solid.source.geometry.getIndex();
+    if (!position?.array || position.itemSize !== 3 || position.isInterleavedBufferAttribute || position.normalized) {
+      return false;
+    }
+    const copy = position.array.slice();
+    const indexCopy = index ? index.array.slice() : null;
+    const transfers = [copy.buffer];
+    if (indexCopy) transfers.push(indexCopy.buffer);
+    this.worker.postMessage({
+      type: 'store', id: solid.id, position: copy, index: indexCopy,
+    }, transfers);
+    solid.workerPosted = true;
+    return true;
   }
 
   /** The cut face is the mesh–plane intersection, in world space. */
@@ -286,6 +414,10 @@ export class SolidSections {
   }
 
   dispose() {
+    this.worker?.terminate();
+    this.worker = null;
+    for (const pending of this.builds.values()) pending.resolve(null);
+    this.builds.clear();
     for (const { source, back, front, cap, section } of this.solids) {
       source.geometry.dispose();
       source.material.dispose();

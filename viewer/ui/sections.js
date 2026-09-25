@@ -101,6 +101,27 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     });
   }
 
+  // One cut build at a time. A newer drag replaces the one waiting, so the
+  // pointer never queues a stack of planes and the page never builds inside
+  // the input event.
+  let queued = null;
+  let sliding = false;
+  function slide(run) {
+    queued = () => run().catch(reportError);
+    if (sliding) return;
+    sliding = true;
+    const step = () => {
+      const next = queued;
+      queued = null;
+      if (!next) {
+        sliding = false;
+        return;
+      }
+      Promise.resolve(next()).then(step, step);
+    };
+    step();
+  }
+
   // Populated from the manifest: a build without the optional NextBrain volume
   // simply offers fewer choices, with no code path of its own.
   const nextbrainSegmented =
@@ -129,12 +150,12 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     }
   });
   listen(cutAtlas, 'change', () => sections.setCutAtlas(cutAtlas.value));
-  listen(position, 'input', () => schedule(() => sections.setOffset(Number(position.value))));
+  listen(position, 'input', () => slide(() => sections.setOffsetReady(Number(position.value))));
   listen(number, 'change', () => sections.setOffset(Number(number.value)));
   listen(reverse, 'change', () => { sections.setDisplay({ reverse: reverse.checked }); onFaceView(); });
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
-  listen(tilt, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
-  listen(azimuth, 'input', () => schedule(() => sections.setAngles(Number(tilt.value), Number(azimuth.value))));
+  listen(tilt, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
+  listen(azimuth, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
   async function openMpr({ atRegion = false } = {}) {
     const region = getSelectedRegion?.();
     if (atRegion && region) {
