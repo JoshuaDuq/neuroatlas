@@ -95,18 +95,35 @@ test('GPU cut plane preserves fractional coordinates and reverse-side clipping',
   sections.dispose();
 });
 
-test('cut coordinates cover supplemental anatomy beyond the brain MRI', async () => {
+test('a hidden spinal cord does not stretch the axial cut below the brain', async () => {
   const { sections, model } = fixture();
-  model.manifest = { supplemental_layers: [{ bounds_ras_mm: [[-5, -50, -550], [8, -30, -60]] }] };
+  model.manifest = {
+    supplemental_layers: [{ id: 'zanatomy', bounds_ras_mm: [[-5, -50, -550], [8, -30, -60]] }],
+  };
+  model.state.spinalCordVisible = false;
   await sections.setMode('axial');
+  assert.deepEqual(sections.offsetRange, [-128, 128]);
+  assert.throws(() => sections.setOffset(-500), RangeError);
+
+  model.state.spinalCordVisible = true;
+  model.dispatchEvent(new Event('change'));
   assert.deepEqual(sections.offsetRange, [-550, 128]);
   sections.setOffset(-500);
   assert.equal(sections.state.crosshair[2], -500);
   assert.throws(() => sections.setOffset(-551), RangeError);
   await sections.setMode('sagittal');
-  assert.deepEqual(sections.offsetRange, [-128, 128]);
   sections.setOffset(0);
   assert.equal(sections.state.crosshair[2], -500);
+  await sections.setMode('axial');
+
+  model.state.spinalCordVisible = false;
+  model.dispatchEvent(new Event('change'));
+  assert.deepEqual(sections.offsetRange, [-128, 128]);
+  assert.equal(sections.state.crosshair[2], -128);
+
+  await sections.setMode('sagittal');
+  model.state.spinalCordVisible = true;
+  assert.deepEqual(sections.offsetRange, [-128, 128]);
   sections.dispose();
 });
 
@@ -197,6 +214,7 @@ test('a highlight reaches the tissue that draws the cut faces', () => {
 test('oblique cut position range projects all anatomical bounds onto the normal', async () => {
   const { sections, model } = fixture();
   model.manifest = manifest;
+  model.state.spinalCordVisible = true;
   await sections.setMode('oblique');
   sections.setAngles(15, 30);
 
