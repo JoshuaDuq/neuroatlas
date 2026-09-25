@@ -8,12 +8,12 @@ test('MRI preserves native display pixels even on an integrated GPU', () => {
 });
 import { qualityProfile } from './quality.js';
 
-test('a phone caps pixel ratio at 1.5 and reduces MSAA', () => {
+test('a phone renders at one CSS pixel and reduces MSAA', () => {
   const quality = qualityProfile({
     phone: true, coarse: true, saveData: false, pixelRatio: 3,
     deviceMemory: 4, hardwareConcurrency: 6,
   });
-  assert.equal(quality.pixelRatio, 1.5);
+  assert.equal(quality.pixelRatio, 1);
   assert.equal(quality.msaaSamples, 2);
   assert.equal(quality.prefetchLayers, false);
 });

@@ -31,8 +31,8 @@ const prefersReducedMotion = () =>
 export function createScene(host, { onContextLost, onContextRestored, onResize } = {}) {
   const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, 0.001, 10);
-  // The composer owns MSAA. Asking the default framebuffer for it as well
-  // would allocate a second multisampled buffer that this path never draws.
+  // The composer owns MSAA and the stencil the cut caps use. The default
+  // framebuffer cannot do both, so it stays single-sampled and unused for drawing.
   const renderer = new WebGLRenderer({
     antialias: false,
     powerPreference: 'high-performance',

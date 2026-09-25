@@ -1,4 +1,5 @@
 import { DoubleSide, MeshPhysicalMaterial, Vector3 } from 'three';
+import { isPhone } from '../render/device.js';
 import { HIGHLIGHT_CHUNK } from './highlight.js';
 import { WHITE_MATTER_LIFT, WHITE_MATTER_UNIFORMS } from './white-matter.js';
 
@@ -7,7 +8,7 @@ export function createSolidMaterial(anatomy, appearance, whiteMatter = null) {
   const { tissue, intensity } = appearance;
   const material = new MeshPhysicalMaterial({
     side: DoubleSide, roughness: tissue.roughness,
-    clearcoat: tissue.clearcoat, clearcoatRoughness: tissue.clearcoat_roughness,
+    clearcoat: isPhone() ? 0 : tissue.clearcoat, clearcoatRoughness: tissue.clearcoat_roughness,
     ior: tissue.ior, specularIntensity: tissue.specular_intensity,
   });
   material.userData.tissueVariation = { value: intensity.cut_strength };
