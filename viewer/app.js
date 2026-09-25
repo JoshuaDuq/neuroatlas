@@ -1040,6 +1040,10 @@ export async function startApp() {
       session.notify(t(state.lang, 'app').regionNotShown);
     }
   }
+  // Before the stage reports ready, so the first hover does not compile
+  // outline shaders in the frame the pointer arrives.
+  try { scene.warmOutlines(model.group); }
+  catch (error) { console.error(error); }
   session.setStatus('ready');
   chrome.setViewport(scene.visibleRect);
   onCameraChange();

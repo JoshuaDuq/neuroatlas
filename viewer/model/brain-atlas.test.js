@@ -347,6 +347,32 @@ test('cut picking skips discarded front faces and finds the retained back face',
   atlas.dispose();
 });
 
+test('picking stops at the first surface and still reaches past a clipped one', async () => {
+  const { Plane } = await import('three');
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const far = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-wall');
+  const kept = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-right');
+  let farCasts = 0;
+  let keptCasts = 0;
+  const farRaycast = far.raycast.bind(far);
+  const keptRaycast = kept.raycast.bind(kept);
+  far.raycast = (raycaster, hits) => { farCasts += 1; farRaycast(raycaster, hits); };
+  kept.raycast = (raycaster, hits) => { keptCasts += 1; keptRaycast(raycaster, hits); };
+  const ray = new Raycaster(new Vector3(-0.1, 0, 0), new Vector3(1, 0, 0));
+  ray.firstHitOnly = true;
+  const nearest = atlas.pick(ray);
+  assert.ok(nearest.id === 'a-left' || nearest.id === 'stem');
+  assert.equal(farCasts, 0, 'a box behind the hit is not tested');
+  assert.equal(keptCasts, 0, 'a box behind the hit is not tested');
+
+  atlas.setClippingPlanes([new Plane(new Vector3(1, 0, 0), -0.02)]);
+  assert.equal(atlas.pick(ray).id, 'a-right', 'a clipped nearer mesh does not hide the one behind it');
+  assert.ok(keptCasts > 0);
+  assert.equal(ray.firstHitOnly, true);
+  atlas.dispose();
+});
+
 test('a cut-only region can be selected and is not dropped on the next update', async () => {
   // Regression: `select` accepted it and `update` immediately cleared it again,
   // because only one of the two knew that these regions have no mesh. The drop

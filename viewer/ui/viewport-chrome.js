@@ -37,6 +37,10 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
   let currentLang = 'en';
   let lastCameraArgs = null;
   let lastRect = null;
+  // The label's box is read from layout. Measuring it on every pointer move
+  // forced a reflow for a chip that only changes size when its words do.
+  let hoverBounds = null;
+  let hoverSize = null;
 
   /*
    * Do the presets and the scale bar still fit on one line? Asked of the
@@ -120,6 +124,8 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
         return;
       }
       lastRect = rect;
+      hoverBounds = null;
+      hoverSize = null;
       host.style.setProperty('--vis-top', `${Math.round(rect.y)}px`);
       host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
       host.style.setProperty('--vis-right', `${Math.round(width - rect.x - rect.width)}px`);
@@ -242,12 +248,16 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
         return;
       }
       hover.hidden = false;
-      hover.textContent = label;
-      const bounds = hover.parentElement.getBoundingClientRect();
+      if (hover.textContent !== label) {
+        hover.textContent = label;
+        hoverSize = null;
+      }
+      if (!hoverBounds) hoverBounds = hover.parentElement.getBoundingClientRect();
+      if (!hoverSize) hoverSize = { width: hover.offsetWidth, height: hover.offsetHeight };
       hover.style.left =
-        `${Math.min(position.x + 14, bounds.width - hover.offsetWidth - 8)}px`;
+        `${Math.min(position.x + 14, hoverBounds.width - hoverSize.width - 8)}px`;
       hover.style.top =
-        `${Math.min(position.y + 14, bounds.height - hover.offsetHeight - 8)}px`;
+        `${Math.min(position.y + 14, hoverBounds.height - hoverSize.height - 8)}px`;
     },
 
     dispose() {

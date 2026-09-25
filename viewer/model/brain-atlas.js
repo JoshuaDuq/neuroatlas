@@ -10,6 +10,28 @@ import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 import { attachNetworkColors } from '../render/network-colors.js';
 import { addMriAppearance } from '../render/mri-material.js';
 
+// Reused by intersect. A hover tests every visible mesh, and a fresh list per
+// pointer frame would collect as the pointer moves.
+const rayBox = new Box3();
+const rayBoxHit = new Vector3();
+const raySlots = [];
+const rayHits = [];
+
+/**
+ * Where the ray enters a mesh's world box, or Infinity when it misses.
+ *
+ * Inside the box the entry is 0: a triangle of that mesh may sit on the
+ * camera. Three's box test returns the exit in that case, which would hide
+ * the mesh behind a farther hit.
+ */
+function boxEntry(mesh, ray) {
+  const { geometry } = mesh;
+  if (!geometry.boundingBox) geometry.computeBoundingBox();
+  rayBox.copy(geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
+  if (rayBox.containsPoint(ray.origin)) return 0;
+  return ray.intersectBox(rayBox, rayBoxHit) ? ray.origin.distanceTo(rayBoxHit) : Infinity;
+}
+
 function asOptions(onProgressOrOptions) {
   if (typeof onProgressOrOptions === 'function') return { onProgress: onProgressOrOptions };
   return onProgressOrOptions ?? {};
@@ -368,18 +390,60 @@ export class BrainAtlas extends EventTarget {
     this.dispatchEvent(new CustomEvent('change', { detail: this.state }));
   }
 
-  /** Raycaster must already be configured with the host camera and pointer. */
+  /**
+   * Raycaster must already be configured with the host camera and pointer.
+   *
+   * Meshes are tested from the front of the ray. Once a hit is in hand, a box
+   * that starts beyond it cannot hold a closer triangle, so the rest of the
+   * brain is not walked. A clipped hit does not count: the retained face
+   * behind it still has to be found.
+   */
   intersect(raycaster) {
     this.group.updateMatrixWorld(true);
+    const planes = this.clippingPlanes;
+    const clipped = planes.length > 0;
+    let count = 0;
+    for (const mesh of this.visibleMeshes) {
+      const entry = boxEntry(mesh, raycaster.ray);
+      if (entry === Infinity) continue;
+      const slot = raySlots[count] ?? (raySlots[count] = { mesh: null, entry: 0 });
+      slot.mesh = mesh;
+      slot.entry = entry;
+      count += 1;
+    }
+    for (let i = 1; i < count; i++) {
+      const slot = raySlots[i];
+      let j = i;
+      while (j > 0 && raySlots[j - 1].entry > slot.entry) {
+        raySlots[j] = raySlots[j - 1];
+        j -= 1;
+      }
+      raySlots[j] = slot;
+    }
     const firstHitOnly = raycaster.firstHitOnly;
-    let hits;
+    if (clipped) raycaster.firstHitOnly = false;
     try {
-      if (this.clippingPlanes.length) raycaster.firstHitOnly = false;
-      hits = raycaster.intersectObjects(this.visibleMeshes, false);
+      let best = null;
+      let bestDistance = Infinity;
+      for (let i = 0; i < count; i++) {
+        const { mesh, entry } = raySlots[i];
+        // The world box is a little loose after the matrix, so a hair of slack
+        // keeps a triangle that lands on the box face.
+        if (entry > bestDistance + 1e-5) break;
+        rayHits.length = 0;
+        mesh.raycast(raycaster, rayHits);
+        for (let h = 0; h < rayHits.length; h++) {
+          const hit = rayHits[h];
+          if (hit.distance >= bestDistance) continue;
+          if (clipped && !planes.every(plane => plane.distanceToPoint(hit.point) >= -1e-9)) continue;
+          best = hit;
+          bestDistance = hit.distance;
+        }
+      }
+      return best;
     } finally {
       raycaster.firstHitOnly = firstHitOnly;
     }
-    return hits.find(hit => this.clippingPlanes.every(plane => plane.distanceToPoint(hit.point) >= -1e-9)) ?? null;
   }
 
   pick(raycaster) {
