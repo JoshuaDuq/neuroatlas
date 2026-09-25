@@ -65,12 +65,19 @@ export class BrainSections extends EventTarget {
         s.internalSystem,
         s.surfaceColor,
         s.detail,
+        s.spinalCordVisible,
       ]);
       if (key === this.visibilityKey) return;
       this.visibilityKey = key;
       if (this.active) {
-        if (this.tissues.layers.has(this.state.cutAtlas) &&
-            this.tissues.hasDetail(s.detail)) this.update();
+        const [minimum, maximum] = this.offsetRange;
+        const offset = new Vector3(...this.state.crosshair).dot(this.frame.normal);
+        if (offset < minimum || offset > maximum) {
+          this.setOffset(Math.min(maximum, Math.max(minimum, offset)));
+          return;
+        }
+        const detailReady = this.tissues.hasDetail?.(s.detail) ?? true;
+        if (this.tissues.layers.has(this.state.cutAtlas) && detailReady) this.update();
         else {
           this.group.visible = false;
           this.setMode(this.state.mode).catch((error) => this.report(error));
@@ -90,7 +97,13 @@ export class BrainSections extends EventTarget {
 
   get coordinateBounds() {
     const bounds = [[-128, -128, -128], [128, 128, 128]];
+    // The cord hangs hundreds of millimetres below the brain. While it is
+    // hidden, folding that tail into the range stretches the axial slider
+    // across empty space and the millimetre readout no longer tracks the brain.
+    const cordShown = Boolean(this.model.state?.spinalCordVisible);
     for (const layer of this.model.manifest?.supplemental_layers ?? []) {
+      if (layer.id === 'zanatomy' && !cordShown) continue;
+      if (!layer.bounds_ras_mm) continue;
       for (let axis = 0; axis < 3; axis++) {
         bounds[0][axis] = Math.floor(Math.min(bounds[0][axis], layer.bounds_ras_mm[0][axis]));
         bounds[1][axis] = Math.ceil(Math.max(bounds[1][axis], layer.bounds_ras_mm[1][axis]));
