@@ -1,5 +1,5 @@
 import {
-  NeutralToneMapping, NoToneMapping, Color, HalfFloatType,
+  NeutralToneMapping, NoToneMapping, Color, FrontSide, HalfFloatType,
   PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -12,6 +12,7 @@ import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
 import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.js';
 import { qualityProfile } from './quality.js';
+import { paintOutlineEdges, sameMeshSet } from './outline-edges.js';
 
 const TRANSITION_MS = 240;
 
@@ -100,8 +101,25 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   core.edgeThickness = 1;
   core.edgeGlow = 0;
   core.enabled = false;
+  // The surface is front-facing. Matching that side keeps the silhouette and
+  // does not rasterize the back of every triangle into the outline depth.
+  for (const pass of [halo, core]) {
+    pass.depthMaterial.side = FrontSide;
+    pass.prepareMaskMaterial.side = FrontSide;
+  }
   composer.addPass(halo);
   composer.addPass(core);
+  const renderHalo = halo.render.bind(halo);
+  const renderCore = core.render.bind(core);
+  // Selection draws both tones of one silhouette. The second pass would
+  // render every mesh again for a mask the halo already built.
+  core.render = function (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    if (this.enabled && halo.enabled && sameMeshSet(halo.selectedObjects, this.selectedObjects)) {
+      paintOutlineEdges(this, halo.renderTargetMaskBuffer.texture, renderer, readBuffer, maskActive);
+      return;
+    }
+    renderCore(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
+  };
   composer.addPass(new OutputPass());
 
   let dirty = true;
@@ -282,6 +300,48 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     scene, camera, controls,
     domElement: renderer.domElement,
     applyTheme, setAppearance, setSize, setOutlined, moveTo, invalidate,
+
+    /**
+     * Compile the outline programs before a pointer reaches a region.
+     *
+     * The first hover otherwise pays for those shaders inside the frame that
+     * draws the ring. One sample mesh is enough: every region shares them.
+     */
+    warmOutlines(root) {
+      let sample = null;
+      root.traverse(object => {
+        if (!sample && object.isMesh && object.visible) sample = object;
+      });
+      if (!sample) return;
+      const previous = {
+        haloObjects: halo.selectedObjects,
+        coreObjects: core.selectedObjects,
+        haloOn: halo.enabled,
+        coreOn: core.enabled,
+        target: renderer.getRenderTarget(),
+        override: scene.overrideMaterial,
+        background: scene.background,
+        visible: sample.visible,
+      };
+      halo.selectedObjects = [sample];
+      core.selectedObjects = [sample];
+      halo.enabled = true;
+      core.enabled = true;
+      const target = composer.renderTarget1;
+      try {
+        renderHalo(renderer, target, target, 0, false);
+        renderCore(renderer, target, target, 0, false);
+      } finally {
+        scene.overrideMaterial = previous.override;
+        scene.background = previous.background;
+        sample.visible = previous.visible;
+        halo.selectedObjects = previous.haloObjects;
+        core.selectedObjects = previous.coreObjects;
+        halo.enabled = previous.haloOn;
+        core.enabled = previous.coreOn;
+        renderer.setRenderTarget(previous.target);
+      }
+    },
 
     /**
      * Declare how much of the canvas the interface covers. Reported upward as
