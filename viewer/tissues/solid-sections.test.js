@@ -49,6 +49,22 @@ function drawnTriangles(mesh) {
   return count / 3;
 }
 
+test('a background build draws the same cap as the synchronous one', { timeout: 20000 }, async () => {
+  const { sections } = fixture();
+  sections.update(plane);
+  const ray = new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1));
+  assert.ok(sections.intersect(ray));
+  const generation = sections.generation;
+  const built = await sections.build(plane);
+  if (built) {
+    assert.equal(sections.applyBuild(plane, built, generation), true);
+    assert.ok(sections.intersect(ray));
+    assert.equal(sections.intersect(new Raycaster(
+      new Vector3(0.08, 0, 0.2), new Vector3(0, 0, -1))), null);
+  }
+  sections.dispose();
+});
+
 test('a cut draws the plane section instead of stencilling the whole solid', () => {
   const source = new Mesh(new BoxGeometry(0.1, 0.1, 0.1, 18, 18, 18),
     new MeshBasicMaterial({ side: DoubleSide }));
