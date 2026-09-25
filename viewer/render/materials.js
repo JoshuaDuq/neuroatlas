@@ -1,4 +1,5 @@
 import { MeshPhysicalMaterial, MeshStandardMaterial } from 'three';
+import { isPhone } from './device.js';
 
 /** Display colours describe tissue classes, never a measured tissue albedo. */
 export function tissueColor(region, palette) {
@@ -104,7 +105,9 @@ export function createAnatomicalMaterial(mesh, region, appearance) {
   const material = new MeshPhysicalMaterial();
   MeshStandardMaterial.prototype.copy.call(material, mesh.material);
   material.roughness = appearance.tissue.roughness;
-  material.clearcoat = appearance.tissue.clearcoat;
+  // The coat lobe is a second lighting pass. On a phone it is what drops the
+  // frame; the coat itself is a thin sheen the small screen does not carry.
+  material.clearcoat = isPhone() ? 0 : appearance.tissue.clearcoat;
   material.clearcoatRoughness = appearance.tissue.clearcoat_roughness;
   material.ior = appearance.tissue.ior;
   material.specularIntensity = appearance.tissue.specular_intensity;

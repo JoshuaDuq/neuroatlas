@@ -19,10 +19,12 @@ export function qualityProfile(input = {}) {
   const handheld = phone || coarse;
   const constrained = handheld || saveData || deviceMemory <= 4;
   const fillBound = constrained || integrated;
+  // A phone renders one CSS pixel. Tablets stay at 1.5. The meshes do not change.
+  const presentationCap = phone ? 1 : (handheld || fewerPixels) ? 1.5 : 2;
   return {
     mriPixelRatio: pixelRatio,
     pixelRatio: input.pixelRatio !== undefined
-      ? Math.min(pixelRatio, handheld || fewerPixels ? 1.5 : 2)
+      ? Math.min(pixelRatio, presentationCap)
       : pixelRatioCap(fewerPixels),
     msaaSamples: fillBound ? 2 : 4,
     prefetchLayers: !fillBound,
