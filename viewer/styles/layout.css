@@ -203,10 +203,7 @@
     height: 1px;
     margin: var(--space-1) 0;
   }
-  #masthead-menu .segmented {
-    width: 100%;
-    border-bottom: 1px solid var(--border-subtle);
-  }
+  #masthead-menu .segmented { width: 100%; }
   #masthead-menu .segmented button {
     flex: 1;
     height: var(--control-height);
