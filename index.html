@@ -338,22 +338,23 @@
                   <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
                 </div>
 
-                <label class="check">
-                  <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
-                </label>
-
-                <label for="opacity">
-                  <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
-                </label>
-                <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
-
-                <label id="internal-visible-label" class="check">
-                  <input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span>
-                </label>
-
-                <label id="spinal-cord-label" class="check">
-                  <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
-                </label>
+                <div class="display-visibility">
+                  <div class="display-cortex">
+                    <label class="check">
+                      <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
+                    </label>
+                    <label for="opacity">
+                      <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
+                    </label>
+                    <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+                  </div>
+                  <label id="internal-visible-label" class="check">
+                    <input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span>
+                  </label>
+                  <label id="spinal-cord-label" class="check">
+                    <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
+                  </label>
+                </div>
 
                 <button id="reset" class="button-quiet" type="button">Reset view</button>
               </div>

@@ -251,8 +251,9 @@
   #mpr-grid article[hidden] { display: none !important; }
   #mpr-close { flex: none; white-space: nowrap; }
   .mpr-header { position: sticky; top: 0; background: var(--surface-base); }
-  #shortcuts-list { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
-  #shortcuts-list dt { margin-top: var(--space-2); }
+  #shortcuts-list { grid-template-columns: minmax(0, 1fr); }
+  #shortcuts-list dt { border-bottom: 0; padding-bottom: 0; }
+  #shortcuts-list dd { padding-top: 0; }
 }
 
 /*
@@ -318,6 +319,7 @@
     --control-height: 44px;
   }
   .check input { width: 20px; height: 20px; }
+  .check input::before { width: 11px; height: 6px; }
   .cut-position-row input[type="number"] { height: var(--control-height); width: 88px; }
   /* A 16px field is the threshold below which iOS zooms the page on focus. */
   input[type="search"], input[type="number"], select { font-size: 1rem; }

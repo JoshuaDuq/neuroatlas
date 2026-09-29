@@ -72,9 +72,16 @@ h1, h2, h3, p, dl, dd, figure { margin: 0; }
   #clinical-title:focus-visible,
   #mpr-close:focus-visible,
   #shortcuts-close:focus-visible,
-  #mpr-grid .button-quiet:focus-visible {
+  #mpr-grid .button-quiet:focus-visible,
+  .check input:focus-visible {
     outline: 2px solid Highlight;
   }
+  .check input {
+    appearance: auto;
+    background: ButtonFace;
+    border-color: ButtonText;
+  }
+  .check input::before { content: none; }
 }
 
 /*
