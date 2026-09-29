@@ -787,12 +787,10 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 
 /* Shortcut sheet ---------------------------------------------------------- */
 #shortcuts {
-  display: flex;
-  flex-direction: column;
   min-width: min(320px, 100vw);
   max-width: calc(100vw - var(--space-8));
   max-height: calc(100dvh - var(--space-8));
-  overflow: hidden;
+  overflow: auto;
   padding: var(--space-5);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-panel);
@@ -800,43 +798,25 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--text-primary);
 }
 #shortcuts::backdrop { background: rgb(0 0 0 / 0.55); }
-#shortcuts h2 { flex: none; font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
+#shortcuts h2 { font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
 #shortcuts-list {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--space-4);
-  row-gap: 0;
-  flex: 1 1 auto;
-  min-height: 0;
-  margin: var(--space-4) 0;
-  overflow: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-control) transparent;
-  border-top: 1px solid var(--border-subtle);
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-4) 0 var(--space-5);
   font-size: var(--text-ui);
 }
-/* Chrome focuses a scrollport. The sheet is not a control, so the ring is a hairline. */
-#shortcuts-list:focus-visible,
+#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
 .cut-fields:focus-visible {
   outline: none;
   box-shadow: -2px 0 0 var(--accent);
 }
 @media (forced-colors: active) {
-  #shortcuts-list:focus-visible,
   .cut-fields:focus-visible {
     outline: 2px solid Highlight;
     box-shadow: none;
   }
 }
-#shortcuts-list dt,
-#shortcuts-list dd {
-  margin: 0;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
-#shortcuts-list dd { color: var(--text-primary); }
 /* A key is a thing you press, so it is drawn as one rather than quoted. */
 kbd {
   min-width: 22px;
