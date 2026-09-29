@@ -39,9 +39,10 @@ h1, h2, h3, p, dl, dd, figure { margin: 0; }
 /* Sentence case above a hairline, never repeated all-caps. */
 .section-label {
   font-size: var(--text-micro);
-  font-weight: 500;
-  color: var(--text-tertiary);
-  padding: var(--space-3) var(--space-4) var(--space-2);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  padding: var(--space-4) var(--space-4) var(--space-1);
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -64,6 +65,11 @@ h1, h2, h3, p, dl, dd, figure { margin: 0; }
 @media (forced-colors: active) {
   .chip, .panel, button, input, select { border-color: CanvasText; }
   :focus-visible { outline-color: Highlight; }
+  input[type="search"]:focus-visible,
+  select:focus-visible,
+  .cut-position-row input[type="number"]:focus-visible {
+    outline: 2px solid Highlight;
+  }
 }
 
 /*
