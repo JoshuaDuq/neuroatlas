@@ -169,7 +169,7 @@
   .sheet-disclaimer {
     padding: var(--space-1) var(--space-4);
     font-size: var(--text-micro);
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
   }
 
   /* ---- panels inside the sheet ---------------------------------------- */

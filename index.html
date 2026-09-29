@@ -23,7 +23,7 @@
     <meta property="og:image:alt" content="A full-resolution reconstruction of one person's right cerebral hemisphere and cerebellum, seen from the side on a dark field, with each Destrieux cortical region in its own colour." />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- Matches --surface-base in dark mode (default layout). -->
-    <meta name="theme-color" content="#1c222b" />
+    <meta name="theme-color" content="#262c35" />
     <!--
       Start the anatomy download before the module graph has parsed. The
       filenames match `startup-assets.js`; `fetchAsset` consumes these Response
@@ -110,14 +110,17 @@
                narrow window shows it as an open dropdown for the whole download. -->
           <div id="masthead-menu" hidden>
             <span id="region-count" class="measure"></span>
+            <span class="masthead-sep" aria-hidden="true"></span>
             <div id="lang-switch" class="segmented" role="group" aria-label="Language">
               <button type="button" data-lang="en" aria-pressed="true">EN</button>
               <button type="button" data-lang="fr" aria-pressed="false">FR</button>
             </div>
+            <span class="masthead-sep" aria-hidden="true"></span>
             <button id="theme-toggle" type="button" aria-pressed="true">
               <span id="theme-label">Dark</span>
             </button>
             <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">?</button>
+            <span class="masthead-sep" aria-hidden="true"></span>
             <button id="viewport-fullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
               <span class="masthead-action-short">Full</span>
               <span class="masthead-action-label"></span>
