@@ -228,14 +228,31 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-color: var(--accent-hover);
   color: var(--surface-base);
 }
+.tab-group[data-tab="cuts"] > .section-controls {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+.cut-fields {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-control) transparent;
+}
 .cut-command {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-top: var(--space-4);
-  padding-top: var(--space-3);
+  margin-top: 0;
+  padding: var(--space-3) 0;
   border-top: 1px solid var(--border-subtle);
+  background: var(--surface-base);
 }
 #mpr-open {
   width: auto;
@@ -815,11 +832,26 @@ kbd {
   box-shadow: inset 0 -2px 0 var(--accent);
 }
 #mpr-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
-#mpr-grid h3 { font-size: var(--text-ui); font-weight: 500; margin-bottom: var(--space-2); }
+#mpr-grid article {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  column-gap: var(--space-3);
+  align-items: baseline;
+}
+#mpr-grid h3 {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
 #mpr-grid canvas {
+  grid-column: 1 / -1;
+  grid-row: 2;
   display: block;
   width: 100%;
   height: auto;
+  margin-top: var(--space-2);
   background: #000;
   cursor: crosshair;
   border: 1px solid var(--border-subtle);
@@ -832,6 +864,7 @@ kbd {
   column-gap: var(--space-3);
   margin: var(--space-2) 0 0;
 }
+#mpr-grid label { grid-column: 1 / -1; grid-row: 3; }
 #mpr-grid label .measure,
 .mpr-display output { color: var(--text-tertiary); font-size: var(--text-micro); justify-self: end; }
 #mpr-grid input[type="range"],
@@ -840,7 +873,24 @@ kbd {
   width: 100%;
   margin: var(--space-1) 0 0;
 }
-#mpr-grid .button-quiet { height: auto; margin-top: var(--space-2); padding: var(--space-1) 0; }
+#mpr-grid .button-quiet {
+  grid-column: 2;
+  grid-row: 1;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  justify-self: start;
+  font-size: var(--text-micro);
+  color: var(--text-secondary);
+}
+#mpr-grid .button-quiet:hover:not(:disabled) {
+  background: none;
+  color: var(--text-primary);
+}
+#mpr-grid .button-quiet:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
 #mpr-readout { font-size: var(--text-ui); }
 .mpr-display {
   display: grid;

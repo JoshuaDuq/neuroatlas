@@ -71,7 +71,8 @@ h1, h2, h3, p, dl, dd, figure { margin: 0; }
   .clinical-profile-name:focus-visible,
   #clinical-title:focus-visible,
   #mpr-close:focus-visible,
-  #shortcuts-close:focus-visible {
+  #shortcuts-close:focus-visible,
+  #mpr-grid .button-quiet:focus-visible {
     outline: 2px solid Highlight;
   }
 }

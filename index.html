@@ -289,34 +289,36 @@
             <div class="tab-group" data-tab="cuts">
               <p id="label-cuts" class="section-label">Anatomical cuts</p>
               <div class="panel-body section-controls">
-                <label id="cut-mode-label" class="visually-hidden">Cutting plane</label>
-                <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
-                  <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
-                  <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
-                  <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
-                  <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
-                  <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
+                <div class="cut-fields">
+                  <label id="cut-mode-label" class="visually-hidden">Cutting plane</label>
+                  <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
+                    <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
+                    <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
+                    <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
+                    <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
+                    <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
+                  </div>
+                  <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
+                  <select id="cut-atlas"></select>
+                  <label id="cut-axis" for="cut-position">Position (mm)</label>
+                  <div class="cut-position-row">
+                    <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
+                    <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
+                  </div>
+                  <div id="cut-oblique" hidden>
+                    <label for="cut-tilt">
+                      <span id="cut-tilt-label">Tilt from axial</span>
+                      <output id="cut-tilt-value" class="measure"></output>
+                    </label>
+                    <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
+                    <label for="cut-azimuth">
+                      <span id="cut-azimuth-label">Rotation around superior axis</span>
+                      <output id="cut-azimuth-value" class="measure"></output>
+                    </label>
+                    <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
+                  </div>
+                  <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
                 </div>
-                <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
-                <select id="cut-atlas"></select>
-                <label id="cut-axis" for="cut-position">Position (mm)</label>
-                <div class="cut-position-row">
-                  <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
-                  <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
-                </div>
-                <div id="cut-oblique" hidden>
-                  <label for="cut-tilt">
-                    <span id="cut-tilt-label">Tilt from axial</span>
-                    <output id="cut-tilt-value" class="measure"></output>
-                  </label>
-                  <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
-                  <label for="cut-azimuth">
-                    <span id="cut-azimuth-label">Rotation around superior axis</span>
-                    <output id="cut-azimuth-value" class="measure"></output>
-                  </label>
-                  <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
-                </div>
-                <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
                 <div class="cut-command">
                   <p id="cut-status" role="status">Full brain · no cut</p>
                   <button id="mpr-open" class="button-primary" type="button">MRI</button>
