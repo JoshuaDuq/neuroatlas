@@ -35,10 +35,25 @@
 .clinical-content > p + p { margin-top: var(--space-3); }
 .clinical-content h3 { font-size: var(--text-body); font-weight: 600; line-height: 1.4; }
 .clinical-content .clinical-profile-name { font-size: var(--text-title); margin-bottom: var(--space-2); }
-.clinical-content h4 { font-size: var(--text-micro); font-weight: 600; margin: var(--space-3) 0 var(--space-1); }
+.clinical-content h4 {
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  margin: var(--space-4) 0 var(--space-1);
+}
+.clinical-profile-name:focus-visible,
+#clinical-title:focus-visible {
+  outline: none;
+  box-shadow: -2px 0 0 var(--accent);
+}
 .clinical-association { margin: var(--space-5) 0; padding-top: var(--space-4); border-top: 1px solid var(--border-subtle); }
 .clinical-association > p { margin-top: var(--space-2); }
-.clinical-regions { margin-top: var(--space-3); display: grid; gap: var(--space-2); }
+.clinical-regions {
+  margin-top: var(--space-3);
+  display: grid;
+  border-top: 1px solid var(--border-subtle);
+}
 .clinical-region-link {
   height: auto;
   min-height: var(--row-height);
@@ -50,6 +65,7 @@
   font-size: var(--text-ui);
   color: var(--accent);
   border: 0;
+  border-bottom: 1px solid var(--border-subtle);
   border-radius: 0;
   background: none;
 }
