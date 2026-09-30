@@ -114,8 +114,8 @@ export function createNavigator({
     const name = document.createElement('span');
     name.className = 'row-name';
     // The alias is why a row matched when the name itself does not contain
-    // the query. It stays outside the name: the name ellipsizes, and a match
-    // buried inside that ellipsis is a match the reader cannot see.
+    // the query. It stays outside .row-name and follows the last word, so
+    // the match is still there when the name wraps.
     let matchedAlias = null;
     if (role === 'option' && query) {
       name.append(highlightMatch(row.label.name, query));
@@ -139,14 +139,21 @@ export function createNavigator({
     } else {
       name.textContent = row.label.name;
     }
-    item.append(name);
-    if (matchedAlias) {
-      const aliasSpan = document.createElement('span');
-      aliasSpan.className = 'row-alias';
-      aliasSpan.append('(');
-      aliasSpan.append(highlightMatch(matchedAlias, query));
-      aliasSpan.append(')');
-      item.append(aliasSpan);
+    if (role === 'option') {
+      const nameBlock = document.createElement('span');
+      nameBlock.className = 'row-title';
+      nameBlock.append(name);
+      if (matchedAlias) {
+        const aliasSpan = document.createElement('span');
+        aliasSpan.className = 'row-alias';
+        aliasSpan.append('(');
+        aliasSpan.append(highlightMatch(matchedAlias, query));
+        aliasSpan.append(')');
+        nameBlock.append(aliasSpan);
+      }
+      item.append(nameBlock);
+    } else {
+      item.append(name);
     }
 
     const side = sideWords[row.region.hemisphere] ?? row.region.hemisphere;
