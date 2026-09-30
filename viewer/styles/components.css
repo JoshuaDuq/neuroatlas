@@ -514,6 +514,38 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .row[data-hidden="true"] { color: var(--text-tertiary); }
 .row[aria-disabled="true"] { cursor: default; }
 .row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/*
+ * A search hit is a choice the reader has to read. The tree can ellipsize
+ * hundreds of rows; ten results cannot hide the word that matched. The name
+ * wraps in the space left by the lobe and the side, which stay one line.
+ */
+#results .row {
+  height: auto;
+  min-height: var(--row-height);
+  align-items: baseline;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+#results .row-title {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+#results .row-name {
+  display: inline;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+}
+#results .row-alias {
+  display: inline;
+  margin-left: var(--space-1);
+  white-space: nowrap;
+}
+/* Auto margins would take the free space and leave the name one long line. */
+#results .row-group,
+#results .row-side,
+#results .row-reason { margin-left: var(--space-2); }
 /* The tail never wraps or shrinks; the name gives way instead. */
 .row-side, .row-reason, .group-count {
   flex: none;
@@ -581,11 +613,25 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--text-secondary);
 }
 .empty + .empty { padding-top: 0; }
+/* The sentence says where the other matches are. The action sits under it,
+   the same quiet text as a constituent, not a box in the middle of the line. */
 .empty button {
+  display: block;
+  width: fit-content;
   height: auto;
-  margin-top: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--text-micro);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--text-ui);
+  text-align: left;
+}
+.empty button:hover:not(:disabled) {
+  background: none;
+  color: var(--accent-hover);
+  box-shadow: inset 0 -1px 0 var(--accent-hover);
 }
 
 /* Viewport chrome -------------------------------------------------------- */
