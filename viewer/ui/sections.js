@@ -356,7 +356,36 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     number.setAttribute('aria-label', cutsI18n.exactPositionAria);
     reverse.checked = state.reverse;
     mprOverlay.checked = state.overlay;
+    // The angles are why an oblique cut was chosen. A short rail scrolls the
+    // fields under the MRI row. Scrolling to the very end bisects the offset
+    // label; stop when the reverse control is in, and on a gap if one is close.
+    const openingOblique = state.mode === 'oblique' && oblique.hidden;
+    const closingOblique = state.mode !== 'oblique' && !oblique.hidden;
     oblique.hidden = state.mode !== 'oblique';
+    if (openingOblique || closingOblique) {
+      const fields = oblique.closest('.cut-fields');
+      const place = () => {
+        if (!fields) return;
+        if (!openingOblique) {
+          fields.scrollTop = 0;
+          return;
+        }
+        const tail = reverse.closest('label') ?? reverse;
+        const past = tail.getBoundingClientRect().bottom - fields.getBoundingClientRect().bottom;
+        if (past > 0) fields.scrollTop += past;
+        const edge = fields.getBoundingClientRect().top;
+        for (const node of fields.children) {
+          const rect = node.getBoundingClientRect();
+          if (rect.bottom <= edge + 1 || rect.top >= edge - 1) continue;
+          const covered = edge - rect.top;
+          const spare = fields.getBoundingClientRect().bottom - tail.getBoundingClientRect().bottom;
+          if (covered > 0 && covered <= spare + 0.5) fields.scrollTop -= covered;
+          break;
+        }
+      };
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(place);
+      else place();
+    }
     if (cutTiltLabel) cutTiltLabel.textContent = cutsI18n.tilt;
     if (cutAzimuthLabel) cutAzimuthLabel.textContent = cutsI18n.azimuth;
     if (cutReverseText) cutReverseText.textContent = cutsI18n.reverseSide;
