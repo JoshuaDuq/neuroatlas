@@ -278,6 +278,11 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   scrollbar-width: thin;
   scrollbar-color: var(--border-control) transparent;
 }
+/* Ask for a classic thumb where the engine draws one. Overlay bars still
+   fade, so opening an oblique cut also scrolls the angles into view. */
+.cut-fields::-webkit-scrollbar { width: 6px; }
+.cut-fields::-webkit-scrollbar-thumb { background: var(--border-control); }
+.cut-fields::-webkit-scrollbar-track { background: transparent; }
 .cut-command {
   display: flex;
   flex: none;
