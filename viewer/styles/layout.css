@@ -374,7 +374,16 @@
 @media (max-width: 1000px) {
   #app {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto 52dvh minmax(0, 1fr) var(--footer-height);
+    /*
+     * The stage used to take 52dvh first. On an 800px window that left the
+     * rail 309px, and Display's last controls — the spinal cord and Restore
+     * opening view — sat under the footer. The rail now keeps enough height
+     * for that instrument (about 400px once the tab strip is counted); the
+     * stage takes what remains and does not collapse below 200px. Above
+     * that, the rail stops growing at 440px so a tall narrow window still
+     * gives the picture the balance of the screen.
+     */
+    grid-template-rows: auto minmax(200px, 1fr) clamp(340px, 50dvh, 440px) var(--footer-height);
     height: 100dvh;
   }
   #viewport  { grid-column: 1 / -1; grid-row: 2; }
