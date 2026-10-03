@@ -6,18 +6,23 @@ button, select, input[type="search"], input[type="number"] {
   border-radius: var(--radius-control);
   background: var(--surface-base);
 }
-button { cursor: pointer; }
+button {
+  cursor: pointer;
+  transition: background-color var(--ui-transition) var(--ease-ui),
+    color var(--ui-transition) var(--ease-ui),
+    border-color var(--ui-transition) var(--ease-ui);
+}
+button, select { font-size: var(--text-ui); }
 button:hover:not(:disabled) { background: var(--surface-sunken); }
 button:disabled, input:disabled, select:disabled { color: var(--text-tertiary); cursor: default; }
 select {
   width: 100%;
   appearance: none;
-  padding-left: 0;
+  padding-left: var(--space-3);
   padding-right: var(--space-6);
-  border: 0;
-  border-bottom: 1px solid var(--border-control);
-  border-radius: 0;
-  background-color: transparent;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  background-color: var(--surface-base);
   background-image:
     linear-gradient(45deg, transparent 50%, var(--text-tertiary) 50%),
     linear-gradient(135deg, var(--text-tertiary) 50%, transparent 50%);
@@ -27,10 +32,10 @@ select {
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
 }
-select:hover:not(:disabled) { border-bottom-color: var(--text-secondary); }
+select:hover:not(:disabled) { border-color: var(--text-secondary); }
 select:focus-visible {
-  outline: none;
-  border-bottom: 2px solid var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .identity #anatomy-switch:focus-visible {
   outline: 2px solid var(--accent);
@@ -39,44 +44,58 @@ select:focus-visible {
 }
 input[type="search"] {
   width: 100%;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  border-radius: 0;
+  height: var(--control-height);
+  background: var(--surface-base);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  font-size: var(--text-ui);
 }
 input[type="search"]::placeholder { color: var(--text-tertiary); opacity: 1; }
-/* The rule is the focus indicator. A box around the field reads as a search well. */
 input[type="search"]:focus-visible {
-  outline: none;
-  border-bottom: 2px solid var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  background: var(--surface-base);
 }
 input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
 
 input[type="range"] {
   appearance: none;
   width: 100%;
-  height: 2px;
-  margin: var(--space-3) 0;
-  background: var(--border-subtle);
-  border-radius: 0;
-  accent-color: var(--text-secondary);
+  height: 24px;
+  margin: var(--space-1) 0;
+  padding: 0;
+  background: transparent;
+  accent-color: var(--accent);
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: var(--border-control);
+  border-radius: 2px;
+}
+input[type="range"]::-moz-range-track {
+  height: 3px;
+  background: var(--border-control);
+  border-radius: 2px;
 }
 input[type="range"]:disabled { opacity: 1; }
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
-  width: 10px;
-  height: 10px;
-  background: var(--text-primary);
-  border: 0;
-  border-radius: 1px;
+  width: 14px;
+  height: 14px;
+  margin-top: -5.5px;
+  background: var(--accent);
+  border: 2px solid var(--surface-base);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--accent);
   cursor: pointer;
 }
 input[type="range"]::-moz-range-thumb {
-  width: 10px;
-  height: 10px;
-  background: var(--text-primary);
-  border: 0;
-  border-radius: 1px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border: 2px solid var(--surface-base);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--accent);
   cursor: pointer;
 }
 input[type="range"]:disabled::-webkit-slider-thumb { background: var(--border-control); }
@@ -92,7 +111,7 @@ input[type="range"]:disabled::-moz-range-thumb { cursor: default; }
 }
 .search-affordance {
   position: absolute;
-  left: 0;
+  left: var(--space-3);
   width: 14px;
   height: 14px;
   color: var(--text-tertiary);
@@ -100,16 +119,16 @@ input[type="range"]:disabled::-moz-range-thumb { cursor: default; }
 }
 .search-box input[type="search"] {
   width: 100%;
-  padding-left: 22px;
-  padding-right: var(--space-6);
+  padding-left: 36px;
+  padding-right: calc(var(--control-height) + var(--space-1));
 }
 .search-clear {
   position: absolute;
   right: var(--space-2);
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;
@@ -126,41 +145,57 @@ input[type="range"]:disabled::-moz-range-thumb { cursor: default; }
   color: var(--text-primary);
   background: var(--surface-sunken);
 }
+.search-shortcut {
+  position: absolute;
+  right: var(--space-3);
+  min-width: 18px;
+  padding: 2px 4px;
+  color: var(--text-tertiary);
+  font-size: var(--text-micro);
+  background: var(--surface-sunken);
+  pointer-events: none;
+}
+.search-box:has(.search-clear:not([hidden])) .search-shortcut { display: none; }
 
-/*
- * Exclusive modes as labelled text, not boxed iOS segments and not website
- * tabs. A 2px accent underline on every switch stacked five of them on one
- * screen. Active state is colour and weight; the hairline under a tab bar
- * (if any) belongs to the bar, not to the word.
- */
-.segmented { display: flex; align-items: stretch; }
+/* A single visual language for exclusive settings. */
+.segmented {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+  border-radius: var(--radius-control);
+}
 .segmented button {
-  height: var(--control-height);
+  height: calc(var(--control-height) - 8px);
   padding: 0 var(--space-3);
   margin: 0;
   border: 0;
-  border-radius: 0;
+  border-radius: calc(var(--radius-control) - 2px);
   background: transparent;
   font-size: var(--text-ui);
   color: var(--text-secondary);
 }
 .segmented button:hover:not(:disabled) {
-  background: transparent;
+  background: var(--surface-base);
   color: var(--text-primary);
 }
 .segmented button[aria-pressed="true"] {
-  background: transparent;
-  color: var(--text-primary);
-  font-weight: 500;
-}
-.segmented.instrument button[aria-pressed="true"] {
+  background: var(--surface-base);
   color: var(--accent);
-  box-shadow: inset 0 -2px 0 var(--accent);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(19 48 60 / 0.1);
 }
 .segmented button[data-loading="true"] { color: var(--text-tertiary); font-weight: 400; }
+#lang-switch { border: 0; padding: 0; background: transparent; }
+#lang-switch button { padding: 0 var(--space-2); font-size: var(--text-micro); }
+#lang-switch button + button { border: 0; }
 #lang-switch button[aria-pressed="true"] {
-  color: var(--text-primary);
+  color: var(--accent);
+  background: var(--accent-wash);
   font-weight: 600;
+  box-shadow: none;
 }
 
 label { display: block; font-size: var(--text-ui); color: var(--text-secondary); }
@@ -168,18 +203,18 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .panel-body > label:first-child { margin-top: 0; }
 .check { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; }
 .check span { min-width: 0; }
-/* A square mark, the same language as the slider thumb. The platform box is a different instrument. */
+/* Keep checkbox state legible in both panel themes. */
 .check input {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   margin: 0;
   flex: none;
   display: grid;
   place-content: center;
-  border: 1px solid var(--border-control);
-  border-radius: 1px;
-  background: transparent;
+  border: 1px solid var(--text-tertiary);
+  border-radius: 3px;
+  background: var(--surface-base);
 }
 .check input::before {
   content: "";
@@ -190,8 +225,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   transform: rotate(-45deg) translateY(-1px);
 }
 .check input:checked {
-  background: var(--text-primary);
-  border-color: var(--text-primary);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 .check input:checked::before { border-color: var(--surface-base); }
 .check input:disabled { border-color: var(--border-subtle); background: transparent; }
@@ -235,22 +270,19 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 
 .actions {
   display: flex;
-  gap: 0;
-  margin-top: var(--space-4);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-control);
+  gap: var(--space-2);
+  margin-top: var(--space-5);
 }
 .actions button {
   flex: 1;
   min-width: 0;
   font-size: var(--text-ui);
-  border: 0;
-  border-radius: 0;
-  border-right: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
   background: var(--surface-base);
   white-space: nowrap;
 }
-.actions button:last-child { border-right: 0; }
+.actions button[disabled] { background: var(--surface-sunken); }
 .actions button:hover:not(:disabled) { background: var(--surface-sunken); }
 .actions .button-primary {
   background: var(--accent);
@@ -313,7 +345,12 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 
 /* The panel switch. Shared with the phone sheet: one tab bar, two shells. */
-.rail-tabs { display: flex; flex: none; }
+.rail-tabs {
+  display: flex;
+  flex: none;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
 .rail-tabs button {
   flex: 1;
   min-width: 0;
@@ -328,17 +365,20 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.rail-tabs button:hover { color: var(--text-primary); }
+.rail-tabs button:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
 .rail-tabs button[aria-selected="true"],
 #explorer-switch button[aria-pressed="true"] {
-  color: var(--text-primary);
+  color: var(--accent);
+  background: transparent;
   font-weight: 600;
-  box-shadow: inset 0 -2px 0 var(--text-primary);
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
-#inspector-tabs { border-bottom: 1px solid var(--border-subtle); }
 
 /* The tab already names the panel; the heading under it is the same word. */
-#inspector-tabs:not([hidden]) ~ .rail-body { padding-top: var(--space-3); }
+#inspector-tabs:not([hidden]) ~ .rail-body { padding-top: var(--space-1); }
 #inspector-tabs:not([hidden]) ~ .rail-body > .tab-group > .section-label:first-child {
   display: none;
 }
@@ -349,16 +389,14 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 #reset {
   width: 100%;
   margin-top: var(--space-3);
-  padding: var(--space-3) 0 0;
-  height: auto;
-  border: 0;
-  border-top: 1px solid var(--border-subtle);
-  border-radius: 0;
-  justify-content: flex-start;
-  text-align: left;
+  padding: 0 var(--space-3);
+  height: var(--control-height);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  text-align: center;
 }
 /* Visibility is one ruled list. Opacity belongs to the cortex row, and goes quiet when the cortex is off. */
-.display-visibility { margin-top: var(--space-3); }
+.display-visibility { margin-top: var(--space-5); }
 .display-visibility > .display-cortex,
 .display-visibility > .check {
   border-bottom: 1px solid var(--border-subtle);
@@ -374,29 +412,44 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .display-cortex:has(#opacity:disabled) > label[for="opacity"],
 .display-cortex:has(#opacity:disabled) output { color: var(--text-tertiary); }
 .display-visibility > :last-child { border-bottom: 0; }
-#hemisphere,
-#cut-mode {
-  width: 100%;
-  border-bottom: 1px solid var(--border-subtle);
-}
-#hemisphere button,
-#cut-mode button {
+#hemisphere { width: 100%; }
+#hemisphere button {
   flex: 1;
   min-width: 0;
   padding: 0 var(--space-2);
   white-space: nowrap;
 }
-#cut-mode button { padding: 0 var(--space-1); }
-#hemisphere button[aria-pressed="true"],
+#cut-mode {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+#cut-mode button {
+  min-width: 0;
+  min-height: var(--control-height);
+  height: auto;
+  padding: var(--space-1);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  line-height: 1.2;
+  box-shadow: none;
+}
+#cut-mode button:first-child { grid-column: 1 / -1; }
 #cut-mode button[aria-pressed="true"] {
-  box-shadow: inset 0 -2px 0 var(--text-primary);
+  color: var(--accent);
+  background: var(--accent-wash);
+  border-color: var(--accent);
 }
 
 /* Selection panel -------------------------------------------------------- */
 #selected-name {
-  font-size: 1.125rem;
+  font-size: 1.375rem;
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
   line-height: 1.3;
   overflow-wrap: break-word;
 }
@@ -406,31 +459,70 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--text-secondary);
   line-height: 1.5;
 }
-#selected-name[hidden] + #selected-hint {
+#selected-name[hidden] ~ #selected-hint {
   max-width: 36ch;
   margin-top: var(--space-3);
   font-size: var(--text-body);
   line-height: 1.55;
 }
 #inspector .tab-group[data-tab="region"] > .panel-body:has(#selected-name[hidden]) {
-  padding-top: var(--space-5);
+  padding-top: var(--space-10);
+}
+.selection-empty {
+  margin: 0;
+}
+.selection-empty-graphic {
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--space-5);
+  color: var(--text-tertiary);
+}
+.selection-empty h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+#selection-empty:not([hidden]) ~ #selected-hint {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-ui);
 }
 
 .datasheet {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
-  column-gap: var(--space-3);
+  column-gap: 0;
   margin-top: var(--space-4);
   font-size: var(--text-ui);
   border-top: 1px solid var(--border-subtle);
 }
 .datasheet dt,
 .datasheet dd {
-  padding: 8px 0;
+  padding: 11px 0;
   border-bottom: 1px solid var(--border-subtle);
 }
-.datasheet dt { color: var(--text-tertiary); font-size: var(--text-micro); }
-.datasheet dd { overflow-wrap: break-word; color: var(--text-primary); }
+.datasheet dt { padding-right: var(--space-3); color: var(--text-tertiary); font-size: var(--text-micro); }
+.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; color: var(--text-primary); }
+#fact-metric { font-size: 1.0625rem; font-weight: 500; color: var(--accent); }
+#fact-source { font-size: var(--text-micro); color: var(--text-secondary); }
+.metadata-details > summary {
+  cursor: pointer;
+  padding: var(--space-3) 0;
+  color: var(--text-secondary);
+  font-size: var(--text-micro);
+}
+.metadata-details > summary:hover,
+.metadata-details[open] > summary { color: var(--accent); }
+.metadata-details .datasheet { margin-top: 0; }
+.inspector-disclosure > summary {
+  cursor: pointer;
+  padding: var(--space-4) var(--space-5);
+  color: var(--text-primary);
+}
+.inspector-disclosure > summary:hover { background: var(--surface-hover); }
+.inspector-disclosure > summary::marker { color: var(--accent); }
+.inspector-disclosure[open] > summary { color: var(--accent); }
 
 #fact-coords {
   display: flex;
@@ -493,46 +585,49 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  width: 100%;
-  height: var(--row-height);
-  padding: 0 var(--space-4);
+  min-height: var(--row-height);
+  height: auto;
+  width: calc(100% - var(--space-6));
+  margin: 2px var(--space-3);
+  padding: 7px var(--space-2);
   border: 0;
-  border-radius: 0;
+  border-radius: var(--radius-control);
   background: none;
   text-align: left;
   font-size: var(--text-ui);
   color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--ui-transition) var(--ease-ui),
+    color var(--ui-transition) var(--ease-ui);
 }
-.row { cursor: pointer; user-select: none; }
-.row:hover { background: var(--surface-sunken); }
-/* The armed search row is the one Enter will take. Sunken alone is the
-   hover colour, so the keyboard target also carries a hairline. */
+.row:focus-visible { outline-offset: -2px; }
+.row:hover { background: var(--surface-hover); }
+/* Distinguish the keyboard target from the selected anatomical region. */
 .row[data-active="true"] {
   background: var(--surface-sunken);
-  box-shadow: inset 2px 0 0 var(--text-secondary);
+  outline: 1px solid var(--border-control);
+  outline-offset: -1px;
 }
 .row[data-selected="true"] {
   background: var(--accent-wash);
-  color: var(--text-primary);
-  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--accent);
+  font-weight: 600;
 }
 .row[data-hidden="true"] { color: var(--text-tertiary); }
 .row[aria-disabled="true"] { cursor: default; }
-.row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/*
- * A search hit is a choice the reader has to read. The tree can ellipsize
- * hundreds of rows; ten results cannot hide the word that matched. The name
- * wraps in the space left by the lobe and the side, which stay one line.
- */
+.row-name { flex: 1; min-width: 0; line-height: 1.4; overflow-wrap: break-word; }
 #results .row {
-  height: auto;
-  min-height: var(--row-height);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
   align-items: baseline;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  gap: 2px var(--space-2);
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
 }
 #results .row-title {
-  flex: 1;
+  grid-column: 1;
+  grid-row: 1;
   min-width: 0;
   line-height: 1.35;
 }
@@ -547,10 +642,16 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   margin-left: var(--space-1);
   white-space: nowrap;
 }
-/* Auto margins would take the free space and leave the name one long line. */
+#results .row-side { grid-column: 2; grid-row: 1; margin-left: 0; }
 #results .row-group,
-#results .row-side,
-#results .row-reason { margin-left: var(--space-2); }
+#results .row-reason {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-left: 0;
+  max-width: none;
+  white-space: normal;
+  text-align: left;
+}
 /* The tail never wraps or shrinks; the name gives way instead. */
 .row-side, .row-reason, .group-count {
   flex: none;
@@ -562,6 +663,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   font-size: var(--text-micro);
   font-variant-numeric: tabular-nums;
 }
+.row-side { color: var(--text-secondary); font-weight: 600; }
+.row[data-selected="true"] .row-side { color: inherit; }
 .row-group {
   flex: none;
   max-width: 42%;
@@ -574,24 +677,82 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 .row-group + .row-side,
 .row-group + .row-reason { margin-left: var(--space-2); }
-.row-indent { padding-left: var(--space-8); }
+.row-indent { padding-left: 26px; }
 
-.group-row { font-weight: 500; }
-.disclosure { width: 10px; color: var(--text-tertiary); }
+.tree-group { isolation: isolate; }
+.visibility-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: var(--space-1);
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: var(--space-1);
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  background: transparent;
+}
+.visibility-control svg { width: 18px; height: 18px; flex: none; }
+.visibility-control span { font-size: var(--text-micro); }
+.visibility-control:hover { background: var(--surface-sunken); color: var(--text-primary); }
+.visibility-control[aria-pressed="false"] { color: var(--accent); background: var(--accent-wash); }
+.visibility-control:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.group-row .visibility-control { width: calc(var(--control-height) + var(--space-1)); }
+.group-row { gap: var(--space-1); }
+.group-row .group-count { min-width: 2ch; }
+.dissection-controls {
+  flex: none;
+  margin: 0 var(--space-5) var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.dissection-heading-row { display: flex; align-items: center; gap: var(--space-2); }
+.dissection-heading-row h3 { margin: 0 auto 0 0; font-size: var(--text-ui); font-weight: 600; }
+.dissection-heading-row button { padding: 0; font-size: var(--text-micro); }
+.dissection-controls p { margin: var(--space-1) 0 var(--space-2); font-size: var(--text-micro); color: var(--text-secondary); }
+.dissection-controls #dissection-status { margin-bottom: 0; }
+.row-indent .row-reason { max-width: 68px; white-space: normal; line-height: 1.35; }
+.tree-group > .group-row {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-2) var(--space-5);
+  border-radius: 0;
+  background: var(--surface-navigation);
+  font-weight: 600;
+}
+.tree-group > .group-row[aria-expanded="true"] {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tree-group > .group-row:hover { background: var(--surface-hover); }
+.tree-group .row-indent {
+  scroll-margin-block: calc(var(--row-height) + var(--space-5));
+}
+.group-count {
+  font-size: var(--text-micro);
+  min-width: 26px;
+  text-align: right;
+}
+.disclosure { display: flex; width: 12px; flex: none; color: var(--text-secondary); }
+.group-row[aria-expanded="true"] .disclosure { transform: rotate(90deg); }
 #tree > .section-label:first-child { border-top: 0; padding-top: var(--space-2); }
 
 .tree-header {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-4);
+  padding: 0 var(--space-5) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
 }
 .tree-toggle-all,
 .tree-internal {
   font-size: var(--text-micro);
-  height: auto;
-  padding: 2px var(--space-2);
+  height: var(--control-height);
+  padding: 0;
 }
 .tree-toggle-all { margin-left: auto; }
 .tree-internal[aria-pressed="true"] {
@@ -640,6 +801,30 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 
 /* Viewport chrome -------------------------------------------------------- */
+.viewport-context {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--vis-top) + var(--space-5));
+  left: calc(var(--vis-left) + var(--space-6));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--overlay-ink);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  pointer-events: none;
+  text-shadow: 0 1px 3px var(--overlay-halo);
+}
+.viewport-help {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--vis-top) + 45px);
+  left: calc(var(--vis-left) + var(--space-6));
+  color: var(--overlay-ink-muted);
+  font-size: var(--text-micro);
+  pointer-events: none;
+  text-shadow: 0 1px 3px var(--overlay-halo);
+}
 /*
  * Anything drawn on the stage is lit by the stage, in both themes: the ground
  * under it is near-black either way, and a plate taken from the rails put a
@@ -699,7 +884,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 /* The view plate owns the bottom line. The letter sits above it, or a long
    label in another language runs through the marker. */
 .orientation [data-edge="bottom"] {
-  bottom: calc(var(--space-4) + 36px);
+  bottom: calc(var(--space-4) + 48px);
   left: 50%;
   transform: translateX(-50%);
 }
@@ -712,6 +897,8 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   left: calc(var(--vis-left) + var(--space-4));
   bottom: calc(var(--vis-bottom) + var(--space-4));
   display: flex;
+  gap: 2px;
+  padding: 4px;
   width: max-content;
   max-width: calc(100% - var(--vis-left) - var(--vis-right) - var(--space-8));
   background: var(--overlay-plate);
@@ -722,22 +909,21 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   /* Never squashed: a truncated preset is a view the reader cannot name, and
      a row measured while squashed cannot be measured back to its full size. */
   flex: none;
-  height: 24px;
+  height: 30px;
   padding: 0 var(--space-2);
   font-size: var(--text-micro);
   border: 0;
-  border-radius: 0;
+  border-radius: calc(var(--radius-control) - 2px);
   margin: 0;
   background: transparent;
-  color: var(--overlay-ink);
+  color: var(--overlay-ink-muted);
 }
 .views button[aria-pressed="true"] {
   color: var(--overlay-accent);
   font-weight: 600;
-  background: transparent;
-  box-shadow: inset 0 -2px 0 var(--overlay-accent);
+  background: var(--overlay-accent-wash);
 }
-.views button:hover:not(:disabled) { background: transparent; }
+.views button:hover:not(:disabled) { background: var(--overlay-plate-hover); }
 .views button:hover:not([aria-pressed="true"]) { color: var(--overlay-ink); }
 
 /* A measurement on the picture, marked the same way the orientation is. */
@@ -796,7 +982,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
  */
 #viewport[data-chrome="tight"] .scale-bar {
   top: auto;
-  bottom: calc(var(--vis-bottom) + var(--space-4) + 30px);
+  bottom: calc(var(--vis-bottom) + var(--space-4) + 46px);
   right: calc(var(--vis-right) + var(--space-3));
   left: auto;
 }
@@ -834,7 +1020,12 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .stage button:hover:not(:disabled) { background: var(--overlay-plate-hover); }
 
 .progress { width: 220px; height: 3px; background: rgb(255 255 255 / 0.16); }
-.progress span { display: block; height: 100%; background: var(--overlay-ink); }
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--overlay-accent);
+  transition: width var(--ui-transition);
+}
 
 /* Shortcut sheet ---------------------------------------------------------- */
 #shortcuts {
@@ -849,6 +1040,11 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--text-primary);
 }
 #shortcuts::backdrop { background: rgb(0 0 0 / 0.55); }
+#shortcuts[open], #mpr-dialog[open] { animation: panel-enter 180ms ease-out; }
+@keyframes panel-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 #shortcuts h2 { font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
 #shortcuts-list {
   display: grid;
@@ -859,14 +1055,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 #shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
 .cut-fields:focus-visible {
-  outline: none;
-  box-shadow: -2px 0 0 var(--accent);
-}
-@media (forced-colors: active) {
-  .cut-fields:focus-visible {
-    outline: 2px solid Highlight;
-    box-shadow: none;
-  }
+  outline-offset: -2px;
 }
 /* A key is a thing you press, so it is drawn as one rather than quoted. */
 kbd {
@@ -885,12 +1074,13 @@ kbd {
 #shortcuts-close {
   width: auto;
   margin-top: var(--space-2);
-  padding-left: 0;
+  padding: 0 var(--space-4);
+  border-color: var(--border-control);
 }
 #shortcuts-open { width: var(--control-height); padding: 0; }
 
 /* Registered sections ---------------------------------------------------- */
-.section-controls input[type="range"] { width: 100%; }
+.section-controls input[type="range"] { width: 100%; margin: var(--space-2) 0; }
 .cut-position-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 4.75rem;
@@ -901,27 +1091,28 @@ kbd {
 .cut-position-row input[type="number"] {
   width: 100%;
   height: var(--control-height);
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid var(--border-control);
-  border-radius: 0;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
   font-variant-numeric: tabular-nums;
   font-family: var(--font-mono);
-  background: transparent;
-  text-align: right;
+  background: var(--surface-base);
+  text-align: center;
 }
 .cut-position-row input[type="number"]:focus-visible {
-  outline: none;
-  border-bottom: 2px solid var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .cut-position-row input[type="number"]::-webkit-outer-spin-button,
 .cut-position-row input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.section-controls input[type="range"] { margin: var(--space-2) 0; }
+.cut-fields > label:not(.check),
+.cut-fields > #cut-oblique > label { margin: var(--space-5) 0 var(--space-2); }
+.cut-fields > .check { padding: var(--space-1) 0; }
+#cut-mode-label.visually-hidden { margin: 0; }
 #cut-oblique { margin-top: var(--space-3); }
-#cut-oblique label { margin-top: var(--space-2); }
 
 
 #mpr-dialog {
@@ -1007,10 +1198,6 @@ kbd {
   background: none;
   color: var(--text-primary);
 }
-#mpr-grid .button-quiet:focus-visible {
-  outline: none;
-  box-shadow: inset 0 -2px 0 var(--accent);
-}
 #mpr-readout { margin-top: var(--space-3); font-size: var(--text-ui); color: var(--text-primary); }
 .mpr-display {
   display: grid;
@@ -1074,5 +1261,3 @@ kbd {
 .constituents-list button:hover:not(:disabled) {
   background: var(--surface-sunken);
 }
-
-

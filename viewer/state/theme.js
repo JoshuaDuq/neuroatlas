@@ -20,7 +20,7 @@ export function createTheme(onChange) {
   }
   let theme = stored === 'dark' || stored === 'light'
     ? stored
-    : 'dark';
+    : 'light';
 
   function apply() {
     document.documentElement.dataset.theme = theme;

@@ -69,6 +69,16 @@ test('isolating a white-matter parcel keeps only its code on the cap', () => {
   matter.dispose();
 });
 
+test('removing a white-matter parcel discards its sampled cap and restores it on show', () => {
+  const matter = whiteMatter();
+  matter.update({ atlas: 'destrieux', hiddenRegions: new Set([PRECENTRAL]) });
+  assert.equal(matter.uniforms.whiteMatterVisibility.value.image.data[1], 0);
+  assert.equal(matter.uniforms.whiteMatterVisibility.value.image.data[2], 255);
+  matter.update({ atlas: 'destrieux', hiddenRegions: new Set() });
+  assert.equal(matter.uniforms.whiteMatterVisibility.value.image.data[1], 255);
+  matter.dispose();
+});
+
 test('the pointed-at and chosen white-matter parcels are lifted by code', () => {
   const matter = whiteMatter();
   matter.setHighlight({ hovered: PRECENTRAL, selected: INSULA });

@@ -1,5 +1,6 @@
 import { Box3, Vector3 } from 'three';
 import { createCatalog } from './catalog/catalog.js';
+import { visibilityOf } from './catalog/visibility.js';
 import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion } from './clinical/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
@@ -18,6 +19,7 @@ import { createSectionControls } from './ui/sections.js';
 import { createInternalAnatomy } from './ui/internal-anatomy.js';
 import { createConstituents } from './ui/constituents.js';
 import { createDisplay } from './ui/display.js';
+import { createDissectionControls } from './ui/dissection.js';
 import { createHeader } from './ui/header.js';
 import { createInspector } from './ui/inspector.js';
 import { createClinicalExplorer } from './ui/clinical.js';
@@ -387,6 +389,7 @@ export async function startApp() {
 
   /** Undo whatever is hiding a region, then select it after loading completes. */
   async function reveal(reason, id) {
+    if (reason === 'removed') model.showRegions([id]);
     if (reason === 'no-mri') await sections.setSurfaceColor('tissue');
     if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
     if (reason === 'internal-hidden') model.setInternalVisible(true);
@@ -404,7 +407,17 @@ export async function startApp() {
     }
     if (reason === 'other-detail') await setDetail(model.regions.get(id).atlas);
     if (reason === 'other-system') model.setInternalSystem(null);
+    const region = model.regions.get(id);
+    if (!model.canSelect(region)) {
+      const next = visibilityOf(region, model.settings).reason;
+      if (next === reason) throw new Error(`Cannot reveal ${id}: ${next}`);
+      return reveal(next, id);
+    }
     select(id);
+  }
+
+  function hideRegions(ids) {
+    display(() => model.hideRegions(ids));
   }
 
   function setLang(lang) {
@@ -436,12 +449,13 @@ export async function startApp() {
     // Another brain is another set of assets, so this re-enters through the
     // URL rather than mutating the model in place. The rest of the state rides
     // along: the reader keeps their atlas, cut and language across the change.
-    // Selection does not — a region id means a different parcel on each brain.
+    // Selection and dissection belong to the current subject's parcels.
     onAnatomy: id => {
       if (id === anatomy) return;
       const state = session.assemble(model.state);
       const hash = encodeState({
         ...state, anatomy: id, selectedRegion: null, isolatedRegion: null,
+        hiddenRegions: new Set(),
       });
       globalThis.location.hash = hash;
       globalThis.location.reload();
@@ -481,6 +495,8 @@ export async function startApp() {
     },
     onAtlas: setAtlas,
     onCutAtlas: setCutAtlas,
+    onHideRegions: hideRegions,
+    onShowRegions: ids => display(() => model.showRegions(ids)),
   });
 
   const isolateSelection = () => display(() => {
@@ -498,6 +514,14 @@ export async function startApp() {
     networks: model.manifest.networks,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
+    onHide: () => {
+      const id = model.state.selectedRegion?.id;
+      if (!id) return;
+      session.setExplorer('anatomy');
+      hideRegions([id]);
+      sheet.show('find');
+      document.getElementById('dissection-undo').focus();
+    },
     centroidOf: id => model.centroidOf(id),
   });
 
@@ -638,6 +662,11 @@ export async function startApp() {
     },
   });
 
+  const dissectionControls = createDissectionControls({
+    onUndo: () => display(() => model.undoDissection()),
+    onRestore: () => display(() => model.restoreHiddenRegions()),
+  });
+
   function faceCut() {
     if (!sections.active) return;
     const frame = sections.frame;
@@ -746,6 +775,7 @@ export async function startApp() {
     inspectorTabs.update(state, strip);
     clinicalExplorer.update(state);
     display_.update(state);
+    dissectionControls.update(state);
     internalAnatomy.update(state);
     constituents.update(state);
     sectionControls.update(state);
@@ -784,6 +814,7 @@ export async function startApp() {
 
   /** Mark what the pointer is on — a cut face lights, a surface outlines — and name it. */
   function highlight() {
+    if (hovered?.region && !model.canSelect(hovered.region)) hovered = null;
     const region = hovered?.region;
     sections.setHighlight({
       hovered: region?.id,
@@ -1004,6 +1035,7 @@ export async function startApp() {
   if (wanted.internalVisible !== undefined) model.setInternalVisible(wanted.internalVisible);
   if (wanted.spinalCordVisible !== undefined) model.setSpinalCordVisible(wanted.spinalCordVisible);
   if (wanted.cortexOpacity !== undefined) model.setCortexOpacity(wanted.cortexOpacity);
+  if (wanted.hiddenRegions) model.loadHiddenRegions(wanted.hiddenRegions);
   // A shared link is input, not a contract: a layer or system this build no
   // longer carries is dropped, and the reader gets the default view of it.
   const restore = async step => {
@@ -1065,6 +1097,7 @@ export async function startApp() {
       picker.dispose();
       chrome.dispose();
       display_.dispose();
+      dissectionControls.dispose();
       internalAnatomy.dispose();
       constituents.dispose();
       inspector.dispose();

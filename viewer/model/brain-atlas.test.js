@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
-import { BoxGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshStandardMaterial, Raycaster, Vector3 } from 'three';
+import { BoxGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshStandardMaterial, Plane, Raycaster, Vector3 } from 'three';
 import { visibilityOf } from '../catalog/visibility.js';
 import { BrainAtlas, SURFACE_COLORS } from './brain-atlas.js';
 import { TissueSections } from '../tissues/gpu-sections.js';
@@ -65,6 +65,7 @@ function fixture() {
     anatomy: { id: 'bert', subject: 'bert', display_name: 'Subject', individual: true },
     atlases: [{ id: 'a', label: 'Atlas A', file: 'a.glb' }, { id: 'b', label: 'Atlas B', file: 'b.glb' }],
     detail_levels: [{ id: 'aseg', label: 'Coarse', file: 'structures.glb' }],
+    solid_envelopes: { file: 'tissue-envelopes.glb' },
     regions,
   };
   const loads = [];
@@ -74,6 +75,15 @@ function fixture() {
       onProgress?.({ loaded: 10, total: 20 });
       onProgress?.({ loaded: 20, total: 20 });
       const scene = new Group();
+      if (file === 'tissue-envelopes.glb') {
+        for (const [index, hemisphere] of ['left', 'right'].entries()) {
+          const mesh = new Mesh(new BoxGeometry(0.009, 0.009, 0.009), new MeshStandardMaterial());
+          mesh.position.set(index * 0.03, 0, 0.015);
+          mesh.userData = { hemisphere, boundary: 'white', units: 'meters' };
+          scene.add(mesh);
+        }
+        return { scene };
+      }
       const atlasId = file === 'structures.glb' ? 'aseg' : file[0];
       for (const [index, region] of regions.filter(region => region.atlas === atlasId).entries()) {
         const mesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshStandardMaterial({ side: DoubleSide }));
@@ -91,6 +101,168 @@ function fixture() {
   return { atlas: new BrainAtlas(manifest, loader), loads };
 }
 
+test('hiding cortex exposes native white matter and restoring it closes the exposure', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  assert.equal(atlas.visibleMeshes.some(mesh => mesh.userData.boundary === 'white'), false);
+  atlas.hideRegions(['a-left']);
+  const white = atlas.visibleMeshes.find(mesh => mesh.userData.boundary === 'white');
+  assert.ok(white, 'the tissue beneath removed cortex must be drawn');
+  assert.equal(white.userData.hemisphere, 'left');
+  assert.equal(white.userData.kind, 'non-region');
+  assert.deepEqual(white.position.toArray(), [0, 0, 0.015]);
+  const positions = white.geometry.attributes.position.array.slice();
+  atlas.setCortexOpacity(0.6);
+  assert.equal(white.material.opacity, 0.6);
+  const plane = new Plane(new Vector3(0, 0, -1), 0.012);
+  atlas.setClippingPlanes([plane]);
+  assert.deepEqual(white.material.clippingPlanes, [plane]);
+  atlas.setHemisphere('right');
+  assert.equal(white.visible, false);
+  atlas.setHemisphere('both');
+  assert.equal(white.visible, true);
+  atlas.setCortexVisible(false);
+  assert.equal(white.visible, false);
+  atlas.setCortexVisible(true);
+  await atlas.setAtlas('b');
+  assert.equal(white.visible, false);
+  await atlas.setAtlas('a');
+  assert.equal(white.visible, true);
+  atlas.select('a-right');
+  atlas.isolate();
+  assert.equal(white.visible, false);
+  atlas.clearIsolation();
+  assert.equal(white.visible, true);
+  atlas.restoreHiddenRegions();
+  assert.equal(white.visible, false);
+  assert.deepEqual(white.geometry.attributes.position.array, positions);
+  atlas.dispose();
+});
+
+test('reinitializing shares the native tissue download and keeps one tissue layer', async () => {
+  const { atlas, loads } = fixture();
+  await Promise.all([atlas.initialize('a'), atlas.initialize('a')]);
+  assert.equal(loads.filter(file => file === 'tissue-envelopes.glb').length, 1);
+  atlas.hideRegions(['a-left']);
+  await atlas.initialize('a');
+  assert.equal(atlas.visibleMeshes.filter(mesh => mesh.userData.boundary === 'white').length, 1);
+  assert.equal(atlas.group.children.filter(group => group.name === 'Native exposed white matter').length, 1);
+  atlas.dispose();
+});
+
+test('dissection exposes white matter and blocks picking through it', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const front = atlas.visibleMeshes.find(mesh => mesh.userData.region_id === 'a-left');
+  front.position.z = 0.03;
+  front.updateMatrix();
+  const positions = front.geometry.attributes.position.array.slice();
+  const ray = new Raycaster(new Vector3(0, 0, 0.1), new Vector3(0, 0, -1));
+  assert.equal(atlas.pick(ray).id, 'a-left');
+  atlas.select('a-left');
+  atlas.hideRegions(['a-left']);
+  assert.equal(atlas.intersect(ray).object.userData.boundary, 'white');
+  assert.equal(atlas.pick(ray), null);
+  assert.equal(front.visible, false);
+  assert.equal(atlas.state.selectedRegion, null);
+  assert.equal(atlas.canSelect(regions[0]), false);
+  assert.deepEqual(front.geometry.attributes.position.array, positions);
+  atlas.undoDissection();
+  assert.equal(atlas.pick(ray).id, 'a-left');
+  assert.equal(atlas.state.selectedRegion.id, 'a-left');
+  atlas.dispose();
+});
+
+test('dissection batches are atomic, undoable and preserve other display settings', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.setCortexOpacity(0.7);
+  atlas.hideRegions(['a-left', 'stem']);
+  assert.deepEqual([...atlas.state.hiddenRegions].sort(), ['a-left', 'stem']);
+  atlas.hideRegions(['a-left', 'stem']);
+  atlas.showRegions(['a-left']);
+  assert.deepEqual([...atlas.state.hiddenRegions], ['stem']);
+  atlas.undoDissection();
+  assert.deepEqual([...atlas.state.hiddenRegions].sort(), ['a-left', 'stem']);
+  atlas.undoDissection();
+  assert.equal(atlas.state.hiddenRegions.size, 0);
+  assert.equal(atlas.state.dissectionCanUndo, false);
+  assert.equal(atlas.state.cortexOpacity, 0.7);
+  atlas.hideRegions(['a-left']);
+  await atlas.setAtlas('b');
+  await atlas.setAtlas('a');
+  assert.equal(atlas.visibleMeshes.some(mesh => mesh.userData.region_id === 'a-left'), false);
+  atlas.restoreHiddenRegions();
+  assert.equal(atlas.state.hiddenRegions.size, 0);
+  atlas.undoDissection();
+  assert.deepEqual([...atlas.state.hiddenRegions], ['a-left']);
+  atlas.reset();
+  assert.equal(atlas.state.hiddenRegions.size, 0);
+  assert.equal(atlas.state.dissectionCanUndo, false);
+  atlas.dispose();
+});
+
+test('hiding an isolated region releases isolation and undo restores it', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.select('a-left');
+  atlas.isolate();
+  atlas.hideRegions(['a-left']);
+  assert.equal(atlas.state.isolatedRegion, null);
+  assert.equal(atlas.visibleMeshes.length, 4);
+  atlas.undoDissection();
+  assert.equal(atlas.state.isolatedRegion, 'a-left');
+  assert.equal(atlas.state.selectedRegion.id, 'a-left');
+  atlas.dispose();
+});
+
+test('dissection undo preserves the current atlas and hemisphere without invalid isolation', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  atlas.select('a-left');
+  atlas.isolate();
+  atlas.hideRegions(['a-left']);
+  await atlas.setAtlas('b');
+  atlas.undoDissection();
+  assert.equal(atlas.state.atlas, 'b');
+  assert.equal(atlas.state.isolatedRegion, null);
+  assert.equal(atlas.state.selectedRegion, null);
+  assert.equal(atlas.canSelect(regions.find(region => region.id === 'b-left')), true);
+
+  await atlas.setAtlas('a');
+  atlas.select('a-left');
+  atlas.isolate();
+  atlas.hideRegions(['a-left']);
+  atlas.setHemisphere('right');
+  atlas.undoDissection();
+  assert.equal(atlas.state.hemisphere, 'right');
+  assert.equal(atlas.state.isolatedRegion, null);
+  assert.equal(atlas.state.selectedRegion, null);
+  assert.equal(atlas.canSelect(regions.find(region => region.id === 'a-right')), true);
+  atlas.dispose();
+});
+
+test('dissection undo announces a restored selection', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const selections = [];
+  atlas.addEventListener('selectionchange', event => selections.push(event.detail?.id ?? null));
+  atlas.select('a-left');
+  atlas.hideRegions(['a-left']);
+  atlas.undoDissection();
+  assert.deepEqual(selections, ['a-left', null, 'a-left']);
+  atlas.dispose();
+});
+
+test('invalid dissection identifiers fail before changing visibility', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  assert.throws(() => atlas.hideRegions(['a-left', 'missing']), /Unknown region/);
+  assert.equal(atlas.state.hiddenRegions.size, 0);
+  assert.equal(atlas.state.dissectionCanUndo, false);
+  atlas.dispose();
+});
+
 test('switches one atlas at a time, caches geometry, and keeps shared anatomy', async () => {
   const { atlas, loads } = fixture();
   await atlas.initialize('a');
@@ -100,7 +272,7 @@ test('switches one atlas at a time, caches geometry, and keeps shared anatomy', 
   assert.equal(atlas.visibleMeshes.length, 2);
   assert.ok(atlas.visibleMeshes.some(mesh => mesh.userData.region_id === 'stem'));
   await atlas.setAtlas('a');
-  assert.deepEqual(loads.sort(), ['a.glb', 'b.glb', 'structures.glb']);
+  assert.deepEqual(loads.sort(), ['a.glb', 'b.glb', 'structures.glb', 'tissue-envelopes.glb']);
   assert.equal(atlas.group.children.filter(group => group.visible).length, 2);
   atlas.dispose();
   assert.equal(atlas.group.children.length, 0);
@@ -242,6 +414,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false,
     surfaceColor: 'atlas', isolatedRegion: null,
+    hiddenRegions: new Set(), dissectionCanUndo: false,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
   assert.equal(atlas.state.visibleMeshCount, 4);
@@ -275,12 +448,12 @@ test('load progress is reported while a layer downloads', async () => {
   const seen = [];
   const { atlas } = fixture();
   await atlas.initialize('a', event => seen.push({ loaded: event.loaded, total: event.total }));
-  assert.deepEqual(seen.at(-1), { loaded: 40, total: 40 }, 'both layers share one bar');
+  assert.deepEqual(seen.at(-1), { loaded: 60, total: 60 }, 'surface, structure and tissue downloads share one bar');
   assert.ok(seen.some(event => event.loaded === 10 && event.total === 20));
   atlas.dispose();
 });
 
-test('initialize fetches the atlas and internal anatomy together', async () => {
+test('initialize fetches cortex, internal anatomy and native tissue together', async () => {
   const { atlas, loads } = fixture();
   const original = atlas.loader.loadAsync;
   let started = 0;
@@ -293,10 +466,10 @@ test('initialize fetches the atlas and internal anatomy together', async () => {
   };
   const pending = atlas.initialize('a');
   await Promise.resolve();
-  assert.equal(started, 2, 'both downloads must have started before either finishes');
+  assert.equal(started, 3, 'all downloads must have started before any finishes');
   released();
   await pending;
-  assert.deepEqual(loads.sort(), ['a.glb', 'structures.glb']);
+  assert.deepEqual(loads.sort(), ['a.glb', 'structures.glb', 'tissue-envelopes.glb']);
   atlas.dispose();
 });
 

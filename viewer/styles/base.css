@@ -7,6 +7,7 @@ body {
   margin: 0;
   font-family: var(--font-ui);
   font-size: var(--text-body);
+  line-height: 1.45;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   color: var(--text-primary);
@@ -14,8 +15,11 @@ body {
 }
 
 button, input, select, output { font: inherit; color: inherit; }
+input { caret-color: var(--accent); }
+::selection { color: var(--surface-base); background: var(--accent); }
 
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
 
 /*
  * One ring, on every surface, in both themes. Never removed, only restyled.
@@ -36,15 +40,18 @@ h1, h2, h3, p, dl, dd, figure { margin: 0; }
   font-variant-numeric: tabular-nums;
 }
 
-/* Sentence case above a hairline, never repeated all-caps. */
+/* Quiet section hierarchy keeps anatomical content easy to scan. */
 .section-label {
   font-size: var(--text-micro);
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--text-secondary);
-  padding: var(--space-4) var(--space-4) var(--space-1);
+  padding: var(--space-5) var(--space-5) var(--space-2);
   border-top: 1px solid var(--border-subtle);
 }
+
+button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
 
 .visually-hidden {
   position: absolute;

@@ -108,10 +108,13 @@ test('snapshot and fullscreen sit in the masthead, not on the anatomy', () => {
   assert.ok(snap > menu && snap < viewport);
 });
 
-test('snapshot and fullscreen are unmarked text, like theme and shortcuts', () => {
-  const menu = html.slice(html.indexOf('id="masthead-menu"'), html.indexOf('</header>'));
-  assert.equal(/<svg\b/.test(menu), false);
-  assert.equal((menu.match(/masthead-action-short/g) ?? []).length, 2);
+test('snapshot and fullscreen retain accessible names with icon controls', () => {
+  for (const id of ['viewport-fullscreen', 'viewport-snapshot']) {
+    assert.match(tagWithId(id), /aria-label="[^"]+"/);
+    const start = html.indexOf(`id="${id}"`);
+    const button = html.slice(start, html.indexOf('</button>', start));
+    assert.match(button, /class="masthead-action-label"/);
+  }
 });
 
 test('deficit search is a flush rail field in the same slot as region search', () => {

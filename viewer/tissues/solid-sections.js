@@ -386,7 +386,7 @@ export class SolidSections {
    * The hit carries the solid it landed in: that solid is the anatomy the
    * viewer drew there, so it, not a resampled voxel, says what was clicked.
    */
-  intersect(raycaster) {
+  intersect(raycaster, acceptsHit = () => true) {
     this.group.updateMatrixWorld(true);
     let result = null;
     let bestDistance = Infinity;
@@ -398,8 +398,10 @@ export class SolidSections {
       // plane, so it still has to prove the point lies inside the solid.
       if (!solid.sectioned && !this.pointInside(solid, hit.point, raycaster.ray.direction)) continue;
       if (hit.distance > bestDistance + 1e-5) continue;
+      const candidate = { ...hit, source: solid.source, region: solid.region };
+      if (!acceptsHit(candidate)) continue;
       bestDistance = Math.min(bestDistance, hit.distance);
-      result = { ...hit, source: solid.source, region: solid.region };
+      result = candidate;
     }
     return result;
   }

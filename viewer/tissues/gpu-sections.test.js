@@ -12,6 +12,35 @@ import { createWhiteMatter } from './white-matter.js';
 
 const { appearance } = parse(readFileSync(new URL('../../config/model.yaml', import.meta.url), 'utf8'));
 
+test('removal refreshes a cached cut palette and disables label picking', () => {
+  const { sections, model, layer, region } = fixture();
+  const frame = centeredFrame('coronal', [0, 0, 0]);
+  sections.update(frame, 'destrieux');
+  assert.equal(layer.palette.image.data[7], 1);
+  model.state.hiddenRegions = new Set([region.id]);
+  sections.update(frame, 'destrieux');
+  assert.equal(layer.palette.image.data[7], 0);
+  const ray = new Raycaster(new Vector3(.0002, .0002, -.1), new Vector3(0, 0, 1));
+  assert.equal(sections.intersect(ray), null);
+  sections.dispose();
+});
+
+test('removal refreshes cached geometric cap visibility', () => {
+  const { sections, model, region } = fixture();
+  const front = new Mesh(new BoxGeometry(.01, .01, .01),
+    new MeshBasicMaterial({ side: DoubleSide }));
+  front.userData = { hemisphere: 'left', region_id: region.id };
+  addSolidSources(sections.solids, [front], sections.anatomy, appearance, BANDS.structure);
+  model.state.surfaceColor = 'mri';
+  const frame = centeredFrame('coronal', [0, 0, 0]);
+  sections.update(frame, 'destrieux');
+  assert.equal(sections.solids.solids[0].group.visible, true);
+  model.state.hiddenRegions = new Set([region.id]);
+  sections.update(frame, 'destrieux');
+  assert.equal(sections.solids.solids[0].group.visible, false);
+  sections.dispose();
+});
+
 test('MRI uses smooth solids for every atlas and keeps cap picking and highlights', () => {
   const { sections, model, layer, region } = fixture();
   const source = new Mesh(new BoxGeometry(.01, .01, .01),

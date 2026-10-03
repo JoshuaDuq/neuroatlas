@@ -1,37 +1,23 @@
-/*
- * Design tokens. Every colour value here was contrast-measured; see
- * docs/superpowers/specs/2026-09-10-viewer-interface-design.md section 7.1.
- *
- * Colour carries meaning and chrome is achromatic: --accent appears only on
- * the focus ring, the selected row, the active segment, the one primary
- * action and links. The scene tokens are read from here by render/scene.js,
- * so a colour is changed in exactly one place.
- */
+/* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  --text-primary: #233743;
+  --text-secondary: #435c6a;
+  --text-tertiary: #536b78;
+  --accent: #087477;
+  --accent-hover: #056166;
+  --accent-wash: #e6f3f2;
+  --danger: #a61b1b;
 
-  /* Rails sit above the stage so the anatomy stays the darkest object. */
-  --text-primary: #f4f6f8;
-  --text-secondary: #c5ced6;
-  --text-tertiary: #9aa6b2;
-  --accent: #4fb6e0;
-  --accent-hover: #7cc9e8;
-  --accent-wash: #2c4250;
-  --danger: #f1928f;
+  --surface-base: #fcfdfd;
+  --surface-navigation: #f6f9fa;
+  --surface-sunken: #edf2f4;
+  --surface-canvas: #eef3f5;
+  --surface-hover: #f1f6f7;
+  --border-subtle: #dfe7eb;
+  --border-control: #738996;
 
-  --surface-base: #262c35;
-  --surface-sunken: #1f252d;
-  --surface-canvas: #0e1116;
-
-  --border-subtle: #3a4350;
-  --border-control: #7a8694;
-
-  /*
-   * The image stage does not have a theme. Light mode was showing #d6cfc2
-   * tissue on a #eef0f2 ground — twelve points of lightness apart, which
-   * costs contrast on the anatomy itself. The chrome switches; the stage
-   * does not, so these are one set rather than two.
-   */
+  /* Preserve tissue contrast and scientific colour mappings in both themes. */
   --scene-background: #0e1116;
   --scene-cortex: #dcd5c8;
   --scene-structure: #cfc6b8;
@@ -41,39 +27,22 @@
   --scene-outline-hidden: #46505e;
   --scene-exposure: 1;
 
-  /*
-   * Markings drawn straight onto the stage: orientation letters, the scale
-   * bar, the loading and error text. Theme-independent for the same reason
-   * the stage is.
-   */
   --overlay-ink: #f2f6fa;
   --overlay-ink-muted: #aab4c0;
   --overlay-halo: rgb(6 9 13 / 0.85);
-  /* --danger is measured against a light rail; a failure on the stage is not. */
   --overlay-danger: #f1928f;
+  --overlay-plate: #181f28;
+  --overlay-plate-hover: #25313e;
+  --overlay-border: #3f4c5b;
+  --overlay-accent: #7dc9e6;
+  --overlay-accent-wash: #263c4b;
 
-  /*
-   * Controls that sit on the stage belong to the stage. Lit from the rails
-   * they became a white toolbar floating on black in light mode, which is the
-   * one place the interface stopped looking like an instrument. The plate is
-   * opaque: a translucent one let the sulci through the type. Measured
-   * against the plate rather than the rail, which is why --accent cannot be
-   * reused: its light value is a dark blue.
-   */
-  --overlay-plate: #12161c;
-  --overlay-plate-hover: #1c222a;
-  --overlay-border: rgb(242 246 250 / 0.16);
-  --overlay-accent: #4fb6e0;
-  --overlay-accent-wash: rgb(79 182 224 / 0.16);
-
-  --font-ui: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  --font-ui: "Source Sans 3 Variable", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-  --text-micro: 0.75rem;   /* 12px  section labels, markers, provenance */
-  --text-ui: 0.8125rem;    /* 13px  tree rows, control labels, metadata */
-  --text-body: 0.875rem;   /* 14px  body text, search field */
-  --text-title: 1.0625rem; /* 17px  selected region name */
+  --text-micro: 0.75rem;
+  --text-ui: 0.875rem;
+  --text-body: 0.9375rem;
+  --text-title: 1.125rem;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -84,56 +53,36 @@
   --space-8: 32px;
   --space-10: 40px;
 
-  --row-height: 28px;
-  --control-height: 32px;
-  --rail-width: 320px;
-  /*
-   * The anatomy's floor. Two fixed rails took their 320px first, so a 1024px
-   * window was left a 384px stage; the rails give way before the picture does.
-   */
-  --stage-min: 520px;
-  --header-height: 48px;
-  --footer-height: 26px;
-
-  --radius-control: 1px;
-  --radius-panel: 2px;
-
-  /* Only the camera animates. Interface state changes are instant. */
+  --row-height: 40px;
+  --control-height: 40px;
+  --rail-width: 280px;
+  --inspector-width: 336px;
+  --stage-min: 360px;
+  --header-height: 76px;
+  --footer-height: 32px;
+  --radius-control: 6px;
+  --radius-panel: 10px;
   --camera-transition: 240ms;
+  --ui-transition: 140ms;
+  --ease-ui: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* An explicit light choice switches to the light theme. */
-:root[data-theme="light"] {
-  color-scheme: light;
-  --text-primary: #1a212b;
-  --text-secondary: #4a5562;
-  --text-tertiary: #5c6772;
-  --accent: #0b6e99;
-  --accent-hover: #095a7d;
-  --accent-wash: #dae7ee;
-  --danger: #a61b1b;
-  --surface-base: #f7f8fa;
-  --surface-sunken: #eef1f4;
-  --surface-canvas: #e8ebef;
-  --border-subtle: #d5dbe2;
-  --border-control: #7b8692;
-}
-
-/* Explicit dark theme */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --text-primary: #f4f6f8;
-  --text-secondary: #c5ced6;
-  --text-tertiary: #9aa6b2;
-  --accent: #4fb6e0;
-  --accent-hover: #7cc9e8;
-  --accent-wash: #2c4250;
+  --text-primary: #edf3f7;
+  --text-secondary: #b9c7d2;
+  --text-tertiary: #9eafbd;
+  --accent: #82d3d0;
+  --accent-hover: #a5e3e0;
+  --accent-wash: #233e43;
   --danger: #f1928f;
-  --surface-base: #262c35;
-  --surface-sunken: #1f252d;
-  --surface-canvas: #0e1116;
-  --border-subtle: #3a4350;
-  --border-control: #7a8694;
+  --surface-base: #1d2a33;
+  --surface-navigation: #1a262f;
+  --surface-sunken: #15222b;
+  --surface-canvas: #111c24;
+  --surface-hover: #26373f;
+  --border-subtle: #34434d;
+  --border-control: #6b808d;
 }
 
 @media (prefers-contrast: more) {

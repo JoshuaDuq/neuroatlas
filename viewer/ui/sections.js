@@ -342,7 +342,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (cutModeLabel) mode.setAttribute('aria-labelledby', cutModeLabel.id);
     for (const button of mode.querySelectorAll('[data-cut-mode]')) {
       const id = button.dataset.cutMode;
-      button.textContent = cutsI18n.modeShort[id] ?? cutsI18n.modes[id] ?? id;
+      button.textContent = cutsI18n.modes[id];
       button.title = cutsI18n.modes[id] ?? id;
       button.setAttribute('aria-pressed', String(id === state.mode));
     }

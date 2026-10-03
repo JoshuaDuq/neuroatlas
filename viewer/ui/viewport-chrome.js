@@ -27,6 +27,8 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
   const hover = document.getElementById('hover-label');
   const legend = document.getElementById('network-legend');
   const host = document.getElementById('viewport');
+  const title = document.getElementById('viewport-title');
+  const help = document.getElementById('viewport-help');
   const fullscreenButton = document.getElementById('viewport-fullscreen');
   const snapshotButton = document.getElementById('viewport-snapshot');
   const stage = document.getElementById('stage');
@@ -48,13 +50,18 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
    * 1100px window a 460px stage, and the bar was painted over the presets
    * there.
    *
-   * Measured from the buttons, never from the row that holds them. A max-width
-   * on the plate can clip it, and scrollWidth would then report the clip.
+   * Measure the unconstrained buttons and plate spacing. The plate's own
+   * width can be capped to the viewport on a narrow screen.
    */
   let cachedPresetsWidth = null;
   function presetsWidth() {
     if (cachedPresetsWidth === null) {
-      cachedPresetsWidth = buttons.reduce((total, button) => total + button.offsetWidth, 0);
+      const style = getComputedStyle(views);
+      const plateSpacing = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth']
+        .reduce((total, property) => total + parseFloat(style[property]), 0);
+      const gaps = parseFloat(style.columnGap) * (buttons.length - 1);
+      cachedPresetsWidth = buttons.reduce((total, button) => total + button.offsetWidth, 0)
+        + plateSpacing + gaps;
     }
     return cachedPresetsWidth;
   }
@@ -136,6 +143,8 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot }) 
     update(state) {
       currentLang = state.lang;
       const i18nViewport = t(state.lang, 'viewport');
+      title.textContent = i18nViewport.title;
+      help.textContent = i18nViewport.navigationHint;
       const viewLabels = t(state.lang, 'views');
       views.setAttribute('aria-label', i18nViewport.viewAria);
 

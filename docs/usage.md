@@ -49,6 +49,26 @@ Navigate to the local URL printed in your terminal (default `http://localhost:51
   - The shared 3D crosshair synchronizes with slice planes.
   - Includes window/center contrast controls, voxel-exact label inspection, and PNG snapshot export.
 
+### Selective dissection
+
+Use the eye controls in the anatomy list to hide a region or an entire group.
+Group controls marked **L** and **R** operate on the two sides separately.
+The **Hide** action in anatomical details removes the selected region.
+Hiding cortical parcels exposes the subject's native white-matter surface
+beneath them. This tissue remains in place and blocks selection of deeper
+structures behind it. Hemisphere, cortex transparency and plane cuts apply
+to the exposed tissue too. Restoring the cortex closes the exposure.
+
+**Undo** reverses one dissection action. **Restore all** brings back every
+explicitly removed part while keeping the current hemisphere, appearance and
+cut settings. Hidden entries remain searchable; select one to reveal it, or
+use its eye control to restore only its dissection visibility.
+
+Dissection also applies to 3D cut faces, including sampled white-matter
+parcels. MRI reference slices continue to show the original scan. Hidden
+region identifiers travel in the URL; undo history lasts for the current visit.
+Switching anatomical subjects clears the dissection because their parcels differ.
+
 ### Keyboard Navigation
 
 Every part of the viewer is reachable without a pointer, including the model
