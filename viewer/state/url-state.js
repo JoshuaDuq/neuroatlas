@@ -121,6 +121,9 @@ const FIELDS = [
 /** Encode state to a hash body, omitting anything still at its default. */
 export function encodeState(state) {
   const parameters = new URLSearchParams();
+  if (state.hiddenRegions?.size) {
+    parameters.set('hidden', [...state.hiddenRegions].sort().join(','));
+  }
   for (const { key, param, write } of FIELDS) {
     const value = state[key];
     if (value === undefined || value === null) continue;
@@ -149,6 +152,11 @@ export function decodeState(hash) {
       continue;
     }
     if (value !== undefined) decoded[key] = value;
+  }
+  if (parameters.has('hidden')) {
+    const ids = parameters.get('hidden').split(',');
+    if (ids.some(id => !id)) throw new Error('Invalid hidden region identifiers in URL.');
+    decoded.hiddenRegions = [...new Set(ids)];
   }
   return decoded;
 }

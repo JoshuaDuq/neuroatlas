@@ -70,6 +70,7 @@ export function visibilityOf(region, settings) {
   if (region.atlas === 'zanatomy' && settings.spinalCordVisible === false) {
     return hidden('spinal-cord-hidden');
   }
+  if (settings.hiddenRegions?.has(region.id)) return hidden('removed');
   if (settings.isolatedRegion && region.id !== settings.isolatedRegion) {
     return hidden('isolated');
   }

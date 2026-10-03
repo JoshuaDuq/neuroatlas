@@ -66,6 +66,7 @@ export class BrainSections extends EventTarget {
         s.surfaceColor,
         s.detail,
         s.spinalCordVisible,
+        [...(s.hiddenRegions ?? [])].sort(),
       ]);
       if (key === this.visibilityKey) return;
       this.visibilityKey = key;

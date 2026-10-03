@@ -12,6 +12,23 @@
  * render/device.js; the two are kept in step by hand.
  */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+  :root { --control-height: 44px; --row-height: 44px; }
+  #dissection-hint { display: none; }
+  .dissection-controls {
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+  }
+  #dissection-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .search-clear { width: 44px; height: 44px; right: var(--space-1); }
+  input[type="range"] { height: 44px; margin: 0; }
+  input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -8.5px; }
+  input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; }
   #app {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -39,10 +56,19 @@
     padding-right: 0;
     margin-right: 0;
     align-self: center;
+    min-width: 0;
+    gap: var(--space-2);
   }
-  .brand { font-size: var(--text-ui); margin-right: 0; flex: none; }
+  .brand { font-size: var(--text-body); margin-right: 0; flex: none; }
+  .brand-mark { width: 28px; height: 28px; }
+  .specimen { margin-top: 2px; gap: var(--space-1); }
+  #specimen-label { display: none; }
   .study-name { display: none; }
   .identity #anatomy-switch { max-width: 8rem; }
+  .instrument-label { display: none; }
+  .instrument-group { min-width: 0; }
+  .instrument-group:has(#atlas-switch) { flex: none; }
+  .instrument-group:has(#surface-switch) { flex: 1; }
   /* Atlas sits with the wordmark; stretching it opened a gap the width of
      the leftover row. Surface keeps the second row as tap targets. */
   #atlas-switch { min-width: 0; flex: none; }
@@ -53,8 +79,12 @@
   #surface-switch { min-width: 0; justify-content: flex-start; }
   #surface-switch button {
     flex: none;
-    padding: 0 var(--space-4);
+    padding: 0 var(--space-3);
   }
+  #masthead .instrument button { height: var(--control-height); }
+  .rail-title { display: none; }
+  .explorer-head { padding: var(--space-3) var(--space-5); }
+  .viewport-context, .viewport-help, .search-shortcut { display: none; }
 
   /* Settings collapse is layout.css @ 1100px; the phone only wraps surface. */
 
@@ -66,6 +96,8 @@
   #viewport {
     grid-column: 1;
     grid-row: 2;
+    margin: 0;
+    border-radius: 0;
     /* The sheet overlays this, so the canvas keeps the whole cell. */
   }
 
@@ -127,8 +159,8 @@
   }
   .sheet-handle-bar {
     width: 28px;
-    height: 2px;
-    border-radius: 0;
+    height: 3px;
+    border-radius: 2px;
     background: var(--border-control);
   }
 
@@ -151,10 +183,14 @@
     font-weight: 600;
   }
   .sheet-selection-side { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
-  .sheet-selection-chevron { color: var(--text-tertiary); }
+  .sheet-selection-chevron { flex: none; color: var(--text-secondary); }
 
   /* Appearance is .rail-tabs in components.css; these are the sheet's rules. */
   .sheet-tabs {
+    padding: 4px var(--space-3);
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
     border-top: 1px solid var(--border-subtle);
     border-bottom: 1px solid var(--border-subtle);
   }
@@ -227,7 +263,7 @@
   }
   /* The view plate holds the bottom-left. I must not sit on Top. */
   .orientation [data-edge="bottom"] {
-    bottom: calc(var(--space-3) + 36px);
+    bottom: calc(var(--space-3) + 48px);
   }
 
   /* ---- dialogs -------------------------------------------------------- */
@@ -267,12 +303,21 @@
   /* Ordered last so the wrapped row is the switch alone. Left in source order
      it broke the line before itself and pushed the overflow button onto a
      third row of its own. */
-  #surface-switch {
+  .instrument-group:has(#surface-switch) {
     order: 1;
     flex: 1 0 100%;
-    padding-left: 0;
-    border-left: 0;
   }
+  #surface-switch { width: 100%; }
+  #surface-switch button { flex: 1; }
+}
+
+@media (max-width: 374px) {
+  #masthead { gap: var(--space-2); }
+  .identity { gap: 6px; }
+  .brand { font-size: 0.8125rem; }
+  .brand-mark { width: 28px; height: 28px; }
+  #masthead-more { width: 32px; }
+  #masthead #atlas-switch button { padding: 0 5px; font-size: var(--text-micro); }
 }
 
 /*
@@ -302,7 +347,7 @@
   #sheet-handle { width: 100%; height: 20px; }
   .sheet-handle-bar { width: 28px; }
   .sheet-tabs { flex-wrap: wrap; }
-  .sheet-tabs button { flex: 1 0 50%; }
+  .sheet-tabs button { flex: 1 0 calc(50% - 2px); }
   .sheet-disclaimer { white-space: normal; }
   #masthead { padding-left: max(var(--space-3), env(safe-area-inset-left)); }
 }
@@ -317,7 +362,13 @@
     --row-height: 44px;
     --control-height: 44px;
   }
+  .rail-tabs button { height: var(--control-height); }
+  .segmented button { height: calc(var(--control-height) - 8px); }
+  input[type="search"] { height: var(--control-height); }
+  .views button { height: var(--control-height); }
+  .search-clear { width: 36px; height: 36px; right: 4px; }
   .check input { width: 20px; height: 20px; }
+  .search-shortcut { display: none; }
   .check input::before { width: 11px; height: 6px; }
   .cut-position-row input[type="number"] { height: var(--control-height); width: 88px; }
   /* A 16px field is the threshold below which iOS zooms the page on focus. */

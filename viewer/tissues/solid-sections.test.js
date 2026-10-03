@@ -18,6 +18,19 @@ function fixture() {
 
 const plane = new Plane(new Vector3(0, 0, -1), 0);
 
+test('discarded cap fragments do not block picking another visible cap', () => {
+  const { sections, source } = fixture();
+  const later = source.clone();
+  later.geometry = source.geometry.clone();
+  later.material = source.material.clone();
+  sections.add(later, new MeshBasicMaterial(), 2);
+  sections.update(plane);
+  const ray = new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1));
+  assert.equal(sections.intersect(ray).source, later);
+  assert.equal(sections.intersect(ray, hit => hit.source !== later).source, source);
+  sections.dispose();
+});
+
 test('caps reach the lower spinal cord in every orientation and retained side', () => {
   const source = new Mesh(new BoxGeometry(0.012, 0.48, 0.01),
     new MeshBasicMaterial({ side: DoubleSide }));
@@ -191,4 +204,3 @@ test('nested solids order enclosing first with tiered polygon offsets and bit-id
 
   sections.dispose();
 });
-

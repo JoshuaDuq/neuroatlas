@@ -269,7 +269,8 @@ export class TissueSections {
     const solid = layer.wedged || state.surfaceColor === 'tissue' || mri;
     const supplemental = this.solids.solids.some(entry => entry.source.userData.supplemental);
     this.solids.group.visible = solid || supplemental;
-    this.whiteMatter?.update({ atlas, isolatedRegion: state.isolatedRegion });
+    this.whiteMatter?.update({ atlas, isolatedRegion: state.isolatedRegion,
+      hiddenRegions: state.hiddenRegions });
     if (this.solids.group.visible) {
       // Colour does not depend on where the plane sits. A drag only moves the
       // plane, and repainting every solid there is work the frame cannot spare.
@@ -280,6 +281,7 @@ export class TissueSections {
         state.isolatedRegion, state.internalVisible, state.internalSystem, state.spinalCordVisible,
         state.detail, state.cutAtlas, state.cutActive, constituents,
         atlas, layer.wedged, this.whiteMatter?.active ?? false,
+        [...(state.hiddenRegions ?? [])].sort().join(','),
       ].join('|');
       if (paintKey !== this.paintKey) {
         this.paintKey = paintKey;
@@ -317,6 +319,7 @@ export class TissueSections {
       state.isolatedRegion,
       state.internalSystem,
       state.detail,
+      [...(state.hiddenRegions ?? [])].sort(),
     ]);
     if (key !== layer.paletteKey) {
       layer.palette.image.data = createPalette(
@@ -348,10 +351,24 @@ export class TissueSections {
   }
 
   /** CPU picking uses the label rule the GPU shader draws with. */
+  capVisibleAt(hit) {
+    const state = this.model.state;
+    const parcel = this.whiteMatterAt(hit);
+    if (state.hiddenRegions?.has(parcel)) return false;
+    if (parcel !== undefined && this.whiteMatter.holds(state.isolatedRegion) &&
+        parcel !== state.isolatedRegion) return false;
+    if (!hit.object.material.userData.sampledLabels.value) return true;
+    const code = this.current.volume.label(worldToRas(hit.point));
+    const label = this.current.metadata.labels[code];
+    return (code === 0 && !state.isolatedRegion) ||
+      Boolean(label && labelVisible(label, state, { regions: this.model.regions }));
+  }
+
   intersect(raycaster) {
     if (!this.current) return null;
     this.group.updateMatrixWorld(true);
-    const cap = this.solids.group.visible ? this.solids.intersect(raycaster) : null;
+    const cap = this.solids.group.visible
+      ? this.solids.intersect(raycaster, hit => this.capVisibleAt(hit)) : null;
     const sampled = this.current.mesh.visible ? raycaster.intersectObject(this.current.mesh)[0] : null;
     const hit = cap ?? sampled;
     const solid = Boolean(cap);
@@ -360,7 +377,6 @@ export class TissueSections {
       const code = this.current.volume.label(worldToRas(hit.point));
       const label = this.current.metadata.labels[code];
       const visible = label && labelVisible(label, this.model.state, { regions: this.model.regions });
-      if (!visible && (code !== 0 || this.model.state.isolatedRegion)) return null;
       return { ...hit, region: visible ? this.model.regions.get(label.region_id) ?? null : null, label };
     }
     // A cap was drawn from its own geometry, and only the atlas's own labels
@@ -376,11 +392,6 @@ export class TissueSections {
       // region from a detail level that is not on screen, or a parcel across
       // the boundary the cap just drew.
       const parcel = this.whiteMatterAt(hit);
-      const isolated = this.model.state.isolatedRegion;
-      // While a parcel is isolated its cap discards every other parcel.
-      if (parcel !== undefined && this.whiteMatter.holds(isolated) && parcel !== isolated) {
-        return null;
-      }
       const id = hit.source.userData.region_id ?? parcel ?? label?.region_id ?? null;
       return { ...hit, region: this.model.regions.get(id) ?? null, label };
     }

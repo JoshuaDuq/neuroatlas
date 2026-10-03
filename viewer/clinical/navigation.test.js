@@ -14,6 +14,7 @@ function scene(region) {
     setHemisphere(side) { calls.push(['hemisphere', side]); },
     setCortexVisible(value) { calls.push(['cortex', value]); },
     setCortexOpacity(value) { calls.push(['opacity', value]); },
+    showRegions(ids) { calls.push(['show', ids]); },
     select(id) { calls.push(['select', id]); },
   };
   const sections = { async setMode(mode) { calls.push(['cut', mode]); } };
@@ -26,7 +27,8 @@ test('opening cortical evidence loads its atlas before selecting and reveals hid
   await openClinicalRegion(model, sections, region.id);
   assert.deepEqual(calls, [
     ['atlas', 'destrieux'], ['cut', 'off'], ['clearIsolation'], ['system', null],
-    ['hemisphere', 'both'], ['cortex', true], ['opacity', 1], ['select', region.id],
+    ['hemisphere', 'both'], ['cortex', true], ['opacity', 1],
+    ['show', [region.id]], ['select', region.id],
   ]);
 });
 
@@ -36,7 +38,7 @@ test('opening a hippocampus loads coarse anatomy and hides the occluding cortex'
   await openClinicalRegion(model, sections, region.id);
   assert.deepEqual(calls, [
     ['detail', 'aseg'], ['cut', 'off'], ['clearIsolation'], ['system', null],
-    ['hemisphere', 'both'], ['cortex', false], ['select', region.id],
+    ['hemisphere', 'both'], ['cortex', false], ['show', [region.id]], ['select', region.id],
   ]);
 });
 

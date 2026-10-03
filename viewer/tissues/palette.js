@@ -4,6 +4,7 @@ import { tissueColor } from '../render/materials.js';
 import { dominantNetwork } from '../catalog/networks.js';
 
 export function labelVisible(label, state, lookup) {
+  if (state.hiddenRegions?.has(label.region_id)) return false;
   const region = lookup?.regions?.get(label.region_id);
   if (region && !internalSystemAllows(region, state)) return false;
   if (label.source_label_id === 0 && label.kind !== 'cortex') return false;

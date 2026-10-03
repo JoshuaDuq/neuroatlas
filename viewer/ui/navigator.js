@@ -1,5 +1,6 @@
 import { count } from './format.js';
 import { t } from '../i18n/translations.js';
+import { createVisibilityControl } from './visibility-control.js';
 
 /**
  * The next row an arrow key can arm.
@@ -64,7 +65,8 @@ function highlightMatch(text, query) {
 }
 
 export function createNavigator({
-  catalog, atlases, cutAtlases, onSelect, onToggleGroup, onToggleAllGroups, onQuery, onReveal, onAtlas, onCutAtlas,
+  catalog, atlases, cutAtlases, onSelect, onToggleGroup, onToggleAllGroups, onQuery,
+  onReveal, onAtlas, onCutAtlas, onHideRegions, onShowRegions,
 }) {
   const search = document.getElementById('search');
   const searchClear = document.getElementById('search-clear');
@@ -75,6 +77,7 @@ export function createNavigator({
   const notice = document.getElementById('rail-notice');
   const searchLabel = document.getElementById('search-label');
   const navRail = document.getElementById('navigator');
+  const title = document.getElementById('navigator-title');
   let structureKey = null;
   let activeIndex = -1;
   let lastScrolledRegionId = null;
@@ -95,7 +98,7 @@ export function createNavigator({
     else onSelect(row.dataset.regionId);
   }
 
-  function buildRow(row, { role, level, lang, query }) {
+  function buildRow(row, { role, level, lang, query, hiddenRegions }) {
     const i18n = t(lang, 'navigator');
     const reasons = t(lang, 'reasons');
     const sideGlyphs = t(lang, 'sides').glyphs;
@@ -178,6 +181,12 @@ export function createNavigator({
     } else {
       item.dataset.hidden = 'true';
       item.dataset.reason = row.reason;
+      if (role === 'option') {
+        const sideMarker = document.createElement('span');
+        sideMarker.className = 'row-side';
+        sideMarker.textContent = sideGlyphs[row.region.hemisphere];
+        item.append(sideMarker);
+      }
       tail.className = 'row-reason';
       tail.textContent = reasons[row.reason] ?? reasons.fallback;
       // Spoken as part of the row, so the state is never colour-only.
@@ -191,6 +200,13 @@ export function createNavigator({
       item.title = item.getAttribute('aria-label');
     }
     item.append(tail);
+    if (role === 'treeitem' && !UNREVEALABLE.has(row.reason)) {
+      item.append(createVisibilityControl({
+        key: `region:${row.region.id}`,
+        ids: [row.region.id], name: row.label.name, hiddenRegions,
+        side: row.region.hemisphere, lang, onHide: onHideRegions, onShow: onShowRegions,
+      }));
+    }
     item.addEventListener('click', () => activate(item));
     return item;
   }
@@ -264,12 +280,15 @@ export function createNavigator({
     if (index >= 0) {
       activeIndex = index;
       choices[index].dataset.active = 'true';
+      choices[index].scrollIntoView({ block: 'start' });
       search.setAttribute('aria-activedescendant', choices[index].id);
     }
   }
 
   function renderTree(state) {
     const i18n = t(state.lang, 'navigator');
+    const focusedControl = document.activeElement?.dataset.visibilityKey;
+    const focusedGroup = document.activeElement?.dataset.groupKey;
     tree.replaceChildren();
     let section = null;
     for (const group of catalog.groups(state)) {
@@ -286,6 +305,8 @@ export function createNavigator({
       }
 
       const expanded = state.expanded.has(group.key);
+      const groupBlock = document.createElement('div');
+      groupBlock.className = 'tree-group';
       const header = document.createElement('div');
       header.className = 'row group-row';
       header.setAttribute('role', 'treeitem');
@@ -296,7 +317,9 @@ export function createNavigator({
 
       const marker = document.createElement('span');
       marker.className = 'disclosure';
-      marker.textContent = expanded ? '▾' : '▸';
+      marker.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" '
+        + 'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+        + 'stroke-linejoin="round"><path d="m9 6 6 6-6 6" /></svg>';
       marker.setAttribute('aria-hidden', 'true');
       const name = document.createElement('span');
       name.className = 'row-name';
@@ -305,21 +328,39 @@ export function createNavigator({
       badge.className = 'group-count';
       badge.textContent = String(group.rows.length);
       header.append(marker, name, badge);
+      for (const side of ['left', 'right', 'midline']) {
+        const ids = group.rows.filter(row => row.region.hemisphere === side &&
+          !UNREVEALABLE.has(row.reason)).map(row => row.region.id);
+        if (!ids.length) continue;
+        header.append(createVisibilityControl({
+          key: `group:${group.key}:${side}`,
+          ids, name: group.name, hiddenRegions: state.hiddenRegions,
+          side, lang: state.lang, onHide: onHideRegions, onShow: onShowRegions,
+        }));
+      }
       header.setAttribute('aria-label', `${group.name}, ${count(group.rows.length, 'region', state.lang)}`);
       header.addEventListener('click', () => onToggleGroup(group.key));
-      tree.append(header);
+      groupBlock.append(header);
+      tree.append(groupBlock);
 
       if (!expanded) continue;
       // Children exist only while open: 360 areas need not all be DOM.
       const children = document.createElement('div');
       children.setAttribute('role', 'group');
       for (const row of group.rows) {
-        children.append(buildRow(row, { role: 'treeitem', level: 2, lang: state.lang }));
+        children.append(buildRow(row, {
+          role: 'treeitem', level: 2, lang: state.lang, hiddenRegions: state.hiddenRegions,
+        }));
       }
-      tree.append(children);
+      groupBlock.append(children);
     }
     const first = treeItems()[0];
     if (first) first.tabIndex = 0;
+    if (focusedControl) {
+      tree.querySelector(`[data-visibility-key="${CSS.escape(focusedControl)}"]`)?.focus();
+    } else if (focusedGroup) {
+      tree.querySelector(`[data-group-key="${CSS.escape(focusedGroup)}"]`)?.focus();
+    }
   }
 
   function markSelection(state) {
@@ -374,6 +415,10 @@ export function createNavigator({
   }
 
   const onTreeKey = event => {
+    if (event.target.closest('button')) {
+      event.stopPropagation();
+      return;
+    }
     const item = event.target.closest('[role="treeitem"]');
     if (!item) return;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -419,6 +464,7 @@ export function createNavigator({
   return {
     update(state) {
       const i18n = t(state.lang, 'navigator');
+      title.textContent = i18n.title;
       const searching = state.query.trim().length > 0;
       results.hidden = !searching;
       tree.hidden = searching;
@@ -445,6 +491,7 @@ export function createNavigator({
         state.atlas, state.detail, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
         state.cortexVisible, state.cortexOpacity > 0, state.internalVisible,
         state.isolatedRegion, state.internalSystem, state.query, [...state.expanded].sort().join(),
+        [...state.hiddenRegions].sort().join(),
       ].join('|');
       if (key !== structureKey) {
         structureKey = key;

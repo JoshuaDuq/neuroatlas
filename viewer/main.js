@@ -1,5 +1,6 @@
 import { startApp } from './app.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
+import '@fontsource-variable/source-sans-3/wght.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';

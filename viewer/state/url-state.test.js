@@ -2,6 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { decodeState, encodeState } from './url-state.js';
 
+test('a shared dissection link round trips sorted hidden region identifiers', () => {
+  const hiddenRegions = new Set(['destrieux:right:18', 'aseg:left:11']);
+  const hash = encodeState({ hiddenRegions });
+  assert.deepEqual(decodeState(hash).hiddenRegions, ['aseg:left:11', 'destrieux:right:18']);
+  assert.equal(encodeState({ hiddenRegions: new Set() }), '');
+});
+
 test('MRI appearance survives a shared URL', () => {
   assert.deepEqual(decodeState(encodeState({ surfaceColor: 'mri' })), { surfaceColor: 'mri' });
 });

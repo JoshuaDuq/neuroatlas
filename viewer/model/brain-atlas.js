@@ -9,6 +9,8 @@ import { REVALIDATE_HEADER } from './published-assets.js';
 import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 import { attachNetworkColors } from '../render/network-colors.js';
 import { addMriAppearance } from '../render/mri-material.js';
+import { createDissection } from '../state/dissection.js';
+import { createWhiteMatterSurfaces } from '../tissues/white-matter-surfaces.js';
 
 // Reused by intersect. A hover tests every visible mesh, and a fresh list per
 // pointer frame would collect as the pointer moves.
@@ -57,6 +59,7 @@ function validateManifest(manifest) {
     ['regions', Array.isArray(manifest.regions)],
     ['detail_levels', manifest.detail_levels?.length > 0],
     ['appearance', Boolean(manifest.appearance?.tissue && manifest.appearance?.folds)],
+    ['native tissue envelopes', Boolean(manifest.solid_envelopes?.file)],
     ['anatomy', Boolean(manifest.anatomy?.subject && manifest.anatomy?.display_name)
       && typeof manifest.anatomy.individual === 'boolean'],
   ].filter(([, present]) => !present).map(([field]) => field);
@@ -139,7 +142,9 @@ export class BrainAtlas extends EventTarget {
     this.group = new Group();
     this.group.name = 'Brain atlas';
     this.regions = new Map(manifest.regions.map(region => [region.id, region]));
+    this.dissection = createDissection(this.regions);
     this.layers = new Map();
+    this.whiteMatterSurfaces = null;
     this.pending = new Map();
     this.atlasId = null;
     this.detailId = null;
@@ -181,10 +186,11 @@ export class BrainAtlas extends EventTarget {
     const level = this.manifest.detail_levels.find(entry => entry.id === detailId);
     if (!level) throw new Error(`Unknown detail level: ${detailId}`);
     const supplemental = this.manifest.supplemental_layers ?? [];
-    const progress = combineProgress(['detail', 'atlas'], options.onProgress);
+    const progress = combineProgress(['detail', 'atlas', 'tissue'], options.onProgress);
     await Promise.all([
       this.loadLayer(level.id, level.file, progress.track('detail')),
       this.loadLayer(atlas.id, atlas.file, progress.track('atlas')),
+      this.loadWhiteMatterSurfaces(progress.track('tissue')),
     ]);
     this.detailId = level.id;
     this.atlasId = atlas.id;
@@ -199,6 +205,33 @@ export class BrainAtlas extends EventTarget {
     )).then(() => {
       if (!this.disposed) this.update();
     });
+  }
+
+  async loadWhiteMatterSurfaces(onProgress) {
+    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.whiteMatterSurfaces) return;
+    const key = 'native-white-matter';
+    if (this.pending.has(key)) return this.pending.get(key);
+    const loading = Promise.all([
+      this.loader.loadAsync(this.manifest.solid_envelopes.file, onProgress),
+      import('three-mesh-bvh'),
+    ]).then(([{ scene }, { MeshBVH, acceleratedRaycast }]) => {
+      try {
+        if (this.disposed) throw new Error('BrainAtlas disposed during tissue loading.');
+        const surfaces = createWhiteMatterSurfaces(scene, this.manifest.appearance);
+        for (const mesh of surfaces.meshes) {
+          mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
+          mesh.raycast = acceleratedRaycast;
+        }
+        this.whiteMatterSurfaces = surfaces;
+        this.group.add(surfaces.group);
+      } catch (error) {
+        disposeScene(scene);
+        throw error;
+      }
+    }).finally(() => this.pending.delete(key));
+    this.pending.set(key, loading);
+    return loading;
   }
 
   async loadLayer(id, file, onProgress) {
@@ -322,6 +355,7 @@ export class BrainAtlas extends EventTarget {
       spinalCordVisible: this.spinalCordVisible,
       surfaceColor: this.surfaceColor,
       isolatedRegion: this.isolatedId,
+      ...this.dissection.state,
     };
   }
 
@@ -334,13 +368,18 @@ export class BrainAtlas extends EventTarget {
   }
 
   get visibleMeshes() {
-    return [...this.layers.values()]
+    const meshes = [...this.layers.values()]
       .filter(layer => layer.scene.visible)
       .flatMap(layer => layer.meshes.filter(mesh => mesh.visible));
+    if (this.whiteMatterSurfaces) {
+      meshes.push(...this.whiteMatterSurfaces.meshes.filter(mesh => mesh.visible));
+    }
+    return meshes;
   }
 
   update() {
     const settings = this.settings;
+    this.whiteMatterSurfaces?.update(settings, this.regions, this.clippingPlanes);
     const mri = this.surfaceColor === 'mri';
     if (this.mriUniforms) this.mriUniforms.scanEnabled.value = mri;
     for (const [id, layer] of this.layers) {
@@ -576,6 +615,7 @@ export class BrainAtlas extends EventTarget {
     if (this.mriUniforms === anatomy.mriUniforms) return;
     if (this.mriUniforms) throw new Error('MRI anatomy is already attached.');
     this.mriUniforms = anatomy.mriUniforms;
+    for (const mesh of this.whiteMatterSurfaces.meshes) addMriAppearance(mesh.material, this.mriUniforms);
     for (const layer of this.layers.values()) {
       for (const mesh of layer.meshes) addMriAppearance(mesh.material, this.mriUniforms);
     }
@@ -593,7 +633,42 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
+  get dissectionSelection() {
+    return { selectedId: this.selectedId, isolatedId: this.isolatedId };
+  }
+
+  hideRegions(ids) {
+    if (!this.dissection.hide(ids, this.dissectionSelection)) return;
+    if (this.dissection.state.hiddenRegions.has(this.isolatedId)) this.isolatedId = null;
+    this.update();
+  }
+
+  showRegions(ids) {
+    if (this.dissection.show(ids, this.dissectionSelection)) this.update();
+  }
+
+  restoreHiddenRegions() {
+    if (this.dissection.restore(this.dissectionSelection)) this.update();
+  }
+
+  undoDissection() {
+    const previous = this.dissection.undo();
+    if (!previous) return;
+    this.isolatedId = null;
+    if (previous.isolatedId && this.canSelect(this.regions.get(previous.isolatedId))) {
+      this.isolatedId = previous.isolatedId;
+    }
+    const selected = this.regions.get(previous.selectedId);
+    this.select(selected && this.canSelect(selected) ? selected.id : null);
+  }
+
+  loadHiddenRegions(ids) {
+    this.dissection.load(ids);
+    this.update();
+  }
+
   reset() {
+    this.dissection.reset();
     this.clippingPlanes = [];
     this.internalSystem = null;
     this.internalConstituents = new Set();
@@ -611,6 +686,7 @@ export class BrainAtlas extends EventTarget {
     this.disposed = true;
     this.requestNumber += 1;
     for (const layer of this.layers.values()) disposeScene(layer.scene);
+    if (this.whiteMatterSurfaces) disposeScene(this.whiteMatterSurfaces.group);
     this.layers.clear();
     this.centroids.clear();
     this.group.removeFromParent();

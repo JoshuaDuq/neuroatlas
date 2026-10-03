@@ -32,10 +32,14 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
   const themeLabel = document.getElementById('theme-label');
   const langContainer = document.getElementById('lang-switch');
   const shortcutsButton = document.getElementById('shortcuts-open');
+  const shortcutsLabel = document.getElementById('shortcuts-label');
   const moreButton = document.getElementById('masthead-more');
   const menu = document.getElementById('masthead-menu');
   const studyName = document.getElementById('study-name');
   const anatomySwitch = document.getElementById('anatomy-switch');
+  const specimenLabel = document.getElementById('specimen-label');
+  const atlasControlLabel = document.getElementById('atlas-control-label');
+  const surfaceControlLabel = document.getElementById('surface-control-label');
 
   /*
    * Which brain. A dropdown rather than a segmented control: the names are
@@ -82,9 +86,8 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     moreButton.setAttribute('aria-expanded', 'false');
   }
 
-  function paintShortcuts(compact) {
-    if (!shortcutsButton) return;
-    shortcutsButton.textContent = compact ? t(lastLang, 'header').shortcuts : '?';
+  function paintShortcuts() {
+    shortcutsLabel.textContent = t(lastLang, 'header').shortcuts;
   }
 
   /*
@@ -111,7 +114,7 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     // Above the breakpoint the panel must never be hidden: it is the masthead.
     menu.hidden = compact;
     moreButton.setAttribute('aria-expanded', 'false');
-    paintShortcuts(compact);
+    paintShortcuts();
     placeMenu();
   }
 
@@ -190,6 +193,9 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
       const switching = state.status === 'switching';
 
       lastLang = state.lang;
+      specimenLabel.textContent = i18n.anatomySwitch;
+      atlasControlLabel.textContent = i18n.atlasSwitch;
+      surfaceControlLabel.textContent = i18n.appearance;
       container.setAttribute('aria-label', i18n.atlasSwitch);
       surfaceContainer.setAttribute('aria-label', t(state.lang, 'display').surfaceColor);
       if (langContainer) langContainer.setAttribute('aria-label', i18n.languageSwitch);
@@ -199,7 +205,7 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
         anatomySwitch.disabled = state.status === 'loading' || switching;
       }
       if (shortcutsButton) shortcutsButton.setAttribute('aria-label', i18n.shortcuts);
-      paintShortcuts(menuQuery.matches);
+      paintShortcuts();
       moreButton.setAttribute('aria-label', t(state.lang, 'menu').more);
 
       for (const btn of langButtons) {

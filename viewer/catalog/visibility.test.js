@@ -23,6 +23,13 @@ test('a cortical region of the active atlas is visible by default', () => {
   assert.deepEqual(visibilityOf(region(), settings()), { visible: true, reason: null });
 });
 
+test('explicitly removed regions stay hidden even when isolated', () => {
+  const current = region();
+  assert.deepEqual(visibilityOf(current, settings({
+    hiddenRegions: new Set([current.id]), isolatedRegion: current.id,
+  })), { visible: false, reason: 'removed' });
+});
+
 test('cortex belonging to a different atlas is hidden', () => {
   assert.deepEqual(visibilityOf(region({ atlas: 'b' }), settings()),
     { visible: false, reason: 'other-atlas' });

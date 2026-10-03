@@ -54,6 +54,14 @@ const state = {
   isolatedRegion: null,
 };
 
+test('removed cut labels have zero alpha and cannot be picked', () => {
+  const hidden = { ...state, hiddenRegions: new Set([labels[1].region_id]) };
+  assert.equal(labelVisible(labels[1], hidden), false);
+  const palette = createPalette(labels, hidden, appearance.tissue);
+  assert.equal(palette[7], 0);
+  assert.equal(palette[11], 1);
+});
+
 test('a cut paints a label in the colour its published sRGB value names', () => {
   const palette = createPalette(labels, state);
   // Published colours are sRGB, as the surfaces' decoded glTF factors are now.

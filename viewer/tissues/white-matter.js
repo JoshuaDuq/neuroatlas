@@ -1,5 +1,6 @@
 import {
-  Data3DTexture, NearestFilter, RedIntegerFormat, UnsignedByteType, Vector2, Vector3,
+  Data3DTexture, DataTexture, NearestFilter, RedFormat, RedIntegerFormat,
+  UnsignedByteType, Vector2, Vector3,
 } from 'three';
 import { worldToVoxelMatrix } from '../slices/coordinates.js';
 import { codeIndex, liftFor } from './highlight.js';
@@ -13,6 +14,7 @@ export const WHITE_MATTER_UNIFORMS = `
       uniform float whiteMatterIsolated;
       uniform vec2 whiteMatterCodes;
       uniform vec2 whiteMatterLifts;
+      uniform sampler2D whiteMatterVisibility;
       ${LABEL_AT}`;
 
 /**
@@ -24,6 +26,7 @@ export const WHITE_MATTER_LIFT = `
           float code = float(labelAt(whiteMatterVolume, whiteMatterShape,
             (whiteMatterToVoxel * vec4(sourceWorld, 1.0)).xyz));
           if (whiteMatterIsolated >= 0.0 && code != whiteMatterIsolated) discard;
+          if (texelFetch(whiteMatterVisibility, ivec2(int(code), 0), 0).r < 0.5) discard;
           if (code > 0.0 && code == whiteMatterCodes.y) capLift = whiteMatterLifts.y;
           else if (code > 0.0 && code == whiteMatterCodes.x) capLift = whiteMatterLifts.x;
         }`;
@@ -44,6 +47,10 @@ export function createWhiteMatter(record, volume) {
   texture.needsUpdate = true;
 
   const codes = codeIndex(record.labels);
+  const visibility = new DataTexture(new Uint8Array(record.labels.length).fill(255),
+    record.labels.length, 1, RedFormat, UnsignedByteType);
+  visibility.needsUpdate = true;
+  let visibilityKey = '';
   const codeOf = regionId => codes.get(regionId) ?? -1;
   const uniforms = {
     whiteMatterVolume: { value: texture },
@@ -53,6 +60,7 @@ export function createWhiteMatter(record, volume) {
     whiteMatterIsolated: { value: -1 },
     whiteMatterCodes: { value: new Vector2(-1, -1) },
     whiteMatterLifts: { value: new Vector2(0, 0) },
+    whiteMatterVisibility: { value: visibility },
   };
 
   return {
@@ -62,9 +70,17 @@ export function createWhiteMatter(record, volume) {
     },
     holds: regionId => codes.has(regionId),
     regionAt: point => record.labels[volume.label(point)]?.region_id ?? null,
-    update({ atlas, isolatedRegion }) {
+    update({ atlas, isolatedRegion, hiddenRegions = new Set() }) {
       uniforms.whiteMatterActive.value = record.applies_to.includes(atlas);
       uniforms.whiteMatterIsolated.value = codeOf(isolatedRegion);
+      const key = [...hiddenRegions].sort().join(',');
+      if (key !== visibilityKey) {
+        visibilityKey = key;
+        for (const [index, label] of record.labels.entries()) {
+          visibility.image.data[index] = hiddenRegions.has(label.region_id) ? 0 : 255;
+        }
+        visibility.needsUpdate = true;
+      }
     },
     setHighlight(highlight = {}) {
       uniforms.whiteMatterCodes.value.set(codeOf(highlight.hovered), codeOf(highlight.selected));
@@ -73,6 +89,7 @@ export function createWhiteMatter(record, volume) {
     },
     dispose() {
       texture.dispose();
+      visibility.dispose();
     },
   };
 }

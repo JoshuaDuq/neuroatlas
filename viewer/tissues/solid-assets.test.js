@@ -88,6 +88,11 @@ test('hemisphere and cortex controls hide the solids they describe', () => {
   assert.equal(paint([wedge()], { hemisphere: 'left' })[0].visible, true);
 });
 
+test('a removed parcel does not leave its solid cut cap on screen', () => {
+  const [parcel] = paint([wedge()], { hiddenRegions: new Set([PARCEL]) });
+  assert.equal(parcel.visible, false);
+});
+
 test('isolation leaves only the isolated parcel standing', () => {
   const caudate = solid({ hemisphere: 'left', region_id: 'aseg:left:11' });
   const [parcel, nucleus] = paint([wedge(), caudate], { isolatedRegion: PARCEL });

@@ -9,3 +9,4 @@ __pycache__/
 data/cache/
 deliverables/*.blend
 deliverables/*.png
+.agents/skills/impeccable/scripts/bin/

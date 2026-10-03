@@ -23,8 +23,13 @@ export function inspectorEmptyChrome({ selectedRegion, explorer }) {
 const MAX_LISTED_SOURCE_IDS = 8;
 
 /** The selected region: what it is, and what is measured about it. */
-export function createInspector({ catalog, networks, onFocus, onIsolate, centroidOf }) {
+export function createInspector({ catalog, networks, onFocus, onIsolate, onHide, centroidOf }) {
   const inspectorPanel = document.getElementById('inspector');
+  const title = document.getElementById('inspector-title');
+  const empty = document.getElementById('selection-empty');
+  const emptyTitle = document.getElementById('selection-empty-title');
+  const metadata = document.getElementById('region-source');
+  const metadataTitle = document.getElementById('region-source-title');
   const labelSelected = document.getElementById('label-selected');
   const factHemiLabel = document.getElementById('fact-hemisphere-label');
   const factAtlasLabel = document.getElementById('fact-atlas-label');
@@ -43,6 +48,7 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, centroi
   const source = document.getElementById('fact-source');
   const focus = document.getElementById('focus');
   const isolate = document.getElementById('isolate');
+  const hideRegion = document.getElementById('hide-region');
   const actions = focus.closest('.actions');
   const regionMpr = document.getElementById('region-mpr');
   const networkSection = document.getElementById('region-networks');
@@ -52,6 +58,7 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, centroi
 
   focus.addEventListener('click', onFocus);
   isolate.addEventListener('click', onIsolate);
+  hideRegion.addEventListener('click', onHide);
 
   function networkRow(share, lang, i18n) {
     const row = document.createElement('li');
@@ -99,6 +106,11 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, centroi
       const atlasDict = t(state.lang, 'atlases');
       const sideWords = t(state.lang, 'sides').capitalized;
       const chrome = inspectorEmptyChrome(state);
+      title.textContent = i18n.title;
+      empty.hidden = Boolean(state.selectedRegion) || state.explorer === 'deficits';
+      emptyTitle.textContent = i18n.emptyTitle;
+      metadata.hidden = chrome.hideFacts;
+      metadataTitle.textContent = i18n.sourceHeading;
 
       if (inspectorPanel) inspectorPanel.setAttribute('aria-label', i18n.panelLabel);
       if (labelSelected) labelSelected.textContent = i18n.selectedHeading;
@@ -108,6 +120,7 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, centroi
       if (factCoordsLabel) factCoordsLabel.textContent = i18n.centroid;
       if (factSourceLabel) factSourceLabel.textContent = i18n.sourceLabel;
       focus.textContent = i18n.focus;
+      hideRegion.textContent = t(state.lang, 'dissection').hideSelected;
       // Latched isolation otherwise reads as a button that did nothing.
       isolate.textContent = state.isolatedRegion ? i18n.restore : i18n.isolate;
 
@@ -127,6 +140,7 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, centroi
         showNetworks(state);
         focus.disabled = true;
         isolate.disabled = true;
+        hideRegion.disabled = true;
         isolate.setAttribute('aria-pressed', 'false');
         return;
       }
@@ -181,11 +195,13 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, centroi
 
       focus.disabled = false;
       isolate.disabled = false;
+      hideRegion.disabled = false;
       isolate.setAttribute('aria-pressed', String(Boolean(state.isolatedRegion)));
     },
     dispose() {
       focus.removeEventListener('click', onFocus);
       isolate.removeEventListener('click', onIsolate);
+      hideRegion.removeEventListener('click', onHide);
     },
   };
 }
