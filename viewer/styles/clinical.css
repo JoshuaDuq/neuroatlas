@@ -1,5 +1,5 @@
 #explorer-switch button { flex: 1; }
-.clinical-intro { padding-top: var(--space-3); padding-bottom: var(--space-6); }
+.clinical-intro { padding-top: var(--space-2); padding-bottom: var(--space-5); }
 .clinical-intro p { color: var(--text-secondary); line-height: 1.5; }
 
 .clinical-deficit {
@@ -18,7 +18,7 @@
 .clinical-deficit-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-1);
   min-width: 0;
 }
 .clinical-deficit-text > span:first-child { font-weight: 600; }
@@ -48,6 +48,7 @@
   letter-spacing: 0.04em;
   color: var(--text-tertiary);
   margin: var(--space-4) 0 var(--space-1);
+  line-height: 1.5;
 }
 .clinical-association { margin: var(--space-6) 0; padding-top: var(--space-5); border-top: 1px solid var(--border-subtle); }
 .clinical-association > p { margin-top: var(--space-2); }

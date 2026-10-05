@@ -6,11 +6,11 @@ import { atlasSwitchLabel, t } from '../i18n/translations.js';
  * What the inspector shows when a region is or is not selected.
  *
  * The empty anatomy panel is a hint. It does not repeat atlas, surface,
- * hemisphere or cut — those already live on the masthead and the plane row.
+ * hemisphere or cut — those belong to the View and Sections tasks.
  */
 export function inspectorEmptyChrome({ selectedRegion, explorer }) {
   const hasRegion = Boolean(selectedRegion);
-  const quiet = !hasRegion && explorer === 'deficits';
+  const quiet = !hasRegion && explorer !== 'anatomy';
   return {
     hideTitle: !hasRegion,
     hideHint: quiet,
@@ -107,7 +107,7 @@ export function createInspector({ catalog, networks, onFocus, onIsolate, onHide,
       const sideWords = t(state.lang, 'sides').capitalized;
       const chrome = inspectorEmptyChrome(state);
       title.textContent = i18n.title;
-      empty.hidden = Boolean(state.selectedRegion) || state.explorer === 'deficits';
+      empty.hidden = Boolean(state.selectedRegion) || chrome.hideHint;
       emptyTitle.textContent = i18n.emptyTitle;
       metadata.hidden = chrome.hideFacts;
       metadataTitle.textContent = i18n.sourceHeading;

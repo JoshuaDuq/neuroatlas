@@ -223,9 +223,9 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       language = state.lang;
       const text = CLINICAL_TEXT[language];
       const exploring = state.explorer === 'deficits';
-      anatomySearch.hidden = exploring;
+      anatomySearch.hidden = state.explorer !== 'anatomy';
       if (deficitSearchHead) deficitSearchHead.hidden = !exploring;
-      anatomyBrowser.hidden = exploring;
+      anatomyBrowser.hidden = state.explorer !== 'anatomy';
       deficitBrowser.hidden = !exploring;
       profile.hidden = !exploring;
       switcher.setAttribute('aria-label', text.explore);
@@ -267,6 +267,7 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       }
     },
     focusSearch() { search.focus(); search.select(); },
+    openDeficit: selectDeficit,
     dispose() {
       switcher.removeEventListener('click', onSwitch);
       search.removeEventListener('input', onInput);

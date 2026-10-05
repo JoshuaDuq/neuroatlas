@@ -56,6 +56,7 @@ export const TRANSLATIONS = {
       zanatomy: 'Z-Anatomy spinal cord reference',
     },
     header: {
+      description: 'Interactive brain atlas',
       atlasSwitch: 'Cortical atlas',
       appearance: 'Appearance',
       atlasShort: {
@@ -158,7 +159,7 @@ export const TRANSLATIONS = {
       cutLabels: 'Cut labels',
     },
     display: {
-      sectionHeading: 'Display',
+      sectionHeading: 'View settings',
       hemisphere: 'Hemisphere',
       both: 'Both',
       left: 'Left',
@@ -243,9 +244,13 @@ export const TRANSLATIONS = {
       provenance: 'Provenance',
     },
 
-    /* The phone shell: the two rails as one sheet over the anatomy. */
+    workspace: {
+      tabs: { find: 'Explore', region: 'Region', cuts: 'Sections', display: 'View' },
+      tabsAria: 'Workspace tasks',
+      inspect: name => `Inspect ${name}`,
+    },
     sheet: {
-      tabs: { find: 'Find', region: 'Region', cuts: 'Cuts', display: 'Display' },
+      tabs: { find: 'Explore', region: 'Region', cuts: 'Sections', display: 'View' },
       tabsAria: 'Panels',
       expand: 'Expand panel',
       collapse: 'Collapse panel',
@@ -315,6 +320,7 @@ export const TRANSLATIONS = {
       zanatomy: 'Moelle épinière de référence Z-Anatomy',
     },
     header: {
+      description: 'Atlas cérébral interactif',
       atlasSwitch: 'Atlas cortical',
       appearance: 'Apparence',
       atlasShort: {
@@ -417,7 +423,7 @@ export const TRANSLATIONS = {
       cutLabels: 'Étiquettes de coupe',
     },
     display: {
-      sectionHeading: 'Affichage',
+      sectionHeading: 'Réglages de la vue',
       hemisphere: 'Hémisphère',
       both: 'Les deux',
       left: 'Gauche',
@@ -509,8 +515,13 @@ export const TRANSLATIONS = {
       provenance: 'Provenance',
     },
 
+    workspace: {
+      tabs: { find: 'Explorer', region: 'Région', cuts: 'Coupes', display: 'Vue' },
+      tabsAria: 'Tâches de l’espace de travail',
+      inspect: name => `Examiner ${name}`,
+    },
     sheet: {
-      tabs: { find: 'Trouver', region: 'Région', cuts: 'Coupes', display: 'Affichage' },
+      tabs: { find: 'Explorer', region: 'Région', cuts: 'Coupes', display: 'Vue' },
       tabsAria: 'Panneaux',
       expand: 'Déplier le panneau',
       collapse: 'Replier le panneau',

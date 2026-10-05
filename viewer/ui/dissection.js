@@ -13,7 +13,7 @@ export function createDissectionControls({ onUndo, onRestore }) {
 
   return {
     update(state) {
-      panel.hidden = state.explorer === 'deficits';
+      panel.hidden = state.explorer !== 'anatomy';
       const i18n = t(state.lang, 'dissection');
       heading.textContent = i18n.heading;
       hint.textContent = i18n.hint;

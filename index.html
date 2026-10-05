@@ -99,36 +99,34 @@
             <path d="M10 10c0 3 2 4 4 4M6 19c2-2 5-2 7 0m-2 9c0-3 1-5 4-5m11-13c0 3-2 4-4 4m8 5c-2-2-5-2-7 0m2 9c0-3-1-5-4-5" />
           </svg>
           <div class="identity-text">
-            <h1 class="brand">NeuroAtlas</h1>
-            <div class="specimen">
-              <span id="specimen-label">Anatomy</span>
-              <p id="study-name" class="study-name" hidden></p>
-              <select id="anatomy-switch" hidden></select>
+            <div class="brand-lockup">
+              <h1 class="brand">NeuroAtlas</h1>
+              <p id="brand-description" class="brand-description">Interactive brain atlas</p>
             </div>
           </div>
         </div>
-        <div class="instrument-group">
-          <span id="atlas-control-label" class="instrument-label">Cortical atlas</span>
-          <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
-        </div>
-        <div class="instrument-group">
-          <span id="surface-control-label" class="instrument-label">Appearance</span>
-          <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
-        </div>
+        <p id="workspace-source" class="workspace-source"></p>
         <div class="masthead-end">
-          <!--
-            Region count, language, theme and shortcuts are settings, not
-            instruments. Below 1100px they collapse behind one button; above
-            it the panel is display:contents and they sit in the masthead row.
-          -->
+          <button id="viewport-fullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
+            </svg>
+            <span class="masthead-action-label"></span>
+          </button>
+          <button id="viewport-snapshot" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 5l2-2h4l2 2h4v15H4V5h4Z" /><circle cx="12" cy="12" r="4" />
+            </svg>
+            <span class="masthead-action-label"></span>
+          </button>
           <button id="masthead-more" type="button" aria-expanded="false"
                   aria-controls="masthead-menu" aria-label="More settings" hidden>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
             </svg>
           </button>
-          <!-- Hidden until the header decides which layout it is in; otherwise a
-               narrow window shows it as an open dropdown for the whole download. -->
           <div id="masthead-menu" hidden>
             <span id="region-count" class="measure"></span>
             <span class="masthead-sep" aria-hidden="true"></span>
@@ -151,21 +149,6 @@
                 <path d="M7 9h.01M12 9h.01M17 9h.01M7 12h.01M12 12h.01M17 12h.01M8 15h8" />
               </svg>
               <span id="shortcuts-label" class="masthead-action-label"></span>
-            </button>
-            <span class="masthead-sep" aria-hidden="true"></span>
-            <button id="viewport-fullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
-              </svg>
-              <span class="masthead-action-label"></span>
-            </button>
-            <button id="viewport-snapshot" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M8 5l2-2h4l2 2h4v15H4V5h4Z" /><circle cx="12" cy="12" r="4" />
-              </svg>
-              <span class="masthead-action-label"></span>
             </button>
           </div>
         </div>
@@ -196,12 +179,7 @@
         </div>
       </main>
 
-      <!--
-        The rails. Above the phone breakpoint this wrapper is display:contents
-        and its two children are grid items of #app exactly as before; on a
-        phone it becomes one sheet over the canvas, with the handle, the
-        selection strip and the tab bar below.
-      -->
+      <!-- The task panel becomes a draggable sheet on phones. -->
       <div id="sheet">
         <div id="sheet-grip" class="sheet-grip" hidden>
           <button id="sheet-handle" type="button" aria-expanded="false" aria-controls="sheet"
@@ -217,233 +195,266 @@
           <div id="sheet-tabs" class="rail-tabs sheet-tabs" role="tablist" aria-label="Panels"></div>
         </div>
 
-        <aside id="navigator" aria-label="Find a region" data-tab="find">
-          <div class="rail-head explorer-head">
-            <h2 id="navigator-title" class="rail-title">Atlas explorer</h2>
-            <div id="explorer-switch" class="rail-tabs" role="group" aria-label="Explore the atlas">
-              <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
-              <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
+        <div id="workspace-panel">
+          <div id="workspace-tabs" class="rail-tabs workspace-tabs" role="tablist" aria-label="Workspace" hidden></div>
+          <button id="workspace-selection" class="workspace-selection" type="button" hidden>
+            <span id="workspace-selection-name"></span>
+            <span id="workspace-selection-side" class="measure"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+          </button>
+          <aside id="navigator" aria-label="Find a region" data-tab="find">
+            <div class="rail-head explorer-head">
+              <h2 id="navigator-title" class="rail-title">Atlas explorer</h2>
+              <div id="explorer-switch" class="segmented" role="group" aria-label="Explore the atlas">
+                <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
+                <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
+                <button type="button" data-explorer="circuits" aria-pressed="false">Circuits</button>
+              </div>
             </div>
-          </div>
-          <div id="anatomy-search" class="rail-head">
-            <label id="search-label" class="visually-hidden" for="search">Search regions</label>
-            <div class="search-box">
-              <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
-              </svg>
-              <input id="search" type="search" autocomplete="off" spellcheck="false"
-                     placeholder="Search regions" role="combobox" aria-expanded="false"
-                     aria-controls="results" aria-autocomplete="list" />
-              <kbd class="search-shortcut" aria-hidden="true">/</kbd>
-              <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                  <path d="m6 6 12 12M6 18 18 6" />
+            <div id="anatomy-search" class="rail-head">
+              <label id="search-label" class="visually-hidden" for="search">Search regions</label>
+              <div class="search-box">
+                <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
                 </svg>
-              </button>
-            </div>
-          </div>
-          <div id="deficit-search-head" class="rail-head" hidden>
-            <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
-            <div class="search-box">
-              <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
-              </svg>
-              <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
-              <button id="deficit-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                  <path d="m6 6 12 12M6 18 18 6" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div id="internal-anatomy" class="rail-head internal-controls" hidden>
-            <label id="internal-system-label" for="internal-system">Study a system</label>
-            <select id="internal-system"></select>
-            <p id="internal-note" class="internal-note" hidden></p>
-          </div>
-          <section id="dissection-controls" class="dissection-controls" aria-labelledby="dissection-heading">
-            <div class="dissection-heading-row">
-              <h3 id="dissection-heading">Dissection</h3>
-              <button id="dissection-undo" class="button-quiet" type="button" disabled>Undo</button>
-              <button id="dissection-restore" class="button-quiet" type="button" disabled>Restore all</button>
-            </div>
-            <p id="dissection-hint">Hide parts with the eye controls to look underneath.</p>
-            <p id="dissection-status" role="status">All parts shown</p>
-          </section>
-          <div id="anatomy-browser" class="rail-body">
-            <div id="tree-header" class="tree-header">
-              <button id="explore-internal" type="button" class="button-quiet tree-internal"
-                      aria-pressed="false">Internal anatomy</button>
-              <button id="tree-toggle-all" class="button-quiet tree-toggle-all" type="button">Collapse all</button>
-            </div>
-            <div id="results" role="listbox" aria-label="Search results" hidden></div>
-            <div id="tree" role="tree" aria-label="Browse anatomy"></div>
-          </div>
-          <div id="deficit-browser" class="rail-body" hidden>
-            <div class="panel-body clinical-intro">
-              <p id="clinical-introduction"></p>
-            </div>
-            <div id="deficit-list" aria-label="Deficits"></div>
-            <p id="clinical-coverage" class="clinical-note panel-body"></p>
-          </div>
-          <p id="rail-notice" class="rail-notice" hidden></p>
-        </aside>
-
-        <aside id="inspector" aria-label="Selection and display">
-          <h2 id="inspector-title" class="rail-title inspector-title">Anatomical details</h2>
-          <!--
-            Desktop only; on a phone the sheet carries its own selection strip
-            and its own tabs, and both of these stay hidden. The readout keeps
-            its height whether or not anything is selected, so choosing a
-            region never shifts the controls under the cursor.
-          -->
-          <p id="inspector-selection" class="inspector-selection" hidden>
-            <span id="inspector-selection-name" class="inspector-selection-name"></span>
-            <span id="inspector-selection-side" class="inspector-selection-side measure"></span>
-          </p>
-          <div id="inspector-tabs" class="rail-tabs" role="tablist" aria-label="Panels" hidden></div>
-          <div class="rail-body">
-            <div class="tab-group" data-tab="region">
-              <p id="label-selected" class="section-label">Selected</p>
-              <div class="panel-body">
-                <h2 id="selected-name">No region selected</h2>
-                <div id="selection-empty" class="selection-empty">
-                  <svg class="selection-empty-graphic" viewBox="0 0 32 32" fill="none"
-                       stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
-                       stroke-linejoin="round" aria-hidden="true">
-                    <path d="M10 3H3v7m19-7h7v7M3 22v7h7m19-7v7h-7" />
-                    <circle cx="16" cy="16" r="6" />
-                    <path d="M16 7v4m0 10v4M7 16h4m10 0h4" />
+                <input id="search" type="search" autocomplete="off" spellcheck="false"
+                       placeholder="Search regions" role="combobox" aria-expanded="false"
+                       aria-controls="results" aria-autocomplete="list" />
+                <kbd class="search-shortcut" aria-hidden="true">/</kbd>
+                <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <path d="m6 6 12 12M6 18 18 6" />
                   </svg>
-                  <h3 id="selection-empty-title">Inspect a region</h3>
-                </div>
-                <p id="selected-hint">Select a region on the model or from the list.</p>
-                <div class="actions">
-                  <button id="focus" type="button" disabled>Focus</button>
-                  <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
-                  <button id="hide-region" type="button" disabled>Hide</button>
-                  <button id="region-mpr" class="button-primary" type="button" hidden>MRI</button>
-                </div>
-                <dl id="selected-facts" class="datasheet" hidden>
-                  <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
-                  <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
-                  <dt id="fact-group-label">Lobe / System</dt><dd id="fact-group"></dd>
-                  <dt id="fact-metric-label">Surface area</dt>
-                  <dd id="fact-metric" class="measure"></dd>
-                </dl>
-                <details id="region-source" class="metadata-details" hidden>
-                  <summary id="region-source-title">Coordinates and source</summary>
-                  <dl class="datasheet">
-                    <dt id="fact-coords-label">Centroid (RAS)</dt>
-                    <dd id="fact-coords" class="measure"></dd>
-                    <dt id="fact-source-label">Source label</dt>
-                    <dd id="fact-source" class="measure"></dd>
+                </button>
+              </div>
+            </div>
+            <div id="deficit-search-head" class="rail-head" hidden>
+              <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
+              <div class="search-box">
+                <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+                </svg>
+                <input id="deficit-search" type="search" autocomplete="off" aria-controls="deficit-list" />
+                <button id="deficit-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <path d="m6 6 12 12M6 18 18 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div id="internal-anatomy" class="rail-head internal-controls" hidden>
+              <label id="internal-system-label" for="internal-system">Study a system</label>
+              <select id="internal-system"></select>
+              <p id="internal-note" class="internal-note" hidden></p>
+            </div>
+            <div id="anatomy-browser" class="rail-body">
+              <div id="tree-header" class="tree-header">
+                <button id="explore-internal" type="button" class="button-quiet tree-internal"
+                        aria-pressed="false">Internal anatomy</button>
+                <button id="tree-toggle-all" class="button-quiet tree-toggle-all" type="button">Collapse all</button>
+              </div>
+              <div id="results" role="listbox" aria-label="Search results" hidden></div>
+              <div id="tree" role="tree" aria-label="Browse anatomy"></div>
+            </div>
+            <div id="deficit-browser" class="rail-body" hidden>
+              <div class="panel-body clinical-intro">
+                <p id="clinical-introduction"></p>
+              </div>
+              <div id="deficit-list" aria-label="Deficits"></div>
+              <p id="clinical-coverage" class="clinical-note panel-body"></p>
+            </div>
+            <div id="circuit-browser" class="rail-body" hidden>
+              <p id="circuit-introduction" class="panel-body circuit-intro"></p>
+              <div id="circuit-list"></div>
+              <div id="circuit-landmarks"></div>
+            </div>
+            <section id="dissection-controls" class="dissection-controls" aria-labelledby="dissection-heading">
+              <div class="dissection-heading-row">
+                <h3 id="dissection-heading">Dissection</h3>
+                <button id="dissection-undo" class="button-quiet" type="button" disabled>Undo</button>
+                <button id="dissection-restore" class="button-quiet" type="button" disabled>Restore all</button>
+              </div>
+              <p id="dissection-hint">Hide parts with the eye controls to look underneath.</p>
+              <p id="dissection-status" role="status">All parts shown</p>
+            </section>
+            <p id="rail-notice" class="rail-notice" hidden></p>
+          </aside>
+
+          <aside id="inspector" aria-label="Region details and view controls">
+            <div class="rail-body">
+              <div class="tab-group" data-tab="region">
+                <h2 id="inspector-title" class="panel-heading">Region details</h2>
+                <section id="circuit-profile" hidden aria-labelledby="circuit-heading"></section>
+                <p id="circuit-action-status" class="panel-body" role="status" hidden></p>
+                <p id="label-selected" class="section-label">Selected</p>
+                <div class="panel-body">
+                  <h2 id="selected-name">No region selected</h2>
+                  <div id="selection-empty" class="selection-empty">
+                    <svg class="selection-empty-graphic" viewBox="0 0 32 32" fill="none"
+                         stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                         stroke-linejoin="round" aria-hidden="true">
+                      <path d="M10 3H3v7m19-7h7v7M3 22v7h7m19-7v7h-7" />
+                      <circle cx="16" cy="16" r="6" />
+                      <path d="M16 7v4m0 10v4M7 16h4m10 0h4" />
+                    </svg>
+                    <h3 id="selection-empty-title">Inspect a region</h3>
+                  </div>
+                  <p id="selected-hint">Select a region on the model or from the list.</p>
+                  <div class="actions">
+                    <button id="focus" type="button" disabled>Focus</button>
+                    <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
+                    <button id="hide-region" type="button" disabled>Hide</button>
+                    <button id="region-mpr" class="button-primary" type="button" hidden>MRI</button>
+                  </div>
+                  <dl id="selected-facts" class="datasheet" hidden>
+                    <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
+                    <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
+                    <dt id="fact-group-label">Lobe / System</dt><dd id="fact-group"></dd>
+                    <dt id="fact-metric-label">Surface area</dt>
+                    <dd id="fact-metric" class="measure"></dd>
                   </dl>
+                  <details id="region-source" class="metadata-details" hidden>
+                    <summary id="region-source-title">Coordinates and source</summary>
+                    <dl class="datasheet">
+                      <dt id="fact-coords-label">Centroid (RAS)</dt>
+                      <dd id="fact-coords" class="measure"></dd>
+                      <dt id="fact-source-label">Source label</dt>
+                      <dd id="fact-source" class="measure"></dd>
+                    </dl>
+                  </details>
+                </div>
+
+                <!--
+                  Measured on this surface, so it sits with the other measured
+                  facts rather than with the clinical associations below it.
+                -->
+                <details id="region-constituents" class="inspector-disclosure" hidden>
+                  <summary id="constituents-title" class="section-label"></summary>
+                  <div class="panel-body">
+                    <p id="constituents-note" class="internal-note"></p>
+                    <ul id="constituents-list" class="constituents-list"></ul>
+                  </div>
                 </details>
+                <section id="region-networks" hidden>
+                  <p id="label-networks" class="section-label">Functional networks</p>
+                  <div class="panel-body">
+                    <ul id="network-list" class="network-list"></ul>
+                    <p id="network-note" class="network-note"></p>
+                  </div>
+                </section>
+
+                <section id="clinical-region" hidden></section>
+                <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
               </div>
 
-              <!--
-                Measured on this surface, so it sits with the other measured
-                facts rather than with the clinical associations below it.
-              -->
-              <details id="region-constituents" class="inspector-disclosure" hidden>
-                <summary id="constituents-title" class="section-label"></summary>
+              <div class="tab-group" data-tab="cuts">
+                <h2 id="label-cuts" class="panel-heading">Anatomical sections</h2>
+                <div class="panel-body section-controls">
+                  <div class="cut-fields">
+                    <label id="cut-mode-label" class="visually-hidden">Cutting plane</label>
+                    <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
+                      <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
+                      <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
+                      <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
+                      <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
+                      <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
+                    </div>
+                    <div class="control-field">
+                      <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
+                      <select id="cut-atlas"></select>
+                    </div>
+                    <div class="control-field">
+                      <label id="cut-axis" for="cut-position">Position (mm)</label>
+                      <div class="cut-position-row">
+                        <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
+                        <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
+                      </div>
+                    </div>
+                    <div id="cut-oblique" hidden>
+                      <div class="control-field">
+                        <label for="cut-tilt">
+                          <span id="cut-tilt-label">Tilt from axial</span>
+                          <output id="cut-tilt-value" class="measure"></output>
+                        </label>
+                        <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
+                      </div>
+                      <div class="control-field">
+                        <label for="cut-azimuth">
+                          <span id="cut-azimuth-label">Rotation around superior axis</span>
+                          <output id="cut-azimuth-value" class="measure"></output>
+                        </label>
+                        <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
+                      </div>
+                    </div>
+                    <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
+                  </div>
+                  <div class="cut-command">
+                    <p id="cut-status" role="status">Full brain · no cut</p>
+                    <button id="mpr-open" class="button-primary" type="button">MRI</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab-group" data-tab="display">
+                <h2 id="label-display" class="panel-heading">View settings</h2>
                 <div class="panel-body">
-                  <p id="constituents-note" class="internal-note"></p>
-                  <ul id="constituents-list" class="constituents-list"></ul>
-                </div>
-              </details>
-              <section id="region-networks" hidden>
-                <p id="label-networks" class="section-label">Functional networks</p>
-                <div class="panel-body">
-                  <ul id="network-list" class="network-list"></ul>
-                  <p id="network-note" class="network-note"></p>
-                </div>
-              </section>
+                  <div class="control-field specimen">
+                    <label id="specimen-label" for="anatomy-switch">Anatomy</label>
+                    <p id="study-name" class="study-name" hidden></p>
+                    <select id="anatomy-switch" hidden></select>
+                  </div>
+                  <div class="control-field">
+                    <span id="atlas-control-label" class="control-label">Cortical atlas</span>
+                    <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
+                  </div>
+                  <div class="control-field">
+                    <label id="detail-label" for="detail">Internal anatomy</label>
+                    <select id="detail"></select>
+                  </div>
+                  <div class="control-field">
+                    <span id="surface-control-label" class="control-label">Appearance</span>
+                    <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
+                  </div>
+                  <div class="control-field">
+                    <label id="display-hemisphere-label">Hemisphere</label>
+                    <div id="hemisphere" class="segmented" role="group" aria-labelledby="display-hemisphere-label">
+                      <button type="button" data-hemisphere="both" aria-pressed="true">Both</button>
+                      <button type="button" data-hemisphere="left" aria-pressed="false">Left</button>
+                      <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
+                    </div>
+                  </div>
 
-              <section id="clinical-region" hidden></section>
-              <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
-            </div>
+                  <div class="display-visibility">
+                    <div class="display-cortex">
+                      <label class="check">
+                        <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
+                      </label>
+                      <div class="display-opacity">
+                        <label for="opacity">
+                          <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
+                        </label>
+                        <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+                      </div>
+                    </div>
+                    <label id="internal-visible-label" class="check">
+                      <input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span>
+                    </label>
+                    <label id="spinal-cord-label" class="check">
+                      <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
+                    </label>
+                  </div>
 
-            <div class="tab-group" data-tab="cuts">
-              <p id="label-cuts" class="section-label">Anatomical cuts</p>
-              <div class="panel-body section-controls">
-                <div class="cut-fields">
-                  <label id="cut-mode-label" class="visually-hidden">Cutting plane</label>
-                  <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
-                    <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
-                    <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
-                    <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
-                    <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
-                    <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
-                  </div>
-                  <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
-                  <select id="cut-atlas"></select>
-                  <label id="cut-axis" for="cut-position">Position (mm)</label>
-                  <div class="cut-position-row">
-                    <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
-                    <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
-                  </div>
-                  <div id="cut-oblique" hidden>
-                    <label for="cut-tilt">
-                      <span id="cut-tilt-label">Tilt from axial</span>
-                      <output id="cut-tilt-value" class="measure"></output>
-                    </label>
-                    <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
-                    <label for="cut-azimuth">
-                      <span id="cut-azimuth-label">Rotation around superior axis</span>
-                      <output id="cut-azimuth-value" class="measure"></output>
-                    </label>
-                    <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
-                  </div>
-                  <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
-                </div>
-                <div class="cut-command">
-                  <p id="cut-status" role="status">Full brain · no cut</p>
-                  <button id="mpr-open" class="button-primary" type="button">MRI</button>
+                  <button id="reset" class="button-quiet" type="button">Reset view</button>
                 </div>
               </div>
             </div>
-
-            <div class="tab-group" data-tab="display">
-              <p id="label-display" class="section-label">Display</p>
-              <div class="panel-body">
-                <label id="detail-label" for="detail">Internal anatomy</label>
-                <select id="detail"></select>
-                <label id="display-hemisphere-label">Hemisphere</label>
-                <div id="hemisphere" class="segmented" role="group" aria-labelledby="display-hemisphere-label">
-                  <button type="button" data-hemisphere="both" aria-pressed="true">Both</button>
-                  <button type="button" data-hemisphere="left" aria-pressed="false">Left</button>
-                  <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
-                </div>
-
-                <div class="display-visibility">
-                  <div class="display-cortex">
-                    <label class="check">
-                      <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
-                    </label>
-                    <label for="opacity">
-                      <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
-                    </label>
-                    <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
-                  </div>
-                  <label id="internal-visible-label" class="check">
-                    <input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span>
-                  </label>
-                  <label id="spinal-cord-label" class="check">
-                    <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
-                  </label>
-                </div>
-
-                <button id="reset" class="button-quiet" type="button">Reset view</button>
-              </div>
-            </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
 
       <footer id="colophon">
@@ -453,7 +464,7 @@
     </div>
 
     <dialog id="mpr-dialog" aria-labelledby="mpr-title">
-      <div class="mpr-header">
+      <div class="dialog-header mpr-header">
         <div><h2 id="mpr-title">Linked MRI sections</h2>
           <p id="mpr-subtitle">Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
         <button id="mpr-close" class="button-quiet" type="button">Close slices</button>
@@ -480,9 +491,11 @@
     </dialog>
 
     <dialog id="shortcuts" aria-labelledby="shortcuts-title">
-      <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+      <div class="dialog-header">
+        <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+        <button id="shortcuts-close" class="button-quiet" type="button">Close</button>
+      </div>
       <dl id="shortcuts-list"></dl>
-      <button id="shortcuts-close" class="button-quiet" type="button">Close</button>
     </dialog>
 
     <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>

@@ -8,11 +8,7 @@ const TABS = ['find', 'region', 'cuts', 'display'];
 const DRAG_THRESHOLD_PX = 8;
 
 /**
- * The phone shell: the two rails as one sheet over a full-bleed canvas.
- *
- * Above the phone breakpoint this does nothing at all — the wrapper is
- * display:contents there and the rails are grid items exactly as before, so
- * the desktop layout never runs a line of this code.
+ * The task panel becomes a sheet over a full-bleed canvas on phones.
  *
  * The sheet reports how much of the canvas it covers rather than resizing it.
  * Resizing would reallocate the composer target and both outline passes on every
@@ -23,7 +19,7 @@ const DRAG_THRESHOLD_PX = 8;
  * out of the task they were in, so the strip sits above the tabs and is
  * always visible.
  */
-export function createSheet({ onInsets, onDetent, onShell } = {}) {
+export function createSheet({ onInsets, onDetent, onShell, onPanelChange } = {}) {
   const sheet = document.getElementById('sheet');
   const grip = document.getElementById('sheet-grip');
   const handle = document.getElementById('sheet-handle');
@@ -36,6 +32,7 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   const inspector = document.getElementById('inspector');
   const viewport = document.getElementById('viewport');
   const groups = [...document.querySelectorAll('.tab-group')];
+  const panels = [navigator_, ...groups];
 
   const query = globalThis.matchMedia?.(PHONE_QUERY) ?? { matches: false, addEventListener() {}, removeEventListener() {} };
   const landscapeQuery = globalThis.matchMedia?.('(orientation: landscape)')
@@ -47,10 +44,14 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   let phone = query.matches;
 
   const buttons = TABS.map(name => {
+    const panel = panels.find(panel => panel.dataset.tab === name);
+    panel.id ||= `workspace-panel-${name}`;
     const button = document.createElement('button');
     button.type = 'button';
     button.role = 'tab';
+    button.id = `sheet-tab-${name}`;
     button.dataset.tab = name;
+    button.setAttribute('aria-controls', panel.id);
     button.setAttribute('aria-selected', String(name === active));
     button.addEventListener('click', () => {
       setTab(name);
@@ -113,7 +114,9 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   function setTab(name) {
     active = name;
     for (const button of buttons) {
-      button.setAttribute('aria-selected', String(button.dataset.tab === name));
+      const selected = button.dataset.tab === name;
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
     }
     navigator_.hidden = name !== 'find';
     inspector.hidden = name === 'find';
@@ -124,6 +127,7 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
       node.classList.remove('sheet-panel-first');
     }
     panel?.classList.add('sheet-panel-first');
+    onPanelChange?.();
   }
 
   // ---- dragging ---------------------------------------------------------
@@ -184,6 +188,15 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
     setTab('region');
     if (detent === 'peek') setDetent('half');
   };
+  const onTabKeyDown = event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const index = event.key === 'Home' ? 0 : event.key === 'End' ? TABS.length - 1
+      : (TABS.indexOf(active) + (event.key === 'ArrowRight' ? 1 : -1) + TABS.length) % TABS.length;
+    setTab(TABS[index]);
+    if (detent === 'peek') setDetent('half');
+    buttons[index].focus();
+  };
 
   /*
    * The press starts on the grip but the finger leaves it at once, so the
@@ -197,6 +210,7 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   globalThis.addEventListener('pointercancel', onPointerUp);
   handle.addEventListener('click', onHandle);
   selection.addEventListener('click', onSelection);
+  tabs.addEventListener('keydown', onTabKeyDown);
 
   // The grip is sized by its text, which arrives after setup; peek follows it.
   const observer = globalThis.ResizeObserver ? new ResizeObserver(() => {
@@ -226,6 +240,7 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
   function setup() {
     onShell?.('sheet');
     grip.hidden = false;
+    for (const panel of panels) panel.setAttribute('aria-labelledby', `sheet-tab-${panel.dataset.tab}`);
     sheet.dataset.dragging = 'false';
     setTab(active);
     setDetent(detent, { notify: false });
@@ -293,6 +308,7 @@ export function createSheet({ onInsets, onDetent, onShell } = {}) {
       globalThis.removeEventListener('pointercancel', onPointerUp);
       handle.removeEventListener('click', onHandle);
       selection.removeEventListener('click', onSelection);
+      tabs.removeEventListener('keydown', onTabKeyDown);
       query.removeEventListener('change', onModeChange);
       landscapeQuery.removeEventListener('change', onModeChange);
       globalThis.removeEventListener('resize', onResize);

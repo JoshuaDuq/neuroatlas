@@ -1,6 +1,6 @@
 import { count } from './format.js';
 import { atlasSwitchLabel, t } from '../i18n/translations.js';
-import { MASTHEAD_MENU_QUERY } from '../render/device.js';
+import { createButtonLabel } from './button-label.js';
 
 const switchProgress = (progress, lang) => {
   const i18n = t(lang, 'header');
@@ -15,15 +15,7 @@ export function anatomySwitchLabel(entry) {
   return quoted?.[1] ?? entry?.subject ?? entry?.id ?? '';
 }
 
-/**
- * Atlas choice, what the surface is coloured by, visible region count,
- * language and theme.
- *
- * The two segmented controls are siblings on purpose: one says which
- * parcellation the cortex carries, the other what the cortex is showing. Both
- * answer "what am I looking at", so both are in the masthead rather than one
- * of them behind a panel tab.
- */
+/** Source and appearance controls in View; identity and preferences above it. */
 export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtlas, onSurfaceColor, onTheme, onLang, onAnatomy }) {
   const container = document.getElementById('atlas-switch');
   const surfaceContainer = document.getElementById('surface-switch');
@@ -40,6 +32,8 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
   const specimenLabel = document.getElementById('specimen-label');
   const atlasControlLabel = document.getElementById('atlas-control-label');
   const surfaceControlLabel = document.getElementById('surface-control-label');
+  const brandDescription = document.getElementById('brand-description');
+  const source = document.getElementById('workspace-source');
 
   /*
    * Which brain. A dropdown rather than a segmented control: the names are
@@ -48,8 +42,8 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
    * only one brain published there is nothing to choose, and the control stays
    * hidden — an option that can never be taken is not a choice.
    *
-   * When there is a choice it replaces the static study name in the identity
-   * cluster. Showing both named the same specimen twice.
+   * With multiple specimens, the View panel replaces the static name with
+   * this dropdown. The header keeps a compact readout of the current source.
    */
   const offerAnatomies = anatomies.length > 1;
   const onAnatomyChange = event => onAnatomy?.(event.target.value);
@@ -71,14 +65,6 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     anatomySwitch.addEventListener('change', onAnatomyChange);
   }
 
-  /*
-   * Below 1100px the region count, language, theme and shortcuts do not fit
-   * beside the two instrument switches. They collapse behind one button.
-   * Above the breakpoint the panel is display:contents and the settings sit
-   * in the masthead row.
-   */
-  const menuQuery = globalThis.matchMedia?.(MASTHEAD_MENU_QUERY)
-    ?? { matches: false, addEventListener() {}, removeEventListener() {} };
   let lastLang = 'en';
 
   function closeMenu() {
@@ -90,66 +76,40 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
     shortcutsLabel.textContent = t(lastLang, 'header').shortcuts;
   }
 
-  /*
-   * In the three-column shell the menu drops over the right rail. Matching
-   * that rail's width keeps its edge on the column boundary, rather than
-   * through the middle of a tab label. A sheet or a stacked rail is not
-   * that column, and the menu stays a compact list.
-   */
-  function placeMenu() {
-    const masthead = moreButton.closest('header');
-    const inspectorRail = document.getElementById('inspector');
-    const rail = inspectorRail?.getBoundingClientRect();
-    const head = masthead.getBoundingClientRect();
-    const coversRail = menuQuery.matches && rail && rail.width > 160
-      && Math.abs(rail.right - globalThis.innerWidth) < 2
-      && rail.top <= head.bottom + 1;
-    if (coversRail) masthead.style.setProperty('--settings-width', `${Math.round(rail.width)}px`);
-    else masthead.style.removeProperty('--settings-width');
-  }
-
-  function applyMode() {
-    const compact = menuQuery.matches;
-    moreButton.hidden = !compact;
-    // Above the breakpoint the panel must never be hidden: it is the masthead.
-    menu.hidden = compact;
-    moreButton.setAttribute('aria-expanded', 'false');
-    paintShortcuts();
-    placeMenu();
-  }
-
   const onMore = event => {
     event.stopPropagation();
     const open = menu.hidden;
     menu.hidden = !open;
     moreButton.setAttribute('aria-expanded', String(open));
-    if (open) placeMenu();
   };
-  const onResize = () => placeMenu();
   const onDocumentPointer = event => {
-    if (!menuQuery.matches || menu.hidden) return;
+    if (menu.hidden) return;
     if (menu.contains(event.target) || moreButton.contains(event.target)) return;
     closeMenu();
   };
   // Marked handled: the app's own Escape would otherwise go on to clear the selection.
   const onEscape = event => {
-    if (event.key !== 'Escape' || !menuQuery.matches || menu.hidden) return;
+    if (event.key !== 'Escape' || menu.hidden) return;
     event.preventDefault();
     closeMenu();
+    moreButton.focus();
   };
   // A setting chosen from the menu has been applied; leaving it open hides
   // the anatomy the reader just changed.
   const onMenuClick = event => {
-    if (menuQuery.matches && event.target.closest('button')) closeMenu();
+    if (event.target.closest('button')) {
+      closeMenu();
+      moreButton.focus();
+    }
   };
 
   moreButton.addEventListener('click', onMore);
   menu.addEventListener('click', onMenuClick);
   document.addEventListener('pointerdown', onDocumentPointer);
   document.addEventListener('keydown', onEscape);
-  globalThis.addEventListener?.('resize', onResize);
-  menuQuery.addEventListener('change', applyMode);
-  applyMode();
+  moreButton.hidden = false;
+  closeMenu();
+  paintShortcuts();
 
   // Two atlases: showing both is clearer than hiding one behind a dropdown.
   const buttons = atlases.map(atlas => {
@@ -165,12 +125,14 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
 
   // A build without the network layer must not offer to colour by it. Absent
   // rather than disabled: an option that can never be chosen is not a choice.
+  const surfaceLabels = new Map();
   const surfaceButtons = SURFACE_MODES
     .filter(mode => mode !== 'network' || networks)
     .map(mode => {
       const button = document.createElement('button');
       button.type = 'button';
       button.dataset.surface = mode;
+      surfaceLabels.set(button, createButtonLabel(button, mode));
       button.addEventListener('click', () => onSurfaceColor(mode));
       surfaceContainer.append(button);
       return button;
@@ -193,6 +155,9 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
       const switching = state.status === 'switching';
 
       lastLang = state.lang;
+      brandDescription.textContent = i18n.description;
+      source.textContent = `${anatomySwitchLabel(anatomy)} · ${atlasSwitchLabel(state.atlas)}`;
+      source.title = anatomy.display_name;
       specimenLabel.textContent = i18n.anatomySwitch;
       atlasControlLabel.textContent = i18n.atlasSwitch;
       surfaceControlLabel.textContent = i18n.appearance;
@@ -226,7 +191,7 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
       const surfaces = t(state.lang, 'display');
       for (const button of surfaceButtons) {
         const mode = button.dataset.surface;
-        button.textContent = surfaces.surfaceColors[mode] ?? mode;
+        surfaceLabels.get(button).textContent = surfaces.surfaceColors[mode] ?? mode;
         button.title = surfaces.surfaceColorTitles[mode] ?? '';
         button.setAttribute('aria-pressed', String(mode === state.surfaceColor));
       }
@@ -245,8 +210,6 @@ export function createHeader({ atlases, networks, anatomy, anatomies = [], onAtl
       menu.removeEventListener('click', onMenuClick);
       document.removeEventListener('pointerdown', onDocumentPointer);
       document.removeEventListener('keydown', onEscape);
-      globalThis.removeEventListener?.('resize', onResize);
-      menuQuery.removeEventListener('change', applyMode);
       themeButton.removeEventListener('click', onThemeClick);
       for (const [btn, handler] of onLangClicks) {
         btn.removeEventListener('click', handler);

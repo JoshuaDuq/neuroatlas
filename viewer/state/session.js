@@ -61,7 +61,7 @@ export function createSession({ views, theme = 'dark', lang = 'en' }) {
     setQuery: query => act({ query }),
 
     setExplorer(explorer) {
-      if (!['anatomy', 'deficits'].includes(explorer)) {
+      if (!['anatomy', 'deficits', 'circuits'].includes(explorer)) {
         throw new Error(`Unknown explorer: ${explorer}`);
       }
       return act({ explorer });

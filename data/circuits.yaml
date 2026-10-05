@@ -1,0 +1,750 @@
+revised: '2026-10-04'
+context_margin_mm: 12
+references:
+  - id: visual-pathways
+    title: Central Visual Pathways
+    citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    url: https://www.ncbi.nlm.nih.gov/books/NBK11034/
+  - id: retinotopy
+    title: The Retinotopic Representation of the Visual Field
+    citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    url: https://www.ncbi.nlm.nih.gov/books/NBK10944/
+  - id: memory-anatomy
+    title: 'Hippocampal–diencephalic–cingulate networks for memory and emotion: An anatomical guide'
+    citation: Bubb, Kinnavane & Aggleton · Brain and Neuroscience Advances · 2017
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5608081/
+  - id: memory-network
+    title: 'Time to retire the serial Papez circuit: Implications for space, memory, and attention'
+    citation: Aggleton et al. · Neuroscience & Biobehavioral Reviews · 2022
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10804970/
+  - id: fornix
+    title: Anatomy and function of the fornix in the context of its potential as a therapeutic target
+    citation: Senova et al. · Journal of Neurology, Neurosurgery & Psychiatry · 2020
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7231447/
+  - id: basal-ganglia
+    title: Functional Neuroanatomy of the Basal Ganglia
+    citation: Lanciego, Luquin & Obeso · Cold Spring Harbor Perspectives in Medicine · 2012
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3543080/
+  - id: motor-learning
+    title: 'Basal ganglia contributions to motor control: a vigorous tutor'
+    citation: Turner & Desmurget · Current Opinion in Neurobiology · 2010
+    url: https://pubmed.ncbi.nlm.nih.gov/20850966/
+  - id: striatal-input
+    title: Projections to the Basal Ganglia
+    citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    url: https://www.ncbi.nlm.nih.gov/books/NBK10988/
+  - id: auditory-pathways
+    title: 'Auditory pathways: anatomy and physiology'
+    citation: Pickles · Handbook of Clinical Neurology · 2015
+    url: https://pubmed.ncbi.nlm.nih.gov/25726260/
+  - id: auditory-thalamus
+    title: The organization and physiology of the auditory thalamus and its role in processing acoustic features important for speech perception
+    citation: Bartlett · Brain and Language · 2013
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3707394/
+  - id: somatic-cortex
+    title: The Somatic Sensory Cortex
+    citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    url: https://www.ncbi.nlm.nih.gov/books/NBK11153/
+  - id: opercular-somatotopy
+    title: The somatotopic organization of cytoarchitectonic areas on the human parietal operculum
+    citation: Eickhoff et al. · Cerebral Cortex · 2007
+    url: https://pubmed.ncbi.nlm.nih.gov/17032710/
+  - id: speech-streams
+    title: The cortical organization of speech processing
+    citation: Hickok & Poeppel · Nature Reviews Neuroscience · 2007
+    url: https://pubmed.ncbi.nlm.nih.gov/17431404/
+  - id: speech-feedback
+    title: 'The cortical organization of speech processing: Feedback control and predictive coding the context of a dual-stream model'
+    citation: Hickok · Journal of Communication Disorders · 2012
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3468690/
+  - id: attention-systems
+    title: Control of goal-directed and stimulus-driven attention in the brain
+    citation: Corbetta & Shulman · Nature Reviews Neuroscience · 2002
+    url: https://pubmed.ncbi.nlm.nih.gov/11994752/
+  - id: attention-laterality
+    title: Right hemisphere dominance during spatial selective attention and target detection occurs outside the dorsal frontoparietal network
+    citation: Shulman et al. · Journal of Neuroscience · 2010
+    url: https://pubmed.ncbi.nlm.nih.gov/20219998/
+  - id: cerebellar-organization
+    title: Organization of the Cerebellum
+    citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    url: https://www.ncbi.nlm.nih.gov/books/NBK11132/
+  - id: cerebellar-peduncles
+    title: Three-dimensional microsurgical anatomy of cerebellar peduncles
+    citation: Perrini et al. · Neurosurgical Review · 2013
+    url: https://pubmed.ncbi.nlm.nih.gov/22933248/
+  - id: cortical-parcellation
+    title: A multi-modal parcellation of human cerebral cortex
+    citation: Glasser et al. · Nature · 2016
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4990127/
+
+circuits:
+  - id: vision
+    name: { en: Visual pathway, fr: Voie visuelle }
+    summary:
+      en: Follow the left postchiasmatic pathway and learn which half of visual space it represents.
+      fr: Suivez la voie postchiasmatique gauche et découvrez quelle moitié du champ visuel elle représente.
+    route:
+      en: Chiasm → optic tract → lateral geniculate nucleus → V1
+      fr: Chiasma → tractus optique → corps genouillé latéral → V1
+    scope:
+      en: Left-sided landmarks after the midline chiasm. The retina, optic nerves and optic radiations are not included in this tour.
+      fr: Repères gauches après le chiasma médian. La rétine, les nerfs optiques et les radiations optiques ne sont pas inclus dans ce parcours.
+    clinical:
+      en: Compare these landmarks with the published visual-field deficit evidence.
+      fr: Comparez ces repères aux données publiées sur les déficits du champ visuel.
+    deficit: hemianopia
+    references: [visual-pathways, retinotopy]
+    steps:
+      - id: chiasm
+        region: learning:midline:optic-chiasm
+        source_name: Optic chiasm
+        name: { en: Optic chiasm, fr: Chiasma optique }
+        role: { en: Partial crossing, fr: Croisement partiel }
+        explanation:
+          en: Nasal retinal fibres cross here; temporal retinal fibres stay on their original side.
+          fr: Les fibres rétiniennes nasales croisent ici ; les fibres temporales restent du même côté.
+        mapping:
+          en: The solid outlines the chiasm, without resolving individual crossing fibres.
+          fr: Le volume délimite le chiasma sans distinguer les fibres qui le traversent.
+        view: inferior
+        plane: axial
+      - id: tract
+        region: learning:left:optic-tract
+        source_name: Optic tract
+        name: { en: Left optic tract, fr: Tractus optique gauche }
+        role: { en: Right visual field, fr: Champ visuel droit }
+        explanation:
+          en: This tract carries right-field information from both eyes toward the left lateral geniculate nucleus.
+          fr: Ce tractus transmet les informations du champ droit des deux yeux vers le corps genouillé latéral gauche.
+        mapping:
+          en: A segmented anatomical tract; its shape does not measure axonal connectivity.
+          fr: Un tractus segmenté anatomiquement ; sa forme ne mesure pas la connectivité axonale.
+        view: inferior
+        plane: axial
+      - id: lgn
+        region: learning:left:lateral-geniculate
+        source_name: Lateral geniculate nucleus
+        name: { en: Left lateral geniculate nucleus, fr: Corps genouillé latéral gauche }
+        role: { en: Thalamic relay, fr: Relais thalamique }
+        explanation:
+          en: This visual relay projects to V1 through the optic radiation, which is not reconstructed here.
+          fr: Ce relais visuel rejoint V1 par les radiations optiques, qui ne sont pas reconstruites ici.
+        mapping:
+          en: The nucleus is displayed as a whole; its retinal layers are not separated.
+          fr: Le noyau est représenté dans son ensemble ; ses couches rétiniennes ne sont pas séparées.
+        view: posterior
+        plane: coronal
+      - id: v1
+        region: hcp-mmp:left:1
+        source_name: L_V1_ROI
+        name: { en: Left primary visual cortex, fr: Cortex visuel primaire gauche }
+        role: { en: Cortical visual map, fr: Carte visuelle corticale }
+        explanation:
+          en: V1 lies around the calcarine sulcus and represents the opposite visual hemifield.
+          fr: V1 entoure le sillon calcarin et représente l’hémichamp visuel opposé.
+        mapping:
+          en: This HCP-MMP parcel is an atlas label mapped onto the individual surface, not an individual functional localizer.
+          fr: Cette parcelle HCP-MMP est une étiquette d’atlas projetée sur la surface individuelle, et non une localisation fonctionnelle individuelle.
+        view: right
+        plane: coronal
+    question:
+      prompt:
+        en: Which information travels in the left optic tract?
+        fr: Quelles informations circulent dans le tractus optique gauche ?
+      options:
+        - { en: The right visual field from both eyes, fr: Le champ visuel droit des deux yeux }
+        - { en: Everything seen by the left eye, fr: Tout ce que voit l’œil gauche }
+        - { en: The left visual field from both eyes, fr: Le champ visuel gauche des deux yeux }
+      correct: 0
+      explanation:
+        en: The partial crossing sorts fibres by visual hemifield, not by eye.
+        fr: Le croisement partiel trie les fibres par hémichamp visuel, et non par œil.
+
+  - id: memory
+    name: { en: Memory landmarks, fr: Repères de la mémoire }
+    summary:
+      en: Locate a hippocampal–diencephalic branch within a broader memory network.
+      fr: Repérez une branche hippocampo-diencéphalique au sein d’un réseau de mémoire plus vaste.
+    route:
+      en: Hippocampal formation → fornix → mammillary bodies → mammillothalamic tract → anterior thalamus
+      fr: Formation hippocampique → fornix → corps mamillaires → tractus mamillo-thalamique → thalamus antérieur
+    scope:
+      en: A left-sided landmark tour, not a complete Papez loop. Memory also depends on parallel pathways and cortical connections.
+      fr: Un parcours de repères gauches, et non un circuit de Papez complet. La mémoire dépend aussi de voies parallèles et de connexions corticales.
+    clinical:
+      en: Explore evidence on hippocampal, fornical and diencephalic contributions to acquired amnesia.
+      fr: Explorez les données sur les contributions hippocampiques, fornicales et diencéphaliques à l’amnésie acquise.
+    deficit: amnesia
+    references: [memory-anatomy, memory-network, fornix]
+    steps:
+      - id: hippocampus
+        region: learning:left:hippocampus
+        source_name: Hippocampal formation
+        name: { en: Left hippocampal formation, fr: Formation hippocampique gauche }
+        role: { en: Distributed memory network, fr: Réseau distribué de mémoire }
+        explanation:
+          en: Locate the medial temporal landmark. One output branch reaches the mammillary bodies through the fornix.
+          fr: Repérez ce territoire temporal médial. Une branche efférente rejoint les corps mamillaires par le fornix.
+        mapping:
+          en: This teaching union includes several hippocampal and adjacent source labels; it is broader than hippocampus proper.
+          fr: Cette union pédagogique réunit plusieurs étiquettes hippocampiques et adjacentes ; elle dépasse l’hippocampe proprement dit.
+        view: left
+        plane: coronal
+      - id: fornix
+        region: learning:left:fornix
+        source_name: Fornix
+        name: { en: Left fornix, fr: Fornix gauche }
+        role: { en: Hippocampal output route, fr: Voie efférente hippocampique }
+        explanation:
+          en: The postcommissural fornix carries projections toward the mammillary bodies; other fornical projections have different targets.
+          fr: Le fornix postcommissural véhicule des projections vers les corps mamillaires ; d’autres projections fornicales ont des cibles différentes.
+        mapping:
+          en: The whole fornix landmark does not distinguish precommissural and postcommissural fibres.
+          fr: Ce repère du fornix ne distingue pas les fibres précommissurales et postcommissurales.
+        view: left
+        plane: sagittal
+      - id: mammillary
+        region: learning:left:mammillary
+        source_name: Mammillary nuclei
+        name: { en: Left mammillary bodies, fr: Corps mamillaires gauches }
+        role: { en: Diencephalic memory landmark, fr: Repère diencéphalique de mémoire }
+        explanation:
+          en: These hypothalamic nuclei project to the anterior thalamic nuclei through the mammillothalamic tract.
+          fr: Ces noyaux hypothalamiques projettent vers les noyaux thalamiques antérieurs par le tractus mamillo-thalamique.
+        mapping:
+          en: Mammillary nuclei are grouped; individual nuclei are not distinguished in this view.
+          fr: Les noyaux mamillaires sont regroupés ; ce volume ne distingue pas chaque noyau.
+        view: inferior
+        plane: sagittal
+      - id: mammillothalamic
+        region: learning:left:mammillothalamic
+        source_name: Mammillothalamic tract
+        name: { en: Left mammillothalamic tract, fr: Tractus mamillo-thalamique gauche }
+        role: { en: Toward anterior thalamus, fr: Vers le thalamus antérieur }
+        explanation:
+          en: Find the tract linking mammillary nuclei with anterior thalamic nuclei.
+          fr: Repérez le tractus reliant les noyaux mamillaires aux noyaux thalamiques antérieurs.
+        mapping:
+          en: A small segmented landmark, not a reconstruction of individual axons.
+          fr: Un petit repère segmenté, et non une reconstruction d’axones individuels.
+        view: left
+        plane: sagittal
+      - id: thalamus
+        region: learning:left:thalamus
+        source_name: Thalamus
+        name: { en: Left thalamus, fr: Thalamus gauche }
+        role: { en: Anterior nuclei within this landmark, fr: Noyaux antérieurs dans ce repère }
+        explanation:
+          en: The anterior nuclei participate in hippocampal–diencephalic–cingulate interactions; they are only part of the thalamus shown.
+          fr: Les noyaux antérieurs participent aux interactions hippocampo-diencéphalo-cingulaires ; ils ne forment qu’une partie du thalamus affiché.
+        mapping:
+          en: The highlight covers the whole thalamic union, not specifically the anterior nuclei. The tour ends before the cortical branches.
+          fr: La sélection couvre l’union thalamique entière, et non les seuls noyaux antérieurs. Le parcours s’arrête avant les branches corticales.
+        view: anterior
+        plane: coronal
+    question:
+      prompt:
+        en: Does the final highlight isolate the anterior thalamic nuclei?
+        fr: La dernière sélection isole-t-elle les noyaux thalamiques antérieurs ?
+      options:
+        - { en: 'Yes, only the anterior nuclei', fr: 'Oui, uniquement les noyaux antérieurs' }
+        - { en: 'No, it shows the whole thalamic union', fr: 'Non, elle montre l’union thalamique entière' }
+        - { en: It measures their functional connectivity, fr: Elle mesure leur connectivité fonctionnelle }
+      correct: 1
+      explanation:
+        en: Teaching a nucleus’s role does not make a coarse atlas union nucleus-specific.
+        fr: Expliquer le rôle d’un noyau ne rend pas une union d’atlas spécifique à ce noyau.
+
+  - id: motor
+    name: { en: Basal ganglia motor loops, fr: Boucles motrices des ganglions de la base }
+    summary:
+      en: Compare cortical input, pallidal output and the indirect branch through six left-sided landmarks.
+      fr: Comparez l’entrée corticale, la sortie pallidale et la branche indirecte à travers six repères gauches.
+    route:
+      en: Direct branch · cortex → putamen → GPi → thalamus → cortex. Indirect branch · putamen → GPe → STN → GPi.
+      fr: Branche directe · cortex → putamen → GPi → thalamus → cortex. Branche indirecte · putamen → GPe → NST → GPi.
+    scope:
+      en: A simplified motor-loop schematic. Nigral output, dopamine modulation, hyperdirect pathways and nonmotor loops are outside this tour.
+      fr: Un schéma simplifié des boucles motrices. La sortie nigrale, la modulation dopaminergique, les voies hyperdirectes et les boucles non motrices sont hors de ce parcours.
+    clinical:
+      en: Read the curated parkinsonism evidence alongside these anatomical landmarks.
+      fr: Consultez les données sélectionnées sur le parkinsonisme à côté de ces repères anatomiques.
+    deficit: parkinsonism
+    references: [basal-ganglia, motor-learning, striatal-input]
+    steps:
+      - id: cortex
+        region: destrieux:left:29
+        source_name: G_precentral
+        name: { en: Left precentral gyrus, fr: Gyrus précentral gauche }
+        role: { en: Cortical input landmark, fr: Repère d’entrée corticale }
+        explanation:
+          en: Motor cortical areas provide excitatory input to striatal territories involved in movement.
+          fr: Les régions corticales motrices fournissent une entrée excitatrice aux territoires striataux impliqués dans le mouvement.
+        mapping:
+          en: This gyral parcel is an anatomical landmark, not the entire motor network or an individual motor map.
+          fr: Cette parcelle gyrale est un repère anatomique, et non tout le réseau moteur ni une carte motrice individuelle.
+        view: left
+        plane: coronal
+      - id: putamen
+        region: learning:left:putamen
+        source_name: Putamen
+        name: { en: Left putamen, fr: Putamen gauche }
+        role: { en: Striatal input, fr: Entrée striatale }
+        explanation:
+          en: The putamen receives cortical input. Direct and indirect projection populations have different pallidal targets.
+          fr: Le putamen reçoit des entrées corticales. Les populations des voies directe et indirecte ont des cibles pallidales différentes.
+        mapping:
+          en: The whole putamen is shown; motor territories and projection populations are not separately labelled.
+          fr: Le putamen entier est affiché ; les territoires moteurs et les populations de projection ne sont pas étiquetés séparément.
+        view: anterior
+        plane: coronal
+      - id: gpi
+        region: learning:left:pallidum-internal
+        source_name: Globus pallidus — internal
+        name: { en: Left internal globus pallidus · GPi, fr: Globus pallidus interne gauche · GPi }
+        role: { en: Inhibitory output, fr: Sortie inhibitrice }
+        explanation:
+          en: GPi sends inhibitory output to thalamic targets. Direct striatal input inhibits these output neurons.
+          fr: Le GPi envoie une sortie inhibitrice aux cibles thalamiques. L’entrée striatale directe inhibe ces neurones de sortie.
+        mapping:
+          en: The internal segment is distinguished from GPe; its motor output territories are not separated.
+          fr: Le segment interne est distingué du GPe ; ses territoires de sortie motrice ne sont pas séparés.
+        view: anterior
+        plane: coronal
+      - id: thalamus
+        region: learning:left:thalamus
+        source_name: Thalamus
+        name: { en: Left thalamus, fr: Thalamus gauche }
+        role: { en: Return toward cortex, fr: Retour vers le cortex }
+        explanation:
+          en: Motor thalamic territories receive basal ganglia output and project back to frontal cortical areas.
+          fr: Les territoires thalamiques moteurs reçoivent la sortie des ganglions de la base et projettent vers les régions corticales frontales.
+        mapping:
+          en: The whole thalamic union is highlighted; it is broader than the motor thalamic targets.
+          fr: L’union thalamique entière est sélectionnée ; elle dépasse les cibles thalamiques motrices.
+        view: anterior
+        plane: coronal
+      - id: gpe
+        region: learning:left:pallidum-external
+        source_name: Globus pallidus — external
+        name: { en: Left external globus pallidus · GPe, fr: Globus pallidus externe gauche · GPe }
+        role: { en: Indirect branch, fr: Branche indirecte }
+        explanation:
+          en: Now return to the indirect branch. Striatal inhibition of GPe changes its inhibitory influence on the subthalamic nucleus.
+          fr: Revenez à la branche indirecte. L’inhibition striatale du GPe modifie son influence inhibitrice sur le noyau sous-thalamique.
+        mapping:
+          en: This step changes branches; the previous thalamic landmark is not a serial input to GPe.
+          fr: Cette étape change de branche ; le repère thalamique précédent n’est pas une entrée sérielle vers le GPe.
+        view: anterior
+        plane: coronal
+      - id: stn
+        region: learning:left:subthalamic
+        source_name: Subthalamic nucleus
+        name: { en: Left subthalamic nucleus · STN, fr: Noyau sous-thalamique gauche · NST }
+        role: { en: Excitatory influence on output, fr: Influence excitatrice sur la sortie }
+        explanation:
+          en: The subthalamic nucleus provides excitatory projections to GPi. These interacting pathways are more complex than an on/off movement switch.
+          fr: Le noyau sous-thalamique fournit des projections excitatrices au GPi. Ces voies en interaction dépassent un simple interrupteur du mouvement.
+        mapping:
+          en: The nucleus is segmented as a whole; these relationships describe a canonical circuit, not measured activity in this individual.
+          fr: Le noyau est segmenté dans son ensemble ; ces relations décrivent un circuit canonique, et non l’activité mesurée chez cet individu.
+        view: anterior
+        plane: axial
+    question:
+      prompt:
+        en: Which is the indirect branch in this simplified schematic?
+        fr: Quelle est la branche indirecte dans ce schéma simplifié ?
+      options:
+        - { en: Putamen → GPi, fr: Putamen → GPi }
+        - { en: Thalamus → GPe → putamen, fr: Thalamus → GPe → putamen }
+        - { en: Putamen → GPe → STN → GPi, fr: Putamen → GPe → NST → GPi }
+      correct: 2
+      explanation:
+        en: GPe and STN distinguish the canonical indirect branch from the direct putamen-to-GPi branch.
+        fr: Le GPe et le NST distinguent la branche indirecte canonique de la branche directe putamen–GPi.
+
+  - id: hearing
+    name: { en: Auditory landmarks, fr: Repères auditifs }
+    summary:
+      en: Explore three left-sided auditory landmarks and distinguish parallel thalamic pathways.
+      fr: Explorez trois repères auditifs gauches et distinguez les voies thalamiques parallèles.
+    route:
+      en: Main ascending route · inferior colliculus → ventral medial geniculate → A1. Dorsal medial geniculate · a parallel branch.
+      fr: Voie ascendante principale · colliculus inférieur → corps genouillé médial ventral → A1. Corps genouillé médial dorsal · une branche parallèle.
+    scope:
+      en: The ventral geniculate relay is not a separate teaching solid here. The displayed dorsal division must not be read as the relay to A1. The ears, cochlear nuclei, other brainstem relays and auditory radiations are outside this tour.
+      fr: Le relais genouillé ventral n’a pas de volume pédagogique distinct ici. La division dorsale affichée ne doit pas être interprétée comme le relais vers A1. Les oreilles, les noyaux cochléaires, les autres relais du tronc cérébral et les radiations auditives sont hors de ce parcours.
+    clinical:
+      en: Compare hearing landmarks with word-deafness evidence. Understanding spoken words also depends on cortical processing beyond a simple ascending relay.
+      fr: Comparez les repères auditifs aux données sur la surdité verbale. Comprendre les mots entendus dépend aussi de traitements corticaux au-delà d’un simple relais ascendant.
+    deficit: word-deafness
+    references: [auditory-pathways, auditory-thalamus, cortical-parcellation]
+    steps:
+      - id: colliculus
+        region: learning:left:inferior-colliculus
+        source_name: Inferior colliculus central nucleus
+        name: { en: Left inferior colliculus central nucleus, fr: Noyau central du colliculus inférieur gauche }
+        role: { en: Midbrain auditory convergence, fr: Convergence auditive mésencéphalique }
+        explanation:
+          en: Ascending auditory pathways converge in the inferior colliculus. By this level, auditory information is not organized as one ear per hemisphere.
+          fr: Les voies auditives ascendantes convergent dans le colliculus inférieur. À ce niveau, les informations auditives ne sont pas organisées selon une oreille par hémisphère.
+        mapping:
+          en: Only the central nucleus is highlighted, not the entire inferior colliculus or its incoming fibres.
+          fr: Seul le noyau central est sélectionné, et non le colliculus inférieur entier ni ses fibres afférentes.
+        view: posterior
+        plane: axial
+      - id: dorsal-geniculate
+        region: learning:left:medial-geniculate
+        source_name: Dorsal medial geniculate nucleus
+        name: { en: Left dorsal medial geniculate nucleus, fr: Noyau genouillé médial dorsal gauche }
+        role: { en: Parallel auditory thalamic branch, fr: Branche thalamique auditive parallèle }
+        explanation:
+          en: Locate the dorsal division. Geniculate subdivisions have different cortical targets; the main relay to A1 is the ventral division, not this highlighted nucleus.
+          fr: Repérez la division dorsale. Les subdivisions genouillées ont des cibles corticales différentes ; le relais principal vers A1 est la division ventrale, et non ce noyau sélectionné.
+        mapping:
+          en: The exact source label is dorsal medial geniculate nucleus. It cannot substitute for the whole medial geniculate body or its ventral division.
+          fr: L’étiquette source exacte est le noyau genouillé médial dorsal. Elle ne remplace ni le corps genouillé médial entier ni sa division ventrale.
+        view: posterior
+        plane: coronal
+      - id: a1
+        region: hcp-mmp:left:24
+        source_name: L_A1_ROI
+        name: { en: Left primary auditory cortex · A1, fr: Cortex auditif primaire gauche · A1 }
+        role: { en: Cortical auditory landmark, fr: Repère auditif cortical }
+        explanation:
+          en: Now visit A1, which receives the main ventral geniculate input. This move changes branches; it does not demonstrate a serial dorsal-geniculate-to-A1 connection.
+          fr: Visitez maintenant A1, qui reçoit l’entrée genouillée ventrale principale. Ce déplacement change de branche ; il ne démontre pas une connexion sérielle du noyau genouillé dorsal vers A1.
+        mapping:
+          en: This HCP-MMP parcel is mapped onto the individual surface. It is not a measured auditory response or an individual tonotopic map.
+          fr: Cette parcelle HCP-MMP est projetée sur la surface individuelle. Elle ne constitue ni une réponse auditive mesurée ni une carte tonotopique individuelle.
+        view: left
+        plane: coronal
+    question:
+      prompt:
+        en: Which geniculate division did the highlighted teaching solid show?
+        fr: Quelle division genouillée le volume pédagogique sélectionné montrait-il ?
+      options:
+        - { en: The ventral relay to A1, fr: Le relais ventral vers A1 }
+        - { en: The dorsal division, fr: La division dorsale }
+        - { en: Every medial geniculate subdivision, fr: Toutes les subdivisions genouillées médiales }
+      correct: 1
+      explanation:
+        en: The source isolates the dorsal division. Knowing the main auditory route does not change the identity of the segmented landmark.
+        fr: La source isole la division dorsale. Connaître la voie auditive principale ne change pas l’identité du repère segmenté.
+
+  - id: touch
+    name: { en: Touch and cortical sensation, fr: Toucher et sensibilité corticale }
+    summary:
+      en: Locate a thalamic relay territory and two cortical landmarks for somatic sensation.
+      fr: Repérez un territoire de relais thalamique et deux repères corticaux de la sensibilité somatique.
+    route:
+      en: Body input → ventral posterior thalamic territories → primary somatosensory cortex ↔ parietal opercular sensory territories.
+      fr: Entrées corporelles → territoires thalamiques ventraux postérieurs → cortex somatosensoriel primaire ↔ territoires sensitifs de l’opercule pariétal.
+    scope:
+      en: A left-sided thalamocortical landmark tour. The spinal pathways, brainstem crossings and individual body-part maps are not displayed. Somatosensory processing includes parallel and reciprocal connections.
+      fr: Un parcours de repères thalamo-corticaux gauches. Les voies spinales, les croisements du tronc cérébral et les cartes individuelles des parties du corps ne sont pas affichés. Le traitement somatosensoriel comprend des connexions parallèles et réciproques.
+    clinical:
+      en: Read the upper-limb sensory-loss evidence and compare its lesion findings with these larger reference landmarks.
+      fr: Consultez les données sur les déficits sensitifs du membre supérieur et comparez leurs résultats lésionnels à ces repères de référence plus étendus.
+    deficit: somatosensory
+    references: [somatic-cortex, opercular-somatotopy, cortical-parcellation]
+    steps:
+      - id: thalamus
+        region: learning:left:thalamus
+        source_name: Thalamus
+        name: { en: Left thalamus, fr: Thalamus gauche }
+        role: { en: Sensory relay territory within this union, fr: Territoire de relais sensitif dans cette union }
+        explanation:
+          en: Ventral posterior thalamic territories relay somatic information toward cortex. Body and face inputs involve different territories within this larger landmark.
+          fr: Les territoires thalamiques ventraux postérieurs relaient les informations somatiques vers le cortex. Les entrées du corps et du visage concernent des territoires différents dans ce repère plus vaste.
+        mapping:
+          en: The whole thalamic union is selected. This view does not isolate the ventral posterolateral or ventral posteromedial nucleus.
+          fr: L’union thalamique entière est sélectionnée. Cette vue n’isole ni le noyau ventral postérolatéral ni le noyau ventral postéromédial.
+        view: anterior
+        plane: coronal
+      - id: area3b
+        region: hcp-mmp:left:9
+        source_name: L_3b_ROI
+        name: { en: Left somatosensory area 3b, fr: Aire somatosensorielle 3b gauche }
+        role: { en: Mainly contralateral cutaneous input, fr: Entrées cutanées principalement contralatérales }
+        explanation:
+          en: Area 3b is a primary cortical recipient of cutaneous input, principally from the opposite side of the body. Areas 3a, 1 and 2 contribute other aspects of primary somatosensory processing.
+          fr: L’aire 3b reçoit des entrées cutanées corticales primaires, principalement du côté opposé du corps. Les aires 3a, 1 et 2 contribuent à d’autres aspects du traitement somatosensoriel primaire.
+        mapping:
+          en: The HCP-MMP parcel is a reference area mapped onto the surface, not the entire S1 complex or a localized hand representation.
+          fr: La parcelle HCP-MMP est une aire de référence projetée sur la surface, et non tout le complexe S1 ni une représentation localisée de la main.
+        view: left
+        plane: axial
+      - id: op1
+        region: hcp-mmp:left:101
+        source_name: L_OP1_ROI
+        name: { en: Left parietal opercular area OP1, fr: Aire OP1 de l’opercule pariétal gauche }
+        role: { en: Secondary somatosensory territory, fr: Territoire somatosensoriel secondaire }
+        explanation:
+          en: OP1 marks a parietal opercular territory associated with secondary somatosensory processing. The operculum contains several sensory areas and body maps, rather than one undivided S2 region.
+          fr: OP1 repère un territoire de l’opercule pariétal associé au traitement somatosensoriel secondaire. L’opercule contient plusieurs aires sensitives et cartes corporelles, plutôt qu’une région S2 indivisée.
+        mapping:
+          en: The HCP-MMP OP1 parcel is a landmark for this territory; it does not reproduce the study’s tactile activation maps in this individual.
+          fr: La parcelle OP1 de HCP-MMP sert de repère pour ce territoire ; elle ne reproduit pas les cartes d’activation tactile de l’étude chez cet individu.
+        view: inferior
+        plane: coronal
+    question:
+      prompt:
+        en: Which side of the body principally supplies cutaneous input to left area 3b?
+        fr: Quel côté du corps fournit principalement les entrées cutanées à l’aire 3b gauche ?
+      options:
+        - { en: The left side, fr: Le côté gauche }
+        - { en: Only the left hand, fr: Uniquement la main gauche }
+        - { en: The right side, fr: Le côté droit }
+      correct: 2
+      explanation:
+        en: Primary somatosensory representations are mainly contralateral. The whole area shown is not a hand-specific map.
+        fr: Les représentations somatosensorielles primaires sont principalement contralatérales. L’aire entière affichée n’est pas une carte spécifique à la main.
+
+  - id: language
+    name: { en: Language network landmarks, fr: Repères du réseau du langage }
+    summary:
+      en: Compare temporal and frontal landmarks within distributed speech and language systems.
+      fr: Comparez des repères temporaux et frontaux au sein des systèmes distribués de la parole et du langage.
+    route:
+      en: Temporal sound analysis ↔ ventral meaning-related systems and dorsal sensorimotor systems ↔ frontal language territories.
+      fr: Analyse temporale des sons ↔ systèmes ventraux liés au sens et systèmes dorsaux sensorimoteurs ↔ territoires frontaux du langage.
+    scope:
+      en: Four left-sided landmarks, not a serial comprehension-to-production chain. Speech processing also involves the right hemisphere, additional cortical territories and white-matter pathways that this tour does not reconstruct.
+      fr: Quatre repères gauches, et non une chaîne sérielle de la compréhension vers la production. Le traitement de la parole implique aussi l’hémisphère droit, d’autres territoires corticaux et des voies de substance blanche que ce parcours ne reconstruit pas.
+    clinical:
+      en: Compare the aphasia evidence across comprehension, naming and speech tasks. Different tasks and lesions need not identify the same critical territory.
+      fr: Comparez les données sur l’aphasie selon les tâches de compréhension, de dénomination et de parole. Des tâches et des lésions différentes ne désignent pas nécessairement le même territoire critique.
+    deficit: aphasia
+    references: [speech-streams, speech-feedback, cortical-parcellation]
+    steps:
+      - id: superior-temporal
+        region: destrieux:left:34
+        source_name: G_temp_sup-Lateral
+        name: { en: Left lateral superior temporal gyrus, fr: Partie latérale du gyrus temporal supérieur gauche }
+        role: { en: Temporal speech-sound landmark, fr: Repère temporal des sons de la parole }
+        explanation:
+          en: Temporal cortices on both sides contribute to analysing speech sounds. Begin at this left-sided anatomical landmark before comparing meaning-related and frontal territories.
+          fr: Les cortex temporaux des deux côtés contribuent à l’analyse des sons de la parole. Commencez par ce repère anatomique gauche avant de comparer les territoires liés au sens et les territoires frontaux.
+        mapping:
+          en: The entire lateral superior temporal parcel is shown. It is broader than a speech-responsive cluster and does not define one fixed Wernicke area.
+          fr: Toute la parcelle temporale supérieure latérale est affichée. Elle dépasse un foyer répondant à la parole et ne définit pas une aire de Wernicke fixe.
+        view: left
+        plane: coronal
+      - id: middle-temporal
+        region: destrieux:left:38
+        source_name: G_temporal_middle
+        name: { en: Left middle temporal gyrus, fr: Gyrus temporal moyen gauche }
+        role: { en: Meaning-related temporal territory, fr: Territoire temporal lié au sens }
+        explanation:
+          en: Temporal regions contribute to linking words with meaning. Semantic processing is distributed and cannot be assigned to this gyrus alone.
+          fr: Des régions temporales contribuent à relier les mots à leur sens. Le traitement sémantique est distribué et ne peut pas être attribué à ce seul gyrus.
+        mapping:
+          en: This Destrieux parcel covers the whole gyrus, including portions with different contributions to language tasks.
+          fr: Cette parcelle Destrieux couvre le gyrus entier, y compris des portions contribuant différemment aux tâches de langage.
+        view: left
+        plane: coronal
+      - id: area44
+        region: hcp-mmp:left:74
+        source_name: L_44_ROI
+        name: { en: Left inferior frontal area 44, fr: Aire frontale inférieure 44 gauche }
+        role: { en: Frontal speech-network landmark, fr: Repère frontal du réseau de la parole }
+        explanation:
+          en: Switch to a frontal landmark. Dorsal speech systems link temporal sound representations with frontal articulatory networks; this is not a direct tract traced from the preceding gyrus.
+          fr: Passez à un repère frontal. Les systèmes dorsaux de la parole relient des représentations sonores temporales aux réseaux articulatoires frontaux ; aucun tractus direct depuis le gyrus précédent n’est tracé ici.
+        mapping:
+          en: HCP-MMP area 44 is an atlas parcel, not an individual functional localization of speech production or the whole of Broca’s region.
+          fr: L’aire 44 de HCP-MMP est une parcelle d’atlas, et non une localisation fonctionnelle individuelle de la production de parole ni toute la région de Broca.
+        view: left
+        plane: axial
+      - id: area45
+        region: hcp-mmp:left:75
+        source_name: L_45_ROI
+        name: { en: Left inferior frontal area 45, fr: Aire frontale inférieure 45 gauche }
+        role: { en: Adjacent frontal language territory, fr: Territoire frontal adjacent du langage }
+        explanation:
+          en: Locate the adjacent inferior frontal parcel. Frontal and temporal territories interact during language tasks; visiting them in order does not imply that each is a single-purpose language centre.
+          fr: Repérez la parcelle frontale inférieure adjacente. Les territoires frontaux et temporaux interagissent pendant les tâches de langage ; les visiter dans cet ordre n’implique pas que chacun soit un centre du langage à fonction unique.
+        mapping:
+          en: The parcel boundary comes from HCP-MMP. The reference surface alone cannot determine this person’s language dominance or task responses.
+          fr: La limite de la parcelle provient de HCP-MMP. La surface de référence seule ne permet pas de déterminer la dominance du langage ni les réponses aux tâches de cette personne.
+        view: left
+        plane: axial
+    question:
+      prompt:
+        en: What does this tour support about language organization?
+        fr: Que permet d’apprendre ce parcours sur l’organisation du langage ?
+      options:
+        - { en: Distributed temporal and frontal systems contribute, fr: Des systèmes temporaux et frontaux distribués contribuent }
+        - { en: One parcel performs all comprehension, fr: Une parcelle réalise toute la compréhension }
+        - { en: The atlas measures individual language dominance, fr: L’atlas mesure la dominance individuelle du langage }
+      correct: 0
+      explanation:
+        en: Language uses interacting systems with task-dependent contributions. Anatomical parcels alone do not measure individual function or lateralization.
+        fr: Le langage mobilise des systèmes en interaction dont les contributions dépendent de la tâche. Les parcelles anatomiques seules ne mesurent ni la fonction ni la latéralisation individuelles.
+
+  - id: attention
+    name: { en: Spatial attention systems, fr: Systèmes de l’attention spatiale }
+    summary:
+      en: Compare goal-directed orienting and reorienting through three right-sided cortical landmarks.
+      fr: Comparez l’orientation guidée par un objectif et la réorientation à travers trois repères corticaux droits.
+    route:
+      en: Dorsal system · intraparietal territories ↔ frontal eye fields. Ventral system · temporoparietal and frontal territories interact during reorienting.
+      fr: Système dorsal · territoires intrapariétaux ↔ champs oculaires frontaux. Système ventral · territoires temporopariétaux et frontaux en interaction lors de la réorientation.
+    scope:
+      en: The dorsal attention network is bilateral; this tour shows only its right-sided landmarks. Ventral reorienting responses often show right dominance. The frontal ventral components and other network nodes are outside this tour.
+      fr: Le réseau dorsal de l’attention est bilatéral ; ce parcours montre seulement ses repères droits. Les réponses ventrales de réorientation présentent souvent une dominance droite. Les composantes frontales ventrales et les autres nœuds du réseau sont hors de ce parcours.
+    clinical:
+      en: Read the neglect evidence as a network problem with varied lesion patterns, rather than a consequence predicted by one highlighted parcel.
+      fr: Consultez les données sur la négligence comme un problème de réseau aux profils lésionnels variés, plutôt qu’une conséquence prédite par une seule parcelle sélectionnée.
+    deficit: neglect
+    references: [attention-systems, attention-laterality, cortical-parcellation]
+    steps:
+      - id: ips1
+        region: hcp-mmp:right:17
+        source_name: R_IPS1_ROI
+        name: { en: Right intraparietal area IPS1, fr: Aire intrapariétale IPS1 droite }
+        role: { en: Goal-directed spatial selection, fr: Sélection spatiale guidée par un objectif }
+        explanation:
+          en: Intraparietal territories participate in selecting locations according to current goals. Start with this right-sided landmark of the bilateral dorsal attention system.
+          fr: Les territoires intrapariétaux participent à la sélection de positions selon les objectifs actuels. Commencez par ce repère droit du système dorsal bilatéral de l’attention.
+        mapping:
+          en: IPS1 is one HCP-MMP parcel within a larger intraparietal territory. It is not the entire dorsal attention network or an individual attention activation map.
+          fr: IPS1 est une parcelle HCP-MMP dans un territoire intrapariétal plus vaste. Elle ne représente ni tout le réseau dorsal de l’attention ni une carte individuelle d’activation attentionnelle.
+        view: right
+        plane: axial
+      - id: fef
+        region: hcp-mmp:right:10
+        source_name: R_FEF_ROI
+        name: { en: Right frontal eye field · FEF, fr: Champ oculaire frontal droit · FEF }
+        role: { en: Frontal orienting landmark, fr: Repère frontal de l’orientation }
+        explanation:
+          en: Frontal eye fields contribute to orienting attention and controlling eye movements. They interact with parietal territories rather than acting as an isolated attention switch.
+          fr: Les champs oculaires frontaux contribuent à orienter l’attention et à contrôler les mouvements oculaires. Ils interagissent avec les territoires pariétaux plutôt que d’agir comme un interrupteur attentionnel isolé.
+        mapping:
+          en: The FEF atlas label supplies a cortical landmark; no eye-movement localizer or connection between these parcels was measured in this brain.
+          fr: L’étiquette FEF de l’atlas fournit un repère cortical ; aucune localisation des mouvements oculaires ni connexion entre ces parcelles n’a été mesurée dans ce cerveau.
+        view: right
+        plane: axial
+      - id: tpoj1
+        region: hcp-mmp:right:139
+        source_name: R_TPOJ1_ROI
+        name: { en: Right temporoparietal area TPOJ1, fr: Aire temporopariétale TPOJ1 droite }
+        role: { en: Landmark for reorienting territory, fr: Repère d’un territoire de réorientation }
+        explanation:
+          en: Change to a temporoparietal landmark near ventral attention territories. Unexpected task-relevant events can recruit reorienting interactions; this step changes systems rather than extending a serial IPS1-to-FEF chain.
+          fr: Passez à un repère temporopariétal proche des territoires ventraux de l’attention. Des événements inattendus pertinents pour la tâche peuvent mobiliser des interactions de réorientation ; cette étape change de système plutôt que de prolonger une chaîne sérielle d’IPS1 vers FEF.
+        mapping:
+          en: TPOJ1 is an anatomical atlas landmark, not the exact temporoparietal cluster from an attention experiment or a lesion study.
+          fr: TPOJ1 est un repère anatomique d’atlas, et non le foyer temporopariétal exact d’une expérience attentionnelle ou d’une étude lésionnelle.
+        view: right
+        plane: coronal
+    question:
+      prompt:
+        en: Does this right-sided tour mean that the dorsal attention network exists only on the right?
+        fr: Ce parcours droit signifie-t-il que le réseau dorsal de l’attention existe seulement à droite ?
+      options:
+        - { en: Yes — attention is exclusively right-sided, fr: Oui — l’attention est exclusivement droite }
+        - { en: No — the dorsal network is bilateral, fr: Non — le réseau dorsal est bilatéral }
+        - { en: Yes — the left hemisphere processes only language, fr: Oui — l’hémisphère gauche traite seulement le langage }
+      correct: 1
+      explanation:
+        en: Tour laterality is a teaching choice. The bilateral dorsal system differs from the right dominance often seen in ventral reorienting responses.
+        fr: La latéralité du parcours est un choix pédagogique. Le système dorsal bilatéral se distingue de la dominance droite souvent observée dans les réponses ventrales de réorientation.
+
+  - id: cerebellar
+    name: { en: Cerebellar output and crossing, fr: Sortie cérébelleuse et croisement }
+    summary:
+      en: Follow a left cerebellar output branch toward the opposite thalamus and cerebral motor cortex.
+      fr: Suivez une branche de sortie du cervelet gauche vers le thalamus et le cortex moteur cérébral opposés.
+    route:
+      en: Left cerebellar cortex → left dentate → left superior peduncle → midbrain crossing → right motor thalamus → right motor cortex.
+      fr: Cortex cérébelleux gauche → noyau dentelé gauche → pédoncule supérieur gauche → croisement mésencéphalique → thalamus moteur droit → cortex moteur droit.
+    scope:
+      en: One simplified dentate output branch, not the full cerebellar loop. Incoming mossy and climbing fibres, other deep nuclei and return pathways are omitted. The crossing is explained, not reconstructed as individual axons.
+      fr: Une branche de sortie dentelée simplifiée, et non toute la boucle cérébelleuse. Les fibres moussues et grimpantes afférentes, les autres noyaux profonds et les voies de retour sont omis. Le croisement est expliqué, et non reconstruit en axones individuels.
+    clinical:
+      en: Compare these output landmarks with cerebellar ataxia evidence. Lesion location within the cerebellum matters; the entire cortex is not one uniform motor territory.
+      fr: Comparez ces repères de sortie aux données sur l’ataxie cérébelleuse. La localisation lésionnelle dans le cervelet importe ; tout le cortex ne constitue pas un territoire moteur uniforme.
+    deficit: ataxia
+    references: [cerebellar-organization, cerebellar-peduncles, cortical-parcellation]
+    steps:
+      - id: cortex
+        region: learning:cerebellar-cortex-left
+        source_name: Cerebellar cortex
+        name: { en: Left cerebellar cortex, fr: Cortex cérébelleux gauche }
+        role: { en: Cortical influence on deep nuclei, fr: Influence corticale sur les noyaux profonds }
+        explanation:
+          en: Purkinje cells provide inhibitory output from cerebellar cortex toward deep nuclei. The lateral hemispheric territory contributes to the dentate branch visited next.
+          fr: Les cellules de Purkinje fournissent une sortie inhibitrice du cortex cérébelleux vers les noyaux profonds. Le territoire hémisphérique latéral contribue à la branche dentelée visitée ensuite.
+        mapping:
+          en: The whole left cerebellar cortex is highlighted, not only the lateral territory projecting to the dentate or its motor subdivisions.
+          fr: Tout le cortex cérébelleux gauche est sélectionné, et non seulement le territoire latéral projetant vers le noyau dentelé ni ses subdivisions motrices.
+        view: posterior
+        plane: coronal
+      - id: dentate
+        region: learning:left:dentate
+        source_name: Cerebellar dentate nucleus
+        covering_region: learning:cerebellar-cortex-left
+        name: { en: Left cerebellar dentate nucleus, fr: Noyau dentelé cérébelleux gauche }
+        role: { en: Deep cerebellar output, fr: Sortie cérébelleuse profonde }
+        explanation:
+          en: The covering cerebellar cortex is hidden to expose this deep nucleus. Dentate output ascends through the superior cerebellar peduncle toward targets that include the contralateral thalamus.
+          fr: Le cortex cérébelleux qui le recouvre est masqué pour exposer ce noyau profond. La sortie dentelée monte par le pédoncule cérébelleux supérieur vers des cibles comprenant le thalamus contralatéral.
+        mapping:
+          en: The whole dentate is shown without separate motor and nonmotor territories. Returning to the cerebellar cortex landmark restores its covering layer. MRI retains the complete volume.
+          fr: Le noyau dentelé entier est affiché sans séparer les territoires moteurs et non moteurs. Revenir au repère du cortex cérébelleux rétablit sa couche de couverture. L’IRM conserve le volume complet.
+        view: posterior
+        plane: coronal
+      - id: superior-peduncle
+        region: learning:left:superior-cerebellar-peduncle
+        source_name: Superior cerebellar peduncle
+        name: { en: Left superior cerebellar peduncle, fr: Pédoncule cérébelleux supérieur gauche }
+        role: { en: Output before the midbrain crossing, fr: Sortie avant le croisement mésencéphalique }
+        explanation:
+          en: This peduncle carries major cerebellar output. The dentatothalamic branch crosses in the midbrain, so the next landmark is on the right.
+          fr: Ce pédoncule véhicule une importante sortie cérébelleuse. La branche dentato-thalamique croise dans le mésencéphale ; le repère suivant se trouve donc à droite.
+        mapping:
+          en: The segmented left peduncle does not trace the decussation or isolate dentatothalamic fibres from its other pathways.
+          fr: Le pédoncule gauche segmenté ne trace pas la décussation et n’isole pas les fibres dentato-thalamiques de ses autres voies.
+        view: posterior
+        plane: coronal
+      - id: thalamus
+        region: learning:right:thalamus
+        source_name: Thalamus
+        name: { en: Right thalamus, fr: Thalamus droit }
+        role: { en: Contralateral motor relay territory, fr: Territoire de relais moteur contralatéral }
+        explanation:
+          en: After crossing, left dentate output reaches right thalamic territories involved in motor loops. Thalamic projections then reach right frontal motor areas.
+          fr: Après le croisement, la sortie dentelée gauche atteint des territoires thalamiques droits impliqués dans les boucles motrices. Les projections thalamiques rejoignent ensuite les aires motrices frontales droites.
+        mapping:
+          en: The whole right thalamic union is highlighted, not specifically its ventrolateral cerebellar-recipient territory.
+          fr: L’union thalamique droite entière est sélectionnée, et non spécifiquement son territoire ventrolatéral recevant les entrées cérébelleuses.
+        view: anterior
+        plane: coronal
+      - id: motor-cortex
+        region: hcp-mmp:right:8
+        source_name: R_4_ROI
+        name: { en: Right primary motor area 4, fr: Aire motrice primaire 4 droite }
+        role: { en: Cerebral motor output landmark, fr: Repère de sortie motrice cérébrale }
+        explanation:
+          en: Visit a right motor cortical landmark downstream of the crossed cerebellar output. The principal corticospinal projection crosses again, helping explain the cerebellum’s influence on the same side of the body.
+          fr: Visitez un repère cortical moteur droit en aval de la sortie cérébelleuse croisée. La projection corticospinale principale croise à nouveau, ce qui contribue à expliquer l’influence du cervelet sur le même côté du corps.
+        mapping:
+          en: This HCP-MMP area 4 parcel is a reference motor landmark. Neither the corticospinal tract nor a subject-specific motor map is reconstructed in this tour.
+          fr: Cette parcelle de l’aire 4 de HCP-MMP est un repère moteur de référence. Ni le tractus corticospinal ni une carte motrice propre au sujet ne sont reconstruits dans ce parcours.
+        view: right
+        plane: axial
+    question:
+      prompt:
+        en: After the superior peduncle crossing, which thalamic side receives this left dentate output branch?
+        fr: Après le croisement du pédoncule supérieur, quel côté thalamique reçoit cette branche de sortie dentelée gauche ?
+      options:
+        - { en: The left thalamus, fr: Le thalamus gauche }
+        - { en: Neither thalamus — only the spinal cord, fr: Aucun thalamus — uniquement la moelle épinière }
+        - { en: The right thalamus, fr: Le thalamus droit }
+      correct: 2
+      explanation:
+        en: This dentatothalamic branch crosses in the midbrain. The whole right thalamic highlight is broader than its specific motor relay target.
+        fr: Cette branche dentato-thalamique croise dans le mésencéphale. La sélection thalamique droite entière dépasse sa cible précise de relais moteur.
