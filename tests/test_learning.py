@@ -8,6 +8,26 @@ from brain_model.sources import read_config
 from brain_model.volumes import load_on_grid, resample_nearest
 
 
+def test_subject_overview_exclusions_preserve_other_units_and_subjects():
+    shared = read_definition({"anatomy": {}})
+    selected = read_definition({"anatomy": {"learning": {
+        "exclude_aseg_units": ["corpus-callosum"],
+    }}})
+    assert "corpus-callosum" not in {unit["id"] for unit in selected["aseg"]}
+    assert "corpus-callosum" in {unit["id"] for unit in shared["aseg"]}
+    assert selected["nextbrain"] == shared["nextbrain"]
+    assert selected["aseg"] == [
+        unit for unit in shared["aseg"] if unit["id"] != "corpus-callosum"
+    ]
+
+
+def test_an_unknown_overview_exclusion_is_refused():
+    with pytest.raises(ValueError, match="Unknown aseg overview units"):
+        read_definition({"anatomy": {"learning": {
+            "exclude_aseg_units": ["not-a-region"],
+        }}})
+
+
 def test_unions_preserve_every_member_voxel_and_exclude_other_labels():
     source = np.array([[[0, 48, 118, 393, 79]]], dtype=np.int32)
     original = source.copy()
@@ -93,7 +113,7 @@ def test_the_cerebellum_is_published_as_a_body_not_only_its_deep_nuclei():
     # them: NextBrain has no cerebellar cortex, so on this level the cerebellum
     # was two small bodies in open space. aseg has the mantle; it comes from
     # there, the way the ventricles and corpus callosum already do.
-    definition = read_definition()
+    definition = read_definition(read_config())
     claimed = {label for unit in definition["aseg"] for label in unit["labels"]}
     assert {8, 47} <= claimed
 
@@ -112,7 +132,7 @@ def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
         np.asarray(image.dataobj), image.header.get_vox2ras_tkr(),
         grid.voxel_to_surface, labels.shape,
     )
-    definition = read_definition()
+    definition = read_definition(config)
     covered = np.isin(aseg, [label for unit in definition["aseg"] for label in unit["labels"]])
     for unit in definition["nextbrain"]:
         members = [

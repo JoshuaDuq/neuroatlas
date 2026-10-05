@@ -90,6 +90,7 @@
     </noscript>
     <div id="app" data-status="loading">
       <header id="masthead">
+        <a id="skip-to-model" class="skip-link" href="#viewport" hidden>Skip to model</a>
         <div class="identity">
           <svg class="brand-mark" width="36" height="36" viewBox="0 0 36 36"
                fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
@@ -98,120 +99,124 @@
             <path d="M18 7c3-4 8-1 8 3 5 0 7 6 4 9 2 4-1 9-5 9 0 4-7 5-7 0" />
             <path d="M10 10c0 3 2 4 4 4M6 19c2-2 5-2 7 0m-2 9c0-3 1-5 4-5m11-13c0 3-2 4-4 4m8 5c-2-2-5-2-7 0m2 9c0-3-1-5-4-5" />
           </svg>
-          <div class="identity-text">
-            <div class="brand-lockup">
-              <h1 class="brand">NeuroAtlas</h1>
-              <p id="brand-description" class="brand-description">Interactive brain atlas</p>
+          <h1 class="brand">NeuroAtlas</h1>
+        </div>
+        <!-- One set of data controls: a bar where it fits, a popover behind the summary where it does not. -->
+        <div id="masthead-data-wrap" class="masthead-data-wrap">
+          <button id="masthead-data-toggle" class="data-toggle" type="button"
+                  aria-expanded="false" aria-controls="masthead-data">
+            <span id="masthead-data-summary" class="data-summary"></span>
+          </button>
+          <div id="masthead-data" class="masthead-data">
+            <div class="data-field">
+              <label id="subject-label" class="data-label" for="anatomy-switch">Subject</label>
+              <p id="study-name" class="study-name" hidden></p>
+              <select id="anatomy-switch" hidden></select>
+            </div>
+            <div class="data-field" data-anatomy-display>
+              <span id="atlas-control-label" class="data-label">Atlas</span>
+              <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
+            </div>
+            <div id="surface-field" class="data-field">
+              <span id="surface-control-label" class="data-label">Colour</span>
+              <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
+            </div>
+            <div class="data-field" data-anatomy-display>
+              <label id="detail-label" class="data-label" for="detail">Internal anatomy</label>
+              <select id="detail"></select>
             </div>
           </div>
         </div>
-        <p id="workspace-source" class="workspace-source"></p>
         <div class="masthead-end">
-          <button id="viewport-fullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <button id="viewport-fullscreen" class="icon-button" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
               <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
             </svg>
             <span class="masthead-action-label"></span>
           </button>
-          <button id="viewport-snapshot" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <button id="viewport-snapshot" class="icon-button" type="button" aria-label="Save image (PNG)" title="Save image (PNG)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M8 5l2-2h4l2 2h4v15H4V5h4Z" /><circle cx="12" cy="12" r="4" />
             </svg>
             <span class="masthead-action-label"></span>
           </button>
-          <button id="masthead-more" type="button" aria-expanded="false"
+          <button id="masthead-more" class="icon-button" type="button" aria-expanded="false"
                   aria-controls="masthead-menu" aria-label="More settings" hidden>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
             </svg>
           </button>
           <div id="masthead-menu" hidden>
-            <span id="region-count" class="measure"></span>
-            <span class="masthead-sep" aria-hidden="true"></span>
-            <div id="lang-switch" class="segmented" role="group" aria-label="Language">
-              <button type="button" data-lang="en" aria-pressed="true">EN</button>
-              <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+            <div class="menu-row">
+              <span id="lang-label" class="menu-label">Language</span>
+              <div id="lang-switch" class="segmented" role="group" aria-labelledby="lang-label">
+                <button type="button" data-lang="en" aria-pressed="true">EN</button>
+                <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+              </div>
+            </div>
+            <div class="menu-row">
+              <span id="theme-label" class="menu-label">Theme</span>
+              <div id="theme-switch" class="segmented" role="group" aria-labelledby="theme-label">
+                <button type="button" data-theme-option="light" aria-pressed="true">Light</button>
+                <button type="button" data-theme-option="dark" aria-pressed="false">Dark</button>
+              </div>
+            </div>
+            <div class="menu-row">
+              <span id="single-keys-label" class="menu-label">Single-key shortcuts</span>
+              <div id="single-keys-switch" class="segmented" role="group" aria-labelledby="single-keys-label">
+                <button type="button" data-single-keys="on" aria-pressed="true">On</button>
+                <button type="button" data-single-keys="off" aria-pressed="false">Off</button>
+              </div>
             </div>
             <span class="masthead-sep" aria-hidden="true"></span>
-            <button id="theme-toggle" type="button" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" />
-              </svg>
-              <span id="theme-label">Light</span>
-            </button>
-            <button id="shortcuts-open" type="button" aria-label="Keyboard shortcuts">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                   stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="14" rx="2" />
-                <path d="M7 9h.01M12 9h.01M17 9h.01M7 12h.01M12 12h.01M17 12h.01M8 15h8" />
-              </svg>
-              <span id="shortcuts-label" class="masthead-action-label"></span>
+            <button id="menu-fullscreen" class="menu-item" type="button" hidden>Full screen</button>
+            <button id="menu-provenance" class="menu-item" type="button" aria-haspopup="dialog" data-opens-provenance>Provenance</button>
+            <button id="shortcuts-open" class="menu-item" type="button" aria-label="Keyboard shortcuts">
+              <span id="shortcuts-label"></span>
+              <kbd aria-hidden="true">?</kbd>
             </button>
           </div>
         </div>
       </header>
 
-      <main id="viewport">
-        <div class="viewport-context" aria-hidden="true">
-          <span id="viewport-title">3D anatomy</span>
-        </div>
-        <p id="viewport-help" class="viewport-help" aria-hidden="true">Drag to rotate · Scroll to zoom</p>
-        <div id="orientation" class="orientation" aria-hidden="true">
-          <span data-edge="top"></span><span data-edge="right"></span>
-          <span data-edge="bottom"></span><span data-edge="left"></span>
-        </div>
-        <div id="views" class="views" role="group" aria-label="Anatomical view"></div>
-        <div id="scale-bar" class="scale-bar" aria-hidden="true">
-          <span class="scale-bar-rule"></span>
-          <span class="measure"></span>
-        </div>
-        <ul id="network-legend" class="network-legend" aria-label="Network colours" hidden></ul>
-        <div id="hover-label" class="chip hover-label" aria-hidden="true" hidden></div>
-        <div id="stage" class="stage" role="status">
-          <p id="stage-message">Loading anatomy…</p>
-          <div id="stage-progress" class="progress" hidden>
-            <span id="stage-bar"></span>
-          </div>
-          <button id="stage-retry" type="button" hidden>Retry</button>
-        </div>
-      </main>
-
       <!-- The task panel becomes a draggable sheet on phones. -->
       <div id="sheet">
         <div id="sheet-grip" class="sheet-grip" hidden>
-          <button id="sheet-handle" type="button" aria-expanded="false" aria-controls="sheet"
-                  aria-label="Expand panel"><span class="sheet-handle-bar"></span></button>
-          <button id="sheet-selection" type="button" class="sheet-selection" hidden>
-            <span id="sheet-selection-name" class="sheet-selection-name"></span>
-            <span id="sheet-selection-side" class="sheet-selection-side measure"></span>
-            <svg class="sheet-selection-chevron" width="12" height="12" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
-          </button>
-          <p id="sheet-disclaimer" class="sheet-disclaimer"></p>
-          <div id="sheet-tabs" class="rail-tabs sheet-tabs" role="tablist" aria-label="Panels"></div>
+          <div class="sheet-grip-row">
+            <button id="sheet-handle" type="button" aria-expanded="false" aria-controls="sheet"
+                    aria-label="Expand panel"><span class="sheet-handle-bar"></span></button>
+            <button id="sheet-selection" type="button" class="sheet-selection" hidden>
+              <span id="sheet-selection-name" class="sheet-selection-name"></span>
+              <span id="sheet-selection-side" class="sheet-selection-side"></span>
+              <svg class="sheet-selection-chevron" width="12" height="12" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                   stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+            </button>
+            <button id="sheet-selection-clear" class="icon-button" type="button" aria-label="Clear selection" hidden>
+              <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+            </button>
+            <p id="sheet-disclaimer" class="sheet-disclaimer"></p>
+          </div>
+          <div id="sheet-tabs" class="rail-tabs sheet-tabs" role="tablist" aria-label="Explore the atlas"></div>
         </div>
 
         <div id="workspace-panel">
-          <div id="workspace-tabs" class="rail-tabs workspace-tabs" role="tablist" aria-label="Workspace" hidden></div>
-          <button id="workspace-selection" class="workspace-selection" type="button" hidden>
-            <span id="workspace-selection-name"></span>
-            <span id="workspace-selection-side" class="measure"></span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
-          </button>
-          <aside id="navigator" aria-label="Find a region" data-tab="find">
-            <div class="rail-head explorer-head">
-              <h2 id="navigator-title" class="rail-title">Atlas explorer</h2>
-              <div id="explorer-switch" class="segmented" role="group" aria-label="Explore the atlas">
-                <button type="button" data-explorer="anatomy" aria-pressed="true">Anatomy</button>
-                <button type="button" data-explorer="deficits" aria-pressed="false">Deficits</button>
-                <button type="button" data-explorer="circuits" aria-pressed="false">Circuits</button>
-              </div>
-            </div>
+          <div id="workspace-tabs" class="rail-tabs workspace-tabs" role="tablist" aria-label="Explore the atlas" hidden></div>
+          <div class="workspace-selection-row">
+            <button id="workspace-selection" class="workspace-selection" type="button" hidden>
+              <span id="workspace-selection-name"></span>
+              <span id="workspace-selection-side"></span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+            </button>
+            <button id="workspace-selection-clear" class="icon-button" type="button" aria-label="Clear selection" title="Clear selection" hidden>
+              <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+            </button>
+          </div>
+          <aside id="navigator" aria-label="Find a region">
+            <h2 id="navigator-title" class="visually-hidden">Atlas explorer</h2>
             <div id="anatomy-search" class="rail-head">
               <label id="search-label" class="visually-hidden" for="search">Search regions</label>
               <div class="search-box">
@@ -247,18 +252,24 @@
                 </button>
               </div>
             </div>
-            <div id="internal-anatomy" class="rail-head internal-controls" hidden>
-              <label id="internal-system-label" for="internal-system">Study a system</label>
-              <select id="internal-system"></select>
-              <p id="internal-note" class="internal-note" hidden></p>
-            </div>
             <div id="anatomy-browser" class="rail-body">
               <div id="tree-header" class="tree-header">
-                <button id="explore-internal" type="button" class="button-quiet tree-internal"
-                        aria-pressed="false">Internal anatomy</button>
-                <button id="tree-toggle-all" class="button-quiet tree-toggle-all" type="button">Collapse all</button>
+                <div id="tree-scope" class="segmented tree-scope" role="group" aria-label="Browse">
+                  <button type="button" data-scope="whole" aria-pressed="true">Whole brain</button>
+                  <button type="button" data-scope="system" aria-pressed="false">By system</button>
+                </div>
+                <button id="tree-toggle-all" class="icon-button tree-toggle-all" type="button"
+                        aria-label="Expand all" title="Expand all">
+                  <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5" /></svg>
+                </button>
+              </div>
+              <div id="internal-anatomy" class="internal-controls" hidden>
+                <label id="internal-system-label" for="internal-system">System</label>
+                <select id="internal-system"></select>
+                <p id="internal-note" class="internal-note">The cortex is hidden while you study a system. Choose Whole brain to show it again.</p>
               </div>
               <div id="results" role="listbox" aria-label="Search results" hidden></div>
+              <div id="results-notes" hidden></div>
               <div id="tree" role="tree" aria-label="Browse anatomy"></div>
             </div>
             <div id="deficit-browser" class="rail-body" hidden>
@@ -273,27 +284,41 @@
               <div id="circuit-list"></div>
               <div id="circuit-landmarks"></div>
             </div>
+            <div id="diffusion-browser" class="rail-body" hidden></div>
             <section id="dissection-controls" class="dissection-controls" aria-labelledby="dissection-heading">
+              <h3 id="dissection-heading" class="visually-hidden">Dissection</h3>
+              <p id="dissection-hint">Hide parts with the eye on each row to see beneath.</p>
               <div class="dissection-heading-row">
-                <h3 id="dissection-heading">Dissection</h3>
+                <p id="dissection-status" role="status">All parts shown</p>
                 <button id="dissection-undo" class="button-quiet" type="button" disabled>Undo</button>
                 <button id="dissection-restore" class="button-quiet" type="button" disabled>Restore all</button>
               </div>
-              <p id="dissection-hint">Hide parts with the eye controls to look underneath.</p>
-              <p id="dissection-status" role="status">All parts shown</p>
             </section>
             <p id="rail-notice" class="rail-notice" hidden></p>
           </aside>
 
           <aside id="inspector" aria-label="Region details and view controls">
+            <div class="detail-location">
+              <button id="detail-back" class="detail-back" type="button">
+                <span class="detail-back-chevron" aria-hidden="true"></span>
+                <span id="detail-back-label">Anatomy</span>
+              </button>
+              <div id="circuit-stepper" class="circuit-stepper" role="group" hidden></div>
+            </div>
             <div class="rail-body">
               <div class="tab-group" data-tab="region">
                 <h2 id="inspector-title" class="panel-heading">Region details</h2>
                 <section id="circuit-profile" hidden aria-labelledby="circuit-heading"></section>
                 <p id="circuit-action-status" class="panel-body" role="status" hidden></p>
+                <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
                 <p id="label-selected" class="section-label">Selected</p>
                 <div class="panel-body">
-                  <h2 id="selected-name">No region selected</h2>
+                  <div class="selection-head">
+                    <h2 id="selected-name">No region selected</h2>
+                    <button id="selection-clear" class="icon-button" type="button" aria-label="Clear selection" title="Clear selection" hidden>
+                      <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+                    </button>
+                  </div>
                   <div id="selection-empty" class="selection-empty">
                     <svg class="selection-empty-graphic" viewBox="0 0 32 32" fill="none"
                          stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
@@ -307,20 +332,19 @@
                   <p id="selected-hint">Select a region on the model or from the list.</p>
                   <div class="actions">
                     <button id="focus" type="button" disabled>Focus</button>
-                    <button id="isolate" type="button" aria-pressed="false" disabled>Isolate</button>
+                    <button id="isolate" type="button" data-active="false" disabled>Isolate</button>
                     <button id="hide-region" type="button" disabled>Hide</button>
-                    <button id="region-mpr" class="button-primary" type="button" hidden>MRI</button>
+                    <button id="region-mpr" class="button-primary" type="button" hidden>Linked MRI</button>
                   </div>
                   <dl id="selected-facts" class="datasheet" hidden>
                     <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
-                    <dt id="fact-atlas-label">Atlas</dt><dd id="fact-atlas"></dd>
                     <dt id="fact-group-label">Lobe / System</dt><dd id="fact-group"></dd>
                     <dt id="fact-metric-label">Surface area</dt>
                     <dd id="fact-metric" class="measure"></dd>
                   </dl>
-                  <details id="region-source" class="metadata-details" hidden>
+                  <details id="region-source" class="metadata-details" open hidden>
                     <summary id="region-source-title">Coordinates and source</summary>
-                    <dl class="datasheet">
+                    <dl class="datasheet datasheet-stacked">
                       <dt id="fact-coords-label">Centroid (RAS)</dt>
                       <dd id="fact-coords" class="measure"></dd>
                       <dt id="fact-source-label">Source label</dt>
@@ -334,7 +358,7 @@
                   facts rather than with the clinical associations below it.
                 -->
                 <details id="region-constituents" class="inspector-disclosure" hidden>
-                  <summary id="constituents-title" class="section-label"></summary>
+                  <summary id="constituents-title"></summary>
                   <div class="panel-body">
                     <p id="constituents-note" class="internal-note"></p>
                     <ul id="constituents-list" class="constituents-list"></ul>
@@ -349,117 +373,147 @@
                 </section>
 
                 <section id="clinical-region" hidden></section>
-                <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
-              </div>
-
-              <div class="tab-group" data-tab="cuts">
-                <h2 id="label-cuts" class="panel-heading">Anatomical sections</h2>
-                <div class="panel-body section-controls">
-                  <div class="cut-fields">
-                    <label id="cut-mode-label" class="visually-hidden">Cutting plane</label>
-                    <div id="cut-mode" class="segmented" role="group" aria-labelledby="cut-mode-label">
-                      <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
-                      <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
-                      <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
-                      <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
-                      <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
-                    </div>
-                    <div class="control-field">
-                      <label id="cut-atlas-label" for="cut-atlas">Cut labels</label>
-                      <select id="cut-atlas"></select>
-                    </div>
-                    <div class="control-field">
-                      <label id="cut-axis" for="cut-position">Position (mm)</label>
-                      <div class="cut-position-row">
-                        <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" disabled />
-                        <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" disabled />
-                      </div>
-                    </div>
-                    <div id="cut-oblique" hidden>
-                      <div class="control-field">
-                        <label for="cut-tilt">
-                          <span id="cut-tilt-label">Tilt from axial</span>
-                          <output id="cut-tilt-value" class="measure"></output>
-                        </label>
-                        <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
-                      </div>
-                      <div class="control-field">
-                        <label for="cut-azimuth">
-                          <span id="cut-azimuth-label">Rotation around superior axis</span>
-                          <output id="cut-azimuth-value" class="measure"></output>
-                        </label>
-                        <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
-                      </div>
-                    </div>
-                    <label class="check"><input id="cut-reverse" type="checkbox" disabled /> <span id="cut-reverse-text">Reverse retained side</span></label>
-                  </div>
-                  <div class="cut-command">
-                    <p id="cut-status" role="status">Full brain · no cut</p>
-                    <button id="mpr-open" class="button-primary" type="button">MRI</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tab-group" data-tab="display">
-                <h2 id="label-display" class="panel-heading">View settings</h2>
-                <div class="panel-body">
-                  <div class="control-field specimen">
-                    <label id="specimen-label" for="anatomy-switch">Anatomy</label>
-                    <p id="study-name" class="study-name" hidden></p>
-                    <select id="anatomy-switch" hidden></select>
-                  </div>
-                  <div class="control-field">
-                    <span id="atlas-control-label" class="control-label">Cortical atlas</span>
-                    <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
-                  </div>
-                  <div class="control-field">
-                    <label id="detail-label" for="detail">Internal anatomy</label>
-                    <select id="detail"></select>
-                  </div>
-                  <div class="control-field">
-                    <span id="surface-control-label" class="control-label">Appearance</span>
-                    <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
-                  </div>
-                  <div class="control-field">
-                    <label id="display-hemisphere-label">Hemisphere</label>
-                    <div id="hemisphere" class="segmented" role="group" aria-labelledby="display-hemisphere-label">
-                      <button type="button" data-hemisphere="both" aria-pressed="true">Both</button>
-                      <button type="button" data-hemisphere="left" aria-pressed="false">Left</button>
-                      <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
-                    </div>
-                  </div>
-
-                  <div class="display-visibility">
-                    <div class="display-cortex">
-                      <label class="check">
-                        <input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span>
-                      </label>
-                      <div class="display-opacity">
-                        <label for="opacity">
-                          <span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output>
-                        </label>
-                        <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
-                      </div>
-                    </div>
-                    <label id="internal-visible-label" class="check">
-                      <input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span>
-                    </label>
-                    <label id="spinal-cord-label" class="check">
-                      <input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span>
-                    </label>
-                  </div>
-
-                  <button id="reset" class="button-quiet" type="button">Reset view</button>
-                </div>
+                <section id="circuit-notes" class="panel-body" hidden></section>
+                <section id="circuit-region" hidden></section>
               </div>
             </div>
           </aside>
         </div>
       </div>
 
+      <main id="viewport">
+        <p id="viewport-help" class="viewport-help" aria-hidden="true">Drag to rotate · Scroll to zoom · Click to inspect</p>
+        <div id="orientation" class="orientation" aria-hidden="true">
+          <span data-edge="top"></span><span data-edge="right"></span>
+          <span data-edge="bottom"></span><span data-edge="left"></span>
+        </div>
+        <!-- The stage toolbar frames and cuts the picture; the section bar docks above it while a plane is cut. -->
+        <div id="stage-dock" class="stage-dock">
+          <div id="stage-toolbar" class="stage-toolbar">
+            <!-- On a phone the presets move into this chooser; viewport-chrome.js re-parents them. -->
+            <button id="view-tool" class="stage-tool view-tool" type="button" aria-haspopup="dialog"
+                    aria-expanded="false" aria-controls="view-popover">
+              <span id="view-tool-label">View</span>
+              <span class="stage-tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div id="view-popover" class="stage-popover" role="dialog" aria-labelledby="view-tool-label" hidden></div>
+            <div id="views" class="views segmented stage-segmented" role="toolbar" aria-label="Anatomical view"></div>
+            <span class="stage-toolbar-sep" aria-hidden="true"></span>
+            <button id="section-tool" class="stage-tool" type="button" aria-haspopup="dialog"
+                    aria-expanded="false" aria-controls="section-popover" data-anatomy-display>
+              <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9Z" /><path d="m4 12 8 4.5 8-4.5" /></svg>
+              <span id="section-tool-label">Section</span>
+              <span class="stage-tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div id="section-popover" class="stage-popover" role="dialog" aria-labelledby="section-tool-label" hidden>
+              <p id="cut-mode-label" class="stage-field-label">Cutting plane</p>
+              <div id="cut-mode" class="segmented stage-segmented" role="group" aria-labelledby="cut-mode-label">
+                <button type="button" data-cut-mode="off" aria-pressed="true">Full</button>
+                <button type="button" data-cut-mode="sagittal" aria-pressed="false">Sag</button>
+                <button type="button" data-cut-mode="coronal" aria-pressed="false">Cor</button>
+                <button type="button" data-cut-mode="axial" aria-pressed="false">Ax</button>
+                <button type="button" data-cut-mode="oblique" aria-pressed="false">Obl</button>
+              </div>
+              <div class="stage-field">
+                <label id="cut-atlas-label" class="stage-field-label" for="cut-atlas">Cut labels</label>
+                <select id="cut-atlas"></select>
+              </div>
+            </div>
+            <button id="display-tool" class="stage-tool" type="button" aria-haspopup="dialog"
+                    aria-expanded="false" aria-controls="display-popover" data-anatomy-display>
+              <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9m4 0h3M4 17h3m4 0h9" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="17" r="2" /></svg>
+              <span id="display-tool-label">Display</span>
+              <span class="stage-tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div id="display-popover" class="stage-popover" role="dialog" aria-labelledby="display-tool-label" hidden>
+              <p id="display-hemisphere-label" class="stage-field-label">Hemisphere</p>
+              <div id="hemisphere" class="segmented stage-segmented" role="group" aria-labelledby="display-hemisphere-label">
+                <button type="button" data-hemisphere="both" aria-pressed="true">Both</button>
+                <button type="button" data-hemisphere="left" aria-pressed="false">Left</button>
+                <button type="button" data-hemisphere="right" aria-pressed="false">Right</button>
+              </div>
+              <div class="display-visibility">
+                <label class="check"><input id="cortex" type="checkbox" checked /> <span id="cortex-text">Show cortex</span></label>
+                <div id="display-opacity" class="display-opacity">
+                  <label for="opacity"><span id="opacity-text">Cortex opacity</span> <output id="opacity-value" class="measure">100%</output></label>
+                  <input id="opacity" type="range" min="0" max="1" step="0.05" value="1" />
+                </div>
+                <label id="internal-visible-label" class="check"><input id="internal-visible" type="checkbox" checked /> <span id="internal-visible-text">Show internal anatomy</span></label>
+                <label id="spinal-cord-label" class="check"><input id="spinal-cord" type="checkbox" /> <span id="spinal-cord-text">Show spinal cord</span></label>
+              </div>
+              <button id="reset" class="stage-command stage-command-quiet" type="button" data-closes-popover>
+                <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5" /></svg>
+                <span id="reset-text">Reset view</span>
+              </button>
+            </div>
+          </div>
+          <div id="section-bar" class="section-bar" role="group" aria-label="Section" hidden>
+            <div class="section-bar-row">
+              <span id="section-bar-name" class="section-bar-name"><span class="section-bar-full"></span><span class="section-bar-short" aria-hidden="true"></span></span>
+              <div class="cut-position-row">
+                <label id="cut-axis" class="visually-hidden" for="cut-position">Position (mm)</label>
+                <span id="cut-end-min" class="cut-end" aria-hidden="true"></span>
+                <input id="cut-position" type="range" min="-128" max="128" step="0.5" value="0" />
+                <span id="cut-end-max" class="cut-end" aria-hidden="true"></span>
+                <input id="cut-number" type="number" aria-label="Exact cut position in millimeters" min="-128" max="128" step="0.5" value="0" />
+                <span class="cut-unit" aria-hidden="true">mm</span>
+              </div>
+              <div id="cut-details" class="cut-details">
+                <label class="check"><input id="cut-reverse" type="checkbox" /> <span id="cut-reverse-text">Reverse side</span></label>
+                <button id="mpr-open" class="stage-command" type="button">Linked MRI</button>
+              </div>
+              <button id="cut-more" class="stage-icon-button cut-more" type="button" aria-expanded="false" aria-controls="cut-details" aria-label="More section controls">
+                <span class="stage-tool-chevron" aria-hidden="true"></span>
+              </button>
+              <button id="cut-close" class="stage-icon-button" type="button" aria-label="Close section">
+                <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+              </button>
+            </div>
+            <div id="cut-oblique" class="section-bar-row cut-angles" hidden>
+              <label class="cut-angle" for="cut-tilt">
+                <span id="cut-tilt-label">Tilt</span>
+                <input id="cut-tilt" type="range" min="0" max="90" step="1" value="30" />
+                <output id="cut-tilt-value" class="measure"></output>
+              </label>
+              <label class="cut-angle" for="cut-azimuth">
+                <span id="cut-azimuth-label">Azimuth</span>
+                <input id="cut-azimuth" type="range" min="-180" max="180" step="1" value="30" />
+                <output id="cut-azimuth-value" class="measure"></output>
+              </label>
+            </div>
+            <p id="cut-status" role="status">Full brain · no cut</p>
+          </div>
+        </div>
+        <div id="scale-bar" class="scale-bar" aria-hidden="true">
+          <span class="scale-bar-rule"></span>
+          <span class="measure"></span>
+        </div>
+        <div class="stage-keys">
+          <ul id="network-legend" class="network-legend stage-key" aria-label="Network colours" hidden></ul>
+          <div id="direction-key" class="stage-key direction-key" hidden>
+            <p id="direction-key-title" class="stage-key-title">Local streamline direction</p>
+            <ul aria-labelledby="direction-key-title">
+              <li><span class="network-swatch" data-direction="lr"></span><span id="direction-key-lr">Left–right</span></li>
+              <li><span class="network-swatch" data-direction="ap"></span><span id="direction-key-ap">Anterior–posterior</span></li>
+              <li><span class="network-swatch" data-direction="si"></span><span id="direction-key-si">Superior–inferior</span></li>
+            </ul>
+          </div>
+        </div>
+        <div id="hover-label" class="chip hover-label" aria-hidden="true" hidden></div>
+        <div id="stage" class="stage">
+          <p id="stage-message">Loading anatomy…</p>
+          <div id="stage-progress" class="progress" role="progressbar" aria-label="Anatomy download"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+            <span id="stage-bar"></span>
+          </div>
+          <button id="stage-retry" type="button" hidden>Retry</button>
+        </div>
+      </main>
+
       <footer id="colophon">
-        <span id="colophon-text">FreeSurfer reference anatomy · not clinical anatomy</span>
-        <a id="provenance" href="models/anatomies.json" target="_blank" rel="noreferrer">Provenance</a>
+        <p id="colophon-text"><span id="colophon-description"></span><span id="colophon-statement">Not clinical anatomy</span></p>
+        <span id="region-count"></span>
+        <button id="provenance" type="button" aria-haspopup="dialog" data-opens-provenance hidden>Provenance</button>
       </footer>
     </div>
 
@@ -467,7 +521,7 @@
       <div class="dialog-header mpr-header">
         <div><h2 id="mpr-title">Linked MRI sections</h2>
           <p id="mpr-subtitle">Click to position the shared crosshair. Arrows move one source millimeter.</p></div>
-        <button id="mpr-close" class="button-quiet" type="button">Close slices</button>
+        <button id="mpr-close" class="button-quiet" type="button">Close</button>
       </div>
       <!--
         Three sections stacked at 375px would be a very long scroll with the
@@ -490,12 +544,67 @@
         MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.</p>
     </dialog>
 
+    <dialog id="diffusion-mri-dialog" aria-labelledby="diffusion-mri-title">
+      <div class="dialog-header mpr-header">
+        <div><h2 id="diffusion-mri-title" data-mri-copy="title"></h2>
+          <p data-mri-copy="hint"></p></div>
+        <button id="diffusion-mri-close" class="button-quiet" type="button" data-mri-copy="close" autofocus></button>
+      </div>
+      <p id="diffusion-mri-status" class="diffusion-note" role="status"></p>
+      <button id="diffusion-mri-retry" type="button" data-mri-copy="retry" hidden></button>
+      <fieldset id="diffusion-mri-controls" disabled>
+        <div class="diffusion-mri-toolbar">
+          <label class="diffusion-mri-plane"><span data-mri-copy="plane"></span>
+            <select id="diffusion-mri-plane">
+              <option value="MULTIPLANAR" data-mri-copy="all"></option>
+              <option value="AXIAL" data-mri-copy="axial"></option>
+              <option value="CORONAL" data-mri-copy="coronal"></option>
+              <option value="SAGITTAL" data-mri-copy="sagittal"></option>
+              <option value="RENDER">3D</option>
+            </select></label>
+          <form id="diffusion-mri-position" class="diffusion-mri-position">
+            <span data-mri-copy="voxel"></span>
+            <label>i <input id="diffusion-mri-i" type="number" min="0" step="1" required /></label>
+            <label>j <input id="diffusion-mri-j" type="number" min="0" step="1" required /></label>
+            <label>k <input id="diffusion-mri-k" type="number" min="0" step="1" required /></label>
+            <button type="submit" data-mri-copy="go"></button>
+          </form>
+        </div>
+        <div class="diffusion-mri-canvas"><canvas id="diffusion-mri-canvas" tabindex="0"></canvas></div>
+        <p id="diffusion-mri-readout" class="measure" role="status"></p>
+        <div class="mpr-display diffusion-mri-display">
+          <label for="diffusion-mri-window"><span data-mri-copy="window"></span>
+            <output id="diffusion-mri-window-value" class="measure" for="diffusion-mri-window"></output>
+            <input id="diffusion-mri-window" type="range" min="1" step="1" /></label>
+          <label for="diffusion-mri-center"><span data-mri-copy="center"></span>
+            <output id="diffusion-mri-center-value" class="measure" for="diffusion-mri-center"></output>
+            <input id="diffusion-mri-center" type="range" step="1" /></label>
+          <label for="diffusion-mri-fa"><span data-mri-copy="faOpacity"></span>
+            <output id="diffusion-mri-fa-value" class="measure" for="diffusion-mri-fa">0</output>
+            <input id="diffusion-mri-fa" type="range" min="0" max="1" step="0.05" value="0" /></label>
+        </div>
+      </fieldset>
+      <div class="mpr-note diffusion-mri-notes">
+        <p id="diffusion-mri-grid"></p>
+        <p class="diffusion-source-file">t1_warped.nii.gz · fa_1x1x1.nii.gz</p>
+        <p data-mri-copy="scope"></p>
+      </div>
+    </dialog>
+
     <dialog id="shortcuts" aria-labelledby="shortcuts-title">
       <div class="dialog-header">
         <h2 id="shortcuts-title">Keyboard shortcuts</h2>
         <button id="shortcuts-close" class="button-quiet" type="button">Close</button>
       </div>
-      <dl id="shortcuts-list"></dl>
+      <div id="shortcuts-list"></div>
+    </dialog>
+
+    <dialog id="provenance-dialog" aria-labelledby="provenance-title">
+      <div class="dialog-header">
+        <h2 id="provenance-title">Provenance</h2>
+        <button id="provenance-close" type="button">Close</button>
+      </div>
+      <dl id="provenance-facts"></dl>
     </dialog>
 
     <p id="announcer" role="status" aria-live="polite" class="visually-hidden"></p>

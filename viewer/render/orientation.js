@@ -1,3 +1,5 @@
+import { Matrix4 } from 'three';
+
 /**
  * Anatomical direction letters for the four viewport edges.
  *
@@ -21,9 +23,22 @@ const AXES = [
 
 const OPPOSITE = { R: 'L', L: 'R', S: 'I', I: 'S', P: 'A', A: 'P' };
 
-/** The world-space basis vector of a camera column, from its world matrix. */
-function basis(camera, column) {
-  const m = camera.matrixWorld.elements;
+const look = new Matrix4();
+
+/**
+ * The world-space basis vector of a camera column. Given the orbit target, it is the basis
+ * lookAt gives the camera on its next update: OrbitControls announces a move before the world
+ * matrix is recomputed, and a framing plan leaves the camera turned toward a destination it has
+ * not reached. Without one, the refreshed world matrix is read.
+ */
+function basis(camera, column, target) {
+  let m;
+  if (target) {
+    m = look.lookAt(camera.position, target, camera.up).elements;
+  } else {
+    camera.updateWorldMatrix(true, false);
+    m = camera.matrixWorld.elements;
+  }
   const offset = column * 4;
   const [x, y, z] = [m[offset], m[offset + 1], m[offset + 2]];
   const length = Math.hypot(x, y, z) || 1;
@@ -47,17 +62,15 @@ function letterFor([x, y, z]) {
 
 const FR_LETTERS = { R: 'D', L: 'G', S: 'S', I: 'I', P: 'P', A: 'A' };
 
-export function edgeLabels(camera, lang = 'en') {
-  const right = letterFor(basis(camera, 0));
-  const top = letterFor(basis(camera, 1));
-  const raw = { right, left: OPPOSITE[right], top, bottom: OPPOSITE[top] };
-  if (lang === 'fr') {
-    return {
-      right: FR_LETTERS[raw.right],
-      left: FR_LETTERS[raw.left],
-      top: FR_LETTERS[raw.top],
-      bottom: FR_LETTERS[raw.bottom],
-    };
-  }
-  return raw;
+/** English edge letters in the reader's language. */
+export function localizeEdges(raw, lang = 'en') {
+  if (lang !== 'fr') return raw;
+  return Object.fromEntries(Object.entries(raw).map(([edge, letter]) => [edge, FR_LETTERS[letter]]));
+}
+
+/** Edge letters for a camera; pass the orbit target for the letters of the frame about to be drawn. */
+export function edgeLabels(camera, lang = 'en', target = null) {
+  const right = letterFor(basis(camera, 0, target));
+  const top = letterFor(basis(camera, 1, target));
+  return localizeEdges({ right, left: OPPOSITE[right], top, bottom: OPPOSITE[top] }, lang);
 }

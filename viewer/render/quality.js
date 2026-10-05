@@ -21,12 +21,24 @@ export function qualityProfile(input = {}) {
   const fillBound = constrained || integrated;
   // A phone renders one CSS pixel. Tablets stay at 1.5. The meshes do not change.
   const presentationCap = phone ? 1 : (handheld || fewerPixels) ? 1.5 : 2;
+  const settledRatio = input.pixelRatio !== undefined
+    ? Math.min(pixelRatio, presentationCap)
+    : pixelRatioCap(fewerPixels);
   return {
     mriPixelRatio: pixelRatio,
-    pixelRatio: input.pixelRatio !== undefined
-      ? Math.min(pixelRatio, presentationCap)
-      : pixelRatioCap(fewerPixels),
+    pixelRatio: settledRatio,
+    // Fill is most of a Retina frame; a picture in motion cannot show the extra pixels anyway.
+    motionPixelRatio: Math.min(settledRatio, 1),
     msaaSamples: fillBound ? 2 : 4,
     prefetchLayers: !fillBound,
   };
+}
+
+// Device pixels a frame in motion may fill; a 1440×900 window's stage is about 0.9 M at 1×.
+const MOTION_PIXEL_BUDGET = 2_000_000;
+
+/** The pixel ratio for a moving camera on a canvas of this CSS size, at most `cap`. */
+export function motionRatio(cap, width, height) {
+  if (!width || !height) return cap;
+  return Math.round(Math.min(cap, Math.sqrt(MOTION_PIXEL_BUDGET / (width * height))) * 100) / 100;
 }

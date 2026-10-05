@@ -1,3 +1,5 @@
+import { atlasSwitchLabel, t } from '../i18n/translations.js';
+
 /** Trace a learning unit to its original atlas regions. */
 export function createConstituents({ catalog, onRegion }) {
   const panel = document.getElementById('region-constituents');
@@ -13,25 +15,32 @@ export function createConstituents({ catalog, onRegion }) {
       const nextKey = `${region.id}:${state.lang}`;
       if (key === nextKey) return;
       key = nextKey;
-      const french = state.lang === 'fr';
-      const heading = french ? 'Régions constitutives' : 'Constituent regions';
-      title.textContent = `${heading} (${region.constituent_regions.length})`;
-      note.textContent = french
-        ? 'Union de régions sources. Surface lissée pour la lecture ; volume mesuré sur les voxels sources. Les petites régions sans surface restent accessibles en coupe.'
-        : 'Union of source regions. Surface smoothed for readability; volume measured from source voxels. Small regions without a surface remain available on cuts.';
+      const i18n = t(state.lang, 'inspector');
+      const count = document.createElement('span');
+      count.className = 'disclosure-count';
+      count.textContent = String(region.constituent_regions.length);
+      title.replaceChildren(i18n.constituentsHeading, ' ', count);
+      note.textContent = i18n.constituentsNote;
       list.replaceChildren();
       for (const id of region.constituent_regions) {
         const entry = catalog.get(id);
         if (!entry) throw new Error(`Missing learning constituent: ${id}`);
         const item = document.createElement('li');
+        const tail = document.createElement('span');
+        tail.className = 'constituent-set';
         if (entry.region.kind === 'structure') {
           const button = document.createElement('button');
           button.type = 'button';
           button.textContent = entry.label.name;
           button.addEventListener('click', () => onRegion(id));
-          item.append(button);
+          // Opening a constituent switches Internal anatomy to the set that holds it.
+          tail.textContent = atlasSwitchLabel(entry.region.atlas, state.lang);
+          item.append(button, tail);
         } else {
-          item.textContent = `${entry.label.name} · ${french ? 'coupe' : 'cut only'}`;
+          const name = document.createElement('span');
+          name.textContent = entry.label.name;
+          tail.textContent = i18n.constituentCutOnly;
+          item.append(name, tail);
         }
         list.append(item);
       }

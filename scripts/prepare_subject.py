@@ -65,12 +65,44 @@ def record_source(provenance, path, **metadata):
     )
 
 
+def record_reconstruction(config, provenance):
+    anatomy = config["anatomy"]
+    settings = anatomy["reconstruction"]
+    directory = config["source_directory"]
+    report_path = directory / settings["provenance"]
+    paths = [directory / name for name in SUBJECT_FILES]
+    required = [*paths, report_path, directory / settings["completion_marker"]]
+    missing = [str(path) for path in required if not path.is_file()]
+    if missing:
+        raise ValueError(f"{anatomy['id']} reconstruction is incomplete: {missing}")
+    report = json.loads(report_path.read_text())
+    if report["status"] != "complete":
+        raise ValueError(f"{anatomy['id']} reconstruction is incomplete: {report['status']}")
+    input_path = ROOT / settings["input"]
+    if sha256(input_path) != settings["input_sha256"]:
+        raise ValueError(f"{settings['input']}: reconstruction input checksum changed")
+    if report["input_sha256"] != settings["input_sha256"]:
+        raise ValueError("Reconstruction report input checksum differs from configuration")
+    stamp = (directory / "scripts/build-stamp.txt").read_text().strip()
+    if stamp != settings["freesurfer_build"] or report["freesurfer_build"] != stamp:
+        raise ValueError("Reconstruction FreeSurfer build differs from configuration")
+    record_source(provenance, input_path, anatomy=anatomy["id"], url=anatomy["source_url"])
+    for path in [*paths, report_path]:
+        record_source(
+            provenance, path, anatomy=anatomy["id"], derived_from=[settings["input"]],
+            procedure="FreeSurfer recon-all; see reconstruction.json for exact commands",
+            citation="https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all",
+        )
+
+
 def obtain_subject(config, provenance):
     anatomy = config["anatomy"]
     if "archive" in anatomy:
         extract_subject(config, provenance)
     elif "download" in anatomy:
         download_subject(config, provenance)
+    elif "reconstruction" in anatomy:
+        record_reconstruction(config, provenance)
     else:
         print(f"{anatomy['id']}: files are committed, nothing to fetch")
 

@@ -7,7 +7,7 @@
  * interface something to reason about — the camera reframes on arrival, and
  * "peek" is a state the selection strip can rely on.
  *
- *   peek  handle, selection strip and tabs — every control one tap away
+ *   peek  handle, selection and tabs — every control one tap away
  *   half  the working height: panel open, anatomy still visible
  *   full  a long list deserves the screen
  *
@@ -19,24 +19,29 @@ export const DETENTS = ['peek', 'half', 'full'];
 /**
  * Sheet spans in pixels for the space available, in detent order.
  *
- * The fractions differ by orientation. Upright the sheet grows over a tall
- * screen and half of it is a fair share; sideways it grows across a wide one,
- * where the same half leaves the anatomy a square too small to read, so it
- * takes less and the reader still sees the brain beside the panel.
+ * Upright the sheet grows over a tall screen: half is a little over half of
+ * it, five list rows on a 390 by 844 phone with the brain still clear above,
+ * and full leaves a fixed band of picture rather than a fraction, so the
+ * preview above a raised sheet is the same deliberate size on every phone.
+ * Sideways it grows across a wide screen, where the same half leaves the
+ * anatomy a square too small to read, so it takes less.
  */
-export function detentHeights(available, { peek = 132, half = 0.5, full = 0.88 } = {}) {
+export function detentHeights(available, { peek, half, full = 1, picture = 0 }) {
   const span = Math.max(0, available);
   // On a small screen the fractions can fall below the peek span or collide
   // with each other; each rest is held clear of the one below it so a drag
   // always has somewhere distinct to land.
   const floor = Math.min(peek, span);
   const middle = Math.max(floor, Math.round(span * half));
-  const top = Math.max(middle, Math.round(span * full));
+  const top = Math.max(middle, Math.round(span * full) - picture);
   return { peek: floor, half: middle, full: top };
 }
 
+/** Peek is the grip's own height when it can be measured; this is the fallback. */
+export const UPRIGHT_DETENTS = { peek: 132, half: 0.58, picture: 128 };
+
 /** Proportions for a sheet that grows across the screen rather than up it. */
-export const SIDEWAYS_DETENTS = { peek: 180, half: 0.4, full: 0.62 };
+export const SIDEWAYS_DETENTS = { peek: 216, half: 0.4, full: 0.62 };
 
 /** The detent a height is nearest to. Ties resolve downward, toward the anatomy. */
 export function nearestDetent(height, heights) {

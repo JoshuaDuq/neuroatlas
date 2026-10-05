@@ -1,9 +1,28 @@
 revised: '2026-09-22'
 
+groups:
+  - id: language
+    name: {en: Language and speech, fr: Langage et parole}
+  - id: literacy
+    name: {en: 'Reading, writing and calculation', fr: 'Lecture, écriture et calcul'}
+  - id: memory
+    name: {en: Memory and navigation, fr: Mémoire et orientation spatiale}
+  - id: attention
+    name: {en: Attention and awareness, fr: Attention et conscience}
+  - id: perception
+    name: {en: Perception and sensation, fr: Perception et sensibilité}
+  - id: praxis
+    name: {en: Praxis and visuomotor control, fr: Praxies et contrôle visuomoteur}
+  - id: motor
+    name: {en: Motor control, fr: Contrôle moteur}
+  - id: executive
+    name: {en: 'Executive, emotional and social functions', fr: 'Fonctions exécutives, émotionnelles et sociales'}
+
 deficits:
   - id: aphasia
     name: {en: Aphasia, fr: Aphasie}
     domain: {en: Language, fr: Langage}
+    group: language
     summary:
       en: Acquired language difficulties. This profile starts with evidence about understanding words and sentences.
       fr: Difficultés acquises du langage. Ce profil présente d’abord les données sur la compréhension des mots et des phrases.
@@ -14,6 +33,7 @@ deficits:
   - id: amnesia
     name: {en: Amnesia, fr: Amnésie}
     domain: {en: Memory, fr: Mémoire}
+    group: memory
     summary:
       en: Difficulty learning or recalling information. The initial evidence concerns acquired anterograde memory impairment.
       fr: Difficulté à apprendre ou à rappeler des informations. Les premières données concernent l’amnésie antérograde acquise.
@@ -24,6 +44,7 @@ deficits:
   - id: neglect
     name: {en: Hemispatial neglect, fr: Négligence spatiale}
     domain: {en: Spatial attention, fr: Attention spatiale}
+    group: attention
     summary:
       en: Reduced attention or response to one side of space. Perceptual and exploratory components can have different anatomical associations.
       fr: Diminution de l’attention ou des réponses à un côté de l’espace. Les composantes perceptives et exploratoires peuvent avoir des associations anatomiques différentes.
@@ -34,6 +55,7 @@ deficits:
   - id: apraxia
     name: {en: Limb apraxia, fr: Apraxie gestuelle}
     domain: {en: Praxis, fr: Praxies}
+    group: praxis
     summary:
       en: Difficulty performing learned or imitated gestures beyond primary weakness. This profile examines meaningless hand and finger imitation.
       fr: Difficulté à réaliser des gestes appris ou imités au-delà d’une faiblesse motrice primaire. Ce profil examine l’imitation de postures manuelles et digitales sans signification.
@@ -44,6 +66,7 @@ deficits:
   - id: agnosia
     name: {en: Visual agnosia, fr: Agnosie visuelle}
     domain: {en: Visual recognition, fr: Reconnaissance visuelle}
+    group: perception
     summary:
       en: Difficulty recognizing visual stimuli. The initial profile covers facial configuration processing in acquired prosopagnosia.
       fr: Difficulté à reconnaître des stimuli visuels. Le profil initial porte sur le traitement de la configuration faciale dans la prosopagnosie acquise.
@@ -54,6 +77,7 @@ deficits:
   - id: executive
     name: {en: Executive dysfunction, fr: Dysfonction exécutive}
     domain: {en: Cognitive control, fr: Contrôle cognitif}
+    group: executive
     summary:
       en: Difficulties regulating goal-directed behavior. This profile focuses on inhibition, conflict monitoring, and switching.
       fr: Difficultés à réguler les comportements orientés vers un but. Ce profil porte sur l’inhibition, le suivi des conflits et la flexibilité cognitive.
@@ -64,6 +88,7 @@ deficits:
   - id: hemianopia
     name: {en: Homonymous hemianopia, fr: Hémianopsie homonyme}
     domain: {en: Vision, fr: Vision}
+    group: perception
     summary:
       en: Loss of the same side of the visual field in both eyes after damage behind the optic chiasm. This profile reports where such lesions were found in a large clinical series.
       fr: Perte du même côté du champ visuel dans les deux yeux après une lésion située derrière le chiasma optique. Ce profil présente la localisation des lésions dans une grande série clinique.
@@ -74,6 +99,7 @@ deficits:
   - id: ataxia
     name: {en: Cerebellar ataxia, fr: Ataxie cérébelleuse}
     domain: {en: Motor coordination, fr: Coordination motrice}
+    group: motor
     summary:
       en: Incoordination of limb movement, gait, posture or speech after cerebellar injury. This profile draws on voxel-based mapping of focal cerebellar lesions.
       fr: Incoordination des mouvements des membres, de la marche, de la posture ou de la parole après une atteinte cérébelleuse. Ce profil s’appuie sur la cartographie voxel par voxel de lésions cérébelleuses focales.
@@ -84,6 +110,7 @@ deficits:
   - id: speech-apraxia
     name: {en: Apraxia of speech, fr: Apraxie de la parole}
     domain: {en: Speech motor planning, fr: Planification motrice de la parole}
+    group: language
     summary:
       en: Impaired planning and coordination of articulatory movements with intact perception of speech sounds. Two lesion studies disagree on its critical site.
       fr: Altération de la planification et de la coordination des mouvements articulatoires avec perception préservée des sons de la parole. Deux études lésionnelles divergent sur son site critique.
@@ -94,6 +121,7 @@ deficits:
   - id: emotion-recognition
     name: {en: Impaired emotion recognition, fr: Trouble de la reconnaissance des émotions}
     domain: {en: Social cognition, fr: Cognition sociale}
+    group: executive
     summary:
       en: Difficulty recognizing emotions, especially fear, in facial expressions. This profile follows bilateral amygdala damage.
       fr: Difficulté à reconnaître les émotions, surtout la peur, dans les expressions faciales. Ce profil concerne les atteintes bilatérales de l’amygdale.
@@ -104,6 +132,7 @@ deficits:
   - id: optic-ataxia
     name: {en: Optic ataxia, fr: Ataxie optique}
     domain: {en: Visuomotor control, fr: Contrôle visuomoteur}
+    group: praxis
     summary:
       en: Misreaching toward visual targets despite adequate vision and limb strength. This profile re-examines the classic superior parietal localization.
       fr: Erreurs d’atteinte vers des cibles visuelles malgré une vision et une force des membres adéquates. Ce profil réexamine la localisation pariétale supérieure classique.
@@ -114,6 +143,7 @@ deficits:
   - id: somatosensory
     name: {en: Somatosensory loss, fr: Déficit somatosensoriel}
     domain: {en: Somatic sensation, fr: Sensibilité somatique}
+    group: perception
     summary:
       en: Reduced touch, pressure, pain or position sense in the arm and hand after stroke. This profile maps acute lesions to sensory deficits of the upper limb.
       fr: Diminution du toucher, de la pression, de la douleur ou du sens de la position dans le bras et la main après un AVC. Ce profil relie des lésions aiguës aux déficits sensitifs du membre supérieur.
@@ -124,6 +154,7 @@ deficits:
   - id: alexia
     name: {en: Pure alexia, fr: Alexie pure}
     domain: {en: Reading, fr: Lecture}
+    group: literacy
     summary:
       en: Acquired loss of fluent visual word recognition with other visual recognition and language preserved. This profile rests on a documented surgical lesion.
       fr: Perte acquise de la reconnaissance visuelle fluente des mots, avec préservation des autres reconnaissances visuelles et du langage. Ce profil repose sur une lésion chirurgicale documentée.
@@ -134,6 +165,7 @@ deficits:
   - id: decision-making
     name: {en: Impaired decision-making, fr: Trouble de la prise de décision}
     domain: {en: Valuation and choice, fr: Valeur et choix}
+    group: executive
     summary:
       en: Disadvantageous real-life choices despite preserved intellect. This profile follows ventromedial prefrontal damage.
       fr: Choix désavantageux dans la vie réelle malgré un intellect préservé. Ce profil concerne les atteintes préfrontales ventromédianes.
@@ -144,6 +176,7 @@ deficits:
   - id: anosognosia
     name: {en: Anosognosia for hemiplegia, fr: Anosognosie de l’hémiplégie}
     domain: {en: Body awareness, fr: Conscience du corps}
+    group: attention
     summary:
       en: Unawareness or denial of a paralysed limb after stroke. This profile follows lesion mapping in the right hemisphere.
       fr: Méconnaissance ou déni d’un membre paralysé après un AVC. Ce profil s’appuie sur une cartographie lésionnelle de l’hémisphère droit.
@@ -154,6 +187,7 @@ deficits:
   - id: lateropulsion
     name: {en: Pusher syndrome, fr: Syndrome du pousseur}
     domain: {en: Postural control, fr: Contrôle postural}
+    group: motor
     summary:
       en: Active pushing away from the non-paretic side with a tilted sense of upright. This profile locates the lesion overlap in a series of severe cases.
       fr: Poussée active à l’opposé du côté non parétique avec une perception inclinée de la verticale. Ce profil situe le chevauchement lésionnel dans une série de cas sévères.
@@ -164,6 +198,7 @@ deficits:
   - id: hemichorea
     name: {en: Hemichorea and hemiballism, fr: Hémichorée et hémiballisme}
     domain: {en: Movement, fr: Mouvement}
+    group: motor
     summary:
       en: Involuntary flinging or dancing movements of one side of the body. This profile weighs the classic subthalamic localization against its exceptions.
       fr: Mouvements involontaires de projection ou de danse d’un côté du corps. Ce profil confronte la localisation sous-thalamique classique à ses exceptions.
@@ -174,6 +209,7 @@ deficits:
   - id: dystonia
     name: {en: Secondary dystonia, fr: Dystonie secondaire}
     domain: {en: Movement, fr: Mouvement}
+    group: motor
     summary:
       en: Sustained abnormal postures or twisting movements after a focal lesion. This profile draws on two reviews of published cases.
       fr: Postures anormales soutenues ou mouvements de torsion après une lésion focale. Ce profil s’appuie sur deux revues de cas publiés.
@@ -184,6 +220,7 @@ deficits:
   - id: abulia
     name: {en: Abulia, fr: Aboulie}
     domain: {en: Motivation, fr: Motivation}
+    group: executive
     summary:
       en: Apathy with loss of initiative, spontaneous thought and emotional response. This profile follows focal basal ganglia lesions.
       fr: Apathie avec perte d’initiative, de pensée spontanée et de réponse émotionnelle. Ce profil concerne les lésions focales des noyaux gris centraux.
@@ -194,6 +231,7 @@ deficits:
   - id: parkinsonism
     name: {en: Parkinsonism, fr: Syndrome parkinsonien}
     domain: {en: Movement, fr: Mouvement}
+    group: motor
     summary:
       en: Slowness, rigidity and tremor from loss of dopaminergic output. This profile combines nigral neuropathology with rare focal lentiform lesions.
       fr: Lenteur, rigidité et tremblement par perte de la sortie dopaminergique. Ce profil associe la neuropathologie nigrique aux rares lésions focales lenticulaires.
@@ -204,6 +242,7 @@ deficits:
   - id: central-pain
     name: {en: Central post-stroke pain, fr: Douleur centrale post-AVC}
     domain: {en: Pain, fr: Douleur}
+    group: perception
     summary:
       en: Persistent pain arising from a lesion of the somatosensory pathways themselves. This profile locates the thalamic site that carries the risk.
       fr: Douleur persistante issue d’une lésion des voies somatosensorielles elles-mêmes. Ce profil situe le site thalamique porteur du risque.
@@ -214,6 +253,7 @@ deficits:
   - id: coma
     name: {en: Coma, fr: Coma}
     domain: {en: Consciousness, fr: Conscience}
+    group: attention
     summary:
       en: Loss of wakefulness and awareness after brainstem injury. This profile charts which tegmental lesions produced coma in a stroke series.
       fr: Perte de l’éveil et de la conscience après une atteinte du tronc cérébral. Ce profil repère les lésions tegmentales ayant produit un coma dans une série d’AVC.
@@ -224,6 +264,7 @@ deficits:
   - id: dysphagia
     name: {en: Dysphagia, fr: Dysphagie}
     domain: {en: Swallowing, fr: Déglutition}
+    group: motor
     summary:
       en: Impaired swallowing with risk of aspiration after stroke. This profile follows atlas-based lesion localization in acute supratentorial infarcts.
       fr: Trouble de la déglutition avec risque d’aspiration après un AVC. Ce profil s’appuie sur une localisation lésionnelle par atlas dans des infarctus supratentoriels aigus.
@@ -234,6 +275,7 @@ deficits:
   - id: achromatopsia
     name: {en: Cerebral achromatopsia, fr: Achromatopsie cérébrale}
     domain: {en: Vision, fr: Vision}
+    group: perception
     summary:
       en: Loss of colour vision from cortical damage with the eyes intact. This profile pools published cases to locate the critical ventral occipital site.
       fr: Perte de la vision des couleurs par atteinte corticale avec des yeux intacts. Ce profil regroupe les cas publiés pour situer le site occipital ventral critique.
@@ -244,6 +286,7 @@ deficits:
   - id: akinetopsia
     name: {en: Akinetopsia, fr: Akinétopsie}
     domain: {en: Vision, fr: Vision}
+    group: perception
     summary:
       en: Selective loss of visual motion perception. This profile rests on one extensively studied patient with bilateral lateral occipitotemporal damage.
       fr: Perte sélective de la perception visuelle du mouvement. Ce profil repose sur une patiente longuement étudiée avec atteinte occipito-temporale latérale bilatérale.
@@ -254,6 +297,7 @@ deficits:
   - id: topographical-disorientation
     name: {en: Topographical disorientation, fr: Désorientation topographique}
     domain: {en: Spatial navigation, fr: Navigation spatiale}
+    group: memory
     summary:
       en: Inability to find one’s way in familiar surroundings despite recognizing landmarks. This profile concerns a loss of directional sense after retrosplenial haemorrhage.
       fr: Incapacité à s’orienter dans un environnement familier malgré la reconnaissance des repères. Ce profil concerne une perte du sens de la direction après hémorragie rétrospléniale.
@@ -264,6 +308,7 @@ deficits:
   - id: cerebellar-cognitive
     name: {en: Cerebellar cognitive affective syndrome, fr: Syndrome cérébelleux cognitivo-affectif}
     domain: {en: Cognition and affect, fr: Cognition et affect}
+    group: executive
     summary:
       en: Executive, visuospatial, linguistic and affective changes after disease confined to the cerebellum. This profile follows the series that defined the syndrome.
       fr: Changements exécutifs, visuospatiaux, langagiers et affectifs après une maladie limitée au cervelet. Ce profil suit la série qui a défini le syndrome.
@@ -274,6 +319,7 @@ deficits:
   - id: dysarthria
     name: {en: Dysarthria, fr: Dysarthrie}
     domain: {en: Speech motor execution, fr: Exécution motrice de la parole}
+    group: language
     summary:
       en: Slurred or imprecise speech from weakness or incoordination of the articulators. This profile contrasts corticobulbar and cerebellar lesion sites.
       fr: Parole empâtée ou imprécise par faiblesse ou incoordination des articulateurs. Ce profil oppose les sites lésionnels cortico-bulbaires et cérébelleux.
@@ -284,6 +330,7 @@ deficits:
   - id: acalculia
     name: {en: Acalculia, fr: Acalculie}
     domain: {en: Calculation, fr: Calcul}
+    group: literacy
     summary:
       en: Acquired difficulty with arithmetic. This profile concerns calculation after left-hemisphere stroke.
       fr: Difficulté acquise en arithmétique. Ce profil concerne le calcul après un AVC gauche.
@@ -294,6 +341,7 @@ deficits:
   - id: agraphia
     name: {en: Acquired dysgraphia, fr: Dysgraphie acquise}
     domain: {en: Spelling, fr: Orthographe}
+    group: literacy
     summary:
       en: Acquired spelling impairment. This profile focuses on holding letter identities and order in working memory.
       fr: Trouble acquis de l’orthographe. Ce profil porte sur le maintien des lettres et de leur ordre en mémoire de travail.
@@ -304,6 +352,7 @@ deficits:
   - id: amusia
     name: {en: Acquired amusia, fr: Amusie acquise}
     domain: {en: Music perception, fr: Perception musicale}
+    group: perception
     summary:
       en: Acquired difficulty perceiving musical pitch or rhythm. This profile concerns post-stroke music perception.
       fr: Difficulté acquise à percevoir la hauteur musicale ou le rythme. Ce profil concerne la perception musicale après un AVC.
@@ -314,6 +363,7 @@ deficits:
   - id: simultanagnosia
     name: {en: Dorsal simultanagnosia, fr: Simultanagnosie dorsale}
     domain: {en: Visual attention, fr: Attention visuelle}
+    group: attention
     summary:
       en: Difficulty attending to multiple objects at once. This profile concerns posterior attention-network damage.
       fr: Difficulté à prêter attention à plusieurs objets simultanément. Ce profil concerne les atteintes du réseau attentionnel postérieur.
@@ -324,6 +374,7 @@ deficits:
   - id: tactile-agnosia
     name: {en: Tactile agnosia, fr: Agnosie tactile}
     domain: {en: Tactile recognition, fr: Reconnaissance tactile}
+    group: perception
     summary:
       en: Difficulty recognizing objects by touch beyond elementary sensory loss. This profile concerns acquired right-hand impairment.
       fr: Difficulté à reconnaître les objets au toucher au-delà d’une perte sensitive élémentaire. Ce profil concerne une atteinte acquise de la main droite.
@@ -334,6 +385,7 @@ deficits:
   - id: word-deafness
     name: {en: Pure word deafness, fr: Surdité verbale pure}
     domain: {en: Auditory speech processing, fr: Traitement auditif de la parole}
+    group: language
     summary:
       en: Impaired understanding of heard speech with relatively preserved reading, spontaneous speech and environmental-sound recognition.
       fr: Compréhension de la parole entendue altérée avec préservation relative de la lecture, de la parole spontanée et de la reconnaissance des bruits environnementaux.
@@ -344,6 +396,7 @@ deficits:
   - id: visual-extinction
     name: {en: Visual extinction, fr: Extinction visuelle}
     domain: {en: Competitive visual attention, fr: Compétition attentionnelle visuelle}
+    group: attention
     summary:
       en: Failure to report a contralesional target during simultaneous bilateral stimulation despite detecting it when presented alone.
       fr: Omission d’une cible contralésionnelle lors d’une stimulation bilatérale simultanée malgré sa détection lorsqu’elle est présentée seule.
@@ -354,6 +407,7 @@ deficits:
   - id: constructional-apraxia
     name: {en: Constructional impairment, fr: Trouble visuoconstructif}
     domain: {en: Visuoconstruction, fr: Visuoconstruction}
+    group: praxis
     summary:
       en: Acquired difficulty copying or constructing spatial arrangements. This profile concerns complex figure copying after stroke.
       fr: Difficulté acquise à copier ou construire des arrangements spatiaux. Ce profil concerne la copie de figures complexes après un AVC.
@@ -364,6 +418,7 @@ deficits:
   - id: hand-paresis
     name: {en: Cortical hand paresis, fr: Parésie de la main d’origine corticale}
     domain: {en: Voluntary movement, fr: Mouvement volontaire}
+    group: motor
     summary:
       en: Hand weakness after cortical injury. This profile concerns infarcts affecting the precentral hand representation.
       fr: Faiblesse de la main après une atteinte corticale. Ce profil concerne les infarctus touchant la représentation précentrale de la main.
@@ -374,6 +429,7 @@ deficits:
   - id: taste-impairment
     name: {en: Central taste impairment, fr: Trouble gustatif central}
     domain: {en: Gustation, fr: Gustation}
+    group: perception
     summary:
       en: Reduced taste intensity or identification after brain injury. This profile examines unilateral insular lesions.
       fr: Diminution de l’intensité gustative ou de l’identification des saveurs après une atteinte cérébrale. Ce profil examine les lésions insulaires unilatérales.
@@ -384,6 +440,7 @@ deficits:
   - id: somatoparaphrenia
     name: {en: Somatoparaphrenia, fr: Somatoparaphrénie}
     domain: {en: Limb ownership, fr: Appartenance corporelle}
+    group: attention
     summary:
       en: Delusional denial or misattribution of ownership of a limb. This profile concerns limb disownership after right-hemisphere damage.
       fr: Déni délirant ou attribution erronée de l’appartenance d’un membre. Ce profil concerne la désappropriation corporelle après une atteinte hémisphérique droite.
@@ -394,6 +451,7 @@ deficits:
   - id: alien-hand
     name: {en: Alien hand syndrome, fr: Syndrome de la main étrangère}
     domain: {en: Voluntary action control, fr: Contrôle volontaire de l’action}
+    group: praxis
     summary:
       en: Apparently purposeful hand actions outside voluntary control. This profile focuses on intermanual conflict after callosal injury.
       fr: Actions de la main apparemment intentionnelles échappant au contrôle volontaire. Ce profil porte sur le conflit intermanuel après une atteinte calleuse.
@@ -2361,9 +2419,13 @@ associations:
       en: Heterogeneous case evidence, not a prospective lesion map. This association covers the callosal pattern and does not provide a universal localization for alien-hand phenomena.
       fr: Données de cas hétérogènes, pas une carte lésionnelle prospective. Cette association couvre le profil calleux et ne fournit pas de localisation universelle des phénomènes de main étrangère.
     mapping_note:
-      en: The whole midline corpus callosum is displayed; its anterior segment is not isolated. The bilateral label describes an interhemispheric landmark, not a requirement for bilateral cortical lesions.
-      fr: Le corps calleux médian entier est affiché; son segment antérieur n’est pas isolé. L’étiquette bilatérale décrit un repère interhémisphérique, pas une nécessité de lésions corticales bilatérales.
+      en: The five native FreeSurfer callosal subsegments represent the whole midline landmark; they do not delineate the anterior injury in the cited cases. The bilateral label describes an interhemispheric landmark, not a requirement for bilateral cortical lesions.
+      fr: Les cinq sous-segments calleux FreeSurfer représentent le repère médian entier ; ils ne délimitent pas l’atteinte antérieure des cas cités. L’étiquette bilatérale décrit un repère interhémisphérique, pas une nécessité de lésions corticales bilatérales.
     mappings:
-      - {region: 'learning:corpus-callosum', source_name: Corpus callosum}
+      - {region: 'aseg:midline:251', source_name: CC_Posterior}
+      - {region: 'aseg:midline:252', source_name: CC_Mid_Posterior}
+      - {region: 'aseg:midline:253', source_name: CC_Central}
+      - {region: 'aseg:midline:254', source_name: CC_Mid_Anterior}
+      - {region: 'aseg:midline:255', source_name: CC_Anterior}
     evidence:
       - {reference: feinberg-1992, role: supporting}

@@ -17,6 +17,7 @@ body {
 button, input, select, output { font: inherit; color: inherit; }
 input { caret-color: var(--accent); }
 ::selection { color: var(--surface-base); background: var(--accent); }
+* { scrollbar-width: thin; scrollbar-color: var(--border-control) transparent; }
 
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
 h1, h2, h3 { text-wrap: balance; }
@@ -44,9 +45,9 @@ h1, h2, h3 { text-wrap: balance; }
 .section-label {
   font-size: var(--text-micro);
   font-weight: 600;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.02em;
   color: var(--text-tertiary);
-  padding: var(--space-5) var(--space-5) var(--space-2);
+  padding: var(--space-4) var(--space-4) 6px;
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -78,6 +79,7 @@ button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
   #clinical-title:focus-visible,
   #mpr-close:focus-visible,
   #shortcuts-close:focus-visible,
+  #provenance-close:focus-visible,
   #mpr-grid .button-quiet:focus-visible,
   .check input:focus-visible {
     outline: 2px solid Highlight;
@@ -88,6 +90,15 @@ button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
     border-color: ButtonText;
   }
   .check input::before { content: none; }
+  /* Shadows and fills are dropped here, so selected states need a system-colour edge. */
+  [role="tab"][aria-selected="true"] { border-bottom: 2px solid Highlight; }
+  .segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+  .row[data-selected="true"],
+  .clinical-deficit[aria-pressed="true"],
+  .circuit-choice[aria-pressed="true"],
+  .circuit-step[aria-current="step"] { outline: 1px solid Highlight; outline-offset: -1px; }
+  input[type="range"]::-webkit-slider-runnable-track { background: CanvasText; }
+  input[type="range"]::-moz-range-track { background: CanvasText; }
 }
 
 /*

@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { openClinicalRegion } from './navigation.js';
+import { openClinicalRegion, revealClinicalRegions } from './navigation.js';
 
-function scene(region) {
+function scene(...regions) {
   const calls = [];
   const model = {
-    regions: new Map([[region.id, region]]),
+    regions: new Map(regions.map(region => [region.id, region])),
     settings: { atlas: 'hcp-mmp', detail: 'nextbrain', cortexOpacity: 0 },
     async setAtlas(id) { calls.push(['atlas', id]); this.settings.atlas = id; },
     async setDetail(id) { calls.push(['detail', id]); this.settings.detail = id; },
@@ -61,4 +61,36 @@ test('an unsuccessful atlas load surfaces the error without selecting an unavail
   await assert.rejects(openClinicalRegion(model, sections, region.id), /Atlas unavailable/);
   assert.deepEqual(calls, []);
   await assert.rejects(openClinicalRegion(model, sections, 'unknown'), /Unknown clinical region/);
+});
+
+test('a deficit draws its mapped regions together, in the detail level holding most of them', async () => {
+  const regions = [
+    { id: 'destrieux:right:26', atlas: 'destrieux', kind: 'cortex' },
+    { id: 'aseg:right:49', atlas: 'aseg', kind: 'structure' },
+    { id: 'aseg:right:50', atlas: 'aseg', kind: 'structure' },
+    { id: 'nextbrain:right:7', atlas: 'nextbrain', kind: 'structure' },
+  ];
+  const { model, sections, calls } = scene(...regions);
+  model.settings.detail = 'learning';
+  const ids = regions.map(region => region.id);
+  await revealClinicalRegions(model, sections, ids);
+  assert.deepEqual(calls, [
+    ['atlas', 'destrieux'], ['detail', 'aseg'], ['cut', 'off'], ['clearIsolation'], ['system', null],
+    ['hemisphere', 'both'], ['cortex', true], ['opacity', 1], ['internal', true], ['show', ids],
+  ]);
+});
+
+test('deep-only mappings hide the cortex, and a detail level already holding one is kept', async () => {
+  const regions = [
+    { id: 'nextbrain:left:458', atlas: 'nextbrain', kind: 'structure' },
+    { id: 'aseg:left:10', atlas: 'aseg', kind: 'structure' },
+    { id: 'aseg:left:11', atlas: 'aseg', kind: 'structure' },
+  ];
+  const { model, sections, calls } = scene(...regions);
+  await revealClinicalRegions(model, sections, regions.map(region => region.id));
+  assert.equal(calls.some(([kind]) => kind === 'detail' || kind === 'atlas'), false);
+  assert.ok(calls.some(([kind, value]) => kind === 'cortex' && value === false));
+  const empty = scene(regions[0]);
+  await revealClinicalRegions(empty.model, empty.sections, []);
+  assert.deepEqual(empty.calls, []);
 });

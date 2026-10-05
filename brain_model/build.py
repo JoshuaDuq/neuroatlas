@@ -300,6 +300,10 @@ def anatomy_limitations(config):
         limitations.append(
             "HCP-MMP is the published Mills fsaverage projection, not native HCP space."
         )
+    if "reconstruction" in config["anatomy"]:
+        report = config["anatomy"]["reconstruction"]["provenance"]
+        reconstruction = json.loads((config["source_directory"] / report).read_text())
+        limitations.extend(reconstruction["limitations"])
     return limitations
 
 

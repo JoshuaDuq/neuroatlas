@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
+import { clearFraming, fitScale, viewOffset, visibleRect } from './effective-viewport.js';
 
 const canvas = { width: 400, height: 800 };
 
@@ -83,4 +83,42 @@ test('a left sheet shifts the image right by half the covered width', () => {
 
 test('a degenerate canvas has no view offset', () => {
   assert.equal(viewOffset({ width: 0, height: 0 }, { x: 0, y: 0, width: 0, height: 0 }), null);
+});
+
+/** The anatomy's band, in the visible rectangle, once the scene has applied a clearFraming result. */
+function framedBand({ height }, { inset, scale }, fill) {
+  const centre = (height - inset) / 2;
+  const half = fill * centre * scale.vertical;
+  return { top: centre - half, bottom: centre + half };
+}
+
+test('a phone at half height keeps the anatomy off its letters and scale bar', () => {
+  // Measured at 390 x 844 with the sheet at half: S ends 52px down, I starts 24px over the dock.
+  const rect = { width: 390, height: 329 };
+  const clear = { top: 60, bottom: 32, left: 28, right: 28 };
+  const framing = clearFraming(rect, 66, clear, 0.8);
+  const band = framedBand(rect, framing, 0.8);
+  assert.ok(Math.abs(band.top - clear.top) < 1e-9, `top at ${band.top}`);
+  assert.ok(Math.abs(band.bottom - (rect.height - 66 - clear.bottom)) < 1e-9, `bottom at ${band.bottom}`);
+  assert.equal(framing.scale.horizontal, 1, 'the side letters sit outside four fifths of the width');
+});
+
+test('a desktop stage keeps four fifths of the room over the dock', () => {
+  const rect = { width: 1120, height: 824 };
+  const framing = clearFraming(rect, 54, { top: 36, bottom: 32, left: 28, right: 28 }, 0.8);
+  const band = framedBand(rect, framing, 0.8);
+  assert.ok(Math.abs((band.bottom - band.top) - 0.8 * (824 - 54)) < 1e-9);
+  assert.equal(framing.scale.horizontal, 1);
+});
+
+test('with nothing to clear, framing is the room over the dock', () => {
+  const framing = clearFraming({ width: 600, height: 500 }, 60, { top: 0, bottom: 0, left: 0, right: 0 }, 0.8);
+  assert.equal(framing.inset, 60);
+  assert.deepEqual(framing.scale, { horizontal: 1, vertical: 1 });
+});
+
+test('a stage too short for its markings still frames something', () => {
+  const framing = clearFraming({ width: 390, height: 90 }, 66, { top: 60, bottom: 32, left: 28, right: 28 }, 0.8);
+  assert.ok(framing.scale.vertical > 0 && Number.isFinite(framing.scale.vertical));
+  assert.ok(framing.inset >= 0);
 });

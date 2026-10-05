@@ -1,5 +1,5 @@
 {
-  "default": "bert",
+  "default": "snail",
   "anatomies": [
     {
       "id": "aomic",
@@ -11,6 +11,12 @@
       "id": "bert",
       "display_name": "FreeSurfer \u201cbert\u201d",
       "label": "FreeSurfer bert single-subject reconstruction",
+      "individual": true
+    },
+    {
+      "id": "snail",
+      "display_name": "SNAIL \u201csubj_1\u201d",
+      "label": "SNAIL subject 1 single-subject reconstruction",
       "individual": true
     }
   ]

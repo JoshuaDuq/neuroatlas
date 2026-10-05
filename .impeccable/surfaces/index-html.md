@@ -16,57 +16,79 @@ catalog's alternate materials do not replace the selected clinical direction.
 
 ## Direction contract
 
-THESIS: One calm clinical task panel gives exploration, contextual inspection,
-sections, and display controls a single home beside a generous anatomy view.
+THESIS: Three homes, each with one job: the masthead states what data is
+loaded, one task panel explores and drills into it, and the dark stage carries
+only the tools that act on the picture.
 
 OWN-WORLD: Self-hosted Source Sans 3, one white ruled task panel, slate ink,
 restrained teal, small control corners, flat underline tabs, and monochrome SVG
 control icons. The dark scientific viewport retains its independent palette.
 
-STORY: Explore anatomy, deficits, or circuits; select and inspect a region;
-create sections; use View to choose the specimen, atlas, appearance, internal
-detail, hemisphere, and visibility. Keep scientific operations reversible.
+STORY: Choose the subject, atlas, colouring, and internal anatomy in the
+masthead. In the panel, pick a mode (Anatomy, Deficits, Circuits, Tracts),
+open an item, and read its detail under one location bar; return with
+“‹ mode” or step through a lesson. Frame, cut, and adjust the picture from the
+stage dock. Opening a deficit or lesson states what it did to the stage and
+offers the way back. Scientific operations stay reversible.
 
-FIRST VIEWPORT: One 64px header above two columns: a 320px task panel and the
-remaining width for the dark anatomical viewport. The footer is 32px. At
-641–1000px, the task panel is 300px and stays beside the anatomy. There is no
-outer workspace padding; a 1px separator and square panel edges join the work
-areas. The header carries identity, a current-source readout, fullscreen, image
-capture, and a settings menu that is collapsed by default at every width.
+FIRST VIEWPORT: A 48px masthead over two columns, a 320px task panel (300px at
+641–1000px) and the dark stage, above a 28px status bar (description · not
+clinical anatomy | N visible regions | Provenance). The masthead is identity,
+then a ruled data bar of 13px captions over 32px tonal controls (Subject,
+Atlas, Colour incl. Networks, Internal anatomy), then fullscreen, Save image,
+and a ⋯ settings popover of labelled rows (Language, Theme, Single-key
+shortcuts) plus Keyboard shortcuts. Below 1280px the data bar is a summary
+button (“Subject · Atlas · Colour”, colour dropped last) opening the same
+fields as a popover. “Skip to model” is the first Tab stop.
 
-The task panel has one primary four-tab row: Explore, Region, Sections, View.
-Desktop tabs stack 20px SVGs over labels in 64px controls with transparent
-selected backgrounds and teal underline rules. Brand type is 20px, selected
-anatomical names 22px, panel titles 18px, body 15px, controls 14px, and captions
-12px. Outside Region, a selected label appears in a 44px full-width strip that
-opens Region. In Explore, a new anatomical selection opens Region in the same
-panel; Sections and View retain the active task on selection. Desktop Region
-is disabled until context exists and returns to Explore when context clears.
+The panel opens on 40px text tabs with a teal underline, then the Anatomy
+list: search, a Whole brain | By system scope, the tree with hover-revealed
+eye columns on fine pointers, and the one-line 36px dissection dock at its
+foot. A detail replaces the list under one 40px location bar; a selection
+strip appears only when the panel is not already showing the selection.
+The stage dock sits bottom left: presets as a segmented group in a dark
+plate, then Section ▾ and Display ▾; a cut adds the section bar above it,
+the stage's only Linked MRI entry, and popovers open above both. Anatomy is
+framed to about 80% of the visible stage, clear of the orientation letters
+and scale bar.
 
-Explore contains Anatomy, Deficits, and Circuits; the dissection dock stays at
-its foot. Contextual anatomical, deficit, and circuit details replace exploration
-within Region. Cutting planes use two equal columns of 52px minimum controls;
-full-brain spans both columns. View consolidates specimen, cortical atlas,
-internal anatomy, four appearance choices in a two-column grid, hemisphere,
-visibility, and reset. The real region retains its scientific viewer outline.
+Phones keep the sheet detents, camera insets, and renderer/chrome
+synchronization. The masthead (52px min) shows the mark and data summary; the
+grip merges the selection with the “Not clinical anatomy” statement; the stage
+plate shows View ▾ / Section ▾ / Display ▾, with presets in the View popover
+and markings hidden while a popover is open or the sheet is full. Short
+landscape uses the side sheet.
 
-Phones retain the existing sheet detents, camera insets, and renderer/chrome
-synchronization. The header has a 64px minimum height and 18px brand; source and
-subtitle hide. The same four task destinations use text tabs in the sheet.
-Phone Region remains available with its existing empty hint and selection
-behavior. Short landscape uses the side sheet: peek and half arrange tabs in
-two rows; full arranges one row. Display controls stay in View at every width.
+FORM: Clinical reference workspace; seed 077bf47c, light and dark panel
+themes around a stage that is dark in both. The previous organization
+(Explore / Region / Sections / View tabs, data and display settings in the
+panel) was replaced after critique for stacked navigation rows, split
+concepts, and mixed control dialects; the shipped organization is the one
+above, recorded in DESIGN.md.
 
-FORM: Clinical reference workspace; seed 077bf47c. The user's pinned light
-clinical direction takes precedence over catalog materials and ranking. The
-user rejected the earlier organization as too many panels and scattered
-controls, approving this structural replacement within the same visual world.
-The organization contract is `docs/superpowers/plans/2026-10-04-workspace-organization.md`.
-
-FINISH: Review evidence lives in `.impeccable/review/workbench/`; the persistent
-system is merged in DESIGN.md and `.impeccable/design.json`. The corrected light
-control border is recorded from the current token source. Review findings are
-interpreted against imported styles and rendered captures, with functional
-sheet/progress motion and small geometry preserved.
+FINISH: Review evidence lives in `.impeccable/review/round3/` (desktop light
+and dark, French, 1100px summary, phone detents and popovers) and the critique
+`.impeccable/critique/2026-10-05T22-36-08Z__index-html.md`. The persistent
+system is DESIGN.md. Functional 1–3px radii, the true-black MPR canvas, the
+loading progress width, and settled sheet motion are recorded as intended.
 
 No shipping rasters are created. Evidence screenshots are development files.
+
+## Diffusion extension
+
+The Tracts tab shares the existing renderer and camera. New sessions open the
+validated SNAIL subject's actual cortical reconstruction; its real streamlines
+form an optional retained layer over the atlas. A searchable
+bundle list, source filenames, counts, length filter, opacity, and CSV export
+inherit the established controls. Native indexed lines preserve original points
+and avoid tube geometry. An optional MRI-navigation dialog restores the requested
+linked SNAIL T1/FA slices, exact voxel crosshair and selected tract lines. It loads
+on demand and caches its data. Masthead T1 colouring uses the matching SNAIL
+anatomy's existing scan and uniforms. Atlas regions,
+picking and section cuts remain available; returning to Anatomy keeps the tract
+layer visible. Shared cortex opacity reveals tracts through the reconstructed
+parcels. Other specimens use the isolated SNAIL reference and T1-derived outline.
+SNAIL's default publication follows successful reconstruction and full
+source-to-asset validation. Destrieux is its own parcellation; HCP-MMP is an
+explicit registered-sphere projection. MRI crosshair movement positions the
+normal cutting plane through the exact image-header coordinate transform.

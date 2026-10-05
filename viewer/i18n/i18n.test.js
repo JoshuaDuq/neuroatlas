@@ -84,8 +84,8 @@ test('atlas switch labels are short names, not the full atlas title', () => {
   assert.equal(atlasSwitchLabel('hcp-mmp', 'fr'), 'HCP-MMP');
   assert.equal(atlasSwitchLabel('destrieux', 'fr'), 'Destrieux');
   assert.equal(atlasSwitchLabel('nextbrain', 'en'), 'NextBrain');
-  assert.equal(atlasSwitchLabel('learning', 'en'), 'Learning');
-  assert.equal(atlasSwitchLabel('learning', 'fr'), 'Pédagogique');
+  assert.equal(atlasSwitchLabel('learning', 'en'), 'Teaching set');
+  assert.equal(atlasSwitchLabel('learning', 'fr'), 'Ensemble pédagogique');
 });
 
 test('UI actions and shortcuts are fully translated in English and French', () => {

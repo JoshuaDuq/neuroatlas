@@ -1,10 +1,10 @@
 import { atlasSwitchLabel, t } from '../i18n/translations.js';
+import { isIndependentTractReference } from '../diffusion/presentation.js';
 
 /**
- * How much of the model is drawn: detail level, hemisphere, cortex, opacity.
- *
- * Source and surface colour are populated by the header controller:
- * it says what the picture means rather than how much of it is showing.
+ * How much of the model is drawn: the stage's Display popover (hemisphere,
+ * cortex, opacity, internal anatomy, spinal cord, reset) and the masthead's
+ * internal-detail level, which is populated here from the manifest.
  */
 export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers }) {
   const detail = document.getElementById('detail');
@@ -19,10 +19,11 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
   const spinalCordText = document.getElementById('spinal-cord-text');
   const spinalCordLabel = document.getElementById('spinal-cord-label');
   const reset = document.getElementById('reset');
-  const labelDisplay = document.getElementById('label-display');
+  const resetText = document.getElementById('reset-text');
   const hemiLabel = document.getElementById('display-hemisphere-label');
   const cortexText = document.getElementById('cortex-text');
   const opacityText = document.getElementById('opacity-text');
+  const opacityRow = document.getElementById('display-opacity');
 
   // Populated from the manifest: a build without the optional fine level offers
   // one choice, and the control simply has nothing to switch between.
@@ -60,8 +61,10 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
 
   return {
     update(state) {
+      for (const node of document.querySelectorAll('[data-anatomy-display]')) {
+        node.hidden = isIndependentTractReference(state);
+      }
       const i18n = t(state.lang, 'display');
-      if (labelDisplay) labelDisplay.textContent = i18n.sectionHeading;
       if (hemiLabel) hemiLabel.textContent = i18n.hemisphere;
       if (detailLabel) detailLabel.textContent = i18n.internalAnatomy;
       const atlasDict = t(state.lang, 'atlases');
@@ -84,15 +87,15 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
       if (internalText) internalText.textContent = i18n.showInternal;
       if (spinalCordText) spinalCordText.textContent = i18n.showSpinalCord;
       if (spinalCordLabel) spinalCordLabel.hidden = !hasSpinalCord;
-      reset.textContent = i18n.resetView;
+      resetText.textContent = i18n.resetView;
       cortex.checked = state.cortexVisible;
       if (internal) internal.checked = state.internalVisible !== false;
       if (spinalCord) spinalCord.checked = state.spinalCordVisible === true;
       // Do not fight the reader's thumb while they are dragging the slider.
       if (document.activeElement !== opacity) opacity.value = String(state.cortexOpacity);
       opacityValue.value = `${Math.round(state.cortexOpacity * 100)}%`;
-      opacity.disabled = !state.cortexVisible;
-      if (detail) detail.disabled = state.internalVisible === false;
+      // A hidden cortex has no opacity to set, so the slider goes rather than greys.
+      opacityRow.hidden = !state.cortexVisible;
     },
     dispose() {
       for (const [element, type, listener] of listeners) {

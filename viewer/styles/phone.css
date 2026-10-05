@@ -12,21 +12,22 @@
  * render/device.js; the two are kept in step by hand.
  */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
-  :root { --control-height: 44px; --row-height: 44px; }
-  #dissection-hint { display: none; }
-  .dissection-controls {
-    padding: var(--space-1) var(--space-5);
-  }
-  #dissection-status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  .search-clear { width: 44px; height: 44px; right: var(--space-1); }
+  :root { --control-height: 44px; --row-height: 44px; --tab-height: 44px; }
+  /* The sheet has no room for the lesson: idle, the dock goes; with something hidden, it returns. */
+  .dissection-controls:has(#dissection-undo:disabled):has(#dissection-restore:disabled) { display: none; }
+  /*
+   * The half detent should show rows, not chrome. The tree header draws 36px
+   * and keeps a 44px hit area; section labels take 20px.
+   */
+  .tree-header { padding-bottom: 0; border-bottom: 0; }
+  .tree-header button { position: relative; height: 36px; }
+  .tree-header button::after { content: ""; position: absolute; inset: -4px 0; }
+  .internal-controls { border-bottom: 0; }
+  #tree > .section-label,
+  #tree > .section-label:first-child { padding: 1px var(--space-4) 0; line-height: 18px; border-top: 1px solid var(--border-subtle); }
+  .search-clear { width: 36px; height: 36px; right: var(--space-1); }
   input[type="range"] { height: 44px; margin: 0; }
-  input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -8.5px; }
+  input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -9px; }
   input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; }
   #app {
     padding: 0;
@@ -41,24 +42,10 @@
     overflow: hidden;
   }
 
-  #masthead {
-    grid-column: 1;
-    grid-row: 1;
-    min-height: 64px;
-    gap: var(--space-2);
-    padding: max(var(--space-2), env(safe-area-inset-top)) var(--space-3);
-    padding-left: max(var(--space-3), env(safe-area-inset-left));
-    padding-right: max(var(--space-3), env(safe-area-inset-right));
-  }
-  .identity { gap: var(--space-2); }
-  .brand { font-size: var(--text-title); }
-  .brand-mark { width: 28px; height: 28px; }
-  .brand-description, .workspace-source { display: none; }
+  /* The masthead's phone layout lives in masthead.css. */
+  .icon-button { width: 44px; height: 44px; }
   #workspace-panel { display: contents; }
-  .explorer-head { padding: var(--space-3) var(--space-5) 0; }
-  .explorer-head .rail-title { display: none; }
-  .viewport-context, .viewport-help, .search-shortcut { display: none; }
-  #surface-switch button { height: var(--control-height); }
+  .viewport-help, .search-shortcut { display: none; }
 
   /* The colophon's disclaimer moves into the sheet, where it stays visible. */
   #colophon { display: none; }
@@ -82,7 +69,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: var(--sheet-height, 132px);
+    height: 132px;
     background: var(--surface-base);
     border-top: 1px solid var(--border-subtle);
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
@@ -90,7 +77,7 @@
   }
   /* Only a settled sheet animates; a dragged one tracks the finger exactly. */
   #sheet[data-dragging="false"] { transition: height var(--camera-transition) ease; }
-  /* Hug the grip. The 132px rest is a drag target, not empty padding. */
+  /* Hug the grip; the sheet measures this height as its peek rest. */
   #sheet[data-detent="peek"]:not([data-dragging="true"]) { height: fit-content; }
 
   /*
@@ -106,7 +93,7 @@
     overflow: hidden;
   }
 
-  /* The sheet strip already names the region; the panel heading repeats it. */
+  /* The grip already names the region; the panel heading would repeat it. */
   #selected-name { display: none; }
   #inspector .tab-group > .section-label { display: none; }
 
@@ -119,14 +106,30 @@
     padding-right: max(0px, env(safe-area-inset-right));
   }
 
+  /*
+   * One grip row: the handle, the "not clinical anatomy" line and, once
+   * something is chosen, its name above that line. The statement stays visible
+   * at every height without a row of its own; taps on it reach the control
+   * underneath. Later children are positioned so they paint over the handle.
+   */
+  .sheet-grip-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    min-height: 44px;
+  }
+  .sheet-grip-row[data-selection="true"] { grid-template-rows: 16px 20px auto 8px; }
   #sheet-handle {
+    position: absolute;
+    inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     width: 100%;
-    height: 24px;
-    padding: 0;
+    height: 100%;
+    padding: var(--space-2) 0 0;
     border: 0;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
     background: none;
   }
   .sheet-handle-bar {
@@ -136,48 +139,68 @@
     background: var(--border-control);
   }
 
+  #selection-clear { display: none; }
   .sheet-selection {
+    position: relative;
+    grid-column: 1;
+    grid-row: 2 / 5;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: var(--space-2);
-    width: 100%;
-    height: var(--row-height);
-    padding: 0 var(--space-4);
+    min-width: 0;
+    height: auto;
+    padding: 0 var(--space-2) 0 var(--space-4);
     border: 0;
     border-radius: 0;
     background: none;
     text-align: left;
   }
+  .sheet-selection:hover:not(:disabled) { background: none; }
+  .sheet-selection:focus-visible, #sheet-selection-clear:focus-visible { outline-offset: -2px; }
   .sheet-selection-name {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: var(--text-body);
     font-weight: 600;
+    line-height: 20px;
   }
-  .sheet-selection-side { margin-left: auto; color: var(--text-tertiary); font-size: var(--text-micro); }
-  .sheet-selection-chevron { flex: none; color: var(--text-secondary); }
+  /* Side and chevron follow the name on its line, so nothing floats in a column beside the clear. */
+  .sheet-selection-side { flex: none; color: var(--text-secondary); font-size: var(--text-small); font-weight: 400; line-height: 20px; }
+  .sheet-selection-chevron { flex: none; align-self: flex-start; margin-top: 4px; color: var(--text-secondary); }
+  /* In the detail view the name heads what the panel shows; it no longer leads anywhere. */
+  #sheet[data-view="detail"] .sheet-selection-chevron { display: none; }
+  #sheet-selection-clear { position: relative; grid-column: 2; grid-row: 2 / 5; color: var(--text-tertiary); }
+
+  /* A safety statement, so never in the overflow menu with the settings. */
+  .sheet-disclaimer {
+    position: relative;
+    grid-column: 1 / -1;
+    align-self: end;
+    padding: var(--space-5) var(--space-4) var(--space-2);
+    font-size: var(--text-micro);
+    line-height: 16px;
+    color: var(--text-secondary);
+    text-align: center;
+    pointer-events: none;
+  }
+  .sheet-grip-row[data-selection="true"] .sheet-disclaimer {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+    padding: 0 var(--space-2) 0 var(--space-4);
+    text-align: left;
+  }
 
   /* Appearance is .rail-tabs in components.css; these are the sheet's rules. */
   .sheet-tabs {
-    padding: 0 var(--space-3);
+    padding: 0 var(--space-2);
     border-radius: 0;
     border-left: 0;
     border-right: 0;
     border-top: 1px solid var(--border-subtle);
     border-bottom: 1px solid var(--border-subtle);
-  }
-
-  /*
-   * "Not clinical anatomy" is a safety statement, so it is not allowed into
-   * the overflow menu with the settings. It sits under the selection and
-   * above the tabs, visible at every sheet height including the lowest. The
-   * tabs then meet the panel they control, instead of sandwiching a line of
-   * legal copy between two tab bars.
-   */
-  .sheet-disclaimer {
-    padding: var(--space-1) var(--space-4);
-    font-size: var(--text-micro);
-    color: var(--text-secondary);
   }
 
   /* ---- panels inside the sheet ---------------------------------------- */
@@ -197,51 +220,12 @@
     -webkit-overflow-scrolling: touch;
     padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
   }
-  /* Tab groups are invisible above this breakpoint and sectioning here. */
-  .tab-group[hidden] { display: none !important; }
-  /* The first visible label in a panel has nothing above it to rule off. */
-  .sheet-panel-first > .section-label { border-top: 0; }
 
-  /* ---- viewport chrome ------------------------------------------------ */
-  /*
-   * Presets scroll rather than wrap, and clear the sheet. The tighter
-   * padding is what lets the seven French names fit on a 390px screen;
-   * a name cut in half is a view the reader cannot choose.
-   */
-  .views {
-    left: calc(var(--vis-left) + var(--space-3));
-    max-width: calc(100% - var(--vis-left) - var(--vis-right) - var(--space-6));
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .views button { padding: 0 var(--space-1); }
-  .views::-webkit-scrollbar { display: none; }
-  .hover-label { display: none; }
-
-  /*
-   * The presets take the whole bottom line. The scale bar would sit on
-   * Bottom there, so it moves to the top left. Chips hold the top right,
-   * and S sits below the bar.
-   */
-  .scale-bar,
-  #viewport[data-chrome="tight"] .scale-bar {
-    top: calc(var(--vis-top) + var(--space-3));
-    bottom: auto;
-    left: calc(var(--vis-left) + var(--space-3));
-    right: auto;
-  }
-  /* The scale bar holds the top-left line. S sits under it, not through it. */
-  .orientation [data-edge="top"] {
-    top: calc(var(--space-3) + 24px);
-  }
-  /* The view plate holds the bottom-left. I must not sit on Top. */
-  .orientation [data-edge="bottom"] {
-    bottom: calc(var(--space-3) + 48px);
-  }
+  /* The stage toolbar, section bar and popovers have their phone rules in stage.css. */
 
   /* ---- dialogs -------------------------------------------------------- */
   /* A phone has no room for a dialog inset from the screen. */
-  #mpr-dialog, #shortcuts {
+  #mpr-dialog, #shortcuts, #provenance-dialog, #diffusion-mri-dialog {
     --dialog-inset: var(--space-4);
     --dialog-top: max(var(--dialog-inset), env(safe-area-inset-top));
     width: 100vw;
@@ -262,7 +246,7 @@
   #mpr-grid article[hidden] { display: none !important; }
   #mpr-close { flex: none; white-space: nowrap; }
   .dialog-header { align-items: start; }
-  #shortcuts-list { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  #shortcuts-list dl { grid-template-columns: minmax(0, 1fr); }
   #shortcuts-list dt { padding: var(--space-3) 0 0; border: 0; }
   #shortcuts-list dd { padding: 0 0 var(--space-3); }
 }
@@ -277,11 +261,11 @@
   #sheet {
     /* Set from the viewport's own offset: a side sheet anchored at zero would
        cover the wordmark and the atlas switch. */
-    top: var(--sheet-top, 0px);
+    top: 0;
     right: auto;
     bottom: 0;
     height: auto;
-    width: var(--sheet-width, 56px);
+    width: 56px;
     border-top: 0;
     border-right: 1px solid var(--border-subtle);
     border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
@@ -291,14 +275,41 @@
   /* Upright, peek hugs the grip; sideways the rail runs to the foot of the screen. */
   #sheet[data-detent="peek"]:not([data-dragging="true"]) { height: auto; }
 
-  #sheet-handle { width: 100%; height: 20px; }
-  .sheet-handle-bar { width: 28px; }
-  .sheet-tabs { flex-wrap: wrap; }
-  .sheet-tabs button { flex: 1 0 calc(50% - 2px); }
-  #sheet[data-detent="full"] .sheet-tabs { flex-wrap: nowrap; }
-  #sheet[data-detent="full"] .sheet-tabs button { flex: 1; }
-  .sheet-disclaimer { white-space: normal; }
-  #masthead { padding-left: max(var(--space-3), env(safe-area-inset-left)); }
+  /*
+   * Height is the scarce axis here, so the handle leaves its own row: an edge
+   * strip beside the statement and tabs, on the side the sheet is dragged by.
+   */
+  .sheet-grip { display: grid; grid-template-columns: minmax(0, 1fr) auto 44px; }
+  .sheet-grip-row { display: contents; }
+  .sheet-grip-row .sheet-disclaimer,
+  .sheet-grip-row[data-selection="true"] .sheet-disclaimer {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    align-self: start;
+    padding: var(--space-2) var(--space-4) var(--space-1);
+    text-align: left;
+  }
+  .sheet-selection { grid-column: 1; grid-row: 2; align-items: center; height: 44px; border-top: 1px solid var(--border-subtle); }
+  .sheet-selection-chevron { align-self: center; margin-top: 0; }
+  #sheet-selection-clear { grid-column: 2; grid-row: 2; border-top: 1px solid var(--border-subtle); border-radius: 0; }
+  .sheet-tabs { grid-column: 1 / 3; grid-row: 3; padding: 0 var(--space-1); }
+  #sheet-handle {
+    position: static;
+    grid-column: 3;
+    grid-row: 1 / 4;
+    align-items: center;
+    height: auto;
+    padding: 0;
+    border-left: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    background: var(--surface-navigation);
+  }
+  .sheet-handle-bar { width: 3px; height: 28px; }
+
+  /* The narrow rail at peek takes the modes in two rows; open, they share one. */
+  #sheet[data-detent="peek"] .sheet-tabs { flex-wrap: wrap; }
+  #sheet[data-detent="peek"] .sheet-tabs button { flex: 1 0 calc(50% - 2px); }
 }
 
 /*
@@ -311,24 +322,27 @@
     --row-height: 44px;
     --control-height: 44px;
   }
-  .rail-tabs button { height: var(--control-height); }
-  .segmented button { height: calc(var(--control-height) - 8px); }
-  input[type="search"] { height: var(--control-height); }
-  .views button { height: var(--control-height); }
-  .search-clear { width: 36px; height: 36px; right: 4px; }
+  :root { --tab-height: 44px; }
+  .search-clear { width: 44px; height: 44px; right: 0; }
+  .search-box input[type="search"] { padding-right: 44px; }
+  .dissection-heading-row button { height: 44px; }
+  .metadata-details > summary, .inspector-disclosure > summary { min-height: 44px; }
   .check input { width: 20px; height: 20px; }
-  .display-opacity { padding-left: 28px; }
-  .visibility-control,
-  .group-row .visibility-control { width: 44px; height: 44px; }
+  .visibility-control { width: 44px; height: 44px; }
+  .visibility-control[data-visibility-key$=":midline"] { min-width: 44px; }
+  .row-side-solo { min-width: 44px; padding-right: 9px; }
+  /* The 44px eye is the row's height: no padding or margin on top of it. */
+  #tree .row { padding-block: 0; }
+  #tree .row-indent { margin-block: 0; }
   .search-shortcut { display: none; }
   .check input::before { width: 11px; height: 6px; }
-  .cut-position-row input[type="number"] { height: var(--control-height); width: 88px; }
   /* A 16px field is the threshold below which iOS zooms the page on focus. */
   input[type="search"], input[type="number"], select { font-size: 1rem; }
-  input[type="range"] {
-    height: 2px;
-    margin: 15px 0;
-  }
-  input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; }
+  /* The whole 44px box is the grab area; the 2px track is centred in it. */
+  input[type="range"],
+  #opacity,
+  #mpr-grid input[type="range"],
+  .mpr-display input[type="range"] { height: 44px; margin: 0; }
+  input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -9px; }
   input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; }
 }

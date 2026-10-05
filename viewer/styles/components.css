@@ -1,20 +1,37 @@
 /* Controls -------------------------------------------------------------- */
-button, select, input[type="search"], input[type="number"] {
+/*
+ * Three button ranks: one filled primary (linked MRI), tonal secondary for
+ * every other command, and quiet text for recessive or destructive-to-settings
+ * actions. Fields keep a 3:1 outline because their edge is the affordance.
+ */
+button {
   height: var(--control-height);
   padding: 0 var(--space-3);
-  border: 1px solid var(--border-control);
+  border: 1px solid transparent;
   border-radius: var(--radius-control);
-  background: var(--surface-base);
-}
-button {
+  background: var(--surface-tonal);
+  color: var(--text-primary);
+  font-size: var(--text-ui);
+  font-weight: 500;
+  line-height: 1.2;
   cursor: pointer;
   transition: background-color var(--ui-transition) var(--ease-ui),
     color var(--ui-transition) var(--ease-ui),
-    border-color var(--ui-transition) var(--ease-ui);
+    border-color var(--ui-transition) var(--ease-ui),
+    box-shadow var(--ui-transition) var(--ease-ui);
 }
-button, select { font-size: var(--text-ui); }
-button { font-weight: 500; }
-.control-icon { width: 17px; height: 17px; flex: none; }
+button:hover:not(:disabled) { background: var(--surface-tonal-hover); }
+button:disabled { background: var(--surface-sunken); color: var(--text-tertiary); cursor: default; }
+.control-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .control-label { min-width: 0; }
 button:has(> .control-icon) {
   display: inline-flex;
@@ -22,109 +39,104 @@ button:has(> .control-icon) {
   justify-content: center;
   gap: var(--space-2);
 }
-button:hover:not(:disabled) { background: var(--surface-sunken); }
-button:disabled, input:disabled, select:disabled { color: var(--text-tertiary); cursor: default; }
-button:disabled { border-color: var(--border-subtle); }
-select {
-  width: 100%;
-  appearance: none;
-  padding-left: var(--space-3);
-  padding-right: var(--space-6);
+
+.button-primary {
+  background: var(--primary-fill);
+  border-color: var(--primary-fill);
+  color: var(--primary-ink);
+}
+.button-primary:hover:not(:disabled) {
+  background: var(--primary-fill-hover);
+  border-color: var(--primary-fill-hover);
+}
+.button-quiet {
+  background: none;
+  color: var(--text-secondary);
+}
+.button-quiet:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+.button-quiet:disabled { background: none; }
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-height);
+  padding: 0;
+  background: none;
+  color: var(--text-secondary);
+}
+.icon-button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+.icon-button[aria-expanded="true"] { background: var(--surface-tonal); color: var(--text-primary); }
+.icon-button:disabled { background: none; }
+
+select, input[type="search"], input[type="number"] {
+  height: var(--control-height);
+  padding: 0 var(--space-3);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-control);
   background-color: var(--surface-base);
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--text-tertiary) 50%),
-    linear-gradient(135deg, var(--text-tertiary) 50%, transparent 50%);
-  background-position:
-    calc(100% - 10px) calc(50% - 1.5px),
-    calc(100% - 5px) calc(50% - 1.5px);
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
-}
-select:hover:not(:disabled) { border-color: var(--text-secondary); }
-select:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.identity #anatomy-switch:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  border-bottom: 0;
-}
-input[type="search"] {
-  width: 100%;
-  height: var(--control-height);
-  background: var(--surface-navigation);
-  border: 1px solid var(--border-control);
-  border-radius: var(--radius-control);
   font-size: var(--text-ui);
 }
-input[type="search"]::placeholder { color: var(--text-tertiary); opacity: 1; }
-input[type="search"]:hover:not(:disabled) { border-color: var(--text-secondary); }
+select {
+  width: 100%;
+  appearance: none;
+  padding-right: var(--space-8);
+  /* The same stroked chevron as every disclosure, drawn from two diagonal strokes. */
+  background-image:
+    linear-gradient(45deg, transparent calc(50% - 0.9px), var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px), transparent calc(50% + 0.6px)),
+    linear-gradient(-45deg, transparent calc(50% - 0.9px), var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px), transparent calc(50% + 0.6px));
+  background-position:
+    calc(100% - 16px) calc(50% + 1px),
+    calc(100% - 11px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+select:hover:not(:disabled),
+input[type="search"]:hover:not(:disabled),
+input[type="number"]:hover:not(:disabled) { border-color: var(--text-secondary); }
+select:disabled, input:disabled { color: var(--text-tertiary); cursor: default; }
 input[type="number"]:disabled, select:disabled {
   border-color: var(--border-subtle);
   background-color: var(--surface-sunken);
 }
-input[type="search"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  background: var(--surface-base);
-}
+input[type="search"] { width: 100%; }
+input[type="search"]::placeholder { color: var(--text-tertiary); opacity: 1; }
 input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
 
 input[type="range"] {
   appearance: none;
   width: 100%;
-  height: 24px;
+  height: 20px;
   margin: var(--space-1) 0;
   padding: 0;
   background: transparent;
   accent-color: var(--accent);
+  cursor: pointer;
 }
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 3px;
-  background: var(--border-control);
-  border-radius: 2px;
-}
-input[type="range"]::-moz-range-track {
-  height: 3px;
-  background: var(--border-control);
-  border-radius: 2px;
-}
-input[type="range"]:disabled { opacity: 1; }
+input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--border-control); border-radius: 1px; }
+input[type="range"]::-moz-range-track { height: 2px; background: var(--border-control); border-radius: 1px; }
+input[type="range"]:disabled { opacity: 1; cursor: default; }
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
   height: 14px;
-  margin-top: -5.5px;
-  background: var(--accent);
-  border: 2px solid var(--surface-base);
+  margin-top: -6px;
+  background: var(--surface-base);
+  border: 2px solid var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--accent);
-  cursor: pointer;
 }
 input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--accent);
-  border: 2px solid var(--surface-base);
+  width: 10px;
+  height: 10px;
+  background: var(--surface-base);
+  border: 2px solid var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--accent);
-  cursor: pointer;
 }
 input[type="range"]:disabled::-webkit-slider-runnable-track { background: var(--border-subtle); }
 input[type="range"]:disabled::-moz-range-track { background: var(--border-subtle); }
-input[type="range"]:disabled::-webkit-slider-thumb {
-  background: var(--border-control);
-  box-shadow: 0 0 0 1px var(--border-control);
-  cursor: default;
-}
-input[type="range"]:disabled::-moz-range-thumb {
-  background: var(--border-control);
-  box-shadow: 0 0 0 1px var(--border-control);
-  cursor: default;
-}
+input[type="range"]:disabled::-webkit-slider-thumb { border-color: var(--border-control); }
+input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-control); }
 
 .search-box {
   position: relative;
@@ -134,110 +146,106 @@ input[type="range"]:disabled::-moz-range-thumb {
 }
 .search-affordance {
   position: absolute;
-  left: var(--space-3);
+  left: 10px;
   width: 14px;
   height: 14px;
   color: var(--text-tertiary);
   pointer-events: none;
 }
 .search-box input[type="search"] {
-  width: 100%;
-  padding-left: 36px;
-  padding-right: calc(var(--control-height) + var(--space-1));
+  padding-left: 32px;
+  padding-right: 36px;
 }
 .search-clear {
   position: absolute;
-  right: var(--space-2);
+  right: var(--space-1);
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--text-tertiary);
-  font-size: 1.125rem;
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-control);
-  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  color: var(--text-tertiary);
 }
-.search-clear:hover {
-  color: var(--text-primary);
-  background: var(--surface-sunken);
-}
+.search-clear:hover:not(:disabled) { color: var(--text-primary); background: var(--surface-hover); }
 .search-shortcut {
   position: absolute;
-  right: var(--space-3);
-  min-width: 18px;
-  padding: 2px 4px;
-  color: var(--text-tertiary);
-  font-size: var(--text-micro);
-  background: var(--surface-sunken);
+  right: var(--space-2);
   pointer-events: none;
 }
 .search-box:has(.search-clear:not([hidden])) .search-shortcut { display: none; }
 
-/* A single visual language for exclusive settings. */
+/* One visual language for exclusive settings: a tonal track and a raised thumb. */
 .segmented {
   display: flex;
   align-items: stretch;
   gap: 2px;
-  padding: 3px;
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-sunken);
+  padding: 2px;
   border-radius: var(--radius-control);
+  background: var(--surface-tonal);
 }
 .segmented button {
-  height: calc(var(--control-height) - 8px);
+  height: calc(var(--control-height) - 4px);
   padding: 0 var(--space-3);
   margin: 0;
   border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
+  border-radius: calc(var(--radius-control) - 1px);
   background: transparent;
-  font-size: var(--text-ui);
   color: var(--text-secondary);
+  font-size: var(--text-small);
+  white-space: nowrap;
 }
-.segmented button:hover:not(:disabled) {
-  background: var(--surface-base);
-  color: var(--text-primary);
-}
-.segmented button[aria-pressed="true"] {
-  background: var(--surface-base);
+.segmented button:hover:not(:disabled) { background: var(--surface-tonal-hover); color: var(--text-primary); }
+/* The ring, not the teal alone, marks the choice. */
+.segmented button[aria-pressed="true"],
+.segmented button[aria-pressed="true"]:hover {
+  background: var(--surface-raised);
   color: var(--accent);
   font-weight: 600;
-  box-shadow: 0 1px 3px rgb(19 48 60 / 0.12);
+  box-shadow: inset 0 0 0 1px var(--thumb-ring), var(--shadow-thumb);
 }
+.segmented button:disabled { background: transparent; }
 .segmented button[data-loading="true"] { color: var(--text-tertiary); font-weight: 400; }
-#lang-switch { border: 0; padding: 0; background: transparent; }
-#lang-switch button { padding: 0 var(--space-2); font-size: var(--text-micro); }
-#lang-switch button + button { border: 0; }
-#lang-switch button[aria-pressed="true"] {
-  color: var(--accent);
-  background: var(--accent-wash);
-  font-weight: 600;
-  box-shadow: none;
-}
 
 label { display: block; font-size: var(--text-ui); color: var(--text-secondary); }
-.panel-body > label { margin: var(--space-3) 0 var(--space-1); }
-.panel-body > label:first-child { margin-top: 0; }
-.control-field { display: grid; gap: var(--space-2); }
-.control-field + .control-field,
-.cut-fields > .control-field { margin-top: var(--space-5); }
-.control-field > label { font-weight: 500; }
+.control-field { display: grid; gap: 6px; }
+.control-field + .control-field { margin-top: var(--space-4); }
+.control-field > label,
+.control-field > .control-label { font-size: var(--text-small); font-weight: 500; color: var(--text-secondary); }
 .control-field > label:has(output) {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
 }
-.control-field output { flex: none; font-weight: 400; }
-.check { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; }
+.control-field output { flex: none; font-weight: 400; color: var(--text-tertiary); font-size: var(--text-micro); }
+.field-group-heading {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+}
+.field-group-heading:not(:first-child) {
+  margin: var(--space-5) calc(-1 * var(--space-4)) var(--space-3);
+  padding: var(--space-4) var(--space-4) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--row-height);
+  margin: 0;
+  font-size: var(--text-ui);
+  color: var(--text-primary);
+  cursor: pointer;
+}
 .check span { min-width: 0; }
-/* Keep checkbox state legible in both panel themes. */
 .check input {
   appearance: none;
   width: 16px;
@@ -246,9 +254,10 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   flex: none;
   display: grid;
   place-content: center;
-  border: 1px solid var(--text-tertiary);
+  border: 1px solid var(--border-control);
   border-radius: 3px;
   background: var(--surface-base);
+  cursor: pointer;
 }
 .check input::before {
   content: "";
@@ -258,243 +267,96 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-bottom: 1.5px solid transparent;
   transform: rotate(-45deg) translateY(-1px);
 }
-.check input:checked {
-  background: var(--accent);
-  border-color: var(--accent);
-}
+.check input:checked { background: var(--accent); border-color: var(--accent); }
 .check input:checked::before { border-color: var(--surface-base); }
-.check input:disabled { border-color: var(--border-subtle); background: transparent; }
+.check input:disabled { border-color: var(--border-subtle); background: transparent; cursor: default; }
 /* A checked control that the current view has turned off still has to read as on. */
-.check input:checked:disabled {
-  background: var(--text-tertiary);
-  border-color: var(--text-tertiary);
-}
-.check input:checked:disabled::before { border-color: var(--surface-base); }
-.check input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.check:has(input:disabled) { color: var(--text-tertiary); }
-/* A slider's reading sits at the end of its label, never on a line of its own. */
-.panel-body label > output { float: right; color: var(--text-tertiary); }
-#opacity { width: 100%; margin: var(--space-1) 0 var(--space-2); }
+.check input:checked:disabled { background: var(--text-tertiary); border-color: var(--text-tertiary); }
+.check:has(input:disabled) { color: var(--text-tertiary); cursor: default; }
 
-/*
- * Rank, so six outlined boxes stop reading as six equal choices. One filled
- * action in the interface — opening the linked MRI. --accent on
- * --surface-base is white on deep blue in light, dark on pale blue in dark.
- * Reset view discards the reader's settings, so it stays recessive.
- */
-.button-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--surface-base);
+/* Unified disclosure: one chevron, one rhythm, for every <details> in the panel. */
+details > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  list-style: none;
+  cursor: pointer;
+  font-size: var(--text-ui);
   font-weight: 500;
-}
-.button-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-}
-.button-quiet {
-  background: none;
-  border-color: transparent;
-  color: var(--text-secondary);
-}
-.button-quiet:disabled { border-color: transparent; }
-.button-quiet:hover:not(:disabled) {
-  background: var(--surface-sunken);
   color: var(--text-primary);
 }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin: 0 3px 0 1px;
+  border-right: 1.5px solid var(--text-tertiary);
+  border-bottom: 1.5px solid var(--text-tertiary);
+  transform: rotate(-45deg);
+  transition: transform var(--ui-transition) var(--ease-ui);
+}
+details[open] > summary::before { transform: translateY(-2px) rotate(45deg); }
+details > summary:hover { color: var(--accent); }
+details > summary:focus-visible { outline-offset: -2px; }
 
+/* Words never split: a long translation takes more of the row, or the row wraps. */
 .actions {
   display: flex;
-  gap: var(--space-2);
-  margin-top: var(--space-5);
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-4);
 }
+/* Padding sets only where the row wraps; the tonal commands grow to fill it, the primary keeps its width. */
 .actions button {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--text-ui);
-  border: 1px solid var(--border-control);
-  border-radius: var(--radius-control);
-  background: var(--surface-base);
+  flex: 1 1 auto;
   height: auto;
   min-height: var(--control-height);
-  padding: var(--space-2) var(--space-1);
-  line-height: 1.25;
-  overflow-wrap: anywhere;
+  padding: var(--space-1) var(--space-2);
 }
-.actions button[disabled] { background: var(--surface-sunken); }
-.actions button:hover:not(:disabled) { background: var(--surface-sunken); }
-.actions .button-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--surface-base);
-  font-weight: 500;
-}
-.actions .button-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-  color: var(--surface-base);
-}
-.tab-group[data-tab="cuts"] > .section-controls {
-  flex: 0 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 0;
-}
-.section-controls,
-.tab-group[data-tab="display"] > .panel-body { padding-top: var(--space-3); }
-.cut-fields {
-  flex: 0 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-control) transparent;
-}
-/* Ask for a classic thumb where the engine draws one. Overlay bars still
-   fade, so opening an oblique cut also scrolls the angles into view. */
-.cut-fields::-webkit-scrollbar { width: 6px; }
-.cut-fields::-webkit-scrollbar-thumb { background: var(--border-control); }
-.cut-fields::-webkit-scrollbar-track { background: transparent; }
-.cut-command {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-top: 0;
-  padding: var(--space-3) 0;
-  border-top: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-}
-#mpr-open {
-  width: auto;
-  flex: none;
-  height: var(--control-height);
-  margin: 0;
-  padding: 0 var(--space-4);
-}
-#cut-status {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: var(--text-secondary);
-  font-size: var(--text-micro);
-  line-height: 1.45;
-}
+.actions .button-primary { flex: 0 0 auto; padding-inline: var(--space-3); }
+#isolate[data-active="true"] { background: var(--accent-wash); color: var(--accent); }
 
-/* The panel switch. Shared with the phone sheet: one tab bar, two shells. */
+/* The four content modes: one tab bar, mirrored in the phone sheet. Tabs are never disabled. */
 .rail-tabs {
   display: flex;
   flex: none;
-  gap: 0;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-base);
 }
 .rail-tabs button {
   flex: 1;
   min-width: 0;
-  height: 44px;
+  height: var(--tab-height);
   padding: 0 var(--space-1);
   border: 0;
   border-radius: 0;
   background: none;
-  font-size: var(--text-ui);
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.rail-tabs button:hover {
-  color: var(--text-primary);
-  background: var(--surface-hover);
-}
-.rail-tabs button[aria-selected="true"],
-#explorer-switch button[aria-pressed="true"] {
+.rail-tabs button:hover { background: none; color: var(--text-primary); }
+.rail-tabs button:focus-visible { outline-offset: -2px; }
+.rail-tabs button[aria-selected="true"] {
   color: var(--accent);
-  background: transparent;
   font-weight: 600;
   box-shadow: inset 0 -2px 0 var(--accent);
 }
 
-#isolate[aria-pressed="true"] {
-  background: var(--accent-wash);
-  color: var(--accent);
-}
-#reset {
-  width: 100%;
-  margin-top: var(--space-3);
-  padding: 0 var(--space-3);
-  height: var(--control-height);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-control);
-  text-align: center;
-}
-/* Visibility is one ruled list. Opacity belongs to the cortex row, and goes quiet when the cortex is off. */
-.display-visibility { margin-top: var(--space-5); }
-.display-visibility > .display-cortex,
-.display-visibility > .check {
-  border-bottom: 1px solid var(--border-subtle);
-}
-.display-visibility > .check {
-  margin: 0;
-  min-height: var(--row-height);
-  height: auto;
-  padding: var(--space-1) 0;
-}
-.display-cortex > .check { margin: 0; min-height: var(--row-height); border: 0; }
-.display-opacity { padding-left: var(--space-6); }
-.display-opacity > label {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-size: var(--text-micro);
-}
-.display-opacity:has(#opacity:disabled) { color: var(--text-tertiary); }
-.display-opacity:has(#opacity:disabled) > label { color: inherit; }
-.display-visibility > :last-child { border-bottom: 0; }
-#hemisphere { width: 100%; }
-#hemisphere button {
-  flex: 1;
-  min-width: 0;
-  padding: 0 var(--space-2);
-  white-space: nowrap;
-}
-#cut-mode {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2);
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
-#cut-mode button {
-  min-width: 0;
-  min-height: 52px;
-  height: auto;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border-control);
-  border-radius: var(--radius-control);
-  line-height: 1.2;
-  box-shadow: none;
-}
-#cut-mode button:first-child { grid-column: 1 / -1; }
-#cut-mode .control-icon { width: 22px; height: 22px; }
-#cut-mode button[aria-pressed="true"] {
-  color: var(--accent);
-  background: var(--accent-wash);
-  border-color: var(--accent);
-}
-
-/* Selection panel -------------------------------------------------------- */
+/* Region ------------------------------------------------------------------ */
+.selection-head { display: flex; align-items: flex-start; justify-content: flex-end; gap: var(--space-2); }
+.selection-head > #selected-name { flex: 1; min-width: 0; }
+#selection-clear { flex: none; margin: -4px calc(-1 * var(--space-2)) 0 0; color: var(--text-tertiary); }
 #selected-name {
-  font-size: 1.375rem;
+  font-size: var(--text-headline);
   font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.3;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
   overflow-wrap: break-word;
 }
 #selected-hint {
@@ -503,108 +365,66 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   color: var(--text-secondary);
   line-height: 1.5;
 }
-#selected-name[hidden] ~ #selected-hint {
-  max-width: 36ch;
-  margin-top: var(--space-3);
-  font-size: var(--text-body);
-  line-height: 1.55;
-}
-#inspector .tab-group[data-tab="region"] > .panel-body:has(#selected-name[hidden]) {
-  padding: 72px var(--space-6) var(--space-8);
-  text-align: center;
-}
-.selection-empty {
-  margin: 0;
-}
+/*
+ * Under a lesson, the landmark's own region is already the headline above.
+ * Any other selection is a smaller second subject, ruled off, with no caption.
+ */
+#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body .selection-head { display: none; }
+#circuit-profile:not([hidden])[data-landmark-selected="false"] ~ .panel-body:has(.selection-head) { border-top: 1px solid var(--border-subtle); }
+#circuit-profile:not([hidden]) ~ .panel-body #selected-name { font-size: var(--text-title); }
+#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body { padding-top: 0; }
+#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body .actions { margin-top: 0; }
+.section-label + .panel-body { padding-top: var(--space-1); }
+.clinical-profile-name, #circuit-profile { scroll-margin-top: var(--space-4); }
+/* With nothing selected the view is a hint, set like the panel's other empty states. */
+#inspector .tab-group[data-tab="region"] > .panel-body:has(#selected-name[hidden]) { padding-top: var(--space-6); }
 .selection-empty-graphic {
   display: block;
-  width: 40px;
-  height: 40px;
-  margin: 0 auto var(--space-5);
+  width: 24px;
+  height: 24px;
+  margin-bottom: var(--space-3);
   color: var(--text-tertiary);
 }
-.selection-empty h3 {
-  font-size: var(--text-title);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-#selection-empty:not([hidden]) ~ #selected-hint {
-  margin-top: var(--space-2);
-  margin-inline: auto;
-  max-width: 28ch;
-  color: var(--text-secondary);
-  font-size: var(--text-ui);
-}
+.selection-empty h3 { font-size: var(--text-title); font-weight: 600; line-height: 1.3; }
+#selection-empty:not([hidden]) ~ #selected-hint { margin-top: var(--space-1); }
 
 .datasheet {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  column-gap: 0;
+  grid-template-columns: minmax(min-content, max-content) minmax(min-content, 1fr);
   margin-top: var(--space-4);
   font-size: var(--text-ui);
   border-top: 1px solid var(--border-subtle);
 }
 .datasheet dt,
 .datasheet dd {
-  padding: var(--space-3) 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-subtle);
+  line-height: 1.4;
 }
-.datasheet dt { padding-right: var(--space-3); color: var(--text-tertiary); font-size: var(--text-micro); }
-.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; color: var(--text-primary); text-align: right; }
-#fact-metric { font-size: 1.0625rem; font-weight: 500; color: var(--accent); }
-#fact-source { font-size: var(--text-micro); color: var(--text-secondary); }
-.metadata-details > summary {
-  cursor: pointer;
-  padding: var(--space-3) 0;
-  color: var(--text-secondary);
-  font-size: var(--text-ui);
-  font-weight: 500;
-}
-.metadata-details > summary:hover,
-.metadata-details[open] > summary { color: var(--accent); }
+.datasheet dt { padding-right: var(--space-3); color: var(--text-secondary); font-size: var(--text-small); }
+.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; }
+/* Mono sets wider and darker than the sans beside it, so measures run a step smaller. */
+.datasheet dd.measure { font-size: var(--text-micro); font-weight: 400; color: var(--text-primary); }
+/* Vectors and source ids are long, so their label sits above them rather than squeezed beside. */
+.datasheet-stacked { grid-template-columns: minmax(0, 1fr); }
+.datasheet-stacked dt { padding: var(--space-2) 0 0; border-bottom: 0; }
+.datasheet-stacked dd { padding: 2px 0 var(--space-2); text-align: left; }
+.metadata-details > summary { border-bottom: 1px solid var(--border-subtle); }
+.metadata-details[open] > summary { border-bottom: 0; }
 .metadata-details .datasheet { margin-top: 0; }
 .inspector-disclosure > summary {
-  cursor: pointer;
-  padding: var(--space-4) var(--space-5);
-  color: var(--text-primary);
-}
-.inspector-disclosure > summary:hover { background: var(--surface-hover); }
-.inspector-disclosure > summary::marker { color: var(--accent); }
-.inspector-disclosure[open] > summary { color: var(--accent); }
-
-#fact-coords {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 var(--space-3);
-  font-size: var(--text-micro);
-  line-height: 1.45;
-}
-.ras-token { white-space: nowrap; }
-
-/* Functional networks ----------------------------------------------------- */
-/*
- * A measured composition, so the bar is a reading and not an accent: chrome
- * stays achromatic and the share is set in the same mono the other
- * measurements use.
- */
-.network-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  padding: var(--space-2) var(--space-4);
   border-top: 1px solid var(--border-subtle);
 }
-/* The one place colour is the datum, so the swatch is the published colour. */
-.network-swatch { width: 10px; height: 10px; flex: none; border-radius: 1px; }
-/*
- * Swatch names the network, bar measures it. The bar used to carry the colour
- * too, which left the reader matching a 4px tint against the model; the
- * swatch is the same token the legend on the stage uses, so the rail and the
- * picture name a network the same way.
- */
+/* A count follows its name, as on the tree's group rows. */
+.disclosure-count { font-size: var(--text-micro); font-weight: 400; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+
+/* Functional networks: the swatch names the network, the bar measures it. */
+.network-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
+.network-swatch { width: 10px; height: 10px; flex: none; border-radius: 2px; }
 .network-row {
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr) minmax(32px, 48px) max-content;
+  grid-template-columns: 10px minmax(0, 1fr) minmax(32px, 56px) 3.5rem;
   align-items: center;
   gap: var(--space-2);
   min-height: var(--row-height);
@@ -613,31 +433,21 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   font-size: var(--text-ui);
 }
 .network-row-name { min-width: 0; line-height: 1.35; }
-.network-bar { height: 4px; background: var(--border-subtle); }
+.network-bar { height: 4px; border-radius: 2px; overflow: hidden; background: var(--border-subtle); }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
-.network-share {
-  text-align: right;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  padding-left: var(--space-2);
-}
-.network-note {
-  margin-top: var(--space-3);
-  font-size: var(--text-micro);
-  line-height: 1.5;
-  color: var(--text-tertiary);
-}
+.network-share { text-align: right; color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; }
+.network-note { margin-top: var(--space-3); font-size: var(--text-micro); line-height: 1.5; color: var(--text-tertiary); }
 
-/* Navigator -------------------------------------------------------------- */
+/* Navigator --------------------------------------------------------------- */
 .row {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  width: calc(100% - var(--space-4));
   min-height: var(--row-height);
   height: auto;
-  width: calc(100% - var(--space-6));
-  margin: 2px var(--space-3);
-  padding: 7px var(--space-2);
+  margin: 0 var(--space-2);
+  padding: var(--space-1) var(--space-2);
   border: 0;
   border-radius: var(--radius-control);
   background: none;
@@ -653,43 +463,25 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .row:hover { background: var(--surface-hover); }
 /* Distinguish the keyboard target from the selected anatomical region. */
 .row[data-active="true"] {
-  background: var(--surface-sunken);
+  background: var(--surface-hover);
   outline: 1px solid var(--border-control);
   outline-offset: -1px;
 }
-.row[data-selected="true"] {
-  background: var(--accent-wash);
-  color: var(--accent);
-  font-weight: 600;
-}
+.row[data-selected="true"] { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
 .row[data-hidden="true"] { color: var(--text-tertiary); }
 .row[aria-disabled="true"] { cursor: default; }
-.row-name { flex: 1; min-width: 0; line-height: 1.4; overflow-wrap: break-word; }
+/* Lines of 20px and 16px keep one-, two- and three-line rows on the 4px grid. */
+.row-name { flex: 1; min-width: 0; line-height: 20px; overflow-wrap: break-word; }
 #results .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
   align-items: baseline;
-  gap: 2px var(--space-2);
-  padding-top: var(--space-2);
-  padding-bottom: var(--space-2);
+  gap: 0 var(--space-2);
+  padding-block: 6px;
 }
-#results .row-title {
-  grid-column: 1;
-  grid-row: 1;
-  min-width: 0;
-  line-height: 1.35;
-}
-#results .row-name {
-  display: inline;
-  overflow: visible;
-  text-overflow: unset;
-  white-space: normal;
-}
-#results .row-alias {
-  display: inline;
-  margin-left: var(--space-1);
-  white-space: nowrap;
-}
+#results .row-title { grid-column: 1; grid-row: 1; min-width: 0; line-height: 20px; }
+#results .row-name { display: inline; white-space: normal; }
+#results .row-alias { display: inline; margin-left: var(--space-1); white-space: nowrap; }
 #results .row-side { grid-column: 2; grid-row: 1; margin-left: 0; }
 #results .row-group,
 #results .row-reason {
@@ -697,6 +489,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   grid-row: 2;
   margin-left: 0;
   max-width: none;
+  line-height: 16px;
   white-space: normal;
   text-align: left;
 }
@@ -725,96 +518,119 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 .row-group + .row-side,
 .row-group + .row-reason { margin-left: var(--space-2); }
-.row-indent { padding-left: 26px; }
-
+.row-indent { padding-left: 28px; padding-right: 0; }
+.row-indent .row-reason { max-width: 96px; white-space: normal; line-height: 16px; }
+/* Both stand where the letter on an eye control stands. */
+.row-side-solo { min-width: 36px; padding-right: 5px; }
+.row-side-rest { min-width: 0; padding-right: 5px; }
 .tree-group { isolation: isolate; }
+.tree-group > .group-row {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  border-radius: 0;
+  background: var(--surface-base);
+  font-weight: 500;
+}
+.tree-group > .group-row:hover { background: var(--surface-hover); }
+.tree-group > .group-row[aria-expanded="true"] {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--border-subtle);
+}
+.tree-group .row-indent { scroll-margin-block: calc(var(--row-height) + var(--space-5)); }
+/* The count follows the name, so the eye columns line up from the right whatever a group holds. */
+.group-row { gap: var(--space-1); }
+.group-row > .row-name { flex: 1 1 auto; }
+.group-row .group-count { display: inline; min-width: 0; margin: 0 0 0 var(--space-2); font-weight: 400; text-align: left; }
+.disclosure {
+  display: flex;
+  width: 12px;
+  flex: none;
+  margin-right: var(--space-1);
+  color: var(--text-tertiary);
+  transition: transform var(--ui-transition) var(--ease-ui);
+}
+.group-row[aria-expanded="true"] .disclosure { transform: rotate(90deg); }
+#tree > .section-label:first-child { border-top: 0; padding-top: var(--space-2); }
+
+/* Per-part visibility: eye, then side letter, in 36px columns. Hidden is neutral ink and a struck eye, never teal. */
+.row-eyes { display: flex; flex: none; align-items: center; gap: var(--space-1); }
 .visibility-control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  gap: var(--space-1);
-  width: 32px;
-  height: 32px;
-  padding: var(--space-1);
+  gap: 3px;
+  width: 36px;
+  height: 24px;
+  padding: 0;
   border: 0;
   border-radius: var(--radius-control);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   background: transparent;
 }
+.visibility-control[data-visibility-key$=":midline"] { width: auto; min-width: 36px; padding: 0 var(--space-1); }
 .visibility-control svg { width: 16px; height: 16px; flex: none; }
-.visibility-control span { font-size: var(--text-micro); }
-.visibility-control:hover { background: var(--surface-sunken); color: var(--text-primary); }
-.visibility-control[aria-pressed="false"] { color: var(--accent); background: var(--accent-wash); }
-.visibility-control:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.group-row .visibility-control { width: 36px; }
-.group-row { gap: var(--space-1); }
-.group-row .group-count { min-width: 2ch; }
-.dissection-controls {
-  flex: none;
-  margin: 0;
-  padding: var(--space-3) var(--space-5) var(--space-4);
-  border-top: 1px solid var(--border-subtle);
-  background: var(--surface-navigation);
+.visibility-side { font-size: var(--text-micro); font-weight: 600; color: var(--text-secondary); }
+.visibility-control:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
+.row[data-selected="true"] .visibility-side { color: var(--accent); }
+.visibility-control[data-state="hidden"],
+.visibility-control[data-state="hidden"] .visibility-side { color: var(--text-tertiary); }
+/* A group with every part hidden dims like a hidden region. */
+.group-row:has(> .row-eyes):not(:has(.visibility-control[data-state="shown"])) > .row-name { color: var(--text-tertiary); }
+.visibility-control:focus-visible { outline-offset: 0; }
+/* A mouse finds the eyes on the row it points at; touch keeps every eye in view. */
+@media (hover: hover) and (pointer: fine) {
+  /* Group eyes lie over the row end, so at rest the name has the whole row. */
+  .tree-group > .group-row { position: relative; }
+  .group-row > .row-eyes {
+    position: absolute;
+    top: 2px;
+    right: var(--space-2);
+    bottom: 2px;
+    padding-left: var(--space-2);
+    background: var(--surface-base);
+    opacity: 0;
+    transition: opacity var(--ui-transition) var(--ease-ui), background-color var(--ui-transition) var(--ease-ui);
+  }
+  .tree-group > .group-row:hover > .row-eyes { background: var(--surface-hover); }
+  /* A shown region keeps only its letter at rest; the eye lies over the name's end, which is clipped under it. */
+  .row-indent[data-visible="true"] { position: relative; }
+  .row-indent[data-visible="true"] > .visibility-control { position: absolute; top: 2px; right: 0; bottom: 2px; height: auto; }
+  .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-name { clip-path: inset(0 16px 0 0); }
+  .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-side-rest { visibility: hidden; }
+  .row-indent[data-visible="true"] > .visibility-control { opacity: 0; transition: opacity var(--ui-transition) var(--ease-ui); }
+  /* Once a side is hidden the eyes take their own room and stay in view. */
+  .group-row > .row-eyes:has([data-state="hidden"], [data-partial="true"]) { position: static; padding: 0; opacity: 1; }
+  .row-eyes > .visibility-control:not([data-state="hidden"], [data-partial="true"]),
+  .row-indent > .visibility-control svg { opacity: 0; transition: opacity var(--ui-transition) var(--ease-ui); }
+  .row:is(:hover, :focus-within) > .row-eyes,
+  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control,
+  .row:is(:hover, :focus-within) > .visibility-control,
+  .row:is(:hover, :focus-within) > .visibility-control svg,
+  .visibility-control[data-state="hidden"] svg { opacity: 1; }
 }
-.dissection-heading-row { display: flex; align-items: center; gap: var(--space-2); }
-.dissection-heading-row h3 { margin: 0 auto 0 0; font-size: var(--text-ui); font-weight: 600; }
-.dissection-heading-row button { padding: 0; font-size: var(--text-micro); }
-.dissection-controls p { margin: var(--space-1) 0 var(--space-2); font-size: var(--text-micro); color: var(--text-secondary); }
-.dissection-controls #dissection-hint { line-height: 1.4; }
-.dissection-controls #dissection-status { margin-bottom: 0; }
-.row-indent .row-reason { max-width: 68px; white-space: normal; line-height: 1.35; }
-.tree-group > .group-row {
-  width: 100%;
-  margin: 0;
-  padding: var(--space-1) var(--space-4);
-  border-radius: 0;
-  background: var(--surface-navigation);
-  font-weight: 600;
+/* Touch keeps every eye in the row, and the eye carries the letter. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .row-side-rest { display: none; }
 }
-.tree-group > .group-row[aria-expanded="true"] {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.tree-group > .group-row:hover { background: var(--surface-hover); }
-.tree-group .row-indent {
-  scroll-margin-block: calc(var(--row-height) + var(--space-5));
-}
-.group-count {
-  font-size: var(--text-micro);
-  min-width: 26px;
-  text-align: right;
-}
-.disclosure { display: flex; width: 12px; flex: none; color: var(--text-secondary); }
-.group-row[aria-expanded="true"] .disclosure { transform: rotate(90deg); }
-#tree > .section-label:first-child { border-top: 0; padding-top: var(--space-2); }
 
 .tree-header {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 0 var(--space-5) var(--space-2);
+  padding: var(--space-1) var(--space-4) var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
 }
-.tree-toggle-all,
-.tree-internal {
-  font-size: var(--text-micro);
-  height: var(--control-height);
-  padding: 0;
-}
-.tree-toggle-all { margin-left: auto; }
-.tree-internal[aria-pressed="true"] {
-  color: var(--accent);
-  background: transparent;
-  box-shadow: inset 0 -1px 0 var(--accent);
-}
-.query-match {
-  background: transparent;
-  color: var(--accent);
-  font-weight: 600;
-}
+/* The list's scope is an exclusive choice; By system hides the cortex, and the note under it says so. */
+.tree-scope { flex: 1; min-width: 0; }
+.tree-scope button { flex: 1; min-width: 0; }
+.tree-toggle-all { flex: none; margin-right: calc(-1 * var(--space-2)); }
+#anatomy-search .search-shortcut { right: 6px; min-width: 20px; height: 20px; padding: 0 6px; line-height: 18px; }
+.query-match { background: transparent; color: var(--accent); font-weight: 600; }
 .row-alias {
   flex: none;
   white-space: nowrap;
@@ -824,14 +640,21 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 }
 
 .empty {
-  padding: var(--space-5);
+  padding: var(--space-4);
   font-size: var(--text-ui);
   color: var(--text-secondary);
-  line-height: 1.55;
+  line-height: 20px;
 }
 .empty + .empty { padding-top: 0; }
-/* The sentence says where the other matches are. The action sits under it,
-   the same quiet text as a constituent, not a box in the middle of the line. */
+.empty-title {
+  padding: var(--space-4) var(--space-4) 0;
+  font-size: var(--text-title);
+  font-weight: 600;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+.empty-title + .empty { padding-top: var(--space-1); }
+/* The sentence says where the other matches are; the action sits under it as link text. */
 .empty button {
   display: block;
   width: fit-content;
@@ -842,334 +665,169 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-radius: 0;
   background: none;
   color: var(--accent);
-  font-size: var(--text-ui);
   text-align: left;
 }
-.empty button:hover:not(:disabled) {
-  background: none;
-  color: var(--accent-hover);
-  box-shadow: inset 0 -1px 0 var(--accent-hover);
-}
-
-/* Viewport chrome -------------------------------------------------------- */
-.viewport-context {
-  position: absolute;
-  z-index: 2;
-  top: calc(var(--vis-top) + var(--space-5));
-  left: calc(var(--vis-left) + var(--space-6));
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--overlay-ink);
-  font-size: var(--text-ui);
-  font-weight: 600;
-  pointer-events: none;
-  text-shadow: 0 1px 3px var(--overlay-halo);
-}
-.viewport-help {
-  position: absolute;
-  z-index: 2;
-  top: calc(var(--vis-top) + 45px);
-  left: calc(var(--vis-left) + var(--space-6));
-  color: var(--overlay-ink-muted);
-  font-size: var(--text-micro);
-  pointer-events: none;
-  text-shadow: 0 1px 3px var(--overlay-halo);
-}
-/*
- * Anything drawn on the stage is lit by the stage, in both themes: the ground
- * under it is near-black either way, and a plate taken from the rails put a
- * white toolbar on black in light mode.
- */
-.chip {
-  position: absolute;
-  z-index: 2;
-  padding: var(--space-1) var(--space-2);
-  background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
-  border-radius: var(--radius-control);
-  color: var(--overlay-ink);
-  font-size: var(--text-micro);
-  pointer-events: none;
-}
-/* --accent is measured against a rail; on the stage it is the light value. */
-#viewport :focus-visible { outline-color: var(--overlay-accent); }
-/* The canvas fills a clipped box, so its ring is drawn inside the edge or not at all. */
-#viewport canvas:focus-visible { outline-offset: -2px; }
+.empty button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 
 /*
- * Chrome is placed against the rectangle the reader can see, not the canvas.
- * On a phone the sheet covers the lower canvas, and markers pinned to the
- * canvas edge would sit behind it. The renderer and the interface derive this
- * rectangle from the same source; these four are set by viewport-chrome.js.
+ * Dissection: one ruled line, a control high plus 2px above and below, at the
+ * foot of the explorer. Idle, it teaches; with something to undo or restore,
+ * the count and its quiet commands take the line.
  */
-#viewport {
-  --vis-top: 0px;
-  --vis-right: 0px;
-  --vis-bottom: 0px;
-  --vis-left: 0px;
-}
-
-.orientation {
-  position: absolute;
-  inset: var(--vis-top) var(--vis-right) var(--vis-bottom) var(--vis-left);
-  pointer-events: none;
-}
-
-/*
- * L/R/A/P/S/I are the picture's own markings, so they are type on the stage
- * rather than plates over it. The halo does what the plate was really for:
- * the geometry runs from near-black crevices to near-white speculars, and no
- * flat colour is legible against all of it.
- */
-.orientation > span {
-  position: absolute;
-  z-index: 2;
-  font-size: var(--text-micro);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--overlay-ink);
-  text-shadow: 0 0 2px var(--overlay-halo), 0 1px 3px var(--overlay-halo);
-}
-.orientation [data-edge="top"] { top: var(--space-3); left: 50%; transform: translateX(-50%); }
-/* The view plate owns the bottom line. The letter sits above it, or a long
-   label in another language runs through the marker. */
-.orientation [data-edge="bottom"] {
-  bottom: calc(var(--space-4) + 48px);
-  left: 50%;
-  transform: translateX(-50%);
-}
-.orientation [data-edge="left"] { left: var(--space-3); top: 50%; transform: translateY(-50%); }
-.orientation [data-edge="right"] { right: var(--space-3); top: 50%; transform: translateY(-50%); }
-
-.views {
-  position: absolute;
-  z-index: 2;
-  left: calc(var(--vis-left) + var(--space-4));
-  bottom: calc(var(--vis-bottom) + var(--space-4));
-  display: flex;
-  gap: 2px;
-  padding: 4px;
-  width: max-content;
-  max-width: calc(100% - var(--vis-left) - var(--vis-right) - var(--space-8));
-  background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
-  border-radius: var(--radius-control);
-}
-.views button {
-  /* Never squashed: a truncated preset is a view the reader cannot name, and
-     a row measured while squashed cannot be measured back to its full size. */
+.dissection-controls {
   flex: none;
-  height: 30px;
-  padding: 0 var(--space-2);
-  font-size: var(--text-micro);
-  border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
-  margin: 0;
-  background: transparent;
-  color: var(--overlay-ink-muted);
-}
-.views button[aria-pressed="true"] {
-  color: var(--overlay-accent);
-  font-weight: 600;
-  background: var(--overlay-accent-wash);
-}
-.views button:hover:not(:disabled) { background: var(--overlay-plate-hover); }
-.views button:hover:not([aria-pressed="true"]) { color: var(--overlay-ink); }
-
-/* A measurement on the picture, marked the same way the orientation is. */
-.scale-bar {
-  position: absolute;
-  z-index: 2;
-  right: calc(var(--vis-right) + var(--space-4));
-  bottom: calc(var(--vis-bottom) + var(--space-4));
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  pointer-events: none;
-  font-size: var(--text-micro);
-  color: var(--overlay-ink);
-  text-shadow: 0 0 2px var(--overlay-halo), 0 1px 3px var(--overlay-halo);
+  box-sizing: content-box;
+  min-height: var(--control-height);
+  padding: 2px var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-navigation);
 }
-.scale-bar-rule {
-  height: 6px;
-  border: 1px solid var(--overlay-ink);
-  border-top: 0;
-  filter: drop-shadow(0 0 1px var(--overlay-halo));
-}
-
-.hover-label { max-width: 280px; }
-
-/*
- * The key to the colours on the model, on the stage rather than in a panel.
- * Top right: the presets hold the bottom left, and in every default view the
- * anatomy reaches the upper left first — the frontal pole sat behind this
- * when it was over there, selection outline and all.
- */
-.network-legend {
+.dissection-heading-row { display: flex; flex: 1; align-items: center; gap: var(--space-1); min-width: 0; }
+.dissection-heading-row button { flex: none; padding: 0 var(--space-2); }
+.dissection-heading-row button:last-child { margin-right: calc(-1 * var(--space-2)); }
+#dissection-hint { flex: 1; min-width: 0; font-size: var(--text-micro); line-height: 16px; color: var(--text-secondary); }
+#dissection-status { flex: 1; min-width: 0; font-size: var(--text-small); font-weight: 500; line-height: 16px; }
+.dissection-controls:has(#dissection-undo:disabled):has(#dissection-restore:disabled) .dissection-heading-row {
   position: absolute;
-  z-index: 2;
-  top: calc(var(--vis-top) + var(--space-4));
-  right: calc(var(--vis-right) + var(--space-4));
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.dissection-controls:not(:has(#dissection-undo:disabled):has(#dissection-restore:disabled)) #dissection-hint { display: none; }
+#app[data-status="loading"] .dissection-controls { display: none; }
+
+/* By system: the system picker sits under the scope that opened it, label beside field. */
+.tree-header:has(+ .internal-controls:not([hidden])) { border-bottom: 0; }
+.internal-controls {
   display: grid;
-  gap: 3px;
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: 0 var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.internal-controls label { font-size: var(--text-small); font-weight: 500; }
+.internal-controls .internal-note { grid-column: 1 / -1; line-height: 16px; }
+.internal-note { font-size: var(--text-micro); line-height: 1.5; color: var(--text-secondary); margin: 0; }
+.constituents-list {
   list-style: none;
-  background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
-  border-radius: var(--radius-control);
-  color: var(--overlay-ink);
-  font-size: var(--text-micro);
-  pointer-events: none;
+  padding: 0;
+  margin: var(--space-3) 0 0;
+  border-top: 1px solid var(--border-subtle);
 }
-.network-legend li { display: flex; align-items: center; gap: var(--space-2); }
-
-/*
- * When the presets and the bar cannot share the bottom line, the bar sits
- * just above the view plate, still on the right. Putting it on the top line
- * set the measurement beside the inspector tabs. The flag comes from
- * viewport-chrome.js, which measures the stage.
- */
-#viewport[data-chrome="tight"] .scale-bar {
-  top: auto;
-  bottom: calc(var(--vis-bottom) + var(--space-4) + 46px);
-  right: calc(var(--vis-right) + var(--space-3));
-  left: auto;
-}
-#viewport[data-chrome="tight"] .views {
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-#viewport[data-chrome="tight"] .views::-webkit-scrollbar { display: none; }
-
-.stage {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: grid;
-  place-content: center;
-  justify-items: center;
+.constituents-list li {
+  display: flex;
+  align-items: baseline;
   gap: var(--space-3);
-  padding: var(--space-8);
-  text-align: center;
-  /* The stage covers the canvas, so it is lit like the canvas, not the rails. */
-  background: var(--scene-background);
-  color: var(--overlay-ink-muted);
+  min-height: var(--row-height);
+  min-width: 0;
+  border-bottom: 1px solid var(--border-subtle);
   font-size: var(--text-ui);
+  line-height: 1.4;
+  color: var(--text-secondary);
 }
-.stage { display: none; }
-#app[data-status="loading"] .stage,
-#app[data-status="error"] .stage,
-#app[data-status="context-lost"] .stage { display: grid; }
-#app[data-status="error"] .stage { color: var(--overlay-danger); }
-.stage button {
-  background: var(--overlay-plate);
-  border-color: var(--overlay-border);
-  color: var(--overlay-ink);
+.constituents-list li > :first-child { flex: 1; min-width: 0; }
+.constituents-list li > span:first-child { padding: 6px 0; }
+/* The tail names the internal-anatomy set the constituent opens in, or that it exists on cuts only. */
+.constituent-set { flex: none; font-size: var(--text-micro); color: var(--text-tertiary); white-space: nowrap; }
+.constituents-list button {
+  height: auto;
+  min-height: var(--row-height);
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  text-align: left;
+  white-space: normal;
+  font-weight: 400;
+  color: var(--accent);
 }
-.stage button:hover:not(:disabled) { background: var(--overlay-plate-hover); }
+.constituents-list button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+.constituents-list button:focus-visible { outline-offset: -2px; }
 
-.progress { width: 220px; height: 3px; background: rgb(255 255 255 / 0.16); }
-.progress span {
-  display: block;
-  height: 100%;
-  background: var(--overlay-accent);
-  transition: width var(--ui-transition);
-}
+/* Stage overlays and tools live in stage.css. */
 
-/* Shortcut sheet ---------------------------------------------------------- */
-#shortcuts, #mpr-dialog {
+/* Keys and dialogs ------------------------------------------------------- */
+/* A key is a thing you press, so it is drawn as one rather than quoted. */
+kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 2px 5px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 var(--border-subtle);
+}
+.key-range { color: var(--text-tertiary); font-size: var(--text-micro); }
+
+#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog {
   --dialog-inset: var(--space-5);
   --dialog-top: var(--dialog-inset);
-}
-#shortcuts {
-  width: min(600px, calc(100vw - var(--space-8)));
-  min-width: min(320px, 100vw);
-  max-width: calc(100vw - var(--space-8));
-  max-height: calc(100dvh - var(--space-8));
-  overflow: auto;
+  margin: auto;
   padding: var(--dialog-inset);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-panel);
   background: var(--surface-base);
   color: var(--text-primary);
+  overflow: auto;
+  box-shadow: var(--shadow-popover);
 }
-#shortcuts::backdrop { background: rgb(0 0 0 / 0.55); }
-#shortcuts[open], #mpr-dialog[open] { animation: panel-enter 180ms ease-out; }
+#shortcuts, #provenance-dialog {
+  width: min(560px, calc(100vw - var(--space-8)));
+  min-width: min(320px, 100vw);
+  max-height: calc(100dvh - var(--space-8));
+}
+#mpr-dialog, #diffusion-mri-dialog { width: min(1180px, 96vw); max-height: 94dvh; }
+/*
+ * Slices are read the way a workstation shows them: a light surround lowers
+ * the perceived contrast of the grey scale, so the viewer is dark in both
+ * themes. Its components follow because they read these tokens.
+ */
+#mpr-dialog, #diffusion-mri-dialog {
+  color-scheme: dark;
+  --text-primary: #edf3f7;
+  --text-secondary: #b9c7d2;
+  --text-tertiary: #9eafbd;
+  --accent: var(--overlay-accent);
+  --accent-hover: var(--overlay-accent-hover);
+  --accent-wash: var(--overlay-accent-wash);
+  --primary-fill: #2f8183;
+  --primary-fill-hover: #276f71;
+  --surface-base: #12171e;
+  --surface-navigation: #181f28;
+  --surface-sunken: #0e1116;
+  --surface-hover: #1f2731;
+  --surface-raised: #303c49;
+  --surface-tonal: #222b36;
+  --surface-tonal-hover: #2c3744;
+  --border-subtle: #29323d;
+  --border-control: #6b7d8c;
+  --danger: #f1928f;
+  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
+  border-color: var(--border-subtle);
+}
+@media (prefers-contrast: more) {
+  #mpr-dialog, #diffusion-mri-dialog {
+    --text-tertiary: var(--text-secondary);
+    --border-control: var(--text-primary);
+    --border-subtle: var(--border-control);
+  }
+}
+#shortcuts::backdrop, #provenance-dialog::backdrop { background: rgb(8 14 20 / 0.5); }
+#mpr-dialog::backdrop, #diffusion-mri-dialog::backdrop { background: rgb(8 14 20 / 0.72); }
+#shortcuts[open], #provenance-dialog[open], #mpr-dialog[open], #diffusion-mri-dialog[open] { animation: panel-enter 180ms var(--ease-ui); }
 @keyframes panel-enter {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-#shortcuts h2 { font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
-#shortcuts-list {
-  display: grid;
-  grid-template-columns: 116px minmax(0, 1fr);
-  column-gap: var(--space-5);
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-ui);
-}
-#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
-#shortcuts-list dt, #shortcuts-list dd {
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-#shortcuts-list dd { align-content: center; }
-.cut-fields:focus-visible {
-  outline-offset: -2px;
-}
-/* A key is a thing you press, so it is drawn as one rather than quoted. */
-kbd {
-  min-width: 22px;
-  padding: 3px 5px;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  line-height: 1.1;
-  text-align: center;
-  color: var(--text-secondary);
-  background: var(--surface-navigation);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-control);
-}
-.key-range { color: var(--text-tertiary); font-size: var(--text-micro); }
-#shortcuts-open { width: var(--control-height); padding: 0; }
-
-/* Registered sections ---------------------------------------------------- */
-.section-controls input[type="range"] { width: 100%; margin: var(--space-2) 0; }
-.cut-position-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 4.75rem;
-  align-items: center;
-  gap: var(--space-3);
-}
-.cut-position-row input[type="range"] { margin: 0; }
-.cut-position-row input[type="number"] {
-  width: 100%;
-  padding: 0 var(--space-2);
-  font-variant-numeric: tabular-nums;
-  font-family: var(--font-mono);
-  text-align: center;
-}
-.cut-position-row input[type="number"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.cut-position-row input[type="number"]::-webkit-outer-spin-button,
-.cut-position-row input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.cut-fields > .check { padding: var(--space-1) 0; }
-#cut-mode-label.visually-hidden { margin: 0; }
-#cut-oblique { margin-top: var(--space-5); }
-
-
-#mpr-dialog {
-  width: min(1180px, 96vw); max-height: 94dvh; margin: auto; padding: var(--dialog-inset);
-  border: 1px solid var(--border-subtle); border-radius: var(--radius-panel);
-  background: var(--surface-base); color: var(--text-primary); overflow: auto;
-}
-#mpr-dialog::backdrop { background: rgb(0 0 0 / .72); }
 .dialog-header {
   position: sticky;
   top: calc(-1 * var(--dialog-top));
@@ -1179,34 +837,45 @@ kbd {
   justify-content: space-between;
   gap: var(--space-4);
   margin: calc(-1 * var(--dialog-top)) calc(-1 * var(--dialog-inset)) 0;
-  padding: var(--dialog-top) var(--dialog-inset) var(--dialog-inset);
+  padding: var(--space-4) var(--dialog-inset);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
 .dialog-header > :first-child { min-width: 0; }
+.dialog-header h2 { font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
 .mpr-header { align-items: start; }
-.mpr-header h2 { font-size: var(--text-title); }
-.mpr-header p, .mpr-note { font-size: var(--text-ui); color: var(--text-secondary); margin-top: var(--space-2); }
-#mpr-close, #shortcuts-close {
-  flex: none;
-  height: var(--control-height);
-  padding: 0 var(--space-3);
-  border-color: var(--border-control);
+.mpr-header p, .mpr-note { font-size: var(--text-small); color: var(--text-secondary); margin-top: var(--space-1); }
+#mpr-close, #shortcuts-close, #provenance-close, #diffusion-mri-close { flex: none; background: var(--surface-tonal); color: var(--text-primary); }
+#mpr-close:hover, #shortcuts-close:hover, #provenance-close:hover, #diffusion-mri-close:hover { background: var(--surface-tonal-hover); }
+#shortcuts-list { margin-top: var(--space-2); }
+#shortcuts-list section + section { margin-top: var(--space-4); }
+.shortcuts-group {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
 }
-#mpr-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
+#shortcuts-list dl {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  column-gap: var(--space-5);
+  font-size: var(--text-ui);
+}
+#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
+#shortcuts-list dt, #shortcuts-list dd { padding: 7px 0; border-bottom: 1px solid var(--border-subtle); }
+#shortcuts-list dd { align-content: center; }
+.shortcuts-note { margin-top: var(--space-3); font-size: var(--text-small); color: var(--text-secondary); }
+
+#mpr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
 #mpr-grid article {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: var(--space-3);
-  align-items: baseline;
+  align-items: center;
 }
-#mpr-grid h3 {
-  grid-column: 1;
-  grid-row: 1;
-  margin: 0;
-  font-size: var(--text-ui);
-  font-weight: 600;
-}
+#mpr-grid h3 { grid-column: 1; grid-row: 1; font-size: var(--text-ui); font-weight: 600; }
 #mpr-grid canvas {
   grid-column: 1 / -1;
   grid-row: 2;
@@ -1216,7 +885,7 @@ kbd {
   margin-top: var(--space-2);
   background: #000;
   cursor: crosshair;
-  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
 }
 #mpr-grid label,
 .mpr-display > label:not(.check) {
@@ -1225,98 +894,58 @@ kbd {
   align-items: baseline;
   column-gap: var(--space-3);
   margin: var(--space-2) 0 0;
+  font-size: var(--text-small);
 }
 #mpr-grid label { grid-column: 1 / -1; grid-row: 3; }
 #mpr-grid label .measure,
 .mpr-display output { color: var(--text-tertiary); font-size: var(--text-micro); justify-self: end; }
 #mpr-grid input[type="range"],
-.mpr-display input[type="range"] {
-  grid-column: 1 / -1;
-  width: 100%;
-  margin: var(--space-1) 0 0;
-}
+.mpr-display input[type="range"] { grid-column: 1 / -1; width: 100%; margin: var(--space-1) 0 0; }
 #mpr-grid .button-quiet {
   grid-column: 2;
   grid-row: 1;
-  height: 30px;
-  margin: 0;
+  height: 32px;
   padding: 0 var(--space-2);
   justify-self: end;
-  font-size: var(--text-micro);
-  color: var(--text-secondary);
+  font-size: var(--text-small);
 }
-#mpr-grid .button-quiet:hover:not(:disabled) {
-  background: var(--surface-sunken);
-  color: var(--text-primary);
-}
+@media (pointer: coarse) { #mpr-grid .button-quiet { height: 44px; } }
 #mpr-readout {
   margin-top: var(--space-3);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
   background: var(--surface-navigation);
-  font-size: var(--text-ui);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--text-small);
   line-height: 1.55;
-  color: var(--text-primary);
   overflow-wrap: anywhere;
 }
 .mpr-display {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-3) var(--space-6);
-  margin: var(--space-3) 0 var(--space-4);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border-subtle);
+  gap: var(--space-2) var(--space-6);
+  margin: var(--space-3) 0 var(--space-3);
+  padding-top: var(--space-2);
 }
-.mpr-note {
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border-subtle);
-}
-.mpr-display .check { grid-column: 1 / -1; margin: 0; }
+.mpr-display .check { grid-column: 1 / -1; }
+.mpr-note { margin-top: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
 @media (max-width: 700px) {
   #mpr-grid { grid-template-columns: 1fr; }
   .mpr-display { grid-template-columns: 1fr; }
 }
 
-.internal-controls {
-  display: grid;
-  gap: var(--space-2);
+/* Increased contrast: tonal fills alone are too faint to find a button by. */
+@media (prefers-contrast: more) {
+  button:not(.row, .button-quiet, .icon-button, .visibility-control, .rail-tabs button, .segmented button, .views button, .stage-tool, .stage-icon-button) {
+    border-color: var(--border-control);
+  }
+  .segmented { box-shadow: inset 0 0 0 1px var(--border-control); }
 }
-.internal-controls label { font-size: var(--text-micro); }
-.internal-controls select { width: 100%; min-width: 0; }
-.internal-note { font-size: var(--text-micro); line-height: 1.5; color: var(--text-secondary); margin: 0; }
-.constituents-list {
-  list-style: none;
-  padding: 0;
-  margin: var(--space-3) 0 0;
-  border-top: 1px solid var(--border-subtle);
-}
-.constituents-list li {
-  min-height: var(--row-height);
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: var(--text-ui);
-  line-height: 1.45;
-  color: var(--text-secondary);
-}
-.constituents-list li:not(:has(button)) {
-  display: block;
-  padding: var(--space-1) 0;
-}
-.constituents-list button {
-  width: 100%;
-  height: auto;
-  min-height: var(--row-height);
-  padding: var(--space-1) 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  white-space: normal;
-  font-size: var(--text-ui);
-  color: var(--accent);
-}
-.constituents-list button:hover:not(:disabled) {
-  background: var(--surface-sunken);
-}
+
+/* Rings on controls that sit flush against a clipped edge are drawn inside it. */
+#selection-clear:focus-visible,
+#workspace-selection:focus-visible,
+#workspace-selection-clear:focus-visible,
+#detail-back:focus-visible,
+#sheet-handle:focus-visible,
+#tree-toggle-all:focus-visible { outline-offset: -2px; }

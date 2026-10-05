@@ -24,6 +24,9 @@ export function createTheme(onChange) {
 
   function apply() {
     document.documentElement.dataset.theme = theme;
+    // The browser's own chrome continues the masthead.
+    const meta = document.querySelector?.('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', token('--surface-base') || meta.getAttribute('content'));
     onChange(theme);
   }
 

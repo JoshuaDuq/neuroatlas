@@ -22,6 +22,21 @@ export function upFor(view) {
   return new Vector3(0, 1, 0);
 }
 
+const CUT_VIEWS = {
+  sagittal: ['right', 'left'], coronal: ['anterior', 'posterior'],
+  axial: ['superior', 'inferior'], oblique: ['oblique', 'oblique'],
+};
+
+/** The preset that faces a cut's surface; an oblique cut is faced along its own normal. */
+export function cutFacingView(mode, reverse = false) {
+  return CUT_VIEWS[mode]?.[Number(Boolean(reverse))] ?? null;
+}
+
+/** The view a restored link should face its cut from, or null to keep the link's own view. */
+export function viewForRestoredCut({ cut, reverse = false, view } = {}) {
+  return view ? null : cutFacingView(cut, reverse);
+}
+
 /**
  * Clipping planes and orbit limits for whatever is being framed.
  *
@@ -42,6 +57,24 @@ export function cameraConstraints(bounds) {
     minDistance: Math.min(radius * 0.25, Math.max(minSpan * 0.5, 0.005)),
     maxDistance: radius * 25,
   };
+}
+
+/** The share of the visible stage the framed anatomy spans on its tighter axis, leaving room for the markings. */
+export const FRAME_FILL = 0.8;
+
+/** Below this bounding radius a framed structure loses the neighbourhood that locates it, in metres. */
+export const MIN_CONTEXT_RADIUS = 0.05;
+
+/** Bounds grown evenly on every side until their bounding sphere reaches `radius`. */
+export function withContext(bounds, radius = MIN_CONTEXT_RADIUS) {
+  const grown = bounds.clone();
+  const half = bounds.getSize(new Vector3()).multiplyScalar(0.5);
+  const sum = half.x + half.y + half.z;
+  const squares = half.lengthSq();
+  if (squares >= radius * radius) return grown;
+  // |half + d| = radius, solved for the margin d added to each axis.
+  const margin = (-sum + Math.sqrt(sum * sum - 3 * (squares - radius * radius))) / 3;
+  return grown.expandByScalar(margin);
 }
 
 /*
@@ -70,7 +103,7 @@ function viewBasis(up, direction) {
 export function fitDistance(camera, bounds, direction, fit = {}, points = null) {
   const center = bounds.getCenter(new Vector3());
   const { right, up } = viewBasis(camera.up, direction);
-  const halfAngle = Math.tan(camera.fov * Math.PI / 360) * 0.92;
+  const halfAngle = Math.tan(camera.fov * Math.PI / 360) * FRAME_FILL;
   const verticalSlope = halfAngle * (fit.vertical ?? 1);
   const horizontalSlope = halfAngle * camera.aspect * (fit.horizontal ?? 1);
   let distance = 0;
@@ -102,7 +135,7 @@ export function fitDistance(camera, bounds, direction, fit = {}, points = null) 
   return distance;
 }
 
-/** Fit a perspective camera to unchanged world bounds, with a small screen margin. */
+/** Fit a perspective camera to unchanged world bounds, spanning FRAME_FILL of the view. */
 export function frameBounds(camera, bounds, direction, fit = {}, points = null) {
   const center = bounds.getCenter(new Vector3());
   camera.position.copy(center)
@@ -114,7 +147,8 @@ export function frameBounds(camera, bounds, direction, fit = {}, points = null) 
 
 /**
  * Frame bounds and apply the matching constraints in one step, so the two can
- * never be applied separately and drift apart.
+ * never be applied separately and drift apart. The controls are not updated:
+ * this plans a move, and an update would announce it to every 'change' listener.
  */
 export function frameTo(camera, controls, bounds, direction, fit, points = null) {
   const { near, far, minDistance, maxDistance } = cameraConstraints(bounds);
@@ -125,6 +159,5 @@ export function frameTo(camera, controls, bounds, direction, fit, points = null)
   const center = frameBounds(camera, bounds, direction, fit, points);
   camera.updateProjectionMatrix();
   controls.target.copy(center);
-  controls.update();
   return center;
 }

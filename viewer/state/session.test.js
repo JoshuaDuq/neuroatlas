@@ -122,8 +122,18 @@ test('shortcuts still work from the canvas, buttons and the page body', () => {
   assert.equal(shortcutsAllowed(null), true);
 });
 
-test('a range input still accepts shortcuts, since it types nothing', () => {
-  assert.equal(shortcutsAllowed({ tagName: 'INPUT', type: 'range' }), true);
+test('a slider keeps the keys that move it', () => {
+  const slider = { tagName: 'INPUT', type: 'range' };
+  for (const key of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown']) {
+    assert.equal(shortcutsAllowed(slider, key), false, key);
+  }
+  // Without the key there is no telling, so the slider keeps them all.
+  assert.equal(shortcutsAllowed(slider), false);
+});
+
+test('a slider passes on keys it does not use, and a checkbox types nothing', () => {
+  assert.equal(shortcutsAllowed({ tagName: 'INPUT', type: 'range' }, 'c'), true);
+  assert.equal(shortcutsAllowed({ tagName: 'INPUT', type: 'range' }, '3'), true);
   assert.equal(shortcutsAllowed({ tagName: 'INPUT', type: 'checkbox' }), true);
 });
 

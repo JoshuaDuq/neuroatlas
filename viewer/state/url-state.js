@@ -11,7 +11,7 @@
  * passes the rest through as opaque strings for the session to accept or
  * reject against the manifest.
  */
-const DEFAULTS = {
+export const DEFAULTS = {
   hemisphere: 'both',
   cortexVisible: true,
   cortexOpacity: 1,

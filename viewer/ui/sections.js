@@ -7,8 +7,13 @@ import { STRUCTURE_LABELS_FR } from '../catalog/structure-groups.fr.js';
 import { DESTRIEUX_LABELS } from '../catalog/destrieux-labels.js';
 import { DESTRIEUX_LABELS_FR } from '../catalog/destrieux-labels.fr.js';
 import { createButtonLabel } from './button-label.js';
+import { decimal, formatRas } from './format.js';
+import { bindRoving } from './roving.js';
+import { isIndependentTractReference } from '../diffusion/presentation.js';
 
 const AXES = { sagittal: 0, coronal: 1, axial: 2 };
+/** The orientation letter at each end of a plane's slider: negative first. */
+const AXIS_ENDS = { sagittal: ['L', 'R'], coronal: ['P', 'A'], axial: ['I', 'S'] };
 const FR_EDGE = { R: 'D', L: 'G', S: 'S', I: 'I', P: 'P', A: 'A' };
 
 const TISSUE_NAMES_FR = {
@@ -41,11 +46,17 @@ const TISSUE_NAMES_EN = {
   ctx_rh_Medial_wall: 'Medial wall',
 };
 
-/** Cut controls and linked MRI sections; the controller owns all coordinates. */
+/** The stage's cut controls and linked MRI sections; the controller owns all coordinates. */
 export function createSectionControls(sections, { anatomy, cutAtlases, onFaceView, onSelect, getSelectedRegion, centroidOf }) {
   const mode = document.getElementById('cut-mode');
-  const modeLabels = new Map([...mode.querySelectorAll('[data-cut-mode]')]
-    .map(button => [button, createButtonLabel(button, button.dataset.cutMode)]));
+  const modeLabels = new Map([...mode.querySelectorAll('[data-cut-mode]')].map(button => {
+    const full = createButtonLabel(button, button.dataset.cutMode);
+    // CSS shows one of the two: the short name fits the phone's single row.
+    const short = document.createElement('span');
+    short.className = 'cut-mode-short';
+    button.append(short);
+    return [button, { full, short }];
+  }));
   const cutAtlas = document.getElementById('cut-atlas');
   const cutAtlasLabel = document.getElementById('cut-atlas-label');
   const position = document.getElementById('cut-position');
@@ -68,6 +79,13 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const cutAzimuthLabel = document.getElementById('cut-azimuth-label');
   const cutAzimuthValue = document.getElementById('cut-azimuth-value');
   const cutReverseText = document.getElementById('cut-reverse-text');
+  const sectionBar = document.getElementById('section-bar');
+  const sectionBarName = document.getElementById('section-bar-name');
+  const sectionTool = document.getElementById('section-tool');
+  const cutEndMin = document.getElementById('cut-end-min');
+  const cutEndMax = document.getElementById('cut-end-max');
+  const cutClose = document.getElementById('cut-close');
+  const cutMore = document.getElementById('cut-more');
   const mprOpenBtn = document.getElementById('mpr-open');
   const regionMpr = document.getElementById('region-mpr');
   const mprCloseBtn = document.getElementById('mpr-close');
@@ -84,6 +102,9 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   let previousImage = null;
   let animation = null;
   let currentLang = 'en';
+  let lastAppState = null;
+  // The plane the reader chose while its anatomy is still being prepared.
+  let pendingPlane = null;
 
   function reportError(error) { status.textContent = error.message; console.error(error); }
 
@@ -139,8 +160,14 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
   listen(mode, 'click', async event => {
     const button = event.target.closest('[data-cut-mode]');
-    if (!button || button.dataset.cutMode === sections.state.mode) return;
-    await sections.setMode(button.dataset.cutMode);
+    const plane = button?.dataset.cutMode;
+    if (!plane || plane === (pendingPlane ?? sections.state.mode)) return;
+    // The bar docks at once and says the anatomy is being prepared.
+    pendingPlane = plane === 'off' ? null : plane;
+    update();
+    await sections.setMode(plane);
+    if (pendingPlane === plane) pendingPlane = null;
+    update();
     if (sections.active) {
       // A region is already chosen. The new plane should meet it, not the
       // midline the slider was left on.
@@ -184,6 +211,16 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   }
   listen(mprOpenBtn, 'click', () => openMpr());
   if (regionMpr) listen(regionMpr, 'click', () => openMpr({ atRegion: true }));
+  listen(cutClose, 'click', async () => {
+    pendingPlane = null;
+    sectionTool.focus({ preventScroll: true });
+    await sections.setMode('off');
+  });
+  listen(cutMore, 'click', () => {
+    const expanded = cutMore.getAttribute('aria-expanded') !== 'true';
+    cutMore.setAttribute('aria-expanded', String(expanded));
+    sectionBar.dataset.expanded = String(expanded);
+  });
   listen(mprCloseBtn, 'click', () => dialog.close());
   listen(width, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
   listen(center, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
@@ -265,6 +302,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     planeSwitch.append(button);
     return button;
   });
+  const planeRoving = bindRoving(planeSwitch);
 
   const planeVisible = name => !phoneQuery.matches || name === activePlane;
 
@@ -277,6 +315,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     for (const button of planeButtons) {
       button.setAttribute('aria-pressed', String(button.dataset.plane === activePlane));
     }
+    planeRoving.sync();
     // The newly shown plane has not been drawn while it was hidden.
     previousImage = null;
     update();
@@ -312,7 +351,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       ctx.strokeText(edgeLetter, ...point);
       ctx.fillText(edgeLetter, ...point);
     }
-    const annotation = `${planeName} ${sections.state.crosshair[AXES[name]].toFixed(1)} mm`;
+    const annotation = `${planeName} ${decimal(sections.state.crosshair[AXES[name]], 1, currentLang, { signed: true })}\u202fmm`;
     ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
     ctx.textAlign = 'left';
     ctx.strokeStyle = '#0e1116';
@@ -340,20 +379,42 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   }
 
   function update(appState) {
+    if (appState) lastAppState = appState;
     if (appState?.lang) currentLang = appState.lang;
     const cutsI18n = t(currentLang, 'cuts');
     const mprI18n = t(currentLang, 'mpr');
+    const letters = t(currentLang, 'orientation');
     const state = sections.state;
+    const plane = pendingPlane ?? state.mode;
 
     if (cutModeLabel) cutModeLabel.textContent = cutsI18n.cuttingPlane;
-    if (cutModeLabel) mode.setAttribute('aria-labelledby', cutModeLabel.id);
     for (const button of mode.querySelectorAll('[data-cut-mode]')) {
       const id = button.dataset.cutMode;
-      modeLabels.get(button).textContent = cutsI18n.modes[id];
-      button.title = cutsI18n.modes[id] ?? id;
-      button.setAttribute('aria-pressed', String(id === state.mode));
+      const name = cutsI18n.modes[id] ?? id;
+      const { full, short } = modeLabels.get(button);
+      full.textContent = name;
+      short.textContent = cutsI18n.modesShort[id] ?? name;
+      button.title = name;
+      button.setAttribute('aria-label', name);
+      button.setAttribute('aria-pressed', String(id === plane));
     }
-    document.getElementById('cut-axis').textContent = cutsI18n.axes[state.mode] ?? cutsI18n.axes.off;
+
+    // The bar exists only while a plane is cut, and not over the tract reference, which hides the cut.
+    const referenceOnly = lastAppState ? isIndependentTractReference(lastAppState) : false;
+    const barShown = plane !== 'off' && !referenceOnly;
+    if (!barShown && sectionBar.contains(document.activeElement)) sectionTool.focus({ preventScroll: true });
+    sectionBar.hidden = !barShown;
+    sectionBar.dataset.pending = String(plane !== state.mode);
+    sectionBarName.querySelector('.section-bar-full').textContent = cutsI18n.modes[plane] ?? plane;
+    sectionBarName.querySelector('.section-bar-short').textContent = cutsI18n.modesShort[plane] ?? plane;
+    sectionBar.setAttribute('aria-label', cutsI18n.barAria(cutsI18n.modes[plane] ?? plane));
+    const ends = AXIS_ENDS[plane]?.map(letter => letters[letter]) ?? ['\u2212', '+'];
+    [cutEndMin.textContent, cutEndMax.textContent] = ends;
+    cutClose.setAttribute('aria-label', cutsI18n.closeCut);
+    cutClose.title = cutsI18n.closeCut;
+    cutMore.setAttribute('aria-label', cutsI18n.moreControls);
+
+    document.getElementById('cut-axis').textContent = cutsI18n.axes[plane] ?? cutsI18n.axes.off;
     const offset = new Vector3(...state.crosshair).dot(sections.frame.normal);
     for (const control of [position, number]) {
       [control.min, control.max] = sections.offsetRange.map(String);
@@ -363,53 +424,27 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     number.setAttribute('aria-label', cutsI18n.exactPositionAria);
     reverse.checked = state.reverse;
     mprOverlay.checked = state.overlay;
-    // The angles are why an oblique cut was chosen. A short rail scrolls the
-    // fields under the MRI row. Scrolling to the very end bisects the offset
-    // label; stop when the reverse control is in, and on a gap if one is close.
-    const openingOblique = state.mode === 'oblique' && oblique.hidden;
-    const closingOblique = state.mode !== 'oblique' && !oblique.hidden;
     oblique.hidden = state.mode !== 'oblique';
-    if (openingOblique || closingOblique) {
-      const fields = oblique.closest('.cut-fields');
-      const place = () => {
-        if (!fields) return;
-        if (!openingOblique) {
-          fields.scrollTop = 0;
-          return;
-        }
-        const tail = reverse.closest('label') ?? reverse;
-        const past = tail.getBoundingClientRect().bottom - fields.getBoundingClientRect().bottom;
-        if (past > 0) fields.scrollTop += past;
-        const edge = fields.getBoundingClientRect().top;
-        for (const node of fields.children) {
-          const rect = node.getBoundingClientRect();
-          if (rect.bottom <= edge + 1 || rect.top >= edge - 1) continue;
-          const covered = edge - rect.top;
-          const spare = fields.getBoundingClientRect().bottom - tail.getBoundingClientRect().bottom;
-          if (covered > 0 && covered <= spare + 0.5) fields.scrollTop -= covered;
-          break;
-        }
-      };
-      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(place);
-      else place();
-    }
-    if (cutTiltLabel) cutTiltLabel.textContent = cutsI18n.tilt;
-    if (cutAzimuthLabel) cutAzimuthLabel.textContent = cutsI18n.azimuth;
-    if (cutReverseText) cutReverseText.textContent = cutsI18n.reverseSide;
-    if (mprOpenBtn) {
-      mprOpenBtn.textContent = cutsI18n.openMpr;
-      mprOpenBtn.title = cutsI18n.openMprTitle;
-      mprOpenBtn.setAttribute('aria-label', cutsI18n.openMprTitle);
-    }
+    cutTiltLabel.textContent = cutsI18n.tiltShort;
+    tilt.setAttribute('aria-label', cutsI18n.tilt);
+    tilt.title = cutsI18n.tilt;
+    cutAzimuthLabel.textContent = cutsI18n.azimuthShort;
+    azimuth.setAttribute('aria-label', cutsI18n.azimuth);
+    azimuth.title = cutsI18n.azimuth;
+    cutReverseText.textContent = cutsI18n.reverseShort;
+    reverse.setAttribute('aria-label', cutsI18n.reverseSide);
+    reverse.closest('label').title = cutsI18n.reverseSide;
+    mprOpenBtn.textContent = cutsI18n.openLinkedMpr;
+    mprOpenBtn.title = cutsI18n.openMprTitle;
     if (regionMpr) {
-      regionMpr.textContent = cutsI18n.openMpr;
+      regionMpr.textContent = cutsI18n.openLinkedMpr;
       regionMpr.title = cutsI18n.openMprTitle;
       regionMpr.setAttribute('aria-label', cutsI18n.openMprTitle);
     }
 
     tilt.value = state.tilt; azimuth.value = state.azimuth;
-    if (cutTiltValue) cutTiltValue.textContent = `${state.tilt}°`;
-    if (cutAzimuthValue) cutAzimuthValue.textContent = `${state.azimuth}°`;
+    cutTiltValue.textContent = `${decimal(state.tilt, 0, currentLang)}°`;
+    cutAzimuthValue.textContent = `${decimal(state.azimuth, 0, currentLang, { signed: true })}°`;
     for (const element of [position, number, reverse]) {
       element.disabled = !sections.active;
     }
@@ -430,11 +465,10 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const spacing = sections.tissues?.metadata?.atlases?.[state.cutAtlas]?.voxel_spacing_mm?.[0] ?? 1;
     // A cut is sampled from a label volume, so its network colour is per parcel
     // while the surface's is per vertex. Said here rather than left to be found.
-    // `state` in this function is the cut's own state; the surface mode is on
-    // the app state, which some callers do not pass at all.
-    const byNetwork = appState?.surfaceColor === 'network';
-    const describeCut = appState?.surfaceColor === 'mri' ? cutsI18n.statusMri : cutsI18n.statusActive;
-    const activeStatus = describeCut(offset.toFixed(1), atlasLabel, +spacing.toFixed(2))
+    const byNetwork = lastAppState?.surfaceColor === 'network';
+    const describeCut = lastAppState?.surfaceColor === 'mri' ? cutsI18n.statusMri : cutsI18n.statusActive;
+    const activeStatus = describeCut(decimal(offset, 1, currentLang, { signed: true }), atlasLabel,
+      decimal(spacing, 2, currentLang, { trim: true }))
       + (byNetwork ? ` · ${cutsI18n.networkByRegion}` : '');
     status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
       : state.error || (sections.active ? activeStatus : cutsI18n.statusFull);
@@ -466,20 +500,15 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (mriCenterValue) mriCenterValue.textContent = Math.round(sections.display.windowCenter);
     const sample = sections.sample(state.crosshair);
     const displayName = sampleDisplayName(sample);
-    readout.textContent = mprI18n.readout(
-      state.crosshair[0].toFixed(1),
-      state.crosshair[1].toFixed(1),
-      state.crosshair[2].toFixed(1),
-      displayName,
-      sample.labelId,
-    );
+    // The same signed RAS triple the region panel shows, so the two can be compared.
+    readout.textContent = mprI18n.readout(formatRas(state.crosshair, currentLang), displayName, sample.labelId);
     const imageKey = JSON.stringify([state.crosshair,state.overlay,sections.display.windowCenter,sections.display.windowWidth,currentLang]);
     if (imageKey === previousImage) return;
     previousImage = imageKey;
     for (const [name, panel] of panels) {
       const coordinate = state.crosshair[AXES[name]];
       panel.slider.value = coordinate;
-      panel.output.textContent = `${coordinate.toFixed(1)} mm`;
+      panel.output.textContent = `${decimal(coordinate, 1, currentLang, { signed: true })}\u202fmm`;
       // A plane nobody can see is not resampled; it redraws when it is shown.
       if (planeVisible(name)) drawPanel(name, panel);
     }
@@ -497,6 +526,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   }, dispose() {
     if (animation !== null) cancelAnimationFrame(animation);
     phoneQuery.removeEventListener('change', applyPlaneMode);
+    planeRoving.dispose();
     planeSwitch.replaceChildren();
     for (const [element,type,listener,options] of listeners) element.removeEventListener(type,listener,options);
     grid.replaceChildren();

@@ -1,0 +1,8 @@
+{
+  "anatomyTabSelected": "true",
+  "atlas": "HCP-MMP",
+  "overlayChecked": true,
+  "source": "/neuroatlas/models/snail/manifest.json",
+  "subject": "snail",
+  "url": "http://127.0.0.1:5174/neuroatlas/#anatomy=snail&atlas=hcp-mmp&detail=learning&opacity=0.16&lang=fr"
+}

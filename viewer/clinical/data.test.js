@@ -60,4 +60,9 @@ test('published clinical content resolves to the actual atlas and cited evidence
     ['ataxia', 'cerebellar-cognitive', 'dysarthria']);
   assert.equal(catalog.search('champ visuel', 'fr')[0].id, 'hemianopia');
   assert.equal(catalog.search('reading', 'en')[0].id, 'alexia');
+  // Every deficit sits in one group, and the groups are what the list is read by.
+  assert.equal(catalog.grouped('', 'en').flatMap(entry => entry.deficits).length, data.deficits.length);
+  assert.deepEqual(catalog.grouped('', 'en').map(entry => entry.group.id),
+    ['language', 'literacy', 'memory', 'attention', 'perception', 'praxis', 'motor', 'executive']);
+  assert.deepEqual(catalog.mappedRegions('aphasia').slice(0, 2), ['destrieux:left:38', 'destrieux:left:34']);
 });

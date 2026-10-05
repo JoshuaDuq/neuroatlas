@@ -3,10 +3,41 @@
 import numpy as np
 import trimesh
 
+from . import nextbrain
 from .encode import published_display_colors
 from .geometry import extract_structure, misclassified_voxels
 from .learning import constituent_id, read_definition, source_grids, source_groups
 from .sources import sha256
+from .volumes import load_on_grid, resample_nearest
+
+
+def validate_source_overlap(config):
+    definition = read_definition(config)
+    grid, table = nextbrain.load(config)
+    image = load_on_grid(config, config["source_directory"] / "mri/aseg.mgz")
+    coarse, _ = resample_nearest(
+        np.asarray(image.dataobj), image.header.get_vox2ras_tkr(),
+        grid.voxel_to_surface, grid.labels.shape,
+    )
+    covered = np.isin(coarse, [
+        label for unit in definition["aseg"] for label in unit["labels"]
+    ])
+    counts = np.bincount(grid.labels.ravel(), minlength=max(table) + 1)
+    overlaps = np.bincount(grid.labels[covered], minlength=len(counts))
+    reports = []
+    for unit in definition["nextbrain"]:
+        members = [
+            label + offset for label in unit["labels"]
+            for offset in (0, nextbrain.HEMISPHERE_OFFSET)
+        ]
+        total = int(counts[members].sum())
+        if total == 0:
+            continue
+        fraction = float(overlaps[members].sum() / total)
+        if fraction >= 0.5:
+            raise ValueError(f"Learning unit {unit['id']} is mostly inside another source: {fraction:.3f}")
+        reports.append({"unit": unit["id"], "cross_source_overlap_fraction": fraction})
+    return reports
 
 
 def expected_metadata(config):
@@ -51,7 +82,7 @@ def validate(config, manifest):
     meshes = {mesh.metadata["region_id"]: mesh for mesh in scene.geometry.values()}
     colors = published_display_colors(path)
     regions = {region["id"]: region for region in manifest["regions"]}
-    maximum = read_definition()["smoothing"]["maximum_displacement_mm"]
+    maximum = read_definition(config)["smoothing"]["maximum_displacement_mm"]
     tolerance = config["validation"]["coordinate_tolerance_mm"]
     reports = []
     for source, grid, table, groups in source_groups(config):
@@ -116,4 +147,5 @@ def validate(config, manifest):
         "regions": reports,
         "source_volumes_unchanged": True,
         "maximum_allowed_displacement_mm": maximum,
+        "cross_source_overlap": validate_source_overlap(config),
     }
