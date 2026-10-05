@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { Box3, PerspectiveCamera, Vector3 } from 'three';
-import { VIEW_DIRECTIONS, cameraConstraints, fitDistance, frameBounds, upFor } from './camera-views.js';
+import { Box3, PerspectiveCamera, Sphere, Vector3 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import {
+  FRAME_FILL, MIN_CONTEXT_RADIUS, VIEW_DIRECTIONS, cameraConstraints, cutFacingView, fitDistance, frameBounds,
+  frameTo, upFor, viewForRestoredCut, withContext,
+} from './camera-views.js';
 
 test('fits all anatomical bounds inside landscape and portrait viewports', () => {
   const bounds = new Box3(new Vector3(-0.08, -0.07, -0.1), new Vector3(0.08, 0.11, 0.1));
@@ -14,8 +18,8 @@ test('fits all anatomical bounds inside landscape and portrait viewports', () =>
       for (const y of [bounds.min.y, bounds.max.y]) {
         for (const z of [bounds.min.z, bounds.max.z]) {
           const projected = new Vector3(x, y, z).project(camera);
-          assert.ok(Math.abs(projected.x) <= 0.93);
-          assert.ok(Math.abs(projected.y) <= 0.93);
+          assert.ok(Math.abs(projected.x) <= FRAME_FILL + 1e-9);
+          assert.ok(Math.abs(projected.y) <= FRAME_FILL + 1e-9);
         }
       }
     }
@@ -149,4 +153,72 @@ test('an inscribed shape is framed closer than the box around it', () => {
   const box = fitDistance(camera, bounds, VIEW_DIRECTIONS.oblique);
   const hull = fitDistance(camera, bounds, VIEW_DIRECTIONS.oblique, {}, cloud);
   assert.ok(hull < box * 0.95, `expected a closer fit, got ${hull} against ${box}`);
+});
+
+test('each cut is faced from the side its reverse flag shows', () => {
+  assert.equal(cutFacingView('axial'), 'superior');
+  assert.equal(cutFacingView('axial', true), 'inferior');
+  assert.equal(cutFacingView('coronal'), 'anterior');
+  assert.equal(cutFacingView('sagittal', true), 'left');
+  assert.equal(cutFacingView('oblique', true), 'oblique');
+  assert.equal(cutFacingView('off'), null);
+});
+
+test('a restored cut is faced unless the link names its own view', () => {
+  assert.equal(viewForRestoredCut({ cut: 'axial' }), 'superior');
+  assert.equal(viewForRestoredCut({ cut: 'coronal', reverse: true }), 'posterior');
+  assert.equal(viewForRestoredCut({ cut: 'axial', view: 'left' }), null);
+  assert.equal(viewForRestoredCut({ view: 'left' }), null);
+  assert.equal(viewForRestoredCut({}), null);
+});
+
+test('planning a framing never announces a camera move that is not drawn', () => {
+  // The orientation letters listen for 'change'; a plan announced as a move put
+  // the destination's letters over the picture it was leaving.
+  const camera = new PerspectiveCamera(35, 1.6, 0.001, 10);
+  camera.position.set(-0.4, 0.1, -0.2);
+  const controls = new OrbitControls(camera);
+  controls.update();
+  let announced = 0;
+  controls.addEventListener('change', () => { announced += 1; });
+  const center = frameTo(camera, controls, brain, VIEW_DIRECTIONS.anterior, {});
+  assert.equal(announced, 0);
+  assert.deepEqual(controls.target.toArray(), center.toArray());
+  assert.ok(camera.position.clone().sub(center).normalize().distanceTo(VIEW_DIRECTIONS.anterior) < 1e-9);
+});
+
+test('a framed silhouette spans four fifths of the visible stage on its tighter axis', () => {
+  // The opening view stood back from box corners the brain never reaches and filled half the stage.
+  const camera = new PerspectiveCamera(35, 1120 / 770, 0.001, 10);
+  const points = [];
+  for (let i = 0; i < 3000; i++) {
+    const u = Math.cos(i) * Math.sin(i * 0.7), v = Math.sin(i * 1.3), w = Math.cos(i * 0.31);
+    const length = Math.hypot(u, v, w) || 1;
+    points.push(0.07 * u / length, 0.02 + 0.06 * v / length, 0.09 * w / length);
+  }
+  const cloud = new Float32Array(points);
+  for (const [view, direction] of Object.entries(VIEW_DIRECTIONS)) {
+    camera.up.copy(upFor(view));
+    frameBounds(camera, brain, direction, {}, cloud);
+    camera.updateProjectionMatrix();
+    let reach = 0;
+    const point = new Vector3();
+    for (let i = 0; i < cloud.length; i += 3) {
+      point.set(cloud[i], cloud[i + 1], cloud[i + 2]).project(camera);
+      reach = Math.max(reach, Math.abs(point.x), Math.abs(point.y));
+    }
+    assert.ok(Math.abs(reach - FRAME_FILL) < 1e-3, `${view} spans ${reach}`);
+  }
+});
+
+test('a small landmark is framed with a neighbourhood around it', () => {
+  const chiasm = new Box3(new Vector3(-0.019, -0.014, -0.016), new Vector3(0.019, 0.014, 0.016));
+  const framed = withContext(chiasm);
+  const radius = framed.getBoundingSphere(new Sphere()).radius;
+  assert.ok(Math.abs(radius - MIN_CONTEXT_RADIUS) < 1e-9);
+  assert.deepEqual(framed.getCenter(new Vector3()).toArray(), chiasm.getCenter(new Vector3()).toArray());
+  // Grown by the same margin on every side, like the authored context margin.
+  const grew = framed.getSize(new Vector3()).sub(chiasm.getSize(new Vector3()));
+  assert.ok(Math.abs(grew.x - grew.y) < 1e-12 && Math.abs(grew.y - grew.z) < 1e-12);
+  assert.deepEqual(withContext(brain).min.toArray(), brain.min.toArray(), 'larger bounds are left alone');
 });

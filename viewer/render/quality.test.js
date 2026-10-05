@@ -6,7 +6,7 @@ test('MRI preserves native display pixels even on an integrated GPU', () => {
   assert.equal(quality.pixelRatio, 1.5);
   assert.equal(quality.mriPixelRatio, 2);
 });
-import { qualityProfile } from './quality.js';
+import { motionRatio, qualityProfile } from './quality.js';
 
 test('a phone renders at one CSS pixel and reduces MSAA', () => {
   const quality = qualityProfile({
@@ -80,4 +80,21 @@ test('an iPad keeps the handheld budget although its GPU is Apple silicon', () =
     deviceMemory: 8, integrated: true, appleSilicon: true,
   });
   assert.equal(quality.pixelRatio, 1.5);
+});
+
+test('a moving camera renders at most one device pixel per CSS pixel; a settled one keeps the full ratio', () => {
+  const retina = qualityProfile({ phone: false, coarse: false, pixelRatio: 2, integrated: true, appleSilicon: true });
+  assert.equal(retina.pixelRatio, 2);
+  assert.equal(retina.motionPixelRatio, 1);
+  const phone = qualityProfile({ phone: true, coarse: true, pixelRatio: 3 });
+  assert.equal(phone.motionPixelRatio, phone.pixelRatio);
+  const lowDpi = qualityProfile({ phone: false, coarse: false, pixelRatio: 1, integrated: false });
+  assert.equal(lowDpi.motionPixelRatio, 1);
+});
+
+test('a moving picture keeps to a pixel budget, so a very large canvas drops below one pixel per CSS pixel', () => {
+  assert.equal(motionRatio(1, 1120, 824), 1);
+  assert.equal(motionRatio(2, 1120, 824), 1.47);
+  assert.equal(motionRatio(1, 2240, 1392), 0.8);
+  assert.equal(motionRatio(1, 0, 0), 1);
 });

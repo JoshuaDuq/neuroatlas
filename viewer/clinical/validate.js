@@ -26,8 +26,9 @@ function indexRecords(records, kind) {
   return index;
 }
 
-function validateDeficit(deficit) {
+function validateDeficit(deficit, groups) {
   for (const field of ['name', 'domain', 'summary']) localized(deficit, field);
+  requireValue(groups.has(deficit.group), `${deficit.id}: unknown group ${deficit.group}`);
   for (const lang of LANGUAGES) {
     const aliases = deficit.aliases?.[lang];
     requireValue(Array.isArray(aliases) && aliases.every(isText),
@@ -85,12 +86,18 @@ function validateAssociation(association, indexes) {
 export function validateClinicalData(data, manifest) {
   requireValue(/^\d{4}-\d{2}-\d{2}$/.test(data?.revised), 'revision date is required');
   const indexes = {
+    groups: indexRecords(data.groups, 'group'),
     deficits: indexRecords(data.deficits, 'deficit'),
     references: indexRecords(data.references, 'reference'),
     associations: indexRecords(data.associations, 'association'),
     regions: indexRecords(manifest.regions, 'region'),
   };
-  for (const deficit of indexes.deficits.values()) validateDeficit(deficit);
+  for (const group of indexes.groups.values()) localized(group, 'name');
+  for (const deficit of indexes.deficits.values()) validateDeficit(deficit, indexes.groups);
+  for (const group of indexes.groups.keys()) {
+    requireValue([...indexes.deficits.values()].some(deficit => deficit.group === group),
+      `${group}: group has no deficits`);
+  }
   for (const reference of indexes.references.values()) validateReference(reference);
   for (const association of indexes.associations.values()) validateAssociation(association, indexes);
   return indexes;

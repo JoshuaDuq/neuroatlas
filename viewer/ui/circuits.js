@@ -1,4 +1,5 @@
 import { CIRCUIT_TEXT } from '../learning/translations.js';
+import { scrollToTop } from './clinical.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -14,10 +15,58 @@ function button(text, action, value) {
   return node;
 }
 
+const SVG = 'http://www.w3.org/2000/svg';
+
+function chevron(direction) {
+  const icon = document.createElementNS(SVG, 'svg');
+  icon.setAttribute('viewBox', '0 0 24 24');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.classList.add('control-icon');
+  const path = document.createElementNS(SVG, 'path');
+  path.setAttribute('d', direction === 'previous' ? 'm15 6-6 6 6 6' : 'm9 6 6 6-6 6');
+  icon.append(path);
+  return icon;
+}
+
+/** Step and landmark commands are actions, so they take the standard button rather than link text. */
+function command(text, action, value) {
+  const node = button(text, action, value);
+  node.className = 'circuit-command';
+  return node;
+}
+
 function disclosure(title, ...children) {
   const node = element('details', null, 'circuit-disclosure');
   node.append(element('summary', title), ...children);
   return node;
+}
+
+/** Which way a stepper control moves, and whether there is a landmark in that direction. */
+export function stepperTargets(step, total) {
+  return {
+    previous: step > 0 ? step - 1 : null,
+    next: step < total - 1 ? step + 1 : null,
+  };
+}
+
+/** The lesson's place and its landmark steps, in the detail's location bar. */
+function renderStepper(group, lesson, total, text) {
+  group.setAttribute('aria-label', text.landmarks);
+  const targets = stepperTargets(lesson.step, total);
+  const progress = element('p', null, 'circuit-progress');
+  progress.append(element('span', `${text.landmark} `, 'visually-hidden'), text.stepShort(lesson.step, total));
+  const controls = ['previous', 'next'].map(direction => {
+    const control = button(null, 'step', targets[direction] ?? lesson.step);
+    control.className = `icon-button circuit-stepper-${direction}`;
+    control.dataset.stepDirection = direction;
+    control.setAttribute('aria-label', text[`${direction}Landmark`]);
+    control.title = text[`${direction}Landmark`];
+    // A boundary has nowhere to go, so the control leaves rather than greying out.
+    control.hidden = targets[direction] === null;
+    control.append(chevron(direction));
+    return control;
+  });
+  group.replaceChildren(controls[0], progress, controls[1]);
 }
 
 function question(circuit, lesson, lang) {
@@ -26,7 +75,7 @@ function question(circuit, lesson, lang) {
   fieldset.append(element('legend', text.question), element('p', circuit.question.prompt[lang]));
   const answers = element('div', null, 'circuit-answers');
   circuit.question.options.forEach((option, index) => {
-    const choice = button(option[lang], 'answer', index);
+    const choice = command(option[lang], 'answer', index);
     choice.setAttribute('aria-pressed', String(index === lesson.answer));
     answers.append(choice);
   });
@@ -36,26 +85,33 @@ function question(circuit, lesson, lang) {
   return fieldset;
 }
 
-/** Lesson controls share the app's render cycle and existing mobile region panel. */
-export function createCircuitExplorer({ catalog, onCircuit, onStep, onMri, onAnswer, onDeficit }) {
+/**
+ * Lesson controls share the app's render cycle. The landmark's own commands
+ * are the region's: Focus frames it as the lesson does, Linked MRI opens its plane.
+ * The landmark reads first, then the region's actions and datasheet, and the
+ * lesson's background last, in `#circuit-notes` below them.
+ */
+export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, onMri, onAnswer, onDeficit }) {
   const browser = document.getElementById('circuit-browser');
   const introduction = document.getElementById('circuit-introduction');
   const list = document.getElementById('circuit-list');
   const landmarks = document.getElementById('circuit-landmarks');
   const profile = document.getElementById('circuit-profile');
+  const stepperGroup = document.getElementById('circuit-stepper');
+  const notes = document.getElementById('circuit-notes');
   const actionStatus = document.getElementById('circuit-action-status');
+  const related = document.getElementById('circuit-region');
   let state;
   let listKey;
   let profileKey;
+  let relatedKey;
   let opening = false;
   let actionError = null;
 
   function updateActions() {
-    for (const container of [browser, profile]) {
+    for (const container of [browser, profile, stepperGroup, notes]) {
       container.setAttribute('aria-busy', String(opening));
-      for (const control of container.querySelectorAll('button')) {
-        control.disabled = opening || control.dataset.boundary === 'true';
-      }
+      for (const control of container.querySelectorAll('button')) control.disabled = opening;
     }
     actionStatus.textContent = opening ? CIRCUIT_TEXT[state.lang].loading : actionError?.message ?? '';
     actionStatus.hidden = state.explorer !== 'circuits' || (!opening && !actionError);
@@ -94,42 +150,42 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onMri, onAns
   function renderProfile() {
     const { lesson, lang } = state;
     const text = CIRCUIT_TEXT[lang];
-    const circuit = lesson.circuit ? catalog.get(lesson.circuit) : null;
-    const heading = element('h2', circuit ? circuit.name[lang] : text.heading, 'panel-heading');
-    heading.id = 'circuit-heading';
-    profile.replaceChildren(heading);
-    const body = element('div', null, 'panel-body circuit-content');
-    if (!circuit) {
-      body.append(element('p', text.choose));
-      profile.append(body);
+    delete profile.dataset.landmarkSelected;
+    if (!lesson.circuit) {
+      for (const node of [profile, stepperGroup, notes]) node.replaceChildren();
       return;
     }
+    const circuit = catalog.get(lesson.circuit);
+    renderStepper(stepperGroup, lesson, circuit.steps.length, text);
+    // The location bar names the circuit on screen; the heading keeps it in the outline.
+    const heading = element('h2', circuit.name[lang], 'visually-hidden');
+    heading.id = 'circuit-heading';
+    const body = element('div', null, 'panel-body circuit-content');
     const step = circuit.steps[lesson.step];
     const title = element('h3', step.name[lang], 'circuit-title');
     title.id = 'circuit-title';
     title.tabIndex = -1;
     body.append(title,
-      element('p', text.step(lesson.step, circuit.steps.length), 'circuit-progress'),
       element('p', step.role[lang], 'circuit-role'),
       element('p', step.explanation[lang]));
-    const navigation = element('div', null, 'circuit-navigation');
-    const previous = button(text.previous, 'step', lesson.step - 1);
-    previous.dataset.boundary = String(lesson.step === 0);
-    const next = button(text.next, 'step', lesson.step + 1);
-    next.dataset.boundary = String(lesson.step === circuit.steps.length - 1);
-    navigation.append(previous, next);
-    const actions = element('div', null, 'circuit-actions');
-    actions.append(button(text.anatomy, 'step', lesson.step), button(text.mri, 'mri', 'open'));
     const exploring = state.selectedRegion?.id !== step.region;
-    if (exploring) body.append(element('p', text.otherSelection, 'circuit-note'));
-    body.append(navigation, actions, element('p', text.mriNote, 'circuit-note'),
+    profile.dataset.landmarkSelected = String(!exploring);
+    if (exploring) {
+      const note = element('p', `${text.otherSelection} `, 'circuit-note circuit-return');
+      note.append(button(text.returnToLandmark, 'step', lesson.step));
+      body.append(note);
+    }
+    profile.replaceChildren(heading, body);
+
+    const foot = [];
+    if (lesson.step === circuit.steps.length - 1) foot.push(question(circuit, lesson, lang));
+    foot.push(
       disclosure(text.connections, element('p', circuit.summary[lang]),
         element('p', circuit.route[lang], 'circuit-route'),
         element('p', circuit.scope[lang]), element('p', text.schematic, 'circuit-note')),
-      disclosure(text.mapping, element('p', step.mapping[lang])),
+      disclosure(text.mapping, element('p', step.mapping[lang]), element('p', text.mriNote, 'circuit-note')),
       disclosure(text.clinical, element('p', circuit.clinical[lang]),
         button(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')));
-    if (lesson.step === circuit.steps.length - 1) body.append(question(circuit, lesson, lang));
     const sources = disclosure(text.evidence);
     for (const id of circuit.references) {
       const reference = catalog.reference(id);
@@ -142,16 +198,41 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onMri, onAns
       sources.append(citation);
     }
     sources.append(element('p', `${text.revised}: ${catalog.revised}`, 'circuit-note'));
-    body.append(sources);
-    profile.append(body);
+    foot.push(sources);
+    notes.replaceChildren(...foot);
+  }
+
+  /** Outside a lesson, a region that is a landmark links to that step of each tour. */
+  function renderRelated() {
+    const { lang } = state;
+    const id = state.selectedRegion?.id;
+    const links = id && state.explorer !== 'circuits'
+      ? catalog.all.flatMap(circuit => circuit.steps
+        .map((step, index) => ({ circuit, step, index }))
+        .filter(({ step }) => step.region === id))
+      : [];
+    related.hidden = links.length === 0;
+    related.replaceChildren();
+    if (!links.length) return;
+    const text = CIRCUIT_TEXT[lang];
+    const body = element('div', null, 'panel-body clinical-regions');
+    for (const { circuit, index } of links) {
+      const link = element('button', `${circuit.name[lang]} · ${text.step(index, circuit.steps.length)}`,
+        'clinical-region-link');
+      link.type = 'button';
+      link.dataset.landmarkCircuit = circuit.id;
+      link.dataset.landmarkStep = String(index);
+      body.append(link);
+    }
+    related.append(element('h2', text.inCircuits, 'section-label'), body);
   }
 
   function updateQuestion() {
-    const feedback = profile.querySelector('.circuit-feedback');
+    const feedback = notes.querySelector('.circuit-feedback');
     if (!feedback) return;
     const { lesson, lang } = state;
     const circuit = catalog.get(lesson.circuit);
-    for (const choice of profile.querySelectorAll('[data-answer]')) {
+    for (const choice of notes.querySelectorAll('[data-answer]')) {
       choice.setAttribute('aria-pressed', String(Number(choice.dataset.answer) === lesson.answer));
     }
     const text = CIRCUIT_TEXT[lang];
@@ -160,37 +241,51 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onMri, onAns
     if (feedback.textContent !== message) feedback.textContent = message;
   }
 
-  async function act(event) {
-    const target = event.target.closest('button');
-    if (!target || target.disabled || opening) return;
-    if (target.dataset.answer !== undefined) {
-      onAnswer(Number(target.dataset.answer));
-      profile.querySelector(`[data-answer="${target.dataset.answer}"]`).focus();
-      return;
-    }
-    if (target.dataset.deficit) return onDeficit(target.dataset.deficit);
-    const action = target.dataset.circuit ? () => onCircuit(target.dataset.circuit)
-      : target.dataset.step !== undefined ? () => onStep(Number(target.dataset.step))
-        : target.dataset.mri ? onMri : null;
-    if (!action) return;
+  async function run(action) {
+    if (opening) return false;
     opening = true;
     actionError = null;
     updateActions();
     try {
       await action();
-      if (!target.dataset.mri && state.explorer === 'circuits') {
-        const focusTarget = document.getElementById('circuit-title');
-        profile.scrollIntoView({ block: 'start' });
-        focusTarget.focus({ preventScroll: true });
-      }
+      return true;
     } catch (error) {
       actionError = error;
       console.error(error);
+      return false;
     } finally {
       opening = false;
       updateActions();
       if (actionError && state.explorer === 'circuits') actionStatus.scrollIntoView({ block: 'nearest' });
     }
+  }
+
+  /** A new landmark starts at the top; the stepper keeps focus so it can be pressed again. */
+  function settle(direction) {
+    if (state.explorer !== 'circuits') return;
+    scrollToTop(profile);
+    const control = direction
+      && (stepperGroup.querySelector(`[data-step-direction="${direction}"]:not([hidden])`)
+        ?? stepperGroup.querySelector('[data-step-direction]:not([hidden])'));
+    (control ?? document.getElementById('circuit-title'))?.focus({ preventScroll: true });
+  }
+
+  async function act(event) {
+    const target = event.target.closest('button');
+    if (!target || target.disabled || opening) return;
+    if (target.dataset.answer !== undefined) {
+      onAnswer(Number(target.dataset.answer));
+      notes.querySelector(`[data-answer="${target.dataset.answer}"]`).focus();
+      return;
+    }
+    if (target.dataset.deficit) return onDeficit(target.dataset.deficit);
+    const action = target.dataset.landmarkCircuit
+      ? () => onLandmark(target.dataset.landmarkCircuit, Number(target.dataset.landmarkStep))
+      : target.dataset.circuit ? () => onCircuit(target.dataset.circuit)
+        : target.dataset.step !== undefined ? () => onStep(Number(target.dataset.step)) : null;
+    if (!action) return;
+    const direction = target.dataset.stepDirection;
+    if (await run(action)) settle(direction);
   }
 
   function onKey(event) {
@@ -202,14 +297,16 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onMri, onAns
     controls[index + (event.key === 'ArrowDown' ? 1 : -1)]?.focus();
   }
 
-  browser.addEventListener('click', act);
-  profile.addEventListener('click', act);
+  const surfaces = [browser, profile, stepperGroup, notes, related];
+  for (const surface of surfaces) surface.addEventListener('click', act);
   browser.addEventListener('keydown', onKey);
   return {
     update(snapshot) {
       state = snapshot;
       browser.hidden = state.explorer !== 'circuits';
-      profile.hidden = browser.hidden;
+      profile.hidden = browser.hidden || !state.lesson.circuit;
+      stepperGroup.hidden = profile.hidden;
+      notes.hidden = profile.hidden;
       actionStatus.hidden = browser.hidden;
       introduction.textContent = CIRCUIT_TEXT[state.lang].introduction;
       list.setAttribute('aria-label', CIRCUIT_TEXT[state.lang].heading);
@@ -218,12 +315,15 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onMri, onAns
       const nextProfileKey = `${key}|${state.selectedRegion?.id}`;
       if (nextProfileKey !== profileKey) { profileKey = nextProfileKey; renderProfile(); }
       updateQuestion();
+      const nextRelatedKey = `${state.lang}|${state.explorer}|${state.selectedRegion?.id}`;
+      if (nextRelatedKey !== relatedKey) { relatedKey = nextRelatedKey; renderRelated(); }
       if (!browser.hidden) updateActions();
     },
+    /** The landmark's Linked MRI: the lesson's prepared plane, with the same progress and errors. */
+    openMri: () => run(onMri),
     focus() { list.querySelector('button').focus(); },
     dispose() {
-      browser.removeEventListener('click', act);
-      profile.removeEventListener('click', act);
+      for (const surface of surfaces) surface.removeEventListener('click', act);
       browser.removeEventListener('keydown', onKey);
     },
   };

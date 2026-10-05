@@ -1,3 +1,36 @@
 {
-  "buildPath": "code"
+  "buildPath": "code",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-05T19:58:02.199Z",
+        "reason": "Assistant decision on evidence: static scan of index.html misses the Vite-imported stylesheets (all roles read as 16px default); rendered sizes are 20/16/15/14/13/12px per DESIGN.md Typography"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "viewer/styles/stage.css"
+        ],
+        "createdAt": "2026-10-05T21:25:41.878Z",
+        "reason": "Assistant decision on evidence: the only width transition in stage.css is the loading progress bar (.progress span), moved from components.css; DESIGN.md retains this operational progress-width motion and the critique detector pass classified it a false positive"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(0, 0, 0)",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-05T21:37:45.273Z",
+        "reason": "Assistant decision on evidence: static scan of index.html misses the Vite-imported stylesheets; the rendered h1.brand ink is --text-primary (#24343b light / #edf3f7 dark), measured in the critique's CDP pass"
+      }
+    ]
+  }
 }

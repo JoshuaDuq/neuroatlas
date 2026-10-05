@@ -15,16 +15,23 @@ const TYPING_INPUT_TYPES = new Set([
   'text', 'search', 'email', 'number', 'password', 'tel', 'url', undefined,
 ]);
 
+/** Keys a slider moves itself with; a shortcut on them would leave it dead. */
+const RANGE_KEYS = new Set([
+  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown',
+]);
+
 /**
  * Whether a single-key shortcut may act, given what currently has focus.
  * Without this, `3` could not be typed into search, and `3b` is a real
- * HCP-MMP area.
+ * HCP-MMP area. A slider gives up only its own keys when the key is given,
+ * and every key when it is not.
  */
-export function shortcutsAllowed(target) {
+export function shortcutsAllowed(target, key) {
   if (!target) return true;
   if (target.isContentEditable) return false;
   const tag = target.tagName;
   if (tag === 'TEXTAREA' || tag === 'SELECT') return false;
+  if (tag === 'INPUT' && target.type === 'range') return key !== undefined && !RANGE_KEYS.has(key);
   if (tag === 'INPUT') return !TYPING_INPUT_TYPES.has(target.type);
   return true;
 }
@@ -61,7 +68,7 @@ export function createSession({ views, theme = 'dark', lang = 'en' }) {
     setQuery: query => act({ query }),
 
     setExplorer(explorer) {
-      if (!['anatomy', 'deficits', 'circuits'].includes(explorer)) {
+      if (!['anatomy', 'deficits', 'circuits', 'diffusion'].includes(explorer)) {
         throw new Error(`Unknown explorer: ${explorer}`);
       }
       return act({ explorer });

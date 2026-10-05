@@ -55,6 +55,38 @@ The complete license text is preserved at [`public/models/licenses/FreeSurfer.ht
 ### CC0 1.0 Universal (`aomic`)
 The `aomic` anatomy (`sub-0022`) is published under Creative Commons Zero (CC0). It is dedicated to the public domain and imposes no redistribution restrictions or proprietary license covenants.
 
+### CC0 1.0 Universal (SNAIL diffusion reference)
+
+`public/diffusion/snail-subject-1/` contains subject 1 of the
+[SNAIL `bundles_2_subjects` dataset](https://hdl.handle.net/1773/38477),
+published under CC0 and distributed through
+[DIPY's bundle visualization example](https://docs.dipy.org/1.10.0/examples_built/visualization/viz_bundles.html).
+The original T1 and FA NIfTI files are retained byte for byte; all 27 original
+TRK bundles are gzip-compressed without geometric processing or decimation.
+`provenance.json` records archive MD5, original SHA-256 checksums, reference
+transforms, source counts and NiBabel geometry checks. Bundle labels follow the
+source names; the seven corpus-callosum subdivisions retain their source segment
+numbers without inferred anatomical assignments.
+
+The browser uses [NiiVue's official TRK decoder](https://niivue.com/docs/loading/)
+and native Three.js indexed line segments with local RAS direction colors.
+The optional MRI navigator uses NiiVue's linked slices and location callbacks
+with the same original T1/FA maps and line tract geometry.
+Spatial checks follow the explicit reference-space conventions discussed in
+[DIPY's streamline formats example](https://docs.dipy.org/stable/examples_built/file_formats/streamline_formats.html).
+
+The main canvas uses Three.js indexed line segments and an MRI-derived outline
+from the same T1. The outline follows scikit-image's
+[Lewiner marching-cubes implementation](https://scikit-image.org/docs/stable/api/skimage.measure.html#skimage.measure.marching_cubes),
+with NiBabel's source affine and the viewer's RAS millimeter-to-meter transform.
+Extraction settings and limitations are recorded in `t1-outline.json`; this
+display outline does not supply a pial surface or cortical atlas labels.
+When SNAIL's reconstruction is selected, its actual cortical surfaces replace
+the outline, with tracts transformed by the exact
+[FreeSurfer scanner-to-surface RAS convention](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems).
+Shared cuts follow the world-space clipping-plane implementation in the pinned
+[Three.js r186 Material source](https://github.com/mrdoob/three.js/blob/r186/src/materials/Material.js).
+
 ### NextBrain (`nextbrain.glb`, NextBrain-sourced `learning.glb` units, `tissues-nextbrain.volume`)
 The NextBrain atlas (`atlas_simplified.zip`) and the SuperSynth model are downloaded from FreeSurfer's distribution server, and the segmentation tool ships inside FreeSurfer 8.2. The NextBrain paper names no separate licence for the atlas: its code-availability statement says the segmentation tool "is integrated in our neuroimaging toolkit 'FreeSurfer'". NeuroAtlas therefore claims no terms for these files beyond FreeSurfer's own. The exact files used, with their SHA-256 checksums, are recorded in `data/sources.json`.
 

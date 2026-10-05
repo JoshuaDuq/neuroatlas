@@ -67,3 +67,22 @@ test('createTheme honors explicitly stored light preference', () => {
   assert.equal(notified, 'light');
   assert.equal(document.documentElement.dataset.theme, 'light');
 });
+
+test('createTheme carries the masthead surface into the browser theme colour', () => {
+  const meta = { content: '#000000', setAttribute(name, value) { this[name] = value; }, getAttribute(name) { return this[name]; } };
+  const surfaces = { light: '#ffffff', dark: '#1d2a33' };
+  globalThis.document = {
+    documentElement: { dataset: {} },
+    querySelector: selector => (selector === 'meta[name="theme-color"]' ? meta : null),
+  };
+  globalThis.getComputedStyle = () => ({
+    getPropertyValue: name => (name === '--surface-base' ? surfaces[document.documentElement.dataset.theme] : ''),
+  });
+  globalThis.localStorage = { getItem: () => null, setItem: () => {} };
+
+  const theme = createTheme(() => {});
+  assert.equal(meta.content, '#ffffff');
+  theme.toggle();
+  assert.equal(meta.content, '#1d2a33');
+  delete globalThis.getComputedStyle;
+});

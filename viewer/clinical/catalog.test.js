@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createClinicalCatalog } from './catalog.js';
+import { createClinicalCatalog, groupDeficits, mappedRegionIds } from './catalog.js';
 
 const text = { en: 'Memory', fr: 'Mémoire' };
 const manifest = { regions: [{
@@ -11,7 +11,8 @@ const manifest = { regions: [{
 function fixture() {
   return structuredClone({
     revised: '2026-09-11',
-    deficits: [{ id: 'amnesia', name: { en: 'Amnesia', fr: 'Amnésie' },
+    groups: [{ id: 'memory', name: { en: 'Memory and navigation', fr: 'Mémoire et orientation spatiale' } }],
+    deficits: [{ id: 'amnesia', name: { en: 'Amnesia', fr: 'Amnésie' }, group: 'memory',
       domain: text, summary: text, aliases: { en: ['forgetfulness'], fr: ['oubli'] } }],
     references: [{ id: 'memory-study', title: 'Memory study', authors: 'Author A',
       year: 1986, journal: 'Journal of Neuroscience', doi: '10.1523/example',
@@ -61,10 +62,37 @@ test('invalid scientific links and missing translations fail with record context
     [data => { data.associations[0].laterality = 'right'; }, /hippocampal-amnesia.*hemisphere/],
     [data => { data.deficits[0].summary = { en: 'Memory' }; }, /amnesia.*summary.fr/],
     [data => { data.references[0].doi = 'javascript:alert(1)'; }, /memory-study.*doi/],
+    [data => { data.deficits[0].group = 'invented'; }, /amnesia.*group/],
+    [data => { data.groups.push({ id: 'empty', name: text }); }, /empty.*no deficits/],
+    [data => { delete data.groups[0].name.fr; }, /memory.*name.fr/],
   ];
   for (const [mutate, expected] of cases) {
     const data = fixture();
     mutate(data);
     assert.throws(() => createClinicalCatalog(data, manifest), expected);
   }
+});
+
+test('deficits list under their group in authored group order, empty groups omitted', () => {
+  const groups = [{ id: 'language' }, { id: 'memory' }, { id: 'motor' }];
+  const deficits = [{ id: 'amnesia', group: 'memory' }, { id: 'aphasia', group: 'language' },
+    { id: 'dysarthria', group: 'language' }];
+  assert.deepEqual(groupDeficits(groups, deficits).map(({ group, deficits }) =>
+    [group.id, deficits.map(d => d.id)]), [['language', ['aphasia', 'dysarthria']], ['memory', ['amnesia']]]);
+  assert.deepEqual(groupDeficits(groups, []), []);
+  const catalog = createClinicalCatalog(fixture(), manifest);
+  assert.deepEqual(catalog.grouped('oubli', 'fr').map(entry => entry.group.name.fr), ['Mémoire et orientation spatiale']);
+  assert.deepEqual(catalog.grouped('unlisted', 'en'), []);
+});
+
+test('a deficit maps each cited region once, in citation order', () => {
+  const associations = [
+    { mappings: [{ region: 'a' }, { region: 'b' }] },
+    { mappings: [] },
+    { mappings: [{ region: 'b' }, { region: 'c' }] },
+  ];
+  assert.deepEqual(mappedRegionIds(associations), ['a', 'b', 'c']);
+  const catalog = createClinicalCatalog(fixture(), manifest);
+  assert.deepEqual(catalog.mappedRegions('amnesia'), ['aseg:left:17']);
+  assert.throws(() => catalog.mappedRegions('unknown'), /Unknown deficit/);
 });

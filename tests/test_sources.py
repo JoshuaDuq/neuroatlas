@@ -7,6 +7,7 @@ import pytest
 import yaml
 
 from brain_model.sources import ROOT, resolve_config, scoped_sources
+from brain_model.build import anatomy_limitations
 
 
 def document():
@@ -66,6 +67,19 @@ def test_switching_the_selection_moves_every_path_at_once():
     assert "hcp_source_directory" not in switched["anatomy"]
 
 
+def test_subject_structure_coverage_preserves_shared_smoothing_and_other_subjects():
+    declared = document()
+    shared = {"labels": [4, 31, 63, 85], "smoothing": {"iterations": 16}}
+    declared["structures"] = shared
+    declared["anatomies"]["second"]["structures"] = {"labels": [4]}
+    selected = resolve_config(declared)
+    assert selected["structures"] == {
+        "labels": [4], "smoothing": {"iterations": 16},
+    }
+    assert resolve_config({**declared, "anatomy": "first"})["structures"] == shared
+    assert declared["structures"]["labels"] == [4, 31, 63, 85]
+
+
 def test_projecting_from_an_undeclared_brain_is_refused():
     broken = document()
     broken["anatomies"]["second"]["project_hcp_from"] = "nowhere"
@@ -89,6 +103,20 @@ def test_sources_are_scoped_to_the_anatomy_whose_build_reads_them():
         "data/FreeSurferColorLUT.txt",
         "data/second/mri/aseg.mgz",
     ]
+
+
+def test_reconstructed_anatomy_publishes_its_source_coverage_limits(tmp_path):
+    limitation = "The source scan does not cover the inferior brainstem."
+    (tmp_path / "reconstruction.json").write_text(json.dumps({
+        "limitations": [limitation],
+    }))
+    config = {
+        "anatomy": {"individual": True, "reconstruction": {
+            "provenance": "reconstruction.json",
+        }},
+        "source_directory": tmp_path,
+    }
+    assert limitation in anatomy_limitations(config)
 
 
 def test_every_declared_anatomy_resolves_and_every_source_tag_names_one():
@@ -144,6 +172,65 @@ def load_prepare_subject():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def reconstructed(tmp_path, monkeypatch):
+    prepare = load_prepare_subject()
+    monkeypatch.setattr(prepare, "ROOT", tmp_path)
+    monkeypatch.setattr(prepare, "SUBJECT_FILES", ["mri/brain.mgz", "scripts/build-stamp.txt"])
+    input_path = tmp_path / "input.nii.gz"
+    input_path.write_bytes(b"source MRI")
+    settings = {
+        "input": "input.nii.gz", "input_sha256": prepare.sha256(input_path),
+        "freesurfer_build": "FreeSurfer-test", "provenance": "reconstruction.json",
+        "completion_marker": "scripts/recon-all.done",
+    }
+    directory = tmp_path / "data/snail"
+    config = {
+        "source_directory": directory,
+        "anatomy": {"id": "snail", "source_url": "https://hdl.handle.net/1773/38477",
+                    "reconstruction": settings},
+    }
+    for name, value in {
+        "mri/brain.mgz": b"brain", "scripts/build-stamp.txt": b"FreeSurfer-test\n",
+        "scripts/recon-all.done": b"done",
+    }.items():
+        path = directory / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(value)
+    (directory / "reconstruction.json").write_text(json.dumps({
+        "status": "complete", "input_sha256": settings["input_sha256"],
+        "freesurfer_build": settings["freesurfer_build"],
+    }))
+    return prepare, config
+
+
+def test_generated_reconstruction_records_its_input_and_required_outputs(tmp_path, monkeypatch):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    provenance = {"sources": []}
+    prepare.obtain_subject(config, provenance)
+    records = {source["path"]: source for source in provenance["sources"]}
+    assert set(records) == {"input.nii.gz", "data/snail/mri/brain.mgz",
+                           "data/snail/scripts/build-stamp.txt", "data/snail/reconstruction.json"}
+    assert all(record["anatomy"] == "snail" for record in records.values())
+    assert records["data/snail/mri/brain.mgz"]["derived_from"] == ["input.nii.gz"]
+
+
+@pytest.mark.parametrize("missing", ["reconstruction.json", "scripts/recon-all.done", "mri/brain.mgz"])
+def test_incomplete_reconstruction_is_not_recorded(tmp_path, monkeypatch, missing):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    (config["source_directory"] / missing).unlink()
+    provenance = {"sources": []}
+    with pytest.raises(ValueError, match="incomplete"):
+        prepare.obtain_subject(config, provenance)
+    assert provenance == {"sources": []}
+
+
+def test_reconstruction_whose_original_input_changed_is_refused(tmp_path, monkeypatch):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    (tmp_path / "input.nii.gz").write_bytes(b"different MRI")
+    with pytest.raises(ValueError, match="checksum"):
+        prepare.obtain_subject(config, {"sources": []})
 
 
 class Response:

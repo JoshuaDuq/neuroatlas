@@ -1,0 +1,31 @@
+{
+  "hash": "#anatomy=snail&atlas=destrieux&cuts=destrieux&detail=learning&region=destrieux:left:12&view=anterior&cut=coronal&pos=-24&colors=mri&opacity=0.16&lang=fr",
+  "position": "-24.0",
+  "readout": "RAS: 7,446 \u00b7 -0,461 \u00b7 46,64 mm \u00b7 T1: 371,719 \u00b7 FA: 0,755",
+  "source": "/neuroatlas/models/snail/manifest.json",
+  "voxel": [
+    128,
+    104,
+    75
+  ],
+  "afterClose": {
+    "cutVisible": true,
+    "focus": "native-tract-mri",
+    "position": "-24.0",
+    "source": "/neuroatlas/models/snail/manifest.json"
+  },
+  "independent_nibabel_reference": {
+    "scanner_ras_mm": [
+      7.4461669921875,
+      -0.4605712890625,
+      46.64009094238281
+    ],
+    "surface_ras_mm": [
+      0.0,
+      -24.0,
+      0.0
+    ],
+    "t1": 371.718994140625,
+    "fa": 0.7553123831748962
+  }
+}

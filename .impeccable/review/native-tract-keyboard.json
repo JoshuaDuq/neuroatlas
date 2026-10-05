@@ -1,0 +1,22 @@
+{
+  "before": {
+    "visibilityChange": {
+      "focusedTag": "BODY",
+      "focusedId": ""
+    }
+  },
+  "after": {
+    "visibilityChange": {
+      "focusedTag": "INPUT",
+      "focusedId": "native-diffusion-bundle-af-left",
+      "checked": false
+    },
+    "lazyLoad": {
+      "focusedTag": "INPUT",
+      "focusedId": "native-diffusion-bundle-af-right",
+      "checked": true,
+      "controlsDisabled": false
+    }
+  },
+  "method": "Actual IAB keyboard Space on labeled checkbox; read-only DOM inspection of focus and control state. Initial bundles restored after verification."
+}

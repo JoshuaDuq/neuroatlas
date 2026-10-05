@@ -11,10 +11,12 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
 import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.js';
-import { qualityProfile } from './quality.js';
+import { motionRatio, qualityProfile } from './quality.js';
 import { paintOutlineEdges, sameMeshSet } from './outline-edges.js';
 
 const TRANSITION_MS = 240;
+// How long the camera must rest before the full-resolution frame is drawn.
+const SETTLE_MS = 150;
 
 const easeInOut = t => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
@@ -48,10 +50,17 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   // where ACES shifted hues and bleached atlas and network colours alike.
   renderer.toneMapping = NeutralToneMapping;
   renderer.domElement.tabIndex = 0;
+  // It takes the arrow keys itself; a screen reader's browse mode would eat them.
+  renderer.domElement.setAttribute('role', 'application');
+  renderer.domElement.setAttribute('aria-roledescription', '3D anatomy viewer');
   renderer.domElement.setAttribute('aria-label',
     'Brain model. Drag or use the arrow keys to rotate, scroll or press plus '
     + 'and minus to zoom, click a region to select.');
   host.prepend(renderer.domElement);
+  // Read on every camera change and every frame of a sheet drag; the observer
+  // below is the only thing that can change it.
+  const initial = host.getBoundingClientRect();
+  let hostSize = { width: initial.width, height: initial.height };
 
   scene.add(camera);
   let lighting = null;
@@ -65,7 +74,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   controls.cursorStyle = 'grab';
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
-  controls.listenToKeyEvents(renderer.domElement);
   controls.zoomToCursor = true;
 
   /*
@@ -75,61 +83,87 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
    * the composer target and both outline passes on every frame of a drag.
    */
   let chromeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
+  // Framing also clears the stage dock, which `chromeInsets` must not include:
+  // the dock is placed by that rectangle and would lift itself by its own height.
+  let framingInset = 0;
+  let framingShown = 0;
+  let insetMove = null;
+  const framingRect = (bottom = framingInset) =>
+    visibleRect(hostSize, { ...chromeInsets, bottom: chromeInsets.bottom + bottom });
 
-  const renderTarget = new WebGLRenderTarget(1, 1, {
-    type: HalfFloatType,
-    stencilBuffer: true,
-    samples: quality.msaaSamples,
-  });
-  const composer = new EffectComposer(renderer, renderTarget);
-  composer.addPass(new RenderPass(scene, camera));
+  function createPipeline() {
+    const composer = new EffectComposer(renderer, new WebGLRenderTarget(1, 1, {
+      type: HalfFloatType,
+      stencilBuffer: true,
+      samples: quality.msaaSamples,
+    }));
+    composer.addPass(new RenderPass(scene, camera));
+
+    /*
+     * Two passes make one two-tone outline. No single colour clears 3:1 against
+     * all 512 atlas colours, but no colour can be close to both black and
+     * white, so a light halo behind a dark core is legible over any of them.
+     * The halo also carries hover on its own, which keeps hover and selection
+     * visually distinct without a third pass.
+     */
+    const halo = new OutlinePass(new Vector2(1, 1), scene, camera);
+    halo.edgeStrength = 6;
+    halo.edgeThickness = 3;
+    halo.edgeGlow = 0;
+    halo.enabled = false;
+    const core = new OutlinePass(new Vector2(1, 1), scene, camera);
+    core.edgeStrength = 6;
+    core.edgeThickness = 1;
+    core.edgeGlow = 0;
+    core.enabled = false;
+    // The surface is front-facing. Matching that side keeps the silhouette and
+    // does not rasterize the back of every triangle into the outline depth.
+    for (const pass of [halo, core]) {
+      pass.depthMaterial.side = FrontSide;
+      pass.prepareMaskMaterial.side = FrontSide;
+    }
+    composer.addPass(halo);
+    composer.addPass(core);
+    const renderHalo = halo.render.bind(halo);
+    const renderCore = core.render.bind(core);
+    // Selection draws both tones of one silhouette. The second pass would
+    // render every mesh again for a mask the halo already built.
+    core.render = function (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+      if (this.enabled && halo.enabled && sameMeshSet(halo.selectedObjects, this.selectedObjects)) {
+        paintOutlineEdges(this, halo.renderTargetMaskBuffer.texture, renderer, readBuffer, maskActive);
+        return;
+      }
+      renderCore(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
+    };
+    composer.addPass(new OutputPass());
+    return { composer, halo, core, renderHalo, renderCore };
+  }
 
   /*
-   * Two passes make one two-tone outline. No single colour clears 3:1 against
-   * all 512 atlas colours, but no colour can be close to both black and
-   * white, so a light halo behind a dark core is legible over any of them.
-   * The halo also carries hover on its own, which keeps hover and selection
-   * visually distinct without a third pass.
+   * A moving camera draws through a second, lower-resolution pipeline that the
+   * output pass scales to the canvas; the frame after it settles is full
+   * resolution. Both stay allocated: resizing targets mid-drag costs 15–50 ms.
    */
-  const halo = new OutlinePass(new Vector2(1, 1), scene, camera);
-  halo.edgeStrength = 6;
-  halo.edgeThickness = 3;
-  halo.edgeGlow = 0;
-  halo.enabled = false;
-  const core = new OutlinePass(new Vector2(1, 1), scene, camera);
-  core.edgeStrength = 6;
-  core.edgeThickness = 1;
-  core.edgeGlow = 0;
-  core.enabled = false;
-  // The surface is front-facing. Matching that side keeps the silhouette and
-  // does not rasterize the back of every triangle into the outline depth.
-  for (const pass of [halo, core]) {
-    pass.depthMaterial.side = FrontSide;
-    pass.prepareMaskMaterial.side = FrontSide;
-  }
-  composer.addPass(halo);
-  composer.addPass(core);
-  const renderHalo = halo.render.bind(halo);
-  const renderCore = core.render.bind(core);
-  // Selection draws both tones of one silhouette. The second pass would
-  // render every mesh again for a mask the halo already built.
-  core.render = function (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
-    if (this.enabled && halo.enabled && sameMeshSet(halo.selectedObjects, this.selectedObjects)) {
-      paintOutlineEdges(this, halo.renderTargetMaskBuffer.texture, renderer, readBuffer, maskActive);
-      return;
-    }
-    renderCore(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
-  };
-  composer.addPass(new OutputPass());
+  const settled = createPipeline();
+  const moving = createPipeline();
+  const pipelines = [settled, moving];
+  const { halo, core, renderHalo, renderCore } = settled;
+  let movingRatio = null;
 
   let dirty = true;
   let looping = false;
+  let lastMotion = -Infinity;
+  let showingMotion = false;
   let transition = null;
   let hasTransparency = () => false;
   let hasSections = () => false;
   const invalidate = () => {
     dirty = true;
     if (!looping) startLoop();
+  };
+  const cameraMoved = () => {
+    lastMotion = performance.now();
+    invalidate();
   };
 
   function setAppearance(appearance) {
@@ -143,10 +177,12 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   function applyTheme() {
     scene.background = new Color(token('--scene-background'));
     renderer.toneMappingExposure = Number(token('--scene-exposure')) || 1;
-    halo.visibleEdgeColor.set(token('--scene-outline-halo'));
-    halo.hiddenEdgeColor.set(token('--scene-outline-hidden'));
-    core.visibleEdgeColor.set(token('--scene-outline-core'));
-    core.hiddenEdgeColor.set(token('--scene-outline-hidden'));
+    for (const pipeline of pipelines) {
+      pipeline.halo.visibleEdgeColor.set(token('--scene-outline-halo'));
+      pipeline.halo.hiddenEdgeColor.set(token('--scene-outline-hidden'));
+      pipeline.core.visibleEdgeColor.set(token('--scene-outline-core'));
+      pipeline.core.hiddenEdgeColor.set(token('--scene-outline-hidden'));
+    }
     invalidate();
   }
 
@@ -159,8 +195,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   /** The canvas rectangle the interface leaves uncovered. */
   function measureVisible() {
-    const { width, height } = host.getBoundingClientRect();
-    return visibleRect({ width, height }, chromeInsets);
+    return visibleRect(hostSize, chromeInsets);
   }
 
   /**
@@ -170,9 +205,9 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
    * anatomy and orbiting would swing the model around a point beside it.
    */
   function applyViewOffset() {
-    const { width, height } = host.getBoundingClientRect();
+    const { width, height } = hostSize;
     if (!width || !height) return;
-    const offset = viewOffset({ width, height }, visibleRect({ width, height }, chromeInsets));
+    const offset = viewOffset({ width, height }, framingRect(framingShown));
     if (offset) {
       camera.setViewOffset(offset.fullWidth, offset.fullHeight,
         offset.offsetX, offset.offsetY, offset.width, offset.height);
@@ -185,14 +220,23 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   function setSize() {
     const { width, height } = host.getBoundingClientRect();
+    hostSize = { width, height };
     if (!width || !height) return;
     const ratio = mriAppearance ? quality.mriPixelRatio : quality.pixelRatio;
     if (renderer.getPixelRatio() !== ratio) {
       renderer.setPixelRatio(ratio);
-      composer.setPixelRatio(ratio);
+      settled.composer.setPixelRatio(ratio);
+    }
+    const reduced = motionRatio(Math.min(ratio, quality.motionPixelRatio), width, height);
+    if (movingRatio !== reduced) {
+      movingRatio = reduced;
+      moving.composer.setPixelRatio(reduced);
     }
     renderer.setSize(width, height);
-    composer.setSize(width, height);
+    for (const pipeline of pipelines) pipeline.composer.setSize(width, height);
+    // Allocated now rather than inside the first frame of a drag.
+    renderer.initRenderTarget(moving.composer.renderTarget1);
+    renderer.initRenderTarget(moving.composer.renderTarget2);
     camera.aspect = width / height;
     applyViewOffset();
     camera.updateProjectionMatrix();
@@ -204,10 +248,13 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   /** Selection gets both tones; hover gets the halo alone. */
   function setOutlined({ selected = [], hovered = [] } = {}) {
-    halo.selectedObjects = [...new Set([...selected, ...hovered])];
-    core.selectedObjects = selected;
-    halo.enabled = halo.selectedObjects.length > 0;
-    core.enabled = core.selectedObjects.length > 0;
+    const ringed = [...new Set([...selected, ...hovered])];
+    for (const pipeline of pipelines) {
+      pipeline.halo.selectedObjects = ringed;
+      pipeline.core.selectedObjects = selected;
+      pipeline.halo.enabled = ringed.length > 0;
+      pipeline.core.enabled = selected.length > 0;
+    }
     invalidate();
   }
 
@@ -229,6 +276,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     // framing would swoop out of the brain on every load; the first paint
     // should simply be correct.
     if (immediate || prefersReducedMotion()) {
+      transition = null;
       camera.position.copy(position);
       controls.target.copy(target);
       arrive();
@@ -238,6 +286,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     transition = {
       from: { position: camera.position.clone(), target: controls.target.clone() },
       to: { position: position.clone(), target: target.clone() },
+      plan: { position: position.clone(), target: target.clone(), near, far, minDistance, maxDistance },
       started: performance.now(),
       arrive,
     };
@@ -245,6 +294,13 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   }
 
   function step(now) {
+    if (insetMove || transition) lastMotion = now;
+    if (insetMove) {
+      const t = Math.min((now - insetMove.started) / TRANSITION_MS, 1);
+      framingShown = insetMove.from + (insetMove.to - insetMove.from) * easeInOut(Math.max(t, 0));
+      if (t === 1) insetMove = null;
+      applyViewOffset();
+    }
     if (!transition) return;
     const t = Math.min((now - transition.started) / TRANSITION_MS, 1);
     const eased = easeInOut(t);
@@ -253,6 +309,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     if (t === 1) {
       transition.arrive();
       transition = null;
+      // The last eased step can be below the controls' own change threshold; announce arrival.
+      controls.dispatchEvent({ type: 'change' });
     }
     invalidate();
   }
@@ -262,13 +320,17 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     controls.update();
     // Solid cuts interleave winding masks and caps in a defined render order.
     renderer.sortObjects = true;
-    if (!dirty && !transition) {
+    const inMotion = performance.now() - lastMotion < SETTLE_MS;
+    // The camera has come to rest on a reduced frame: redraw it at full resolution.
+    if (!inMotion && showingMotion) dirty = true;
+    if (!dirty && !transition && !insetMove && !inMotion) {
       renderer.setAnimationLoop(null);
       looping = false;
       return;
     }
     if (!dirty) return;
-    composer.render();
+    (inMotion ? moving : settled).composer.render();
+    showingMotion = inMotion;
     dirty = false;
   }
 
@@ -294,7 +356,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   const observer = new ResizeObserver(setSize);
   observer.observe(host);
-  controls.addEventListener('change', invalidate);
+  controls.addEventListener('change', cameraMoved);
 
   return {
     scene, camera, controls,
@@ -327,7 +389,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       core.selectedObjects = [sample];
       halo.enabled = true;
       core.enabled = true;
-      const target = composer.renderTarget1;
+      const target = settled.composer.renderTarget1;
       try {
         renderHalo(renderer, target, target, 0, false);
         renderCore(renderer, target, target, 0, false);
@@ -360,22 +422,52 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       onResize?.({ canvasChanged: false });
     },
 
+    /**
+     * Keep framing clear of the bottom `bottom` pixels of the visible rectangle.
+     * The image slides with the camera's eased move. Returns whether it changed.
+     */
+    setFramingInset({ bottom = 0 } = {}, { immediate = false } = {}) {
+      if (bottom === framingInset) return false;
+      framingInset = bottom;
+      if (immediate || prefersReducedMotion()) {
+        insetMove = null;
+        framingShown = bottom;
+        applyViewOffset();
+      } else {
+        insetMove = { from: framingShown, to: bottom, started: performance.now() };
+        invalidate();
+      }
+      return true;
+    },
+
     /** The canvas rectangle the interface leaves uncovered, in CSS pixels. */
     get visibleRect() { return measureVisible(); },
 
-    /** The fraction of each frustum axis that rectangle spans, for framing. */
+    /** The fraction of each frustum axis framing may use, for `planFraming`. */
     get viewportFit() {
-      const { width, height } = host.getBoundingClientRect();
-      return fitScale({ width, height }, visibleRect({ width, height }, chromeInsets));
+      return fitScale(hostSize, framingRect());
     },
+
+    /** Where the camera is headed: an eased move's plan, or where it already is. */
+    get destination() {
+      if (transition) return transition.plan;
+      return {
+        position: camera.position.clone(), target: controls.target.clone(),
+        near: camera.near, far: camera.far,
+        minDistance: controls.minDistance, maxDistance: controls.maxDistance,
+      };
+    },
+
+    /** The canvas's CSS size, as of the last resize. */
+    get hostSize() { return hostSize; },
 
     set sectionsProbe(probe) { hasSections = probe; },
     set transparencyProbe(probe) { hasTransparency = probe; },
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
-    get viewportHeight() { return host.getBoundingClientRect().height; },
+    get viewportHeight() { return hostSize.height; },
 
     captureSnapshot() {
-      composer.render();
+      settled.composer.render();
       return renderer.domElement.toDataURL('image/png');
     },
 
@@ -385,13 +477,15 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       renderer.setAnimationLoop(null);
       looping = false;
       observer.disconnect();
-      controls.removeEventListener('change', invalidate);
+      controls.removeEventListener('change', cameraMoved);
       renderer.domElement.removeEventListener('webglcontextlost', handleLost);
       renderer.domElement.removeEventListener('webglcontextrestored', handleRestored);
       controls.dispose();
       lighting?.dispose();
-      for (const pass of composer.passes) pass.dispose?.();
-      composer.dispose();
+      for (const { composer } of pipelines) {
+        for (const pass of composer.passes) pass.dispose?.();
+        composer.dispose();
+      }
       renderer.dispose();
       renderer.domElement.remove();
     },
@@ -408,6 +502,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 export function planFraming(camera, controls, bounds, direction, frameTo, fit, points = null) {
   const start = {
     position: camera.position.clone(),
+    quaternion: camera.quaternion.clone(),
     target: controls.target.clone(),
     near: camera.near,
     far: camera.far,
@@ -423,12 +518,15 @@ export function planFraming(camera, controls, bounds, direction, frameTo, fit, p
     minDistance: controls.minDistance,
     maxDistance: controls.maxDistance,
   };
+  // A plan is a dry run: the real camera must read exactly as it did before it.
   camera.position.copy(start.position);
+  camera.quaternion.copy(start.quaternion);
   controls.target.copy(start.target);
   camera.near = start.near;
   camera.far = start.far;
   controls.minDistance = start.minDistance;
   controls.maxDistance = start.maxDistance;
   camera.updateProjectionMatrix();
+  camera.updateMatrixWorld();
   return plan;
 }

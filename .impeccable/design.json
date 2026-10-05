@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-05T02:39:27.755801Z",
+  "generatedAt": "2026-10-05T23:48:13.009219Z",
   "title": "Design System: NeuroAtlas",
   "extensions": {
     "colorMeta": {
@@ -510,7 +510,7 @@
       },
       "overlay-accent": {
         "role": "primary",
-        "displayName": "Viewport Focus Accent",
+        "displayName": "Viewport Teal",
         "tonalRamp": [
           "oklch(15.00% 0.0857 224.39)",
           "oklch(26.43% 0.0857 224.39)",
@@ -535,6 +535,90 @@
           "oklch(83.57% 0.0383 239.13)",
           "oklch(95.00% 0.0383 239.13)"
         ]
+      },
+      "primary-fill": {
+        "role": "primary",
+        "displayName": "Primary Fill"
+      },
+      "primary-fill-hover": {
+        "role": "primary",
+        "displayName": "Primary Fill Hover"
+      },
+      "primary-ink": {
+        "role": "primary",
+        "displayName": "Primary Ink"
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised Thumb"
+      },
+      "surface-tonal": {
+        "role": "neutral",
+        "displayName": "Tonal Fill"
+      },
+      "surface-tonal-hover": {
+        "role": "neutral",
+        "displayName": "Tonal Fill Hover"
+      },
+      "thumb-ring": {
+        "role": "neutral",
+        "displayName": "Selected Segment Ring"
+      },
+      "dark-primary-fill": {
+        "role": "primary",
+        "displayName": "Primary Fill — Dark Theme"
+      },
+      "dark-primary-fill-hover": {
+        "role": "primary",
+        "displayName": "Primary Fill Hover — Dark Theme"
+      },
+      "dark-surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised Thumb — Dark Theme"
+      },
+      "dark-surface-tonal": {
+        "role": "neutral",
+        "displayName": "Tonal Fill — Dark Theme"
+      },
+      "dark-surface-tonal-hover": {
+        "role": "neutral",
+        "displayName": "Tonal Fill Hover — Dark Theme"
+      },
+      "dark-thumb-ring": {
+        "role": "neutral",
+        "displayName": "Selected Segment Ring — Dark Theme"
+      },
+      "mpr-canvas": {
+        "role": "neutral",
+        "displayName": "MPR Slice Black"
+      },
+      "overlay-ink-faint": {
+        "role": "neutral",
+        "displayName": "Faint Viewport Ink"
+      },
+      "overlay-halo-core": {
+        "role": "neutral",
+        "displayName": "Viewport Halo Core"
+      },
+      "overlay-track": {
+        "role": "neutral",
+        "displayName": "Stage Track"
+      },
+      "overlay-track-hover": {
+        "role": "neutral",
+        "displayName": "Stage Track Hover"
+      },
+      "overlay-raised": {
+        "role": "neutral",
+        "displayName": "Stage Thumb"
+      },
+      "overlay-control-border": {
+        "role": "neutral",
+        "displayName": "Stage Control Border"
+      },
+      "overlay-accent-hover": {
+        "role": "primary",
+        "displayName": "Viewport Teal Hover"
       }
     },
     "typographyMeta": {
@@ -544,11 +628,11 @@
       },
       "headline": {
         "displayName": "Anatomical Headline",
-        "purpose": "Selected anatomical region name and current circuit landmark."
+        "purpose": "Selected region, deficit, and circuit landmark names."
       },
       "title": {
-        "displayName": "Panel Title",
-        "purpose": "Explore, Sections, and View panel headings, plus the selected circuit name."
+        "displayName": "Title",
+        "purpose": "Brand, dialog, empty-state, and second-subject titles."
       },
       "body": {
         "displayName": "Body",
@@ -564,32 +648,37 @@
       },
       "measurement": {
         "displayName": "Measurement",
-        "purpose": "Measured values and source data; tabular numerals where used."
+        "purpose": "Measures, coordinates, source labels; tabular, a step under the sans."
       },
-      "input": {
-        "displayName": "Field Text",
-        "purpose": "Regular-weight text in search inputs."
+      "field-label": {
+        "displayName": "Field Label",
+        "purpose": "Masthead captions, field labels, segmented choices."
       },
-      "dialog-title": {
-        "displayName": "Dialog Title",
-        "purpose": "Shortcut and MRI dialog headings."
+      "marking": {
+        "displayName": "Stage Marking",
+        "purpose": "Orientation letters with a halo."
       }
     },
     "shadows": [
       {
-        "name": "setting-selected",
-        "value": "0 1px 3px rgb(19 48 60 / 0.12)",
-        "purpose": "Selected segmented settings."
+        "name": "thumb",
+        "value": "0 1px 2px rgb(0 0 0 / 0.12)",
+        "purpose": "Selected segmented thumb, light theme (0.45 dark, 0.5 on the stage and in MRI)."
       },
       {
-        "name": "settings-popover",
-        "value": "0 8px 24px rgb(10 25 40 / 0.14)",
-        "purpose": "Collapsed general-settings popover."
+        "name": "popover",
+        "value": "0 6px 16px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.08)",
+        "purpose": "Masthead popovers, skip link, dialogs; dark theme 0.4 / 0.3."
       },
       {
-        "name": "viewport-text-halo",
-        "value": "0 0 2px var(--overlay-halo), 0 1px 3px var(--overlay-halo)",
-        "purpose": "Text shadow for orientation and scale markings over anatomy."
+        "name": "overlay",
+        "value": "0 6px 16px rgb(0 0 0 / 0.45), 0 1px 2px rgb(0 0 0 / 0.4)",
+        "purpose": "Stage popovers."
+      },
+      {
+        "name": "marking-halo",
+        "value": "-webkit-text-stroke: 3px #06090d; text-shadow: 0 0 1px #06090d, 0 0 2px #06090d, 0 0 4px #06090d, 0 0 8px rgb(6 9 13 / 0.85)",
+        "purpose": "Orientation letters and scale bar over anatomy."
       }
     ],
     "motion": [
@@ -610,8 +699,8 @@
       },
       {
         "name": "dialog-entry",
-        "value": "180ms ease-out",
-        "purpose": "Existing 6px translate and opacity entry."
+        "value": "180ms",
+        "purpose": "Dialog entry: 4px translate and opacity, shared easing."
       },
       {
         "name": "reduced-motion",
@@ -627,15 +716,15 @@
     "breakpoints": [
       {
         "name": "phone",
-        "value": "640px"
-      },
-      {
-        "name": "short-landscape",
-        "value": "(max-height: 480px) and (orientation: landscape)"
+        "value": "(max-width: 640px), (max-height: 480px) and (orientation: landscape)"
       },
       {
         "name": "compact-workspace",
         "value": "(min-width: 641px) and (max-width: 1000px)"
+      },
+      {
+        "name": "masthead-summary",
+        "value": "(max-width: 1279px)"
       },
       {
         "name": "mri-single-column",
@@ -730,40 +819,44 @@
     }
   ],
   "narrative": {
-    "northStar": "The Light Clinical Workspace",
-    "overview": "The light clinical workspace keeps the real reconstructed anatomy at the center of a calm, professional scientific tool. A single white task panel, cool slate ground, dark readable ink, and restrained teal selection make exploration and inspection one clear workflow. Keep the NeuroAtlas name, existing brain mark, and English and French copy.\n\nThis is a visual direction, not a clinical claim. Preserve the existing “not clinical anatomy” statement, scientific geometry, measurements, source labels, provenance, and published data colors. The panel theme and anatomical renderer retain independent palettes.",
+    "northStar": "The Clinical Reading Room",
+    "overview": "A calm clinical workspace in light or dark around a dark imaging stage. The masthead states what data is loaded, one task panel explores and drills into it, and the stage carries only the tools that act on the picture. Keep the NeuroAtlas name, the existing brain mark, and English and French copy.\n\nThis is a visual direction, not a clinical claim. Preserve the “not clinical anatomy” statement, scientific geometry, measurements, source labels, provenance, and published data colours. Panel theme and renderer keep independent palettes.",
     "keyCharacteristics": [
       "Anatomy leads; controls support it.",
-      "One ruled task panel with small corners reserved for controls.",
-      "Flat navigation and clear selected, focused, and disabled states."
+      "Three homes: masthead = data, panel = modes and drill-in, stage = section and display tools.",
+      "One ruled task panel at instrument density; small corners only on controls.",
+      "Three button ranks, one segmented vocabulary, one disclosure, one chevron.",
+      "Flat surfaces; clear selected, focused, and disabled states."
     ],
     "rules": [
       {
         "name": "The Independent Palettes Rule",
-        "body": "UI teal communicates interaction. Tissue shading, atlas and network colors, outlines, orientation, and scale markings retain their scientific meaning in both themes.",
+        "body": "UI teal communicates interaction. Tissue shading, atlas and network colours, streamline direction colours, outlines, orientation, and scale markings retain their scientific meaning in both themes.",
         "section": "colors"
       },
       {
         "name": "The Complete Name Rule",
-        "body": "Allow anatomical names and localized control labels to wrap. Keep hemisphere labels explicit; truncate only compact selection readouts and constrained navigation labels.",
+        "body": "Allow anatomical names and localized control labels to wrap. Never split a word: action rows wrap instead. Keep hemisphere labels explicit; truncate only compact selection readouts, the masthead summary's subject, and constrained navigation labels.",
         "section": "typography"
       },
       {
         "name": "The Flat Workspace Rule",
-        "body": "Use tonal surfaces and fine borders for the main workspace. Reserve the existing small shadows for selected segmented settings and the settings popover.",
+        "body": "Use tonal surfaces and fine borders for the workspace. Reserve shadows for segmented thumbs, popovers, and dialogs.",
         "section": "elevation"
       }
     ],
     "dos": [
       "Do use the shared palette, spacing, typography, and radius tokens in viewer/styles/tokens.css.",
-      "Do preserve visible focus, existing ARIA semantics, keyboard operation, and English and French at every breakpoint.",
-      "Do keep task navigation in one panel and display controls together in View.",
-      "Do maintain readable hover, selected, disabled, empty, loading, and error states in both themes; keep text contrast at least 4.5:1 and control outlines at least 3:1.",
-      "Do verify UI changes in the browser and with the existing tests; review detector findings in the context of a dense scientific tool."
+      "Do keep data in the masthead, modes and drill-in in the panel, and picture tools on the stage.",
+      "Do preserve visible focus, ARIA semantics, keyboard operation, and English and French at every breakpoint.",
+      "Do maintain readable hover, selected, disabled, empty, loading, and error states in both themes; text at least 4.5:1, field outlines and state edges at least 3:1.",
+      "Do verify UI changes in the browser and with the existing tests."
     ],
     "donts": [
-      "Don’t recolor scientific data to match the UI accent or replace real anatomy with synthetic illustrations.",
+      "Don’t recolour scientific data to match the UI accent or replace real anatomy with synthetic illustrations.",
       "Don’t hide the “not clinical anatomy” statement in settings or add unsupported claims.",
+      "Don’t stack navigation rows: one location bar per detail view.",
+      "Don’t add a second filled button to a view, a new selected-state idiom, or a second disclosure style.",
       "Don’t add decorative icon backgrounds, count badges, redundant controls, or ornamental motion."
     ]
   }

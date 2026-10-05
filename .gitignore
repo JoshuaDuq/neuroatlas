@@ -10,3 +10,4 @@ data/cache/
 deliverables/*.blend
 deliverables/*.png
 .agents/skills/impeccable/scripts/bin/
+data/snail/

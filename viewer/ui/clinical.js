@@ -1,5 +1,6 @@
 import { t } from '../i18n/translations.js';
 import { CLINICAL_TEXT } from '../clinical/translations.js';
+import { visibilityOf } from '../catalog/visibility.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -17,6 +18,23 @@ function deficitButton(deficit, lang) {
     element('span', deficit.domain[lang], 'clinical-note'));
   button.append(text);
   return button;
+}
+
+function deficitGroup({ group, deficits }, lang) {
+  const section = element('div', null, 'deficit-group');
+  const heading = element('h3', group.name[lang], 'deficit-group-heading');
+  heading.id = `deficit-group-${group.id}`;
+  section.setAttribute('role', 'group');
+  section.setAttribute('aria-labelledby', heading.id);
+  section.append(heading, ...deficits.map(deficit => deficitButton(deficit, lang)));
+  return section;
+}
+
+/** An opened profile starts at its top, not wherever the list or the last profile was scrolled. */
+export function scrollToTop(node) {
+  for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+    if (/(auto|scroll)/.test(getComputedStyle(parent).overflowY)) parent.scrollTop = 0;
+  }
 }
 
 function publication(reference, role, lang) {
@@ -38,33 +56,54 @@ function publication(reference, role, lang) {
   return article;
 }
 
-function associationSection(association, clinical, anatomy, lang) {
+/** One association: a heading that opens its evidence, and its mapped regions always in reach. */
+function associationSection(association, clinical, anatomy, lang, open) {
   const text = CLINICAL_TEXT[lang];
+  const sides = t(lang, 'sides').capitalized;
   const section = element('article', null, 'clinical-association');
-  section.append(element('h3', association.title[lang]),
-    element('p', `${association.network[lang]} · ${text.laterality[association.laterality]}`, 'clinical-note'),
-    element('p', association.finding[lang]),
-    element('h4', text.limits), element('p', association.limitation[lang]),
-    element('h4', text.mapping), element('p', association.mapping_note[lang], 'clinical-note'));
-  const regions = element('div', null, 'clinical-regions');
+  section.dataset.association = association.id;
+  const bodyId = `clinical-association-${association.id}`;
+  const toggle = element('button', null, 'clinical-association-toggle');
+  toggle.type = 'button';
+  toggle.setAttribute('aria-expanded', String(open));
+  toggle.setAttribute('aria-controls', bodyId);
+  toggle.append(element('span', association.title[lang], 'clinical-association-title'),
+    element('span', text.lateralityShort[association.laterality], 'clinical-association-side'));
+  const heading = element('h3', null, 'clinical-association-head');
+  heading.append(toggle);
+
+  const regions = element('div', null, 'clinical-association-regions');
   for (const mapping of association.mappings) {
     const entry = anatomy.get(mapping.region);
-    const label = `${entry.label.name} · ${text.sides[entry.region.hemisphere]}`;
-    const button = element('button', null, 'clinical-region-link');
+    const label = `${entry.label.name} · ${sides[entry.region.hemisphere]}`;
+    const button = element('button', label, 'clinical-association-region');
     button.type = 'button';
     button.dataset.clinicalRegion = mapping.region;
     button.setAttribute('aria-label', `${text.openRegion}: ${label}`);
-    button.append(element('span', label));
     regions.append(button);
   }
   if (!association.mappings.length) regions.append(element('p', text.mappingEmpty, 'clinical-note'));
-  const details = element('details', null, 'clinical-evidence');
-  details.append(element('summary', `${text.evidence} · ${association.evidence.length}`));
+
+  const body = element('div', null, 'clinical-association-body');
+  body.id = bodyId;
+  body.hidden = !open;
+  body.append(element('p', `${association.network[lang]} · ${text.laterality[association.laterality]}`, 'clinical-note'),
+    element('h4', text.studyFinding), element('p', association.finding[lang]),
+    element('h4', text.limits), element('p', association.limitation[lang]),
+    element('h4', text.mapping), element('p', association.mapping_note[lang], 'clinical-note'),
+    element('h4', `${text.evidence} · ${association.evidence.length}`));
   for (const item of association.evidence) {
-    details.append(publication(clinical.reference(item.reference), item.role, lang));
+    body.append(publication(clinical.reference(item.reference), item.role, lang));
   }
-  section.append(regions, details);
+  section.append(heading, regions, body);
   return section;
+}
+
+/** The profile's status line: work in progress, a failure, a restored view, or what opening did. */
+export function stageMessage(text, { opening, busy, error, failure, restored }) {
+  if (opening) return text[busy];
+  if (error) return failure ? text[failure] : error.message;
+  return restored ? text.stageRestored : text.stageShown;
 }
 
 /** A region inspector does not title a Neuropsychology section that has nothing to report. */
@@ -73,8 +112,7 @@ export function relatedRegionVisible(selectedRegion, deficitCount) {
 }
 
 /** Deficit navigation and evidence share the existing session render cycle. */
-export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery, onDeficit, onRegion }) {
-  const switcher = document.getElementById('explorer-switch');
+export function createClinicalExplorer({ clinical, anatomy, onQuery, onDeficit, onRegion, onRestore }) {
   const anatomySearch = document.getElementById('anatomy-search');
   const deficitSearchHead = document.getElementById('deficit-search-head');
   const anatomyBrowser = document.getElementById('anatomy-browser');
@@ -91,49 +129,103 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
   let profileKey = null;
   let relatedKey = null;
   let opening = false;
+  let pending = 0;
   let language = 'en';
   let actionError = null;
+  let busy = 'loading';
+  let failure = null;
+  // Whether the scene from before the first deficit is held, and whether it was just put back.
+  let restorable = false;
+  let restored = false;
+  let current = null;
+  // Open associations survive a language change, not a change of deficit.
+  let expanded = new Set();
 
-  function selectDeficit(id) {
-    onDeficit(id);
-    const heading = document.getElementById('clinical-title');
-    const name = heading?.parentElement?.querySelector('.clinical-profile-name');
-    const target = name ?? heading;
-    if (!target) return;
-    if (name) name.tabIndex = -1;
-    // The profile sits under the region facts. Bring the deficit just chosen
-    // to the top of the panel, then name it without scrolling again.
-    target.scrollIntoView({ block: 'start' });
-    target.focus({ preventScroll: true });
+  /** The profile renders at once; the brain is prepared and framed behind it. */
+  async function selectDeficit(id) {
+    const preparing = onDeficit(id);
+    const name = profile.querySelector('.clinical-profile-name');
+    scrollToTop(profile);
+    if (name) {
+      name.tabIndex = -1;
+      name.focus({ preventScroll: true });
+    }
+    await run(() => preparing);
+  }
+
+  // Opening another deficit can overlap the last one's preparation, so this counts rather than refuses.
+  async function run(action, { busyText = 'loading', failureText = null } = {}) {
+    pending += 1;
+    opening = true;
+    busy = busyText;
+    failure = failureText;
+    actionError = null;
+    restored = false;
+    updateAction();
+    try {
+      await action();
+      return true;
+    } catch (error) {
+      actionError = error;
+      console.error(error);
+      return false;
+    } finally {
+      pending -= 1;
+      opening = pending > 0;
+      updateAction();
+    }
+  }
+
+  /** The button leaves with the snapshot, so focus moves to the profile's title just below it. */
+  async function restorePrevious() {
+    if (!(await run(onRestore, { busyText: 'restoring', failureText: 'restoreFailed' }))) return;
+    restored = true;
+    updateAction();
+    const title = document.getElementById('clinical-title');
+    title.tabIndex = -1;
+    title.focus();
   }
 
   function renderProfile(state) {
-    const text = CLINICAL_TEXT[state.lang];
     profile.replaceChildren();
-    const title = element('h2', text.profile, 'section-label');
-    title.id = 'clinical-title';
-    title.tabIndex = -1;
-    profile.append(title);
-    const body = element('div', null, 'panel-body clinical-content');
-    if (!state.selectedDeficit) {
-      body.append(element('p', text.choose));
-    } else {
-      const deficit = clinical.get(state.selectedDeficit);
-      body.append(element('h3', deficit.name[state.lang], 'clinical-profile-name'),
-        element('p', deficit.summary[state.lang]),
-        element('p', text.referenceOnly, 'clinical-note'));
-      for (const association of clinical.forDeficit(deficit.id)) {
-        body.append(associationSection(association, clinical, anatomy, state.lang));
-      }
-      body.append(element('p', text.openNote, 'clinical-note'),
-        element('p', `${text.sources} · ${text.revised}: ${clinical.revised}`, 'clinical-note'));
-    }
+    if (!state.selectedDeficit) return;
+    const text = CLINICAL_TEXT[state.lang];
+    const deficit = clinical.get(state.selectedDeficit);
+    // What opening the deficit did to the model, said before the evidence rather than after it.
+    const stage = element('div', null, 'clinical-stage');
     const actionStatus = element('p', null, 'clinical-action-status');
     actionStatus.id = 'clinical-action-status';
     actionStatus.setAttribute('role', 'status');
-    body.append(actionStatus);
-    profile.append(body);
+    const drawn = element('p', null, 'clinical-drawn');
+    drawn.id = 'clinical-drawn';
+    const restore = element('button', text.restore, 'button-quiet clinical-restore');
+    restore.type = 'button';
+    restore.id = 'clinical-restore';
+    stage.append(actionStatus, drawn, restore);
+    const name = element('h2', deficit.name[state.lang], 'clinical-profile-name');
+    name.id = 'clinical-title';
+    const body = element('div', null, 'panel-body clinical-content');
+    body.append(name, element('p', deficit.summary[state.lang]),
+      element('p', text.referenceOnly, 'clinical-note clinical-caveat'));
+    const associations = element('div', null, 'clinical-associations');
+    for (const association of clinical.forDeficit(deficit.id)) {
+      associations.append(associationSection(association, clinical, anatomy, state.lang,
+        expanded.has(association.id)));
+    }
+    body.append(associations, element('p', text.openNote, 'clinical-note'),
+      element('p', `${text.sources} · ${text.revised}: ${clinical.revised}`, 'clinical-note'));
+    profile.append(stage, body);
     updateAction();
+  }
+
+  /** The outline shows only what is drawn, so the profile says when that is not every mapped region. */
+  function updateDrawn(state) {
+    const readout = document.getElementById('clinical-drawn');
+    if (!readout || !state.selectedDeficit) return;
+    const ids = clinical.mappedRegions(state.selectedDeficit);
+    const shown = ids.filter(id => visibilityOf(anatomy.get(id).region, state).visible).length;
+    readout.hidden = opening || shown === ids.length;
+    readout.textContent = CLINICAL_TEXT[state.lang].drawn(shown, ids.length);
   }
 
   function renderRelated(state) {
@@ -145,24 +237,29 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
     if (related.hidden) return;
     const text = CLINICAL_TEXT[state.lang];
     related.append(element('h2', text.related, 'section-label'));
-    const body = element('div', null, 'panel-body clinical-content');
-    for (const id of deficits) body.append(deficitButton(clinical.get(id), state.lang));
+    const body = element('div', null, 'panel-body');
+    const rows = element('ul', null, 'clinical-related');
+    for (const id of deficits) {
+      const item = element('li');
+      item.append(deficitButton(clinical.get(id), state.lang));
+      rows.append(item);
+    }
+    body.append(rows);
     related.append(body);
   }
 
   function updateAction() {
     for (const button of profile.querySelectorAll('[data-clinical-region]')) button.disabled = opening;
+    if (current) updateDrawn(current);
     const status = document.getElementById('clinical-action-status');
     if (!status) return;
-    status.textContent = opening ? CLINICAL_TEXT[language].loading : actionError?.message ?? '';
-    status.hidden = !opening && !actionError;
+    const said = stageMessage(CLINICAL_TEXT[language], { opening, busy, error: actionError, failure, restored });
+    // Rewriting the same words would have the live region say them again on every render.
+    if (status.textContent !== said) status.textContent = said;
     status.dataset.error = String(Boolean(actionError));
+    document.getElementById('clinical-restore').hidden = opening || !restorable;
   }
 
-  const onSwitch = event => {
-    const button = event.target.closest('[data-explorer]');
-    if (button) onExplorer(button.dataset.explorer);
-  };
   const onInput = event => onQuery(event.target.value);
   const onSearchKey = event => {
     if (event.key === 'Escape' && search.value) {
@@ -186,24 +283,24 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
     event.preventDefault();
     if (next) next.focus();
   };
-  const onRegionClick = async event => {
-    const button = event.target.closest('[data-clinical-region]');
-    if (!button || opening) return;
-    opening = true;
-    actionError = null;
-    updateAction();
-    try {
-      await onRegion(button.dataset.clinicalRegion);
-    } catch (error) {
-      actionError = error;
-      console.error(error);
-    } finally {
-      opening = false;
-      updateAction();
+  const onProfileClick = event => {
+    const toggle = event.target.closest('.clinical-association-toggle');
+    if (toggle) {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      const id = toggle.closest('[data-association]').dataset.association;
+      toggle.setAttribute('aria-expanded', String(open));
+      document.getElementById(toggle.getAttribute('aria-controls')).hidden = !open;
+      if (open) expanded.add(id); else expanded.delete(id);
+      return;
     }
+    if (event.target.closest('#clinical-restore')) {
+      if (!opening) restorePrevious();
+      return;
+    }
+    const button = event.target.closest('[data-clinical-region]');
+    if (button && !opening) run(() => onRegion(button.dataset.clinicalRegion));
   };
 
-  switcher.addEventListener('click', onSwitch);
   search.addEventListener('input', onInput);
   search.addEventListener('keydown', onSearchKey);
   const onClearDeficitSearch = () => {
@@ -216,23 +313,21 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
   list.addEventListener('click', onDeficitClick);
   list.addEventListener('keydown', onListKey);
   related.addEventListener('click', onDeficitClick);
-  profile.addEventListener('click', onRegionClick);
+  profile.addEventListener('click', onProfileClick);
 
   return {
-    update(state) {
+    /** `restorable`: whether the scene from before this excursion's first deficit can be put back. */
+    update(state, { restorable: canRestore = false } = {}) {
+      current = state;
       language = state.lang;
+      restorable = canRestore;
       const text = CLINICAL_TEXT[language];
       const exploring = state.explorer === 'deficits';
       anatomySearch.hidden = state.explorer !== 'anatomy';
       if (deficitSearchHead) deficitSearchHead.hidden = !exploring;
       anatomyBrowser.hidden = state.explorer !== 'anatomy';
       deficitBrowser.hidden = !exploring;
-      profile.hidden = !exploring;
-      switcher.setAttribute('aria-label', text.explore);
-      for (const button of switcher.querySelectorAll('button')) {
-        button.textContent = text[button.dataset.explorer];
-        button.setAttribute('aria-pressed', String(button.dataset.explorer === state.explorer));
-      }
+      profile.hidden = !exploring || !state.selectedDeficit;
       search.placeholder = text.search;
       searchLabel.textContent = text.searchLabel ?? text.search;
       if (deficitSearchClear) {
@@ -247,19 +342,24 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
       const nextListKey = `${language}|${state.clinicalQuery}`;
       if (nextListKey !== listKey) {
         listKey = nextListKey;
-        const matches = clinical.search(state.clinicalQuery, language);
-        list.replaceChildren(...matches.map(deficit => deficitButton(deficit, language)));
-        if (!matches.length) list.append(element('p', text.noResults, 'empty'));
+        const groups = clinical.grouped(state.clinicalQuery, language);
+        list.replaceChildren(...groups.map(entry => deficitGroup(entry, language)));
+        if (!groups.length) list.append(element('p', text.noResults, 'empty'));
       }
       for (const button of list.querySelectorAll('button')) {
         button.setAttribute('aria-pressed', String(button.dataset.deficit === state.selectedDeficit));
       }
       const nextProfileKey = `${language}|${state.selectedDeficit}`;
       if (nextProfileKey !== profileKey) {
+        if (!profileKey?.endsWith(`|${state.selectedDeficit}`)) {
+          expanded = new Set();
+          restored = false;
+        }
         profileKey = nextProfileKey;
         actionError = null;
         renderProfile(state);
       }
+      updateAction();
       const nextRelatedKey = `${language}|${state.selectedRegion?.id}`;
       if (nextRelatedKey !== relatedKey) {
         relatedKey = nextRelatedKey;
@@ -269,14 +369,13 @@ export function createClinicalExplorer({ clinical, anatomy, onExplorer, onQuery,
     focusSearch() { search.focus(); search.select(); },
     openDeficit: selectDeficit,
     dispose() {
-      switcher.removeEventListener('click', onSwitch);
       search.removeEventListener('input', onInput);
       search.removeEventListener('keydown', onSearchKey);
       deficitSearchClear?.removeEventListener('click', onClearDeficitSearch);
       list.removeEventListener('click', onDeficitClick);
       list.removeEventListener('keydown', onListKey);
       related.removeEventListener('click', onDeficitClick);
-      profile.removeEventListener('click', onRegionClick);
+      profile.removeEventListener('click', onProfileClick);
     },
   };
 }

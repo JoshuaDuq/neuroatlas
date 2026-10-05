@@ -1,0 +1,55 @@
+{
+  "source": "snail-subject-1/t1_warped.nii.gz",
+  "source_sha256": "3cd3f2c5eba843c31970ee3107e4af07f6fb34554612fcd3f1066a7d992fa416",
+  "published_sha256": "cb2e0598c41048fdc1f5c73a964dafa7a68a95835abff909b476ebeb8ba1bae1",
+  "method": "Lewiner marching cubes on the largest connected T1 component above the configured intensity threshold",
+  "intensity_threshold": 80,
+  "step_size_voxels": 2,
+  "source_affine": [
+    [
+      1.0,
+      0.0,
+      -0.0,
+      -120.5538330078125
+    ],
+    [
+      0.0,
+      1.0,
+      -0.0,
+      -104.4605712890625
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -28.359909057617188
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "display_transform": "RAS mm to (R, S, -A) meters; no registration",
+  "vertices": 30058,
+  "triangles": 59826,
+  "ras_bounds_mm": [
+    [
+      -63.06996154785156,
+      -74.48212814331055,
+      -28.359909057617188
+    ],
+    [
+      70.50582885742188,
+      104.46684265136719,
+      111.99411010742188
+    ]
+  ],
+  "limitations": "MRI-derived display outline, not a pial or labeled cortical reconstruction; limited to the source field of view",
+  "software": {
+    "nibabel": "5.4.2",
+    "numpy": "2.4.6",
+    "trimesh": "5.1.0"
+  }
+}

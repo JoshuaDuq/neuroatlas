@@ -1,0 +1,140 @@
+{
+  "anatomy": "snail",
+  "source": "public/diffusion/snail-subject-1/t1_warped.nii.gz",
+  "source_sha256": "3cd3f2c5eba843c31970ee3107e4af07f6fb34554612fcd3f1066a7d992fa416",
+  "orig": "data/snail/mri/orig.mgz",
+  "orig_sha256": "a981e8c07bfae9ac476bec1c87b4d6e05eb5718add9efdfc57d0d6f38eb4c7bc",
+  "scanner_affine": [
+    [
+      -1.0,
+      0.0,
+      0.0,
+      135.4461669921875
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -104.4605712890625
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0,
+      174.6400909423828
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "surface_affine": [
+    [
+      -1.0,
+      0.0,
+      0.0,
+      128.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -128.0
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0,
+      128.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "scanner_ras_to_surface_ras": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -7.4461669921875
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      -23.5394287109375
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -46.64009094238281
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "anchors": [
+    {
+      "source_voxel": [
+        0,
+        0,
+        0
+      ],
+      "scanner_ras_mm": [
+        -120.5538330078125,
+        -104.4605712890625,
+        -28.359909057617188
+      ],
+      "surface_ras_mm": [
+        -128.0,
+        -128.0,
+        -75.0
+      ]
+    },
+    {
+      "source_voxel": [
+        128,
+        128,
+        75
+      ],
+      "scanner_ras_mm": [
+        7.4461669921875,
+        23.5394287109375,
+        46.64009094238281
+      ],
+      "surface_ras_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source_voxel": [
+        255,
+        255,
+        149
+      ],
+      "scanner_ras_mm": [
+        134.4461669921875,
+        150.5394287109375,
+        120.64009094238281
+      ],
+      "surface_ras_mm": [
+        127.0,
+        127.0,
+        74.0
+      ]
+    }
+  ],
+  "method": "orig.mgz vox2ras_tkr @ inverse(scanner affine); exact coordinate change, no anatomical registration or streamline resampling",
+  "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems"
+}

@@ -4,9 +4,37 @@
 # reported in. Two individuals differ again in who published them and under what
 # terms. Switching is this one line plus a rebuild; no conversion step reads
 # anything subject-specific of its own.
-anatomy: bert
+anatomy: snail
 
 anatomies:
+  snail:
+    subject: subj_1
+    display_name: SNAIL “subj_1”
+    label: SNAIL subject 1 single-subject reconstruction
+    individual: true
+    directory: data/snail
+    source_url: https://hdl.handle.net/1773/38477
+    reconstruction:
+      input: public/diffusion/snail-subject-1/t1_warped.nii.gz
+      input_sha256: 3cd3f2c5eba843c31970ee3107e4af07f6fb34554612fcd3f1066a7d992fa416
+      freesurfer_build: freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45
+      threads: 4
+      provenance: reconstruction.json
+      completion_marker: scripts/recon-all.done
+    project_hcp_from: fsaverage
+    structures:
+      # This source aseg has no choroid-plexus (31/63) or optic-chiasm (85) labels.
+      labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28,
+               43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 58, 60,
+               251, 252, 253, 254, 255]
+    learning:
+      # The coarse callosal estimate overlaps the finer fornix/septal estimates.
+      # Keep it in aseg; omit its surface from this mixed-source overview.
+      exclude_aseg_units: [corpus-callosum]
+    nextbrain:
+      directory: data/nextbrain-snail
+      volume: nextbrain-snail.mgz
+      procedure: subject-segmentation
   bert:
     subject: bert
     # `display_name` is what the viewer shows. It is a proper noun, so it is not

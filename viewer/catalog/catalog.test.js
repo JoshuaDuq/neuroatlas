@@ -103,11 +103,14 @@ test('visible region count excludes unlabelled medial surfaces', async () => {
   const real = JSON.parse(
     await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));
   const full = createCatalog(real);
-  // Cortex + 35 native structures + the 58-part reference cord; medial walls
-  // are non-regions.
-  assert.equal(full.visibleCount(settings()), 241);
-  assert.equal(full.visibleCount(settings({ atlas: 'hcp-mmp' })), 453);
-  assert.equal(full.visibleCount(settings({ cortexVisible: false })), 93);
+  const structures = real.detail_levels.find(level => level.id === 'aseg').region_count;
+  const supplemental = real.supplemental_layers.reduce((count, layer) => count + layer.region_count, 0);
+  const internal = structures + supplemental;
+  // Exporter counts exclude medial walls and preserve each specimen's coverage.
+  for (const atlas of real.atlases) {
+    assert.equal(full.visibleCount(settings({ atlas: atlas.id })), atlas.region_count + internal);
+  }
+  assert.equal(full.visibleCount(settings({ cortexVisible: false })), internal);
 });
 
 test('a capped result set reports the true total, never a silent cut', async () => {

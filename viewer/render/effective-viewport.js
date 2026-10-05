@@ -100,3 +100,27 @@ export function viewOffset(canvas, rect) {
     width, height,
   };
 }
+
+/**
+ * Framing that keeps the anatomy off the stage's markings.
+ *
+ * `rect` is the visible rectangle, `dock` how far the dock reaches up into it, `clear` the room
+ * the orientation letters and scale bar take at each edge, and `fill` the share of the room over
+ * the dock that framing spans when the markings are not in the way. The scene centres the image
+ * above `inset`; scaling its fit by `scale` puts the anatomy inside the band the markings leave.
+ */
+export function clearFraming({ width, height }, dock, clear, fill) {
+  const inset = Math.max(0, dock + clear.bottom - clear.top);
+  const centre = (height - inset) / 2;
+  const room = fill * Math.max(0, height - dock) / 2;
+  // A stage too short for its markings keeps a sliver of anatomy rather than none.
+  const half = Math.max(room / 4, Math.min(room, centre - clear.top, height - dock - clear.bottom - centre));
+  const across = Math.max(fill * width / 8, Math.min(fill * width / 2, width / 2 - Math.max(clear.left, clear.right)));
+  return {
+    inset,
+    scale: {
+      horizontal: width > 0 ? across / (fill * width / 2) : 1,
+      vertical: centre > 0 && half > 0 ? half / (fill * centre) : 1,
+    },
+  };
+}

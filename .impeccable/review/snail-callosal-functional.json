@@ -1,0 +1,18 @@
+{
+  "detail": "aseg",
+  "overlayChecked": true,
+  "regions": [
+    "Voir la région: Corps calleux, postérieur · ligne médiane",
+    "Voir la région: Corps calleux, médio-postérieur · ligne médiane",
+    "Voir la région: Corps calleux, central · ligne médiane",
+    "Voir la région: Corps calleux, médio-antérieur · ligne médiane",
+    "Voir la région: Corps calleux, antérieur · ligne médiane"
+  ],
+  "source": "/neuroatlas/models/snail/manifest.json",
+  "subject": "snail",
+  "selectionAfterClick": {
+    "detail": "aseg",
+    "hash": "#anatomy=snail&atlas=hcp-mmp&cuts=hcp-mmp&detail=aseg&region=aseg:midline:253&cortex=0&opacity=0.16&lang=fr",
+    "source": "/neuroatlas/models/snail/manifest.json"
+  }
+}

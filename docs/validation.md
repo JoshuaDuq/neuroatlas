@@ -69,13 +69,80 @@ npm test
 7. **Published Colour Space**: glTF `baseColorFactor` is linear, so each published sRGB display colour is written converted, and validation decodes it back to the exact palette entry.
 8. **Browser QA Transcripts**: [`deliverables/gpu-browser-qa.json`](../deliverables/gpu-browser-qa.json) and [`deliverables/gpu-cut-performance.json`](../deliverables/gpu-cut-performance.json) log automated browser tests across cut modes, atlas switches, and continuous drag frame rates.
 
+### Diffusion geometry and performance
+
+The bundled SNAIL reference is independently checked against its original
+archive and NiBabel's RAS+ millimeter decoder. Tests in `viewer/diffusion/`
+verify byte-exact NIfTI files, lossless TRK compression, all 27 bundle counts,
+sampled RAS+ coordinates and float64 polyline lengths at multiple thresholds.
+Native-viewer tests preserve every point and verify the same
+RAS+ samples after rotation/unit conversion, prevent lines from joining across
+streamline boundaries, and keep position/color buffers intact while filtering
+line indices. The TRK decoder is checked against both original gzip bytes and
+HTTP-decompressed response bodies. The outline's source/output hashes, affine,
+GLB counts and transformed bounds are checked independently.
+
+`node scripts/benchmark-diffusion.mjs` compares CPU geometry generation
+and graphics buffer sizes using identical original streamlines. Its output
+includes the former NiiVue tube renderer, NiiVue lines and the current native
+indexed lines. One development-machine run on the largest bundle (15,244
+streamlines; 3,157,802 points) measured 3,225 ms and 692.9 MB for 0.3 mm tubes,
+versus 269 ms and 72.5 MB for native lines. This measures preparation and buffer
+data, not end-to-end latency or GPU
+frame rate. The browser defaults to lines, retains every source point, and
+commits the minimum-length slider on release. The restored MRI navigator loads
+NiiVue only when opened, caches maps and selected tract lines across reopening,
+and commits contrast/FA changes on release. It also uses source Float64 arc
+lengths rather than NiiVue's default integer-rounded lengths. No tube control
+is exposed.
+
+Manual checks covered the actual largest bundle's load/toggle, empty
+length/search states, camera presets, restoring anatomy and the 390 × 844 French layout.
+The original scanner-RAS coordinates are retained in the tract buffers. A rigid
+group transform maps them into the matching SNAIL FreeSurfer surface RAS. Tests
+check the transform against independent NiBabel voxel anchors, reject scale or
+reflection, and confirm rotation/unit conversion without changing arc lengths.
+Matching anatomy keeps regions, cuts and MRI available while tracts load;
+other specimens use the independent reference. Missing source identity fails
+rather than being treated as a matching anatomy. The shared world-space
+clipping plane affects the line material, without changing source buffers or
+length measurements.
+
+SNAIL is the validated default anatomy. The normal viewer composes its actual
+FreeSurfer cortical reconstruction, atlas regions and original streamlines.
+On other specimens, the independent tract reference uses the T1-derived
+outline instead; tracts are never placed on unrelated anatomy. That outline is
+a display isosurface at a documented threshold and 2-voxel sampling step.
+
+The full SNAIL source-to-asset validation passed. Maximum cortical GLB
+coordinate error is 0.00000430 mm for both Destrieux and HCP-MMP. The raw T1
+import preserves voxel values exactly, and its affine agrees within
+0.00001 mm. Reconstruction completion, runtime and source/output hashes are
+recorded in `data/snail/reconstruction.json`. The explicit coarse structure
+set excludes absent aseg labels 31, 63 and 85; no region is fabricated.
+
+The mixed learning overview also excludes SNAIL's coarse callosal surface.
+Before that display exclusion, 59.1% of the finer septal estimate and 61.9% of
+the fornix estimate lay in the displayed coarse units, mainly the callosal
+estimate. Without that conflicting surface the overlaps are 10.6% and 2.47%.
+The native callosal subsegments remain in the aseg detail level. The full
+learning validator now rejects a unit with at least half of its voxels covered
+by the other displayed source; source masks and measurements are unchanged.
+
+Live checks confirmed a fresh route selects SNAIL, returning from Tracts to
+Anatomy retains streamlines, and a cortical region remains selectable. MRI
+source voxel `[128,104,75]` matched the independent NiBabel scanner coordinate
+and moved the normal coronal cut to surface A = -24 mm. Closing the navigator
+preserved that cut and restored focus. These checks concern conversion and
+viewer behavior; the validation report does not claim clinical accuracy.
+
 ---
 
 ## 4. Scientific Limitations & Boundaries
 
 To preserve scientific rigor, the model explicitly defines its biological and numerical limits:
 
-1. **Individual Anatomy, Not a Group Template**: The model depicts one individual human brain (`bert` or `aomic` `sub-0022`). Folds, sulcal depths, and asymmetries belong to that person alone and are **not clinically normative**.
+1. **Individual Anatomy, Not a Group Template**: The default depicts SNAIL `subj_1`; Bert and AOMIC `sub-0022` are alternative specimens. Folds, sulcal depths, and asymmetries belong to that individual alone and are **not clinically normative**.
 2. **1 mm Scan, 0.4 mm NextBrain Grid**: The T1w MRI and FreeSurfer segmentations are sampled on a $1\text{ mm}$ isotropic grid. NextBrain labels sit on a $0.4\text{ mm}$ grid, but they are estimated from that same 1 mm scan: the grid is finer than the image, so where neighbouring structures share their T1 contrast the histological atlas prior, not the scan, places the boundary. Cortical layers and microscopic fibre tracts are not resolved at any level.
 3. **HCP-MMP1.0 Projection Distance**: HCP-MMP1.0 boundaries are resampled from `fsaverage` onto the subject via registered spherical coordinates (`sphere.reg`). They sit **two registrations away** from original HCP space.
 4. **NextBrain Is a Model Estimate**: Each brain's NextBrain labels are its own Bayesian segmentation (FreeSurfer 8.2, `mri_histo_atlas_segment_fireants` in `invivo` mode), not a histological delineation of that brain. Against each brain's own FreeSurfer aseg they score Dice 0.82–0.89 on bert and 0.80–0.89 on aomic for caudate, putamen, thalamus, hippocampus and amygdala, above the MNI warp they replaced on all ten comparisons in both brains. The claustrum, a thin sheet, is still fragmented at 0.4 mm.

@@ -161,15 +161,18 @@ def test_cut_only_regions_from_an_unknown_source_are_rejected(tmp_path):
         validate_cut_only_regions(config, regions)
 
 
-bert = pytest.mark.skipif(
+published_subject = pytest.mark.skipif(
     not white_matter.is_available(read_config()),
     reason="wmparc.mgz is extracted by scripts/prepare_subject.py",
 )
 
 
-@bert
+@pytest.mark.skipif(
+    not white_matter.is_available(read_config("bert")),
+    reason="Bert's wmparc.mgz is extracted by scripts/prepare_subject.py",
+)
 def test_bert_white_matter_round_trips_through_its_published_box(tmp_path):
-    config = read_config()
+    config = read_config("bert")
     config["output_directory"] = tmp_path
     regions = white_matter.build_regions(config)
     record = white_matter.export_volume(config, regions)
@@ -184,7 +187,7 @@ def test_bert_white_matter_round_trips_through_its_published_box(tmp_path):
     np.testing.assert_array_equal(ids[decode(config, record)], box)
 
 
-@bert
+@published_subject
 def test_tissue_labels_publish_white_matter_for_the_surface_atlas_cuts(tmp_path):
     config = read_config()
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())

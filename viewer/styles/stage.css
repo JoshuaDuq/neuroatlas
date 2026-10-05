@@ -1,0 +1,614 @@
+/* Stage tools: view presets, section and display tools, and the overlays drawn on the picture. */
+
+/*
+ * Anything drawn on the stage is lit by the stage, in both themes: the ground
+ * under it is near-black either way. The --vis-* edges are the rectangle the
+ * reader can see, set by viewport-chrome.js from the renderer's own source.
+ */
+#viewport {
+  --vis-top: 0px;
+  --vis-right: 0px;
+  --vis-bottom: 0px;
+  --vis-left: 0px;
+  --dock-height: 38px;
+  --stage-gutter: var(--space-4);
+}
+
+/* Controls on the stage read the overlay palette through the panel's token names. */
+.stage-dock,
+.stage-keys {
+  color-scheme: dark;
+  --text-primary: var(--overlay-ink);
+  --text-secondary: var(--overlay-ink-muted);
+  --text-tertiary: var(--overlay-ink-faint);
+  --accent: var(--overlay-accent);
+  --accent-hover: var(--overlay-accent-hover);
+  --accent-wash: var(--overlay-accent-wash);
+  --primary-fill: #2f8183;
+  --primary-fill-hover: #276f71;
+  --surface-base: var(--overlay-plate);
+  --surface-sunken: var(--scene-background);
+  --surface-hover: var(--overlay-plate-hover);
+  --surface-tonal: var(--overlay-track);
+  --surface-tonal-hover: var(--overlay-track-hover);
+  --surface-raised: var(--overlay-raised);
+  --border-subtle: var(--overlay-border);
+  --border-control: var(--overlay-control-border);
+  /* 3.3:1 against the track, so the selected thumb keeps an edge without its shadow. */
+  --thumb-ring: var(--overlay-control-border);
+  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
+  color: var(--overlay-ink);
+}
+
+/* --accent is measured against a rail; on the stage it is the overlay's teal. */
+#viewport :focus-visible { outline-color: var(--overlay-accent); }
+/* The canvas fills a clipped box, so its ring is drawn inside the edge or not at all. */
+#viewport canvas:focus-visible { outline-offset: -2px; }
+
+.viewport-help {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--vis-top) + var(--stage-gutter));
+  left: calc(var(--vis-left) + var(--stage-gutter));
+  /* Wraps before the middle of the stage, where the S marking sits. */
+  max-width: calc((100% - var(--vis-left) - var(--vis-right)) / 2 - var(--stage-gutter) - var(--space-3));
+  padding: 3px var(--space-2);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+  background: var(--overlay-plate);
+  color: var(--overlay-ink-muted);
+  font-size: var(--text-micro);
+  line-height: 16px;
+  pointer-events: none;
+  transition: opacity var(--camera-transition) var(--ease-ui);
+}
+.viewport-help[data-dismissed="true"] { opacity: 0; }
+
+.chip {
+  position: absolute;
+  z-index: 2;
+  padding: 3px var(--space-2);
+  background: var(--overlay-plate);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+  color: var(--overlay-ink);
+  font-size: var(--text-micro);
+  line-height: 16px;
+  pointer-events: none;
+}
+.hover-label { max-width: 280px; }
+
+/* Markings ---------------------------------------------------------------- */
+/*
+ * L/R/A/P/S/I and the scale are the picture's own markings: type with a
+ * halo, not plates. An opaque rim drawn under the fill holds the edge over
+ * bright tissue, and stacked dark shadows widen it into a halo that keeps the
+ * letter readable where the rim alone left white tissue touching the glyph.
+ */
+.orientation {
+  position: absolute;
+  inset: var(--vis-top) var(--vis-right) var(--vis-bottom) var(--vis-left);
+  pointer-events: none;
+}
+.orientation > span,
+.scale-bar {
+  color: var(--overlay-ink);
+  -webkit-text-stroke: 3px var(--overlay-halo-core);
+  paint-order: stroke fill;
+  text-shadow:
+    0 0 1px var(--overlay-halo-core),
+    0 0 2px var(--overlay-halo-core),
+    0 0 4px var(--overlay-halo-core),
+    0 0 8px var(--overlay-halo);
+}
+.orientation > span {
+  position: absolute;
+  z-index: 2;
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+}
+.orientation [data-edge="top"] { top: var(--space-3); left: 50%; transform: translateX(-50%); }
+/* The dock owns the bottom line, and the section bar the line above it; the letter clears both. */
+.orientation [data-edge="bottom"] {
+  bottom: calc(var(--stage-gutter) + var(--dock-height) + var(--space-2));
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* Level with the anatomy, which is framed in the stage above the dock. */
+.orientation :is([data-edge="left"], [data-edge="right"]) {
+  top: calc(50% - (var(--dock-height) + var(--stage-gutter)) / 2);
+  transform: translateY(-50%);
+}
+.orientation [data-edge="left"] { left: var(--space-3); }
+#viewport[data-dock-tall="true"] .orientation [data-edge="bottom"] { visibility: hidden; }
+.orientation [data-edge="right"] { right: var(--space-3); }
+
+.scale-bar {
+  position: absolute;
+  z-index: 2;
+  right: calc(var(--vis-right) + var(--stage-gutter));
+  bottom: calc(var(--vis-bottom) + var(--stage-gutter) + 11px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;
+  font-size: var(--text-micro);
+  line-height: 16px;
+}
+.scale-bar-rule {
+  height: 6px;
+  border: 1px solid var(--overlay-ink);
+  border-top: 0;
+  filter: drop-shadow(0 0 1px var(--overlay-halo-core)) drop-shadow(0 0 1px var(--overlay-halo-core));
+}
+/* When the toolbar and the bar cannot share the bottom line, the bar sits above the dock. */
+#viewport[data-chrome="tight"] .scale-bar {
+  bottom: calc(var(--vis-bottom) + var(--stage-gutter) + var(--dock-height) + var(--space-2));
+  right: calc(var(--vis-right) + var(--space-3));
+}
+
+/* Colour keys, beside the picture they explain. */
+.stage-keys {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--vis-top) + var(--stage-gutter));
+  right: calc(var(--vis-right) + var(--stage-gutter));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+.stage-key {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--overlay-plate);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+  color: var(--overlay-ink);
+  font-size: var(--text-micro);
+}
+.network-legend,
+.direction-key ul {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.network-legend { padding: var(--space-2) var(--space-3); }
+.network-legend li,
+.direction-key li { display: flex; align-items: center; gap: var(--space-2); }
+.stage-key-title { margin-bottom: var(--space-2); color: var(--overlay-ink-muted); font-weight: 600; }
+.direction-key [data-direction="lr"] { background: var(--scene-direction-lr); }
+.direction-key [data-direction="ap"] { background: var(--scene-direction-ap); }
+.direction-key [data-direction="si"] { background: var(--scene-direction-si); }
+
+/* Loading and failure ----------------------------------------------------- */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  text-align: center;
+  background: var(--scene-background);
+  color: var(--overlay-ink-muted);
+  font-size: var(--text-small);
+}
+#app[data-status="loading"] .stage,
+#app[data-status="error"] .stage,
+#app[data-status="context-lost"] .stage { display: grid; }
+#app[data-status="error"] .stage { color: var(--overlay-danger); }
+.stage button { background: var(--overlay-plate); border-color: var(--overlay-border); color: var(--overlay-ink); }
+.stage button:hover:not(:disabled) { background: var(--overlay-plate-hover); }
+.progress { width: 220px; height: 2px; background: rgb(255 255 255 / 0.14); }
+.progress span { display: block; height: 100%; background: var(--overlay-accent); transition: width var(--ui-transition); }
+#app:is([data-status="loading"], [data-status="error"], [data-status="context-lost"]) .stage-dock { visibility: hidden; }
+
+/* The dock: toolbar on the bottom line, section bar above it ------------- */
+.stage-dock {
+  position: absolute;
+  /* Above the markings and keys, so an open popover is never drawn under the scale bar. */
+  z-index: 3;
+  left: calc(var(--vis-left) + var(--stage-gutter));
+  bottom: calc(var(--vis-bottom) + var(--stage-gutter));
+  width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter));
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: var(--space-2);
+  /* The dock spans the stage; only its plates take the pointer. */
+  pointer-events: none;
+}
+.stage-dock > * { pointer-events: auto; }
+
+/* Static, so the popovers inside it are placed against the whole dock and open above the section bar. */
+.stage-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 2px;
+  background: var(--overlay-plate);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+}
+
+/* The presets are one exclusive choice, drawn like every other: a track and a ringed thumb. */
+.views {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.views::-webkit-scrollbar { display: none; }
+/* Scrolled presets fade at the edge that hides more; viewport-chrome.js sets which. */
+.views[data-overflow="end"] { mask-image: linear-gradient(to right, var(--overlay-halo-core) calc(100% - 32px), transparent); }
+.views[data-overflow="start"] { mask-image: linear-gradient(to left, var(--overlay-halo-core) calc(100% - 32px), transparent); }
+.views[data-overflow="both"] {
+  mask-image: linear-gradient(to right, transparent, var(--overlay-halo-core) 32px,
+    var(--overlay-halo-core) calc(100% - 32px), transparent);
+}
+/* Never squashed: a truncated preset is a view the reader cannot name. */
+.views button { flex: none; padding: 0 var(--space-2); }
+/* The presets scroll inside the plate, which would clip a ring drawn outside them. */
+.views button:focus-visible { outline-offset: -2px; }
+
+.stage-toolbar-sep {
+  flex: none;
+  width: 1px;
+  height: 20px;
+  margin: 0 var(--space-1);
+  background: var(--overlay-border);
+}
+.stage-toolbar:not(:has(> .stage-tool:not([hidden]))) > .stage-toolbar-sep { display: none; }
+
+.stage-tool {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  margin: 0;
+  padding: 0 var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--overlay-ink);
+  font-size: var(--text-small);
+  white-space: nowrap;
+}
+.stage-tool:hover:not(:disabled) { background: var(--overlay-plate-hover); }
+.stage-tool[aria-expanded="true"],
+.stage-tool[aria-expanded="true"]:hover { background: var(--overlay-track); }
+/* The phone's chooser for the presets; a desktop plate shows them inline. */
+.view-tool { display: none; }
+/* Drawn, like every disclosure chevron. It points up while its popover is open. */
+.stage-tool-chevron {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin: -4px 0 0;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  color: var(--overlay-ink-muted);
+  transform: rotate(45deg);
+  transition: transform var(--ui-transition) var(--ease-ui);
+}
+[aria-expanded="true"] > .stage-tool-chevron { transform: translateY(4px) rotate(-135deg); }
+
+/* Popovers ---------------------------------------------------------------- */
+/* Opened above the whole dock; stage-tools.js keeps them inside the visible stage. */
+.stage-popover {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(100% + var(--space-2));
+  left: 0;
+  width: 288px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  background: var(--overlay-plate);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--overlay-shadow);
+  color: var(--overlay-ink);
+  font-size: var(--text-ui);
+  text-align: left;
+}
+#display-popover { width: 272px; }
+.stage-field-label {
+  display: block;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-small);
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--overlay-ink-muted);
+}
+.stage-field { margin-top: var(--space-4); }
+
+#cut-mode {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#cut-mode button {
+  height: 36px;
+  min-width: 0;
+  justify-content: flex-start;
+  padding: 0 var(--space-3);
+}
+#cut-mode button:first-child { grid-column: 1 / -1; }
+#cut-mode .control-icon { width: 16px; height: 16px; }
+.cut-mode-short { display: none; }
+#hemisphere { width: 100%; }
+#hemisphere button { flex: 1; min-width: 0; padding: 0 var(--space-2); }
+
+.display-visibility {
+  margin-top: var(--space-3);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--overlay-border);
+}
+/* Indented to the checkbox's words: a 16px box and its 8px gap. */
+.display-opacity { padding: 0 0 var(--space-2) var(--space-6); }
+.display-opacity > label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--text-micro);
+}
+.display-opacity output { color: var(--overlay-ink-faint); }
+#opacity { height: 24px; margin: 0; }
+
+/* Tonal by default (the overlay track); quiet commands drop the fill until hovered. */
+.stage-command {
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  font-size: var(--text-small);
+  white-space: nowrap;
+}
+.stage-command-quiet {
+  background: none;
+  color: var(--overlay-ink-muted);
+}
+.stage-command-quiet:hover:not(:disabled) { background: var(--overlay-plate-hover); color: var(--overlay-ink); }
+#reset {
+  margin: var(--space-2) 0 0 calc(-1 * var(--space-2));
+  padding: 0 var(--space-2);
+}
+
+.stage-icon-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
+  background: none;
+  color: var(--overlay-ink-muted);
+}
+.stage-icon-button:hover:not(:disabled) { background: var(--overlay-plate-hover); color: var(--overlay-ink); }
+
+/* Section bar ------------------------------------------------------------- */
+.section-bar {
+  width: min(720px, 100%);
+  padding: var(--space-1) var(--space-1) var(--space-2) var(--space-3);
+  background: var(--overlay-plate);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+  color: var(--overlay-ink);
+}
+.section-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-height: var(--control-height);
+}
+.section-bar-name {
+  flex: none;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+.section-bar-short { display: none; }
+.cut-position-row {
+  display: flex;
+  flex: 1 1 240px;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+/* A 24px hit area around the 2px track. */
+.cut-position-row input[type="range"],
+.cut-angle input[type="range"] { flex: 1; min-width: 64px; height: 24px; margin: 0; }
+.cut-end {
+  flex: none;
+  min-width: 1ch;
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: var(--overlay-ink-muted);
+}
+.cut-position-row input[type="number"] {
+  flex: none;
+  width: 4.5rem;
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.cut-position-row input[type="number"]::-webkit-outer-spin-button,
+.cut-position-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.cut-unit { margin-left: calc(-1 * var(--space-1)); font-size: var(--text-micro); color: var(--overlay-ink-muted); }
+.cut-details { display: contents; }
+.cut-details .check { flex: none; min-height: var(--control-height); font-size: var(--text-small); white-space: nowrap; }
+.cut-more { display: none; }
+#cut-close { margin-left: auto; }
+.cut-angles { margin-top: var(--space-1); padding-right: var(--space-2); }
+.cut-angle {
+  display: flex;
+  flex: 1 1 220px;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--text-small);
+  color: var(--overlay-ink-muted);
+}
+.cut-angle output {
+  min-width: 5ch;
+  font-size: var(--text-micro);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--overlay-ink);
+}
+#cut-status {
+  margin: var(--space-1) 0 0;
+  padding-right: var(--space-2);
+  font-size: var(--text-micro);
+  line-height: 16px;
+  color: var(--overlay-ink-muted);
+}
+/* While the plane's anatomy is prepared, the bar names it and says so; there is nothing to move yet. */
+.section-bar[data-pending="true"] :is(.cut-position-row, .cut-details, .cut-more, .cut-angles) { display: none; }
+
+/* Phones ------------------------------------------------------------------ */
+/* The literal twin of PHONE_QUERY in render/device.js, as in phone.css. */
+@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+  .hover-label { display: none; }
+
+  /* Three worded tools share the plate; the presets open from View, one opposing pair per row. */
+  .stage-toolbar { width: 100%; }
+  .stage-toolbar-sep { display: none; }
+  .view-tool { display: inline-flex; }
+  .stage-tool { flex: 1 1 0; min-width: 0; justify-content: center; }
+  .stage-tool > .control-icon { display: none; }
+  .stage-tool > span:not(.stage-tool-chevron) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  /* Every choice in a phone popover is a full 44px target. */
+  .stage-popover .segmented button { height: 44px; }
+  .views {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+  .views button:first-child { grid-column: 1 / -1; }
+  .views button { min-width: 0; }
+
+  /* Display, compact: the hemisphere choice beside its name, opacity on the cortex row. */
+  #display-popover {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+  }
+  #display-popover > .stage-field-label { margin: 0; }
+  #display-popover > :is(.display-visibility, #reset) { grid-column: 1 / -1; }
+  #display-popover .display-visibility {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-3);
+    margin-top: var(--space-2);
+    padding-top: 0;
+  }
+  #display-popover .display-visibility > .check { grid-column: 1 / -1; }
+  #display-popover .display-visibility > .check:first-child { grid-column: 1; }
+  #display-popover .display-opacity { display: flex; align-items: center; gap: var(--space-2); padding: 0; }
+  #display-popover .display-opacity > label { order: 1; flex: none; }
+  #opacity-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  #display-popover #opacity { flex: 1; min-width: 0; height: 44px; }
+  #display-popover #reset { justify-self: start; margin: 0 0 0 calc(-1 * var(--space-2)); }
+
+  #cut-mode { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  #cut-mode button:first-child { grid-column: auto; }
+  #cut-mode button { flex-direction: column; justify-content: center; gap: 2px; padding: 0 var(--space-1); }
+  #cut-mode .control-label { display: none; }
+  #cut-mode .cut-mode-short { display: block; font-size: var(--text-micro); line-height: 16px; }
+
+  .section-bar { width: 100%; padding: 0 0 0 var(--space-3); }
+  .section-bar-row { flex-wrap: nowrap; gap: var(--space-2); }
+  .section-bar-full { display: none; }
+  .section-bar-short { display: inline; }
+  .cut-position-row { flex: 1 1 0; }
+  .cut-position-row input[type="number"] { width: 4rem; }
+  .cut-unit { display: none; }
+  .cut-more { display: inline-flex; }
+  #cut-close { margin-left: 0; }
+  .cut-details { display: none; }
+  .section-bar[data-expanded="true"] .section-bar-row:first-child { flex-wrap: wrap; }
+  .section-bar[data-expanded="true"] .cut-details {
+    display: flex;
+    flex-basis: 100%;
+    order: 5;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0 var(--space-2) var(--space-2) 0;
+  }
+  .section-bar:not([data-expanded="true"]) .cut-angles { display: none; }
+  .cut-angles { flex-wrap: wrap; padding-bottom: var(--space-1); }
+  .cut-position-row input[type="range"],
+  .cut-angle input[type="range"] { height: 44px; }
+  /* Collapsed, the readout still speaks; it is simply not drawn. */
+  .section-bar:not([data-expanded="true"]) #cut-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .section-bar[data-expanded="true"] #cut-status { padding-bottom: var(--space-2); }
+
+  /* The toolbar takes the whole bottom line, so the scale bar moves to the top left, S below it. */
+  .scale-bar,
+  #viewport[data-chrome="tight"] .scale-bar {
+    top: calc(var(--vis-top) + var(--space-3));
+    bottom: auto;
+    left: calc(var(--vis-left) + var(--space-3));
+    right: auto;
+  }
+  .orientation [data-edge="top"] { top: calc(var(--space-3) + 24px); }
+
+  /* A raised sheet leaves the picture a strip: the tools and markings would collide in it. */
+  #app:has(#sheet[data-detent="full"]) :is(.stage-dock, .scale-bar, .orientation) { visibility: hidden; }
+  /* An open popover covers most of the picture; markings left at its edges would label nothing. */
+  #viewport:has(.stage-popover:not([hidden])) :is(.scale-bar, .orientation) { visibility: hidden; }
+}
+
+/* A landscape phone is wide but short: the bar keeps its details on its one row instead of growing. */
+@media (max-height: 480px) and (orientation: landscape) {
+  /* The scale bar sits far to the left of a wide stage, so S keeps the top line. */
+  .orientation [data-edge="top"] { top: var(--space-3); }
+  .cut-more { display: none; }
+  #section-bar:not([data-pending="true"]) .cut-details { display: contents; }
+  #section-bar .section-bar-row:first-child { flex-wrap: nowrap; }
+  #section-bar:not([data-pending="true"]) .cut-angles { display: flex; flex-wrap: nowrap; }
+}
+
+/* A finger is not a cursor: stage targets follow --control-height, which phone.css raises for coarse pointers. */
+@media (pointer: coarse) {
+  .display-opacity { padding-left: 28px; }
+  .cut-position-row input[type="range"],
+  .cut-angle input[type="range"] { height: 44px; }
+}
+
+@media (forced-colors: active) {
+  .orientation > span, .scale-bar { -webkit-text-stroke: 0; }
+  .stage-segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+  .stage-toolbar, .stage-popover, .section-bar, .stage-key { border-color: CanvasText; }
+}

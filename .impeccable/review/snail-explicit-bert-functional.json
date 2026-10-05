@@ -1,0 +1,10 @@
+{
+  "source": "/neuroatlas/models/bert/manifest.json",
+  "subject": "bert",
+  "referenceMode": {
+    "canvasLabel": "Cerveau de référence et faisceaux. Glisser ou utiliser les flèches pour tourner, défiler ou appuyer sur plus et moins pour zoomer. Sélectionner les faisceaux dans le panneau.",
+    "mismatchVisible": true,
+    "overlayControlVisible": false,
+    "sectionControlVisible": false
+  }
+}

@@ -1,0 +1,3660 @@
+{
+  "status": "passed",
+  "scope": "Source-to-asset conversion fidelity",
+  "clinical_accuracy_validated": false,
+  "atlases": [
+    {
+      "file": "cortex-destrieux.glb",
+      "sha256": "3421c8065e3f28fff065f18b2be261ae3541a589aeaf65d4c74a7b781cb2e06f",
+      "mesh_count": 150,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 123524,
+          "source_triangles": 247044,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 323544,
+          "maximum_parent_plane_error_mm": 5.717648576819556e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 112194.43100069677,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 130053,
+          "source_triangles": 260102,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 339992,
+          "maximum_parent_plane_error_mm": 5.329070518200751e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 116062.98546416024,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "field_ranges": {
+        "_SULC": [
+          -13.804972648620605,
+          16.833572387695312
+        ],
+        "_CONCAVITY": [
+          -0.679202139377594,
+          0.6079657673835754
+        ],
+        "_T1": [
+          76.65523529052734,
+          255.0
+        ]
+      },
+      "maximum_glb_coordinate_error_mm": 4.297842090138146e-06,
+      "maximum_normal_component_error": 1.5287642759154174e-05,
+      "maximum_sulcal_depth_error": 0.0002337558560370212,
+      "maximum_ribbon_T1_error": 0.0013679652805080877
+    },
+    {
+      "file": "cortex-hcp-mmp.glb",
+      "sha256": "b42393c544cd6ea51479b79c7f515417fad83315b51f11cbec71030224e2346d",
+      "mesh_count": 362,
+      "hemispheres": {
+        "left": {
+          "source_vertices": 123524,
+          "source_triangles": 247044,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 372549,
+          "maximum_parent_plane_error_mm": 5.6066262743570405e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 112194.43100069677,
+          "source_vertex_labels_preserved": true
+        },
+        "right": {
+          "source_vertices": 130053,
+          "source_triangles": 260102,
+          "source_zero_area_triangles": 0,
+          "export_triangles": 392482,
+          "maximum_parent_plane_error_mm": 5.329070518200751e-15,
+          "maximum_parent_area_error_mm2": 8.881784197001252e-16,
+          "source_surface_area_mm2": 116062.98546416024,
+          "source_vertex_labels_preserved": true
+        }
+      },
+      "field_ranges": {
+        "_SULC": [
+          -13.804972648620605,
+          16.833572387695312
+        ],
+        "_CONCAVITY": [
+          -0.679202139377594,
+          0.6079657673835754
+        ],
+        "_T1": [
+          76.65523529052734,
+          255.0
+        ]
+      },
+      "maximum_glb_coordinate_error_mm": 4.297842090138146e-06,
+      "maximum_normal_component_error": 1.528711628284718e-05,
+      "maximum_sulcal_depth_error": 0.0002337558560370212,
+      "maximum_ribbon_T1_error": 0.0013679652805080877
+    }
+  ],
+  "ribbon_labels": [
+    {
+      "file": "ribbon-destrieux.labels",
+      "sha256": "151688330c16ec69f65bccec2fd31faad863c08e88517ee610b4d2d507ec10dd",
+      "vertex_count": 253577,
+      "region_count": 150,
+      "wedges": 150,
+      "holes": 0,
+      "pinches": 73
+    },
+    {
+      "file": "ribbon-hcp-mmp.labels",
+      "sha256": "55c6ef8d9de9d3d2e49058ab1cda1a20f0e7ebc661b3d27a1a679a2ed8ea45f5",
+      "vertex_count": 253577,
+      "region_count": 362,
+      "wedges": 362,
+      "holes": 0,
+      "pinches": 177
+    }
+  ],
+  "structures": {
+    "file": "structures.glb",
+    "sha256": "09bf208f8e2f77931bfc8ba6eee49e6ea3bc7617a7392261e06ae142afa58262",
+    "maximum_allowed_displacement_mm": 0.6,
+    "regions": [
+      {
+        "id": "aseg:midline:255",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.48912209174810456,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1203.1015712172425
+      },
+      {
+        "id": "aseg:midline:254",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4689871734448824,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 423.4645850895506
+      },
+      {
+        "id": "aseg:midline:253",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5246364907141214,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 763.9897818485517
+      },
+      {
+        "id": "aseg:midline:252",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4708303295502136,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 703.6214490181032
+      },
+      {
+        "id": "aseg:midline:251",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.502203393484603,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 962.4495083247505
+      },
+      {
+        "id": "aseg:right:60",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4698423591806803,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3543.348157187706
+      },
+      {
+        "id": "aseg:right:58",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4923733107237922,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 715.3371642135157
+      },
+      {
+        "id": "aseg:right:54",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.45984984870119333,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1755.9493777817793
+      },
+      {
+        "id": "aseg:right:53",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5061158876796794,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3583.294722210029
+      },
+      {
+        "id": "aseg:right:52",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.46468647208021446,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1335.185612558044
+      },
+      {
+        "id": "aseg:right:51",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4762619144301502,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 5313.435884984625
+      },
+      {
+        "id": "aseg:right:50",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4686217044886474,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3172.3327120629942
+      },
+      {
+        "id": "aseg:right:49",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.48174749888379714,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 5965.964491920403
+      },
+      {
+        "id": "aseg:right:47",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5107584148871899,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 58948.884811886324
+      },
+      {
+        "id": "aseg:right:46",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5452287615693125,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 14065.551507251123
+      },
+      {
+        "id": "aseg:right:44",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4923781363481796,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 461.7994134111937
+      },
+      {
+        "id": "aseg:right:43",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5046569432472924,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10014.589495004078
+      },
+      {
+        "id": "aseg:left:28",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5069546085850685,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3655.821433164794
+      },
+      {
+        "id": "aseg:left:26",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.45137548965488317,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 801.3400122620716
+      },
+      {
+        "id": "aseg:left:18",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.48740742822910216,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1846.310155627985
+      },
+      {
+        "id": "aseg:left:17",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5174312157636023,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3803.8639932439155
+      },
+      {
+        "id": "aseg:midline:16",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4812941986426752,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 18350.86731608556
+      },
+      {
+        "id": "aseg:midline:15",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4854723403169185,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3496.0887711913724
+      },
+      {
+        "id": "aseg:midline:14",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.46428899547193564,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 843.0407326009938
+      },
+      {
+        "id": "aseg:left:13",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.45984711998711175,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1250.5450191160298
+      },
+      {
+        "id": "aseg:left:12",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.45825476788654834,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 5836.809629092789
+      },
+      {
+        "id": "aseg:left:11",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.47773971373442065,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3391.399519433152
+      },
+      {
+        "id": "aseg:left:10",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.460473670420794,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 6280.725511280465
+      },
+      {
+        "id": "aseg:left:8",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5399796736962214,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 58557.54581789214
+      },
+      {
+        "id": "aseg:left:7",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.5013423129744351,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 14704.360496483998
+      },
+      {
+        "id": "aseg:left:5",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.4641148277352486,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 560.531393731963
+      },
+      {
+        "id": "aseg:left:4",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.49269370590067396,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8969.28561632267
+      }
+    ]
+  },
+  "spinal_cord": {
+    "source_shape_preserved": true,
+    "watertight": true,
+    "mri_registered": false,
+    "structure_count": 35,
+    "region_count": 58,
+    "triangle_count": 277236,
+    "volume_method": "Enclosed volume of the published closed surface",
+    "placement": "Rigid translation onto the brainstem; no rotation or scaling",
+    "division": "Mirrored objects publish their two disconnected halves; no triangle is cut"
+  },
+  "solid_envelopes": {
+    "file": "tissue-envelopes.glb",
+    "sha256": "7a63f22b773ad8e538a5210fc8b345a0739c232d1596565902b66d2b7c680743",
+    "identical_native_topology": true,
+    "maximum_coordinate_error_mm": 3.6954879711892374e-06
+  },
+  "nextbrain_structures": {
+    "file": "nextbrain.glb",
+    "sha256": "13ff525188c6a5bdaab94e209f7d2157fef284dab11f2920f647ef57373368a6",
+    "maximum_allowed_displacement_mm": 0.6,
+    "regions": [
+      {
+        "id": "nextbrain:right:10843",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20626269413321507,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 19.23106324807539
+      },
+      {
+        "id": "nextbrain:right:10813",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21224076502632488,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 5.837220019148105
+      },
+      {
+        "id": "nextbrain:right:10752",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20309485130197408,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 67.98097768605291
+      },
+      {
+        "id": "nextbrain:right:10751",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1847737481671028,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 18.53801465353474
+      },
+      {
+        "id": "nextbrain:right:10721",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20767789211195836,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 724.9481325468805
+      },
+      {
+        "id": "nextbrain:right:10697",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599232531158452,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 39.121341196176125
+      },
+      {
+        "id": "nextbrain:right:10662",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.5089767622297564,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 962.3682266945727
+      },
+      {
+        "id": "nextbrain:right:10580",
+        "boundary_edges": 0,
+        "pinch_edges": 93,
+        "maximum_display_displacement_mm": 0.38174992100537847,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3061.73631117948
+      },
+      {
+        "id": "nextbrain:right:10578",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20035384678342924,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 18.941331332992874
+      },
+      {
+        "id": "nextbrain:right:10576",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20164862907064948,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 156.083781473399
+      },
+      {
+        "id": "nextbrain:right:10575",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1888489452941007,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 19.14105574712652
+      },
+      {
+        "id": "nextbrain:right:10573",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2041735322811735,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.226257958088463
+      },
+      {
+        "id": "nextbrain:right:10565",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.3000001421502051,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.794735598270478
+      },
+      {
+        "id": "nextbrain:right:10564",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.2159924652167528,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 93.11147117886256
+      },
+      {
+        "id": "nextbrain:right:10563",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.20546858187016068,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.88997625006008
+      },
+      {
+        "id": "nextbrain:right:10562",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21018711575644877,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 38.9263670396463
+      },
+      {
+        "id": "nextbrain:right:10561",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.600000815643844,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 21.64856565842654
+      },
+      {
+        "id": "nextbrain:right:10558",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_display_displacement_mm": 0.201751732014333,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 51.482299429195116
+      },
+      {
+        "id": "nextbrain:right:10541",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18570082049727563,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 60.95227586106276
+      },
+      {
+        "id": "nextbrain:right:10531",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20912291860866886,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 152.61695905314923
+      },
+      {
+        "id": "nextbrain:right:10521",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19046855509544106,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 44.52121880620145
+      },
+      {
+        "id": "nextbrain:right:10519",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3420176879752836,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 35.40080207191768
+      },
+      {
+        "id": "nextbrain:right:10517",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19699097386655937,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 230.4962428901485
+      },
+      {
+        "id": "nextbrain:right:10508",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599224085953264,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 677.9394882252387
+      },
+      {
+        "id": "nextbrain:right:10496",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20147849057305928,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 31.315572407075155
+      },
+      {
+        "id": "nextbrain:right:10492",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20373735067696838,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.373203417656132
+      },
+      {
+        "id": "nextbrain:right:10484",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21229513793849986,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 76.14977280817592
+      },
+      {
+        "id": "nextbrain:right:10478",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19581621413314781,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 49.76785205316732
+      },
+      {
+        "id": "nextbrain:right:10465",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1990594956920378,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 179.327011286884
+      },
+      {
+        "id": "nextbrain:right:10461",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_display_displacement_mm": 0.21599206184611475,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 46.321700944278824
+      },
+      {
+        "id": "nextbrain:right:10458",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3000005951757721,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 281.9227452511106
+      },
+      {
+        "id": "nextbrain:right:10454",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20481434266533446,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 275.5689793643521
+      },
+      {
+        "id": "nextbrain:right:10441",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.30000057133746744,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 517.7181338213261
+      },
+      {
+        "id": "nextbrain:right:10435",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20185152473622872,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 123.89510410778011
+      },
+      {
+        "id": "nextbrain:right:10432",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19515841091678873,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 75.95051309977308
+      },
+      {
+        "id": "nextbrain:right:10430",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20300901698398272,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.825902132829532
+      },
+      {
+        "id": "nextbrain:right:10425",
+        "boundary_edges": 0,
+        "pinch_edges": 18,
+        "maximum_display_displacement_mm": 0.21599220906042285,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 41.866716741536656
+      },
+      {
+        "id": "nextbrain:right:10424",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19964291696622727,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 53.93211710301288
+      },
+      {
+        "id": "nextbrain:right:10423",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.30000047522903844,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 40.472968459407355
+      },
+      {
+        "id": "nextbrain:right:10421",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.19680583583618375,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 6.60560530039705
+      },
+      {
+        "id": "nextbrain:right:10420",
+        "boundary_edges": 0,
+        "pinch_edges": 21,
+        "maximum_display_displacement_mm": 0.19190091577573498,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 24.72788729231463
+      },
+      {
+        "id": "nextbrain:right:10418",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599179966240542,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 15.313282983878548
+      },
+      {
+        "id": "nextbrain:right:10414",
+        "boundary_edges": 0,
+        "pinch_edges": 45,
+        "maximum_display_displacement_mm": 0.3000003192078729,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 661.8363424312078
+      },
+      {
+        "id": "nextbrain:right:10408",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19362565008838512,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.02782985964236
+      },
+      {
+        "id": "nextbrain:right:10407",
+        "boundary_edges": 0,
+        "pinch_edges": 39,
+        "maximum_display_displacement_mm": 0.3000005764091993,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 79.18000799273258
+      },
+      {
+        "id": "nextbrain:right:10404",
+        "boundary_edges": 0,
+        "pinch_edges": 69,
+        "maximum_display_displacement_mm": 0.3000010519130948,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 159.34034366743424
+      },
+      {
+        "id": "nextbrain:right:10399",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20377539270470185,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 44.70180865518206
+      },
+      {
+        "id": "nextbrain:right:10398",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1976402114371713,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 63.81214566370966
+      },
+      {
+        "id": "nextbrain:right:10397",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.2999999365572959,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 127.94907705452506
+      },
+      {
+        "id": "nextbrain:right:10396",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21321135306611513,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 34.733479594005054
+      },
+      {
+        "id": "nextbrain:right:10394",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19616122411189832,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 102.71825333330113
+      },
+      {
+        "id": "nextbrain:right:10393",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.2604783449752273,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 54.72459965060882
+      },
+      {
+        "id": "nextbrain:right:10385",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18657925350435453,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 205.4086029697596
+      },
+      {
+        "id": "nextbrain:right:10384",
+        "boundary_edges": 0,
+        "pinch_edges": 63,
+        "maximum_display_displacement_mm": 0.6000002514800294,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 2240.7888251708305
+      },
+      {
+        "id": "nextbrain:right:10382",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21787288436461963,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 49.35132860940969
+      },
+      {
+        "id": "nextbrain:right:10381",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1967505719822896,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 107.30600309569357
+      },
+      {
+        "id": "nextbrain:right:10380",
+        "boundary_edges": 0,
+        "pinch_edges": 21,
+        "maximum_display_displacement_mm": 0.3365591157499142,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 355.6962829757334
+      },
+      {
+        "id": "nextbrain:right:10379",
+        "boundary_edges": 0,
+        "pinch_edges": 42,
+        "maximum_display_displacement_mm": 0.6000003987298879,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 105.73188570374504
+      },
+      {
+        "id": "nextbrain:right:10378",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.28632997077124844,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 152.6986617209716
+      },
+      {
+        "id": "nextbrain:right:10377",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2151018998695998,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 406.89544311354956
+      },
+      {
+        "id": "nextbrain:right:10374",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19629606227936752,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.705093828357796
+      },
+      {
+        "id": "nextbrain:right:10372",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.23874430976763808,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.763045498841677
+      },
+      {
+        "id": "nextbrain:right:10371",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599208518119775,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.78712054788972
+      },
+      {
+        "id": "nextbrain:right:10370",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1920057895391879,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 46.02416906756512
+      },
+      {
+        "id": "nextbrain:right:10368",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.25411639289805454,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 44.624908562543204
+      },
+      {
+        "id": "nextbrain:right:10367",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.19196445208080962,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.591201689343212
+      },
+      {
+        "id": "nextbrain:right:10364",
+        "boundary_edges": 0,
+        "pinch_edges": 12,
+        "maximum_display_displacement_mm": 0.24060147600639695,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 11.555838269863635
+      },
+      {
+        "id": "nextbrain:right:10354",
+        "boundary_edges": 0,
+        "pinch_edges": 99,
+        "maximum_display_displacement_mm": 0.5999980602994626,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 376.16800271893055
+      },
+      {
+        "id": "nextbrain:right:10352",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19211358118356492,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 153.14471291624764
+      },
+      {
+        "id": "nextbrain:right:10350",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2103314267368572,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 128.89417127269
+      },
+      {
+        "id": "nextbrain:right:10349",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1884247371385621,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 53.31172443391086
+      },
+      {
+        "id": "nextbrain:right:10347",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19568784456737726,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 578.5404396407532
+      },
+      {
+        "id": "nextbrain:right:10346",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.22688134508689006,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.293212491363772
+      },
+      {
+        "id": "nextbrain:right:10345",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.300001583530052,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 346.3034808971344
+      },
+      {
+        "id": "nextbrain:right:10344",
+        "boundary_edges": 0,
+        "pinch_edges": 24,
+        "maximum_display_displacement_mm": 0.3000010140458056,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 38.79211632681874
+      },
+      {
+        "id": "nextbrain:right:10343",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.30000039263115685,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 264.434959704421
+      },
+      {
+        "id": "nextbrain:right:10342",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21420739282502052,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 6.2545903565547105
+      },
+      {
+        "id": "nextbrain:right:10341",
+        "boundary_edges": 0,
+        "pinch_edges": 12,
+        "maximum_display_displacement_mm": 0.20002712601986541,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 128.21322753038802
+      },
+      {
+        "id": "nextbrain:right:10339",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2159923976885946,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 99.27968010003255
+      },
+      {
+        "id": "nextbrain:right:10326",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.30000031870425686,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 56.09747891569417
+      },
+      {
+        "id": "nextbrain:right:10321",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1895423559727341,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 28.252054644251363
+      },
+      {
+        "id": "nextbrain:right:10320",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.18805392313984534,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.261401287398067
+      },
+      {
+        "id": "nextbrain:right:10316",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19238143494626941,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 21.158641815469927
+      },
+      {
+        "id": "nextbrain:right:10315",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18581106349689777,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 14.993153034231003
+      },
+      {
+        "id": "nextbrain:right:10314",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.6000001946273195,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 122.68462735330722
+      },
+      {
+        "id": "nextbrain:right:10313",
+        "boundary_edges": 0,
+        "pinch_edges": 24,
+        "maximum_display_displacement_mm": 0.5385972825094698,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 598.3081294237367
+      },
+      {
+        "id": "nextbrain:right:10312",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18605883274515372,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 29.86805488055272
+      },
+      {
+        "id": "nextbrain:right:10310",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19845060054628336,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 156.95537697401767
+      },
+      {
+        "id": "nextbrain:right:10309",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21338898596857048,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.259391905418747
+      },
+      {
+        "id": "nextbrain:right:10301",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21547430761750583,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 17.675234334023912
+      },
+      {
+        "id": "nextbrain:right:10298",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.18857689368617828,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 12.801383688724082
+      },
+      {
+        "id": "nextbrain:right:10297",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.18738831471630227,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 24.36909245939285
+      },
+      {
+        "id": "nextbrain:right:10295",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1933393309114057,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 31.281468831376863
+      },
+      {
+        "id": "nextbrain:right:10285",
+        "boundary_edges": 0,
+        "pinch_edges": 39,
+        "maximum_display_displacement_mm": 0.21716725605185677,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 81.42037709343
+      },
+      {
+        "id": "nextbrain:right:10283",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2167467277688075,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 267.7345470978145
+      },
+      {
+        "id": "nextbrain:right:10282",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20060579005960458,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 392.593412642424
+      },
+      {
+        "id": "nextbrain:right:10279",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18860723730079856,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 22.433631686293438
+      },
+      {
+        "id": "nextbrain:right:10277",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20281380849382746,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 24.731625737437437
+      },
+      {
+        "id": "nextbrain:right:10276",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21905446152021174,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 31.77654383827075
+      },
+      {
+        "id": "nextbrain:right:10275",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20256259204571744,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 50.32082871456978
+      },
+      {
+        "id": "nextbrain:right:10256",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18855251807197349,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 29.891451948122366
+      },
+      {
+        "id": "nextbrain:right:10255",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18497460013935021,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 11.883341456491976
+      },
+      {
+        "id": "nextbrain:right:10254",
+        "boundary_edges": 0,
+        "pinch_edges": 24,
+        "maximum_display_displacement_mm": 0.30000037608383445,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 263.06226653975017
+      },
+      {
+        "id": "nextbrain:right:10253",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1855346176123822,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 24.276280251340257
+      },
+      {
+        "id": "nextbrain:right:10252",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19980666934060498,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.36050574306488
+      },
+      {
+        "id": "nextbrain:right:10246",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20541593831752816,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.713568275885468
+      },
+      {
+        "id": "nextbrain:right:10245",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18990932426923895,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.799747412986129
+      },
+      {
+        "id": "nextbrain:right:10242",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.215020245036034,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 166.0456747748528
+      },
+      {
+        "id": "nextbrain:right:10238",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599222064625645,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 15.09505144676834
+      },
+      {
+        "id": "nextbrain:right:10232",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1847153243615757,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 37.39961275703216
+      },
+      {
+        "id": "nextbrain:right:10230",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1968066500504595,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 47.55698908099065
+      },
+      {
+        "id": "nextbrain:right:10228",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1849928990540316,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.599189983290255
+      },
+      {
+        "id": "nextbrain:right:10226",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.20893104296583956,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 105.07234218249108
+      },
+      {
+        "id": "nextbrain:right:10225",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18949026950638553,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 74.14680224945698
+      },
+      {
+        "id": "nextbrain:right:10223",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18181560616311152,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 14.470220476763096
+      },
+      {
+        "id": "nextbrain:right:10222",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21195742122920933,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 554.572387712142
+      },
+      {
+        "id": "nextbrain:right:10220",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20852910998982085,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 159.4608969116651
+      },
+      {
+        "id": "nextbrain:right:10218",
+        "boundary_edges": 0,
+        "pinch_edges": 78,
+        "maximum_display_displacement_mm": 0.4566385673981342,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 402.1373281239386
+      },
+      {
+        "id": "nextbrain:right:10217",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19985244720904988,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 282.8186376867864
+      },
+      {
+        "id": "nextbrain:right:10216",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.21599208878542897,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 466.2860453239736
+      },
+      {
+        "id": "nextbrain:right:10215",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21035316647464553,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 91.74601285136391
+      },
+      {
+        "id": "nextbrain:right:10214",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2109264854822935,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 74.46240788659142
+      },
+      {
+        "id": "nextbrain:right:10208",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.2054601630326826,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 169.34330893489087
+      },
+      {
+        "id": "nextbrain:right:10206",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19868205056452037,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 415.50713211022054
+      },
+      {
+        "id": "nextbrain:right:10201",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19901950778780586,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 24.292540850710022
+      },
+      {
+        "id": "nextbrain:right:10199",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.29999994282661363,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 172.525596195151
+      },
+      {
+        "id": "nextbrain:right:10196",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2159925580215809,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 11.861726105350844
+      },
+      {
+        "id": "nextbrain:right:10194",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21367031379106852,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.920879991121787
+      },
+      {
+        "id": "nextbrain:right:10191",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2159922522278408,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.458538588090456
+      },
+      {
+        "id": "nextbrain:right:10190",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_display_displacement_mm": 0.5999994660771938,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 11.382602730094195
+      },
+      {
+        "id": "nextbrain:right:10184",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21157581597837566,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 113.979298319039
+      },
+      {
+        "id": "nextbrain:right:10181",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2061575398219703,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 77.43172449771205
+      },
+      {
+        "id": "nextbrain:right:10174",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19680601350131632,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 114.19666260372196
+      },
+      {
+        "id": "nextbrain:right:10161",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21095376885911388,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.294152057697403
+      },
+      {
+        "id": "nextbrain:right:10157",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3000015164460395,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.091847519605688
+      },
+      {
+        "id": "nextbrain:right:10149",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.189393866870608,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 25.289110113249443
+      },
+      {
+        "id": "nextbrain:right:10147",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1975665968576754,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 25.47205542679053
+      },
+      {
+        "id": "nextbrain:right:10130",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20711673508479622,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 93.99310829830809
+      },
+      {
+        "id": "nextbrain:right:10128",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3000007298910407,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 247.82959203906228
+      },
+      {
+        "id": "nextbrain:right:10125",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19992569047236328,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 97.18523909334193
+      },
+      {
+        "id": "nextbrain:right:10120",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18792202069879896,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.470477618680842
+      },
+      {
+        "id": "nextbrain:right:10119",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.6000006011661544,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1045.589215457288
+      },
+      {
+        "id": "nextbrain:right:10118",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3000003018362673,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 991.9396856924432
+      },
+      {
+        "id": "nextbrain:right:10117",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21394456353721547,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 97.96669172716828
+      },
+      {
+        "id": "nextbrain:right:10111",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18622573763293704,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.949498102899216
+      },
+      {
+        "id": "nextbrain:right:10103",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599182484431134,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 74.50342831588767
+      },
+      {
+        "id": "nextbrain:right:10102",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.30000074146970807,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 583.1801433914577
+      },
+      {
+        "id": "nextbrain:right:10101",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2069647013026052,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 602.685931977475
+      },
+      {
+        "id": "nextbrain:right:10099",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19208460025135451,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 14.995993127333088
+      },
+      {
+        "id": "nextbrain:right:10079",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20443554259108374,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 5461.423158651519
+      },
+      {
+        "id": "nextbrain:right:10048",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.23530705812113836,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 2034.9500084078263
+      },
+      {
+        "id": "nextbrain:left:843",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19386990373565846,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 19.602232556197688
+      },
+      {
+        "id": "nextbrain:left:813",
+        "boundary_edges": 0,
+        "pinch_edges": 33,
+        "maximum_display_displacement_mm": 0.3000007008682453,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.864821104079159
+      },
+      {
+        "id": "nextbrain:left:752",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21105791265684937,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 102.14718580800456
+      },
+      {
+        "id": "nextbrain:left:751",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1961001983458408,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 29.025377934611303
+      },
+      {
+        "id": "nextbrain:left:721",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.6000004603253677,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 954.839117915604
+      },
+      {
+        "id": "nextbrain:left:715",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18321618928280292,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.902748882823522
+      },
+      {
+        "id": "nextbrain:left:697",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.195862939760431,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 51.81207824609609
+      },
+      {
+        "id": "nextbrain:left:662",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20354638032748873,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 890.1604702413937
+      },
+      {
+        "id": "nextbrain:left:580",
+        "boundary_edges": 0,
+        "pinch_edges": 48,
+        "maximum_display_displacement_mm": 0.3000010886982432,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 3486.2932116255743
+      },
+      {
+        "id": "nextbrain:left:578",
+        "boundary_edges": 0,
+        "pinch_edges": 12,
+        "maximum_display_displacement_mm": 0.5999994878835065,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 21.36768194892376
+      },
+      {
+        "id": "nextbrain:left:576",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20024573244508503,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 177.53229958773366
+      },
+      {
+        "id": "nextbrain:left:575",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18562921200170304,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 15.622580458068448
+      },
+      {
+        "id": "nextbrain:left:565",
+        "boundary_edges": 0,
+        "pinch_edges": 30,
+        "maximum_display_displacement_mm": 0.30000067130882435,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.679231703370197
+      },
+      {
+        "id": "nextbrain:left:564",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20426085170204672,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 98.33986013703783
+      },
+      {
+        "id": "nextbrain:left:563",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_display_displacement_mm": 0.3000010952731587,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.042365306521936
+      },
+      {
+        "id": "nextbrain:left:562",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.5081632811579394,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 48.03882604242374
+      },
+      {
+        "id": "nextbrain:left:561",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.2506912145199525,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.330455578480528
+      },
+      {
+        "id": "nextbrain:left:558",
+        "boundary_edges": 0,
+        "pinch_edges": 12,
+        "maximum_display_displacement_mm": 0.21599213666551256,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 43.90988255382233
+      },
+      {
+        "id": "nextbrain:left:541",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19308296003175476,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 55.82000684554032
+      },
+      {
+        "id": "nextbrain:left:531",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.34904813369359566,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 175.5042320803834
+      },
+      {
+        "id": "nextbrain:left:521",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.5999997606715324,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 38.789355369258494
+      },
+      {
+        "id": "nextbrain:left:519",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2029789002347898,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 37.04149577780949
+      },
+      {
+        "id": "nextbrain:left:517",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.3792261382001316,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 186.8725480952543
+      },
+      {
+        "id": "nextbrain:left:508",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21088299499714977,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 797.7592459120585
+      },
+      {
+        "id": "nextbrain:left:496",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599195595352486,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 45.574948262732526
+      },
+      {
+        "id": "nextbrain:left:492",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19773448009289432,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 23.272158451092476
+      },
+      {
+        "id": "nextbrain:left:484",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.5999996891283709,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 69.41196790014257
+      },
+      {
+        "id": "nextbrain:left:479",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1845118828295689,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.546223179417517
+      },
+      {
+        "id": "nextbrain:left:478",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19971801759229893,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 61.374691561323026
+      },
+      {
+        "id": "nextbrain:left:465",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21153162605877923,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 193.4829268220681
+      },
+      {
+        "id": "nextbrain:left:461",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599271926078997,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 32.92275927026422
+      },
+      {
+        "id": "nextbrain:left:458",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18962254095727285,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 257.28553823617193
+      },
+      {
+        "id": "nextbrain:left:454",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20406341417306054,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 267.21500177997996
+      },
+      {
+        "id": "nextbrain:left:441",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.2092338770163192,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 291.2837945611662
+      },
+      {
+        "id": "nextbrain:left:435",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_display_displacement_mm": 0.19245264331941553,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 120.74921775081711
+      },
+      {
+        "id": "nextbrain:left:432",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19565687235555365,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 61.88247580211097
+      },
+      {
+        "id": "nextbrain:left:430",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1902123263734472,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.884654268449571
+      },
+      {
+        "id": "nextbrain:left:425",
+        "boundary_edges": 0,
+        "pinch_edges": 27,
+        "maximum_display_displacement_mm": 0.3000004301404916,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 65.86070797442913
+      },
+      {
+        "id": "nextbrain:left:424",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2077267333718589,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 66.20084442676853
+      },
+      {
+        "id": "nextbrain:left:423",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20050997237448998,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 51.69741524468041
+      },
+      {
+        "id": "nextbrain:left:421",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20623418124581283,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 6.49855996990524
+      },
+      {
+        "id": "nextbrain:left:420",
+        "boundary_edges": 0,
+        "pinch_edges": 18,
+        "maximum_display_displacement_mm": 0.19001261762747423,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 19.708116735603614
+      },
+      {
+        "id": "nextbrain:left:418",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21599316613273853,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.86180517791163
+      },
+      {
+        "id": "nextbrain:left:414",
+        "boundary_edges": 0,
+        "pinch_edges": 165,
+        "maximum_display_displacement_mm": 0.47744311860534167,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 679.6536766260273
+      },
+      {
+        "id": "nextbrain:left:408",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19789277744813974,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 12.748829978003998
+      },
+      {
+        "id": "nextbrain:left:407",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.20819637253041973,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 75.57375484473239
+      },
+      {
+        "id": "nextbrain:left:404",
+        "boundary_edges": 0,
+        "pinch_edges": 69,
+        "maximum_display_displacement_mm": 0.3000011396839682,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 147.76760781910065
+      },
+      {
+        "id": "nextbrain:left:399",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1968065216772021,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 52.403801680976414
+      },
+      {
+        "id": "nextbrain:left:398",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.29999945722258736,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 78.61829252603344
+      },
+      {
+        "id": "nextbrain:left:397",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.2140084262903135,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 138.56454636257178
+      },
+      {
+        "id": "nextbrain:left:396",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20752296388935748,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 38.17039555092855
+      },
+      {
+        "id": "nextbrain:left:394",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21695854858156477,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 114.15041278051118
+      },
+      {
+        "id": "nextbrain:left:393",
+        "boundary_edges": 0,
+        "pinch_edges": 27,
+        "maximum_display_displacement_mm": 0.5999996567025717,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 39.76653986027807
+      },
+      {
+        "id": "nextbrain:left:385",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19976282624024047,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 199.79181660048192
+      },
+      {
+        "id": "nextbrain:left:384",
+        "boundary_edges": 0,
+        "pinch_edges": 75,
+        "maximum_display_displacement_mm": 0.3000012861656904,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 1971.4579474907168
+      },
+      {
+        "id": "nextbrain:left:382",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19415024612770165,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 49.58017846203887
+      },
+      {
+        "id": "nextbrain:left:381",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.2608550468475219,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 102.92424074806762
+      },
+      {
+        "id": "nextbrain:left:380",
+        "boundary_edges": 0,
+        "pinch_edges": 36,
+        "maximum_display_displacement_mm": 0.6000001930515789,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 305.32553894358307
+      },
+      {
+        "id": "nextbrain:left:379",
+        "boundary_edges": 0,
+        "pinch_edges": 39,
+        "maximum_display_displacement_mm": 0.3570891206647651,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 94.03089134732328
+      },
+      {
+        "id": "nextbrain:left:378",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.3833370195386751,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 110.80965272183361
+      },
+      {
+        "id": "nextbrain:left:377",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.26955561890342394,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 485.3541560311091
+      },
+      {
+        "id": "nextbrain:left:374",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20133458650760755,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 18.16753517469239
+      },
+      {
+        "id": "nextbrain:left:372",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.2159921416341907,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.098716052309786
+      },
+      {
+        "id": "nextbrain:left:371",
+        "boundary_edges": 0,
+        "pinch_edges": 21,
+        "maximum_display_displacement_mm": 0.47074799481104646,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.033475366282085
+      },
+      {
+        "id": "nextbrain:left:370",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2071378972125553,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 38.8714266195512
+      },
+      {
+        "id": "nextbrain:left:368",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.6000011293001243,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 49.850483854302965
+      },
+      {
+        "id": "nextbrain:left:367",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20844477346892085,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.829664285431976
+      },
+      {
+        "id": "nextbrain:left:364",
+        "boundary_edges": 0,
+        "pinch_edges": 33,
+        "maximum_display_displacement_mm": 0.2191550146792847,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.217399137675827
+      },
+      {
+        "id": "nextbrain:left:354",
+        "boundary_edges": 0,
+        "pinch_edges": 60,
+        "maximum_display_displacement_mm": 0.6000002967674658,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 426.6354282335408
+      },
+      {
+        "id": "nextbrain:left:352",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20036385068177937,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 138.9802538560808
+      },
+      {
+        "id": "nextbrain:left:350",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.199225277932379,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 164.6959551951486
+      },
+      {
+        "id": "nextbrain:left:349",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19291769722188032,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 46.85452390894748
+      },
+      {
+        "id": "nextbrain:left:347",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20315008919923525,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 709.9732920817444
+      },
+      {
+        "id": "nextbrain:left:346",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.21599305436767627,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 7.909493231573364
+      },
+      {
+        "id": "nextbrain:left:345",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.29999884021497036,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 375.37119255121746
+      },
+      {
+        "id": "nextbrain:left:344",
+        "boundary_edges": 0,
+        "pinch_edges": 54,
+        "maximum_display_displacement_mm": 0.30000019708715514,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 38.15804892673684
+      },
+      {
+        "id": "nextbrain:left:343",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.2031112791087742,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 284.8976563856655
+      },
+      {
+        "id": "nextbrain:left:342",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.22320765674599893,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.103202845069339
+      },
+      {
+        "id": "nextbrain:left:341",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2092452140295064,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 144.86996269774772
+      },
+      {
+        "id": "nextbrain:left:339",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.2999984258217246,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 129.19462079548796
+      },
+      {
+        "id": "nextbrain:left:326",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19901335823272653,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 79.43905733520067
+      },
+      {
+        "id": "nextbrain:left:321",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20470509322969016,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 32.48655954241836
+      },
+      {
+        "id": "nextbrain:left:316",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20275033979040388,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 34.26746681752204
+      },
+      {
+        "id": "nextbrain:left:315",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1979912989599462,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.469216364216313
+      },
+      {
+        "id": "nextbrain:left:314",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2183595754602153,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 122.59226672957489
+      },
+      {
+        "id": "nextbrain:left:313",
+        "boundary_edges": 0,
+        "pinch_edges": 21,
+        "maximum_display_displacement_mm": 0.24160023385726154,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 583.1853824617403
+      },
+      {
+        "id": "nextbrain:left:312",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20135035462231854,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 30.13071565117541
+      },
+      {
+        "id": "nextbrain:left:310",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20196466143121264,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 157.45225225515978
+      },
+      {
+        "id": "nextbrain:left:309",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21469719455097622,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 17.96640345404501
+      },
+      {
+        "id": "nextbrain:left:301",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20670998474749122,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 17.644150742928495
+      },
+      {
+        "id": "nextbrain:left:298",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.31000227294730515,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 15.19627059259176
+      },
+      {
+        "id": "nextbrain:left:297",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.20104273065036415,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 45.79321201263592
+      },
+      {
+        "id": "nextbrain:left:295",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1968746274702684,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 35.4124332663918
+      },
+      {
+        "id": "nextbrain:left:285",
+        "boundary_edges": 0,
+        "pinch_edges": 15,
+        "maximum_display_displacement_mm": 0.3279102691902011,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 93.58901260839035
+      },
+      {
+        "id": "nextbrain:left:283",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2038643752543384,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 293.7911056990871
+      },
+      {
+        "id": "nextbrain:left:282",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.3000001154907561,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 399.2976737775466
+      },
+      {
+        "id": "nextbrain:left:279",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3000000476648314,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 32.862256000292746
+      },
+      {
+        "id": "nextbrain:left:277",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19383571680191125,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 30.713955824712666
+      },
+      {
+        "id": "nextbrain:left:276",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.5410692324173779,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 30.79019674564924
+      },
+      {
+        "id": "nextbrain:left:275",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19630292295771873,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 55.88927736602781
+      },
+      {
+        "id": "nextbrain:left:256",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21363974309218003,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 29.897240756882194
+      },
+      {
+        "id": "nextbrain:left:255",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19503266296154892,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.058888172475644
+      },
+      {
+        "id": "nextbrain:left:254",
+        "boundary_edges": 0,
+        "pinch_edges": 36,
+        "maximum_display_displacement_mm": 0.30000041528151755,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 191.2228666583572
+      },
+      {
+        "id": "nextbrain:left:253",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19169881051528462,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 26.384340553130908
+      },
+      {
+        "id": "nextbrain:left:252",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.299999965720353,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 12.723710266605288
+      },
+      {
+        "id": "nextbrain:left:246",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20093119706875304,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 11.12809836565577
+      },
+      {
+        "id": "nextbrain:left:245",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2159914124849637,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.50369675005695
+      },
+      {
+        "id": "nextbrain:left:244",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19000627956218383,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.8211521460048
+      },
+      {
+        "id": "nextbrain:left:243",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18736734102035404,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.23213745417192
+      },
+      {
+        "id": "nextbrain:left:242",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.1938132385957015,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 169.30690029734725
+      },
+      {
+        "id": "nextbrain:left:238",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21840437943868563,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 15.147114443162506
+      },
+      {
+        "id": "nextbrain:left:232",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.24857812161962253,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 47.68666654175889
+      },
+      {
+        "id": "nextbrain:left:230",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2159921576122985,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 50.86134400652899
+      },
+      {
+        "id": "nextbrain:left:228",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19486749670713185,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.032275906215155
+      },
+      {
+        "id": "nextbrain:left:227",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.1868345608435104,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.864687845493659
+      },
+      {
+        "id": "nextbrain:left:226",
+        "boundary_edges": 0,
+        "pinch_edges": 12,
+        "maximum_display_displacement_mm": 0.2999996493506762,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 84.29349313431103
+      },
+      {
+        "id": "nextbrain:left:225",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2159922032939452,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 100.14839889648218
+      },
+      {
+        "id": "nextbrain:left:223",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19680663928923947,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.08996057971455
+      },
+      {
+        "id": "nextbrain:left:222",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21708082870122,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 523.5501194639543
+      },
+      {
+        "id": "nextbrain:left:220",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.30000009823812446,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 152.90545740051547
+      },
+      {
+        "id": "nextbrain:left:218",
+        "boundary_edges": 0,
+        "pinch_edges": 39,
+        "maximum_display_displacement_mm": 0.4580507381695382,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 357.5701307629955
+      },
+      {
+        "id": "nextbrain:left:217",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20533610505130767,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 295.73775596489725
+      },
+      {
+        "id": "nextbrain:left:216",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.3000007347749583,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 530.1148768658262
+      },
+      {
+        "id": "nextbrain:left:215",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19650866108902124,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 82.55123480794158
+      },
+      {
+        "id": "nextbrain:left:214",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.3000010883305365,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 62.51037943892093
+      },
+      {
+        "id": "nextbrain:left:208",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20528623921132763,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 192.85216488730802
+      },
+      {
+        "id": "nextbrain:left:206",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20046077938868134,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 401.3361980341499
+      },
+      {
+        "id": "nextbrain:left:201",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19673764904299018,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 29.087179886838403
+      },
+      {
+        "id": "nextbrain:left:199",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.2906072232021971,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 213.17996023677523
+      },
+      {
+        "id": "nextbrain:left:196",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19813121195719766,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 13.699552038792483
+      },
+      {
+        "id": "nextbrain:left:194",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.18307475775664236,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.7726344364398
+      },
+      {
+        "id": "nextbrain:left:192",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.17815560411714038,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 12.353855681014268
+      },
+      {
+        "id": "nextbrain:left:191",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.6000000203955252,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.246864478521301
+      },
+      {
+        "id": "nextbrain:left:190",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.17947927936047817,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 10.260776319959492
+      },
+      {
+        "id": "nextbrain:left:184",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.22344908436447997,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 106.80850694092535
+      },
+      {
+        "id": "nextbrain:left:181",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.2043970108236163,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 78.17197644452315
+      },
+      {
+        "id": "nextbrain:left:174",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.3000005734101415,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 101.77913360179492
+      },
+      {
+        "id": "nextbrain:left:161",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21599203137606424,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 16.584131838184184
+      },
+      {
+        "id": "nextbrain:left:157",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18659285057661207,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 8.902738077307333
+      },
+      {
+        "id": "nextbrain:left:149",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.21926149983605353,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 32.34139945817411
+      },
+      {
+        "id": "nextbrain:left:147",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599194433789834,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 32.44207850661286
+      },
+      {
+        "id": "nextbrain:left:130",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.19552782254315784,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 80.5937086937679
+      },
+      {
+        "id": "nextbrain:left:128",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.30000044615374205,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 220.7942723689836
+      },
+      {
+        "id": "nextbrain:left:125",
+        "boundary_edges": 0,
+        "pinch_edges": 6,
+        "maximum_display_displacement_mm": 0.6000006100072727,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 59.16672373897449
+      },
+      {
+        "id": "nextbrain:left:120",
+        "boundary_edges": 0,
+        "pinch_edges": 9,
+        "maximum_display_displacement_mm": 0.3288417204382336,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 12.601653639697435
+      },
+      {
+        "id": "nextbrain:left:119",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21577265396311057,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 962.7488429923375
+      },
+      {
+        "id": "nextbrain:left:118",
+        "boundary_edges": 0,
+        "pinch_edges": 18,
+        "maximum_display_displacement_mm": 0.3000011395303551,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 943.9188846530724
+      },
+      {
+        "id": "nextbrain:left:117",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18574396048265682,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 99.67983072714719
+      },
+      {
+        "id": "nextbrain:left:111",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.18641801232800928,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 9.196372200425868
+      },
+      {
+        "id": "nextbrain:left:103",
+        "boundary_edges": 0,
+        "pinch_edges": 3,
+        "maximum_display_displacement_mm": 0.20537986396446417,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 126.16689950152431
+      },
+      {
+        "id": "nextbrain:left:102",
+        "boundary_edges": 0,
+        "pinch_edges": 24,
+        "maximum_display_displacement_mm": 0.6000003252757244,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 609.3385184135951
+      },
+      {
+        "id": "nextbrain:left:101",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20667572159686537,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 730.1903383684138
+      },
+      {
+        "id": "nextbrain:left:99",
+        "boundary_edges": 0,
+        "pinch_edges": 24,
+        "maximum_display_displacement_mm": 0.2999995437340154,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 17.326200428986375
+      },
+      {
+        "id": "nextbrain:left:79",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.21599175809240914,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 5457.609001392917
+      },
+      {
+        "id": "nextbrain:left:48",
+        "boundary_edges": 0,
+        "pinch_edges": 0,
+        "maximum_display_displacement_mm": 0.20108737390178333,
+        "misclassified_voxel_centres": 0,
+        "mesh_volume_mm3": 2217.6103120904445
+      }
+    ]
+  },
+  "nextbrain_cut_labels": {
+    "file": "tissues-nextbrain.volume",
+    "sha256": "a41e3c96e770b28f87956b563240d206ba9a0dc47ab3ff851a5cc7fa43f10f80",
+    "block": 2,
+    "voxel_spacing_mm": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "every_block_is_its_majority": true,
+    "tied_blocks": 140419,
+    "source_voxels_matching_their_cut_label": 0.9661059376020934,
+    "labels_absent_from_cut": [
+      68,
+      160,
+      304,
+      365,
+      400,
+      409,
+      411,
+      443,
+      444,
+      493,
+      506,
+      510,
+      559,
+      569,
+      666,
+      10068,
+      10160,
+      10209,
+      10284,
+      10304,
+      10365,
+      10400,
+      10405,
+      10411,
+      10510,
+      10559,
+      10572,
+      10765
+    ]
+  },
+  "learning_structures": {
+    "file": "learning.glb",
+    "sha256": "ac6b5ad334014d72c0843cb47d87f933c34d9927db882867b2b9baf1b781cbf7",
+    "regions": [
+      {
+        "id": "learning:left:caudate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 50322,
+        "maximum_display_displacement_mm": 0.3969753499136019,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:caudate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 48495,
+        "maximum_display_displacement_mm": 0.2604783449752273,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:putamen",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 86184,
+        "maximum_display_displacement_mm": 0.21599175809240914,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:putamen",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 86355,
+        "maximum_display_displacement_mm": 0.20443554259108374,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:pallidum-external",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 15127,
+        "maximum_display_displacement_mm": 0.21577265396311057,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:pallidum-external",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 16449,
+        "maximum_display_displacement_mm": 0.6000006011661544,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:pallidum-internal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6307,
+        "maximum_display_displacement_mm": 0.20046077938868134,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:pallidum-internal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 6528,
+        "maximum_display_displacement_mm": 0.19868205056452037,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:accumbens",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 11463,
+        "maximum_display_displacement_mm": 0.20667572159686537,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:accumbens",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 9460,
+        "maximum_display_displacement_mm": 0.2069647013026052,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:subthalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1299,
+        "maximum_display_displacement_mm": 0.20004305834025776,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:subthalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1046,
+        "maximum_display_displacement_mm": 0.19137774213094236,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:substantia-nigra",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 4711,
+        "maximum_display_displacement_mm": 0.20233311323138078,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:substantia-nigra",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 4912,
+        "maximum_display_displacement_mm": 0.19845057991006726,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:claustrum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 11544,
+        "maximum_display_displacement_mm": 0.5999993049184095,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:claustrum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 11266,
+        "maximum_display_displacement_mm": 0.30000074146970807,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:ventral-pallidum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 234,
+        "maximum_display_displacement_mm": 0.3288417204382336,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:ventral-pallidum",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 258,
+        "maximum_display_displacement_mm": 0.18792202069879896,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:septal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2234,
+        "maximum_display_displacement_mm": 0.20537986396446417,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:septal",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1452,
+        "maximum_display_displacement_mm": 0.21599182484431134,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:innominata",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3633,
+        "maximum_display_displacement_mm": 0.30000029806605566,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:innominata",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 4038,
+        "maximum_display_displacement_mm": 0.3000007298910407,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:thalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 102810,
+        "maximum_display_displacement_mm": 0.30000027511587235,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:thalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 106316,
+        "maximum_display_displacement_mm": 0.2174450062081837,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:hypothalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 8592,
+        "maximum_display_displacement_mm": 0.20314087702298728,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:hypothalamus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 7426,
+        "maximum_display_displacement_mm": 0.2159925580215809,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:mammillary",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 432,
+        "maximum_display_displacement_mm": 0.20085607014829304,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:mammillary",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 468,
+        "maximum_display_displacement_mm": 0.19707918780969233,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:zona-incerta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1404,
+        "maximum_display_displacement_mm": 0.2999996493506762,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:zona-incerta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1725,
+        "maximum_display_displacement_mm": 0.20893104296583956,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:lateral-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1118,
+        "maximum_display_displacement_mm": 0.5999996891283709,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:lateral-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1226,
+        "maximum_display_displacement_mm": 0.21229513793849986,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:medial-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 109,
+        "maximum_display_displacement_mm": 0.19970392947228263,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:medial-geniculate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 128,
+        "maximum_display_displacement_mm": 0.17953933067679487,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:hippocampus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 53278,
+        "maximum_display_displacement_mm": 0.2227366661572507,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:hippocampus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 49037,
+        "maximum_display_displacement_mm": 0.20888924479711793,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:amygdala",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 28310,
+        "maximum_display_displacement_mm": 0.3000006212534502,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:amygdala",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 25829,
+        "maximum_display_displacement_mm": 0.30406979720901417,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:bnST",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1609,
+        "maximum_display_displacement_mm": 0.18574396048265682,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:bnST",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1571,
+        "maximum_display_displacement_mm": 0.21394456353721547,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:fornix",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3520,
+        "maximum_display_displacement_mm": 0.2906072232021971,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:fornix",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2889,
+        "maximum_display_displacement_mm": 0.29999994282661363,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:fimbria",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 581,
+        "maximum_display_displacement_mm": 0.21599271926078997,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:fimbria",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 820,
+        "maximum_display_displacement_mm": 0.21599206184611475,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:anterior-commissure",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1310,
+        "maximum_display_displacement_mm": 0.19552782254315784,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:anterior-commissure",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1510,
+        "maximum_display_displacement_mm": 0.20711673508479622,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:optic-tract",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3075,
+        "maximum_display_displacement_mm": 0.20528623921132763,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:optic-tract",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2713,
+        "maximum_display_displacement_mm": 0.2054601630326826,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:midline:optic-chiasm",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 590,
+        "maximum_display_displacement_mm": 0.21911825269214802,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:stria-terminalis",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1877,
+        "maximum_display_displacement_mm": 0.22344908436447997,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:stria-terminalis",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2036,
+        "maximum_display_displacement_mm": 0.21157581597837566,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:mammillothalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 543,
+        "maximum_display_displacement_mm": 0.5410692324173779,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:mammillothalamic",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 557,
+        "maximum_display_displacement_mm": 0.21905446152021174,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:superior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2782,
+        "maximum_display_displacement_mm": 0.34904813369359566,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:superior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2424,
+        "maximum_display_displacement_mm": 0.20912291860866886,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:inferior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 826,
+        "maximum_display_displacement_mm": 0.195862939760431,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:inferior-cerebellar-peduncle",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 630,
+        "maximum_display_displacement_mm": 0.21599232531158452,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:midbrain",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 35448,
+        "maximum_display_displacement_mm": 0.3079728342920223,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:midbrain",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 39299,
+        "maximum_display_displacement_mm": 0.6000002514800294,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:pons",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 65240,
+        "maximum_display_displacement_mm": 0.1993943963286451,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:pons",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 58243,
+        "maximum_display_displacement_mm": 0.20070968736337808,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:medulla",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 14015,
+        "maximum_display_displacement_mm": 0.20354638032748873,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:medulla",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 15123,
+        "maximum_display_displacement_mm": 0.5089767622297564,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:red-nucleus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3135,
+        "maximum_display_displacement_mm": 0.19976282624024047,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:red-nucleus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 3224,
+        "maximum_display_displacement_mm": 0.18657925350435453,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:vta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1951,
+        "maximum_display_displacement_mm": 0.19245264331941553,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:vta",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1999,
+        "maximum_display_displacement_mm": 0.20185152473622872,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:inferior-colliculus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 897,
+        "maximum_display_displacement_mm": 0.19308296003175476,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:inferior-colliculus",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 972,
+        "maximum_display_displacement_mm": 0.18570082049727563,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:dentate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 14726,
+        "maximum_display_displacement_mm": 0.6000004603253677,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:dentate",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 11224,
+        "maximum_display_displacement_mm": 0.20767789211195836,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:left:interposed",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 2103,
+        "maximum_display_displacement_mm": 0.21105226883338937,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:interposed",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 1397,
+        "maximum_display_displacement_mm": 0.20068087976885166,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:ventricles-left",
+        "source_atlas": "aseg",
+        "source_voxel_count": 9607,
+        "maximum_display_displacement_mm": 0.49269370590067396,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:ventricles-right",
+        "source_atlas": "aseg",
+        "source_voxel_count": 10561,
+        "maximum_display_displacement_mm": 0.4972848033370084,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:third-ventricle",
+        "source_atlas": "aseg",
+        "source_voxel_count": 863,
+        "maximum_display_displacement_mm": 0.46428899547193564,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:fourth-ventricle",
+        "source_atlas": "aseg",
+        "source_voxel_count": 3531,
+        "maximum_display_displacement_mm": 0.4854723403169185,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:cerebellar-cortex-left",
+        "source_atlas": "aseg",
+        "source_voxel_count": 58546,
+        "maximum_display_displacement_mm": 0.5399796736962214,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:cerebellar-cortex-right",
+        "source_atlas": "aseg",
+        "source_voxel_count": 58914,
+        "maximum_display_displacement_mm": 0.5107584148871899,
+        "misclassified_voxel_centres": 0
+      }
+    ],
+    "source_volumes_unchanged": true,
+    "maximum_allowed_displacement_mm": 0.6,
+    "cross_source_overlap": [
+      {
+        "unit": "caudate",
+        "cross_source_overlap_fraction": 0.01893398909094589
+      },
+      {
+        "unit": "putamen",
+        "cross_source_overlap_fraction": 2.318316438602287e-05
+      },
+      {
+        "unit": "pallidum-external",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "pallidum-internal",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "accumbens",
+        "cross_source_overlap_fraction": 0.00023897146680686325
+      },
+      {
+        "unit": "subthalamic",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "substantia-nigra",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "claustrum",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "ventral-pallidum",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "septal",
+        "cross_source_overlap_fraction": 0.10607704829083017
+      },
+      {
+        "unit": "innominata",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "thalamus",
+        "cross_source_overlap_fraction": 0.005293459445501755
+      },
+      {
+        "unit": "hypothalamus",
+        "cross_source_overlap_fraction": 0.03202647022100137
+      },
+      {
+        "unit": "mammillary",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "zona-incerta",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "lateral-geniculate",
+        "cross_source_overlap_fraction": 0.01151877133105802
+      },
+      {
+        "unit": "medial-geniculate",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "hippocampus",
+        "cross_source_overlap_fraction": 0.024463666129111078
+      },
+      {
+        "unit": "amygdala",
+        "cross_source_overlap_fraction": 0.013077448789227729
+      },
+      {
+        "unit": "bnST",
+        "cross_source_overlap_fraction": 0.09874213836477988
+      },
+      {
+        "unit": "fornix",
+        "cross_source_overlap_fraction": 0.024652831955063192
+      },
+      {
+        "unit": "fimbria",
+        "cross_source_overlap_fraction": 0.05852962169878658
+      },
+      {
+        "unit": "anterior-commissure",
+        "cross_source_overlap_fraction": 0.0007092198581560284
+      },
+      {
+        "unit": "optic-tract",
+        "cross_source_overlap_fraction": 0.014858327574291638
+      },
+      {
+        "unit": "optic-chiasm",
+        "cross_source_overlap_fraction": 0.003389830508474576
+      },
+      {
+        "unit": "stria-terminalis",
+        "cross_source_overlap_fraction": 0.19217991311014568
+      },
+      {
+        "unit": "mammillothalamic",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "superior-cerebellar-peduncle",
+        "cross_source_overlap_fraction": 0.002689204763734153
+      },
+      {
+        "unit": "inferior-cerebellar-peduncle",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "midbrain",
+        "cross_source_overlap_fraction": 0.021218242872623652
+      },
+      {
+        "unit": "pons",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "medulla",
+        "cross_source_overlap_fraction": 0.006452055734779326
+      },
+      {
+        "unit": "red-nucleus",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "vta",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "inferior-colliculus",
+        "cross_source_overlap_fraction": 0.04601391118245051
+      },
+      {
+        "unit": "dentate",
+        "cross_source_overlap_fraction": 3.853564547206166e-05
+      },
+      {
+        "unit": "interposed",
+        "cross_source_overlap_fraction": 0.0
+      }
+    ]
+  },
+  "white_matter": {
+    "file": "white-matter.volume",
+    "sha256": "e1c05c84de4fa85ac2a4811520fa94288e56e39f25318458ed54a930f77ed5f4",
+    "identical_parcel_voxels": true,
+    "crop_corner_voxel": [
+      69,
+      69,
+      33
+    ],
+    "shape": [
+      125,
+      112,
+      172
+    ],
+    "parcel_count": 68
+  },
+  "volumes": {
+    "mri": {
+      "file": "mri.volume",
+      "sha256": "5d24edc8292c0b35757335acda70bae2a8d9fc4a66d00411855d2668ab79fbb6",
+      "identical_voxels": true,
+      "identical_tkregister_affine": true,
+      "cropped_to_labels": false,
+      "published_shape": [
+        256,
+        256,
+        256
+      ],
+      "voxel_count": 16777216,
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "segmentation": {
+      "file": "aseg.volume",
+      "sha256": "0b761595675c2d802b12140b310df6baf44af4987ec866be5175333860534f26",
+      "identical_voxels": true,
+      "identical_tkregister_affine": true,
+      "cropped_to_labels": true,
+      "published_shape": [
+        133,
+        142,
+        178
+      ],
+      "voxel_count": 16777216,
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  }
+}

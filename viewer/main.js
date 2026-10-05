@@ -5,8 +5,11 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
+import './styles/masthead.css';
+import './styles/stage.css';
 import './styles/clinical.css';
 import './styles/circuits.css';
+import './styles/diffusion.css';
 import './styles/phone.css';
 
 /**
@@ -32,6 +35,7 @@ function webgl2Unavailable() {
 function fail(message, { retryable }) {
   document.getElementById('app').dataset.status = 'error';
   document.getElementById('stage-message').textContent = message;
+  document.getElementById('announcer').textContent = message;
   const retry = document.getElementById('stage-retry');
   retry.hidden = !retryable;
   if (retryable) retry.addEventListener('click', reloadWithoutStoredModels);

@@ -1,0 +1,39 @@
+{
+  "exactVoxel": {
+    "voxel": [
+      128,
+      104,
+      75
+    ],
+    "ras": [
+      7.4461669921875,
+      -0.4605712890625,
+      46.64009094238281
+    ],
+    "t1": 371.718994140625,
+    "fa": 0.7553123831748962
+  },
+  "keyboardRight": {
+    "voxel": [
+      129,
+      104,
+      75
+    ],
+    "t1": 360.2246398925781,
+    "fa": 0.7238877415657043
+  },
+  "closeFocus": "native-tract-mri",
+  "reopenPreserved": true,
+  "clickReadout": "RAS: 43,053 · 23,539 · 62,108 mm · T1: 354,977 · FA: 0,536",
+  "clickVoxels": [
+    "164",
+    "128",
+    "90"
+  ],
+  "phone": {
+    "closeHeight": 44,
+    "height": 844,
+    "overflow": false,
+    "width": 390
+  }
+}

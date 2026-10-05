@@ -13,8 +13,16 @@ from .volumes import conformed_grid, load_on_grid
 ATLAS_ID = "learning"
 
 
-def read_definition():
-    return yaml.safe_load((ROOT / "config/learning-anatomy.yaml").read_text())
+def read_definition(config):
+    definition = yaml.safe_load((ROOT / "config/learning-anatomy.yaml").read_text())
+    excluded = config["anatomy"].get("learning", {}).get("exclude_aseg_units", [])
+    if not isinstance(excluded, list) or any(not isinstance(unit, str) for unit in excluded):
+        raise ValueError("Overview exclusions must be a list of unit names")
+    unknown = set(excluded) - {unit["id"] for unit in definition["aseg"]}
+    if unknown:
+        raise ValueError(f"Unknown aseg overview units: {sorted(unknown)}")
+    definition["aseg"] = [unit for unit in definition["aseg"] if unit["id"] not in excluded]
+    return definition
 
 
 def combine_labels(volume, groups):
@@ -72,7 +80,7 @@ def expand_nextbrain(groups, table):
 
 def source_groups(config):
     """Each source's label grid and display units; the two grids need not match."""
-    definition = read_definition()
+    definition = read_definition(config)
     grid, table = nextbrain.load(config)
     yield "nextbrain", grid, table, expand_nextbrain(definition["nextbrain"], table)
     grid = conformed_grid(load_on_grid(config, config["source_directory"] / "mri/aseg.mgz"))
@@ -123,7 +131,7 @@ def region_record(group, source, volume):
 
 
 def build(config):
-    definition = read_definition()
+    definition = read_definition(config)
     scene = trimesh.Scene()
     regions = []
     grids = []

@@ -34,6 +34,8 @@ def resolve_config(document):
     # The warp is anatomy-specific; everything else about it is not.
     config["nextbrain"] = {**config["nextbrain"], **anatomy["nextbrain"]}
     config["nextbrain"]["directory"] = ROOT / config["nextbrain"]["directory"]
+    if "structures" in anatomy:
+        config["structures"] = {**config["structures"], **anatomy["structures"]}
     return config
 
 

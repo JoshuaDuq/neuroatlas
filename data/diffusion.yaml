@@ -1,0 +1,118 @@
+id: snail-subject-1
+name:
+  en: SNAIL reference · subject 1
+  fr: Référence SNAIL · sujet 1
+source: https://hdl.handle.net/1773/38477
+license: CC0-1.0
+archive_md5: 97756fbef11ce2df31f1bedf1fc7aac7
+archive_url: https://digital.lib.washington.edu/researchworks/bitstreams/a461de94-2d87-4a50-9b79-7c990500f4f7/download
+archive_subject: bundles_2_subjects/subj_1
+provenance: snail-subject-1/provenance.json
+anatomy: snail
+reference_space: snail-subject-1/surface-space.json
+overlay_cortex_opacity: 0.16
+brain_outline:
+  file: snail-subject-1/t1-outline.glb
+  provenance: snail-subject-1/t1-outline.json
+  source_map: t1
+  intensity_threshold: 80
+  step_size: 2
+  opacity: 0.16
+maps:
+  - id: t1
+    file: snail-subject-1/t1_warped.nii.gz
+    name: { en: T1 reference, fr: Référence T1 }
+    colormap: gray
+    range: [0, 1100]
+    opacity: 1
+  - id: fa
+    file: snail-subject-1/fa_1x1x1.nii.gz
+    name: { en: Fractional anisotropy (FA), fr: Anisotropie fractionnelle (FA) }
+    colormap: viridis
+    range: [0, 1]
+    opacity: 0
+bundles:
+  - id: af-left
+    file: snail-subject-1/bundles_af.left.trk.gz
+    name: { en: Arcuate fasciculus · left, fr: Faisceau arqué · gauche }
+    initial: true
+  - id: af-right
+    file: snail-subject-1/bundles_af.right.trk.gz
+    name: { en: Arcuate fasciculus · right, fr: Faisceau arqué · droit }
+  - id: cst-left
+    file: snail-subject-1/bundles_cst.left.trk.gz
+    name: { en: Corticospinal tract · left, fr: Faisceau corticospinal · gauche }
+  - id: cst-right
+    file: snail-subject-1/bundles_cst.right.trk.gz
+    name: { en: Corticospinal tract · right, fr: Faisceau corticospinal · droit }
+    initial: true
+  - id: cg-left
+    file: snail-subject-1/bundles_cg.left.trk.gz
+    name: { en: Cingulum · left, fr: Cingulum · gauche }
+  - id: cg-right
+    file: snail-subject-1/bundles_cg.right.trk.gz
+    name: { en: Cingulum · right, fr: Cingulum · droit }
+  - id: uf-left
+    file: snail-subject-1/bundles_uf.left.trk.gz
+    name: { en: Uncinate fasciculus · left, fr: Faisceau unciné · gauche }
+  - id: uf-right
+    file: snail-subject-1/bundles_uf.right.trk.gz
+    name: { en: Uncinate fasciculus · right, fr: Faisceau unciné · droit }
+  - id: ifof-left
+    file: snail-subject-1/bundles_ifof.left.trk.gz
+    name: { en: Inferior fronto-occipital fasciculus · left, fr: Faisceau fronto-occipital inférieur · gauche }
+  - id: ifof-right
+    file: snail-subject-1/bundles_ifof.right.trk.gz
+    name: { en: Inferior fronto-occipital fasciculus · right, fr: Faisceau fronto-occipital inférieur · droit }
+  - id: ilf-left
+    file: snail-subject-1/bundles_ilf.left.trk.gz
+    name: { en: Inferior longitudinal fasciculus · left, fr: Faisceau longitudinal inférieur · gauche }
+  - id: ilf-right
+    file: snail-subject-1/bundles_ilf.right.trk.gz
+    name: { en: Inferior longitudinal fasciculus · right, fr: Faisceau longitudinal inférieur · droit }
+  - id: mdlf-left
+    file: snail-subject-1/bundles_mdlf.left.trk.gz
+    name: { en: Middle longitudinal fasciculus · left, fr: Faisceau longitudinal moyen · gauche }
+  - id: mdlf-right
+    file: snail-subject-1/bundles_mdlf.right.trk.gz
+    name: { en: Middle longitudinal fasciculus · right, fr: Faisceau longitudinal moyen · droit }
+  - id: slf1-left
+    file: snail-subject-1/bundles_slf1.left.trk.gz
+    name: { en: Superior longitudinal fasciculus I · left, fr: Faisceau longitudinal supérieur I · gauche }
+  - id: slf1-right
+    file: snail-subject-1/bundles_slf1.right.trk.gz
+    name: { en: Superior longitudinal fasciculus I · right, fr: Faisceau longitudinal supérieur I · droit }
+  - id: slf2-left
+    file: snail-subject-1/bundles_slf2.left.trk.gz
+    name: { en: Superior longitudinal fasciculus II · left, fr: Faisceau longitudinal supérieur II · gauche }
+  - id: slf2-right
+    file: snail-subject-1/bundles_slf2.right.trk.gz
+    name: { en: Superior longitudinal fasciculus II · right, fr: Faisceau longitudinal supérieur II · droit }
+  - id: slf3-left
+    file: snail-subject-1/bundles_slf_3.left.trk.gz
+    name: { en: Superior longitudinal fasciculus III · left, fr: Faisceau longitudinal supérieur III · gauche }
+  - id: slf3-right
+    file: snail-subject-1/bundles_slf_3.right.trk.gz
+    name: { en: Superior longitudinal fasciculus III · right, fr: Faisceau longitudinal supérieur III · droit }
+  - id: cc-1
+    file: snail-subject-1/bundles_cc_1.trk.gz
+    name: { en: Corpus callosum · source segment 1, fr: Corps calleux · segment source 1 }
+    initial: true
+  - id: cc-2
+    file: snail-subject-1/bundles_cc_2.trk.gz
+    name: { en: Corpus callosum · source segment 2, fr: Corps calleux · segment source 2 }
+  - id: cc-3
+    file: snail-subject-1/bundles_cc_3.trk.gz
+    name: { en: Corpus callosum · source segment 3, fr: Corps calleux · segment source 3 }
+  - id: cc-4
+    file: snail-subject-1/bundles_cc_4.trk.gz
+    name: { en: Corpus callosum · source segment 4, fr: Corps calleux · segment source 4 }
+  - id: cc-5
+    file: snail-subject-1/bundles_cc_5.trk.gz
+    name: { en: Corpus callosum · source segment 5, fr: Corps calleux · segment source 5 }
+  - id: cc-6
+    file: snail-subject-1/bundles_cc_6.trk.gz
+    name: { en: Corpus callosum · source segment 6, fr: Corps calleux · segment source 6 }
+  - id: cc-7
+    file: snail-subject-1/bundles_cc_7.trk.gz
+    name: { en: Corpus callosum · source segment 7, fr: Corps calleux · segment source 7 }

@@ -1,26 +1,29 @@
-.circuit-intro { font-size: var(--text-ui); line-height: 1.5; color: var(--text-secondary); }
+.circuit-intro { padding-top: var(--space-1); padding-bottom: var(--space-3); font-size: var(--text-ui); line-height: 1.5; color: var(--text-secondary); }
+/*
+ * List rows share the tree's pitch: 32px for one line, 48px for two. The wash is inset 8px
+ * from the panel; the text sits on the 16px column (7px padding + the 1px button border).
+ */
+#circuit-list { display: grid; padding: 0 var(--space-2); }
 .circuit-choice {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-1);
-  width: calc(100% - var(--space-6));
+  justify-content: center;
+  width: 100%;
   height: auto;
-  min-height: var(--row-height);
-  margin: 2px var(--space-3);
-  padding: var(--space-3) var(--space-2);
-  border: 0;
+  padding: 5px 7px;
   background: transparent;
   text-align: left;
-  font-size: var(--text-ui);
-  line-height: 1.4;
-  font-weight: 600;
+  line-height: 20px;
 }
-.circuit-choice:hover { background: var(--surface-hover); }
-.circuit-choice[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
-.circuit-count { color: var(--text-secondary); font-size: var(--text-micro); font-weight: 400; }
-#circuit-landmarks { margin-top: var(--space-5); }
-.circuit-steps { padding: var(--space-2) var(--space-3) var(--space-5); list-style: none; }
+.circuit-choice:hover:not(:disabled) { background: var(--surface-hover); }
+.circuit-choice[aria-pressed="true"],
+.circuit-choice[aria-pressed="true"]:hover { background: var(--accent-wash); color: var(--accent); }
+.circuit-count { color: var(--text-tertiary); font-size: var(--text-micro); font-weight: 400; line-height: 16px; }
+.circuit-choice[aria-pressed="true"] .circuit-count { color: inherit; }
+.circuit-choice:disabled { background: transparent; }
+#circuit-landmarks { margin-top: var(--space-4); }
+.circuit-steps { padding: var(--space-1) var(--space-2) var(--space-4); list-style: none; }
 .circuit-step {
   display: flex;
   align-items: center;
@@ -28,42 +31,98 @@
   width: 100%;
   height: auto;
   min-height: var(--row-height);
-  padding: var(--space-3) var(--space-2);
-  border: 0;
-  border-radius: var(--radius-control);
+  padding: 5px 7px;
   background: transparent;
   text-align: left;
-  font-size: var(--text-ui);
-  line-height: 1.4;
+  font-weight: 400;
+  line-height: 20px;
 }
-.circuit-step-number { flex: none; width: 1.1rem; text-align: center; color: var(--text-tertiary); }
+.circuit-step:hover:not(:disabled) { background: var(--surface-hover); }
+.circuit-step:disabled { background: transparent; }
+.circuit-step-number {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-content: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--text-secondary);
+}
 .circuit-step[aria-current="step"] { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
+.circuit-step[aria-current="step"] .circuit-step-number { border-color: var(--accent); color: var(--accent); }
+
+/* The lesson's place in the location bar. Fixed columns keep the count still when a boundary control leaves. */
+.circuit-stepper {
+  flex: none;
+  display: grid;
+  grid-template-columns: var(--control-height) auto var(--control-height);
+  align-items: center;
+}
+.circuit-stepper-previous { grid-column: 1; }
+.circuit-progress { grid-column: 2; padding: 0 var(--space-1); font-size: var(--text-micro); color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.circuit-stepper-next { grid-column: 3; }
+.circuit-stepper .icon-button { height: var(--control-height); }
+.circuit-stepper .icon-button:focus-visible { outline-offset: -2px; }
 .circuit-content { font-size: var(--text-ui); line-height: 1.55; overflow-wrap: anywhere; }
 .circuit-content > * + * { margin-top: var(--space-3); }
 .circuit-content .circuit-title {
-  font-size: 1.375rem;
-  line-height: 1.3;
+  font-size: var(--text-headline);
   font-weight: 600;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
 }
-.circuit-content .circuit-progress { margin-top: var(--space-2); }
+.circuit-content .circuit-role { margin-top: var(--space-1); font-size: var(--text-small); color: var(--text-secondary); }
 .circuit-note { font-size: var(--text-micro); color: var(--text-secondary); line-height: 1.5; }
-.circuit-progress, .circuit-role { font-size: var(--text-micro); color: var(--accent); }
-.circuit-content .circuit-role { margin-top: var(--space-1); }
-.circuit-navigation, .circuit-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.circuit-navigation { justify-content: space-between; }
-.circuit-actions > button { height: auto; min-height: var(--control-height); white-space: normal; }
-.circuit-disclosure { border-top: 1px solid var(--border-subtle); padding-top: var(--space-3); }
-.circuit-disclosure > summary { cursor: pointer; font-weight: 600; min-height: var(--control-height); }
+/* Back to the prepared view, offered only once the reader has wandered off the landmark. */
+.circuit-return .button-quiet {
+  height: auto;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font-size: inherit;
+  font-weight: 500;
+}
+.circuit-return .button-quiet:hover:not(:disabled) { background: none; text-decoration: underline; text-underline-offset: 3px; }
+.circuit-command {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-width: 0;
+  height: auto;
+  min-height: var(--control-height);
+  padding: var(--space-1) var(--space-2);
+  white-space: normal;
+}
+/* The lesson's background, at the foot of the landmark's data: full-width rows like the region's own disclosures. */
+#circuit-notes { padding: 0 0 var(--space-4); font-size: var(--text-ui); line-height: 1.55; overflow-wrap: anywhere; }
+.circuit-disclosure { padding: 0 var(--space-4); border-top: 1px solid var(--border-subtle); }
+#circuit-notes > .circuit-disclosure:last-child { border-bottom: 1px solid var(--border-subtle); }
+.circuit-disclosure[open] { padding-bottom: var(--space-3); }
 .circuit-disclosure > * + * { margin-top: var(--space-2); }
-.circuit-route { color: var(--accent); }
+.circuit-disclosure .button-quiet {
+  height: auto;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 500;
+}
+.circuit-disclosure .button-quiet:hover:not(:disabled) { background: none; text-decoration: underline; text-underline-offset: 3px; }
+.circuit-route { color: var(--text-primary); font-weight: 500; }
 .circuit-source a { color: var(--accent); text-underline-offset: 3px; }
 .circuit-source span { display: block; margin-top: var(--space-1); }
-.circuit-question { border: 0; padding: var(--space-3) 0 0; min-width: 0; }
-.circuit-question legend { font-weight: 600; }
-.circuit-answers { display: grid; gap: var(--space-2); margin-top: var(--space-3); }
-.circuit-answers button { height: auto; min-height: var(--control-height); padding: var(--space-2); text-align: left; white-space: normal; }
-.circuit-answers button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-wash); }
+.circuit-question { min-width: 0; margin: 0; padding: var(--space-4) var(--space-4) var(--space-6); border: 0; border-top: 1px solid var(--border-subtle); }
+.circuit-question legend { float: left; width: 100%; margin-bottom: var(--space-1); padding: 0; font-weight: 600; }
+.circuit-answers { display: grid; gap: 6px; margin-top: var(--space-3); }
+.circuit-answers .circuit-command { justify-content: flex-start; text-align: left; font-weight: 400; }
+.circuit-answers button[aria-pressed="true"] { color: var(--accent); background: var(--accent-wash); font-weight: 500; }
 .circuit-feedback:not(:empty) { margin-top: var(--space-3); }
 #circuit-action-status { font-size: var(--text-ui); line-height: 1.5; }
 #circuit-action-status[data-error="true"] { color: var(--danger); }
+
+@media (pointer: coarse) {
+  .circuit-disclosure > summary { min-height: 44px; }
+}

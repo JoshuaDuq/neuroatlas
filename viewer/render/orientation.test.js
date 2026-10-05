@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { edgeLabels } from './orientation.js';
+import { edgeLabels, localizeEdges } from './orientation.js';
 
 // manifest coordinate_system: x = right, y = superior, z = posterior.
 const VIEWS = {
@@ -63,4 +63,37 @@ test('the oblique default view keeps superior at the top', () => {
   camera.lookAt(0, 0, 0);
   camera.updateMatrixWorld(true);
   assert.equal(edgeLabels(camera).top, 'S');
+});
+
+test('letters follow the camera inside its own change event, before anything redraws', async () => {
+  // OrbitControls fires 'change' after lookAt has turned the camera but before
+  // its world matrix is recomputed; reading that matrix left the previous view's letters on screen.
+  const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
+  const camera = cameraFor('left');
+  const controls = new OrbitControls(camera);
+  controls.update();
+  let seen = null;
+  controls.addEventListener('change', () => { seen = edgeLabels(camera); });
+  camera.position.set(0, 0, -0.5);
+  controls.update();
+  assert.deepEqual(seen, { right: 'L', left: 'R', top: 'S', bottom: 'I' });
+});
+
+test('stored letters are translated without asking the camera again', () => {
+  const raw = edgeLabels(cameraFor('anterior'));
+  assert.deepEqual(localizeEdges(raw, 'fr'), { right: 'G', left: 'D', top: 'S', bottom: 'I' });
+  assert.deepEqual(localizeEdges(raw, 'en'), raw);
+});
+
+test('with a target, letters follow where the camera stands, not a rotation a framing plan left on it', () => {
+  // A camera left turned toward some other view (e.g. mid-plan) must not label the picture
+  // with that view's letters.
+  const camera = cameraFor('left');
+  const planned = cameraFor('anterior');
+  camera.quaternion.copy(planned.quaternion);
+  camera.updateMatrixWorld(true);
+  assert.deepEqual(edgeLabels(camera, 'en', new Vector3(0, 0, 0)),
+    { right: 'P', left: 'A', top: 'S', bottom: 'I' });
+  assert.deepEqual(edgeLabels(cameraFor('superior'), 'fr', new Vector3(0, 0, 0)),
+    { right: 'D', left: 'G', top: 'A', bottom: 'P' });
 });
