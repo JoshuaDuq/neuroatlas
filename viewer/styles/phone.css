@@ -15,8 +15,7 @@
   :root { --control-height: 44px; --row-height: 44px; }
   #dissection-hint { display: none; }
   .dissection-controls {
-    margin-bottom: var(--space-3);
-    padding-bottom: var(--space-2);
+    padding: var(--space-1) var(--space-5);
   }
   #dissection-status {
     position: absolute;
@@ -30,6 +29,8 @@
   input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -8.5px; }
   input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; }
   #app {
+    padding: 0;
+    gap: 0;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     height: 100dvh;
@@ -43,50 +44,21 @@
   #masthead {
     grid-column: 1;
     grid-row: 1;
-    flex-wrap: wrap;
-    row-gap: var(--space-2);
-    height: auto;
-    gap: var(--space-3);
-    padding: max(var(--space-2), env(safe-area-inset-top)) var(--space-3) var(--space-2);
+    min-height: 64px;
+    gap: var(--space-2);
+    padding: max(var(--space-2), env(safe-area-inset-top)) var(--space-3);
     padding-left: max(var(--space-3), env(safe-area-inset-left));
     padding-right: max(var(--space-3), env(safe-area-inset-right));
   }
-  .identity {
-    border-right: 0;
-    padding-right: 0;
-    margin-right: 0;
-    align-self: center;
-    min-width: 0;
-    gap: var(--space-2);
-  }
-  .brand { font-size: var(--text-body); margin-right: 0; flex: none; }
+  .identity { gap: var(--space-2); }
+  .brand { font-size: var(--text-title); }
   .brand-mark { width: 28px; height: 28px; }
-  .specimen { margin-top: 2px; gap: var(--space-1); }
-  #specimen-label { display: none; }
-  .study-name { display: none; }
-  .identity #anatomy-switch { max-width: 8rem; }
-  .instrument-label { display: none; }
-  .instrument-group { min-width: 0; }
-  .instrument-group:has(#atlas-switch) { flex: none; }
-  .instrument-group:has(#surface-switch) { flex: 1; }
-  /* Atlas sits with the wordmark; stretching it opened a gap the width of
-     the leftover row. Surface keeps the second row as tap targets. */
-  #atlas-switch { min-width: 0; flex: none; }
-  #atlas-switch button {
-    flex: none;
-    padding: 0 var(--space-2);
-  }
-  #surface-switch { min-width: 0; justify-content: flex-start; }
-  #surface-switch button {
-    flex: none;
-    padding: 0 var(--space-3);
-  }
-  #masthead .instrument button { height: var(--control-height); }
-  .rail-title { display: none; }
-  .explorer-head { padding: var(--space-3) var(--space-5); }
+  .brand-description, .workspace-source { display: none; }
+  #workspace-panel { display: contents; }
+  .explorer-head { padding: var(--space-3) var(--space-5) 0; }
+  .explorer-head .rail-title { display: none; }
   .viewport-context, .viewport-help, .search-shortcut { display: none; }
-
-  /* Settings collapse is layout.css @ 1100px; the phone only wraps surface. */
+  #surface-switch button { height: var(--control-height); }
 
   /* The colophon's disclaimer moves into the sheet, where it stays visible. */
   #colophon { display: none; }
@@ -136,7 +108,7 @@
 
   /* The sheet strip already names the region; the panel heading repeats it. */
   #selected-name { display: none; }
-  #inspector .tab-group > .section-label:first-child { display: none; }
+  #inspector .tab-group > .section-label { display: none; }
 
   .sheet-grip {
     display: block;
@@ -187,7 +159,7 @@
 
   /* Appearance is .rail-tabs in components.css; these are the sheet's rules. */
   .sheet-tabs {
-    padding: 4px var(--space-3);
+    padding: 0 var(--space-3);
     border-radius: 0;
     border-left: 0;
     border-right: 0;
@@ -215,6 +187,7 @@
     flex: 1;
     min-height: 0;
     border: 0;
+    border-radius: 0;
     background: none;
   }
   #navigator[hidden], #inspector[hidden] { display: none !important; }
@@ -269,6 +242,8 @@
   /* ---- dialogs -------------------------------------------------------- */
   /* A phone has no room for a dialog inset from the screen. */
   #mpr-dialog, #shortcuts {
+    --dialog-inset: var(--space-4);
+    --dialog-top: max(var(--dialog-inset), env(safe-area-inset-top));
     width: 100vw;
     max-width: 100vw;
     height: 100dvh;
@@ -276,8 +251,8 @@
     margin: 0;
     border: 0;
     border-radius: 0;
-    padding: var(--space-4);
-    padding-top: max(var(--space-4), env(safe-area-inset-top));
+    padding: var(--dialog-inset);
+    padding-top: var(--dialog-top);
     padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
   }
   #mpr-planes { display: flex; margin-bottom: var(--space-3); }
@@ -286,38 +261,10 @@
   #mpr-planes:not([hidden]) ~ #mpr-grid h3 { display: none; }
   #mpr-grid article[hidden] { display: none !important; }
   #mpr-close { flex: none; white-space: nowrap; }
-  .mpr-header { position: sticky; top: 0; background: var(--surface-base); }
+  .dialog-header { align-items: start; }
   #shortcuts-list { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
-  #shortcuts-list dt { margin-top: var(--space-2); }
-}
-
-/*
- * Portrait has no room for two segmented controls on one line: 375px less the
- * wordmark and the overflow button leaves each about 118px, which truncates
- * both. The surface control takes the second row on its own, where its three
- * modes are full-width tap targets. A landscape phone is 812px across and
- * keeps everything on one line, so this is deliberately not in the shared
- * phone query.
- */
-@media (max-width: 640px) {
-  /* Ordered last so the wrapped row is the switch alone. Left in source order
-     it broke the line before itself and pushed the overflow button onto a
-     third row of its own. */
-  .instrument-group:has(#surface-switch) {
-    order: 1;
-    flex: 1 0 100%;
-  }
-  #surface-switch { width: 100%; }
-  #surface-switch button { flex: 1; }
-}
-
-@media (max-width: 374px) {
-  #masthead { gap: var(--space-2); }
-  .identity { gap: 6px; }
-  .brand { font-size: 0.8125rem; }
-  .brand-mark { width: 28px; height: 28px; }
-  #masthead-more { width: 32px; }
-  #masthead #atlas-switch button { padding: 0 5px; font-size: var(--text-micro); }
+  #shortcuts-list dt { padding: var(--space-3) 0 0; border: 0; }
+  #shortcuts-list dd { padding: 0 0 var(--space-3); }
 }
 
 /*
@@ -348,6 +295,8 @@
   .sheet-handle-bar { width: 28px; }
   .sheet-tabs { flex-wrap: wrap; }
   .sheet-tabs button { flex: 1 0 calc(50% - 2px); }
+  #sheet[data-detent="full"] .sheet-tabs { flex-wrap: nowrap; }
+  #sheet[data-detent="full"] .sheet-tabs button { flex: 1; }
   .sheet-disclaimer { white-space: normal; }
   #masthead { padding-left: max(var(--space-3), env(safe-area-inset-left)); }
 }
@@ -368,6 +317,9 @@
   .views button { height: var(--control-height); }
   .search-clear { width: 36px; height: 36px; right: 4px; }
   .check input { width: 20px; height: 20px; }
+  .display-opacity { padding-left: 28px; }
+  .visibility-control,
+  .group-row .visibility-control { width: 44px; height: 44px; }
   .search-shortcut { display: none; }
   .check input::before { width: 11px; height: 6px; }
   .cut-position-row input[type="number"] { height: var(--control-height); width: 88px; }

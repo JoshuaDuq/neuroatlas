@@ -10,6 +10,7 @@ function scene(region) {
     async setAtlas(id) { calls.push(['atlas', id]); this.settings.atlas = id; },
     async setDetail(id) { calls.push(['detail', id]); this.settings.detail = id; },
     setInternalSystem(value) { calls.push(['system', value]); },
+    setInternalVisible(value) { calls.push(['internal', value]); },
     clearIsolation() { calls.push(['clearIsolation']); },
     setHemisphere(side) { calls.push(['hemisphere', side]); },
     setCortexVisible(value) { calls.push(['cortex', value]); },
@@ -38,8 +39,19 @@ test('opening a hippocampus loads coarse anatomy and hides the occluding cortex'
   await openClinicalRegion(model, sections, region.id);
   assert.deepEqual(calls, [
     ['detail', 'aseg'], ['cut', 'off'], ['clearIsolation'], ['system', null],
-    ['hemisphere', 'both'], ['cortex', false], ['show', [region.id]], ['select', region.id],
+    ['hemisphere', 'both'], ['cortex', false], ['internal', true], ['show', [region.id]], ['select', region.id],
   ]);
+});
+
+test('hidden internal anatomy is restored before selecting a deep landmark', async () => {
+  const region = { id: 'learning:left:fornix', atlas: 'learning', kind: 'structure' };
+  const { model, sections } = scene(region);
+  let internalVisible = false;
+  model.setInternalVisible = value => { internalVisible = value; };
+  model.select = id => {
+    assert.equal(internalVisible, true, `cannot select hidden landmark ${id}`);
+  };
+  await openClinicalRegion(model, sections, region.id);
 });
 
 test('an unsuccessful atlas load surfaces the error without selecting an unavailable region', async () => {

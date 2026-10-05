@@ -39,6 +39,14 @@ test('assembly merges model state and view state into one snapshot', () => {
   assert.equal(snapshot.status, 'loading');
 });
 
+test('circuits is an independent explorer without changing the anatomical selection', () => {
+  const s = session();
+  s.setExplorer('circuits');
+  assert.equal(s.assemble(modelState).explorer, 'circuits');
+  assert.equal(s.assemble(modelState).atlas, 'destrieux');
+  assert.equal(s.assemble(modelState).selectedRegion, null);
+});
+
 test('the snapshot never carries derived data', () => {
   // results and groups are computed by the catalog at render time; storing
   // them is how a list comes to disagree with the model.

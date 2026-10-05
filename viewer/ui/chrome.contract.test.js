@@ -32,9 +32,9 @@ test('empty inspector has no duplicate view-status datasheet', () => {
   assert.equal(/id="view-status"/.test(html), false);
 });
 
-test('anatomy/deficits is a panel switch, not a masthead instrument', () => {
+test('anatomy/deficits/circuits is an exploration mode inside the task panel', () => {
   const tag = tagWithId('explorer-switch');
-  assert.match(tag, /\brail-tabs\b/);
+  assert.match(tag, /\bsegmented\b/);
   assert.equal(/\binstrument\b/.test(tag), false);
 });
 
@@ -48,9 +48,13 @@ test('cut plane lives in the cuts panel, not across every inspector tab', () => 
   assert.equal(/\binstrument\b/.test(tagWithId('cut-mode')), false);
 });
 
-test('atlas and surface colour remain the masthead instruments', () => {
+test('source, atlas and appearance controls share the View panel', () => {
   assert.match(tagWithId('atlas-switch'), /\binstrument\b/);
   assert.match(tagWithId('surface-switch'), /\binstrument\b/);
+  const display = html.indexOf('data-tab="display"');
+  for (const id of ['anatomy-switch', 'atlas-switch', 'surface-switch', 'detail', 'hemisphere']) {
+    assert.ok(html.indexOf(`id="${id}"`) > display, `${id} belongs in View`);
+  }
 });
 
 test('hemisphere is a display setting, not a masthead instrument', () => {
@@ -76,20 +80,22 @@ test('a deficit with no region hides the anatomy hint as well', () => {
   assert.equal(empty.hideActions, true);
 });
 
+test('the circuit introduction replaces the empty anatomical hint', () => {
+  assert.equal(inspectorEmptyChrome({ selectedRegion: null, explorer: 'circuits' }).hideHint, true);
+  assert.ok(html.includes('data-explorer="circuits"'));
+  assert.ok(html.indexOf('id="circuit-profile"') < html.indexOf('id="label-selected"'));
+});
+
 test('neuropsychology is omitted when the region has no associations', () => {
   assert.equal(relatedRegionVisible(null, 0), false);
   assert.equal(relatedRegionVisible({ id: 'destrieux:left:1' }, 0), false);
   assert.equal(relatedRegionVisible({ id: 'destrieux:left:1' }, 2), true);
 });
 
-test('the anatomy switch lives in the identity cluster, not among settings', () => {
-  const identity = html.indexOf('class="identity"');
-  const atlas = html.indexOf('id="atlas-switch"');
+test('the anatomy switch shares the View panel with the reconstruction controls', () => {
+  const display = html.indexOf('data-tab="display"');
   const anatomy = html.indexOf('id="anatomy-switch"');
-  const menu = html.indexOf('id="masthead-menu"');
-  assert.ok(identity !== -1 && atlas !== -1 && anatomy !== -1 && menu !== -1);
-  assert.ok(anatomy > identity && anatomy < atlas, 'anatomy-switch belongs with the wordmark');
-  assert.ok(anatomy < menu, 'anatomy-switch must not sit in the settings menu');
+  assert.ok(anatomy > display);
 });
 
 test('anatomy switch labels are the specimen, not the full reconstruction title', () => {
@@ -99,13 +105,13 @@ test('anatomy switch labels are the specimen, not the full reconstruction title'
 });
 
 test('snapshot and fullscreen sit in the masthead, not on the anatomy', () => {
-  const menu = html.indexOf('id="masthead-menu"');
+  const masthead = html.indexOf('<header id="masthead"');
   const viewport = html.indexOf('<main id="viewport"');
   const fs = html.indexOf('id="viewport-fullscreen"');
   const snap = html.indexOf('id="viewport-snapshot"');
-  assert.ok(menu !== -1 && viewport !== -1 && fs !== -1 && snap !== -1);
-  assert.ok(fs > menu && fs < viewport);
-  assert.ok(snap > menu && snap < viewport);
+  assert.ok(masthead !== -1 && viewport !== -1 && fs !== -1 && snap !== -1);
+  assert.ok(fs > masthead && fs < viewport);
+  assert.ok(snap > masthead && snap < viewport);
 });
 
 test('snapshot and fullscreen retain accessible names with icon controls', () => {

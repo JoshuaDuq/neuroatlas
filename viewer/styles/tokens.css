@@ -1,21 +1,21 @@
 /* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
   color-scheme: light;
-  --text-primary: #233743;
-  --text-secondary: #435c6a;
-  --text-tertiary: #536b78;
-  --accent: #087477;
-  --accent-hover: #056166;
-  --accent-wash: #e6f3f2;
+  --text-primary: #24343b;
+  --text-secondary: #50616a;
+  --text-tertiary: #61717a;
+  --accent: #156b6d;
+  --accent-hover: #0d5557;
+  --accent-wash: #eaf4f2;
   --danger: #a61b1b;
 
-  --surface-base: #fcfdfd;
-  --surface-navigation: #f6f9fa;
-  --surface-sunken: #edf2f4;
-  --surface-canvas: #eef3f5;
-  --surface-hover: #f1f6f7;
-  --border-subtle: #dfe7eb;
-  --border-control: #738996;
+  --surface-base: #ffffff;
+  --surface-navigation: #f8fafb;
+  --surface-sunken: #f0f4f5;
+  --surface-canvas: #e3eaed;
+  --surface-hover: #f0f5f5;
+  --border-subtle: #e0e7ea;
+  --border-control: #80919b;
 
   /* Preserve tissue contrast and scientific colour mappings in both themes. */
   --scene-background: #0e1116;
@@ -55,13 +55,11 @@
 
   --row-height: 40px;
   --control-height: 40px;
-  --rail-width: 280px;
-  --inspector-width: 336px;
-  --stage-min: 360px;
-  --header-height: 76px;
+  --rail-width: 320px;
+  --header-height: 64px;
   --footer-height: 32px;
   --radius-control: 6px;
-  --radius-panel: 10px;
+  --radius-panel: 8px;
   --camera-transition: 240ms;
   --ui-transition: 140ms;
   --ease-ui: cubic-bezier(0.16, 1, 0.3, 1);

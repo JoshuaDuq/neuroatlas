@@ -3,6 +3,9 @@ import { createCatalog } from './catalog/catalog.js';
 import { visibilityOf } from './catalog/visibility.js';
 import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion } from './clinical/navigation.js';
+import { loadCircuitCatalog } from './learning/load.js';
+import { createCircuitSession } from './learning/session.js';
+import { openCircuitLandmark, prepareCircuitMri } from './learning/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
 import { VIEW_DIRECTIONS, fitDistance, frameTo, upFor } from './render/camera-views.js';
@@ -23,11 +26,12 @@ import { createDissectionControls } from './ui/dissection.js';
 import { createHeader } from './ui/header.js';
 import { createInspector } from './ui/inspector.js';
 import { createClinicalExplorer } from './ui/clinical.js';
+import { createCircuitExplorer } from './ui/circuits.js';
 import { createNavigator } from './ui/navigator.js';
 import { createShortcuts } from './ui/shortcuts.js';
 import { createViewportChrome } from './ui/viewport-chrome.js';
 import { createSheet } from './ui/sheet.js';
-import { createInspectorTabs } from './ui/inspector-tabs.js';
+import { createWorkspace } from './ui/workspace.js';
 import { qualityProfile } from './render/quality.js';
 import { t } from './i18n/translations.js';
 
@@ -118,6 +122,8 @@ export async function startApp() {
 
   const catalog = createCatalog(model.manifest, initialLang);
   const clinicalCatalog = loadClinicalCatalog(model.manifest);
+  const circuitCatalog = loadCircuitCatalog(model.manifest, clinicalCatalog);
+  const circuitSession = createCircuitSession(circuitCatalog);
   scene.setAppearance(model.manifest.appearance);
   const brainBounds = () => {
     const box = new Box3();
@@ -519,26 +525,26 @@ export async function startApp() {
       if (!id) return;
       session.setExplorer('anatomy');
       hideRegions([id]);
-      sheet.show('find');
+      showPanel('find');
       document.getElementById('dissection-undo').focus();
     },
     centroidOf: id => model.centroidOf(id),
   });
+
+  function openDeficit(id) {
+    clinicalCatalog.get(id);
+    session.setDeficit(id);
+    session.setExplorer('deficits');
+    render();
+    showRegion();
+  }
 
   const clinicalExplorer = createClinicalExplorer({
     clinical: clinicalCatalog,
     anatomy: catalog,
     onExplorer: value => { session.setExplorer(value); render(); },
     onQuery: query => { session.setClinicalQuery(query); render(); },
-    onDeficit: id => {
-      clinicalCatalog.get(id);
-      session.setDeficit(id);
-      session.setExplorer('deficits');
-      render();
-      // The write-up lives on the region panel. On a phone that panel is not
-      // the list the reader just tapped, so the tap has to open it.
-      showRegion();
-    },
+    onDeficit: openDeficit,
     onRegion: async id => {
       await openClinicalRegion(model, sections, id);
       focusSelection();
@@ -695,6 +701,59 @@ export async function startApp() {
     getSelectedRegion: () => model.state.selectedRegion,
     centroidOf: id => model.centroidOf(id),
   });
+
+  async function openLandmark(step) {
+    await openCircuitLandmark(model, sections, step);
+    session.setView(step.view);
+    scene.camera.up.copy(upFor(step.view));
+    const bounds = new Box3();
+    for (const mesh of model.visibleMeshes) {
+      if (mesh.userData.region_id === step.region) bounds.expandByObject(mesh);
+    }
+    if (bounds.isEmpty()) throw new Error(`Landmark geometry unavailable: ${step.region}`);
+    // The meshes use metres; authored anatomical distances use millimetres.
+    bounds.expandByScalar(circuitCatalog.contextMarginMm / 1000);
+    scene.moveTo(planFraming(scene.camera, scene.controls, bounds,
+      VIEW_DIRECTIONS[step.view], frameTo, scene.viewportFit));
+  }
+
+  const circuitExplorer = createCircuitExplorer({
+    catalog: circuitCatalog,
+    onCircuit: async id => {
+      const circuit = circuitCatalog.get(id);
+      showRegion();
+      await openLandmark(circuit.steps[0]);
+      circuitSession.start(id);
+      render();
+    },
+    onStep: async index => {
+      const lesson = circuitSession.snapshot();
+      const step = circuitCatalog.get(lesson.circuit).steps[index];
+      if (!step) throw new RangeError(`Invalid landmark index: ${index}`);
+      await openLandmark(step);
+      circuitSession.go(index);
+      render();
+      if (session.assemble(model.state).explorer === 'circuits') showRegion();
+    },
+    onMri: async () => {
+      const lesson = circuitSession.snapshot();
+      const step = circuitCatalog.get(lesson.circuit).steps[lesson.step];
+      const canOpen = () => {
+        const current = circuitSession.snapshot();
+        return session.assemble(model.state).explorer === 'circuits'
+          && current.circuit === lesson.circuit && current.step === lesson.step;
+      };
+      await openLandmark(step);
+      if (!canOpen()) return;
+      await prepareCircuitMri(model, sections, step);
+      if (!canOpen()) return;
+      faceCut();
+      await sectionControls.openPreparedPlane(step.plane, canOpen);
+      render();
+    },
+    onAnswer: index => { circuitSession.answer(index); render(); },
+    onDeficit: id => clinicalExplorer.openDeficit(id),
+  });
   const shortcuts = createShortcuts(initialLang);
 
   const onSnapshot = () => {
@@ -719,7 +778,7 @@ export async function startApp() {
 
   // Built before the sheet: the sheet decides on construction which shell owns
   // the panels, and hands them over through onShell.
-  const inspectorTabs = createInspectorTabs();
+  const workspace = createWorkspace(() => scene.invalidate());
 
   /*
    * The phone shell. It reports how much of the canvas it covers rather than
@@ -728,9 +787,10 @@ export async function startApp() {
    * rectangle back from the scene.
    */
   sheet = createSheet({
+    onPanelChange: () => scene.invalidate(),
     onShell: shell => {
-      if (shell === 'sheet') inspectorTabs.deactivate();
-      else inspectorTabs.activate();
+      if (shell === 'sheet') workspace.deactivate();
+      else workspace.activate();
     },
     onInsets: insets => {
       scene.setChromeInsets(insets);
@@ -741,11 +801,12 @@ export async function startApp() {
     onDetent: () => { if (framed) frameCurrent(); },
   });
 
-  /** The region panel is where a selection or a deficit is read. */
-  function showRegion() {
-    if (sheet?.isPhone) sheet.show('region');
-    else inspectorTabs.show('region');
+  function showPanel(name) {
+    if (sheet.isPhone) sheet.show(name);
+    else workspace.show(name);
   }
+
+  function showRegion() { showPanel('region'); }
 
   // ---- the single render path -------------------------------------------
 
@@ -754,7 +815,7 @@ export async function startApp() {
   function render() {
     cachedFramingBounds = null;
     cachedFramingPoints = null;
-    const state = session.assemble(model.state);
+    const state = { ...session.assemble(model.state), lesson: circuitSession.snapshot() };
     catalog.setLanguage(state.lang);
     document.documentElement.lang = state.lang;
     root.dataset.status = state.status;
@@ -772,8 +833,9 @@ export async function startApp() {
         }
       : {};
     sheet.update(state, strip);
-    inspectorTabs.update(state, strip);
+    workspace.update(state, strip);
     clinicalExplorer.update(state);
+    circuitExplorer.update(state);
     display_.update(state);
     dissectionControls.update(state);
     internalAnatomy.update(state);
@@ -975,11 +1037,15 @@ export async function startApp() {
     if (shortcuts.isOpen) return;
     if (event.key === '/') {
       event.preventDefault();
+      showPanel('find');
       if (session.assemble(model.state).explorer === 'deficits') clinicalExplorer.focusSearch();
+      else if (session.assemble(model.state).explorer === 'circuits') {
+        circuitExplorer.focus();
+      }
       else navigator.focusSearch();
       return;
     }
-    if (session.assemble(model.state).explorer === 'deficits'
+    if (session.assemble(model.state).explorer !== 'anatomy'
       && ['ArrowDown', 'ArrowUp'].includes(event.key)) return;
     if (event.key === 'ArrowDown') { event.preventDefault(); navigator.moveFocus(1); return; }
     if (event.key === 'ArrowUp') { event.preventDefault(); navigator.moveFocus(-1); return; }
@@ -1088,7 +1154,7 @@ export async function startApp() {
       scene.controls.removeEventListener('change', onCameraChange);
       clearTimeout(urlTimer);
       sheet.dispose();
-      inspectorTabs.dispose();
+      workspace.dispose();
       sections.removeEventListener('change', render);
       model.removeEventListener('change', render);
       sectionControls.dispose();
@@ -1102,6 +1168,7 @@ export async function startApp() {
       constituents.dispose();
       inspector.dispose();
       clinicalExplorer.dispose();
+      circuitExplorer.dispose();
       navigator.dispose();
       header.dispose();
       model.dispose();

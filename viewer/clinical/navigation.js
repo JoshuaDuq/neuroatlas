@@ -20,6 +20,7 @@ export async function openClinicalRegion(model, sections, id) {
   if (region.kind === 'cortex' && model.settings.cortexOpacity === 0) {
     model.setCortexOpacity(1);
   }
+  if (region.kind === 'structure') model.setInternalVisible(true);
   model.showRegions([id]);
   model.select(id);
 }

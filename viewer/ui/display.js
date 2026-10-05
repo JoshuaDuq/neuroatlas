@@ -3,7 +3,7 @@ import { atlasSwitchLabel, t } from '../i18n/translations.js';
 /**
  * How much of the model is drawn: detail level, hemisphere, cortex, opacity.
  *
- * What the surface is coloured by is a masthead control, not one of these:
+ * Source and surface colour are populated by the header controller:
  * it says what the picture means rather than how much of it is showing.
  */
 export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers }) {

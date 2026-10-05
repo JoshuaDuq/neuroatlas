@@ -1,6 +1,6 @@
 export const CLINICAL_TEXT = {
   en: {
-    anatomy: 'Anatomy', deficits: 'Deficits', explore: 'Explore the atlas',
+    anatomy: 'Anatomy', deficits: 'Deficits', circuits: 'Circuits', explore: 'Explore the atlas',
     search: 'Search deficits',
     searchLabel: 'Search deficits or cognitive functions',
     introduction: 'Explore acquired deficits through anatomy and published evidence.',
@@ -25,7 +25,7 @@ export const CLINICAL_TEXT = {
     sides: { left: 'left', right: 'right', midline: 'midline' },
   },
   fr: {
-    anatomy: 'Anatomie', deficits: 'Déficits', explore: 'Explorer l’atlas',
+    anatomy: 'Anatomie', deficits: 'Déficits', circuits: 'Circuits', explore: 'Explorer l’atlas',
     search: 'Rechercher un déficit',
     searchLabel: 'Rechercher un déficit ou une fonction cognitive',
     introduction: 'Explorer les déficits acquis à travers l’anatomie et les données publiées.',

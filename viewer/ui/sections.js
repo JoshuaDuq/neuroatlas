@@ -6,6 +6,7 @@ import { STRUCTURE_LABELS } from '../catalog/structure-groups.js';
 import { STRUCTURE_LABELS_FR } from '../catalog/structure-groups.fr.js';
 import { DESTRIEUX_LABELS } from '../catalog/destrieux-labels.js';
 import { DESTRIEUX_LABELS_FR } from '../catalog/destrieux-labels.fr.js';
+import { createButtonLabel } from './button-label.js';
 
 const AXES = { sagittal: 0, coronal: 1, axial: 2 };
 const FR_EDGE = { R: 'D', L: 'G', S: 'S', I: 'I', P: 'P', A: 'A' };
@@ -43,6 +44,8 @@ const TISSUE_NAMES_EN = {
 /** Cut controls and linked MRI sections; the controller owns all coordinates. */
 export function createSectionControls(sections, { anatomy, cutAtlases, onFaceView, onSelect, getSelectedRegion, centroidOf }) {
   const mode = document.getElementById('cut-mode');
+  const modeLabels = new Map([...mode.querySelectorAll('[data-cut-mode]')]
+    .map(button => [button, createButtonLabel(button, button.dataset.cutMode)]));
   const cutAtlas = document.getElementById('cut-atlas');
   const cutAtlasLabel = document.getElementById('cut-atlas-label');
   const position = document.getElementById('cut-position');
@@ -156,6 +159,12 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
   listen(tilt, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
   listen(azimuth, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
+  function showMpr() {
+    dialog.showModal();
+    previousImage = null;
+    update();
+  }
+
   async function openMpr({ atRegion = false } = {}) {
     const region = getSelectedRegion?.();
     if (atRegion && region) {
@@ -171,9 +180,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       }
     }
     await sections.load();
-    dialog.showModal();
-    previousImage = null;
-    update();
+    showMpr();
   }
   listen(mprOpenBtn, 'click', () => openMpr());
   if (regionMpr) listen(regionMpr, 'click', () => openMpr({ atRegion: true }));
@@ -342,7 +349,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     if (cutModeLabel) mode.setAttribute('aria-labelledby', cutModeLabel.id);
     for (const button of mode.querySelectorAll('[data-cut-mode]')) {
       const id = button.dataset.cutMode;
-      button.textContent = cutsI18n.modes[id];
+      modeLabels.get(button).textContent = cutsI18n.modes[id];
       button.title = cutsI18n.modes[id] ?? id;
       button.setAttribute('aria-pressed', String(id === state.mode));
     }
@@ -480,7 +487,14 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
   applyPlaneMode();
 
-  return { update, dispose() {
+  return { update, async openPreparedPlane(plane, canOpen) {
+    if (!Object.hasOwn(AXES, plane)) throw new Error(`Unknown MRI plane: ${plane}`);
+    await sections.load();
+    if (!canOpen()) return;
+    activePlane = plane;
+    applyPlaneMode();
+    showMpr();
+  }, dispose() {
     if (animation !== null) cancelAnimationFrame(animation);
     phoneQuery.removeEventListener('change', applyPlaneMode);
     planeSwitch.replaceChildren();
