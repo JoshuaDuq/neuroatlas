@@ -67,10 +67,11 @@ export function createDisplay({ detailLevels, hasSpinalCord = true, ...handlers 
       const i18n = t(state.lang, 'display');
       if (hemiLabel) hemiLabel.textContent = i18n.hemisphere;
       if (detailLabel) detailLabel.textContent = i18n.internalAnatomy;
+      const notes = t(state.lang, 'header').notes;
       const atlasDict = t(state.lang, 'atlases');
       for (const option of detail.options) {
         option.textContent = atlasSwitchLabel(option.value, state.lang);
-        option.title = atlasDict[option.value] ?? option.textContent;
+        option.title = notes[option.value] ?? atlasDict[option.value] ?? option.textContent;
       }
       if (state.detail) detail.value = state.detail;
       detail.hidden = detailLevels.length < 2;

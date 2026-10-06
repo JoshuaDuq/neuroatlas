@@ -1,5 +1,12 @@
-/* Tracts panel: a scrolling body over the MRI command docked at its foot. */
+/* Tracts panel: search first, as in Anatomy and Deficits; a scrolling list; the MRI command docked at the foot. */
 #navigator > #diffusion-browser:not([hidden]) { display: flex; flex-direction: column; overflow: hidden; }
+.native-tract-head {
+  flex: none;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-base);
+}
 .native-tract-controls {
   flex: 1 1 auto;
   min-height: 0;
@@ -23,15 +30,25 @@
 .native-tract-controls > .diffusion-note { margin-top: var(--space-1); }
 #native-tract-status[data-error="true"] { color: var(--danger); }
 #native-tract-retry { margin-top: var(--space-2); }
-#native-tract-overlay-control { margin-top: var(--space-2); }
-.native-tract-controls fieldset { min-width: 0; margin: var(--space-4) 0 0; padding: 0; border: 0; }
+.native-tract-controls fieldset { min-width: 0; margin: var(--space-2) 0 0; padding: 0; border: 0; }
 /* Touch raises ranges to 44px elsewhere; a mouse still gets a 24px hit area. */
 @media (pointer: fine) { .native-tract-controls input[type="range"] { height: 24px; margin: 2px 0 0; } }
 
-.diffusion-load-hint { margin-top: var(--space-2); }
+/* The list heading reads like the deficit groups: a 12px caption over the ruled rows. */
+.diffusion-list-heading {
+  margin: 0;
+  padding: var(--space-1) 0 6px;
+  font-size: var(--text-micro);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+}
+.diffusion-load-hint { margin: -2px 0 6px; }
 .native-tract-controls:not(:has(.diffusion-bundle-meta[data-loaded="false"])) .diffusion-load-hint,
 .native-tract-controls:has(#native-tract-no-results:not([hidden])) .diffusion-load-hint { display: none; }
-#native-tract-bundles { margin-top: var(--space-2); border-top: 1px solid var(--border-subtle); }
+#native-tract-bundles { border-top: 1px solid var(--border-subtle); }
+/* The settings rule closes the list, so the last row does not draw a second one beside it. */
+#native-tract-bundles > .diffusion-bundle:last-child { border-bottom: 0; }
 #native-tract-no-results { padding: var(--space-3) 0; }
 
 /* One row per tract: its name, then a toggle per side (or per segment) in a right-hand column. */
@@ -42,7 +59,7 @@
   gap: var(--space-1) var(--space-3);
   min-height: 28px;
 }
-.diffusion-bundle-name { flex: 1; min-width: 0; font-size: var(--text-ui); font-weight: 500; line-height: 1.35; }
+.diffusion-bundle-name { flex: 1; min-width: 0; font-size: var(--text-ui); font-weight: 500; line-height: 1.35; text-wrap: balance; }
 .diffusion-bundle[data-visible="false"] .diffusion-bundle-name { color: var(--text-secondary); }
 .diffusion-bundle-parts { display: flex; flex: none; flex-wrap: wrap; gap: var(--space-1); }
 /* Segments outnumber the room beside the name, so their toggles take a line of their own. */
@@ -57,8 +74,8 @@
 .diffusion-part > * { grid-area: 1 / 1; }
 .diffusion-part input {
   appearance: none;
-  width: 28px;
-  height: 24px;
+  width: 32px;
+  height: 28px;
   margin: 0;
   border: 1px solid var(--border-control);
   border-radius: 3px;
@@ -118,15 +135,34 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0 var(--space-1);
-  margin: var(--space-2) calc(-1 * var(--space-2)) 0;
+  margin: var(--space-3) calc(-1 * var(--space-2)) 0;
 }
 .diffusion-exports button { padding: 0 var(--space-2); }
 
+/* Display settings and About share one full-width ruled disclosure, like a lesson's notes. */
+.diffusion-settings,
 .diffusion-about {
-  margin: var(--space-4) calc(-1 * var(--space-4)) 0;
+  margin: 0 calc(-1 * var(--space-4));
   padding: 0 var(--space-4);
   border-top: 1px solid var(--border-subtle);
 }
+.diffusion-settings { margin-top: var(--space-1); }
+.diffusion-settings[open] { padding-bottom: var(--space-4); }
+.diffusion-settings > summary { justify-content: flex-start; }
+/* Closed, the summary still reads out what it holds; open, the controls say it themselves. */
+.diffusion-settings[open] .diffusion-settings-readout { visibility: hidden; }
+.diffusion-settings-readout {
+  margin-left: auto;
+  font-size: var(--text-micro);
+  font-weight: 400;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.diffusion-settings > summary + * { margin-top: var(--space-1); }
+.diffusion-settings > .check + .control-field { margin-top: var(--space-4); }
+.diffusion-about { border-bottom: 1px solid var(--border-subtle); }
+.diffusion-about[open] { padding-bottom: var(--space-3); }
 .diffusion-about > summary + * { margin-top: var(--space-1); }
 .diffusion-about > p + p { margin-top: var(--space-2); }
 .diffusion-source {
@@ -137,6 +173,15 @@
   color: var(--accent);
   text-underline-offset: 3px;
 }
+
+/*
+ * Both MRI viewers (their shell is in components.css): notes and hints keep a readable
+ * measure, and source files and grids read as data, a step smaller in mono.
+ */
+.mpr-header p,
+.mpr-note > p { max-width: 72ch; text-wrap: pretty; }
+.mpr-note > .measure { font-size: var(--text-micro); }
+#mpr-readout { font-size: var(--text-micro); }
 
 /* MRI navigation: the same reading-room pieces as the linked MRI sections. */
 #diffusion-mri-status { margin-top: var(--space-3); font-size: var(--text-small); }
@@ -188,7 +233,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-control);
   background: var(--surface-navigation);
-  font-size: var(--text-small);
+  font-size: var(--text-micro);
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
@@ -213,7 +258,7 @@
   #diffusion-mri-close { white-space: nowrap; }
 }
 @media (pointer: coarse) {
-  .diffusion-part input { width: 44px; height: var(--control-height); }
+  .diffusion-part input { width: 44px; height: 44px; }
   /* A 20px thumb on the coarse 2px track needs room above it, clear of the label. */
   .diffusion-mri-display input[type="range"] { margin: 14px 0 10px; }
 }

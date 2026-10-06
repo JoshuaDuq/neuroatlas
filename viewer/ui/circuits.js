@@ -1,5 +1,5 @@
 import { CIRCUIT_TEXT } from '../learning/translations.js';
-import { scrollToTop } from './clinical.js';
+import { drillChevron, scrollToTop } from './clinical.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -39,6 +39,32 @@ function disclosure(title, ...children) {
   const node = element('details', null, 'circuit-disclosure');
   node.append(element('summary', title), ...children);
   return node;
+}
+
+/** Where a landmark stands in the reader's lesson: the one shown, one already seen, or one ahead. */
+export function stepProgress(index, lesson) {
+  if (index === lesson.step) return 'current';
+  return lesson.visited.includes(index) ? 'visited' : 'upcoming';
+}
+
+/** The lesson's landmarks in order, each one a way to it. Seen and ahead differ in shape, not only in ink. */
+function stepList(circuit, lesson, lang) {
+  const text = CIRCUIT_TEXT[lang];
+  const steps = element('ol', null, 'circuit-steps');
+  circuit.steps.forEach((step, index) => {
+    const row = element('li');
+    const choice = button(null, 'step', index);
+    const progress = stepProgress(index, lesson);
+    choice.className = 'circuit-step';
+    choice.dataset.progress = progress;
+    if (progress === 'current') choice.setAttribute('aria-current', 'step');
+    choice.append(element('span', String(index + 1), 'circuit-step-number'),
+      element('span', step.name[lang], 'circuit-step-name'));
+    if (progress === 'visited') choice.append(element('span', `, ${text.visited}`, 'visually-hidden'));
+    row.append(choice);
+    steps.append(row);
+  });
+  return steps;
 }
 
 /** Which way a stepper control moves, and whether there is a landmark in that direction. */
@@ -125,26 +151,19 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       const choice = button(null, 'circuit', circuit.id);
       choice.className = 'circuit-choice';
       choice.setAttribute('aria-pressed', String(circuit.id === lesson.circuit));
-      choice.append(element('span', circuit.name[lang]),
+      const label = element('span', null, 'circuit-choice-text');
+      label.append(element('span', circuit.name[lang]),
         element('span', `${circuit.steps.length} ${text.landmarks.toLowerCase()}`, 'circuit-count'));
+      choice.append(label, drillChevron());
       return choice;
     }));
     landmarks.replaceChildren();
     if (!lesson.circuit) return;
-    const circuit = catalog.get(lesson.circuit);
-    landmarks.append(element('h3', text.landmarks, 'section-label'));
-    const steps = element('ol', null, 'circuit-steps');
-    circuit.steps.forEach((step, index) => {
-      const row = element('li');
-      const choice = button(null, 'step', index);
-      choice.className = 'circuit-step';
-      if (index === lesson.step) choice.setAttribute('aria-current', 'step');
-      choice.append(element('span', String(index + 1), 'circuit-step-number'),
-        element('span', step.name[lang]));
-      row.append(choice);
-      steps.append(row);
-    });
-    landmarks.append(steps);
+    const heading = element('h3', text.landmarks, 'section-label');
+    heading.id = 'circuit-landmarks-heading';
+    const steps = stepList(catalog.get(lesson.circuit), lesson, lang);
+    steps.setAttribute('aria-labelledby', heading.id);
+    landmarks.append(heading, steps);
   }
 
   function renderProfile() {
@@ -160,6 +179,10 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     // The location bar names the circuit on screen; the heading keeps it in the outline.
     const heading = element('h2', circuit.name[lang], 'visually-hidden');
     heading.id = 'circuit-heading';
+    // The whole sequence, in the lesson itself rather than only in the list it was opened from.
+    const sequence = stepList(circuit, lesson, lang);
+    sequence.classList.add('circuit-sequence');
+    sequence.setAttribute('aria-label', text.landmarks);
     const body = element('div', null, 'panel-body circuit-content');
     const step = circuit.steps[lesson.step];
     const title = element('h3', step.name[lang], 'circuit-title');
@@ -175,7 +198,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       note.append(button(text.returnToLandmark, 'step', lesson.step));
       body.append(note);
     }
-    profile.replaceChildren(heading, body);
+    profile.replaceChildren(heading, sequence, body);
 
     const foot = [];
     if (lesson.step === circuit.steps.length - 1) foot.push(question(circuit, lesson, lang));
@@ -185,7 +208,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
         element('p', circuit.scope[lang]), element('p', text.schematic, 'circuit-note')),
       disclosure(text.mapping, element('p', step.mapping[lang]), element('p', text.mriNote, 'circuit-note')),
       disclosure(text.clinical, element('p', circuit.clinical[lang]),
-        button(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')));
+        command(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')));
     const sources = disclosure(text.evidence);
     for (const id of circuit.references) {
       const reference = catalog.reference(id);
@@ -217,8 +240,9 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     const text = CIRCUIT_TEXT[lang];
     const body = element('div', null, 'panel-body clinical-regions');
     for (const { circuit, index } of links) {
-      const link = element('button', `${circuit.name[lang]} · ${text.step(index, circuit.steps.length)}`,
-        'clinical-region-link');
+      const link = element('button', null, 'clinical-region-link');
+      link.append(element('span', `${circuit.name[lang]} · ${text.step(index, circuit.steps.length)}`),
+        drillChevron());
       link.type = 'button';
       link.dataset.landmarkCircuit = circuit.id;
       link.dataset.landmarkStep = String(index);
@@ -288,9 +312,12 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     if (await run(action)) settle(direction);
   }
 
+  /** Arrows walk the list, or the lesson's own landmarks. */
   function onKey(event) {
     if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
-    const controls = [...browser.querySelectorAll('button:not(:disabled)')];
+    const scope = event.currentTarget === browser ? browser : event.target.closest('.circuit-sequence');
+    if (!scope) return;
+    const controls = [...scope.querySelectorAll('button:not(:disabled)')];
     const index = controls.indexOf(document.activeElement);
     if (index < 0) return;
     event.preventDefault();
@@ -300,6 +327,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
   const surfaces = [browser, profile, stepperGroup, notes, related];
   for (const surface of surfaces) surface.addEventListener('click', act);
   browser.addEventListener('keydown', onKey);
+  profile.addEventListener('keydown', onKey);
   return {
     update(snapshot) {
       state = snapshot;
@@ -325,6 +353,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     dispose() {
       for (const surface of surfaces) surface.removeEventListener('click', act);
       browser.removeEventListener('keydown', onKey);
+      profile.removeEventListener('keydown', onKey);
     },
   };
 }

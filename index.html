@@ -112,18 +112,22 @@
               <label id="subject-label" class="data-label" for="anatomy-switch">Subject</label>
               <p id="study-name" class="study-name" hidden></p>
               <select id="anatomy-switch" hidden></select>
+              <p id="subject-note" class="data-note"></p>
             </div>
             <div class="data-field" data-anatomy-display>
               <span id="atlas-control-label" class="data-label">Atlas</span>
               <div id="atlas-switch" class="segmented instrument" role="group" aria-label="Cortical atlas"></div>
+              <p id="atlas-note" class="data-note"></p>
             </div>
             <div id="surface-field" class="data-field">
               <span id="surface-control-label" class="data-label">Colour</span>
               <div id="surface-switch" class="segmented instrument" role="group" aria-label="Surface colour"></div>
+              <p id="surface-note" class="data-note"></p>
             </div>
             <div class="data-field" data-anatomy-display>
               <label id="detail-label" class="data-label" for="detail">Internal anatomy</label>
               <select id="detail"></select>
+              <p id="detail-note" class="data-note"></p>
             </div>
           </div>
         </div>
@@ -159,7 +163,8 @@
             <div class="menu-row">
               <span id="theme-label" class="menu-label">Theme</span>
               <div id="theme-switch" class="segmented" role="group" aria-labelledby="theme-label">
-                <button type="button" data-theme-option="light" aria-pressed="true">Light</button>
+                <button type="button" data-theme-option="system" aria-pressed="true">System</button>
+                <button type="button" data-theme-option="light" aria-pressed="false">Light</button>
                 <button type="button" data-theme-option="dark" aria-pressed="false">Dark</button>
               </div>
             </div>
@@ -170,7 +175,6 @@
                 <button type="button" data-single-keys="off" aria-pressed="false">Off</button>
               </div>
             </div>
-            <span class="masthead-sep" aria-hidden="true"></span>
             <button id="menu-fullscreen" class="menu-item" type="button" hidden>Full screen</button>
             <button id="menu-provenance" class="menu-item" type="button" aria-haspopup="dialog" data-opens-provenance>Provenance</button>
             <button id="shortcuts-open" class="menu-item" type="button" aria-label="Keyboard shortcuts">
@@ -299,10 +303,15 @@
 
           <aside id="inspector" aria-label="Region details and view controls">
             <div class="detail-location">
-              <button id="detail-back" class="detail-back" type="button">
-                <span class="detail-back-chevron" aria-hidden="true"></span>
-                <span id="detail-back-label">Anatomy</span>
-              </button>
+              <nav id="detail-path" class="detail-path" aria-label="Breadcrumb">
+                <ol>
+                  <li><button id="detail-back" class="detail-back" type="button">
+                    <span class="detail-back-chevron" aria-hidden="true"></span>
+                    <span id="detail-back-label">Anatomy</span>
+                  </button></li>
+                  <li hidden><button id="detail-group" class="detail-crumb" type="button" aria-current="location"></button></li>
+                </ol>
+              </nav>
               <div id="circuit-stepper" class="circuit-stepper" role="group" hidden></div>
             </div>
             <div class="rail-body">
@@ -383,20 +392,23 @@
 
       <main id="viewport">
         <p id="viewport-help" class="viewport-help" aria-hidden="true">Drag to rotate · Scroll to zoom · Click to inspect</p>
+        <p id="viewport-focus-hint" class="viewport-help viewport-focus-hint" aria-hidden="true">3D view · Arrow keys rotate · + − zoom</p>
         <div id="orientation" class="orientation" aria-hidden="true">
           <span data-edge="top"></span><span data-edge="right"></span>
           <span data-edge="bottom"></span><span data-edge="left"></span>
         </div>
-        <!-- The stage toolbar frames and cuts the picture; the section bar docks above it while a plane is cut. -->
+        <!-- One plate: the tools frame and cut the picture; the section row sits above them while a plane is cut. -->
         <div id="stage-dock" class="stage-dock">
           <div id="stage-toolbar" class="stage-toolbar">
-            <!-- On a phone the presets move into this chooser; viewport-chrome.js re-parents them. -->
+            <!-- Where the presets do not fit inline they move into this chooser; viewport-chrome.js re-parents them. -->
             <button id="view-tool" class="stage-tool view-tool" type="button" aria-haspopup="dialog"
                     aria-expanded="false" aria-controls="view-popover">
               <span id="view-tool-label">View</span>
               <span class="stage-tool-chevron" aria-hidden="true"></span>
             </button>
-            <div id="view-popover" class="stage-popover" role="dialog" aria-labelledby="view-tool-label" hidden></div>
+            <div id="view-popover" class="stage-popover" role="dialog" aria-labelledby="view-popover-label" hidden>
+              <p id="view-popover-label" class="stage-field-label">Anatomical view</p>
+            </div>
             <div id="views" class="views segmented stage-segmented" role="toolbar" aria-label="Anatomical view"></div>
             <span class="stage-toolbar-sep" aria-hidden="true"></span>
             <button id="section-tool" class="stage-tool" type="button" aria-haspopup="dialog"
@@ -511,7 +523,7 @@
       </main>
 
       <footer id="colophon">
-        <p id="colophon-text"><span id="colophon-description"></span><span id="colophon-statement">Not clinical anatomy</span></p>
+        <p id="colophon-text"><span id="colophon-statement">Not clinical anatomy</span><span id="colophon-description"></span></p>
         <span id="region-count"></span>
         <button id="provenance" type="button" aria-haspopup="dialog" data-opens-provenance hidden>Provenance</button>
       </footer>
@@ -532,16 +544,16 @@
       <div id="mpr-grid"></div>
       <p id="mpr-readout" class="measure" role="status"></p>
       <div class="mpr-display">
-        <label for="mri-window-width"><span id="mri-window-width-text">Contrast window</span>
+        <label for="mri-window-width"><span id="mri-window-width-text">Window</span>
           <output id="mri-window-width-value" class="measure"></output>
           <input id="mri-window-width" type="range" min="10" max="255" value="180" /></label>
-        <label for="mri-window-center"><span id="mri-window-center-text">Window center</span>
+        <label for="mri-window-center"><span id="mri-window-center-text">Level</span>
           <output id="mri-window-center-value" class="measure"></output>
           <input id="mri-window-center" type="range" min="0" max="255" value="90" /></label>
         <label class="check"><input id="mpr-overlay" type="checkbox" /> <span id="mpr-overlay-text">Segmentation overlay</span></label>
       </div>
-      <p id="mpr-note" class="mpr-note">1 mm source grid · surface RAS coordinates · L/R explicitly marked.
-        MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.</p>
+      <div class="mpr-note"><p id="mpr-note">1 mm source grid · surface RAS coordinates · L/R explicitly marked.
+        MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.</p></div>
     </dialog>
 
     <dialog id="diffusion-mri-dialog" aria-labelledby="diffusion-mri-title">
@@ -585,8 +597,8 @@
         </div>
       </fieldset>
       <div class="mpr-note diffusion-mri-notes">
-        <p id="diffusion-mri-grid"></p>
-        <p class="diffusion-source-file">t1_warped.nii.gz · fa_1x1x1.nii.gz</p>
+        <p id="diffusion-mri-grid" class="measure"></p>
+        <p class="diffusion-source-file measure">t1_warped.nii.gz · fa_1x1x1.nii.gz</p>
         <p data-mri-copy="scope"></p>
       </div>
     </dialog>

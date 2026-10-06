@@ -4,6 +4,7 @@
 .clinical-deficit {
   display: flex;
   align-items: center;
+  gap: var(--space-2);
   width: 100%;
   min-height: var(--row-height);
   height: auto;
@@ -14,7 +15,20 @@
   text-align: left;
   font-weight: 400;
 }
-.clinical-deficit-text { display: flex; flex-direction: column; min-width: 0; }
+.clinical-deficit-text { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+/* Rows that open a detail trail the tree's chevron: same 12px stroke, tertiary ink, the row's colour once chosen. */
+.drill-chevron {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--text-tertiary);
+}
+[aria-pressed="true"] > .drill-chevron { color: inherit; }
 /* Two lines on a 48px row (6 + 20 + 16 + 6), the rhythm every two-line list row keeps. */
 .clinical-deficit-text > span:first-child { font-weight: 500; line-height: 20px; }
 .clinical-deficit-text > .clinical-note { line-height: 16px; }
@@ -49,18 +63,22 @@
 #clinical-coverage { padding-top: var(--space-3); }
 
 /* Deficit profile ---------------------------------------------------------- */
-/* What opening the deficit did to the model: a ruled status line above the headline. */
+/* What the stage shows for the deficit: a ruled status line above the headline. */
 .clinical-stage {
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-4) var(--space-1);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-navigation);
   font-size: var(--text-micro);
   line-height: 1.5;
   color: var(--text-secondary);
 }
-.clinical-stage > p + p { margin-top: var(--space-1); }
+.clinical-stage > p { font-variant-numeric: tabular-nums; text-wrap: pretty; }
+.clinical-stage > p + p { margin-top: 2px; }
+/* The count line and what opening reset are separate lines of one status. */
+.clinical-action-status { white-space: pre-line; }
 .clinical-action-status[data-error="true"] { color: var(--danger); }
 .clinical-drawn[hidden] { display: none; }
+.clinical-stage:has(> .clinical-restore[hidden]) { padding-bottom: var(--space-2); }
 /* The way back closes the strip as a text action, like a lesson's return to its landmark. */
 .clinical-stage .clinical-restore {
   display: block;
@@ -96,6 +114,8 @@
   line-height: 1.25;
 }
 .clinical-content > .clinical-caveat { margin-top: var(--space-2); }
+/* The side every finding shares, said once as the title's second line. */
+.clinical-content .clinical-profile-name:has(+ .clinical-profile-side) { margin-bottom: 2px; }
 .clinical-content a { display: inline-block; color: var(--accent); text-underline-offset: 3px; }
 
 /* Associations: a ruled list of headings that open; the mapped regions stay in reach while closed. */
@@ -176,11 +196,14 @@
 #clinical-region .clinical-deficit-text > span:first-child { color: var(--accent); font-weight: 400; }
 #clinical-region .clinical-deficit:hover:not(:disabled) { background: var(--surface-hover); }
 
-/* Rows that link elsewhere keep a ruled list. Guided circuits use these on the region view as well. */
-.clinical-regions { display: grid; margin-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
+/* Rows that link elsewhere: a ruled list on the text column, like the Neuropsychology rows. */
+.clinical-regions { display: grid; }
+.clinical-regions > .clinical-region-link:first-child { border-top: 1px solid var(--border-subtle); }
 .clinical-region-link {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
   width: 100%;
   height: auto;
   min-height: var(--row-height);

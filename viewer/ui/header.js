@@ -9,23 +9,31 @@ const switchProgress = (progress, lang) => {
 
 const SURFACE_MODES = ['tissue', 'mri', 'atlas', 'network'];
 
+// The label is also kept as data-label, which the masthead's CSS uses to hold the bold width.
+const setLabel = (button, text) => {
+  button.textContent = text;
+  button.dataset.label = text;
+};
+
 /** The published title without its quotation marks: "SNAIL subj_1", dataset and subject together. */
 export function subjectName(entry) {
   const name = String(entry?.display_name ?? '').replace(/[“”"]/g, '').replace(/\s+/g, ' ').trim();
   return name || entry?.subject || entry?.id || '';
 }
 
-/** What the collapsed masthead names: subject, atlas and colouring, or the tract reference alone. */
-export function dataSummary({ subject, atlas, colour, reference }) {
-  return reference ? [reference] : [subject, atlas, colour].filter(Boolean);
+/** What the collapsed masthead names, part by part: subject, atlas, colouring, internal anatomy, or the tract reference alone. */
+export function dataSummary({ subject, atlas, colour, detail, reference }) {
+  if (reference) return [{ part: 'subject', text: reference }];
+  return Object.entries({ subject, atlas, colour, detail })
+    .filter(([, text]) => text)
+    .map(([part, text]) => ({ part, text }));
 }
 
-/** The status bar's statement, after what is loaded; alone until something is. */
+/** The status bar's statement, then what is loaded; alone until something is. */
 export function colophonParts(lang, { anatomy, reference } = {}) {
   const copy = t(lang, 'footer');
-  if (reference) return { description: copy.referenceColophon(reference.label), statement: copy.statement };
-  if (anatomy) return { description: copy.colophon(anatomy), statement: copy.statement };
-  return { description: '', statement: copy.statementAlone };
+  const description = reference ? copy.referenceColophon(reference.label) : anatomy ? copy.colophon(anatomy) : '';
+  return { description, statement: copy.statementAlone };
 }
 
 export function paintColophon(lang, loaded) {
@@ -66,6 +74,13 @@ export function createHeader({
   const subjectLabel = document.getElementById('subject-label');
   const atlasControlLabel = document.getElementById('atlas-control-label');
   const surfaceControlLabel = document.getElementById('surface-control-label');
+  const detailSelect = document.getElementById('detail');
+  const notes = {
+    subject: document.getElementById('subject-note'),
+    atlas: document.getElementById('atlas-note'),
+    surface: document.getElementById('surface-note'),
+    detail: document.getElementById('detail-note'),
+  };
 
   // A dropdown only when there is a choice; one published brain is a name, not a control.
   const offerAnatomies = anatomies.length > 1;
@@ -197,6 +212,7 @@ export function createHeader({
     });
 
   const langButtons = langContainer ? [...langContainer.querySelectorAll('button')] : [];
+  for (const btn of langButtons) btn.dataset.label = btn.textContent;
   const onLangClicks = langButtons.map(btn => {
     const handler = () => onLang?.(btn.dataset.lang);
     btn.addEventListener('click', handler);
@@ -206,7 +222,7 @@ export function createHeader({
   const themeButtons = [...themeContainer.querySelectorAll('[data-theme-option]')];
   const onThemeClick = event => {
     const button = event.target.closest('[data-theme-option]');
-    if (button && button.getAttribute('aria-pressed') !== 'true') onTheme();
+    if (button && button.getAttribute('aria-pressed') !== 'true') onTheme(button.dataset.themeOption);
   };
   themeContainer.addEventListener('click', onThemeClick);
 
@@ -222,46 +238,57 @@ export function createHeader({
     .filter(Boolean)
     .map(group => bindRoving(group));
 
-  // The colouring (Networks) is the last to go: the subject truncates first, then the atlas drops,
-  // and only when the subject would be cut below about five letters does the colour drop too.
+  // The subject truncates first. Once it would be cut below about five letters, internal anatomy
+  // drops, then the atlas; the colouring (Networks) is the last to go.
   function fitSummary() {
     dataSummaryNode.removeAttribute('data-short');
-    const subject = dataSummaryNode.firstElementChild;
+    const subject = dataSummaryNode.querySelector('[data-part="subject"]');
     if (!collapsed() || !subject) return;
     const tooShort = () => subject.clientWidth
       < Math.min(subject.scrollWidth, 5 * parseFloat(getComputedStyle(subject).fontSize));
-    for (const level of ['atlas', 'colour']) {
-      if (dataSummaryNode.children.length < 3 || !tooShort()) return;
-      dataSummaryNode.dataset.short = level;
+    const dropped = [];
+    for (const part of ['detail', 'atlas', 'colour']) {
+      if (!tooShort()) return;
+      if (!dataSummaryNode.querySelector(`[data-part="${part}"]`)) continue;
+      dropped.push(part);
+      dataSummaryNode.dataset.short = dropped.join(' ');
     }
   }
   document.fonts?.ready.then(fitSummary);
 
   let paintedSummary = '';
   function paintSummary(parts) {
-    const key = parts.join('\n');
+    const key = parts.map(({ part, text }) => `${part}:${text}`).join('\n');
     if (key === paintedSummary) return;
     paintedSummary = key;
-    dataSummaryNode.replaceChildren(...parts.flatMap((text, index) => {
-      const part = document.createElement('span');
-      part.className = 'data-summary-part';
-      part.textContent = text;
-      if (!index) return [part];
+    dataSummaryNode.replaceChildren(...parts.flatMap(({ part, text }, index) => {
+      const node = document.createElement('span');
+      node.className = 'data-summary-part';
+      node.dataset.part = part;
+      node.textContent = text;
+      if (!index) return [node];
       const dot = document.createElement('span');
       dot.className = 'data-summary-sep';
+      dot.dataset.part = part;
       dot.setAttribute('aria-hidden', 'true');
       dot.textContent = '·';
-      return [dot, part];
+      return [dot, node];
     }));
     fitSummary();
   }
 
   return {
-    update(state, { visibleCount, reference, tracts = null, singleKeys = true }) {
+    update(state, { visibleCount, reference, tracts = null, singleKeys = true, themeChoice }) {
       const i18n = t(state.lang, 'header');
       const atlasDict = t(state.lang, 'atlases');
       const surfaces = t(state.lang, 'display');
+      const footer = t(state.lang, 'footer');
       const switching = state.status === 'switching';
+      const offersDetail = detailSelect.options.length > 1;
+      const detailId = state.detail ?? detailSelect.value;
+      // One line on what each loaded choice is: the popover prints it, the bar puts it on the title.
+      const kind = typeof anatomy.individual === 'boolean' ? footer.kind(anatomy.individual) : '';
+      const atlasNote = id => i18n.notes[id] ?? atlasDict[id] ?? '';
 
       lastLang = state.lang;
       skipLink.textContent = i18n.skipToModel;
@@ -274,7 +301,7 @@ export function createHeader({
       surfaceField.hidden = Boolean(reference);
       if (anatomySwitch && offerAnatomies) {
         anatomySwitch.hidden = Boolean(reference);
-        anatomySwitch.title = anatomySwitch.selectedOptions[0]?.title || i18n.subject;
+        anatomySwitch.title = kind || i18n.subject;
         anatomySwitch.disabled = state.status === 'loading' || switching;
       }
       subjectLabel.textContent = i18n.subject;
@@ -282,10 +309,18 @@ export function createHeader({
       surfaceControlLabel.textContent = i18n.colour;
       container.setAttribute('aria-label', i18n.atlasSwitch);
       surfaceContainer.setAttribute('aria-label', surfaces.surfaceColor);
+      notes.subject.textContent = kind;
+      notes.subject.hidden = !kind;
+      notes.atlas.textContent = atlasNote(state.atlas);
+      notes.surface.textContent = surfaces.surfaceColorTitles[state.surfaceColor] ?? '';
+      notes.detail.textContent = offersDetail ? atlasNote(detailId) : '';
+      notes.detail.hidden = !offersDetail;
+      detailSelect.title = offersDetail ? atlasNote(detailId) : '';
       paintSummary(dataSummary({
         subject: subjectName(anatomy),
         atlas: atlasSwitchLabel(state.atlas, state.lang),
         colour: surfaces.surfaceColors[state.surfaceColor],
+        detail: offersDetail ? atlasSwitchLabel(detailId, state.lang) : null,
         reference: reference?.label,
       }));
       dataToggle.title = i18n.dataSummary;
@@ -304,9 +339,8 @@ export function createHeader({
 
       for (const button of buttons) {
         const active = button.dataset.atlas === state.atlas;
-        const fullLabel = atlasDict[button.dataset.atlas] ?? button.dataset.atlas;
-        button.textContent = atlasSwitchLabel(button.dataset.atlas, state.lang);
-        button.title = fullLabel;
+        setLabel(button, atlasSwitchLabel(button.dataset.atlas, state.lang));
+        button.title = atlasNote(button.dataset.atlas);
         button.setAttribute('aria-pressed', String(active));
         button.disabled = state.status === 'loading' || switching;
         button.dataset.loading = String(switching && !active);
@@ -314,13 +348,12 @@ export function createHeader({
 
       for (const button of surfaceButtons) {
         const mode = button.dataset.surface;
-        button.textContent = surfaces.surfaceColors[mode] ?? mode;
+        setLabel(button, surfaces.surfaceColors[mode] ?? mode);
         button.title = surfaces.surfaceColorTitles[mode] ?? '';
         button.setAttribute('aria-pressed', String(mode === state.surfaceColor));
       }
 
       // Tracts mode counts its bundles; elsewhere, the regions currently drawn.
-      const footer = t(state.lang, 'footer');
       regionCount.textContent = tracts ?? (switching
         ? switchProgress(state.progress, state.lang)
         : state.status === 'ready' ? footer.visibleRegions(visibleCount) : '');
@@ -334,16 +367,18 @@ export function createHeader({
       } : null);
 
       themeLabel.textContent = i18n.theme;
+      const themeNames = { system: i18n.systemTheme, light: i18n.lightTheme, dark: i18n.darkTheme };
       for (const button of themeButtons) {
         const option = button.dataset.themeOption;
-        button.textContent = option === 'dark' ? i18n.darkTheme : i18n.lightTheme;
-        button.setAttribute('aria-pressed', String(option === state.theme));
+        setLabel(button, themeNames[option]);
+        button.title = option === 'system' ? i18n.systemThemeNote : '';
+        button.setAttribute('aria-pressed', String(option === themeChoice));
       }
 
       if (singleKeysLabel) singleKeysLabel.textContent = i18n.singleKeys;
       for (const button of singleKeyButtons) {
         const on = button.dataset.singleKeys === 'on';
-        button.textContent = on ? i18n.singleKeysOn : i18n.singleKeysOff;
+        setLabel(button, on ? i18n.singleKeysOn : i18n.singleKeysOff);
         button.setAttribute('aria-pressed', String(on === singleKeys));
       }
       for (const group of rovingGroups) group.sync();

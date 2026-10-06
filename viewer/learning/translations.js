@@ -1,7 +1,7 @@
 export const CIRCUIT_TEXT = {
   en: {
     introduction: 'Guided anatomy, linked MRI and questions. Connections are schematic.',
-    heading: 'Guided learning', landmarks: 'Landmarks', landmark: 'Landmark',
+    heading: 'Guided learning', landmarks: 'Landmarks', landmark: 'Landmark', visited: 'seen',
     schematic: 'Schematic relationships · not measured connectivity or tractography',
     connections: 'Connections and scope',
     previousLandmark: 'Previous landmark', nextLandmark: 'Next landmark',
@@ -18,7 +18,7 @@ export const CIRCUIT_TEXT = {
   },
   fr: {
     introduction: 'Anatomie guidée, IRM liée et questions. Les connexions sont schématiques.',
-    heading: 'Apprentissage guidé', landmarks: 'Repères', landmark: 'Repère',
+    heading: 'Apprentissage guidé', landmarks: 'Repères', landmark: 'Repère', visited: 'vu',
     schematic: 'Relations schématiques · sans mesure de connectivité ni tractographie',
     connections: 'Connexions et portée',
     previousLandmark: 'Repère précédent', nextLandmark: 'Repère suivant',

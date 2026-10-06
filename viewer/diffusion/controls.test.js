@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { parse } from 'yaml';
-import { tractRowName, tractRows } from './controls.js';
+import { lengthSummary, settingsReadout, tractRowName, tractRows } from './controls.js';
+import { DIFFUSION_TEXT } from './translations.js';
 
 const catalog = parse(await readFile(new URL('../../data/diffusion.yaml', import.meta.url), 'utf8'));
 const bundle = (id, en, fr = en) => ({ id, name: { en, fr } });
@@ -37,4 +38,12 @@ test('the published collection reads as one row per tract in both languages', ()
   for (const row of rows) {
     for (const lang of ['en', 'fr']) assert.ok(tractRowName(row, lang));
   }
+});
+
+test('tract lengths read in the reader’s notation, and the settings readout names opacity and filter', () => {
+  const metrics = { mean: 142.25, min: 75, max: 239.46 };
+  assert.equal(lengthSummary(metrics, DIFFUSION_TEXT.en, 'en'), 'mean 142.3\u202fmm (range 75.0–239.5)');
+  assert.equal(lengthSummary(metrics, DIFFUSION_TEXT.fr, 'fr'), 'moyenne 142,3\u202fmm (étendue 75,0–239,5)');
+  assert.equal(settingsReadout(0.16, 1, 'en'), '16% · ≥1\u202fmm');
+  assert.equal(settingsReadout(1, 40, 'fr'), '100% · ≥40\u202fmm');
 });

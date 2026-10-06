@@ -1,47 +1,60 @@
 import catalog from '../../data/diffusion.yaml';
 import { createNativeTractViewer } from './native-viewer.js';
 import { DIFFUSION_TEXT } from './translations.js';
-import { tractRow, tractRows, updateTractRow, saveLengths } from './controls.js';
+import { tractRow, tractRows, updateTractRow, saveLengths, settingsReadout } from './controls.js';
 import { createMriNavigator } from './navigation-ui.js';
 import { t } from '../i18n/translations.js';
 
 const MARKUP = `
+  <div class="rail-head native-tract-head">
+    <label class="visually-hidden" for="native-tract-search" data-native-copy="search"></label>
+    <div class="search-box">
+      <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+      </svg>
+      <input id="native-tract-search" type="search" autocomplete="off" spellcheck="false"
+             aria-controls="native-tract-bundles" />
+      <button id="native-tract-search-clear" class="search-clear" type="button" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <path d="m6 6 12 12M6 18 18 6" />
+        </svg>
+      </button>
+    </div>
+  </div>
   <div class="panel-body native-tract-controls">
     <h3 class="visually-hidden" data-native-copy="dataset"></h3>
     <p class="diffusion-lead" data-native-copy="nativeReference"></p>
     <p id="native-tract-anatomy-mismatch" class="diffusion-note" data-native-copy="otherAnatomy"></p>
     <p id="native-tract-status" class="diffusion-note" role="status"></p>
     <button id="native-tract-retry" type="button" data-native-copy="retry" hidden></button>
-    <label id="native-tract-overlay-control" class="check">
-      <input id="native-tract-overlay" type="checkbox" /> <span data-native-copy="showOverlay"></span>
-    </label>
     <fieldset id="native-tract-controls" disabled>
-      <div class="control-field">
-        <label for="native-tract-opacity"><span data-native-copy="brainOpacity"></span>
-          <output id="native-tract-opacity-value" class="measure" for="native-tract-opacity"></output></label>
-        <input id="native-tract-opacity" type="range" min="0" max="1" step="0.02" value="0.16" />
-      </div>
-      <div class="control-field">
-        <label for="native-tract-minimum"><span data-native-copy="minimum"></span>
-          <output id="native-tract-minimum-value" class="measure" for="native-tract-minimum">1</output></label>
-        <input id="native-tract-minimum" type="range" min="1" max="250" step="1" value="1" />
-      </div>
-      <h4 class="field-group-heading" data-native-copy="bundleCollection"></h4>
-      <label class="visually-hidden" for="native-tract-search" data-native-copy="search"></label>
-      <div class="search-box">
-        <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
-        </svg>
-        <input id="native-tract-search" type="search" autocomplete="off" spellcheck="false" />
-      </div>
+      <h4 class="diffusion-list-heading" data-native-copy="bundleCollection"></h4>
       <p class="diffusion-note diffusion-load-hint" data-native-copy="loadHint"></p>
       <div id="native-tract-bundles"></div>
       <p id="native-tract-no-results" class="diffusion-note" data-native-copy="noResults" hidden></p>
-      <div class="diffusion-exports">
-        <button id="native-tract-restore" class="button-quiet" type="button" data-native-copy="restore"></button>
-        <button id="native-tract-csv" class="button-quiet" type="button" data-native-copy="exportMetrics"></button>
-      </div>
+      <details id="native-tract-settings" class="diffusion-settings">
+        <summary><span data-native-copy="settings"></span>
+          <span id="native-tract-settings-readout" class="diffusion-settings-readout measure"></span></summary>
+        <label id="native-tract-overlay-control" class="check">
+          <input id="native-tract-overlay" type="checkbox" /> <span data-native-copy="showOverlay"></span>
+        </label>
+        <div class="control-field">
+          <label for="native-tract-opacity"><span data-native-copy="brainOpacity"></span>
+            <output id="native-tract-opacity-value" class="measure" for="native-tract-opacity"></output></label>
+          <input id="native-tract-opacity" type="range" min="0" max="1" step="0.02" value="0.16" />
+        </div>
+        <div class="control-field">
+          <label for="native-tract-minimum"><span data-native-copy="minimum"></span>
+            <output id="native-tract-minimum-value" class="measure" for="native-tract-minimum">1</output></label>
+          <input id="native-tract-minimum" type="range" min="1" max="250" step="1" value="1" />
+        </div>
+        <div class="diffusion-exports">
+          <button id="native-tract-restore" class="button-quiet" type="button" data-native-copy="restore"></button>
+          <button id="native-tract-csv" class="button-quiet" type="button" data-native-copy="exportMetrics"></button>
+        </div>
+      </details>
     </fieldset>
     <details class="diffusion-about">
       <summary data-native-copy="about"></summary>
@@ -131,6 +144,10 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
       ? copy().cortexOpacity : copy().brainOpacity;
     if (matchingAnatomy) get('opacity').value = cortexOpacity;
     get('opacity-value').value = `${Math.round(Number(get('opacity').value) * 100)}%`;
+    get('settings-readout').textContent = settingsReadout(Number(get('opacity').value),
+      Number(get('minimum').value), lang);
+    get('search-clear').hidden = !get('search').value;
+    get('search-clear').setAttribute('aria-label', t(lang, 'navigator').clearSearch);
     engine.group.visible = matchingAnatomy ? overlayVisible : active;
     const loaded = new Map(engine.snapshot().map(bundle => [bundle.catalogId, bundle]));
     const glyphs = t(lang, 'sides').glyphs;
@@ -171,13 +188,31 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     render(); scene.invalidate();
     onVisibility?.();
   });
-  listen('search', 'input', filterBundles);
+  listen('search', 'input', () => {
+    get('search-clear').hidden = !get('search').value;
+    filterBundles();
+  });
+  listen('search-clear', 'click', () => {
+    get('search').value = '';
+    get('search-clear').hidden = true;
+    filterBundles();
+    get('search').focus();
+  });
+  listen('search', 'keydown', event => {
+    if (event.key === 'Escape' && get('search').value) {
+      event.preventDefault();
+      get('search-clear').click();
+    }
+  });
   listen('opacity', 'input', event => runControl(() => {
     const value = Number(event.target.value);
     if (matchingAnatomy) onCortexOpacity(value);
     else engine.setOpacity(value);
   }));
-  listen('minimum', 'input', event => { get('minimum-value').value = event.target.value; });
+  listen('minimum', 'input', event => {
+    get('minimum-value').value = event.target.value;
+    get('settings-readout').textContent = settingsReadout(Number(get('opacity').value), Number(event.target.value), lang);
+  });
   listen('minimum', 'change', event => runControl(() => engine.setMinimum(Number(event.target.value))));
   listen('restore', 'click', () => runControl(() => {
     for (const bundle of engine.snapshot()) {

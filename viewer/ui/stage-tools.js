@@ -1,17 +1,13 @@
 import { bindRoving } from './roving.js';
 
-/** Which edges of a horizontal scroller still have content past them. */
-export function overflowCue({ scrollLeft, scrollWidth, clientWidth }) {
-  const before = scrollLeft > 1;
-  const after = scrollLeft < scrollWidth - clientWidth - 1;
-  return before && after ? 'both' : before ? 'start' : after ? 'end' : '';
-}
-
-/** How far to scroll so `box` sits inside `frame`, clear of a `fade` on either edge. */
-export function revealDelta(frame, box, fade = 0) {
-  if (box.left < frame.left + fade) return box.left - frame.left - fade;
-  if (box.right > frame.right - fade) return box.right - frame.right + fade;
-  return 0;
+/**
+ * How the dock lays out in `room` pixels: the presets inline only when the tools fit with them
+ * (otherwise View ▾ holds them, never a clipped strip), and the section bar whole only when its
+ * first row fits on one line. `needs` is null on a phone, which always takes the compact dock.
+ */
+export function dockArrangement({ room, needs }) {
+  if (!needs) return { menu: true, compact: true };
+  return { menu: needs.tools > room, compact: needs.section > room };
 }
 
 /**

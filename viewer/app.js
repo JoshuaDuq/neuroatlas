@@ -98,7 +98,14 @@ export async function startApp() {
       onCameraChange();
     },
   });
-  const theme = createTheme(() => scene.applyTheme());
+  // One path for the reader's choice and a live OS switch. The cut faces and
+  // the chrome join it once they exist (see "start").
+  let afterTheme = null;
+  const theme = createTheme(current => {
+    scene.applyTheme();
+    session.setTheme(current);
+    afterTheme?.();
+  });
 
   // Which brain, before anything of it is loaded. A link may name one; if it
   // does not, the index names the default. Only one brain is ever live, so
@@ -565,12 +572,7 @@ export async function startApp() {
         render();
       }
     },
-    onTheme: () => {
-      theme.toggle();
-      sections.applyTheme();
-      session.setTheme(theme.current);
-      render();
-    },
+    onTheme: choice => theme.choose(choice),
     onLang: setLang,
     onSingleKeys: enabled => {
       keyPreference.set(enabled);
@@ -1064,9 +1066,13 @@ export async function startApp() {
   const shortcuts = createShortcuts(initialLang);
   shortcuts.setSingleKeys(keyPreference.enabled);
 
-  const onSnapshot = () => {
+  const onSnapshot = async () => {
     try {
-      const dataUrl = scene.captureSnapshot();
+      const dataUrl = await chrome.snapshot(crop => scene.captureSnapshot(crop), {
+        anatomy: model.manifest.anatomy,
+        section: sectionControls.current,
+        referenceLabel: lang => nativeTracts.reference(lang).label,
+      });
       const link = document.createElement('a');
       link.download = `neuroatlas-${model.state.atlas ?? 'brain'}.png`;
       link.href = dataUrl;
@@ -1089,10 +1095,19 @@ export async function startApp() {
   // Built before the sheet: the sheet decides on construction which shell owns
   // the panels, and hands them over through onShell.
   workspace = createWorkspace({
+    catalog,
     onMode: chooseExplorer,
     onClear: clearContext,
     onViewChange: () => scene.invalidate(),
     onReturn: leaveLandmark,
+    // The group crumb leads to the selected row, so the tree shows it rather than a search.
+    onLocate: () => {
+      const id = model.state.selectedRegion?.id;
+      if (!id) return;
+      session.setQuery('');
+      revealInTree(id);
+      render();
+    },
   });
 
   /*
@@ -1182,7 +1197,7 @@ export async function startApp() {
     header.update(referenceOnly ? { ...state, surfaceColor: 'tissue' } : state, { visibleCount,
       reference: referenceOnly ? nativeTracts.reference(state.lang) : null,
       tracts: state.explorer === 'diffusion' ? nativeTracts.reference(state.lang).detail : null,
-      singleKeys: keyPreference.enabled });
+      singleKeys: keyPreference.enabled, themeChoice: theme.choice });
     navigator.update(state);
     inspector.update(state);
     const strip = contextStrip(state, referenceOnly);
@@ -1502,8 +1517,11 @@ export async function startApp() {
 
   model.addEventListener('change', render);
   sections.addEventListener('change', render);
+  afterTheme = () => {
+    sections.applyTheme();
+    render();
+  };
   scene.applyTheme();
-  session.setTheme(theme.current);
   scene.setSize();
   // The camera starts inside the brain; frame it before the link's layers load around it.
   applyView(session.assemble(model.state).view, { immediate: true });
@@ -1557,6 +1575,7 @@ export async function startApp() {
       nativeTracts.dispose();
       navigator.dispose();
       header.dispose();
+      theme.dispose();
       model.dispose();
       scene.dispose();
     },

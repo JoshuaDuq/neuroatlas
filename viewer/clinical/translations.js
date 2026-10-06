@@ -11,11 +11,16 @@ export const CLINICAL_TEXT = {
     noAtlasCoverage: 'Clinical mappings currently use Destrieux parcels, FreeSurfer structures and learning-anatomy solids. Fine-atlas parcels have not been assigned equivalent claims.',
     studyFinding: 'Reported finding', limits: 'Interpretation',
     mapping: 'Approximate anatomical mapping', openRegion: 'Open region',
-    stageShown: 'Opening this deficit drew its mapped regions in their atlas, outlined, and cleared cuts and isolation.',
+    // Outlined unless a cut is on, which turns the outlines off.
+    regionsMarked: (shown, total, outlined) => {
+      const count = shown === total ? `${total}` : `${shown} of ${total}`;
+      return `${count} mapped ${total === 1 ? 'region' : 'regions'} ${outlined ? 'outlined' : 'visible'}`;
+    },
+    cleared: 'Cut and isolation cleared.',
     restore: 'Restore previous view', restoring: 'Restoring the previous view…',
     stageRestored: 'Previous view restored.', restoreFailed: 'The previous view could not be fully restored.',
     openNote: 'Opening a mapped region also clears cuts and isolation, then selects it. The cortex is hidden when only deep structures are shown.',
-    drawn: (shown, total) => `${shown} of ${total} mapped regions are drawn in this view. Open a region below to reveal it.`,
+    drawnHint: 'Open a region below to reveal it.',
     evidence: 'Publications', supporting: 'Supporting study', qualifying: 'Contrasting evidence',
     population: 'Study population', abstract: 'Source inspected: abstract',
     'full-text': 'Source inspected: full text',
@@ -39,16 +44,21 @@ export const CLINICAL_TEXT = {
     noAtlasCoverage: 'Les correspondances cliniques utilisent actuellement les parcelles Destrieux, les structures FreeSurfer et les solides de l’anatomie d’apprentissage. Aucune équivalence n’est attribuée aux parcelles fines.',
     studyFinding: 'Résultat rapporté', limits: 'Interprétation',
     mapping: 'Correspondance anatomique approximative', openRegion: 'Voir la région',
-    stageShown: 'L’ouverture de ce déficit a affiché ses régions associées dans leur atlas, en contour, et retiré les coupes et l’isolement.',
+    regionsMarked: (shown, total, outlined) => {
+      const count = shown === total ? `${total}` : `${shown} sur ${total}`;
+      const plural = total === 1 ? '' : 's';
+      return `${count} région${plural} associée${plural} ${outlined ? 'entourée' : 'visible'}${plural}`;
+    },
+    cleared: 'Coupe et isolement retirés.',
     restore: 'Rétablir la vue précédente', restoring: 'Rétablissement de la vue précédente…',
     stageRestored: 'Vue précédente rétablie.', restoreFailed: 'La vue précédente n’a pas pu être entièrement rétablie.',
     openNote: 'Ouvrir une région associée retire aussi les coupes et l’isolement, puis la sélectionne. Le cortex est masqué lorsque seules des structures profondes sont affichées.',
-    drawn: (shown, total) => `${shown} des ${total} régions associées sont affichées dans cette vue. Ouvrez une région ci-dessous pour l’afficher.`,
+    drawnHint: 'Ouvrez une région ci-dessous pour l’afficher.',
     evidence: 'Publications', supporting: 'Étude à l’appui', qualifying: 'Données contradictoires',
     population: 'Population étudiée', abstract: 'Source consultée : résumé',
     'full-text': 'Source consultée : texte intégral',
     sources: 'Sélection de publications · pas une revue systématique',
-    revised: 'Contenu vérifié', referenceOnly: 'Anatomie de référence; les associations ne prédisent pas le déficit d’un patient individuel.',
+    revised: 'Contenu vérifié', referenceOnly: 'Anatomie de référence\u202f; les associations ne prédisent pas le déficit d’un patient individuel.',
     mappingEmpty: 'Aucune correspondance disponible dans l’atlas.', loading: 'Ouverture de l’anatomie…',
     methods: { 'lesion-mapping': 'Cartographie lésion–symptôme', 'meta-analysis': 'Méta-analyse de cartographie lésionnelle',
       'case-report': 'Étude de cas', 'case-series': 'Série de cas' },

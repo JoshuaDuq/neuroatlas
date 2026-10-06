@@ -47,6 +47,16 @@ test('the detail view opens with its way back, inside the panel it returns from'
   assert.ok(back < html.indexOf('class="rail-body"', inspector));
 });
 
+test('the location bar is one breadcrumb: the way back, then the group, which is the current place', () => {
+  assert.match(tagWithId('detail-path'), /^<nav\b[^>]*aria-label="[^"]+"/);
+  const path = html.slice(html.indexOf('id="detail-path"'), html.indexOf('</nav>', html.indexOf('id="detail-path"')));
+  assert.ok(path.indexOf('id="detail-back"') < path.indexOf('id="detail-group"'));
+  assert.match(tagWithId('detail-group'), /aria-current="location"/);
+  assert.equal(/aria-current/.test(tagWithId('detail-back')), false);
+  assert.ok(html.indexOf('id="circuit-stepper"') > html.indexOf('</nav>', html.indexOf('id="detail-path"')),
+    'the lesson stepper shares the bar, outside the path');
+});
+
 test('the panel precedes the stage in reading and Tab order', () => {
   const sheet = html.indexOf('<div id="sheet"');
   assert.ok(sheet !== -1 && sheet > html.indexOf('<header id="masthead"'));
@@ -205,12 +215,27 @@ test('subject names keep the dataset with the subject, without quotation marks',
   assert.equal(subjectName({ id: 'y' }), 'y');
 });
 
-test('the data summary names subject, atlas and colour, or the tract reference alone', () => {
-  assert.deepEqual(dataSummary({ subject: 'SNAIL subj_1', atlas: 'Destrieux', colour: 'Regions' }),
-    ['SNAIL subj_1', 'Destrieux', 'Regions']);
+test('the data summary names subject, atlas, colour and internal anatomy, or the tract reference alone', () => {
+  const texts = parts => parts.map(({ text }) => text);
+  const full = dataSummary({ subject: 'SNAIL subj_1', atlas: 'Destrieux', colour: 'Regions', detail: 'Teaching set' });
+  assert.deepEqual(texts(full), ['SNAIL subj_1', 'Destrieux', 'Regions', 'Teaching set']);
+  assert.deepEqual(full.map(({ part }) => part), ['subject', 'atlas', 'colour', 'detail']);
   assert.deepEqual(dataSummary({ subject: 'bert', atlas: 'Destrieux', colour: 'Regions', reference: 'SNAIL' }),
-    ['SNAIL']);
-  assert.deepEqual(dataSummary({ subject: 'bert', atlas: 'Destrieux' }), ['bert', 'Destrieux']);
+    [{ part: 'subject', text: 'SNAIL' }]);
+  assert.deepEqual(texts(dataSummary({ subject: 'bert', atlas: 'Destrieux', detail: null })), ['bert', 'Destrieux']);
+});
+
+test('every masthead data choice is explained in a line, in both languages', () => {
+  for (const lang of ['en', 'fr']) {
+    const notes = t(lang, 'header').notes;
+    for (const id of ['destrieux', 'hcp-mmp', 'learning', 'aseg', 'nextbrain']) {
+      assert.ok(notes[id]?.length > 10, `${lang} ${id} has a note`);
+    }
+    for (const mode of ['tissue', 'mri', 'atlas', 'network']) assert.ok(t(lang, 'display').surfaceColorTitles[mode]);
+  }
+  for (const id of ['subject-note', 'atlas-note', 'surface-note', 'detail-note']) {
+    assert.ok(mastheadHtml().slice(mastheadHtml().indexOf('id="masthead-data"')).includes(`id="${id}"`));
+  }
 });
 
 test('the masthead says Subject, never Specimen, for an in-vivo MRI', () => {
@@ -229,7 +254,8 @@ test('the status bar keeps the not-clinical statement in every state', () => {
     assert.match(colophonParts(lang, { anatomy }).statement, /clinical anatomy|anatomie clinique/);
     assert.match(colophonParts(lang, { anatomy, reference: { label: 'Ref' } }).statement, /clinical anatomy|anatomie clinique/);
   }
-  assert.match(tagWithId('colophon-statement'), /id="colophon-statement"/);
+  assert.ok(html.indexOf('id="colophon-statement"') < html.indexOf('id="colophon-description"'),
+    'the statement leads the status bar, ahead of the description that truncates');
   assert.equal(/FreeSurfer reference anatomy/.test(html), false);
 });
 

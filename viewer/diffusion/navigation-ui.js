@@ -3,22 +3,22 @@ import { isPhone } from '../render/device.js';
 
 const TEXT = {
   en: {
-    title: 'MRI with tracts · SNAIL subject 1', close: 'Close MRI',
+    title: 'MRI with tracts · SNAIL subject 1', close: 'Close',
     hint: 'Click a slice to position the crosshair. Scroll through slices; arrow keys move one voxel.',
     plane: 'View', all: 'Linked slices + 3D', axial: 'Axial', coronal: 'Coronal', sagittal: 'Sagittal',
-    voxel: 'Source voxel (0-based)', go: 'Go to voxel', window: 'T1 contrast window',
-    center: 'T1 window center', faOpacity: 'FA overlay opacity',
+    voxel: 'Source voxel (0-based)', go: 'Go to voxel', window: 'T1 window',
+    center: 'T1 level', faOpacity: 'FA overlay opacity',
     loading: 'Loading the reference MRI and selected tracts…', retry: 'Reload MRI',
     canvas: 'Linked SNAIL MRI slices and tracts. Click to position the crosshair; arrows move one voxel.',
     scope: 'Scanner RAS millimeters · R/L marked. Tracts use the complete source geometry and current length filter. The published scan has cropped inferior coverage; cortical atlas parcels remain surface labels.',
     grid: (dims, spacing) => `${dims.join(' × ')} source voxels · ${spacing.join(' × ')} mm spacing`,
   },
   fr: {
-    title: 'IRM avec faisceaux · SNAIL sujet 1', close: 'Fermer l’IRM',
+    title: 'IRM avec faisceaux · SNAIL sujet 1', close: 'Fermer',
     hint: 'Cliquer une coupe pour placer le réticule. Défiler pour parcourir les coupes ; les flèches déplacent d’un voxel.',
     plane: 'Vue', all: 'Coupes liées + 3D', axial: 'Axiale', coronal: 'Coronale', sagittal: 'Sagittale',
-    voxel: 'Voxel source (indice 0)', go: 'Aller au voxel', window: 'Fenêtre de contraste T1',
-    center: 'Centre de la fenêtre T1', faOpacity: 'Opacité de la superposition FA',
+    voxel: 'Voxel source (indice 0)', go: 'Aller au voxel', window: 'Fenêtre T1',
+    center: 'Niveau T1', faOpacity: 'Opacité de la superposition FA',
     loading: 'Chargement de l’IRM de référence et des faisceaux sélectionnés…', retry: 'Recharger l’IRM',
     canvas: 'Coupes IRM SNAIL liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.',
     scope: 'Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux conservent la géométrie source complète et le filtre de longueur courant. La couverture inférieure de l’image publiée est tronquée ; les régions corticales restent des étiquettes de surface.',
@@ -66,8 +66,10 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
     if (location) {
       const number = value => Number.isFinite(value) ? value.toLocaleString(language,
         { maximumFractionDigits: 3 }) : String(value);
-      get('readout').textContent = `RAS: ${Array.from(location.mm).slice(0, 3).map(number).join(' · ')} mm`
-        + ` · T1: ${number(location.values[0].value)} · FA: ${number(location.values[1].value)}`;
+      // French sets a narrow no-break space before a colon; a label never wraps away from its value.
+      const colon = language === 'fr' ? '\u202f:\u00a0' : ':\u00a0';
+      get('readout').textContent = `RAS${colon}${Array.from(location.mm).slice(0, 3).map(number).join(' · ')}\u202fmm`
+        + ` · T1${colon}${number(location.values[0].value)} · FA${colon}${number(location.values[1].value)}`;
     }
   }
 

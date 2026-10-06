@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  controlKeyAction, groupDisplayName, labelledGroups, nextEnabledIndex, sharedGroupNames, treeKeyAction, vocabularyOf,
+  controlKeyAction, groupDisplayName, labelledGroups, nextEnabledIndex, regionGroup, sharedGroupNames, treeKeyAction,
+  vocabularyOf,
 } from './navigator.js';
 import { visibilityStateOf } from './visibility-control.js';
 
@@ -113,4 +114,17 @@ test('a qualified name is sorted by what the list shows, within its family', () 
   ];
   assert.deepEqual(labelledGroups(groups, 'fr').map(entry => entry.label),
     ['Insula', 'Lobe limbique', 'Cervelet', 'Système limbique', 'Tronc cérébral']);
+});
+
+test('a region\'s group is the one the tree lists it under, qualified as the tree shows it', () => {
+  const row = (id, region) => ({ region: { ...region, id } });
+  const groups = [
+    { name: 'Limbic', key: 'cortex:Limbic', kind: 'cortex', rows: [row('a', lobe)] },
+    { name: 'Frontal', key: 'cortex:Frontal', kind: 'cortex', rows: [row('b', lobe), row('c', lobe)] },
+    { name: 'Limbic', key: 'structure:Limbic', kind: 'structure', rows: [row('d', structure)] },
+  ];
+  assert.deepEqual(regionGroup(groups, 'c', 'en'), { key: 'cortex:Frontal', label: 'Frontal' });
+  assert.deepEqual(regionGroup(groups, 'a', 'en'), { key: 'cortex:Limbic', label: 'Limbic lobe' });
+  assert.deepEqual(regionGroup(groups, 'd', 'en'), { key: 'structure:Limbic', label: 'Limbic system' });
+  assert.equal(regionGroup(groups, 'elsewhere', 'en'), null);
 });

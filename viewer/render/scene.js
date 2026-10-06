@@ -466,9 +466,21 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
     get viewportHeight() { return hostSize.height; },
 
-    captureSnapshot() {
+    /**
+     * The settled frame, copied pixel for pixel to a 2D canvas that can be annotated. `crop` is
+     * the part of the canvas to keep, in CSS pixels; `ratio` is the copy's pixels per CSS pixel.
+     */
+    captureSnapshot(crop = { x: 0, y: 0, ...hostSize }) {
       settled.composer.render();
-      return renderer.domElement.toDataURL('image/png');
+      const source = renderer.domElement;
+      const ratio = source.width / hostSize.width;
+      const [x, y, width, height] = [crop.x, crop.y, crop.width, crop.height].map(value => Math.round(value * ratio));
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      // Read in the same task as the render: the drawing buffer is not preserved past it.
+      canvas.getContext('2d').drawImage(source, x, y, width, height, 0, 0, width, height);
+      return { canvas, ratio };
     },
 
     setMriAppearance,

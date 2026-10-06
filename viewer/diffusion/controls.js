@@ -1,3 +1,7 @@
+import { decimal } from '../ui/format.js';
+
+const NARROW_NBSP = '\u202f';
+
 export function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined && text !== null) node.textContent = text;
@@ -106,16 +110,24 @@ export function updateTractRow(section, row, { lang, loaded, glyphs, text }) {
       continue;
     }
     count.textContent = text.streamlines(visible ? metrics.shown : metrics.total, metrics.total);
-    // One span per measurement, so a wrapped line breaks between them and never inside one.
-    const parts = metrics.shown && visible
-      ? [`${text.mean} ${metrics.mean.toFixed(1)} mm`,
-        `${text.range} ${metrics.min.toFixed(1)}–${metrics.max.toFixed(1)} mm`]
-      : visible ? [text.noShown] : [];
+    // The lengths are one span, so a line too narrow for both breaks after the count, never inside a measure.
+    const parts = metrics.shown && visible ? [lengthSummary(metrics, text, lang)] : visible ? [text.noShown] : [];
     length.replaceChildren(...parts.flatMap((value, index) => [...(index ? [' '] : []), element('span', value)]));
   }
   section.dataset.visible = String(anyVisible);
   section.dataset.name = [tractRowName(row, lang), ...row.members.map(({ bundle }) => bundle.name[lang])]
     .join(' ').toLocaleLowerCase(lang);
+}
+
+/** Mean with its range, as a paper writes it, in the reader's notation (decimal comma in French). */
+export function lengthSummary({ mean, min, max }, text, lang) {
+  const mm = value => decimal(value, 1, lang);
+  return `${text.mean} ${mm(mean)}${NARROW_NBSP}mm (${text.range} ${mm(min)}–${mm(max)})`;
+}
+
+/** The closed settings disclosure still says what it holds: opacity, then the length filter. */
+export function settingsReadout(opacity, minimum, lang) {
+  return `${Math.round(opacity * 100)}% · ≥${decimal(minimum, 0, lang)}${NARROW_NBSP}mm`;
 }
 
 export function saveLengths(bundles, minimum) {
