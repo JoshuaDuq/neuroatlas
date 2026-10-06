@@ -6,17 +6,22 @@ import { clearFraming } from '../render/effective-viewport.js';
 import { networkCss, networkName } from '../catalog/networks.js';
 import { t } from '../i18n/translations.js';
 import { isIndependentTractReference } from '../diffusion/presentation.js';
-import { createStagePopovers, overflowCue, revealDelta } from './stage-tools.js';
+import { createStagePopovers, dockArrangement } from './stage-tools.js';
 import { bindRoving } from './roving.js';
 import { decimal } from './format.js';
+import { subjectName } from './header.js';
+import { SNAPSHOT_LAYOUT, annotateSnapshot, snapshotCaption, snapshotFonts } from './snapshot.js';
 
 const VIEW_KEYS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 
-/** Both margins plus the least gap allowed between the toolbar and the bar. */
+/** Both margins plus the least gap allowed between the dock and the scale bar. */
 const CHROME_GUTTERS_PX = 48;
 
 /** Space kept between a marking and the anatomy, so its halo never sits on tissue. */
 const MARKING_GAP_PX = 8;
+
+/** Room the top orientation letter and its gap take from a hint that would reach it. */
+const TOP_LETTER_ROOM_PX = 20;
 
 /** Keys that move the camera while the canvas has focus. */
 const CAMERA_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-']);
@@ -24,8 +29,15 @@ const CAMERA_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 
 /** How far the camera must move during a gesture before it has left the preset. */
 const MOVED_EPSILON = 1e-6;
 
-/** The fade on a clipped edge of the presets (stage.css), kept clear when one is revealed. */
-const PRESET_FADE_PX = 32;
+/** The reader has rotated or clicked the model once; the drag-and-scroll hint stays retired. */
+const HINT_STORAGE_KEY = 'neuroatlas.stage-hint';
+
+function hintRetired() {
+  try { return globalThis.localStorage?.getItem(HINT_STORAGE_KEY) === 'retired'; } catch { return false; }
+}
+function retireHint() {
+  try { globalThis.localStorage?.setItem(HINT_STORAGE_KEY, 'retired'); } catch { /* Storage blocked: the hint returns next visit. */ }
+}
 
 /**
  * The download's bar and its words. Called hundreds of times a load, so none
@@ -51,7 +63,7 @@ export function paintLoadProgress(lang, loaded, total) {
 
 /**
  * Everything drawn over the canvas: anatomical orientation, the scale bar,
- * the stage toolbar and its popovers, the colour keys, the hover label, and
+ * the stage dock and its popovers, the colour keys, the hover label, and
  * the loading and error stage.
  */
 export function createViewportChrome({ networks, onView, onRetry, onSnapshot, onDock, controls }) {
@@ -60,10 +72,15 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     [...orientation.children].map(node => [node.dataset.edge, node]));
   const views = document.getElementById('views');
   const toolbar = document.getElementById('stage-toolbar');
+  const separator = toolbar.querySelector('.stage-toolbar-sep');
   const dock = document.getElementById('stage-dock');
+  const sectionBar = document.getElementById('section-bar');
+  const sectionRow = sectionBar.querySelector('.section-bar-row');
   const sectionToolLabel = document.getElementById('section-tool-label');
+  const viewTool = document.getElementById('view-tool');
   const viewToolLabel = document.getElementById('view-tool-label');
   const viewPopover = document.getElementById('view-popover');
+  const viewPopoverLabel = document.getElementById('view-popover-label');
   const displayToolLabel = document.getElementById('display-tool-label');
   const bar = document.getElementById('scale-bar');
   const barRule = bar.querySelector('.scale-bar-rule');
@@ -73,6 +90,7 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
   const directionKey = document.getElementById('direction-key');
   const host = document.getElementById('viewport');
   const help = document.getElementById('viewport-help');
+  const focusHint = document.getElementById('viewport-focus-hint');
   const fullscreenButton = document.getElementById('viewport-fullscreen');
   const snapshotButton = document.getElementById('viewport-snapshot');
   const stageMessage = document.getElementById('stage-message');
@@ -80,6 +98,7 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
   const retry = document.getElementById('stage-retry');
   const phone = globalThis.matchMedia?.(PHONE_QUERY);
   let currentLang = 'en';
+  let lastState = null;
   // The region selected when the stage first drew; a later selection means "click to inspect" was learned.
   let firstSelection;
   // Letters as of the last camera move. A language change re-words them; it never re-reads
@@ -96,35 +115,65 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     fill: () => phone?.matches ?? false,
   });
 
-  // Seven presets do not fit a phone's plate beside two tools, so there they open from View.
-  function seatPresets() {
-    const home = phone?.matches ? viewPopover : toolbar;
-    if (views.parentElement === home) return;
-    popovers.hide();
-    if (home === toolbar) viewPopover.after(views); else viewPopover.append(views);
-    cachedToolbarWidth = null;
-    fitChrome();
-  }
+  let stageGutter = null;
+  const gutter = () => {
+    stageGutter ??= parseFloat(getComputedStyle(host).getPropertyValue('--stage-gutter')) || 16;
+    return stageGutter;
+  };
 
   /*
-   * Do the toolbar and the scale bar still fit on one line? Asked of the
-   * rectangle the reader can see, not the window. The presets scroll inside
-   * the plate when it is capped, so their content width is what is measured.
+   * The dock's natural widths: the tools with the presets inline, and the section bar's first
+   * row with every control beside the slider. Read in one forced layout, and only when the words
+   * or the tools on show change, never on a resize or a sheet drag.
    */
-  let cachedToolbarWidth = null;
-  let toolbarSignature = '';
-  function toolbarWidth() {
-    if (cachedToolbarWidth === null) {
-      const style = getComputedStyle(toolbar);
-      const spacing = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth']
-        .reduce((total, property) => total + parseFloat(style[property]), 0);
-      const items = [...toolbar.children].filter(node =>
-        !node.hidden && getComputedStyle(node).position !== 'absolute' && getComputedStyle(node).display !== 'none');
-      cachedToolbarWidth = items.reduce((total, node) =>
-        total + (node === views ? views.scrollWidth : node.offsetWidth), 0)
-        + spacing + parseFloat(style.columnGap || 0) * Math.max(0, items.length - 1);
+  let needs = null;
+  let needsKey = '';
+  function dockNeeds() {
+    const key = [currentLang, [...toolbar.children].map(node => Number(node.hidden)).join(''),
+      sectionBar.hidden, sectionBar.dataset.pending, sectionRow.textContent].join('|');
+    if (needs && key === needsKey) return needs;
+    needsKey = key;
+    const compact = sectionBar.dataset.compact;
+    let probe = null;
+    if (views.parentElement !== toolbar) {
+      probe = views.cloneNode(true);
+      probe.removeAttribute('id');
+      separator.before(probe);
     }
-    return cachedToolbarWidth;
+    delete sectionBar.dataset.compact;
+    dock.dataset.measure = 'true';
+    const style = getComputedStyle(dock);
+    const frame = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+    needs = { tools: toolbar.offsetWidth + frame, section: sectionBar.hidden ? 0 : sectionBar.offsetWidth + frame };
+    delete dock.dataset.measure;
+    if (compact !== undefined) sectionBar.dataset.compact = compact;
+    probe?.remove();
+    return needs;
+  }
+
+  // Seven presets beside two tools need room; where there is none they open from View ▾.
+  function seatPresets(menu) {
+    const mode = menu ? 'menu' : 'inline';
+    if (host.dataset.presets !== mode) host.dataset.presets = mode;
+    const home = menu ? viewPopover : toolbar;
+    if (views.parentElement === home) return;
+    const hadFocus = views.contains(document.activeElement);
+    if (popovers.open === viewPopover.id) popovers.hide();
+    if (menu) viewPopover.append(views); else separator.before(views);
+    roving.sync();
+    if (hadFocus) (menu ? viewTool : views.querySelector('[tabindex="0"]'))?.focus({ preventScroll: true });
+  }
+
+  /** Presets inline or in View ▾, and the section bar whole or behind its disclosure, by measured room. */
+  function fitDockLayout() {
+    if (!lastRect?.width) return;
+    const onPhone = phone?.matches ?? false;
+    const { menu, compact } = dockArrangement({
+      room: lastRect.width - 2 * gutter(),
+      needs: onPhone ? null : dockNeeds(),
+    });
+    seatPresets(menu);
+    if (sectionBar.dataset.compact !== String(compact)) sectionBar.dataset.compact = String(compact);
   }
 
   /*
@@ -134,11 +183,15 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
    */
   const labelWidths = new Map();
   let barWidth = 0;
+  let dockWidth = 0;
 
+  /** Do the dock and the scale bar still fit on one line of the rectangle the reader can see? */
   function fitChrome() {
     if (!lastRect?.width) return;
-    const needed = toolbarWidth() + (bar.hidden ? 0 : barWidth) + CHROME_GUTTERS_PX;
-    const mode = needed > lastRect.width ? 'tight' : 'wide';
+    const needed = dockWidth + (bar.hidden ? 0 : barWidth) + CHROME_GUTTERS_PX;
+    let mode = needed > lastRect.width ? 'tight' : 'wide';
+    // Raised beside the bottom letter, a bar reaching the middle would read as part of it.
+    if (mode === 'tight' && barWidth > lastRect.width / 2 - CHROME_GUTTERS_PX) mode = 'stacked';
     if (host.dataset.chrome !== mode) host.dataset.chrome = mode;
   }
 
@@ -151,10 +204,21 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     if (host.dataset.dockTall !== tall) host.dataset.dockTall = tall;
   }
   const dockObserver = globalThis.ResizeObserver
-    ? new ResizeObserver(() => { dockHeight = Math.round(dock.offsetHeight); fitDock(); onDock?.(); })
+    ? new ResizeObserver(([entry]) => {
+      const box = entry.borderBoxSize?.[0];
+      dockHeight = Math.round(box?.blockSize ?? dock.offsetHeight);
+      dockWidth = Math.round(box?.inlineSize ?? dock.offsetWidth);
+      fitDock();
+      fitChrome();
+      onDock?.();
+    })
     : null;
   dockObserver?.observe(dock);
-  let stageGutter = null;
+  // The section bar's plane, words and readiness change outside the state loop; refit before paint.
+  const sectionObserver = globalThis.MutationObserver ? new MutationObserver(fitDockLayout) : null;
+  sectionObserver?.observe(sectionBar, {
+    attributes: true, attributeFilter: ['hidden', 'data-pending'], subtree: true, childList: true, characterData: true,
+  });
 
   const sheetRaised = () => phone?.matches && document.getElementById('sheet')?.dataset.detent === 'full';
 
@@ -166,8 +230,7 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
       dockHeight = measured;
       fitDock();
     }
-    stageGutter ??= parseFloat(getComputedStyle(host).getPropertyValue('--stage-gutter')) || 16;
-    return dockHeight + stageGutter;
+    return dockHeight + gutter();
   }
 
   /*
@@ -237,7 +300,7 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     // The bar is as wide as the camera makes it, so the fit is asked again
     // whenever it changes, not only when it appears.
     const pixels = `${Math.round(scale.pixels)}px`;
-    const text = `${decimal(scale.millimetres, 1, currentLang, { trim: true })}\u202fmm`;
+    const text = `${decimal(scale.millimetres, 1, currentLang, { trim: true })} mm`;
     const changed = wasHidden || barRule.style.width !== pixels || barText.textContent !== text;
     if (barRule.style.width !== pixels) barRule.style.width = pixels;
     if (barText.textContent !== text) barText.textContent = text;
@@ -265,6 +328,22 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
   }
 
   /*
+   * The hints sit at the top left and never reach the top letter: on a stage too narrow for
+   * one line beside it, a hint is not drawn. Widths are read once per wording.
+   */
+  const hintWidths = new Map();
+  function fitHints() {
+    if (!lastRect?.width) return;
+    const room = lastRect.width / 2 - gutter() - TOP_LETTER_ROOM_PX;
+    for (const node of [help, focusHint]) {
+      const text = node.textContent;
+      if (!hintWidths.has(text)) hintWidths.set(text, node.offsetWidth);
+      const fits = String(hintWidths.get(text) <= room);
+      if (node.dataset.room !== fits) node.dataset.room = fits;
+    }
+  }
+
+  /*
    * A preset reads as pressed only while the camera sits where that preset
    * put it. The session keeps the named view for the link either way.
    */
@@ -280,46 +359,41 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
       dismissHelp();
       onView(view);
     });
-    button.addEventListener('focus', () => revealPreset(button));
     views.append(button);
     return button;
   });
-
-  // A capped plate scrolls its presets; the clipped edge fades while more lies past it.
-  function fitPresetCue() {
-    const cue = overflowCue(views);
-    if ((views.dataset.overflow ?? '') === cue) return;
-    if (cue) views.dataset.overflow = cue; else delete views.dataset.overflow;
-  }
-  function revealPreset(button) {
-    const delta = revealDelta(views.getBoundingClientRect(), button.getBoundingClientRect(), PRESET_FADE_PX);
-    if (delta) views.scrollLeft += delta;
-    fitPresetCue();
-  }
-  let shownPressed = -1;
-  views.addEventListener('scroll', fitPresetCue, { passive: true });
-  const presetObserver = globalThis.ResizeObserver
-    ? new ResizeObserver(() => {
-      fitPresetCue();
-      if (shownPressed >= 0) revealPreset(buttons[shownPressed]);
-    })
-    : null;
-  for (const node of [views, ...buttons]) presetObserver?.observe(node);
   const roving = bindRoving(views);
-  seatPresets();
-  phone?.addEventListener('change', seatPresets);
+
+  /** View ▾ names the view the camera holds, so the chooser reads like the inline presets. */
+  function paintViewTool() {
+    const copy = t(currentLang, 'viewport');
+    const name = held && currentView ? t(currentLang, 'views')[currentView] : null;
+    const label = name ?? copy.viewTool;
+    if (viewToolLabel.textContent !== label) viewToolLabel.textContent = label;
+    viewTool.setAttribute('aria-label', name ? copy.viewToolAria(name) : copy.viewAria);
+  }
 
   function paintPresets() {
     const pressed = held ? currentView : null;
-    const pressedIndex = buttons.findIndex(button => button.dataset.view === pressed);
-    buttons.forEach((button, index) => {
-      const value = String(index === pressedIndex);
+    for (const button of buttons) {
+      const value = String(button.dataset.view === pressed);
       if (button.getAttribute('aria-pressed') !== value) button.setAttribute('aria-pressed', value);
-    });
+    }
     roving.sync();
-    if (pressedIndex >= 0 && pressedIndex !== shownPressed) revealPreset(buttons[pressedIndex]);
-    shownPressed = pressedIndex;
+    paintViewTool();
   }
+
+  const onPhoneChange = () => fitDockLayout();
+  phone?.addEventListener('change', onPhoneChange);
+  // Widths measured in a fallback face are wrong once Source Sans arrives.
+  const onFontsLoaded = () => {
+    needs = null;
+    hintWidths.clear();
+    labelWidths.clear();
+    fitDockLayout();
+    fitHints();
+  };
+  document.fonts?.addEventListener('loadingdone', onFontsLoaded);
 
   function holdView() {
     held = true;
@@ -341,6 +415,7 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     clearTimeout(watchTimer);
     watching = true;
     gestureFrom = { position: controls.object.position.clone(), target: controls.target.clone() };
+    dismissHelp();
   };
   const onGestureChange = () => {
     if (!watching) return;
@@ -359,24 +434,27 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
   controls?.addEventListener('change', onGestureChange);
   controls?.addEventListener('end', onGestureEnd);
 
-  // Once the reader has moved the model by any means, the instruction has done its work.
+  // Once the reader has moved or clicked the model, the instruction has done its work, for good.
   function dismissHelp() {
     if (help.dataset.dismissed === 'true') return;
     help.dataset.dismissed = 'true';
+    retireHint();
     host.removeEventListener('pointerdown', onCanvasGesture);
     host.removeEventListener('wheel', onCanvasGesture);
   }
   const onCanvasGesture = event => {
-    if (event.target.tagName !== 'CANVAS') return;
-    if (event.type !== 'keydown' || CAMERA_KEYS.has(event.key)) dismissHelp();
+    if (event.target.tagName === 'CANVAS') dismissHelp();
   };
   const onCanvasKey = event => {
     if (event.target.tagName !== 'CANVAS' || !CAMERA_KEYS.has(event.key)) return;
     dismissHelp();
     releaseView();
   };
-  host.addEventListener('pointerdown', onCanvasGesture);
-  host.addEventListener('wheel', onCanvasGesture, { passive: true });
+  if (hintRetired()) help.dataset.dismissed = 'true';
+  else {
+    host.addEventListener('pointerdown', onCanvasGesture);
+    host.addEventListener('wheel', onCanvasGesture, { passive: true });
+  }
   host.addEventListener('keydown', onCanvasKey);
 
   retry.addEventListener('click', onRetry);
@@ -397,6 +475,48 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     const button = host.querySelector(`[aria-controls="${popovers.open}"]`);
     if (!button?.checkVisibility?.({ visibilityProperty: true })) popovers.hide();
     else popovers.place();
+  }
+
+  /*
+   * The markings as the reader sees them, in CSS pixels of the visible stage: the letters where
+   * they are drawn, the scale bar's rule and words, and any colour key's plate.
+   */
+  function snapshotMarkings(crop) {
+    const origin = host.getBoundingClientRect();
+    const local = node => {
+      const r = node.getBoundingClientRect();
+      return { x: r.left - origin.left - crop.x, y: r.top - origin.top - crop.y, width: r.width, height: r.height };
+    };
+    const { gutter: margin, line } = SNAPSHOT_LAYOUT;
+    const letters = orientation.hidden ? [] : Object.entries(edges).map(([edge, node]) => {
+      const box = local(node);
+      const spot = { edge, text: node.textContent, x: box.x + box.width / 2, y: box.y + box.height / 2 };
+      // Without the dock the top letter needs no room under a phone's scale bar.
+      if (edge === 'top') spot.y = 12 + line / 2;
+      // Hidden over a tall dock; on the image it keeps the line above the statement.
+      if (edge === 'bottom' && host.dataset.dockTall === 'true') {
+        Object.assign(spot, { x: crop.width / 2, y: crop.height - margin - line * 2 });
+      }
+      return spot;
+    });
+    const keys = [...host.querySelectorAll('.stage-key')].filter(node => !node.hidden).map(node => ({
+      box: local(node),
+      swatches: [...node.querySelectorAll('.network-swatch')].map(swatch => {
+        const style = getComputedStyle(swatch);
+        return { ...local(swatch), color: style.backgroundColor, radius: parseFloat(style.borderTopLeftRadius) || 0 };
+      }),
+      texts: [...node.querySelectorAll('li > span:not(.network-swatch), .stage-key-title')].map(word => {
+        const box = local(word);
+        const style = getComputedStyle(word);
+        return { text: word.textContent, x: box.x, y: box.y + box.height / 2, color: style.color,
+          font: `${style.fontWeight} ${style.fontSize} ${style.fontFamily}` };
+      }),
+    }));
+    const scaleShown = !bar.hidden && scale;
+    return {
+      letters, keys,
+      scale: scaleShown ? { pixels: Math.round(scale.pixels), label: barText.textContent } : null,
+    };
   }
 
   return {
@@ -421,13 +541,16 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
       host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
       host.style.setProperty('--vis-right', `${Math.round(width - rect.x - rect.width)}px`);
       host.style.setProperty('--vis-bottom', `${Math.round(height - rect.y - rect.height)}px`);
+      fitDockLayout();
       fitChrome();
       fitDock();
+      fitHints();
       settlePopovers();
     },
 
     update(state, { directionKey: showKey = false } = {}) {
       currentLang = state.lang;
+      lastState = state;
       const selected = state.selectedRegion?.id ?? null;
       if (state.status === 'ready' && firstSelection === undefined) firstSelection = selected;
       else if (selected && firstSelection !== undefined && selected !== firstSelection) dismissHelp();
@@ -436,10 +559,11 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
       // The tract reference has no regions to click.
       help.textContent = isIndependentTractReference(state)
         ? i18nViewport.navigationHintTracts : i18nViewport.navigationHint;
+      focusHint.textContent = i18nViewport.keyboardHint;
       const viewLabels = t(state.lang, 'views');
       views.setAttribute('aria-label', i18nViewport.viewAria);
+      viewPopoverLabel.textContent = i18nViewport.viewAria;
       sectionToolLabel.textContent = i18nViewport.sectionTool;
-      viewToolLabel.textContent = i18nViewport.viewTool;
       displayToolLabel.textContent = i18nViewport.displayTool;
 
       for (const button of buttons) {
@@ -447,14 +571,8 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
         if (button.textContent !== label) button.textContent = label;
       }
       paintPresets();
-      // The toolbar is measured for the chrome layout, so new words or a tool
-      // appearing or leaving invalidates that measure.
-      const signature = `${state.lang}|${[...toolbar.children].map(node => Number(node.hidden)).join('')}`;
-      if (signature !== toolbarSignature) {
-        toolbarSignature = signature;
-        cachedToolbarWidth = null;
-        fitChrome();
-      }
+      fitDockLayout();
+      fitHints();
       showLegend(state);
       showDirectionKey(showKey, i18nViewport.directionKey);
       settlePopovers();
@@ -516,6 +634,45 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
     /** The camera has been framed on something other than a preset. */
     releaseView,
 
+    /**
+     * The visible stage as a PNG data URL that documents itself: the rendered frame from
+     * `capture(crop)`, with the orientation letters, scale bar, colour key, a caption naming
+     * subject, labels, colouring and view or section, and the not-clinical statement.
+     */
+    async snapshot(capture, { anatomy, section = null, referenceLabel = () => null } = {}) {
+      if (!lastRect || !lastState) throw new Error('The stage has not been laid out yet.');
+      const lang = currentLang;
+      const reference = isIndependentTractReference(lastState) ? referenceLabel(lang) : null;
+      const detail = document.getElementById('detail');
+      const caption = snapshotCaption(lang, {
+        subject: subjectName(anatomy),
+        atlas: lastState.atlas,
+        surfaceColor: lastState.surfaceColor,
+        detail: detail && !detail.hidden ? lastState.detail : null,
+        reference,
+        view: held ? currentView : null,
+        section: reference ? null : section,
+      });
+      const tokens = getComputedStyle(host);
+      const token = name => tokens.getPropertyValue(name).trim();
+      const crop = { x: lastRect.x, y: lastRect.y, width: lastRect.width, height: lastRect.height };
+      const plan = {
+        ...snapshotMarkings(crop),
+        width: crop.width,
+        height: crop.height,
+        caption,
+        statement: t(lang, 'viewport').snapshotStatement,
+        fonts: { ui: token('--font-ui'), mono: token('--font-mono') },
+        palette: {
+          ink: token('--overlay-ink'), halo: token('--overlay-halo'), haloCore: token('--overlay-halo-core'),
+          plate: token('--overlay-plate'), border: token('--overlay-border'),
+        },
+      };
+      await snapshotFonts(plan);
+      const { canvas, ratio } = capture(crop);
+      return annotateSnapshot(canvas, { ...plan, ratio }).toDataURL('image/png');
+    },
+
     /** Called when the camera moves or the viewport resizes, outside the state loop. */
     updateCamera(camera, distance, viewportHeight) {
       // The chip named what was under the pointer before the move; the next pointer move renames it.
@@ -561,10 +718,10 @@ export function createViewportChrome({ networks, onView, onRetry, onSnapshot, on
       controls?.removeEventListener('end', onGestureEnd);
       clearTimeout(watchTimer);
       dockObserver?.disconnect();
-      presetObserver?.disconnect();
+      sectionObserver?.disconnect();
       roving.dispose();
-      phone?.removeEventListener('change', seatPresets);
-      views.removeEventListener('scroll', fitPresetCue);
+      phone?.removeEventListener('change', onPhoneChange);
+      document.fonts?.removeEventListener('loadingdone', onFontsLoaded);
       popovers.dispose();
       snapshotButton?.removeEventListener('click', onSnapshotClick);
       fullscreenButton?.removeEventListener('click', onFullscreenClick);

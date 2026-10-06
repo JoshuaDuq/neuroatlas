@@ -1,9 +1,10 @@
+// One oblique projection (depth runs up and to the right): the uncut solid, then each plane through it.
 const ICON_PATHS = {
-  off: 'M5 3h14v18H5ZM9 3v18M15 3v18',
-  sagittal: 'M5 3h14v18H5ZM12 3v18',
-  coronal: 'M5 3h14v18H5ZM5 8h14M5 16h14',
-  axial: 'M5 3h14v18H5ZM5 12h14',
-  oblique: 'M5 3h14v18H5ZM5 17 19 7',
+  off: 'M4 9h11v11H4ZM4 9l5-5h11l-5 5M20 4v11l-5 5',
+  sagittal: 'M9 9.5 15 3.5v11l-6 6Z',
+  coronal: 'M6.5 6.5h11v11h-11Z',
+  axial: 'M4 14.5 9 9.5h11l-5 5Z',
+  oblique: 'M4 18 9 6h11l-5 12Z',
 };
 
 /** Keep decorative icons separate from the translated, accessible label. */

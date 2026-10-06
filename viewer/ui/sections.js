@@ -407,7 +407,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     sectionBar.dataset.pending = String(plane !== state.mode);
     sectionBarName.querySelector('.section-bar-full').textContent = cutsI18n.modes[plane] ?? plane;
     sectionBarName.querySelector('.section-bar-short').textContent = cutsI18n.modesShort[plane] ?? plane;
-    sectionBar.setAttribute('aria-label', cutsI18n.barAria(cutsI18n.modes[plane] ?? plane));
+    sectionBar.setAttribute('aria-label', cutsI18n.sectionNames[plane] ?? cutsI18n.modes[plane] ?? plane);
     const ends = AXIS_ENDS[plane]?.map(letter => letters[letter]) ?? ['\u2212', '+'];
     [cutEndMin.textContent, cutEndMax.textContent] = ends;
     cutClose.setAttribute('aria-label', cutsI18n.closeCut);
@@ -516,7 +516,15 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
   applyPlaneMode();
 
-  return { update, async openPreparedPlane(plane, canOpen) {
+  return { update,
+    /** The cut on screen, for the exported image's caption; null while none is, or while it is prepared. */
+    get current() {
+      if (!sections.active || pendingPlane || sectionBar.hidden) return null;
+      const state = sections.state;
+      const offset = new Vector3(...state.crosshair).dot(sections.frame.normal);
+      return { plane: state.mode, offset, tilt: state.tilt, azimuth: state.azimuth };
+    },
+    async openPreparedPlane(plane, canOpen) {
     if (!Object.hasOwn(AXES, plane)) throw new Error(`Unknown MRI plane: ${plane}`);
     await sections.load();
     if (!canOpen()) return;

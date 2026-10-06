@@ -27,15 +27,25 @@ test('panel copy names no tab the redesign removed', () => {
   }
 });
 
-test('an open deficit says how much of its mapping the view cannot draw', () => {
-  assert.equal(CLINICAL_TEXT.en.drawn(5, 8).startsWith('5 of 8 mapped regions'), true);
-  assert.equal(CLINICAL_TEXT.fr.drawn(5, 8).startsWith('5 des 8 régions associées'), true);
+test('an open deficit says how much of its mapping the stage outlines, or only shows while cut', () => {
+  const { en, fr } = CLINICAL_TEXT;
+  assert.equal(en.regionsMarked(7, 7, true), '7 mapped regions outlined');
+  assert.equal(en.regionsMarked(5, 8, true), '5 of 8 mapped regions outlined');
+  assert.equal(en.regionsMarked(1, 1, true), '1 mapped region outlined');
+  assert.equal(en.regionsMarked(0, 1, true), '0 of 1 mapped region outlined');
+  assert.equal(en.regionsMarked(7, 7, false), '7 mapped regions visible');
+  assert.equal(fr.regionsMarked(7, 7, true), '7 régions associées entourées');
+  assert.equal(fr.regionsMarked(5, 8, true), '5 sur 8 régions associées entourées');
+  assert.equal(fr.regionsMarked(1, 1, true), '1 région associée entourée');
+  assert.equal(fr.regionsMarked(2, 3, false), '2 sur 3 régions associées visibles');
+  assert.equal(fr.regionsMarked(1, 1, false), '1 région associée visible');
 });
 
 test('a tract row counts streamlines, and what the length filter keeps of them', () => {
   assert.equal(DIFFUSION_TEXT.en.streamlines(721, 721), '721 streamlines');
   assert.equal(DIFFUSION_TEXT.en.streamlines(640, 721), '640 of 721 streamlines');
   assert.equal(DIFFUSION_TEXT.en.streamlines(1, 1), '1 streamline');
-  assert.equal(DIFFUSION_TEXT.fr.streamlines(2140, 2140), `${(2140).toLocaleString('fr')} trajectoires`);
+  assert.equal(DIFFUSION_TEXT.fr.streamlines(2140, 2140), '2140 trajectoires');
+  assert.equal(DIFFUSION_TEXT.en.streamlines(12345, 12345), '12\u2009345 streamlines');
   assert.equal(DIFFUSION_TEXT.fr.streamlines(640, 721), '640 sur 721 trajectoires');
 });

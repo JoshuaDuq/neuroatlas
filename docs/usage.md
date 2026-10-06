@@ -22,12 +22,12 @@ Navigate to the local URL printed in your terminal (default `http://localhost:51
 
 ```
 +-----------------------------------------------------------------------------+
-| NeuroAtlas  Specimen · Atlas · Colour · Internal anatomy   Fullscreen PNG ⋯ |
+| NeuroAtlas │ Subject │ Atlas │ Colour │ Internal anatomy    Fullscreen PNG ⋯ |
 +----------------------------+------------------------------------------------+
 | Anatomy Deficits Circuits  |                                                |
 | Tracts                     |           3D scene: orbit, zoom, pick          |
 |                            |                                                |
-| List, or a region/deficit/ |  [Default Left Right Front Back Top Bottom]    |
+| List, or a region/deficit/ |  [Oblique Left Right Anterior Posterior …]     |
 | circuit in detail          |  [Section ▾] [Display ▾]                       |
 +----------------------------+------------------------------------------------+
 | not clinical anatomy · region count · Provenance                            |
@@ -36,26 +36,32 @@ Navigate to the local URL printed in your terminal (default `http://localhost:51
 
 Each part of the window has one job:
 
-- **Masthead: what is loaded.** **Specimen**, cortical **Atlas** (Destrieux or
+- **Masthead: what is loaded.** **Subject**, cortical **Atlas** (Destrieux or
   HCP-MMP), **Colour** (Tissue, T1, Regions, Networks) and the **Internal
   anatomy** detail level sit beside the name, with fullscreen, PNG capture and
   **More settings** (language, theme, single-key shortcuts, keyboard shortcuts).
   Below 1280 px and on phones they collapse into one summary button, such as
-  "bert · Destrieux · Regions", that opens the same controls.
+  "bert · Destrieux · Regions · Teaching set", that opens the same controls
+  with a one-line note on each choice.
 - **Panel: what you are studying.** The tabs are **Anatomy**, **Deficits**,
   **Circuits** and **Tracts**. Search or browse a list; selecting a region,
   opening a deficit or starting a circuit shows its details in the same panel,
-  under a **‹ Anatomy** (or Deficits, Circuits) row that returns to the list
-  where you left it. While you browse, the selection strip at the top of the
+  under a **‹ Anatomy › Frontal** path (or ‹ Deficits, ‹ Circuits): the mode
+  returns to the list where you left it, and the group returns to the list with
+  that region's row open and in view. While you browse, the selection strip at the top of the
   list leads back to the details. In the details, Escape also returns to the
   list. Hover a row to reveal its eye controls; a hidden part keeps its eye
   visible, and the dissection line at the foot of Anatomy undoes or restores.
-- **Stage: how the picture is framed and cut.** The toolbar under the anatomy
-  holds the camera presets, **Section** (cutting plane and cut labels) and
-  **Display** (hemisphere, cortex and its opacity, internal anatomy, spinal
-  cord, restore the opening view). While a plane is cut, a section bar above the
-  toolbar holds its position, oblique angles, **Reverse side** and **Linked
-  MRI**; its × returns to the full brain.
+- **Stage: how the picture is framed and cut.** One dock under the anatomy
+  holds the anatomical views (Oblique, Left, Right, Anterior, Posterior,
+  Superior, Inferior; under **View ▾** where they do not fit inline),
+  **Section** (cutting plane and cut labels) and **Display** (hemisphere,
+  cortex and its opacity, internal anatomy, spinal cord, **Reset view**). While
+  a plane is cut, the dock's upper row holds its position, oblique angles,
+  **Reverse side** and **Linked MRI** (behind a disclosure on a narrow stage);
+  its × returns to the full brain. The PNG action saves the visible stage with
+  its orientation letters, scale bar, colour key, a caption naming the subject,
+  atlas, colouring and view or section, and the not-clinical statement.
 
 On phones the panel becomes a draggable sheet with peek, half and full
 positions and the same four tabs; the stage toolbar stays above it. In short
@@ -242,8 +248,8 @@ itself. Press <kbd>?</kbd> in the app for the live list.
 | <kbd>Tab</kbd> | Move focus to the model |
 | <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> | Turn the model, once it holds focus |
 | <kbd>+</kbd> <kbd>−</kbd> | Zoom the model in or out |
-| <kbd>1</kbd>–<kbd>6</kbd> | Left, right, front, back, top, bottom view |
-| <kbd>0</kbd> | Return to the default oblique view |
+| <kbd>1</kbd>–<kbd>6</kbd> | Left, right, anterior, posterior, superior, inferior view |
+| <kbd>0</kbd> | Return to the oblique view |
 | <kbd>F</kbd> / <kbd>I</kbd> | Focus / isolate the selected region |
 | <kbd>C</kbd> / <kbd>S</kbd> | Show or hide the cortex / spinal cord |
 | <kbd>H</kbd> | Cycle hemisphere: both, left, right |

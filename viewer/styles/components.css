@@ -306,7 +306,7 @@ details > summary:focus-visible { outline-offset: -2px; }
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
   margin-top: var(--space-4);
 }
 /* Padding sets only where the row wraps; the tonal commands grow to fill it, the primary keeps its width. */
@@ -314,38 +314,63 @@ details > summary:focus-visible { outline-offset: -2px; }
   flex: 1 1 auto;
   height: auto;
   min-height: var(--control-height);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) 6px;
 }
 .actions .button-primary { flex: 0 0 auto; padding-inline: var(--space-3); }
 #isolate[data-active="true"] { background: var(--accent-wash); color: var(--accent); }
 
-/* The four content modes: one tab bar, mirrored in the phone sheet. Tabs are never disabled. */
+/*
+ * The four content modes, mirrored in the phone sheet: equal ruled cells on the
+ * recessed ground. The chosen cell opens into the panel it heads, under a 2px
+ * teal rule. Equal cells mean a bolder label never moves the others. Tabs are
+ * never disabled.
+ */
 .rail-tabs {
   display: flex;
   flex: none;
-  padding: 0 var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-base);
+  background: var(--surface-navigation);
 }
 .rail-tabs button {
-  flex: 1;
-  min-width: 0;
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   height: var(--tab-height);
   padding: 0 var(--space-1);
   border: 0;
   border-radius: 0;
   background: none;
   color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
-.rail-tabs button:hover { background: none; color: var(--text-primary); }
-.rail-tabs button:focus-visible { outline-offset: -2px; }
-.rail-tabs button[aria-selected="true"] {
-  color: var(--accent);
+/* Cells share the width but never go below their bold label, so no mode name is cut and choosing one moves nothing. */
+.rail-tabs button::after {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
   font-weight: 600;
-  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.rail-tabs button + button { border-left: 1px solid var(--border-subtle); }
+.rail-tabs button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+.rail-tabs button:focus-visible { outline-offset: -2px; }
+.rail-tabs button[aria-selected="true"],
+.rail-tabs button[aria-selected="true"]:hover {
+  height: calc(var(--tab-height) + 1px);
+  margin-bottom: -1px;
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.rail-tabs button[aria-selected="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--accent);
 }
 
 /* Region ------------------------------------------------------------------ */
@@ -356,7 +381,7 @@ details > summary:focus-visible { outline-offset: -2px; }
   font-size: var(--text-headline);
   font-weight: 600;
   letter-spacing: -0.015em;
-  line-height: 1.25;
+  line-height: 24px;
   overflow-wrap: break-word;
 }
 #selected-hint {
@@ -399,7 +424,7 @@ details > summary:focus-visible { outline-offset: -2px; }
 .datasheet dd {
   padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-subtle);
-  line-height: 1.4;
+  line-height: 20px;
 }
 .datasheet dt { padding-right: var(--space-3); color: var(--text-secondary); font-size: var(--text-small); }
 .datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; }
@@ -436,20 +461,24 @@ details > summary:focus-visible { outline-offset: -2px; }
 .network-bar { height: 4px; border-radius: 2px; overflow: hidden; background: var(--border-subtle); }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
 .network-share { text-align: right; color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; }
-.network-note { margin-top: var(--space-3); font-size: var(--text-micro); line-height: 1.5; color: var(--text-tertiary); }
+.network-note { margin-top: var(--space-3); font-size: var(--text-micro); line-height: 16px; color: var(--text-tertiary); }
+/* A section of the detail: more room above its heading than below it; the ruled list under it draws the rule. */
+#inspector .tab-group > section > .section-label { padding: var(--space-5) var(--space-4) var(--space-2); border-top: 0; }
+#inspector .tab-group > section > .section-label + .panel-body { padding-top: 0; }
 
 /* Navigator --------------------------------------------------------------- */
+/* An index, not a menu: rows run edge to edge, names on the panel's 16px or 36px column, data in a right-hand column. */
 .row {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  width: calc(100% - var(--space-4));
+  width: 100%;
   min-height: var(--row-height);
   height: auto;
-  margin: 0 var(--space-2);
-  padding: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
   border: 0;
-  border-radius: var(--radius-control);
+  border-radius: 0;
   background: none;
   text-align: left;
   font-size: var(--text-ui);
@@ -518,33 +547,29 @@ details > summary:focus-visible { outline-offset: -2px; }
 }
 .row-group + .row-side,
 .row-group + .row-reason { margin-left: var(--space-2); }
-.row-indent { padding-left: 28px; padding-right: 0; }
+.row-indent { padding-left: 36px; }
 .row-indent .row-reason { max-width: 96px; white-space: normal; line-height: 16px; }
 /* Both stand where the letter on an eye control stands. */
 .row-side-solo { min-width: 36px; padding-right: 5px; }
 .row-side-rest { min-width: 0; padding-right: 5px; }
 .tree-group { isolation: isolate; }
-.tree-group > .group-row {
-  width: 100%;
-  margin: 0;
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
-  border-radius: 0;
-  background: var(--surface-base);
-  font-weight: 500;
-}
+.tree-group > .group-row { background: var(--surface-base); font-weight: 500; }
 .tree-group > .group-row:hover { background: var(--surface-hover); }
+/* An open group heads its rows on the recessed ground, and stays in view over them. */
 .tree-group > .group-row[aria-expanded="true"] {
   position: sticky;
   top: 0;
   z-index: 1;
+  background: var(--surface-navigation);
   font-weight: 600;
-  box-shadow: inset 0 -1px 0 var(--border-subtle);
+  box-shadow: inset 0 -1px 0 var(--border-subtle), inset 0 1px 0 var(--border-subtle);
 }
+.tree-group > .group-row[aria-expanded="true"]:hover { background: var(--surface-hover); }
 .tree-group .row-indent { scroll-margin-block: calc(var(--row-height) + var(--space-5)); }
-/* The count follows the name, so the eye columns line up from the right whatever a group holds. */
+/* The count stands in the right-hand column a region's side letter uses; on a fine pointer the eyes lie over it. */
 .group-row { gap: var(--space-1); }
 .group-row > .row-name { flex: 1 1 auto; }
-.group-row .group-count { display: inline; min-width: 0; margin: 0 0 0 var(--space-2); font-weight: 400; text-align: left; }
+.group-row > .group-count { min-width: 3ch; padding-right: 5px; font-weight: 400; }
 .disclosure {
   display: flex;
   width: 12px;
@@ -553,8 +578,10 @@ details > summary:focus-visible { outline-offset: -2px; }
   color: var(--text-tertiary);
   transition: transform var(--ui-transition) var(--ease-ui);
 }
-.group-row[aria-expanded="true"] .disclosure { transform: rotate(90deg); }
-#tree > .section-label:first-child { border-top: 0; padding-top: var(--space-2); }
+.group-row[aria-expanded="true"] .disclosure { color: var(--text-secondary); transform: rotate(90deg); }
+/* Cortex, Subcortical: captions of the index, set apart by space and a rule rather than size. */
+#tree > .section-label { padding: var(--space-5) var(--space-4) var(--space-1); line-height: 16px; }
+#tree > .section-label:first-child { border-top: 0; padding-top: var(--space-3); }
 
 /* Per-part visibility: eye, then side letter, in 36px columns. Hidden is neutral ink and a struck eye, never teal. */
 .row-eyes { display: flex; flex: none; align-items: center; gap: var(--space-1); }
@@ -592,14 +619,14 @@ details > summary:focus-visible { outline-offset: -2px; }
     right: var(--space-2);
     bottom: 2px;
     padding-left: var(--space-2);
-    background: var(--surface-base);
+    /* The row's own ground, so the eyes cover the count beneath them on any row. */
+    background: inherit;
     opacity: 0;
-    transition: opacity var(--ui-transition) var(--ease-ui), background-color var(--ui-transition) var(--ease-ui);
+    transition: opacity var(--ui-transition) var(--ease-ui);
   }
-  .tree-group > .group-row:hover > .row-eyes { background: var(--surface-hover); }
   /* A shown region keeps only its letter at rest; the eye lies over the name's end, which is clipped under it. */
   .row-indent[data-visible="true"] { position: relative; }
-  .row-indent[data-visible="true"] > .visibility-control { position: absolute; top: 2px; right: 0; bottom: 2px; height: auto; }
+  .row-indent[data-visible="true"] > .visibility-control { position: absolute; top: 2px; right: var(--space-2); bottom: 2px; height: auto; }
   .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-name { clip-path: inset(0 16px 0 0); }
   .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-side-rest { visibility: hidden; }
   .row-indent[data-visible="true"] > .visibility-control { opacity: 0; transition: opacity var(--ui-transition) var(--ease-ui); }
@@ -670,17 +697,16 @@ details > summary:focus-visible { outline-offset: -2px; }
 .empty button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 
 /*
- * Dissection: one ruled line, a control high plus 2px above and below, at the
- * foot of the explorer. Idle, it teaches; with something to undo or restore,
- * the count and its quiet commands take the line.
+ * Dissection: one ruled line at the foot of the explorer, as tall as the tab
+ * row and the location bar. Idle, it teaches; with something to undo or
+ * restore, the count and its quiet commands take the line.
  */
 .dissection-controls {
   flex: none;
   display: flex;
   align-items: center;
-  box-sizing: content-box;
-  min-height: var(--control-height);
-  padding: 2px var(--space-4);
+  min-height: calc(var(--tab-height) + 1px);
+  padding: 0 var(--space-4);
   border-top: 1px solid var(--border-subtle);
   background: var(--surface-navigation);
 }
@@ -793,24 +819,24 @@ kbd {
  */
 #mpr-dialog, #diffusion-mri-dialog {
   color-scheme: dark;
-  --text-primary: #edf3f7;
-  --text-secondary: #b9c7d2;
-  --text-tertiary: #9eafbd;
+  --text-primary: var(--overlay-ink);
+  --text-secondary: var(--overlay-ink-muted);
+  --text-tertiary: #9ba2aa;
   --accent: var(--overlay-accent);
   --accent-hover: var(--overlay-accent-hover);
   --accent-wash: var(--overlay-accent-wash);
-  --primary-fill: #2f8183;
-  --primary-fill-hover: #276f71;
-  --surface-base: #12171e;
-  --surface-navigation: #181f28;
-  --surface-sunken: #0e1116;
-  --surface-hover: #1f2731;
-  --surface-raised: #303c49;
-  --surface-tonal: #222b36;
-  --surface-tonal-hover: #2c3744;
-  --border-subtle: #29323d;
-  --border-control: #6b7d8c;
-  --danger: #f1928f;
+  --primary-fill: var(--overlay-primary-fill);
+  --primary-fill-hover: var(--overlay-primary-fill-hover);
+  --surface-base: #121315;
+  --surface-navigation: var(--overlay-plate);
+  --surface-sunken: #0b0c0d;
+  --surface-hover: #1f2124;
+  --surface-raised: var(--overlay-raised);
+  --surface-tonal: var(--overlay-track);
+  --surface-tonal-hover: var(--overlay-track-hover);
+  --border-subtle: #2a2c30;
+  --border-control: var(--overlay-control-border);
+  --danger: var(--overlay-danger);
   --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
   border-color: var(--border-subtle);
 }
@@ -821,8 +847,8 @@ kbd {
     --border-subtle: var(--border-control);
   }
 }
-#shortcuts::backdrop, #provenance-dialog::backdrop { background: rgb(8 14 20 / 0.5); }
-#mpr-dialog::backdrop, #diffusion-mri-dialog::backdrop { background: rgb(8 14 20 / 0.72); }
+#shortcuts::backdrop, #provenance-dialog::backdrop { background: rgb(8 9 11 / 0.5); }
+#mpr-dialog::backdrop, #diffusion-mri-dialog::backdrop { background: rgb(8 9 11 / 0.72); }
 #shortcuts[open], #provenance-dialog[open], #mpr-dialog[open], #diffusion-mri-dialog[open] { animation: panel-enter 180ms var(--ease-ui); }
 @keyframes panel-enter {
   from { opacity: 0; transform: translateY(4px); }
@@ -847,24 +873,25 @@ kbd {
 .mpr-header p, .mpr-note { font-size: var(--text-small); color: var(--text-secondary); margin-top: var(--space-1); }
 #mpr-close, #shortcuts-close, #provenance-close, #diffusion-mri-close { flex: none; background: var(--surface-tonal); color: var(--text-primary); }
 #mpr-close:hover, #shortcuts-close:hover, #provenance-close:hover, #diffusion-mri-close:hover { background: var(--surface-tonal-hover); }
-#shortcuts-list { margin-top: var(--space-2); }
-#shortcuts-list section + section { margin-top: var(--space-4); }
+/* The two reference sheets: a 56px ruled header, then datasheet rows whose rules run the full width. */
+:is(#shortcuts, #provenance-dialog) .dialog-header { align-items: center; min-height: 56px; padding-block: var(--space-3); }
 .shortcuts-group {
-  padding-bottom: 6px;
+  padding: var(--space-4) 0 6px;
   border-bottom: 1px solid var(--border-subtle);
   font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-tertiary);
 }
+#shortcuts-list section + section .shortcuts-group { padding-top: var(--space-6); }
 #shortcuts-list dl {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
-  column-gap: var(--space-5);
+  grid-template-columns: 148px minmax(0, 1fr);
   font-size: var(--text-ui);
+  line-height: 20px;
 }
-#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); }
-#shortcuts-list dt, #shortcuts-list dd { padding: 7px 0; border-bottom: 1px solid var(--border-subtle); }
+#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); padding-right: var(--space-4); }
+#shortcuts-list dt, #shortcuts-list dd { padding-block: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
 #shortcuts-list dd { align-content: center; }
 .shortcuts-note { margin-top: var(--space-3); font-size: var(--text-small); color: var(--text-secondary); }
 
@@ -947,5 +974,6 @@ kbd {
 #workspace-selection:focus-visible,
 #workspace-selection-clear:focus-visible,
 #detail-back:focus-visible,
+#detail-group:focus-visible,
 #sheet-handle:focus-visible,
 #tree-toggle-all:focus-visible { outline-offset: -2px; }

@@ -1,4 +1,4 @@
-/* Stage tools: view presets, section and display tools, and the overlays drawn on the picture. */
+/* Stage tools: the dock (view presets, section and display tools, section row), its popovers, and the overlays drawn on the picture. */
 
 /*
  * Anything drawn on the stage is lit by the stage, in both themes: the ground
@@ -12,6 +12,9 @@
   --vis-left: 0px;
   --dock-height: 38px;
   --stage-gutter: var(--space-4);
+  /* One elevation for every plate on the stage: a firm edge and a short, offset shadow. */
+  --stage-edge: color-mix(in srgb, var(--overlay-border) 60%, var(--overlay-control-border));
+  --stage-elevation: 0 4px 12px rgb(0 0 0 / 0.5);
 }
 
 /* Controls on the stage read the overlay palette through the panel's token names. */
@@ -24,8 +27,8 @@
   --accent: var(--overlay-accent);
   --accent-hover: var(--overlay-accent-hover);
   --accent-wash: var(--overlay-accent-wash);
-  --primary-fill: #2f8183;
-  --primary-fill-hover: #276f71;
+  --primary-fill: var(--overlay-primary-fill);
+  --primary-fill-hover: var(--overlay-primary-fill-hover);
   --surface-base: var(--overlay-plate);
   --surface-sunken: var(--scene-background);
   --surface-hover: var(--overlay-plate-hover);
@@ -42,27 +45,44 @@
 
 /* --accent is measured against a rail; on the stage it is the overlay's teal. */
 #viewport :focus-visible { outline-color: var(--overlay-accent); }
-/* The canvas fills a clipped box, so its ring is drawn inside the edge or not at all. */
-#viewport canvas:focus-visible { outline-offset: -2px; }
 
+/*
+ * The model's keyboard focus: a teal ring round the visible stage, kept off the anatomy by a
+ * dark hairline, with the keys named at the top left. The canvas's own ring would run under
+ * the dock and, on a phone, under the sheet.
+ */
+#viewport canvas:focus-visible { outline: none; }
+#viewport:has(> canvas:focus-visible)::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: var(--vis-top) var(--vis-right) var(--vis-bottom) var(--vis-left);
+  border: 2px solid var(--overlay-accent);
+  box-shadow: inset 0 0 0 1px var(--overlay-halo-core);
+  pointer-events: none;
+}
+
+/* Hints are type on the picture, like its markings: no plate. */
 .viewport-help {
   position: absolute;
   z-index: 2;
   top: calc(var(--vis-top) + var(--stage-gutter));
   left: calc(var(--vis-left) + var(--stage-gutter));
-  /* Wraps before the middle of the stage, where the S marking sits. */
-  max-width: calc((100% - var(--vis-left) - var(--vis-right)) / 2 - var(--stage-gutter) - var(--space-3));
-  padding: 3px var(--space-2);
-  border: 1px solid var(--overlay-border);
-  border-radius: var(--radius-control);
-  background: var(--overlay-plate);
+  margin: 0;
   color: var(--overlay-ink-muted);
   font-size: var(--text-micro);
   line-height: 16px;
+  white-space: nowrap;
+  text-shadow: 0 0 2px var(--overlay-halo-core), 0 0 4px var(--overlay-halo-core), 0 0 8px var(--overlay-halo);
   pointer-events: none;
   transition: opacity var(--camera-transition) var(--ease-ui);
 }
 .viewport-help[data-dismissed="true"] { opacity: 0; }
+/* viewport-chrome.js: no room for one line clear of the top letter. */
+.viewport-help[data-room="false"] { visibility: hidden; }
+.viewport-focus-hint { opacity: 0; color: var(--overlay-accent); transition: none; }
+#viewport:has(> canvas:focus-visible) .viewport-focus-hint { opacity: 1; }
+#viewport:has(> canvas:focus-visible) #viewport-help { opacity: 0; }
 
 .chip {
   position: absolute;
@@ -84,6 +104,7 @@
  * halo, not plates. An opaque rim drawn under the fill holds the edge over
  * bright tissue, and stacked dark shadows widen it into a halo that keeps the
  * letter readable where the rim alone left white tissue touching the glyph.
+ * snapshot.js draws the same rim and halo onto an exported image.
  */
 .orientation {
   position: absolute;
@@ -110,7 +131,7 @@
   letter-spacing: 0.06em;
 }
 .orientation [data-edge="top"] { top: var(--space-3); left: 50%; transform: translateX(-50%); }
-/* The dock owns the bottom line, and the section bar the line above it; the letter clears both. */
+/* The dock owns the bottom line; the letter clears the whole plate. */
 .orientation [data-edge="bottom"] {
   bottom: calc(var(--stage-gutter) + var(--dock-height) + var(--space-2));
   left: 50%;
@@ -143,10 +164,14 @@
   border-top: 0;
   filter: drop-shadow(0 0 1px var(--overlay-halo-core)) drop-shadow(0 0 1px var(--overlay-halo-core));
 }
-/* When the toolbar and the bar cannot share the bottom line, the bar sits above the dock. */
-#viewport[data-chrome="tight"] .scale-bar {
+/* When the dock and the bar cannot share the bottom line, the bar sits above the dock. */
+#viewport:is([data-chrome="tight"], [data-chrome="stacked"]) .scale-bar {
   bottom: calc(var(--vis-bottom) + var(--stage-gutter) + var(--dock-height) + var(--space-2));
   right: calc(var(--vis-right) + var(--space-3));
+}
+/* Too wide to sit beside the bottom letter: one line higher. */
+#viewport[data-chrome="stacked"] .scale-bar {
+  bottom: calc(var(--vis-bottom) + var(--stage-gutter) + var(--dock-height) + 2 * var(--space-2) + 16px);
 }
 
 /* Colour keys, beside the picture they explain. */
@@ -211,54 +236,43 @@
 .progress span { display: block; height: 100%; background: var(--overlay-accent); transition: width var(--ui-transition); }
 #app:is([data-status="loading"], [data-status="error"], [data-status="context-lost"]) .stage-dock { visibility: hidden; }
 
-/* The dock: toolbar on the bottom line, section bar above it ------------- */
+/* The dock: one plate, the tools on its bottom line and the section row above them -------- */
 .stage-dock {
   position: absolute;
   /* Above the markings and keys, so an open popover is never drawn under the scale bar. */
   z-index: 3;
   left: calc(var(--vis-left) + var(--stage-gutter));
   bottom: calc(var(--vis-bottom) + var(--stage-gutter));
-  width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter));
   display: flex;
   flex-direction: column-reverse;
-  align-items: flex-start;
-  gap: var(--space-2);
-  /* The dock spans the stage; only its plates take the pointer. */
-  pointer-events: none;
+  width: max-content;
+  max-width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter));
+  background: var(--overlay-plate);
+  border: 1px solid var(--stage-edge);
+  border-radius: var(--radius-control);
+  box-shadow: var(--stage-elevation);
 }
-.stage-dock > * { pointer-events: auto; }
 
-/* Static, so the popovers inside it are placed against the whole dock and open above the section bar. */
+/*
+ * viewport-chrome.js measures the dock's natural widths in this state, for one forced layout:
+ * each row at its own width, the presets inline, the section row whole on one line.
+ */
+.stage-dock[data-measure] { max-width: none; align-items: flex-start; }
+#viewport .stage-dock[data-measure] :is(.view-tool, .cut-more, .cut-angles, #cut-status) { display: none; }
+.stage-dock[data-measure] .section-bar-row { flex-wrap: nowrap; }
+
+/* Static, so the popovers inside it are placed against the whole dock and open above the section row. */
 .stage-toolbar {
   display: flex;
   align-items: center;
   gap: 2px;
-  max-width: 100%;
   padding: 2px;
-  background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
-  border-radius: var(--radius-control);
 }
 
 /* The presets are one exclusive choice, drawn like every other: a track and a ringed thumb. */
-.views {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.views::-webkit-scrollbar { display: none; }
-/* Scrolled presets fade at the edge that hides more; viewport-chrome.js sets which. */
-.views[data-overflow="end"] { mask-image: linear-gradient(to right, var(--overlay-halo-core) calc(100% - 32px), transparent); }
-.views[data-overflow="start"] { mask-image: linear-gradient(to left, var(--overlay-halo-core) calc(100% - 32px), transparent); }
-.views[data-overflow="both"] {
-  mask-image: linear-gradient(to right, transparent, var(--overlay-halo-core) 32px,
-    var(--overlay-halo-core) calc(100% - 32px), transparent);
-}
-/* Never squashed: a truncated preset is a view the reader cannot name. */
+.stage-toolbar > .views { flex: none; }
+/* Never squashed or clipped: a truncated preset is a view the reader cannot name. */
 .views button { flex: none; padding: 0 var(--space-2); }
-/* The presets scroll inside the plate, which would clip a ring drawn outside them. */
-.views button:focus-visible { outline-offset: -2px; }
 
 .stage-toolbar-sep {
   flex: none;
@@ -267,7 +281,8 @@
   margin: 0 var(--space-1);
   background: var(--overlay-border);
 }
-.stage-toolbar:not(:has(> .stage-tool:not([hidden]))) > .stage-toolbar-sep { display: none; }
+/* Over the tract reference Section and Display go, and the rule before them with them. */
+.stage-toolbar:not(:has(> [data-anatomy-display]:not([hidden]))) > .stage-toolbar-sep { display: none; }
 
 .stage-tool {
   display: inline-flex;
@@ -286,8 +301,9 @@
 .stage-tool:hover:not(:disabled) { background: var(--overlay-plate-hover); }
 .stage-tool[aria-expanded="true"],
 .stage-tool[aria-expanded="true"]:hover { background: var(--overlay-track); }
-/* The phone's chooser for the presets; a desktop plate shows them inline. */
+/* The chooser for the presets, where they do not fit the plate inline (viewport-chrome.js). */
 .view-tool { display: none; }
+#viewport[data-presets="menu"] .view-tool { display: inline-flex; }
 /* Drawn, like every disclosure chevron. It points up while its popover is open. */
 .stage-tool-chevron {
   flex: none;
@@ -314,14 +330,15 @@
   overscroll-behavior: contain;
   padding: var(--space-3) var(--space-4) var(--space-4);
   background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
+  border: 1px solid var(--stage-edge);
   border-radius: var(--radius-panel);
-  box-shadow: var(--overlay-shadow);
+  box-shadow: var(--stage-elevation);
   color: var(--overlay-ink);
   font-size: var(--text-ui);
   text-align: left;
 }
 #display-popover { width: 272px; }
+#view-popover { width: 248px; }
 .stage-field-label {
   display: block;
   margin: 0 0 var(--space-2);
@@ -331,6 +348,14 @@
   color: var(--overlay-ink-muted);
 }
 .stage-field { margin-top: var(--space-4); }
+
+/* In View ▾: the oblique view, then one opposing pair per row. */
+#view-popover > .views {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#view-popover > .views button { height: 36px; min-width: 0; }
+#view-popover > .views button:first-child { grid-column: 1 / -1; }
 
 #cut-mode {
   display: grid;
@@ -394,13 +419,11 @@
 }
 .stage-icon-button:hover:not(:disabled) { background: var(--overlay-plate-hover); color: var(--overlay-ink); }
 
-/* Section bar ------------------------------------------------------------- */
+/* Section row ------------------------------------------------------------- */
+/* The dock's upper row while a plane is cut, ruled off from the tools under it. */
 .section-bar {
-  width: min(720px, 100%);
   padding: var(--space-1) var(--space-1) var(--space-2) var(--space-3);
-  background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
-  border-radius: var(--radius-control);
+  border-bottom: 1px solid var(--overlay-border);
   color: var(--overlay-ink);
 }
 .section-bar-row {
@@ -418,14 +441,14 @@
 .section-bar-short { display: none; }
 .cut-position-row {
   display: flex;
-  flex: 1 1 240px;
+  flex: 1 1 auto;
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
 }
-/* A 24px hit area around the 2px track. */
+/* A 24px hit area around the 2px track; 160px is the slider's natural length in a whole row. */
 .cut-position-row input[type="range"],
-.cut-angle input[type="range"] { flex: 1; min-width: 64px; height: 24px; margin: 0; }
+.cut-angle input[type="range"] { flex: 1 1 auto; width: 160px; min-width: 64px; height: 24px; margin: 0; }
 .cut-end {
   flex: none;
   min-width: 1ch;
@@ -478,27 +501,45 @@
 /* While the plane's anatomy is prepared, the bar names it and says so; there is nothing to move yet. */
 .section-bar[data-pending="true"] :is(.cut-position-row, .cut-details, .cut-more, .cut-angles) { display: none; }
 
+/*
+ * Compact (viewport-chrome.js, where the whole row would wrap): the row keeps the plane, the
+ * slider and the exact position on one line; Reverse side and Linked MRI open from the disclosure.
+ */
+.section-bar[data-compact="true"] .section-bar-row:first-child { flex-wrap: nowrap; gap: var(--space-2); }
+/* From nothing, so an unfolded row never pushes the disclosure and close onto a line of their own. */
+.section-bar[data-compact="true"] .cut-position-row { flex: 1 1 0; }
+.section-bar[data-compact="true"] .cut-position-row input[type="range"] { min-width: 40px; }
+.section-bar[data-compact="true"] .cut-position-row input[type="number"] { width: 4rem; }
+.section-bar[data-compact="true"] .cut-unit { display: none; }
+.section-bar[data-compact="true"] .cut-more { display: inline-flex; }
+.section-bar[data-compact="true"] #cut-close { margin-left: 0; }
+.section-bar[data-compact="true"] .cut-details { display: none; }
+.section-bar[data-compact="true"][data-expanded="true"] .section-bar-row:first-child { flex-wrap: wrap; }
+.section-bar[data-compact="true"][data-expanded="true"] .cut-details {
+  display: flex;
+  flex-basis: 100%;
+  order: 5;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-2) var(--space-1) 0;
+}
+
 /* Phones ------------------------------------------------------------------ */
 /* The literal twin of PHONE_QUERY in render/device.js, as in phone.css. */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
   .hover-label { display: none; }
 
-  /* Three worded tools share the plate; the presets open from View, one opposing pair per row. */
-  .stage-toolbar { width: 100%; }
+  /* Three worded tools share the plate across the stage; the presets open from View. */
+  .stage-dock { width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter)); }
   .stage-toolbar-sep { display: none; }
   .view-tool { display: inline-flex; }
   .stage-tool { flex: 1 1 0; min-width: 0; justify-content: center; }
   .stage-tool > .control-icon { display: none; }
   .stage-tool > span:not(.stage-tool-chevron) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   /* Every choice in a phone popover is a full 44px target. */
-  .stage-popover .segmented button { height: 44px; }
-  .views {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    overflow: visible;
-  }
-  .views button:first-child { grid-column: 1 / -1; }
-  .views button { min-width: 0; }
+  .stage-popover .segmented button,
+  #view-popover > .views button { height: 44px; }
 
   /* Display, compact: the hemisphere choice beside its name, opacity on the cortex row. */
   #display-popover {
@@ -539,26 +580,10 @@
   #cut-mode .control-label { display: none; }
   #cut-mode .cut-mode-short { display: block; font-size: var(--text-micro); line-height: 16px; }
 
-  .section-bar { width: 100%; padding: 0 0 0 var(--space-3); }
-  .section-bar-row { flex-wrap: nowrap; gap: var(--space-2); }
+  /* The section row is always compact here (viewport-chrome.js), under the plane's short name. */
+  .section-bar { padding: 0 0 0 var(--space-3); }
   .section-bar-full { display: none; }
   .section-bar-short { display: inline; }
-  .cut-position-row { flex: 1 1 0; }
-  .cut-position-row input[type="number"] { width: 4rem; }
-  .cut-unit { display: none; }
-  .cut-more { display: inline-flex; }
-  #cut-close { margin-left: 0; }
-  .cut-details { display: none; }
-  .section-bar[data-expanded="true"] .section-bar-row:first-child { flex-wrap: wrap; }
-  .section-bar[data-expanded="true"] .cut-details {
-    display: flex;
-    flex-basis: 100%;
-    order: 5;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    padding: 0 var(--space-2) var(--space-2) 0;
-  }
   .section-bar:not([data-expanded="true"]) .cut-angles { display: none; }
   .cut-angles { flex-wrap: wrap; padding-bottom: var(--space-1); }
   .cut-position-row input[type="range"],
@@ -574,9 +599,9 @@
   }
   .section-bar[data-expanded="true"] #cut-status { padding-bottom: var(--space-2); }
 
-  /* The toolbar takes the whole bottom line, so the scale bar moves to the top left, S below it. */
+  /* The dock takes the whole bottom line, so the scale bar moves to the top left, S below it. */
   .scale-bar,
-  #viewport[data-chrome="tight"] .scale-bar {
+  #viewport[data-chrome] .scale-bar {
     top: calc(var(--vis-top) + var(--space-3));
     bottom: auto;
     left: calc(var(--vis-left) + var(--space-3));
@@ -594,7 +619,7 @@
 @media (max-height: 480px) and (orientation: landscape) {
   /* The scale bar sits far to the left of a wide stage, so S keeps the top line. */
   .orientation [data-edge="top"] { top: var(--space-3); }
-  .cut-more { display: none; }
+  #section-bar .cut-more { display: none; }
   #section-bar:not([data-pending="true"]) .cut-details { display: contents; }
   #section-bar .section-bar-row:first-child { flex-wrap: nowrap; }
   #section-bar:not([data-pending="true"]) .cut-angles { display: flex; flex-wrap: nowrap; }
@@ -610,5 +635,6 @@
 @media (forced-colors: active) {
   .orientation > span, .scale-bar { -webkit-text-stroke: 0; }
   .stage-segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
-  .stage-toolbar, .stage-popover, .section-bar, .stage-key { border-color: CanvasText; }
+  .stage-dock, .stage-popover, .stage-key { border-color: CanvasText; }
+  #viewport:has(> canvas:focus-visible)::after { border-color: Highlight; }
 }

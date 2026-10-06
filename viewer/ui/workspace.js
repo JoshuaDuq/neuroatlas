@@ -1,12 +1,13 @@
 import { PHONE_QUERY } from '../render/device.js';
 import { t } from '../i18n/translations.js';
 import { isIndependentTractReference } from '../diffusion/presentation.js';
+import { regionGroup } from './navigator.js';
 
 export const MODES = ['anatomy', 'deficits', 'circuits', 'diffusion'];
 
 /** A list's current item, which a list that comes back into view shows. */
 const CURRENT_ITEM = '#tree [aria-current="true"], #deficit-list [aria-pressed="true"], '
-  + '#circuit-landmarks [aria-current="step"]';
+  + '#circuit-landmarks [aria-current="step"], #circuit-list [aria-pressed="true"]';
 
 /** Whether the current mode has anything for the detail view to show. */
 export function detailAvailable(state) {
@@ -43,6 +44,16 @@ export function stripVisible({ view, mode, selection }) {
   const listed = LISTED_IN[selection.kind];
   if (!listed) throw new Error(`Unknown selection kind: ${selection.kind}`);
   return !listed.includes(mode);
+}
+
+/**
+ * The location bar's path: the list the detail returns to, then, for a region
+ * read from Anatomy, the tree group that holds it.
+ */
+export function locationCrumbs({ mode, place, group, labels }) {
+  const crumbs = [{ kind: 'list', label: place ?? labels[mode] }];
+  if (mode === 'anatomy' && !place && group) crumbs.push({ kind: 'group', ...group });
+  return crumbs;
 }
 
 /**
@@ -100,9 +111,10 @@ function createModeTabs(bar, prefix, onChoose) {
  * It owns the mode tabs, the detail's location bar and the list/detail switch
  * in both shells; the phone sheet only decides how much of the panel is on screen.
  * `onReturn` reports the reader stepping back to a list, as opposed to a list
- * shown because the context went away.
+ * shown because the context went away; `onLocate` opens the selected region's
+ * place in the tree before its group crumb returns there.
  */
-export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}) {
+export function createWorkspace({ catalog, onMode, onClear, onViewChange, onReturn, onLocate } = {}) {
   const panel = document.getElementById('workspace-panel');
   const sheet = document.getElementById('sheet');
   const strip = document.getElementById('workspace-selection');
@@ -111,8 +123,11 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
   const stripClear = document.getElementById('workspace-selection-clear');
   const navigator = document.getElementById('navigator');
   const inspector = document.getElementById('inspector');
+  const path = document.getElementById('detail-path');
   const back = document.getElementById('detail-back');
   const backLabel = document.getElementById('detail-back-label');
+  const groupCrumb = document.getElementById('detail-group');
+  const groupItem = groupCrumb.closest('li');
   const query = globalThis.matchMedia(PHONE_QUERY);
   const desktopTabs = createModeTabs(document.getElementById('workspace-tabs'), 'workspace-tab', choose);
   const sheetTabs = createModeTabs(document.getElementById('sheet-tabs'), 'sheet-tab', choose);
@@ -125,6 +140,7 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
   let previousSelection = null;
   let selection = {};
   let place = null;
+  let group = null;
   let lang = 'en';
   let opener = null;
 
@@ -143,11 +159,18 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
     sheet.dataset.view = view;
     desktopTabs.render(mode, copy.modes, copy.tabsAria, shown.id);
     sheetTabs.render(mode, copy.modes, copy.tabsAria, shown.id);
-    const where = place ?? copy.modes[mode];
-    backLabel.textContent = where;
-    back.setAttribute('aria-label', copy.back(where));
+    const [list, inGroup] = locationCrumbs({ mode, place, group, labels: copy.modes });
+    path.setAttribute('aria-label', copy.path);
+    backLabel.textContent = list.label;
+    back.setAttribute('aria-label', copy.back(list.label));
     if (place) back.title = place;
     else back.removeAttribute('title');
+    groupItem.hidden = !inGroup;
+    if (inGroup) {
+      groupCrumb.textContent = inGroup.label;
+      groupCrumb.title = copy.showInList(inGroup.label);
+      groupCrumb.setAttribute('aria-label', copy.showInList(inGroup.label));
+    }
     stripName.textContent = selection.label ?? '';
     stripSide.textContent = selection.side ?? '';
     strip.setAttribute('aria-label', copy.inspect(selection.label ?? ''));
@@ -203,6 +226,17 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
   }
 
   const onBack = returnToList;
+  // The group crumb returns to the region's own row: its group open, the row in view and focused.
+  const onGroup = () => {
+    onLocate?.();
+    const row = navigator.querySelector('#tree [aria-current="true"]');
+    if (row) opener = row;
+    returnToList();
+    if (!visible(row)) return;
+    row.scrollIntoView({ block: 'center' });
+    // A click need not have focused the crumb (Safari), and then the return moves no focus.
+    if (document.activeElement !== row) row.focus({ preventScroll: true });
+  };
   const onStrip = () => { if (available) setView('detail'); };
   // The strip and its clear vanish with the context, so focus goes to the tab in front.
   const onClearClick = () => {
@@ -210,6 +244,7 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
     if (!visible(document.activeElement)) desktopTabs.selected()?.focus();
   };
   back.addEventListener('click', onBack);
+  groupCrumb.addEventListener('click', onGroup);
   strip.addEventListener('click', onStrip);
   stripClear.addEventListener('click', onClearClick);
 
@@ -241,6 +276,8 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
       available = detailAvailable(state);
       selection = nextSelection;
       place = nextPlace;
+      group = mode === 'anatomy' && selectedId
+        ? regionGroup(catalog.groups(state), selectedId, state.lang) : null;
       const next = viewAfterUpdate({
         view, reference, wasAvailable, available, previousSelection, selection: selectedId,
       });
@@ -252,6 +289,7 @@ export function createWorkspace({ onMode, onClear, onViewChange, onReturn } = {}
     },
     dispose() {
       back.removeEventListener('click', onBack);
+      groupCrumb.removeEventListener('click', onGroup);
       strip.removeEventListener('click', onStrip);
       stripClear.removeEventListener('click', onClearClick);
       desktopTabs.dispose();

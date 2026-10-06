@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { MODES, detailAvailable, stripVisible, viewAfterUpdate } from './workspace.js';
+import { MODES, detailAvailable, locationCrumbs, stripVisible, viewAfterUpdate } from './workspace.js';
+import { t } from '../i18n/translations.js';
 
 test('the tab row is the four content modes, in session order', () => {
   assert.deepEqual(MODES, ['anatomy', 'deficits', 'circuits', 'diffusion']);
@@ -78,4 +79,32 @@ test('the selection strip leads only from a list that does not show the selectio
   assert.equal(strip('circuits', 'lesson'), false);
   assert.equal(stripVisible({ view: 'list', mode: 'deficits', selection: {} }), false);
   assert.throws(() => strip('anatomy', 'atlas'), /kind/);
+});
+
+test('a region read from Anatomy carries its tree group in the location bar', () => {
+  const labels = t('en', 'workspace').modes;
+  const frontal = { key: 'cortex:Frontal', label: 'Frontal' };
+  assert.deepEqual(locationCrumbs({ mode: 'anatomy', place: null, group: frontal, labels }), [
+    { kind: 'list', label: 'Anatomy' },
+    { kind: 'group', key: 'cortex:Frontal', label: 'Frontal' },
+  ]);
+  assert.deepEqual(locationCrumbs({ mode: 'anatomy', place: null, group: null, labels }),
+    [{ kind: 'list', label: 'Anatomy' }], 'a region the tree does not list has no group to return to');
+});
+
+test('Deficits, Circuits and Tracts keep their own single way back', () => {
+  const labels = t('fr', 'workspace').modes;
+  const group = { key: 'cortex:Frontal', label: 'Frontal' };
+  assert.deepEqual(locationCrumbs({ mode: 'deficits', place: null, group, labels }), [{ kind: 'list', label: 'Déficits' }]);
+  assert.deepEqual(locationCrumbs({ mode: 'diffusion', place: null, group, labels }), [{ kind: 'list', label: 'Faisceaux' }]);
+  assert.deepEqual(locationCrumbs({ mode: 'circuits', place: 'Voie motrice', group, labels }),
+    [{ kind: 'list', label: 'Voie motrice' }]);
+});
+
+test('the path and its group crumb are named in both languages', () => {
+  for (const lang of ['en', 'fr']) {
+    const copy = t(lang, 'workspace');
+    assert.ok(copy.path);
+    assert.match(copy.showInList('Frontal'), /^Frontal\b/, 'the spoken name starts with the visible one');
+  }
 });

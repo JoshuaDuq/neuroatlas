@@ -1,30 +1,31 @@
 /* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
   color-scheme: light;
-  --text-primary: #24343b;
-  --text-secondary: #50616a;
-  --text-tertiary: #61717a;
+  --text-primary: #1c242b;
+  --text-secondary: #4b5660;
+  --text-tertiary: #5d6872;
   --accent: #156b6d;
   --accent-hover: #0d5557;
-  --accent-wash: #eaf4f2;
+  --accent-wash: #e8f3f2;
   /* The one filled button. Dark keeps a deep fill so it does not outshine the anatomy. */
   --primary-fill: var(--accent);
   --primary-fill-hover: var(--accent-hover);
   --primary-ink: #ffffff;
   --danger: #a61b1b;
 
+  /* Near-neutral greys: teal and the anatomy carry the only colour. */
   --surface-base: #ffffff;
-  --surface-navigation: #f8fafb;
-  --surface-sunken: #f0f4f5;
-  --surface-canvas: #e3eaed;
-  --surface-hover: #f0f5f5;
+  --surface-navigation: #f7f8f9;
+  --surface-sunken: #eff1f3;
+  --surface-canvas: #e4e7ea;
+  --surface-hover: #f2f4f5;
   --surface-raised: #ffffff;
-  --surface-tonal: #e9eef0;
-  --surface-tonal-hover: #dde5e8;
-  --border-subtle: #e0e7ea;
-  --border-control: #80919b;
+  --surface-tonal: #eceef0;
+  --surface-tonal-hover: #e1e4e7;
+  --border-subtle: #e1e4e7;
+  --border-control: #7f8a94;
   /* Selected segment ring: 3:1 against the tonal track. */
-  --thumb-ring: #75868f;
+  --thumb-ring: #78838d;
 
   /* Preserve tissue contrast and scientific colour mappings in both themes. */
   --scene-background: #0e1116;
@@ -40,24 +41,25 @@
   --scene-direction-ap: #00ff00;
   --scene-direction-si: #0000ff;
 
-  --overlay-ink: #f2f6fa;
-  --overlay-ink-muted: #aab4c0;
-  --overlay-ink-faint: #8d99a6;
-  --overlay-halo: rgb(6 9 13 / 0.85);
-  --overlay-halo-core: #06090d;
+  --overlay-ink: #f1f2f4;
+  --overlay-ink-muted: #aeb3ba;
+  --overlay-ink-faint: #90969e;
+  --overlay-halo: rgb(6 7 9 / 0.85);
+  --overlay-halo-core: #060709;
   --overlay-danger: #f1928f;
-  --overlay-plate: #181f28;
-  --overlay-plate-hover: #25313e;
-  --overlay-track: #232d38;
-  --overlay-track-hover: #2c3845;
-  --overlay-raised: #3a4857;
-  --overlay-border: #3f4c5b;
-  --overlay-control-border: #6b7d8c;
-  /* The panel's dark-theme teal: 9.6:1 on the plate, 6.6:1 on its wash. */
-  --overlay-accent: #82d3d0;
-  --overlay-accent-hover: #a5e3e0;
-  --overlay-accent-wash: #213b40;
-  --overlay-shadow: 0 6px 16px rgb(0 0 0 / 0.45), 0 1px 2px rgb(0 0 0 / 0.4);
+  --overlay-plate: #16171a;
+  --overlay-plate-hover: #24262a;
+  --overlay-track: #222428;
+  --overlay-track-hover: #2b2e33;
+  --overlay-raised: #3a3d42;
+  --overlay-border: #3d4046;
+  --overlay-control-border: #6d737b;
+  /* The panel's dark-theme teal: 10:1 on the plate, 7:1 on its wash. */
+  --overlay-accent: #7fd0cc;
+  --overlay-accent-hover: #a3e0dc;
+  --overlay-accent-wash: #1f3637;
+  --overlay-primary-fill: #2a7678;
+  --overlay-primary-fill-hover: #24686a;
 
   --font-ui: "Source Sans 3 Variable", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -95,26 +97,27 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --text-primary: #edf3f7;
-  --text-secondary: #b9c7d2;
-  --text-tertiary: #9eafbd;
-  --accent: #82d3d0;
-  --accent-hover: #a5e3e0;
-  --accent-wash: #233e43;
-  --primary-fill: #2f8183;
-  --primary-fill-hover: #276f71;
+  /* Graphite, not blue slate: the chrome meets the stage without a hue seam. */
+  --text-primary: #e9ebee;
+  --text-secondary: #b6bcc3;
+  --text-tertiary: #9ba2aa;
+  --accent: #7fd0cc;
+  --accent-hover: #a3e0dc;
+  --accent-wash: #1f3637;
+  --primary-fill: var(--overlay-primary-fill);
+  --primary-fill-hover: var(--overlay-primary-fill-hover);
   --danger: #f1928f;
-  --surface-base: #1d2a33;
-  --surface-navigation: #1a262f;
-  --surface-sunken: #15222b;
-  --surface-canvas: #111c24;
-  --surface-hover: #26373f;
-  --surface-raised: #364a56;
-  --surface-tonal: #283842;
-  --surface-tonal-hover: #31434e;
-  --border-subtle: #34434d;
-  --border-control: #6b808d;
-  --thumb-ring: #74899a;
+  --surface-base: #1b1d20;
+  --surface-navigation: #18191c;
+  --surface-sunken: #141517;
+  --surface-canvas: #111214;
+  --surface-hover: #25272b;
+  --surface-raised: #3a3d42;
+  --surface-tonal: #27292d;
+  --surface-tonal-hover: #303338;
+  --border-subtle: #303338;
+  --border-control: #6d737b;
+  --thumb-ring: #7a8189;
   --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.45);
   --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.3);
 }
@@ -128,8 +131,8 @@
     --thumb-ring: var(--text-primary);
     --overlay-ink-muted: var(--overlay-ink);
     --overlay-halo: rgb(6 9 13 / 0.95);
-    --overlay-plate: #0c0f14;
-    --overlay-plate-hover: #1e242d;
+    --overlay-plate: #0c0d0f;
+    --overlay-plate-hover: #1e2024;
     --overlay-border: var(--overlay-ink);
     --overlay-ink-faint: var(--overlay-ink);
     --overlay-control-border: var(--overlay-ink);

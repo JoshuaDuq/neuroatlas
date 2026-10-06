@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { overflowCue, placePopover, revealDelta } from './stage-tools.js';
+import { dockArrangement, placePopover } from './stage-tools.js';
 
 const desktop = { x: 0, y: 0, width: 1120, height: 824 };
 
@@ -45,16 +45,19 @@ test('a stage too narrow for the popover never yields a negative size', () => {
   assert.equal(spot.maxHeight, 0);
 });
 
-test('a scroller cues only the edges that still hide content', () => {
-  assert.equal(overflowCue({ scrollLeft: 0, scrollWidth: 300, clientWidth: 300 }), '');
-  assert.equal(overflowCue({ scrollLeft: 0, scrollWidth: 400, clientWidth: 300 }), 'end');
-  assert.equal(overflowCue({ scrollLeft: 50, scrollWidth: 400, clientWidth: 300 }), 'both');
-  assert.equal(overflowCue({ scrollLeft: 100, scrollWidth: 400, clientWidth: 300 }), 'start');
+test('the presets stay inline only while the tools fit beside them, never as a clipped strip', () => {
+  assert.equal(dockArrangement({ room: 1088, needs: { tools: 640, section: 0 } }).menu, false);
+  assert.equal(dockArrangement({ room: 640, needs: { tools: 640, section: 0 } }).menu, false);
+  assert.equal(dockArrangement({ room: 639, needs: { tools: 640, section: 0 } }).menu, true);
 });
 
-test('a revealed preset clears the fade on the edge it was hidden past', () => {
-  const frame = { left: 0, right: 300 };
-  assert.equal(revealDelta(frame, { left: 100, right: 160 }, 20), 0);
-  assert.equal(revealDelta(frame, { left: 310, right: 360 }, 20), 80);
-  assert.equal(revealDelta(frame, { left: -40, right: 10 }, 20), -60);
+test('the section bar folds its details behind the disclosure when its row would wrap', () => {
+  assert.equal(dockArrangement({ room: 748, needs: { tools: 600, section: 700 } }).compact, false);
+  assert.equal(dockArrangement({ room: 488, needs: { tools: 600, section: 700 } }).compact, true);
+  // A wide plane row does not push the presets into the chooser on its own.
+  assert.equal(dockArrangement({ room: 650, needs: { tools: 600, section: 700 } }).menu, false);
+});
+
+test('a phone always takes the chooser and the compact section bar', () => {
+  assert.deepEqual(dockArrangement({ room: 358, needs: null }), { menu: true, compact: true });
 });

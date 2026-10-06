@@ -19,35 +19,6 @@
   border-right: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
-/* Content modes as labels: text edges align with the panel's 16px column; the hit area and underline reach 8px past each word. */
-#workspace-tabs { justify-content: space-between; padding: 0 var(--space-4); }
-#workspace-tabs button {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  flex: none;
-  margin: 0 calc(-1 * var(--space-2));
-  padding: 0 var(--space-2);
-  overflow: visible;
-}
-/* The bold label's width is held while unselected, so choosing a tab never moves the others. */
-#workspace-tabs button::after {
-  content: attr(data-label);
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  font-weight: 600;
-}
-#workspace-tabs button[aria-selected="true"] { box-shadow: none; }
-#workspace-tabs button[aria-selected="true"]::before {
-  content: "";
-  position: absolute;
-  inset: auto var(--space-2) 0;
-  height: 2px;
-  background: var(--accent);
-}
-
 .workspace-selection-row {
   display: flex;
   flex: none;
@@ -77,31 +48,58 @@
 .workspace-selection svg { flex: none; margin-left: auto; color: var(--text-tertiary); }
 #navigator, #inspector { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
 
-/* The detail's one location bar: the way back, and in a lesson the place in its sequence. */
+/*
+ * The detail's one location bar: a path back to the list (and, from Anatomy,
+ * to the region's group), and in a lesson the place in its sequence. One
+ * row: the group gives way to an ellipsis before the way back does.
+ */
 .detail-location {
   display: flex;
   align-items: center;
   flex: none;
   gap: var(--space-2);
+  height: var(--tab-height);
   padding-right: var(--space-1);
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-navigation);
+  background: var(--surface-base);
 }
-.detail-back {
+.detail-path { flex: 1; align-self: stretch; min-width: 0; }
+.detail-path ol { display: flex; height: 100%; margin: 0; padding: 0; list-style: none; }
+.detail-path li { display: flex; align-items: center; min-width: 0; }
+.detail-path li:has(+ li:not([hidden])) { flex: none; }
+.detail-path li + li::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin: 0 var(--space-1) 0 2px;
+  border-top: 1.5px solid var(--text-tertiary);
+  border-right: 1.5px solid var(--text-tertiary);
+  transform: rotate(45deg);
+}
+.detail-back, .detail-crumb {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  flex: 1;
   min-width: 0;
-  height: var(--tab-height);
-  padding: 0 var(--space-2) 0 var(--space-4);
+  height: 100%;
+  padding: 0 var(--space-2);
   border: 0;
   border-radius: 0;
   background: none;
   color: var(--text-secondary);
   text-align: left;
 }
-.detail-back:hover:not(:disabled), .detail-back:focus-visible { background: none; color: var(--accent); }
+.detail-back { padding-left: var(--space-4); }
+.detail-crumb {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.detail-back:hover:not(:disabled), .detail-crumb:hover:not(:disabled) { background: none; color: var(--accent); }
 .detail-back-chevron {
   flex: none;
   width: 7px;
@@ -135,7 +133,9 @@
 .panel-body { padding: var(--space-4); }
 #anatomy-search.rail-head, #deficit-search-head.rail-head { padding-top: var(--space-2); padding-bottom: var(--space-2); }
 #anatomy-browser { padding-bottom: var(--space-3); }
-#inspector > .rail-body { display: flex; flex-direction: column; }
+/* A short detail ends on a rule over the recessed ground, like the foot of a datasheet, rather than in blank panel. */
+#inspector > .rail-body { display: flex; flex-direction: column; background: var(--surface-navigation); }
+#inspector .tab-group { padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); background: var(--surface-base); }
 #inspector-title, #label-selected { display: none; }
 .rail-notice {
   padding: var(--space-2) var(--space-4);
@@ -149,35 +149,38 @@
 #viewport { position: relative; min-width: 0; overflow: hidden; background: var(--scene-background); }
 #viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 
-/* Status bar: the disclaimer, what is loaded, and where it came from. */
+/* Status bar: ruled cells like the masthead — the statement, what is loaded, the count, where it came from. */
 #colophon {
   grid-column: 1 / -1;
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: 0 var(--space-4);
+  align-items: stretch;
   border-top: 1px solid var(--border-subtle);
   background: var(--surface-base);
   font-size: var(--text-micro);
+  line-height: 1.2;
   color: var(--text-secondary);
   white-space: nowrap;
 }
-/* The description gives way; the statement never does. */
-#colophon-text { display: flex; min-width: 0; }
-#colophon-description { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-#colophon-statement { flex: none; }
-#colophon-description:not(:empty) + #colophon-statement::before { content: "\00a0·\00a0" / ""; }
-#region-count { margin-left: auto; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+#colophon-text { display: flex; flex: 1 1 auto; min-width: 0; }
+#colophon-text > *, #region-count { display: flex; align-items: center; padding: 0 var(--space-4); }
+/* The statement never gives way; the description does. */
+#colophon-statement { flex: none; color: var(--text-primary); font-weight: 600; }
+#colophon-description { display: block; align-content: center; min-width: 0; overflow: hidden; text-overflow: ellipsis; border-left: 1px solid var(--border-subtle); }
+#colophon-description:empty, #region-count:empty { display: none; }
+#region-count { flex: none; border-left: 1px solid var(--border-subtle); font-variant-numeric: tabular-nums; }
 #provenance {
-  height: 24px;
-  padding: 0 var(--space-2);
-  margin-right: calc(-1 * var(--space-2));
+  flex: none;
+  height: auto;
+  padding: 0 var(--space-4);
+  border-left: 1px solid var(--border-subtle);
+  border-radius: 0;
   background: none;
   color: var(--text-secondary);
   font-size: var(--text-micro);
   font-weight: 500;
 }
 #provenance:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+#provenance:focus-visible { outline-offset: -2px; }
 
 /*
  * Until the anatomy arrives there is nothing to inspect, cut or set. The panel

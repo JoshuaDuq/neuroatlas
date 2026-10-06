@@ -82,6 +82,12 @@ export function labelledGroups(groups, lang) {
       || a.label.localeCompare(b.label, lang));
 }
 
+/** The tree group that holds a region, named as the tree names it; null when the tree does not list it. */
+export function regionGroup(groups, id, lang) {
+  const found = labelledGroups(groups, lang).find(({ group }) => group.rows.some(row => row.region.id === id));
+  return found ? { key: found.group.key, label: found.label } : null;
+}
+
 /** Reasons that mean "in a different atlas" rather than "hidden here". */
 const OTHER_ATLAS = new Set(['other-atlas', 'other-cut-atlas']);
 /** Reasons no control can undo: the row explains, and activating it does nothing. */
@@ -466,9 +472,7 @@ export function createNavigator({
       const badge = document.createElement('span');
       badge.className = 'group-count';
       badge.textContent = String(group.rows.length);
-      // Inside the name, so a wrapped name keeps its count after the last word.
-      name.append(badge);
-      header.append(marker, name);
+      header.append(marker, name, badge);
       // On a fine pointer the eyes overlay the row end (components.css), so the name keeps the row.
       const eyes = document.createElement('span');
       eyes.className = 'row-eyes';

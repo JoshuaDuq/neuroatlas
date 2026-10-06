@@ -1,4 +1,4 @@
-import { t } from '../i18n/translations.js';
+import { t, atlasSwitchLabel } from '../i18n/translations.js';
 import { CLINICAL_TEXT } from '../clinical/translations.js';
 import { visibilityOf } from '../catalog/visibility.js';
 
@@ -9,6 +9,20 @@ function element(tag, text, className) {
   return node;
 }
 
+const SVG = 'http://www.w3.org/2000/svg';
+
+/** The tree's own stroked chevron, trailing a row that opens a detail. */
+export function drillChevron() {
+  const icon = document.createElementNS(SVG, 'svg');
+  icon.setAttribute('viewBox', '0 0 24 24');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.classList.add('drill-chevron');
+  const path = document.createElementNS(SVG, 'path');
+  path.setAttribute('d', 'm9 6 6 6-6 6');
+  icon.append(path);
+  return icon;
+}
+
 function deficitButton(deficit, lang) {
   const button = element('button', null, 'clinical-deficit');
   button.type = 'button';
@@ -16,7 +30,7 @@ function deficitButton(deficit, lang) {
   const text = element('span', null, 'clinical-deficit-text');
   text.append(element('span', deficit.name[lang]),
     element('span', deficit.domain[lang], 'clinical-note'));
-  button.append(text);
+  button.append(text, drillChevron());
   return button;
 }
 
@@ -56,8 +70,11 @@ function publication(reference, role, lang) {
   return article;
 }
 
-/** One association: a heading that opens its evidence, and its mapped regions always in reach. */
-function associationSection(association, clinical, anatomy, lang, open) {
+/**
+ * One association: a heading that opens its evidence, and its mapped regions always in reach.
+ * `sideOnRow` is false when the profile states the one side all its associations share.
+ */
+function associationSection(association, clinical, anatomy, lang, { open, sideOnRow }) {
   const text = CLINICAL_TEXT[lang];
   const sides = t(lang, 'sides').capitalized;
   const section = element('article', null, 'clinical-association');
@@ -67,19 +84,28 @@ function associationSection(association, clinical, anatomy, lang, open) {
   toggle.type = 'button';
   toggle.setAttribute('aria-expanded', String(open));
   toggle.setAttribute('aria-controls', bodyId);
-  toggle.append(element('span', association.title[lang], 'clinical-association-title'),
-    element('span', text.lateralityShort[association.laterality], 'clinical-association-side'));
+  // The short side reads on screen; a screen reader hears the full one even when the profile states it.
+  const spoken = element('span', ` · ${text.laterality[association.laterality]}`, 'visually-hidden');
+  let side = spoken;
+  if (sideOnRow) {
+    const shown = element('span', text.lateralityShort[association.laterality]);
+    shown.setAttribute('aria-hidden', 'true');
+    side = element('span', null, 'clinical-association-side');
+    side.append(shown, spoken);
+  }
+  toggle.append(element('span', association.title[lang], 'clinical-association-title'), side);
   const heading = element('h3', null, 'clinical-association-head');
   heading.append(toggle);
 
   const regions = element('div', null, 'clinical-association-regions');
-  for (const mapping of association.mappings) {
-    const entry = anatomy.get(mapping.region);
-    const label = `${entry.label.name} · ${sides[entry.region.hemisphere]}`;
-    const button = element('button', label, 'clinical-association-region');
+  const entries = association.mappings.map(mapping => ({ id: mapping.region, entry: anatomy.get(mapping.region) }));
+  const stated = sideStated(association.laterality, entries.map(({ entry }) => entry.region.hemisphere));
+  for (const { id, entry } of entries) {
+    const full = `${entry.label.name} · ${sides[entry.region.hemisphere]}`;
+    const button = element('button', stated ? entry.label.name : full, 'clinical-association-region');
     button.type = 'button';
-    button.dataset.clinicalRegion = mapping.region;
-    button.setAttribute('aria-label', `${text.openRegion}: ${label}`);
+    button.dataset.clinicalRegion = id;
+    button.setAttribute('aria-label', `${text.openRegion}: ${full}`);
     regions.append(button);
   }
   if (!association.mappings.length) regions.append(element('p', text.mappingEmpty, 'clinical-note'));
@@ -87,7 +113,7 @@ function associationSection(association, clinical, anatomy, lang, open) {
   const body = element('div', null, 'clinical-association-body');
   body.id = bodyId;
   body.hidden = !open;
-  body.append(element('p', `${association.network[lang]} · ${text.laterality[association.laterality]}`, 'clinical-note'),
+  body.append(element('p', association.network[lang], 'clinical-note'),
     element('h4', text.studyFinding), element('p', association.finding[lang]),
     element('h4', text.limits), element('p', association.limitation[lang]),
     element('h4', text.mapping), element('p', association.mapping_note[lang], 'clinical-note'),
@@ -99,11 +125,33 @@ function associationSection(association, clinical, anatomy, lang, open) {
   return section;
 }
 
-/** The profile's status line: work in progress, a failure, a restored view, or what opening did. */
-export function stageMessage(text, { opening, busy, error, failure, restored }) {
+/** The one side every association in a profile shares, said once under its title; null when they differ. */
+export function sharedSide(lateralities) {
+  return lateralities.length > 0 && lateralities.every(side => side === lateralities[0]) ? lateralities[0] : null;
+}
+
+/** Links under an association name their side only when the association's own side does not already. */
+export function sideStated(laterality, hemispheres) {
+  return hemispheres.length > 0 && hemispheres.every(hemisphere => hemisphere === laterality);
+}
+
+/**
+ * What the stage shows for an open deficit: its outlined regions and their atlases, then what opening reset
+ * on a line of its own. Clauses hold together and a wrap carries the separator down with the next one.
+ */
+export function stageStatus(text, { shown, total, atlases, outlined, cleared, lang }) {
+  const clauses = [text.regionsMarked(shown, total, outlined)];
+  if (atlases.length) clauses.push(new Intl.ListFormat(lang, { type: 'conjunction' }).format(atlases));
+  const lines = [clauses.map(clause => clause.replaceAll(' ', '\u00a0')).join(' ·\u00a0')];
+  if (cleared) lines.push(text.cleared);
+  return lines.join('\n');
+}
+
+/** The profile's status line: work in progress, a failure, a restored view, or what the stage shows. */
+export function stageMessage(text, { opening, busy, error, failure, restored, status }) {
   if (opening) return text[busy];
   if (error) return failure ? text[failure] : error.message;
-  return restored ? text.stageRestored : text.stageShown;
+  return restored ? text.stageRestored : status;
 }
 
 /** A region inspector does not title a Neuropsychology section that has nothing to report. */
@@ -191,12 +239,12 @@ export function createClinicalExplorer({ clinical, anatomy, onQuery, onDeficit, 
     if (!state.selectedDeficit) return;
     const text = CLINICAL_TEXT[state.lang];
     const deficit = clinical.get(state.selectedDeficit);
-    // What opening the deficit did to the model, said before the evidence rather than after it.
+    // What the stage shows, said before the evidence rather than after it.
     const stage = element('div', null, 'clinical-stage');
     const actionStatus = element('p', null, 'clinical-action-status');
     actionStatus.id = 'clinical-action-status';
     actionStatus.setAttribute('role', 'status');
-    const drawn = element('p', null, 'clinical-drawn');
+    const drawn = element('p', text.drawnHint, 'clinical-drawn');
     drawn.id = 'clinical-drawn';
     const restore = element('button', text.restore, 'button-quiet clinical-restore');
     restore.type = 'button';
@@ -205,12 +253,16 @@ export function createClinicalExplorer({ clinical, anatomy, onQuery, onDeficit, 
     const name = element('h2', deficit.name[state.lang], 'clinical-profile-name');
     name.id = 'clinical-title';
     const body = element('div', null, 'panel-body clinical-content');
-    body.append(name, element('p', deficit.summary[state.lang]),
+    const found = clinical.forDeficit(deficit.id);
+    const side = sharedSide(found.map(association => association.laterality));
+    body.append(name);
+    if (side) body.append(element('p', text.laterality[side], 'clinical-note clinical-profile-side'));
+    body.append(element('p', deficit.summary[state.lang]),
       element('p', text.referenceOnly, 'clinical-note clinical-caveat'));
     const associations = element('div', null, 'clinical-associations');
-    for (const association of clinical.forDeficit(deficit.id)) {
+    for (const association of found) {
       associations.append(associationSection(association, clinical, anatomy, state.lang,
-        expanded.has(association.id)));
+        { open: expanded.has(association.id), sideOnRow: !side }));
     }
     body.append(associations, element('p', text.openNote, 'clinical-note'),
       element('p', `${text.sources} · ${text.revised}: ${clinical.revised}`, 'clinical-note'));
@@ -218,14 +270,19 @@ export function createClinicalExplorer({ clinical, anatomy, onQuery, onDeficit, 
     updateAction();
   }
 
-  /** The outline shows only what is drawn, so the profile says when that is not every mapped region. */
-  function updateDrawn(state) {
-    const readout = document.getElementById('clinical-drawn');
-    if (!readout || !state.selectedDeficit) return;
+  /** Counted from what is drawn now, so the strip stays true as the reader hides, cuts or isolates. */
+  function stageView(state) {
     const ids = clinical.mappedRegions(state.selectedDeficit);
-    const shown = ids.filter(id => visibilityOf(anatomy.get(id).region, state).visible).length;
-    readout.hidden = opening || shown === ids.length;
-    readout.textContent = CLINICAL_TEXT[state.lang].drawn(shown, ids.length);
+    const shown = ids.map(id => anatomy.get(id).region).filter(region => visibilityOf(region, state).visible);
+    return {
+      shown: shown.length,
+      total: ids.length,
+      atlases: [...new Set(shown.map(region => region.atlas))].map(atlas => atlasSwitchLabel(atlas, state.lang)),
+      // A cut turns the stage's outlines off.
+      outlined: !state.cutActive,
+      cleared: !state.cutActive && !state.isolatedRegion,
+      lang: state.lang,
+    };
   }
 
   function renderRelated(state) {
@@ -250,10 +307,13 @@ export function createClinicalExplorer({ clinical, anatomy, onQuery, onDeficit, 
 
   function updateAction() {
     for (const button of profile.querySelectorAll('[data-clinical-region]')) button.disabled = opening;
-    if (current) updateDrawn(current);
     const status = document.getElementById('clinical-action-status');
-    if (!status) return;
-    const said = stageMessage(CLINICAL_TEXT[language], { opening, busy, error: actionError, failure, restored });
+    if (!status || !current?.selectedDeficit) return;
+    const view = stageView(current);
+    const text = CLINICAL_TEXT[language];
+    document.getElementById('clinical-drawn').hidden = opening || restored || view.shown === view.total;
+    const said = stageMessage(text, { opening, busy, error: actionError, failure, restored,
+      status: stageStatus(text, view) });
     // Rewriting the same words would have the live region say them again on every render.
     if (status.textContent !== said) status.textContent = said;
     status.dataset.error = String(Boolean(actionError));

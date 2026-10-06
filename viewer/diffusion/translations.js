@@ -1,3 +1,6 @@
+// Counts group digits with a thin space past four digits, as the rest of the atlas does.
+const grouped = value => (String(value).length > 4 ? String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009') : String(value));
+
 export const DIFFUSION_TEXT = {
   en: {
     dataset: 'SNAIL reference · subject 1', bundleCollection: '27 tract bundles',
@@ -18,10 +21,10 @@ export const DIFFUSION_TEXT = {
     loading: 'Loading reference dataset…', noResults: 'No matching tract bundles in this collection.',
     restore: 'Restore default tracts', exportMetrics: 'Export lengths CSV',
     streamlines: (shown, total) => (shown === total
-      ? `${total.toLocaleString('en')} ${total === 1 ? 'streamline' : 'streamlines'}`
-      : `${shown.toLocaleString('en')} of ${total.toLocaleString('en')} streamlines`),
-    mean: 'Mean', range: 'Range', noShown: 'No streamlines meet this length filter.',
-    source: 'Dataset source · CC0', about: 'About this data',
+      ? `${grouped(total)} ${total === 1 ? 'streamline' : 'streamlines'}`
+      : `${grouped(shown)} of ${grouped(total)} streamlines`),
+    mean: 'mean', range: 'range', noShown: 'No streamlines meet this length filter.',
+    source: 'Dataset source · CC0', about: 'About this data', settings: 'Tract display',
   },
   fr: {
     dataset: 'Référence SNAIL · sujet 1', bundleCollection: '27 faisceaux',
@@ -42,9 +45,9 @@ export const DIFFUSION_TEXT = {
     loading: 'Chargement des données de référence…', noResults: 'Aucun faisceau correspondant dans cette collection.',
     restore: 'Rétablir les faisceaux initiaux', exportMetrics: 'Exporter les longueurs CSV',
     streamlines: (shown, total) => (shown === total
-      ? `${total.toLocaleString('fr')} ${total === 1 ? 'trajectoire' : 'trajectoires'}`
-      : `${shown.toLocaleString('fr')} sur ${total.toLocaleString('fr')} trajectoires`),
-    mean: 'Moyenne', range: 'Étendue', noShown: 'Aucune trajectoire ne satisfait ce filtre de longueur.',
-    source: 'Source des données · CC0', about: 'À propos de ces données',
+      ? `${grouped(total)} ${total === 1 ? 'trajectoire' : 'trajectoires'}`
+      : `${grouped(shown)} sur ${grouped(total)} trajectoires`),
+    mean: 'moyenne', range: 'étendue', noShown: 'Aucune trajectoire ne satisfait ce filtre de longueur.',
+    source: 'Source des données · CC0', about: 'À propos de ces données', settings: 'Affichage des faisceaux',
   },
 };
