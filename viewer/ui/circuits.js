@@ -95,29 +95,13 @@ function renderStepper(group, lesson, total, text) {
   group.replaceChildren(controls[0], progress, controls[1]);
 }
 
-function question(circuit, lesson, lang) {
-  const text = CIRCUIT_TEXT[lang];
-  const fieldset = element('fieldset', null, 'circuit-question');
-  fieldset.append(element('legend', text.question), element('p', circuit.question.prompt[lang]));
-  const answers = element('div', null, 'circuit-answers');
-  circuit.question.options.forEach((option, index) => {
-    const choice = command(option[lang], 'answer', index);
-    choice.setAttribute('aria-pressed', String(index === lesson.answer));
-    answers.append(choice);
-  });
-  const feedback = element('p', null, 'circuit-feedback');
-  feedback.setAttribute('role', 'status');
-  fieldset.append(answers, feedback);
-  return fieldset;
-}
-
 /**
  * Lesson controls share the app's render cycle. The landmark's own commands
  * are the region's: Focus frames it as the lesson does, Linked MRI opens its plane.
  * The landmark reads first, then the region's actions and datasheet, and the
  * lesson's background last, in `#circuit-notes` below them.
  */
-export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, onMri, onAnswer, onDeficit }) {
+export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, onMri, onDeficit }) {
   const browser = document.getElementById('circuit-browser');
   const introduction = document.getElementById('circuit-introduction');
   const list = document.getElementById('circuit-list');
@@ -200,15 +184,14 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     }
     profile.replaceChildren(heading, sequence, body);
 
-    const foot = [];
-    if (lesson.step === circuit.steps.length - 1) foot.push(question(circuit, lesson, lang));
-    foot.push(
+    const foot = [
       disclosure(text.connections, element('p', circuit.summary[lang]),
         element('p', circuit.route[lang], 'circuit-route'),
         element('p', circuit.scope[lang]), element('p', text.schematic, 'circuit-note')),
       disclosure(text.mapping, element('p', step.mapping[lang]), element('p', text.mriNote, 'circuit-note')),
       disclosure(text.clinical, element('p', circuit.clinical[lang]),
-        command(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')));
+        command(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')),
+    ];
     const sources = disclosure(text.evidence);
     for (const id of circuit.references) {
       const reference = catalog.reference(id);
@@ -251,20 +234,6 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     related.append(element('h2', text.inCircuits, 'section-label'), body);
   }
 
-  function updateQuestion() {
-    const feedback = notes.querySelector('.circuit-feedback');
-    if (!feedback) return;
-    const { lesson, lang } = state;
-    const circuit = catalog.get(lesson.circuit);
-    for (const choice of notes.querySelectorAll('[data-answer]')) {
-      choice.setAttribute('aria-pressed', String(Number(choice.dataset.answer) === lesson.answer));
-    }
-    const text = CIRCUIT_TEXT[lang];
-    const message = lesson.answer === null ? ''
-      : `${lesson.answer === circuit.question.correct ? text.correct : text.incorrect} ${circuit.question.explanation[lang]}`;
-    if (feedback.textContent !== message) feedback.textContent = message;
-  }
-
   async function run(action) {
     if (opening) return false;
     opening = true;
@@ -297,11 +266,6 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
   async function act(event) {
     const target = event.target.closest('button');
     if (!target || target.disabled || opening) return;
-    if (target.dataset.answer !== undefined) {
-      onAnswer(Number(target.dataset.answer));
-      notes.querySelector(`[data-answer="${target.dataset.answer}"]`).focus();
-      return;
-    }
     if (target.dataset.deficit) return onDeficit(target.dataset.deficit);
     const action = target.dataset.landmarkCircuit
       ? () => onLandmark(target.dataset.landmarkCircuit, Number(target.dataset.landmarkStep))
@@ -342,7 +306,6 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       if (key !== listKey) { listKey = key; renderList(); }
       const nextProfileKey = `${key}|${state.selectedRegion?.id}`;
       if (nextProfileKey !== profileKey) { profileKey = nextProfileKey; renderProfile(); }
-      updateQuestion();
       const nextRelatedKey = `${state.lang}|${state.explorer}|${state.selectedRegion?.id}`;
       if (nextRelatedKey !== relatedKey) { relatedKey = nextRelatedKey; renderRelated(); }
       if (!browser.hidden) updateActions();

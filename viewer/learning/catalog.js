@@ -45,16 +45,6 @@ function validateStep(step, regions) {
   if (!['axial', 'coronal', 'sagittal'].includes(step.plane)) throw new Error(`Unknown MRI plane: ${step.plane}`);
 }
 
-function validateQuestion(question, context) {
-  requireTranslation(question?.prompt, `${context}.question.prompt`);
-  requireTranslation(question.explanation, `${context}.question.explanation`);
-  if (!Array.isArray(question.options) || question.options.length < 2) throw new Error(`Missing answer options: ${context}`);
-  for (const option of question.options) requireTranslation(option, `${context}.question.option`);
-  if (!Number.isInteger(question.correct) || question.correct < 0 || question.correct >= question.options.length) {
-    throw new Error(`Invalid correct answer: ${context}`);
-  }
-}
-
 /** Authored lessons must resolve to the exact source labels in this anatomy. */
 export function createCircuitCatalog(data, manifest, deficitIds) {
   requireText(data.revised, 'revised');
@@ -79,7 +69,6 @@ export function createCircuitCatalog(data, manifest, deficitIds) {
     const landmarks = indexRecords(circuit.steps, `${circuit.id} landmark`);
     for (const step of landmarks.values()) validateStep(step, regions);
     steps.set(circuit.id, landmarks);
-    validateQuestion(circuit.question, circuit.id);
   }
   return {
     all: [...circuits.values()],

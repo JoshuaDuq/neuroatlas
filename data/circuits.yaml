@@ -148,18 +148,6 @@ circuits:
           fr: Cette parcelle HCP-MMP est une étiquette d’atlas projetée sur la surface individuelle, et non une localisation fonctionnelle individuelle.
         view: right
         plane: coronal
-    question:
-      prompt:
-        en: Which information travels in the left optic tract?
-        fr: Quelles informations circulent dans le tractus optique gauche ?
-      options:
-        - { en: The right visual field from both eyes, fr: Le champ visuel droit des deux yeux }
-        - { en: Everything seen by the left eye, fr: Tout ce que voit l’œil gauche }
-        - { en: The left visual field from both eyes, fr: Le champ visuel gauche des deux yeux }
-      correct: 0
-      explanation:
-        en: The partial crossing sorts fibres by visual hemifield, not by eye.
-        fr: Le croisement partiel trie les fibres par hémichamp visuel, et non par œil.
 
   - id: memory
     name: { en: Memory landmarks, fr: Repères de la mémoire }
@@ -243,18 +231,6 @@ circuits:
           fr: La sélection couvre l’union thalamique entière, et non les seuls noyaux antérieurs. Le parcours s’arrête avant les branches corticales.
         view: anterior
         plane: coronal
-    question:
-      prompt:
-        en: Does the final highlight isolate the anterior thalamic nuclei?
-        fr: La dernière sélection isole-t-elle les noyaux thalamiques antérieurs ?
-      options:
-        - { en: 'Yes, only the anterior nuclei', fr: 'Oui, uniquement les noyaux antérieurs' }
-        - { en: 'No, it shows the whole thalamic union', fr: 'Non, elle montre l’union thalamique entière' }
-        - { en: It measures their functional connectivity, fr: Elle mesure leur connectivité fonctionnelle }
-      correct: 1
-      explanation:
-        en: Teaching a nucleus’s role does not make a coarse atlas union nucleus-specific.
-        fr: Expliquer le rôle d’un noyau ne rend pas une union d’atlas spécifique à ce noyau.
 
   - id: motor
     name: { en: Basal ganglia motor loops, fr: Boucles motrices des ganglions de la base }
@@ -351,18 +327,6 @@ circuits:
           fr: Le noyau est segmenté dans son ensemble ; ces relations décrivent un circuit canonique, et non l’activité mesurée chez cet individu.
         view: anterior
         plane: axial
-    question:
-      prompt:
-        en: Which is the indirect branch in this simplified schematic?
-        fr: Quelle est la branche indirecte dans ce schéma simplifié ?
-      options:
-        - { en: Putamen → GPi, fr: Putamen → GPi }
-        - { en: Thalamus → GPe → putamen, fr: Thalamus → GPe → putamen }
-        - { en: Putamen → GPe → STN → GPi, fr: Putamen → GPe → NST → GPi }
-      correct: 2
-      explanation:
-        en: GPe and STN distinguish the canonical indirect branch from the direct putamen-to-GPi branch.
-        fr: Le GPe et le NST distinguent la branche indirecte canonique de la branche directe putamen–GPi.
 
   - id: hearing
     name: { en: Auditory landmarks, fr: Repères auditifs }
@@ -420,18 +384,6 @@ circuits:
           fr: Cette parcelle HCP-MMP est projetée sur la surface individuelle. Elle ne constitue ni une réponse auditive mesurée ni une carte tonotopique individuelle.
         view: left
         plane: coronal
-    question:
-      prompt:
-        en: Which geniculate division did the highlighted teaching solid show?
-        fr: Quelle division genouillée le volume pédagogique sélectionné montrait-il ?
-      options:
-        - { en: The ventral relay to A1, fr: Le relais ventral vers A1 }
-        - { en: The dorsal division, fr: La division dorsale }
-        - { en: Every medial geniculate subdivision, fr: Toutes les subdivisions genouillées médiales }
-      correct: 1
-      explanation:
-        en: The source isolates the dorsal division. Knowing the main auditory route does not change the identity of the segmented landmark.
-        fr: La source isole la division dorsale. Connaître la voie auditive principale ne change pas l’identité du repère segmenté.
 
   - id: touch
     name: { en: Touch and cortical sensation, fr: Toucher et sensibilité corticale }
@@ -489,18 +441,6 @@ circuits:
           fr: La parcelle OP1 de HCP-MMP sert de repère pour ce territoire ; elle ne reproduit pas les cartes d’activation tactile de l’étude chez cet individu.
         view: inferior
         plane: coronal
-    question:
-      prompt:
-        en: Which side of the body principally supplies cutaneous input to left area 3b?
-        fr: Quel côté du corps fournit principalement les entrées cutanées à l’aire 3b gauche ?
-      options:
-        - { en: The left side, fr: Le côté gauche }
-        - { en: Only the left hand, fr: Uniquement la main gauche }
-        - { en: The right side, fr: Le côté droit }
-      correct: 2
-      explanation:
-        en: Primary somatosensory representations are mainly contralateral. The whole area shown is not a hand-specific map.
-        fr: Les représentations somatosensorielles primaires sont principalement contralatérales. L’aire entière affichée n’est pas une carte spécifique à la main.
 
   - id: language
     name: { en: Language network landmarks, fr: Repères du réseau du langage }
@@ -571,18 +511,6 @@ circuits:
           fr: La limite de la parcelle provient de HCP-MMP. La surface de référence seule ne permet pas de déterminer la dominance du langage ni les réponses aux tâches de cette personne.
         view: left
         plane: axial
-    question:
-      prompt:
-        en: What does this tour support about language organization?
-        fr: Que permet d’apprendre ce parcours sur l’organisation du langage ?
-      options:
-        - { en: Distributed temporal and frontal systems contribute, fr: Des systèmes temporaux et frontaux distribués contribuent }
-        - { en: One parcel performs all comprehension, fr: Une parcelle réalise toute la compréhension }
-        - { en: The atlas measures individual language dominance, fr: L’atlas mesure la dominance individuelle du langage }
-      correct: 0
-      explanation:
-        en: Language uses interacting systems with task-dependent contributions. Anatomical parcels alone do not measure individual function or lateralization.
-        fr: Le langage mobilise des systèmes en interaction dont les contributions dépendent de la tâche. Les parcelles anatomiques seules ne mesurent ni la fonction ni la latéralisation individuelles.
 
   - id: attention
     name: { en: Spatial attention systems, fr: Systèmes de l’attention spatiale }
@@ -640,18 +568,6 @@ circuits:
           fr: TPOJ1 est un repère anatomique d’atlas, et non le foyer temporopariétal exact d’une expérience attentionnelle ou d’une étude lésionnelle.
         view: right
         plane: coronal
-    question:
-      prompt:
-        en: Does this right-sided tour mean that the dorsal attention network exists only on the right?
-        fr: Ce parcours droit signifie-t-il que le réseau dorsal de l’attention existe seulement à droite ?
-      options:
-        - { en: Yes — attention is exclusively right-sided, fr: Oui — l’attention est exclusivement droite }
-        - { en: No — the dorsal network is bilateral, fr: Non — le réseau dorsal est bilatéral }
-        - { en: Yes — the left hemisphere processes only language, fr: Oui — l’hémisphère gauche traite seulement le langage }
-      correct: 1
-      explanation:
-        en: Tour laterality is a teaching choice. The bilateral dorsal system differs from the right dominance often seen in ventral reorienting responses.
-        fr: La latéralité du parcours est un choix pédagogique. Le système dorsal bilatéral se distingue de la dominance droite souvent observée dans les réponses ventrales de réorientation.
 
   - id: cerebellar
     name: { en: Cerebellar output and crossing, fr: Sortie cérébelleuse et croisement }
@@ -736,15 +652,3 @@ circuits:
           fr: Cette parcelle de l’aire 4 de HCP-MMP est un repère moteur de référence. Ni le tractus corticospinal ni une carte motrice propre au sujet ne sont reconstruits dans ce parcours.
         view: right
         plane: axial
-    question:
-      prompt:
-        en: After the superior peduncle crossing, which thalamic side receives this left dentate output branch?
-        fr: Après le croisement du pédoncule supérieur, quel côté thalamique reçoit cette branche de sortie dentelée gauche ?
-      options:
-        - { en: The left thalamus, fr: Le thalamus gauche }
-        - { en: Neither thalamus — only the spinal cord, fr: Aucun thalamus — uniquement la moelle épinière }
-        - { en: The right thalamus, fr: Le thalamus droit }
-      correct: 2
-      explanation:
-        en: This dentatothalamic branch crosses in the midbrain. The whole right thalamic highlight is broader than its specific motor relay target.
-        fr: Cette branche dentato-thalamique croise dans le mésencéphale. La sélection thalamique droite entière dépasse sa cible précise de relais moteur.

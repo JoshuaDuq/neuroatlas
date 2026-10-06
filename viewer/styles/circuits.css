@@ -125,12 +125,6 @@
 .circuit-route { color: var(--text-primary); font-weight: 500; }
 .circuit-source a { color: var(--accent); text-underline-offset: 3px; }
 .circuit-source span { display: block; margin-top: var(--space-1); }
-.circuit-question { min-width: 0; margin: 0; padding: var(--space-4) var(--space-4) var(--space-6); border: 0; border-top: 1px solid var(--border-subtle); }
-.circuit-question legend { float: left; width: 100%; margin-bottom: var(--space-1); padding: 0; font-weight: 600; }
-.circuit-answers { display: grid; gap: 6px; margin-top: var(--space-3); }
-.circuit-answers .circuit-command { justify-content: flex-start; text-align: left; font-weight: 400; }
-.circuit-answers button[aria-pressed="true"] { color: var(--accent); background: var(--accent-wash); font-weight: 500; }
-.circuit-feedback:not(:empty) { margin-top: var(--space-3); }
 #circuit-action-status { font-size: var(--text-ui); line-height: 1.5; }
 #circuit-action-status[data-error="true"] { color: var(--danger); }
 

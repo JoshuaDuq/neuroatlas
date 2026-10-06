@@ -192,8 +192,8 @@ Switching anatomical subjects clears the dissection because their parcels differ
 
 Choose the **Circuits** tab beside **Anatomy** and **Deficits**. Eight bilingual tours
 cover vision, memory, basal ganglia motor loops, hearing, touch, language,
-spatial attention and cerebellar output. Together they offer 33 landmarks
-and eight learning questions. Choose a tour, then select a numbered landmark or
+spatial attention and cerebellar output. Together they offer 33 landmarks.
+Choose a tour, then select a numbered landmark or
 step with the arrows beside the landmark count at the top of the lesson. On a
 phone, selecting a tour opens the lesson in the sheet; scroll it to reach the
 notes.
@@ -223,14 +223,13 @@ Its dentate step hides the covering cerebellar cortex to expose the deep
 nucleus. Returning to the cortex landmark restores that layer; linked MRI
 always retains the complete source volume.
 
-The final landmark offers a question with explanatory feedback. Answers stay
-available while navigating that tour. Starting a tour again resets its answer;
-reloading the page or switching brains resets learning progress. The existing
+Starting a tour again resets the landmarks it marks as seen; reloading the
+page or switching brains resets learning progress. The existing
 anatomical URL still records the selected region and display state. English
 and French are available through the language control. In Circuits, **/**
 focuses the tour list, and **↑/↓** moves between its buttons.
 
-Lesson text, mappings, source links, orientations, questions and context margin
+Lesson text, mappings, source links, orientations and context margin
 live in `data/circuits.yaml`. The catalog validates their exact source names
 against each published anatomy; missing landmarks or translations cause an
 error rather than substitution. Scientific-content tests cover both brains.

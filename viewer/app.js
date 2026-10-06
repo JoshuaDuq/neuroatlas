@@ -1030,7 +1030,6 @@ export async function startApp() {
       await sectionControls.openPreparedPlane(step.plane, canOpen);
       render();
     },
-    onAnswer: index => { circuitSession.answer(index); render(); },
     onDeficit: id => clinicalExplorer.openDeficit(id),
   });
   // Under a lesson the landmark's Linked MRI opens the lesson's prepared plane, ahead of the plain one.
