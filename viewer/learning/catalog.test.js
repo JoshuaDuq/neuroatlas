@@ -72,15 +72,14 @@ test('incorrect source mappings and missing bilingual content fail visibly', () 
   assert.throws(() => createCircuitCatalog(untranslated, manifests[0], deficitIds), /fr/);
 });
 
-test('invalid questions, references, planes and clinical targets are rejected', () => {
+test('invalid references, planes and clinical targets are rejected', () => {
   for (const change of [
-    d => { d.circuits[0].question.correct = 99; },
     d => { d.circuits[0].references = ['missing']; },
     d => { d.circuits[0].steps[0].plane = 'invented'; },
     d => { d.circuits[0].deficit = 'invented'; },
     d => { d.circuits.push(d.circuits[0]); },
     d => { d.context_margin_mm = -1; },
-    d => { d.circuits[0].question.options[0].extra = 'unquoted comma'; },
+    d => { d.circuits[0].name.extra = 'unquoted comma'; },
   ]) {
     const invalid = structuredClone(data);
     change(invalid);
