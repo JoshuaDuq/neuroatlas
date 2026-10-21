@@ -24,7 +24,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   assert.equal(atlas.state.detail, 'learning');
   // Reference layers load behind the first paint rather than holding it up.
   await atlas.supplementalReady;
-  atlas.setSpinalCordVisible(true);
+  await atlas.setSpinalCordVisible(true);
   // 148 Destrieux parcels plus the two non-region surfaces.
   assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + supplemental);
   for (const entry of manifest.atlases) {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readerState, sameRegions } from './reader-state.js';
+import { applyReaderState as restore, readerState, sameRegions } from './reader-state.js';
 import { decodeState, encodeState } from './url-state.js';
 
 const LOADED = { atlas: 'destrieux', detail: 'learning', cutAtlas: 'destrieux' };
@@ -61,4 +61,89 @@ test('hidden sets compare by membership', () => {
   assert.equal(sameRegions(new Set(['a', 'b']), new Set(['b', 'a'])), true);
   assert.equal(sameRegions(new Set(['a']), new Set(['a', 'b'])), false);
   assert.equal(sameRegions(new Set(), new Set()), true);
+});
+
+function restorationFixture() {
+  const target = readerState({}, LOADED);
+  const events = [];
+  const model = {
+    settings: { ...target },
+    state: { selectedRegion: null },
+    async setAtlas(id) { events.push('atlas'); this.settings.atlas = id; },
+    async setDetail(id) { events.push('detail'); this.settings.detail = id; },
+    setInternalSystem(value) { events.push('system'); this.settings.internalSystem = value; },
+    setHemisphere(value) { events.push('hemisphere'); this.settings.hemisphere = value; },
+    setCortexVisible(value) { this.settings.cortexVisible = value; },
+    setInternalVisible(value) { this.settings.internalVisible = value; },
+    async setSpinalCordVisible(value) { events.push('cord'); this.settings.spinalCordVisible = value; },
+    setCortexOpacity(value) { this.settings.cortexOpacity = value; },
+    loadHiddenRegions(ids) { events.push('hidden'); this.settings.hiddenRegions = new Set(ids); },
+    select(id) { events.push('selection'); this.state.selectedRegion = id ? { id } : null; },
+    isolate() { events.push('isolation'); this.settings.isolatedRegion = this.state.selectedRegion.id; },
+    clearIsolation() { this.settings.isolatedRegion = null; },
+  };
+  const sections = {
+    state: { cutAtlas: LOADED.cutAtlas }, active: false,
+    async setSurfaceColor(value) { events.push('color'); model.settings.surfaceColor = value; },
+    async setCutAtlas(value) { events.push('cut-atlas'); this.state.cutAtlas = value; },
+    async setMode(mode) { events.push('cut'); this.active = mode !== 'off'; },
+    setAngles() { events.push('angles'); },
+    setDisplay() { events.push('cut-display'); },
+    setOffset() { events.push('cut-position'); },
+  };
+  return { target, events, model, sections,
+    applyCamera() { events.push('camera'); }, revealInTree() { events.push('tree'); } };
+}
+
+test('startup restoration propagates requested layer failures', async () => {
+  for (const key of ['atlas', 'detail', 'cutAtlas']) {
+    const fixture = restorationFixture();
+    fixture.target[key] = 'unavailable';
+    const failure = new Error(`Requested ${key} unavailable`);
+    const owner = key === 'cutAtlas' ? fixture.sections : fixture.model;
+    const method = { atlas: 'setAtlas', detail: 'setDetail', cutAtlas: 'setCutAtlas' }[key];
+    owner[method] = async () => { throw failure; };
+    await assert.rejects(restore(fixture.target, fixture), error => error === failure);
+    assert.equal(fixture.events.includes('camera'), false);
+  }
+});
+
+test('startup restoration propagates region, system and camera failures', async () => {
+  for (const [key, method] of [['selectedRegion', 'select'], ['internalSystem', 'setInternalSystem'],
+    ['view', 'applyCamera']]) {
+    const fixture = restorationFixture();
+    fixture.target[key] = 'unavailable';
+    const failure = new Error(`Requested ${key} unavailable`);
+    const owner = method === 'applyCamera' ? fixture : fixture.model;
+    owner[method] = () => { throw failure; };
+    await assert.rejects(restore(fixture.target, fixture), error => error === failure);
+  }
+});
+
+test('startup restoration awaits requested cord anatomy before selection and framing', async () => {
+  const fixture = restorationFixture();
+  fixture.target.spinalCordVisible = true;
+  fixture.target.selectedRegion = 'cord';
+  let complete;
+  fixture.model.setSpinalCordVisible = () => new Promise(resolve => {
+    complete = () => { fixture.model.settings.spinalCordVisible = true; resolve(); };
+  });
+  const applying = restore(fixture.target, fixture);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(fixture.events, []);
+  complete();
+  await applying;
+  assert.deepEqual(fixture.events, ['selection', 'tree', 'camera']);
+});
+
+test('startup restoration preserves layer, display, cut, selection and camera ordering', async () => {
+  const fixture = restorationFixture();
+  Object.assign(fixture.target, { atlas: 'hcp-mmp', detail: 'aseg', internalSystem: 'Brainstem',
+    hemisphere: 'left', spinalCordVisible: true, surfaceColor: 'tissue',
+    hiddenRegions: new Set(['hidden']), cutAtlas: 'aseg', cut: 'oblique',
+    selectedRegion: 'region', isolatedRegion: 'region' });
+  await restore(fixture.target, fixture);
+  assert.deepEqual(fixture.events, ['atlas', 'detail', 'system', 'hemisphere', 'cord', 'hidden',
+    'color', 'cut-atlas', 'angles', 'cut', 'cut-display', 'cut-position',
+    'selection', 'isolation', 'tree', 'camera']);
 });

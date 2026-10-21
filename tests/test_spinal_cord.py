@@ -7,9 +7,9 @@ import pytest
 import trimesh
 from scipy.spatial import cKDTree
 
-from brain_model import spinal_cord
-from brain_model.geometry import to_gltf
+from brain_model.layers import spinal_cord
 from brain_model.sources import ROOT, read_config
+from brain_model.surfaces.geometry import to_gltf
 
 
 @pytest.fixture(scope="module")
@@ -39,11 +39,6 @@ def centreline(vertices, bins=24):
         centre = slab.mean(axis=0)
         track.append((*centre, np.linalg.norm(slab[:, :2] - centre[:2], axis=1).mean()))
     return np.array(track)
-
-
-def compact(mesh, faces):
-    used, inverse = np.unique(mesh.faces[faces], return_inverse=True)
-    return trimesh.Trimesh(mesh.vertices[used], inverse.reshape(-1, 3), process=False)
 
 
 def test_every_published_part_is_its_source_surface_unchanged(published, parts):
@@ -79,7 +74,7 @@ def test_a_split_structure_divides_into_its_two_mirrored_halves(published):
                                       np.arange(len(source.faces)))
         volume = 0.0
         for side, faces in halves.items():
-            half = compact(source, faces)
+            half = spinal_cord.compact(source, faces)
             assert half.is_watertight and half.volume > 0, f"{side} {structure['id']}"
             # RAS: the subject's left is negative x.
             assert (half.vertices[:, 0].mean() < midline) == (side == "left")

@@ -94,6 +94,21 @@ test('a cut carries the same network colour the surface carries', () => {
   }
 });
 
+test('a cut carries CAB-NP colours for the areas it assigns and tissue colour elsewhere', () => {
+  const cabNp = { colors: { Default: [255, 0, 0] }, regions: { 'destrieux:left:1': 'Default' } };
+  const palette = createPalette(labels, { ...state, surfaceColor: 'cab-np' },
+    appearance.tissue, { regions: new Map(), cabNp });
+  const red = new Color().setRGB(1, 0, 0, SRGBColorSpace);
+  for (const [channel, value] of red.toArray().entries()) {
+    assert.ok(Math.abs(palette[4 + channel] - value) < 1e-7);
+  }
+  const white = new Color(tissueColor({ ...labels[2], source_name: labels[2].name },
+    appearance.tissue));
+  for (const [channel, value] of white.toArray().entries()) {
+    assert.ok(Math.abs(palette[8 + channel] - value) < 1e-7);
+  }
+});
+
 test('a NextBrain cortical cut parcel carries the network colour of its region', () => {
   // NextBrain cut labels are kind `tissue` — they have no surface — but its
   // cortical parcels still have a region record, and that record can carry

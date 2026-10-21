@@ -419,6 +419,9 @@ appearance:
     thickness: 0.025
     samples: 32
     intensity: 0.9
+atlas_comparison:
+  enabled_anatomies: [snail]
+  atlases: [destrieux, hcp-mmp]
 atlases:
   - id: destrieux
     label: Destrieux anatomical atlas

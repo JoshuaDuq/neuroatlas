@@ -1,6 +1,7 @@
-import { Box3, Group, Vector3 } from 'three';
+import { Box3, Group, SRGBColorSpace, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { labelOf } from '../catalog/labels.js';
+import { validateCabNp } from '../catalog/networks.js';
 import { belongsToDetail, visibilityOf } from '../catalog/visibility.js';
 import { worldToRas } from '../slices/coordinates.js';
 import { fetchAsset } from './asset-cache.js';
@@ -43,11 +44,12 @@ function asOptions(onProgressOrOptions) {
  * What the cortical surface is coloured by.
  *
  * `tissue` is the modelled tissue class, `atlas` the parcellation's own
- * published colours, and `network` the Yeo palette carried per vertex. They
+ * published colours, `network` the Yeo palette carried per vertex, and
+ * `cab-np` CAB-NP's network for each HCP-MMP area as a whole. They
  * are one setting rather than several toggles because the surface can only
  * show one of them at a time.
  */
-export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network'];
+export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np'];
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -110,6 +112,9 @@ export class BrainAtlas extends EventTarget {
     const url = new URL(manifestUrl, globalThis.location.href);
     const bytes = await fetchAsset(url.href);
     const manifest = JSON.parse(new TextDecoder().decode(bytes));
+    const cabNp = manifest.cab_np ? JSON.parse(new TextDecoder().decode(
+      await fetchAsset(new URL(manifest.cab_np.file, url).href),
+    )) : null;
     const loader = new GLTFLoader()
       .setPath(new URL('.', url).href)
       .setRequestHeader(REVALIDATE_HEADER);
@@ -118,15 +123,9 @@ export class BrainAtlas extends EventTarget {
       const buffer = await fetchAsset(asset, { onProgress });
       return loader.parseAsync(buffer, loader.path);
     };
-    const model = new BrainAtlas(manifest, loader);
+    const model = new BrainAtlas(manifest, loader, cabNp);
     try {
-      // A link may name a layer this build no longer publishes; it falls back
-      // to the defaults rather than leaving the reader a dead page.
-      const known = (entries, id) => entries.some(entry => entry.id === id);
-      await model.initialize(known(manifest.atlases, atlasId) ? atlasId : undefined, {
-        ...options,
-        detail: known(manifest.detail_levels, options.detail) ? options.detail : undefined,
-      });
+      await model.initialize(atlasId, options);
       return model;
     } catch (error) {
       model.dispose();
@@ -134,7 +133,7 @@ export class BrainAtlas extends EventTarget {
     }
   }
 
-  constructor(manifest, loader) {
+  constructor(manifest, loader, cabNp = null) {
     super();
     validateManifest(manifest);
     this.manifest = manifest;
@@ -142,6 +141,7 @@ export class BrainAtlas extends EventTarget {
     this.group = new Group();
     this.group.name = 'Brain atlas';
     this.regions = new Map(manifest.regions.map(region => [region.id, region]));
+    this.cabNp = cabNp && validateCabNp(cabNp, this.regions);
     this.dissection = createDissection(this.regions);
     this.layers = new Map();
     this.whiteMatterSurfaces = null;
@@ -159,6 +159,10 @@ export class BrainAtlas extends EventTarget {
     this.cortexOpacity = 1;
     this.internalVisible = true;
     this.spinalCordVisible = false;
+    this.spinalCordLoadState = 'unloaded';
+    this.spinalCordLoadError = null;
+    this.spinalCordRequest = 0;
+    this.supplementalReady = null;
     this.surfaceColor = 'atlas';
     this.mriUniforms = null;
     this.sourceColors = new WeakMap();
@@ -182,7 +186,7 @@ export class BrainAtlas extends EventTarget {
     const options = asOptions(onProgressOrOptions);
     const atlas = this.manifest.atlases.find(entry => entry.id === atlasId);
     if (!atlas) throw new Error(`Unknown atlas: ${atlasId}`);
-    const detailId = options.detail ?? this.defaultDetail;
+    const detailId = options.detail === undefined ? this.defaultDetail : options.detail;
     const level = this.manifest.detail_levels.find(entry => entry.id === detailId);
     if (!level) throw new Error(`Unknown detail level: ${detailId}`);
     const supplemental = this.manifest.supplemental_layers ?? [];
@@ -196,15 +200,22 @@ export class BrainAtlas extends EventTarget {
     this.atlasId = atlas.id;
     this.isolatedId = null;
     this.select(null);
-    // A reference layer is hidden until someone asks for it, so the first
-    // paint does not wait on one: the spinal cord alone is several megabytes
-    // of anatomy nobody has requested yet. They load behind the first frame
-    // and `update` reveals whichever was already asked for by a link.
-    this.supplementalReady = Promise.all(supplemental.map(
-      layer => this.loadLayer(layer.id, layer.file).catch(() => null),
-    )).then(() => {
-      if (!this.disposed) this.update();
-    });
+    if (!this.supplementalReady) {
+      const hasCord = supplemental.some(layer => layer.id === 'zanatomy');
+      this.spinalCordLoadState = hasCord ? 'loading' : 'unavailable';
+      this.supplementalReady = Promise.all(supplemental.map(
+        layer => this.loadLayer(layer.id, layer.file),
+      )).then(() => {
+        if (hasCord) this.spinalCordLoadState = 'ready';
+        if (!this.disposed) this.update();
+      });
+      // Observe background failures immediately; the original promise remains
+      // rejected so an awaited request to show the cord receives the error.
+      this.supplementalReady.catch(error => {
+        this.spinalCordLoadState = 'error';
+        this.spinalCordLoadError = error;
+      });
+    }
   }
 
   async loadWhiteMatterSurfaces(onProgress) {
@@ -301,6 +312,8 @@ export class BrainAtlas extends EventTarget {
     await this.loadLayer(id, atlas.file, onProgress);
     if (request !== this.requestNumber) return;
     this.atlasId = id;
+    // CAB-NP partitions one atlas's areas; any other atlas has none to colour.
+    if (this.surfaceColor === 'cab-np' && id !== this.cabNp.atlas) this.surfaceColor = 'atlas';
     this.isolatedId = null;
     this.select(null);
   }
@@ -388,6 +401,7 @@ export class BrainAtlas extends EventTarget {
       for (const mesh of layer.meshes) {
         const region = this.regions.get(mesh.userData.region_id);
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
+        const cabNpNetwork = this.surfaceColor === 'cab-np' ? this.cabNp.regions[region.id] : null;
         mesh.visible = visibilityOf(region, settings).visible;
         const material = mesh.material;
         if (cortex) {
@@ -407,7 +421,11 @@ export class BrainAtlas extends EventTarget {
         // Under network colour this shows only where no network reaches: the
         // medial wall keeps the tissue it always had.
         material.color.copy(this.sourceColors.get(mesh));
-        if (this.surfaceColor !== 'atlas' || region.kind === 'non-region') {
+        if (cabNpNetwork) {
+          // Published sRGB, converted as the per-vertex network colours are.
+          material.color.setRGB(
+            ...this.cabNp.colors[cabNpNetwork].map(value => value / 255), SRGBColorSpace);
+        } else if (this.surfaceColor !== 'atlas' || region.kind === 'non-region') {
           material.color.set(tissueColor(region, this.manifest.appearance.tissue));
         }
         // Selection is drawn by the outline pass. Tinting the material would
@@ -530,6 +548,7 @@ export class BrainAtlas extends EventTarget {
    * silent by construction.
    */
   canSelect(region) {
+    if (region.supplemental && !this.layers.has(region.atlas)) return false;
     return visibilityOf(region, this.settings).visible;
   }
 
@@ -590,8 +609,18 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
-  setSpinalCordVisible(visible) {
+  async setSpinalCordVisible(visible) {
     if (typeof visible !== 'boolean') throw new TypeError('Spinal cord visibility must be boolean.');
+    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    const request = ++this.spinalCordRequest;
+    if (visible) {
+      if (!this.manifest.supplemental_layers?.some(layer => layer.id === 'zanatomy')) {
+        throw new Error('This anatomy does not publish a spinal cord.');
+      }
+      if (!this.supplementalReady) throw new Error('Initialize the brain before showing the spinal cord.');
+      await this.supplementalReady;
+      if (request !== this.spinalCordRequest) return;
+    }
     this.spinalCordVisible = visible;
     this.isolatedId = null;
     this.update();
@@ -606,6 +635,10 @@ export class BrainAtlas extends EventTarget {
     }
     if (mode === 'network' && !this.manifest.networks) {
       throw new Error('This model carries no network layer.');
+    }
+    if (mode === 'cab-np' && !this.cabNp) throw new Error('This model carries no CAB-NP partition.');
+    if (mode === 'cab-np' && this.atlasId !== this.cabNp.atlas) {
+      throw new Error(`CAB-NP colours ${this.cabNp.atlas} areas; show that atlas first.`);
     }
     this.surfaceColor = mode;
     this.update();
@@ -668,6 +701,7 @@ export class BrainAtlas extends EventTarget {
   }
 
   reset() {
+    this.spinalCordRequest += 1;
     this.dissection.reset();
     this.clippingPlanes = [];
     this.internalSystem = null;
@@ -684,6 +718,7 @@ export class BrainAtlas extends EventTarget {
 
   dispose() {
     this.disposed = true;
+    this.spinalCordRequest += 1;
     this.requestNumber += 1;
     for (const layer of this.layers.values()) disposeScene(layer.scene);
     if (this.whiteMatterSurfaces) disposeScene(this.whiteMatterSurfaces.group);

@@ -74,9 +74,11 @@
     border-top: 1px solid var(--border-subtle);
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
     overscroll-behavior: contain;
+    /* The iOS sheet curve: it leaves at the speed the finger let go and settles softly. */
+    --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
   }
   /* Only a settled sheet animates; a dragged one tracks the finger exactly. */
-  #sheet[data-dragging="false"] { transition: height var(--camera-transition) ease; }
+  #sheet[data-dragging="false"] { transition: height var(--camera-transition) var(--ease-sheet); }
   /* Hug the grip; the sheet measures this height as its peek rest. */
   #sheet[data-detent="peek"]:not([data-dragging="true"]) { height: fit-content; }
 
@@ -102,8 +104,11 @@
     flex: none;
     /* The grip is the drag surface; the panel below it scrolls instead. */
     touch-action: none;
-    padding-left: max(0px, env(safe-area-inset-left));
-    padding-right: max(0px, env(safe-area-inset-right));
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   /*
@@ -139,8 +144,8 @@
     background: none;
   }
   .sheet-handle-bar {
-    width: 28px;
-    height: 3px;
+    width: 36px;
+    height: 4px;
     border-radius: 2px;
     background: var(--border-control);
   }
@@ -198,8 +203,10 @@
     text-align: left;
   }
 
-  /* Appearance is .rail-tabs in components.css; the sheet adds the rule over it. */
-  .sheet-tabs { border-top: 1px solid var(--border-subtle); }
+  /* At rest the tabs are the sheet's last line, so they clear the home indicator. */
+  #sheet[data-detent="peek"] .sheet-grip { padding-bottom: env(safe-area-inset-bottom); }
+  /* Nothing follows the tabs at rest, so their rule would only underline the screen edge. */
+  #sheet[data-detent="peek"] .sheet-tabs { border-bottom-color: transparent; }
 
   /* ---- panels inside the sheet ---------------------------------------- */
   #navigator, #inspector {
@@ -267,9 +274,9 @@
     border-top: 0;
     border-right: 1px solid var(--border-subtle);
     border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
-    padding-left: max(0px, env(safe-area-inset-left));
+    padding-left: env(safe-area-inset-left);
   }
-  #sheet[data-dragging="false"] { transition: width var(--camera-transition) ease; }
+  #sheet[data-dragging="false"] { transition: width var(--camera-transition) var(--ease-sheet); }
   /* Upright, peek hugs the grip; sideways the rail runs to the foot of the screen. */
   #sheet[data-detent="peek"]:not([data-dragging="true"]) { height: auto; }
 
@@ -286,9 +293,9 @@
     padding: var(--space-2) var(--space-4) var(--space-1);
     text-align: left;
   }
-  .sheet-selection { grid-column: 1; grid-row: 2; align-items: center; height: 44px; border-top: 1px solid var(--border-subtle); }
+  .sheet-selection { grid-column: 1; grid-row: 2; align-items: center; height: 44px; }
   .sheet-selection-chevron { align-self: center; margin-top: 0; }
-  #sheet-selection-clear { grid-column: 2; grid-row: 2; border-top: 1px solid var(--border-subtle); border-radius: 0; }
+  #sheet-selection-clear { grid-column: 2; grid-row: 2; }
   .sheet-tabs { grid-column: 1 / 3; grid-row: 3; }
   #sheet-handle {
     position: static;
@@ -297,12 +304,9 @@
     align-items: center;
     height: auto;
     padding: 0;
-    border-left: 1px solid var(--border-subtle);
-    border-bottom: 1px solid var(--border-subtle);
     border-radius: 0;
-    background: var(--surface-navigation);
   }
-  .sheet-handle-bar { width: 3px; height: 28px; }
+  .sheet-handle-bar { width: 4px; height: 36px; }
 
   /* The narrow rail at peek takes the modes in two rows; open, they share one. */
   #sheet[data-detent="peek"] .sheet-tabs { flex-wrap: wrap; }
@@ -315,11 +319,7 @@
  * components.css is sized from these two tokens, so this is the whole change.
  */
 @media (pointer: coarse) {
-  :root {
-    --row-height: 44px;
-    --control-height: 44px;
-  }
-  :root { --tab-height: 44px; }
+  :root { --row-height: 44px; --control-height: 44px; --tab-height: 44px; }
   .search-clear { width: 44px; height: 44px; right: 0; }
   .search-box input[type="search"] { padding-right: 44px; }
   .dissection-heading-row button { height: 44px; }

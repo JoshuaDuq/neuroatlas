@@ -313,10 +313,11 @@ Desktop is a full-height grid: masthead (48px) across, task panel (320px;
 300px at 641–1000px) beside the stage, status bar (28px) across. No outer
 padding; 1px separators; panel insets (16px); shared 4px rhythm.
 
-**Masthead (data).** Identity, then a ruled data bar of one control family: a
-13px secondary caption and a 32px tonal control for Subject, Atlas, Colour
-(Tissue, T1, Regions, Networks), and Internal anatomy. Below 1280px wide (and
-in short landscape) the bar collapses to a summary button, “Subject · Atlas ·
+**Masthead (data).** Identity, then a left-weighted data bar with no dividers:
+caption and control pairs 24px apart, a 13px secondary caption beside a 28px
+tonal control for Subject, Atlas, Colour (Tissue, T1, Regions, Networks), and
+Internal anatomy. When the bar does not fit (measured, not a fixed breakpoint;
+always in short landscape) it collapses to a summary button, “Subject · Atlas ·
 Colour”, that opens the same fields as a 320px popover; as room shrinks the
 subject truncates, then the atlas drops, then the colour. At the end:
 fullscreen, Save image, and a ⋯ settings popover of labelled rows (Language,
@@ -324,7 +325,8 @@ Theme, Single-key shortcuts), then Keyboard shortcuts as a menu item; on
 phones Full screen and Provenance join the menu. A “Skip to model” link is
 the first Tab stop, invisible until focused.
 
-**Task panel (modes and drill-in).** One row of text tabs (40px): Anatomy,
+**Task panel (modes and drill-in).** One row of word tabs (40px) on the 16px
+text column: Anatomy,
 Deficits, Circuits, Tracts. Each mode is a list; opening an item drills into
 its detail under one location bar (40px, navigation ground): “‹ mode” back,
 or in a lesson the circuit name with a “n of N” stepper. A selection strip
@@ -344,10 +346,11 @@ axis, clear of the letters and scale bar; context framings never go below a
 50 mm bounding radius. Letters are derived from camera position, target, and
 up, so they always match the frame being drawn.
 
-**Status bar.** Description · “not clinical anatomy” (the description
-truncates; the statement never does), then “N visible regions” (tract bundles
-in Tracts) and a Provenance button opening a dialog of labelled rows built
-from the anatomy index and manifest.
+**Status bar.** One quiet ruled line, no cells: “Not clinical anatomy” in
+600, a short hairline, the description (it truncates; the statement never
+does), then “N visible regions” (tract bundles in Tracts) with tabular digits
+and a quiet 24px Provenance text button opening a dialog of labelled rows
+built from the anatomy index and manifest.
 
 **Phones** (≤640px, or landscape ≤480px tall). The canvas is full bleed under
 the sheet with peek, half, and full detents; short landscape uses a side
@@ -358,7 +361,12 @@ Section ▾, Display ▾ as equal worded tools; presets live in the View popover
 Orientation letters and scale bar hide while a stage popover is open and at
 the full detent. Fine-pointer controls and rows (32px) become (44px) on
 phones and coarse pointers. Keep safe-area insets and the one visible-viewport
-rectangle shared by renderer and chrome.
+rectangle shared by renderer and chrome. The sheet settles on the iOS
+drawer curve; a release faster than 0.4 px/ms over the last 100ms moves one
+detent, a slower one settles by position; past either limit it gives with
+rubber-band resistance capped at 72px; extra touches are ignored mid-drag.
+Sheet tabs mirror the desktop tabs without a rule above; peek pads for the home
+indicator.
 
 Dialogs share sticky ruled headers and insets (20px desktop, 16px phone);
 Shortcuts and Provenance are bounded (560px), MRI viewers wide (1180px); all
@@ -381,8 +389,8 @@ Controls, rows, plates, and chips (4px); popovers, dialogs, and the sheet's
 exposed corners (6px); the panel, tabs, location bar, and docks are square.
 Functional small radii are part of the system: segmented thumbs, checkboxes,
 keycaps, and tract toggles (3px); network swatches, bars, and MPR canvases
-(2px); slider tracks (1px); range thumbs and circuit step numbers are
-circles. Phone viewport and full-screen dialogs meet the screen edge.
+(2px); slider tracks (1px); range thumbs and circuit step numbers (UI
+face, tabular figures) are circles. Phone viewport and full-screen dialogs meet the screen edge.
 
 Icons are monochrome inline SVG (16px, 1.5px round strokes). Every chevron
 (disclosure, select caret, stage tool, data summary, back) is drawn from two
@@ -397,7 +405,9 @@ spans and hidden from assistive technology.
   text for recessive actions (Undo, Restore all, Reset view). Text-link
   actions (Restore previous view, return to landmark, mapped regions) are
   teal and underline on hover. Disabled: sunken ground, tertiary ink. Under
-  increased contrast tonal buttons gain the control border.
+  increased contrast tonal buttons gain the control border. Commands answer a
+  press with scale(0.97); rows, tabs, segments, tree items, and text links
+  stay still. Hover styles apply only on hover-capable pointers.
 - **Fields:** search, numbers, and panel selects use the base surface with the
   control border; hover darkens it. Masthead selects are tonal and borderless
   like the segmented track. Every select carries the stroked chevron. Ranges
@@ -407,8 +417,9 @@ spans and hidden from assistive technology.
   plane, hemisphere, MRI plane): tonal track, raised thumb with a 1px ring,
   teal 600 label. The ring, not teal alone, marks the choice. Every group is
   one Tab stop with arrow, Home, and End movement (viewer/ui/roving.js).
-- **Mode tabs:** text only, 40px; selected is teal 600 with a 2px underline
-  spanning the word plus 8px; hover changes ink only. Tabs are never disabled.
+- **Mode tabs:** natural-width words, no cells or dividers, 40px; selected is
+  primary ink 600 over a 2px teal rule exactly the word's width; hover changes
+  ink only; bold width is held so nothing shifts. Tabs are never disabled.
   Mirrored in the phone sheet.
 - **Anatomy tree:** a Whole brain | By system scope over the tree (By system
   opens the System picker beneath it and says the cortex is hidden). Group
@@ -419,7 +430,8 @@ spans and hidden from assistive technology.
   hover or focus and stay once something is hidden. Hidden is a struck eye in
   tertiary ink, never teal. Touch keeps every eye in view.
 - **Region detail:** headline with a quiet clear (×), the action row, a ruled
-  datasheet (label left, value right, measures in mono), then “Coordinates and
+  datasheet (label left, value right, measures in mono), the atlas comparison
+  as a table with Region / Area / Share caption headings, then “Coordinates and
   source” as a stacked datasheet in a disclosure open by default, then
   constituents, functional networks, neuropsychology, and guided-circuit
   links as ruled sections.
@@ -430,9 +442,11 @@ spans and hidden from assistive technology.
 - **Circuit lesson:** headline, role, description, the landmark's actions and
   datasheet, then the lesson's notes as full-width disclosures at the foot. A
   selection that is not the landmark becomes a ruled 16px second subject.
-- **Tracts:** one row per tract, name then lettered L | R (or numbered
-  segment) toggles drawn as selection: teal wash, doubled teal edge, 600
-  letter. Metrics in one 12px line. Scope notes in an “About this data”
+- **Tracts:** one row per tract at a 32px pitch, separated by space not
+  rules; name then lettered L | R (or numbered segment) 28×24 tonal keys drawn
+  as selection: teal wash, doubled teal edge, 600 letter. Metrics in one 12px
+  line. Deficit and circuit group headings share the Anatomy section label.
+  With a mouse, list-row chevrons show on hover, focus, or selection only. Scope notes in an “About this data”
   disclosure.
 - **Disclosure:** every disclosure shares one rhythm: 36px summary, 14px/500
   primary ink, a stroked chevron that turns on open, teal on hover.
@@ -444,7 +458,8 @@ spans and hidden from assistive technology.
   names on phones) and Cut labels. Display ▾ holds hemisphere, cortex and
   opacity, internal anatomy, spinal cord, and Reset view. The hover chip names
   the side and hides while the camera moves; the navigation hint fades after
-  the first turn or zoom.
+  the first turn or zoom. The loading and error states use the overlay palette
+  with a 200×2px progress bar and a tonal Retry.
 - **Linked MRI viewer:** dark in both themes, like a reading workstation,
   because a light surround lowers perceived contrast in grey-scale slices. It
   re-scopes the panel tokens, so its components need no special cases.
@@ -466,13 +481,17 @@ spans and hidden from assistive technology.
 Focus is a visible accent ring (2px, offset 2px), drawn inside for clipped
 rows, tabs, and the canvas; the stage uses the overlay teal. Preserve
 forced-colour and increased-contrast treatments. UI colour feedback (140ms)
-with the shared easing; camera and settled sheet movement (240ms); dialog
-entry (180ms); dragging tracks directly. Respect reduced motion. The loading
+and press (160ms) with the shared ease-out; popovers grow from their trigger,
+opacity 0 and scale(0.97), in 160–180ms and leave in 120ms (masthead popovers
+close at once); dialogs enter centred from scale(0.98) with a fading backdrop
+(200ms in, 120ms out); camera and settled sheet movement (240ms); dragging
+tracks directly; keyboard-initiated actions never animate. Reduced motion keeps
+fades and colour, and drops every scale and movement. The loading
 progress width and settled sheet height/width transitions are operational
 motion; keep them.
 
 Detector notes: static scans of index.html miss the Vite-imported
-stylesheets. The 1–3px radii above and the MPR canvas black are functional
+stylesheets. Dialog and status-bar rules live in stage.css. The 1–3px radii above and the MPR canvas black are functional
 and recorded; overlay tokens belong to the stage, not to panel backgrounds.
 
 ## Do's and Don'ts

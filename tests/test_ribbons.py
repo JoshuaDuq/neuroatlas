@@ -5,13 +5,13 @@ import pytest
 from nibabel.freesurfer.io import read_annot, read_geometry
 
 from brain_model.build import cortical_region
-from brain_model.ribbons import (
+from brain_model.sources import HEMISPHERES, read_config
+from brain_model.surfaces.ribbons import (
     export_ribbon_labels,
     triangle_owners,
     validate_ribbon_labels,
     wedge_defects,
 )
-from brain_model.sources import HEMISPHERES, read_config
 
 SQUARE = np.array([[0, 1, 2], [0, 2, 3]])
 

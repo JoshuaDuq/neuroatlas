@@ -7,7 +7,7 @@ import { Color, LinearSRGBColorSpace, Vector2, Vector3 } from 'three';
  * a colour-blind reader, not enough for a marked cortex to pass for white
  * matter. `tint` is how much moves hue, which an achromatic scan leaves free.
  */
-export const MRI_MARK = { lift: 0.33, tint: 1.8 };
+const MRI_MARK = { lift: 0.33, tint: 1.8 };
 
 const glsl = value => (Number.isInteger(value) ? `${value}.0` : `${value}`);
 

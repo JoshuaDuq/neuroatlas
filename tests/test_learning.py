@@ -1,11 +1,11 @@
 import numpy as np
 import pytest
 
-from brain_model import nextbrain
-from brain_model.geometry import extract_structure, smooth_display
-from brain_model.learning import combine_labels, read_definition
+from brain_model.labels import nextbrain
+from brain_model.labels.volumes import load_on_grid, resample_nearest
+from brain_model.layers.learning import combine_labels, read_definition
 from brain_model.sources import read_config
-from brain_model.volumes import load_on_grid, resample_nearest
+from brain_model.surfaces.geometry import extract_structure, smooth_display
 
 
 def test_subject_overview_exclusions_preserve_other_units_and_subjects():
@@ -66,7 +66,7 @@ def test_a_midline_structure_is_published_once_rather_than_halved():
     # NextBrain labels every ROI on both halves of its grid. For the optic
     # chiasm — the crossing itself — halving it invents a boundary and leaves
     # each half small enough that surviving a warp is a coin toss.
-    from brain_model.learning import expand_nextbrain
+    from brain_model.layers.learning import expand_nextbrain
 
     table = {161: ("optic_chiasm", [0, 0, 0]), 10161: ("optic_chiasm", [0, 0, 0])}
     units = expand_nextbrain(

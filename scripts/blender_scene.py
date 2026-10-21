@@ -6,7 +6,6 @@ from pathlib import Path
 import bpy
 from mathutils import Vector
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -134,8 +133,8 @@ def main():
     output = ROOT / "deliverables"
     output.mkdir(exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(output / "Brain-Atlas.blend"))
-    inventory = [dict(id=obj.get("region_id"), vertices=len(obj.data.vertices),
-                      faces=len(obj.data.polygons), modifiers=len(obj.modifiers))
+    inventory = [{"id": obj.get("region_id"), "vertices": len(obj.data.vertices),
+                  "faces": len(obj.data.polygons), "modifiers": len(obj.modifiers)}
                  for obj in bpy.data.objects if obj.type == "MESH"]
     (output / "blender-inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
     scene.render.filepath = str(output / "brain-preview.png")

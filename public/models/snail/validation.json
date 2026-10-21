@@ -394,6 +394,23 @@
     "identical_native_topology": true,
     "maximum_coordinate_error_mm": 3.6954879711892374e-06
   },
+  "cab_np": {
+    "assigned_areas": 360,
+    "areas_per_network": {
+      "Visual1": 6,
+      "Visual2": 54,
+      "Somatomotor": 39,
+      "Cingulo-Opercular": 56,
+      "Dorsal-Attention": 23,
+      "Language": 23,
+      "Frontoparietal": 50,
+      "Auditory": 15,
+      "Posterior-Multimodal": 7,
+      "Default": 77,
+      "Orbito-Affective": 6,
+      "Ventral-Multimodal": 4
+    }
+  },
   "nextbrain_structures": {
     "file": "nextbrain.glb",
     "sha256": "13ff525188c6a5bdaab94e209f7d2157fef284dab11f2920f647ef57373368a6",

@@ -418,6 +418,23 @@
     "identical_native_topology": true,
     "maximum_coordinate_error_mm": 3.6954879850670252e-06
   },
+  "cab_np": {
+    "assigned_areas": 360,
+    "areas_per_network": {
+      "Visual1": 6,
+      "Visual2": 54,
+      "Somatomotor": 39,
+      "Cingulo-Opercular": 56,
+      "Dorsal-Attention": 23,
+      "Language": 23,
+      "Frontoparietal": 50,
+      "Auditory": 15,
+      "Posterior-Multimodal": 7,
+      "Default": 77,
+      "Orbito-Affective": 6,
+      "Ventral-Multimodal": 4
+    }
+  },
   "nextbrain_structures": {
     "file": "nextbrain.glb",
     "sha256": "98b1182f46bd7f2f58b76cf4fcb017ca0b1ab234eb34040a2a87965b8aace2e4",
@@ -3664,7 +3681,157 @@
       }
     ],
     "source_volumes_unchanged": true,
-    "maximum_allowed_displacement_mm": 0.6
+    "maximum_allowed_displacement_mm": 0.6,
+    "cross_source_overlap": [
+      {
+        "unit": "caudate",
+        "cross_source_overlap_fraction": 0.037633664553867165
+      },
+      {
+        "unit": "putamen",
+        "cross_source_overlap_fraction": 1.6993123449377485e-05
+      },
+      {
+        "unit": "pallidum-external",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "pallidum-internal",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "accumbens",
+        "cross_source_overlap_fraction": 0.00043094160741219563
+      },
+      {
+        "unit": "subthalamic",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "substantia-nigra",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "claustrum",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "ventral-pallidum",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "septal",
+        "cross_source_overlap_fraction": 0.08846319414550151
+      },
+      {
+        "unit": "innominata",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "thalamus",
+        "cross_source_overlap_fraction": 0.005976459138051644
+      },
+      {
+        "unit": "hypothalamus",
+        "cross_source_overlap_fraction": 0.11620199894792214
+      },
+      {
+        "unit": "mammillary",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "zona-incerta",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "lateral-geniculate",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "medial-geniculate",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "hippocampus",
+        "cross_source_overlap_fraction": 0.007604744977433398
+      },
+      {
+        "unit": "amygdala",
+        "cross_source_overlap_fraction": 0.009440456288720622
+      },
+      {
+        "unit": "bnST",
+        "cross_source_overlap_fraction": 0.0665390138822403
+      },
+      {
+        "unit": "fornix",
+        "cross_source_overlap_fraction": 0.056418293204160135
+      },
+      {
+        "unit": "fimbria",
+        "cross_source_overlap_fraction": 0.04179331306990881
+      },
+      {
+        "unit": "anterior-commissure",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "optic-tract",
+        "cross_source_overlap_fraction": 0.001692928766766506
+      },
+      {
+        "unit": "optic-chiasm",
+        "cross_source_overlap_fraction": 0.0010193679918450561
+      },
+      {
+        "unit": "stria-terminalis",
+        "cross_source_overlap_fraction": 0.13848101265822785
+      },
+      {
+        "unit": "mammillothalamic",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "superior-cerebellar-peduncle",
+        "cross_source_overlap_fraction": 0.012023777357470953
+      },
+      {
+        "unit": "inferior-cerebellar-peduncle",
+        "cross_source_overlap_fraction": 0.001955671447196871
+      },
+      {
+        "unit": "midbrain",
+        "cross_source_overlap_fraction": 0.0049682010717642605
+      },
+      {
+        "unit": "pons",
+        "cross_source_overlap_fraction": 2.3285462303747213e-05
+      },
+      {
+        "unit": "medulla",
+        "cross_source_overlap_fraction": 0.0042597713175397955
+      },
+      {
+        "unit": "red-nucleus",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "vta",
+        "cross_source_overlap_fraction": 0.0
+      },
+      {
+        "unit": "inferior-colliculus",
+        "cross_source_overlap_fraction": 0.023972602739726026
+      },
+      {
+        "unit": "dentate",
+        "cross_source_overlap_fraction": 0.01064800730149072
+      },
+      {
+        "unit": "interposed",
+        "cross_source_overlap_fraction": 0.00811176205497972
+      }
+    ]
   },
   "white_matter": {
     "file": "white-matter.volume",

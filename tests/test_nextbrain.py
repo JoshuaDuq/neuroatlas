@@ -5,9 +5,10 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from brain_model import nextbrain
+from brain_model.labels import nextbrain
+from brain_model.labels.volumes import LabelGrid, offset_by, resample_nearest
 from brain_model.sources import ROOT, read_config, sha256
-from brain_model.volumes import LabelGrid, offset_by, read_published, resample_nearest
+from tests.support import read_published
 
 
 @pytest.fixture
@@ -206,7 +207,7 @@ def test_cortical_cut_parcels_carry_network_composition(config):
     nearest-vertex rule the HCP cut labels already use. Nuclei have no cortical
     surface and must not be given a network.
     """
-    from brain_model import networks as yeo
+    from brain_model.layers import networks as yeo
 
     if not yeo.is_available(config):
         pytest.skip("network annotation is optional")
@@ -223,7 +224,7 @@ def test_cortical_cut_parcels_carry_network_composition(config):
 
 
 def test_pericalcarine_cortex_is_visual(config):
-    from brain_model import networks as yeo
+    from brain_model.layers import networks as yeo
 
     if not yeo.is_available(config):
         pytest.skip("network annotation is optional")

@@ -27,6 +27,9 @@ export const usesAtlasColors = state => state.surfaceColor === 'atlas';
 /** Whether a cut face carries the network colours the surface is carrying. */
 export const usesNetworkColors = state => state.surfaceColor === 'network';
 
+/** Whether a cut face carries CAB-NP's colours, which only HCP-MMP's areas have. */
+export const usesCabNpColors = state => state.surfaceColor === 'cab-np';
+
 /*
  * The network a cut voxel is painted with.
  *
@@ -63,6 +66,10 @@ export function labelAppearance(label, state, tissuePalette, lookup, color = new
     // Published sRGB, converted the same way the surface converts it, so a
     // parcel reads as one colour whether it is met on the cut or the surface.
     if (channels) color.setRGB(...channels.map(value => value / 255), SRGBColorSpace);
+  }
+  const cabNpNetwork = usesCabNpColors(state) ? lookup?.cabNp?.regions[label.region_id] : null;
+  if (cabNpNetwork) {
+    color.setRGB(...lookup.cabNp.colors[cabNpNetwork].map(value => value / 255), SRGBColorSpace);
   }
   if (label.kind === 'cortex' && !label.region_id) color.set(tissuePalette.unlabelled);
   return { color, visible: labelVisible(label, state, lookup) };

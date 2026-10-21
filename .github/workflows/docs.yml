@@ -1,0 +1,27 @@
+name: Docs check
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install docs dependencies
+        run: uv sync --locked --group docs --no-install-project
+
+      # Strict: any Sphinx warning fails the check. Nothing is deployed from a pull request.
+      - name: Build documentation
+        run: uv run sphinx-build -W -b html -d docs/_build/doctrees docs docs/_build/html

@@ -89,7 +89,7 @@
       </div>
     </noscript>
     <div id="app" data-status="loading">
-      <header id="masthead">
+      <header id="masthead" data-collapsed>
         <a id="skip-to-model" class="skip-link" href="#viewport" hidden>Skip to model</a>
         <div class="identity">
           <svg class="brand-mark" width="36" height="36" viewBox="0 0 36 36"
@@ -351,6 +351,31 @@
                     <dt id="fact-metric-label">Surface area</dt>
                     <dd id="fact-metric" class="measure"></dd>
                   </dl>
+                  <details id="region-comparison" class="metadata-details atlas-comparison" open hidden>
+                    <summary id="comparison-heading">Compare atlases</summary>
+                    <p id="comparison-status" class="comparison-note" role="status" hidden></p>
+                    <button id="comparison-retry" type="button" hidden>Retry comparison</button>
+                    <div id="comparison-content" hidden>
+                      <p id="comparison-target" class="comparison-target"></p>
+                      <p id="comparison-denominator" class="comparison-note"></p>
+                      <div id="comparison-columns" class="comparison-columns" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                      </div>
+                      <ul id="comparison-list" class="comparison-list"></ul>
+                      <details id="comparison-more" class="comparison-more" hidden>
+                        <summary id="comparison-more-heading"></summary>
+                        <ul id="comparison-more-list" class="comparison-list"></ul>
+                      </details>
+                      <div id="comparison-unassigned" class="comparison-row comparison-unassigned"></div>
+                      <p id="comparison-view-note" class="comparison-note" hidden></p>
+                      <button id="comparison-export" class="comparison-export" type="button">Download CSV</button>
+                      <details class="comparison-method">
+                        <summary id="comparison-method-heading">Method and sources</summary>
+                        <p id="comparison-method" class="comparison-note"></p>
+                        <div id="comparison-sources" class="comparison-sources"></div>
+                      </details>
+                    </div>
+                  </details>
                   <details id="region-source" class="metadata-details" open hidden>
                     <summary id="region-source-title">Coordinates and source</summary>
                     <dl class="datasheet datasheet-stacked">
@@ -376,8 +401,12 @@
                 <section id="region-networks" hidden>
                   <p id="label-networks" class="section-label">Functional networks</p>
                   <div class="panel-body">
+                    <p id="label-yeo" class="network-map"></p>
                     <ul id="network-list" class="network-list"></ul>
                     <p id="network-note" class="network-note"></p>
+                    <p id="label-cab-np" class="network-map" hidden></p>
+                    <ul id="cab-np-list" class="network-list" hidden></ul>
+                    <p id="cab-np-note" class="network-note" hidden></p>
                   </div>
                 </section>
 

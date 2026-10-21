@@ -1,0 +1,43 @@
+{% extends "!page.html" %}
+
+{% block body %}
+<header class="docs-header">
+  <a class="docs-identity" href="{{ pathto(master_doc) }}">
+    {% include "brand-mark.html" %}
+    <span class="docs-brand">{{ project }}</span>
+    <span class="docs-label">Docs</span>
+  </a>
+  <nav class="docs-sections" aria-label="Documentation sections">
+    {%- for label, target, current in [
+      ("Get started", "install", pagename == "install"),
+      ("Guides", "guides/viewer", pagename.startswith("guides/")),
+      ("Concepts", "concepts/architecture", pagename.startswith("concepts/")),
+      ("Validation", "validation", pagename == "validation"),
+      ("API", "api/index", pagename.startswith("api/")),
+      ("References", "reference/references", pagename.startswith("reference/")),
+    ] %}
+    <a href="{{ pathto(target) }}"{% if current %} aria-current="page"{% endif %}>{{ label }}</a>
+    {%- endfor %}
+  </nav>
+  <div class="docs-actions">
+    <a class="docs-link" href="{{ theme_source_repository }}">Source</a>
+    <a class="docs-open" href="{{ viewer_url }}">Open viewer</a>
+  </div>
+</header>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+{%- if pagename != master_doc %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="{{ pathto(master_doc) }}">Documentation</a>
+  {%- for parent in parents %}
+  <span aria-hidden="true">/</span>
+  <a href="{{ parent.link|e }}">{{ parent.title }}</a>
+  {%- endfor %}
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ title|striptags|e }}</span>
+</nav>
+{%- endif %}
+{{ body }}
+{% endblock %}

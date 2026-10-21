@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from brain_model.registration import resample_surface_labels
+from brain_model.surfaces.registration import resample_surface_labels
 
 
 def test_registered_spheres_transfer_discrete_labels_without_moving_anatomy():

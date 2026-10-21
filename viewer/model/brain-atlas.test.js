@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
-import { BoxGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshStandardMaterial, Plane, Raycaster, Vector3 } from 'three';
+import { BoxGeometry, Color, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshStandardMaterial, Plane, Raycaster, SRGBColorSpace, Vector3 } from 'three';
 import { visibilityOf } from '../catalog/visibility.js';
 import { BrainAtlas, SURFACE_COLORS } from './brain-atlas.js';
 import { TissueSections } from '../tissues/gpu-sections.js';
@@ -58,7 +58,7 @@ const regions = [
     kind: 'tissue-region' },
 ];
 
-function fixture() {
+function fixture(cabNp = null) {
   const manifest = {
     schema_version: 1,
     appearance,
@@ -98,8 +98,137 @@ function fixture() {
       return { scene };
     },
   };
-  return { atlas: new BrainAtlas(manifest, loader), loads };
+  return { atlas: new BrainAtlas(manifest, loader, cabNp), loads };
 }
+
+for (const request of [
+  { atlas: 'missing', options: {}, message: /Unknown atlas: missing/ },
+  { atlas: null, options: {}, message: /Unknown atlas: null/ },
+  { atlas: 'a', options: { detail: 'missing' }, message: /Unknown detail level: missing/ },
+  { atlas: 'a', options: { detail: null }, message: /Unknown detail level: null/ },
+]) {
+  test(`published loading rejects atlas=${request.atlas}, detail=${request.options.detail}`, async context => {
+    const { atlas } = fixture();
+    globalThis.location = { href: 'https://example.invalid/' };
+    context.after(() => { delete globalThis.location; });
+    context.mock.method(globalThis, 'fetch', async url => {
+      if (String(url).endsWith('manifest.json')) return new Response(JSON.stringify(atlas.manifest));
+      throw new Error(`Unrequested default layer download: ${url}`);
+    });
+    await assert.rejects(BrainAtlas.load('https://example.invalid/manifest.json',
+      request.atlas, request.options), request.message);
+    atlas.dispose();
+  });
+}
+
+test('omitted atlas and detail choices use published defaults', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize();
+  assert.equal(atlas.settings.atlas, 'a');
+  assert.equal(atlas.settings.detail, 'aseg');
+  atlas.dispose();
+});
+
+function cordFixture(loadCord) {
+  const { atlas, loads } = fixture();
+  const cord = { id: 'cord', label: 'Spinal cord', hemisphere: 'midline', atlas: 'zanatomy',
+    source_label_id: 1, kind: 'structure', supplemental: true, mri_registered: false,
+    system_names: { en: 'Spinal cord', fr: 'Moelle épinière' } };
+  atlas.manifest.supplemental_layers = [{ id: 'zanatomy', file: 'cord.glb' }];
+  atlas.manifest.regions = [...atlas.manifest.regions, cord];
+  atlas.regions.set(cord.id, cord);
+  const loadBrain = atlas.loader.loadAsync.bind(atlas.loader);
+  atlas.loader.loadAsync = (file, onProgress) => {
+    if (file !== 'cord.glb') return loadBrain(file, onProgress);
+    loads.push(file);
+    return loadCord(cord);
+  };
+  return { atlas, loads, cord };
+}
+
+function cordScene(cord) {
+  const scene = new Group();
+  const mesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshStandardMaterial());
+  mesh.userData = { ...cord, region_id: cord.id };
+  scene.add(mesh);
+  return { scene };
+}
+
+test('a rejected supplemental download remains observable without invalidating the main brain', async () => {
+  const failure = new Error('Spinal cord request failed: HTTP 503');
+  const { atlas, cord } = cordFixture(async () => { throw failure; });
+  await atlas.initialize();
+  await new Promise(resolve => setImmediate(resolve));
+  await assert.rejects(atlas.supplementalReady, error => error === failure);
+  assert.equal(atlas.spinalCordLoadState, 'error');
+  assert.equal(atlas.spinalCordLoadError, failure);
+  assert.equal(atlas.settings.spinalCordVisible, false);
+  assert.ok(atlas.visibleMeshes.length > 0);
+  assert.equal(atlas.canSelect(cord), false);
+  await assert.rejects(() => atlas.setSpinalCordVisible(true), error => error === failure);
+  assert.equal(atlas.settings.spinalCordVisible, false);
+  atlas.dispose();
+});
+
+test('showing the cord awaits its download and blocks selection while pending', async () => {
+  let finishDownload;
+  const { atlas, cord } = cordFixture(region => new Promise(resolve => {
+    finishDownload = () => resolve(cordScene(region));
+  }));
+  await atlas.initialize();
+  const showing = atlas.setSpinalCordVisible(true);
+  assert.equal(atlas.spinalCordLoadState, 'loading');
+  assert.equal(atlas.settings.spinalCordVisible, false);
+  assert.equal(atlas.canSelect(cord), false);
+  assert.throws(() => atlas.select(cord.id), /not visible/);
+  finishDownload();
+  await showing;
+  assert.equal(atlas.spinalCordLoadState, 'ready');
+  assert.equal(atlas.settings.spinalCordVisible, true);
+  atlas.select(cord.id);
+  atlas.isolate();
+  atlas.hideRegions([cord.id]);
+  assert.equal(atlas.state.selectedRegion, null);
+  atlas.undoDissection();
+  assert.equal(atlas.state.selectedRegion.id, cord.id);
+  assert.equal(atlas.state.isolatedRegion, cord.id);
+  atlas.dispose();
+});
+
+test('an unloaded supplemental region cannot be selected even with display flags enabled', async () => {
+  let finishDownload;
+  const { atlas, cord } = cordFixture(region => new Promise(resolve => {
+    finishDownload = () => resolve(cordScene(region));
+  }));
+  await atlas.initialize();
+  atlas.spinalCordVisible = true;
+  assert.equal(atlas.canSelect(cord), false);
+  assert.throws(() => atlas.select(cord.id), /not visible/);
+  finishDownload();
+  await atlas.supplementalReady;
+  atlas.dispose();
+});
+
+test('hiding the cord cancels a pending visibility request', async () => {
+  let finishDownload;
+  const { atlas } = cordFixture(region => new Promise(resolve => {
+    finishDownload = () => resolve(cordScene(region));
+  }));
+  await atlas.initialize();
+  const showing = atlas.setSpinalCordVisible(true);
+  await atlas.setSpinalCordVisible(false);
+  finishDownload();
+  await showing;
+  assert.equal(atlas.settings.spinalCordVisible, false);
+  atlas.dispose();
+});
+
+test('requesting an unpublished spinal cord fails descriptively', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize();
+  await assert.rejects(async () => atlas.setSpinalCordVisible(true), /spinal cord.*publish|publish.*spinal cord/i);
+  atlas.dispose();
+});
 
 test('hiding cortex exposes native white matter and restoring it closes the exposure', async () => {
   const { atlas } = fixture();
@@ -322,6 +451,52 @@ test('neutral anatomy preserves picking and isolation through atlas color change
   assert.equal(atlas.state.surfaceColor, 'atlas');
   assert.equal(mesh.material.color.getHex(), 0xffffff);
   atlas.dispose();
+});
+
+const cabNp = {
+  id: 'cab-np', atlas: 'a', networks: ['Visual1', 'Default'],
+  colors: { Visual1: [0, 0, 255], Default: [255, 0, 0] },
+  regions: { 'a-left': 'Default', 'a-right': 'Visual1' },
+};
+
+test('CAB-NP colours each area of its atlas whole, and nothing else', async () => {
+  const { atlas } = fixture(cabNp);
+  await atlas.initialize('a');
+  atlas.setSurfaceColor('cab-np');
+  const colour = id => atlas.layers.get('a').meshes
+    .find(mesh => mesh.userData.region_id === id).material.color;
+  const red = new Color().setRGB(1, 0, 0, SRGBColorSpace);
+  assert.equal(colour('a-left').getHex(), red.getHex());
+  assert.equal(colour('a-right').getHex(), new Color().setRGB(0, 0, 1, SRGBColorSpace).getHex());
+  // The medial wall is in no network and keeps its tissue colour.
+  assert.equal(colour('a-wall').getHex(), new Color(appearance.tissue.unlabelled).getHex());
+  for (const mesh of atlas.layers.get('a').meshes) {
+    assert.equal(mesh.material.userData.tissueVariation.value, 0);
+  }
+  atlas.dispose();
+});
+
+test('CAB-NP needs its own atlas, and leaving that atlas leaves its colours', async () => {
+  const { atlas } = fixture(cabNp);
+  await atlas.initialize('b');
+  assert.throws(() => atlas.setSurfaceColor('cab-np'), /CAB-NP colours a areas/);
+  await atlas.setAtlas('a');
+  atlas.setSurfaceColor('cab-np');
+  await atlas.setAtlas('b');
+  assert.equal(atlas.state.surfaceColor, 'atlas');
+  atlas.dispose();
+});
+
+test('a model without the partition refuses CAB-NP colours', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  assert.throws(() => atlas.setSurfaceColor('cab-np'), /no CAB-NP partition/);
+  atlas.dispose();
+});
+
+test('a partition assigning a region of another atlas is rejected', () => {
+  assert.throws(() => fixture({ ...cabNp, regions: { 'b-left': 'Default' } }),
+    /Invalid CAB-NP assignment: b-left/);
 });
 
 test('rejects cortex missing source morphometry instead of silently losing relief', async () => {
@@ -600,7 +775,8 @@ test('an out-of-date manifest names the field it is missing, not the schema', ()
   };
   const loader = { async loadAsync() { return { scene: new Group() }; } };
 
-  const { detail_levels, ...stale } = good;
+  const stale = { ...good };
+  delete stale.detail_levels;
   assert.throws(() => new BrainAtlas(stale, loader), /detail_levels/);
   assert.throws(() => new BrainAtlas({ ...good, atlases: [] }, loader), /atlases/);
   assert.throws(() => new BrainAtlas({ ...good, schema_version: 2 }, loader),

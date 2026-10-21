@@ -3,9 +3,9 @@ import numpy as np
 import pytest
 
 from brain_model.build import build_structure_layer
-from brain_model.geometry import extract_structure, misclassified_voxels
+from brain_model.labels.volumes import LabelGrid, conformed_grid
+from brain_model.surfaces.geometry import extract_structure, misclassified_voxels
 from brain_model.validate import read_meshes, validate_structure_layer
-from brain_model.volumes import LabelGrid, conformed_grid
 
 SMOOTHING = {"iterations": 16, "maximum_displacement_mm": 0.6}
 TKR = np.array([[-1.0, 0, 0, 12], [0, 0, 1, -12], [0, -1, 0, 12], [0, 0, 0, 1]])
@@ -60,7 +60,7 @@ def test_validation_reports_voxel_fidelity_and_refuses_a_surface_past_its_bound(
 
     import trimesh
 
-    from brain_model.export import write_scene
+    from brain_model.gltf.export import write_scene
 
     scene = trimesh.load_scene(path, process=False)
     for geometry in scene.geometry.values():

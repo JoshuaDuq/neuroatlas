@@ -22,7 +22,9 @@ import {
 import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
 import { codeIndex, liftFor } from './highlight.js';
-import { createPalette, labelVisible, usesAtlasColors, usesNetworkColors } from './palette.js';
+import {
+  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesNetworkColors,
+} from './palette.js';
 import { createCutMaterial } from './shader.js';
 import { SolidSections } from './solid-sections.js';
 import {
@@ -63,7 +65,6 @@ export class TissueSections {
     this.metadataLoading = null;
     this.current = null;
     this.disposed = false;
-    this.frame = null;
     this.anatomy = null;
     this.anatomyLoading = null;
     this.envelopes = [];
@@ -72,6 +73,12 @@ export class TissueSections {
     this.whiteMatter = null;
     this.solids = new SolidSections();
     this.group.add(this.solids.group);
+  }
+
+  /** What a cut label's colour is looked up in: its region and each published network palette. */
+  get paletteLookup() {
+    const { regions, manifest, cabNp } = this.model;
+    return { regions, networks: manifest.networks, cabNp };
   }
 
   async loadMetadata() {
@@ -259,7 +266,6 @@ export class TissueSections {
     const layer = this.layers.get(atlas);
     if (!layer) throw new Error(`Tissue atlas has not loaded: ${atlas}`);
     this.current = layer;
-    this.frame = frame;
     const state = this.model.state;
     // A cut-only atlas has no surface to cut parcels out of, so its published
     // colours still have to come from the label volume.
@@ -292,7 +298,7 @@ export class TissueSections {
           detail: state.detail,
           wedged: layer.wedged,
           appearance: this.model.manifest.appearance,
-          lookup: { regions: this.model.regions, networks: this.model.manifest.networks },
+          lookup: this.paletteLookup,
           whiteMatter: this.whiteMatter?.active ? this.whiteMatter : null,
         });
       }
@@ -308,7 +314,7 @@ export class TissueSections {
     // Only tissue colour carries the T1 brightness it was tuned against; under
     // a published palette — atlas or network — that modulation would distort
     // the datum, and the cut would no longer match its key.
-    const published = usesAtlasColors(state) || usesNetworkColors(state);
+    const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state);
     layer.uniforms.tissueVariation.value = published
       ? 0 : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
@@ -324,7 +330,7 @@ export class TissueSections {
     if (key !== layer.paletteKey) {
       layer.palette.image.data = createPalette(
         layer.metadata.labels, state, this.model.manifest.appearance.tissue,
-        { regions: this.model.regions, networks: this.model.manifest.networks },
+        this.paletteLookup,
       );
       layer.palette.needsUpdate = true;
       layer.paletteKey = key;

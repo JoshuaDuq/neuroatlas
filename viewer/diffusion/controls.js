@@ -2,7 +2,7 @@ import { decimal } from '../ui/format.js';
 
 const NARROW_NBSP = '\u202f';
 
-export function element(tag, text, className) {
+function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined && text !== null) node.textContent = text;
   if (className) node.className = className;

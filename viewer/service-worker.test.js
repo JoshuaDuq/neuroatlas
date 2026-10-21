@@ -47,7 +47,6 @@ function bootWorker({ version = 'testversion', origin = 'https://example.org' } 
     return { ...made, clone: () => ({ ...made }) };
   };
 
-  // eslint-disable-next-line no-new-func
   new Function('self', 'caches', 'fetch', 'URL',
     SOURCE.replace('__MODEL_VERSION__', version))(self, caches, fetchStub, URL);
 

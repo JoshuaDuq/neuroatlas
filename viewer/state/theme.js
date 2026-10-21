@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'neuroatlas.theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
-export const THEME_CHOICES = ['system', 'light', 'dark'];
+const THEME_CHOICES = ['system', 'light', 'dark'];
 
 /** A CSS custom property's current value; the token layer owns both palettes. */
 export const token = name => (typeof document === 'undefined' ? ''

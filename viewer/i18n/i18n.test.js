@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { PerspectiveCamera, Vector3 } from 'three';
+import { PerspectiveCamera } from 'three';
 import { createSession } from '../state/session.js';
 import { decodeState, encodeState } from '../state/url-state.js';
 import { count } from '../ui/format.js';
@@ -33,15 +33,14 @@ test('url-state encodes and decodes lang', () => {
     surfaceColor: 'atlas', view: 'oblique', selectedRegion: null, isolatedRegion: null,
     lang: 'en',
   };
-  // Default lang is omitted to keep URLs clean
-  assert.equal(encodeState(stateEn), 'atlas=destrieux');
+  assert.equal(encodeState(stateEn), 'atlas=destrieux&lang=en');
 
   const stateFr = { ...stateEn, lang: 'fr' };
   assert.equal(encodeState(stateFr), 'atlas=destrieux&lang=fr');
 
   assert.equal(decodeState('#atlas=destrieux&lang=fr').lang, 'fr');
   assert.equal(decodeState('#atlas=destrieux&lang=en').lang, 'en');
-  assert.equal(decodeState('#atlas=destrieux&lang=unknown').lang, undefined);
+  assert.throws(() => decodeState('#atlas=destrieux&lang=unknown'), /Invalid URL field lang/);
 });
 
 test('count formats plural nouns in French correctly', () => {
@@ -105,7 +104,7 @@ test('UI actions and shortcuts are fully translated in English and French', () =
     assert.ok(vp.fullscreenShort);
 
     const shortcuts = t(lang, 'shortcuts');
-    const keys = shortcuts.items.map(([k]) => k);
+    const keys = shortcuts.groups.flatMap(([, items]) => items).map(([k]) => k);
     for (const expectedKey of ['F', 'I', 'M', 'C', 'S', 'H', '0', '1 – 6', '/', 'Esc']) {
       assert.ok(keys.includes(expectedKey), `Missing shortcut ${expectedKey} in ${lang}`);
     }

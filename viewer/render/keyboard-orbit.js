@@ -16,7 +16,7 @@ import { Quaternion, Spherical, Vector3 } from 'three';
 export const ORBIT_STEP = Math.PI / 36;
 
 /** One step of zoom, matching the wheel's proportional feel. */
-export const DOLLY_STEP = 1.1;
+const DOLLY_STEP = 1.1;
 
 const Y_UP = new Vector3(0, 1, 0);
 const POLE = 1e-6;

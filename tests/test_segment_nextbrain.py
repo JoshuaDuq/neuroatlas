@@ -7,9 +7,9 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from brain_model import nextbrain
+from brain_model.labels import nextbrain
+from brain_model.labels.volumes import resample_nearest
 from brain_model.sources import ROOT
-from brain_model.volumes import resample_nearest
 
 
 def load_script():

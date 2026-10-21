@@ -5,6 +5,7 @@ import gzip
 import hashlib
 import json
 import shutil
+import sys
 import tarfile
 import tempfile
 from pathlib import Path
@@ -13,11 +14,11 @@ import nibabel as nib
 import numpy as np
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from brain_model.sources import ROOT, sha256
 
-ROOT = Path(__file__).resolve().parents[1]
 
-
-def checksum(path, algorithm="sha256"):
+def checksum(path, algorithm):
     digest = hashlib.new(algorithm)
     with path.open("rb") as source:
         for block in iter(lambda: source.read(1024 * 1024), b""):
@@ -109,21 +110,20 @@ def prepare_diffusion(archive_path):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
             records.append({
-                "file": target.name, "source_sha256": checksum(source),
+                "file": target.name, "source_sha256": sha256(source),
                 "shape": list(image.shape), "affine": image.affine.tolist(),
             })
         for descriptor in config["bundles"]:
             target = output / descriptor["file"]
             source = directory / target.name.removesuffix(".gz")
             bundle, points, lengths = validate_bundle(source, reference)
-            with target.open("wb") as compressed:
-                with gzip.GzipFile(filename="", fileobj=compressed, mode="wb",
-                                   compresslevel=6, mtime=0) as stream:
-                    with source.open("rb") as original:
-                        shutil.copyfileobj(original, stream)
+            with target.open("wb") as compressed, gzip.GzipFile(
+                filename="", fileobj=compressed, mode="wb", compresslevel=6, mtime=0
+            ) as stream, source.open("rb") as original:
+                shutil.copyfileobj(original, stream)
             records.append({
-                "file": target.name, "source_sha256": checksum(source),
-                "published_sha256": checksum(target),
+                "file": target.name, "source_sha256": sha256(source),
+                "published_sha256": sha256(target),
                 "source_bytes": source.stat().st_size,
                 "published_bytes": target.stat().st_size,
                 **geometry_record(bundle, points, lengths),

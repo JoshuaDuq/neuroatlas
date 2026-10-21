@@ -1,0 +1,348 @@
+/*
+ * NeuroAtlas documentation: the viewer's instrument chrome, set on furo.
+ * Palette and type come from viewer/styles/tokens.css via conf.py; this file
+ * adds the shape: ruled bands, flat surfaces, 4px and 6px radii, no shadows.
+ */
+
+@font-face {
+  font-family: "Source Sans 3 Variable";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("fonts/source-sans-3-latin-wght-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Source Sans 3 Variable";
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("fonts/source-sans-3-latin-wght-italic.woff2") format("woff2-variations");
+}
+
+:root {
+  --docs-header-height: 48px;
+  --radius-control: 4px;
+  --radius-panel: 6px;
+  --ui-transition: 140ms;
+}
+
+body {
+  --rule: 1px solid var(--color-background-border);
+  --color-sidebar-item-background--current: var(--color-accent-surface);
+  --color-sidebar-link-text--top-level: var(--color-foreground-secondary);
+  --color-code-background: var(--color-background-secondary);
+  --color-code-foreground: var(--color-foreground-primary);
+  --sd-color-shadow: transparent;
+  --sd-color-card-border: var(--color-background-border);
+  --sd-color-card-border-hover: var(--color-brand-primary);
+  --sd-color-card-background: var(--color-background-primary);
+  font-synthesis: none;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
+::selection { background: var(--color-brand-primary); color: var(--color-on-accent); }
+:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+/* Masthead: identity, section tabs, actions. Below furo's drawer breakpoint the theme's own mobile header takes over. */
+.docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  display: flex;
+  align-items: stretch;
+  height: var(--docs-header-height);
+  background: var(--color-background-primary);
+  border-bottom: var(--rule);
+}
+.docs-identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-right: var(--rule);
+  color: var(--color-foreground-primary);
+  text-decoration: none;
+}
+.brand-mark { flex: none; }
+.docs-brand {
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.docs-label {
+  padding-left: 8px;
+  border-left: var(--rule);
+  color: var(--color-foreground-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.docs-sections {
+  display: flex;
+  padding-left: 8px;
+}
+.docs-sections a {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--color-foreground-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--ui-transition);
+}
+.docs-sections a:hover { color: var(--color-foreground-primary); }
+.docs-sections a[aria-current] {
+  border-bottom-color: var(--color-brand-primary);
+  color: var(--color-foreground-primary);
+}
+.docs-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  padding: 0 12px;
+}
+.docs-link {
+  color: var(--color-foreground-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.docs-link:hover { color: var(--color-foreground-primary); }
+.docs-open {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-primary-fill);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--ui-transition);
+}
+.docs-open:hover { background: var(--color-primary-fill-hover); }
+
+.mobile-header {
+  height: var(--docs-header-height);
+  background: var(--color-background-primary);
+  border-bottom: var(--rule);
+  box-shadow: none;
+}
+.mobile-header .brand {
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 63em) {
+  .docs-header { display: none; }
+}
+
+/* Navigation rails */
+.sidebar-drawer {
+  background: var(--color-background-secondary);
+  border-right: var(--rule);
+}
+@media (min-width: 63.01em) {
+  .sidebar-sticky { top: var(--docs-header-height); height: calc(100vh - var(--docs-header-height)); }
+}
+@media (min-width: 82.01em) {
+  .toc-sticky { top: var(--docs-header-height); max-height: calc(100vh - var(--docs-header-height)); }
+}
+.sidebar-release {
+  display: flex;
+  gap: 8px;
+  padding: 16px 16px 4px;
+  color: var(--color-foreground-muted);
+  font-size: 0.75rem;
+}
+.sidebar-release span:first-child { font-family: var(--font-stack--monospace); }
+.sidebar-release span:last-child { padding-left: 8px; border-left: var(--rule); }
+.sidebar-search-container {
+  margin: 8px 12px 4px;
+  border: 1px solid var(--color-foreground-border);
+  border-radius: var(--radius-control);
+  background: var(--color-background-primary);
+}
+.sidebar-search-container:focus-within {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+.sidebar-search { padding: 7px 8px 7px 32px; font-size: 0.875rem; }
+.sidebar-tree { padding: 0 8px 16px; }
+.sidebar-tree .caption {
+  padding: 16px 8px 4px;
+  margin: 0;
+  text-transform: none;
+}
+.sidebar-tree .caption-text {
+  color: var(--color-foreground-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.sidebar-tree .reference {
+  padding: 6px 8px;
+  border-radius: var(--radius-control);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.sidebar-tree .reference:hover { background: var(--color-background-hover); }
+.sidebar-tree .current-page > .reference {
+  background: var(--color-accent-surface);
+  box-shadow: inset 2px 0 var(--color-brand-primary);
+  color: var(--color-brand-primary);
+  font-weight: 600;
+}
+.sidebar-tree li > ul { margin-left: 8px; border-left: var(--rule); }
+.toc-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.toc-tree { font-size: 0.8125rem; line-height: 1.4; }
+
+/* Page */
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+  color: var(--color-foreground-muted);
+  font-size: 0.8125rem;
+}
+.breadcrumbs a { color: var(--color-foreground-secondary); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--color-brand-primary); }
+
+article h1, article h2, article h3, article h4 {
+  margin-inline: 0;
+  padding-inline: 0;
+  border-radius: 0;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+article h1 { margin: 0 0 1rem; font-size: 1.875rem; }
+article h2 {
+  margin: 2.5rem 0 1rem;
+  padding-top: 1.25rem;
+  border-top: var(--rule);
+  font-size: 1.25rem;
+}
+article h3 { margin: 2rem 0 0.75rem; font-size: 1.0625rem; }
+article h4 { margin: 1.5rem 0 0.5rem; font-size: 0.9375rem; }
+.headerlink { font-weight: 400; }
+
+article a.reference { text-decoration-color: var(--color-background-border); text-underline-offset: 3px; }
+article a.reference:hover { text-decoration-color: currentColor; }
+
+.hero-lede {
+  max-width: 44rem;
+  color: var(--color-foreground-secondary);
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+figure { margin: 1.5rem 0; }
+figure img {
+  border: var(--rule);
+  border-radius: var(--radius-panel);
+}
+figcaption {
+  margin-top: 0.5rem;
+  color: var(--color-foreground-muted);
+  font-size: 0.8125rem;
+}
+figcaption p { text-align: left; }
+
+code.literal, kbd {
+  border-radius: var(--radius-control);
+  background: var(--color-background-hover);
+  font-size: 0.875em;
+}
+code.literal { padding: 0.1em 0.3em; border: 0; }
+kbd { padding: 0 0.35em; border: var(--rule); box-shadow: none; }
+div.highlight, div.highlight pre {
+  border-radius: var(--radius-panel);
+  background: var(--color-code-background);
+}
+div.highlight { border: var(--rule); }
+div.highlight pre { font-size: 0.8125rem; line-height: 1.55; }
+
+/* Tables are ruled rows with a quiet header band, as the viewer's lists are. */
+.table-wrapper { overflow-x: auto; }
+table.docutils {
+  border: 0;
+  border-top: var(--rule);
+  border-bottom: var(--rule);
+  box-shadow: none;
+  font-size: 0.875rem;
+}
+table.docutils th {
+  border: 0;
+  border-bottom: var(--rule);
+  background: var(--color-background-secondary);
+  color: var(--color-foreground-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+table.docutils td {
+  border: 0;
+  border-bottom: var(--rule);
+}
+table.docutils tr:last-child td { border-bottom: 0; }
+
+/* Admonitions: one flat, evenly ruled panel; a warning alone takes the danger colour. */
+.admonition, details {
+  border: var(--rule);
+  border-radius: var(--radius-panel);
+  background: var(--color-admonition-background);
+  box-shadow: none;
+  font-size: 0.9375rem;
+}
+.admonition.warning, .admonition.danger, .admonition.error, .admonition.caution {
+  border-color: var(--color-danger);
+}
+.admonition > .admonition-title {
+  padding: 8px 16px 0;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+.admonition > .admonition-title::before { display: none; }
+
+.sd-card {
+  border-radius: var(--radius-panel);
+  box-shadow: none;
+  transition: border-color var(--ui-transition);
+}
+.sd-card-hover:hover { transform: none; }
+.sd-card .sd-card-title { font-weight: 650; }
+
+/* Reference documentation */
+dl.py > dt.sig {
+  border: var(--rule);
+  border-radius: var(--radius-control);
+  background: var(--color-api-background);
+  font-size: 0.875rem;
+}
+dl.py > dt.sig .sig-name { font-weight: 600; }
+
+/* Page footer */
+.related-pages { border-top: var(--rule); padding-top: 1rem; }
+.related-pages a:hover .title { color: var(--color-brand-primary); }
+.bottom-of-page {
+  border-top: var(--rule);
+  color: var(--color-foreground-muted);
+  font-size: 0.75rem;
+}

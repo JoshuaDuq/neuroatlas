@@ -47,6 +47,19 @@ function paint(solids, { detail = 'aseg', ...state } = {}, wedged = true) {
 const wedge = () => solid({ hemisphere: 'left', atlas: 'destrieux', kind: 'ribbon', region_id: PARCEL });
 const published = (r, g, b) => new Color().setRGB(r / 255, g / 255, b / 255, SRGBColorSpace);
 
+test('the white envelope stays white matter where a parcel reuses its code', () => {
+  const labels = indexLabels([
+    { source_label_id: 2, name: 'Left-Cerebral-White-Matter', color: [245, 245, 245], hemisphere: 'left', kind: 'tissue', region_id: null },
+    { source_label_id: 2, name: 'R_MST_ROI', color: [20, 30, 200], hemisphere: 'right', kind: 'cortex', region_id: 'hcp-mmp:right:2' },
+  ]);
+  const white = solid({ hemisphere: 'left', boundary: 'white' });
+  paintSolids({ solids: [white] }, {
+    labels, state: { ...STATE, surfaceColor: 'atlas' }, atlas: 'hcp-mmp', detail: 'aseg',
+    wedged: true, appearance, lookup: LOOKUP,
+  });
+  assert.ok(white.cap.material.color.equals(published(245, 245, 245)));
+});
+
 test('a parcel solid takes the published atlas colour', () => {
   const [painted] = paint([wedge()], { surfaceColor: 'atlas' });
   assert.ok(painted.visible);
@@ -137,6 +150,11 @@ test('a nucleus the cut atlas never labelled keeps its own published colour', ()
   assert.ok(atlas.cap.material.color.equals(published(60, 180, 90)));
   const [tissue] = paint([nucleus()], { detail: 'nextbrain', surfaceColor: 'tissue' });
   assert.equal(tissue.cap.material.color.getHexString(), appearance.tissue.gray.slice(1));
+  // In no network, so a network palette leaves it in tissue colour as its surface is.
+  for (const surfaceColor of ['network', 'cab-np']) {
+    const [networked] = paint([nucleus()], { detail: 'nextbrain', surfaceColor });
+    assert.equal(networked.cap.material.color.getHexString(), appearance.tissue.gray.slice(1));
+  }
 });
 
 test('a painted solid answers for the region its colour came from', () => {

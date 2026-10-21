@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from brain_model.geometry import extract_structure, partition_surface, to_gltf
+from brain_model.surfaces.geometry import extract_structure, partition_surface, to_gltf
 
 
 def areas(triangles):
@@ -91,7 +91,7 @@ def sphere_mask(shape=16, radius=5.2):
 
 @pytest.mark.parametrize("affine", [np.eye(4), TKR])
 def test_a_raw_marching_cubes_surface_keeps_every_voxel_centre_on_its_side(affine):
-    from brain_model.geometry import misclassified_voxels
+    from brain_model.surfaces.geometry import misclassified_voxels
 
     mask = sphere_mask()
     mesh = extract_structure(mask, 1, affine)
@@ -99,7 +99,7 @@ def test_a_raw_marching_cubes_surface_keeps_every_voxel_centre_on_its_side(affin
 
 
 def test_a_surface_moved_one_voxel_misplaces_the_two_slabs_it_crossed():
-    from brain_model.geometry import misclassified_voxels
+    from brain_model.surfaces.geometry import misclassified_voxels
 
     mask = np.zeros((12, 12, 12), dtype=bool)
     mask[4:8, 4:8, 4:8] = True
@@ -120,7 +120,7 @@ DIAGONAL_BAND = [[1, 1, 4], [3, 2, 4], [4, 2, 3], [4, 2, 4], [4, 3, 3], [5, 3, 3
 
 @pytest.mark.parametrize("affine", [np.eye(4), TKR])
 def test_display_smoothing_keeps_every_voxel_centre_on_its_own_side(affine):
-    from brain_model.geometry import misclassified_voxels, smooth_display
+    from brain_model.surfaces.geometry import misclassified_voxels, smooth_display
 
     mask = np.zeros((12, 6, 7), dtype=bool)
     mask[tuple(np.array(DIAGONAL_BAND).T)] = True

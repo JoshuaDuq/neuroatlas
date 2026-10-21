@@ -64,23 +64,6 @@ def check_axes(depsgraph):
             raise ValueError(f"Z-Anatomy axis {axis} is not oriented as expected: {claim}")
 
 
-# The tissue a structure is published as has to be the tissue Z-Anatomy files it under.
-TISSUE_GROUPS = {
-    "white": "White matter of spinal cord.g",
-    "gray": "Grey matter of spinal cord.g",
-    "fluid": "Central structures of spinal cord.g",
-}
-
-
-def check_tissue(obj, tissue):
-    ancestors, parent = [], obj.parent
-    while parent is not None:
-        ancestors.append(parent.name)
-        parent = parent.parent
-    if TISSUE_GROUPS[tissue] not in ancestors:
-        raise ValueError(f"{obj.name!r} is declared {tissue}, but Z-Anatomy files it under {ancestors[:3]}")
-
-
 def components(mesh):
     seen, groups = set(), []
     for face in mesh.faces:

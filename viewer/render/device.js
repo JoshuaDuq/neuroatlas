@@ -17,10 +17,6 @@ export const isPhone = () => globalThis.matchMedia?.(PHONE_QUERY).matches ?? fal
 /** A finger rather than a mouse. Drives hit-target size. */
 export const isCoarse = () => globalThis.matchMedia?.('(pointer: coarse)').matches ?? false;
 
-/** A phone held sideways, where the sheet belongs at the side rather than the foot. */
-export const isLandscape = () =>
-  globalThis.matchMedia?.('(orientation: landscape)').matches ?? false;
-
 /**
  * Whether this WebGL renderer is an integrated / unified GPU.
  *

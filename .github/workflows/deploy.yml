@@ -39,6 +39,18 @@ jobs:
       - name: Build static site
         run: npm run build
 
+      # After the viewer build: vite build empties dist/, so the docs are added to it here.
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install docs dependencies
+        run: uv sync --locked --group docs --no-install-project
+
+      - name: Build documentation into dist/docs
+        run: uv run sphinx-build -W -b html -d docs/_build/doctrees docs dist/docs
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

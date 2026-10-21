@@ -39,19 +39,19 @@ key, and the “not clinical anatomy” statement. Scientific operations stay
 reversible.
 
 FIRST VIEWPORT: A 48px masthead over two columns, a 320px task panel (300px at
-641–1000px) and the dark stage, above a 28px status bar (Not clinical anatomy |
-description | N visible regions | Provenance, ruled). The masthead is identity,
-then a ruled instrument banner of full-height cells, each a 12px caption beside
-a quiet value (Subject and Internal anatomy as quiet selects; Atlas and Colour
-incl. Networks as ringed word choices), then fullscreen, Save image, and a ⋯
+641–1000px) and the dark stage, above a 28px status bar (Not clinical anatomy, hairline,
+description · N visible regions · Provenance, one quiet ruled line). The masthead is identity,
+then a left-weighted data bar without dividers, each field a 13px caption beside
+a 28px tonal value (Subject and Internal anatomy as selects; Atlas and Colour
+incl. Networks as segmented tracks), then fullscreen, Save image, and a ⋯
 settings datasheet (Language, Theme System | Light | Dark, Single-key
-shortcuts) plus Keyboard shortcuts. Below 1280px the banner is a summary button
+shortcuts) plus Keyboard shortcuts. When it does not fit, the bar is a summary button
 (“Subject · Atlas · Colour · Internal anatomy”, internal anatomy dropped first,
 then atlas, then colour) opening the same fields with their notes. “Skip to
 model” is the first Tab stop; the theme follows the OS until the reader picks.
 
-The panel opens on four equal ruled 40px mode cells (selected: panel ground,
-2px teal rule on top), then the Anatomy list: search, a Whole brain | By system
+The panel opens on four 40px word tabs (selected: primary ink 600 over a
+word-width 2px teal rule), then the Anatomy list: search, a Whole brain | By system
 scope, the tree with counts in a right column and hover-revealed eye columns
 on fine pointers, and the dissection dock at its foot. A detail replaces the
 list under one 40px location bar and ends on a rule; a selection strip appears

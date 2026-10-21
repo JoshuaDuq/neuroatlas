@@ -9,16 +9,20 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import center_of_mass, map_coordinates
 
-from . import networks, nextbrain, spinal_cord, validate_learning, white_matter
-from .encode import (
+from . import validate_learning
+from .gltf.encode import (
     decode_field,
     decode_normals,
     field_tolerance,
     normal_tolerance,
     published_field_ranges,
 )
-from .export import compact_region
-from .geometry import (
+from .gltf.export import compact_region
+from .labels import nextbrain, white_matter
+from .labels.volumes import conformed_grid
+from .layers import cab_np, networks, spinal_cord
+from .sources import read_color_table, read_config, sha256, verify_sources, write_json
+from .surfaces.geometry import (
     extract_structure,
     misclassified_voxels,
     normalize,
@@ -27,11 +31,9 @@ from .geometry import (
     partition_vertex_labels,
     to_gltf,
 )
-from .ribbons import validate_ribbon_labels
-from .solids import validate_solid_envelopes
-from .sources import read_color_table, read_config, sha256, verify_sources, write_json
+from .surfaces.ribbons import validate_ribbon_labels
+from .surfaces.solids import validate_solid_envelopes
 from .validate_volumes import validate_volumes
-from .volumes import conformed_grid
 
 
 def triangle_areas(triangles):
@@ -739,6 +741,7 @@ def main():
         **({"spinal_cord": spinal_cord.validate(config, manifest["supplemental_layers"][0])}
            if spinal_cord.is_available(config) else {}),
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
+        "cab_np": cab_np.validate(config, manifest),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config),
              "nextbrain_cut_labels": nextbrain.validate_volume(

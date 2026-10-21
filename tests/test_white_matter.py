@@ -6,9 +6,9 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from brain_model import white_matter
+from brain_model.labels import white_matter
+from brain_model.labels.tissue_labels import export_tissue_labels
 from brain_model.sources import read_config
-from brain_model.tissue_labels import export_tissue_labels
 from brain_model.validate import validate_cut_only_regions
 
 

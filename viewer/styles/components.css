@@ -18,10 +18,19 @@ button {
   transition: background-color var(--ui-transition) var(--ease-ui),
     color var(--ui-transition) var(--ease-ui),
     border-color var(--ui-transition) var(--ease-ui),
-    box-shadow var(--ui-transition) var(--ease-ui);
+    box-shadow var(--ui-transition) var(--ease-ui),
+    transform var(--press-transition) var(--ease-ui);
 }
-button:hover:not(:disabled) { background: var(--surface-tonal-hover); }
 button:disabled { background: var(--surface-sunken); color: var(--text-tertiary); cursor: default; }
+/* Commands answer a press; rows, tabs, segments and text links are places, not commands, and stay still. */
+@media (prefers-reduced-motion: no-preference) {
+  button:active:not(:disabled, .row, [role="tab"], [role="treeitem"], .segmented button, .comparison-row,
+    .workspace-selection, .detail-back, .detail-crumb, .constituents-list button, .empty button,
+    .comparison-export, .clinical-deficit, .clinical-association-toggle, .clinical-association-region,
+    .clinical-region-link, .clinical-restore, .circuit-choice, .circuit-step, .circuit-return button) {
+    transform: scale(var(--press-scale));
+  }
+}
 .control-icon {
   width: 16px;
   height: 16px;
@@ -45,15 +54,10 @@ button:has(> .control-icon) {
   border-color: var(--primary-fill);
   color: var(--primary-ink);
 }
-.button-primary:hover:not(:disabled) {
-  background: var(--primary-fill-hover);
-  border-color: var(--primary-fill-hover);
-}
 .button-quiet {
   background: none;
   color: var(--text-secondary);
 }
-.button-quiet:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
 .button-quiet:disabled { background: none; }
 
 .icon-button {
@@ -65,7 +69,6 @@ button:has(> .control-icon) {
   background: none;
   color: var(--text-secondary);
 }
-.icon-button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
 .icon-button[aria-expanded="true"] { background: var(--surface-tonal); color: var(--text-primary); }
 .icon-button:disabled { background: none; }
 
@@ -92,9 +95,6 @@ select {
   background-repeat: no-repeat;
   cursor: pointer;
 }
-select:hover:not(:disabled),
-input[type="search"]:hover:not(:disabled),
-input[type="number"]:hover:not(:disabled) { border-color: var(--text-secondary); }
 select:disabled, input:disabled { color: var(--text-tertiary); cursor: default; }
 input[type="number"]:disabled, select:disabled {
   border-color: var(--border-subtle);
@@ -158,9 +158,9 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
 }
 .search-clear {
   position: absolute;
+  inset-block: 0;
   right: var(--space-1);
-  top: 50%;
-  transform: translateY(-50%);
+  margin-block: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,13 +170,27 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
   background: transparent;
   color: var(--text-tertiary);
 }
-.search-clear:hover:not(:disabled) { color: var(--text-primary); background: var(--surface-hover); }
 .search-shortcut {
   position: absolute;
   right: var(--space-2);
   pointer-events: none;
 }
 .search-box:has(.search-clear:not([hidden])) .search-shortcut { display: none; }
+
+/* Hover only where a pointer hovers; a tap must not leave a control lit. */
+@media (hover: hover) {
+  button:hover:not(:disabled) { background: var(--surface-tonal-hover); }
+  .button-primary:hover:not(:disabled) {
+    background: var(--primary-fill-hover);
+    border-color: var(--primary-fill-hover);
+  }
+  .button-quiet:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+  .icon-button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+  select:hover:not(:disabled),
+  input[type="search"]:hover:not(:disabled),
+  input[type="number"]:hover:not(:disabled) { border-color: var(--text-secondary); }
+  .search-clear:hover:not(:disabled) { color: var(--text-primary); background: var(--surface-hover); }
+}
 
 /* One visual language for exclusive settings: a tonal track and a raised thumb. */
 .segmented {
@@ -198,7 +212,9 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
   font-size: var(--text-small);
   white-space: nowrap;
 }
-.segmented button:hover:not(:disabled) { background: var(--surface-tonal-hover); color: var(--text-primary); }
+@media (hover: hover) {
+  .segmented button:hover:not(:disabled) { background: var(--surface-tonal-hover); color: var(--text-primary); }
+}
 /* The ring, not the teal alone, marks the choice. */
 .segmented button[aria-pressed="true"],
 .segmented button[aria-pressed="true"]:hover {
@@ -222,18 +238,6 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   gap: var(--space-3);
 }
 .control-field output { flex: none; font-weight: 400; color: var(--text-tertiary); font-size: var(--text-micro); }
-.field-group-heading {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-micro);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-tertiary);
-}
-.field-group-heading:not(:first-child) {
-  margin: var(--space-5) calc(-1 * var(--space-4)) var(--space-3);
-  padding: var(--space-4) var(--space-4) 0;
-  border-top: 1px solid var(--border-subtle);
-}
 
 .check {
   display: flex;
@@ -258,6 +262,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   border-radius: 3px;
   background: var(--surface-base);
   cursor: pointer;
+  transition: background-color var(--ui-transition) var(--ease-ui), border-color var(--ui-transition) var(--ease-ui);
 }
 .check input::before {
   content: "";
@@ -299,7 +304,9 @@ details > summary::before {
   transition: transform var(--ui-transition) var(--ease-ui);
 }
 details[open] > summary::before { transform: translateY(-2px) rotate(45deg); }
-details > summary:hover { color: var(--accent); }
+@media (hover: hover) {
+  details > summary:hover { color: var(--accent); }
+}
 details > summary:focus-visible { outline-offset: -2px; }
 
 /* Words never split: a long translation takes more of the row, or the row wraps. */
@@ -320,33 +327,36 @@ details > summary:focus-visible { outline-offset: -2px; }
 #isolate[data-active="true"] { background: var(--accent-wash); color: var(--accent); }
 
 /*
- * The four content modes, mirrored in the phone sheet: equal ruled cells on the
- * recessed ground. The chosen cell opens into the panel it heads, under a 2px
- * teal rule. Equal cells mean a bolder label never moves the others. Tabs are
- * never disabled.
+ * The four content modes, mirrored in the phone sheet: words on the panel's
+ * text column, the chosen one in primary ink over a 2px teal rule as wide as
+ * the word. Tabs are never disabled.
  */
 .rail-tabs {
   display: flex;
   flex: none;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-navigation);
+  background: var(--surface-base);
 }
 .rail-tabs button {
   position: relative;
   display: flex;
-  flex: 1 1 0;
+  flex: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: var(--tab-height);
-  padding: 0 var(--space-1);
+  margin-bottom: -1px;
+  padding: 0 var(--space-2);
   border: 0;
   border-radius: 0;
   background: none;
   color: var(--text-secondary);
   white-space: nowrap;
+  transition: color var(--ui-transition) var(--ease-ui);
 }
-/* Cells share the width but never go below their bold label, so no mode name is cut and choosing one moves nothing. */
+/* The bold label's width is held, so choosing a mode moves nothing. */
 .rail-tabs button::after {
   content: attr(data-label);
   height: 0;
@@ -354,21 +364,18 @@ details > summary:focus-visible { outline-offset: -2px; }
   visibility: hidden;
   font-weight: 600;
 }
-.rail-tabs button + button { border-left: 1px solid var(--border-subtle); }
-.rail-tabs button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+@media (hover: hover) {
+  .rail-tabs button:hover:not(:disabled) { background: none; color: var(--text-primary); }
+}
 .rail-tabs button:focus-visible { outline-offset: -2px; }
-.rail-tabs button[aria-selected="true"],
-.rail-tabs button[aria-selected="true"]:hover {
-  height: calc(var(--tab-height) + 1px);
-  margin-bottom: -1px;
-  background: var(--surface-base);
+.rail-tabs button[aria-selected="true"] {
   color: var(--text-primary);
   font-weight: 600;
 }
 .rail-tabs button[aria-selected="true"]::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
+  inset: auto var(--space-2) 0;
   height: 2px;
   background: var(--accent);
 }
@@ -427,7 +434,7 @@ details > summary:focus-visible { outline-offset: -2px; }
   line-height: 20px;
 }
 .datasheet dt { padding-right: var(--space-3); color: var(--text-secondary); font-size: var(--text-small); }
-.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; }
+.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; font-variant-numeric: tabular-nums; }
 /* Mono sets wider and darker than the sans beside it, so measures run a step smaller. */
 .datasheet dd.measure { font-size: var(--text-micro); font-weight: 400; color: var(--text-primary); }
 /* Vectors and source ids are long, so their label sits above them rather than squeezed beside. */
@@ -437,6 +444,55 @@ details > summary:focus-visible { outline-offset: -2px; }
 .metadata-details > summary { border-bottom: 1px solid var(--border-subtle); }
 .metadata-details[open] > summary { border-bottom: 0; }
 .metadata-details .datasheet { margin-top: 0; }
+.atlas-comparison { margin-top: var(--space-4); border-top: 1px solid var(--border-subtle); }
+.comparison-target { margin: var(--space-1) 0 2px; font-size: var(--text-ui); font-weight: 600; }
+.comparison-note { color: var(--text-secondary); font-size: var(--text-micro); line-height: 1.5; }
+.comparison-list { list-style: none; margin: 0; padding: 0; }
+/* One grid for the column heads, the rows and the unassigned remainder, so figures align down the table. */
+.comparison-columns,
+.comparison-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.5rem 3.5rem;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+.comparison-columns {
+  margin-top: var(--space-3);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-micro);
+  line-height: 16px;
+  color: var(--text-tertiary);
+}
+.comparison-columns > :not(:first-child) { text-align: right; }
+.comparison-row {
+  height: auto;
+  min-height: var(--row-height);
+  padding: var(--space-2) 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  font-size: var(--text-ui);
+}
+.comparison-row .measure { color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; text-align: right; }
+.comparison-name { min-width: 0; line-height: 1.35; overflow-wrap: break-word; }
+.comparison-row[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
+.comparison-row[aria-pressed="true"] .measure { color: var(--accent); }
+@media (hover: hover) {
+  .comparison-row:hover:not(:disabled) { background: var(--surface-hover); }
+  .comparison-row[aria-pressed="true"]:hover { background: var(--accent-wash); }
+}
+.comparison-row:focus-visible { outline-offset: -2px; }
+.comparison-unassigned { color: var(--text-secondary); }
+.comparison-export { margin-top: var(--space-2); padding-left: 0; color: var(--accent); background: transparent; }
+@media (hover: hover) {
+  .comparison-export:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+}
+.comparison-sources { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) 0; font-size: var(--text-micro); }
+.comparison-method .comparison-note { margin-top: var(--space-1); }
 .inspector-disclosure > summary {
   padding: var(--space-2) var(--space-4);
   border-top: 1px solid var(--border-subtle);
@@ -462,6 +518,9 @@ details > summary:focus-visible { outline-offset: -2px; }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
 .network-share { text-align: right; color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; }
 .network-note { margin-top: var(--space-3); font-size: var(--text-micro); line-height: 16px; color: var(--text-tertiary); }
+/* Which published map the list below it comes from. */
+.network-map { padding-bottom: var(--space-1); font-size: var(--text-micro); color: var(--text-secondary); }
+.network-note + .network-map { margin-top: var(--space-4); }
 /* A section of the detail: more room above its heading than below it; the ruled list under it draws the rule. */
 #inspector .tab-group > section > .section-label { padding: var(--space-5) var(--space-4) var(--space-2); border-top: 0; }
 #inspector .tab-group > section > .section-label + .panel-body { padding-top: 0; }
@@ -489,7 +548,9 @@ details > summary:focus-visible { outline-offset: -2px; }
     color var(--ui-transition) var(--ease-ui);
 }
 .row:focus-visible { outline-offset: -2px; }
-.row:hover { background: var(--surface-hover); }
+@media (hover: hover) {
+  .row:hover { background: var(--surface-hover); }
+}
 /* Distinguish the keyboard target from the selected anatomical region. */
 .row[data-active="true"] {
   background: var(--surface-hover);
@@ -554,7 +615,9 @@ details > summary:focus-visible { outline-offset: -2px; }
 .row-side-rest { min-width: 0; padding-right: 5px; }
 .tree-group { isolation: isolate; }
 .tree-group > .group-row { background: var(--surface-base); font-weight: 500; }
-.tree-group > .group-row:hover { background: var(--surface-hover); }
+@media (hover: hover) {
+  .tree-group > .group-row:hover { background: var(--surface-hover); }
+}
 /* An open group heads its rows on the recessed ground, and stays in view over them. */
 .tree-group > .group-row[aria-expanded="true"] {
   position: sticky;
@@ -564,7 +627,9 @@ details > summary:focus-visible { outline-offset: -2px; }
   font-weight: 600;
   box-shadow: inset 0 -1px 0 var(--border-subtle), inset 0 1px 0 var(--border-subtle);
 }
-.tree-group > .group-row[aria-expanded="true"]:hover { background: var(--surface-hover); }
+@media (hover: hover) {
+  .tree-group > .group-row[aria-expanded="true"]:hover { background: var(--surface-hover); }
+}
 .tree-group .row-indent { scroll-margin-block: calc(var(--row-height) + var(--space-5)); }
 /* The count stands in the right-hand column a region's side letter uses; on a fine pointer the eyes lie over it. */
 .group-row { gap: var(--space-1); }
@@ -602,7 +667,9 @@ details > summary:focus-visible { outline-offset: -2px; }
 .visibility-control[data-visibility-key$=":midline"] { width: auto; min-width: 36px; padding: 0 var(--space-1); }
 .visibility-control svg { width: 16px; height: 16px; flex: none; }
 .visibility-side { font-size: var(--text-micro); font-weight: 600; color: var(--text-secondary); }
-.visibility-control:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
+@media (hover: hover) {
+  .visibility-control:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
+}
 .row[data-selected="true"] .visibility-side { color: var(--accent); }
 .visibility-control[data-state="hidden"],
 .visibility-control[data-state="hidden"] .visibility-side { color: var(--text-tertiary); }
@@ -694,7 +761,9 @@ details > summary:focus-visible { outline-offset: -2px; }
   color: var(--accent);
   text-align: left;
 }
-.empty button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) {
+  .empty button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+}
 
 /*
  * Dissection: one ruled line at the foot of the explorer, as tall as the tab
@@ -771,12 +840,14 @@ details > summary:focus-visible { outline-offset: -2px; }
   font-weight: 400;
   color: var(--accent);
 }
-.constituents-list button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) {
+  .constituents-list button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+}
 .constituents-list button:focus-visible { outline-offset: -2px; }
 
 /* Stage overlays and tools live in stage.css. */
 
-/* Keys and dialogs ------------------------------------------------------- */
+/* Keys ------------------------------------------------------------------- */
 /* A key is a thing you press, so it is drawn as one rather than quoted. */
 kbd {
   display: inline-block;
@@ -794,172 +865,7 @@ kbd {
 }
 .key-range { color: var(--text-tertiary); font-size: var(--text-micro); }
 
-#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog {
-  --dialog-inset: var(--space-5);
-  --dialog-top: var(--dialog-inset);
-  margin: auto;
-  padding: var(--dialog-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--surface-base);
-  color: var(--text-primary);
-  overflow: auto;
-  box-shadow: var(--shadow-popover);
-}
-#shortcuts, #provenance-dialog {
-  width: min(560px, calc(100vw - var(--space-8)));
-  min-width: min(320px, 100vw);
-  max-height: calc(100dvh - var(--space-8));
-}
-#mpr-dialog, #diffusion-mri-dialog { width: min(1180px, 96vw); max-height: 94dvh; }
-/*
- * Slices are read the way a workstation shows them: a light surround lowers
- * the perceived contrast of the grey scale, so the viewer is dark in both
- * themes. Its components follow because they read these tokens.
- */
-#mpr-dialog, #diffusion-mri-dialog {
-  color-scheme: dark;
-  --text-primary: var(--overlay-ink);
-  --text-secondary: var(--overlay-ink-muted);
-  --text-tertiary: #9ba2aa;
-  --accent: var(--overlay-accent);
-  --accent-hover: var(--overlay-accent-hover);
-  --accent-wash: var(--overlay-accent-wash);
-  --primary-fill: var(--overlay-primary-fill);
-  --primary-fill-hover: var(--overlay-primary-fill-hover);
-  --surface-base: #121315;
-  --surface-navigation: var(--overlay-plate);
-  --surface-sunken: #0b0c0d;
-  --surface-hover: #1f2124;
-  --surface-raised: var(--overlay-raised);
-  --surface-tonal: var(--overlay-track);
-  --surface-tonal-hover: var(--overlay-track-hover);
-  --border-subtle: #2a2c30;
-  --border-control: var(--overlay-control-border);
-  --danger: var(--overlay-danger);
-  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
-  border-color: var(--border-subtle);
-}
-@media (prefers-contrast: more) {
-  #mpr-dialog, #diffusion-mri-dialog {
-    --text-tertiary: var(--text-secondary);
-    --border-control: var(--text-primary);
-    --border-subtle: var(--border-control);
-  }
-}
-#shortcuts::backdrop, #provenance-dialog::backdrop { background: rgb(8 9 11 / 0.5); }
-#mpr-dialog::backdrop, #diffusion-mri-dialog::backdrop { background: rgb(8 9 11 / 0.72); }
-#shortcuts[open], #provenance-dialog[open], #mpr-dialog[open], #diffusion-mri-dialog[open] { animation: panel-enter 180ms var(--ease-ui); }
-@keyframes panel-enter {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.dialog-header {
-  position: sticky;
-  top: calc(-1 * var(--dialog-top));
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin: calc(-1 * var(--dialog-top)) calc(-1 * var(--dialog-inset)) 0;
-  padding: var(--space-4) var(--dialog-inset);
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-}
-.dialog-header > :first-child { min-width: 0; }
-.dialog-header h2 { font-size: var(--text-title); font-weight: 600; letter-spacing: -0.01em; }
-.mpr-header { align-items: start; }
-.mpr-header p, .mpr-note { font-size: var(--text-small); color: var(--text-secondary); margin-top: var(--space-1); }
-#mpr-close, #shortcuts-close, #provenance-close, #diffusion-mri-close { flex: none; background: var(--surface-tonal); color: var(--text-primary); }
-#mpr-close:hover, #shortcuts-close:hover, #provenance-close:hover, #diffusion-mri-close:hover { background: var(--surface-tonal-hover); }
-/* The two reference sheets: a 56px ruled header, then datasheet rows whose rules run the full width. */
-:is(#shortcuts, #provenance-dialog) .dialog-header { align-items: center; min-height: 56px; padding-block: var(--space-3); }
-.shortcuts-group {
-  padding: var(--space-4) 0 6px;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: var(--text-micro);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-tertiary);
-}
-#shortcuts-list section + section .shortcuts-group { padding-top: var(--space-6); }
-#shortcuts-list dl {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  font-size: var(--text-ui);
-  line-height: 20px;
-}
-#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); padding-right: var(--space-4); }
-#shortcuts-list dt, #shortcuts-list dd { padding-block: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
-#shortcuts-list dd { align-content: center; }
-.shortcuts-note { margin-top: var(--space-3); font-size: var(--text-small); color: var(--text-secondary); }
-
-#mpr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
-#mpr-grid article {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: var(--space-3);
-  align-items: center;
-}
-#mpr-grid h3 { grid-column: 1; grid-row: 1; font-size: var(--text-ui); font-weight: 600; }
-#mpr-grid canvas {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-top: var(--space-2);
-  background: #000;
-  cursor: crosshair;
-  border-radius: 2px;
-}
-#mpr-grid label,
-.mpr-display > label:not(.check) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  column-gap: var(--space-3);
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-small);
-}
-#mpr-grid label { grid-column: 1 / -1; grid-row: 3; }
-#mpr-grid label .measure,
-.mpr-display output { color: var(--text-tertiary); font-size: var(--text-micro); justify-self: end; }
-#mpr-grid input[type="range"],
-.mpr-display input[type="range"] { grid-column: 1 / -1; width: 100%; margin: var(--space-1) 0 0; }
-#mpr-grid .button-quiet {
-  grid-column: 2;
-  grid-row: 1;
-  height: 32px;
-  padding: 0 var(--space-2);
-  justify-self: end;
-  font-size: var(--text-small);
-}
-@media (pointer: coarse) { #mpr-grid .button-quiet { height: 44px; } }
-#mpr-readout {
-  margin-top: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-control);
-  background: var(--surface-navigation);
-  border: 1px solid var(--border-subtle);
-  font-size: var(--text-small);
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-}
-.mpr-display {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-2) var(--space-6);
-  margin: var(--space-3) 0 var(--space-3);
-  padding-top: var(--space-2);
-}
-.mpr-display .check { grid-column: 1 / -1; }
-.mpr-note { margin-top: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
-@media (max-width: 700px) {
-  #mpr-grid { grid-template-columns: 1fr; }
-  .mpr-display { grid-template-columns: 1fr; }
-}
+/* Dialogs: stage.css. */
 
 /* Increased contrast: tonal fills alone are too faint to find a button by. */
 @media (prefers-contrast: more) {

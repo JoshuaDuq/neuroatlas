@@ -7,8 +7,8 @@ import json
 import nibabel as nib
 import numpy as np
 
+from .labels.volumes import display_window, offset_by, place_crop
 from .sources import read_color_table, sha256
-from .volumes import display_window, offset_by, place_crop
 
 
 def validate_record(config, record, source_name):

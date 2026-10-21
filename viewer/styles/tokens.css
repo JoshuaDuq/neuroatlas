@@ -27,11 +27,8 @@
   /* Selected segment ring: 3:1 against the tonal track. */
   --thumb-ring: #78838d;
 
-  /* Preserve tissue contrast and scientific colour mappings in both themes. */
+  /* The stage stays dark in both themes; panel colours change above. */
   --scene-background: #0e1116;
-  --scene-cortex: #dcd5c8;
-  --scene-structure: #cfc6b8;
-  --scene-nonregion: #6e6a63;
   --scene-outline-core: #0b1114;
   --scene-outline-halo: #f2f6fa;
   --scene-outline-hidden: #46505e;
@@ -93,6 +90,12 @@
   --camera-transition: 240ms;
   --ui-transition: 140ms;
   --ease-ui: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Press feedback, then anchored popovers (exit faster than entry) and centred dialogs. */
+  --press-transition: 160ms;
+  --press-scale: 0.97;
+  --popover-transition: 180ms;
+  --popover-exit: 120ms;
+  --dialog-transition: 200ms;
 }
 
 :root[data-theme="dark"] {

@@ -16,12 +16,17 @@
   line-height: 20px;
 }
 .circuit-choice-text { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
-.circuit-choice:hover:not(:disabled) { background: var(--surface-hover); }
 .circuit-choice[aria-pressed="true"],
 .circuit-choice[aria-pressed="true"]:hover { background: var(--accent-wash); color: var(--accent); }
 .circuit-count { color: var(--text-tertiary); font-size: var(--text-micro); font-weight: 400; line-height: 16px; }
 .circuit-choice[aria-pressed="true"] .circuit-count { color: inherit; }
 .circuit-choice:disabled { background: transparent; }
+@media (hover: hover) and (pointer: fine) {
+  .circuit-choice:hover:not(:disabled),
+  .circuit-step:hover:not(:disabled) { background: var(--surface-hover); }
+  .circuit-choice[aria-pressed="true"]:hover,
+  .circuit-step[aria-current="step"]:hover { background: var(--accent-wash); }
+}
 #circuit-landmarks { margin-top: var(--space-4); }
 .circuit-steps { margin: 0; padding: var(--space-1) var(--space-2) var(--space-4); list-style: none; }
 .circuit-step {
@@ -37,7 +42,6 @@
   font-weight: 400;
   line-height: 20px;
 }
-.circuit-step:hover:not(:disabled) { background: var(--surface-hover); }
 .circuit-step:disabled { background: transparent; }
 .circuit-step-name { min-width: 0; }
 /* Ahead is an open ring, seen a filled disc, the current one the selection: shape tells them apart, not ink alone. */
@@ -49,8 +53,9 @@
   place-content: center;
   border: 1px solid var(--border-control);
   border-radius: 50%;
-  font-family: var(--font-mono);
   font-size: var(--text-micro);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--text-secondary);
 }
@@ -64,7 +69,6 @@
 /* Inside a lesson the sequence is a compact list under the location bar, ruled off from the landmark. */
 .circuit-sequence { padding: var(--space-2) var(--space-2); border-bottom: 1px solid var(--border-subtle); }
 .circuit-sequence .circuit-step { min-height: 28px; padding-block: 3px; gap: 10px; font-size: var(--text-small); }
-.circuit-sequence .circuit-step-number { width: 20px; height: 20px; font-size: var(--text-micro); }
 @media (forced-colors: active) {
   .circuit-step-number { forced-color-adjust: none; border-color: CanvasText; color: CanvasText; background: Canvas; }
   .circuit-step[data-progress="visited"] .circuit-step-number { background: CanvasText; color: Canvas; }
@@ -102,7 +106,9 @@
   font-size: inherit;
   font-weight: 500;
 }
-.circuit-return .button-quiet:hover:not(:disabled) { background: none; text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .circuit-return .button-quiet:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+}
 .circuit-command {
   display: inline-flex;
   align-items: center;
@@ -123,7 +129,7 @@
 /* The way into the deficit is a command in the button ranks, not a line of link text. */
 .circuit-disclosure .circuit-command { padding: var(--space-1) var(--space-3); }
 .circuit-route { color: var(--text-primary); font-weight: 500; }
-.circuit-source a { color: var(--accent); text-underline-offset: 3px; }
+.circuit-source a { font-weight: 500; }
 .circuit-source span { display: block; margin-top: var(--space-1); }
 #circuit-action-status { font-size: var(--text-ui); line-height: 1.5; }
 #circuit-action-status[data-error="true"] { color: var(--danger); }

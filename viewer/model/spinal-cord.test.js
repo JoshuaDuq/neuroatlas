@@ -63,7 +63,7 @@ test('reference cord is searchable, selectable and isolatable in every detail le
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
   await model.supplementalReady;
-  model.setSpinalCordVisible(true);
+  await model.setSpinalCordVisible(true);
   const catalog = createCatalog(manifest);
   for (const level of manifest.detail_levels) {
     await model.setDetail(level.id);
@@ -90,7 +90,7 @@ test('a lateral root follows the hemisphere filter its own side declares', async
   const model = new BrainAtlas(manifest, loader);
   await model.initialize('destrieux');
   await model.supplementalReady;
-  model.setSpinalCordVisible(true);
+  await model.setSpinalCordVisible(true);
   const left = assembly.find(region => region.id === 'zanatomy:left:anterior-root');
   const right = assembly.find(region => region.id === 'zanatomy:right:anterior-root');
   model.setHemisphere('left');
@@ -112,17 +112,17 @@ test('spinal cord visibility toggle hides meshes and prevents selection', async 
   assert.equal(model.settings.spinalCordVisible, false);
   assert.ok(!model.visibleMeshes.some(mesh => mesh.userData.atlas === 'zanatomy'));
 
-  model.setSpinalCordVisible(true);
+  await model.setSpinalCordVisible(true);
   assert.ok(model.visibleMeshes.some(mesh => mesh.userData.region_id === cord.id));
 
-  model.setSpinalCordVisible(false);
+  await model.setSpinalCordVisible(false);
   assert.equal(model.settings.spinalCordVisible, false);
   assert.ok(!model.visibleMeshes.some(mesh => mesh.userData.atlas === 'zanatomy'));
   assert.equal(visibilityOf(cord, model.settings).visible, false);
   assert.equal(visibilityOf(cord, model.settings).reason, 'spinal-cord-hidden');
   assert.throws(() => model.select(cord.id), /Region is not visible/);
 
-  model.setSpinalCordVisible(true);
+  await model.setSpinalCordVisible(true);
   assert.equal(model.settings.spinalCordVisible, true);
   assert.ok(model.visibleMeshes.some(mesh => mesh.userData.region_id === cord.id));
   assert.equal(visibilityOf(cord, model.settings).visible, true);

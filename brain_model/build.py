@@ -8,19 +8,11 @@ import numpy as np
 import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
-from . import learning, networks, nextbrain, spinal_cord, white_matter
-from .export import add_region, compact_region, published_area_mm2, write_scene
-from .geometry import (
-    extract_structure,
-    partition_edges,
-    partition_surface,
-    partition_vertex_field,
-    partition_vertex_labels,
-    smooth_display,
-)
-from .ribbons import export_ribbon_labels
-from .shading import cortical_concavity, ribbon_intensity
-from .solids import export_solid_envelopes
+from .gltf.export import add_region, compact_region, published_area_mm2, write_scene
+from .labels import nextbrain, white_matter
+from .labels.tissue_labels import export_tissue_labels
+from .labels.volumes import conformed_grid, export_volumes
+from .layers import cab_np, comparison, learning, networks, spinal_cord
 from .sources import (
     HEMISPHERES,
     read_color_table,
@@ -28,8 +20,17 @@ from .sources import (
     verify_sources,
     write_json,
 )
-from .tissue_labels import export_tissue_labels
-from .volumes import conformed_grid, export_volumes
+from .surfaces.geometry import (
+    extract_structure,
+    partition_edges,
+    partition_surface,
+    partition_vertex_field,
+    partition_vertex_labels,
+    smooth_display,
+)
+from .surfaces.ribbons import export_ribbon_labels
+from .surfaces.shading import cortical_concavity, ribbon_intensity
+from .surfaces.solids import export_solid_envelopes
 
 
 def cortical_region(atlas, hemisphere, label, name):
@@ -327,8 +328,8 @@ def network_limitations(config):
     if not networks.is_available(config):
         return []
     limitations = [
-        "Networks are resting-state functional connectivity from 1000 subjects: a region's share says which networks its surface falls in, not what the region does.",
-        "Network shares are computed over a region's own source vertices, so they follow vertex density rather than surface area.",
+        "Networks describe group resting-state functional connectivity from 1000 subjects, not a region's measured function in this brain.",
+        "Cortical parcel network shares count assigned source vertices; NextBrain cortical region shares count assigned projected cortical voxels. Unassigned samples are excluded. Neither is a surface-area fraction.",
     ]
     if config["anatomy"]["individual"]:
         limitations.append(
@@ -427,6 +428,7 @@ def main():
         },
         "atlases": atlas_metadata,
         "networks": networks.metadata() if networks.is_available(config) else None,
+        "cab_np": cab_np.export(config, regions),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
@@ -449,6 +451,7 @@ def main():
             "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
             "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
             *network_limitations(config),
+            *cab_np.limitations(),
             *white_matter.limitations(config),
         ],
         "provenance": provenance,
@@ -456,6 +459,8 @@ def main():
     tissues = export_tissue_labels(config, manifest)
     if nextbrain.ATLAS_ID in tissues["atlases"]:
         nextbrain.mark_uncut(manifest["regions"], tissues["atlases"][nextbrain.ATLAS_ID])
+    if comparison.is_enabled(config):
+        manifest["atlas_comparison"] = comparison.export_comparison(config, manifest)
     write_json(config["output_directory"] / "manifest.json", manifest)
     published = write_anatomy_index(config)
     print(f"Exported {len(regions)} meshes including explicit non-region surfaces.")

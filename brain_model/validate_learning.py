@@ -3,12 +3,17 @@
 import numpy as np
 import trimesh
 
-from . import nextbrain
-from .encode import published_display_colors
-from .geometry import extract_structure, misclassified_voxels
-from .learning import constituent_id, read_definition, source_grids, source_groups
+from .gltf.encode import published_display_colors
+from .labels import nextbrain
+from .labels.volumes import load_on_grid, resample_nearest
+from .layers.learning import (
+    constituent_id,
+    read_definition,
+    source_grids,
+    source_groups,
+)
 from .sources import sha256
-from .volumes import load_on_grid, resample_nearest
+from .surfaces.geometry import extract_structure, misclassified_voxels
 
 
 def validate_source_overlap(config):

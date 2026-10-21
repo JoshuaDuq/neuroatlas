@@ -5,9 +5,9 @@ import pytest
 import trimesh
 from nibabel.freesurfer.io import read_geometry
 
-from brain_model.geometry import to_gltf
-from brain_model.solids import export_solid_envelopes, validate_solid_envelopes
 from brain_model.sources import read_config
+from brain_model.surfaces.geometry import to_gltf
+from brain_model.surfaces.solids import export_solid_envelopes, validate_solid_envelopes
 
 
 def test_solid_envelopes_preserve_native_vertices_and_triangles(tmp_path):

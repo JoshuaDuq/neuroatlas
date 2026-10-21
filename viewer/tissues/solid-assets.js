@@ -3,7 +3,7 @@ import { DoubleSide, Mesh } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { fetchAsset } from '../model/asset-cache.js';
 import { tissueColor } from '../render/materials.js';
-import { labelAppearance, usesAtlasColors, usesNetworkColors } from './palette.js';
+import { labelAppearance, usesAtlasColors, usesCabNpColors, usesNetworkColors } from './palette.js';
 import { buildRibbonWedges } from './ribbon-wedges.js';
 import { createSolidMaterial } from './solid-material.js';
 import { addMriAppearance } from '../render/mri-material.js';
@@ -109,13 +109,18 @@ export function addSolidSources(sections, sources, anatomy, appearance, band, wh
   }
 }
 
-/** Index a cut atlas's labels the two ways a solid can be identified. */
+/**
+ * Index a cut atlas's labels the two ways a solid can be identified.
+ *
+ * Only tissue is found by code. A cortical parcel's code is its own atlas's
+ * numbering, and HCP-MMP's areas 2 and 41 share the codes of cerebral white matter.
+ */
 export function indexLabels(labels) {
   const byRegion = new Map();
   const byCode = new Map();
   for (const label of labels) {
     if (label.region_id) byRegion.set(label.region_id, label);
-    byCode.set(label.source_label_id, label);
+    if (label.kind !== 'cortex') byCode.set(label.source_label_id, label);
   }
   return { byRegion, byCode };
 }
@@ -179,7 +184,7 @@ export function paintSolids(sections, {
   // Only tissue colour carries the T1 brightness it was tuned against; under a
   // published palette that modulation would distort the datum, exactly as it
   // would on a voxel cut face. Relief is lighting, not colour, so it stays.
-  const published = usesAtlasColors(state) || usesNetworkColors(state);
+  const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
   const sampledAtlas = state.surfaceColor === 'mri' && !wedged;
   const sampledIsolation = sampledAtlas && labels.byRegion.has(state.isolatedRegion) &&
@@ -211,7 +216,7 @@ export function paintSolids(sections, {
         || isolatedWhiteMatter;
       if (boundary) {
         cap.material.color.set(appearance.tissue[boundary === 'pial' ? 'cortex' : 'white']);
-      } else if (published && !usesNetworkColors(state)) {
+      } else if (usesAtlasColors(state)) {
         // A detail level the cut atlas never labelled still has its own
         // published colour on the mesh, which is what the surface shows too.
         cap.material.color.copy(source.material.color);

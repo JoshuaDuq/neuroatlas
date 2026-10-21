@@ -10,10 +10,6 @@ import { fetchPublished } from './published-assets.js';
 
 const inflight = new Map();
 
-export function resetAssetCache() {
-  inflight.clear();
-}
-
 async function readWithProgress(response, onChunk) {
   const total = Number(response.headers.get('Content-Length')) || 0;
   if (!response.body?.getReader) {
