@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { MINIMUM_SHARE, dominantNetwork, networkName, networksOf } from './networks.js';
+import { readFileSync } from 'node:fs';
+
+import {
+  MINIMUM_SHARE, cabNpName, dominantNetwork, networkName, networksOf, validateCabNp,
+} from './networks.js';
 import { labelOf } from './labels.js';
 
 const region = networks => ({ networks });
@@ -20,7 +24,7 @@ test('a language with no table falls back to the published English name', () => 
   assert.equal(networkName('Cont', 'de'), 'Frontoparietal control');
 });
 
-test('spill below the minimum share is dropped, and the rest are not rescaled', () => {
+test('shares below the display threshold are hidden, and the rest are not rescaled', () => {
   const shares = networksOf(region([
     { network: 'SomMot', fraction: 0.75 },
     { network: 'DorsAttn', fraction: 0.21 },
@@ -48,7 +52,7 @@ test('the dominant network is the largest share that survived the minimum', () =
   ])), 'Limbic');
 });
 
-test('a region that is all spill has no dominant network', () => {
+test('a region whose shares are all below threshold has no displayed dominant network', () => {
   assert.equal(dominantNetwork(region([{ network: 'Vis', fraction: 0.01 }])), null);
 });
 
@@ -78,4 +82,29 @@ test('Destrieux keeps its lobes: a fold is named by where it is', () => {
     networks: [{ network: 'SomMot', fraction: 0.75 }],
   };
   assert.equal(labelOf(gyrus).group, 'Frontal');
+});
+
+test('CAB-NP networks read as Ji et al. name them, in both languages', () => {
+  assert.equal(cabNpName('Visual1'), 'Primary visual');
+  assert.equal(cabNpName('Orbito-Affective', 'fr'), 'Orbito-affectif');
+  assert.throws(() => cabNpName('Invented'), /Unknown CAB-NP network: Invented/);
+});
+
+test('the published partition names every network the viewer can name', () => {
+  const partition = JSON.parse(readFileSync(
+    new URL('../../public/models/snail/cab-np.json', import.meta.url), 'utf8'));
+  for (const network of partition.networks) {
+    assert.ok(cabNpName(network, 'en') && cabNpName(network, 'fr'));
+  }
+});
+
+test('a CAB-NP network without a colour is rejected', () => {
+  const regions = new Map([['hcp-mmp:left:1', { atlas: 'hcp-mmp' }]]);
+  const partition = { id: 'cab-np', atlas: 'hcp-mmp', networks: ['Default'], colors: {},
+    regions: { 'hcp-mmp:left:1': 'Default' } };
+  assert.throws(() => validateCabNp(partition, regions), /has no colour: Default/);
+  partition.colors.Default = [255, 0, 0];
+  assert.equal(validateCabNp(partition, regions), partition);
+  partition.regions['hcp-mmp:left:1'] = 'Visual1';
+  assert.throws(() => validateCabNp(partition, regions), /Invalid CAB-NP assignment/);
 });

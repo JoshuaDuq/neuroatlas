@@ -1,5 +1,8 @@
 import { Box3, Vector3 } from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createCatalog } from './catalog/catalog.js';
+import { readComparisonGeometry } from './comparison/assets.js';
+import { createComparisonOverlay } from './comparison/overlay.js';
 import { visibilityOf } from './catalog/visibility.js';
 import { loadClinicalCatalog } from './clinical/load.js';
 import { openClinicalRegion, revealClinicalRegions } from './clinical/navigation.js';
@@ -7,6 +10,7 @@ import { loadCircuitCatalog } from './learning/load.js';
 import { createCircuitSession } from './learning/session.js';
 import { openCircuitLandmark, prepareCircuitMri } from './learning/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
+import { loadAnatomies, resolveAnatomy } from './model/published-anatomy.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
 import {
   VIEW_DIRECTIONS, cutFacingView, fitDistance, frameTo, upFor, viewForRestoredCut, withContext,
@@ -18,29 +22,30 @@ import { createSession, shortcutsAllowed } from './state/session.js';
 import { captureBeforeInternal, insideInternal, leaveInternal } from './state/internal-mode.js';
 import { createTheme } from './state/theme.js';
 import { decodeState, encodeState } from './state/url-state.js';
-import { readerState, sameRegions } from './state/reader-state.js';
+import { applyReaderState as restoreReaderState, readerState } from './state/reader-state.js';
 import { BrainSections } from './slices/sections.js';
 import { offsetThrough, rasToWorld } from './slices/coordinates.js';
-import { createSectionControls } from './ui/sections.js';
-import { createInternalAnatomy } from './ui/internal-anatomy.js';
-import { createConstituents } from './ui/constituents.js';
-import { createDisplay } from './ui/display.js';
-import { createDissectionControls } from './ui/dissection.js';
-import { createHeader, paintColophon } from './ui/header.js';
-import { createInspector } from './ui/inspector.js';
-import { createClinicalExplorer } from './ui/clinical.js';
-import { createCircuitExplorer } from './ui/circuits.js';
+import { createSectionControls } from './ui/chrome/sections.js';
+import { createInternalAnatomy } from './ui/panels/internal-anatomy.js';
+import { createConstituents } from './ui/panels/constituents.js';
+import { createDisplay } from './ui/chrome/display.js';
+import { createDissectionControls } from './ui/panels/dissection.js';
+import { createHeader, paintColophon } from './ui/chrome/header.js';
+import { createInspector } from './ui/panels/inspector.js';
+import { createAtlasComparison } from './ui/panels/atlas-comparison.js';
+import { createClinicalExplorer } from './ui/panels/clinical.js';
+import { createCircuitExplorer } from './ui/panels/circuits.js';
 import { createNativeTractExplorer } from './diffusion/native-ui.js';
 import { isIndependentTractReference } from './diffusion/presentation.js';
-import { createNavigator } from './ui/navigator.js';
+import { createNavigator } from './ui/panels/navigator.js';
 import {
   characterShortcutAllowed, createKeyPreference, createShortcuts, isCharacterKey,
-} from './ui/shortcuts.js';
-import { createViewportChrome, paintLoadProgress } from './ui/viewport-chrome.js';
-import { createSheet } from './ui/sheet.js';
-import { createWorkspace } from './ui/workspace.js';
+} from './ui/chrome/shortcuts.js';
+import { createViewportChrome, paintLoadProgress } from './ui/chrome/viewport-chrome.js';
+import { createSheet } from './ui/chrome/sheet.js';
+import { createWorkspace } from './ui/chrome/workspace.js';
 import { qualityProfile } from './render/quality.js';
-import { t } from './i18n/translations.js';
+import { atlasSwitchLabel, t } from './i18n/translations.js';
 
 const VIEW_KEYS = ['left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 
@@ -80,6 +85,12 @@ export async function startApp() {
   const announce = text => { announcer.textContent = text; };
   announce(t(initialLang, 'viewport').loadingAnatomy);
   paintColophon(initialLang);
+  // Resolve the requested subject before constructing a scene for it.
+  const modelsUrl = `${import.meta.env.BASE_URL}models`;
+  const published = await loadAnatomies(`${modelsUrl}/anatomies.json`);
+  const anatomies = published.anatomies;
+  const anatomy = resolveAnatomy(published, wanted.anatomy);
+  const manifestUrl = `${modelsUrl}/${anatomy}/manifest.json`;
   const session = createSession({ views: Object.keys(VIEW_DIRECTIONS), lang: initialLang });
   const keyPreference = createKeyPreference();
   // Declared before the scene: its resize observer can fire during the model
@@ -107,16 +118,6 @@ export async function startApp() {
     afterTheme?.();
   });
 
-  // Which brain, before anything of it is loaded. A link may name one; if it
-  // does not, the index names the default. Only one brain is ever live, so
-  // region ids shared between brains cannot be mixed.
-  const modelsUrl = `${import.meta.env.BASE_URL}models`;
-  const published = await fetch(`${modelsUrl}/anatomies.json`).then(r => r.json());
-  const anatomies = published.anatomies;
-  const anatomy = anatomies.some(entry => entry.id === wanted.anatomy)
-    ? wanted.anatomy
-    : published.default;
-  const manifestUrl = `${modelsUrl}/${anatomy}/manifest.json`;
   // The layers download in parallel. Once one has failed, the other's
   // progress must not paint "Loading" back over the error.
   let loadFailed = false;
@@ -130,6 +131,8 @@ export async function startApp() {
   }).catch(error => {
     loadFailed = true;
     announce(error.message);
+    theme.dispose();
+    scene.dispose();
     throw error;
   });
 
@@ -148,12 +151,9 @@ export async function startApp() {
   };
   const bounds = brainBounds();
   scene.scene.add(model.group);
-  scene.transparencyProbe = () => tractReferenceActive
-    || model.visibleMeshes.some(mesh => mesh.material.transparent);
 
   const sections = new BrainSections(model, new URL('volumes.json', new URL(manifestUrl, location.href)));
   scene.scene.add(sections.group);
-  scene.sectionsProbe = () => !tractReferenceActive && sections.active;
 
   // ---- commands ---------------------------------------------------------
 
@@ -161,12 +161,16 @@ export async function startApp() {
   function display(change) {
     const had = model.state.selectedRegion;
     change();
+    notifyClearedSelection(had);
+    render();
+  }
+
+  function notifyClearedSelection(had) {
     if (had && !model.state.selectedRegion) {
       const state = session.assemble(model.state);
       const name = catalog.get(had.id)?.label.name ?? had.label;
       session.notify(t(state.lang, 'app').selectionCleared(name));
     }
-    render();
   }
 
   let framed = false;
@@ -358,7 +362,7 @@ export async function startApp() {
   }
 
   function applyView(view, { immediate = false } = {}) {
-    if (!session.setView(view)) return;
+    if (!session.setView(view)) throw new Error(`Unknown view: ${view}`);
     frameCurrent({ immediate });
   }
 
@@ -456,6 +460,7 @@ export async function startApp() {
 
   async function setAtlas(id) {
     if (id === model.state.atlas) return;
+    const byCabNp = model.state.surfaceColor === 'cab-np';
     session.setSwitching(null);
     render();
     try {
@@ -466,6 +471,10 @@ export async function startApp() {
         }
       });
       session.setStatus('ready');
+      if (byCabNp && model.state.surfaceColor !== 'cab-np') {
+        const { lang } = session.assemble(model.state);
+        session.notify(t(lang, 'app').cabNpAtlasOnly(atlasSwitchLabel(id, lang)));
+      }
     } catch (error) {
       // The control reflects model.state.atlas, so it reverts on this render.
       const label = model.manifest.atlases.find(atlas => atlas.id === id)?.label ?? id;
@@ -517,7 +526,7 @@ export async function startApp() {
     if (reason === 'no-mri') await sections.setSurfaceColor('tissue');
     if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
     if (reason === 'internal-hidden') model.setInternalVisible(true);
-    if (reason === 'spinal-cord-hidden') model.setSpinalCordVisible(true);
+    if (reason === 'spinal-cord-hidden') await model.setSpinalCordVisible(true);
     if (reason === 'hemisphere') model.setHemisphere('both');
     if (reason === 'isolated') model.clearIsolation();
     // A cut-only region is nowhere until a plane exists. Coronal is the
@@ -529,7 +538,7 @@ export async function startApp() {
         sections.setOffset(offsetThrough(coords, sections.frame.normal, sections.offsetRange));
       }
     }
-    if (reason === 'other-detail') await setDetail(model.regions.get(id).atlas);
+    if (reason === 'other-detail') await model.setDetail(model.regions.get(id).atlas);
     if (reason === 'other-system') model.setInternalSystem(null);
     const region = model.regions.get(id);
     if (!model.canSelect(region)) {
@@ -556,6 +565,7 @@ export async function startApp() {
   const header = createHeader({
     atlases: model.manifest.atlases,
     networks: model.manifest.networks,
+    cabNp: model.cabNp,
     anatomy: model.manifest.anatomy,
     anatomies,
     manifest: model.manifest,
@@ -565,6 +575,8 @@ export async function startApp() {
     onAtlas: setAtlas,
     onSurfaceColor: async value => {
       try {
+        // CAB-NP is defined on one atlas's areas, so choosing it shows that atlas.
+        if (value === 'cab-np' && model.state.atlas !== model.cabNp.atlas) await setAtlas(model.cabNp.atlas);
         await sections.setSurfaceColor(value);
         render();
       } catch (error) {
@@ -623,8 +635,13 @@ export async function startApp() {
     onToggleAllGroups,
     onQuery: query => { session.setQuery(query); render(); },
     onReveal: async (reason, id) => {
-      await reveal(reason, id);
-      if (id) focusSelection();
+      try {
+        await reveal(reason, id);
+        if (id) focusSelection();
+      } catch (error) {
+        session.notify(error.message);
+        render();
+      }
     },
     onAtlas: setAtlas,
     onCutAtlas: setCutAtlas,
@@ -645,6 +662,7 @@ export async function startApp() {
   const inspector = createInspector({
     catalog,
     networks: model.manifest.networks,
+    cabNp: model.cabNp,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
     onClear: () => {
@@ -660,6 +678,28 @@ export async function startApp() {
       document.getElementById('dissection-undo').focus();
     },
     centroidOf: id => model.centroidOf(id),
+  });
+
+  let atlasComparison = null;
+  const absoluteManifestUrl = new URL(manifestUrl, globalThis.location.href);
+  const overlapOverlay = createComparisonOverlay(async () => {
+    const data = atlasComparison.data;
+    const buffer = await readComparisonGeometry(
+      new URL(data.geometry.file, absoluteManifestUrl), data.geometry.sha256,
+    );
+    const gltf = await new GLTFLoader().parseAsync(buffer, new URL('.', absoluteManifestUrl).href);
+    return gltf.scene;
+  });
+  scene.scene.add(overlapOverlay.group);
+  atlasComparison = createAtlasComparison({
+    manifest: model.manifest,
+    manifestUrl: absoluteManifestUrl,
+    highlight: async id => {
+      const applied = await overlapOverlay.highlight(id);
+      if (applied) outline();
+      return applied;
+    },
+    clearHighlight: () => { overlapOverlay.clear(); outline(); },
   });
 
   const loadedLayers = () => ({
@@ -680,73 +720,14 @@ export async function startApp() {
     }, loadedLayers());
   }
 
-  /**
-   * Put the scene in `target`, a complete reader state: layers before the system and parts
-   * they hold, display before the cut, selection after both, camera last. Startup and Restore
-   * share it; a shared link may skip what this build cannot show, a restore may not.
-   */
-  async function applyReaderState(target, { tolerant = false, immediate = false } = {}) {
-    const step = async (action, skipped = error => console.warn('Ignored link state:', error.message)) => {
-      if (!tolerant) return action();
-      try { await action(); } catch (error) { skipped(error); }
-    };
-    await step(async () => {
-      if (target.atlas !== model.settings.atlas) await setAtlas(target.atlas);
-      if (target.atlas !== model.settings.atlas) throw new Error(`Atlas not applied: ${target.atlas}`);
-    });
-    await step(async () => {
-      if (target.detail !== model.settings.detail) await setDetail(target.detail);
-      if (target.detail !== model.settings.detail) throw new Error(`Detail level not applied: ${target.detail}`);
-    });
-    await step(() => {
-      if (target.internalSystem !== model.settings.internalSystem) model.setInternalSystem(target.internalSystem);
-    });
-    await step(() => {
-      const settings = model.settings;
-      if (target.hemisphere !== settings.hemisphere) model.setHemisphere(target.hemisphere);
-      if (target.cortexVisible !== settings.cortexVisible) model.setCortexVisible(target.cortexVisible);
-      if (target.internalVisible !== settings.internalVisible) model.setInternalVisible(target.internalVisible);
-      if (target.spinalCordVisible !== settings.spinalCordVisible) model.setSpinalCordVisible(target.spinalCordVisible);
-      if (target.cortexOpacity !== settings.cortexOpacity) model.setCortexOpacity(target.cortexOpacity);
-    });
-    await step(() => {
-      if (!sameRegions(target.hiddenRegions, model.settings.hiddenRegions)) {
-        model.loadHiddenRegions([...target.hiddenRegions]);
-      }
-    });
-    await step(async () => {
-      if (target.surfaceColor !== model.settings.surfaceColor) await sections.setSurfaceColor(target.surfaceColor);
-    });
-    await step(async () => {
-      if (target.cutAtlas !== sections.state.cutAtlas) await sections.setCutAtlas(target.cutAtlas);
-    });
-    await step(async () => {
-      if (target.cut === 'off') {
-        if (sections.active) await sections.setMode('off');
-        return;
-      }
-      if (target.cut === 'oblique') sections.setAngles(target.cutTilt, target.cutAzimuth);
-      await sections.setMode(target.cut);
-      sections.setDisplay({ reverse: target.cutReverse });
-      sections.setOffset(target.cutOffset);
-    });
-    // Isolation needs its region selected, so it is applied through a selection.
-    await step(() => {
-      if (target.isolatedRegion !== model.settings.isolatedRegion) {
-        if (target.isolatedRegion) {
-          model.select(target.isolatedRegion);
-          model.isolate();
-        } else {
-          model.clearIsolation();
-        }
-      }
-      if (target.selectedRegion !== (model.state.selectedRegion?.id ?? null)) model.select(target.selectedRegion);
-      if (target.selectedRegion) revealInTree(target.selectedRegion);
-    }, () => session.notify(t(session.assemble(model.state).lang, 'app').regionNotShown));
-    await step(() => {
-      if (target.camera === 'cut' && sections.active) faceCut({ immediate });
-      else if (target.camera === 'cut' || target.camera === 'view') applyView(target.view, { immediate });
-      else restoreCamera(target.view, target.camera, { immediate });
+  function applyReaderState(target, movement = {}) {
+    return restoreReaderState(target, {
+      model, sections, revealInTree,
+      applyCamera: () => {
+        if (target.camera === 'cut' && sections.active) faceCut(movement);
+        else if (target.camera === 'cut' || target.camera === 'view') applyView(target.view, movement);
+        else restoreCamera(target.view, target.camera, movement);
+      },
     });
   }
 
@@ -877,22 +858,28 @@ export async function startApp() {
   const internalAnatomy = createInternalAnatomy({
     manifest: model.manifest,
     onToggle: () => (insideInternal(model.state) ? leaveInternalAnatomy() : enterInternal()),
-    onSystem: system => {
-      // The other door in, and it has to land the reader where the button does:
-      // otherwise a network legend is left over a cortex that is not drawn.
-      if (!insideInternal(model.state)) {
-        beforeInternal = captureBeforeInternal(model.state, model.state.detail);
-        model.setSurfaceColor('atlas');
-        model.setCortexVisible(false);
+    onSystem: async system => {
+      try {
+        if (system === 'Spinal cord') await model.setSpinalCordVisible(true);
+        // The other door in must clear the cortex's network legend as well.
+        if (!insideInternal(model.state)) {
+          beforeInternal = captureBeforeInternal(model.state, model.state.detail);
+          model.setSurfaceColor('atlas');
+          model.setCortexVisible(false);
+        }
+        model.setInternalSystem(system);
+        session.setQuery('');
+        const group = catalog.groups(session.assemble(model.state))
+          .find(entry => entry.kind === 'structure');
+        if (system && group && !session.assemble(model.state).expanded.has(group.key)) {
+          session.toggleGroup(group.key);
+        }
+        frameInternal();
+        render();
+      } catch (error) {
+        session.notify(error.message);
+        render();
       }
-      model.setInternalSystem(system);
-      session.setQuery('');
-      const group = catalog.groups(session.assemble(model.state)).find(entry => entry.kind === 'structure');
-      if (system && group && !session.assemble(model.state).expanded.has(group.key)) {
-        session.toggleGroup(group.key);
-      }
-      frameInternal();
-      render();
     },
   });
 
@@ -908,11 +895,16 @@ export async function startApp() {
   const hasSpinalCord = (model.manifest.supplemental_layers ?? [])
     .some(layer => layer.id === 'zanatomy');
 
-  function setSpinalCordVisible(visible) {
-    display(() => {
-      model.setSpinalCordVisible(visible);
+  async function setSpinalCordVisible(visible) {
+    const had = model.state.selectedRegion;
+    try {
+      await model.setSpinalCordVisible(visible);
+      notifyClearedSelection(had);
       frameWhole();
-    });
+    } catch (error) {
+      session.notify(error.message);
+    }
+    render();
   }
 
   const display_ = createDisplay({
@@ -1083,6 +1075,7 @@ export async function startApp() {
 
   chrome = createViewportChrome({
     networks: model.manifest.networks,
+    cabNp: model.cabNp,
     onView: applyView,
     onRetry: reloadWithoutStoredModels,
     onSnapshot,
@@ -1199,6 +1192,9 @@ export async function startApp() {
       singleKeys: keyPreference.enabled, themeChoice: theme.choice });
     navigator.update(state);
     inspector.update(state);
+    const outlineAvailable = !sections.active && !referenceOnly;
+    overlapOverlay.setVisible(outlineAvailable);
+    atlasComparison.update({ ...state, outlineAvailable });
     const strip = contextStrip(state, referenceOnly);
     sheet.update(state, strip);
     workspace.update(state, strip, state.explorer === 'circuits' && state.lesson.circuit
@@ -1282,13 +1278,14 @@ export async function startApp() {
       return mesh ? [mesh] : [];
     };
     const selected = meshFor(model.state.selectedRegion?.id);
+    const overlap = overlapOverlay.outlined;
     const { explorer, selectedDeficit } = session.assemble({});
     const wanted = new Set(explorer === 'deficits' && selectedDeficit
       ? clinicalCatalog.mappedRegions(selectedDeficit) : []);
     const mapped = wanted.size ? meshes.filter(mesh => wanted.has(mesh.userData.region_id)) : [];
     // An open deficit outlines all its drawn regions; once one is selected, the rest recede to the halo.
     scene.setOutlined({
-      selected: selected.length ? selected : mapped,
+      selected: overlap.length ? overlap : selected.length ? selected : mapped,
       hovered: [...meshFor(hovered?.region?.id), ...(selected.length ? mapped : [])],
     });
   }
@@ -1523,20 +1520,18 @@ export async function startApp() {
   scene.applyTheme();
   scene.setSize();
   // The camera starts inside the brain; frame it before the link's layers load around it.
-  applyView(session.assemble(model.state).view, { immediate: true });
-  // The load already applied the link's atlas and detail level, or fell back from ones this
-  // build does not publish. An unknown cut atlas or view falls back the same way.
-  const publishes = (entries, id) => (entries.some(entry => entry.id === id) ? id : undefined);
-  await applyReaderState(readerState({
-    ...wanted,
-    atlas: model.settings.atlas,
-    detail: model.settings.detail,
-    cutAtlas: publishes(model.manifest.cut_atlases, wanted.cutAtlas),
-    view: Object.hasOwn(VIEW_DIRECTIONS, wanted.view ?? '') ? wanted.view : undefined,
-    // Without a view of its own, the link faces its cut, as choosing the cut does.
-    camera: viewForRestoredCut({ cut: wanted.cut, reverse: wanted.cutReverse, view: wanted.view })
-      ? 'cut' : 'view',
-  }, loadedLayers()), { tolerant: true, immediate: true });
+  try {
+    applyView(session.assemble(model.state).view, { immediate: true });
+    await applyReaderState(readerState({
+      ...wanted,
+      // Without a view of its own, the link faces its cut, as choosing the cut does.
+      camera: viewForRestoredCut({ cut: wanted.cut, reverse: wanted.cutReverse, view: wanted.view })
+        ? 'cut' : 'view',
+    }, loadedLayers()), { immediate: true });
+  } catch (error) {
+    dispose();
+    throw error;
+  }
   // Before the stage reports ready, so the first hover does not compile
   // outline shaders in the frame the pointer arrives.
   try { scene.warmOutlines(model.group); }
@@ -1549,34 +1544,36 @@ export async function startApp() {
   render();
   prefetchIdleLayers(model);
 
-  return {
-    dispose() {
-      globalThis.removeEventListener('keydown', onKeyDown);
-      scene.controls.removeEventListener('change', onCameraChange);
-      clearTimeout(urlTimer);
-      sheet.dispose();
-      workspace.dispose();
-      sections.removeEventListener('change', render);
-      model.removeEventListener('change', render);
-      sectionControls.dispose();
-      sections.dispose();
-      shortcuts.dispose();
-      picker.dispose();
-      chrome.dispose();
-      display_.dispose();
-      dissectionControls.dispose();
-      internalAnatomy.dispose();
-      constituents.dispose();
-      inspector.dispose();
-      clinicalExplorer.dispose();
-      circuitExplorer.dispose();
-      document.getElementById('inspector').removeEventListener('click', onLessonMri, true);
-      nativeTracts.dispose();
-      navigator.dispose();
-      header.dispose();
-      theme.dispose();
-      model.dispose();
-      scene.dispose();
-    },
-  };
+  function dispose() {
+    globalThis.removeEventListener('keydown', onKeyDown);
+    scene.controls.removeEventListener('change', onCameraChange);
+    clearTimeout(urlTimer);
+    sheet.dispose();
+    workspace.dispose();
+    sections.removeEventListener('change', render);
+    model.removeEventListener('change', render);
+    sectionControls.dispose();
+    sections.dispose();
+    shortcuts.dispose();
+    picker.dispose();
+    chrome.dispose();
+    display_.dispose();
+    dissectionControls.dispose();
+    internalAnatomy.dispose();
+    constituents.dispose();
+    inspector.dispose();
+    atlasComparison.dispose();
+    overlapOverlay.dispose();
+    clinicalExplorer.dispose();
+    circuitExplorer.dispose();
+    document.getElementById('inspector').removeEventListener('click', onLessonMri, true);
+    nativeTracts.dispose();
+    navigator.dispose();
+    header.dispose();
+    theme.dispose();
+    model.dispose();
+    scene.dispose();
+  }
+
+  return { dispose };
 }

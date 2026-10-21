@@ -1,14 +1,14 @@
 import numpy as np
 import pytest
 
-from brain_model.geometry import partition_surface, partition_vertex_labels
-from brain_model.networks import (
+from brain_model.layers.networks import (
     NETWORKS,
     NONE,
     composition,
     network_indices,
     network_of,
 )
+from brain_model.surfaces.geometry import partition_surface, partition_vertex_labels
 
 MEDIAL_WALL = "Background+FreeSurfer_Defined_Medial_Wall"
 

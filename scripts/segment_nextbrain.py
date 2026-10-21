@@ -23,9 +23,9 @@ from scipy.ndimage import map_coordinates
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from brain_model import nextbrain
+from brain_model.labels import nextbrain
+from brain_model.labels.volumes import offset_by, resample_nearest
 from brain_model.sources import ROOT, read_config, sha256
-from brain_model.volumes import offset_by, resample_nearest
 
 CACHE = ROOT / "data/cache"
 RUNTIME = Path(__file__).resolve().parent / "freesurfer"
@@ -73,18 +73,10 @@ WORKAROUNDS = {
 }
 
 
-def file_sha256(path):
-    digest = hashlib.sha256()
-    with open(path, "rb") as handle:
-        for chunk in iter(lambda: handle.read(2**24), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def tree_sha256(directory):
     digest = hashlib.sha256()
     for path in sorted(p for p in directory.rglob("*") if p.is_file()):
-        digest.update(f"{path.relative_to(directory)}\0{file_sha256(path)}\n".encode())
+        digest.update(f"{path.relative_to(directory)}\0{sha256(path)}\n".encode())
     return digest.hexdigest()
 
 
@@ -92,7 +84,7 @@ def verify_runtime(freesurfer):
     stamp = (freesurfer / "build-stamp.txt").read_text().strip()
     if stamp != FREESURFER_BUILD:
         raise SystemExit(f"Expected FreeSurfer {FREESURFER_BUILD}, found {stamp}.")
-    if file_sha256(SUPERSYNTH["path"]) != SUPERSYNTH["sha256"]:
+    if sha256(SUPERSYNTH["path"]) != SUPERSYNTH["sha256"]:
         raise SystemExit(f"SuperSynth model checksum mismatch: {SUPERSYNTH['path']}")
     if tree_sha256(ATLAS["path"]) != ATLAS["tree_sha256"]:
         raise SystemExit(f"NextBrain atlas checksum mismatch: {ATLAS['path']}")

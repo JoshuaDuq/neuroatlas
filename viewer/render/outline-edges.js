@@ -27,7 +27,6 @@ export function sameMeshSet(a, b) {
 export function paintOutlineEdges(pass, maskTexture, renderer, readBuffer, maskActive) {
   renderer.getClearColor(pass._oldClearColor);
   const oldClearAlpha = renderer.getClearAlpha();
-  pass.oldClearAlpha = oldClearAlpha;
   const oldAutoClear = renderer.autoClear;
   renderer.autoClear = false;
   try {

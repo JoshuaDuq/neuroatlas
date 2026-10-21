@@ -1,5 +1,6 @@
 import { startApp } from './app.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
+import { bindAppLifecycle } from './state/lifecycle.js';
 import '@fontsource-variable/source-sans-3/wght.css';
 import './styles/tokens.css';
 import './styles/base.css';
@@ -62,7 +63,7 @@ if (unsupported) {
 } else {
   try {
     const app = await startApp();
-    globalThis.addEventListener('pagehide', () => app.dispose(), { once: true });
+    bindAppLifecycle(app);
     keepAnatomyCached();
   } catch (error) {
     fail(error.message, { retryable: true });

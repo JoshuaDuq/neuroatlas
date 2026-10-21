@@ -34,25 +34,23 @@
 /* Touch raises ranges to 44px elsewhere; a mouse still gets a 24px hit area. */
 @media (pointer: fine) { .native-tract-controls input[type="range"] { height: 24px; margin: 2px 0 0; } }
 
-/* The list heading reads like the deficit groups: a 12px caption over the ruled rows. */
+/* The list heading reads like the tree's section labels: a 12px caption over the rows. */
 .diffusion-list-heading {
   margin: 0;
-  padding: var(--space-1) 0 6px;
+  padding: var(--space-3) 0 2px;
   font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-tertiary);
 }
-.diffusion-load-hint { margin: -2px 0 6px; }
+.diffusion-load-hint { margin: 0 0 var(--space-1); color: var(--text-tertiary); }
 .native-tract-controls:not(:has(.diffusion-bundle-meta[data-loaded="false"])) .diffusion-load-hint,
 .native-tract-controls:has(#native-tract-no-results:not([hidden])) .diffusion-load-hint { display: none; }
-#native-tract-bundles { border-top: 1px solid var(--border-subtle); }
-/* The settings rule closes the list, so the last row does not draw a second one beside it. */
-#native-tract-bundles > .diffusion-bundle:last-child { border-bottom: 0; }
+#native-tract-bundles { padding-bottom: var(--space-3); }
 #native-tract-no-results { padding: var(--space-3) 0; }
 
-/* One row per tract: its name, then a toggle per side (or per segment) in a right-hand column. */
-.diffusion-bundle { padding: var(--space-1) 0; border-bottom: 1px solid var(--border-subtle); }
+/* One row per tract: its name, then a toggle per side (or per segment) in a right-hand column. Spacing, not rules, separates rows. */
+.diffusion-bundle { padding: 2px 0; }
 .diffusion-bundle-head {
   display: flex;
   align-items: center;
@@ -67,19 +65,29 @@
 .diffusion-bundle[data-layout="segments"] .diffusion-bundle-name { flex-basis: 100%; }
 
 /*
- * A part toggle is a checkbox drawn as a lettered box. Drawn is a selection, not an action: a teal wash,
- * never the primary's fill, with a doubled edge and heavier letter so on and off differ beyond colour.
+ * A part toggle is a checkbox drawn as a lettered tonal key, like a segmented choice. Drawn is a selection,
+ * not an action: a teal wash, never the primary's fill, with a doubled edge and heavier letter so on and
+ * off differ beyond colour.
  */
-.diffusion-part { position: relative; display: inline-grid; margin: 0; cursor: pointer; }
+.diffusion-part {
+  position: relative;
+  display: inline-grid;
+  margin: 0;
+  cursor: pointer;
+  transition: transform var(--press-transition) var(--ease-ui);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .diffusion-part:active:has(input:not(:disabled)) { transform: scale(var(--press-scale)); }
+}
 .diffusion-part > * { grid-area: 1 / 1; }
 .diffusion-part input {
   appearance: none;
-  width: 32px;
-  height: 28px;
+  width: 28px;
+  height: 24px;
   margin: 0;
-  border: 1px solid var(--border-control);
+  border: 1px solid transparent;
   border-radius: 3px;
-  background: var(--surface-base);
+  background: var(--surface-tonal);
   cursor: pointer;
   transition: background-color var(--ui-transition) var(--ease-ui), border-color var(--ui-transition) var(--ease-ui),
     box-shadow var(--ui-transition) var(--ease-ui);
@@ -92,7 +100,9 @@
   font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
 }
-.diffusion-part:hover input:not(:disabled) { border-color: var(--text-secondary); }
+@media (hover: hover) and (pointer: fine) {
+  .diffusion-part:hover input:not(:disabled) { background: var(--surface-tonal-hover); }
+}
 .diffusion-part input:checked,
 .diffusion-part:hover input:checked:not(:disabled) {
   background: var(--accent-wash);
@@ -100,9 +110,9 @@
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 .diffusion-part input:checked + span { color: var(--accent); font-weight: 600; }
-.diffusion-part input:disabled { border-color: var(--border-subtle); cursor: default; }
+.diffusion-part input:disabled { background: var(--surface-sunken); cursor: default; }
 .diffusion-part input:disabled + span { color: var(--text-tertiary); }
-.diffusion-part input:checked:disabled { background: var(--surface-sunken); border-color: var(--text-tertiary); box-shadow: inset 0 0 0 1px var(--text-tertiary); }
+.diffusion-part input:checked:disabled { border-color: var(--text-tertiary); box-shadow: inset 0 0 0 1px var(--text-tertiary); }
 .diffusion-part input:checked:disabled + span { color: var(--text-tertiary); }
 .diffusion-part:has(input:disabled) { cursor: default; }
 
@@ -111,7 +121,6 @@
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr);
   align-items: baseline;
-  margin-top: 2px;
   font-size: var(--text-micro);
   line-height: 1.5;
   color: var(--text-secondary);
@@ -170,97 +179,11 @@
   width: fit-content;
   margin-top: var(--space-2);
   font-size: var(--text-micro);
-  color: var(--accent);
-  text-underline-offset: 3px;
 }
 
-/*
- * Both MRI viewers (their shell is in components.css): notes and hints keep a readable
- * measure, and source files and grids read as data, a step smaller in mono.
- */
-.mpr-header p,
-.mpr-note > p { max-width: 72ch; text-wrap: pretty; }
-.mpr-note > .measure { font-size: var(--text-micro); }
-#mpr-readout { font-size: var(--text-micro); }
-
-/* MRI navigation: the same reading-room pieces as the linked MRI sections. */
-#diffusion-mri-status { margin-top: var(--space-3); font-size: var(--text-small); }
-#diffusion-mri-status[data-error="true"] { color: var(--danger); }
-#diffusion-mri-retry { margin-top: var(--space-2); }
-#diffusion-mri-controls { min-width: 0; margin: var(--space-4) 0 0; padding: 0; border: 0; }
-.diffusion-mri-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-6);
-}
-.diffusion-mri-plane,
-.diffusion-mri-position > span {
-  font-size: var(--text-small);
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-.diffusion-mri-plane { display: flex; align-items: center; gap: var(--space-3); }
-.diffusion-mri-plane select { width: auto; min-width: 12rem; font-weight: 400; color: var(--text-primary); }
-.diffusion-mri-position { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
-.diffusion-mri-position label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-small);
-  color: var(--text-tertiary);
-}
-.diffusion-mri-position input {
-  width: 5.5rem;
-  padding: 0 var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-}
-.diffusion-mri-canvas {
-  height: min(52dvh, 520px);
-  min-height: 300px;
-  margin-top: var(--space-3);
-  overflow: hidden;
-  background: var(--scene-background);
-}
-#diffusion-mri-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
-#diffusion-mri-readout {
-  margin-top: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-control);
-  background: var(--surface-navigation);
-  font-size: var(--text-micro);
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-}
-#diffusion-mri-readout:empty { display: none; }
-.diffusion-mri-display { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.diffusion-mri-notes > p + p { margin-top: var(--space-1); }
-#diffusion-mri-grid { font-variant-numeric: tabular-nums; }
-@media (max-width: 700px) {
-  .diffusion-mri-display { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
-  .diffusion-mri-canvas { height: min(50dvh, 390px); }
-  .diffusion-mri-plane { flex: 1 1 100%; }
-  .diffusion-mri-plane select { flex: 1; min-width: 0; }
-  .diffusion-mri-position {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-    width: 100%;
-  }
-  .diffusion-mri-position > span { grid-column: 1 / -1; }
-  .diffusion-mri-position input { width: 100%; min-width: 0; }
-  #diffusion-mri-close { white-space: nowrap; }
-}
+/* The MRI navigation dialog: stage.css, with the other dialogs. */
 @media (pointer: coarse) {
   .diffusion-part input { width: 44px; height: 44px; }
-  /* A 20px thumb on the coarse 2px track needs room above it, clear of the label. */
-  .diffusion-mri-display input[type="range"] { margin: 14px 0 10px; }
 }
 
 @media (forced-colors: active) {
@@ -271,4 +194,8 @@
   .diffusion-part input:checked + span { color: HighlightText; }
   .diffusion-part input:disabled { border-color: GrayText; }
   .diffusion-part input:disabled + span { color: GrayText; }
+}
+
+@media (prefers-contrast: more) {
+  .diffusion-part input { border-color: var(--border-control); }
 }

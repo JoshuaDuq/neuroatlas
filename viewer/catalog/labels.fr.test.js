@@ -148,7 +148,6 @@ test('exact 1:1 key parity between English and French Destrieux tables', () => {
   assert.equal(enKeys.length, 74);
   assert.deepEqual(enKeys, frKeys);
   for (const key of enKeys) {
-    const en = DESTRIEUX_LABELS[key];
     const fr = DESTRIEUX_LABELS_FR[key];
     assert.ok(fr.name && fr.name.length > 0, `Missing French name for ${key}`);
     assert.ok(fr.lobe && fr.lobe.length > 0, `Missing French lobe for ${key}`);
@@ -161,7 +160,6 @@ test('exact 1:1 key parity between English and French subcortical structure tabl
   assert.equal(enKeys.length, 35);
   assert.deepEqual(enKeys, frKeys);
   for (const key of enKeys) {
-    const en = STRUCTURE_LABELS[key];
     const fr = STRUCTURE_LABELS_FR[key];
     assert.ok(fr.name && fr.name.length > 0, `Missing French name for ${key}`);
     assert.ok(fr.system && fr.system.length > 0, `Missing French system for ${key}`);

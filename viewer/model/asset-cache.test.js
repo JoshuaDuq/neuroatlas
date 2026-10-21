@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { fetchAsset, resetAssetCache } from './asset-cache.js';
+import { fetchAsset } from './asset-cache.js';
 
 function responseFor(bytes, { length = true } = {}) {
   const body = new Uint8Array(bytes).map((_, i) => i + 1);
@@ -9,7 +9,6 @@ function responseFor(bytes, { length = true } = {}) {
 }
 
 test('fetchAsset reuses an in-flight request and fans progress out to every listener', async () => {
-  resetAssetCache();
   let fetches = 0;
   const original = globalThis.fetch;
   globalThis.fetch = async () => {
@@ -33,12 +32,10 @@ test('fetchAsset reuses an in-flight request and fans progress out to every list
     assert.deepEqual(seenB.at(-1), { loaded: 8, total: 8 });
   } finally {
     globalThis.fetch = original;
-    resetAssetCache();
   }
 });
 
 test('fetchAsset consumes a head-started response instead of opening a second download', async () => {
-  resetAssetCache();
   let fetches = 0;
   const original = globalThis.fetch;
   globalThis.fetch = async () => {
@@ -56,6 +53,5 @@ test('fetchAsset consumes a head-started response instead of opening a second do
   } finally {
     globalThis.fetch = original;
     delete globalThis.__neuroatlasAssets;
-    resetAssetCache();
   }
 });

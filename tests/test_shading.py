@@ -4,7 +4,7 @@ import pytest
 
 
 def test_partitioned_scalar_field_is_continuous_and_preserves_source_values():
-    from brain_model.geometry import partition_surface, partition_vertex_field
+    from brain_model.surfaces.geometry import partition_surface, partition_vertex_field
 
     vertices = np.array([[0., 0, 0], [4., 0, 0], [0., 3, 0], [4., 3, 0]])
     faces = np.array([[0, 1, 2], [1, 3, 2]])
@@ -21,7 +21,7 @@ def test_partitioned_scalar_field_is_continuous_and_preserves_source_values():
 
 @pytest.mark.parametrize("values", [np.array([1., np.nan, 2.]), np.ones(2)])
 def test_partitioned_scalar_field_rejects_invalid_source_data(values):
-    from brain_model.geometry import partition_vertex_field
+    from brain_model.surfaces.geometry import partition_vertex_field
 
     with pytest.raises(ValueError, match="field"):
         partition_vertex_field(np.array([[0, 1, 2]]), np.array([1, 2, 3]), values)
@@ -30,7 +30,7 @@ def test_partitioned_scalar_field_rejects_invalid_source_data(values):
 def test_cortical_concavity_is_scale_invariant_and_leaves_geometry_unchanged():
     import trimesh
 
-    from brain_model.shading import cortical_concavity
+    from brain_model.surfaces.shading import cortical_concavity
 
     mesh = trimesh.creation.icosphere(subdivisions=2)
     vertices, faces = mesh.vertices.copy(), mesh.faces.copy()
@@ -43,7 +43,7 @@ def test_cortical_concavity_is_scale_invariant_and_leaves_geometry_unchanged():
 
 
 def test_ribbon_intensity_samples_corresponding_surfaces_in_surface_ras():
-    from brain_model.shading import ribbon_intensity
+    from brain_model.surfaces.shading import ribbon_intensity
 
     grid = np.indices((9, 9, 9))
     data = (grid[0] + 2 * grid[1] + 3 * grid[2]).astype(float)

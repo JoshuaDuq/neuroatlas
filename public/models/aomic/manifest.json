@@ -784,7 +784,18 @@
     },
     "attribute": "_NETWORK",
     "method": "Schaefer2018 parcels collapsed to their published Yeo network; carried per vertex, never interpolated",
-    "composition": "Share of a region's own source vertices, excluding vertices in no network"
+    "composition": "Cortical parcels: shares of assigned source vertices. NextBrain cortical regions: shares of assigned projected cortical voxels. Unassigned samples are excluded; these are not surface-area shares."
+  },
+  "cab_np": {
+    "id": "cab-np",
+    "file": "cab-np.json",
+    "atlas": "hcp-mmp",
+    "label": "Cole-Anticevic Brain-wide Network Partition (CAB-NP) v1.1.6",
+    "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006",
+    "license": "CAB-NP License (Rutgers University and Yale University), non-commercial use only",
+    "license_file": "../licenses/CAB-NP.txt",
+    "source_file": "../licenses/CAB-NP-LabelKey.txt",
+    "method": "Each HCP-MMP1.0 area takes the network CAB-NP assigns it, matched by published area name in each hemisphere; carried per area, never per vertex"
   },
   "cut_atlases": [
     {
@@ -33341,9 +33352,12 @@
     "NextBrain cortical parcels are published as ctx-rh- names for both hemispheres, an artefact of the reused label block; the hemisphere field is authoritative.",
     "Cortical regions are surface patches; the solids that cap them at a cut are closed by extruding each patch to its corresponding white-surface vertices.",
     "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
-    "Networks are resting-state functional connectivity from 1000 subjects: a region's share says which networks its surface falls in, not what the region does.",
-    "Network shares are computed over a region's own source vertices, so they follow vertex density rather than surface area.",
+    "Networks describe group resting-state functional connectivity from 1000 subjects, not a region's measured function in this brain.",
+    "Cortical parcel network shares count assigned source vertices; NextBrain cortical region shares count assigned projected cortical voxels. Unassigned samples are excluded. Neither is a surface-area fraction.",
     "Networks are a group average projected onto one person's folds through registered spheres; they are not this individual's measured networks.",
+    "CAB-NP networks come from group resting-state connectivity of Human Connectome Project participants, not from this brain's measured function, and reach this brain through the same HCP-MMP projection.",
+    "CAB-NP assigns each HCP-MMP area whole to one network, so its colour boundaries are HCP-MMP's boundaries. It colours that atlas's areas only.",
+    "CAB-NP assigns the hemispheres separately; 13 areas belong to a different network on each side, as published.",
     "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region."
   ],
   "provenance": {
@@ -33682,6 +33696,18 @@
         },
         "citation": "https://doi.org/10.1038/s41586-025-09708-2",
         "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
+      },
+      {
+        "path": "data/cab-np/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt",
+        "sha256": "2d12fea6d84be2d82f9d146e7fa9fa2fe54a91fade32e6febb74adf53b583adf",
+        "url": "https://github.com/ColeLab/ColeAnticevicNetPartition/blob/e4ea9fd709ead8616843924b717c6abce62ea05c/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt",
+        "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
+      },
+      {
+        "path": "data/cab-np/LICENSE",
+        "sha256": "7f36e1a470ec5f5a56b9c0dae13e107dda88fb71d83340346654294a5c19318d",
+        "url": "https://github.com/ColeLab/ColeAnticevicNetPartition/blob/e4ea9fd709ead8616843924b717c6abce62ea05c/LICENSE",
+        "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
       }
     ]
   }

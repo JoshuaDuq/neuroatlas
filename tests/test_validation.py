@@ -3,7 +3,7 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from brain_model.geometry import Partition, partition_surface
+from brain_model.surfaces.geometry import Partition, partition_surface
 from brain_model.validate import validate_partition
 
 
@@ -100,7 +100,7 @@ def manifest_assets(tmp_path):
     import nibabel as nib
     import trimesh
 
-    from brain_model.export import add_region, write_scene
+    from brain_model.gltf.export import add_region, write_scene
 
     source = tmp_path / "source"
     (source / "label").mkdir(parents=True)
@@ -253,7 +253,7 @@ def test_metadata_is_checked_against_source_when_manifest_and_glb_agree(
     import trimesh
 
     from brain_model import validate
-    from brain_model.export import write_scene
+    from brain_model.gltf.export import write_scene
 
     config, manifest = manifest_assets
     region_id = manifest["regions"][0]["id"]
@@ -267,7 +267,7 @@ def test_metadata_is_checked_against_source_when_manifest_and_glb_agree(
 
 
 def test_a_solid_block_surface_encloses_its_label_without_pinching():
-    from brain_model.geometry import extract_structure
+    from brain_model.surfaces.geometry import extract_structure
     from brain_model.validate import surface_closure
 
     volume = np.zeros((4, 4, 4), dtype=np.int32)
@@ -283,7 +283,7 @@ def test_a_diagonal_staircase_of_voxels_pinches_but_still_encloses_a_volume():
     # voxels meet at a corner. No closed two-manifold surface exists over it, so
     # the pinch is published rather than mended; the surface still has no hole,
     # which is what leaves the volume it encloses defined at all.
-    from brain_model.geometry import extract_structure
+    from brain_model.surfaces.geometry import extract_structure
     from brain_model.validate import surface_closure
 
     volume = np.zeros((5, 5, 6), dtype=np.int32)

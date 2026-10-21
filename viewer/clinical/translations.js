@@ -1,14 +1,12 @@
 export const CLINICAL_TEXT = {
   en: {
-    anatomy: 'Anatomy', deficits: 'Deficits', circuits: 'Circuits', diffusion: 'Tracts', explore: 'Explore the atlas',
+    deficits: 'Deficits',
     search: 'Search deficits',
     searchLabel: 'Search deficits or cognitive functions',
     introduction: 'Explore acquired deficits through anatomy and published evidence.',
     coverage: '{count} profiles · adult acquired deficits',
     noResults: 'No matching deficit in this collection.',
     related: 'Neuropsychology',
-    noCoverage: 'No curated association for this region yet. This does not imply absence of a clinical role.',
-    noAtlasCoverage: 'Clinical mappings currently use Destrieux parcels, FreeSurfer structures and learning-anatomy solids. Fine-atlas parcels have not been assigned equivalent claims.',
     studyFinding: 'Reported finding', limits: 'Interpretation',
     mapping: 'Approximate anatomical mapping', openRegion: 'Open region',
     // Outlined unless a cut is on, which turns the outlines off.
@@ -33,15 +31,13 @@ export const CLINICAL_TEXT = {
     lateralityShort: { left: 'Left', right: 'Right', bilateral: 'Bilateral' },
   },
   fr: {
-    anatomy: 'Anatomie', deficits: 'Déficits', circuits: 'Circuits', diffusion: 'Faisceaux', explore: 'Explorer l’atlas',
+    deficits: 'Déficits',
     search: 'Rechercher un déficit',
     searchLabel: 'Rechercher un déficit ou une fonction cognitive',
     introduction: 'Explorer les déficits acquis à travers l’anatomie et les données publiées.',
     coverage: '{count} profils · déficits acquis de l’adulte',
     noResults: 'Aucun déficit correspondant dans cette collection.',
     related: 'Neuropsychologie',
-    noCoverage: 'Aucune association documentée ici pour cette région. Cela n’implique pas l’absence de rôle clinique.',
-    noAtlasCoverage: 'Les correspondances cliniques utilisent actuellement les parcelles Destrieux, les structures FreeSurfer et les solides de l’anatomie d’apprentissage. Aucune équivalence n’est attribuée aux parcelles fines.',
     studyFinding: 'Résultat rapporté', limits: 'Interprétation',
     mapping: 'Correspondance anatomique approximative', openRegion: 'Voir la région',
     regionsMarked: (shown, total, outlined) => {

@@ -28,35 +28,25 @@ export const DEFAULTS = {
   isolatedRegion: null,
   internalSystem: null,
   anatomy: null,
-  lang: 'en',
 };
 
 const HEMISPHERES = ['both', 'left', 'right'];
-const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network'];
-
-/**
- * `colors` was a flag before the surface could be coloured three ways. Links
- * carrying the old one still mean what they meant, so they are read rather
- * than dropped; nothing writes them any more.
- */
-const surfaceColor = value => {
-  if (value === '1') return 'atlas';
-  if (value === '0') return 'tissue';
-  return SURFACE_COLORS.includes(value) ? value : undefined;
-};
+const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np'];
 
 const flag = value => (value === '1' ? true : value === '0' ? false : undefined);
+const nonempty = value => (value.trim() ? value : undefined);
+const numberOf = value => (value.trim() ? Number(value) : NaN);
 
-const CUTS = ['sagittal', 'coronal', 'axial', 'oblique'];
+const CUTS = ['off', 'sagittal', 'coronal', 'axial', 'oblique'];
 
 const millimetres = value => {
-  const number = Number(value);
+  const number = numberOf(value);
   if (!Number.isFinite(number) || Math.abs(number) > 512) return undefined;
   return Math.round(number * 10) / 10;
 };
 
 const degrees = (value, minimum, maximum) => {
-  const number = Number(value);
+  const number = numberOf(value);
   if (!Number.isFinite(number) || number < minimum || number > maximum) return undefined;
   return Math.round(number);
 };
@@ -70,24 +60,24 @@ const FIELDS = [
    * names the same region in each — so a link without this would open the
    * right region on whichever brain happened to load.
    */
-  { key: 'anatomy', param: 'anatomy', read: value => value || undefined },
-  { key: 'atlas', param: 'atlas', read: value => value || undefined },
-  { key: 'cutAtlas', param: 'cuts', read: value => value || undefined },
-  { key: 'internalSystem', param: 'system', read: value => value || undefined },
-  { key: 'detail', param: 'detail', read: value => value || undefined },
+  { key: 'anatomy', param: 'anatomy', read: nonempty },
+  { key: 'atlas', param: 'atlas', read: nonempty },
+  { key: 'cutAtlas', param: 'cuts', read: nonempty },
+  { key: 'internalSystem', param: 'system', read: nonempty },
+  { key: 'detail', param: 'detail', read: nonempty },
   {
     key: 'selectedRegion',
     param: 'region',
-    read: value => value || undefined,
+    read: nonempty,
     write: identifier,
   },
   {
     key: 'isolatedRegion',
     param: 'isolate',
-    read: value => value || undefined,
+    read: nonempty,
     write: identifier,
   },
-  { key: 'view', param: 'view', read: value => value || undefined },
+  { key: 'view', param: 'view', read: nonempty },
   { key: 'cut', param: 'cut', read: value => (CUTS.includes(value) ? value : undefined) },
   { key: 'cutOffset', param: 'pos', read: millimetres },
   { key: 'cutReverse', param: 'rev', read: flag, write: value => (value ? '1' : '0') },
@@ -101,12 +91,16 @@ const FIELDS = [
   { key: 'cortexVisible', param: 'cortex', read: flag, write: value => (value ? '1' : '0') },
   { key: 'internalVisible', param: 'internal', read: flag, write: value => (value ? '1' : '0') },
   { key: 'spinalCordVisible', param: 'cord', read: flag, write: value => (value ? '1' : '0') },
-  { key: 'surfaceColor', param: 'colors', read: surfaceColor },
+  {
+    key: 'surfaceColor',
+    param: 'colors',
+    read: value => (SURFACE_COLORS.includes(value) ? value : undefined),
+  },
   {
     key: 'cortexOpacity',
     param: 'opacity',
     read: value => {
-      const number = Number(value);
+      const number = numberOf(value);
       return Number.isFinite(number) && number >= 0 && number <= 1 ? number : undefined;
     },
     write: value => String(Math.round(value * 100) / 100),
@@ -134,26 +128,23 @@ export function encodeState(state) {
   return parameters.toString().replaceAll('%3A', ':');
 }
 
-/** Decode a hash body, dropping any field that fails validation. */
+/** Decode a hash body, rejecting invalid requests for known scene fields. */
 export function decodeState(hash) {
+  if (typeof hash !== 'string') throw new TypeError('URL state must be a string.');
   const decoded = {};
-  let parameters;
-  try {
-    parameters = new URLSearchParams(hash.replace(/^#/, ''));
-  } catch {
-    return decoded;
-  }
+  const parameters = new URLSearchParams(hash.replace(/^#/, ''));
   for (const { key, param, read } of FIELDS) {
     if (!parameters.has(param)) continue;
-    let value;
-    try {
-      value = read(parameters.get(param));
-    } catch {
-      continue;
+    if (parameters.getAll(param).length !== 1) {
+      throw new Error(`Duplicate URL field: ${param}.`);
     }
-    if (value !== undefined) decoded[key] = value;
+    const requested = parameters.get(param);
+    const value = read(requested);
+    if (value === undefined) throw new Error(`Invalid URL field ${param}: ${JSON.stringify(requested)}.`);
+    decoded[key] = value;
   }
   if (parameters.has('hidden')) {
+    if (parameters.getAll('hidden').length !== 1) throw new Error('Duplicate URL field: hidden.');
     const ids = parameters.get('hidden').split(',');
     if (ids.some(id => !id)) throw new Error('Invalid hidden region identifiers in URL.');
     decoded.hiddenRegions = [...new Set(ids)];

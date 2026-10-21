@@ -15,7 +15,7 @@ import test from 'node:test';
  */
 test('no local shadows an element binding in any UI module', async () => {
   const directory = new URL('./', import.meta.url);
-  const files = (await readdir(directory)).filter(
+  const files = (await readdir(directory, { recursive: true })).filter(
     file => file.endsWith('.js') && !file.endsWith('.test.js'));
 
   const offences = [];
@@ -37,7 +37,7 @@ test('no local shadows an element binding in any UI module', async () => {
 
 test('any UI module using t() imports t from translations', async () => {
   const directory = new URL('./', import.meta.url);
-  const files = (await readdir(directory)).filter(
+  const files = (await readdir(directory, { recursive: true })).filter(
     file => file.endsWith('.js') && !file.endsWith('.test.js'));
 
   const offences = [];

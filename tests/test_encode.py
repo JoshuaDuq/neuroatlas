@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 import trimesh
 
-from brain_model.encode import (
+from brain_model.gltf.encode import (
     INT16,
     UINT8,
     UINT16,
@@ -16,7 +16,7 @@ from brain_model.encode import (
     published_field_ranges,
     reencode,
 )
-from brain_model.export import add_region
+from brain_model.gltf.export import add_region
 
 
 def read_json_chunk(data):

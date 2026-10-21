@@ -6,8 +6,8 @@ from urllib.parse import quote
 import pytest
 import yaml
 
-from brain_model.sources import ROOT, resolve_config, scoped_sources
 from brain_model.build import anatomy_limitations
+from brain_model.sources import ROOT, resolve_config, scoped_sources
 
 
 def document():

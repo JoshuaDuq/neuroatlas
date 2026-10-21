@@ -1,6 +1,6 @@
 import {
   NeutralToneMapping, NoToneMapping, Color, FrontSide, HalfFloatType,
-  PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget,
+  PerspectiveCamera, Scene, Vector2, WebGLRenderer, WebGLRenderTarget,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { token } from '../state/theme.js';
@@ -155,8 +155,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   let lastMotion = -Infinity;
   let showingMotion = false;
   let transition = null;
-  let hasTransparency = () => false;
-  let hasSections = () => false;
   const invalidate = () => {
     dirty = true;
     if (!looping) startLoop();
@@ -461,8 +459,6 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     /** The canvas's CSS size, as of the last resize. */
     get hostSize() { return hostSize; },
 
-    set sectionsProbe(probe) { hasSections = probe; },
-    set transparencyProbe(probe) { hasTransparency = probe; },
     get distanceToTarget() { return camera.position.distanceTo(controls.target); },
     get viewportHeight() { return hostSize.height; },
 

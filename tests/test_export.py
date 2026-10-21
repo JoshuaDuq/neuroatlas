@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 import trimesh
 
-from brain_model.encode import decode_normals, normal_tolerance
-from brain_model.export import add_region, write_scene
+from brain_model.gltf.encode import decode_normals, normal_tolerance
+from brain_model.gltf.export import add_region, write_scene
 
 
 def test_glb_retains_geometry_normals_and_selectable_region_metadata(tmp_path):
@@ -43,7 +43,7 @@ def test_recorded_area_is_the_area_glTF_actually_stores():
     # The manifest is checked against the mesh read back from the file, whose
     # vertices are float32. Measuring the source in float64 would describe
     # geometry the file does not contain.
-    from brain_model.export import published_area_mm2
+    from brain_model.gltf.export import published_area_mm2
 
     vertices = np.array(
         [[0.0, 0.0, 0.0], [1e-3, 0.0, 0.0], [0.0, 1e-3, 0.0]], dtype=np.float64
@@ -58,7 +58,7 @@ def test_a_sliver_records_an_area_that_round_trips_within_the_manifest_tolerance
     # A few-voxel structure is exactly where float64 and float32 areas diverge
     # past 1e-6. Recording the published figure is what lets such a structure be
     # published at all rather than dropped for failing its own checksum.
-    from brain_model.export import published_area_mm2
+    from brain_model.gltf.export import published_area_mm2
 
     rng = np.random.default_rng(0)
     vertices = rng.normal(scale=2e-5, size=(18, 3)) + np.array([0.05, -0.03, 0.02])
@@ -73,7 +73,7 @@ def test_a_sliver_records_an_area_that_round_trips_within_the_manifest_tolerance
 def test_display_colours_are_published_as_the_linear_factors_gltf_defines(tmp_path):
     # baseColorFactor is linear. Writing an sRGB display colour's bytes there
     # rendered every region lighter and greyer than its published colour.
-    from brain_model.encode import _read_glb
+    from brain_model.gltf.encode import _read_glb
 
     vertices = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0], [0.0, 10.0, 0.0]])
     faces = np.array([[0, 1, 2]])
@@ -98,7 +98,7 @@ def test_display_colours_are_published_as_the_linear_factors_gltf_defines(tmp_pa
 def test_a_published_colour_reads_back_as_the_display_colour_it_was_given(tmp_path):
     # What validation compares against a palette: trimesh would round the
     # linear factor to a byte, which no longer names the display colour.
-    from brain_model.encode import published_display_colors
+    from brain_model.gltf.encode import published_display_colors
 
     vertices = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0], [0.0, 10.0, 0.0]])
     region = {"id": "learning:left:putamen", "label": "Putamen", "atlas": "learning",

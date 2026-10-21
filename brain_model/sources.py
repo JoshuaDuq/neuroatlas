@@ -52,7 +52,11 @@ def read_config(anatomy=None):
 
 
 def sha256(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(2**24), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def scoped_sources(document, anatomy):

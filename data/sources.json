@@ -1122,6 +1122,18 @@
       "sha256": "a9e28aa6290bdbd3efd007115fb667ac85521138ad1410ddd93d79cda5e29724",
       "anatomy": "snail",
       "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/cab-np/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt",
+      "sha256": "2d12fea6d84be2d82f9d146e7fa9fa2fe54a91fade32e6febb74adf53b583adf",
+      "url": "https://github.com/ColeLab/ColeAnticevicNetPartition/blob/e4ea9fd709ead8616843924b717c6abce62ea05c/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt",
+      "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
+    },
+    {
+      "path": "data/cab-np/LICENSE",
+      "sha256": "7f36e1a470ec5f5a56b9c0dae13e107dda88fb71d83340346654294a5c19318d",
+      "url": "https://github.com/ColeLab/ColeAnticevicNetPartition/blob/e4ea9fd709ead8616843924b717c6abce62ea05c/LICENSE",
+      "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
     }
   ]
 }

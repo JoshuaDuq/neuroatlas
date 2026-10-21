@@ -1,31 +1,13 @@
-import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { parse } from 'yaml';
+import { publishedVersion } from './scripts/published-version.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 
-/*
- * One hash over every published model file. Hashing only the manifests missed
- * geometry: the cortex and interior layers carry no checksum of their own.
- */
-function modelVersion() {
-  const models = resolve(root, 'public/models');
-  const digest = createHash('sha256');
-  const walk = dir => {
-    for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-      const path = resolve(dir, entry.name);
-      if (entry.isDirectory()) walk(path);
-      else digest.update(entry.name).update(readFileSync(path));
-    }
-  };
-  if (existsSync(models)) walk(models);
-  return digest.digest('hex').slice(0, 16);
-}
-
-const MODEL_VERSION = modelVersion();
+const MODEL_VERSION = publishedVersion(resolve(root, 'public'));
 
 export default defineConfig({
   base: '/neuroatlas/',

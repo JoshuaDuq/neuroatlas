@@ -27,3 +27,46 @@ export function readerState(partial, loaded) {
 }
 
 export const sameRegions = (a, b) => a.size === b.size && [...a].every(id => b.has(id));
+
+/** Restore requested layers before display, cuts, selection and camera; failures propagate. */
+export async function applyReaderState(target, { model, sections, applyCamera, revealInTree }) {
+  if (target.atlas !== model.settings.atlas) await model.setAtlas(target.atlas);
+  if (target.atlas !== model.settings.atlas) throw new Error(`Atlas not applied: ${target.atlas}`);
+  if (target.detail !== model.settings.detail) await model.setDetail(target.detail);
+  if (target.detail !== model.settings.detail) throw new Error(`Detail level not applied: ${target.detail}`);
+  if (target.internalSystem !== model.settings.internalSystem) model.setInternalSystem(target.internalSystem);
+
+  const settings = model.settings;
+  if (target.hemisphere !== settings.hemisphere) model.setHemisphere(target.hemisphere);
+  if (target.cortexVisible !== settings.cortexVisible) model.setCortexVisible(target.cortexVisible);
+  if (target.internalVisible !== settings.internalVisible) model.setInternalVisible(target.internalVisible);
+  if (target.spinalCordVisible !== settings.spinalCordVisible) {
+    await model.setSpinalCordVisible(target.spinalCordVisible);
+  }
+  if (target.cortexOpacity !== settings.cortexOpacity) model.setCortexOpacity(target.cortexOpacity);
+  if (!sameRegions(target.hiddenRegions, model.settings.hiddenRegions)) {
+    model.loadHiddenRegions([...target.hiddenRegions]);
+  }
+  if (target.surfaceColor !== model.settings.surfaceColor) await sections.setSurfaceColor(target.surfaceColor);
+  if (target.cutAtlas !== sections.state.cutAtlas) await sections.setCutAtlas(target.cutAtlas);
+  if (target.cut === 'off') {
+    if (sections.active) await sections.setMode('off');
+  } else {
+    if (target.cut === 'oblique') sections.setAngles(target.cutTilt, target.cutAzimuth);
+    await sections.setMode(target.cut);
+    sections.setDisplay({ reverse: target.cutReverse });
+    sections.setOffset(target.cutOffset);
+  }
+
+  if (target.isolatedRegion !== model.settings.isolatedRegion) {
+    if (target.isolatedRegion) {
+      model.select(target.isolatedRegion);
+      model.isolate();
+    } else {
+      model.clearIsolation();
+    }
+  }
+  if (target.selectedRegion !== (model.state.selectedRegion?.id ?? null)) model.select(target.selectedRegion);
+  if (target.selectedRegion) revealInTree(target.selectedRegion);
+  applyCamera(target);
+}

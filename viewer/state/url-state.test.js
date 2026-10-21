@@ -29,6 +29,10 @@ test('everything that differs from the default survives a round trip', () => {
   assert.deepEqual(decodeState(encodeState(state)), state);
 });
 
+test('CAB-NP colours survive a round trip', () => {
+  assert.deepEqual(decodeState(encodeState({ surfaceColor: 'cab-np' })), { surfaceColor: 'cab-np' });
+});
+
 test('tissue colors explicitly survive reload over the region default', () => {
   const saved = encodeState({ surfaceColor: 'tissue' });
   assert.equal(saved, 'colors=tissue');
@@ -39,22 +43,42 @@ test('a leading hash is accepted, because that is what location.hash gives', () 
   assert.deepEqual(decodeState('#atlas=destrieux'), { atlas: 'destrieux' });
 });
 
-test('malformed input yields nothing instead of throwing', () => {
-  for (const hash of ['', '#', '???', '#=&=&', 'atlas', '#%%%%']) {
+test('empty links and unknown keys carry no scene state', () => {
+  for (const hash of ['', '#', '???', '#=&=&', '#%%%%', '#unrelated=1']) {
     assert.deepEqual(decodeState(hash), {}, `${hash} should decode to nothing`);
   }
 });
 
-test('out-of-range and unknown values are dropped one by one', () => {
-  const decoded = decodeState(
-    '#atlas=destrieux&hemi=banana&opacity=5&cortex=maybe&colors=2&nonsense=1');
-  assert.deepEqual(decoded, { atlas: 'destrieux' });
+test('invalid known URL fields reject the request and name the field', () => {
+  const invalid = {
+    anatomy: ['', ' '], atlas: [''], cuts: [''], system: [''], detail: [''],
+    region: [''], isolate: [''], view: [''], hemi: ['banana'],
+    opacity: ['5', '-0.1', '', ' ', 'NaN', 'Infinity', 'true'],
+    cortex: ['maybe'], internal: ['true'], cord: ['2'], colors: ['2', '0', '1'],
+    cut: ['sideways'], pos: ['9999', '', ' '], tilt: ['91'], az: ['181'], rev: ['yes'],
+    lang: ['es'],
+  };
+  for (const [field, values] of Object.entries(invalid)) {
+    for (const value of values) {
+      assert.throws(() => decodeState(`#${field}=${encodeURIComponent(value)}`),
+        new RegExp(field), `${field}=${value} must be rejected`);
+    }
+  }
+  assert.throws(() => decodeState('#atlas'), /atlas/);
+});
+
+test('the URL decoder requires a string hash', () => {
+  for (const value of [null, 5, {}, []]) assert.throws(() => decodeState(value), /string/i);
+});
+
+test('duplicate known fields are ambiguous and reject the request', () => {
+  assert.throws(() => decodeState('#opacity=0.2&opacity=0.8'), /opacity/);
 });
 
 test('opacity survives at the edges of its range but not beyond', () => {
   assert.equal(decodeState('#opacity=0').cortexOpacity, 0);
   assert.equal(decodeState('#opacity=1').cortexOpacity, 1);
-  assert.equal(decodeState('#opacity=-0.1').cortexOpacity, undefined);
+  assert.throws(() => decodeState('#opacity=-0.1'), /opacity/);
 });
 
 test('atlas, region and view pass through as opaque strings', () => {
@@ -87,9 +111,12 @@ test('a cut plane survives a shared link, and an uncut brain does not mention on
   assert.deepEqual(decodeState(encodeState(sagittal)), sagittal);
   const oblique = { cut: 'oblique', cutTilt: 10, cutAzimuth: -20 };
   assert.deepEqual(decodeState(encodeState(oblique)), oblique);
-  assert.equal(decodeState('#cut=sideways').cut, undefined);
-  assert.equal(decodeState('#pos=9999').cutOffset, undefined);
-  assert.equal(decodeState('#tilt=91').cutTilt, undefined);
+  assert.deepEqual(decodeState('#cut=off&pos=-512&tilt=0&az=-180&rev=0'), {
+    cut: 'off', cutOffset: -512, cutTilt: 0, cutAzimuth: -180, cutReverse: false,
+  });
+  assert.deepEqual(decodeState('#pos=512&tilt=90&az=180'), {
+    cutOffset: 512, cutTilt: 90, cutAzimuth: 180,
+  });
 });
 
 test('a system study survives sharing a link', () => {
@@ -134,4 +161,18 @@ test('a link naming no brain leaves the choice to the published default', () => 
   // of a brain is fetched.
   assert.equal(decodeState('#atlas=destrieux').anatomy, undefined);
   assert.ok(!encodeState({ atlas: 'destrieux' }).includes('anatomy'));
+});
+
+test('a supplied language survives serialization even when English is active', () => {
+  for (const lang of ['en', 'fr']) {
+    const hash = encodeState({ atlas: 'destrieux', lang });
+    assert.equal(hash, `atlas=destrieux&lang=${lang}`);
+    assert.equal(decodeState(hash).lang, lang);
+  }
+});
+
+test('an absent language is omitted so startup can use the saved preference', () => {
+  for (const state of [{}, { lang: undefined }, { lang: null }]) {
+    assert.equal(encodeState({ atlas: 'destrieux', ...state }), 'atlas=destrieux');
+  }
 });

@@ -1,4 +1,4 @@
-import { NETWORK_NAMES_FR } from './networks.fr.js';
+import { CAB_NP_NAMES_FR, NETWORK_NAMES_FR } from './networks.fr.js';
 
 /**
  * Yeo's seven networks: the names readers see, and what a region belongs to.
@@ -7,7 +7,7 @@ import { NETWORK_NAMES_FR } from './networks.fr.js';
  * here so a reader meets "Somatomotor" rather than "SomMot"; these are the
  * published names, not expansions invented for this viewer.
  */
-export const NETWORK_NAMES = {
+const NETWORK_NAMES = {
   Vis: 'Visual',
   SomMot: 'Somatomotor',
   DorsAttn: 'Dorsal attention',
@@ -17,12 +17,29 @@ export const NETWORK_NAMES = {
   Default: 'Default mode',
 };
 
+/**
+ * CAB-NP's twelve networks as Ji et al. (2019) name them. Keys are the
+ * network names in its published label key, which the partition file carries.
+ */
+const CAB_NP_NAMES = {
+  Visual1: 'Primary visual',
+  Visual2: 'Secondary visual',
+  Somatomotor: 'Somatomotor',
+  'Cingulo-Opercular': 'Cingulo-opercular',
+  'Dorsal-Attention': 'Dorsal attention',
+  Language: 'Language',
+  Frontoparietal: 'Frontoparietal',
+  Auditory: 'Auditory',
+  Default: 'Default mode',
+  'Posterior-Multimodal': 'Posterior multimodal',
+  'Ventral-Multimodal': 'Ventral multimodal',
+  'Orbito-Affective': 'Orbito-affective',
+};
+
 /*
- * Under this a share is registration spill across a boundary rather than
- * membership: the networks are a group average projected through two
- * registrations, and a percent or two of a parcel means nothing at that
- * resolution. Dropped, never renormalised — the remaining shares still say
- * what fraction of the region they are, so they need not total 100%.
+ * Hide small contributions to keep the chart readable. This display threshold
+ * does not establish whether a contribution is registration error. Shares are
+ * never renormalised, so the displayed contributions need not total 100%.
  */
 export const MINIMUM_SHARE = 0.05;
 
@@ -31,9 +48,39 @@ export function networkName(key, lang = 'en') {
   return table[key] ?? NETWORK_NAMES[key] ?? key;
 }
 
-/** A region's networks, largest share first, spill removed. */
+export function cabNpName(key, lang = 'en') {
+  const name = (lang === 'fr' ? CAB_NP_NAMES_FR : CAB_NP_NAMES)[key];
+  if (!name) throw new Error(`Unknown CAB-NP network: ${key}`);
+  return name;
+}
+
+/** The published CAB-NP partition, checked against the regions it assigns. */
+export function validateCabNp(partition, regions) {
+  if (partition?.id !== 'cab-np' || !Array.isArray(partition.networks)) {
+    throw new Error('Invalid CAB-NP partition.');
+  }
+  for (const network of partition.networks) {
+    cabNpName(network);
+    if (partition.colors?.[network]?.length !== 3) throw new Error(`CAB-NP network has no colour: ${network}`);
+  }
+  for (const [id, network] of Object.entries(partition.regions ?? {})) {
+    if (regions.get(id)?.atlas !== partition.atlas || !partition.networks.includes(network)) {
+      throw new Error(`Invalid CAB-NP assignment: ${id}`);
+    }
+  }
+  return partition;
+}
+
+/** A region's networks, largest share first, below-threshold shares hidden. */
 export function networksOf(region, minimum = MINIMUM_SHARE) {
   return (region?.networks ?? []).filter(share => share.fraction >= minimum);
+}
+
+/** The samples counted by the build, excluding samples assigned to no network. */
+export function networkBasis(region) {
+  if (['destrieux', 'hcp-mmp'].includes(region.atlas)) return 'vertices';
+  if (region.atlas === 'nextbrain' && region.kind === 'tissue-region') return 'voxels';
+  throw new Error(`Unknown network composition basis for ${region.id ?? region.atlas}.`);
 }
 
 /** The network a region mostly belongs to, or null if it belongs to none. */

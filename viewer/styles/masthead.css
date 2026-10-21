@@ -1,22 +1,17 @@
-/* Masthead: a ruled banner of what is loaded — identity, subject, atlas, colour, internal anatomy — then the actions. */
+/* Masthead: identity, then what is loaded as caption and control pairs, then the actions. */
 #masthead {
   position: relative;
   grid-column: 1 / -1;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: var(--space-8);
   min-width: 0;
+  padding: 0 var(--space-2) 0 var(--space-4);
   background: var(--surface-base);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 40;
 }
-.identity {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-4);
-  border-right: 1px solid var(--border-subtle);
-}
+.identity { display: flex; flex: none; align-items: center; gap: var(--space-2); }
 .brand-mark { flex: none; width: 24px; height: 24px; color: var(--text-primary); }
 .brand {
   font-size: var(--text-title);
@@ -30,7 +25,7 @@
   flex: none;
   align-items: center;
   gap: var(--space-1);
-  padding: 0 var(--space-2);
+  margin-left: auto;
 }
 .masthead-action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 #masthead-more[hidden] { display: inline-flex !important; visibility: hidden; }
@@ -58,28 +53,18 @@
 }
 .skip-link:not(:focus) { width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
 
-/* Data banner: each field is a ruled cell; caption and value share the one baseline. */
+/* Every value is a 28px tonal control, so captions and values share one line. */
 .masthead-data-wrap {
   position: relative;
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  align-items: center;
   min-width: 0;
 }
 #app:is([data-status="loading"], [data-status="error"]) .masthead-data-wrap { visibility: hidden; }
 .data-toggle { display: none; }
-.masthead-data { display: flex; flex: 1 1 auto; align-items: stretch; min-width: 0; }
-.data-field {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: start;
-  align-content: center;
-  align-items: baseline;
-  column-gap: 6px;
-  flex: 1 1 auto;
-  min-width: 0;
-  padding: 0 var(--space-4);
-  border-right: 1px solid var(--border-subtle);
-}
+.masthead-data { display: flex; align-items: center; gap: var(--space-6); min-width: 0; }
+.data-field { display: flex; flex: none; align-items: center; gap: var(--space-2); min-width: 0; }
 .data-field:not(:has(> :not([hidden], .data-note))) { display: none; }
 .data-label {
   margin: 0;
@@ -101,7 +86,6 @@
   color: var(--text-primary);
 }
 
-/* A select at rest is its value and the stroked caret; the wash comes on hover or while open. */
 #masthead-data select {
   width: auto;
   max-width: 240px;
@@ -109,28 +93,27 @@
   field-sizing: content;
   padding: 0 26px 0 var(--space-2);
   border-color: transparent;
-  background-color: transparent;
-  /* The caret ends 6px inside the wash, 10px after the value. */
+  background-color: var(--surface-tonal);
+  /* The caret ends 6px inside the control, 10px after the value. */
   background-position: calc(100% - 11px) calc(50% + 1px), calc(100% - 6px) calc(50% + 1px);
   color: var(--text-primary);
   font-size: var(--text-small);
   font-weight: 500;
 }
-#masthead-data select:is(:hover, :open):not(:disabled) { border-color: transparent; background-color: var(--surface-tonal); }
-#masthead-data select:disabled { border-color: transparent; background-color: transparent; color: var(--text-tertiary); }
+#masthead-data select:is(:hover, :open):not(:disabled) { border-color: transparent; background-color: var(--surface-tonal-hover); }
+#masthead-data select:disabled { border-color: transparent; background-color: var(--surface-tonal); color: var(--text-tertiary); }
 
-/* Choices sit in the banner as words; the selected one carries the ring (3:1 on the ground), not teal alone. */
-#masthead .segmented { flex: none; gap: 2px; padding: 0; background: none; }
+#masthead .segmented { flex: none; }
 #masthead .segmented button {
   display: inline-flex;
   flex-direction: column;
   justify-content: center;
-  height: 28px;
+  align-items: center;
   min-width: 0;
-  padding: 0 var(--space-2);
-  color: var(--text-secondary);
+  padding: 0 10px;
 }
-/* The bold label's width is held, so a choice never moves its neighbours or the rules. */
+#masthead-data .segmented button { height: 24px; }
+/* The bold label's width is held, so a choice never moves its neighbours. */
 #masthead .segmented button::after {
   content: attr(data-label);
   height: 0;
@@ -138,114 +121,101 @@
   visibility: hidden;
   font-weight: 600;
 }
-#masthead .segmented button:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
-#masthead .segmented button[aria-pressed="true"],
-#masthead .segmented button[aria-pressed="true"]:hover {
-  background: var(--surface-raised);
-  color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--thumb-ring);
-}
-#masthead .segmented button[data-loading="true"] { color: var(--text-tertiary); }
 @media (prefers-contrast: more) {
   #masthead-data select, #masthead-data select:is(:hover, :open):not(:disabled) { border-color: var(--border-control); }
 }
 
-/* Where the banner does not fit, a summary button opens the same fields as a popover. */
-@media (max-width: 1279px), (max-height: 480px) and (orientation: landscape) {
-  .masthead-data-wrap { align-items: center; padding: 0 var(--space-2); }
-  .masthead-end { border-left: 1px solid var(--border-subtle); }
-  .data-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
-    max-width: 100%;
-    padding: 0 var(--space-2);
-    background: none;
-    color: var(--text-primary);
-    font-weight: 500;
-  }
-  .data-toggle:hover:not(:disabled) { background: var(--surface-tonal); }
-  .data-toggle[aria-expanded="true"] { background: var(--surface-tonal); }
-  .data-toggle::after {
-    content: "";
-    flex: none;
-    width: 6px;
-    height: 6px;
-    margin: 0 4px 0 2px;
-    border-right: 1.5px solid var(--text-secondary);
-    border-bottom: 1.5px solid var(--text-secondary);
-    transform: translateY(-2px) rotate(45deg);
-    transition: transform var(--ui-transition) var(--ease-ui);
-  }
-  .data-toggle[aria-expanded="true"]::after { transform: translateY(1px) rotate(225deg); }
-  .data-summary { display: flex; align-items: baseline; gap: 6px; min-width: 0; white-space: nowrap; }
-  /* Only the subject truncates; header.js drops internal anatomy, then the atlas, then the colour. */
-  .data-summary > * { flex: none; }
-  .data-summary > [data-part="subject"] { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-  .data-summary-sep { color: var(--text-secondary); }
-  .data-summary[data-short~="detail"] > [data-part="detail"],
-  .data-summary[data-short~="atlas"] > [data-part="atlas"],
-  .data-summary[data-short~="colour"] > [data-part="colour"] { display: none; }
-
-  /* The banner turned on its side: one ruled field per row, caption, value, then what it means. */
-  .masthead-data {
-    position: absolute;
-    top: calc(100% + var(--space-1));
-    left: var(--space-2);
-    display: none;
-    flex-direction: column;
-    width: min(360px, calc(100vw - var(--space-6)));
-    max-height: calc(100dvh - var(--header-height) - var(--space-4));
-    overflow-y: auto;
-    background: var(--surface-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-panel);
-    box-shadow: var(--shadow-popover);
-  }
-  .masthead-data[data-open] { display: flex; }
-  .data-field {
-    grid-template-columns: minmax(0, 1fr);
-    grid-auto-flow: row;
-    justify-items: start;
-    row-gap: 2px;
-    flex: none;
-    padding: var(--space-3) var(--space-4);
-    border: 0;
-  }
-  .data-field + .data-field { border-top: 1px solid var(--border-subtle); }
-  /* Values align with the caption; their hover wash reaches into the inset. */
-  .masthead-data :is(select, .segmented, .study-name) { margin-left: calc(-1 * var(--space-2)); max-width: calc(100% + var(--space-2)); }
-  .masthead-data .study-name { margin-left: 0; }
-  .data-note {
-    display: block;
-    font-size: var(--text-micro);
-    line-height: 1.4;
-    color: var(--text-secondary);
-  }
-
-  /* A tract reference offers no choices: its name sits in the bar, with no popover behind it. */
-  #masthead[data-reference] .data-toggle { display: none; }
-  #masthead[data-reference] .masthead-data {
-    position: static;
-    display: flex;
-    width: auto;
-    max-height: none;
-    overflow: visible;
-    background: none;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  #masthead[data-reference] .data-field {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    align-items: baseline;
-    column-gap: 6px;
-    padding: 0 var(--space-2);
-  }
-  #masthead[data-reference] .data-note { display: none; }
+/* Popovers grow from their trigger; closing is immediate. */
+:is(#masthead-menu, .masthead-data[data-open]) {
+  transition: opacity 160ms var(--ease-ui), transform 160ms var(--ease-ui);
 }
+@starting-style {
+  :is(#masthead-menu, .masthead-data[data-open]) { opacity: 0; transform: scale(0.97); }
+}
+
+/* Where the bar does not fit (header.js measures it), a summary button opens the same fields as a popover. */
+#masthead[data-collapsed] { gap: var(--space-4); }
+#masthead[data-collapsed] .masthead-data-wrap { flex: 1 1 auto; }
+#masthead[data-collapsed] .data-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+#masthead[data-collapsed] .data-toggle[aria-expanded="true"] { background: var(--surface-tonal-hover); }
+#masthead[data-collapsed] .data-toggle::after {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin: 0 4px 0 2px;
+  border-right: 1.5px solid var(--text-secondary);
+  border-bottom: 1.5px solid var(--text-secondary);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--ui-transition) var(--ease-ui);
+}
+#masthead[data-collapsed] .data-toggle[aria-expanded="true"]::after { transform: translateY(1px) rotate(225deg); }
+#masthead[data-collapsed] .data-summary { display: flex; align-items: baseline; gap: 6px; min-width: 0; white-space: nowrap; }
+/* Only the subject truncates; header.js drops internal anatomy, then the atlas, then the colour. */
+#masthead[data-collapsed] .data-summary > * { flex: none; }
+#masthead[data-collapsed] .data-summary > [data-part="subject"] { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+#masthead[data-collapsed] .data-summary-sep { color: var(--text-tertiary); }
+#masthead[data-collapsed] .data-summary[data-short~="detail"] > [data-part="detail"],
+#masthead[data-collapsed] .data-summary[data-short~="atlas"] > [data-part="atlas"],
+#masthead[data-collapsed] .data-summary[data-short~="colour"] > [data-part="colour"] { display: none; }
+
+/* The bar turned on its side: one ruled field per row, caption, value, then what it means. */
+#masthead[data-collapsed] .masthead-data {
+  position: absolute;
+  top: calc(100% + var(--space-3));
+  left: 0;
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: min(360px, calc(100vw - var(--space-6)));
+  max-height: calc(100dvh - var(--header-height) - var(--space-4));
+  overflow-y: auto;
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-popover);
+  transform-origin: top left;
+}
+#masthead[data-collapsed] .masthead-data[data-open] { display: flex; }
+#masthead[data-collapsed] .data-field {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: var(--space-3) var(--space-4);
+}
+#masthead[data-collapsed] .data-field + .data-field { border-top: 1px solid var(--border-subtle); }
+#masthead[data-collapsed] .data-note {
+  display: block;
+  font-size: var(--text-micro);
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* A tract reference offers no choices: its name sits in the bar, with no popover behind it. */
+#masthead[data-collapsed][data-reference] .data-toggle { display: none; }
+#masthead[data-collapsed][data-reference] .masthead-data {
+  position: static;
+  display: flex;
+  width: auto;
+  max-height: none;
+  overflow: visible;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+#masthead[data-collapsed][data-reference] .data-field { flex-direction: row; align-items: center; padding: 0; }
+#masthead[data-collapsed][data-reference] .data-note { display: none; }
 
 /* Settings popover: a ruled datasheet of preferences, then the commands. */
 #masthead-menu {
@@ -261,19 +231,20 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-panel);
   box-shadow: var(--shadow-popover);
+  transform-origin: top right;
 }
 .menu-row {
   display: grid;
   /* Wide enough for Système | Clair | Sombre at full weight. */
-  grid-template-columns: minmax(0, 1fr) 176px;
+  grid-template-columns: minmax(0, 1fr) 184px;
   align-items: center;
   gap: var(--space-6);
   min-height: 44px;
-  padding: 0 var(--space-3) 0 var(--space-4);
+  padding: 0 var(--space-2) 0 var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
 }
 .menu-label { font-size: var(--text-ui); color: var(--text-primary); }
-#masthead-menu .segmented button { flex: 1; align-items: center; }
+#masthead-menu .segmented button { flex: 1; }
 /* Three words of unequal length: each keeps its own width and the spare room is shared. */
 #masthead-menu #theme-switch button { flex: 1 1 auto; }
 .menu-item {
@@ -282,7 +253,7 @@
   justify-content: space-between;
   gap: var(--space-3);
   width: 100%;
-  height: 44px;
+  height: 40px;
   padding: 0 var(--space-3) 0 var(--space-4);
   border-radius: 0;
   background: none;
@@ -294,33 +265,15 @@
 .menu-item:hover:not(:disabled) { background: var(--surface-hover); }
 .menu-item:focus-visible { outline-offset: -2px; }
 
-/* Provenance: the shared dialog shell (components.css), then one ruled datasheet of facts. */
-#provenance-facts {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  font-size: var(--text-ui);
-}
-#provenance-facts dt, #provenance-facts dd { padding: var(--space-3) 0; border-bottom: 1px solid var(--border-subtle); }
-#provenance-facts dt { padding-right: var(--space-4); font-size: var(--text-small); line-height: 20px; color: var(--text-secondary); }
-#provenance-facts dd { display: grid; gap: var(--space-3); min-width: 0; line-height: 20px; }
-.provenance-item { display: grid; justify-items: start; gap: 2px; min-width: 0; }
-.provenance-value { overflow-wrap: anywhere; }
-.provenance-item .measure { font-size: var(--text-micro); }
-.provenance-note { font-size: var(--text-small); line-height: 18px; color: var(--text-secondary); }
-.provenance-link { color: var(--accent); font-size: var(--text-small); line-height: 18px; text-underline-offset: 3px; overflow-wrap: anywhere; }
-.provenance-link:hover { color: var(--accent-hover); }
-
 /* Phones: the mark alone names the app, the summary takes the room, fullscreen and provenance move into the menu. */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
   #masthead {
     grid-column: 1;
     grid-row: 1;
+    gap: var(--space-2);
     min-height: 52px;
-    padding-top: env(safe-area-inset-top);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+    padding: env(safe-area-inset-top) max(var(--space-1), env(safe-area-inset-right)) 0 max(var(--space-3), env(safe-area-inset-left));
   }
-  .identity { padding: 0 var(--space-3); }
   .brand {
     position: absolute;
     width: 1px;
@@ -329,11 +282,11 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
-  .masthead-data-wrap { position: static; padding: 0 var(--space-1); }
-  .masthead-end { gap: 0; padding: 0 var(--space-1); }
+  .masthead-data-wrap { position: static; }
+  .masthead-end { gap: 0; }
   #viewport-fullscreen { display: none; }
   #menu-fullscreen:not([hidden]), #menu-provenance { display: flex; }
-  .masthead-data {
+  #masthead[data-collapsed] .masthead-data {
     left: max(var(--space-3), env(safe-area-inset-left));
     width: min(360px, calc(100vw - 2 * var(--space-3)));
     /* Below the 52px bar, its rule, and a gutter. */
@@ -344,9 +297,6 @@
   /* The French labels and the three-way theme choice share a 390px screen. */
   .menu-row { gap: var(--space-4); }
 
-  #provenance-facts { grid-template-columns: minmax(0, 1fr); }
-  #provenance-facts dt { padding: var(--space-3) 0 0; border: 0; }
-  #provenance-facts dd { padding: var(--space-1) 0 var(--space-3); }
 }
 
 /* Touch: 44px targets wherever the choices sit in a popover rather than the 48px bar. */
@@ -355,7 +305,7 @@
   #masthead-data[data-open] select,
   #masthead-menu .segmented button { height: 44px; }
   /* A fingertip needs the width too: the choices share the row. */
-  #masthead-data[data-open] .segmented { justify-self: stretch; margin-left: 0; max-width: none; }
+  #masthead-data[data-open] .segmented { align-self: stretch; }
   #masthead-data[data-open] .segmented button { flex: 1; align-items: center; }
   .menu-row { min-height: 52px; }
 }
@@ -363,8 +313,8 @@
 /* A phone on its side has width but little height: two columns, no scrolling. */
 @media (max-height: 480px) and (orientation: landscape) {
   #masthead { min-height: var(--header-height); }
-  .masthead-data { width: min(640px, calc(100vw - 2 * var(--space-3))); }
-  .masthead-data[data-open] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .masthead-data[data-open] .data-field:nth-child(2) { border-top: 0; }
-  .masthead-data[data-open] .data-field:nth-child(even) { border-left: 1px solid var(--border-subtle); }
+  #masthead[data-collapsed] .masthead-data { width: min(640px, calc(100vw - 2 * var(--space-3))); }
+  #masthead[data-collapsed] .masthead-data[data-open] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #masthead[data-collapsed] .data-field:nth-child(2) { border-top: 0; }
+  #masthead[data-collapsed] .data-field:nth-child(even) { border-left: 1px solid var(--border-subtle); }
 }

@@ -16,8 +16,17 @@ body {
 
 button, input, select, output { font: inherit; color: inherit; }
 input { caret-color: var(--accent); }
+output { font-variant-numeric: tabular-nums; }
 ::selection { color: var(--surface-base); background: var(--accent); }
-* { scrollbar-width: thin; scrollbar-color: var(--border-control) transparent; }
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text-tertiary) 45%, transparent) transparent; }
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color var(--ui-transition) var(--ease-ui);
+}
+a:hover { color: var(--accent-hover); }
 
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
 h1, h2, h3 { text-wrap: balance; }
@@ -62,11 +71,15 @@ button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
   white-space: nowrap;
 }
 
+/* Reduced motion keeps fades and colour changes; nothing travels, grows or loops. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
+  /* The sheet and the scaled popover and dialog entries keep only their fade. */
+  :is(#sheet, #masthead-menu, .masthead-data, .stage-popover, dialog) { transition-property: opacity !important; }
 }
 
 @media (forced-colors: active) {

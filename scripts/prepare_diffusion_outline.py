@@ -1,7 +1,7 @@
 """Derive a display outline from the tract reference's skull-stripped T1."""
 
-import hashlib
 import json
+import sys
 from pathlib import Path
 
 import nibabel as nib
@@ -11,7 +11,8 @@ import yaml
 from scipy import ndimage
 from skimage.measure import marching_cubes
 
-ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from brain_model.sources import ROOT, sha256
 
 
 def prepare_outline():
@@ -45,8 +46,8 @@ def prepare_outline():
     target.write_bytes(mesh.export(file_type="glb"))
     provenance = {
         "source": descriptor["file"],
-        "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-        "published_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+        "source_sha256": sha256(source),
+        "published_sha256": sha256(target),
         "method": "Lewiner marching cubes on the largest connected T1 "
                   "component above the configured intensity threshold",
         "intensity_threshold": settings["intensity_threshold"],

@@ -6,7 +6,96 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from brain_model.volumes import encode_volume, export_volumes, read_published
+from brain_model.labels.volumes import (
+    encode_volume,
+    export_volumes,
+    load_on_grid,
+    validate_same_grid,
+)
+from tests.support import read_published
+
+
+@pytest.fixture
+def small_subject(tmp_path):
+    directory = tmp_path / "subject" / "mri"
+    directory.mkdir(parents=True)
+    voxels = np.arange(60, dtype=np.uint8).reshape(3, 4, 5)
+    nib.save(nib.MGHImage(voxels, np.eye(4)), directory / "orig.mgz")
+    nib.save(
+        nib.MGHImage(np.ones(voxels.shape, dtype=np.int32), np.eye(4)),
+        directory / "aseg.mgz",
+    )
+    return {
+        "source_directory": directory.parent,
+        "output_directory": tmp_path / "published",
+        "sections": {},
+        "anatomy": {"individual": True},
+    }
+
+
+def write_changed_grid(path, mismatch):
+    shape = (3, 4, 5)
+    affine = np.eye(4)
+    if mismatch == "translation":
+        affine[0, 3] = 25
+    elif mismatch == "orientation":
+        affine[0, 0] = -1
+    elif mismatch == "shape":
+        shape = (4, 4, 5)
+    elif mismatch == "frame_count":
+        shape = (3, 4, 5, 2)
+    nib.save(nib.MGHImage(np.ones(shape, dtype=np.uint8), affine), path)
+
+
+@pytest.mark.parametrize(
+    "mismatch", ["translation", "orientation", "shape", "frame_count"]
+)
+def test_load_on_grid_rejects_a_different_native_grid(small_subject, mismatch):
+    path = small_subject["source_directory"] / "mri/orig.mgz"
+    write_changed_grid(path, mismatch)
+    with pytest.raises(ValueError, match="grid"):
+        load_on_grid(small_subject, path)
+
+
+def test_load_on_grid_accepts_matching_images_without_changing_voxels(small_subject):
+    path = small_subject["source_directory"] / "mri/orig.mgz"
+    image = load_on_grid(small_subject, path)
+    np.testing.assert_array_equal(
+        np.asarray(image.dataobj), np.arange(60, dtype=np.uint8).reshape(3, 4, 5)
+    )
+    np.testing.assert_array_equal(image.affine, np.eye(4))
+
+
+@pytest.mark.parametrize(
+    "mismatch", ["translation", "orientation", "shape", "frame_count"]
+)
+def test_export_rejects_a_different_native_grid_before_writing(small_subject, mismatch):
+    path = small_subject["source_directory"] / "mri/orig.mgz"
+    write_changed_grid(path, mismatch)
+    with pytest.raises(ValueError, match="grid"):
+        export_volumes(small_subject)
+    assert not small_subject["output_directory"].exists()
+
+
+def test_export_preserves_matching_native_grids(small_subject):
+    records = export_volumes(small_subject)
+    for name, filename in [("mri", "orig"), ("segmentation", "aseg")]:
+        image = nib.load(small_subject["source_directory"] / "mri" / f"{filename}.mgz")
+        record = records[name]
+        restored = read_published(
+            record, small_subject["output_directory"] / record["file"], image.shape
+        )
+        np.testing.assert_array_equal(restored, np.asarray(image.dataobj))
+
+
+def test_grid_validation_checks_tkregister_even_with_matching_image_affines():
+    voxels = np.zeros((3, 4, 5), dtype=np.int32)
+    reference = nib.MGHImage(voxels, np.eye(4))
+    image = nib.MGHImage(voxels, np.eye(4))
+    image.header.set_zooms((2, 1, 1))
+    np.testing.assert_array_equal(image.affine, reference.affine)
+    with pytest.raises(ValueError, match="tkregister"):
+        validate_same_grid(image, reference)
 
 
 def test_preserves_every_voxel_and_records_tkregister_affine(tmp_path):

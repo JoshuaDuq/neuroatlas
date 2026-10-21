@@ -21,6 +21,8 @@ No additional user roles were established for this UI redesign.
 - Explore and search cortical and internal anatomical regions.
 - Inspect source labels, measurements, functional networks, and documented
   neuropsychological associations.
+- Compare SNAIL's Destrieux and HCP-MMP atlases by pial surface area, outline
+  exact intersections, and export every contribution in CSV at full precision.
 - Switch anatomies, cortical atlases, surface appearances, and hemispheres.
 - Hide and restore anatomical parts, create anatomical cuts, and inspect linked
   MRI sections.

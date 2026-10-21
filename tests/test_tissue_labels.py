@@ -4,11 +4,107 @@ import json
 
 import nibabel as nib
 import numpy as np
-from nibabel.freesurfer.io import read_annot, read_geometry
+import pytest
+from nibabel.freesurfer.io import (
+    read_annot,
+    read_geometry,
+    write_annot,
+    write_geometry,
+)
 
+from brain_model.labels.tissue_labels import export_tissue_labels
+from brain_model.labels.volumes import offset_by
 from brain_model.sources import read_color_table, read_config
-from brain_model.tissue_labels import export_tissue_labels
-from brain_model.volumes import offset_by, read_published
+from tests.support import read_published
+
+
+@pytest.fixture
+def small_ribbon_subject(tmp_path):
+    directory = tmp_path / "subject"
+    for name in ["mri", "surf", "label"]:
+        (directory / name).mkdir(parents=True)
+    source = np.zeros((3, 4, 5), dtype=np.int32)
+    source[0, 0, 0], source[1, 1, 1], source[2, 2, 2] = 11101, 12101, 2
+    image = nib.MGHImage(source, np.eye(4))
+    nib.save(image, directory / "mri/aparc.a2009s+aseg.mgz")
+    ribbon = np.zeros(source.shape, dtype=np.int32)
+    ribbon[0, 0, 0], ribbon[1, 1, 1] = 3, 42
+    nib.save(nib.MGHImage(ribbon, np.eye(4)), directory / "mri/ribbon.mgz")
+    vertices = nib.affines.apply_affine(
+        image.header.get_vox2ras_tkr(), [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
+    )
+    regions = []
+    for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
+        write_annot(
+            directory / "label" / f"{prefix}.HCPMMP1.annot",
+            np.ones(3, dtype=int),
+            np.array([[1, 1, 1, 0], [10, 20, 30, 0]]),
+            ["unknown", "parcel"],
+        )
+        for surface in ["pial", "white"]:
+            write_geometry(
+                directory / "surf" / f"{prefix}.{surface}",
+                vertices,
+                np.array([[0, 1, 2]]),
+            )
+        for label_id, kind in [(0, "unknown"), (1, "cortex")]:
+            regions.append(
+                {
+                    "id": f"hcp-mmp:{hemisphere}:{label_id}",
+                    "atlas": "hcp-mmp",
+                    "hemisphere": hemisphere,
+                    "source_label_id": label_id,
+                    "kind": kind,
+                }
+            )
+    config = {
+        "source_directory": directory,
+        "output_directory": tmp_path / "published",
+        "anatomy": {"individual": True},
+    }
+    return config, {"regions": regions}
+
+
+@pytest.mark.parametrize("mismatch", ["translation", "orientation", "shape"])
+def test_hcp_projection_rejects_a_different_ribbon_grid(small_ribbon_subject, mismatch):
+    config, manifest = small_ribbon_subject
+    path = config["source_directory"] / "mri/ribbon.mgz"
+    image = nib.load(path)
+    ribbon = np.asarray(image.dataobj)
+    affine = image.affine.copy()
+    if mismatch == "translation":
+        affine[0, 3] += 25
+    elif mismatch == "orientation":
+        affine[0, 0] = -1
+    elif mismatch == "shape":
+        ribbon = np.stack([ribbon, ribbon], axis=-1)
+    nib.save(nib.MGHImage(ribbon, affine), path)
+    with pytest.raises(ValueError, match="grid"):
+        export_tissue_labels(config, manifest)
+
+
+def test_hcp_projection_preserves_a_matching_ribbon_grid(small_ribbon_subject):
+    config, manifest = small_ribbon_subject
+    metadata = export_tissue_labels(config, manifest)
+    record = metadata["atlases"]["hcp-mmp"]
+    codes = read_published(
+        record, config["output_directory"] / record["file"], (3, 4, 5)
+    )
+    labels = record["labels"]
+    assert labels[codes[0, 0, 0]]["region_id"] == "hcp-mmp:left:1"
+    assert labels[codes[1, 1, 1]]["region_id"] == "hcp-mmp:right:1"
+    assert labels[codes[2, 2, 2]]["source_label_id"] == 2
+
+
+def test_hcp_projection_checks_the_actual_segmentation_grid(small_ribbon_subject):
+    config, manifest = small_ribbon_subject
+    path = config["source_directory"] / "mri/aparc.a2009s+aseg.mgz"
+    image = nib.load(path)
+    affine = image.affine.copy()
+    affine[0, 3] += 25
+    nib.save(nib.MGHImage(np.asarray(image.dataobj), affine), path)
+    with pytest.raises(ValueError, match="scanner affine"):
+        export_tissue_labels(config, manifest)
 
 
 def test_published_anatomical_labels_survive_transport_and_match_region_names(tmp_path):
