@@ -1,7 +1,5 @@
-import { openClinicalRegion } from '../clinical/navigation.js';
-
-export async function openCircuitLandmark(model, sections, step) {
-  await openClinicalRegion(model, sections, step.region);
+/** Once the landmark is drawn and selected: uncover it and show its own side. */
+export function showCircuitLandmark(model, step) {
   if (step.covering_region) model.hideRegions([step.covering_region]);
   const region = model.regions.get(step.region);
   model.setHemisphere(region.hemisphere === 'midline' ? 'both' : region.hemisphere);

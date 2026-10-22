@@ -3,7 +3,9 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { inspectorEmptyChrome } from '../panels/inspector.js';
 import { relatedRegionVisible } from '../panels/clinical.js';
-import { colophonParts, dataSummary, subjectName } from './header.js';
+import {
+  atlasOption, colophonParts, colourGroups, colourOption, dataSummary, loadingText, subjectName,
+} from './header.js';
 import { t } from '../../i18n/translations.js';
 
 const html = await readFile(new URL('../../../index.html', import.meta.url), 'utf8');
@@ -96,8 +98,9 @@ test('cut and display controls live on the stage, not in the panel', () => {
   assert.equal(/\binstrument\b/.test(tagWithId('cut-mode')), false);
 });
 
-test('the Section and Display tools open their popovers and say so', () => {
-  for (const [tool, popover] of [['section-tool', 'section-popover'], ['display-tool', 'display-popover']]) {
+test('the View, Section and Display tools open their popovers and say so', () => {
+  for (const [tool, popover] of [['view-tool', 'view-popover'], ['section-tool', 'section-popover'],
+    ['display-tool', 'display-popover']]) {
     const button = tagWithId(tool);
     assert.match(button, /aria-haspopup="dialog"/);
     assert.match(button, /aria-expanded="false"/);
@@ -108,13 +111,24 @@ test('the Section and Display tools open their popovers and say so', () => {
   }
 });
 
-test('the presets, then the tools, share one plate; the section bar waits for a plane', () => {
+test('three worded tools share one plate at every size; the section bar waits for a plane', () => {
   const stage = stageHtml();
-  const views = stage.indexOf('id="views"');
-  assert.ok(views < stage.indexOf('id="section-tool"'));
-  assert.ok(stage.indexOf('id="section-tool"') < stage.indexOf('id="display-tool"'));
-  assert.match(tagWithId('views'), /role="toolbar"/);
+  const toolbar = stage.slice(stage.indexOf('id="stage-toolbar"'), stage.indexOf('id="section-bar"'));
+  const tools = [...toolbar.matchAll(/<button id="([a-z-]+)" class="stage-tool"/g)].map(match => match[1]);
+  assert.deepEqual(tools, ['view-tool', 'section-tool', 'display-tool']);
+  for (const tool of tools) {
+    const button = toolbar.slice(toolbar.indexOf(`id="${tool}"`), toolbar.indexOf('</button>', toolbar.indexOf(`id="${tool}"`)));
+    assert.equal(/<svg/.test(button), false, `${tool} is a word, with no icon`);
+  }
   assert.match(tagWithId('section-bar'), /\shidden\b/);
+});
+
+test('the presets live in the View popover, with Reset view at its foot', () => {
+  const popover = html.slice(html.indexOf('id="view-popover"'), html.indexOf('id="section-tool"'));
+  assert.ok(popover.indexOf('id="views"') !== -1 && popover.indexOf('id="views"') < popover.indexOf('id="reset"'));
+  assert.match(tagWithId('views'), /role="group"/);
+  const display = html.slice(html.indexOf('id="display-popover"'), html.indexOf('id="section-bar"'));
+  assert.equal(display.includes('id="reset"'), false);
 });
 
 test('the view presets are a segmented choice, like the cutting planes above them', () => {
@@ -143,12 +157,21 @@ function mastheadHtml() {
 }
 
 test('subject, atlas, colour and internal detail live in the masthead data group', () => {
-  assert.match(tagWithId('atlas-switch'), /\binstrument\b/);
-  assert.match(tagWithId('surface-switch'), /\binstrument\b/);
   const masthead = mastheadHtml();
   const data = masthead.slice(masthead.indexOf('id="masthead-data"'));
   for (const id of ['anatomy-switch', 'study-name', 'atlas-switch', 'surface-switch', 'detail']) {
     assert.ok(data.includes(`id="${id}"`), `${id} belongs in the masthead data group`);
+  }
+  assert.equal(/\bsegmented\b|\binstrument\b/.test(data.slice(0, data.indexOf('class="masthead-end"'))), false);
+});
+
+test('each data field is a native select, named by its caption and described by its note', () => {
+  for (const [select, label, note] of [['anatomy-switch', 'subject-label', 'subject-note'],
+    ['atlas-switch', 'atlas-label', 'atlas-note'], ['surface-switch', 'surface-label', 'surface-note'],
+    ['detail', 'detail-label', 'detail-note']]) {
+    assert.match(tagWithId(select), /^<select\b/);
+    assert.match(tagWithId(select), new RegExp(`aria-describedby="${note}"`));
+    assert.match(tagWithId(label), new RegExp(`^<label\\b[^>]*for="${select}"`));
   }
 });
 
@@ -187,11 +210,11 @@ test('a deficit with no region hides the anatomy hint as well', () => {
 
 test('the circuit introduction replaces the empty anatomical hint', () => {
   assert.equal(inspectorEmptyChrome({ selectedRegion: null, explorer: 'circuits' }).hideHint, true);
-  assert.ok(html.indexOf('id="circuit-profile"') < html.indexOf('id="label-selected"'));
+  assert.ok(html.indexOf('id="circuit-profile"') < html.indexOf('id="selected-name"'));
 });
 
 test('an opened deficit leads its detail view, ahead of any selected region', () => {
-  assert.ok(html.indexOf('id="clinical-profile"') < html.indexOf('id="label-selected"'));
+  assert.ok(html.indexOf('id="clinical-profile"') < html.indexOf('id="selected-name"'));
 });
 
 test('the tracts MRI dock carries its one action, not a source filename', async () => {
@@ -250,7 +273,7 @@ test('the status bar keeps the not-clinical statement in every state', () => {
     const loading = colophonParts(lang);
     assert.equal(loading.description, '', 'no dataset is named before one is loaded');
     assert.match(loading.statement, /clinical anatomy|anatomie clinique/i);
-    assert.match(colophonParts(lang, { anatomy }).description, /SNAIL/);
+    assert.match(colophonParts(lang, { anatomy }).description, /^SNAIL subj_1 · /, 'named as the masthead names it');
     assert.match(colophonParts(lang, { anatomy }).statement, /clinical anatomy|anatomie clinique/);
     assert.match(colophonParts(lang, { anatomy, reference: { label: 'Ref' } }).statement, /clinical anatomy|anatomie clinique/);
   }
@@ -278,8 +301,40 @@ test('provenance opens a dialog, not a raw JSON file', () => {
   assert.equal(/href="models\/anatomies\.json" target/.test(html), false);
 });
 
-test('the T1 colouring is not named MRI beside the linked MRI command', () => {
-  for (const lang of ['en', 'fr']) assert.equal(t(lang, 'display').surfaceColors.mri, 'T1');
+test('Colour groups appearance, the atlas regions and networks, with the functional divisions and domains last', () => {
+  const all = { networks: {}, cabNp: {}, functionalRegions: {}, domains: {} };
+  assert.deepEqual(colourGroups(all), [
+    ['appearance', ['tissue', 'mri']], ['parcellation', ['atlas']], ['networks', ['network', 'cab-np']],
+    [null, ['functional', 'domains']],
+  ]);
+  assert.deepEqual(colourGroups({ networks: {} }), [
+    ['appearance', ['tissue', 'mri']], ['parcellation', ['atlas']], ['networks', ['network']],
+  ], 'a colouring the build does not publish is not offered');
+  assert.deepEqual(Object.values(t('en', 'display').surfaceColors),
+    ['Tissue', 'T1 MRI', 'Regions', 'Yeo 7 networks', 'CAB-NP networks', 'Functional divisions',
+      'Neuropsychological domains']);
+  for (const lang of ['en', 'fr']) {
+    assert.deepEqual(Object.keys(t(lang, 'header').colourGroups), ['appearance', 'parcellation', 'networks']);
+  }
+});
+
+test('an option that changes the other field says so before it is chosen', () => {
+  assert.equal(colourOption('en', 'cab-np', { atlas: 'destrieux', required: 'hcp-mmp' }),
+    'CAB-NP networks (atlas becomes HCP-MMP)');
+  assert.equal(colourOption('fr', 'functional', { atlas: 'destrieux', required: 'hcp-mmp' }),
+    'Divisions fonctionnelles (l’atlas devient HCP-MMP)');
+  assert.equal(colourOption('en', 'cab-np', { atlas: 'hcp-mmp', required: 'hcp-mmp' }), 'CAB-NP networks');
+  assert.equal(colourOption('en', 'network', { atlas: 'destrieux', required: null }), 'Yeo 7 networks');
+  assert.equal(atlasOption('en', 'destrieux', 'hcp-mmp'), 'Destrieux (colour becomes Regions)');
+  assert.equal(atlasOption('fr', 'destrieux', 'hcp-mmp'), 'Destrieux (la couleur devient Régions)');
+  assert.equal(atlasOption('en', 'hcp-mmp', 'hcp-mmp'), 'HCP-MMP');
+  assert.equal(atlasOption('en', 'destrieux', null), 'Destrieux');
+});
+
+test('a download names how far it has come, in the reader’s notation', () => {
+  assert.equal(loadingText('en', { loaded: 34, total: 100 }), 'Loading 34%');
+  assert.equal(loadingText('fr', { loaded: 34, total: 100 }), 'Chargement 34\u202f%');
+  assert.equal(loadingText('en', null), 'Loading…');
 });
 
 test('snapshot and fullscreen sit in the masthead, not on the anatomy', () => {
@@ -292,13 +347,20 @@ test('snapshot and fullscreen sit in the masthead, not on the anatomy', () => {
   assert.ok(snap > masthead && snap < viewport);
 });
 
-test('snapshot and fullscreen retain accessible names with icon controls', () => {
-  for (const id of ['viewport-fullscreen', 'viewport-snapshot']) {
-    assert.match(tagWithId(id), /aria-label="[^"]+"/);
-    const start = html.indexOf(`id="${id}"`);
-    const button = html.slice(start, html.indexOf('</button>', start));
-    assert.match(button, /class="masthead-action-label"/);
+test('the masthead icon buttons are named, carry the shared tooltip, and no native title', () => {
+  for (const id of ['viewport-fullscreen', 'viewport-snapshot', 'masthead-more']) {
+    const tag = tagWithId(id);
+    assert.match(tag, /aria-label="[^"]+"/);
+    assert.match(tag, /data-tooltip="[^"]+"/);
+    assert.equal(/\stitle=/.test(tag), false);
   }
+  assert.equal(/\stitle=/.test(mastheadHtml()), false);
+});
+
+test('full screen and Save image wait for the anatomy; the settings menu does not', () => {
+  for (const id of ['viewport-fullscreen', 'viewport-snapshot', 'menu-fullscreen']) assert.match(tagWithId(id), /\sdisabled\b/);
+  assert.match(tagWithId('menu-provenance'), /\shidden\b/, 'provenance needs the manifest');
+  assert.equal(/\sdisabled\b/.test(tagWithId('masthead-more')), false);
 });
 
 test('deficit search is a flush rail field in the same slot as region search', () => {
@@ -347,7 +409,11 @@ test('a selected region shows the title, facts and actions', () => {
 
 test('the region datasheet leaves the loaded atlas to the masthead', () => {
   assert.equal(/id="fact-atlas"/.test(html), false);
-  assert.match(tagWithId('fact-source'), /\bmeasure\b/);
+  const start = html.indexOf('id="selected-facts"');
+  const facts = html.slice(start, html.indexOf('</dl>', start));
+  for (const id of ['fact-metric', 'fact-coords', 'fact-source']) {
+    assert.ok(facts.includes(`id="${id}"`), `${id} is a row of the one datasheet`);
+  }
 });
 
 test('the tree scope is an exclusive choice, and By system says it hides the cortex', () => {
@@ -358,5 +424,5 @@ test('the tree scope is an exclusive choice, and By system says it hides the cor
     .map(([, value, pressed, label]) => [value, pressed, label]);
   assert.deepEqual(choices, [['whole', 'true', 'Whole brain'], ['system', 'false', 'By system']]);
   assert.equal(/id="explore-internal"/.test(html), false);
-  for (const lang of ['en', 'fr']) assert.match(t(lang, 'navigator').cortexHiddenNote, /cortex/i);
+  for (const lang of ['en', 'fr']) assert.match(t(lang, 'reasons')['cortex-hidden'], /cortex/i);
 });

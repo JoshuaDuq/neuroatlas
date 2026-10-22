@@ -15,6 +15,7 @@ from nibabel.freesurfer.io import (
 from brain_model.labels.tissue_labels import describe_source_label, export_tissue_labels
 from brain_model.labels.volumes import offset_by
 from brain_model.sources import read_color_table, read_config
+from brain_model.validate_volumes import validate_tissue_volumes
 from tests.support import read_published
 
 
@@ -60,7 +61,7 @@ def small_ribbon_subject(tmp_path):
     config = {
         "source_directory": directory,
         "output_directory": tmp_path / "published",
-        "anatomy": {"individual": True},
+        "anatomy": {"individual": True, "layers": []},
     }
     return config, {"regions": regions}
 
@@ -207,3 +208,66 @@ def test_destrieux_labels_match_regions_across_recon_spellings():
     }
     label = describe_source_label(11101, read_color_table(), [region])
     assert label["region_id"] == "destrieux:left:1"
+
+
+def republish(config, record, codes):
+    """Rewrite a published grid with consistent checksums, as a careful forger would."""
+    payload = np.ascontiguousarray(codes, dtype=record["dtype"]).tobytes(order="F")
+    path = config["output_directory"] / record["file"]
+    path.write_bytes(gzip.compress(payload, mtime=0))
+    record["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    record["decoded_sha256"] = hashlib.sha256(payload).hexdigest()
+
+
+def published_codes(config, record):
+    payload = gzip.decompress((config["output_directory"] / record["file"]).read_bytes())
+    return np.frombuffer(payload, record["dtype"]).reshape(record["shape"], order="F").copy()
+
+
+def test_validation_recomputes_both_cut_volumes_from_their_sources(small_ribbon_subject):
+    config, manifest = small_ribbon_subject
+    tissues = export_tissue_labels(config, manifest)
+    report = validate_tissue_volumes(config, manifest, tissues)
+    assert report["destrieux"]["identical_to_source_labels"] is True
+    assert report["hcp-mmp"]["hemispheres"] == {
+        "left": {"ribbon_voxels": 1, "cortical_voxels_outside_ribbon": 0},
+        "right": {"ribbon_voxels": 1, "cortical_voxels_outside_ribbon": 0},
+    }
+
+
+@pytest.mark.parametrize("damage", ["ribbon", "non-cortex", "destrieux"])
+def test_validation_decodes_the_voxels_rather_than_trusting_the_checksums(
+    small_ribbon_subject, damage
+):
+    config, manifest = small_ribbon_subject
+    tissues = export_tissue_labels(config, manifest)
+    atlas = "destrieux" if damage == "destrieux" else "hcp-mmp"
+    record = tissues["atlases"][atlas]
+    codes = published_codes(config, record)
+    corner = np.array(record["crop_corner_voxel"])
+    voxel = {"ribbon": (0, 0, 0), "non-cortex": (2, 2, 2), "destrieux": (2, 2, 2)}[damage]
+    index = tuple(np.array(voxel) - corner)
+    labels = [label["source_label_id"] for label in record["labels"]]
+    codes[index] = (codes[index] + 1) % len(labels)
+    republish(config, record, codes)
+    with pytest.raises(ValueError, match="differ|relabels"):
+        validate_tissue_volumes(config, manifest, tissues)
+
+
+def test_validation_rejects_a_label_table_that_no_longer_describes_the_source(
+    small_ribbon_subject,
+):
+    config, manifest = small_ribbon_subject
+    tissues = export_tissue_labels(config, manifest)
+    tissues["atlases"]["hcp-mmp"]["labels"][-1]["name"] = "renamed"
+    with pytest.raises(ValueError, match="label tables"):
+        validate_tissue_volumes(config, manifest, tissues)
+
+
+def test_the_published_cut_volumes_match_their_sources():
+    config = read_config()
+    manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
+    tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
+    report = validate_tissue_volumes(config, manifest, tissues)
+    for counts in report["hcp-mmp"]["hemispheres"].values():
+        assert counts["ribbon_voxels"] > 200_000

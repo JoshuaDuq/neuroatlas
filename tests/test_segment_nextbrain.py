@@ -9,7 +9,7 @@ import pytest
 
 from brain_model.labels import nextbrain
 from brain_model.labels.volumes import resample_nearest
-from brain_model.sources import ROOT
+from brain_model.sources import ROOT, read_config
 
 
 def load_script():
@@ -66,14 +66,23 @@ def test_the_joined_grid_starts_on_the_cut_label_lattice_and_covers_both_sides()
         (grid(0.3989, [-66.3, -109.3, -61.7]), np.array([2, 3, 4]), np.array([180, 300, 400])),
         (grid(0.4010, [-6.3, -109.3, -61.2]), np.array([0, 5, 1]), np.array([190, 330, 470])),
     ]
-    affine, shape = segment.joined_grid(boxes)
+    spacing, lattice = segment.grid_spacing(read_config()["nextbrain"])
+    assert (spacing, lattice) == (0.4, 0.8)
+    affine, shape = segment.joined_grid(boxes, spacing, lattice)
     lower = affine[:3, 3]
-    np.testing.assert_allclose(lower / segment.LATTICE_MM, np.round(lower / segment.LATTICE_MM))
+    np.testing.assert_allclose(lower / lattice, np.round(lower / lattice))
     upper = nib.affines.apply_affine(affine, np.array(shape) - 1)
     for source, lo, hi in boxes:
         for corner in (lo, hi):
             point = nib.affines.apply_affine(source, corner)
             assert np.all(point >= lower) and np.all(point <= upper)
+
+
+@pytest.mark.parametrize("lattice", [0.4, 1.2])
+def test_a_lattice_of_partial_cut_blocks_is_refused(lattice):
+    settings = {**read_config()["nextbrain"], "segmentation_lattice_mm": lattice}
+    with pytest.raises(ValueError, match="cut blocks"):
+        segment.grid_spacing(settings)
 
 
 def test_the_lut_names_each_side_and_offsets_the_right(tmp_path):
@@ -95,7 +104,7 @@ def test_voxels_both_sides_label_go_where_freesurfer_splits_the_hemispheres(tmp_
     orig = np.eye(4)
     orig[:3, 3] = -16
     nib.save(nib.MGHImage(np.zeros((32, 32, 32), np.uint8), orig), mri / "orig.mgz")
-    config = {"source_directory": tmp_path / "subject"}
+    config = {"source_directory": tmp_path / "subject", "nextbrain": read_config()["nextbrain"]}
     work = tmp_path / "work"
     (work / "SuperSynth").mkdir(parents=True)
     # Each side's grid reaches 2 mm past the midline, as FreeSurfer's do.

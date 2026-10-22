@@ -1,0 +1,295 @@
+/* Navigator --------------------------------------------------------------- */
+/*
+ * An index, not a menu: rows run edge to edge, names on the panel's 16px or 36px column, data
+ * (side letters, counts) ending on the right-hand column 16px from the edge.
+ */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--row-height);
+  height: auto;
+  margin: 0;
+  padding: 6px var(--space-4);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  text-align: left;
+  font-size: var(--text-ui);
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--ui-transition) var(--ease-ui),
+    color var(--ui-transition) var(--ease-ui);
+}
+.row:focus-visible { outline-offset: -2px; }
+@media (hover: hover) and (pointer: fine) {
+  .row:hover { background: var(--surface-hover); }
+}
+/* Distinguish the keyboard target from the selected anatomical region. */
+.row[data-active="true"] {
+  background: var(--surface-hover);
+  outline: 1px solid var(--border-control);
+  outline-offset: -1px;
+}
+.row[data-selected="true"] { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
+.row[data-hidden="true"] { color: var(--text-tertiary); }
+.row[aria-disabled="true"] { cursor: default; }
+/* Lines of 20px and 16px keep one- and two-line rows on the 4px grid. */
+.row-name { flex: 1; min-width: 0; line-height: var(--lh-ui); overflow-wrap: break-word; }
+#results .row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+#results .row-title { grid-column: 1; grid-row: 1; min-width: 0; line-height: var(--lh-ui); }
+#results .row-name { display: inline; white-space: normal; }
+#results .row-alias { display: inline; margin-left: var(--space-1); white-space: nowrap; }
+#results .row-side { grid-column: 2; grid-row: 1; margin-left: 0; }
+#results .row-group,
+#results .row-reason {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-left: 0;
+  max-width: none;
+  line-height: var(--lh-caption);
+  white-space: normal;
+  text-align: left;
+}
+/* A result's second line names its group; a hidden result's reason stays in the row's dimmed ink. */
+#results .row-group { color: var(--text-secondary); }
+/* The tail never wraps or shrinks; the name gives way instead. */
+.row-side, .row-reason, .group-count {
+  flex: none;
+  margin-left: auto;
+  min-width: 2ch;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  font-variant-numeric: tabular-nums;
+}
+.row-side { color: var(--text-secondary); font-weight: 600; }
+.row[data-selected="true"] .row-side { color: inherit; }
+.row-group {
+  flex: none;
+  max-width: 42%;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+}
+.row-group + .row-side,
+.row-group + .row-reason { margin-left: var(--space-2); }
+.row-indent { padding-left: var(--indent); }
+/* A reason of the row's own (outside the MRI, too small for the cut); a setting's reason is on the caption. */
+.row-indent .row-reason { max-width: 96px; white-space: normal; }
+/* Without an eye the letter still holds the eye's column, so names wrap alike. */
+.row-side-solo { min-width: 32px; }
+.row-side-rest { min-width: 0; }
+.tree-group { isolation: isolate; }
+.tree-group > .group-row { background: var(--surface-base); font-weight: 500; }
+@media (hover: hover) and (pointer: fine) {
+  .tree-group > .group-row:hover { background: var(--surface-hover); }
+}
+/*
+ * An open group heads its rows on the recessed ground and stays in view over them. Pinned 1px
+ * above the list's top, its upper rule tucks under the list head's rule instead of doubling it.
+ */
+.tree-group > .group-row[aria-expanded="true"] {
+  position: sticky;
+  top: -1px;
+  z-index: 1;
+  background: var(--surface-navigation);
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--border-subtle), inset 0 1px 0 var(--border-subtle);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tree-group > .group-row[aria-expanded="true"]:hover { background: var(--surface-hover); }
+}
+.tree-group .row-indent { scroll-margin-block: calc(var(--row-height) + var(--space-5)); }
+.group-row > .chevron { color: var(--text-tertiary); }
+.group-row[aria-expanded="true"] > .chevron { --chevron-turn: 90deg; color: var(--text-secondary); }
+.group-row > .row-name { flex: 1 1 auto; }
+.group-row > .group-count { min-width: 3ch; font-weight: 400; }
+/* Cortex, Subcortical: captions of the index, and on the right the setting that hides their rows, said once. */
+#tree > .section-label { display: flex; align-items: baseline; gap: var(--space-2); }
+#tree > .section-label:first-child { padding-top: var(--space-3); border-top: 0; }
+.section-state {
+  min-width: 0;
+  margin-left: auto;
+  text-align: right;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text-tertiary);
+}
+
+/*
+ * Per-part visibility: an eye, then its side letter, the letter ending 8px inside the control
+ * so that the control's last 8px overhang the row's 16px inset and the letter stands on the
+ * data column. Hidden is neutral ink and a struck eye, never teal.
+ */
+.row-eyes { display: flex; flex: none; align-items: center; gap: var(--space-1); }
+.visibility-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: none;
+  gap: 3px;
+  width: 40px;
+  height: 24px;
+  /* In a row's flow it takes no more height than the 20px line, so the row keeps its 32px pitch. */
+  margin-block: -2px;
+  padding: 0 var(--space-2) 0 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  background: transparent;
+}
+.row-indent > .visibility-control { margin-right: calc(-1 * var(--space-2)); }
+.visibility-control[data-visibility-key$=":midline"] { width: auto; min-width: 40px; padding-left: 6px; }
+.visibility-control svg { width: 16px; height: 16px; flex: none; }
+.visibility-side { font-size: var(--text-caption); line-height: var(--lh-caption); font-weight: 600; color: var(--text-secondary); }
+@media (hover: hover) and (pointer: fine) {
+  .visibility-control:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
+}
+.row[data-selected="true"] .visibility-side { color: var(--accent); }
+.row[data-hidden="true"] .visibility-side { color: var(--text-tertiary); }
+.visibility-control[data-state="hidden"],
+.visibility-control[data-state="hidden"] .visibility-side { color: var(--text-tertiary); }
+.visibility-control:focus-visible { outline-offset: 0; }
+/* A mouse finds the eyes on the row it points at; touch keeps every eye in view. */
+@media (hover: hover) and (pointer: fine) {
+  /* Group eyes lie over the row end, so at rest the name has the whole row. */
+  .tree-group > .group-row { position: relative; }
+  .group-row > .row-eyes {
+    position: absolute;
+    top: 2px;
+    right: var(--space-2);
+    bottom: 2px;
+    padding-left: var(--space-2);
+    /* The row's own ground, so the eyes cover the count beneath them on any row. */
+    background: inherit;
+    opacity: 0;
+  }
+  /* A shown region keeps only its letter at rest; the eye lies over the name's end, which is clipped under it. */
+  .row-indent[data-visible="true"] { position: relative; }
+  .row-indent[data-visible="true"] > .visibility-control {
+    position: absolute;
+    top: 2px;
+    right: var(--space-4);
+    bottom: 2px;
+    height: auto;
+    margin-block: 0;
+  }
+  .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-name { clip-path: inset(0 16px 0 0); }
+  .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-side-rest { visibility: hidden; }
+  .row-indent[data-visible="true"] > .visibility-control { opacity: 0; }
+  /* Once a side is hidden the eyes take their own room, before the count, and stay in view. */
+  .group-row > .row-eyes:has([data-state="hidden"], [data-partial="true"]) { position: static; padding: 0; opacity: 1; }
+  .row-eyes > .visibility-control:not([data-state="hidden"], [data-partial="true"]),
+  .row-indent > .visibility-control svg { opacity: 0; }
+  .row:is(:hover, :focus-within) > .row-eyes,
+  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control,
+  .row:is(:hover, :focus-within) > .visibility-control,
+  .row:is(:hover, :focus-within) > .visibility-control svg,
+  .visibility-control[data-state="hidden"] svg { opacity: 1; }
+}
+/* Touch keeps every eye in the row, and the eye carries the letter. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .row-side-rest { display: none; }
+}
+
+/* Anatomy's list head adds the scope under the search: Whole brain | By system, then expand all. */
+.tree-header { display: flex; align-items: center; gap: var(--space-2); }
+.tree-scope { flex: 1; min-width: 0; }
+.tree-scope button { flex: 1; min-width: 0; height: auto; min-height: calc(var(--control-height) - 4px); }
+/* The icon's ink ends on the data column. */
+.tree-toggle-all { flex: none; margin-right: calc(-1 * var(--space-2)); }
+/* By system: the system picker sits under the scope that opened it, label beside field. */
+.internal-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+.internal-controls label { font-size: var(--text-ui); font-weight: 500; }
+.internal-note { font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); margin: 0; }
+
+.query-match { background: transparent; color: var(--accent); font-weight: 600; }
+.row-alias {
+  flex: none;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  margin-left: var(--space-1);
+}
+
+/*
+ * The empty search, alike in every list: what found nothing as a title 12px under the list
+ * head, then one line on where to look instead.
+ */
+.empty {
+  padding: var(--space-4);
+  font-size: var(--text-ui);
+  color: var(--text-secondary);
+  line-height: var(--lh-ui);
+}
+.empty + .empty { padding-top: 0; }
+.empty-title {
+  padding: var(--space-3) var(--space-4) 0;
+  font-size: var(--text-title);
+  font-weight: 600;
+  line-height: var(--lh-title);
+  overflow-wrap: anywhere;
+}
+.empty-title + .empty { padding-top: var(--space-1); }
+/* The sentence says where the other matches are; the action sits under it as link text. */
+.empty button {
+  display: block;
+  width: fit-content;
+  height: auto;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  text-align: left;
+}
+@media (hover: hover) and (pointer: fine) {
+  .empty button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+}
+
+/*
+ * Dissection: one ruled line at the foot of the explorer, as tall as the tab row and the
+ * location bar, there only while something is hidden: the count, then its quiet commands.
+ */
+.dissection-controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--tab-height) + 1px);
+  padding: 0 var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-navigation);
+}
+.dissection-heading-row { display: flex; flex: 1; align-items: center; gap: var(--space-1); min-width: 0; }
+.dissection-heading-row button { flex: none; padding: 0 var(--space-2); }
+.dissection-heading-row button:last-child { margin-right: calc(-1 * var(--space-2)); }
+#dissection-status {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  line-height: var(--lh-ui);
+  font-variant-numeric: tabular-nums;
+}
+#app[data-status="loading"] .dissection-controls { display: none; }

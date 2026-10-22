@@ -6,7 +6,7 @@ NeuroAtlas has two parts that install separately. The web viewer needs Node.js. 
 
 | Part | Needs |
 | :--- | :--- |
-| Web viewer | Node.js with npm (CI uses Node 20) and a browser with WebGL 2 |
+| Web viewer | Node.js with npm (CI uses Node 24) and a browser with WebGL 2 |
 | Python pipeline | uv. Python 3.12 or 3.13 (`requires-python` is `>=3.12,<3.14`); uv installs one if none is present |
 | NextBrain segmentation | FreeSurfer 8.2, and about 20 minutes of CPU time per brain. Workarounds needed on macOS arm64 live in `scripts/freesurfer/`. |
 
@@ -29,7 +29,9 @@ Vite serves the viewer on port 5173 by default. The viewer is built with the bas
 uv sync --locked
 ```
 
-`--locked` installs exactly the versions recorded in `uv.lock` and fails if the lock file is out of date. The default groups include `dev` (pytest and ruff), so `uv run pytest` works after this step.
+`--locked` installs exactly the versions recorded in `uv.lock` and fails if the lock file is out of date. The default groups include `dev` (pytest and ruff), so `uv run pytest` works after this step. The tests read the committed sources of `snail`, `bert` and `aomic`, and a missing source fails them. Only the check of the FreeSurfer convolution workaround is skipped, with its reason, where FreeSurfer 8.2 is not installed.
+
+Continuous integration runs `uv run pytest`, `npm test` and `python -m brain_model.validate` for each published anatomy on every pull request, and again before each deployment.
 
 Pipeline commands are run through `uv run`, for example `uv run python -m brain_model.build --anatomy bert`. The [build guide](guides/building.md) lists each step.
 

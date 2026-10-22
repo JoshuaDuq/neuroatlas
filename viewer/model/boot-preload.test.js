@@ -25,7 +25,7 @@ const boot = async () => {
 };
 
 test('the preload script fetches from the same base the build publishes under', async () => {
-  const configured = (await read('vite.config.js')).match(/base:\s*'([^']+)'/);
+  const configured = (await read('vite.config.js')).match(/\bbase\s*[:=]\s*'([^']+)'/);
   assert.ok(configured, 'vite.config.js declares no base');
   const used = (await boot()).match(/var root = '([^']+)'/);
   assert.ok(used, 'the preload script hardcodes no root');
@@ -79,4 +79,34 @@ test('the default brain is read from the index rather than assumed', async () =>
   const script = await boot();
   assert.match(script, /models\/anatomies\.json/);
   assert.match(script, /published\.default/);
+});
+
+test('the preload script asks for each file at the version the build publishes for it', async () => {
+  const script = (await read('index.html')).match(/<script>\s*(window\.__neuroatlasAssets[\s\S]*?\}\)\(\);)\s*<\/script>/)[1];
+  const versions = {
+    'models/anatomies.json': 'index0000000000a', 'models/bert/manifest.json': 'manifest00000000',
+    'models/bert/cortex-hcp-mmp.glb': 'hcp0000000000000', 'models/bert/nextbrain.glb': 'fine000000000000',
+  };
+  const requested = [];
+  const window = {};
+  const location = { hash: '#anatomy=bert&atlas=hcp-mmp&detail=nextbrain', origin: 'https://example.org' };
+  const fetch = async url => { requested.push(url); return new Response('{}'); };
+  new Function('window', 'location', 'fetch', script.replace('__PUBLISHED_VERSIONS__', JSON.stringify(versions)))(
+    window, location, fetch);
+  assert.deepEqual(requested.sort(), [
+    'https://example.org/neuroatlas/models/anatomies.json?v=index0000000000a',
+    'https://example.org/neuroatlas/models/bert/cortex-hcp-mmp.glb?v=hcp0000000000000',
+    'https://example.org/neuroatlas/models/bert/manifest.json?v=manifest00000000',
+    'https://example.org/neuroatlas/models/bert/nextbrain.glb?v=fine000000000000',
+  ]);
+  assert.deepEqual(Object.keys(window.__neuroatlasAssets).sort(), requested.map(url => url.split('?')[0]).sort());
+});
+
+test('the first frame does not wait for the tissue envelopes or the cord', async () => {
+  const script = await boot();
+  const published = JSON.parse(await read('public/models/anatomies.json'));
+  const manifest = JSON.parse(await read(`public/models/${published.default}/manifest.json`));
+  for (const file of [manifest.solid_envelopes.file, ...(manifest.supplemental_layers ?? []).map(layer => layer.file)]) {
+    assert.ok(!script.includes(file), `preload starts ${file}`);
+  }
 });

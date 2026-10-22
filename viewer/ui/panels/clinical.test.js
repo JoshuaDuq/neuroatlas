@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { sharedSide, sideStated, stageMessage, stageStatus } from './clinical.js';
+import { publishedCorrections, revealNotice, sharedSide, sideStated, stageMessage } from './clinical.js';
 import { CLINICAL_TEXT } from '../../clinical/translations.js';
 
 const idle = { opening: false, busy: 'loading', error: null, failure: null, restored: false, status: 'shown' };
@@ -19,49 +19,41 @@ test('work in progress names itself: opening anatomy, or restoring the view', ()
   assert.equal(stageMessage(text, { ...idle, opening: true, busy: 'restoring', restored: true }), text.restoring);
 });
 
-test('a failed restore is said in the reader’s language; other failures keep their message', () => {
+test('failures are said in the reader’s language, never as the developer’s message', () => {
   const error = new Error('Unknown clinical region: x');
   assert.equal(stageMessage(CLINICAL_TEXT.fr, { ...idle, error, failure: 'restoreFailed' }),
     CLINICAL_TEXT.fr.restoreFailed);
-  assert.equal(stageMessage(CLINICAL_TEXT.en, { ...idle, error }), error.message);
+  assert.equal(stageMessage(CLINICAL_TEXT.en, { ...idle, error, operation: 'deficit', lang: 'en' }),
+    'Could not show this deficit’s regions.');
+  const offline = Object.assign(new Error('Asset request failed: HTTP 503'), { code: 'asset-fetch' });
+  const said = stageMessage(CLINICAL_TEXT.fr, { ...idle, error: offline, operation: 'region', lang: 'fr' });
+  assert.match(said, /^Impossible d’afficher la région\. Un fichier n’a pas pu être téléchargé/);
+  assert.doesNotMatch(said, /HTTP/);
 });
 
-const read = said => said.replaceAll('\u00a0', ' ');
+const settings = {
+  atlas: 'destrieux', colour: 'atlas', detail: 'learning', cut: false, isolated: false, hemisphere: 'both', cortex: true,
+};
 
-test('the stage status counts the outlined regions and names their atlases; what opening reset is its own line', () => {
-  const view = { shown: 7, total: 7, atlases: ['Destrieux'], outlined: true, cleared: true };
-  assert.equal(read(stageStatus(CLINICAL_TEXT.en, { ...view, lang: 'en' })),
-    '7 mapped regions outlined · Destrieux\nCut and isolation cleared.');
-  assert.equal(read(stageStatus(CLINICAL_TEXT.fr, { ...view, lang: 'fr' })),
-    '7 régions associées entourées · Destrieux\nCoupe et isolement retirés.');
-  assert.equal(read(stageStatus(CLINICAL_TEXT.en, { ...view, shown: 1, total: 1, atlases: ['FreeSurfer aseg'], lang: 'en' })),
-    '1 mapped region outlined · FreeSurfer aseg\nCut and isolation cleared.');
+test('opening a deficit claims no change when nothing in the reader’s settings changed', () => {
+  for (const lang of ['en', 'fr']) assert.equal(revealNotice(lang, settings, { ...settings }), null);
 });
 
-test('a partly drawn mapping, two atlases, an isolation or a later cut are said as they are', () => {
-  assert.equal(read(stageStatus(CLINICAL_TEXT.en,
-    { shown: 6, total: 7, atlases: ['Destrieux'], outlined: true, cleared: false, lang: 'en' })),
-  '6 of 7 mapped regions outlined · Destrieux');
-  // A cut turns the outlines off, so the regions are only said to be visible.
-  assert.equal(read(stageStatus(CLINICAL_TEXT.en,
-    { shown: 5, total: 8, atlases: ['Destrieux', 'Teaching set'], outlined: false, cleared: false, lang: 'en' })),
-  '5 of 8 mapped regions visible · Destrieux and Teaching set');
-  assert.equal(read(stageStatus(CLINICAL_TEXT.fr,
-    { shown: 5, total: 8, atlases: ['Destrieux', 'Ensemble pédagogique'], outlined: false, cleared: false, lang: 'fr' })),
-  '5 sur 8 régions associées visibles · Destrieux et Ensemble pédagogique');
-  assert.equal(read(stageStatus(CLINICAL_TEXT.en, { shown: 0, total: 3, atlases: [], outlined: true, cleared: true, lang: 'en' })),
-    '0 of 3 mapped regions outlined\nCut and isolation cleared.');
+test('what opening a deficit changed is said once, as one sentence naming only what happened', () => {
+  const after = { ...settings, detail: 'aseg' };
+  assert.equal(revealNotice('en', settings, after), 'Internal anatomy set to FreeSurfer aseg.');
+  assert.equal(revealNotice('fr', settings, after), 'Anatomie interne réglée sur FreeSurfer aseg.');
+  const cut = { ...settings, cut: true, isolated: true };
+  assert.equal(revealNotice('en', cut, after), 'Section closed, isolation cleared, and internal anatomy set to FreeSurfer aseg.');
+  assert.equal(revealNotice('fr', cut, after), 'Coupe fermée, isolement retiré et anatomie interne réglée sur FreeSurfer aseg.');
 });
 
-test('a wrapped count line breaks only before a separator, never leaving one at a line end', () => {
-  for (const lang of ['en', 'fr']) {
-    const said = stageStatus(CLINICAL_TEXT[lang],
-      { shown: 5, total: 8, atlases: ['Destrieux', 'Teaching set'], outlined: true, cleared: true, lang });
-    const [count, cleared] = said.split('\n');
-    assert.equal(count.split(' ').length, 2, count);
-    for (const space of count.matchAll(/ /g)) assert.equal(count[space.index + 1], '·', count);
-    assert.equal(cleared, CLINICAL_TEXT[lang].cleared);
-  }
+test('an atlas, colouring, side or cortex the reveal changed is named; a cut or isolation is only ever cleared', () => {
+  const before = { ...settings, atlas: 'hcp-mmp', colour: 'cab-np', hemisphere: 'left' };
+  assert.equal(revealNotice('en', before, { ...settings, cortex: false }),
+    'Atlas set to Destrieux, colour set to Regions, both hemispheres shown, and cortex hidden.');
+  // A cut or isolation the reader makes after opening is not something the reveal cleared.
+  assert.equal(revealNotice('en', settings, { ...settings, cut: true, isolated: true }), null);
 });
 
 test('region links drop the side their association already states, and keep it when sides differ', () => {
@@ -80,4 +72,24 @@ test('a profile whose findings all share one side states it once; mixed sides st
   assert.equal(sharedSide(['left', 'right']), null);
   assert.equal(sharedSide(['left', 'bilateral', 'left']), null);
   assert.equal(sharedSide([]), null);
+});
+
+test('a reference’s published corrections are listed in the reader’s language with their DOI', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { parse } = await import('yaml');
+  const data = parse(readFileSync(new URL('../../../data/neuropsychology.yaml', import.meta.url), 'utf8'));
+  const corrected = data.references.filter(reference => reference.corrections);
+  assert.ok(corrected.length > 0);
+  for (const reference of corrected) {
+    for (const lang of ['en', 'fr']) {
+      const listed = publishedCorrections(reference, lang);
+      assert.equal(listed.length, reference.corrections.length);
+      for (const [index, entry] of listed.entries()) {
+        assert.equal(entry.href, `https://doi.org/${reference.corrections[index].doi}`);
+        assert.equal(entry.summary, reference.corrections[index].summary[lang]);
+      }
+    }
+  }
+  assert.deepEqual(publishedCorrections({}, 'en'), []);
+  for (const lang of ['en', 'fr']) assert.ok(CLINICAL_TEXT[lang].correction);
 });

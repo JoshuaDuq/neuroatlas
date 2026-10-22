@@ -30,7 +30,6 @@ from brain_model.sources import ROOT, read_config, sha256
 CACHE = ROOT / "data/cache"
 RUNTIME = Path(__file__).resolve().parent / "freesurfer"
 CITATION = "https://doi.org/10.1038/s41586-025-09708-2"
-FREESURFER_BUILD = "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45"
 DIST = "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist"
 SUPERSYNTH = {
     "path": CACHE / "supersynth/SuperSynth_August_2025.pth",
@@ -45,10 +44,6 @@ ATLAS = {
     "tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2",
 }
 CROP_MARGIN_VOXELS = 20
-SPACING_MM = 0.4
-# Joined-grid origins sit on multiples of two voxels, so the build's 2x2x2 cut
-# label blocks fall on one fixed 0.8 mm lattice whatever the labelled extent.
-LATTICE_MM = 2 * SPACING_MM
 WORKAROUNDS = {
     "conv3d_slices": (
         "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a "
@@ -80,10 +75,10 @@ def tree_sha256(directory):
     return digest.hexdigest()
 
 
-def verify_runtime(freesurfer):
+def verify_runtime(config, freesurfer):
     stamp = (freesurfer / "build-stamp.txt").read_text().strip()
-    if stamp != FREESURFER_BUILD:
-        raise SystemExit(f"Expected FreeSurfer {FREESURFER_BUILD}, found {stamp}.")
+    if stamp != config["freesurfer_build"]:
+        raise SystemExit(f"Expected FreeSurfer {config['freesurfer_build']}, found {stamp}.")
     if sha256(SUPERSYNTH["path"]) != SUPERSYNTH["sha256"]:
         raise SystemExit(f"SuperSynth model checksum mismatch: {SUPERSYNTH['path']}")
     if tree_sha256(ATLAS["path"]) != ATLAS["tree_sha256"]:
@@ -165,17 +160,33 @@ def read_hemisphere(work, side):
     return image, data.astype(np.int32)
 
 
-def joined_grid(boxes):
-    """A 0.4 mm surface-RAS lattice covering every labelled voxel of both sides."""
+def grid_spacing(settings):
+    """The joined grid's spacing and origin step, which must be whole cut blocks.
+
+    Origins on that step put the build's cut-label blocks on one fixed lattice
+    whatever the labelled extent.
+    """
+    spacing, lattice = settings["segmentation_spacing_mm"], settings["segmentation_lattice_mm"]
+    block = nextbrain.block_size(spacing, settings["cut_label_spacing_mm"])
+    blocks = lattice / (block * spacing)
+    if round(blocks) < 1 or not np.isclose(blocks, round(blocks)):
+        raise ValueError(
+            f"A {lattice} mm lattice is not a whole number of {block}-voxel cut blocks"
+        )
+    return spacing, lattice
+
+
+def joined_grid(boxes, spacing, lattice):
+    """A surface-RAS grid covering every labelled voxel of both sides."""
     corners = np.vstack([
         apply_affine(affine, [[i, j, k] for i in (lo[0], hi[0]) for j in (lo[1], hi[1])
                               for k in (lo[2], hi[2])])
         for affine, lo, hi in boxes
     ])
-    lower = np.floor((corners.min(axis=0) - SPACING_MM) / LATTICE_MM) * LATTICE_MM
-    upper = corners.max(axis=0) + SPACING_MM
-    shape = np.ceil((upper - lower) / SPACING_MM).astype(int) + 1
-    grid = np.diag([SPACING_MM, SPACING_MM, SPACING_MM, 1.0])
+    lower = np.floor((corners.min(axis=0) - spacing) / lattice) * lattice
+    upper = corners.max(axis=0) + spacing
+    shape = np.ceil((upper - lower) / spacing).astype(int) + 1
+    grid = np.diag([spacing, spacing, spacing, 1.0])
     grid[:3, 3] = lower
     return grid, tuple(shape)
 
@@ -199,7 +210,8 @@ def join_hemispheres(config, work):
     for image, data in sides.values():
         occupied = np.argwhere(data > 0)
         boxes.append((to_surface @ image.affine, occupied.min(axis=0), occupied.max(axis=0)))
-    grid, shape = joined_grid(boxes)
+    spacing, lattice = grid_spacing(config[nextbrain.ATLAS_ID])
+    grid, shape = joined_grid(boxes, spacing, lattice)
     resampled, shifts = {}, {}
     for side, (image, data) in sides.items():
         resampled[side], shifts[side] = resample_nearest(
@@ -215,7 +227,7 @@ def join_hemispheres(config, work):
         chosen = tuple(both[to_right].T)
         labels[chosen] = right[chosen] + nextbrain.HEMISPHERE_OFFSET
     return labels, grid, {
-        "spacing_mm": SPACING_MM,
+        "spacing_mm": spacing,
         "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
         "maximum_nearest_neighbour_shift_mm": {s: round(v, 4) for s, v in shifts.items()},
         "voxels_labelled_by_both_sides": len(both),
@@ -282,7 +294,7 @@ def record_sources(config, paths, details):
                 "segmentation (segment_fireants.py --mode invivo --device cpu) of each "
                 "hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid"
             ),
-            "freesurfer_build": FREESURFER_BUILD,
+            "freesurfer_build": config["freesurfer_build"],
             **details,
             "runtime_workarounds": WORKAROUNDS,
             "citation": CITATION,
@@ -306,7 +318,7 @@ def main():
     if config[nextbrain.ATLAS_ID]["procedure"] != nextbrain.SUBJECT_SEGMENTATION:
         raise SystemExit(f"{config['anatomy']['id']} does not take a subject NextBrain segmentation.")
     work = args.work or CACHE / f"nextbrain-seg-{config['anatomy']['id']}"
-    verify_runtime(args.freesurfer)
+    verify_runtime(config, args.freesurfer)
     image, crop = crop_input(config, work)
     run_freesurfer(args.freesurfer, work, image, args.threads)
 

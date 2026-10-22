@@ -5,12 +5,13 @@ import { readComparisonGeometry } from './comparison/assets.js';
 import { createComparisonOverlay } from './comparison/overlay.js';
 import { visibilityOf } from './catalog/visibility.js';
 import { loadClinicalCatalog } from './clinical/load.js';
-import { openClinicalRegion, revealClinicalRegions } from './clinical/navigation.js';
 import { loadCircuitCatalog } from './learning/load.js';
 import { createCircuitSession } from './learning/session.js';
-import { openCircuitLandmark, prepareCircuitMri } from './learning/navigation.js';
+import { prepareCircuitMri, showCircuitLandmark } from './learning/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
 import { functionalName, functionalRegionOf } from './catalog/functional-regions.js';
+import { domainName, domainsOf } from './catalog/neuropsych-domains.js';
+import { cabNpName, networkName } from './catalog/networks.js';
 import { loadAnatomies, resolveAnatomy } from './model/published-anatomy.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
 import {
@@ -22,8 +23,12 @@ import { createScene, planFraming } from './render/scene.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
 import { captureBeforeInternal, insideInternal, leaveInternal } from './state/internal-mode.js';
 import { createTheme } from './state/theme.js';
-import { decodeState, encodeState } from './state/url-state.js';
+import { PARAMS, decodeState, encodeState, orbitWithin } from './state/url-state.js';
+import { checkLink } from './state/link-check.js';
 import { applyReaderState as restoreReaderState, readerState } from './state/reader-state.js';
+import { createSceneCommands, publishesSpinalCord } from './state/scene-commands.js';
+import { createLinkWriter, sameSubject } from './state/link-writer.js';
+import { prefetchAtlas, startLanguage } from './state/boot.js';
 import { BrainSections } from './slices/sections.js';
 import { offsetThrough, rasToWorld } from './slices/coordinates.js';
 import { createSectionControls } from './ui/chrome/sections.js';
@@ -31,11 +36,12 @@ import { createInternalAnatomy } from './ui/panels/internal-anatomy.js';
 import { createConstituents } from './ui/panels/constituents.js';
 import { createDisplay } from './ui/chrome/display.js';
 import { createDissectionControls } from './ui/panels/dissection.js';
-import { createHeader, paintColophon } from './ui/chrome/header.js';
+import { createHeader, createSettings, paintColophon } from './ui/chrome/header.js';
 import { createInspector } from './ui/panels/inspector.js';
 import { createAtlasComparison } from './ui/panels/atlas-comparison.js';
-import { createClinicalExplorer } from './ui/panels/clinical.js';
+import { createClinicalExplorer, revealNotice } from './ui/panels/clinical.js';
 import { createCircuitExplorer } from './ui/panels/circuits.js';
+import { createInvolvement } from './ui/panels/related.js';
 import { createNativeTractExplorer } from './diffusion/native-ui.js';
 import { isIndependentTractReference } from './diffusion/presentation.js';
 import { createNavigator } from './ui/panels/navigator.js';
@@ -44,26 +50,23 @@ import {
 } from './ui/chrome/shortcuts.js';
 import { createViewportChrome, paintLoadProgress } from './ui/chrome/viewport-chrome.js';
 import { createSheet } from './ui/chrome/sheet.js';
-import { createWorkspace } from './ui/chrome/workspace.js';
+import { MODES, createWorkspace } from './ui/chrome/workspace.js';
+import { createNotice } from './ui/chrome/notice.js';
 import { qualityProfile } from './render/quality.js';
+import { failureNotice, linkNotice } from './i18n/errors.js';
 import { atlasSwitchLabel, t } from './i18n/translations.js';
 
 const VIEW_KEYS = ['left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 
-/**
- * After the first atlas is on screen, pull the others in while the reader is
- * looking. Switching then does not wait on another 20 MB download. Phones and
- * Save-Data connections skip this: the extra decoded layers would evict the
- * one they are using.
- */
-function prefetchIdleLayers(model) {
-  if (!qualityProfile().prefetchLayers) return;
+/** Once the first atlas is on screen, pull the other cortical atlas in while the reader is looking. */
+function prefetchOtherAtlas(model) {
+  const atlas = prefetchAtlas(model.manifest.atlases, model.state.atlas, {
+    prefetchLayers: qualityProfile().prefetchLayers, connection: globalThis.navigator?.connection,
+  });
+  if (!atlas) return;
   const idle = globalThis.requestIdleCallback ?? (fn => setTimeout(fn, 1500));
   idle(() => {
-    for (const entry of [...model.manifest.atlases, ...model.manifest.detail_levels]) {
-      if (entry.id === model.state.atlas || entry.id === model.state.detail) continue;
-      model.loadLayer(entry.id, entry.file).catch(() => {});
-    }
+    model.loadLayer(atlas.id, atlas.file).catch(error => console.warn('Prefetch failed:', error));
   });
 }
 
@@ -78,10 +81,12 @@ export async function startApp() {
   const viewport = document.getElementById('viewport');
   const announcer = document.getElementById('announcer');
 
-  const wanted = decodeState(globalThis.location.hash);
+  // A link is applied field by field: what this anatomy cannot apply is named, not fatal.
+  const link = decodeState(globalThis.location.hash);
+  const wanted = link.state;
   let savedLang = null;
   try { savedLang = localStorage.getItem('neuroatlas-lang'); } catch {}
-  const initialLang = wanted.lang ?? (savedLang === 'fr' ? 'fr' : 'en');
+  const initialLang = startLanguage(globalThis.location.hash, savedLang);
   // Spoken at the start, end and failure of the load, not at every progress tick.
   const announce = text => { announcer.textContent = text; };
   announce(t(initialLang, 'viewport').loadingAnatomy);
@@ -90,7 +95,9 @@ export async function startApp() {
   const modelsUrl = `${import.meta.env.BASE_URL}models`;
   const published = await loadAnatomies(`${modelsUrl}/anatomies.json`);
   const anatomies = published.anatomies;
-  const anatomy = resolveAnatomy(published, wanted.anatomy);
+  const unpublished = wanted.anatomy !== undefined && !anatomies.some(entry => entry.id === wanted.anatomy);
+  if (unpublished) link.rejected.push('anatomy');
+  const anatomy = resolveAnatomy(published, unpublished ? undefined : wanted.anatomy);
   const manifestUrl = `${modelsUrl}/${anatomy}/manifest.json`;
   const session = createSession({ views: Object.keys(VIEW_DIRECTIONS), lang: initialLang });
   const keyPreference = createKeyPreference();
@@ -118,24 +125,62 @@ export async function startApp() {
     session.setTheme(current);
     afterTheme?.();
   });
+  // The settings menu does not wait on the anatomy. Until it has loaded, a setting repaints
+  // only what is on screen: the menu, the stage's message and the status bar.
+  const shortcuts = createShortcuts(initialLang);
+  shortcuts.setSingleKeys(keyPreference.enabled);
+  const settings = createSettings({
+    modelView: scene.domElement,
+    onTheme: choice => theme.choose(choice),
+    onLang: setLang,
+    onSingleKeys: enabled => {
+      keyPreference.set(enabled);
+      shortcuts.setSingleKeys(enabled);
+      repaint();
+    },
+  });
+  function paintLoading() {
+    const { lang, status, progress } = session.assemble({});
+    document.documentElement.lang = lang;
+    settings.update({ lang, status }, { singleKeys: keyPreference.enabled, themeChoice: theme.choice });
+    shortcuts.setLanguage(lang);
+    paintColophon(lang);
+    paintLoadProgress(lang, progress?.loaded, progress?.total);
+  }
+  let repaint = paintLoading;
+  afterTheme = paintLoading;
+  paintLoading();
 
   // The layers download in parallel. Once one has failed, the other's
   // progress must not paint "Loading" back over the error.
   let loadFailed = false;
-  const model = await BrainAtlas.load(manifestUrl, wanted.atlas, {
-    detail: wanted.detail,
+  const loadModel = (atlas, detail) => BrainAtlas.load(manifestUrl, atlas, {
+    detail,
     onProgress: progress => {
       if (loadFailed || !progress?.total) return;
       session.setProgress({ loaded: progress.loaded, total: progress.total });
-      paintLoadProgress(initialLang, progress.loaded, progress.total);
+      paintLoadProgress(session.assemble({}).lang, progress.loaded, progress.total);
     },
-  }).catch(error => {
+  });
+  let model;
+  try {
+    try {
+      model = await loadModel(wanted.atlas, wanted.detail);
+    } catch (error) {
+      // A layer the link names that this anatomy does not publish: open the defaults. The link's
+      // check then names the unknown layer and applies a published one the other kept from loading.
+      if (error.code !== 'unknown-layer') throw error;
+      console.error(error);
+      model = await loadModel(undefined, undefined);
+    }
+  } catch (error) {
     loadFailed = true;
-    announce(error.message);
+    announce(failureNotice(error, initialLang, 'start').text);
+    settings.dispose();
     theme.dispose();
     scene.dispose();
     throw error;
-  });
+  }
 
   const catalog = createCatalog(model.manifest, initialLang, model.cabNp);
   const clinicalCatalog = loadClinicalCatalog(model.manifest);
@@ -155,12 +200,15 @@ export async function startApp() {
 
   const sections = new BrainSections(model, new URL('volumes.json', new URL(manifestUrl, location.href)));
   scene.scene.add(sections.group);
+  const commands = createSceneCommands({ model, sections, session, render });
 
   // ---- commands ---------------------------------------------------------
 
   /** Apply a display change, and say so if it silently dropped the selection. */
   function display(change) {
     const had = model.state.selectedRegion;
+    // A display change is the reader's next action, which a standing notice lasts until.
+    session.notify(null);
     change();
     notifyClearedSelection(had);
     render();
@@ -170,13 +218,26 @@ export async function startApp() {
     if (had && !model.state.selectedRegion) {
       const state = session.assemble(model.state);
       const name = catalog.get(had.id)?.label.name ?? had.label;
-      session.notify(t(state.lang, 'app').selectionCleared(name));
+      session.notify({ text: t(state.lang, 'app').selectionCleared(name) });
     }
   }
 
   let framed = false;
   let sheet;
   let workspace;
+
+  // replaceState, not push: the back button is not a camera undo stack.
+  const linkWriter = createLinkWriter(() => {
+    const hash = encodeState(linkState());
+    history.replaceState(null, '', hash ? `#${hash}` : globalThis.location.pathname + globalThis.location.search);
+  });
+  const scheduleUrl = linkWriter.schedule;
+
+  // Every camera move is a change the link has to follow.
+  function moveCamera(plan, options) {
+    scene.moveTo(plan, options);
+    scheduleUrl();
+  }
 
   /*
    * The reader's magnification, as a multiple of the distance at which the
@@ -297,10 +358,10 @@ export async function startApp() {
   // Framing fits above the stage dock, measured now: the section bar can change it in the same task.
   // Returns whether the framing changed.
   const applyFraming = ({ immediate = false } = {}) => {
-    const { inset, scale } = chrome?.framing() ?? { inset: 0, scale: { horizontal: 1, vertical: 1 } };
+    const { inset, scale } = chrome?.framing() ?? { inset: {}, scale: { horizontal: 1, vertical: 1 } };
     const rescaled = scale.horizontal !== framingScale.horizontal || scale.vertical !== framingScale.vertical;
     framingScale = scale;
-    return scene.setFramingInset({ bottom: inset }, { immediate }) || rescaled;
+    return scene.setFramingInset(inset, { immediate }) || rescaled;
   };
   const framingFit = ({ immediate = false } = {}) => {
     applyFraming({ immediate });
@@ -320,7 +381,7 @@ export async function startApp() {
     const after = fittedDistance(direction);
     if (!(before > 0 && after > 0)) return;
     const distance = plan.position.distanceTo(plan.target) * after / before;
-    scene.moveTo({ ...plan, position: plan.target.clone().addScaledVector(direction, distance) });
+    moveCamera({ ...plan, position: plan.target.clone().addScaledVector(direction, distance) });
   }
 
   /**
@@ -339,7 +400,7 @@ export async function startApp() {
         ? scene.distanceToTarget
         : fittedDistance(direction);
       const position = target.clone().addScaledVector(direction, distance);
-      scene.moveTo(
+      moveCamera(
         {
           position,
           target,
@@ -351,7 +412,7 @@ export async function startApp() {
         { immediate: immediate || !framed },
       );
     } else {
-      scene.moveTo(
+      moveCamera(
         planFraming(scene.camera, scene.controls, framingBounds(), VIEW_DIRECTIONS[view], frameTo,
           fit, framingPoints()),
         { immediate: immediate || !framed },
@@ -376,7 +437,7 @@ export async function startApp() {
   }
 
   /** A landmark is framed as its lesson authored it: that view, with anatomical context around it. */
-  function frameLandmark(step) {
+  function frameLandmark(step, { immediate = false } = {}) {
     const bounds = new Box3();
     for (const mesh of model.visibleMeshes) {
       if (mesh.userData.region_id === step.region) bounds.expandByObject(mesh);
@@ -387,8 +448,8 @@ export async function startApp() {
     scene.camera.up.copy(upFor(step.view));
     // The meshes use metres; authored anatomical distances use millimetres.
     bounds.expandByScalar(circuitCatalog.contextMarginMm / 1000);
-    scene.moveTo(planFraming(scene.camera, scene.controls, withContext(bounds),
-      VIEW_DIRECTIONS[step.view], frameTo, framingFit()));
+    moveCamera(planFraming(scene.camera, scene.controls, withContext(bounds),
+      VIEW_DIRECTIONS[step.view], frameTo, framingFit({ immediate })), { immediate });
     return true;
   }
 
@@ -399,22 +460,39 @@ export async function startApp() {
     if (!meshes.length) return;
     const box = new Box3();
     for (const mesh of meshes) box.expandByObject(mesh);
-    // The same anatomical context a lesson landmark gets around it.
-    box.expandByScalar(circuitCatalog.contextMarginMm / 1000);
     const framed = withContext(box);
+    // A mapping wide enough to carry its own context is fitted by its silhouette, as the whole brain is,
+    // so it fills the stage as DESIGN.md's framing says; a small one keeps the context box around it.
+    const points = framed.equals(box) ? silhouette(meshes) : null;
     const direction = viewDirection();
     const sides = new Set(meshes.map(mesh => model.regions.get(mesh.userData.region_id)?.hemisphere)
       .filter(side => side === 'left' || side === 'right'));
     // Seen from the other side, a one-sided mapping is framed through the hemisphere in front of it.
     if (sides.size === 1 && Math.sign(direction.x) === (sides.has('left') ? 1 : -1)) direction.x *= -1;
     chrome?.releaseView();
-    scene.moveTo(planFraming(scene.camera, scene.controls, framed, direction, frameTo,
-      framingFit()));
+    moveCamera(planFraming(scene.camera, scene.controls, framed, direction, frameTo,
+      framingFit(), points));
   }
 
-  function focusSelection() {
+  /** The meshes' vertices in world space, thinned like the whole brain's framing points. */
+  function silhouette(meshes) {
+    const stride = meshes.reduce((total, mesh) => total + mesh.geometry.attributes.position.count, 0) > 60000 ? 8 : 1;
+    const kept = [];
+    const point = new Vector3();
+    for (const mesh of meshes) {
+      const position = mesh.geometry.attributes.position;
+      mesh.updateWorldMatrix(true, false);
+      for (let i = 0; i < position.count; i += stride) {
+        point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+        kept.push(point.x, point.y, point.z);
+      }
+    }
+    return new Float32Array(kept);
+  }
+
+  function focusSelection({ immediate = false } = {}) {
     const landmark = lessonLandmark();
-    if (landmark && frameLandmark(landmark)) { render(); return; }
+    if (landmark && frameLandmark(landmark, { immediate })) { render(); return; }
     const id = model.state.selectedRegion?.id;
     if (!id) return;
     const meshes = model.visibleMeshes.filter(m => m.userData.region_id === id);
@@ -423,9 +501,9 @@ export async function startApp() {
     for (const mesh of meshes) box.expandByObject(mesh);
     const direction = scene.camera.position.clone().sub(scene.controls.target).normalize();
     chrome?.releaseView();
-    scene.moveTo(planFraming(
+    moveCamera(planFraming(
       scene.camera, scene.controls, box, direction, frameTo,
-      framingFit()));
+      framingFit({ immediate })), { immediate });
   }
 
   /** Open the tree branch that holds a region, so a selection is never out of sight. */
@@ -459,60 +537,6 @@ export async function startApp() {
     tabList?.querySelector('[role="tab"][aria-selected="true"]:not(:disabled)')?.focus();
   }
 
-  async function setAtlas(id) {
-    if (id === model.state.atlas) return;
-    const byCabNp = model.state.surfaceColor === 'cab-np';
-    const byFunctional = model.state.surfaceColor === 'functional';
-    session.setSwitching(null);
-    render();
-    try {
-      await model.setAtlas(id, progress => {
-        if (progress?.total) {
-          session.setSwitching({ loaded: progress.loaded, total: progress.total });
-          render();
-        }
-      });
-      session.setStatus('ready');
-      if (byCabNp && model.state.surfaceColor !== 'cab-np') {
-        const { lang } = session.assemble(model.state);
-        session.notify(t(lang, 'app').cabNpAtlasOnly(atlasSwitchLabel(id, lang)));
-      }
-      if (byFunctional && model.state.surfaceColor !== 'functional') {
-        const { lang } = session.assemble(model.state);
-        session.notify(t(lang, 'app').functionalAtlasOnly(atlasSwitchLabel(id, lang)));
-      }
-    } catch (error) {
-      // The control reflects model.state.atlas, so it reverts on this render.
-      const label = model.manifest.atlases.find(atlas => atlas.id === id)?.label ?? id;
-      session.failSwitch(label, error);
-    }
-    render();
-  }
-
-  // A later colour choice supersedes one still waiting on its atlas.
-  let surfaceRequest = 0;
-  async function chooseSurfaceColor(value) {
-    const request = ++surfaceRequest;
-    try {
-      // CAB-NP and the functional divisions are defined on one atlas's areas, so choosing either shows that atlas.
-      const atlas = value === 'cab-np' ? model.cabNp.atlas
-        : value === 'functional' ? model.functionalRegions.atlas : null;
-      if (atlas && model.state.atlas !== atlas) {
-        await setAtlas(atlas);
-        // A failed switch has already said why.
-        if (request !== surfaceRequest || model.state.atlas !== atlas) return;
-      }
-      const entering = value === 'functional' && model.state.surfaceColor !== 'functional';
-      await sections.setSurfaceColor(value);
-      // The glass brain shows the cortex alone; the reader can bring the internal anatomy back.
-      if (entering && model.state.internalVisible) model.setInternalVisible(false);
-      render();
-    } catch (error) {
-      session.notify(error.message);
-      render();
-    }
-  }
-
   /**
    * Choose the label volume the cut samples. The cortical surface is untouched:
    * a cut atlas need not have a surface, and NextBrain has none.
@@ -524,59 +548,35 @@ export async function startApp() {
     sections.setCutAtlas(id).catch(() => {});
   }
 
-  /**
-   * Choose which segmentation of the internal anatomy is drawn.
-   *
-   * Loading the fine level is a download, so it reports progress the way an
-   * atlas switch does and leaves the model on screen while it arrives.
-   */
-  async function setDetail(id) {
-    if (id === model.state.detail) return;
-    session.setSwitching(null);
-    render();
-    try {
-      await model.setDetail(id, progress => {
-        if (progress?.total) {
-          session.setSwitching({ loaded: progress.loaded, total: progress.total });
-          render();
-        }
-      });
-      session.setStatus('ready');
-    } catch (error) {
-      // The control reflects model.state.detail, so it reverts on this render.
-      const level = model.manifest.detail_levels.find(level => level.id === id);
-      session.failSwitch(level?.label ?? id, error);
-    }
-    render();
-  }
-
-  /** Undo whatever is hiding a region, then select it after loading completes. */
-  async function reveal(reason, id) {
+  /** Undo whatever is hiding a region, then select it; false once a later command took over. */
+  async function reveal(reason, id, current) {
     if (reason === 'removed') model.showRegions([id]);
-    if (reason === 'no-mri') await sections.setSurfaceColor('tissue');
+    if (reason === 'no-mri') await commands.applySurfaceColor('tissue', current);
     if (reason === 'cortex-hidden') { model.setCortexVisible(true); model.setCortexOpacity(1); }
     if (reason === 'internal-hidden') model.setInternalVisible(true);
-    if (reason === 'spinal-cord-hidden') await model.setSpinalCordVisible(true);
+    if (reason === 'spinal-cord-hidden') await commands.showSpinalCord(true, current);
     if (reason === 'hemisphere') model.setHemisphere('both');
     if (reason === 'isolated') model.clearIsolation();
     // A cut-only region is nowhere until a plane exists. Coronal is the
     // conventional default, and the panel moves it from there.
     if (reason === 'no-cut') {
-      await sections.setMode('coronal');
+      await commands.cut('coronal', current);
       const coords = model.centroidOf(id);
-      if (coords && sections.active) {
+      if (current() && coords && sections.active) {
         sections.setOffset(offsetThrough(coords, sections.frame.normal, sections.offsetRange));
       }
     }
-    if (reason === 'other-detail') await model.setDetail(model.regions.get(id).atlas);
+    if (reason === 'other-detail') await commands.loadDetail(model.regions.get(id).atlas, current);
     if (reason === 'other-system') model.setInternalSystem(null);
+    if (!current()) return false;
     const region = model.regions.get(id);
     if (!model.canSelect(region)) {
       const next = visibilityOf(region, model.settings).reason;
       if (next === reason) throw new Error(`Cannot reveal ${id}: ${next}`);
-      return reveal(next, id);
+      return reveal(next, id, current);
     }
     select(id);
+    return true;
   }
 
   function hideRegions(ids) {
@@ -586,7 +586,7 @@ export async function startApp() {
   function setLang(lang) {
     session.setLang(lang);
     try { localStorage.setItem('neuroatlas-lang', lang); } catch {}
-    render();
+    repaint();
   }
 
   // ---- panels -----------------------------------------------------------
@@ -596,33 +596,29 @@ export async function startApp() {
     networks: model.manifest.networks,
     cabNp: model.cabNp,
     functionalRegions: model.functionalRegions,
+    domains: model.domains,
+    detailLevels: model.manifest.detail_levels,
     anatomy: model.manifest.anatomy,
     anatomies,
     manifest: model.manifest,
     manifestUrl,
     indexUrl: `${modelsUrl}/anatomies.json`,
-    modelView: scene.domElement,
-    onAtlas: setAtlas,
-    onSurfaceColor: chooseSurfaceColor,
-    onTheme: choice => theme.choose(choice),
-    onLang: setLang,
-    onSingleKeys: enabled => {
-      keyPreference.set(enabled);
-      shortcuts.setSingleKeys(enabled);
-      render();
-    },
+    onAtlas: commands.chooseAtlas,
+    onSurfaceColor: commands.chooseSurfaceColor,
+    onDetail: commands.chooseDetail,
     // Another brain is another set of assets, so this re-enters through the
-    // URL rather than mutating the model in place. The rest of the state rides
-    // along: the reader keeps their atlas, cut and language across the change.
-    // Selection and dissection belong to the current subject's parcels.
+    // URL rather than mutating the model in place. The reader keeps their atlas,
+    // cut, view, panel and language; selection, dissection, the exact camera and
+    // the MRI window belong to the current subject's parcels and intensities.
     onAnatomy: id => {
       if (id === anatomy) return;
-      const state = session.assemble(model.state);
+      linkWriter.cancel();
       const hash = encodeState({
-        ...state, anatomy: id, selectedRegion: null, isolatedRegion: null,
-        hiddenRegions: new Set(),
+        ...linkState(), anatomy: id, selectedRegion: null, isolatedRegion: null,
+        hiddenRegions: new Set(), orbit: null, mriWindow: null,
       });
-      globalThis.location.hash = hash;
+      // Replaced, not pushed: Back must not return to a link for the brain just left.
+      history.replaceState(null, '', `#${hash}`);
       globalThis.location.reload();
     },
   });
@@ -655,15 +651,14 @@ export async function startApp() {
     onToggleAllGroups,
     onQuery: query => { session.setQuery(query); render(); },
     onReveal: async (reason, id) => {
+      const current = commands.begin();
       try {
-        await reveal(reason, id);
-        if (id) focusSelection();
+        if (await reveal(reason, id, current) && id) focusSelection();
       } catch (error) {
-        session.notify(error.message);
-        render();
+        commands.failIfCurrent(current, 'region', error);
       }
     },
-    onAtlas: setAtlas,
+    onAtlas: commands.chooseAtlas,
     onCutAtlas: setCutAtlas,
     onHideRegions: hideRegions,
     onShowRegions: ids => display(() => model.showRegions(ids)),
@@ -684,6 +679,7 @@ export async function startApp() {
     networks: model.manifest.networks,
     cabNp: model.cabNp,
     functionalRegions: model.functionalRegions,
+    domains: model.domains,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
     onClear: () => {
@@ -729,26 +725,29 @@ export async function startApp() {
 
   /** The scene as its link carries it, plus the exact camera a link leaves out. */
   function captureReaderState() {
-    const { position, target, near, far, minDistance, maxDistance } = scene.destination;
+    const { position, target, up, near, far, minDistance, maxDistance } = scene.destination;
     return readerState({
       ...session.assemble(model.state),
       ...cutState(),
+      mriWindow: mriWindowLink(),
       camera: {
-        position: position.clone(), target: target.clone(), up: scene.camera.up.clone(),
+        position: position.clone(), target: target.clone(), up: up.clone(),
         near, far, minDistance, maxDistance, zoom,
         held: chrome.viewHeld,
       },
     }, loadedLayers());
   }
 
-  function applyReaderState(target, movement = {}) {
+  /** Apply a whole scene under `current`; returns the steps that failed, each with its link fields. */
+  function applyReaderState(target, current, movement = {}) {
     return restoreReaderState(target, {
-      model, sections, revealInTree,
+      model, sections, commands, current, revealInTree,
       applyCamera: () => {
         if (target.camera === 'cut' && sections.active) faceCut(movement);
         else if (target.camera === 'cut' || target.camera === 'view') applyView(target.view, movement);
         else restoreCamera(target.view, target.camera, movement);
       },
+      applyOrbit: orbit => placeOrbit(orbit, movement),
     });
   }
 
@@ -756,26 +755,78 @@ export async function startApp() {
     session.setView(view);
     framingFit({ immediate });
     scene.camera.up.copy(pose.up);
-    scene.moveTo(pose, { immediate });
+    moveCamera(pose, { immediate });
     zoom = pose.zoom;
     if (pose.held) chrome.holdView(); else chrome.releaseView();
     render();
   }
 
+  const toWorld = millimetres => new Vector3(...millimetres).divideScalar(1000);
+  const toMillimetres = vector => vector.toArray().map(value => value * 1000);
+
+  /** A link's exact camera, placed in the framing just applied; only nearer limits are widened to admit it. */
+  function placeOrbit({ position, target, up }, { immediate = false } = {}) {
+    const plan = scene.destination;
+    if (!orbitWithin({ position, target }, plan.maxDistance * 1000)) {
+      throw new RangeError(`Camera ${position} → ${target} mm is beyond the orbit limit of ${plan.maxDistance} m.`);
+    }
+    const pose = { ...plan, position: toWorld(position), target: toWorld(target) };
+    const distance = pose.position.distanceTo(pose.target);
+    // A camera written at the limit may read back a rounding past it.
+    pose.minDistance = Math.min(plan.minDistance, distance);
+    pose.maxDistance = Math.max(plan.maxDistance, distance);
+    scene.camera.up.copy(up ? new Vector3(...up) : upFor(session.assemble({}).view));
+    chrome.releaseView();
+    moveCamera(pose, { immediate });
+    const fitted = fittedDistance(pose.position.clone().sub(pose.target).normalize());
+    if (fitted > 0) zoom = distance / fitted;
+    render();
+  }
+
+  /** The camera as a link carries it, when no named view describes it. */
+  function orbitLink() {
+    if (!chrome || chrome.viewHeld || tractReferenceActive) return null;
+    const { position, target, up } = scene.destination;
+    const named = upFor(session.assemble({}).view);
+    return {
+      position: toMillimetres(position), target: toMillimetres(target),
+      ...(up.distanceTo(named) > 1e-3 ? { up: up.toArray() } : {}),
+    };
+  }
+
+  /** The MRI window, when the reader has moved it off the scan's published one. */
+  function mriWindowLink() {
+    const shown = sections.display;
+    const published = sections.volumes?.metadata.display;
+    if (!shown || !published) return null;
+    if (shown.windowCenter === published.window_center && shown.windowWidth === published.window_width) return null;
+    return { center: shown.windowCenter, width: shown.windowWidth };
+  }
+
+  /** Panels word their own failures; a newer deploy also needs the notice's Reload. */
+  function offerReload(error) {
+    if (error?.code === 'asset-updated') commands.fail('landmark', error);
+  }
+
   // The scene before this excursion's first deficit. Kept until it is restored or the deficit
   // closes, so Restore returns there whatever was changed since, as its label says.
   let beforeDeficit = null;
-  let restoring = null;
+  // The scene before the open lesson, put back when the reader leaves it. Null for a lesson a link
+  // opened on its landmark: that scene is the link's own.
+  let beforeLesson = null;
 
+  /** Put back the scene from before the first deficit; false when a later command overtook it. */
   async function restoreBeforeDeficit() {
-    restoring = applyReaderState(beforeDeficit);
-    try {
-      await restoring;
-    } finally {
-      restoring = null;
+    const current = commands.begin();
+    const failures = await applyReaderState(beforeDeficit, current);
+    if (!current()) return false;
+    if (failures.length) {
+      for (const { error } of failures) console.error(error);
+      throw new AggregateError(failures.map(({ error }) => error), 'The previous view was not fully restored.');
     }
     beforeDeficit = null;
     render();
+    return true;
   }
 
   /** Closing a deficit ends its excursion: the scene stays, and there is nothing left to restore. */
@@ -785,18 +836,34 @@ export async function startApp() {
     render();
   }
 
+  /** The reader's own settings a reveal can change, compared after it to say which it did. */
+  function revealSettings() {
+    const { atlas, surfaceColor, detail, cutActive, isolatedRegion, hemisphere, cortexVisible } = model.settings;
+    return { atlas, colour: surfaceColor, detail, cut: cutActive, isolated: Boolean(isolatedRegion), hemisphere,
+      cortex: cortexVisible };
+  }
+
+  function sayRevealed(before) {
+    const said = revealNotice(session.assemble({}).lang, before, revealSettings());
+    if (said) session.notify({ text: said });
+  }
+
   /** The profile opens at once; the mapped regions are then drawn together and framed once. */
   async function openDeficit(id) {
+    const current = commands.begin();
     const regions = clinicalCatalog.mappedRegions(id);
-    if (restoring) await Promise.allSettled([restoring]);
-    // Before the detail opens: on a phone, raising the sheet reframes the camera.
-    beforeDeficit ??= captureReaderState();
+    // Before the detail opens: on a phone, raising the sheet reframes the camera. A lesson it is
+    // opened from ends here and hands over the scene from before it, for Restore to return to.
+    beforeDeficit ??= beforeLesson ?? captureReaderState();
+    beforeLesson = null;
+    circuitSession.close();
     session.setDeficit(id);
     session.setExplorer('deficits');
     render();
     showDetail();
-    await revealClinicalRegions(model, sections, regions);
-    if (session.assemble(model.state).selectedDeficit !== id) return;
+    const before = revealSettings();
+    if (!(await commands.revealRegions(regions, current))) return;
+    sayRevealed(before);
     frameRegions(regions);
     render();
   }
@@ -810,17 +877,24 @@ export async function startApp() {
     render();
   }
 
+  const involved = createInvolvement(model.regions);
   const clinicalExplorer = createClinicalExplorer({
     clinical: clinicalCatalog,
     anatomy: catalog,
+    involved,
     onQuery: query => { session.setClinicalQuery(query); render(); },
     onDeficit: openDeficit,
     onRegion: async id => {
+      const current = commands.begin();
       beforeDeficit ??= captureReaderState();
-      await openClinicalRegion(model, sections, id);
+      const before = revealSettings();
+      if (!(await commands.openRegion(id, current))) return;
+      sayRevealed(before);
       focusSelection();
+      render();
     },
     onRestore: restoreBeforeDeficit,
+    onFailure: offerReload,
   });
 
   function frameInternal() {
@@ -837,13 +911,13 @@ export async function startApp() {
       }
     }
     if (internalBounds.isEmpty()) return;
-    scene.moveTo(planFraming(scene.camera, scene.controls, internalBounds,
+    moveCamera(planFraming(scene.camera, scene.controls, internalBounds,
       viewDirection(), frameTo, framingFit()));
   }
 
   /** Pull back to the whole brain along the direction the reader already has. */
   function frameWhole() {
-    scene.moveTo(planFraming(scene.camera, scene.controls, framingBounds(),
+    moveCamera(planFraming(scene.camera, scene.controls, framingBounds(),
       viewDirection(), frameTo, framingFit(), framingPoints()));
   }
 
@@ -851,37 +925,62 @@ export async function startApp() {
   let beforeInternal = null;
 
   async function enterInternal() {
+    const current = commands.begin();
     beforeInternal = captureBeforeInternal(model.state, model.defaultDetail);
-    await sections.setMode('off');
-    await setDetail(model.defaultDetail);
+    session.setQuery('');
+    try {
+      await sections.setMode('off');
+      if (!current()) return;
+      await commands.loadDetail(model.defaultDetail, current);
+      if (!current()) return;
+    } catch (error) {
+      commands.failIfCurrent(current, 'internal', error);
+      return;
+    }
     model.setInternalSystem(null);
     model.setCortexVisible(false);
     model.setSurfaceColor('atlas');
-    session.setQuery('');
     frameInternal();
     render();
   }
 
   async function leaveInternalAnatomy() {
-    const changes = leaveInternal(beforeInternal, model.state);
+    const current = commands.begin();
+    const changes = leaveInternal(beforeInternal, model.state, {
+      'cab-np': model.cabNp?.atlas, functional: model.functionalRegions?.atlas, domains: model.domains?.atlas,
+    });
     beforeInternal = null;
+    session.setQuery('');
     // Both setters release isolation, which would otherwise hold the cortex
     // hidden behind whichever single structure the reader had isolated.
     model.setInternalSystem(changes.internalSystem);
     model.setCortexVisible(changes.cortexVisible);
-    model.setSurfaceColor(changes.surfaceColor);
-    if (changes.detail) await setDetail(changes.detail);
-    session.setQuery('');
+    try {
+      await commands.applySurfaceColor(changes.surfaceColor, current);
+      if (current() && changes.detail) await commands.loadDetail(changes.detail, current);
+    } catch (error) {
+      commands.failIfCurrent(current, 'wholeBrain', error);
+    }
+    if (!current()) return;
+    if (changes.colourLost) {
+      const { lang, atlas } = session.assemble(model.state);
+      const copy = t(lang, 'app');
+      const said = { 'cab-np': copy.cabNpAtlasOnly, functional: copy.functionalAtlasOnly,
+        domains: copy.domainsAtlasOnly }[changes.colourLost];
+      session.notify({ text: said(atlasSwitchLabel(atlas, lang)) });
+    }
     frameWhole();
     render();
   }
 
   const internalAnatomy = createInternalAnatomy({
+    catalog,
     manifest: model.manifest,
     onToggle: () => (insideInternal(model.state) ? leaveInternalAnatomy() : enterInternal()),
     onSystem: async system => {
+      const current = commands.begin();
       try {
-        if (system === 'Spinal cord') await model.setSpinalCordVisible(true);
+        if (system === 'Spinal cord' && !(await commands.showSpinalCord(true, current))) return;
         // The other door in must clear the cortex's network legend as well.
         if (!insideInternal(model.state)) {
           beforeInternal = captureBeforeInternal(model.state, model.state.detail);
@@ -898,8 +997,7 @@ export async function startApp() {
         frameInternal();
         render();
       } catch (error) {
-        session.notify(error.message);
-        render();
+        commands.failIfCurrent(current, 'system', error);
       }
     },
   });
@@ -907,31 +1005,38 @@ export async function startApp() {
   const constituents = createConstituents({
     catalog,
     onRegion: async id => {
-      model.setInternalSystem(null);
-      await openClinicalRegion(model, sections, id);
-      focusSelection();
+      const current = commands.begin();
+      try {
+        model.setInternalSystem(null);
+        if (await commands.openRegion(id, current)) focusSelection();
+      } catch (error) {
+        commands.failIfCurrent(current, 'region', error);
+      }
     },
   });
 
-  const hasSpinalCord = (model.manifest.supplemental_layers ?? [])
-    .some(layer => layer.id === 'zanatomy');
+  const hasSpinalCord = publishesSpinalCord(model.manifest);
 
   async function setSpinalCordVisible(visible) {
+    if (!hasSpinalCord) {
+      session.notify({ text: t(session.assemble({}).lang, 'display').spinalCordUnavailable });
+      render();
+      return;
+    }
+    const current = commands.begin();
     const had = model.state.selectedRegion;
     try {
-      await model.setSpinalCordVisible(visible);
+      if (!(await commands.showSpinalCord(visible, current))) return;
       notifyClearedSelection(had);
       frameWhole();
     } catch (error) {
-      session.notify(error.message);
+      commands.failIfCurrent(current, 'cord', error);
     }
     render();
   }
 
   const display_ = createDisplay({
-    detailLevels: model.manifest.detail_levels,
     hasSpinalCord,
-    onDetail: setDetail,
     onHemisphere: value => display(() => {
       model.setHemisphere(value);
       frameWhole();
@@ -943,6 +1048,8 @@ export async function startApp() {
     onReset: () => {
       // The opening picture: display, cut, camera, and the list. Not wrapped
       // in display(), which would announce the cleared selection as a mishap.
+      // A command still loading would land over it, so it is overtaken.
+      commands.begin();
       session.setQuery('');
       sections.setMode('off');
       model.reset();
@@ -969,13 +1076,15 @@ export async function startApp() {
     const cutBounds = sliceWorldCenter.y < bounds.min.y
       ? new Box3(sliceWorldCenter.clone().subScalar(0.04), sliceWorldCenter.clone().addScalar(0.04))
       : bounds;
-    scene.moveTo(planFraming(scene.camera, scene.controls, cutBounds, direction, frameTo,
+    moveCamera(planFraming(scene.camera, scene.controls, cutBounds, direction, frameTo,
       framingFit({ immediate }), cutBounds === bounds ? framingPoints() : null), { immediate });
     render();
   }
 
   const sectionControls = createSectionControls(sections, {
     anatomy: model.manifest.anatomy,
+    // A plane chosen on the stage is a scene command: its first cut downloads, and a later command overtakes it.
+    cut: plane => commands.cut(plane, commands.begin()),
     cutAtlases: model.manifest.cut_atlases,
     onFaceView: faceCut,
     onSelect: select,
@@ -983,59 +1092,93 @@ export async function startApp() {
     centroidOf: id => model.centroidOf(id),
   });
 
-  async function openLandmark(step) {
-    await openCircuitLandmark(model, sections, step);
+  /** Draw, select and frame a lesson's landmark; false once a later command took over. */
+  async function openLandmark(step, current) {
+    if (!(await commands.openRegion(step.region, current))) return false;
+    showCircuitLandmark(model, step);
     if (!frameLandmark(step)) throw new Error(`Landmark geometry unavailable: ${step.region}`);
+    return true;
   }
 
-  // The view a lesson was opened from; stepping back to the list returns the camera to it.
-  let readerView = null;
-  function rememberReaderView() {
-    if (!lessonLandmark()) readerView = session.assemble(model.state).view;
+  /** The scene a lesson opens over, unless one is already open and holds it. */
+  function rememberBeforeLesson() {
+    if (!circuitSession.snapshot().circuit) beforeLesson = captureReaderState();
   }
-  function leaveLandmark() {
-    if (!lessonLandmark() || !readerView) return;
-    session.setView(readerView);
-    frameCurrent();
+
+  /**
+   * Leaving a lesson, back to the list or to another tab, ends it and puts back the scene from before
+   * it, as a deficit's Restore does. The list stays in front: a restored selection is not a new choice.
+   */
+  async function leaveLesson() {
+    if (!circuitSession.snapshot().circuit || session.assemble(model.state).explorer !== 'circuits') return;
+    const before = beforeLesson;
+    beforeLesson = null;
+    circuitSession.close();
+    render();
+    if (!before) return;
+    const current = commands.begin();
+    const failures = await applyReaderState(before, current);
+    if (!current()) return;
+    workspace.showList();
+    if (failures.length) {
+      commands.fail('restore', new AggregateError(failures.map(({ error }) => error),
+        'The scene from before the lesson was not fully restored.'));
+    }
+    render();
+  }
+
+  // A tab chosen during a lesson waits for the lesson's scene to come back; a later choice wins.
+  let modeWanted = null;
+  async function chooseMode(value) {
+    modeWanted = value;
+    await leaveLesson();
+    if (modeWanted === value) chooseExplorer(value);
   }
 
   const circuitExplorer = createCircuitExplorer({
     catalog: circuitCatalog,
+    involved,
     onCircuit: async id => {
+      const current = commands.begin();
       const circuit = circuitCatalog.get(id);
-      rememberReaderView();
+      rememberBeforeLesson();
       showDetail();
-      await openLandmark(circuit.steps[0]);
+      if (!(await openLandmark(circuit.steps[0], current))) return;
       circuitSession.start(id);
       render();
     },
     onLandmark: async (id, index) => {
-      rememberReaderView();
+      const current = commands.begin();
+      rememberBeforeLesson();
       session.setExplorer('circuits');
       showDetail();
-      await openLandmark(circuitCatalog.get(id).steps[index]);
+      if (!(await openLandmark(circuitCatalog.get(id).steps[index], current))) return;
       circuitSession.start(id);
       circuitSession.go(index);
       render();
     },
     onStep: async index => {
+      const current = commands.begin();
       const lesson = circuitSession.snapshot();
       const step = circuitCatalog.get(lesson.circuit).steps[index];
       if (!step) throw new RangeError(`Invalid landmark index: ${index}`);
-      await openLandmark(step);
+      if (!(await openLandmark(step, current))) return;
       circuitSession.go(index);
       render();
       if (session.assemble(model.state).explorer === 'circuits') showDetail();
     },
     onMri: async () => {
+      const current = commands.begin();
       const lesson = circuitSession.snapshot();
       const step = circuitCatalog.get(lesson.circuit).steps[lesson.step];
       const canOpen = () => {
-        const current = circuitSession.snapshot();
-        return session.assemble(model.state).explorer === 'circuits'
-          && current.circuit === lesson.circuit && current.step === lesson.step;
+        const shown = circuitSession.snapshot();
+        return current() && session.assemble(model.state).explorer === 'circuits'
+          && shown.circuit === lesson.circuit && shown.step === lesson.step;
       };
-      await openLandmark(step);
+      await openLandmark(step, current);
+      if (!canOpen()) return;
+      await commands.prepareCut(current);
       if (!canOpen()) return;
       await prepareCircuitMri(model, sections, step);
       if (!canOpen()) return;
@@ -1044,6 +1187,7 @@ export async function startApp() {
       render();
     },
     onDeficit: id => clinicalExplorer.openDeficit(id),
+    onFailure: offerReload,
   });
   // Under a lesson the landmark's Linked MRI opens the lesson's prepared plane, ahead of the plain one.
   const onLessonMri = event => {
@@ -1075,9 +1219,6 @@ export async function startApp() {
     // The stage's direction key follows whether any streamline is drawn.
     onVisibility: () => render(),
   });
-  const shortcuts = createShortcuts(initialLang);
-  shortcuts.setSingleKeys(keyPreference.enabled);
-
   const onSnapshot = async () => {
     try {
       const dataUrl = await chrome.snapshot(crop => scene.captureSnapshot(crop), {
@@ -1090,9 +1231,7 @@ export async function startApp() {
       link.href = dataUrl;
       link.click();
     } catch (error) {
-      console.error(error);
-      session.notify(error.message);
-      render();
+      commands.fail('snapshot', error);
     }
   };
 
@@ -1100,23 +1239,34 @@ export async function startApp() {
     networks: model.manifest.networks,
     cabNp: model.cabNp,
     functionalRegions: model.functionalRegions,
+    domains: model.domains,
     onView: applyView,
     onRetry: reloadWithoutStoredModels,
     onSnapshot,
     onDock: refitDock,
     onFunctionalLevel: level => display(() => model.setFunctionalLevel(level)),
+    onDomain: id => display(() => model.setDomain(id)),
     controls: scene.controls,
   });
   chrome.setViewport(scene.visibleRect, scene.hostSize);
+
+  const notice = createNotice({
+    onDismiss: () => {
+      session.notify(null);
+      render();
+      rescueFocus();
+    },
+    onReload: reloadWithoutStoredModels,
+  });
 
   // Built before the sheet: the sheet decides on construction which shell owns
   // the panels, and hands them over through onShell.
   workspace = createWorkspace({
     catalog,
-    onMode: chooseExplorer,
+    onMode: chooseMode,
     onClear: clearContext,
     onViewChange: () => scene.invalidate(),
-    onReturn: leaveLandmark,
+    onReturn: leaveLesson,
     // The group crumb leads to the selected row, so the tree shows it rather than a search.
     onLocate: () => {
       const id = model.state.selectedRegion?.id;
@@ -1127,6 +1277,9 @@ export async function startApp() {
     },
   });
 
+  // The camera's heading where it is going, so a move in flight is read where it lands.
+  const heading = () => scene.destination.position.clone().sub(scene.destination.target).normalize();
+  let fitBefore = null;
   /*
    * The phone shell. It reports how much of the canvas it covers rather than
    * resizing it, and everything that must agree about where the viewport is —
@@ -1139,15 +1292,33 @@ export async function startApp() {
     onShell: shell => {
       if (shell === 'sheet') workspace.deactivate();
       else workspace.activate();
+      notice.setShell(shell);
     },
-    onInsets: insets => {
-      scene.setChromeInsets(insets);
+    onInsets: (insets, motion) => {
+      // A reader's own framing (an orbit, Focus, a landmark) keeps its heading and its size in the
+      // room: its fit is read before the sheet first moves, and again where the sheet settles.
+      const own = framed && !orbiting && !chrome?.viewHeld;
+      if (own && !fitBefore) fitBefore = fittedDistance(heading());
+      scene.setChromeInsets(insets, motion);
       chrome?.setViewport(scene.visibleRect, scene.hostSize);
+      if (!motion.settle) return;
+      if (own) keepFraming(fitBefore);
+      fitBefore = null;
     },
-    // Reframing during a drag would fight the finger; on arrival the camera
-    // eases to the new rectangle, which is the one thing allowed to animate.
-    onDetent: () => { if (framed) frameCurrent(); },
+    // Reframing during a drag would fight the finger; on arrival a held view
+    // eases to the new rectangle on the sheet's curve.
+    onDetent: () => { if (framed && chrome?.viewHeld) frameCurrent(); },
   });
+
+  /** Scale the camera's distance from a fit of `before` to the room it has now, keeping heading and target. */
+  function keepFraming(before) {
+    applyFraming();
+    const after = fittedDistance(heading());
+    if (!(before > 0 && after > 0) || after === before) return;
+    const plan = scene.destination;
+    const distance = plan.position.distanceTo(plan.target) * after / before;
+    moveCamera({ ...plan, position: plan.target.clone().addScaledVector(heading(), distance) });
+  }
 
   function showList() {
     workspace.showList();
@@ -1174,6 +1345,7 @@ export async function startApp() {
         kind: lessonLandmark() ? 'landmark' : 'region',
         label: catalog.get(region.id)?.label.name ?? region.label,
         side: t(state.lang, 'sides').glyphs[region.hemisphere] ?? '',
+        sideWord: t(state.lang, 'sides').words[region.hemisphere],
         clearable: true,
       };
     }
@@ -1184,6 +1356,18 @@ export async function startApp() {
       return { kind: 'lesson', label: circuitCatalog.get(state.lesson.circuit).name[state.lang], clearable: false };
     }
     return {};
+  }
+
+  /** The location bar's place within a mode: a lesson's circuit, an open deficit's group. */
+  function detailPlace(state) {
+    if (state.explorer === 'circuits' && state.lesson.circuit) {
+      return circuitCatalog.get(state.lesson.circuit).name[state.lang];
+    }
+    if (state.explorer === 'deficits' && state.selectedDeficit) {
+      const { group } = clinicalCatalog.get(state.selectedDeficit);
+      return clinicalCatalog.groups.find(entry => entry.id === group).name[state.lang];
+    }
+    return null;
   }
 
   // ---- the single render path -------------------------------------------
@@ -1213,8 +1397,8 @@ export async function startApp() {
 
     header.update(referenceOnly ? { ...state, surfaceColor: 'tissue' } : state, { visibleCount,
       reference: referenceOnly ? nativeTracts.reference(state.lang) : null,
-      tracts: state.explorer === 'diffusion' ? nativeTracts.reference(state.lang).detail : null,
-      singleKeys: keyPreference.enabled, themeChoice: theme.choice });
+      tracts: state.explorer === 'diffusion' ? nativeTracts.reference(state.lang).detail : null });
+    settings.update(state, { singleKeys: keyPreference.enabled, themeChoice: theme.choice });
     navigator.update(state);
     inspector.update(state);
     const outlineAvailable = !sections.active && !referenceOnly;
@@ -1222,23 +1406,21 @@ export async function startApp() {
     atlasComparison.update({ ...state, outlineAvailable });
     const strip = contextStrip(state, referenceOnly);
     sheet.update(state, strip);
-    workspace.update(state, strip, state.explorer === 'circuits' && state.lesson.circuit
-      ? circuitCatalog.get(state.lesson.circuit).name[state.lang] : null);
+    workspace.update(state, strip, detailPlace(state));
     clinicalExplorer.update(state, { restorable: beforeDeficit !== null });
     circuitExplorer.update(state);
     nativeTracts.update(state);
     display_.update(state);
-    dissectionControls.update(state);
-    document.getElementById('dissection-controls').hidden = referenceOnly
-      || state.explorer !== 'anatomy';
+    const dissectionSaid = dissectionControls.update(state);
     internalAnatomy.update(state);
     constituents.update(state);
     sectionControls.update(state);
     chrome.update(referenceOnly ? { ...state, surfaceColor: 'tissue' } : state,
       { directionKey: nativeTracts.streamlinesVisible });
     shortcuts.setLanguage(state.lang);
+    notice.update(state);
     outline();
-    syncUrl(state);
+    scheduleUrl();
 
     // The text state is the product for a reader who cannot see the render.
     const region = state.selectedRegion;
@@ -1250,16 +1432,20 @@ export async function startApp() {
       : null;
     // A notice explains a change the reader may not be looking at, so it
     // outranks the selection it often accompanies.
-    const notice = state.notice ?? null;
-    if (notice && notice !== announcedNotice) announce(notice);
-    else if (spoken !== announced) announce(spoken ?? '');
+    // A changed count of hidden parts joins the sentence, so one announcer speaks once.
+    const said = state.notice?.text ?? null;
+    const joined = sentence => (sentence && dissectionSaid
+      ? `${sentence.replace(/[^.!?…]$/, '$&.')} ${dissectionSaid}` : sentence || dissectionSaid || '');
+    if (said && said !== announcedNotice) announce(joined(said));
+    else if (spoken !== announced) announce(joined(spoken));
+    else if (dissectionSaid) announce(dissectionSaid);
     if (state.status === 'context-lost' && announcedStatus !== 'context-lost') {
-      announce(state.error.message);
+      announce(t(state.lang, 'errors').contextLost);
     } else if (announcedStatus === 'context-lost' && state.status === 'ready') {
       announce(viewportCopy.loaded);
     }
     announced = spoken;
-    announcedNotice = notice;
+    announcedNotice = said;
     announcedStatus = state.status;
   }
 
@@ -1279,9 +1465,16 @@ export async function startApp() {
     const division = surfaceColor === 'functional'
       && (functionalRegionOf(model.functionalRegions, functionalLevel, region.id)
         ?? functionalRegionOf(model.functionalRegions, 'sections', region.id));
-    const name = division ? `${label} · ${functionalName(division, lang)}` : label;
+    // The network a colour stands for, where one network holds the whole region: every CAB-NP
+    // area; a Yeo 7 region only when all its assigned vertices share one network.
+    const cabNp = surfaceColor === 'cab-np' && model.cabNp?.regions[region.id];
+    const yeo = surfaceColor === 'network' && model.regions.get(region.id)?.networks;
+    const network = cabNp ? cabNpName(cabNp, lang) : yeo?.length === 1 ? networkName(yeo[0].network, lang) : null;
+    // Every domain the area reaches, strongest first; glass names none.
+    const domains = surfaceColor === 'domains'
+      ? domainsOf(model.domains, region.id).map(record => domainName(record, lang)).join(', ') : null;
     const side = t(lang, 'sides').capitalized[region.hemisphere];
-    return side ? `${name} · ${side}` : name;
+    return [label, division && functionalName(division, lang), network, domains, side].filter(Boolean).join(' · ');
   }
 
   /** Mark what the pointer is on — a cut face lights, a surface outlines — and name it. */
@@ -1336,23 +1529,20 @@ export async function startApp() {
     };
   }
 
-  function cutLink() {
-    const cut = cutState();
-    return cut.cut ? { ...cut, cutOffset: Math.round(cut.cutOffset * 10) / 10 } : cut;
+  /**
+   * Everything the link carries. The brain is fixed for the life of the page,
+   * so it is not session state, but region ids are shared between brains and a
+   * link without it reopens someone else's anatomy.
+   */
+  function linkState() {
+    const lesson = circuitSession.snapshot();
+    return {
+      ...session.assemble(model.state), ...cutState(), anatomy,
+      circuit: lesson.circuit, circuitStep: lesson.circuit ? lesson.step : 0,
+      orbit: orbitLink(), mriWindow: mriWindowLink(),
+    };
   }
 
-  let urlTimer = null;
-  function syncUrl(state) {
-    clearTimeout(urlTimer);
-    urlTimer = setTimeout(() => {
-      // The brain is fixed for the life of the page, so it is not session
-      // state — but it has to be in the link. Region ids are shared between
-      // brains, so a link without it reopens someone else's anatomy.
-      const hash = encodeState({ ...state, ...cutLink(), anatomy });
-      // replaceState, not push: the back button is not a camera undo stack.
-      history.replaceState(null, '', hash ? `#${hash}` : globalThis.location.pathname);
-    }, 250);
-  }
 
   function focusPoint(point) {
     chrome?.releaseView();
@@ -1360,7 +1550,7 @@ export async function startApp() {
     const minDistance = point.y < bounds.min.y
       ? Math.min(scene.controls.minDistance, 0.015)
       : scene.controls.minDistance;
-    scene.moveTo({
+    moveCamera({
       position: scene.camera.position.clone().add(delta),
       target: point.clone(),
       near: scene.camera.near,
@@ -1402,6 +1592,7 @@ export async function startApp() {
   // A dock change during a drag waits for the pointer to lift.
   scene.controls.addEventListener('start', () => { orbiting = true; });
   scene.controls.addEventListener('end', () => {
+    scheduleUrl();
     orbiting = false;
     if (dockPending) { dockPending = false; refitDock(); }
   });
@@ -1428,12 +1619,14 @@ export async function startApp() {
     // A drag reports its zoom when the pointer lifts; a key press has no
     // equivalent moment, so it reports its own.
     rememberZoom();
+    scheduleUrl();
     return true;
   }
 
+  // From the keys 0–6, so the view is simply there; a click on a preset keeps the orbit.
   function chooseView(view) {
     chrome.dismissHelp();
-    applyView(view);
+    applyView(view, { immediate: true });
   }
 
   const onKeyDown = event => {
@@ -1475,7 +1668,7 @@ export async function startApp() {
     // from a control that has keys of its own.
     if (isCharacterKey(event.key)
       && !characterShortcutAllowed(event.target, keyPreference.enabled)) return;
-    if (event.key === '?') { event.preventDefault(); return shortcuts.toggle(); }
+    if (event.key === '?') { event.preventDefault(); return shortcuts.toggle({ instant: true }); }
     if (shortcuts.isOpen) return;
     if (event.key === '/') {
       event.preventDefault();
@@ -1504,7 +1697,7 @@ export async function startApp() {
     if (event.key.toLowerCase() === 'f') {
       if (model.state.selectedRegion) {
         event.preventDefault();
-        focusSelection();
+        focusSelection({ immediate: true });
       }
       return;
     }
@@ -1537,10 +1730,111 @@ export async function startApp() {
   };
   globalThis.addEventListener('keydown', onKeyDown);
 
+  // ---- links ------------------------------------------------------------
+
+  const known = {
+    atlases: new Set(model.manifest.atlases.map(entry => entry.id)),
+    details: new Set(model.manifest.detail_levels.map(entry => entry.id)),
+    cutAtlases: new Set(model.manifest.cut_atlases.map(entry => entry.id)),
+    views: new Set(Object.keys(VIEW_DIRECTIONS)),
+    explorers: new Set(MODES),
+    surfaceColors: new Set(['tissue', 'mri', 'atlas', ...(model.manifest.networks ? ['network'] : []),
+      ...(model.cabNp ? ['cab-np'] : []), ...(model.functionalRegions ? ['functional'] : []),
+      ...(model.domains ? ['domains'] : [])]),
+    domains: new Set(model.domains?.domains.map(domain => domain.id) ?? []),
+    regions: model.regions,
+    deficits: new Set(clinicalCatalog.search('', 'en').map(deficit => deficit.id)),
+    circuits: new Map(circuitCatalog.all.map(circuit => [circuit.id, circuit.steps.length])),
+    spinalCord: hasSpinalCord,
+  };
+
+  /**
+   * Apply a decoded link to the anatomy on screen, field by field. Returns the
+   * link parameters that were not applied, or null when a later command took
+   * over. The address bar keeps the link until it has settled.
+   */
+  async function restoreLink({ state: linked, rejected }, movement) {
+    const current = commands.begin();
+    linkWriter.hold(current);
+    // Released by the caller once the scene has settled, with the link's own notice.
+    session.holdNotices();
+    try {
+      const { state: valid, rejected: unknown } = checkLink(linked, known);
+      const notApplied = [...rejected, ...unknown];
+      const atlas = valid.atlas ?? model.manifest.atlases[0].id;
+      const target = readerState({
+        ...valid,
+        // Without a view of its own, the link faces its cut, as choosing the cut does.
+        camera: viewForRestoredCut({ cut: valid.cut, reverse: valid.cutReverse, view: valid.view })
+          ? 'cut' : 'view',
+      }, { atlas, detail: model.defaultDetail, cutAtlas: valid.cutAtlas ?? atlas });
+      const failures = await applyReaderState(target, current, movement);
+      if (!current()) return null;
+      const present = new Set(Object.keys(linked).map(key => PARAMS[key]));
+      for (const { fields, error } of failures) {
+        console.error(error);
+        const named = fields.filter(field => present.has(field));
+        notApplied.push(...(named.length ? named : fields.slice(0, 1)));
+      }
+      beforeDeficit = null;
+      beforeLesson = null;
+      chooseExplorer(valid.explorer ?? 'anatomy');
+      session.setDeficit(valid.selectedDeficit ?? null);
+      if (valid.circuit) {
+        circuitSession.start(valid.circuit);
+        circuitSession.go(valid.circuitStep ?? 0);
+      } else {
+        circuitSession.close();
+      }
+      const { explorer, selectedDeficit } = session.assemble({});
+      // A lesson linked without its landmark opens on it, as choosing that step does; leaving it
+      // returns to the rest of the link.
+      if (explorer === 'circuits' && valid.circuit && !valid.selectedRegion) {
+        const lesson = circuitSession.snapshot();
+        beforeLesson = captureReaderState();
+        try {
+          if (!(await openLandmark(circuitCatalog.get(lesson.circuit).steps[lesson.step], current))) return null;
+        } catch (error) {
+          console.error(error);
+          notApplied.push('step');
+        }
+      }
+      // The panel opens on what the link names, without raising a phone's sheet over its camera.
+      if ((explorer === 'deficits' && selectedDeficit) || (explorer === 'circuits' && valid.circuit)) {
+        workspace.showDetail();
+      }
+      render();
+      return notApplied;
+    } finally {
+      linkWriter.release(current);
+      scheduleUrl();
+    }
+  }
+
+  /** A link edited in place: the same brain takes it as scene commands; another brain is another page. */
+  async function onHashChange() {
+    const decoded = decodeState(globalThis.location.hash);
+    if (!sameSubject(decoded.state, anatomy, published.default)) {
+      globalThis.location.reload();
+      return;
+    }
+    if (decoded.state.lang) session.setLang(decoded.state.lang);
+    const notApplied = await restoreLink(decoded, {});
+    session.releaseNotices(notApplied?.length ? linkNotice(notApplied, session.assemble({}).lang) : null);
+    render();
+  }
+
   // ---- start ------------------------------------------------------------
 
   model.addEventListener('change', render);
   sections.addEventListener('change', render);
+  // The envelopes the model fetches by itself, when hiding the cortex first exposes white matter.
+  const onLoadError = event => {
+    session.notify(failureNotice(event.detail, session.assemble({}).lang, 'whiteMatter'));
+    render();
+  };
+  model.addEventListener('loaderror', onLoadError);
+  repaint = render;
   afterTheme = () => {
     sections.applyTheme();
     render();
@@ -1548,14 +1842,10 @@ export async function startApp() {
   scene.applyTheme();
   scene.setSize();
   // The camera starts inside the brain; frame it before the link's layers load around it.
+  let notApplied;
   try {
     applyView(session.assemble(model.state).view, { immediate: true });
-    await applyReaderState(readerState({
-      ...wanted,
-      // Without a view of its own, the link faces its cut, as choosing the cut does.
-      camera: viewForRestoredCut({ cut: wanted.cut, reverse: wanted.cutReverse, view: wanted.view })
-        ? 'cut' : 'view',
-    }, loadedLayers()), { immediate: true });
+    notApplied = await restoreLink(link, { immediate: true });
   } catch (error) {
     dispose();
     throw error;
@@ -1569,17 +1859,22 @@ export async function startApp() {
   onCameraChange();
   // Before the render, which replaces it with a restored selection if there is one.
   announce(t(session.assemble(model.state).lang, 'viewport').loaded);
+  session.releaseNotices(notApplied?.length ? linkNotice(notApplied, session.assemble({}).lang) : null);
   render();
-  prefetchIdleLayers(model);
+  prefetchOtherAtlas(model);
+  globalThis.addEventListener('hashchange', onHashChange);
 
   function dispose() {
     globalThis.removeEventListener('keydown', onKeyDown);
+    globalThis.removeEventListener('hashchange', onHashChange);
+    notice.dispose();
     scene.controls.removeEventListener('change', onCameraChange);
-    clearTimeout(urlTimer);
+    linkWriter.cancel();
     sheet.dispose();
     workspace.dispose();
     sections.removeEventListener('change', render);
     model.removeEventListener('change', render);
+    model.removeEventListener('loaderror', onLoadError);
     sectionControls.dispose();
     sections.dispose();
     shortcuts.dispose();
@@ -1598,6 +1893,7 @@ export async function startApp() {
     nativeTracts.dispose();
     navigator.dispose();
     header.dispose();
+    settings.dispose();
     theme.dispose();
     model.dispose();
     scene.dispose();

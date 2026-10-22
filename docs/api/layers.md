@@ -20,6 +20,15 @@ The Cole-Anticevic network partition, one network per HCP-MMP1.0 area. Its assig
    :members:
 ```
 
+## `brain_model.layers.neuropsych_domains`
+
+Each HCP-MMP1.0 area's neuropsychological domains: those whose Neurosynth consistency z, averaged over the area on `fsaverage`, reaches the threshold in `config/neuropsych-domains.yaml`, with the lesion check of each domain. Published per area in `neuropsych-domains.json`.
+
+```{eval-rst}
+.. automodule:: brain_model.layers.neuropsych_domains
+   :members:
+```
+
 ## `brain_model.layers.functional_regions`
 
 Published groupings of HCP-MMP1.0 areas at two levels: Glasser's 22 sections and the named regions Glasser and Rolls define, transcribed in `config/functional-regions.yaml` and published per area in `functional-regions.json`.

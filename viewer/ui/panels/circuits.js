@@ -1,4 +1,5 @@
 import { CIRCUIT_TEXT } from '../../learning/translations.js';
+import { failureNotice } from '../../i18n/errors.js';
 import { drillChevron, scrollToTop } from './clinical.js';
 
 function element(tag, text, className) {
@@ -35,8 +36,9 @@ function command(text, action, value) {
   return node;
 }
 
+/** One of the lesson's notes: a collapsible section whose summary reads as a section heading. */
 function disclosure(title, ...children) {
-  const node = element('details', null, 'circuit-disclosure');
+  const node = element('details', null, 'detail-section circuit-disclosure');
   node.append(element('summary', title), ...children);
   return node;
 }
@@ -86,7 +88,7 @@ function renderStepper(group, lesson, total, text) {
     control.className = `icon-button circuit-stepper-${direction}`;
     control.dataset.stepDirection = direction;
     control.setAttribute('aria-label', text[`${direction}Landmark`]);
-    control.title = text[`${direction}Landmark`];
+    control.dataset.tooltip = text[`${direction}Landmark`];
     // A boundary has nowhere to go, so the control leaves rather than greying out.
     control.hidden = targets[direction] === null;
     control.append(chevron(direction));
@@ -99,13 +101,14 @@ function renderStepper(group, lesson, total, text) {
  * Lesson controls share the app's render cycle. The landmark's own commands
  * are the region's: Focus frames it as the lesson does, Linked MRI opens its plane.
  * The landmark reads first, then the region's actions and datasheet, and the
- * lesson's background last, in `#circuit-notes` below them.
+ * lesson's sequence and background last, in `#circuit-notes` below them.
  */
-export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, onMri, onDeficit }) {
+export function createCircuitExplorer({
+  catalog, involved, onCircuit, onStep, onLandmark, onMri, onDeficit, onFailure,
+}) {
   const browser = document.getElementById('circuit-browser');
-  const introduction = document.getElementById('circuit-introduction');
   const list = document.getElementById('circuit-list');
-  const landmarks = document.getElementById('circuit-landmarks');
+  const coverage = document.getElementById('circuit-coverage');
   const profile = document.getElementById('circuit-profile');
   const stepperGroup = document.getElementById('circuit-stepper');
   const notes = document.getElementById('circuit-notes');
@@ -117,13 +120,15 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
   let relatedKey;
   let opening = false;
   let actionError = null;
+  let actionFailed = 'landmark';
 
   function updateActions() {
     for (const container of [browser, profile, stepperGroup, notes]) {
       container.setAttribute('aria-busy', String(opening));
       for (const control of container.querySelectorAll('button')) control.disabled = opening;
     }
-    const said = opening ? CIRCUIT_TEXT[state.lang].loading : actionError?.message ?? '';
+    const said = opening ? CIRCUIT_TEXT[state.lang].loading
+      : actionError ? failureNotice(actionError, state.lang, actionFailed).text : '';
     // A live region rewritten with the same words says them again on every render.
     if (actionStatus.textContent !== said) actionStatus.textContent = said;
     actionStatus.hidden = state.explorer !== 'circuits' || (!opening && !actionError);
@@ -131,25 +136,19 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
   }
 
   function renderList() {
-    const { lesson, lang } = state;
-    const text = CIRCUIT_TEXT[lang];
+    const text = CIRCUIT_TEXT[state.lang];
     list.replaceChildren(...catalog.all.map(circuit => {
       const choice = button(null, 'circuit', circuit.id);
       choice.className = 'circuit-choice';
-      choice.setAttribute('aria-pressed', String(circuit.id === lesson.circuit));
-      const label = element('span', null, 'circuit-choice-text');
-      label.append(element('span', circuit.name[lang]),
-        element('span', `${circuit.steps.length} ${text.landmarks.toLowerCase()}`, 'circuit-count'));
-      choice.append(label, drillChevron());
+      const count = element('span', String(circuit.steps.length), 'circuit-count');
+      count.setAttribute('aria-hidden', 'true');
+      choice.append(element('span', circuit.name[state.lang], 'circuit-choice-name'), count,
+        element('span', `, ${text.landmarkCount(circuit.steps.length)}`, 'visually-hidden'), drillChevron());
       return choice;
     }));
-    landmarks.replaceChildren();
-    if (!lesson.circuit) return;
-    const heading = element('h3', text.landmarks, 'section-label');
-    heading.id = 'circuit-landmarks-heading';
-    const steps = stepList(catalog.get(lesson.circuit), lesson, lang);
-    steps.setAttribute('aria-labelledby', heading.id);
-    landmarks.append(heading, steps);
+    // Landmarks counted as the rows count them, so the foot line is their sum.
+    coverage.textContent = text.coverage(catalog.all.length,
+      catalog.all.reduce((total, circuit) => total + circuit.steps.length, 0));
   }
 
   function renderProfile() {
@@ -165,10 +164,6 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     // The location bar names the circuit on screen; the heading keeps it in the outline.
     const heading = element('h2', circuit.name[lang], 'visually-hidden');
     heading.id = 'circuit-heading';
-    // The whole sequence, in the lesson itself rather than only in the list it was opened from.
-    const sequence = stepList(circuit, lesson, lang);
-    sequence.classList.add('circuit-sequence');
-    sequence.setAttribute('aria-label', text.landmarks);
     const body = element('div', null, 'panel-body circuit-content');
     const step = circuit.steps[lesson.step];
     const title = element('h3', step.name[lang], 'circuit-title');
@@ -176,7 +171,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     title.tabIndex = -1;
     body.append(title,
       element('p', step.role[lang], 'circuit-role'),
-      element('p', step.explanation[lang]));
+      element('p', step.explanation[lang], 'circuit-explanation'));
     const exploring = state.selectedRegion?.id !== step.region;
     profile.dataset.landmarkSelected = String(!exploring);
     if (exploring) {
@@ -184,16 +179,17 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       note.append(button(text.returnToLandmark, 'step', lesson.step));
       body.append(note);
     }
-    profile.replaceChildren(heading, sequence, body);
+    profile.replaceChildren(heading, body);
 
-    const foot = [
-      disclosure(text.connections, element('p', circuit.summary[lang]),
-        element('p', circuit.route[lang], 'circuit-route'),
-        element('p', circuit.scope[lang]), element('p', text.schematic, 'circuit-note')),
-      disclosure(text.mapping, element('p', step.mapping[lang]), element('p', text.mriNote, 'circuit-note')),
-      disclosure(text.clinical, element('p', circuit.clinical[lang]),
-        command(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')),
-    ];
+    // The whole sequence, as the lesson's first section after the landmark's own data.
+    const landmarks = element('section', null, 'detail-section circuit-landmarks');
+    const landmarksHeading = element('h3', text.landmarks, 'detail-section-heading');
+    landmarksHeading.id = 'circuit-landmarks-heading';
+    const sequence = stepList(circuit, lesson, lang);
+    sequence.classList.add('circuit-sequence');
+    sequence.setAttribute('aria-labelledby', landmarksHeading.id);
+    landmarks.append(landmarksHeading, sequence);
+
     const sources = disclosure(text.evidence);
     for (const id of circuit.references) {
       const reference = catalog.reference(id);
@@ -206,40 +202,52 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       sources.append(citation);
     }
     sources.append(element('p', `${text.revised}: ${catalog.revised}`, 'circuit-note'));
-    foot.push(sources);
-    notes.replaceChildren(...foot);
+    notes.replaceChildren(landmarks,
+      disclosure(text.connections, element('p', circuit.summary[lang]),
+        element('p', circuit.route[lang], 'circuit-route'),
+        element('p', circuit.scope[lang]), element('p', text.schematic, 'circuit-note')),
+      disclosure(text.mapping, element('p', step.mapping[lang]), element('p', text.mriNote, 'circuit-note')),
+      disclosure(text.clinical, element('p', circuit.clinical[lang]),
+        command(text.clinicalLink, 'deficit', circuit.deficit), element('p', text.clinicalNote, 'circuit-note')),
+      sources);
   }
 
-  /** Outside a lesson, a region that is a landmark links to that step of each tour. */
+  /** Outside a lesson, a region that is, holds or lies in a landmark links to that step of each tour. */
   function renderRelated() {
     const { lang } = state;
     const id = state.selectedRegion?.id;
-    const links = id && state.explorer !== 'circuits'
-      ? catalog.all.flatMap(circuit => circuit.steps
-        .map((step, index) => ({ circuit, step, index }))
-        .filter(({ step }) => step.region === id))
-      : [];
+    const regions = id && state.explorer !== 'circuits' ? involved(id) : new Set();
+    const links = catalog.all.flatMap(circuit => circuit.steps
+      .map((step, index) => ({ circuit, step, index }))
+      .filter(({ step }) => regions.has(step.region)));
     related.hidden = links.length === 0;
     related.replaceChildren();
     if (!links.length) return;
     const text = CIRCUIT_TEXT[lang];
-    const body = element('div', null, 'panel-body clinical-regions');
+    const heading = element('h3', text.inCircuits, 'detail-section-heading');
+    heading.id = 'circuit-region-heading';
+    related.setAttribute('aria-labelledby', heading.id);
+    const rows = element('div', null, 'circuit-links');
     for (const { circuit, index } of links) {
-      const link = element('button', null, 'clinical-region-link');
-      link.append(element('span', `${circuit.name[lang]} · ${text.step(index, circuit.steps.length)}`),
-        drillChevron());
+      const link = element('button', null, 'circuit-link');
+      const place = element('span', text.stepShort(index, circuit.steps.length), 'circuit-link-step');
+      place.setAttribute('aria-hidden', 'true');
+      link.append(element('span', circuit.name[lang], 'circuit-link-name'), place,
+        element('span', `, ${text.step(index, circuit.steps.length)}`, 'visually-hidden'), drillChevron());
       link.type = 'button';
       link.dataset.landmarkCircuit = circuit.id;
       link.dataset.landmarkStep = String(index);
-      body.append(link);
+      rows.append(link);
     }
-    related.append(element('h2', text.inCircuits, 'section-label'), body);
+    related.append(heading, rows);
   }
 
-  async function run(action) {
+  /** `failed` names what the reader is told could not be done. */
+  async function run(action, failed = 'landmark') {
     if (opening) return false;
     opening = true;
     actionError = null;
+    actionFailed = failed;
     updateActions();
     try {
       await action();
@@ -247,6 +255,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
     } catch (error) {
       actionError = error;
       console.error(error);
+      onFailure(error);
       return false;
     } finally {
       opening = false;
@@ -293,7 +302,7 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
   const surfaces = [browser, profile, stepperGroup, notes, related];
   for (const surface of surfaces) surface.addEventListener('click', act);
   browser.addEventListener('keydown', onKey);
-  profile.addEventListener('keydown', onKey);
+  notes.addEventListener('keydown', onKey);
   return {
     update(snapshot) {
       state = snapshot;
@@ -302,23 +311,25 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       stepperGroup.hidden = profile.hidden;
       notes.hidden = profile.hidden;
       actionStatus.hidden = browser.hidden;
-      introduction.textContent = CIRCUIT_TEXT[state.lang].introduction;
       list.setAttribute('aria-label', CIRCUIT_TEXT[state.lang].heading);
-      const key = `${state.lang}|${state.lesson.circuit}|${state.lesson.step}`;
-      if (key !== listKey) { listKey = key; renderList(); }
-      const nextProfileKey = `${key}|${state.selectedRegion?.id}`;
+      if (state.lang !== listKey) { listKey = state.lang; renderList(); }
+      // Pressed in place, so a row that opened a lesson is still there to take focus back.
+      for (const choice of list.querySelectorAll('.circuit-choice')) {
+        choice.setAttribute('aria-pressed', String(choice.dataset.circuit === state.lesson.circuit));
+      }
+      const nextProfileKey = `${state.lang}|${state.lesson.circuit}|${state.lesson.step}|${state.selectedRegion?.id}`;
       if (nextProfileKey !== profileKey) { profileKey = nextProfileKey; renderProfile(); }
       const nextRelatedKey = `${state.lang}|${state.explorer}|${state.selectedRegion?.id}`;
       if (nextRelatedKey !== relatedKey) { relatedKey = nextRelatedKey; renderRelated(); }
       if (!browser.hidden) updateActions();
     },
     /** The landmark's Linked MRI: the lesson's prepared plane, with the same progress and errors. */
-    openMri: () => run(onMri),
+    openMri: () => run(onMri, 'mri'),
     focus() { list.querySelector('button').focus(); },
     dispose() {
       for (const surface of surfaces) surface.removeEventListener('click', act);
       browser.removeEventListener('keydown', onKey);
-      profile.removeEventListener('keydown', onKey);
+      notes.removeEventListener('keydown', onKey);
     },
   };
 }

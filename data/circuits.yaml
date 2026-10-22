@@ -1,81 +1,107 @@
-revised: '2026-10-04'
+revised: '2026-10-22'
 context_margin_mm: 12
 references:
   - id: visual-pathways
     title: Central Visual Pathways
     citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    nbk: NBK11034
     url: https://www.ncbi.nlm.nih.gov/books/NBK11034/
   - id: retinotopy
     title: The Retinotopic Representation of the Visual Field
     citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    nbk: NBK10944
     url: https://www.ncbi.nlm.nih.gov/books/NBK10944/
   - id: memory-anatomy
     title: 'Hippocampal–diencephalic–cingulate networks for memory and emotion: An anatomical guide'
     citation: Bubb, Kinnavane & Aggleton · Brain and Neuroscience Advances · 2017
+    pmid: '28944298'
+    pmcid: PMC5608081
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC5608081/
   - id: memory-network
     title: 'Time to retire the serial Papez circuit: Implications for space, memory, and attention'
     citation: Aggleton et al. · Neuroscience & Biobehavioral Reviews · 2022
+    pmid: '35940310'
+    pmcid: PMC10804970
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10804970/
   - id: fornix
     title: Anatomy and function of the fornix in the context of its potential as a therapeutic target
     citation: Senova et al. · Journal of Neurology, Neurosurgery & Psychiatry · 2020
+    pmid: '32132227'
+    pmcid: PMC7231447
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7231447/
   - id: basal-ganglia
     title: Functional Neuroanatomy of the Basal Ganglia
     citation: Lanciego, Luquin & Obeso · Cold Spring Harbor Perspectives in Medicine · 2012
+    pmid: '23071379'
+    pmcid: PMC3543080
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3543080/
   - id: motor-learning
     title: 'Basal ganglia contributions to motor control: a vigorous tutor'
     citation: Turner & Desmurget · Current Opinion in Neurobiology · 2010
+    pmid: '20850966'
     url: https://pubmed.ncbi.nlm.nih.gov/20850966/
   - id: striatal-input
     title: Projections to the Basal Ganglia
     citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    nbk: NBK10988
     url: https://www.ncbi.nlm.nih.gov/books/NBK10988/
   - id: auditory-pathways
     title: 'Auditory pathways: anatomy and physiology'
     citation: Pickles · Handbook of Clinical Neurology · 2015
+    pmid: '25726260'
     url: https://pubmed.ncbi.nlm.nih.gov/25726260/
   - id: auditory-thalamus
     title: The organization and physiology of the auditory thalamus and its role in processing acoustic features important for speech perception
     citation: Bartlett · Brain and Language · 2013
+    pmid: '23725661'
+    pmcid: PMC3707394
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3707394/
   - id: somatic-cortex
     title: The Somatic Sensory Cortex
     citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    nbk: NBK11153
     url: https://www.ncbi.nlm.nih.gov/books/NBK11153/
   - id: opercular-somatotopy
     title: The somatotopic organization of cytoarchitectonic areas on the human parietal operculum
     citation: Eickhoff et al. · Cerebral Cortex · 2007
+    pmid: '17032710'
     url: https://pubmed.ncbi.nlm.nih.gov/17032710/
   - id: speech-streams
     title: The cortical organization of speech processing
     citation: Hickok & Poeppel · Nature Reviews Neuroscience · 2007
+    pmid: '17431404'
     url: https://pubmed.ncbi.nlm.nih.gov/17431404/
   - id: speech-feedback
     title: 'The cortical organization of speech processing: Feedback control and predictive coding the context of a dual-stream model'
     citation: Hickok · Journal of Communication Disorders · 2012
+    pmid: '22766458'
+    pmcid: PMC3468690
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3468690/
   - id: attention-systems
     title: Control of goal-directed and stimulus-driven attention in the brain
     citation: Corbetta & Shulman · Nature Reviews Neuroscience · 2002
+    pmid: '11994752'
     url: https://pubmed.ncbi.nlm.nih.gov/11994752/
   - id: attention-laterality
     title: Right hemisphere dominance during spatial selective attention and target detection occurs outside the dorsal frontoparietal network
     citation: Shulman et al. · Journal of Neuroscience · 2010
+    pmid: '20219998'
     url: https://pubmed.ncbi.nlm.nih.gov/20219998/
   - id: cerebellar-organization
     title: Organization of the Cerebellum
     citation: Purves et al. · Neuroscience, 2nd edition · 2001
+    nbk: NBK11132
     url: https://www.ncbi.nlm.nih.gov/books/NBK11132/
   - id: cerebellar-peduncles
     title: Three-dimensional microsurgical anatomy of cerebellar peduncles
     citation: Perrini et al. · Neurosurgical Review · 2013
+    pmid: '22933248'
     url: https://pubmed.ncbi.nlm.nih.gov/22933248/
   - id: cortical-parcellation
     title: A multi-modal parcellation of human cerebral cortex
     citation: Glasser et al. · Nature · 2016
+    pmid: '27437579'
+    pmcid: PMC4990127
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4990127/
 
 circuits:
@@ -86,7 +112,7 @@ circuits:
       fr: Suivez la voie postchiasmatique gauche et découvrez quelle moitié du champ visuel elle représente.
     route:
       en: Chiasm → optic tract → lateral geniculate nucleus → V1
-      fr: Chiasma → tractus optique → corps genouillé latéral → V1
+      fr: Chiasma → tractus optique → noyau géniculé latéral → V1
     scope:
       en: Left-sided landmarks after the midline chiasm. The retina, optic nerves and optic radiations are not included in this tour.
       fr: Repères gauches après le chiasma médian. La rétine, les nerfs optiques et les radiations optiques ne sont pas inclus dans ce parcours.
@@ -116,7 +142,7 @@ circuits:
         role: { en: Right visual field, fr: Champ visuel droit }
         explanation:
           en: This tract carries right-field information from both eyes toward the left lateral geniculate nucleus.
-          fr: Ce tractus transmet les informations du champ droit des deux yeux vers le corps genouillé latéral gauche.
+          fr: Ce tractus transmet les informations du champ droit des deux yeux vers le noyau géniculé latéral gauche.
         mapping:
           en: A segmented anatomical tract; its shape does not measure axonal connectivity.
           fr: Un tractus segmenté anatomiquement ; sa forme ne mesure pas la connectivité axonale.
@@ -125,14 +151,14 @@ circuits:
       - id: lgn
         region: learning:left:lateral-geniculate
         source_name: Lateral geniculate nucleus
-        name: { en: Left lateral geniculate nucleus, fr: Corps genouillé latéral gauche }
+        name: { en: Left lateral geniculate nucleus, fr: Noyau géniculé latéral gauche }
         role: { en: Thalamic relay, fr: Relais thalamique }
         explanation:
           en: This visual relay projects to V1 through the optic radiation, which is not reconstructed here.
           fr: Ce relais visuel rejoint V1 par les radiations optiques, qui ne sont pas reconstruites ici.
         mapping:
-          en: The nucleus is displayed as a whole; its retinal layers are not separated.
-          fr: Le noyau est représenté dans son ensemble ; ses couches rétiniennes ne sont pas séparées.
+          en: The nucleus is displayed as a whole; its eye-specific layers are not separated.
+          fr: Le noyau est représenté dans son ensemble ; ses couches propres à chaque œil ne sont pas séparées.
         view: posterior
         plane: coronal
       - id: v1
@@ -335,10 +361,10 @@ circuits:
       fr: Explorez trois repères auditifs gauches et distinguez les voies thalamiques parallèles.
     route:
       en: Main ascending route · inferior colliculus → ventral medial geniculate → A1. Dorsal medial geniculate · a parallel branch.
-      fr: Voie ascendante principale · colliculus inférieur → corps genouillé médial ventral → A1. Corps genouillé médial dorsal · une branche parallèle.
+      fr: Voie ascendante principale · colliculus inférieur → noyau géniculé médial ventral → A1. Noyau géniculé médial dorsal · une branche parallèle.
     scope:
       en: The ventral geniculate relay is not a separate teaching solid here. The displayed dorsal division must not be read as the relay to A1. The ears, cochlear nuclei, other brainstem relays and auditory radiations are outside this tour.
-      fr: Le relais genouillé ventral n’a pas de volume pédagogique distinct ici. La division dorsale affichée ne doit pas être interprétée comme le relais vers A1. Les oreilles, les noyaux cochléaires, les autres relais du tronc cérébral et les radiations auditives sont hors de ce parcours.
+      fr: Le relais géniculé ventral n’a pas de volume pédagogique distinct ici. La division dorsale affichée ne doit pas être interprétée comme le relais vers A1. Les oreilles, les noyaux cochléaires, les autres relais du tronc cérébral et les radiations auditives sont hors de ce parcours.
     clinical:
       en: Compare hearing landmarks with word-deafness evidence. Understanding spoken words also depends on cortical processing beyond a simple ascending relay.
       fr: Comparez les repères auditifs aux données sur la surdité verbale. Comprendre les mots entendus dépend aussi de traitements corticaux au-delà d’un simple relais ascendant.
@@ -361,14 +387,14 @@ circuits:
       - id: dorsal-geniculate
         region: learning:left:medial-geniculate
         source_name: Dorsal medial geniculate nucleus
-        name: { en: Left dorsal medial geniculate nucleus, fr: Noyau genouillé médial dorsal gauche }
+        name: { en: Left dorsal medial geniculate nucleus, fr: Noyau géniculé médial dorsal gauche }
         role: { en: Parallel auditory thalamic branch, fr: Branche thalamique auditive parallèle }
         explanation:
           en: Locate the dorsal division. Geniculate subdivisions have different cortical targets; the main relay to A1 is the ventral division, not this highlighted nucleus.
-          fr: Repérez la division dorsale. Les subdivisions genouillées ont des cibles corticales différentes ; le relais principal vers A1 est la division ventrale, et non ce noyau sélectionné.
+          fr: Repérez la division dorsale. Les subdivisions géniculées ont des cibles corticales différentes ; le relais principal vers A1 est la division ventrale, et non ce noyau sélectionné.
         mapping:
           en: The exact source label is dorsal medial geniculate nucleus. It cannot substitute for the whole medial geniculate body or its ventral division.
-          fr: L’étiquette source exacte est le noyau genouillé médial dorsal. Elle ne remplace ni le corps genouillé médial entier ni sa division ventrale.
+          fr: L’étiquette source exacte est le noyau géniculé médial dorsal. Elle ne remplace ni le corps géniculé médial entier ni sa division ventrale.
         view: posterior
         plane: coronal
       - id: a1
@@ -378,7 +404,7 @@ circuits:
         role: { en: Cortical auditory landmark, fr: Repère auditif cortical }
         explanation:
           en: Now visit A1, which receives the main ventral geniculate input. This move changes branches; it does not demonstrate a serial dorsal-geniculate-to-A1 connection.
-          fr: Visitez maintenant A1, qui reçoit l’entrée genouillée ventrale principale. Ce déplacement change de branche ; il ne démontre pas une connexion sérielle du noyau genouillé dorsal vers A1.
+          fr: Visitez maintenant A1, qui reçoit l’entrée géniculée ventrale principale. Ce déplacement change de branche ; il ne démontre pas une connexion sérielle du noyau géniculé dorsal vers A1.
         mapping:
           en: This HCP-MMP parcel is mapped onto the individual surface. It is not a measured auditory response or an individual tonotopic map.
           fr: Cette parcelle HCP-MMP est projetée sur la surface individuelle. Elle ne constitue ni une réponse auditive mesurée ni une carte tonotopique individuelle.
@@ -419,10 +445,10 @@ circuits:
         region: hcp-mmp:left:9
         source_name: L_3b_ROI
         name: { en: Left somatosensory area 3b, fr: Aire somatosensorielle 3b gauche }
-        role: { en: Mainly contralateral cutaneous input, fr: Entrées cutanées principalement contralatérales }
+        role: { en: Mainly contralateral cutaneous input, fr: Entrées cutanées principalement controlatérales }
         explanation:
           en: Area 3b is a primary cortical recipient of cutaneous input, principally from the opposite side of the body. Areas 3a, 1 and 2 contribute other aspects of primary somatosensory processing.
-          fr: L’aire 3b reçoit des entrées cutanées corticales primaires, principalement du côté opposé du corps. Les aires 3a, 1 et 2 contribuent à d’autres aspects du traitement somatosensoriel primaire.
+          fr: L’aire 3b est une cible corticale primaire des entrées cutanées, principalement du côté opposé du corps. Les aires 3a, 1 et 2 contribuent à d’autres aspects du traitement somatosensoriel primaire.
         mapping:
           en: The HCP-MMP parcel is a reference area mapped onto the surface, not the entire S1 complex or a localized hand representation.
           fr: La parcelle HCP-MMP est une aire de référence projetée sur la surface, et non tout le complexe S1 ni une représentation localisée de la main.
@@ -607,7 +633,7 @@ circuits:
         role: { en: Deep cerebellar output, fr: Sortie cérébelleuse profonde }
         explanation:
           en: The covering cerebellar cortex is hidden to expose this deep nucleus. Dentate output ascends through the superior cerebellar peduncle toward targets that include the contralateral thalamus.
-          fr: Le cortex cérébelleux qui le recouvre est masqué pour exposer ce noyau profond. La sortie du noyau dentelé monte par le pédoncule cérébelleux supérieur vers des cibles comprenant le thalamus contralatéral.
+          fr: Le cortex cérébelleux qui le recouvre est masqué pour exposer ce noyau profond. La sortie du noyau dentelé monte par le pédoncule cérébelleux supérieur vers des cibles comprenant le thalamus controlatéral.
         mapping:
           en: The whole dentate is shown without separate motor and nonmotor territories. Returning to the cerebellar cortex landmark restores its covering layer. MRI retains the complete volume.
           fr: Le noyau dentelé entier est affiché sans séparer les territoires moteurs et non moteurs. Revenir au repère du cortex cérébelleux rétablit sa couche de couverture. L’IRM conserve le volume complet.
@@ -630,7 +656,7 @@ circuits:
         region: learning:right:thalamus
         source_name: Thalamus
         name: { en: Right thalamus, fr: Thalamus droit }
-        role: { en: Contralateral motor relay territory, fr: Territoire de relais moteur contralatéral }
+        role: { en: Contralateral motor relay territory, fr: Territoire de relais moteur controlatéral }
         explanation:
           en: After crossing, left dentate output reaches right thalamic territories involved in motor loops. Thalamic projections then reach right frontal motor areas.
           fr: Après le croisement, la sortie du noyau dentelé gauche atteint des territoires thalamiques droits impliqués dans les boucles motrices. Les projections thalamiques rejoignent ensuite les aires motrices frontales droites.

@@ -113,3 +113,24 @@ def test_a_categorical_field_must_be_integers():
         partition_vertex_labels(
             np.array([[0, 1, 2]]), np.array([1, 2, 3]), np.array([0.5, 0.5, 0.5])
         )
+
+
+def test_the_published_palette_sits_within_the_configured_jitter():
+    from nibabel.freesurfer.io import read_annot
+
+    from brain_model.layers.networks import annotation_path, verify_palette
+    from brain_model.sources import read_config
+
+    config = read_config()
+    jitter = config["networks"]["maximum_color_jitter"]
+    for prefix in ("lh", "rh"):
+        _, colors, names = read_annot(annotation_path(config["source_directory"], prefix))
+        verify_palette(colors, names, jitter)
+    from brain_model.layers.networks import COLORS
+
+    parcel = next(i for i, name in enumerate(names) if network_of(name.decode()))
+    red = COLORS[network_of(names[parcel].decode())][0]
+    colors = colors.copy()
+    colors[parcel, 0] = red + jitter + 1 if red < 128 else red - jitter - 1
+    with pytest.raises(ValueError, match="jitter"):
+        verify_palette(colors, names, jitter)

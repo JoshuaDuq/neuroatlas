@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { Color, ColorManagement, LinearSRGBColorSpace, SRGBColorSpace } from 'three';
-import { createTractGeometry, filterTractGeometry } from './native-geometry.js';
+import { Color, ColorManagement, LinearSRGBColorSpace, SRGBColorSpace, Vector3 } from 'three';
+import { RAS_MM_TO_WORLD, createTractGeometry, filterTractGeometry } from './native-geometry.js';
 
 const points = new Float32Array([
   100, 200, 300, 103, 204, 300, 100, 200, 300,
@@ -14,9 +14,12 @@ test('native tract coordinates preserve RAS orientation and millimeter scale', (
   const { geometry, lengths } = createTractGeometry(points, offsets);
   const position = geometry.getAttribute('position');
   assert.equal(position.count, points.length / 3);
-  assert.ok(Math.abs(position.getX(0) - 0.1) < 1e-7);
-  assert.ok(Math.abs(position.getY(0) - 0.3) < 1e-7);
-  assert.ok(Math.abs(position.getZ(0) + 0.2) < 1e-7);
+  // The lines draw the source points themselves; their matrix carries mm → m and the axes.
+  assert.equal(position.array, points);
+  const world = new Vector3().fromBufferAttribute(position, 0).applyMatrix4(RAS_MM_TO_WORLD);
+  assert.ok(Math.abs(world.x - 0.1) < 1e-7);
+  assert.ok(Math.abs(world.y - 0.3) < 1e-7);
+  assert.ok(Math.abs(world.z + 0.2) < 1e-7);
   assert.deepEqual(points, original);
   assert.deepEqual(Array.from(lengths), [10, 20]);
   geometry.dispose();

@@ -36,12 +36,13 @@ test('the anatomy index revalidates the published request', async context => {
 test('an unsuccessful anatomy index request reports its HTTP status', async context => {
   context.mock.method(globalThis, 'fetch', async () =>
     new Response(JSON.stringify({ error: 'Unavailable' }), { status: 503 }));
-  await assert.rejects(loadAnatomies('https://example.invalid/models/anatomies.json'), /HTTP 503/);
+  await assert.rejects(loadAnatomies('https://example.invalid/models/anatomies.json'),
+    error => error.code === 'asset-fetch' && error.status === 503);
 });
 
 test('an anatomy index network failure propagates without a substitute subject', async context => {
   const failure = new TypeError('Network unavailable');
   context.mock.method(globalThis, 'fetch', async () => { throw failure; });
   await assert.rejects(loadAnatomies('https://example.invalid/models/anatomies.json'),
-    error => error === failure);
+    error => error.code === 'asset-fetch' && error.cause === failure);
 });

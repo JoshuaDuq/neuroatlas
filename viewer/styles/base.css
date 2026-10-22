@@ -1,13 +1,14 @@
 /* Reset, typography and focus. Nothing here is decorative. */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { font-size: 100%; }
+/* Every control draws its own pressed or selected state; the platform's tap flash would be a second one. */
+html { font-size: 100%; -webkit-tap-highlight-color: transparent; }
 
 body {
   margin: 0;
   font-family: var(--font-ui);
-  font-size: var(--text-body);
-  line-height: 1.45;
+  font-size: var(--text-ui);
+  line-height: var(--lh-ui);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   color: var(--text-primary);
@@ -15,9 +16,11 @@ body {
 }
 
 button, input, select, output { font: inherit; color: inherit; }
-input { caret-color: var(--accent); }
 output { font-variant-numeric: tabular-nums; }
+
+/* The browser's own surfaces, drawn from the palette. */
 ::selection { color: var(--surface-base); background: var(--accent); }
+input, textarea { caret-color: var(--accent); }
 * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text-tertiary) 45%, transparent) transparent; }
 
 a {
@@ -26,7 +29,9 @@ a {
   text-underline-offset: 3px;
   transition: color var(--ui-transition) var(--ease-ui);
 }
-a:hover { color: var(--accent-hover); }
+@media (hover: hover) and (pointer: fine) {
+  a:hover { color: var(--accent-hover); }
+}
 
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
 h1, h2, h3 { text-wrap: balance; }
@@ -44,23 +49,20 @@ h1, h2, h3 { text-wrap: balance; }
 
 [hidden] { display: none !important; }
 
-/* Numbers are measurements: mono so columns align and digits do not jitter. */
-.measure {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
+/* Quantities keep the row's own face and size; tabular figures align them down a column. */
+.measure { font-variant-numeric: tabular-nums; }
+/* Monospace only for what is copied rather than read: source ids, file names, voxel indices. */
+.code { font-family: var(--font-mono); font-size: var(--text-caption); }
 
-/* Quiet section hierarchy keeps anatomical content easy to scan. */
-.section-label {
-  font-size: var(--text-micro);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-tertiary);
-  padding: var(--space-4) var(--space-4) 6px;
-  border-top: 1px solid var(--border-subtle);
-}
-
-button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
+/*
+ * A theme is a state swap, not a fade (theme.js holds data-theme-switching for two frames);
+ * data-instant marks a popover, dialog or tooltip that replaces an open one and so appears at once.
+ */
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after,
+[data-instant],
+[data-instant]::backdrop { transition: none !important; }
 
 .visually-hidden {
   position: absolute;
@@ -69,49 +71,6 @@ button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-/* Reduced motion keeps fades and colour changes; nothing travels, grows or loops. */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-  }
-  /* The sheet and the scaled popover and dialog entries keep only their fade. */
-  :is(#sheet, #masthead-menu, .masthead-data, .stage-popover, dialog) { transition-property: opacity !important; }
-}
-
-@media (forced-colors: active) {
-  .chip, .panel, button, input, select { border-color: CanvasText; }
-  :focus-visible { outline-color: Highlight; }
-  input[type="search"]:focus-visible,
-  select:focus-visible,
-  .cut-position-row input[type="number"]:focus-visible,
-  .clinical-profile-name:focus-visible,
-  #clinical-title:focus-visible,
-  #mpr-close:focus-visible,
-  #shortcuts-close:focus-visible,
-  #provenance-close:focus-visible,
-  #mpr-grid .button-quiet:focus-visible,
-  .check input:focus-visible {
-    outline: 2px solid Highlight;
-  }
-  .check input {
-    appearance: auto;
-    background: ButtonFace;
-    border-color: ButtonText;
-  }
-  .check input::before { content: none; }
-  /* Shadows and fills are dropped here, so selected states need a system-colour edge. */
-  [role="tab"][aria-selected="true"] { border-bottom: 2px solid Highlight; }
-  .segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
-  .row[data-selected="true"],
-  .clinical-deficit[aria-pressed="true"],
-  .circuit-choice[aria-pressed="true"],
-  .circuit-step[aria-current="step"] { outline: 1px solid Highlight; outline-offset: -1px; }
-  input[type="range"]::-webkit-slider-runnable-track { background: CanvasText; }
-  input[type="range"]::-moz-range-track { background: CanvasText; }
 }
 
 /*
@@ -123,8 +82,8 @@ button, summary, [role="treeitem"] { -webkit-tap-highlight-color: transparent; }
   margin: 0 auto;
   padding: 3rem 1.5rem;
   color: var(--text-primary, #1c222b);
-  font: 400 1rem/1.6 var(--font-sans, system-ui, sans-serif);
+  font: 400 1rem/1.6 var(--font-ui, system-ui, sans-serif);
 }
 
-.noscript-notice h1 { font-size: 1.5rem; margin: 0 0 1rem; }
+.noscript-notice h1 { font-size: var(--text-headline, 1.25rem); margin: 0 0 1rem; }
 .noscript-notice p { margin: 0 0 1rem; }

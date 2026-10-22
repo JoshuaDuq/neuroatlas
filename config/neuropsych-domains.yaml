@@ -1,0 +1,99 @@
+# Neuropsychological domains as Neurosynth consistency maps on HCP-MMP1.0 areas.
+# Each domain is one Neurosynth abstract term. scripts/derive_domain_scores.py
+# averages that term's uniformity (consistency) z map over every fsaverage area
+# into data/neuropsych-domains/area-scores.json; an area belongs to a domain when
+# its mean z reaches `threshold_z`. Consistency z grows with the number of studies,
+# so the domain an area is drawn as when all are shown is the one whose z there is
+# the largest share of that domain's own cortical maximum.
+# Colours distinguish domains; they are not a published palette. Domains whose areas
+# share a border differ by an OKLab ΔE of at least 14, and any two by at least 11,
+# under normal vision and simulated protanopia and deuteranopia (Machado 2009,
+# severity 1).
+label: Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas)
+method: >-
+  Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA
+  chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and
+  pial surfaces and averaged per HCP-MMP area. An area belongs to every domain whose
+  mean z reaches 3; shown alone, it takes the domain whose z is the largest share of
+  that domain's cortical maximum. Carried per area, never per vertex
+threshold_z: 3
+scores_source: neurosynth
+sources:
+  neurosynth:
+    short: Neurosynth (Yarkoni et al. 2011)
+    citation: Yarkoni T, Poldrack RA, Nichols TE, Van Essen DC, Wager TD (2011) Large-scale automated synthesis of human functional neuroimaging data. Nat Methods 8:665–670
+    doi: https://doi.org/10.1038/nmeth.1635
+    pmid: 21706013
+    license: Open Database License (ODbL) 1.0; derived area scores shared under the same licence
+    license_url: https://opendatacommons.org/licenses/odbl/1-0/
+domains:
+  - id: executive
+    term: executive function
+    name: Executive functions
+    name_fr: Fonctions exécutives
+    color: [104, 206, 23]
+    lesion_checks: [executive-control]
+  - id: working-memory
+    term: working memory
+    name: Working memory
+    name_fr: Mémoire de travail
+    color: [111, 150, 232]
+  - id: long-term-memory
+    term: episodic memory
+    name: Long-term memory (episodic)
+    name_fr: Mémoire à long terme (épisodique)
+    color: [186, 255, 63]
+    lesion_checks: [hippocampal-amnesia]
+  - id: language
+    term: language
+    name: Language
+    name_fr: Langage
+    color: [125, 217, 251]
+    lesion_checks: [aphasia-comprehension, aphasia-repetition, aphasia-production, aphasia-naming, aphasia-semantic, aphasia-phonological]
+  - id: attention
+    term: attention
+    name: Attention
+    name_fr: Attention
+    color: [159, 254, 186]
+    lesion_checks: [neglect-perceptual, neglect-exploratory, neglect-egocentric, neglect-allocentric, extinction-temporoparietal]
+  - id: visuospatial
+    term: visuospatial
+    name: Visuospatial abilities
+    name_fr: Habiletés visuospatiales
+    color: [201, 91, 10]
+    lesion_checks: [neglect-perceptual, constructional-visual-thalamic]
+  - id: social-cognition
+    term: social cognition
+    name: Social cognition
+    name_fr: Cognition sociale
+    color: [152, 62, 27]
+    lesion_checks: [emotion-amygdala, emotion-prosody]
+  - id: visual-perception
+    term: visual
+    name: Visual perception
+    name_fr: Perception visuelle
+    color: [153, 30, 133]
+    lesion_checks: [hemianopia-occipital, achromatopsia-ventral, akinetopsia-lateral, agnosia-face]
+  - id: motor
+    term: motor
+    name: Motor functions
+    name_fr: Fonctions motrices
+    color: [34, 88, 229]
+    lesion_checks: [hand-paresis-precentral]
+  - id: auditory-perception
+    term: auditory
+    name: Auditory perception
+    name_fr: Perception auditive
+    color: [126, 179, 150]
+    lesion_checks: [word-deafness-auditory, amusia-temporal]
+  - id: emotion
+    term: emotion
+    name: Emotion
+    name_fr: Émotion
+    color: [177, 102, 126]
+    lesion_checks: [emotion-amygdala, decision-ventromedial]
+limitations:
+  - Neuropsychological domains are Neurosynth consistency maps of the published activation literature, averaged over each HCP-MMP area on fsaverage and reaching this brain through its HCP-MMP projection. They show where studies using a domain's term report activation in groups of healthy people, not what this brain does, and not what damage to an area would impair.
+  - Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.
+  - The maps are cortical. Subcortical structures, the cerebellum and white matter that neuropsychological deficits also follow are not coloured, and a lesion check on them is reported as off the cortical surface.
+  - Neurosynth's MNI152 maps are sampled on fsaverage's surfaces, whose MNI305 space differs from MNI152 by a few millimetres; whole-area averages absorb most, not all, of that difference.

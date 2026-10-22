@@ -103,12 +103,22 @@ export function createShortcuts(initialLang = 'en') {
 
   renderList();
 
-  const show = () => {
+  // A sheet called up or put away by a key is simply there or gone; a pointer gets the fade.
+  const show = ({ instant = false } = {}) => {
     if (dialog.open) return;
     opener = document.activeElement;
+    dialog.toggleAttribute('data-instant', instant);
     dialog.showModal();
   };
-  const hide = () => dialog.close();
+  const hide = ({ instant = false } = {}) => {
+    dialog.toggleAttribute('data-instant', instant);
+    dialog.close();
+  };
+  // A click with no pointer behind it (detail 0) came from Enter or Space.
+  const onOpenClick = event => show({ instant: event.detail === 0 });
+  const onCloseClick = event => hide({ instant: event.detail === 0 });
+  // Escape closes the dialog natively.
+  const onCancel = () => dialog.toggleAttribute('data-instant', true);
   // The platform returns focus to the opener, but the settings menu closes
   // behind the dialog and takes its button with it.
   const onClose = () => {
@@ -116,12 +126,13 @@ export function createShortcuts(initialLang = 'en') {
     opener = null;
     if (!returned) moreButton?.focus();
   };
-  open.addEventListener('click', show);
-  close.addEventListener('click', hide);
+  open.addEventListener('click', onOpenClick);
+  close.addEventListener('click', onCloseClick);
+  dialog.addEventListener('cancel', onCancel);
   dialog.addEventListener('close', onClose);
 
   return {
-    toggle() { dialog.open ? hide() : show(); },
+    toggle({ instant = false } = {}) { dialog.open ? hide({ instant }) : show({ instant }); },
     get isOpen() { return dialog.open; },
     setLanguage(next) {
       // Called on every render; the sheet is rebuilt only when its words change.
@@ -134,8 +145,9 @@ export function createShortcuts(initialLang = 'en') {
       note.textContent = t(lang, 'shortcuts').singleKeysNote(singleKeys);
     },
     dispose() {
-      open.removeEventListener('click', show);
-      close.removeEventListener('click', hide);
+      open.removeEventListener('click', onOpenClick);
+      close.removeEventListener('click', onCloseClick);
+      dialog.removeEventListener('cancel', onCancel);
       dialog.removeEventListener('close', onClose);
       list.replaceChildren();
       note.remove();

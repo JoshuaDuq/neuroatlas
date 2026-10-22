@@ -24,6 +24,7 @@ def subject(tmp_path, labels, voxel_mm=1.0):
     return {
         "source_directory": tmp_path,
         "output_directory": tmp_path / "out",
+        "anatomy": {"id": "test", "layers": ["white_matter"]},
         "atlases": [{"id": "destrieux"}, {"id": "hcp-mmp"}],
     }
 
@@ -113,11 +114,24 @@ def test_a_wmparc_off_the_subject_grid_is_refused(tmp_path):
         white_matter.build_regions(config)
 
 
-def test_a_recon_without_wmparc_has_no_layer(tmp_path):
+def test_a_declared_layer_without_wmparc_is_refused(tmp_path):
+    from brain_model.build import require_layer_inputs
+
     config = subject(tmp_path, small_recon())
     (tmp_path / "mri" / "wmparc.mgz").unlink()
-    assert white_matter.is_available(config) is False
+    with pytest.raises(ValueError, match="wmparc.mgz"):
+        require_layer_inputs(config)
+
+
+def test_an_undeclared_layer_publishes_nothing_even_with_wmparc_present(tmp_path):
+    config = subject(tmp_path, small_recon())
+    config["anatomy"]["layers"] = []
+    assert white_matter.is_declared(config) is False
     assert white_matter.limitations(config) == []
+    white_matter.validate_regions(config, {})
+    regions = {region["id"]: region for region in white_matter.build_regions(config)}
+    with pytest.raises(ValueError, match="differ from wmparc"):
+        white_matter.validate_regions(config, regions)
 
 
 def test_validation_catches_a_region_that_no_longer_matches_the_source(tmp_path):
@@ -161,16 +175,6 @@ def test_cut_only_regions_from_an_unknown_source_are_rejected(tmp_path):
         validate_cut_only_regions(config, regions)
 
 
-published_subject = pytest.mark.skipif(
-    not white_matter.is_available(read_config()),
-    reason="wmparc.mgz is extracted by scripts/prepare_subject.py",
-)
-
-
-@pytest.mark.skipif(
-    not white_matter.is_available(read_config("bert")),
-    reason="Bert's wmparc.mgz is extracted by scripts/prepare_subject.py",
-)
 def test_bert_white_matter_round_trips_through_its_published_box(tmp_path):
     config = read_config("bert")
     config["output_directory"] = tmp_path
@@ -187,7 +191,6 @@ def test_bert_white_matter_round_trips_through_its_published_box(tmp_path):
     np.testing.assert_array_equal(ids[decode(config, record)], box)
 
 
-@published_subject
 def test_tissue_labels_publish_white_matter_for_the_surface_atlas_cuts(tmp_path):
     config = read_config()
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())

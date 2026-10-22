@@ -1,13 +1,13 @@
 import { Box3, Group, LineBasicMaterial, LineSegments, MeshStandardMaterial } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { readDiffusionAsset } from './assets.js';
-import { createTractGeometry, filterTractGeometry } from './native-geometry.js';
+import { RAS_MM_TO_WORLD, createTractGeometry, filterTractGeometry } from './native-geometry.js';
 import { summarizeLengths } from './streamlines.js';
-import { decodeTractAsset } from './tract-file.js';
 import { createReferenceTransform } from './reference-space.js';
 import { rasToWorld, worldToRas } from '../slices/coordinates.js';
 
-export function createNativeTractViewer(catalog, invalidate) {
+/** `loadTract` is the decode this viewer shares with the MRI navigator. */
+export function createNativeTractViewer(catalog, invalidate, loadTract) {
   const group = new Group();
   group.name = catalog.id;
   group.visible = false;
@@ -50,19 +50,19 @@ export function createNativeTractViewer(catalog, invalidate) {
       setVisible(bundle.id, true);
       return;
     }
-    const { buffer } = await readDiffusionAsset(bundle.file);
-    const source = await decodeTractAsset(buffer);
+    const tract = await loadTract(bundle);
     if (disposed) throw new Error('Tract viewer disposed during bundle loading.');
-    const { geometry, lengths } = createTractGeometry(source.pts, source.offsetPt0);
-    filterTractGeometry(geometry, source.offsetPt0, lengths, minimum);
+    const { geometry, lengths } = createTractGeometry(tract.pts, tract.offsetPt0, tract.lengths);
+    filterTractGeometry(geometry, tract.offsetPt0, lengths, minimum);
     const lines = new LineSegments(geometry, new LineBasicMaterial({
       vertexColors: true, toneMapped: false, clippingPlanes,
     }));
     lines.name = bundle.id;
     lines.matrixAutoUpdate = false;
-    lines.updateMatrix();
+    lines.matrix.copy(RAS_MM_TO_WORLD);
+    lines.matrixWorldNeedsUpdate = true;
     group.add(lines);
-    bundles.set(bundle.id, { bundle, lines, lengths, offsets: source.offsetPt0 });
+    bundles.set(bundle.id, { bundle, lines, lengths, offsets: tract.offsetPt0 });
     invalidate();
   }
 

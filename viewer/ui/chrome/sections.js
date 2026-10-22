@@ -1,14 +1,16 @@
 import { Vector3 } from 'three';
 import { centeredFrame, offsetThrough, pointOnFrame } from '../../slices/coordinates.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
+import { failureNotice } from '../../i18n/errors.js';
 import { PHONE_QUERY } from '../../render/device.js';
 import { STRUCTURE_LABELS } from '../../catalog/structure-groups.js';
 import { STRUCTURE_LABELS_FR } from '../../catalog/structure-groups.fr.js';
 import { DESTRIEUX_LABELS } from '../../catalog/destrieux-labels.js';
 import { DESTRIEUX_LABELS_FR } from '../../catalog/destrieux-labels.fr.js';
 import { createButtonLabel } from './button-label.js';
-import { decimal, formatRas } from '../format.js';
+import { decimal, formatRas, millimetres } from '../format.js';
 import { bindRoving } from '../roving.js';
+import { trackDrag } from '../drag.js';
 import { isIndependentTractReference } from '../../diffusion/presentation.js';
 
 const AXES = { sagittal: 0, coronal: 1, axial: 2 };
@@ -47,7 +49,9 @@ const TISSUE_NAMES_EN = {
 };
 
 /** The stage's cut controls and linked MRI sections; the controller owns all coordinates. */
-export function createSectionControls(sections, { anatomy, cutAtlases, onFaceView, onSelect, getSelectedRegion, centroidOf }) {
+export function createSectionControls(sections, {
+  anatomy, cutAtlases, cut, onFaceView, onSelect, getSelectedRegion, centroidOf,
+}) {
   const mode = document.getElementById('cut-mode');
   const modeLabels = new Map([...mode.querySelectorAll('[data-cut-mode]')].map(button => {
     const full = createButtonLabel(button, button.dataset.cutMode);
@@ -65,7 +69,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   const tilt = document.getElementById('cut-tilt');
   const azimuth = document.getElementById('cut-azimuth');
   const oblique = document.getElementById('cut-oblique');
-  const status = document.getElementById('cut-status');
+  const statusSaid = document.getElementById('cut-status-said');
+  const statusShown = document.getElementById('cut-status-shown');
   const dialog = document.getElementById('mpr-dialog');
   const grid = document.getElementById('mpr-grid');
   const planeSwitch = document.getElementById('mpr-planes');
@@ -106,7 +111,11 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   // The plane the reader chose while its anatomy is still being prepared.
   let pendingPlane = null;
 
-  function reportError(error) { status.textContent = error.message; console.error(error); }
+  function reportError(error) {
+    console.error(error);
+    statusSaid.textContent = statusShown.textContent = failureNotice(error, currentLang, 'section').text;
+  }
+
 
   function listen(element, type, callback, options) {
     const listener = async event => {
@@ -165,9 +174,10 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     // The bar docks at once and says the anatomy is being prepared.
     pendingPlane = plane === 'off' ? null : plane;
     update();
-    await sections.setMode(plane);
+    const kept = await cut(plane);
     if (pendingPlane === plane) pendingPlane = null;
     update();
+    if (!kept) return;
     // A plane chosen while this one was prepared replaced it; that choice frames its own cut.
     if (sections.active && sections.state.mode === plane) {
       // A region is already chosen. The new plane should meet it, not the
@@ -185,8 +195,13 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   listen(number, 'change', () => sections.setOffset(Number(number.value)));
   listen(reverse, 'change', () => { sections.setDisplay({ reverse: reverse.checked }); onFaceView(); });
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
-  listen(tilt, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
-  listen(azimuth, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
+  for (const angle of [tilt, azimuth]) {
+    listen(angle, 'input', () => slide(() => sections.setAnglesReady(Number(tilt.value), Number(azimuth.value))));
+  }
+  // While a slider is dragged the status line waits: a live region rewritten at every step is noise.
+  const drag = trackDrag([position, tilt, azimuth], () => update());
+  // Arrow steps on the position slider are spoken by the slider; the sentence waits until it is left.
+  listen(position, 'blur', () => update());
   function showMpr() {
     dialog.showModal();
     previousImage = null;
@@ -422,6 +437,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     }
     if (document.activeElement !== position) position.value = String(offset);
     if (document.activeElement !== number) number.value = offset.toFixed(1);
+    position.setAttribute('aria-valuetext', millimetres(Number(position.value), currentLang));
     number.setAttribute('aria-label', cutsI18n.exactPositionAria);
     reverse.checked = state.reverse;
     mprOverlay.checked = state.overlay;
@@ -446,6 +462,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     tilt.value = state.tilt; azimuth.value = state.azimuth;
     cutTiltValue.textContent = `${decimal(state.tilt, 0, currentLang)}°`;
     cutAzimuthValue.textContent = `${decimal(state.azimuth, 0, currentLang, { signed: true })}°`;
+    tilt.setAttribute('aria-valuetext', cutTiltValue.textContent);
+    azimuth.setAttribute('aria-valuetext', cutAzimuthValue.textContent);
     for (const element of [position, number, reverse]) {
       element.disabled = !sections.active;
     }
@@ -472,15 +490,25 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
       'cab-np': state.cutAtlas === sections.model.cabNp?.atlas ? cutsI18n.cabNpByArea : cutsI18n.cabNpOtherLabels,
       functional: state.cutAtlas === sections.model.functionalRegions?.atlas
         ? cutsI18n.functionalByArea : cutsI18n.functionalOtherLabels,
+      domains: state.cutAtlas === sections.model.domains?.atlas
+        ? cutsI18n.domainsByArea : cutsI18n.domainsOtherLabels,
     }[lastAppState?.surfaceColor];
-    const describeCut = lastAppState?.surfaceColor === 'mri' ? cutsI18n.statusMri : cutsI18n.statusActive;
-    const activeStatus = describeCut(decimal(offset, 1, currentLang, { signed: true }), atlasLabel,
-      decimal(spacing, 2, currentLang, { trim: true }))
-      + (colourNote ? ` · ${colourNote}` : '');
+    const mri = lastAppState?.surfaceColor === 'mri';
+    const spacingText = decimal(spacing, 2, currentLang, { trim: true });
+    const note = colourNote ? ` · ${colourNote}` : '';
+    // The sections report a failure by its code; the words are the reader's.
     const said = state.status === 'loading' ? cutsI18n.statusPreparing
-      : state.error || (sections.active ? activeStatus : cutsI18n.statusFull);
+      : state.error ? failureNotice({ code: state.error }, currentLang, 'section').text
+        : sections.active
+          ? (mri ? cutsI18n.statusMri : cutsI18n.statusActive)(decimal(offset, 1, currentLang, { signed: true }), atlasLabel, spacingText) + note
+          : cutsI18n.statusFull;
+    // On screen the slider and the field already state the position, so the line leaves it out.
+    const shown = sections.active && state.status !== 'loading' && !state.error
+      ? (mri ? cutsI18n.gridMri : cutsI18n.grid)(atlasLabel, spacingText) + note : said;
+    if (statusShown.textContent !== shown) statusShown.textContent = shown;
     // A live region rewritten with the same words says them again on every render.
-    if (status.textContent !== said) status.textContent = said;
+    const stepping = drag.dragging || document.activeElement === position;
+    if (!stepping && statusSaid.textContent !== said) statusSaid.textContent = said;
 
     if (mprTitle) mprTitle.textContent = mprI18n.title;
     if (mprSubtitle) mprSubtitle.textContent = mprI18n.subtitle;
@@ -505,8 +533,12 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
 
     if (!dialog.open || !sections.volumes) return;
     width.value = sections.display.windowWidth; center.value = sections.display.windowCenter;
-    if (mriWidthValue) mriWidthValue.textContent = Math.round(sections.display.windowWidth);
-    if (mriCenterValue) mriCenterValue.textContent = Math.round(sections.display.windowCenter);
+    for (const [slider, output, value] of [[width, mriWidthValue, sections.display.windowWidth],
+      [center, mriCenterValue, sections.display.windowCenter]]) {
+      const text = decimal(value, 0, currentLang);
+      if (output) output.textContent = text;
+      slider.setAttribute('aria-valuetext', text);
+    }
     const sample = sections.sample(state.crosshair);
     const displayName = sampleDisplayName(sample);
     // The same signed RAS triple the region panel shows, so the two can be compared.
@@ -518,7 +550,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     for (const [name, panel] of panels) {
       const coordinate = state.crosshair[AXES[name]];
       panel.slider.value = coordinate;
-      panel.output.textContent = `${decimal(coordinate, 1, currentLang, { signed: true })}\u202fmm`;
+      panel.output.textContent = millimetres(coordinate, currentLang);
+      panel.slider.setAttribute('aria-valuetext', panel.output.textContent);
       // A plane nobody can see is not resampled; it redraws when it is shown.
       if (planeVisible(name)) drawPanel(name, panel);
     }
@@ -544,6 +577,7 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
   }, dispose() {
     if (animation !== null) cancelAnimationFrame(animation);
     phoneQuery.removeEventListener('change', applyPlaneMode);
+    drag.dispose();
     planeRoving.dispose();
     planeSwitch.replaceChildren();
     for (const [element,type,listener,options] of listeners) element.removeEventListener(type,listener,options);

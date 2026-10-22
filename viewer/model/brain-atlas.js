@@ -5,6 +5,7 @@ import { validateCabNp } from '../catalog/networks.js';
 import {
   FUNCTIONAL_LEVELS, functionalRegionOf, validateFunctionalRegions,
 } from '../catalog/functional-regions.js';
+import { shownDomain, validateNeuropsychDomains } from '../catalog/neuropsych-domains.js';
 import { belongsToDetail, visibilityOf } from '../catalog/visibility.js';
 import { worldToRas } from '../slices/coordinates.js';
 import { fetchAsset } from './asset-cache.js';
@@ -16,7 +17,7 @@ import { addMriAppearance } from '../render/mri-material.js';
 import { createDissection } from '../state/dissection.js';
 import { createGlassSolids } from '../tissues/glass-solids.js';
 import { loadRibbonSources } from '../tissues/solid-assets.js';
-import { createWhiteMatterSurfaces } from '../tissues/white-matter-surfaces.js';
+import { createWhiteMatterSurfaces, exposedWhiteMatter } from '../tissues/white-matter-surfaces.js';
 
 // Reused by intersect. A hover tests every visible mesh, and a fresh list per
 // pointer frame would collect as the pointer moves.
@@ -40,6 +41,12 @@ function boxEntry(mesh, ray) {
   return ray.intersectBox(rayBox, rayBoxHit) ? ray.origin.distanceTo(rayBoxHit) : Infinity;
 }
 
+const ENVELOPES = 'native-envelopes';
+
+/** A layer id this manifest does not publish; the app tells it from a failed download by this code. */
+const unknownLayer = message => Object.assign(new Error(message), { code: 'unknown-layer' });
+const SPINAL_CORD = 'spinal-cord';
+
 function asOptions(onProgressOrOptions) {
   if (typeof onProgressOrOptions === 'function') return { onProgress: onProgressOrOptions };
   return onProgressOrOptions ?? {};
@@ -51,11 +58,12 @@ function asOptions(onProgressOrOptions) {
  * `tissue` is the modelled tissue class, `atlas` the parcellation's own
  * published colours, `network` the Yeo palette carried per vertex,
  * `cab-np` CAB-NP's network for each HCP-MMP area as a whole, and
- * `functional` the published functional divisions, drawn solid inside glass.
+ * `functional` the published functional divisions, drawn solid inside glass,
+ * and `domains` each area's neuropsychological domains on opaque cortex.
  * They are one setting rather than several toggles because the surface can
  * only show one of them at a time.
  */
-export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'];
+export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional', 'domains'];
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -120,8 +128,8 @@ export class BrainAtlas extends EventTarget {
     const url = new URL(manifestUrl, globalThis.location.href);
     const bytes = await fetchAsset(url.href);
     const manifest = JSON.parse(new TextDecoder().decode(bytes));
-    const [cabNp, functionalRegions] = await Promise.all(
-      [manifest.cab_np, manifest.functional_regions].map(async pointer => (pointer
+    const [cabNp, functionalRegions, domains] = await Promise.all(
+      [manifest.cab_np, manifest.functional_regions, manifest.neuropsych_domains].map(async pointer => (pointer
         ? JSON.parse(new TextDecoder().decode(await fetchAsset(new URL(pointer.file, url).href)))
         : null)),
     );
@@ -133,7 +141,7 @@ export class BrainAtlas extends EventTarget {
       const buffer = await fetchAsset(asset, { onProgress });
       return loader.parseAsync(buffer, loader.path);
     };
-    const model = new BrainAtlas(manifest, loader, cabNp, functionalRegions);
+    const model = new BrainAtlas(manifest, loader, cabNp, functionalRegions, domains);
     try {
       await model.initialize(atlasId, options);
       return model;
@@ -143,7 +151,7 @@ export class BrainAtlas extends EventTarget {
     }
   }
 
-  constructor(manifest, loader, cabNp = null, functionalRegions = null) {
+  constructor(manifest, loader, cabNp = null, functionalRegions = null, domains = null) {
     super();
     validateManifest(manifest);
     this.manifest = manifest;
@@ -154,10 +162,16 @@ export class BrainAtlas extends EventTarget {
     this.cabNp = cabNp && validateCabNp(cabNp, this.regions);
     this.functionalRegions = functionalRegions && validateFunctionalRegions(functionalRegions, this.regions);
     this.functionalLevel = 'named';
+    this.domains = domains && validateNeuropsychDomains(domains, this.regions);
+    // The domain the reader picked from the key, or null for every area's strongest.
+    this.domain = null;
     this.glassSolids = null;
     this.dissection = createDissection(this.regions);
     this.layers = new Map();
+    // The native pial and white envelopes: every one, and the white ones the dissection exposes.
+    this.envelopes = null;
     this.whiteMatterSurfaces = null;
+    this.ribbonWedges = new Map();
     this.pending = new Map();
     this.atlasId = null;
     this.detailId = null;
@@ -175,7 +189,6 @@ export class BrainAtlas extends EventTarget {
     this.spinalCordLoadState = 'unloaded';
     this.spinalCordLoadError = null;
     this.spinalCordRequest = 0;
-    this.supplementalReady = null;
     this.surfaceColor = 'atlas';
     this.mriUniforms = null;
     this.sourceColors = new WeakMap();
@@ -197,75 +210,130 @@ export class BrainAtlas extends EventTarget {
     return (levels.find(level => level.id === 'learning') ?? levels[0]).id;
   }
 
+  /**
+   * Load what the first frame draws: one cortical atlas and one detail level.
+   * The envelopes and the cord wait until something needs them.
+   */
   async initialize(atlasId = this.manifest.atlases[0].id, onProgressOrOptions) {
     const options = asOptions(onProgressOrOptions);
     const atlas = this.manifest.atlases.find(entry => entry.id === atlasId);
-    if (!atlas) throw new Error(`Unknown atlas: ${atlasId}`);
+    if (!atlas) throw unknownLayer(`Unknown atlas: ${atlasId}`);
     const detailId = options.detail === undefined ? this.defaultDetail : options.detail;
     const level = this.manifest.detail_levels.find(entry => entry.id === detailId);
-    if (!level) throw new Error(`Unknown detail level: ${detailId}`);
-    const supplemental = this.manifest.supplemental_layers ?? [];
-    const progress = combineProgress(['detail', 'atlas', 'tissue'], options.onProgress);
+    if (!level) throw unknownLayer(`Unknown detail level: ${detailId}`);
+    const progress = combineProgress(['detail', 'atlas'], options.onProgress);
     await Promise.all([
       this.loadLayer(level.id, level.file, progress.track('detail')),
       this.loadLayer(atlas.id, atlas.file, progress.track('atlas')),
-      this.loadWhiteMatterSurfaces(progress.track('tissue')),
     ]);
     this.detailId = level.id;
     this.atlasId = atlas.id;
     this.isolatedId = null;
     this.select(null);
-    if (!this.supplementalReady) {
-      const hasCord = supplemental.some(layer => layer.id === 'zanatomy');
-      this.spinalCordLoadState = hasCord ? 'loading' : 'unavailable';
-      this.supplementalReady = Promise.all(supplemental.map(
-        layer => this.loadLayer(layer.id, layer.file),
-      )).then(() => {
-        if (hasCord) this.spinalCordLoadState = 'ready';
-        if (!this.disposed) this.update();
-      });
-      // Observe background failures immediately; the original promise remains
-      // rejected so an awaited request to show the cord receives the error.
-      this.supplementalReady.catch(error => {
-        this.spinalCordLoadState = 'error';
-        this.spinalCordLoadError = error;
-      });
-    }
   }
 
-  async loadWhiteMatterSurfaces(onProgress) {
+  /**
+   * The native pial and white envelopes, downloaded the first time exposed
+   * white matter, the glass brain or a cut needs them. Resolves to every
+   * envelope mesh; a failed download is retried by the next call. `onProgress`
+   * hears the download this call starts.
+   */
+  async ensureEnvelopes(onProgress) {
     if (this.disposed) throw new Error('BrainAtlas has been disposed.');
-    if (this.whiteMatterSurfaces) return;
-    const key = 'native-white-matter';
-    if (this.pending.has(key)) return this.pending.get(key);
+    if (this.envelopes) return this.envelopes;
+    if (this.pending.has(ENVELOPES)) return this.pending.get(ENVELOPES);
     const loading = Promise.all([
       this.loader.loadAsync(this.manifest.solid_envelopes.file, onProgress),
       import('three-mesh-bvh'),
     ]).then(([{ scene }, { MeshBVH, acceleratedRaycast }]) => {
       try {
         if (this.disposed) throw new Error('BrainAtlas disposed during tissue loading.');
+        const envelopes = [];
+        scene.traverse(mesh => { if (mesh.isMesh) envelopes.push(mesh); });
         const surfaces = createWhiteMatterSurfaces(scene, this.manifest.appearance);
         for (const mesh of surfaces.meshes) {
           mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
           mesh.raycast = acceleratedRaycast;
+          if (this.mriUniforms) addMriAppearance(mesh.material, this.mriUniforms);
         }
         this.whiteMatterSurfaces = surfaces;
+        this.envelopes = envelopes;
         this.group.add(surfaces.group);
       } catch (error) {
         disposeScene(scene);
         throw error;
       }
-    }).finally(() => this.pending.delete(key));
-    this.pending.set(key, loading);
+      this.update();
+      return this.envelopes;
+    }).finally(() => this.pending.delete(ENVELOPES));
+    this.pending.set(ENVELOPES, loading);
+    return loading;
+  }
+
+  /** Hidden cortex exposes white matter the moment it is hidden; the envelopes follow and repaint. */
+  loadEnvelopesBehind() {
+    this.ensureEnvelopes().catch(error => {
+      if (this.disposed) return;
+      console.error(error);
+      this.dispatchEvent(new CustomEvent('loaderror', { detail: error }));
+    });
+  }
+
+  /**
+   * Every supplemental layer (the cord assembly), downloaded the first time
+   * the cord is shown. A failure clears the request so the next one retries.
+   * `onProgress` hears the download this call starts.
+   */
+  async ensureSpinalCord(onProgress) {
+    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    const layers = this.manifest.supplemental_layers ?? [];
+    if (!layers.some(layer => layer.id === 'zanatomy')) throw new Error('This anatomy does not publish a spinal cord.');
+    if (this.pending.has(SPINAL_CORD)) return this.pending.get(SPINAL_CORD);
+    if (layers.every(layer => this.layers.has(layer.id))) return;
+    this.spinalCordLoadState = 'loading';
+    const progress = combineProgress(layers.map(layer => layer.id), onProgress);
+    const loading = Promise.all(layers.map(layer => this.loadLayer(layer.id, layer.file, progress.track(layer.id))))
+      .then(() => {
+        this.spinalCordLoadState = 'ready';
+        this.spinalCordLoadError = null;
+        if (!this.disposed) this.update();
+      }, error => {
+        this.spinalCordLoadState = 'error';
+        this.spinalCordLoadError = error;
+        throw error;
+      })
+      .finally(() => this.pending.delete(SPINAL_CORD));
+    this.pending.set(SPINAL_CORD, loading);
     return loading;
   }
 
   /**
-   * Close each named functional region into a ribbon solid for the glass brain.
-   *
-   * Cut from the native envelopes already loaded for exposed white matter, so
-   * only the atlas's per-vertex region index is fetched.
+   * One closed ribbon solid per parcel of an atlas, cut from the envelopes and
+   * kept: the glass brain and the cut share them, geometry and BVH alike.
    */
+  async ensureRibbonWedges(atlas, baseUrl) {
+    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.ribbonWedges.has(atlas)) return this.ribbonWedges.get(atlas);
+    const key = `ribbon:${atlas}`;
+    if (this.pending.has(key)) return this.pending.get(key);
+    const loading = (async () => {
+      const envelopes = await this.ensureEnvelopes();
+      const [wedges, { MeshBVH }] = await Promise.all([
+        loadRibbonSources(this.manifest, baseUrl, atlas, envelopes), import('three-mesh-bvh'),
+      ]);
+      if (this.disposed) {
+        for (const wedge of wedges) wedge.geometry.dispose();
+        throw new Error('BrainAtlas was disposed during loading.');
+      }
+      for (const wedge of wedges) wedge.geometry.boundsTree = new MeshBVH(wedge.geometry, { indirect: true });
+      this.ribbonWedges.set(atlas, wedges);
+      return wedges;
+    })().finally(() => this.pending.delete(key));
+    this.pending.set(key, loading);
+    return loading;
+  }
+
+  /** Close each named functional region into a ribbon solid for the glass brain. */
   async loadGlassSolids(baseUrl) {
     if (this.disposed) throw new Error('BrainAtlas has been disposed.');
     if (this.glassSolids) return;
@@ -273,29 +341,15 @@ export class BrainAtlas extends EventTarget {
     const key = 'glass-solids';
     if (this.pending.has(key)) return this.pending.get(key);
     const loading = (async () => {
-      await this.loadWhiteMatterSurfaces();
-      const envelopes = [];
-      this.whiteMatterSurfaces.group.updateMatrixWorld(true);
-      this.whiteMatterSurfaces.group.traverse(mesh => { if (mesh.isMesh) envelopes.push(mesh); });
       const { atlas, regions } = this.functionalRegions;
-      const [sources, { MeshBVH, acceleratedRaycast }] = await Promise.all([
-        loadRibbonSources(this.manifest, baseUrl, atlas, envelopes), import('three-mesh-bvh'),
+      const [wedges, { acceleratedRaycast }] = await Promise.all([
+        this.ensureRibbonWedges(atlas, baseUrl), import('three-mesh-bvh'),
       ]);
-      const wedges = [];
-      for (const wedge of sources) {
-        if (regions.named[wedge.userData.region_id] && !this.disposed) wedges.push(wedge);
-        else wedge.geometry.dispose();
-      }
-      if (this.disposed) {
-        for (const wedge of wedges) wedge.geometry.dispose();
-        throw new Error('BrainAtlas was disposed during loading.');
-      }
-      this.glassSolids = createGlassSolids(wedges, this.manifest.appearance);
+      if (this.disposed) throw new Error('BrainAtlas was disposed during loading.');
+      this.glassSolids = createGlassSolids(
+        wedges.filter(wedge => regions.named[wedge.userData.region_id]), this.manifest.appearance);
       // Seen through the glass, a solid's wall can show where its patch does not.
-      for (const mesh of this.glassSolids.meshes) {
-        mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
-        mesh.raycast = acceleratedRaycast;
-      }
+      for (const mesh of this.glassSolids.meshes) mesh.raycast = acceleratedRaycast;
       this.group.add(this.glassSolids.group);
       this.update();
     })().finally(() => this.pending.delete(key));
@@ -365,7 +419,7 @@ export class BrainAtlas extends EventTarget {
 
   async setAtlas(id, onProgress) {
     const atlas = this.manifest.atlases.find(atlas => atlas.id === id);
-    if (!atlas) throw new Error(`Unknown atlas: ${id}`);
+    if (!atlas) throw unknownLayer(`Unknown atlas: ${id}`);
     const request = ++this.atlasRequest;
     await this.loadLayer(id, atlas.file, onProgress);
     if (request !== this.atlasRequest) return;
@@ -373,6 +427,7 @@ export class BrainAtlas extends EventTarget {
     // CAB-NP and the functional divisions group one atlas's areas; any other atlas has none to colour.
     if (this.surfaceColor === 'cab-np' && id !== this.cabNp.atlas) this.surfaceColor = 'atlas';
     if (this.surfaceColor === 'functional' && id !== this.functionalRegions.atlas) this.surfaceColor = 'atlas';
+    if (this.surfaceColor === 'domains' && id !== this.domains.atlas) this.surfaceColor = 'atlas';
     this.isolatedId = null;
     this.select(null);
   }
@@ -386,7 +441,7 @@ export class BrainAtlas extends EventTarget {
    */
   async setDetail(id, onProgress) {
     const level = this.manifest.detail_levels.find(level => level.id === id);
-    if (!level) throw new Error(`Unknown detail level: ${id}`);
+    if (!level) throw unknownLayer(`Unknown detail level: ${id}`);
     const request = ++this.detailRequest;
     await this.loadLayer(id, level.file, onProgress);
     if (request !== this.detailRequest) return;
@@ -427,6 +482,7 @@ export class BrainAtlas extends EventTarget {
       spinalCordVisible: this.spinalCordVisible,
       surfaceColor: this.surfaceColor,
       functionalLevel: this.functionalLevel,
+      domain: this.domain,
       isolatedRegion: this.isolatedId,
       ...this.dissection.state,
     };
@@ -452,10 +508,13 @@ export class BrainAtlas extends EventTarget {
 
   update() {
     const settings = this.settings;
+    if (!this.whiteMatterSurfaces && !this.pending.has(ENVELOPES)
+        && exposedWhiteMatter(settings, this.regions).size) this.loadEnvelopesBehind();
     this.whiteMatterSurfaces?.update(settings, this.regions, this.clippingPlanes);
     const mri = this.surfaceColor === 'mri';
     if (this.mriUniforms) this.mriUniforms.scanEnabled.value = mri;
     const functional = this.surfaceColor === 'functional';
+    const domains = this.surfaceColor === 'domains';
     const shownCortex = new Set();
     for (const [id, layer] of this.layers) {
       layer.scene.visible = id === this.detailId || id === this.atlasId ||
@@ -464,9 +523,11 @@ export class BrainAtlas extends EventTarget {
         const region = this.regions.get(mesh.userData.region_id);
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
         const cabNpNetwork = this.surfaceColor === 'cab-np' ? this.cabNp.regions[region.id] : null;
-        const division = functional && cortex
-          ? functionalRegionOf(this.functionalRegions, this.functionalLevel, region.id) : null;
-        // Cortex outside every division of the level is the glass the divisions sit in.
+        const division = !cortex ? null
+          : functional ? functionalRegionOf(this.functionalRegions, this.functionalLevel, region.id)
+            : domains ? shownDomain(this.domains, region.id, this.domain) : null;
+        // Cortex outside every division of the level is the glass the divisions sit in; an
+        // area that reaches no domain keeps the plain tissue colour, opaque.
         const glass = functional && cortex && !division;
         mesh.visible = visibilityOf(region, settings).visible;
         if (mesh.visible && layer.scene.visible) shownCortex.add(region.id);
@@ -696,16 +757,12 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
-  async setSpinalCordVisible(visible) {
+  async setSpinalCordVisible(visible, onProgress) {
     if (typeof visible !== 'boolean') throw new TypeError('Spinal cord visibility must be boolean.');
     if (this.disposed) throw new Error('BrainAtlas has been disposed.');
     const request = ++this.spinalCordRequest;
     if (visible) {
-      if (!this.manifest.supplemental_layers?.some(layer => layer.id === 'zanatomy')) {
-        throw new Error('This anatomy does not publish a spinal cord.');
-      }
-      if (!this.supplementalReady) throw new Error('Initialize the brain before showing the spinal cord.');
-      await this.supplementalReady;
+      await this.ensureSpinalCord(onProgress);
       if (request !== this.spinalCordRequest) return;
     }
     this.spinalCordVisible = visible;
@@ -734,6 +791,12 @@ export class BrainAtlas extends EventTarget {
       }
       if (!this.glassSolids) throw new Error('Glass-brain solids must load before selecting functional divisions.');
     }
+    if (mode === 'domains') {
+      if (!this.domains) throw new Error('This model carries no neuropsychological domains.');
+      if (this.atlasId !== this.domains.atlas) {
+        throw new Error(`Neuropsychological domains colour ${this.domains.atlas} areas; show that atlas first.`);
+      }
+    }
     this.surfaceColor = mode;
     this.update();
   }
@@ -744,11 +807,21 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
+  /** Show one domain's every area, or with null each area's strongest domain. */
+  setDomain(id) {
+    if (id !== null && !this.domains?.domains.some(domain => domain.id === id)) {
+      throw new TypeError(`Unknown neuropsychological domain: ${id}`);
+    }
+    this.domain = id;
+    this.update();
+  }
+
   setMriAnatomy(anatomy) {
     if (this.mriUniforms === anatomy.mriUniforms) return;
     if (this.mriUniforms) throw new Error('MRI anatomy is already attached.');
     this.mriUniforms = anatomy.mriUniforms;
-    for (const mesh of this.whiteMatterSurfaces.meshes) addMriAppearance(mesh.material, this.mriUniforms);
+    // Envelopes that load later take it as they arrive.
+    for (const mesh of this.whiteMatterSurfaces?.meshes ?? []) addMriAppearance(mesh.material, this.mriUniforms);
     for (const layer of this.layers.values()) {
       for (const mesh of layer.meshes) addMriAppearance(mesh.material, this.mriUniforms);
     }
@@ -813,6 +886,7 @@ export class BrainAtlas extends EventTarget {
     this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
     this.functionalLevel = 'named';
+    this.domain = null;
     this.isolatedId = null;
     this.select(null);
   }
@@ -824,7 +898,16 @@ export class BrainAtlas extends EventTarget {
     this.detailRequest += 1;
     for (const layer of this.layers.values()) disposeScene(layer.scene);
     if (this.whiteMatterSurfaces) disposeScene(this.whiteMatterSurfaces.group);
-    if (this.glassSolids) disposeScene(this.glassSolids.group);
+    // The glass solids draw the cached wedges' geometry, which goes with the wedges.
+    for (const mesh of this.glassSolids?.meshes ?? []) mesh.material.dispose();
+    this.glassSolids?.group.removeFromParent();
+    for (const wedges of this.ribbonWedges.values()) {
+      for (const wedge of wedges) {
+        wedge.geometry.boundsTree = null;
+        wedge.geometry.dispose();
+      }
+    }
+    this.ribbonWedges.clear();
     this.layers.clear();
     this.centroids.clear();
     this.group.removeFromParent();

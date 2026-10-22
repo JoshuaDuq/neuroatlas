@@ -2,8 +2,9 @@ import { readDiffusionAsset } from './assets.js';
 import { validateVolume } from './validation.js';
 import { configureNavigationTract, scannerVoxel, sourceVoxelPoint } from './navigation-data.js';
 
-export async function createMriNavigationViewer(catalog, canvas, onLocation) {
-  const { Niivue, NVImage, SHOW_RENDER, SLICE_TYPE, MULTIPLANAR_TYPE } = await import('@niivue/niivue');
+/** `loadTract` is the decode the 3D lines already hold; the navigator builds its fibers from it. */
+export async function createMriNavigationViewer(catalog, canvas, onLocation, loadTract) {
+  const { Niivue, NVImage, NVMesh, SHOW_RENDER, SLICE_TYPE, MULTIPLANAR_TYPE } = await import('@niivue/niivue');
   const viewer = new Niivue({ backColor: [0.035, 0.045, 0.06, 1],
     crosshairColor: [0.47, 0.8, 0.92, 1], crosshairWidth: 1,
     show3Dcrosshair: true, isRadiologicalConvention: false,
@@ -13,6 +14,7 @@ export async function createMriNavigationViewer(catalog, canvas, onLocation) {
     multiplanarLayout: MULTIPLANAR_TYPE.GRID, multiplanarPadPixels: 16, meshXRay: 0.8,
     meshThicknessOn2D: 2, dragAndDropEnabled: false, logLevel: 'error' });
   const meshes = new Map();
+  let disposed = false;
   viewer.onLocationChange = onLocation;
   try {
     await viewer.attachToCanvas(canvas);
@@ -74,9 +76,14 @@ export async function createMriNavigationViewer(catalog, canvas, onLocation) {
         if (!mesh) {
           const bundle = catalog.bundles.find(bundle => bundle.id === id);
           if (!bundle) throw new RangeError(`Unknown MRI tract bundle: ${id}`);
-          const asset = await readDiffusionAsset(bundle.file);
-          mesh = await viewer.addMeshFromUrl({ ...asset, name: bundle.file.split('/').at(-1) });
-          configureNavigationTract(mesh, minimum);
+          const tract = await loadTract(bundle);
+          if (disposed) return;
+          // As NiiVue's own TRK reader builds it: fibers carry a transparent base colour.
+          mesh = new NVMesh(tract.pts, tract.offsetPt0, bundle.file.split('/').at(-1),
+            new Uint8Array([255, 255, 255, 0]), 1, true, viewer.gl, 'inferno',
+            tract.dpg || null, tract.dps || null, tract.dpv || null);
+          viewer.addMesh(mesh);
+          configureNavigationTract(mesh, minimum, tract.lengths);
           mesh.updateMesh(viewer.gl);
           meshes.set(id, mesh);
         } else if (mesh.fiberLength !== minimum) {
@@ -88,10 +95,13 @@ export async function createMriNavigationViewer(catalog, canvas, onLocation) {
       viewer.drawScene();
     },
     resize() { viewer.resizeListener(); },
+    /** Frees the GPU context and the volumes; a canvas whose context was lost cannot be drawn on again. */
     dispose() {
+      disposed = true;
       for (const mesh of meshes.values()) mesh.unloadMesh(viewer.gl);
       meshes.clear();
       viewer.cleanup();
+      viewer.volumes = [];
       viewer.gl.getExtension('WEBGL_lose_context')?.loseContext();
     },
   };

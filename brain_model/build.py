@@ -12,9 +12,18 @@ from .gltf.export import add_region, compact_region, published_area_mm2, write_s
 from .labels import nextbrain, white_matter
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
-from .layers import cab_np, comparison, functional_regions, learning, networks, spinal_cord
+from .layers import (
+    cab_np,
+    comparison,
+    functional_regions,
+    learning,
+    networks,
+    neuropsych_domains,
+    spinal_cord,
+)
 from .sources import (
     HEMISPHERES,
+    ROOT,
     read_color_table,
     read_config,
     verify_sources,
@@ -55,14 +64,37 @@ def read_native_surface(source, prefix):
     return vertices, faces
 
 
+def require_layer_inputs(config):
+    """Every input of each declared layer; a declared layer is never left out."""
+    inputs = {
+        "networks": lambda: [
+            networks.annotation_path(config["source_directory"], prefix)
+            for prefix in HEMISPHERES
+        ],
+        "nextbrain": lambda: nextbrain.paths(config),
+        "white_matter": lambda: [white_matter.path(config)],
+        "spinal_cord": lambda: [ROOT / config["spinal_cord"]["source"]],
+    }
+    missing = [
+        str(path)
+        for layer in config["anatomy"]["layers"]
+        for path in inputs[layer]()
+        if not path.exists()
+    ]
+    if missing:
+        raise ValueError(
+            f"{config['anatomy']['id']} declares layers whose inputs are missing: {missing}"
+        )
+
+
 def read_networks(config, prefix, vertex_count):
-    if not networks.is_available(config):
+    if not networks.is_declared(config):
         return None
     path = networks.annotation_path(config["source_directory"], prefix)
     labels, colors, names = read_annot(path)
     if len(labels) != vertex_count:
         raise ValueError(f"{path.name} does not describe this surface's vertices")
-    networks.verify_palette(colors, names)
+    networks.verify_palette(colors, names, config["networks"]["maximum_color_jitter"])
     return networks.network_indices(labels, names)
 
 
@@ -240,7 +272,7 @@ def build_nextbrain_structures(config):
 
 def detail_levels(config):
     levels = [{"id": "aseg", "label": "FreeSurfer subcortical segmentation"}]
-    if nextbrain.is_available(config):
+    if nextbrain.is_declared(config):
         levels.append(
             {"id": nextbrain.ATLAS_ID, "label": config[nextbrain.ATLAS_ID]["label"]}
         )
@@ -252,7 +284,7 @@ def cut_atlases(config):
         {"id": a["id"], "label": a["label"], "citation": a["citation"], "surface": True}
         for a in config["atlases"]
     ]
-    if nextbrain.is_available(config):
+    if nextbrain.is_declared(config):
         settings = config[nextbrain.ATLAS_ID]
         atlases.append(
             {
@@ -325,7 +357,7 @@ def resolution_limitations(config, fine):
 
 
 def network_limitations(config):
-    if not networks.is_available(config):
+    if not networks.is_declared(config):
         return []
     limitations = [
         "Networks describe group resting-state functional connectivity from 1000 subjects, not a region's measured function in this brain.",
@@ -367,7 +399,8 @@ def main():
     )
     config = read_config(parser.parse_args().anatomy)
     provenance = verify_sources(config)
-    if nextbrain.is_available(config):
+    require_layer_inputs(config)
+    if nextbrain.is_declared(config):
         nextbrain.verify_procedure(config, provenance)
     atlas_metadata = []
     regions = []
@@ -383,7 +416,7 @@ def main():
     levels = [{**level} for level in detail_levels(config)]
     levels[0].update(coarse)
     fine = None
-    if nextbrain.is_available(config):
+    if nextbrain.is_declared(config):
         fine, nuclei = build_nextbrain_structures(config)
         levels[1].update(fine)
         regions.extend(nuclei)
@@ -397,11 +430,11 @@ def main():
                 config, skip=[region["source_label_id"] for region in nuclei]
             )
         )
-    if white_matter.is_available(config):
+    if white_matter.is_declared(config):
         regions.extend(white_matter.build_regions(config))
     export_volumes(config)
     cord_layers, cord_regions = [], []
-    if spinal_cord.is_available(config):
+    if spinal_cord.is_declared(config):
         layer, cord_regions = spinal_cord.build(config)
         cord_layers = [layer]
         regions.extend(cord_regions)
@@ -427,15 +460,16 @@ def main():
             ],
         },
         "atlases": atlas_metadata,
-        "networks": networks.metadata() if networks.is_available(config) else None,
+        "networks": networks.metadata() if networks.is_declared(config) else None,
         "cab_np": cab_np.export(config, regions),
         "functional_regions": functional_regions.export(config, regions),
+        "neuropsych_domains": neuropsych_domains.export(config, regions),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
         "boundary_convention": "Barycentric vertex cells on mixed-label triangles",
         "limitations": [
-            *(spinal_cord.limitations(config) if cord_regions else []),
+            *(spinal_cord.limitations(config) if cord_regions else spinal_cord.omission(config)),
             *anatomy_limitations(config),
             "Destrieux labels identify gyri and sulci; HCP labels identify multimodal areas.",
             "Subvertex label boundaries are visualization conventions, not measured boundaries.",
@@ -454,6 +488,7 @@ def main():
             *network_limitations(config),
             *cab_np.limitations(),
             *functional_regions.limitations(),
+            *neuropsych_domains.limitations(),
             *white_matter.limitations(config),
         ],
         "provenance": provenance,

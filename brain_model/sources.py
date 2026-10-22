@@ -10,6 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 HEMISPHERES = {"lh": "left", "rh": "right"}
 
+# What an anatomy may publish beside its cortex, aseg structures and volumes.
+LAYERS = ("networks", "nextbrain", "white_matter", "spinal_cord")
+
 
 def resolve_config(document):
     config = dict(document)
@@ -18,6 +21,9 @@ def resolve_config(document):
     if selected not in anatomies:
         raise ValueError(f"`anatomies` does not declare the selected {selected!r}")
     anatomy = {"id": selected, **anatomies[selected]}
+    unknown = set(anatomy["layers"]) - set(LAYERS)
+    if unknown or len(set(anatomy["layers"])) != len(anatomy["layers"]):
+        raise ValueError(f"{selected} declares unknown or repeated layers: {anatomy['layers']}")
     # Resolved here so that no later step needs the declarations to find the
     # brain an atlas is resampled from. Naming one that is not declared is the
     # same mistake as selecting one, and fails the same way.
@@ -51,6 +57,12 @@ def read_config(anatomy=None):
     return config
 
 
+def declares(config, layer):
+    if layer not in LAYERS:
+        raise ValueError(f"Unknown layer: {layer!r}")
+    return layer in config["anatomy"]["layers"]
+
+
 def sha256(path):
     digest = hashlib.sha256()
     with open(path, "rb") as handle:
@@ -76,9 +88,9 @@ def verify_sources(config):
     )
     for source in provenance["sources"]:
         path = ROOT / source["path"]
-        # A derived source is produced by a documented one-off procedure that
-        # this package cannot run, so a checkout without it still builds every
-        # asset that needs no warp. Present, it is checked like any download.
+        # An optional source serves a layer not every anatomy declares; one
+        # that declares it requires it (build.require_layer_inputs). Present,
+        # it is checked like any download.
         if source.get("optional") and not path.exists():
             continue
         if sha256(path) != source["sha256"]:

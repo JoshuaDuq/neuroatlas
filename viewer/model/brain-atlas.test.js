@@ -59,7 +59,7 @@ const regions = [
     kind: 'tissue-region' },
 ];
 
-function fixture(cabNp = null, functional = null) {
+function fixture(cabNp = null, functional = null, domains = null) {
   const manifest = {
     schema_version: 1,
     appearance,
@@ -99,7 +99,7 @@ function fixture(cabNp = null, functional = null) {
       return { scene };
     },
   };
-  return { atlas: new BrainAtlas(manifest, loader, cabNp, functional), loads };
+  return { atlas: new BrainAtlas(manifest, loader, cabNp, functional, domains), loads };
 }
 
 for (const request of [
@@ -117,7 +117,7 @@ for (const request of [
       throw new Error(`Unrequested default layer download: ${url}`);
     });
     await assert.rejects(BrainAtlas.load('https://example.invalid/manifest.json',
-      request.atlas, request.options), request.message);
+      request.atlas, request.options), error => request.message.test(error.message) && error.code === 'unknown-layer');
     atlas.dispose();
   });
 }
@@ -155,19 +155,41 @@ function cordScene(cord) {
   return { scene };
 }
 
-test('a rejected supplemental download remains observable without invalidating the main brain', async () => {
-  const failure = new Error('Spinal cord request failed: HTTP 503');
-  const { atlas, cord } = cordFixture(async () => { throw failure; });
+test('the cord is not downloaded until it is first shown', async () => {
+  const { atlas, loads, cord } = cordFixture(async region => cordScene(region));
   await atlas.initialize();
   await new Promise(resolve => setImmediate(resolve));
-  await assert.rejects(atlas.supplementalReady, error => error === failure);
+  assert.ok(!loads.includes('cord.glb'));
+  assert.equal(atlas.spinalCordLoadState, 'unloaded');
+  await atlas.setSpinalCordVisible(true);
+  assert.deepEqual(loads.filter(file => file === 'cord.glb'), ['cord.glb']);
+  assert.ok(atlas.canSelect(cord));
+  await atlas.setSpinalCordVisible(false);
+  await atlas.setSpinalCordVisible(true);
+  assert.equal(loads.filter(file => file === 'cord.glb').length, 1, 'shown again from memory');
+  atlas.dispose();
+});
+
+test('a failed cord download leaves the brain alone and the next request retries it', async () => {
+  const failure = new Error('Spinal cord request failed: HTTP 503');
+  let attempts = 0;
+  const { atlas, cord } = cordFixture(async region => {
+    attempts += 1;
+    if (attempts === 1) throw failure;
+    return cordScene(region);
+  });
+  await atlas.initialize();
+  await assert.rejects(() => atlas.setSpinalCordVisible(true), error => error === failure);
   assert.equal(atlas.spinalCordLoadState, 'error');
   assert.equal(atlas.spinalCordLoadError, failure);
   assert.equal(atlas.settings.spinalCordVisible, false);
   assert.ok(atlas.visibleMeshes.length > 0);
   assert.equal(atlas.canSelect(cord), false);
-  await assert.rejects(() => atlas.setSpinalCordVisible(true), error => error === failure);
-  assert.equal(atlas.settings.spinalCordVisible, false);
+  await atlas.setSpinalCordVisible(true);
+  assert.equal(attempts, 2);
+  assert.equal(atlas.spinalCordLoadState, 'ready');
+  assert.equal(atlas.settings.spinalCordVisible, true);
+  atlas.select(cord.id);
   atlas.dispose();
 });
 
@@ -202,11 +224,13 @@ test('an unloaded supplemental region cannot be selected even with display flags
     finishDownload = () => resolve(cordScene(region));
   }));
   await atlas.initialize();
+  const loading = atlas.ensureSpinalCord();
   atlas.spinalCordVisible = true;
   assert.equal(atlas.canSelect(cord), false);
   assert.throws(() => atlas.select(cord.id), /not visible/);
   finishDownload();
-  await atlas.supplementalReady;
+  await loading;
+  assert.equal(atlas.canSelect(cord), true);
   atlas.dispose();
 });
 
@@ -235,7 +259,12 @@ test('hiding cortex exposes native white matter and restoring it closes the expo
   const { atlas } = fixture();
   await atlas.initialize('a');
   assert.equal(atlas.visibleMeshes.some(mesh => mesh.userData.boundary === 'white'), false);
+  const changed = new Promise(resolve => atlas.addEventListener('change', resolve, { once: true }));
   atlas.hideRegions(['a-left']);
+  await changed;
+  assert.equal(atlas.visibleMeshes.some(mesh => mesh.userData.boundary === 'white'), false,
+    'the envelopes are still on their way');
+  await atlas.ensureEnvelopes();
   const white = atlas.visibleMeshes.find(mesh => mesh.userData.boundary === 'white');
   assert.ok(white, 'the tissue beneath removed cortex must be drawn');
   assert.equal(white.userData.hemisphere, 'left');
@@ -269,14 +298,62 @@ test('hiding cortex exposes native white matter and restoring it closes the expo
   atlas.dispose();
 });
 
-test('reinitializing shares the native tissue download and keeps one tissue layer', async () => {
+test('the first frame waits for no envelopes; the first exposure downloads them once and repaints', async () => {
   const { atlas, loads } = fixture();
   await Promise.all([atlas.initialize('a'), atlas.initialize('a')]);
-  assert.equal(loads.filter(file => file === 'tissue-envelopes.glb').length, 1);
+  assert.ok(!loads.includes('tissue-envelopes.glb'));
+  let changes = 0;
+  atlas.addEventListener('change', () => { changes += 1; });
   atlas.hideRegions(['a-left']);
+  atlas.setCortexOpacity(0.9);
+  const before = changes;
+  await atlas.ensureEnvelopes();
+  assert.equal(loads.filter(file => file === 'tissue-envelopes.glb').length, 1);
+  assert.ok(changes > before, 'the model announces the exposed white matter');
   await atlas.initialize('a');
   assert.equal(atlas.visibleMeshes.filter(mesh => mesh.userData.boundary === 'white').length, 1);
   assert.equal(atlas.group.children.filter(group => group.name === 'Native exposed white matter').length, 1);
+  atlas.dispose();
+});
+
+test('a failed envelope download is reported and retried by the next exposure', async t => {
+  const { atlas, loads } = fixture();
+  await atlas.initialize('a');
+  const load = atlas.loader.loadAsync;
+  const failure = new Error('HTTP 503');
+  atlas.loader.loadAsync = async file => {
+    if (file === 'tissue-envelopes.glb' && loads.filter(name => name === file).length === 0) {
+      loads.push(file);
+      throw failure;
+    }
+    return load(file);
+  };
+  t.mock.method(console, 'error', () => {});
+  const reported = new Promise(resolve => atlas.addEventListener('loaderror', resolve, { once: true }));
+  atlas.hideRegions(['a-left']);
+  assert.equal((await reported).detail, failure);
+  atlas.setHemisphere('left');
+  await atlas.ensureEnvelopes();
+  assert.ok(atlas.visibleMeshes.some(mesh => mesh.userData.boundary === 'white'));
+  atlas.dispose();
+});
+
+test('MRI colour attached before the envelopes reaches them when they arrive', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const sections = new TissueSections(atlas, new URL('https://example.invalid/'));
+  sections.anatomy = sections.createAnatomy(new Volume({ shape: [2, 2, 2], order: 'F',
+    voxel_to_surface_ras_mm: [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]],
+  }, new Uint8Array(8).fill(100)));
+  atlas.setMriAnatomy(sections.anatomy);
+  atlas.setSurfaceColor('mri');
+  await atlas.ensureEnvelopes();
+  for (const mesh of atlas.whiteMatterSurfaces.meshes) {
+    const shader = { uniforms: {}, vertexShader: '#include <begin_vertex>', fragmentShader: '#include <opaque_fragment>' };
+    mesh.material.onBeforeCompile(shader);
+    assert.equal(shader.uniforms.scanVolume.value, sections.anatomy.texture);
+  }
+  sections.dispose();
   atlas.dispose();
 });
 
@@ -291,6 +368,7 @@ test('dissection exposes white matter and blocks picking through it', async () =
   assert.equal(atlas.pick(ray).id, 'a-left');
   atlas.select('a-left');
   atlas.hideRegions(['a-left']);
+  await atlas.ensureEnvelopes();
   assert.equal(atlas.intersect(ray).object.userData.boundary, 'white');
   assert.equal(atlas.pick(ray), null);
   assert.equal(front.visible, false);
@@ -339,6 +417,7 @@ test('hiding an isolated region releases isolation and undo restores it', async 
   atlas.isolate();
   atlas.hideRegions(['a-left']);
   assert.equal(atlas.state.isolatedRegion, null);
+  await atlas.ensureEnvelopes();
   assert.equal(atlas.visibleMeshes.length, 4);
   atlas.undoDissection();
   assert.equal(atlas.state.isolatedRegion, 'a-left');
@@ -421,7 +500,7 @@ test('switches one atlas at a time, caches geometry, and keeps shared anatomy', 
   assert.equal(atlas.visibleMeshes.length, 2);
   assert.ok(atlas.visibleMeshes.some(mesh => mesh.userData.region_id === 'stem'));
   await atlas.setAtlas('a');
-  assert.deepEqual(loads.sort(), ['a.glb', 'b.glb', 'structures.glb', 'tissue-envelopes.glb']);
+  assert.deepEqual(loads.sort(), ['a.glb', 'b.glb', 'structures.glb']);
   assert.equal(atlas.group.children.filter(group => group.visible).length, 2);
   atlas.dispose();
   assert.equal(atlas.group.children.length, 0);
@@ -639,10 +718,61 @@ test('functional divisions need their atlas and their solids, and leaving the at
   atlas.dispose();
 });
 
+const domains = {
+  id: 'neuropsych-domains', atlas: 'a', threshold_z: 3,
+  domains: [
+    { id: 'language', term: 'language', name: 'Language', name_fr: 'Langage', color: [255, 0, 0] },
+    { id: 'memory', term: 'episodic memory', name: 'Memory', name_fr: 'Mémoire', color: [0, 0, 255] },
+  ],
+  lesion_checks: { language: [], memory: [] },
+  regions: {
+    'a-left': [{ domain: 'language', z: 6 }, { domain: 'memory', z: 4 }],
+    'a-right': [{ domain: 'memory', z: 5 }],
+  },
+};
+
+test('each area shows its strongest domain on opaque cortex, and a picked domain shows its every area', async () => {
+  const { atlas } = fixture(null, functional, domains);
+  await atlas.initialize('a');
+  atlas.setSurfaceColor('domains');
+  const red = new Color().setRGB(1, 0, 0, SRGBColorSpace).getHex();
+  const blue = new Color().setRGB(0, 0, 1, SRGBColorSpace).getHex();
+  const tissue = new Color(appearance.tissue.cortex).getHex();
+  assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), red);
+  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), blue);
+  // An area no domain reaches is plain cortex, not glass.
+  for (const id of ['a-left', 'a-right', 'a-wall']) {
+    assert.equal(meshOf(atlas, id).material.opacity, 1);
+    assert.equal(meshOf(atlas, id).material.userData.glass, false);
+  }
+  atlas.setDomain('memory');
+  // Memory is a-left's weaker domain; picked, it is drawn there too.
+  assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), blue);
+  atlas.setDomain('language');
+  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), tissue);
+  assert.equal(meshOf(atlas, 'a-right').material.opacity, 1);
+  assert.throws(() => atlas.setDomain('praxis'), /Unknown neuropsychological domain: praxis/);
+  atlas.reset();
+  assert.equal(atlas.state.domain, null);
+  atlas.dispose();
+});
+
+test('domains need their atlas, and leaving the atlas leaves them', async () => {
+  const { atlas } = fixture(null, functional, domains);
+  await atlas.initialize('b');
+  assert.throws(() => atlas.setSurfaceColor('domains'), /colour a areas; show that atlas first/);
+  await atlas.setAtlas('a');
+  atlas.setSurfaceColor('domains');
+  await atlas.setAtlas('b');
+  assert.equal(atlas.state.surfaceColor, 'atlas');
+  atlas.dispose();
+});
+
 test('a model without the divisions refuses them', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
   assert.throws(() => atlas.setSurfaceColor('functional'), /no functional divisions/);
+  assert.throws(() => atlas.setSurfaceColor('domains'), /no neuropsychological domains/);
   await assert.rejects(atlas.loadGlassSolids('https://example.invalid/'), /no functional divisions/);
   atlas.dispose();
 });
@@ -736,7 +866,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false,
-    surfaceColor: 'atlas', functionalLevel: 'named', isolatedRegion: null,
+    surfaceColor: 'atlas', functionalLevel: 'named', domain: null, isolatedRegion: null,
     hiddenRegions: new Set(), dissectionCanUndo: false,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));
@@ -771,12 +901,12 @@ test('load progress is reported while a layer downloads', async () => {
   const seen = [];
   const { atlas } = fixture();
   await atlas.initialize('a', event => seen.push({ loaded: event.loaded, total: event.total }));
-  assert.deepEqual(seen.at(-1), { loaded: 60, total: 60 }, 'surface, structure and tissue downloads share one bar');
+  assert.deepEqual(seen.at(-1), { loaded: 40, total: 40 }, 'surface and structure downloads share one bar');
   assert.ok(seen.some(event => event.loaded === 10 && event.total === 20));
   atlas.dispose();
 });
 
-test('initialize fetches cortex, internal anatomy and native tissue together', async () => {
+test('initialize fetches cortex and internal anatomy together, and nothing else', async () => {
   const { atlas, loads } = fixture();
   const original = atlas.loader.loadAsync;
   let started = 0;
@@ -789,10 +919,10 @@ test('initialize fetches cortex, internal anatomy and native tissue together', a
   };
   const pending = atlas.initialize('a');
   await Promise.resolve();
-  assert.equal(started, 3, 'all downloads must have started before any finishes');
+  assert.equal(started, 2, 'both downloads must have started before either finishes');
   released();
   await pending;
-  assert.deepEqual(loads.sort(), ['a.glb', 'structures.glb', 'tissue-envelopes.glb']);
+  assert.deepEqual(loads.sort(), ['a.glb', 'structures.glb']);
   atlas.dispose();
 });
 

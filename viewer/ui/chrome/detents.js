@@ -40,8 +40,11 @@ export function detentHeights(available, { peek, half, full = 1, picture = 0 }) 
 /** Peek is the grip's own height when it can be measured; this is the fallback. */
 export const UPRIGHT_DETENTS = { peek: 132, half: 0.58, picture: 128 };
 
-/** Proportions for a sheet that grows across the screen rather than up it. */
-export const SIDEWAYS_DETENTS = { peek: 216, half: 0.4, full: 0.62 };
+/**
+ * Proportions for a sheet that grows across the screen rather than up it. Peek is the narrowest
+ * the rail goes; the one row of tabs it measures is usually wider, so half has to clear that.
+ */
+export const SIDEWAYS_DETENTS = { peek: 216, half: 0.5, full: 0.62 };
 
 /** The detent a height is nearest to. Ties resolve downward, toward the anatomy. */
 export function nearestDetent(height, heights) {

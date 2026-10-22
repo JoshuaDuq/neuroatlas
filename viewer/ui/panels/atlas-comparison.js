@@ -2,12 +2,21 @@ import { readComparison } from '../../comparison/assets.js';
 import { createComparisonCatalog } from '../../comparison/catalog.js';
 import { labelOf } from '../../catalog/labels.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
+import { failureNotice } from '../../i18n/errors.js';
+import { withUnit } from '../format.js';
 import { overlapArea, overlapShare } from './comparison-format.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
   node.textContent = text;
   if (className) node.className = className;
+  return node;
+}
+
+/** A table figure; the column head carries its unit, which is spoken where no label replaces the cell. */
+function cell(value, unit) {
+  const node = element('span', value, 'measure');
+  node.append(element('span', ` ${unit}`, 'visually-hidden'));
   return node;
 }
 
@@ -28,7 +37,6 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
   const retry = document.getElementById('comparison-retry');
   const content = document.getElementById('comparison-content');
   const denominator = document.getElementById('comparison-denominator');
-  const targetHeading = document.getElementById('comparison-target');
   const columns = document.getElementById('comparison-columns');
   const list = document.getElementById('comparison-list');
   const more = document.getElementById('comparison-more');
@@ -46,7 +54,8 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
   let comparisonData = null;
   let loading = null;
   let phase = 'idle';
-  let notice = '';
+  // What failed, worded at paint time so a language change rewords it.
+  let failed = null;
   let active = null;
   let busy = null;
   let request = 0;
@@ -65,13 +74,14 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
     clear();
     const current = request;
     busy = row.meshId;
-    notice = '';
+    failed = null;
     paint();
     try {
       const applied = await highlight(row.meshId);
       if (!disposed && current === request && applied) active = row.meshId;
     } catch (error) {
-      if (!disposed && current === request) notice = error.message;
+      console.error(error);
+      if (!disposed && current === request) failed = { error, operation: 'overlap' };
     } finally {
       if (!disposed && current === request) { busy = null; paint(); }
     }
@@ -85,7 +95,8 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
     button.className = 'comparison-row';
     button.dataset.overlap = row.meshId;
     button.setAttribute('aria-pressed', String(active === row.meshId));
-    button.setAttribute('aria-label', copy.highlight(name, overlapShare(row.fraction, state.lang)));
+    button.setAttribute('aria-label',
+      copy.highlight(name, withUnit(overlapShare(row.fraction, state.lang), '%', state.lang)));
     button.disabled = !state.outlineAvailable;
     button.append(element('span', name, 'comparison-name'),
       element('span', overlapArea(row.areaMm2, state.lang), 'measure'),
@@ -98,13 +109,16 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
   function paint() {
     if (disposed || panel.hidden) return;
     const copy = t(state.lang, 'comparison');
-    const key = [sourceId, state.lang, phase, notice, active, busy, state.outlineAvailable].join('|');
+    const key = [sourceId, state.lang, phase, failed?.operation, active, busy, state.outlineAvailable].join('|');
     if (key === painted) return;
     painted = key;
     const focused = panel.contains(document.activeElement) ? document.activeElement.dataset.overlap : null;
     const expanded = more.open;
-    heading.textContent = copy.heading;
-    status.textContent = notice || (phase === 'loading' ? copy.loading : busy ? copy.highlightLoading : '');
+    // The comparison pairs the two cortical atlases, so the other one is the loaded manifest's other atlas.
+    const target = manifest.atlases.find(atlas => atlas.id !== state.selectedRegion.atlas).id;
+    heading.textContent = copy.heading(atlasSwitchLabel(target, state.lang));
+    const said = failed ? failureNotice(failed.error, state.lang, failed.operation).text : '';
+    status.textContent = said || (phase === 'loading' ? copy.loading : busy ? copy.highlightLoading : '');
     status.hidden = !status.textContent;
     panel.setAttribute('aria-busy', String(phase === 'loading' || Boolean(busy)));
     retry.hidden = phase !== 'error';
@@ -112,9 +126,8 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
     content.hidden = phase !== 'ready';
     if (phase !== 'ready') return;
     const comparison = catalog.comparisonFor(sourceId);
-    targetHeading.textContent = copy.target(atlasSwitchLabel(state.selectedRegion.atlas, state.lang),
-      atlasSwitchLabel(comparison.targetAtlas, state.lang));
-    denominator.textContent = copy.denominator(overlapArea(comparison.totalAreaMm2, state.lang));
+    // The datasheet above states the region's area; the note says what the shares divide.
+    denominator.textContent = copy.denominator;
     copy.columns.forEach((label, index) => { columns.children[index].textContent = label; });
     list.replaceChildren(...comparison.rows.slice(0, 4).map(row => rowNode(row, copy)));
     more.hidden = comparison.rows.length <= 4;
@@ -122,8 +135,8 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
     moreList.replaceChildren(...comparison.rows.slice(4).map(row => rowNode(row, copy)));
     more.open = expanded;
     unassigned.replaceChildren(element('span', copy.unassigned),
-      element('span', overlapArea(comparison.unassignedAreaMm2, state.lang), 'measure'),
-      element('span', overlapShare(comparison.unassignedFraction, state.lang), 'measure'));
+      cell(overlapArea(comparison.unassignedAreaMm2, state.lang), 'mm²'),
+      cell(overlapShare(comparison.unassignedFraction, state.lang), '%'));
     viewNote.hidden = state.outlineAvailable;
     viewNote.textContent = copy.viewNote;
     exportButton.textContent = copy.export;
@@ -146,7 +159,7 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
 
   function load() {
     phase = 'loading';
-    notice = '';
+    failed = null;
     paint();
     loading = readComparison(new URL(manifest.atlas_comparison.file, manifestUrl),
       manifest.atlas_comparison.sha256)
@@ -156,9 +169,10 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
         comparisonData = data;
         phase = 'ready';
       }).catch(error => {
+        console.error(error);
         if (disposed) return;
         phase = 'error';
-        notice = error.message;
+        failed = { error, operation: 'comparison' };
       }).finally(() => { if (!disposed) paint(); });
   }
 
@@ -178,7 +192,7 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
       if (sourceId !== nextId) {
         sourceId = nextId;
         painted = null;
-        notice = phase === 'error' ? notice : '';
+        if (phase !== 'error') failed = null;
         clear();
       }
       if (!state.outlineAvailable && (active || busy)) clear();

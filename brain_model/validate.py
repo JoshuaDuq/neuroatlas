@@ -10,6 +10,7 @@ from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 from scipy.ndimage import center_of_mass, map_coordinates
 
 from . import validate_learning
+from .build import require_layer_inputs
 from .gltf.encode import (
     decode_field,
     decode_normals,
@@ -20,7 +21,13 @@ from .gltf.encode import (
 from .gltf.export import compact_region
 from .labels import nextbrain, white_matter
 from .labels.volumes import conformed_grid
-from .layers import cab_np, functional_regions, networks, spinal_cord
+from .layers import (
+    cab_np,
+    functional_regions,
+    networks,
+    neuropsych_domains,
+    spinal_cord,
+)
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .surfaces.geometry import (
     extract_structure,
@@ -34,7 +41,9 @@ from .surfaces.geometry import (
 from .surfaces.ribbons import validate_ribbon_labels
 from .surfaces.shading import cortical_concavity
 from .surfaces.solids import validate_solid_envelopes
-from .validate_volumes import validate_volumes
+from .validate_segmentation import segmentation_agreement, surface_holes
+from .validate_transforms import validate_transforms
+from .validate_volumes import validate_tissue_volumes, validate_volumes
 
 
 def triangle_areas(triangles):
@@ -207,7 +216,7 @@ def read_meshes(path):
 
 
 def read_network_field(config, prefix, faces, labels):
-    if not networks.is_available(config):
+    if not networks.is_declared(config):
         return None, None
     path = networks.annotation_path(config["source_directory"], prefix)
     network_labels, _, names = read_annot(path)
@@ -635,7 +644,7 @@ def validate_manifest(config, manifest):
     }:
         raise ValueError("Manifest atlas set mismatch")
     groups = {}
-    if spinal_cord.is_available(config):
+    if spinal_cord.is_declared(config):
         groups["spinal-cord.glb"] = {
             region["id"]: region
             for region in (
@@ -674,7 +683,7 @@ def validate_manifest(config, manifest):
     groups["structures.glb"] = coarse
     expected_levels = {"aseg": ("structures.glb", coarse, grid_fields(coarse_grid))}
     measured = [(coarse, coarse_grid)]
-    if nextbrain.is_available(config):
+    if nextbrain.is_declared(config):
         fine, fine_grid = expected_nextbrain_metadata(config)
         groups["nextbrain.glb"] = fine
         expected_levels[nextbrain.ATLAS_ID] = ("nextbrain.glb", fine, grid_fields(fine_grid))
@@ -726,6 +735,72 @@ def validate_manifest(config, manifest):
                 raise ValueError(f"Manifest segmentation volume mismatch: {region_id}")
 
 
+def validate_layers(config, manifest, tissues):
+    """The published assets hold exactly the optional layers the anatomy declares.
+
+    Detail levels and regions are held to the same declaration by
+    validate_manifest; these are the remaining places a layer is published.
+    """
+    declared = config["anatomy"]["layers"]
+    cut = [atlas["id"] for atlas in config["atlases"]]
+    fine = [nextbrain.ATLAS_ID] if "nextbrain" in declared else []
+    expected = {
+        "networks": networks.metadata() if "networks" in declared else None,
+        "cut_atlases": cut + fine,
+        "tissue_atlases": sorted(cut + fine),
+        "white_matter": "white_matter" in declared,
+        "supplemental_layers": [spinal_cord.ATLAS_ID] if "spinal_cord" in declared else [],
+    }
+    published = {
+        "networks": manifest["networks"],
+        "cut_atlases": [atlas["id"] for atlas in manifest["cut_atlases"]],
+        "tissue_atlases": sorted(tissues["atlases"]),
+        "white_matter": "white_matter" in tissues,
+        "supplemental_layers": [layer["id"] for layer in manifest["supplemental_layers"]],
+    }
+    differ = [key for key in expected if published[key] != expected[key]]
+    if differ:
+        raise ValueError(f"Published layers differ from the declared ones: {differ}")
+    return list(declared)
+
+
+def named_files(document):
+    if isinstance(document, dict):
+        for key, value in document.items():
+            if key == "file" and isinstance(value, str):
+                yield value
+            else:
+                yield from named_files(value)
+    elif isinstance(document, list):
+        for value in document:
+            yield from named_files(value)
+
+
+def validate_published_files(config, manifest):
+    """The output directory holds exactly the files its metadata names.
+
+    A file no build step names any more, such as a dropped layer's mesh, would
+    otherwise still ship beside the assets that replaced it.
+    """
+    directory = config["output_directory"]
+    documents = [manifest] + [
+        json.loads((directory / manifest[key]["file"]).read_text())
+        for key in ("volumes", "tissues")
+    ]
+    if "atlas_comparison" in manifest:
+        # Its `sources` name the FreeSurfer inputs, not published files.
+        comparison = directory / manifest["atlas_comparison"]["file"]
+        documents.append(json.loads(comparison.read_text())["geometry"])
+    named = {"manifest.json"} | {name for document in documents for name in named_files(document)}
+    present = {path.name for path in directory.iterdir()} - {"validation.json"}
+    if present != named:
+        raise ValueError(
+            f"Published files differ from the ones named: unnamed {sorted(present - named)}, "
+            f"missing {sorted(named - present)}"
+        )
+    return sorted(present)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -733,10 +808,13 @@ def main():
     )
     config = read_config(parser.parse_args().anatomy)
     provenance = verify_sources(config)
-    if nextbrain.is_available(config):
+    require_layer_inputs(config)
+    if nextbrain.is_declared(config):
         nextbrain.verify_procedure(config, provenance)
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
+    layers = validate_layers(config, manifest, tissues)
+    files = validate_published_files(config, manifest)
     validate_manifest(config, manifest)
     atlases = [
         validate_atlas(config, atlas, manifest["regions"]) for atlas in config["atlases"]
@@ -756,25 +834,40 @@ def main():
         ],
         "structures": validate_structures(config),
         **({"spinal_cord": spinal_cord.validate(config, manifest["supplemental_layers"][0])}
-           if spinal_cord.is_available(config) else {}),
+           if spinal_cord.is_declared(config) else {}),
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         "cab_np": cab_np.validate(config, manifest),
         "functional_regions": functional_regions.validate(config, manifest),
+        "neuropsych_domains": neuropsych_domains.validate(config, manifest),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config),
              "nextbrain_cut_labels": nextbrain.validate_volume(
                  config, tissues["atlases"][nextbrain.ATLAS_ID]
              ),
              "learning_structures": validate_learning.validate(config, manifest)}
-            if nextbrain.is_available(config)
+            if nextbrain.is_declared(config)
             else {}
         ),
         **(
             {"white_matter": white_matter.validate_volume(config, tissues["white_matter"])}
-            if white_matter.is_available(config)
+            if white_matter.is_declared(config)
             else {}
         ),
         "volumes": validate_volumes(config),
+        "tissue_volumes": validate_tissue_volumes(config, manifest, tissues),
+        "transforms": validate_transforms(config),
+        "layers": layers,
+        "published_files": files,
+        **(
+            {"segmentation_agreement": segmentation_agreement(config)}
+            if nextbrain.is_declared(config)
+            else {}
+        ),
+        **(
+            {"reconstruction_quality": surface_holes(config)}
+            if "statistics" in config["anatomy"]
+            else {}
+        ),
     }
     write_json(config["output_directory"] / "validation.json", report)
     print(

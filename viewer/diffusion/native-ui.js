@@ -1,12 +1,15 @@
 import catalog from '../../data/diffusion.yaml';
 import { createNativeTractViewer } from './native-viewer.js';
-import { DIFFUSION_TEXT } from './translations.js';
+import { DIFFUSION_TEXT, diffusionError, diffusionErrorCode } from './translations.js';
+import { createTractLoader } from './tract-file.js';
 import { tractRow, tractRows, updateTractRow, saveLengths, settingsReadout } from './controls.js';
 import { createMriNavigator } from './navigation-ui.js';
 import { t } from '../i18n/translations.js';
+import { reloadWithoutStoredModels } from '../model/published-assets.js';
+import { decimal, grouped, percent, withUnit } from '../ui/format.js';
 
 const MARKUP = `
-  <div class="rail-head native-tract-head">
+  <div class="rail-head">
     <label class="visually-hidden" for="native-tract-search" data-native-copy="search"></label>
     <div class="search-box">
       <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -15,6 +18,7 @@ const MARKUP = `
       </svg>
       <input id="native-tract-search" type="search" autocomplete="off" spellcheck="false"
              aria-controls="native-tract-bundles" />
+      <kbd class="search-shortcut" aria-hidden="true">/</kbd>
       <button id="native-tract-search-clear" class="search-clear" type="button" hidden>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
@@ -23,20 +27,20 @@ const MARKUP = `
       </button>
     </div>
   </div>
-  <div class="panel-body native-tract-controls">
+  <div class="rail-body native-tract-controls">
     <h3 class="visually-hidden" data-native-copy="dataset"></h3>
-    <p class="diffusion-lead" data-native-copy="nativeReference"></p>
-    <p id="native-tract-anatomy-mismatch" class="diffusion-note" data-native-copy="otherAnatomy"></p>
-    <p id="native-tract-status" class="diffusion-note" role="status"></p>
+    <p id="native-tract-status" class="diffusion-status" role="status"></p>
     <button id="native-tract-retry" type="button" data-native-copy="retry" hidden></button>
     <fieldset id="native-tract-controls" disabled>
-      <h4 class="diffusion-list-heading" data-native-copy="bundleCollection"></h4>
-      <p class="diffusion-note diffusion-load-hint" data-native-copy="loadHint"></p>
+      <h4 id="native-tract-heading" class="section-label diffusion-list-heading">
+        <span data-native-copy="bundles"></span><span id="native-tract-count" class="diffusion-list-count"></span></h4>
       <div id="native-tract-bundles"></div>
-      <p id="native-tract-no-results" class="diffusion-note" data-native-copy="noResults" hidden></p>
-      <details id="native-tract-settings" class="diffusion-settings">
+      <p id="native-tract-no-results" class="empty-title" hidden></p>
+      <p id="native-tract-no-results-hint" class="empty" data-native-copy="noMatchHint" hidden></p>
+      <p id="native-tract-anatomy-mismatch" class="diffusion-scope" data-native-copy="otherAnatomy"></p>
+      <details id="native-tract-settings" class="detail-section diffusion-settings">
         <summary><span data-native-copy="settings"></span>
-          <span id="native-tract-settings-readout" class="diffusion-settings-readout measure"></span></summary>
+          <span id="native-tract-settings-readout" class="diffusion-settings-readout"></span></summary>
         <label id="native-tract-overlay-control" class="check">
           <input id="native-tract-overlay" type="checkbox" /> <span data-native-copy="showOverlay"></span>
         </label>
@@ -56,9 +60,9 @@ const MARKUP = `
         </div>
       </details>
     </fieldset>
-    <details class="diffusion-about">
+    <details class="detail-section diffusion-about">
       <summary data-native-copy="about"></summary>
-      <p class="diffusion-note" data-native-copy="nativeHint"></p>
+      <p class="diffusion-note" data-native-copy="nativeReference"></p>
       <p class="diffusion-note" data-native-copy="outlineLimit"></p>
       <p id="native-tract-mri-hint" class="diffusion-note" data-native-copy="mriHint"></p>
       <p class="diffusion-note" data-native-copy="metricsScope"></p>
@@ -75,7 +79,8 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   const entry = document.getElementById('diffusion-browser');
   entry.innerHTML = MARKUP;
   const get = name => entry.querySelector(`#native-tract-${name}`);
-  const engine = createNativeTractViewer(catalog, scene.invalidate);
+  const loadTract = createTractLoader();
+  const engine = createNativeTractViewer(catalog, scene.invalidate, loadTract);
   const matchingAnatomy = anatomy === catalog.anatomy;
   scene.scene.add(engine.group);
   engine.setOutlineVisible(!matchingAnatomy);
@@ -95,7 +100,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   let overlayVisible = false;
   let cortexOpacity = 1;
   const copy = () => DIFFUSION_TEXT[lang];
-  const mri = createMriNavigator({ catalog,
+  const mri = createMriNavigator({ catalog, loadTract,
     getTracts: engine.snapshot,
     getMinimum: () => Number(get('minimum').value),
     getPoint: () => matchingAnatomy && ready ? engine.surfaceToScanner(sections.state.crosshair) : null,
@@ -113,14 +118,20 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   const rows = tractRows(catalog.bundles).map(row => ({ row, section: tractRow(row, onBundle) }));
   get('bundles').append(...rows.map(({ section }) => section));
 
+  /** The caption counts the bundles the query keeps; with none kept, the empty state replaces it. */
   function filterBundles() {
-    const query = get('search').value.trim().toLocaleLowerCase(lang);
+    const query = get('search').value.trim();
+    const needle = query.toLocaleLowerCase(lang);
     let matches = 0;
-    for (const row of get('bundles').children) {
-      row.hidden = !row.dataset.name.includes(query);
-      if (!row.hidden) matches++;
+    for (const { row, section } of rows) {
+      section.hidden = !section.dataset.name.includes(needle);
+      if (!section.hidden) matches += row.members.length;
     }
+    get('count').textContent = grouped(matches);
+    get('heading').hidden = matches === 0;
     get('no-results').hidden = matches > 0;
+    get('no-results-hint').hidden = matches > 0;
+    if (!matches) get('no-results').textContent = t(lang, 'navigator').noMatch(query);
   }
 
   function render() {
@@ -129,11 +140,14 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
       node.textContent = copy()[node.dataset.nativeCopy];
     }
     get('search').placeholder = copy().search;
-    get('status').textContent = error ? error.message : copy()[busy ? 'loading' : 'ready'];
+    get('status').textContent = error ? diffusionError(lang, error) : copy()[busy ? 'loading' : 'ready'];
     get('status').role = error ? 'alert' : 'status';
     get('status').classList.toggle('visually-hidden', ready && !busy && !error);
     get('status').dataset.error = String(Boolean(error));
-    get('retry').hidden = !failedLoad || busy;
+    // Bytes from a newer deploy cannot be fetched again into this page: only a reload helps.
+    const updated = diffusionErrorCode(error) === 'asset-updated';
+    get('retry').hidden = (!failedLoad && !updated) || busy;
+    if (updated) get('retry').textContent = t(lang, 'errors').reload;
     get('controls').disabled = busy || !ready;
     get('overlay-control').hidden = !matchingAnatomy;
     get('overlay').checked = overlayVisible;
@@ -144,7 +158,9 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     entry.querySelector('[data-native-copy="brainOpacity"]').textContent = matchingAnatomy
       ? copy().cortexOpacity : copy().brainOpacity;
     if (matchingAnatomy) get('opacity').value = cortexOpacity;
-    get('opacity-value').value = `${Math.round(Number(get('opacity').value) * 100)}%`;
+    get('opacity-value').value = percent(Number(get('opacity').value), lang);
+    get('opacity').setAttribute('aria-valuetext', get('opacity-value').value);
+    get('minimum').setAttribute('aria-valuetext', withUnit(decimal(Number(get('minimum').value), 0, lang), 'mm', lang));
     get('settings-readout').textContent = settingsReadout(Number(get('opacity').value),
       Number(get('minimum').value), lang);
     get('search-clear').hidden = !get('search').value;
@@ -167,7 +183,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
       ready = true;
       if (firstReference) onReady();
     } catch (caught) {
-      error = caught; failedLoad = action; console.error(caught.stack);
+      error = caught; failedLoad = action; console.error(caught);
     } finally {
       busy = false; render();
       if (focused && active && document.activeElement === document.body) {
@@ -183,7 +199,10 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     render();
   }
 
-  listen('retry', 'click', () => runLoad(failedLoad).then(() => onVisibility?.()));
+  listen('retry', 'click', () => {
+    if (diffusionErrorCode(error) === 'asset-updated') reloadWithoutStoredModels();
+    else runLoad(failedLoad).then(() => onVisibility?.());
+  });
   listen('mri', 'click', mri.open);
   listen('overlay', 'change', event => {
     overlayVisible = event.target.checked;
@@ -213,6 +232,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   }));
   listen('minimum', 'input', event => {
     get('minimum-value').value = event.target.value;
+    event.target.setAttribute('aria-valuetext', withUnit(decimal(Number(event.target.value), 0, lang), 'mm', lang));
     get('settings-readout').textContent = settingsReadout(Number(get('opacity').value), Number(event.target.value), lang);
   });
   listen('minimum', 'change', event => runControl(() => engine.setMinimum(Number(event.target.value))));

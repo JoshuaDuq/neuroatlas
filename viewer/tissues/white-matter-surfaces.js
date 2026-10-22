@@ -1,6 +1,20 @@
 import { DoubleSide, MeshPhysicalMaterial } from 'three';
 import { isPhone } from '../render/device.js';
 
+/** The hemispheres whose white surface hidden cortex of the shown atlas lays open, as displayed now. */
+export function exposedWhiteMatter(state, regions) {
+  const exposed = new Set();
+  if (!state.cortexVisible || !(state.cortexOpacity > 0) || state.isolatedRegion) return exposed;
+  for (const id of state.hiddenRegions) {
+    const region = regions.get(id);
+    if (region.kind === 'cortex' && region.atlas === state.atlas
+        && (state.hemisphere === 'both' || state.hemisphere === region.hemisphere)) {
+      exposed.add(region.hemisphere);
+    }
+  }
+  return exposed;
+}
+
 /** Native grey/white boundaries exposed by selectively hiding cortical parcels. */
 export function createWhiteMatterSurfaces(group, appearance) {
   const meshes = [];
@@ -32,18 +46,9 @@ export function createWhiteMatterSurfaces(group, appearance) {
     group,
     meshes,
     update(state, regions, clippingPlanes) {
-      const exposed = new Set();
-      for (const id of state.hiddenRegions) {
-        const region = regions.get(id);
-        if (region.kind === 'cortex' && region.atlas === state.atlas) {
-          exposed.add(region.hemisphere);
-        }
-      }
+      const exposed = exposedWhiteMatter(state, regions);
       for (const mesh of meshes) {
-        const hemisphere = mesh.userData.hemisphere;
-        mesh.visible = exposed.has(hemisphere) && state.cortexVisible &&
-          state.cortexOpacity > 0 && !state.isolatedRegion &&
-          (state.hemisphere === 'both' || state.hemisphere === hemisphere);
+        mesh.visible = exposed.has(mesh.userData.hemisphere);
         const material = mesh.material;
         const transparent = state.cortexOpacity < 1;
         if (material.transparent !== transparent || material.clippingPlanes !== clippingPlanes) {

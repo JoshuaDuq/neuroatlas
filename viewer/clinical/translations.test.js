@@ -29,16 +29,17 @@ test('panel copy names no tab the redesign removed', () => {
 
 test('an open deficit says how much of its mapping the stage outlines, or only shows while cut', () => {
   const { en, fr } = CLINICAL_TEXT;
-  assert.equal(en.regionsMarked(7, 7, true), '7 mapped regions outlined');
-  assert.equal(en.regionsMarked(5, 8, true), '5 of 8 mapped regions outlined');
-  assert.equal(en.regionsMarked(1, 1, true), '1 mapped region outlined');
-  assert.equal(en.regionsMarked(0, 1, true), '0 of 1 mapped region outlined');
-  assert.equal(en.regionsMarked(7, 7, false), '7 mapped regions visible');
-  assert.equal(fr.regionsMarked(7, 7, true), '7 régions associées entourées');
-  assert.equal(fr.regionsMarked(5, 8, true), '5 sur 8 régions associées entourées');
-  assert.equal(fr.regionsMarked(1, 1, true), '1 région associée entourée');
-  assert.equal(fr.regionsMarked(2, 3, false), '2 sur 3 régions associées visibles');
-  assert.equal(fr.regionsMarked(1, 1, false), '1 région associée visible');
+  assert.equal(en.regionsMarked(7, 7, true), '7 regions outlined');
+  assert.equal(en.regionsMarked(10, 11, true), '10 of 11 regions outlined');
+  assert.equal(en.regionsMarked(1, 1, true), '1 region outlined');
+  assert.equal(en.regionsMarked(0, 1, true), '0 of 1 region outlined');
+  assert.equal(en.regionsMarked(7, 7, false), '7 regions visible');
+  assert.equal(fr.regionsMarked(7, 7, true), '7 régions entourées');
+  assert.equal(fr.regionsMarked(10, 11, true), '10 régions sur 11 entourées');
+  assert.equal(fr.regionsMarked(1, 1, true), '1 région entourée');
+  assert.equal(fr.regionsMarked(1, 3, true), '1 région sur 3 entourée');
+  assert.equal(fr.regionsMarked(2, 3, false), '2 régions sur 3 visibles');
+  assert.equal(fr.regionsMarked(1, 1, false), '1 région visible');
 });
 
 test('a tract row counts streamlines, and what the length filter keeps of them', () => {
@@ -46,6 +47,13 @@ test('a tract row counts streamlines, and what the length filter keeps of them',
   assert.equal(DIFFUSION_TEXT.en.streamlines(640, 721), '640 of 721 streamlines');
   assert.equal(DIFFUSION_TEXT.en.streamlines(1, 1), '1 streamline');
   assert.equal(DIFFUSION_TEXT.fr.streamlines(2140, 2140), '2140 trajectoires');
-  assert.equal(DIFFUSION_TEXT.en.streamlines(12345, 12345), '12\u2009345 streamlines');
+  assert.equal(DIFFUSION_TEXT.en.streamlines(12345, 12345), '12\u202f345 streamlines');
   assert.equal(DIFFUSION_TEXT.fr.streamlines(640, 721), '640 sur 721 trajectoires');
+});
+
+test('the circuits list counts its lessons and their landmarks in both languages', () => {
+  assert.equal(CIRCUIT_TEXT.en.coverage(8, 33), '8 guided circuits · 33 landmarks');
+  assert.equal(CIRCUIT_TEXT.fr.coverage(8, 33), '8 parcours guidés · 33 repères');
+  assert.deepEqual([1, 4].map(CIRCUIT_TEXT.en.landmarkCount), ['1 landmark', '4 landmarks']);
+  assert.deepEqual([1, 4].map(CIRCUIT_TEXT.fr.landmarkCount), ['1 repère', '4 repères']);
 });

@@ -101,13 +101,6 @@ def test_the_published_chiasm_is_one_structure_in_every_brain():
     assert chiasm["hemisphere"] == "midline"
 
 
-subject = pytest.mark.skipif(
-    not nextbrain.is_available(read_config())
-    or not (read_config()["source_directory"] / "mri/aseg.mgz").exists(),
-    reason="the subject volumes are fetched by scripts/prepare_subject.py",
-)
-
-
 def test_the_cerebellum_is_published_as_a_body_not_only_its_deep_nuclei():
     # The overview drew the dentate and interposed nuclei with nothing around
     # them: NextBrain has no cerebellar cortex, so on this level the cerebellum
@@ -118,7 +111,6 @@ def test_the_cerebellum_is_published_as_a_body_not_only_its_deep_nuclei():
     assert {8, 47} <= claimed
 
 
-@subject
 def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():
     # Why the mantle and not aseg's cerebellar white matter: the deep nuclei sit
     # inside that label, so publishing it would enclose them completely. The two

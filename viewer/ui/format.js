@@ -1,18 +1,26 @@
-const THIN_SPACE = ' ';
 const EM_DASH = '—';
-const MINUS = '\u2212';
-const NARROW_NBSP = '\u202f';
+const MINUS = '−';
+/** Between digit groups and before a unit: narrow, and never a line break. */
+const NARROW_NBSP = ' ';
 const SIGNIFICANT_FIGURES = 4;
 
 /** Group digits the way quantities do, so counts and measurements agree. */
-const grouped = value => {
+export const grouped = value => {
   const text = String(value);
   return text.length > 4
-    ? text.replace(/\B(?=(\d{3})+(?!\d))/g, THIN_SPACE)
+    ? text.replace(/\B(?=(\d{3})+(?!\d))/g, NARROW_NBSP)
     : text;
 };
 
 const decimalMark = lang => (lang === 'fr' ? ',' : '.');
+
+/**
+ * A number and its unit, held together on one line. English sets a percent sign close up;
+ * French, like every other unit, takes the narrow no-break space before it.
+ */
+export function withUnit(number, unit, lang = 'en') {
+  return unit === '%' && lang !== 'fr' ? `${number}%` : `${number}${NARROW_NBSP}${unit}`;
+}
 
 /** English adds -es after a sibilant: one match, two matches. */
 const plural = noun => (/(?:s|x|z|ch|sh)$/.test(noun) ? `${noun}es` : `${noun}s`);
@@ -35,13 +43,13 @@ export function count(value, noun, lang = 'en') {
 }
 
 /**
- * Render a measured value.
+ * Render a measured value, as a headline fact: a region's area or volume.
  *
  * Measurements are the reason the atlas exists, so their presentation is
- * fixed rather than left to each call site: four significant figures, a thin
- * space before the unit and between digit groups, and an em dash for a value
- * that is absent. An absent quantity is never rendered as zero, because zero
- * is itself a possible measurement.
+ * fixed rather than left to each call site: four significant figures, grouped
+ * digits, the unit held to the number, and an em dash for a value that is
+ * absent. An absent quantity is never rendered as zero, because zero is itself
+ * a possible measurement. Parts of a table use `decimal` at one fixed place.
  */
 export function quantity(value, unit, lang = 'en') {
   if (typeof value !== 'number' || !Number.isFinite(value)) return EM_DASH;
@@ -50,7 +58,7 @@ export function quantity(value, unit, lang = 'en') {
     : Number(value.toPrecision(SIGNIFICANT_FIGURES));
   const [whole, fraction] = String(rounded).split('.');
   const text = fraction ? `${grouped(whole)}${decimalMark(lang)}${fraction}` : grouped(whole);
-  return `${text}${THIN_SPACE}${unit}`;
+  return withUnit(text, unit, lang);
 }
 
 /**
@@ -68,13 +76,23 @@ export function decimal(value, digits = 1, lang = 'en', { signed = false, trim =
 
 /**
  * A point in RAS millimetres: each axis signed, one decimal, true minus sign.
- * French separates the axes with semicolons because its decimal mark is a comma.
- * The no-break spaces keep a unit or a semicolon from starting a wrapped line.
+ * French separates the axes with semicolons because its decimal mark is a comma;
+ * the no-break space keeps a semicolon from starting a wrapped line.
  */
 export function formatRas(values, lang = 'en') {
   if (!Array.isArray(values) || values.length !== 3
       || values.some(value => typeof value !== 'number' || !Number.isFinite(value))) return EM_DASH;
   const axes = values.map(value => decimal(value, 1, lang, { signed: true }));
   const separator = lang === 'fr' ? `${NARROW_NBSP}; ` : ', ';
-  return `${axes.join(separator)}${NARROW_NBSP}mm`;
+  return withUnit(axes.join(separator), 'mm', lang);
+}
+
+/** A signed coordinate along one axis, as slider readouts and their spoken values give it. */
+export function millimetres(value, lang = 'en') {
+  return withUnit(decimal(value, 1, lang, { signed: true }), 'mm', lang);
+}
+
+/** A fraction as a whole percentage. */
+export function percent(fraction, lang = 'en') {
+  return withUnit(decimal(fraction * 100, 0, lang), '%', lang);
 }

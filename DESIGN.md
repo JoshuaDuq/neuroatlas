@@ -227,6 +227,12 @@ components:
     typography: "{typography.caption}"
     rounded: "{rounded.control}"
     padding: 3px 8px
+  notice:
+    backgroundColor: "{colors.surface-tonal}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.field-label}"
+    rounded: "{rounded.flat}"
+    padding: 4px 4px 4px 16px
 ---
 # Design System: NeuroAtlas
 
@@ -448,6 +454,14 @@ spans and hidden from assistive technology.
   line. Deficit and circuit group headings share the Anatomy section label.
   With a mouse, list-row chevrons show on hover, focus, or selection only. Scope notes in an “About this data”
   disclosure.
+- **Notice:** one row under the mode tabs, square, on the tonal ground with
+  primary ink at 13px; in the phone sheet it sits in the grip, so it shows at
+  every detent and beside any detail. It says in the reader's words what
+  changed or failed (a dropped colouring, a download, link fields not
+  applied), stays until the next action, and ends with a quiet × that
+  dismisses it. When only a reload can help, a tonal Reload sits before the
+  ×. No colour of its own, not danger red; the page's announcer speaks it, so
+  the row is not a live region.
 - **Disclosure:** every disclosure shares one rhythm: 36px summary, 14px/500
   primary ink, a stroked chevron that turns on open, teal on hover.
 - **Dissection dock:** the hint alone while nothing can be undone; otherwise

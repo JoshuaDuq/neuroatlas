@@ -6,7 +6,7 @@ import re
 
 import numpy as np
 
-from ..sources import read_color_table, sha256
+from ..sources import declares, read_color_table, sha256
 from .volumes import encode_array, load_on_grid, offset_by
 
 ATLAS_ID = "wmparc"
@@ -24,8 +24,8 @@ def path(config):
     return config["source_directory"] / SOURCE
 
 
-def is_available(config):
-    return path(config).exists()
+def is_declared(config):
+    return declares(config, "white_matter")
 
 
 def is_parcel(labels):
@@ -129,7 +129,7 @@ def export_volume(config, regions):
 def validate_regions(config, regions):
     expected = (
         {region["id"]: region for region in build_regions(config)}
-        if is_available(config)
+        if is_declared(config)
         else {}
     )
     if set(regions) != set(expected):
@@ -196,7 +196,7 @@ def validate_volume(config, record):
 
 
 def limitations(config):
-    if not is_available(config):
+    if not is_declared(config):
         return []
     return [
         "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region.",

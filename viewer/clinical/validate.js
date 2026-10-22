@@ -2,6 +2,7 @@ import { canonicalSourceName } from '../catalog/source-names.js';
 
 const LANGUAGES = ['en', 'fr'];
 const METHODS = new Set(['lesion-mapping', 'meta-analysis', 'case-report', 'case-series']);
+const DOI = /^10\.\d{4,9}\/\S+$/;
 
 function requireValue(condition, context) {
   if (!condition) throw new Error(`Invalid clinical catalog: ${context}`);
@@ -42,12 +43,21 @@ function validateReference(reference) {
   }
   requireValue(Number.isInteger(reference.year) && reference.year >= 1800,
     `${reference.id}: year must be a publication year`);
-  requireValue(/^10\.\d{4,9}\/\S+$/.test(reference.doi), `${reference.id}: invalid doi`);
+  requireValue(DOI.test(reference.doi), `${reference.id}: invalid doi`);
   requireValue(/^\d+$/.test(reference.pmid), `${reference.id}: invalid pmid`);
   requireValue(METHODS.has(reference.method), `${reference.id}: unknown method`);
   requireValue(reference.scope === 'abstract' || reference.scope === 'full-text',
     `${reference.id}: source scope is required`);
   localized(reference, 'population');
+  // Published errata and corrections, each with what it changes.
+  requireValue(reference.corrections === undefined || Array.isArray(reference.corrections),
+    `${reference.id}: corrections must be a list`);
+  for (const correction of reference.corrections ?? []) {
+    requireValue(DOI.test(correction.doi), `${reference.id}: invalid correction doi`);
+    for (const lang of LANGUAGES) {
+      requireValue(isText(correction.summary?.[lang]), `${reference.id}: correction summary.${lang} is required`);
+    }
+  }
 }
 
 function validateAssociation(association, indexes) {

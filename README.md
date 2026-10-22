@@ -43,7 +43,7 @@ Most 3D brain atlases are drawn on an averaged template. NeuroAtlas is built fro
 - **Cut it open.** Sagittal, coronal, axial or oblique planes, positioned in native millimetres. Every closed solid is capped where the plane meets it, and the cut face is labelled by sampling 3D label volumes on the GPU. Hide a region or a whole group to expose the subject's own white-matter surface beneath.
 - **Check it against the scan.** Linked MRI opens three orthogonal T1 sections that share a 3D crosshair with the model, with window and centre contrast, voxel-exact label inspection and PNG export.
 - **Eight layers in one frame.** Two cortical parcellations, teaching solids, subcortical segmentations, NextBrain histology, gyral white matter, the spinal cord and resting-state networks share one spatial frame (see the table below).
-- **Six ways to colour it.** Regions, Tissue (grey and white matter with T1 relief), T1, Yeo 7, CAB-NP's 12 networks, and published functional divisions (Glasser 2016, Rolls 2023) drawn as solid cortex inside a glass brain.
+- **Seven ways to colour it.** Regions, Tissue (grey and white matter with T1 relief), T1, Yeo 7, CAB-NP's 12 networks, published functional divisions (Glasser 2016; Rolls 2022, 2023) drawn as solid cortex inside a glass brain, and eleven neuropsychological domains from Neurosynth consistency maps.
 - **Learn with it.** Deficits maps documented neuropsychological deficits onto the regions involved, with the evidence and limitations of each association. Eight bilingual guided circuits cover vision, memory, basal ganglia motor loops, hearing, touch, language, spatial attention and cerebellar output, across 33 landmarks.
 - **Follow the wiring.** 27 named tract bundles from DIPY's SNAIL example dataset, drawn over the cortex reconstructed from that subject's own T1.
 - **Compare atlases.** On SNAIL, see how a Destrieux region and HCP-MMP areas overlap by shared pial surface area, in either direction. You can outline any exact intersection and download every contribution as CSV at full precision.
@@ -61,7 +61,7 @@ Counts describe the default `snail` publication unless noted. Each subject's man
 | FreeSurfer aseg | 32 subcortical structures in `snail` (35 in `bert`) |
 | NextBrain histology | 306 meshes in `snail` (328 in `bert`), 515 ROIs in `bert` |
 | Gyral white matter (`wmparc`) | 68 parcels |
-| Spinal cord | 58 tracts and horns (Z-Anatomy reference) |
+| Spinal cord | 58 tracts and horns (Z-Anatomy reference), in `bert` and `aomic` only: the `snail` scan ends inside the medulla |
 | Yeo 7 networks | 7 resting-state networks |
 
 [Atlases and parcellations](https://joshuaduq.github.io/neuroatlas/docs/concepts/atlases.html) describes how each layer was derived.
@@ -106,6 +106,7 @@ The NextBrain step needs FreeSurfer 8.2 and takes about 20 minutes on a CPU. See
 ```bash
 npm test
 uv run pytest
+uv run python -m brain_model.validate --anatomy snail
 uv sync --locked --group docs
 uv run sphinx-build -W -b html docs docs/_build/html
 ```
@@ -172,6 +173,7 @@ Each anatomy is one person's brain, not a template, and is **not clinically norm
 - **SNAIL tract reference:** CC0 1.0.
 - **HCP-MMP1.0 annotation:** HCP Open Access Data Use Terms.
 - **CAB-NP network assignments (`cab-np.json`):** CAB-NP License (Rutgers University and Yale University), non-commercial use only, kept as an isolated file beside its licence and original label key.
+- **Neuropsychological domain scores (`neuropsych-domains.json`, `data/neuropsych-domains/area-scores.json`):** derived from the Neurosynth database, Open Database License (ODbL) 1.0, shared under the same licence.
 - **Spinal cord (`spinal-cord.glb`):** derived from Z-Anatomy, CC BY-SA 4.0, kept as an isolated file.
 
 The full terms and citations are on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.
@@ -180,4 +182,4 @@ NeuroAtlas is for research and education. It is not a medical device and must no
 
 ## Acknowledgements
 
-NeuroAtlas builds on openly shared science: FreeSurfer, NextBrain, the Destrieux and HCP-MMP1.0 parcellations, the Yeo 7 and CAB-NP network assignments, DIPY's SNAIL dataset, the Amsterdam Open MRI Collection and Z-Anatomy. Each is cited on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.
+NeuroAtlas builds on openly shared science: FreeSurfer, NextBrain, the Destrieux and HCP-MMP1.0 parcellations, the Yeo 7 and CAB-NP network assignments, the Neurosynth database, DIPY's SNAIL dataset, the Amsterdam Open MRI Collection and Z-Anatomy. Each is cited on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.

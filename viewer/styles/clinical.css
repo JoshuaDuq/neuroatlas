@@ -1,33 +1,33 @@
-.clinical-intro { padding-top: var(--space-1); padding-bottom: var(--space-3); }
-.clinical-intro p { font-size: var(--text-ui); color: var(--text-secondary); line-height: 1.5; }
-
+/* Deficits list ------------------------------------------------------------ */
+/* Full-bleed square rows on the 16px column: name over domain, 48px for the two lines (6 + 20 + 16 + 6). */
 .clinical-deficit {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   width: 100%;
-  min-height: var(--row-height);
   height: auto;
+  min-height: var(--row-height);
+  margin: 0;
+  padding: 6px var(--space-4);
   border: 0;
   border-radius: 0;
-  padding: var(--space-2) var(--space-4);
   background: none;
+  color: var(--text-primary);
   text-align: left;
   font-weight: 400;
 }
+.clinical-deficit:focus-visible { outline-offset: -2px; }
 .clinical-deficit-text { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
-/* Rows that open a detail trail the tree's chevron: same 12px stroke, tertiary ink, the row's colour once chosen. */
-.drill-chevron {
-  flex: none;
-  width: 12px;
-  height: 12px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  color: var(--text-tertiary);
+.clinical-deficit-name { line-height: var(--lh-ui); }
+.clinical-deficit-domain { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); }
+.clinical-deficit[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
+.clinical-deficit[aria-pressed="true"] .clinical-deficit-name { font-weight: 600; }
+.clinical-deficit[aria-pressed="true"] .clinical-deficit-domain { color: inherit; }
+@media (hover: hover) and (pointer: fine) {
+  .clinical-deficit:hover:not(:disabled, [aria-pressed="true"]) { background: var(--surface-hover); }
 }
+/* A row that opens a detail trails the one chevron in the right column's slot. */
+.drill-chevron { color: var(--text-tertiary); }
 [aria-pressed="true"] > .drill-chevron { color: inherit; }
 /* A mouse reveals the way in on the row it points at; touch keeps every chevron. */
 @media (hover: hover) and (pointer: fine) {
@@ -36,196 +36,140 @@
   :focus-visible > .drill-chevron,
   [aria-pressed="true"] > .drill-chevron { opacity: 1; }
 }
-/* Two lines on a 48px row (6 + 20 + 16 + 6), the rhythm every two-line list row keeps. */
-.clinical-deficit-text > span:first-child { font-weight: 500; line-height: 20px; }
-.clinical-deficit-text > .clinical-note { line-height: 16px; }
-#deficit-list .clinical-deficit {
-  width: calc(100% - var(--space-4));
-  margin: 0 var(--space-2);
-  padding: 6px var(--space-2);
-  border-radius: var(--radius-control);
-}
-#deficit-list .clinical-deficit .clinical-note { color: var(--text-tertiary); }
-/* Group headings are the tree's section labels, held in view while their deficits scroll under them. */
+/*
+ * Group captions stay in view while their deficits scroll under them. Stuck 1px above the top,
+ * a caption's own rule slips under the list's edge, so it never doubles the head's rule.
+ */
 .deficit-group { isolation: isolate; padding-bottom: var(--space-2); }
-.deficit-group-heading { position: sticky; top: 0; z-index: 1; background: var(--surface-base); }
-.clinical-deficit[aria-pressed="true"],
-.clinical-deficit[aria-pressed="true"]:hover { color: var(--accent); background: var(--accent-wash); }
-.clinical-deficit[aria-pressed="true"] .clinical-note { color: inherit; }
-.clinical-note { color: var(--text-secondary); font-size: var(--text-micro); line-height: 1.5; }
-#clinical-coverage { padding-top: var(--space-2); color: var(--text-tertiary); }
-@media (hover: hover) and (pointer: fine) {
-  .clinical-deficit:hover:not(:disabled) { background: var(--surface-hover); }
+.deficit-group-heading { position: sticky; top: -1px; z-index: 1; background: var(--surface-base); }
+.deficit-group:first-child > .deficit-group-heading { border-top-color: transparent; }
+
+/* A list's scope: one tertiary line at its foot, a count or a caveat. */
+.scope-note {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  font-variant-numeric: tabular-nums;
 }
 
+.clinical-note { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); }
+
 /* Deficit profile ---------------------------------------------------------- */
-/* What the stage shows for the deficit: a ruled status line above the headline. */
-.clinical-stage {
-  padding: var(--space-2) var(--space-4) var(--space-1);
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-navigation);
-  font-size: var(--text-micro);
-  line-height: 1.5;
-  color: var(--text-secondary);
+/* Headline, a 4px step to its meta line, 12px to the summary; the caveat is attached to the summary. */
+.clinical-content { font-size: var(--text-ui); line-height: var(--lh-prose); overflow-wrap: anywhere; }
+.clinical-content .clinical-profile-name {
+  font-size: var(--text-headline);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: var(--lh-title);
 }
-.clinical-stage > p { font-variant-numeric: tabular-nums; text-wrap: pretty; }
-.clinical-stage > p + p { margin-top: 2px; }
-/* The count line and what opening reset are separate lines of one status. */
-.clinical-action-status { white-space: pre-line; }
-.clinical-action-status[data-error="true"] { color: var(--danger); }
-.clinical-drawn[hidden] { display: none; }
-.clinical-stage:has(> .clinical-restore[hidden]) { padding-bottom: var(--space-2); }
-/* The way back closes the strip as a text action, like a lesson's return to its landmark. */
-.clinical-stage .clinical-restore {
-  display: block;
+.clinical-meta {
+  margin-top: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  font-variant-numeric: tabular-nums;
+}
+.clinical-meta[data-error="true"] { color: var(--danger); }
+.clinical-summary { margin-top: var(--space-3); }
+.clinical-content > .clinical-caveat { margin-top: var(--space-2); }
+.clinical-content > .clinical-sources { margin-top: var(--space-4); color: var(--text-tertiary); }
+.clinical-content a { display: inline-block; }
+
+/*
+ * Associations: ruled rows of a title, its mapped regions on the indent column, always in reach,
+ * and its evidence behind an inline disclosure whose chevron sits in the indent's slot.
+ */
+.clinical-association { padding: var(--space-2) 0; border-bottom: 1px solid var(--border-subtle); }
+.detail-section-heading + .clinical-association { border-top: 1px solid var(--border-subtle); }
+.clinical-association-title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  line-height: var(--lh-ui);
+  text-wrap: pretty;
+}
+.clinical-association-title > :first-child { flex: 1; min-width: 0; }
+.clinical-association-side {
+  flex: none;
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: var(--lh-caption);
+}
+.clinical-association-regions,
+.clinical-evidence-body { padding-left: calc(var(--indent) - var(--space-4)); }
+.clinical-association-regions { display: flex; flex-direction: column; align-items: flex-start; }
+.clinical-association-region {
   height: auto;
-  min-height: var(--control-height);
-  padding: 0;
+  min-height: 28px;
+  padding: var(--space-1) 0;
   border: 0;
+  border-radius: 0;
   background: none;
   color: var(--accent);
-  font-size: inherit;
-  font-weight: 500;
-  line-height: inherit;
   text-align: left;
+  font-weight: 400;
+  line-height: var(--lh-ui);
 }
 @media (hover: hover) and (pointer: fine) {
-  .clinical-stage .clinical-restore:hover:not(:disabled) {
+  .clinical-association-region:hover:not(:disabled) {
     background: none;
     color: var(--accent-hover);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 }
-.clinical-stage .clinical-restore[hidden] { display: none; }
-@media (forced-colors: active) {
-  .clinical-stage .clinical-restore { color: LinkText; text-decoration: underline; }
-}
-
-.clinical-content { font-size: var(--text-ui); line-height: 1.55; overflow-wrap: anywhere; }
-.clinical-content > p + p { margin-top: var(--space-3); }
-.clinical-content .clinical-profile-name {
-  margin-bottom: var(--space-2);
-  font-size: var(--text-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.25;
-}
-.clinical-content > .clinical-caveat { margin-top: var(--space-2); }
-/* The side every finding shares, said once as the title's second line. */
-.clinical-content .clinical-profile-name:has(+ .clinical-profile-side) { margin-bottom: 2px; }
-.clinical-content a { display: inline-block; }
-
-/* Associations: a ruled list of headings that open; the mapped regions stay in reach while closed. */
-.clinical-associations { margin: var(--space-5) 0 var(--space-5); border-top: 1px solid var(--border-subtle); }
-.clinical-association { padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
-.clinical-association-head { font: inherit; text-wrap: pretty; }
-/* The same disclosure as every <details> summary: CSS chevron, 14px/500 primary, teal on hover. */
-.clinical-association-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  width: 100%;
-  height: auto;
-  min-height: 36px;
-  padding: var(--space-1) 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  font-size: var(--text-ui);
-  font-weight: 500;
-  line-height: 1.35;
-  color: var(--text-primary);
-}
-@media (hover: hover) and (pointer: fine) {
-  .clinical-association-toggle:hover:not(:disabled) { background: none; color: var(--accent); }
-}
-.clinical-association-toggle:focus-visible { outline-offset: -2px; }
-.clinical-association-toggle::before {
-  content: "";
-  flex: none;
-  width: 6px;
-  height: 6px;
-  margin: 0 3px 0 1px;
-  border-right: 1.5px solid var(--text-tertiary);
-  border-bottom: 1.5px solid var(--text-tertiary);
-  transform: rotate(-45deg);
-  transition: transform var(--ui-transition) var(--ease-ui);
-}
-.clinical-association-toggle[aria-expanded="true"]::before { transform: translateY(-2px) rotate(45deg); }
-.clinical-association-title { flex: 1; min-width: 0; }
-.clinical-association-side { flex: none; font-size: var(--text-micro); font-weight: 400; color: var(--text-tertiary); }
-/* Indented to the title, past the 18px chevron column. */
-.clinical-association-regions,
-.clinical-association-body { padding-left: 18px; }
-.clinical-association-regions { display: flex; flex-direction: column; align-items: flex-start; }
-.clinical-association-region {
-  height: auto;
-  min-height: 28px;
-  padding: 2px 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--accent);
-}
-@media (hover: hover) and (pointer: fine) {
-  .clinical-association-region:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
-}
 .clinical-association-region:disabled { background: none; color: var(--text-tertiary); }
 .clinical-association-region:focus-visible { outline-offset: 0; }
 .clinical-association-regions > .clinical-note { padding: var(--space-1) 0; }
-.clinical-association-body { padding-top: var(--space-2); padding-bottom: var(--space-2); }
-.clinical-association-body > p + p { margin-top: var(--space-1); }
-.clinical-association-body h4 {
-  margin: var(--space-4) 0 2px;
-  font-size: var(--text-small);
-  font-weight: 600;
-  line-height: 1.4;
+.clinical-evidence-body { padding-bottom: var(--space-2); }
+.clinical-evidence-body > p + p { margin-top: var(--space-1); }
+.clinical-evidence-body h5 {
+  margin: var(--space-4) 0 var(--space-1);
   color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  line-height: var(--lh-caption);
 }
-.clinical-association-body h4 + .clinical-publication { margin-top: var(--space-2); }
+.clinical-evidence-body h5 + .clinical-publication { margin-top: var(--space-2); }
 /* A reference entry reads a step smaller than the finding it supports. */
 .clinical-publication {
   padding: var(--space-3) 0;
   border-top: 1px solid var(--border-subtle);
-  font-size: var(--text-small);
-  line-height: 1.5;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
 }
 .clinical-publication > * + * { margin-top: var(--space-1); }
 .clinical-publication > a:first-of-type { font-weight: 500; }
+/* A published correction follows its paper, set off by space rather than a rule. */
+.clinical-publication > .clinical-correction { margin-top: var(--space-2); }
+.clinical-publication:last-child { padding-bottom: 0; }
 
-/* A region's neuropsychology: ruled rows that open the deficit, like the other links in the detail view. */
+/*
+ * Sections after the region's own body keep the L2 rhythm: 24px above each, never the body's
+ * padding as well, and the detail still ends 16px below the last of them.
+ */
+#region-detail:has(~ :is(#clinical-region, #circuit-notes, #circuit-region):not([hidden])) { padding-bottom: 0; }
+#clinical-region, #circuit-region { margin-bottom: var(--space-4); padding-inline: var(--space-4); }
+
+/* A region's Neuropsychology: ruled rows on the text column that open the deficit. */
 .clinical-related { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
 .clinical-related > li { border-bottom: 1px solid var(--border-subtle); }
-#clinical-region .clinical-deficit { padding: 6px 0; }
-#clinical-region .clinical-deficit-text > span:first-child { color: var(--accent); font-weight: 400; }
-
-/* Rows that link elsewhere: a ruled list on the text column, like the Neuropsychology rows. */
-.clinical-regions { display: grid; }
-.clinical-regions > .clinical-region-link:first-child { border-top: 1px solid var(--border-subtle); }
-.clinical-region-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  width: 100%;
-  height: auto;
-  min-height: var(--row-height);
-  padding: var(--space-1) 0;
-  border: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  font-weight: 400;
-  color: var(--accent);
-}
+#clinical-region .clinical-deficit { padding: 7px 0 8px; }
+#clinical-region .clinical-deficit-name { color: var(--accent); }
 @media (hover: hover) and (pointer: fine) {
-  .clinical-region-link:hover:not(:disabled) { background: var(--surface-hover); }
+  #clinical-region .clinical-deficit:hover:not(:disabled) { background: none; }
+  #clinical-region .clinical-deficit:hover:not(:disabled) .clinical-deficit-name {
+    color: var(--accent-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 /* Under an open deficit, a selected region is a second subject: ruled off, with a smaller name. */
@@ -233,6 +177,6 @@
 #clinical-profile:not([hidden]) ~ .panel-body #selected-name { font-size: var(--text-title); }
 
 @media (pointer: coarse) {
-  .clinical-association-toggle { min-height: var(--row-height); }
-  .clinical-association-region { min-height: var(--row-height); }
+  .clinical-association-region { min-height: 44px; }
+  .clinical-evidence > summary { min-height: 44px; }
 }

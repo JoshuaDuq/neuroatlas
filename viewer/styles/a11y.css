@@ -1,0 +1,108 @@
+/*
+ * Reduced motion, increased contrast and forced colours. Imported last (main.js), so no component
+ * rule of equal specificity can undo a rule these readers depend on.
+ */
+
+/* Reduced motion ---------------------------------------------------------- */
+/* Fades and colour changes stay; nothing travels, grows, turns or loops. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+  /* The sheet and the scaled popover, dialog and tooltip entries keep only their fade. */
+  :is(#sheet, #masthead-menu, .masthead-data, .stage-popover, dialog, .tooltip,
+    .stage-dock, .orientation, .scale-bar) { transition-property: opacity !important; }
+  /* A chevron points the new way at once. */
+  :is(.chevron, .stage-tool-chevron),
+  details > summary::before,
+  #masthead .data-toggle::after { transition: none !important; }
+}
+
+/* Increased contrast ------------------------------------------------------ */
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme="dark"] {
+    --text-tertiary: var(--text-secondary);
+    --border-control: var(--text-primary);
+    --border-subtle: var(--border-control);
+    --thumb-ring: var(--text-primary);
+    --overlay-ink-muted: var(--overlay-ink);
+    --overlay-halo: rgb(6 9 13 / 0.95);
+    --overlay-plate: #0c0d0f;
+    --overlay-plate-hover: #1e2024;
+    --overlay-border: var(--overlay-ink);
+    --overlay-ink-faint: var(--overlay-ink);
+    --overlay-control-border: var(--overlay-ink);
+  }
+  #mpr-dialog, #diffusion-mri-dialog {
+    --text-tertiary: var(--text-secondary);
+    --border-control: var(--text-primary);
+    --border-subtle: var(--border-control);
+  }
+  /* Tonal fills alone are too faint to find a button by. */
+  button:not(.row, .button-quiet, .icon-button, .visibility-control, .rail-tabs button, .segmented button, .views button, .stage-tool, .stage-icon-button) {
+    border-color: var(--border-control);
+  }
+  .segmented { box-shadow: inset 0 0 0 1px var(--border-control); }
+  #masthead-data select, #masthead-data select:is(:hover, :open):not(:disabled) { border-color: var(--border-control); }
+  .diffusion-part input { border-color: var(--border-control); }
+}
+
+/* Forced colours ---------------------------------------------------------- */
+@media (forced-colors: active) {
+  .chip, .tooltip, .panel, button, input, select { border-color: CanvasText; }
+  :focus-visible { outline-color: Highlight; }
+  input[type="search"]:focus-visible,
+  select:focus-visible,
+  .cut-position-row input[type="number"]:focus-visible,
+  .clinical-profile-name:focus-visible,
+  #clinical-title:focus-visible,
+  #mpr-close:focus-visible,
+  #shortcuts-close:focus-visible,
+  #provenance-close:focus-visible,
+  #mpr-grid .button-quiet:focus-visible,
+  .check input:focus-visible {
+    outline: 2px solid Highlight;
+  }
+  /* The drawn tick would be forced to ink on every box, checked or not: the system control draws itself. */
+  .check input { appearance: auto; background: Canvas; border-color: CanvasText; }
+  .check input::before { content: none; }
+  /* A transparent track is forced to nothing; the track and thumb keep system colours of their own. */
+  input[type="range"] { forced-color-adjust: none; }
+  input[type="range"]::-webkit-slider-runnable-track { background: CanvasText; }
+  input[type="range"]::-moz-range-track { background: CanvasText; }
+  input[type="range"]::-webkit-slider-thumb { background: Canvas; border-color: CanvasText; }
+  input[type="range"]::-moz-range-thumb { background: Canvas; border-color: CanvasText; }
+  input[type="range"]:disabled::-webkit-slider-runnable-track { background: GrayText; }
+  input[type="range"]:disabled::-moz-range-track { background: GrayText; }
+  input[type="range"]:disabled::-webkit-slider-thumb { border-color: GrayText; }
+  input[type="range"]:disabled::-moz-range-thumb { border-color: GrayText; }
+  /* Shadows and fills are dropped here, so selected states need a system-colour edge. */
+  [role="tab"][aria-selected="true"] { border-bottom: 2px solid Highlight; }
+  .segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+  .row[data-selected="true"],
+  .clinical-deficit[aria-pressed="true"],
+  .circuit-choice[aria-pressed="true"],
+  .circuit-step[aria-current="step"] { outline: 1px solid Highlight; outline-offset: -1px; }
+
+  /* The stage stays dark in every mode, so its markings keep the overlay ink and halo. */
+  #viewport :is(.orientation > span, .scale-bar, .scale-bar-rule) { forced-color-adjust: none; }
+  .stage-dock, .stage-popover, .stage-key { border-color: CanvasText; }
+  #viewport:has(> canvas:focus-visible)::after { border-color: Highlight; }
+
+  .clinical-restore { color: LinkText; text-decoration: underline; }
+
+  .circuit-step-number { forced-color-adjust: none; border-color: CanvasText; color: CanvasText; background: Canvas; }
+  .circuit-step[data-progress="visited"] .circuit-step-number { background: CanvasText; color: Canvas; }
+  .circuit-step[aria-current="step"] .circuit-step-number { border-color: Highlight; box-shadow: inset 0 0 0 1px Highlight; color: CanvasText; }
+
+  .diffusion-part input, .diffusion-part > span { forced-color-adjust: none; }
+  .diffusion-part input { background: Canvas; border-color: CanvasText; }
+  .diffusion-part > span { color: CanvasText; }
+  .diffusion-part input:checked { background: Highlight; border-color: Highlight; box-shadow: none; }
+  .diffusion-part input:checked + span { color: HighlightText; }
+  .diffusion-part input:disabled { border-color: GrayText; }
+  .diffusion-part input:disabled + span { color: GrayText; }
+}

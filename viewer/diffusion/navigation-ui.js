@@ -1,42 +1,51 @@
 import { createMriNavigationViewer } from './navigation-viewer.js';
+import { diffusionError, diffusionErrorCode, mriReadout } from './translations.js';
 import { isPhone } from '../render/device.js';
+import { t } from '../i18n/translations.js';
+import { reloadWithoutStoredModels } from '../model/published-assets.js';
+import { decimal, percent, withUnit } from '../ui/format.js';
 
 const TEXT = {
   en: {
     title: 'MRI with tracts · SNAIL subject 1', close: 'Close',
     hint: 'Click a slice to position the crosshair. Scroll through slices; arrow keys move one voxel.',
     plane: 'View', all: 'Linked slices + 3D', axial: 'Axial', coronal: 'Coronal', sagittal: 'Sagittal',
-    voxel: 'Source voxel (0-based)', go: 'Go to voxel', window: 'T1 window',
-    center: 'T1 level', faOpacity: 'FA overlay opacity',
+    voxel: 'Source voxel (0-based)', go: 'Go to voxel', window: 'Window',
+    center: 'Level', faOpacity: 'FA opacity',
     loading: 'Loading the reference MRI and selected tracts…', retry: 'Reload MRI',
     canvas: 'Linked SNAIL MRI slices and tracts. Click to position the crosshair; arrows move one voxel.',
-    scope: 'Scanner RAS millimeters · R/L marked. Tracts use the complete source geometry and current length filter. The published scan has cropped inferior coverage; cortical atlas parcels remain surface labels.',
+    scope: 'Scanner RAS millimetres · R/L marked. Tracts use the complete source geometry and current length filter. The published scan has cropped inferior coverage; cortical atlas parcels remain surface labels.',
     outside: 'The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position.',
-    grid: (dims, spacing) => `${dims.join(' × ')} source voxels · ${spacing.join(' × ')} mm spacing`,
+    grid: (dims, spacing) => `${dims.join(' × ')} source voxels · ${spacing} spacing`,
   },
   fr: {
     title: 'IRM avec faisceaux · SNAIL sujet 1', close: 'Fermer',
     hint: 'Cliquer une coupe pour placer le réticule. Défiler pour parcourir les coupes ; les flèches déplacent d’un voxel.',
     plane: 'Vue', all: 'Coupes liées + 3D', axial: 'Axiale', coronal: 'Coronale', sagittal: 'Sagittale',
-    voxel: 'Voxel source (indice 0)', go: 'Aller au voxel', window: 'Fenêtre T1',
-    center: 'Niveau T1', faOpacity: 'Opacité de la superposition FA',
+    voxel: 'Voxel source (indice 0)', go: 'Aller au voxel', window: 'Fenêtre',
+    center: 'Niveau', faOpacity: 'Opacité FA',
     loading: 'Chargement de l’IRM de référence et des faisceaux sélectionnés…', retry: 'Recharger l’IRM',
     canvas: 'Coupes IRM SNAIL liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.',
     scope: 'Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux conservent la géométrie source complète et le filtre de longueur courant. La couverture inférieure de l’image publiée est tronquée ; les régions corticales restent des étiquettes de surface.',
     outside: 'Le réticule de l’atlas est hors du champ de cette image ; l’IRM garde sa position.',
-    grid: (dims, spacing) => `${dims.join(' × ')} voxels source · espacement de ${spacing.join(' × ')} mm`,
+    grid: (dims, spacing) => `${dims.join(' × ')} voxels source · espacement de ${spacing}`,
   },
 };
 
-export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, onPoint }) {
+/**
+ * The MRI navigator holds a NiiVue engine, a WebGL 2 context and the float32
+ * scan volumes only while its dialog is open; closing it frees all three.
+ */
+export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, onPoint, loadTract }) {
   const dialog = document.getElementById('diffusion-mri-dialog');
   const get = id => dialog.querySelector(`#diffusion-mri-${id}`);
-  const canvas = get('canvas');
+  let canvas = get('canvas');
   const listeners = new AbortController();
   const listen = (id, event, action) => get(id).addEventListener(event, action, { signal: listeners.signal });
   let language = 'en';
   let engine = null;
   let busy = false;
+  let queued = false;
   let disposed = false;
   let error = null;
   let location = null;
@@ -55,24 +64,25 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
     canvas.setAttribute('aria-label', copy.canvas);
     canvas.tabIndex = busy || !engine ? -1 : 0;
     get('controls').disabled = busy || !engine;
-    get('status').textContent = error ? error.message : busy ? copy.loading : outside ? copy.outside : '';
+    get('status').textContent = error ? diffusionError(language, error) : busy ? copy.loading : outside ? copy.outside : '';
     get('status').hidden = !busy && !error && !outside;
     get('status').role = error ? 'alert' : 'status';
     get('status').dataset.error = String(Boolean(error));
     get('retry').hidden = !error || busy;
-    for (const name of ['window', 'center', 'fa']) get(`${name}-value`).value = get(name).value;
+    // Bytes from a newer deploy cannot be fetched again into this page: only a reload helps.
+    if (diffusionErrorCode(error) === 'asset-updated') get('retry').textContent = t(language, 'errors').reload;
+    for (const name of ['window', 'center']) get(`${name}-value`).value = decimal(Number(get(name).value), 0, language);
+    get('fa-value').value = percent(Number(get('fa').value), language);
+    for (const name of ['window', 'center', 'fa']) get(name).setAttribute('aria-valuetext', get(`${name}-value`).value);
     if (engine) {
       const header = engine.header;
-      get('grid').textContent = copy.grid(header.dims.slice(1, 4), header.pixDims.slice(1, 4));
+      const spacing = header.pixDims.slice(1, 4).map(value => decimal(value, 2, language, { trim: true }));
+      get('grid').textContent = copy.grid(header.dims.slice(1, 4), withUnit(spacing.join(' × '), 'mm', language));
       for (const [axis, id] of ['i', 'j', 'k'].entries()) get(id).max = header.dims[axis + 1] - 1;
     }
     if (location) {
-      const number = value => Number.isFinite(value) ? value.toLocaleString(language,
-        { maximumFractionDigits: 3 }) : String(value);
-      // French sets a narrow no-break space before a colon; a label never wraps away from its value.
-      const colon = language === 'fr' ? '\u202f:\u00a0' : ':\u00a0';
-      get('readout').textContent = `RAS${colon}${Array.from(location.mm).slice(0, 3).map(number).join(' · ')}\u202fmm`
-        + ` · T1${colon}${number(location.values[0].value)} · FA${colon}${number(location.values[1].value)}`;
+      get('readout').textContent = mriReadout(Array.from(location.mm).slice(0, 3),
+        location.values[0].value, location.values[1].value, language);
     }
   }
 
@@ -91,26 +101,59 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
   }
 
   async function load() {
-    if (busy || disposed) return;
+    if (disposed) return;
+    if (busy) { queued = true; return; }
     busy = true; error = null; outside = false; render();
     try {
       if (!engine) {
-        const loaded = await createMriNavigationViewer(catalog, canvas, updateLocation);
-        if (disposed) { loaded.dispose(); return; }
+        const loaded = await createMriNavigationViewer(catalog, canvas, updateLocation, loadTract);
+        if (disposed || !dialog.open) { retire(loaded); return; }
         engine = loaded;
-        engine.setVoxel(engine.header.dims.slice(1, 4).map(size => Math.floor(size / 2)));
+        // Reopened, it resumes where the reader left it.
+        engine.setWindow(Number(get('center').value), Number(get('window').value));
+        engine.setFaOpacity(Number(get('fa').value));
+        engine.setVoxel(location ? Array.from(location.vox, Math.round)
+          : engine.header.dims.slice(1, 4).map(size => Math.floor(size / 2)));
       }
+      const current = engine;
       const point = getPoint();
-      if (point) outside = !engine.setScannerPoint(point);
-      await engine.syncTracts(getTracts().filter(bundle => bundle.visible).map(bundle => bundle.id), getMinimum());
-      engine.setPlane(get('plane').value);
-      if (dialog.open) engine.resize();
+      if (point) outside = !current.setScannerPoint(point);
+      await current.syncTracts(getTracts().filter(bundle => bundle.visible).map(bundle => bundle.id), getMinimum());
+      // Closed while the tracts were added.
+      if (current !== engine) return;
+      current.setPlane(get('plane').value);
+      if (dialog.open) current.resize();
     } catch (caught) { if (!disposed) report(caught); }
-    finally { busy = false; if (!disposed) render(); }
+    finally {
+      busy = false;
+      if (!disposed) {
+        render();
+        if (queued) { queued = false; if (dialog.open) load(); }
+      }
+    }
+  }
+
+  /** A lost context stays bound to its canvas, so the next engine draws on a fresh one. */
+  function retire(viewer) {
+    viewer.dispose();
+    const fresh = canvas.cloneNode(false);
+    canvas.replaceWith(fresh);
+    canvas = fresh;
+  }
+
+  function release() {
+    if (!engine) return;
+    retire(engine);
+    engine = null;
+    render();
   }
 
   listen('close', 'click', () => dialog.close());
-  listen('retry', 'click', load);
+  dialog.addEventListener('close', release, { signal: listeners.signal });
+  listen('retry', 'click', () => {
+    if (diffusionErrorCode(error) === 'asset-updated') reloadWithoutStoredModels();
+    else load();
+  });
   listen('plane', 'change', () => run(() => engine.setPlane(get('plane').value)));
   listen('position', 'submit', event => {
     event.preventDefault();
@@ -120,10 +163,10 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
   for (const name of ['window', 'center']) listen(name, 'change', () => run(() =>
     engine.setWindow(Number(get('center').value), Number(get('window').value))));
   listen('fa', 'change', () => run(() => engine.setFaOpacity(Number(get('fa').value))));
-  canvas.addEventListener('keydown', event => {
+  dialog.addEventListener('keydown', event => {
     const moves = { ArrowLeft: [-1, 0, 0], ArrowRight: [1, 0, 0],
       ArrowDown: [0, -1, 0], ArrowUp: [0, 1, 0], PageDown: [0, 0, -1], PageUp: [0, 0, 1] };
-    if (!engine || busy || !moves[event.key]) return;
+    if (event.target !== canvas || !engine || busy || !moves[event.key]) return;
     event.preventDefault();
     run(() => engine.moveVoxel(moves[event.key]));
   }, { signal: listeners.signal });
@@ -138,6 +181,6 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
     get isOpen() { return dialog.open; },
     open() { if (!dialog.open) dialog.showModal(); load(); },
     updateLanguage(value) { language = value; render(); },
-    dispose() { disposed = true; listeners.abort(); if (dialog.open) dialog.close(); engine?.dispose(); },
+    dispose() { disposed = true; listeners.abort(); if (dialog.open) dialog.close(); engine?.dispose(); engine = null; },
   };
 }

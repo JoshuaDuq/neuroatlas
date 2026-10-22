@@ -37,7 +37,11 @@ export function createTheme(onChange, {
   let theme = resolve();
 
   function apply() {
-    document.documentElement.dataset.theme = theme;
+    const root = document.documentElement;
+    // Both palettes swap in one frame: transitions are held off until the new colours have painted.
+    root.dataset.themeSwitching = '';
+    root.dataset.theme = theme;
+    requestAnimationFrame(() => requestAnimationFrame(() => delete root.dataset.themeSwitching));
     // The browser's own chrome continues the masthead.
     const meta = document.querySelector?.('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', token('--surface-base') || meta.getAttribute('content'));

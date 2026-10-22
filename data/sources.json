@@ -1134,6 +1134,30 @@
       "sha256": "7f36e1a470ec5f5a56b9c0dae13e107dda88fb71d83340346654294a5c19318d",
       "url": "https://github.com/ColeLab/ColeAnticevicNetPartition/blob/e4ea9fd709ead8616843924b717c6abce62ea05c/LICENSE",
       "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
+    },
+    {
+      "path": "data/snail/stats/aseg.stats",
+      "sha256": "bd0a456ede75de475eb2abe120300a17f30d785dd0540f7230def159080d6f06",
+      "anatomy": "snail",
+      "derived_from": [
+        "public/diffusion/snail-subject-1/t1_warped.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/bert/stats/aseg.stats",
+      "sha256": "f4bec57ca02cdefc485dceb10152c126e3bb4c5df58d849a5618368247cb442c",
+      "anatomy": "bert",
+      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
+      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
+      "archive_member": "bert/stats/aseg.stats"
+    },
+    {
+      "path": "data/aomic/stats/aseg.stats",
+      "sha256": "2ccc8da56f1c60da8e2a150066183abdbb55f193bd4c724bb65b0f1846680e78",
+      "anatomy": "aomic",
+      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/stats/aseg.stats"
     }
   ]
 }

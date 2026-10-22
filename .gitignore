@@ -10,6 +10,38 @@ data/cache/
 deliverables/*.blend
 deliverables/*.png
 .agents/skills/impeccable/scripts/bin/
-data/snail/
+# The SNAIL reconstruction is CC0, but only the files data/sources.json pins
+# are published; the rest of the recon-all tree stays local.
+data/snail/*
+!data/snail/reconstruction.json
+!data/snail/hcp-registration.json
+!data/snail/network-registration.json
+!data/snail/mri/
+data/snail/mri/*
+!data/snail/mri/orig.mgz
+!data/snail/mri/aseg.mgz
+!data/snail/mri/aparc.a2009s+aseg.mgz
+!data/snail/mri/ribbon.mgz
+!data/snail/mri/brain.mgz
+!data/snail/mri/wmparc.mgz
+!data/snail/scripts/
+data/snail/scripts/*
+!data/snail/scripts/build-stamp.txt
+!data/snail/surf/
+data/snail/surf/*
+!data/snail/surf/[lr]h.pial
+# FreeSurfer's ?h.pial is a symlink to ?h.pial.T1; the link alone would dangle.
+!data/snail/surf/[lr]h.pial.T1
+!data/snail/surf/[lr]h.white
+!data/snail/surf/[lr]h.sulc
+!data/snail/surf/[lr]h.sphere.reg
+!data/snail/label/
+data/snail/label/*
+!data/snail/label/[lr]h.aparc.a2009s.annot
+!data/snail/label/[lr]h.HCPMMP1.annot
+!data/snail/label/[lr]h.Schaefer2018_400Parcels_7Networks_order.annot
+!data/snail/stats/
+data/snail/stats/*
+!data/snail/stats/aseg.stats
 docs/_build/
 data/nextbrain/

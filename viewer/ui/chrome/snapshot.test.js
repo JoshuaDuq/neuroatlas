@@ -12,14 +12,15 @@ test('the caption names the subject, then atlas, colouring and internal anatomy 
   assert.equal(lines[0][0][0].strong, true);
 });
 
-test('a cut replaces the view with the section and its signed position in mono', () => {
+test('a cut replaces the view with the section and its signed position, kept with its unit', () => {
   const lines = snapshotCaption('fr', {
     subject: 'SNAIL subj_1', atlas: 'hcp-mmp', surfaceColor: 'network', detail: null, view: 'oblique',
     section: { plane: 'coronal', offset: -12.34, tilt: 30, azimuth: 30 },
   });
   assert.equal(lines.length, 3);
   assert.equal(words(lines)[2], 'Coupe coronale · −12,3 mm');
-  assert.deepEqual(lines[2].flat().filter(run => run.mono).map(run => run.text), ['−12,3 mm']);
+  // One numeric voice: the caption's figures are set in the UI face, as on screen.
+  assert.equal(lines.flat(2).some(run => 'mono' in run), false);
 });
 
 test('an oblique section carries its tilt and azimuth', () => {

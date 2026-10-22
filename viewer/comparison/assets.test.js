@@ -28,28 +28,32 @@ test('comparison geometry returns verified original bytes', async context => {
   assert.deepEqual(new Uint8Array(buffer), bytes);
 });
 
-test('comparison readers have no global subject or request cache', async context => {
+test('comparison readers keep no subject or request cache once a load completes', async context => {
   let requests = 0;
   context.mock.method(globalThis, 'fetch', async () => { requests += 1; return new Response(json); });
-  await Promise.all([readComparison(url, checksum(json)), readComparison(url, checksum(json))]);
+  await readComparison(url, checksum(json));
+  await readComparison(url, checksum(json));
   assert.equal(requests, 2);
 });
 
 for (const read of [readComparison, readComparisonGeometry]) {
   test(`${read.name} reports HTTP errors before digesting`, async context => {
     context.mock.method(globalThis, 'fetch', async () => new Response('Unavailable', { status: 503 }));
-    await assert.rejects(read(url, checksum(json)), /HTTP 503/);
+    await assert.rejects(read(url, checksum(json)),
+      error => error.code === 'asset-fetch' && error.status === 503 && /HTTP 503/.test(error.message));
   });
 
-  test(`${read.name} preserves original network failures`, async context => {
+  test(`${read.name} keeps the original network failure as the cause`, async context => {
     const failure = new TypeError('Network unavailable');
     context.mock.method(globalThis, 'fetch', async () => { throw failure; });
-    await assert.rejects(read(url, checksum(json)), error => error === failure);
+    await assert.rejects(read(url, checksum(json)),
+      error => error.code === 'asset-fetch' && error.cause === failure);
   });
 
   test(`${read.name} rejects changed published bytes`, async context => {
     context.mock.method(globalThis, 'fetch', async () => new Response('changed'));
-    await assert.rejects(read(url, checksum(json)), /checksum mismatch/i);
+    await assert.rejects(read(url, checksum(json)),
+      error => error.code === 'asset-updated' && /checksum mismatch/i.test(error.message));
   });
 
   test(`${read.name} requires a SHA256 before sending a request`, async context => {

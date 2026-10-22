@@ -123,6 +123,7 @@ def manifest_assets(tmp_path):
     config = {
         "source_directory": source,
         "output_directory": tmp_path,
+        "anatomy": {"layers": []},
         "atlases": [atlas],
         "structures": {"labels": [10]},
         "validation": {"relative_area_tolerance": 1e-6},
@@ -306,3 +307,74 @@ def test_a_hole_is_reported_as_a_boundary_edge_and_never_as_a_pinch():
     assert surface_closure(box)["boundary_edges"] == 0
     punctured = trimesh.Trimesh(box.vertices, box.faces[1:], process=False)
     assert surface_closure(punctured) == {"boundary_edges": 3, "pinch_edges": 0}
+
+
+def published(anatomy):
+    import json
+
+    from brain_model.sources import read_config
+
+    config = read_config(anatomy)
+    return config, *(
+        json.loads((config["output_directory"] / name).read_text())
+        for name in ("manifest.json", "tissue-labels.json")
+    )
+
+
+@pytest.mark.parametrize("anatomy", ["snail", "bert", "aomic"])
+def test_each_published_anatomy_holds_exactly_its_declared_layers(anatomy):
+    from brain_model.validate import validate_layers
+
+    config, manifest, tissues = published(anatomy)
+    assert validate_layers(config, manifest, tissues) == config["anatomy"]["layers"]
+
+
+@pytest.mark.parametrize(
+    "layer,field",
+    [
+        ("networks", "networks"),
+        ("nextbrain", "cut_atlases"),
+        ("white_matter", "white_matter"),
+        ("spinal_cord", "supplemental_layers"),
+    ],
+)
+def test_a_published_layer_that_is_not_declared_is_refused(layer, field):
+    from brain_model.validate import validate_layers
+
+    config, manifest, tissues = published("bert")
+    config["anatomy"]["layers"] = [x for x in config["anatomy"]["layers"] if x != layer]
+    with pytest.raises(ValueError, match=field):
+        validate_layers(config, manifest, tissues)
+
+
+def test_a_declared_layer_that_is_not_published_is_refused():
+    from brain_model.validate import validate_layers
+
+    config, manifest, tissues = published("bert")
+    manifest["supplemental_layers"] = []
+    with pytest.raises(ValueError, match="supplemental_layers"):
+        validate_layers(config, manifest, tissues)
+    config, manifest, tissues = published("bert")
+    del tissues["white_matter"]
+    with pytest.raises(ValueError, match="white_matter"):
+        validate_layers(config, manifest, tissues)
+
+
+@pytest.mark.parametrize("anatomy", ["bert", "aomic"])
+def test_every_published_file_is_one_the_metadata_names(anatomy):
+    from brain_model.validate import validate_published_files
+
+    config, manifest, _ = published(anatomy)
+    assert "spinal-cord.glb" in validate_published_files(config, manifest)
+
+
+def test_a_file_no_metadata_names_is_refused(tmp_path):
+    from brain_model.validate import validate_published_files
+
+    config, manifest, _ = published("bert")
+    for path in config["output_directory"].iterdir():
+        (tmp_path / path.name).symlink_to(path)
+    (tmp_path / "stale.glb").write_bytes(b"")
+    config["output_directory"] = tmp_path
+    with pytest.raises(ValueError, match=r"unnamed \['stale.glb'\]"):
+        validate_published_files(config, manifest)

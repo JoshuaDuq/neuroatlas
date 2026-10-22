@@ -4,35 +4,39 @@ NeuroAtlas combines published neuroimaging datasets, peer-reviewed cortical atla
 
 ## Bibliography
 
+Each DOI and PMID below, and every citation in the clinical and circuit data, is checked against the PubMed, Bookshelf and Crossref records that `scripts/fetch_references.py` writes to `data/reference-records.json`. Years are the journal-issue year PubMed records, not the year of online-first publication.
+
 ### Cortical and subcortical atlases
 
 - **Destrieux cortical parcellation (`aparc.a2009s`).**
-  Destrieux, C., Fischl, B., Dale, A., & Halgren, E. (2010). Automatic parcellation of human cortical gyri and sulci using standard anatomical nomenclature. *NeuroImage*, 53(1), 1–15. [doi:10.1016/j.neuroimage.2010.06.010](https://doi.org/10.1016/j.neuroimage.2010.06.010)
+  Destrieux, C., Fischl, B., Dale, A., & Halgren, E. (2010). Automatic parcellation of human cortical gyri and sulci using standard anatomical nomenclature. *NeuroImage*, 53(1), 1–15. [doi:10.1016/j.neuroimage.2010.06.010](https://doi.org/10.1016/j.neuroimage.2010.06.010). PMID 20547229.
 - **HCP-MMP1.0 multimodal cortical parcellation.**
-  Glasser, M. F., Coalson, T. S., Robinson, E. C., Hacker, C. D., Harwell, J., Yacoub, E., Ugurbil, K., Andersson, J., Beckmann, C. F., Jenkinson, M., Smith, S. M., & Van Essen, D. C. (2016). A multi-modal parcellation of human cerebral cortex. *Nature*, 536(7615), 171–178. [doi:10.1038/nature18933](https://doi.org/10.1038/nature18933)
+  Glasser, M. F., Coalson, T. S., Robinson, E. C., Hacker, C. D., Harwell, J., Yacoub, E., Ugurbil, K., Andersson, J., Beckmann, C. F., Jenkinson, M., Smith, S. M., & Van Essen, D. C. (2016). A multi-modal parcellation of human cerebral cortex. *Nature*, 536(7615), 171–178. [doi:10.1038/nature18933](https://doi.org/10.1038/nature18933). PMID 27437579.
 - **Yeo 7 resting-state functional networks.**
-  Yeo, B. T. T., Krienen, F. M., Sepulcre, J., Sabuncu, M. R., Lashkari, D., Hollinshead, M., Roffman, J. L., Smoller, J. W., Zöllei, L., Polimeni, J. R., Fischl, B., Liu, H., & Buckner, R. L. (2011). The organization of the human cerebral cortex estimated by intrinsic functional connectivity. *Journal of Neurophysiology*, 106(3), 1125–1165. [doi:10.1152/jn.00338.2011](https://doi.org/10.1152/jn.00338.2011)
+  Yeo, B. T. T., Krienen, F. M., Sepulcre, J., Sabuncu, M. R., Lashkari, D., Hollinshead, M., Roffman, J. L., Smoller, J. W., Zöllei, L., Polimeni, J. R., Fischl, B., Liu, H., & Buckner, R. L. (2011). The organization of the human cerebral cortex estimated by intrinsic functional connectivity. *Journal of Neurophysiology*, 106(3), 1125–1165. [doi:10.1152/jn.00338.2011](https://doi.org/10.1152/jn.00338.2011). PMID 21653723.
 - **Cole-Anticevic Brain-wide Network Partition (CAB-NP).**
-  Ji, J. L., Spronk, M., Kulkarni, K., Repovš, G., Anticevic, A., & Cole, M. W. (2019). Mapping the human brain's cortical-subcortical functional network organization. *NeuroImage*, 185, 35–57. [doi:10.1016/j.neuroimage.2018.10.006](https://doi.org/10.1016/j.neuroimage.2018.10.006). Label key v1.1.6 from [ColeLab/ColeAnticevicNetPartition](https://github.com/ColeLab/ColeAnticevicNetPartition) at commit `e4ea9fd`.
+  Ji, J. L., Spronk, M., Kulkarni, K., Repovš, G., Anticevic, A., & Cole, M. W. (2019). Mapping the human brain's cortical-subcortical functional network organization. *NeuroImage*, 185, 35–57. [doi:10.1016/j.neuroimage.2018.10.006](https://doi.org/10.1016/j.neuroimage.2018.10.006). PMID 30291974. Label key v1.1.6 from [ColeLab/ColeAnticevicNetPartition](https://github.com/ColeLab/ColeAnticevicNetPartition) at commit `e4ea9fd`.
 - **Orbitofrontal, ventromedial prefrontal and anterior cingulate groupings of HCP-MMP areas.**
-  Rolls, E. T., Deco, G., Huang, C.-C., & Feng, J. (2023). The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. *Cerebral Cortex*, 33(2), 330–356. [doi:10.1093/cercor/bhac070](https://doi.org/10.1093/cercor/bhac070). PMID 35233615.
+  Rolls, E. T., Deco, G., Huang, C.-C., & Feng, J. (2022). The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. *Cerebral Cortex*, 33(2), 330–356. [doi:10.1093/cercor/bhac070](https://doi.org/10.1093/cercor/bhac070). PMID 35233615.
 - **Posterior and midcingulate groupings of HCP-MMP areas.**
   Rolls, E. T., Wirth, S., Deco, G., Huang, C.-C., & Feng, J. (2023). The human posterior cingulate, retrosplenial, and medial parietal cortex effective connectome, and implications for memory and navigation. *Human Brain Mapping*, 44(2), 629–655. [doi:10.1002/hbm.26089](https://doi.org/10.1002/hbm.26089). PMID 36178249.
 - **Glass-brain display of functional divisions.**
   Carlén, M. (2017). What constitutes the prefrontal cortex? *Science*, 358(6362), 478–482. [doi:10.1126/science.aan8868](https://doi.org/10.1126/science.aan8868). PMID 29074767. The display follows its Fig. 1 in concept only; none of its borders are used.
+- **Neurosynth meta-analytic database (neuropsychological domains).**
+  Yarkoni, T., Poldrack, R. A., Nichols, T. E., Van Essen, D. C., & Wager, T. D. (2011). Large-scale automated synthesis of human functional neuroimaging data. *Nature Methods*, 8(8), 665–670. [doi:10.1038/nmeth.1635](https://doi.org/10.1038/nmeth.1635). PMID 21706013. Database version 7, with consistency maps computed by NiMARE 0.22.1.
 - **Schaefer multi-scale parcellation.**
-  Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O., Zuo, X. N., Holmes, A. J., Eickhoff, S. B., & Yeo, B. T. T. (2018). Local-global parcellation of the human cerebral cortex from intrinsic functional connectivity MRI. *Cerebral Cortex*, 28(9), 3095–3114. [doi:10.1093/cercor/bhx179](https://doi.org/10.1093/cercor/bhx179)
+  Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O., Zuo, X. N., Holmes, A. J., Eickhoff, S. B., & Yeo, B. T. T. (2018). Local-global parcellation of the human cerebral cortex from intrinsic functional connectivity MRI. *Cerebral Cortex*, 28(9), 3095–3114. [doi:10.1093/cercor/bhx179](https://doi.org/10.1093/cercor/bhx179). PMID 28981612.
 - **FreeSurfer automated segmentation (`aseg`, `wmparc`).**
-  Fischl, B., Salat, D. H., Busa, E., Albert, M., Dieterich, M., Haselgrove, C., van der Kouwe, A., Killiany, R., Kennedy, D., Klaveness, S., Montillo, A., Makris, N., Rosen, B., & Dale, A. M. (2002). Whole brain segmentation: automated labeling of neuroanatomical structures in the human brain. *Neuron*, 33(3), 341–355. [doi:10.1016/S0896-6273(02)00569-X](https://doi.org/10.1016/S0896-6273(02)00569-X)
+  Fischl, B., Salat, D. H., Busa, E., Albert, M., Dieterich, M., Haselgrove, C., van der Kouwe, A., Killiany, R., Kennedy, D., Klaveness, S., Montillo, A., Makris, N., Rosen, B., & Dale, A. M. (2002). Whole brain segmentation: automated labeling of neuroanatomical structures in the human brain. *Neuron*, 33(3), 341–355. [doi:10.1016/S0896-6273(02)00569-X](https://doi.org/10.1016/S0896-6273(02)00569-X). PMID 11832223.
 
-  Fischl, B., van der Kouwe, A., Destrieux, C., Halgren, E., Ségonne, F., Salat, D. H., Busa, E., Seidman, L. J., Goldstein, J., Kennedy, D., Caviness, V., Makris, N., Rosen, B., & Dale, A. M. (2004). Automatically parcellating the human cerebral cortex. *Cerebral Cortex*, 14(1), 11–22. [doi:10.1093/cercor/bhg087](https://doi.org/10.1093/cercor/bhg087)
+  Fischl, B., van der Kouwe, A., Destrieux, C., Halgren, E., Ségonne, F., Salat, D. H., Busa, E., Seidman, L. J., Goldstein, J., Kennedy, D., Caviness, V., Makris, N., Rosen, B., & Dale, A. M. (2004). Automatically parcellating the human cerebral cortex. *Cerebral Cortex*, 14(1), 11–22. [doi:10.1093/cercor/bhg087](https://doi.org/10.1093/cercor/bhg087). PMID 14654453.
 - **NextBrain probabilistic histological atlas.**
-  Casamitjana, A., Mancini, M., Robinson, E., Peter, L., Annunziata, R., Althonayan, J., … Jaunmuktane, Z., & Iglesias, J. E. (2025). A probabilistic histological atlas of the human brain for MRI segmentation. *Nature*, 648(8094), 678–685. [doi:10.1038/s41586-025-09708-2](https://doi.org/10.1038/s41586-025-09708-2). Each brain's labels are its own segmentation with the atlas, produced by `scripts/segment_nextbrain.py` through FreeSurfer 8.2's SuperSynth and `mri_histo_atlas_segment_fireants`.
+  Casamitjana, A., Mancini, M., Robinson, E., Peter, L., Annunziata, R., Althonayan, J., … Jaunmuktane, Z., & Iglesias, J. E. (2025). A probabilistic histological atlas of the human brain for MRI segmentation. *Nature*, 648(8094), 678–685. [doi:10.1038/s41586-025-09708-2](https://doi.org/10.1038/s41586-025-09708-2). PMID 41193801. Each brain's labels are its own segmentation with the atlas, produced by `scripts/segment_nextbrain.py` through FreeSurfer 8.2's SuperSynth and `mri_histo_atlas_segment_fireants`.
 
 ### Reference datasets and tools
 
 - **Amsterdam Open MRI Collection (AOMIC-PIOP1).**
-  Snoek, L., van der Miesen, M. M., Beemsterboer, T., van der Leij, A., Eigenhuis, A., & Scholte, H. S. (2021). The Amsterdam Open MRI Collection, a set of multimodal MRI datasets for individual difference research. *Scientific Data*, 8(1), 85. [doi:10.1038/s41597-021-00870-6](https://doi.org/10.1038/s41597-021-00870-6). OpenNeuro dataset [ds002785](https://openneuro.org/datasets/ds002785).
+  Snoek, L., van der Miesen, M. M., Beemsterboer, T., van der Leij, A., Eigenhuis, A., & Scholte, H. S. (2021). The Amsterdam Open MRI Collection, a set of multimodal MRI datasets for individual difference analyses. *Scientific Data*, 8(1), 85. [doi:10.1038/s41597-021-00870-6](https://doi.org/10.1038/s41597-021-00870-6). PMID 33741990. OpenNeuro dataset [ds002785](https://openneuro.org/datasets/ds002785).
 - **Z-Anatomy Open Anatomy Project.**
   The Z-Anatomy open anatomical scene, licensed under CC BY-SA 4.0, incorporating BodyParts3D (CC BY-SA 2.1 JP). [z-anatomy.com](https://www.z-anatomy.com/)
 
@@ -104,6 +108,10 @@ The CAB-NP network assignments are the property of Rutgers University and Yale U
 - The original files are included.
 
 To meet these terms, each anatomy's `cab-np.json` holds only the assignments and is kept separate from the manifest and the meshes. The licence and the original, unmodified label key are published beside it as [`public/models/licenses/CAB-NP.txt`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/CAB-NP.txt) and [`public/models/licenses/CAB-NP-LabelKey.txt`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/CAB-NP-LabelKey.txt). The licence also disclaims all warranty and asks licensees to indemnify the universities. Commercial use needs a separate licence from the universities.
+
+### Open Database License (`neuropsych-domains.json`)
+
+Each anatomy's `neuropsych-domains.json` and the committed `data/neuropsych-domains/area-scores.json` are derived from the Neurosynth database, which is released under the [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/). They are shared under the same licence, with attribution to Neurosynth (Yarkoni et al. 2011) and to the studies it synthesises. Anyone who publicly uses them must attribute them, and any database derived from them must be shared under the ODbL and kept open.
 
 ### CC BY-SA 4.0 copyleft (`spinal-cord.glb`)
 

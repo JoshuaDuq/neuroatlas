@@ -209,8 +209,7 @@ def test_cortical_cut_parcels_carry_network_composition(config):
     """
     from brain_model.layers import networks as yeo
 
-    if not yeo.is_available(config):
-        pytest.skip("network annotation is optional")
+    assert yeo.is_declared(config)
     regions = {region["id"]: region for region in nextbrain.build_regions(config)}
     cortex = [
         region for region in regions.values()
@@ -224,10 +223,6 @@ def test_cortical_cut_parcels_carry_network_composition(config):
 
 
 def test_pericalcarine_cortex_is_visual(config):
-    from brain_model.layers import networks as yeo
-
-    if not yeo.is_available(config):
-        pytest.skip("network annotation is optional")
     regions = {region["id"]: region for region in nextbrain.build_regions(config)}
     assert regions["nextbrain:left:2021"]["networks"][0]["network"] == "Vis"
 
@@ -253,6 +248,18 @@ def test_a_cut_label_without_a_published_region_is_a_build_error(config):
         nextbrain.export_atlas(config, regions[1:])
 
 
-def test_an_absent_volume_leaves_the_optional_atlas_out(config, tmp_path):
+def test_a_declared_atlas_whose_volume_is_absent_is_refused(config, tmp_path):
+    from brain_model.build import require_layer_inputs
+
     config["nextbrain"] = {**config["nextbrain"], "directory": tmp_path}
-    assert nextbrain.is_available(config) is False
+    assert nextbrain.is_declared(config)
+    with pytest.raises(ValueError, match="inputs are missing"):
+        require_layer_inputs(config)
+
+
+def test_an_undeclared_atlas_is_left_out_even_when_its_volume_is_present(config):
+    from brain_model.build import cut_atlases, detail_levels
+
+    config["anatomy"] = {**config["anatomy"], "layers": []}
+    assert nextbrain.ATLAS_ID not in [level["id"] for level in detail_levels(config)]
+    assert nextbrain.ATLAS_ID not in [atlas["id"] for atlas in cut_atlases(config)]

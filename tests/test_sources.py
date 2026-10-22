@@ -20,6 +20,7 @@ def document():
                 "individual": False,
                 "directory": "data/first",
                 "source_url": "https://example.invalid/first",
+                "layers": [],
                 "nextbrain": {"directory": "data/nb-first", "volume": "first.mgz"},
             },
             "second": {
@@ -30,6 +31,7 @@ def document():
                 "source_url": "https://example.invalid/second",
                 "archive": {"sha256": "0" * 64, "member_prefix": "second/"},
                 "project_hcp_from": "first",
+                "layers": ["nextbrain", "spinal_cord"],
                 "nextbrain": {"directory": "data/nb-second", "volume": "second.mgz"},
             },
         },
@@ -90,6 +92,25 @@ def test_projecting_from_an_undeclared_brain_is_refused():
 def test_an_undeclared_anatomy_is_refused_rather_than_half_built():
     with pytest.raises(ValueError, match="anatomies"):
         resolve_config({**document(), "anatomy": "third"})
+
+
+@pytest.mark.parametrize("layers", [["tracts"], ["nextbrain", "nextbrain"]])
+def test_an_unknown_or_repeated_layer_is_refused(layers):
+    broken = document()
+    broken["anatomies"]["second"]["layers"] = layers
+    with pytest.raises(ValueError, match="layers"):
+        resolve_config(broken)
+
+
+def test_layers_are_what_the_anatomy_declares():
+    from brain_model.sources import declares
+
+    config = resolve_config(document())
+    assert declares(config, "nextbrain") and declares(config, "spinal_cord")
+    assert not declares(config, "networks")
+    assert not declares(resolve_config({**document(), "anatomy": "first"}), "nextbrain")
+    with pytest.raises(ValueError, match="Unknown layer"):
+        declares(config, "tracts")
 
 
 def test_sources_are_scoped_to_the_anatomy_whose_build_reads_them():
@@ -182,12 +203,12 @@ def reconstructed(tmp_path, monkeypatch):
     input_path.write_bytes(b"source MRI")
     settings = {
         "input": "input.nii.gz", "input_sha256": prepare.sha256(input_path),
-        "freesurfer_build": "FreeSurfer-test", "provenance": "reconstruction.json",
-        "completion_marker": "scripts/recon-all.done",
+        "provenance": "reconstruction.json", "completion_marker": "scripts/recon-all.done",
     }
     directory = tmp_path / "data/snail"
     config = {
         "source_directory": directory,
+        "freesurfer_build": "FreeSurfer-test",
         "anatomy": {"id": "snail", "source_url": "https://hdl.handle.net/1773/38477",
                     "reconstruction": settings},
     }
@@ -200,7 +221,12 @@ def reconstructed(tmp_path, monkeypatch):
         path.write_bytes(value)
     (directory / "reconstruction.json").write_text(json.dumps({
         "status": "complete", "input_sha256": settings["input_sha256"],
-        "freesurfer_build": settings["freesurfer_build"],
+        "freesurfer_build": config["freesurfer_build"],
+        "output_sha256": {
+            name: prepare.sha256(directory / name)
+            for name in ["mri/brain.mgz", "scripts/build-stamp.txt"]
+        },
+        "completion_marker_sha256": prepare.sha256(directory / "scripts/recon-all.done"),
     }))
     return prepare, config
 
@@ -231,6 +257,55 @@ def test_reconstruction_whose_original_input_changed_is_refused(tmp_path, monkey
     (tmp_path / "input.nii.gz").write_bytes(b"different MRI")
     with pytest.raises(ValueError, match="checksum"):
         prepare.obtain_subject(config, {"sources": []})
+
+
+@pytest.mark.parametrize("changed", ["mri/brain.mgz", "scripts/recon-all.done"])
+def test_outputs_the_report_does_not_describe_are_never_recorded(
+    tmp_path, monkeypatch, changed
+):
+    # Even when replacing records is asked for: the report describes the run,
+    # so a file that no longer matches it is not that run's output.
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    (config["source_directory"] / changed).write_bytes(b"rewritten")
+    provenance = {"sources": []}
+    with pytest.raises(ValueError, match="differ from reconstruction.json"):
+        prepare.obtain_subject(config, provenance, rerecord=True)
+    assert provenance == {"sources": []}
+
+
+def test_a_report_that_omits_a_required_output_is_refused(tmp_path, monkeypatch):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    path = config["source_directory"] / "reconstruction.json"
+    report = json.loads(path.read_text())
+    del report["output_sha256"]["mri/brain.mgz"]
+    path.write_text(json.dumps(report))
+    with pytest.raises(ValueError, match="exactly the required outputs"):
+        prepare.obtain_subject(config, {"sources": []})
+
+
+def test_rerecording_a_changed_reconstruction_needs_the_explicit_flag(tmp_path, monkeypatch):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    provenance = {"sources": [{"path": "data/snail/mri/brain.mgz", "sha256": "0" * 64}]}
+    with pytest.raises(ValueError, match="--rerecord"):
+        prepare.obtain_subject(config, provenance)
+    assert provenance["sources"][0]["sha256"] == "0" * 64
+
+    prepare.obtain_subject(config, provenance, rerecord=True)
+    records = {source["path"]: source for source in provenance["sources"]}
+    assert records["data/snail/mri/brain.mgz"]["sha256"] == prepare.sha256(
+        config["source_directory"] / "mri/brain.mgz"
+    )
+
+
+def test_rerecording_an_unchanged_reconstruction_needs_no_flag(tmp_path, monkeypatch):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    provenance = {"sources": []}
+    prepare.obtain_subject(config, provenance)
+    before = json.loads(json.dumps(provenance))
+    prepare.obtain_subject(config, provenance)
+    assert sorted(before["sources"], key=lambda s: s["path"]) == sorted(
+        provenance["sources"], key=lambda s: s["path"]
+    )
 
 
 class Response:
@@ -302,3 +377,53 @@ def test_both_hemispheres_white_matter_is_drawn_in_one_colour():
     table = read_color_table()
     assert table[41] == ("Right-Cerebral-White-Matter", [245, 245, 245])
     assert table[2] == ("Left-Cerebral-White-Matter", [245, 245, 245])
+
+
+def test_network_annotations_are_projected_exactly_when_declared(monkeypatch):
+    prepare = load_prepare_subject()
+    projected = []
+    monkeypatch.setattr(
+        prepare, "transfer_annotation",
+        lambda config, provenance, name, report, rerecord=False: projected.append(name),
+    )
+    config = {"anatomy": {"id": "x", "project_hcp_from": "fsaverage", "layers": []}}
+    prepare.transfer_annotations(config, {"sources": []})
+    assert projected == ["HCPMMP1"]
+    projected.clear()
+    config["anatomy"]["layers"] = ["networks"]
+    prepare.transfer_annotations(config, {"sources": []})
+    assert projected == ["HCPMMP1", "Schaefer2018_400Parcels_7Networks_order"]
+
+
+def test_a_projection_whose_source_annotation_is_missing_is_refused(tmp_path):
+    prepare = load_prepare_subject()
+    config = {"anatomy": {"id": "x", "hcp_source_directory": tmp_path},
+              "source_directory": tmp_path}
+    with pytest.raises(SystemExit, match="not published"):
+        prepare.transfer_annotation(config, {"sources": []}, "HCPMMP1", "hcp.json")
+
+
+@pytest.mark.parametrize("anatomy", ["snail", "bert", "aomic"])
+def test_every_source_a_published_anatomy_builds_from_is_committed_and_unchanged(anatomy):
+    # A pinned path that is a symlink is read through its target, so a link
+    # committed without its target fails here as surely as a missing file.
+    from brain_model.build import require_layer_inputs
+    from brain_model.sources import read_config, verify_sources
+
+    config = read_config(anatomy)
+    verify_sources(config)
+    require_layer_inputs(config)
+
+
+def test_an_output_the_report_predates_is_recorded_only_when_declared(tmp_path, monkeypatch):
+    prepare, config = reconstructed(tmp_path, monkeypatch)
+    monkeypatch.setattr(prepare, "SUBJECT_FILES", [*prepare.SUBJECT_FILES, "stats/aseg.stats"])
+    stats = config["source_directory"] / "stats/aseg.stats"
+    stats.parent.mkdir()
+    stats.write_text("# Measure SurfaceHoles, SurfaceHoles, Holes, 0, unitless\n")
+    with pytest.raises(ValueError, match="exactly the required outputs"):
+        prepare.obtain_subject(config, {"sources": []})
+    config["anatomy"]["reconstruction"]["unreported_outputs"] = ["stats/aseg.stats"]
+    provenance = {"sources": []}
+    prepare.obtain_subject(config, provenance)
+    assert "data/snail/stats/aseg.stats" in {source["path"] for source in provenance["sources"]}

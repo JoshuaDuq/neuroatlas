@@ -1,5 +1,12 @@
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+
 /** Trace a learning unit to its original atlas regions. */
 export function createConstituents({ catalog, onRegion }) {
   const panel = document.getElementById('region-constituents');
@@ -16,34 +23,33 @@ export function createConstituents({ catalog, onRegion }) {
       if (key === nextKey) return;
       key = nextKey;
       const i18n = t(state.lang, 'inspector');
-      const count = document.createElement('span');
-      count.className = 'disclosure-count';
-      count.textContent = String(region.constituent_regions.length);
-      title.replaceChildren(i18n.constituentsHeading, ' ', count);
+      const sides = t(state.lang, 'sides');
+      title.replaceChildren(i18n.constituentsHeading,
+        element('span', String(region.constituent_regions.length), 'disclosure-count'));
       note.textContent = i18n.constituentsNote;
-      list.replaceChildren();
-      for (const id of region.constituent_regions) {
+      const entries = region.constituent_regions.map(id => {
         const entry = catalog.get(id);
         if (!entry) throw new Error(`Missing learning constituent: ${id}`);
+        return { id, ...entry };
+      });
+      // A midline union holds a left and a right part of one name; only their sides tell them apart.
+      const sided = new Set(entries.map(entry => entry.region.hemisphere)).size > 1;
+      list.replaceChildren(...entries.map(({ id, region: part, label }) => {
         const item = document.createElement('li');
-        const tail = document.createElement('span');
-        tail.className = 'constituent-set';
-        if (entry.region.kind === 'structure') {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.textContent = entry.label.name;
-          button.addEventListener('click', () => onRegion(id));
-          // Opening a constituent switches Internal anatomy to the set that holds it.
-          tail.textContent = atlasSwitchLabel(entry.region.atlas, state.lang);
-          item.append(button, tail);
-        } else {
-          const name = document.createElement('span');
-          name.textContent = entry.label.name;
-          tail.textContent = i18n.constituentCutOnly;
-          item.append(name, tail);
+        const named = part.kind === 'structure'
+          ? element('button', label.name)
+          : element('span', label.name);
+        if (part.kind === 'structure') {
+          named.type = 'button';
+          named.addEventListener('click', () => onRegion(id));
+          if (sided) named.setAttribute('aria-label', `${label.name}, ${sides.words[part.hemisphere]}`);
         }
-        list.append(item);
-      }
+        // Opening a constituent switches Internal anatomy to the set that holds it.
+        const set = part.kind === 'structure' ? atlasSwitchLabel(part.atlas, state.lang) : i18n.constituentCutOnly;
+        item.append(named, element('span', set, 'constituent-set'));
+        if (sided) item.append(element('span', sides.glyphs[part.hemisphere], 'row-side'));
+        return item;
+      }));
     },
     dispose() { list.replaceChildren(); },
   };

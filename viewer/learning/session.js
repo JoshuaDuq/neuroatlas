@@ -7,6 +7,9 @@ export function createCircuitSession(catalog) {
       catalog.get(id);
       state = { circuit: id, step: 0, visited: [0] };
     },
+    close() {
+      state = { circuit: null, step: 0, visited: [] };
+    },
     go(step) {
       const circuit = catalog.get(state.circuit);
       if (!Number.isInteger(step) || step < 0 || step >= circuit.steps.length) {

@@ -45,3 +45,11 @@ test('invalid actions do not mutate the previous lesson', () => {
   assert.throws(() => session.go(5), /landmark/);
   assert.deepEqual(session.snapshot().visited, [0]);
 });
+
+test('a link without a lesson closes the one open', () => {
+  const session = createCircuitSession(catalog);
+  session.start('vision');
+  session.go(1);
+  session.close();
+  assert.deepEqual(session.snapshot(), { circuit: null, step: 0, visited: [] });
+});

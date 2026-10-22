@@ -1,10 +1,9 @@
 import { visibilityOf } from '../catalog/visibility.js';
-import { DoubleSide, Mesh } from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { Mesh, MeshBasicMaterial } from 'three';
 import { fetchAsset } from '../model/asset-cache.js';
 import { tissueColor } from '../render/materials.js';
 import {
-  labelAppearance, usesAtlasColors, usesCabNpColors, usesFunctionalColors, usesNetworkColors,
+  labelAppearance, usesAtlasColors, usesCabNpColors, usesDomainColors, usesFunctionalColors, usesNetworkColors,
 } from './palette.js';
 import { buildRibbonWedges } from './ribbon-wedges.js';
 import { createSolidMaterial } from './solid-material.js';
@@ -17,24 +16,20 @@ const WHITE_MATTER = { left: 2, right: 41 };
 /** Later bands cap over earlier ones where their solids overlap. */
 export const BANDS = { envelope: 0, ribbon: 1, structure: 2 };
 
-async function loadMeshes(url) {
-  const bytes = await fetchAsset(url);
-  const { scene } = await new GLTFLoader().parseAsync(bytes, '');
-  scene.updateMatrixWorld(true);
-  const sources = [];
-  scene.traverse(source => {
-    if (!source.isMesh) return;
-    source.material.side = DoubleSide;
-    sources.push(source);
-  });
-  return sources;
-}
-
-/** Surface reconstruction defines tissue shape independently of the chosen atlas. */
-export async function loadSolidSources(manifest, baseUrl) {
-  const envelope = manifest.solid_envelopes;
-  if (!envelope?.file) throw new Error('Missing native tissue envelopes in the manifest.');
-  return loadMeshes(new URL(envelope.file, baseUrl));
+/**
+ * A cut source for a mesh the model already holds. It shares the mesh's
+ * geometry and BVH, which the model owns; `color` is the published colour a
+ * nucleus cap takes under atlas colours.
+ */
+export function solidSource(mesh, userData = { ...mesh.userData }, color = null) {
+  mesh.updateWorldMatrix(true, false);
+  const source = new Mesh(mesh.geometry, new MeshBasicMaterial());
+  if (color) source.material.color.copy(color);
+  source.matrixAutoUpdate = false;
+  source.matrix.copy(mesh.matrixWorld);
+  source.matrixWorld.copy(mesh.matrixWorld);
+  source.userData = userData;
+  return source;
 }
 
 export function enclosingFirst(sources) {
@@ -43,25 +38,11 @@ export function enclosingFirst(sources) {
   );
 }
 
-export async function loadSupplementalSources(manifest, baseUrl) {
-  const layers = manifest.supplemental_layers ?? [];
-  return enclosingFirst((await Promise.all(layers.map(layer =>
-    loadMeshes(new URL(layer.file, baseUrl))))).flat());
-}
-
-/** The cut caps the internal anatomy the viewer is showing, not a fixed layer. */
-export async function loadStructureSources(manifest, baseUrl, detail) {
-  const level = manifest.detail_levels.find(entry => entry.id === detail);
-  if (!level?.file) throw new Error(`Missing solid structures for detail level: ${detail}`);
-  const sources = await loadMeshes(new URL(level.file, baseUrl));
-  for (const source of sources) source.userData.detail = detail;
-  return enclosingFirst(sources);
-}
-
 function envelopeSurface(sources, hemisphere, boundary) {
   const mesh = sources.find(source =>
     source.userData.hemisphere === hemisphere && source.userData.boundary === boundary);
   if (!mesh) throw new Error(`Missing the ${hemisphere} ${boundary} envelope.`);
+  mesh.updateWorldMatrix(true, false);
   const baked = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld);
   return { position: baked.getAttribute('position').array, index: baked.getIndex().array };
 }
@@ -187,7 +168,7 @@ export function paintSolids(sections, {
   // published palette that modulation would distort the datum, exactly as it
   // would on a voxel cut face. Relief is lighting, not colour, so it stays.
   const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state)
-    || usesFunctionalColors(state);
+    || usesFunctionalColors(state) || usesDomainColors(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
   const sampledAtlas = state.surfaceColor === 'mri' && !wedged;
   const sampledIsolation = sampledAtlas && labels.byRegion.has(state.isolatedRegion) &&

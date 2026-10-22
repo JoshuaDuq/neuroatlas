@@ -7,7 +7,8 @@ import { NVImage, NVMeshLoaders } from '@niivue/niivue';
 import { parse } from 'yaml';
 import { validateVolume } from './validation.js';
 import { streamlineLengths, summarizeLengths } from './streamlines.js';
-import { createTractGeometry } from './native-geometry.js';
+import { Vector3 } from 'three';
+import { RAS_MM_TO_WORLD, createTractGeometry } from './native-geometry.js';
 
 const directory = new URL('../../public/diffusion/', import.meta.url);
 const catalog = parse(await readFile(new URL('../../data/diffusion.yaml', import.meta.url), 'utf8'));
@@ -54,9 +55,10 @@ test('all named bundles decode in the NiBabel RAS+ space with matching geometry'
     const position = native.geometry.getAttribute('position');
     assert.equal(position.count, record.points);
     for (const sample of record.rasmm_samples) {
-      near(position.getX(sample.index) * 1000, sample.position[0], 0.001);
-      near(-position.getZ(sample.index) * 1000, sample.position[1], 0.001);
-      near(position.getY(sample.index) * 1000, sample.position[2], 0.001);
+      const world = new Vector3().fromBufferAttribute(position, sample.index).applyMatrix4(RAS_MM_TO_WORLD);
+      near(world.x * 1000, sample.position[0], 0.001);
+      near(-world.z * 1000, sample.position[1], 0.001);
+      near(world.y * 1000, sample.position[2], 0.001);
     }
     native.geometry.dispose();
     for (const expected of record.length_summaries) {

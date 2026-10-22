@@ -803,13 +803,25 @@
     "id": "functional-regions",
     "file": "functional-regions.json",
     "atlas": "hcp-mmp",
-    "label": "Functional divisions (Glasser 2016 sections; Glasser 2016 and Rolls 2023 named regions)",
+    "label": "Functional divisions (Glasser 2016 sections; Glasser 2016, Rolls 2022 and Rolls 2023 named regions)",
     "citations": [
       "https://doi.org/10.1038/nature18933",
       "https://doi.org/10.1093/cercor/bhac070",
       "https://doi.org/10.1002/hbm.26089"
     ],
     "method": "Each HCP-MMP1.0 area takes the section and, where a source names one, the named region whose published area list holds it, matched by area name in each hemisphere; carried per area, never per vertex"
+  },
+  "neuropsych_domains": {
+    "id": "neuropsych-domains",
+    "file": "neuropsych-domains.json",
+    "atlas": "hcp-mmp",
+    "label": "Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas)",
+    "citations": [
+      "https://doi.org/10.1038/nmeth.1635"
+    ],
+    "license": "Open Database License (ODbL) 1.0; derived area scores shared under the same licence",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "method": "Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and pial surfaces and averaged per HCP-MMP area. An area belongs to every domain whose mean z reaches 3; shown alone, it takes the domain whose z is the largest share of that domain's cortical maximum. Carried per area, never per vertex"
   },
   "cut_atlases": [
     {
@@ -33372,9 +33384,13 @@
     "CAB-NP networks come from group resting-state connectivity of Human Connectome Project participants, not from this brain's measured function, and reach this brain through the same HCP-MMP projection.",
     "CAB-NP assigns each HCP-MMP area whole to one network, so its colour boundaries are HCP-MMP's boundaries. It colours that atlas's areas only.",
     "CAB-NP assigns the hemispheres separately; 13 areas belong to a different network on each side, as published.",
-    "Functional divisions are published groupings of HCP-MMP1.0 areas: the 22 sections of Glasser et al. (2016) and named regions from Glasser et al. (2016) and Rolls et al. (2023). They reach this brain through the HCP-MMP projection and are not measured in it.",
+    "Functional divisions are published groupings of HCP-MMP1.0 areas: the 22 sections of Glasser et al. (2016) and named regions from Glasser et al. (2016) and Rolls et al. (2022, 2023). They reach this brain through the HCP-MMP projection and are not measured in it.",
     "A functional division's borders are HCP-MMP's area borders. No border is drawn for a name no source defines as a set of HCP-MMP areas: dorsomedial prefrontal cortex, a dorsolateral prefrontal cortex narrower than Glasser's section, the temporoparietal junction and the intraparietal sulcus have no named region and are shown only within Glasser's sections.",
     "Glasser's supplement places six areas (23c, 52, PFcm, TF, a47r, pOFC) in one section in its Table 1 and in another in its section texts; the sections follow Table 1's primary column, and the alternative is published beside each.",
+    "Neuropsychological domains are Neurosynth consistency maps of the published activation literature, averaged over each HCP-MMP area on fsaverage and reaching this brain through its HCP-MMP projection. They show where studies using a domain's term report activation in groups of healthy people, not what this brain does, and not what damage to an area would impair.",
+    "Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.",
+    "The maps are cortical. Subcortical structures, the cerebellum and white matter that neuropsychological deficits also follow are not coloured, and a lesion check on them is reported as off the cortical surface.",
+    "Neurosynth's MNI152 maps are sampled on fsaverage's surfaces, whose MNI305 space differs from MNI152 by a few millimetres; whole-area averages absorb most, not all, of that difference.",
     "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region."
   ],
   "provenance": {
@@ -33725,6 +33741,12 @@
         "sha256": "7f36e1a470ec5f5a56b9c0dae13e107dda88fb71d83340346654294a5c19318d",
         "url": "https://github.com/ColeLab/ColeAnticevicNetPartition/blob/e4ea9fd709ead8616843924b717c6abce62ea05c/LICENSE",
         "citation": "https://doi.org/10.1016/j.neuroimage.2018.10.006"
+      },
+      {
+        "path": "data/aomic/stats/aseg.stats",
+        "sha256": "2ccc8da56f1c60da8e2a150066183abdbb55f193bd4c724bb65b0f1846680e78",
+        "anatomy": "aomic",
+        "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/stats/aseg.stats"
       }
     ]
   }

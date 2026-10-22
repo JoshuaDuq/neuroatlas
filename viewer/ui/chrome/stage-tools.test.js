@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { dockArrangement, placePopover } from './stage-tools.js';
+import { compactSection, placePopover } from './stage-tools.js';
 
 const desktop = { x: 0, y: 0, width: 1120, height: 824 };
 
@@ -45,19 +45,12 @@ test('a stage too narrow for the popover never yields a negative size', () => {
   assert.equal(spot.maxHeight, 0);
 });
 
-test('the presets stay inline only while the tools fit beside them, never as a clipped strip', () => {
-  assert.equal(dockArrangement({ room: 1088, needs: { tools: 640, section: 0 } }).menu, false);
-  assert.equal(dockArrangement({ room: 640, needs: { tools: 640, section: 0 } }).menu, false);
-  assert.equal(dockArrangement({ room: 639, needs: { tools: 640, section: 0 } }).menu, true);
+test('the section row folds its details behind the disclosure only where its one line would wrap', () => {
+  assert.equal(compactSection({ room: 748, need: 700 }), false);
+  assert.equal(compactSection({ room: 700, need: 700 }), false);
+  assert.equal(compactSection({ room: 488, need: 700 }), true);
 });
 
-test('the section bar folds its details behind the disclosure when its row would wrap', () => {
-  assert.equal(dockArrangement({ room: 748, needs: { tools: 600, section: 700 } }).compact, false);
-  assert.equal(dockArrangement({ room: 488, needs: { tools: 600, section: 700 } }).compact, true);
-  // A wide plane row does not push the presets into the chooser on its own.
-  assert.equal(dockArrangement({ room: 650, needs: { tools: 600, section: 700 } }).menu, false);
-});
-
-test('a phone always takes the chooser and the compact section bar', () => {
-  assert.deepEqual(dockArrangement({ room: 358, needs: null }), { menu: true, compact: true });
+test('a phone always takes the compact section row', () => {
+  assert.equal(compactSection({ room: 358, need: null }), true);
 });

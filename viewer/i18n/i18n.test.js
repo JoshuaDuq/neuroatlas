@@ -7,6 +7,7 @@ import { decodeState, encodeState } from '../state/url-state.js';
 import { count } from '../ui/format.js';
 import { edgeLabels } from '../render/orientation.js';
 import { TRANSLATIONS, atlasSwitchLabel, t } from './translations.js';
+import { failureNotice } from './errors.js';
 
 test('session accepts and toggles language', () => {
   const session = createSession({ views: ['oblique', 'left'], lang: 'en' });
@@ -20,11 +21,8 @@ test('session accepts and toggles language', () => {
   assert.equal(session.assemble(modelState).lang, 'en');
 });
 
-test('session notifies in French when in French mode', () => {
-  const session = createSession({ views: ['oblique'], lang: 'fr' });
-  const modelState = { atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1 };
-  session.failSwitch('Destrieux', new Error('boom'));
-  assert.match(session.assemble(modelState).notice, /Impossible de charger/);
+test('a failed layer switch is said in French when the reader reads French', () => {
+  assert.match(failureNotice(new Error('boom'), 'fr', 'layer', 'Destrieux').text, /^Impossible de charger Destrieux\./);
 });
 
 test('url-state encodes and decodes lang', () => {
@@ -38,9 +36,9 @@ test('url-state encodes and decodes lang', () => {
   const stateFr = { ...stateEn, lang: 'fr' };
   assert.equal(encodeState(stateFr), 'atlas=destrieux&lang=fr');
 
-  assert.equal(decodeState('#atlas=destrieux&lang=fr').lang, 'fr');
-  assert.equal(decodeState('#atlas=destrieux&lang=en').lang, 'en');
-  assert.throws(() => decodeState('#atlas=destrieux&lang=unknown'), /Invalid URL field lang/);
+  assert.equal(decodeState('#atlas=destrieux&lang=fr').state.lang, 'fr');
+  assert.equal(decodeState('#atlas=destrieux&lang=en').state.lang, 'en');
+  assert.deepEqual(decodeState('#atlas=destrieux&lang=unknown').rejected, ['lang']);
 });
 
 test('count formats plural nouns in French correctly', () => {
@@ -90,7 +88,7 @@ test('atlas switch labels are short names, not the full atlas title', () => {
 test('UI actions and shortcuts are fully translated in English and French', () => {
   for (const lang of ['en', 'fr']) {
     const header = t(lang, 'header');
-    assert.ok(header.atlasSwitch);
+    assert.ok(header.atlas);
 
     const nav = t(lang, 'navigator');
     assert.ok(nav.clearSearch);
@@ -100,8 +98,6 @@ test('UI actions and shortcuts are fully translated in English and French', () =
 
     const vp = t(lang, 'viewport');
     assert.ok(vp.snapshot);
-    assert.ok(vp.snapshotShort);
-    assert.ok(vp.fullscreenShort);
 
     const shortcuts = t(lang, 'shortcuts');
     const keys = shortcuts.groups.flatMap(([, items]) => items).map(([k]) => k);
@@ -118,7 +114,7 @@ test('the colophon and slice note name whichever brain was actually built', () =
   const template = { subject: 'fsaverage', display_name: 'FreeSurfer fsaverage', individual: false };
 
   for (const lang of ['en', 'fr']) {
-    const { colophon } = t(lang, 'footer');
+    const colophon = entry => t(lang, 'footer').colophon(entry.display_name, entry.individual);
     assert.match(colophon(subject), /bert/);
     assert.match(colophon(template), /fsaverage/);
     assert.notEqual(colophon(subject), colophon(template));
@@ -130,7 +126,7 @@ test('the colophon and slice note name whichever brain was actually built', () =
     assert.notEqual(note(subject), note(template));
   }
 
-  assert.notEqual(t('en', 'footer').colophon(subject), t('fr', 'footer').colophon(subject));
+  assert.notEqual(t('en', 'footer').colophon('bert', true), t('fr', 'footer').colophon('bert', true));
 });
 
 /**

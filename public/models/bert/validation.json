@@ -492,6 +492,22 @@
       }
     }
   },
+  "neuropsych_domains": {
+    "assigned_areas": 235,
+    "areas_per_domain": {
+      "executive": 17,
+      "working-memory": 79,
+      "long-term-memory": 34,
+      "language": 96,
+      "attention": 112,
+      "visuospatial": 47,
+      "social-cognition": 17,
+      "visual-perception": 139,
+      "motor": 116,
+      "auditory-perception": 97,
+      "emotion": 59
+    }
+  },
   "nextbrain_structures": {
     "file": "nextbrain.glb",
     "sha256": "98b1182f46bd7f2f58b76cf4fcb017ca0b1ab234eb34040a2a87965b8aace2e4",
@@ -3942,6 +3958,150 @@
         1.0,
         1.0
       ]
+    }
+  },
+  "tissue_volumes": {
+    "source_sha256": "4684f83dbcea1001afa60fa36641240c3df68a519d9c356fc32d80f0e81b50ea",
+    "destrieux": {
+      "file": "tissues-destrieux.volume",
+      "sha256": "59aef1941435d92ca517af39287f511bd581bd5a513bccb6b965d0db88c0495d",
+      "decoded_sha256": "8dee40e444d8d91f99b7ede54337e5f64a2e42d4b7aa19ce0c64f98eb9398c85",
+      "identical_to_source_labels": true,
+      "label_count": 194
+    },
+    "hcp-mmp": {
+      "file": "tissues-hcp-mmp.volume",
+      "sha256": "177a777f86f68495c1e5721df9dc25f9bf66fb388344e49e0db91a7de9a1c103",
+      "decoded_sha256": "aad4712c878fc57964967bbe1badfb165d77b691e52530fdf78e5110fac42b8d",
+      "non_cortical_voxels_identical_to_destrieux": true,
+      "cortical_voxels_match_nearest_vertex_labels": true,
+      "hemispheres": {
+        "left": {
+          "ribbon_voxels": 267992,
+          "cortical_voxels_outside_ribbon": 1145
+        },
+        "right": {
+          "ribbon_voxels": 266711,
+          "cortical_voxels_outside_ribbon": 1168
+        }
+      },
+      "label_count": 556
+    }
+  },
+  "transforms": {
+    "projected_annotations": {
+      "HCPMMP1": {
+        "left": {
+          "target_vertices": 133103,
+          "sha256": "8ae6a9c497ffab5af29ede3443b6c8c2f15b6afc797d84d39a0143659b472e70",
+          "byte_identical_to_rederivation": true
+        },
+        "right": {
+          "target_vertices": 133819,
+          "sha256": "5ed681dff01676fcdbdabd9140da83c6043d0f20f0960fa4ef72270447f382d6",
+          "byte_identical_to_rederivation": true
+        }
+      },
+      "Schaefer2018_400Parcels_7Networks_order": {
+        "left": {
+          "target_vertices": 133103,
+          "sha256": "c31c668b9bd494ce1b20d83cc131946be51e07c9ee0cdeddb415d0a34e8a3a77",
+          "byte_identical_to_rederivation": true
+        },
+        "right": {
+          "target_vertices": 133819,
+          "sha256": "93d157f8bf07f4c7e8871bf34dec707e88bd495e739f6659bc6691326cb83108",
+          "byte_identical_to_rederivation": true
+        }
+      }
+    }
+  },
+  "layers": [
+    "networks",
+    "nextbrain",
+    "white_matter",
+    "spinal_cord"
+  ],
+  "published_files": [
+    "aseg.volume",
+    "cab-np.json",
+    "cortex-destrieux.glb",
+    "cortex-hcp-mmp.glb",
+    "functional-regions.json",
+    "learning.glb",
+    "manifest.json",
+    "mri.volume",
+    "neuropsych-domains.json",
+    "nextbrain.glb",
+    "ribbon-destrieux.labels",
+    "ribbon-hcp-mmp.labels",
+    "spinal-cord.glb",
+    "structures.glb",
+    "tissue-envelopes.glb",
+    "tissue-labels.json",
+    "tissues-destrieux.volume",
+    "tissues-hcp-mmp.volume",
+    "tissues-nextbrain.volume",
+    "volumes.json",
+    "white-matter.volume"
+  ],
+  "segmentation_agreement": {
+    "method": "Dice of each NextBrain learning-unit union with the same structure's aseg label, aseg resampled onto the NextBrain grid by nearest neighbour",
+    "aseg_sha256": "9f5ac7681752483e8e1a6d9b4653d59c1037bdb0e6685b9fd48a8b02781ada0d",
+    "aseg_labels": {
+      "caudate": {
+        "left": 11,
+        "right": 50
+      },
+      "putamen": {
+        "left": 12,
+        "right": 51
+      },
+      "thalamus": {
+        "left": 10,
+        "right": 49
+      },
+      "hippocampus": {
+        "left": 17,
+        "right": 53
+      },
+      "amygdala": {
+        "left": 18,
+        "right": 54
+      }
+    },
+    "maximum_nearest_neighbour_shift_mm": 0.6928236197712061,
+    "minimum_dice": 0.8,
+    "dice": {
+      "caudate": {
+        "left": 0.8451355559035678,
+        "right": 0.836786275035423
+      },
+      "putamen": {
+        "left": 0.8862075906335964,
+        "right": 0.8742120635986877
+      },
+      "thalamus": {
+        "left": 0.8801276811086457,
+        "right": 0.8835461040940029
+      },
+      "hippocampus": {
+        "left": 0.8354218261088785,
+        "right": 0.8438627414213389
+      },
+      "amygdala": {
+        "left": 0.8293468350501465,
+        "right": 0.817199028152375
+      }
+    }
+  },
+  "reconstruction_quality": {
+    "source": "data/bert/stats/aseg.stats",
+    "sha256": "f4bec57ca02cdefc485dceb10152c126e3bb4c5df58d849a5618368247cb442c",
+    "surface_holes": {
+      "left": 26,
+      "right": 33,
+      "total": 59
     }
   }
 }

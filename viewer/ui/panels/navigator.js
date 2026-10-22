@@ -109,8 +109,33 @@ export function matchesElsewhere(rows, atlases, current, drawnBy) {
 const OTHER_ATLAS = new Set(['other-atlas', 'other-cut-atlas']);
 /** Reasons no control can undo: the row explains, and activating it does nothing. */
 const UNREVEALABLE = new Set(['below-cut-resolution']);
+/** Reasons a display setting gives many rows at once: said on the section caption, not on each row. */
+const SETTING_REASONS = new Set([
+  'hemisphere', 'cortex-hidden', 'internal-hidden', 'spinal-cord-hidden', 'isolated', 'no-cut', 'other-system',
+]);
 const EXPAND_ICON = 'm7 15 5 5 5-5M7 9l5-5 5 5';
 const COLLAPSE_ICON = 'm7 20 5-5 5 5M7 4l5 5 5-5';
+
+/** The display settings hiding rows of each section (kind → reasons, in the order met), said once on its caption. */
+export function sectionReasons(groups) {
+  const said = new Map();
+  for (const group of groups) {
+    for (const row of group.rows) {
+      if (row.visible || !SETTING_REASONS.has(row.reason)) continue;
+      const reasons = said.get(group.kind) ?? [];
+      if (!reasons.includes(row.reason)) said.set(group.kind, [...reasons, row.reason]);
+    }
+  }
+  return said;
+}
+
+/**
+ * Whether a hidden tree row says why on the row itself. A setting's reason is on the section
+ * caption and a removed part's struck eye says it, so only a reason of the row's own is printed.
+ */
+export function rowStatesReason(row) {
+  return !row.visible && row.reason !== 'removed' && !SETTING_REASONS.has(row.reason);
+}
 
 /**
  * Find a region: search, or browse the anatomy.
@@ -165,7 +190,6 @@ export function createNavigator({
   const notes = document.getElementById('results-notes');
   const tree = document.getElementById('tree');
   const announcer = document.getElementById('announcer');
-  const notice = document.getElementById('rail-notice');
   const searchLabel = document.getElementById('search-label');
   const navRail = document.getElementById('navigator');
   const title = document.getElementById('navigator-title');
@@ -173,6 +197,7 @@ export function createNavigator({
   let hiddenKey = null;
   let activeIndex = -1;
   let lastScrolledRegionId = null;
+  let rovedRegionId = null;
   let roving = null;
   let announceTimer = null;
   let announced = null;
@@ -344,7 +369,8 @@ export function createNavigator({
     }
     // A shown row's letter stands alone at rest; on a fine pointer its eye, which repeats it, lies over it.
     if (eye && row.visible) tail.classList.add('row-side-rest');
-    item.append(tail);
+    // Otherwise the eye's own letter stands in the column the reason would have taken.
+    if (role === 'option' || row.visible || rowStatesReason(row)) item.append(tail);
     if (role === 'treeitem' && !eye) {
       const sideMarker = document.createElement('span');
       sideMarker.className = 'row-side row-side-solo';
@@ -435,15 +461,24 @@ export function createNavigator({
     }
   }
 
+  /** A group whose every row is undrawn dims like a hidden row. */
+  function markGroupHidden(header, group) {
+    if (group.rows.some(row => row.visible)) delete header.dataset.hidden;
+    else header.dataset.hidden = 'true';
+  }
+
   function renderTree(state) {
     const i18n = t(state.lang, 'navigator');
+    const reasons = t(state.lang, 'reasons');
     const focused = focusSelectors(document.activeElement);
     const tabStop = focusSelectors(roving);
     tree.replaceChildren();
     roving = null;
+    const groups = labelledGroups(catalog.groups(state), state.lang);
+    const settings = sectionReasons(groups.map(({ group }) => group));
     let section = null;
     let sectionGroup = tree;
-    for (const { group, label } of labelledGroups(catalog.groups(state), state.lang)) {
+    for (const { group, label } of groups) {
       // Lobes and systems are separate vocabularies and can share a name, so
       // the tree says which is which. The heading names a group rather than
       // sitting in the tree as a stray paragraph.
@@ -451,14 +486,22 @@ export function createNavigator({
         section = group.kind;
         const heading = document.createElement('p');
         heading.className = 'section-label';
-        heading.id = `tree-section-${section}`;
         heading.setAttribute('aria-hidden', 'true');
-        heading.textContent = section === 'cortex' ? i18n.cortex
+        const sectionName = document.createElement('span');
+        sectionName.id = `tree-section-${section}`;
+        sectionName.textContent = section === 'cortex' ? i18n.cortex
           : section === 'tissue' ? i18n.cutOnly
           : i18n.subcortical;
+        heading.append(sectionName);
+        if (settings.has(section)) {
+          const said = document.createElement('span');
+          said.className = 'section-state';
+          said.textContent = settings.get(section).map(reason => reasons[reason]).join(' · ');
+          heading.append(said);
+        }
         sectionGroup = document.createElement('div');
         sectionGroup.setAttribute('role', 'group');
-        sectionGroup.setAttribute('aria-labelledby', heading.id);
+        sectionGroup.setAttribute('aria-labelledby', sectionName.id);
         tree.append(heading, sectionGroup);
       }
 
@@ -472,12 +515,10 @@ export function createNavigator({
       header.setAttribute('aria-level', '1');
       header.tabIndex = -1;
       header.dataset.groupKey = group.key;
+      markGroupHidden(header, group);
 
       const marker = document.createElement('span');
-      marker.className = 'disclosure';
-      marker.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" '
-        + 'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
-        + 'stroke-linejoin="round"><path d="m9 6 6 6-6 6" /></svg>';
+      marker.className = 'chevron';
       marker.setAttribute('aria-hidden', 'true');
       const name = document.createElement('span');
       name.className = 'row-name';
@@ -485,8 +526,9 @@ export function createNavigator({
       const badge = document.createElement('span');
       badge.className = 'group-count';
       badge.textContent = String(group.rows.length);
-      header.append(marker, name, badge);
-      // On a fine pointer the eyes overlay the row end (components.css), so the name keeps the row.
+      header.append(marker, name);
+      // On a fine pointer the eyes overlay the row end (navigator.css), so the name keeps the row;
+      // once they take their own room they stand before the count, which keeps the right-hand column.
       const eyes = document.createElement('span');
       eyes.className = 'row-eyes';
       for (const side of ['midline', 'left', 'right']) {
@@ -500,6 +542,7 @@ export function createNavigator({
         }));
       }
       if (eyes.childElementCount) header.append(eyes);
+      header.append(badge);
       header.setAttribute('aria-label', `${label}, ${count(group.rows.length, 'region', state.lang)}`);
       header.addEventListener('click', () => onToggleGroup(group.key));
       groupBlock.append(header);
@@ -524,8 +567,12 @@ export function createNavigator({
   /** Only hidden parts changed: update the rows that did, and keep the rest of the tree. */
   function patchTree(state) {
     const focused = focusSelectors(document.activeElement);
-    const rows = new Map(catalog.groups(state).flatMap(group => group.rows)
-      .map(row => [row.region.id, row]));
+    const groups = catalog.groups(state);
+    const rows = new Map(groups.flatMap(group => group.rows).map(row => [row.region.id, row]));
+    for (const group of groups) {
+      const header = tree.querySelector(`.group-row[data-group-key="${CSS.escape(group.key)}"]`);
+      if (header) markGroupHidden(header, group);
+    }
     for (const control of tree.querySelectorAll('.group-row > .row-eyes > .visibility-control')) {
       syncVisibilityControl(control, state.hiddenRegions);
     }
@@ -551,14 +598,19 @@ export function createNavigator({
   function markSelection(state) {
     const id = state.selectedRegion?.id ?? null;
     let selectedItem = null;
+    let selectedRow = null;
     for (const item of [...options(), ...treeItems()]) {
       if (!item.dataset.regionId) continue;
       const selected = item.dataset.regionId === id;
       item.dataset.selected = String(selected);
       if (item.getAttribute('role') === 'option') {
         item.setAttribute('aria-selected', String(selected));
+      } else if (selected) {
+        // A single-selection tree marks only the selected item.
+        item.setAttribute('aria-selected', 'true');
+        selectedRow = item;
       } else {
-        item.setAttribute('aria-current', selected ? 'true' : 'false');
+        item.removeAttribute('aria-selected');
       }
       if (selected) selectedItem = item;
     }
@@ -567,6 +619,11 @@ export function createNavigator({
       selectedItem.scrollIntoView({ block: 'nearest' });
     } else if (!id) {
       lastScrolledRegionId = null;
+    }
+    // A new selection becomes the tree's Tab stop, unless the reader is moving through the tree.
+    if (id !== rovedRegionId && (!id || selectedRow)) {
+      rovedRegionId = id;
+      if (selectedRow && !tree.contains(document.activeElement)) setRoving(selectedRow);
     }
   }
 
@@ -692,7 +749,7 @@ export function createNavigator({
         const allExpanded = groups.length > 0 && groups.every(g => state.expanded.has(g.key));
         const label = allExpanded ? i18n.collapseAll : i18n.expandAll;
         treeToggleAll.setAttribute('aria-label', label);
-        treeToggleAll.title = label;
+        treeToggleAll.dataset.tooltip = label;
         treeToggleAll.querySelector('path').setAttribute('d', allExpanded ? COLLAPSE_ICON : EXPAND_ICON);
       }
       if (searchClear) {
@@ -723,9 +780,6 @@ export function createNavigator({
       structureKey = key;
       hiddenKey = hidden;
       markSelection(state);
-
-      notice.hidden = !state.notice;
-      notice.textContent = state.notice ?? '';
     },
 
     focusSearch() { search.focus(); search.select(); },

@@ -41,9 +41,9 @@ The compiled assets are stored in `public/models/{anatomy}/`.
 | `cortex-hcp-mmp.glb` | glTF 2.0 binary | 360 HCP-MMP1.0 cortical areas | Multimodal surface layer, projected from `fs_LR` |
 | `learning.glb` | glTF 2.0 binary | 82 teaching overview structures for `bert` (19 MB; NextBrain units at 0.4 mm) | Smoothed union solids, grouped into 8 anatomical systems |
 | `structures.glb` | glTF 2.0 binary | 35 FreeSurfer `aseg` subcortical structures for `bert` | Smoothed marching-cubes deep-anatomy reference level |
-| `nextbrain.glb` | glTF 2.0 binary | 328 solid histological nuclei for `bert`, meshed at 0.4 mm (36 MB, loaded on demand) | Fine subcortical reference level |
-| `tissue-envelopes.glb` | glTF 2.0 binary | Native pial and white surface boundaries | Closed envelopes that drive the stencil solid cuts |
-| `spinal-cord.glb` | glTF 2.0 binary | 58 Z-Anatomy spinal structures | Reference assembly seated below the brainstem |
+| `nextbrain.glb` | glTF 2.0 binary | 328 solid histological nuclei for `bert`, meshed at 0.4 mm (36 MB) | Fine subcortical reference level |
+| `tissue-envelopes.glb` | glTF 2.0 binary | Native pial and white surface boundaries | Exposed white matter, the glass-brain solids and the solid cuts |
+| `spinal-cord.glb` | glTF 2.0 binary | 58 Z-Anatomy spinal structures (`bert` and `aomic`; the `snail` scan ends inside the medulla, so it has none) | Reference assembly seated below the brainstem |
 | `tissues-*.volume` | gzip R16 binary | Categorical label grids: 1 mm for Destrieux and HCP-MMP, 0.8 mm blocks for NextBrain | Label decoding on GPU cut planes |
 | `white-matter.volume` | gzip R8 binary | Gyral white-matter parcels, cropped | Gyral names on white-matter cut faces |
 | `mri.volume`, `aseg.volume` | gzip R8/R16 binary | Native T1w intensities and segmentation | Volumetric reference and T1 cut relief |
@@ -54,6 +54,34 @@ The compiled assets are stored in `public/models/{anatomy}/`.
 ```{note}
 The `.volume` extension is deliberate, not `.gz`. Web servers often read a `.gz` file as HTTP content-encoding and decompress it in the browser. That breaks the binary stream lengths and the WebGL byte alignment.
 ```
+
+## Loading and caching
+
+The first frame downloads the anatomy index, the manifest, one cortical atlas and one detail level. The head of `index.html` starts those requests before the scripts have parsed. Everything else waits for the view that needs it:
+
+| Asset | Downloaded |
+| :--- | :--- |
+| Other detail levels | When chosen. |
+| The other cortical atlas | When chosen. A desktop browser also fetches it in idle time once the first frame is up; a phone, a Save-Data connection or a 2G/3G connection does not. |
+| `tissue-envelopes.glb` | The first time hidden cortex exposes white matter, the glass brain opens, or a plane is cut. The model repaints when it arrives. |
+| `spinal-cord.glb` | The first time the cord is shown or a plane is cut. |
+| `mri.volume` | The first cut, MRI surface colour or linked MRI view. All three read the same copy. |
+| `aseg.volume` | The first linked MRI view. |
+| `ribbon-*.labels` | The first cut of that atlas, or the glass brain for the atlas its divisions use. |
+| `tissues-*.volume`, `white-matter.volume` | The first cut of that atlas; the white matter with the first cut. |
+
+A failed download is not remembered, so the next request tries again.
+
+Each parcel's ribbon solid is cut from the envelopes once per atlas, and the glass brain and the cut share it. The cut also caps the model's own meshes rather than a second download of them: a cap's source shares its mesh's geometry and bounding-volume hierarchy, and the model alone disposes them.
+
+Every file is requested at its own content version, `?v=` and the first 16 hex digits of its SHA-256. The build (`vite.config.js`, through `scripts/published-version.mjs`) records each file under `public/models/` and `public/diffusion/` with its SHA-256 and byte size. It writes that record into the viewer, the head script and the service worker. Each download is checked against it:
+
+- Bytes that differ from what this page was built for fail with the code `asset-updated`. A tab left open across a deploy therefore stops instead of pairing an old manifest with new geometry.
+- A network or HTTP failure fails with `asset-fetch`, and with the HTTP `status` when there is one.
+- The recorded size drives the progress bar. Under `Content-Encoding`, `Content-Length` counts the compressed bytes while the stream yields decoded ones.
+- A `.gz` file that a server decodes on the way is checked against its recorded contents.
+
+The service worker keeps each file under its versioned URL once the bytes hash to that version. On activation it deletes only the entries whose URL the new deploy no longer publishes, so a deploy that changes one file costs one download. It stores neither the page nor its scripts, so it does not make the site work offline.
 
 ## Quantization and encoding
 

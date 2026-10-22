@@ -38,6 +38,24 @@ Reconciles the transported volumes with their native MRI sources, including the 
    :members:
 ```
 
+## `brain_model.validate_segmentation`
+
+How far each brain's NextBrain segmentation agrees with its own FreeSurfer aseg, and FreeSurfer's count of surface defect holes before repair.
+
+```{eval-rst}
+.. automodule:: brain_model.validate_segmentation
+   :members:
+```
+
+## `brain_model.validate_transforms`
+
+Re-derives the annotations projected from `fsaverage` and the tract reference's scanner-to-surface transform from their sources.
+
+```{eval-rst}
+.. automodule:: brain_model.validate_transforms
+   :members:
+```
+
 ## `brain_model.sources`
 
 The source configuration and integrity checks. It reads `config/model.yaml` and `data/sources.json`, verifies SHA-256 checksums, and reads the colour tables.

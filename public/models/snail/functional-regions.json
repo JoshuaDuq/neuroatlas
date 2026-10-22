@@ -8,9 +8,9 @@
       "doi": "https://doi.org/10.1038/nature18933",
       "pmid": 27437579
     },
-    "rolls-2023-ofc": {
-      "short": "Rolls et al. (2023), Cereb Cortex",
-      "citation": "Rolls ET, Deco G, Huang CC, Feng J (2023) The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. Cereb Cortex 33:330\u2013356",
+    "rolls-2022-ofc": {
+      "short": "Rolls et al. (2022), Cereb Cortex",
+      "citation": "Rolls ET, Deco G, Huang CC, Feng J (2022) The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. Cereb Cortex 33:330\u2013356",
       "doi": "https://doi.org/10.1093/cercor/bhac070",
       "pmid": 35233615
     },
@@ -233,7 +233,7 @@
       },
       {
         "id": "lateral-ofc",
-        "source": "rolls-2023-ofc",
+        "source": "rolls-2022-ofc",
         "color": [
           250,
           146,
@@ -253,7 +253,7 @@
       },
       {
         "id": "medial-ofc",
-        "source": "rolls-2023-ofc",
+        "source": "rolls-2022-ofc",
         "color": [
           196,
           62,
@@ -272,7 +272,7 @@
       },
       {
         "id": "subgenual-cingulate",
-        "source": "rolls-2023-ofc",
+        "source": "rolls-2022-ofc",
         "color": [
           96,
           170,
@@ -288,7 +288,7 @@
       },
       {
         "id": "pregenual-acc",
-        "source": "rolls-2023-ofc",
+        "source": "rolls-2022-ofc",
         "color": [
           150,
           107,
@@ -308,7 +308,7 @@
       },
       {
         "id": "area-10",
-        "source": "rolls-2023-ofc",
+        "source": "rolls-2022-ofc",
         "color": [
           48,
           222,
@@ -327,7 +327,7 @@
       },
       {
         "id": "supracallosal-acc",
-        "source": "rolls-2023-ofc",
+        "source": "rolls-2022-ofc",
         "color": [
           133,
           87,
