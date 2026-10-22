@@ -137,7 +137,7 @@ export async function startApp() {
     throw error;
   });
 
-  const catalog = createCatalog(model.manifest, initialLang);
+  const catalog = createCatalog(model.manifest, initialLang, model.cabNp);
   const clinicalCatalog = loadClinicalCatalog(model.manifest);
   const circuitCatalog = loadCircuitCatalog(model.manifest, clinicalCatalog);
   const circuitSession = createCircuitSession(circuitCatalog);
@@ -489,6 +489,30 @@ export async function startApp() {
     render();
   }
 
+  // A later colour choice supersedes one still waiting on its atlas.
+  let surfaceRequest = 0;
+  async function chooseSurfaceColor(value) {
+    const request = ++surfaceRequest;
+    try {
+      // CAB-NP and the functional divisions are defined on one atlas's areas, so choosing either shows that atlas.
+      const atlas = value === 'cab-np' ? model.cabNp.atlas
+        : value === 'functional' ? model.functionalRegions.atlas : null;
+      if (atlas && model.state.atlas !== atlas) {
+        await setAtlas(atlas);
+        // A failed switch has already said why.
+        if (request !== surfaceRequest || model.state.atlas !== atlas) return;
+      }
+      const entering = value === 'functional' && model.state.surfaceColor !== 'functional';
+      await sections.setSurfaceColor(value);
+      // The glass brain shows the cortex alone; the reader can bring the internal anatomy back.
+      if (entering && model.state.internalVisible) model.setInternalVisible(false);
+      render();
+    } catch (error) {
+      session.notify(error.message);
+      render();
+    }
+  }
+
   /**
    * Choose the label volume the cut samples. The cortical surface is untouched:
    * a cut atlas need not have a surface, and NextBrain has none.
@@ -562,7 +586,6 @@ export async function startApp() {
   function setLang(lang) {
     session.setLang(lang);
     try { localStorage.setItem('neuroatlas-lang', lang); } catch {}
-    shortcuts.setLanguage(lang);
     render();
   }
 
@@ -580,23 +603,7 @@ export async function startApp() {
     indexUrl: `${modelsUrl}/anatomies.json`,
     modelView: scene.domElement,
     onAtlas: setAtlas,
-    onSurfaceColor: async value => {
-      try {
-        // CAB-NP and the functional divisions are defined on one atlas's areas, so choosing either shows that atlas.
-        if (value === 'cab-np' && model.state.atlas !== model.cabNp.atlas) await setAtlas(model.cabNp.atlas);
-        if (value === 'functional' && model.state.atlas !== model.functionalRegions.atlas) {
-          await setAtlas(model.functionalRegions.atlas);
-        }
-        const entering = value === 'functional' && model.state.surfaceColor !== 'functional';
-        await sections.setSurfaceColor(value);
-        // The glass brain shows the cortex alone; the reader can bring the internal anatomy back.
-        if (entering && model.state.internalVisible) model.setInternalVisible(false);
-        render();
-      } catch (error) {
-        session.notify(error.message);
-        render();
-      }
-    },
+    onSurfaceColor: chooseSurfaceColor,
     onTheme: choice => theme.choose(choice),
     onLang: setLang,
     onSingleKeys: enabled => {
@@ -1082,8 +1089,10 @@ export async function startApp() {
       link.download = `neuroatlas-${model.state.atlas ?? 'brain'}.png`;
       link.href = dataUrl;
       link.click();
-    } catch (err) {
-      console.error('Failed to capture snapshot:', err);
+    } catch (error) {
+      console.error(error);
+      session.notify(error.message);
+      render();
     }
   };
 
@@ -1442,8 +1451,8 @@ export async function startApp() {
     if (tractReferenceActive && event.key === 'Escape') return;
     if (event.key === 'Escape') {
       // The dialog closes itself; the selection under it is not the target.
-      // A search field gives up its text first. Once that is empty, Escape
-      // steps back through the region and then the deficit.
+      // A search field gives up its text first and marks the key handled. Then
+      // Escape steps back through the region and then the deficit.
       if (shortcuts.isOpen) return;
       // Inside a detail view Escape is Back; the selection stays for a second Escape.
       if (workspace.focusInDetail) {
@@ -1451,10 +1460,7 @@ export async function startApp() {
         return;
       }
       const view = session.assemble(model.state);
-      if (document.activeElement === document.getElementById('search') && view.query) {
-        session.setQuery('');
-        render();
-      } else if (model.state.selectedRegion) {
+      if (model.state.selectedRegion) {
         select(null);
         rescueFocus();
       } else if (view.selectedDeficit) {

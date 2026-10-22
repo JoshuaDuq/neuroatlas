@@ -11,6 +11,7 @@ const TEXT = {
     loading: 'Loading the reference MRI and selected tracts…', retry: 'Reload MRI',
     canvas: 'Linked SNAIL MRI slices and tracts. Click to position the crosshair; arrows move one voxel.',
     scope: 'Scanner RAS millimeters · R/L marked. Tracts use the complete source geometry and current length filter. The published scan has cropped inferior coverage; cortical atlas parcels remain surface labels.',
+    outside: 'The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position.',
     grid: (dims, spacing) => `${dims.join(' × ')} source voxels · ${spacing.join(' × ')} mm spacing`,
   },
   fr: {
@@ -22,6 +23,7 @@ const TEXT = {
     loading: 'Chargement de l’IRM de référence et des faisceaux sélectionnés…', retry: 'Recharger l’IRM',
     canvas: 'Coupes IRM SNAIL liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.',
     scope: 'Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux conservent la géométrie source complète et le filtre de longueur courant. La couverture inférieure de l’image publiée est tronquée ; les régions corticales restent des étiquettes de surface.',
+    outside: 'Le réticule de l’atlas est hors du champ de cette image ; l’IRM garde sa position.',
     grid: (dims, spacing) => `${dims.join(' × ')} voxels source · espacement de ${spacing.join(' × ')} mm`,
   },
 };
@@ -38,6 +40,7 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
   let disposed = false;
   let error = null;
   let location = null;
+  let outside = false;
   const map = catalog.maps[0];
   get('window').max = map.range[1] - map.range[0];
   get('window').value = get('window').max;
@@ -52,8 +55,8 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
     canvas.setAttribute('aria-label', copy.canvas);
     canvas.tabIndex = busy || !engine ? -1 : 0;
     get('controls').disabled = busy || !engine;
-    get('status').textContent = error ? error.message : busy ? copy.loading : '';
-    get('status').hidden = !busy && !error;
+    get('status').textContent = error ? error.message : busy ? copy.loading : outside ? copy.outside : '';
+    get('status').hidden = !busy && !error && !outside;
     get('status').role = error ? 'alert' : 'status';
     get('status').dataset.error = String(Boolean(error));
     get('retry').hidden = !error || busy;
@@ -81,6 +84,7 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
   function updateLocation(next) {
     if (next.values.length !== catalog.maps.length) return;
     location = next;
+    if (!busy) outside = false;
     for (const [axis, id] of ['i', 'j', 'k'].entries()) get(id).value = Math.round(next.vox[axis]);
     render();
     if (!busy && dialog.open) onPoint(Array.from(next.mm).slice(0, 3));
@@ -88,7 +92,7 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
 
   async function load() {
     if (busy || disposed) return;
-    busy = true; error = null; render();
+    busy = true; error = null; outside = false; render();
     try {
       if (!engine) {
         const loaded = await createMriNavigationViewer(catalog, canvas, updateLocation);
@@ -97,7 +101,7 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
         engine.setVoxel(engine.header.dims.slice(1, 4).map(size => Math.floor(size / 2)));
       }
       const point = getPoint();
-      if (point) engine.setScannerPoint(point);
+      if (point) outside = !engine.setScannerPoint(point);
       await engine.syncTracts(getTracts().filter(bundle => bundle.visible).map(bundle => bundle.id), getMinimum());
       engine.setPlane(get('plane').value);
       if (dialog.open) engine.resize();

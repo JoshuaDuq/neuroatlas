@@ -16,9 +16,9 @@ def describe_source_label(value, table, regions):
     name, color = table[value]
     hemisphere = (
         "left"
-        if name.startswith(("Left-", "ctx_lh_"))
+        if name.startswith(("Left-", "ctx_lh_", "ctx-lh-"))
         else "right"
-        if name.startswith(("Right-", "ctx_rh_"))
+        if name.startswith(("Right-", "ctx_rh_", "ctx-rh-"))
         else "midline"
     )
     cortex = value >= 11100
@@ -29,7 +29,8 @@ def describe_source_label(value, table, regions):
             cortex
             and region["atlas"] == "destrieux"
             and region["hemisphere"] == hemisphere
-            and region["source_name"] == name[7:]
+            # FreeSurfer 6 annotations write `&` where the LUT writes `_and_`.
+            and region["source_name"].replace("&", "_and_") == name[7:]
         )
         or (
             not cortex

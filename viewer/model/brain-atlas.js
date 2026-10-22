@@ -181,7 +181,9 @@ export class BrainAtlas extends EventTarget {
     this.sourceColors = new WeakMap();
     this.selectedId = null;
     this.isolatedId = null;
-    this.requestNumber = 0;
+    // Separate, so a detail change does not cancel an atlas change still loading, or the reverse.
+    this.atlasRequest = 0;
+    this.detailRequest = 0;
     this.disposed = false;
     this.clippingPlanes = [];
     this.centroids = new Map();
@@ -364,9 +366,9 @@ export class BrainAtlas extends EventTarget {
   async setAtlas(id, onProgress) {
     const atlas = this.manifest.atlases.find(atlas => atlas.id === id);
     if (!atlas) throw new Error(`Unknown atlas: ${id}`);
-    const request = ++this.requestNumber;
+    const request = ++this.atlasRequest;
     await this.loadLayer(id, atlas.file, onProgress);
-    if (request !== this.requestNumber) return;
+    if (request !== this.atlasRequest) return;
     this.atlasId = id;
     // CAB-NP and the functional divisions group one atlas's areas; any other atlas has none to colour.
     if (this.surfaceColor === 'cab-np' && id !== this.cabNp.atlas) this.surfaceColor = 'atlas';
@@ -385,9 +387,9 @@ export class BrainAtlas extends EventTarget {
   async setDetail(id, onProgress) {
     const level = this.manifest.detail_levels.find(level => level.id === id);
     if (!level) throw new Error(`Unknown detail level: ${id}`);
-    const request = ++this.requestNumber;
+    const request = ++this.detailRequest;
     await this.loadLayer(id, level.file, onProgress);
-    if (request !== this.requestNumber) return;
+    if (request !== this.detailRequest) return;
     this.detailId = id;
     this.internalSystem = null;
     this.internalConstituents = new Set();
@@ -818,7 +820,8 @@ export class BrainAtlas extends EventTarget {
   dispose() {
     this.disposed = true;
     this.spinalCordRequest += 1;
-    this.requestNumber += 1;
+    this.atlasRequest += 1;
+    this.detailRequest += 1;
     for (const layer of this.layers.values()) disposeScene(layer.scene);
     if (this.whiteMatterSurfaces) disposeScene(this.whiteMatterSurfaces.group);
     if (this.glassSolids) disposeScene(this.glassSolids.group);

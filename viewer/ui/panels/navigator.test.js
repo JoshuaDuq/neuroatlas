@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  controlKeyAction, groupDisplayName, labelledGroups, nextEnabledIndex, regionGroup, sharedGroupNames, treeKeyAction,
-  vocabularyOf,
+  controlKeyAction, groupDisplayName, labelledGroups, matchesElsewhere, nextEnabledIndex, regionGroup,
+  sharedGroupNames, treeKeyAction, vocabularyOf,
 } from './navigator.js';
+import { cutAtlasesOf } from '../../catalog/visibility.js';
 import { visibilityStateOf } from './visibility-control.js';
 
 test('an arrow moves past a row that cannot be chosen', () => {
@@ -127,4 +128,25 @@ test('a region\'s group is the one the tree lists it under, qualified as the tre
   assert.deepEqual(regionGroup(groups, 'a', 'en'), { key: 'cortex:Limbic', label: 'Limbic lobe' });
   assert.deepEqual(regionGroup(groups, 'd', 'en'), { key: 'structure:Limbic', label: 'Limbic system' });
   assert.equal(regionGroup(groups, 'elsewhere', 'en'), null);
+});
+
+test('a match in another cut atlas offers the cut atlas that draws it, not merely another one', () => {
+  const cutAtlases = [{ id: 'destrieux' }, { id: 'hcp-mmp' }, { id: 'nextbrain' }];
+  const row = (id, region) => ({ region: { id, kind: 'tissue-region', ...region } });
+  const histological = row('nb', { atlas: 'nextbrain' });
+  const gyral = row('wm', { atlas: 'wmparc', cut_atlases: ['destrieux', 'hcp-mmp'] });
+  const offered = (rows, current) => matchesElsewhere(rows, cutAtlases, current, cutAtlasesOf)
+    .map(({ atlas, rows: drawn }) => [atlas.id, drawn.map(entry => entry.region.id)]);
+  assert.deepEqual(offered([histological], 'destrieux'), [['nextbrain', ['nb']]]);
+  assert.deepEqual(offered([histological], 'hcp-mmp'), [['nextbrain', ['nb']]]);
+  assert.deepEqual(offered([gyral], 'nextbrain'), [['destrieux', ['wm']]]);
+  assert.throws(() => matchesElsewhere([histological], cutAtlases.slice(0, 2), 'destrieux', cutAtlasesOf),
+    /No other atlas draws nb/);
+});
+
+test('a match in another surface atlas offers that atlas', () => {
+  const atlases = [{ id: 'destrieux' }, { id: 'hcp-mmp' }];
+  const rows = [{ region: { id: 'v1', atlas: 'hcp-mmp' } }];
+  assert.deepEqual(matchesElsewhere(rows, atlases, 'destrieux', region => [region.atlas])
+    .map(({ atlas }) => atlas.id), ['hcp-mmp']);
 });

@@ -12,7 +12,7 @@ from nibabel.freesurfer.io import (
     write_geometry,
 )
 
-from brain_model.labels.tissue_labels import export_tissue_labels
+from brain_model.labels.tissue_labels import describe_source_label, export_tissue_labels
 from brain_model.labels.volumes import offset_by
 from brain_model.sources import read_color_table, read_config
 from tests.support import read_published
@@ -190,3 +190,20 @@ def test_hcp_projection_never_relabels_white_matter_or_deep_structures(tmp_path)
             nearest = np.argmin(np.sum((vertices - point) ** 2, axis=1)) % len(pial)
             label = record["labels"][data[tuple(coordinate)]]
             assert label["source_label_id"] == annotation[nearest]
+
+
+def test_desikan_unknown_cortex_keeps_its_hemisphere():
+    table = read_color_table()
+    assert describe_source_label(1000, table, [])["hemisphere"] == "left"
+    assert describe_source_label(2000, table, [])["hemisphere"] == "right"
+    assert describe_source_label(11101, table, [])["hemisphere"] == "left"
+    assert describe_source_label(85, table, [])["hemisphere"] == "midline"
+
+
+def test_destrieux_labels_match_regions_across_recon_spellings():
+    region = {
+        "id": "destrieux:left:1", "atlas": "destrieux", "hemisphere": "left",
+        "source_name": "G&S_frontomargin", "kind": "cortex",
+    }
+    label = describe_source_label(11101, read_color_table(), [region])
+    assert label["region_id"] == "destrieux:left:1"

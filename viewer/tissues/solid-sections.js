@@ -70,6 +70,7 @@ export class SolidSections {
     this.generation = 0;
     this.worker = null;
     this.workerFailed = false;
+    this.disposed = false;
     this.builds = new Map();
     this.buildToken = 0;
   }
@@ -164,7 +165,8 @@ export class SolidSections {
       if (!show) {
         solid.group.visible = false;
         solid.cutShow = false;
-        solid.cutReady = true;
+        // Nothing was cut for this plane, so a solid shown again must be cut then.
+        solid.cutReady = false;
         continue;
       }
       if (!moved && solid.cutReady) {
@@ -220,7 +222,7 @@ export class SolidSections {
       if (!show) {
         solid.group.visible = false;
         solid.cutShow = false;
-        solid.cutReady = true;
+        solid.cutReady = false;
         continue;
       }
       this.place(solid, byId.get(solid.id) ?? { empty: true });
@@ -255,7 +257,7 @@ export class SolidSections {
   }
 
   ensureWorker() {
-    if (this.workerFailed) return null;
+    if (this.workerFailed || this.disposed) return null;
     if (this.worker) return this.worker;
     if (typeof Worker === 'undefined') {
       this.workerFailed = true;
@@ -416,6 +418,7 @@ export class SolidSections {
   }
 
   dispose() {
+    this.disposed = true;
     this.worker?.terminate();
     this.worker = null;
     for (const pending of this.builds.values()) pending.resolve(null);

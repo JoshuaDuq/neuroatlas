@@ -33,6 +33,11 @@ def test_an_unknown_network_is_an_error_rather_than_a_silent_none():
         network_of("7Networks_LH_Invented_1")
 
 
+def test_a_truncated_parcel_name_is_an_error_rather_than_no_network():
+    with pytest.raises(ValueError, match="parcel name"):
+        network_of("7Networks_LH_Vis")
+
+
 def test_labels_become_network_indices_and_the_medial_wall_becomes_none():
     names = [MEDIAL_WALL, "7Networks_LH_Vis_1", "7Networks_LH_Default_pCunPCC_2"]
     # -1 is what FreeSurfer writes for a vertex no parcel claims.

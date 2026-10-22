@@ -7,6 +7,9 @@ import bpy
 from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[1]
+PUBLISHED = ROOT / "public/models"
+# Each brain publishes into its own directory; the scene shows the default one.
+MODELS = PUBLISHED / json.loads((PUBLISHED / "anatomies.json").read_text())["default"]
 
 
 def point_at(obj, target):
@@ -17,7 +20,7 @@ def import_collection(name, filename):
     collection = bpy.data.collections.new(name)
     bpy.context.scene.collection.children.link(collection)
     existing = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=str(ROOT / "public/models" / filename),
+    bpy.ops.import_scene.gltf(filepath=str(MODELS / filename),
                               merge_vertices=False)
     for obj in set(bpy.data.objects) - existing:
         for previous in list(obj.users_collection):
@@ -108,7 +111,9 @@ def main():
     scene["coordinate_convention"] = "Blender RAS meters: +X right, +Y anterior, +Z superior"
     # Read from the manifest rather than restated: which brain is in these GLBs
     # is a build-time choice, and a scene that says otherwise outlives it.
-    anatomy = json.loads((ROOT / "public/models/manifest.json").read_text())["anatomy"]
+    manifest = json.loads((MODELS / "manifest.json").read_text())
+    anatomy = manifest["anatomy"]
+    coarse = next(level for level in manifest["detail_levels"] if level["id"] == "aseg")
     scene["anatomy"] = anatomy["label"]
     scene["scientific_scope"] = (
         f"{anatomy['label']}; conversion fidelity, not clinical accuracy"
@@ -118,10 +123,11 @@ def main():
         "SOURCE-DERIVED BRAIN\n\n"
         "Select objects to inspect region_id, atlas, hemisphere and source_label_id.\n"
         "Enable only one cortical collection at a time to avoid overlap.\n"
-        "Hide cortical collections to inspect 35 internal structures.\n"
+        f"Hide cortical collections to inspect {coarse['region_count']} internal structures.\n"
         "Native region colors remain in source_atlas_color custom properties.\n"
         "No smoothing, subdivision or decimation modifiers are applied.\n"
-        "Internal shading uses gradient normals, with all source positions unchanged.\n"
+        "Internal structures are marching-cubes surfaces display-smoothed by at most "
+        f"{coarse['display_geometry']['maximum_displacement_mm']} mm in the export.\n"
         "Cortical regions are open surface patches, not watertight solids.\n"
         "Full methodology and licenses accompany public/models.\n"
     )

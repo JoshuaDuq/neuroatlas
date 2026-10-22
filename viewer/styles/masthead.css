@@ -177,7 +177,8 @@
   flex-direction: column;
   align-items: stretch;
   gap: 0;
-  width: min(360px, calc(100vw - var(--space-6)));
+  /* Wide enough for the six French colour choices on one row. */
+  width: min(400px, calc(100vw - var(--space-6)));
   max-height: calc(100dvh - var(--header-height) - var(--space-4));
   overflow-y: auto;
   background: var(--surface-base);
@@ -194,6 +195,9 @@
   padding: var(--space-3) var(--space-4);
 }
 #masthead[data-collapsed] .data-field + .data-field { border-top: 1px solid var(--border-subtle); }
+/* A phone is narrower still: the choices wrap rather than spill past the popover. */
+#masthead[data-collapsed] .segmented { flex-wrap: wrap; }
+#masthead[data-collapsed] .segmented button { flex: 1 0 auto; }
 #masthead[data-collapsed] .data-note {
   display: block;
   font-size: var(--text-micro);
@@ -306,7 +310,7 @@
   #masthead-menu .segmented button { height: 44px; }
   /* A fingertip needs the width too: the choices share the row. */
   #masthead-data[data-open] .segmented { align-self: stretch; }
-  #masthead-data[data-open] .segmented button { flex: 1; align-items: center; }
+  #masthead-data[data-open] .segmented button { align-items: center; }
   .menu-row { min-height: 52px; }
 }
 

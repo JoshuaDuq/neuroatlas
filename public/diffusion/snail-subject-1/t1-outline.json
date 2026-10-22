@@ -1,7 +1,7 @@
 {
   "source": "snail-subject-1/t1_warped.nii.gz",
   "source_sha256": "3cd3f2c5eba843c31970ee3107e4af07f6fb34554612fcd3f1066a7d992fa416",
-  "published_sha256": "cb2e0598c41048fdc1f5c73a964dafa7a68a95835abff909b476ebeb8ba1bae1",
+  "published_sha256": "f19bc21a7ffcbefec3044caf9014c21c0daac0c941976ffd22f71ee1622129f8",
   "method": "Lewiner marching cubes on the largest connected T1 component above the configured intensity threshold",
   "intensity_threshold": 80,
   "step_size_voxels": 2,

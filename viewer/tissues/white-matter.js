@@ -37,6 +37,7 @@ export const WHITE_MATTER_LIFT = `
  * the cut of any atlas the volume was published for.
  */
 export function createWhiteMatter(record, volume) {
+  if (!(volume.data instanceof Uint8Array)) throw new Error('Expected uint8 white-matter labels.');
   const texture = new Data3DTexture(volume.data, ...volume.shape);
   texture.format = RedIntegerFormat;
   texture.type = UnsignedByteType;

@@ -1,4 +1,5 @@
 import { labelOf } from './labels.js';
+import { cabNpName } from './networks.js';
 import { belongsToDetail, cutAtlasesOf, visibilityOf } from './visibility.js';
 
 const EXACT = 0, PREFIX = 1, WORD = 2, SUBSTRING = 3, NO_MATCH = 4;
@@ -33,7 +34,7 @@ function tierOf(text, query) {
  * Three.js or the DOM, and derives everything from a settings snapshot rather
  * than holding state of its own.
  */
-export function createCatalog(manifest, defaultLang = 'en') {
+export function createCatalog(manifest, defaultLang = 'en', cabNp = null) {
   let activeLang = defaultLang;
   let entries = [];
   let byId = new Map();
@@ -78,14 +79,25 @@ export function createCatalog(manifest, defaultLang = 'en') {
     a.label.name.localeCompare(b.label.name, activeLang) ||
     a.region.hemisphere.localeCompare(b.region.hemisphere);
 
+  // While CAB-NP colours its atlas's areas, they are listed under the network their colour shows.
+  const labelIn = (entry, settings) => {
+    const network = settings?.surfaceColor === 'cab-np' ? cabNp?.regions[entry.region.id] : null;
+    return network ? { ...entry.label, group: cabNpName(network, activeLang) } : entry.label;
+  };
+
   const row = (entry, settings) => ({
     region: entry.region,
-    label: entry.label,
+    label: labelIn(entry, settings),
     ...visibilityOf(entry.region, settings),
   });
 
   return {
     get: id => byId.get(id) ?? null,
+
+    label(id, settings) {
+      if (settings?.lang) ensureLang(settings.lang);
+      return labelIn(byId.get(id), settings);
+    },
 
     setLanguage(lang) {
       ensureLang(lang);
@@ -140,8 +152,9 @@ export function createCatalog(manifest, defaultLang = 'en') {
         if (!shown) continue;
         if (into === structural && settings.internalSystem &&
             labelOf(entry.region, 'en').group !== settings.internalSystem) continue;
-        if (!into.has(entry.label.group)) into.set(entry.label.group, []);
-        into.get(entry.label.group).push(entry);
+        const { group } = labelIn(entry, settings);
+        if (!into.has(group)) into.set(group, []);
+        into.get(group).push(entry);
       }
       // A lobe and a system can share a name — Destrieux has a Limbic lobe and
       // aseg a Limbic system — so the key, not the name, identifies a group.

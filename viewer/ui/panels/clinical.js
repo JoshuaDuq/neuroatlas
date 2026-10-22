@@ -324,6 +324,8 @@ export function createClinicalExplorer({ clinical, anatomy, onQuery, onDeficit, 
   const onSearchKey = event => {
     if (event.key === 'Escape' && search.value) {
       event.preventDefault();
+      // The field keeps focus, so the render that follows leaves its text alone.
+      search.value = '';
       onQuery('');
     }
     if (event.key === 'ArrowDown' || event.key === 'Enter') {

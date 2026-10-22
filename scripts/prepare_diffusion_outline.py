@@ -37,11 +37,16 @@ def prepare_outline():
     voxels, faces, _, _ = marching_cubes(
         field, level=settings["intensity_threshold"],
         step_size=settings["step_size"], allow_degenerate=False,
+        gradient_direction="ascent",
     )
     ras = nib.affines.apply_affine(image.affine, voxels)
+    if np.linalg.det(image.affine[:3, :3]) < 0:
+        faces = faces[:, ::-1]
     world = ras[:, [0, 2, 1]] / 1000
     world[:, 2] *= -1
     mesh = trimesh.Trimesh(vertices=world, faces=faces, process=False)
+    if mesh.volume <= 0:
+        raise ValueError("The brain outline's triangles must face outward")
     target = directory / settings["file"]
     target.write_bytes(mesh.export(file_type="glb"))
     provenance = {

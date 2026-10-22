@@ -124,6 +124,8 @@ export function createShortcuts(initialLang = 'en') {
     toggle() { dialog.open ? hide() : show(); },
     get isOpen() { return dialog.open; },
     setLanguage(next) {
+      // Called on every render; the sheet is rebuilt only when its words change.
+      if (next === lang) return;
       lang = next;
       renderList();
     },

@@ -123,7 +123,9 @@ export function createCircuitExplorer({ catalog, onCircuit, onStep, onLandmark, 
       container.setAttribute('aria-busy', String(opening));
       for (const control of container.querySelectorAll('button')) control.disabled = opening;
     }
-    actionStatus.textContent = opening ? CIRCUIT_TEXT[state.lang].loading : actionError?.message ?? '';
+    const said = opening ? CIRCUIT_TEXT[state.lang].loading : actionError?.message ?? '';
+    // A live region rewritten with the same words says them again on every render.
+    if (actionStatus.textContent !== said) actionStatus.textContent = said;
     actionStatus.hidden = state.explorer !== 'circuits' || (!opening && !actionError);
     actionStatus.dataset.error = String(Boolean(actionError));
   }

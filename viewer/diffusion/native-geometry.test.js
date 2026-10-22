@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { Color, ColorManagement, LinearSRGBColorSpace, SRGBColorSpace } from 'three';
 import { createTractGeometry, filterTractGeometry } from './native-geometry.js';
 
 const points = new Float32Array([
@@ -34,5 +35,19 @@ test('native lines never join separate streamlines and filter only their indices
   assert.equal(geometry.getAttribute('color'), color);
   filterTractGeometry(geometry, offsets, lengths, 25);
   assert.equal(geometry.drawRange.count, 0);
+  geometry.dispose();
+});
+
+test('direction colours display as |R|, |A|, |S| after the sRGB output encoding', () => {
+  const line = new Float32Array([0, 0, 0, 3, 4, 0, 6, 8, 0, 0, 0, 0, 0, 0, 5]);
+  const { geometry } = createTractGeometry(line, new Uint32Array([0, 3, 5]));
+  const color = geometry.getAttribute('color');
+  const shown = index => new Color(color.getX(index), color.getY(index), color.getZ(index))
+    .getRGB(new Color(), SRGBColorSpace);
+  assert.equal(ColorManagement.workingColorSpace, LinearSRGBColorSpace);
+  for (const [index, expected] of [[1, [0.6, 0.8, 0]], [4, [0, 0, 1]]]) {
+    const { r, g, b } = shown(index);
+    [r, g, b].forEach((value, axis) => assert.ok(Math.abs(value - expected[axis]) < 1 / 255, `${value} ≠ ${expected[axis]}`));
+  }
   geometry.dispose();
 });

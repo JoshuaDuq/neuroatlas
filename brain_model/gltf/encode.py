@@ -178,6 +178,9 @@ def reencode(data, *, ranges=None, normals=True, fields=True):
         ranges = field_ranges(gltf, buffer)
     else:
         present = field_ranges(gltf, buffer)
+        unmeasured = sorted(set(present) - set(ranges))
+        if unmeasured:
+            raise ValueError(f"No given range for {unmeasured}")
         ranges = {name: span for name, span in ranges.items() if name in present}
     out = _Builder()
     quantized_normals = False
@@ -237,8 +240,9 @@ def reencode(data, *, ranges=None, normals=True, fields=True):
             if "indices" in primitive:
                 source_index = primitive["indices"]
                 triangles = _accessor_array(gltf, buffer, source_index)
-                vertices = out.accessors[attributes["POSITION"]]["count"]
-                narrow = vertices <= 65536 and int(triangles.max(initial=0)) < 65536
+                # glTF forbids 65535 in a uint16 index buffer: WebGL 2 always
+                # reads it as a primitive restart and drops the triangle.
+                narrow = int(triangles.max(initial=0)) < 65535
                 if ("indices", source_index, narrow) in written:
                     primitive["indices"] = written["indices", source_index, narrow]
                     continue

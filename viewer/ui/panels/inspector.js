@@ -231,7 +231,7 @@ export function createInspector({
         return;
       }
 
-      const label = catalog.get(region.id).label;
+      const label = catalog.label(region.id, state);
       name.hidden = false;
       name.textContent = label.name;
       hint.hidden = !region.notes;

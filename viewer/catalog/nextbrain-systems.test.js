@@ -18,3 +18,10 @@ for (const { id } of anatomies) {
     }
   });
 }
+
+// The supraoptic commissures cross above the chiasm but carry no retinal fibres;
+// Terminologia Anatomica files them under the hypothalamus.
+test('the supraoptic decussation is hypothalamic, not a visual pathway', () => {
+  assert.equal(nextbrainSystem({ source_label_id: 209 }), 'Hypothalamus');
+  assert.equal(nextbrainSystem({ source_label_id: 10209 }, 'fr'), 'Hypothalamus');
+});

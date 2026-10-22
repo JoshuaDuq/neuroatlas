@@ -233,8 +233,8 @@ deficits:
     domain: {en: Movement, fr: Mouvement}
     group: motor
     summary:
-      en: Slowness, rigidity and tremor from loss of dopaminergic output. This profile combines nigral neuropathology with rare focal lentiform lesions.
-      fr: Lenteur, rigidité et tremblement par perte de la sortie dopaminergique. Ce profil associe la neuropathologie nigrique aux rares lésions focales lenticulaires.
+      en: Slowness of movement with rigidity or rest tremor, most often from loss of nigral dopaminergic neurons. This profile combines nigral neuropathology with rare focal lentiform lesions.
+      fr: Lenteur des mouvements avec rigidité ou tremblement de repos, le plus souvent par perte des neurones dopaminergiques nigriques. Ce profil associe la neuropathologie nigrique aux rares lésions focales lenticulaires.
     aliases:
       en: [bradykinesia, rigidity, tremor, substantia nigra, Parkinson, dopamine]
       fr: [bradykinésie, rigidité, tremblement, substance noire, Parkinson, dopamine]
@@ -761,7 +761,7 @@ references:
 
   - id: dewey-1989
     title: 'Hemiballism-hemichorea: clinical and pharmacologic findings in 21 patients'
-    authors: Dewey RB, Jankovic J
+    authors: Dewey RB Jr, Jankovic J
     year: 1989
     journal: Archives of Neurology
     doi: 10.1001/archneur.1989.00520440044020
@@ -1707,8 +1707,8 @@ associations:
       en: Neuronal loss in the anterior thalamic nuclei was found consistently only in alcoholics with Korsakoff amnesia, whereas the mammillary and mediodorsal thalamic nuclei degenerated substantially in amnesic and non-amnesic alcoholics with Wernicke’s encephalopathy alike.
       fr: La perte neuronale des noyaux thalamiques antérieurs n’était constante que chez les alcooliques avec amnésie de Korsakoff, alors que les noyaux mamillaires et médiodorsaux dégénéraient fortement chez les alcooliques amnésiques comme non amnésiques avec encéphalopathie de Wernicke.
     limitation:
-      en: Post-mortem nutritional injury, not a focal lesion. The mammillary bodies were damaged in both groups, so they mark the disease rather than the amnesia.
-      fr: Atteinte nutritionnelle post-mortem, et non lésion focale. Les corps mamillaires étaient atteints dans les deux groupes; ils marquent donc la maladie plutôt que l’amnésie.
+      en: A post-mortem study of nutritional injury, not of a focal lesion. The mammillary bodies were damaged in both groups, so they mark the disease rather than the amnesia.
+      fr: Étude post-mortem d’une atteinte nutritionnelle, et non d’une lésion focale. Les corps mamillaires étaient atteints dans les deux groupes; ils marquent donc la maladie plutôt que l’amnésie.
     mapping_note:
       en: The anteroventral nucleus is the anterior thalamic nucleus available on both sides; the mammillary nuclei are shown as the co-damaged, non-differentiating site.
       fr: Le noyau antéroventral est le noyau thalamique antérieur disponible des deux côtés; les noyaux mamillaires sont affichés comme site co-atteint mais non discriminant.

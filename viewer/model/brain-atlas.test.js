@@ -393,6 +393,25 @@ test('invalid dissection identifiers fail before changing visibility', async () 
   atlas.dispose();
 });
 
+test('a detail change does not cancel an atlas change still loading', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const load = atlas.loader.loadAsync;
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  atlas.loader.loadAsync = async (file, onProgress) => {
+    if (file === 'b.glb') await gate;
+    return load(file, onProgress);
+  };
+  const switching = atlas.setAtlas('b');
+  await atlas.setDetail('aseg');
+  release();
+  await switching;
+  assert.equal(atlas.settings.atlas, 'b');
+  assert.equal(atlas.settings.detail, 'aseg');
+  atlas.dispose();
+});
+
 test('switches one atlas at a time, caches geometry, and keeps shared anatomy', async () => {
   const { atlas, loads } = fixture();
   await atlas.initialize('a');

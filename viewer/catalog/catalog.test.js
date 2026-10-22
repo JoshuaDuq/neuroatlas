@@ -99,6 +99,23 @@ test('switching atlas switches which cortical groups exist', () => {
     ['V–Z', 'Basal ganglia']);
 });
 
+test('while CAB-NP colours the surface, its areas group, label and search by CAB-NP network', () => {
+  const yeo = (id, source_name, network) =>
+    ({ ...cortex(id, 'left', source_name, 'hcp-mmp'), networks: [{ network, fraction: 1 }] });
+  const cabNp = createCatalog({ regions: [yeo('h:l:44', 'L_44_ROI', 'Default'), yeo('h:l:1', 'L_V1_ROI', 'Vis')] },
+    'en', { regions: { 'h:l:44': 'Language', 'h:l:1': 'Visual1' } });
+  const groupNames = over => cabNp.groups(settings({ atlas: 'hcp-mmp', ...over })).map(g => g.name);
+
+  assert.deepEqual(groupNames({}), ['Default mode', 'Visual']);
+  assert.deepEqual(groupNames({ surfaceColor: 'network' }), ['Default mode', 'Visual']);
+  assert.deepEqual(groupNames({ surfaceColor: 'cab-np' }), ['Language', 'Primary visual']);
+  assert.deepEqual(groupNames({ surfaceColor: 'cab-np', lang: 'fr' }), ['Langage', 'Visuel primaire']);
+  assert.equal(cabNp.label('h:l:44', settings({ surfaceColor: 'cab-np', lang: 'en' })).group, 'Language');
+  assert.equal(cabNp.label('h:l:44', settings({ surfaceColor: 'atlas' })).group, 'Default mode');
+  assert.equal(cabNp.search('44', settings({ atlas: 'hcp-mmp', surfaceColor: 'cab-np' })).rows[0].label.group,
+    'Language');
+});
+
 test('visible region count excludes unlabelled medial surfaces', async () => {
   const real = JSON.parse(
     await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url), 'utf8'));

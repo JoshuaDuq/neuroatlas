@@ -18,8 +18,15 @@ export function filterTractGeometry(geometry, offsets, lengths, minimum) {
   geometry.setDrawRange(0, count);
 }
 
+// Direction colours are display values, as in NiiVue; three.js reads vertex colours as linear and
+// encodes them to sRGB on output, so each 8-bit display level is stored as its linear value.
+const LINEAR_LEVELS = Uint16Array.from({ length: 256 }, (_, level) => {
+  const value = level / 255;
+  return Math.round(65535 * (value < 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4));
+});
+
 function directionColors(points, offsets) {
-  const colors = new Uint8Array(points.length);
+  const colors = new Uint16Array(points.length);
   for (let line = 0; line < offsets.length - 1; line++) {
     const start = offsets[line];
     const end = offsets[line + 1] - 1;
@@ -31,9 +38,9 @@ function directionColors(points, offsets) {
       const superior = points[after + 2] - points[before + 2];
       const magnitude = Math.hypot(right, anterior, superior);
       if (magnitude === 0) continue;
-      colors[point * 3] = Math.round(255 * Math.abs(right) / magnitude);
-      colors[point * 3 + 1] = Math.round(255 * Math.abs(anterior) / magnitude);
-      colors[point * 3 + 2] = Math.round(255 * Math.abs(superior) / magnitude);
+      colors[point * 3] = LINEAR_LEVELS[Math.round(255 * Math.abs(right) / magnitude)];
+      colors[point * 3 + 1] = LINEAR_LEVELS[Math.round(255 * Math.abs(anterior) / magnitude)];
+      colors[point * 3 + 2] = LINEAR_LEVELS[Math.round(255 * Math.abs(superior) / magnitude)];
     }
   }
   return colors;

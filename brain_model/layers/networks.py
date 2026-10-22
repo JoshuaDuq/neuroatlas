@@ -40,8 +40,10 @@ _PREFIX = "7Networks"
 
 def network_of(parcel_name):
     fields = parcel_name.split("_")
-    if len(fields) < _NETWORK_FIELD + 2 or fields[0] != _PREFIX:
+    if fields[0] != _PREFIX:
         return None
+    if len(fields) < _NETWORK_FIELD + 2:
+        raise ValueError(f"{parcel_name}: not a Schaefer 7-network parcel name")
     network = fields[_NETWORK_FIELD]
     if network not in NETWORKS:
         raise ValueError(f"{parcel_name}: unknown Yeo network {network!r}")

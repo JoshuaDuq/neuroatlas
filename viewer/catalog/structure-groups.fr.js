@@ -30,6 +30,7 @@ export const STRUCTURE_LABELS_FR = {
   'Right-Thalamus-Proper': { name: 'Thalamus', system: 'Diencéphale' },
   'Left-VentralDC': { name: 'Diencéphale ventral', system: 'Diencéphale' },
   'Right-VentralDC': { name: 'Diencéphale ventral', system: 'Diencéphale' },
+  'Optic-Chiasm': { name: 'Chiasma optique', system: 'Diencéphale' },
 
   'Left-Cerebellum-Cortex': { name: 'Cortex cérébelleux', system: 'Cervelet' },
   'Right-Cerebellum-Cortex': { name: 'Cortex cérébelleux', system: 'Cervelet' },
@@ -37,7 +38,6 @@ export const STRUCTURE_LABELS_FR = {
   'Right-Cerebellum-White-Matter': { name: 'Substance blanche cérébelleuse', system: 'Cervelet' },
 
   'Brain-Stem': { name: 'Tronc cérébral', system: 'Tronc cérébral' },
-  'Optic-Chiasm': { name: 'Chiasma optique', system: 'Tronc cérébral' },
 
   'CC_Anterior': { name: 'Corps calleux, antérieur', system: 'Corps calleux' },
   'CC_Mid_Anterior': { name: 'Corps calleux, médio-antérieur', system: 'Corps calleux' },

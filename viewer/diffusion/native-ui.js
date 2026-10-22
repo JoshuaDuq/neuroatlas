@@ -90,6 +90,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   let busy = false;
   let lang = 'en';
   let error = null;
+  let failedLoad = null;
   let disposed = false;
   let overlayVisible = false;
   let cortexOpacity = 1;
@@ -132,7 +133,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     get('status').role = error ? 'alert' : 'status';
     get('status').classList.toggle('visually-hidden', ready && !busy && !error);
     get('status').dataset.error = String(Boolean(error));
-    get('retry').hidden = !error || busy;
+    get('retry').hidden = !failedLoad || busy;
     get('controls').disabled = busy || !ready;
     get('overlay-control').hidden = !matchingAnatomy;
     get('overlay').checked = overlayVisible;
@@ -158,7 +159,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   async function runLoad(action) {
     if (busy) return;
     const focused = entry.contains(document.activeElement) ? document.activeElement : null;
-    busy = true; error = null; render();
+    busy = true; error = null; failedLoad = null; render();
     try {
       await action();
       if (disposed) return;
@@ -166,7 +167,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
       ready = true;
       if (firstReference) onReady();
     } catch (caught) {
-      error = caught; console.error(caught.stack);
+      error = caught; failedLoad = action; console.error(caught.stack);
     } finally {
       busy = false; render();
       if (focused && active && document.activeElement === document.body) {
@@ -176,12 +177,13 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   }
 
   function runControl(action) {
+    failedLoad = null;
     try { action(); error = null; }
     catch (caught) { error = caught; console.error(caught); }
     render();
   }
 
-  listen('retry', 'click', () => runLoad(() => engine.load()));
+  listen('retry', 'click', () => runLoad(failedLoad).then(() => onVisibility?.()));
   listen('mri', 'click', mri.open);
   listen('overlay', 'change', event => {
     overlayVisible = event.target.checked;
@@ -218,6 +220,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     for (const bundle of engine.snapshot()) {
       engine.setVisible(bundle.id, Boolean(catalog.bundles.find(entry => entry.id === bundle.id).initial));
     }
+    onVisibility?.();
   }));
   listen('csv', 'click', () => saveLengths(engine.snapshot(), Number(get('minimum').value)));
 

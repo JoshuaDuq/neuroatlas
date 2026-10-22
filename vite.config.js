@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
@@ -8,6 +8,7 @@ import { publishedVersion } from './scripts/published-version.mjs';
 const root = fileURLToPath(new URL('.', import.meta.url));
 
 const MODEL_VERSION = publishedVersion(resolve(root, 'public'));
+let outDir;
 
 export default defineConfig({
   base: '/neuroatlas/',
@@ -39,15 +40,6 @@ export default defineConfig({
       },
     },
     {
-      // Byte-equivalent merge of two layers the viewer already loads separately.
-      // Shipping it next to them is 28 MB nobody fetches.
-      name: 'omit-unused-anatomical-merge',
-      closeBundle() {
-        const file = resolve(root, 'dist/models/brain-anatomical.glb');
-        if (existsSync(file)) unlinkSync(file);
-      },
-    },
-    {
       name: 'model-version-in-html',
       transformIndexHtml: html => html.replace('__MODEL_VERSION__', MODEL_VERSION),
     },
@@ -55,9 +47,11 @@ export default defineConfig({
       // Emit the service worker, stamped with the same model version the page
       // puts on its requests.
       name: 'model-service-worker',
+      // Wherever this build writes, including an `--outDir` given on the command line.
+      configResolved(config) { outDir = resolve(config.root, config.build.outDir); },
       closeBundle() {
         const source = readFileSync(resolve(root, 'viewer/service-worker.js'), 'utf8');
-        writeFileSync(resolve(root, 'dist/sw.js'), source.replace('__MODEL_VERSION__', MODEL_VERSION));
+        writeFileSync(resolve(outDir, 'sw.js'), source.replace('__MODEL_VERSION__', MODEL_VERSION));
       },
     },
   ],

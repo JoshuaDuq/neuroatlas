@@ -195,7 +195,7 @@ circuits:
       - id: mammillary
         region: learning:left:mammillary
         source_name: Mammillary nuclei
-        name: { en: Left mammillary bodies, fr: Corps mamillaires gauches }
+        name: { en: Left mammillary body, fr: Corps mamillaire gauche }
         role: { en: Diencephalic memory landmark, fr: Repère diencéphalique de mémoire }
         explanation:
           en: These hypothalamic nuclei project to the anterior thalamic nuclei through the mammillothalamic tract.
@@ -579,7 +579,7 @@ circuits:
       fr: Cortex cérébelleux gauche → noyau dentelé gauche → pédoncule supérieur gauche → croisement mésencéphalique → thalamus moteur droit → cortex moteur droit.
     scope:
       en: One simplified dentate output branch, not the full cerebellar loop. Incoming mossy and climbing fibres, other deep nuclei and return pathways are omitted. The crossing is explained, not reconstructed as individual axons.
-      fr: Une branche de sortie dentelée simplifiée, et non toute la boucle cérébelleuse. Les fibres moussues et grimpantes afférentes, les autres noyaux profonds et les voies de retour sont omis. Le croisement est expliqué, et non reconstruit en axones individuels.
+      fr: Une branche de sortie du noyau dentelé, simplifiée, et non toute la boucle cérébelleuse. Les fibres moussues et grimpantes afférentes, les autres noyaux profonds et les voies de retour sont omis. Le croisement est expliqué, et non reconstruit en axones individuels.
     clinical:
       en: Compare these output landmarks with cerebellar ataxia evidence. Lesion location within the cerebellum matters; the entire cortex is not one uniform motor territory.
       fr: Comparez ces repères de sortie aux données sur l’ataxie cérébelleuse. La localisation lésionnelle dans le cervelet importe ; tout le cortex ne constitue pas un territoire moteur uniforme.
@@ -593,7 +593,7 @@ circuits:
         role: { en: Cortical influence on deep nuclei, fr: Influence corticale sur les noyaux profonds }
         explanation:
           en: Purkinje cells provide inhibitory output from cerebellar cortex toward deep nuclei. The lateral hemispheric territory contributes to the dentate branch visited next.
-          fr: Les cellules de Purkinje fournissent une sortie inhibitrice du cortex cérébelleux vers les noyaux profonds. Le territoire hémisphérique latéral contribue à la branche dentelée visitée ensuite.
+          fr: Les cellules de Purkinje fournissent une sortie inhibitrice du cortex cérébelleux vers les noyaux profonds. Le territoire hémisphérique latéral contribue à la branche du noyau dentelé visitée ensuite.
         mapping:
           en: The whole left cerebellar cortex is highlighted, not only the lateral territory projecting to the dentate or its motor subdivisions.
           fr: Tout le cortex cérébelleux gauche est sélectionné, et non seulement le territoire latéral projetant vers le noyau dentelé ni ses subdivisions motrices.
@@ -607,7 +607,7 @@ circuits:
         role: { en: Deep cerebellar output, fr: Sortie cérébelleuse profonde }
         explanation:
           en: The covering cerebellar cortex is hidden to expose this deep nucleus. Dentate output ascends through the superior cerebellar peduncle toward targets that include the contralateral thalamus.
-          fr: Le cortex cérébelleux qui le recouvre est masqué pour exposer ce noyau profond. La sortie dentelée monte par le pédoncule cérébelleux supérieur vers des cibles comprenant le thalamus contralatéral.
+          fr: Le cortex cérébelleux qui le recouvre est masqué pour exposer ce noyau profond. La sortie du noyau dentelé monte par le pédoncule cérébelleux supérieur vers des cibles comprenant le thalamus contralatéral.
         mapping:
           en: The whole dentate is shown without separate motor and nonmotor territories. Returning to the cerebellar cortex landmark restores its covering layer. MRI retains the complete volume.
           fr: Le noyau dentelé entier est affiché sans séparer les territoires moteurs et non moteurs. Revenir au repère du cortex cérébelleux rétablit sa couche de couverture. L’IRM conserve le volume complet.
@@ -633,7 +633,7 @@ circuits:
         role: { en: Contralateral motor relay territory, fr: Territoire de relais moteur contralatéral }
         explanation:
           en: After crossing, left dentate output reaches right thalamic territories involved in motor loops. Thalamic projections then reach right frontal motor areas.
-          fr: Après le croisement, la sortie dentelée gauche atteint des territoires thalamiques droits impliqués dans les boucles motrices. Les projections thalamiques rejoignent ensuite les aires motrices frontales droites.
+          fr: Après le croisement, la sortie du noyau dentelé gauche atteint des territoires thalamiques droits impliqués dans les boucles motrices. Les projections thalamiques rejoignent ensuite les aires motrices frontales droites.
         mapping:
           en: The whole right thalamic union is highlighted, not specifically its ventrolateral cerebellar-recipient territory.
           fr: L’union thalamique droite entière est sélectionnée, et non spécifiquement son territoire ventrolatéral recevant les entrées cérébelleuses.

@@ -5,7 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { acceleratedRaycast } from 'three-mesh-bvh';
 import { BrainAtlas } from '../viewer/model/brain-atlas.js';
 
-const directory = new URL('../public/models/', import.meta.url);
+const models = new URL('../public/models/', import.meta.url);
+const anatomy = JSON.parse(await readFile(new URL('anatomies.json', models), 'utf8')).default;
+const directory = new URL(`${anatomy}/`, models);
 const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
 const parser = new GLTFLoader();
 const model = new BrainAtlas(manifest, {
@@ -43,7 +45,7 @@ for (let i = 0; i < rays.length; i++) {
   if (standard.hits[i]) assert.ok(Math.abs(standard.hits[i][1] - accelerated.hits[i][1]) < 1e-9);
 }
 const result = {
-  rays: rays.length, identical_selections: true,
+  anatomy, rays: rays.length, identical_selections: true,
   standard_total_ms: standard.milliseconds,
   accelerated_total_ms: accelerated.milliseconds,
   speedup: standard.milliseconds / accelerated.milliseconds,

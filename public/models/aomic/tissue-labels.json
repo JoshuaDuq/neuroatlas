@@ -581,7 +581,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "left",
           "kind": "tissue",
           "region_id": null
         },
@@ -593,7 +593,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "right",
           "kind": "tissue",
           "region_id": null
         },
@@ -607,7 +607,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:1"
         },
         {
           "source_label_id": 11102,
@@ -619,7 +619,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:2"
         },
         {
           "source_label_id": 11103,
@@ -631,7 +631,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:3"
         },
         {
           "source_label_id": 11104,
@@ -643,7 +643,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:4"
         },
         {
           "source_label_id": 11105,
@@ -655,7 +655,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:5"
         },
         {
           "source_label_id": 11106,
@@ -667,7 +667,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:6"
         },
         {
           "source_label_id": 11107,
@@ -679,7 +679,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:7"
         },
         {
           "source_label_id": 11108,
@@ -691,7 +691,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:8"
         },
         {
           "source_label_id": 11109,
@@ -799,7 +799,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:17"
         },
         {
           "source_label_id": 11118,
@@ -1267,7 +1267,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:57"
         },
         {
           "source_label_id": 11158,
@@ -1279,7 +1279,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:58"
         },
         {
           "source_label_id": 11159,
@@ -1291,7 +1291,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:59"
         },
         {
           "source_label_id": 11160,
@@ -1327,7 +1327,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:62"
         },
         {
           "source_label_id": 11163,
@@ -1495,7 +1495,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:1"
         },
         {
           "source_label_id": 12102,
@@ -1507,7 +1507,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:2"
         },
         {
           "source_label_id": 12103,
@@ -1519,7 +1519,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:3"
         },
         {
           "source_label_id": 12104,
@@ -1531,7 +1531,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:4"
         },
         {
           "source_label_id": 12105,
@@ -1543,7 +1543,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:5"
         },
         {
           "source_label_id": 12106,
@@ -1555,7 +1555,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:6"
         },
         {
           "source_label_id": 12107,
@@ -1567,7 +1567,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:7"
         },
         {
           "source_label_id": 12108,
@@ -1579,7 +1579,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:8"
         },
         {
           "source_label_id": 12109,
@@ -1687,7 +1687,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:17"
         },
         {
           "source_label_id": 12118,
@@ -2155,7 +2155,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:57"
         },
         {
           "source_label_id": 12158,
@@ -2167,7 +2167,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:58"
         },
         {
           "source_label_id": 12159,
@@ -2179,7 +2179,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:59"
         },
         {
           "source_label_id": 12160,
@@ -2215,7 +2215,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:62"
         },
         {
           "source_label_id": 12163,
@@ -2955,7 +2955,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "left",
           "kind": "tissue",
           "region_id": null
         },
@@ -2967,7 +2967,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "right",
           "kind": "tissue",
           "region_id": null
         },
@@ -2981,7 +2981,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:1"
         },
         {
           "source_label_id": 11102,
@@ -2993,7 +2993,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:2"
         },
         {
           "source_label_id": 11103,
@@ -3005,7 +3005,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:3"
         },
         {
           "source_label_id": 11104,
@@ -3017,7 +3017,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:4"
         },
         {
           "source_label_id": 11105,
@@ -3029,7 +3029,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:5"
         },
         {
           "source_label_id": 11106,
@@ -3041,7 +3041,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:6"
         },
         {
           "source_label_id": 11107,
@@ -3053,7 +3053,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:7"
         },
         {
           "source_label_id": 11108,
@@ -3065,7 +3065,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:8"
         },
         {
           "source_label_id": 11109,
@@ -3173,7 +3173,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:17"
         },
         {
           "source_label_id": 11118,
@@ -3641,7 +3641,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:57"
         },
         {
           "source_label_id": 11158,
@@ -3653,7 +3653,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:58"
         },
         {
           "source_label_id": 11159,
@@ -3665,7 +3665,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:59"
         },
         {
           "source_label_id": 11160,
@@ -3701,7 +3701,7 @@
           ],
           "hemisphere": "left",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:left:62"
         },
         {
           "source_label_id": 11163,
@@ -3869,7 +3869,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:1"
         },
         {
           "source_label_id": 12102,
@@ -3881,7 +3881,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:2"
         },
         {
           "source_label_id": 12103,
@@ -3893,7 +3893,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:3"
         },
         {
           "source_label_id": 12104,
@@ -3905,7 +3905,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:4"
         },
         {
           "source_label_id": 12105,
@@ -3917,7 +3917,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:5"
         },
         {
           "source_label_id": 12106,
@@ -3929,7 +3929,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:6"
         },
         {
           "source_label_id": 12107,
@@ -3941,7 +3941,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:7"
         },
         {
           "source_label_id": 12108,
@@ -3953,7 +3953,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:8"
         },
         {
           "source_label_id": 12109,
@@ -4061,7 +4061,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:17"
         },
         {
           "source_label_id": 12118,
@@ -4529,7 +4529,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:57"
         },
         {
           "source_label_id": 12158,
@@ -4541,7 +4541,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:58"
         },
         {
           "source_label_id": 12159,
@@ -4553,7 +4553,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:59"
         },
         {
           "source_label_id": 12160,
@@ -4589,7 +4589,7 @@
           ],
           "hemisphere": "right",
           "kind": "cortex",
-          "region_id": null
+          "region_id": "destrieux:right:62"
         },
         {
           "source_label_id": 12163,
