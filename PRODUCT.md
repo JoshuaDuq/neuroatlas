@@ -35,8 +35,10 @@ No additional user roles were established for this UI redesign.
 
 ## Brand Commitments
 
-Keep the NeuroAtlas name and existing brain mark. The user requested a clean,
-clinical, professional interface and selected a light clinical workspace.
+Keep the NeuroAtlas name and the cut-away mark: SNAIL subj_1's left hemisphere,
+traced from its surfaces, solid behind a coronal cut and outlined in front. The
+user requested a clean, clinical, professional interface and selected a light
+clinical workspace.
 
 ## Evidence on Hand
 
