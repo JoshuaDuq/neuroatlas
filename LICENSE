@@ -1,0 +1,36 @@
+MIT License
+
+Copyright (c) 2026 Joshua Duquette
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+
+Scope
+
+This licence covers the source code of the build pipeline and the web viewer
+only. It does not cover the neuroimaging data or the assets derived from it:
+everything under data/, public/models/ and public/diffusion/ stays under the
+terms of its origin, listed in README.md and docs/reference/references.md, with
+the full texts in public/models/licenses/. Those terms include the FreeSurfer
+Software License, the HCP Open Access Data Use Terms, the non-commercial CAB-NP
+License, CC BY-SA 4.0 (Z-Anatomy) and CC0 1.0.
+
+NeuroAtlas is for research and education. It is not a medical device and must
+not be used for diagnosis, treatment or any other clinical decision.
