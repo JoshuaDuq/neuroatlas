@@ -20,6 +20,8 @@ test('every link in the provenance sheet comes from the published records', () =
       `${href} is not in the manifest`);
   }
   assert.ok(hrefs(rows).includes(`${beside}${manifest.cab_np.license_file}`));
+  const hcp = manifest.atlases.find(atlas => atlas.id === 'hcp-mmp');
+  assert.ok(hrefs(rows).includes(`${beside}${hcp.license_file}`));
   assert.ok(hrefs(rows).includes(manifest.anatomy.source_url));
   assert.ok(hrefs(rows).includes(urls.manifestUrl));
   assert.ok(hrefs(rows).includes(urls.indexUrl));

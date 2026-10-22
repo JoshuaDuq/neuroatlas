@@ -344,6 +344,7 @@
       "label": "HCP-MMP1.0 multimodal atlas",
       "annotation": "HCPMMP1",
       "citation": "https://doi.org/10.1038/nature18933",
+      "license_file": "../licenses/HCP-Data-Use-Terms.txt",
       "file": "cortex-hcp-mmp.glb",
       "region_count": 360,
       "surface_shading": {

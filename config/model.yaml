@@ -66,6 +66,8 @@ anatomies:
     source_url: https://osf.io/download/3bxqt?version=2
     # No `archive`: these files are committed. No `project_hcp_from`: HCP-MMP1.0
     # is already published in this space, so nothing is resampled onto it.
+    # The NextBrain volume is the exception: its source published no licence,
+    # so it is kept locally and not committed.
     nextbrain:
       directory: data/nextbrain
       volume: nextbrain-fsaverage.mgz
@@ -434,6 +436,8 @@ atlases:
     label: HCP-MMP1.0 multimodal atlas
     annotation: HCPMMP1
     citation: https://doi.org/10.1038/nature18933
+    # Redistributed only under these terms; relative to the manifest, like CAB-NP's.
+    license_file: ../licenses/HCP-Data-Use-Terms.txt
 # A cut-label atlas with no cortical surface counterpart. Optional: the volume
 # is produced once per brain by scripts/segment_nextbrain.py, which needs
 # FreeSurfer 8.2. `directory`, `volume` and `procedure` come from the selected

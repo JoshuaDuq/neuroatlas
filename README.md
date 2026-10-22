@@ -166,7 +166,7 @@ Each anatomy is one person's brain, not a template, and is **not clinically norm
 
 ## Licensing
 
-- **Code** (pipeline and viewer): MIT.
+- **Code** (pipeline and viewer): MIT, see [`LICENSE`](LICENSE). It covers the code only; each data asset below keeps its own terms.
 - **`bert` and `fsaverage` assets:** FreeSurfer Software License.
 - **`aomic` `sub-0022` assets:** CC0 1.0 (public domain).
 - **SNAIL tract reference:** CC0 1.0.
@@ -175,6 +175,8 @@ Each anatomy is one person's brain, not a template, and is **not clinically norm
 - **Spinal cord (`spinal-cord.glb`):** derived from Z-Anatomy, CC BY-SA 4.0, kept as an isolated file.
 
 The full terms and citations are on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.
+
+NeuroAtlas is for research and education. It is not a medical device and must not be used for diagnosis, treatment or any other clinical decision.
 
 ## Acknowledgements
 

@@ -25,20 +25,21 @@ export function provenanceRows(manifest, { lang = 'en', manifestUrl, indexUrl } 
   }]);
   add(copy.sourceData, [anatomy.source_url && { link: link(anatomy.source_url) }]);
   add(copy.reconstruction, [anatomy.reconstruction && { text: anatomy.reconstruction, mono: true }]);
-  add(copy.atlases, (manifest.atlases ?? []).map(atlas => ({
+  // A licence the manifest publishes beside its own directory; the href resolves `..` when followed.
+  const licence = file => file && manifestUrl && {
+    link: { href: manifestUrl.replace(/[^/]*$/, '') + file, text: file.split('/').pop(), mono: true },
+  };
+  add(copy.atlases, (manifest.atlases ?? []).flatMap(atlas => [{
     text: names[atlas.id] ?? atlas.label,
     note: atlas.id === 'hcp-mmp' && anatomy.hcp_projected_from
       ? copy.projectedFrom(anatomy.hcp_projected_from) : null,
     link: link(atlas.citation),
-  })));
+  }, licence(atlas.license_file)]));
   const { networks, cab_np: cabNp } = manifest;
   add(copy.networks, [
     networks?.label && { text: networks.label, link: link(networks.citation) },
     cabNp && { text: cabNp.label, note: cabNp.license, link: link(cabNp.citation) },
-    cabNp && manifestUrl && {
-      // The licence sits beside the manifest's directory; the href resolves `..` when followed.
-      link: { href: manifestUrl.replace(/[^/]*$/, '') + cabNp.license_file, text: 'CAB-NP.txt', mono: true },
-    },
+    cabNp && licence(cabNp.license_file),
   ]);
   const functional = manifest.functional_regions;
   add(copy.functional, functional ? [
@@ -104,6 +105,7 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, fallbackFocu
   const title = document.getElementById('provenance-title');
   const close = document.getElementById('provenance-close');
   const facts = document.getElementById('provenance-facts');
+  const use = document.getElementById('provenance-use');
   const openers = [...document.querySelectorAll('[data-opens-provenance]')];
   let lang = 'en';
   let reference = null;
@@ -113,6 +115,7 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, fallbackFocu
     const copy = t(lang, 'footer');
     title.textContent = copy.provenance;
     close.textContent = copy.close;
+    use.textContent = copy.intendedUse;
     const rows = reference ? referenceRows(reference, lang) : provenanceRows(manifest, { lang, manifestUrl, indexUrl });
     facts.replaceChildren(...rows.flatMap(row => {
       const dt = document.createElement('dt');

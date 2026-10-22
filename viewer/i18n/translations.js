@@ -387,6 +387,7 @@ export const TRANSLATIONS = {
       index: 'Index of the published anatomies',
       tractReference: 'Tract reference',
       sources: 'Sources',
+      intendedUse: 'For research and education. NeuroAtlas is not a medical device and must not be used for diagnosis, treatment or any other clinical decision.',
     },
 
     workspace: {
@@ -795,6 +796,7 @@ export const TRANSLATIONS = {
       index: 'Index des anatomies publiées',
       tractReference: 'Référence des faisceaux',
       sources: 'Sources',
+      intendedUse: 'Pour la recherche et l’enseignement. NeuroAtlas n’est pas un dispositif médical et ne doit pas servir au diagnostic, au traitement ni à aucune autre décision clinique.',
     },
 
     workspace: {
