@@ -74,6 +74,7 @@
       "ior": 1.38,
       "specular_intensity": 0.55
     },
+    "glass_opacity": 0.1,
     "intensity": {
       "low": 85,
       "high": 180,
@@ -796,6 +797,18 @@
     "license_file": "../licenses/CAB-NP.txt",
     "source_file": "../licenses/CAB-NP-LabelKey.txt",
     "method": "Each HCP-MMP1.0 area takes the network CAB-NP assigns it, matched by published area name in each hemisphere; carried per area, never per vertex"
+  },
+  "functional_regions": {
+    "id": "functional-regions",
+    "file": "functional-regions.json",
+    "atlas": "hcp-mmp",
+    "label": "Functional divisions (Glasser 2016 sections; Glasser 2016 and Rolls 2023 named regions)",
+    "citations": [
+      "https://doi.org/10.1038/nature18933",
+      "https://doi.org/10.1093/cercor/bhac070",
+      "https://doi.org/10.1002/hbm.26089"
+    ],
+    "method": "Each HCP-MMP1.0 area takes the section and, where a source names one, the named region whose published area list holds it, matched by area name in each hemisphere; carried per area, never per vertex"
   },
   "cut_atlases": [
     {
@@ -33401,6 +33414,9 @@
     "CAB-NP networks come from group resting-state connectivity of Human Connectome Project participants, not from this brain's measured function, and reach this brain through the same HCP-MMP projection.",
     "CAB-NP assigns each HCP-MMP area whole to one network, so its colour boundaries are HCP-MMP's boundaries. It colours that atlas's areas only.",
     "CAB-NP assigns the hemispheres separately; 13 areas belong to a different network on each side, as published.",
+    "Functional divisions are published groupings of HCP-MMP1.0 areas: the 22 sections of Glasser et al. (2016) and named regions from Glasser et al. (2016) and Rolls et al. (2023). They reach this brain through the HCP-MMP projection and are not measured in it.",
+    "A functional division's borders are HCP-MMP's area borders. No border is drawn for a name no source defines as a set of HCP-MMP areas: dorsomedial prefrontal cortex, a dorsolateral prefrontal cortex narrower than Glasser's section, the temporoparietal junction and the intraparietal sulcus have no named region and are shown only within Glasser's sections.",
+    "Glasser's supplement places six areas (23c, 52, PFcm, TF, a47r, pOFC) in one section in its Table 1 and in another in its section texts; the sections follow Table 1's primary column, and the alternative is published beside each.",
     "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region."
   ],
   "provenance": {

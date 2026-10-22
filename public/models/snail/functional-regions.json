@@ -1,0 +1,1440 @@
+{
+  "id": "functional-regions",
+  "atlas": "hcp-mmp",
+  "sources": {
+    "glasser-2016": {
+      "short": "Glasser et al. (2016)",
+      "citation": "Glasser MF, Coalson TS, Robinson EC, et al. (2016) A multi-modal parcellation of human cerebral cortex. Nature 536:171\u2013178",
+      "doi": "https://doi.org/10.1038/nature18933",
+      "pmid": 27437579
+    },
+    "rolls-2023-ofc": {
+      "short": "Rolls et al. (2023), Cereb Cortex",
+      "citation": "Rolls ET, Deco G, Huang CC, Feng J (2023) The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. Cereb Cortex 33:330\u2013356",
+      "doi": "https://doi.org/10.1093/cercor/bhac070",
+      "pmid": 35233615
+    },
+    "rolls-2023-pcc": {
+      "short": "Rolls et al. (2023), Hum Brain Mapp",
+      "citation": "Rolls ET, Wirth S, Deco G, Huang CC, Feng J (2023) The human posterior cingulate, retrosplenial, and medial parietal cortex effective connectome, and implications for memory and navigation. Hum Brain Mapp 44:629\u2013655",
+      "doi": "https://doi.org/10.1002/hbm.26089",
+      "pmid": 36178249
+    }
+  },
+  "contested": {
+    "23c": {
+      "section": 7,
+      "text_section": 18
+    },
+    "52": {
+      "section": 10,
+      "text_section": 12
+    },
+    "PFcm": {
+      "section": 10,
+      "text_section": 9
+    },
+    "TF": {
+      "section": 13,
+      "text_section": 14
+    },
+    "a47r": {
+      "section": 21,
+      "text_section": 20
+    },
+    "pOFC": {
+      "section": 19,
+      "text_section": 20
+    }
+  },
+  "levels": {
+    "named": [
+      {
+        "id": "v1",
+        "source": "glasser-2016",
+        "color": [
+          23,
+          167,
+          80
+        ],
+        "short": "V1",
+        "short_fr": "V1",
+        "name": "Primary visual cortex (V1)",
+        "name_fr": "Cortex visuel primaire (V1)",
+        "areas": [
+          "V1"
+        ]
+      },
+      {
+        "id": "mt",
+        "source": "glasser-2016",
+        "color": [
+          60,
+          155,
+          170
+        ],
+        "short": "MT",
+        "short_fr": "MT",
+        "name": "Middle temporal area (MT)",
+        "name_fr": "Aire temporale moyenne (MT)",
+        "areas": [
+          "MT"
+        ]
+      },
+      {
+        "id": "ffc",
+        "source": "glasser-2016",
+        "color": [
+          247,
+          113,
+          160
+        ],
+        "short": "FFC",
+        "short_fr": "FFC",
+        "name": "Fusiform face complex (FFC)",
+        "name_fr": "Complexe fusiforme des visages (FFC)",
+        "areas": [
+          "FFC"
+        ]
+      },
+      {
+        "id": "m1",
+        "source": "glasser-2016",
+        "color": [
+          197,
+          198,
+          25
+        ],
+        "short": "M1",
+        "short_fr": "M1",
+        "name": "Primary motor cortex (M1)",
+        "name_fr": "Cortex moteur primaire (M1)",
+        "areas": [
+          "4"
+        ]
+      },
+      {
+        "id": "s1",
+        "source": "glasser-2016",
+        "color": [
+          205,
+          92,
+          172
+        ],
+        "short": "S1",
+        "short_fr": "S1",
+        "name": "Primary somatosensory cortex (S1)",
+        "name_fr": "Cortex somatosensoriel primaire (S1)",
+        "areas": [
+          "3a",
+          "3b",
+          "1",
+          "2"
+        ]
+      },
+      {
+        "id": "s2",
+        "source": "glasser-2016",
+        "color": [
+          222,
+          96,
+          47
+        ],
+        "short": "SII",
+        "short_fr": "SII",
+        "name": "Secondary somatosensory cortex (SII)",
+        "name_fr": "Cortex somatosensoriel secondaire (SII)",
+        "areas": [
+          "OP1"
+        ]
+      },
+      {
+        "id": "sma",
+        "source": "glasser-2016",
+        "color": [
+          87,
+          129,
+          78
+        ],
+        "short": "SMA",
+        "short_fr": "AMS",
+        "name": "Supplementary motor area (SMA)",
+        "name_fr": "Aire motrice suppl\u00e9mentaire (AMS)",
+        "areas": [
+          "6mp",
+          "6ma",
+          "SCEF"
+        ]
+      },
+      {
+        "id": "fef",
+        "source": "glasser-2016",
+        "color": [
+          148,
+          128,
+          187
+        ],
+        "short": "FEF",
+        "short_fr": "FEF",
+        "name": "Frontal eye fields (FEF)",
+        "name_fr": "Champs oculomoteurs frontaux (FEF)",
+        "areas": [
+          "FEF"
+        ]
+      },
+      {
+        "id": "pef",
+        "source": "glasser-2016",
+        "color": [
+          6,
+          191,
+          168
+        ],
+        "short": "PEF",
+        "short_fr": "PEF",
+        "name": "Premotor eye field (PEF)",
+        "name_fr": "Champ oculomoteur pr\u00e9moteur (PEF)",
+        "areas": [
+          "PEF"
+        ]
+      },
+      {
+        "id": "broca",
+        "source": "glasser-2016",
+        "color": [
+          152,
+          95,
+          133
+        ],
+        "short": "Broca's area",
+        "short_fr": "Aire de Broca",
+        "name": "Broca's area",
+        "name_fr": "Aire de Broca",
+        "areas": [
+          "44",
+          "45"
+        ]
+      },
+      {
+        "id": "a1",
+        "source": "glasser-2016",
+        "color": [
+          85,
+          117,
+          169
+        ],
+        "short": "A1",
+        "short_fr": "A1",
+        "name": "Primary auditory cortex (A1)",
+        "name_fr": "Cortex auditif primaire (A1)",
+        "areas": [
+          "A1"
+        ]
+      },
+      {
+        "id": "lateral-ofc",
+        "source": "rolls-2023-ofc",
+        "color": [
+          250,
+          146,
+          241
+        ],
+        "short": "Lateral OFC",
+        "short_fr": "COF lat\u00e9ral",
+        "name": "Lateral orbitofrontal cortex",
+        "name_fr": "Cortex orbitofrontal lat\u00e9ral",
+        "areas": [
+          "47s",
+          "47l",
+          "a47r",
+          "p47r",
+          "47m"
+        ]
+      },
+      {
+        "id": "medial-ofc",
+        "source": "rolls-2023-ofc",
+        "color": [
+          196,
+          62,
+          73
+        ],
+        "short": "Medial OFC",
+        "short_fr": "COF m\u00e9dian",
+        "name": "Medial orbitofrontal cortex",
+        "name_fr": "Cortex orbitofrontal m\u00e9dian",
+        "areas": [
+          "11l",
+          "13l",
+          "OFC",
+          "pOFC"
+        ]
+      },
+      {
+        "id": "subgenual-cingulate",
+        "source": "rolls-2023-ofc",
+        "color": [
+          96,
+          170,
+          243
+        ],
+        "short": "Subgenual cingulate",
+        "short_fr": "Cingulaire subg\u00e9nual",
+        "name": "Subgenual cingulate cortex",
+        "name_fr": "Cortex cingulaire subg\u00e9nual",
+        "areas": [
+          "25"
+        ]
+      },
+      {
+        "id": "pregenual-acc",
+        "source": "rolls-2023-ofc",
+        "color": [
+          150,
+          107,
+          52
+        ],
+        "short": "Pregenual ACC",
+        "short_fr": "CCA pr\u00e9g\u00e9nual",
+        "name": "Pregenual anterior cingulate cortex",
+        "name_fr": "Cortex cingulaire ant\u00e9rieur pr\u00e9g\u00e9nual",
+        "areas": [
+          "s32",
+          "a24",
+          "p24",
+          "p32",
+          "d32"
+        ]
+      },
+      {
+        "id": "area-10",
+        "source": "rolls-2023-ofc",
+        "color": [
+          48,
+          222,
+          151
+        ],
+        "short": "Area 10 and related vmPFC",
+        "short_fr": "Aire 10 et r\u00e9gions du CPFvm",
+        "name": "Area 10 and related ventromedial prefrontal cortex regions",
+        "name_fr": "Aire 10 et r\u00e9gions apparent\u00e9es du cortex pr\u00e9frontal ventrom\u00e9dian",
+        "areas": [
+          "10v",
+          "10r",
+          "10d",
+          "9m"
+        ]
+      },
+      {
+        "id": "supracallosal-acc",
+        "source": "rolls-2023-ofc",
+        "color": [
+          133,
+          87,
+          200
+        ],
+        "short": "Supracallosal ACC",
+        "short_fr": "CCA supracalleux",
+        "name": "Supracallosal anterior cingulate cortex",
+        "name_fr": "Cortex cingulaire ant\u00e9rieur supracalleux",
+        "areas": [
+          "a32pr",
+          "a24pr",
+          "33pr",
+          "p32pr",
+          "p24pr"
+        ]
+      },
+      {
+        "id": "midcingulate",
+        "source": "rolls-2023-pcc",
+        "color": [
+          64,
+          209,
+          247
+        ],
+        "short": "Midcingulate",
+        "short_fr": "Cingulaire moyen",
+        "name": "Midcingulate cortex",
+        "name_fr": "Cortex cingulaire moyen",
+        "areas": [
+          "23c",
+          "24dd",
+          "24dv"
+        ]
+      },
+      {
+        "id": "pcc-1",
+        "source": "rolls-2023-pcc",
+        "color": [
+          101,
+          130,
+          242
+        ],
+        "short": "PCC group 1",
+        "short_fr": "CCP groupe 1",
+        "name": "Postero-ventral posterior cingulate division (group 1)",
+        "name_fr": "Division cingulaire post\u00e9rieure post\u00e9ro-ventrale (groupe 1)",
+        "areas": [
+          "31pd",
+          "31pv",
+          "7m",
+          "d23ab",
+          "v23ab"
+        ]
+      },
+      {
+        "id": "pcc-2",
+        "source": "rolls-2023-pcc",
+        "color": [
+          159,
+          141,
+          14
+        ],
+        "short": "PCC group 2",
+        "short_fr": "CCP groupe 2",
+        "name": "Antero-dorsal posterior cingulate division (group 2)",
+        "name_fr": "Division cingulaire post\u00e9rieure ant\u00e9ro-dorsale (groupe 2)",
+        "areas": [
+          "RSC",
+          "31a",
+          "23d",
+          "PCV",
+          "POS2",
+          "POS1"
+        ]
+      },
+      {
+        "id": "pcc-3",
+        "source": "rolls-2023-pcc",
+        "color": [
+          197,
+          131,
+          243
+        ],
+        "short": "PCC group 3",
+        "short_fr": "CCP groupe 3",
+        "name": "Dorsal visual transitional area and ProS (group 3)",
+        "name_fr": "Aire visuelle dorsale de transition et ProS (groupe 3)",
+        "areas": [
+          "DVT",
+          "ProS"
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "number": 1,
+        "source": "glasser-2016",
+        "color": [
+          251,
+          113,
+          140
+        ],
+        "short": "V1",
+        "short_fr": "V1",
+        "name": "Primary visual cortex (V1)",
+        "name_fr": "Cortex visuel primaire (V1)",
+        "areas": [
+          "V1"
+        ]
+      },
+      {
+        "id": "section-2",
+        "number": 2,
+        "source": "glasser-2016",
+        "color": [
+          147,
+          81,
+          189
+        ],
+        "short": "Early visual",
+        "short_fr": "Visuel pr\u00e9coce",
+        "name": "Early visual cortex",
+        "name_fr": "Cortex visuel pr\u00e9coce",
+        "areas": [
+          "V2",
+          "V3",
+          "V4"
+        ]
+      },
+      {
+        "id": "section-3",
+        "number": 3,
+        "source": "glasser-2016",
+        "color": [
+          238,
+          173,
+          137
+        ],
+        "short": "Dorsal stream visual",
+        "short_fr": "Visuel de la voie dorsale",
+        "name": "Dorsal stream visual cortex",
+        "name_fr": "Cortex visuel de la voie dorsale",
+        "areas": [
+          "V3A",
+          "V3B",
+          "V6",
+          "V6A",
+          "V7",
+          "IPS1"
+        ]
+      },
+      {
+        "id": "section-4",
+        "number": 4,
+        "source": "glasser-2016",
+        "color": [
+          133,
+          159,
+          246
+        ],
+        "short": "Ventral stream visual",
+        "short_fr": "Visuel de la voie ventrale",
+        "name": "Ventral stream visual cortex",
+        "name_fr": "Cortex visuel de la voie ventrale",
+        "areas": [
+          "V8",
+          "VVC",
+          "PIT",
+          "FFC",
+          "VMV1",
+          "VMV2",
+          "VMV3"
+        ]
+      },
+      {
+        "id": "section-5",
+        "number": 5,
+        "source": "glasser-2016",
+        "color": [
+          129,
+          117,
+          49
+        ],
+        "short": "MT+ complex and neighbors",
+        "short_fr": "Complexe MT+ et voisines",
+        "name": "MT+ complex and neighboring visual areas",
+        "name_fr": "Complexe MT+ et aires visuelles voisines",
+        "areas": [
+          "V3CD",
+          "LO1",
+          "LO2",
+          "LO3",
+          "V4t",
+          "FST",
+          "MT",
+          "MST",
+          "PH"
+        ]
+      },
+      {
+        "id": "section-6",
+        "number": 6,
+        "source": "glasser-2016",
+        "color": [
+          148,
+          207,
+          159
+        ],
+        "short": "Somatosensory and motor",
+        "short_fr": "Somatosensoriel et moteur",
+        "name": "Somatosensory and motor cortex",
+        "name_fr": "Cortex somatosensoriel et moteur",
+        "areas": [
+          "4",
+          "3a",
+          "3b",
+          "1",
+          "2"
+        ]
+      },
+      {
+        "id": "section-7",
+        "number": 7,
+        "source": "glasser-2016",
+        "color": [
+          185,
+          64,
+          130
+        ],
+        "short": "Paracentral and mid cingulate",
+        "short_fr": "Paracentral et cingulaire moyen",
+        "name": "Paracentral lobular and mid cingulate cortex",
+        "name_fr": "Cortex du lobule paracentral et cingulaire moyen",
+        "areas": [
+          "24dd",
+          "24dv",
+          "6mp",
+          "6ma",
+          "SCEF",
+          "5m",
+          "5L",
+          "5mv",
+          "23c"
+        ]
+      },
+      {
+        "id": "section-8",
+        "number": 8,
+        "source": "glasser-2016",
+        "color": [
+          141,
+          117,
+          235
+        ],
+        "short": "Premotor",
+        "short_fr": "Pr\u00e9moteur",
+        "name": "Premotor cortex",
+        "name_fr": "Cortex pr\u00e9moteur",
+        "areas": [
+          "55b",
+          "6d",
+          "6a",
+          "FEF",
+          "6v",
+          "6r",
+          "PEF"
+        ]
+      },
+      {
+        "id": "section-9",
+        "number": 9,
+        "source": "glasser-2016",
+        "color": [
+          224,
+          91,
+          74
+        ],
+        "short": "Posterior opercular",
+        "short_fr": "Operculaire post\u00e9rieur",
+        "name": "Posterior opercular cortex",
+        "name_fr": "Cortex operculaire post\u00e9rieur",
+        "areas": [
+          "43",
+          "FOP1",
+          "OP4",
+          "OP1",
+          "OP2-3"
+        ]
+      },
+      {
+        "id": "section-10",
+        "number": 10,
+        "source": "glasser-2016",
+        "color": [
+          197,
+          198,
+          25
+        ],
+        "short": "Early auditory",
+        "short_fr": "Auditif pr\u00e9coce",
+        "name": "Early auditory cortex",
+        "name_fr": "Cortex auditif pr\u00e9coce",
+        "areas": [
+          "A1",
+          "LBelt",
+          "MBelt",
+          "PBelt",
+          "RI",
+          "52",
+          "PFcm"
+        ]
+      },
+      {
+        "id": "section-11",
+        "number": 11,
+        "source": "glasser-2016",
+        "color": [
+          165,
+          122,
+          174
+        ],
+        "short": "Auditory association",
+        "short_fr": "Auditif associatif",
+        "name": "Auditory association cortex",
+        "name_fr": "Cortex auditif associatif",
+        "areas": [
+          "A4",
+          "A5",
+          "STSdp",
+          "STSda",
+          "STSvp",
+          "STSva",
+          "STGa",
+          "TA2"
+        ]
+      },
+      {
+        "id": "section-12",
+        "number": 12,
+        "source": "glasser-2016",
+        "color": [
+          145,
+          195,
+          246
+        ],
+        "short": "Insular and frontal opercular",
+        "short_fr": "Insulaire et operculaire frontal",
+        "name": "Insular and frontal opercular cortex",
+        "name_fr": "Cortex insulaire et operculaire frontal",
+        "areas": [
+          "PI",
+          "Ig",
+          "PoI1",
+          "PoI2",
+          "FOP2",
+          "FOP3",
+          "MI",
+          "AVI",
+          "AAIC",
+          "Pir",
+          "FOP4",
+          "FOP5"
+        ]
+      },
+      {
+        "id": "section-13",
+        "number": 13,
+        "source": "glasser-2016",
+        "color": [
+          163,
+          95,
+          85
+        ],
+        "short": "Medial temporal",
+        "short_fr": "Temporal m\u00e9dial",
+        "name": "Medial temporal cortex",
+        "name_fr": "Cortex temporal m\u00e9dial",
+        "areas": [
+          "H",
+          "PreS",
+          "EC",
+          "PeEc",
+          "PHA1",
+          "PHA2",
+          "PHA3",
+          "TF"
+        ]
+      },
+      {
+        "id": "section-14",
+        "number": 14,
+        "source": "glasser-2016",
+        "color": [
+          154,
+          176,
+          75
+        ],
+        "short": "Lateral temporal",
+        "short_fr": "Temporal lat\u00e9ral",
+        "name": "Lateral temporal cortex",
+        "name_fr": "Cortex temporal lat\u00e9ral",
+        "areas": [
+          "PHT",
+          "TE1p",
+          "TE1m",
+          "TE1a",
+          "TE2p",
+          "TE2a",
+          "TGv",
+          "TGd"
+        ]
+      },
+      {
+        "id": "section-15",
+        "number": 15,
+        "source": "glasser-2016",
+        "color": [
+          40,
+          214,
+          223
+        ],
+        "short": "Temporo-parieto-occipital junction",
+        "short_fr": "Jonction temporo-pari\u00e9to-occipitale",
+        "name": "Temporo-parieto-occipital junction",
+        "name_fr": "Jonction temporo-pari\u00e9to-occipitale",
+        "areas": [
+          "TPOJ1",
+          "TPOJ2",
+          "TPOJ3",
+          "STV",
+          "PSL"
+        ]
+      },
+      {
+        "id": "section-16",
+        "number": 16,
+        "source": "glasser-2016",
+        "color": [
+          190,
+          124,
+          28
+        ],
+        "short": "Superior parietal",
+        "short_fr": "Pari\u00e9tal sup\u00e9rieur",
+        "name": "Superior parietal cortex",
+        "name_fr": "Cortex pari\u00e9tal sup\u00e9rieur",
+        "areas": [
+          "LIPv",
+          "LIPd",
+          "VIP",
+          "AIP",
+          "MIP",
+          "7PC",
+          "7AL",
+          "7Am",
+          "7PL",
+          "7Pm"
+        ]
+      },
+      {
+        "id": "section-17",
+        "number": 17,
+        "source": "glasser-2016",
+        "color": [
+          86,
+          147,
+          189
+        ],
+        "short": "Inferior parietal",
+        "short_fr": "Pari\u00e9tal inf\u00e9rieur",
+        "name": "Inferior parietal cortex",
+        "name_fr": "Cortex pari\u00e9tal inf\u00e9rieur",
+        "areas": [
+          "PGp",
+          "PGs",
+          "PGi",
+          "PFm",
+          "PF",
+          "PFt",
+          "PFop",
+          "IP0",
+          "IP1",
+          "IP2"
+        ]
+      },
+      {
+        "id": "section-18",
+        "number": 18,
+        "source": "glasser-2016",
+        "color": [
+          197,
+          131,
+          243
+        ],
+        "short": "Posterior cingulate",
+        "short_fr": "Cingulaire post\u00e9rieur",
+        "name": "Posterior cingulate cortex",
+        "name_fr": "Cortex cingulaire post\u00e9rieur",
+        "areas": [
+          "DVT",
+          "ProS",
+          "POS1",
+          "POS2",
+          "RSC",
+          "v23ab",
+          "d23ab",
+          "31pv",
+          "31pd",
+          "31a",
+          "23d",
+          "PCV",
+          "7m"
+        ]
+      },
+      {
+        "id": "section-19",
+        "number": 19,
+        "source": "glasser-2016",
+        "color": [
+          246,
+          127,
+          47
+        ],
+        "short": "Anterior cingulate and medial prefrontal",
+        "short_fr": "Cingulaire ant\u00e9rieur et pr\u00e9frontal m\u00e9dian",
+        "name": "Anterior cingulate and medial prefrontal cortex",
+        "name_fr": "Cortex cingulaire ant\u00e9rieur et pr\u00e9frontal m\u00e9dian",
+        "areas": [
+          "33pr",
+          "p24pr",
+          "a24pr",
+          "p24",
+          "a24",
+          "p32pr",
+          "a32pr",
+          "d32",
+          "p32",
+          "s32",
+          "8BM",
+          "9m",
+          "10v",
+          "10r",
+          "25",
+          "pOFC"
+        ]
+      },
+      {
+        "id": "section-20",
+        "number": 20,
+        "source": "glasser-2016",
+        "color": [
+          79,
+          105,
+          215
+        ],
+        "short": "Orbital and polar frontal",
+        "short_fr": "Frontal orbitaire et polaire",
+        "name": "Orbital and polar frontal cortex",
+        "name_fr": "Cortex frontal orbitaire et polaire",
+        "areas": [
+          "47s",
+          "47m",
+          "11l",
+          "13l",
+          "a10p",
+          "p10p",
+          "10pp",
+          "10d",
+          "OFC"
+        ]
+      },
+      {
+        "id": "section-21",
+        "number": 21,
+        "source": "glasser-2016",
+        "color": [
+          99,
+          156,
+          111
+        ],
+        "short": "Inferior frontal",
+        "short_fr": "Frontal inf\u00e9rieur",
+        "name": "Inferior frontal cortex",
+        "name_fr": "Cortex frontal inf\u00e9rieur",
+        "areas": [
+          "44",
+          "45",
+          "IFJp",
+          "IFJa",
+          "IFSp",
+          "IFSa",
+          "47l",
+          "p47r",
+          "a47r"
+        ]
+      },
+      {
+        "id": "section-22",
+        "number": 22,
+        "source": "glasser-2016",
+        "color": [
+          223,
+          169,
+          218
+        ],
+        "short": "Dorsolateral prefrontal",
+        "short_fr": "Pr\u00e9frontal dorsolat\u00e9ral",
+        "name": "Dorsolateral prefrontal cortex",
+        "name_fr": "Cortex pr\u00e9frontal dorsolat\u00e9ral",
+        "areas": [
+          "8C",
+          "8Av",
+          "i6-8",
+          "s6-8",
+          "SFL",
+          "8BL",
+          "9p",
+          "9a",
+          "8Ad",
+          "p9-46v",
+          "a9-46v",
+          "46",
+          "9-46d"
+        ]
+      }
+    ]
+  },
+  "regions": {
+    "named": {
+      "hcp-mmp:left:1": "v1",
+      "hcp-mmp:left:8": "m1",
+      "hcp-mmp:left:9": "s1",
+      "hcp-mmp:left:10": "fef",
+      "hcp-mmp:left:11": "pef",
+      "hcp-mmp:left:14": "pcc-2",
+      "hcp-mmp:left:15": "pcc-2",
+      "hcp-mmp:left:18": "ffc",
+      "hcp-mmp:left:23": "mt",
+      "hcp-mmp:left:24": "a1",
+      "hcp-mmp:left:27": "pcc-2",
+      "hcp-mmp:left:30": "pcc-1",
+      "hcp-mmp:left:31": "pcc-2",
+      "hcp-mmp:left:32": "pcc-2",
+      "hcp-mmp:left:33": "pcc-1",
+      "hcp-mmp:left:34": "pcc-1",
+      "hcp-mmp:left:35": "pcc-1",
+      "hcp-mmp:left:38": "midcingulate",
+      "hcp-mmp:left:40": "midcingulate",
+      "hcp-mmp:left:41": "midcingulate",
+      "hcp-mmp:left:43": "sma",
+      "hcp-mmp:left:44": "sma",
+      "hcp-mmp:left:51": "s1",
+      "hcp-mmp:left:52": "s1",
+      "hcp-mmp:left:53": "s1",
+      "hcp-mmp:left:55": "sma",
+      "hcp-mmp:left:57": "supracallosal-acc",
+      "hcp-mmp:left:58": "supracallosal-acc",
+      "hcp-mmp:left:59": "supracallosal-acc",
+      "hcp-mmp:left:60": "supracallosal-acc",
+      "hcp-mmp:left:61": "pregenual-acc",
+      "hcp-mmp:left:62": "pregenual-acc",
+      "hcp-mmp:left:64": "pregenual-acc",
+      "hcp-mmp:left:65": "area-10",
+      "hcp-mmp:left:66": "lateral-ofc",
+      "hcp-mmp:left:69": "area-10",
+      "hcp-mmp:left:72": "area-10",
+      "hcp-mmp:left:74": "broca",
+      "hcp-mmp:left:75": "broca",
+      "hcp-mmp:left:76": "lateral-ofc",
+      "hcp-mmp:left:77": "lateral-ofc",
+      "hcp-mmp:left:88": "area-10",
+      "hcp-mmp:left:91": "medial-ofc",
+      "hcp-mmp:left:92": "medial-ofc",
+      "hcp-mmp:left:93": "medial-ofc",
+      "hcp-mmp:left:94": "lateral-ofc",
+      "hcp-mmp:left:101": "s2",
+      "hcp-mmp:left:121": "pcc-3",
+      "hcp-mmp:left:142": "pcc-3",
+      "hcp-mmp:left:161": "pcc-1",
+      "hcp-mmp:left:162": "pcc-2",
+      "hcp-mmp:left:164": "subgenual-cingulate",
+      "hcp-mmp:left:165": "pregenual-acc",
+      "hcp-mmp:left:166": "medial-ofc",
+      "hcp-mmp:left:171": "lateral-ofc",
+      "hcp-mmp:left:179": "supracallosal-acc",
+      "hcp-mmp:left:180": "pregenual-acc",
+      "hcp-mmp:right:1": "v1",
+      "hcp-mmp:right:8": "m1",
+      "hcp-mmp:right:9": "s1",
+      "hcp-mmp:right:10": "fef",
+      "hcp-mmp:right:11": "pef",
+      "hcp-mmp:right:14": "pcc-2",
+      "hcp-mmp:right:15": "pcc-2",
+      "hcp-mmp:right:18": "ffc",
+      "hcp-mmp:right:23": "mt",
+      "hcp-mmp:right:24": "a1",
+      "hcp-mmp:right:27": "pcc-2",
+      "hcp-mmp:right:30": "pcc-1",
+      "hcp-mmp:right:31": "pcc-2",
+      "hcp-mmp:right:32": "pcc-2",
+      "hcp-mmp:right:33": "pcc-1",
+      "hcp-mmp:right:34": "pcc-1",
+      "hcp-mmp:right:35": "pcc-1",
+      "hcp-mmp:right:38": "midcingulate",
+      "hcp-mmp:right:40": "midcingulate",
+      "hcp-mmp:right:41": "midcingulate",
+      "hcp-mmp:right:43": "sma",
+      "hcp-mmp:right:44": "sma",
+      "hcp-mmp:right:51": "s1",
+      "hcp-mmp:right:52": "s1",
+      "hcp-mmp:right:53": "s1",
+      "hcp-mmp:right:55": "sma",
+      "hcp-mmp:right:57": "supracallosal-acc",
+      "hcp-mmp:right:58": "supracallosal-acc",
+      "hcp-mmp:right:59": "supracallosal-acc",
+      "hcp-mmp:right:60": "supracallosal-acc",
+      "hcp-mmp:right:61": "pregenual-acc",
+      "hcp-mmp:right:62": "pregenual-acc",
+      "hcp-mmp:right:64": "pregenual-acc",
+      "hcp-mmp:right:65": "area-10",
+      "hcp-mmp:right:66": "lateral-ofc",
+      "hcp-mmp:right:69": "area-10",
+      "hcp-mmp:right:72": "area-10",
+      "hcp-mmp:right:74": "broca",
+      "hcp-mmp:right:75": "broca",
+      "hcp-mmp:right:76": "lateral-ofc",
+      "hcp-mmp:right:77": "lateral-ofc",
+      "hcp-mmp:right:88": "area-10",
+      "hcp-mmp:right:91": "medial-ofc",
+      "hcp-mmp:right:92": "medial-ofc",
+      "hcp-mmp:right:93": "medial-ofc",
+      "hcp-mmp:right:94": "lateral-ofc",
+      "hcp-mmp:right:101": "s2",
+      "hcp-mmp:right:121": "pcc-3",
+      "hcp-mmp:right:142": "pcc-3",
+      "hcp-mmp:right:161": "pcc-1",
+      "hcp-mmp:right:162": "pcc-2",
+      "hcp-mmp:right:164": "subgenual-cingulate",
+      "hcp-mmp:right:165": "pregenual-acc",
+      "hcp-mmp:right:166": "medial-ofc",
+      "hcp-mmp:right:171": "lateral-ofc",
+      "hcp-mmp:right:179": "supracallosal-acc",
+      "hcp-mmp:right:180": "pregenual-acc"
+    },
+    "sections": {
+      "hcp-mmp:left:1": "section-1",
+      "hcp-mmp:left:2": "section-5",
+      "hcp-mmp:left:3": "section-3",
+      "hcp-mmp:left:4": "section-2",
+      "hcp-mmp:left:5": "section-2",
+      "hcp-mmp:left:6": "section-2",
+      "hcp-mmp:left:7": "section-4",
+      "hcp-mmp:left:8": "section-6",
+      "hcp-mmp:left:9": "section-6",
+      "hcp-mmp:left:10": "section-8",
+      "hcp-mmp:left:11": "section-8",
+      "hcp-mmp:left:12": "section-8",
+      "hcp-mmp:left:13": "section-3",
+      "hcp-mmp:left:14": "section-18",
+      "hcp-mmp:left:15": "section-18",
+      "hcp-mmp:left:16": "section-3",
+      "hcp-mmp:left:17": "section-3",
+      "hcp-mmp:left:18": "section-4",
+      "hcp-mmp:left:19": "section-3",
+      "hcp-mmp:left:20": "section-5",
+      "hcp-mmp:left:21": "section-5",
+      "hcp-mmp:left:22": "section-4",
+      "hcp-mmp:left:23": "section-5",
+      "hcp-mmp:left:24": "section-10",
+      "hcp-mmp:left:25": "section-15",
+      "hcp-mmp:left:26": "section-22",
+      "hcp-mmp:left:27": "section-18",
+      "hcp-mmp:left:28": "section-15",
+      "hcp-mmp:left:29": "section-16",
+      "hcp-mmp:left:30": "section-18",
+      "hcp-mmp:left:31": "section-18",
+      "hcp-mmp:left:32": "section-18",
+      "hcp-mmp:left:33": "section-18",
+      "hcp-mmp:left:34": "section-18",
+      "hcp-mmp:left:35": "section-18",
+      "hcp-mmp:left:36": "section-7",
+      "hcp-mmp:left:37": "section-7",
+      "hcp-mmp:left:38": "section-7",
+      "hcp-mmp:left:39": "section-7",
+      "hcp-mmp:left:40": "section-7",
+      "hcp-mmp:left:41": "section-7",
+      "hcp-mmp:left:42": "section-16",
+      "hcp-mmp:left:43": "section-7",
+      "hcp-mmp:left:44": "section-7",
+      "hcp-mmp:left:45": "section-16",
+      "hcp-mmp:left:46": "section-16",
+      "hcp-mmp:left:47": "section-16",
+      "hcp-mmp:left:48": "section-16",
+      "hcp-mmp:left:49": "section-16",
+      "hcp-mmp:left:50": "section-16",
+      "hcp-mmp:left:51": "section-6",
+      "hcp-mmp:left:52": "section-6",
+      "hcp-mmp:left:53": "section-6",
+      "hcp-mmp:left:54": "section-8",
+      "hcp-mmp:left:55": "section-7",
+      "hcp-mmp:left:56": "section-8",
+      "hcp-mmp:left:57": "section-19",
+      "hcp-mmp:left:58": "section-19",
+      "hcp-mmp:left:59": "section-19",
+      "hcp-mmp:left:60": "section-19",
+      "hcp-mmp:left:61": "section-19",
+      "hcp-mmp:left:62": "section-19",
+      "hcp-mmp:left:63": "section-19",
+      "hcp-mmp:left:64": "section-19",
+      "hcp-mmp:left:65": "section-19",
+      "hcp-mmp:left:66": "section-20",
+      "hcp-mmp:left:67": "section-22",
+      "hcp-mmp:left:68": "section-22",
+      "hcp-mmp:left:69": "section-19",
+      "hcp-mmp:left:70": "section-22",
+      "hcp-mmp:left:71": "section-22",
+      "hcp-mmp:left:72": "section-20",
+      "hcp-mmp:left:73": "section-22",
+      "hcp-mmp:left:74": "section-21",
+      "hcp-mmp:left:75": "section-21",
+      "hcp-mmp:left:76": "section-21",
+      "hcp-mmp:left:77": "section-21",
+      "hcp-mmp:left:78": "section-8",
+      "hcp-mmp:left:79": "section-21",
+      "hcp-mmp:left:80": "section-21",
+      "hcp-mmp:left:81": "section-21",
+      "hcp-mmp:left:82": "section-21",
+      "hcp-mmp:left:83": "section-22",
+      "hcp-mmp:left:84": "section-22",
+      "hcp-mmp:left:85": "section-22",
+      "hcp-mmp:left:86": "section-22",
+      "hcp-mmp:left:87": "section-22",
+      "hcp-mmp:left:88": "section-19",
+      "hcp-mmp:left:89": "section-20",
+      "hcp-mmp:left:90": "section-20",
+      "hcp-mmp:left:91": "section-20",
+      "hcp-mmp:left:92": "section-20",
+      "hcp-mmp:left:93": "section-20",
+      "hcp-mmp:left:94": "section-20",
+      "hcp-mmp:left:95": "section-16",
+      "hcp-mmp:left:96": "section-8",
+      "hcp-mmp:left:97": "section-22",
+      "hcp-mmp:left:98": "section-22",
+      "hcp-mmp:left:99": "section-9",
+      "hcp-mmp:left:100": "section-9",
+      "hcp-mmp:left:101": "section-9",
+      "hcp-mmp:left:102": "section-9",
+      "hcp-mmp:left:103": "section-10",
+      "hcp-mmp:left:104": "section-10",
+      "hcp-mmp:left:105": "section-10",
+      "hcp-mmp:left:106": "section-12",
+      "hcp-mmp:left:107": "section-11",
+      "hcp-mmp:left:108": "section-12",
+      "hcp-mmp:left:109": "section-12",
+      "hcp-mmp:left:110": "section-12",
+      "hcp-mmp:left:111": "section-12",
+      "hcp-mmp:left:112": "section-12",
+      "hcp-mmp:left:113": "section-9",
+      "hcp-mmp:left:114": "section-12",
+      "hcp-mmp:left:115": "section-12",
+      "hcp-mmp:left:116": "section-17",
+      "hcp-mmp:left:117": "section-16",
+      "hcp-mmp:left:118": "section-13",
+      "hcp-mmp:left:119": "section-13",
+      "hcp-mmp:left:120": "section-13",
+      "hcp-mmp:left:121": "section-18",
+      "hcp-mmp:left:122": "section-13",
+      "hcp-mmp:left:123": "section-11",
+      "hcp-mmp:left:124": "section-10",
+      "hcp-mmp:left:125": "section-11",
+      "hcp-mmp:left:126": "section-13",
+      "hcp-mmp:left:127": "section-13",
+      "hcp-mmp:left:128": "section-11",
+      "hcp-mmp:left:129": "section-11",
+      "hcp-mmp:left:130": "section-11",
+      "hcp-mmp:left:131": "section-14",
+      "hcp-mmp:left:132": "section-14",
+      "hcp-mmp:left:133": "section-14",
+      "hcp-mmp:left:134": "section-14",
+      "hcp-mmp:left:135": "section-13",
+      "hcp-mmp:left:136": "section-14",
+      "hcp-mmp:left:137": "section-14",
+      "hcp-mmp:left:138": "section-5",
+      "hcp-mmp:left:139": "section-15",
+      "hcp-mmp:left:140": "section-15",
+      "hcp-mmp:left:141": "section-15",
+      "hcp-mmp:left:142": "section-18",
+      "hcp-mmp:left:143": "section-17",
+      "hcp-mmp:left:144": "section-17",
+      "hcp-mmp:left:145": "section-17",
+      "hcp-mmp:left:146": "section-17",
+      "hcp-mmp:left:147": "section-17",
+      "hcp-mmp:left:148": "section-17",
+      "hcp-mmp:left:149": "section-17",
+      "hcp-mmp:left:150": "section-17",
+      "hcp-mmp:left:151": "section-17",
+      "hcp-mmp:left:152": "section-3",
+      "hcp-mmp:left:153": "section-4",
+      "hcp-mmp:left:154": "section-4",
+      "hcp-mmp:left:155": "section-13",
+      "hcp-mmp:left:156": "section-5",
+      "hcp-mmp:left:157": "section-5",
+      "hcp-mmp:left:158": "section-5",
+      "hcp-mmp:left:159": "section-5",
+      "hcp-mmp:left:160": "section-4",
+      "hcp-mmp:left:161": "section-18",
+      "hcp-mmp:left:162": "section-18",
+      "hcp-mmp:left:163": "section-4",
+      "hcp-mmp:left:164": "section-19",
+      "hcp-mmp:left:165": "section-19",
+      "hcp-mmp:left:166": "section-19",
+      "hcp-mmp:left:167": "section-12",
+      "hcp-mmp:left:168": "section-12",
+      "hcp-mmp:left:169": "section-12",
+      "hcp-mmp:left:170": "section-20",
+      "hcp-mmp:left:171": "section-21",
+      "hcp-mmp:left:172": "section-14",
+      "hcp-mmp:left:173": "section-10",
+      "hcp-mmp:left:174": "section-10",
+      "hcp-mmp:left:175": "section-11",
+      "hcp-mmp:left:176": "section-11",
+      "hcp-mmp:left:177": "section-14",
+      "hcp-mmp:left:178": "section-12",
+      "hcp-mmp:left:179": "section-19",
+      "hcp-mmp:left:180": "section-19",
+      "hcp-mmp:right:1": "section-1",
+      "hcp-mmp:right:2": "section-5",
+      "hcp-mmp:right:3": "section-3",
+      "hcp-mmp:right:4": "section-2",
+      "hcp-mmp:right:5": "section-2",
+      "hcp-mmp:right:6": "section-2",
+      "hcp-mmp:right:7": "section-4",
+      "hcp-mmp:right:8": "section-6",
+      "hcp-mmp:right:9": "section-6",
+      "hcp-mmp:right:10": "section-8",
+      "hcp-mmp:right:11": "section-8",
+      "hcp-mmp:right:12": "section-8",
+      "hcp-mmp:right:13": "section-3",
+      "hcp-mmp:right:14": "section-18",
+      "hcp-mmp:right:15": "section-18",
+      "hcp-mmp:right:16": "section-3",
+      "hcp-mmp:right:17": "section-3",
+      "hcp-mmp:right:18": "section-4",
+      "hcp-mmp:right:19": "section-3",
+      "hcp-mmp:right:20": "section-5",
+      "hcp-mmp:right:21": "section-5",
+      "hcp-mmp:right:22": "section-4",
+      "hcp-mmp:right:23": "section-5",
+      "hcp-mmp:right:24": "section-10",
+      "hcp-mmp:right:25": "section-15",
+      "hcp-mmp:right:26": "section-22",
+      "hcp-mmp:right:27": "section-18",
+      "hcp-mmp:right:28": "section-15",
+      "hcp-mmp:right:29": "section-16",
+      "hcp-mmp:right:30": "section-18",
+      "hcp-mmp:right:31": "section-18",
+      "hcp-mmp:right:32": "section-18",
+      "hcp-mmp:right:33": "section-18",
+      "hcp-mmp:right:34": "section-18",
+      "hcp-mmp:right:35": "section-18",
+      "hcp-mmp:right:36": "section-7",
+      "hcp-mmp:right:37": "section-7",
+      "hcp-mmp:right:38": "section-7",
+      "hcp-mmp:right:39": "section-7",
+      "hcp-mmp:right:40": "section-7",
+      "hcp-mmp:right:41": "section-7",
+      "hcp-mmp:right:42": "section-16",
+      "hcp-mmp:right:43": "section-7",
+      "hcp-mmp:right:44": "section-7",
+      "hcp-mmp:right:45": "section-16",
+      "hcp-mmp:right:46": "section-16",
+      "hcp-mmp:right:47": "section-16",
+      "hcp-mmp:right:48": "section-16",
+      "hcp-mmp:right:49": "section-16",
+      "hcp-mmp:right:50": "section-16",
+      "hcp-mmp:right:51": "section-6",
+      "hcp-mmp:right:52": "section-6",
+      "hcp-mmp:right:53": "section-6",
+      "hcp-mmp:right:54": "section-8",
+      "hcp-mmp:right:55": "section-7",
+      "hcp-mmp:right:56": "section-8",
+      "hcp-mmp:right:57": "section-19",
+      "hcp-mmp:right:58": "section-19",
+      "hcp-mmp:right:59": "section-19",
+      "hcp-mmp:right:60": "section-19",
+      "hcp-mmp:right:61": "section-19",
+      "hcp-mmp:right:62": "section-19",
+      "hcp-mmp:right:63": "section-19",
+      "hcp-mmp:right:64": "section-19",
+      "hcp-mmp:right:65": "section-19",
+      "hcp-mmp:right:66": "section-20",
+      "hcp-mmp:right:67": "section-22",
+      "hcp-mmp:right:68": "section-22",
+      "hcp-mmp:right:69": "section-19",
+      "hcp-mmp:right:70": "section-22",
+      "hcp-mmp:right:71": "section-22",
+      "hcp-mmp:right:72": "section-20",
+      "hcp-mmp:right:73": "section-22",
+      "hcp-mmp:right:74": "section-21",
+      "hcp-mmp:right:75": "section-21",
+      "hcp-mmp:right:76": "section-21",
+      "hcp-mmp:right:77": "section-21",
+      "hcp-mmp:right:78": "section-8",
+      "hcp-mmp:right:79": "section-21",
+      "hcp-mmp:right:80": "section-21",
+      "hcp-mmp:right:81": "section-21",
+      "hcp-mmp:right:82": "section-21",
+      "hcp-mmp:right:83": "section-22",
+      "hcp-mmp:right:84": "section-22",
+      "hcp-mmp:right:85": "section-22",
+      "hcp-mmp:right:86": "section-22",
+      "hcp-mmp:right:87": "section-22",
+      "hcp-mmp:right:88": "section-19",
+      "hcp-mmp:right:89": "section-20",
+      "hcp-mmp:right:90": "section-20",
+      "hcp-mmp:right:91": "section-20",
+      "hcp-mmp:right:92": "section-20",
+      "hcp-mmp:right:93": "section-20",
+      "hcp-mmp:right:94": "section-20",
+      "hcp-mmp:right:95": "section-16",
+      "hcp-mmp:right:96": "section-8",
+      "hcp-mmp:right:97": "section-22",
+      "hcp-mmp:right:98": "section-22",
+      "hcp-mmp:right:99": "section-9",
+      "hcp-mmp:right:100": "section-9",
+      "hcp-mmp:right:101": "section-9",
+      "hcp-mmp:right:102": "section-9",
+      "hcp-mmp:right:103": "section-10",
+      "hcp-mmp:right:104": "section-10",
+      "hcp-mmp:right:105": "section-10",
+      "hcp-mmp:right:106": "section-12",
+      "hcp-mmp:right:107": "section-11",
+      "hcp-mmp:right:108": "section-12",
+      "hcp-mmp:right:109": "section-12",
+      "hcp-mmp:right:110": "section-12",
+      "hcp-mmp:right:111": "section-12",
+      "hcp-mmp:right:112": "section-12",
+      "hcp-mmp:right:113": "section-9",
+      "hcp-mmp:right:114": "section-12",
+      "hcp-mmp:right:115": "section-12",
+      "hcp-mmp:right:116": "section-17",
+      "hcp-mmp:right:117": "section-16",
+      "hcp-mmp:right:118": "section-13",
+      "hcp-mmp:right:119": "section-13",
+      "hcp-mmp:right:120": "section-13",
+      "hcp-mmp:right:121": "section-18",
+      "hcp-mmp:right:122": "section-13",
+      "hcp-mmp:right:123": "section-11",
+      "hcp-mmp:right:124": "section-10",
+      "hcp-mmp:right:125": "section-11",
+      "hcp-mmp:right:126": "section-13",
+      "hcp-mmp:right:127": "section-13",
+      "hcp-mmp:right:128": "section-11",
+      "hcp-mmp:right:129": "section-11",
+      "hcp-mmp:right:130": "section-11",
+      "hcp-mmp:right:131": "section-14",
+      "hcp-mmp:right:132": "section-14",
+      "hcp-mmp:right:133": "section-14",
+      "hcp-mmp:right:134": "section-14",
+      "hcp-mmp:right:135": "section-13",
+      "hcp-mmp:right:136": "section-14",
+      "hcp-mmp:right:137": "section-14",
+      "hcp-mmp:right:138": "section-5",
+      "hcp-mmp:right:139": "section-15",
+      "hcp-mmp:right:140": "section-15",
+      "hcp-mmp:right:141": "section-15",
+      "hcp-mmp:right:142": "section-18",
+      "hcp-mmp:right:143": "section-17",
+      "hcp-mmp:right:144": "section-17",
+      "hcp-mmp:right:145": "section-17",
+      "hcp-mmp:right:146": "section-17",
+      "hcp-mmp:right:147": "section-17",
+      "hcp-mmp:right:148": "section-17",
+      "hcp-mmp:right:149": "section-17",
+      "hcp-mmp:right:150": "section-17",
+      "hcp-mmp:right:151": "section-17",
+      "hcp-mmp:right:152": "section-3",
+      "hcp-mmp:right:153": "section-4",
+      "hcp-mmp:right:154": "section-4",
+      "hcp-mmp:right:155": "section-13",
+      "hcp-mmp:right:156": "section-5",
+      "hcp-mmp:right:157": "section-5",
+      "hcp-mmp:right:158": "section-5",
+      "hcp-mmp:right:159": "section-5",
+      "hcp-mmp:right:160": "section-4",
+      "hcp-mmp:right:161": "section-18",
+      "hcp-mmp:right:162": "section-18",
+      "hcp-mmp:right:163": "section-4",
+      "hcp-mmp:right:164": "section-19",
+      "hcp-mmp:right:165": "section-19",
+      "hcp-mmp:right:166": "section-19",
+      "hcp-mmp:right:167": "section-12",
+      "hcp-mmp:right:168": "section-12",
+      "hcp-mmp:right:169": "section-12",
+      "hcp-mmp:right:170": "section-20",
+      "hcp-mmp:right:171": "section-21",
+      "hcp-mmp:right:172": "section-14",
+      "hcp-mmp:right:173": "section-10",
+      "hcp-mmp:right:174": "section-10",
+      "hcp-mmp:right:175": "section-11",
+      "hcp-mmp:right:176": "section-11",
+      "hcp-mmp:right:177": "section-14",
+      "hcp-mmp:right:178": "section-12",
+      "hcp-mmp:right:179": "section-19",
+      "hcp-mmp:right:180": "section-19"
+    }
+  }
+}

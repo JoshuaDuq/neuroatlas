@@ -1,6 +1,6 @@
 # Layer modules
 
-The derived layers. These are not parcellations of the cortex: the Yeo networks carried as a surface attribute, the CAB-NP network of each HCP-MMP area, the learning overview, the reference spinal cord, and the atlas comparison.
+The derived layers. These are not parcellations of the cortex: the Yeo networks carried as a surface attribute, the CAB-NP network of each HCP-MMP area, the functional divisions of HCP-MMP areas, the learning overview, the reference spinal cord, and the atlas comparison.
 
 ## `brain_model.layers.networks`
 
@@ -17,6 +17,15 @@ The Cole-Anticevic network partition, one network per HCP-MMP1.0 area. Its assig
 
 ```{eval-rst}
 .. automodule:: brain_model.layers.cab_np
+   :members:
+```
+
+## `brain_model.layers.functional_regions`
+
+Published groupings of HCP-MMP1.0 areas at two levels: Glasser's 22 sections and the named regions Glasser and Rolls define, transcribed in `config/functional-regions.yaml` and published per area in `functional-regions.json`.
+
+```{eval-rst}
+.. automodule:: brain_model.layers.functional_regions
    :members:
 ```
 

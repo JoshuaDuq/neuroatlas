@@ -514,6 +514,10 @@ details > summary:focus-visible { outline-offset: -2px; }
   font-size: var(--text-ui);
 }
 .network-row-name { min-width: 0; line-height: 1.35; }
+.functional-row { grid-template-columns: 10px minmax(0, 1fr); align-items: start; }
+.functional-row .network-swatch { margin-top: 4px; }
+.functional-row .network-row-name > span { display: block; }
+.functional-row-meta { font-size: var(--text-micro); color: var(--text-tertiary); }
 .network-bar { height: 4px; border-radius: 2px; overflow: hidden; background: var(--border-subtle); }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
 .network-share { text-align: right; color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; }

@@ -231,7 +231,7 @@ test('every masthead data choice is explained in a line, in both languages', () 
     for (const id of ['destrieux', 'hcp-mmp', 'learning', 'aseg', 'nextbrain']) {
       assert.ok(notes[id]?.length > 10, `${lang} ${id} has a note`);
     }
-    for (const mode of ['tissue', 'mri', 'atlas', 'network', 'cab-np']) assert.ok(t(lang, 'display').surfaceColorTitles[mode]);
+    for (const mode of ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional']) assert.ok(t(lang, 'display').surfaceColorTitles[mode]);
   }
   for (const id of ['subject-note', 'atlas-note', 'surface-note', 'detail-note']) {
     assert.ok(mastheadHtml().slice(mastheadHtml().indexOf('id="masthead-data"')).includes(`id="${id}"`));

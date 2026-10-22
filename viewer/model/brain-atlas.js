@@ -2,6 +2,9 @@ import { Box3, Group, SRGBColorSpace, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { labelOf } from '../catalog/labels.js';
 import { validateCabNp } from '../catalog/networks.js';
+import {
+  FUNCTIONAL_LEVELS, functionalRegionOf, validateFunctionalRegions,
+} from '../catalog/functional-regions.js';
 import { belongsToDetail, visibilityOf } from '../catalog/visibility.js';
 import { worldToRas } from '../slices/coordinates.js';
 import { fetchAsset } from './asset-cache.js';
@@ -11,6 +14,8 @@ import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 import { attachNetworkColors } from '../render/network-colors.js';
 import { addMriAppearance } from '../render/mri-material.js';
 import { createDissection } from '../state/dissection.js';
+import { createGlassSolids } from '../tissues/glass-solids.js';
+import { loadRibbonSources } from '../tissues/solid-assets.js';
 import { createWhiteMatterSurfaces } from '../tissues/white-matter-surfaces.js';
 
 // Reused by intersect. A hover tests every visible mesh, and a fresh list per
@@ -44,12 +49,13 @@ function asOptions(onProgressOrOptions) {
  * What the cortical surface is coloured by.
  *
  * `tissue` is the modelled tissue class, `atlas` the parcellation's own
- * published colours, `network` the Yeo palette carried per vertex, and
- * `cab-np` CAB-NP's network for each HCP-MMP area as a whole. They
- * are one setting rather than several toggles because the surface can only
- * show one of them at a time.
+ * published colours, `network` the Yeo palette carried per vertex,
+ * `cab-np` CAB-NP's network for each HCP-MMP area as a whole, and
+ * `functional` the published functional divisions, drawn solid inside glass.
+ * They are one setting rather than several toggles because the surface can
+ * only show one of them at a time.
  */
-export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np'];
+export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'];
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -62,6 +68,8 @@ function validateManifest(manifest) {
     ['detail_levels', manifest.detail_levels?.length > 0],
     ['appearance', Boolean(manifest.appearance?.tissue && manifest.appearance?.folds)],
     ['native tissue envelopes', Boolean(manifest.solid_envelopes?.file)],
+    ['appearance.glass_opacity', !manifest.functional_regions
+      || (manifest.appearance?.glass_opacity > 0 && manifest.appearance.glass_opacity < 1)],
     ['anatomy', Boolean(manifest.anatomy?.subject && manifest.anatomy?.display_name)
       && typeof manifest.anatomy.individual === 'boolean'],
   ].filter(([, present]) => !present).map(([field]) => field);
@@ -112,9 +120,11 @@ export class BrainAtlas extends EventTarget {
     const url = new URL(manifestUrl, globalThis.location.href);
     const bytes = await fetchAsset(url.href);
     const manifest = JSON.parse(new TextDecoder().decode(bytes));
-    const cabNp = manifest.cab_np ? JSON.parse(new TextDecoder().decode(
-      await fetchAsset(new URL(manifest.cab_np.file, url).href),
-    )) : null;
+    const [cabNp, functionalRegions] = await Promise.all(
+      [manifest.cab_np, manifest.functional_regions].map(async pointer => (pointer
+        ? JSON.parse(new TextDecoder().decode(await fetchAsset(new URL(pointer.file, url).href)))
+        : null)),
+    );
     const loader = new GLTFLoader()
       .setPath(new URL('.', url).href)
       .setRequestHeader(REVALIDATE_HEADER);
@@ -123,7 +133,7 @@ export class BrainAtlas extends EventTarget {
       const buffer = await fetchAsset(asset, { onProgress });
       return loader.parseAsync(buffer, loader.path);
     };
-    const model = new BrainAtlas(manifest, loader, cabNp);
+    const model = new BrainAtlas(manifest, loader, cabNp, functionalRegions);
     try {
       await model.initialize(atlasId, options);
       return model;
@@ -133,7 +143,7 @@ export class BrainAtlas extends EventTarget {
     }
   }
 
-  constructor(manifest, loader, cabNp = null) {
+  constructor(manifest, loader, cabNp = null, functionalRegions = null) {
     super();
     validateManifest(manifest);
     this.manifest = manifest;
@@ -142,6 +152,9 @@ export class BrainAtlas extends EventTarget {
     this.group.name = 'Brain atlas';
     this.regions = new Map(manifest.regions.map(region => [region.id, region]));
     this.cabNp = cabNp && validateCabNp(cabNp, this.regions);
+    this.functionalRegions = functionalRegions && validateFunctionalRegions(functionalRegions, this.regions);
+    this.functionalLevel = 'named';
+    this.glassSolids = null;
     this.dissection = createDissection(this.regions);
     this.layers = new Map();
     this.whiteMatterSurfaces = null;
@@ -245,6 +258,49 @@ export class BrainAtlas extends EventTarget {
     return loading;
   }
 
+  /**
+   * Close each named functional region into a ribbon solid for the glass brain.
+   *
+   * Cut from the native envelopes already loaded for exposed white matter, so
+   * only the atlas's per-vertex region index is fetched.
+   */
+  async loadGlassSolids(baseUrl) {
+    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.glassSolids) return;
+    if (!this.functionalRegions) throw new Error('This model carries no functional divisions.');
+    const key = 'glass-solids';
+    if (this.pending.has(key)) return this.pending.get(key);
+    const loading = (async () => {
+      await this.loadWhiteMatterSurfaces();
+      const envelopes = [];
+      this.whiteMatterSurfaces.group.updateMatrixWorld(true);
+      this.whiteMatterSurfaces.group.traverse(mesh => { if (mesh.isMesh) envelopes.push(mesh); });
+      const { atlas, regions } = this.functionalRegions;
+      const [sources, { MeshBVH, acceleratedRaycast }] = await Promise.all([
+        loadRibbonSources(this.manifest, baseUrl, atlas, envelopes), import('three-mesh-bvh'),
+      ]);
+      const wedges = [];
+      for (const wedge of sources) {
+        if (regions.named[wedge.userData.region_id] && !this.disposed) wedges.push(wedge);
+        else wedge.geometry.dispose();
+      }
+      if (this.disposed) {
+        for (const wedge of wedges) wedge.geometry.dispose();
+        throw new Error('BrainAtlas was disposed during loading.');
+      }
+      this.glassSolids = createGlassSolids(wedges, this.manifest.appearance);
+      // Seen through the glass, a solid's wall can show where its patch does not.
+      for (const mesh of this.glassSolids.meshes) {
+        mesh.geometry.boundsTree = new MeshBVH(mesh.geometry, { indirect: true });
+        mesh.raycast = acceleratedRaycast;
+      }
+      this.group.add(this.glassSolids.group);
+      this.update();
+    })().finally(() => this.pending.delete(key));
+    this.pending.set(key, loading);
+    return loading;
+  }
+
   async loadLayer(id, file, onProgress) {
     if (this.disposed) throw new Error('BrainAtlas has been disposed.');
     if (this.layers.has(id)) return this.layers.get(id);
@@ -312,8 +368,9 @@ export class BrainAtlas extends EventTarget {
     await this.loadLayer(id, atlas.file, onProgress);
     if (request !== this.requestNumber) return;
     this.atlasId = id;
-    // CAB-NP partitions one atlas's areas; any other atlas has none to colour.
+    // CAB-NP and the functional divisions group one atlas's areas; any other atlas has none to colour.
     if (this.surfaceColor === 'cab-np' && id !== this.cabNp.atlas) this.surfaceColor = 'atlas';
+    if (this.surfaceColor === 'functional' && id !== this.functionalRegions.atlas) this.surfaceColor = 'atlas';
     this.isolatedId = null;
     this.select(null);
   }
@@ -367,6 +424,7 @@ export class BrainAtlas extends EventTarget {
       internalVisible: this.internalVisible,
       spinalCordVisible: this.spinalCordVisible,
       surfaceColor: this.surfaceColor,
+      functionalLevel: this.functionalLevel,
       isolatedRegion: this.isolatedId,
       ...this.dissection.state,
     };
@@ -395,6 +453,8 @@ export class BrainAtlas extends EventTarget {
     this.whiteMatterSurfaces?.update(settings, this.regions, this.clippingPlanes);
     const mri = this.surfaceColor === 'mri';
     if (this.mriUniforms) this.mriUniforms.scanEnabled.value = mri;
+    const functional = this.surfaceColor === 'functional';
+    const shownCortex = new Set();
     for (const [id, layer] of this.layers) {
       layer.scene.visible = id === this.detailId || id === this.atlasId ||
         (this.manifest.supplemental_layers ?? []).some(entry => entry.id === id);
@@ -402,7 +462,12 @@ export class BrainAtlas extends EventTarget {
         const region = this.regions.get(mesh.userData.region_id);
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
         const cabNpNetwork = this.surfaceColor === 'cab-np' ? this.cabNp.regions[region.id] : null;
+        const division = functional && cortex
+          ? functionalRegionOf(this.functionalRegions, this.functionalLevel, region.id) : null;
+        // Cortex outside every division of the level is the glass the divisions sit in.
+        const glass = functional && cortex && !division;
         mesh.visible = visibilityOf(region, settings).visible;
+        if (mesh.visible && layer.scene.visible) shownCortex.add(region.id);
         const material = mesh.material;
         if (cortex) {
           // Only tissue colour carries the T1 brightness it was tuned against;
@@ -425,12 +490,16 @@ export class BrainAtlas extends EventTarget {
           // Published sRGB, converted as the per-vertex network colours are.
           material.color.setRGB(
             ...this.cabNp.colors[cabNpNetwork].map(value => value / 255), SRGBColorSpace);
+        } else if (division) {
+          material.color.setRGB(...division.color.map(value => value / 255), SRGBColorSpace);
         } else if (this.surfaceColor !== 'atlas' || region.kind === 'non-region') {
           material.color.set(tissueColor(region, this.manifest.appearance.tissue));
         }
         // Selection is drawn by the outline pass. Tinting the material would
         // alter a region's atlas colour, which is the datum being displayed.
-        material.opacity = cortex ? this.cortexOpacity : 1;
+        material.opacity = cortex
+          ? this.cortexOpacity * (glass ? this.manifest.appearance.glass_opacity : 1) : 1;
+        material.userData.glass = glass;
         const transparent = material.opacity < 1;
         if (material.transparent !== transparent) {
           material.transparent = transparent;
@@ -439,6 +508,13 @@ export class BrainAtlas extends EventTarget {
         material.depthWrite = !transparent;
       }
     }
+    // Translucent divisions show what is behind them, so only opaque ones need closing.
+    const solid = functional && this.functionalLevel === 'named' && this.cortexOpacity === 1;
+    this.glassSolids?.update({
+      solidOf: id => (solid ? functionalRegionOf(this.functionalRegions, 'named', id) : null),
+      shown: id => shownCortex.has(id),
+      clippingPlanes: this.clippingPlanes,
+    });
     const selected = this.selectedId ? this.regions.get(this.selectedId) : null;
     if (selected && !this.canSelect(selected)) {
       this.selectedId = null;
@@ -457,10 +533,19 @@ export class BrainAtlas extends EventTarget {
    */
   intersect(raycaster) {
     this.group.updateMatrixWorld(true);
+    const meshes = this.visibleMeshes;
+    if (!meshes.some(mesh => mesh.material.userData.glass)) return this.nearestHit(raycaster, meshes);
+    // A division seen through the glass, patch or ribbon solid, is what the reader is pointing at.
+    const solids = this.glassSolids?.meshes.filter(mesh => mesh.visible) ?? [];
+    return this.nearestHit(raycaster, [...meshes.filter(mesh => !mesh.material.userData.glass), ...solids])
+      ?? this.nearestHit(raycaster, meshes.filter(mesh => mesh.material.userData.glass));
+  }
+
+  nearestHit(raycaster, meshes) {
     const planes = this.clippingPlanes;
     const clipped = planes.length > 0;
     let count = 0;
-    for (const mesh of this.visibleMeshes) {
+    for (const mesh of meshes) {
       const entry = boxEntry(mesh, raycaster.ray);
       if (entry === Infinity) continue;
       const slot = raySlots[count] ?? (raySlots[count] = { mesh: null, entry: 0 });
@@ -640,7 +725,20 @@ export class BrainAtlas extends EventTarget {
     if (mode === 'cab-np' && this.atlasId !== this.cabNp.atlas) {
       throw new Error(`CAB-NP colours ${this.cabNp.atlas} areas; show that atlas first.`);
     }
+    if (mode === 'functional') {
+      if (!this.functionalRegions) throw new Error('This model carries no functional divisions.');
+      if (this.atlasId !== this.functionalRegions.atlas) {
+        throw new Error(`Functional divisions colour ${this.functionalRegions.atlas} areas; show that atlas first.`);
+      }
+      if (!this.glassSolids) throw new Error('Glass-brain solids must load before selecting functional divisions.');
+    }
     this.surfaceColor = mode;
+    this.update();
+  }
+
+  setFunctionalLevel(level) {
+    if (!FUNCTIONAL_LEVELS.includes(level)) throw new TypeError(`Unknown functional level: ${level}`);
+    this.functionalLevel = level;
     this.update();
   }
 
@@ -712,6 +810,7 @@ export class BrainAtlas extends EventTarget {
     this.internalVisible = true;
     this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
+    this.functionalLevel = 'named';
     this.isolatedId = null;
     this.select(null);
   }
@@ -722,6 +821,7 @@ export class BrainAtlas extends EventTarget {
     this.requestNumber += 1;
     for (const layer of this.layers.values()) disposeScene(layer.scene);
     if (this.whiteMatterSurfaces) disposeScene(this.whiteMatterSurfaces.group);
+    if (this.glassSolids) disposeScene(this.glassSolids.group);
     this.layers.clear();
     this.centroids.clear();
     this.group.removeFromParent();

@@ -4,6 +4,7 @@ import { PHONE_QUERY } from '../../render/device.js';
 import { FRAME_FILL } from '../../render/camera-views.js';
 import { clearFraming } from '../../render/effective-viewport.js';
 import { cabNpName, networkCss, networkName } from '../../catalog/networks.js';
+import { functionalShortName } from '../../catalog/functional-regions.js';
 import { t } from '../../i18n/translations.js';
 import { isIndependentTractReference } from '../../diffusion/presentation.js';
 import { createStagePopovers, dockArrangement } from './stage-tools.js';
@@ -66,7 +67,9 @@ export function paintLoadProgress(lang, loaded, total) {
  * the stage dock and its popovers, the colour keys, the hover label, and
  * the loading and error stage.
  */
-export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnapshot, onDock, controls }) {
+export function createViewportChrome({
+  networks, cabNp, functionalRegions, onView, onRetry, onSnapshot, onDock, onFunctionalLevel, controls,
+}) {
   const orientation = document.getElementById('orientation');
   const edges = Object.fromEntries(
     [...orientation.children].map(node => [node.dataset.edge, node]));
@@ -87,6 +90,12 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
   const barText = bar.querySelector('.measure');
   const hover = document.getElementById('hover-label');
   const legend = document.getElementById('network-legend');
+  const functionalKey = document.getElementById('functional-key');
+  const functionalLevel = document.getElementById('functional-level');
+  const functionalTitle = document.getElementById('functional-key-title');
+  const functionalList = document.getElementById('functional-key-list');
+  const functionalToggle = document.getElementById('functional-key-toggle');
+  const functionalToggleLabel = document.getElementById('functional-key-toggle-label');
   const directionKey = document.getElementById('direction-key');
   const host = document.getElementById('viewport');
   const help = document.getElementById('viewport-help');
@@ -293,6 +302,49 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
     }));
   }
 
+  const onLevelClick = event => {
+    const button = event.target.closest('[data-level]');
+    if (button && button.getAttribute('aria-pressed') !== 'true') onFunctionalLevel(button.dataset.level);
+  };
+  functionalLevel.addEventListener('click', onLevelClick);
+  // A phone's stage is too short for 21 or 22 rows beside the anatomy, so there the key opens on request.
+  let functionalKeyOpen = false;
+  const onKeyToggle = () => {
+    functionalKeyOpen = !functionalKeyOpen;
+    if (lastState) showFunctionalKey(lastState);
+  };
+  functionalToggle.addEventListener('click', onKeyToggle);
+
+  /** The level switch sits on the key it changes; outside the plate, so a snapshot draws the key alone. */
+  function showFunctionalKey(state) {
+    functionalKey.hidden = !functionalRegions || state.surfaceColor !== 'functional'
+      || !(state.status === 'ready' || state.status === 'switching');
+    functionalLevel.hidden = functionalKey.hidden;
+    if (functionalKey.hidden) return;
+    const copy = t(state.lang, 'functional');
+    functionalLevel.setAttribute('aria-label', copy.keyAria);
+    for (const button of functionalLevel.querySelectorAll('[data-level]')) {
+      button.textContent = copy.levels[button.dataset.level];
+      button.setAttribute('aria-pressed', String(button.dataset.level === state.functionalLevel));
+    }
+    functionalTitle.textContent = copy.keyTitles[state.functionalLevel];
+    functionalToggleLabel.textContent = copy.keyTitles[state.functionalLevel];
+    const collapsed = (phone?.matches ?? false) && !functionalKeyOpen;
+    functionalToggle.setAttribute('aria-expanded', String(!collapsed));
+    functionalList.hidden = collapsed;
+    functionalList.replaceChildren(...functionalRegions.levels[state.functionalLevel].map(record => {
+      const row = document.createElement('li');
+      const swatch = document.createElement('span');
+      swatch.className = 'network-swatch';
+      swatch.style.background = networkCss(record.color);
+      const label = document.createElement('span');
+      label.textContent = record.number
+        ? `${record.number} · ${functionalShortName(record, state.lang)}` : functionalShortName(record, state.lang);
+      row.append(swatch, label);
+      return row;
+    }));
+  }
+
   let scale = null;
   function paintScale() {
     const wasHidden = bar.hidden;
@@ -387,7 +439,10 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
     paintViewTool();
   }
 
-  const onPhoneChange = () => fitDockLayout();
+  const onPhoneChange = () => {
+    fitDockLayout();
+    if (lastState) showFunctionalKey(lastState);
+  };
   phone?.addEventListener('change', onPhoneChange);
   // Widths measured in a fallback face are wrong once Source Sans arrives.
   const onFontsLoaded = () => {
@@ -492,6 +547,7 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
       return { x: r.left - origin.left - crop.x, y: r.top - origin.top - crop.y, width: r.width, height: r.height };
     };
     const { gutter: margin, line } = SNAPSHOT_LAYOUT;
+    const visible = node => node.checkVisibility?.() !== false;
     const letters = orientation.hidden ? [] : Object.entries(edges).map(([edge, node]) => {
       const box = local(node);
       const spot = { edge, text: node.textContent, x: box.x + box.width / 2, y: box.y + box.height / 2 };
@@ -505,11 +561,12 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
     });
     const keys = [...host.querySelectorAll('.stage-key')].filter(node => !node.hidden).map(node => ({
       box: local(node),
-      swatches: [...node.querySelectorAll('.network-swatch')].map(swatch => {
+      // A collapsed key draws what it shows: its title, not the rows it hides.
+      swatches: [...node.querySelectorAll('.network-swatch')].filter(visible).map(swatch => {
         const style = getComputedStyle(swatch);
         return { ...local(swatch), color: style.backgroundColor, radius: parseFloat(style.borderTopLeftRadius) || 0 };
       }),
-      texts: [...node.querySelectorAll('li > span:not(.network-swatch), .stage-key-title')].map(word => {
+      texts: [...node.querySelectorAll('li > span:not(.network-swatch), .stage-key-title')].filter(visible).map(word => {
         const box = local(word);
         const style = getComputedStyle(word);
         return { text: word.textContent, x: box.x, y: box.y + box.height / 2, color: style.color,
@@ -578,6 +635,7 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
       fitDockLayout();
       fitHints();
       showLegend(state);
+      showFunctionalKey(state);
       showDirectionKey(showKey, i18nViewport.directionKey);
       settlePopovers();
       const ready = state.status === 'ready' || state.status === 'switching';
@@ -731,6 +789,9 @@ export function createViewportChrome({ networks, cabNp, onView, onRetry, onSnaps
       fullscreenButton?.removeEventListener('click', onFullscreenClick);
       views.replaceChildren();
       legend.replaceChildren();
+      functionalLevel.removeEventListener('click', onLevelClick);
+      functionalToggle.removeEventListener('click', onKeyToggle);
+      functionalList.replaceChildren();
     },
   };
 }

@@ -10,6 +10,7 @@ import { loadCircuitCatalog } from './learning/load.js';
 import { createCircuitSession } from './learning/session.js';
 import { openCircuitLandmark, prepareCircuitMri } from './learning/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
+import { functionalName, functionalRegionOf } from './catalog/functional-regions.js';
 import { loadAnatomies, resolveAnatomy } from './model/published-anatomy.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
 import {
@@ -461,6 +462,7 @@ export async function startApp() {
   async function setAtlas(id) {
     if (id === model.state.atlas) return;
     const byCabNp = model.state.surfaceColor === 'cab-np';
+    const byFunctional = model.state.surfaceColor === 'functional';
     session.setSwitching(null);
     render();
     try {
@@ -474,6 +476,10 @@ export async function startApp() {
       if (byCabNp && model.state.surfaceColor !== 'cab-np') {
         const { lang } = session.assemble(model.state);
         session.notify(t(lang, 'app').cabNpAtlasOnly(atlasSwitchLabel(id, lang)));
+      }
+      if (byFunctional && model.state.surfaceColor !== 'functional') {
+        const { lang } = session.assemble(model.state);
+        session.notify(t(lang, 'app').functionalAtlasOnly(atlasSwitchLabel(id, lang)));
       }
     } catch (error) {
       // The control reflects model.state.atlas, so it reverts on this render.
@@ -566,6 +572,7 @@ export async function startApp() {
     atlases: model.manifest.atlases,
     networks: model.manifest.networks,
     cabNp: model.cabNp,
+    functionalRegions: model.functionalRegions,
     anatomy: model.manifest.anatomy,
     anatomies,
     manifest: model.manifest,
@@ -575,9 +582,15 @@ export async function startApp() {
     onAtlas: setAtlas,
     onSurfaceColor: async value => {
       try {
-        // CAB-NP is defined on one atlas's areas, so choosing it shows that atlas.
+        // CAB-NP and the functional divisions are defined on one atlas's areas, so choosing either shows that atlas.
         if (value === 'cab-np' && model.state.atlas !== model.cabNp.atlas) await setAtlas(model.cabNp.atlas);
+        if (value === 'functional' && model.state.atlas !== model.functionalRegions.atlas) {
+          await setAtlas(model.functionalRegions.atlas);
+        }
+        const entering = value === 'functional' && model.state.surfaceColor !== 'functional';
         await sections.setSurfaceColor(value);
+        // The glass brain shows the cortex alone; the reader can bring the internal anatomy back.
+        if (entering && model.state.internalVisible) model.setInternalVisible(false);
         render();
       } catch (error) {
         session.notify(error.message);
@@ -663,6 +676,7 @@ export async function startApp() {
     catalog,
     networks: model.manifest.networks,
     cabNp: model.cabNp,
+    functionalRegions: model.functionalRegions,
     onFocus: focusSelection,
     onIsolate: isolateSelection,
     onClear: () => {
@@ -1076,10 +1090,12 @@ export async function startApp() {
   chrome = createViewportChrome({
     networks: model.manifest.networks,
     cabNp: model.cabNp,
+    functionalRegions: model.functionalRegions,
     onView: applyView,
     onRetry: reloadWithoutStoredModels,
     onSnapshot,
     onDock: refitDock,
+    onFunctionalLevel: level => display(() => model.setFunctionalLevel(level)),
     controls: scene.controls,
   });
   chrome.setViewport(scene.visibleRect, scene.hostSize);
@@ -1248,8 +1264,14 @@ export async function startApp() {
   /** Both hemispheres share every name, so the chip says which side as well. */
   function hoverText(region) {
     if (!region) return null;
-    const name = catalog.get(region.id)?.label.name ?? region.label;
-    const side = t(session.assemble(model.state).lang, 'sides').capitalized[region.hemisphere];
+    const { lang, surfaceColor, functionalLevel } = session.assemble(model.state);
+    const label = catalog.get(region.id)?.label.name ?? region.label;
+    // Glass belongs to no division of the level on show, but always to a section.
+    const division = surfaceColor === 'functional'
+      && (functionalRegionOf(model.functionalRegions, functionalLevel, region.id)
+        ?? functionalRegionOf(model.functionalRegions, 'sections', region.id));
+    const name = division ? `${label} · ${functionalName(division, lang)}` : label;
+    const side = t(lang, 'sides').capitalized[region.hemisphere];
     return side ? `${name} · ${side}` : name;
   }
 

@@ -7,7 +7,7 @@ const switchProgress = (progress, lang) => {
   return progress?.total ? i18n.loadingProgress(progress) : i18n.loadingAtlas;
 };
 
-const SURFACE_MODES = ['tissue', 'mri', 'atlas', 'network', 'cab-np'];
+const SURFACE_MODES = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'];
 
 // The label is also kept as data-label, which the masthead's CSS uses to hold the bold width.
 const setLabel = (button, text) => {
@@ -44,7 +44,7 @@ export function paintColophon(lang, loaded) {
 
 /** The masthead: which data is loaded, plus fullscreen, snapshot and settings; and the status bar under the stage. */
 export function createHeader({
-  atlases, networks, cabNp, anatomy, anatomies = [], manifest, manifestUrl, indexUrl, modelView,
+  atlases, networks, cabNp, functionalRegions, anatomy, anatomies = [], manifest, manifestUrl, indexUrl, modelView,
   onAtlas, onSurfaceColor, onTheme, onLang, onAnatomy, onSingleKeys,
 }) {
   const container = document.getElementById('atlas-switch');
@@ -210,7 +210,8 @@ export function createHeader({
   // A build without a network layer must not offer to colour by it. Absent
   // rather than disabled: an option that can never be chosen is not a choice.
   const surfaceButtons = SURFACE_MODES
-    .filter(mode => (mode !== 'network' || networks) && (mode !== 'cab-np' || cabNp))
+    .filter(mode => (mode !== 'network' || networks) && (mode !== 'cab-np' || cabNp)
+      && (mode !== 'functional' || functionalRegions))
     .map(mode => {
       const button = document.createElement('button');
       button.type = 'button';

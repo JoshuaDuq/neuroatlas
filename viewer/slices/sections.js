@@ -64,6 +64,7 @@ export class BrainSections extends EventTarget {
         s.isolatedRegion,
         s.internalSystem,
         s.surfaceColor,
+        s.functionalLevel,
         s.detail,
         s.spinalCordVisible,
         [...(s.hiddenRegions ?? [])].sort(),
@@ -190,6 +191,10 @@ export class BrainSections extends EventTarget {
       if (request !== this.appearanceRequest || this.disposed) return;
       if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
       this.model.setMriAnatomy(this.tissues.anatomy);
+    }
+    if (mode === 'functional') {
+      await this.model.loadGlassSolids(this.metadataUrl);
+      if (request !== this.appearanceRequest || this.disposed) return;
     }
     this.model.setSurfaceColor(mode);
     this.state.status = 'ready';

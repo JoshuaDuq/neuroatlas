@@ -1,5 +1,6 @@
 import { count, formatRas, quantity } from '../format.js';
 import { cabNpName, networkBasis, networkCss, networkName, networksOf } from '../../catalog/networks.js';
+import { functionalName, functionalRegionOf } from '../../catalog/functional-regions.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 
 /**
@@ -23,7 +24,9 @@ export function inspectorEmptyChrome({ selectedRegion, explorer }) {
 const MAX_LISTED_SOURCE_IDS = 8;
 
 /** The selected region: what it is, and what is measured about it. */
-export function createInspector({ catalog, networks, cabNp, onFocus, onIsolate, onHide, onClear, centroidOf }) {
+export function createInspector({
+  catalog, networks, cabNp, functionalRegions, onFocus, onIsolate, onHide, onClear, centroidOf,
+}) {
   const inspectorPanel = document.getElementById('inspector');
   const title = document.getElementById('inspector-title');
   const empty = document.getElementById('selection-empty');
@@ -58,6 +61,10 @@ export function createInspector({ catalog, networks, cabNp, onFocus, onIsolate, 
   const cabNpLabel = document.getElementById('label-cab-np');
   const cabNpList = document.getElementById('cab-np-list');
   const cabNpNote = document.getElementById('cab-np-note');
+  const functionalSection = document.getElementById('region-functional');
+  const functionalHeading = document.getElementById('label-functional');
+  const functionalList = document.getElementById('functional-list');
+  const functionalNote = document.getElementById('functional-note');
   const explorerPanel = document.getElementById('navigator');
 
   // The × leaves with the selection, so focus goes to whichever panel is now in front.
@@ -129,6 +136,50 @@ export function createInspector({ catalog, networks, cabNp, onFocus, onIsolate, 
       { network: assigned, fraction: 1 }, state.lang, i18n, { colors: cabNp.colors, name: cabNpName })] : []));
   }
 
+  function divisionRow(record, level, lang, copy) {
+    const row = document.createElement('li');
+    row.className = 'network-row functional-row';
+    const swatch = document.createElement('span');
+    swatch.className = 'network-swatch';
+    swatch.style.background = networkCss(record.color);
+    const label = document.createElement('span');
+    label.className = 'network-row-name';
+    const divisionName = document.createElement('span');
+    divisionName.textContent = functionalName(record, lang);
+    const meta = document.createElement('span');
+    meta.className = 'functional-row-meta';
+    meta.textContent = [
+      level === 'sections' ? copy.section(record.number) : copy.named,
+      functionalRegions.sources[record.source].short,
+      copy.areas(record.areas.join(' ')),
+    ].join(' · ');
+    label.append(divisionName, meta);
+    row.append(swatch, label);
+    return row;
+  }
+
+  /** The HCP-MMP area's section, and its named region where a source names one. */
+  function showFunctional(state) {
+    const region = state.selectedRegion;
+    const section = region ? functionalRegionOf(functionalRegions, 'sections', region.id) : null;
+    functionalSection.hidden = !section;
+    if (!section) return;
+    const copy = t(state.lang, 'functional');
+    const named = functionalRegionOf(functionalRegions, 'named', region.id);
+    functionalHeading.textContent = copy.heading;
+    functionalList.replaceChildren(...[
+      named && divisionRow(named, 'named', state.lang, copy),
+      divisionRow(section, 'sections', state.lang, copy),
+    ].filter(Boolean));
+    // The build checked that every HCP-MMP name reads `L_<area>_ROI` or `R_<area>_ROI`.
+    const contested = functionalRegions.contested[region.source_name.slice(2, -4)];
+    functionalNote.textContent = [
+      !named && copy.unnamed,
+      contested && copy.contested(contested.section, contested.text_section),
+      copy.note,
+    ].filter(Boolean).join(' ');
+  }
+
   return {
     update(state) {
       const i18n = t(state.lang, 'inspector');
@@ -172,6 +223,7 @@ export function createInspector({ catalog, networks, cabNp, onFocus, onIsolate, 
         if (factGroup) factGroup.textContent = '';
         if (factCoords) factCoords.textContent = '';
         showNetworks(state);
+        showFunctional(state);
         focus.disabled = true;
         isolate.disabled = true;
         hideRegion.disabled = true;
@@ -211,6 +263,7 @@ export function createInspector({ catalog, networks, cabNp, onFocus, onIsolate, 
         : `${sourceAtlas} · ${ids.join(', ')}`;
       source.title = counted ? ids.join(', ') : '';
       showNetworks(state);
+      showFunctional(state);
 
       focus.disabled = false;
       isolate.disabled = false;

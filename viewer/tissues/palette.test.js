@@ -109,6 +109,24 @@ test('a cut carries CAB-NP colours for the areas it assigns and tissue colour el
   }
 });
 
+test('a cut carries the functional division of the level on show, and glass keeps tissue colour', () => {
+  const functional = {
+    levels: {
+      named: [],
+      sections: [{ id: 'section-22', color: [0, 0, 255] }],
+    },
+    regions: { named: {}, sections: { 'destrieux:left:1': 'section-22' } },
+  };
+  const cortex = new Color(tissueColor({ ...labels[1], source_name: labels[1].name }, appearance.tissue));
+  const channels = (palette, offset) => [...palette.slice(offset, offset + 3)];
+  const at = level => createPalette(labels, { ...state, surfaceColor: 'functional', functionalLevel: level },
+    appearance.tissue, { regions: new Map(), functional });
+  channels(at('sections'), 4).forEach((value, channel) =>
+    assert.ok(Math.abs(value - new Color().setRGB(0, 0, 1, SRGBColorSpace).toArray()[channel]) < 1e-7));
+  channels(at('named'), 4).forEach((value, channel) =>
+    assert.ok(Math.abs(value - cortex.toArray()[channel]) < 1e-7));
+});
+
 test('a NextBrain cortical cut parcel carries the network colour of its region', () => {
   // NextBrain cut labels are kind `tissue` — they have no surface — but its
   // cortical parcels still have a region record, and that record can carry

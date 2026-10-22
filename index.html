@@ -398,6 +398,13 @@
                     <ul id="constituents-list" class="constituents-list"></ul>
                   </div>
                 </details>
+                <section id="region-functional" hidden>
+                  <p id="label-functional" class="section-label">Functional division</p>
+                  <div class="panel-body">
+                    <ul id="functional-list" class="network-list"></ul>
+                    <p id="functional-note" class="network-note"></p>
+                  </div>
+                </section>
                 <section id="region-networks" hidden>
                   <p id="label-networks" class="section-label">Functional networks</p>
                   <div class="panel-body">
@@ -531,6 +538,18 @@
         </div>
         <div class="stage-keys">
           <ul id="network-legend" class="network-legend stage-key" aria-label="Network colours" hidden></ul>
+          <div id="functional-level" class="segmented stage-segmented functional-level" role="group" aria-label="Functional division level" hidden>
+            <button type="button" data-level="named" aria-pressed="true">Named</button>
+            <button type="button" data-level="sections" aria-pressed="false">Sections</button>
+          </div>
+          <div id="functional-key" class="stage-key functional-key" hidden>
+            <button id="functional-key-toggle" class="functional-key-toggle" type="button" aria-expanded="false" aria-controls="functional-key-list">
+              <span id="functional-key-toggle-label" class="stage-key-title"></span>
+              <span class="stage-tool-chevron" aria-hidden="true"></span>
+            </button>
+            <p id="functional-key-title" class="stage-key-title">Named regions · Glasser 2016, Rolls 2023</p>
+            <ul id="functional-key-list" aria-labelledby="functional-key-title"></ul>
+          </div>
           <div id="direction-key" class="stage-key direction-key" hidden>
             <p id="direction-key-title" class="stage-key-title">Local streamline direction</p>
             <ul aria-labelledby="direction-key-title">

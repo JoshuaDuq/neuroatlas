@@ -20,7 +20,7 @@ from .gltf.encode import (
 from .gltf.export import compact_region
 from .labels import nextbrain, white_matter
 from .labels.volumes import conformed_grid
-from .layers import cab_np, networks, spinal_cord
+from .layers import cab_np, functional_regions, networks, spinal_cord
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
 from .surfaces.geometry import (
     extract_structure,
@@ -742,6 +742,7 @@ def main():
            if spinal_cord.is_available(config) else {}),
         "solid_envelopes": validate_solid_envelopes(config, manifest["solid_envelopes"]),
         "cab_np": cab_np.validate(config, manifest),
+        "functional_regions": functional_regions.validate(config, manifest),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config),
              "nextbrain_cut_labels": nextbrain.validate_volume(

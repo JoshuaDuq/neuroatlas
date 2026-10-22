@@ -40,6 +40,11 @@ export function provenanceRows(manifest, { lang = 'en', manifestUrl, indexUrl } 
       link: { href: manifestUrl.replace(/[^/]*$/, '') + cabNp.license_file, text: 'CAB-NP.txt', mono: true },
     },
   ]);
+  const functional = manifest.functional_regions;
+  add(copy.functional, functional ? [
+    { text: functional.label },
+    ...functional.citations.map(citation => ({ link: link(citation) })),
+  ] : []);
   add(copy.supplemental, (manifest.supplemental_layers ?? []).map(layer => ({
     text: names[layer.id] ?? layer.label,
     note: [layer.license, layer.attribution].filter(Boolean).join(' · ') || null,

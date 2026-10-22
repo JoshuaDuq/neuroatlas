@@ -13,6 +13,11 @@
  */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
   :root { --control-height: 44px; --row-height: 44px; --tab-height: 44px; }
+  /* In two columns the functional key's 21 or 22 rows stay above the anatomy rather than over it. */
+  .functional-key { max-width: none; }
+  .functional-key ul { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-3); max-height: 30vh; }
+  .functional-key-toggle { display: flex; min-height: 44px; }
+  .functional-key > .stage-key-title { display: none; }
   /* The sheet has no room for the lesson: idle, the dock goes; with something hidden, it returns. */
   .dissection-controls:has(#dissection-undo:disabled):has(#dissection-restore:disabled) { display: none; }
   /*

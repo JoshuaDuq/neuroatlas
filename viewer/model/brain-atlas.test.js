@@ -6,6 +6,7 @@ import { BoxGeometry, Color, DoubleSide, Float32BufferAttribute, Group, Mesh, Me
 import { visibilityOf } from '../catalog/visibility.js';
 import { BrainAtlas, SURFACE_COLORS } from './brain-atlas.js';
 import { TissueSections } from '../tissues/gpu-sections.js';
+import { createGlassSolids } from '../tissues/glass-solids.js';
 import { Volume } from '../slices/volume.js';
 
 test('MRI is an explicit appearance and requires registered data', async () => {
@@ -58,7 +59,7 @@ const regions = [
     kind: 'tissue-region' },
 ];
 
-function fixture(cabNp = null) {
+function fixture(cabNp = null, functional = null) {
   const manifest = {
     schema_version: 1,
     appearance,
@@ -98,7 +99,7 @@ function fixture(cabNp = null) {
       return { scene };
     },
   };
-  return { atlas: new BrainAtlas(manifest, loader, cabNp), loads };
+  return { atlas: new BrainAtlas(manifest, loader, cabNp, functional), loads };
 }
 
 for (const request of [
@@ -499,6 +500,134 @@ test('a partition assigning a region of another atlas is rejected', () => {
     /Invalid CAB-NP assignment: b-left/);
 });
 
+const functional = {
+  id: 'functional-regions', atlas: 'a',
+  sources: { glasser: { citation: 'Glasser et al. (2016)', doi: 'https://doi.org/10.1038/nature18933' } },
+  levels: {
+    named: [{ id: 'm1', name: 'M1', name_fr: 'M1', short: 'M1', short_fr: 'M1', source: 'glasser', color: [255, 0, 0], areas: ['4'] }],
+    sections: [
+      { id: 'section-6', number: 6, name: 'S6', name_fr: 'S6', short: 'S6', short_fr: 'S6', source: 'glasser', color: [0, 0, 255], areas: ['4'] },
+      { id: 'section-22', number: 22, name: 'S22', name_fr: 'S22', short: 'S22', short_fr: 'S22', source: 'glasser', color: [0, 255, 0], areas: ['46'] },
+    ],
+  },
+  regions: {
+    named: { 'a-left': 'm1' },
+    sections: { 'a-left': 'section-6', 'a-right': 'section-22' },
+  },
+};
+
+/** Ribbon solids for each area, as the glass brain cuts them from the envelopes. */
+function withGlassSolids(atlas) {
+  const wedges = ['a-left', 'a-right'].map(id => {
+    const wedge = new Mesh(new BoxGeometry(0.01, 0.01, 0.01));
+    wedge.userData = { region_id: id, atlas: 'a', kind: 'ribbon' };
+    return wedge;
+  });
+  atlas.glassSolids = createGlassSolids(wedges, appearance);
+  atlas.group.add(atlas.glassSolids.group);
+  return atlas.glassSolids;
+}
+
+const meshOf = (atlas, id) => atlas.layers.get('a').meshes.find(mesh => mesh.userData.region_id === id);
+
+test('functional divisions are solid in their colour and the rest of the cortex is glass', async () => {
+  const { atlas } = fixture(null, functional);
+  await atlas.initialize('a');
+  withGlassSolids(atlas);
+  atlas.setSurfaceColor('functional');
+  const red = new Color().setRGB(1, 0, 0, SRGBColorSpace);
+  assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), red.getHex());
+  assert.equal(meshOf(atlas, 'a-left').material.opacity, 1);
+  for (const id of ['a-right', 'a-wall']) {
+    assert.equal(meshOf(atlas, id).material.opacity, appearance.glass_opacity);
+    assert.equal(meshOf(atlas, id).material.transparent, true);
+    assert.equal(meshOf(atlas, id).material.userData.tissueVariation.value, 0);
+  }
+  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), new Color(appearance.tissue.cortex).getHex());
+  atlas.setFunctionalLevel('sections');
+  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(),
+    new Color().setRGB(0, 1, 0, SRGBColorSpace).getHex());
+  assert.equal(meshOf(atlas, 'a-right').material.opacity, 1);
+  // The medial wall is in no section, so it stays glass at every level.
+  assert.equal(meshOf(atlas, 'a-wall').material.opacity, appearance.glass_opacity);
+  atlas.setCortexOpacity(0.5);
+  assert.equal(meshOf(atlas, 'a-right').material.opacity, 0.5);
+  assert.equal(meshOf(atlas, 'a-wall').material.opacity, 0.5 * appearance.glass_opacity);
+  assert.throws(() => atlas.setFunctionalLevel('lobes'), /Unknown functional level: lobes/);
+  atlas.dispose();
+});
+
+test('only an opaque named division is closed by its ribbon solid, and only while its patch is drawn', async () => {
+  const { atlas } = fixture(null, functional);
+  await atlas.initialize('a');
+  const solids = withGlassSolids(atlas);
+  const wedge = id => solids.meshes.find(mesh => mesh.userData.region_id === id);
+  atlas.setSurfaceColor('functional');
+  atlas.update();
+  assert.equal(wedge('a-left').visible, true);
+  assert.equal(wedge('a-right').visible, false);
+  assert.equal(wedge('a-left').material.color.getHex(), new Color().setRGB(1, 0, 0, SRGBColorSpace).getHex());
+  atlas.setHemisphere('right');
+  assert.equal(wedge('a-left').visible, false);
+  atlas.setHemisphere('both');
+  atlas.setCortexOpacity(0.6);
+  assert.equal(wedge('a-left').visible, false);
+  atlas.setCortexOpacity(1);
+  atlas.setFunctionalLevel('sections');
+  assert.equal(wedge('a-left').visible, false);
+  atlas.setFunctionalLevel('named');
+  atlas.setSurfaceColor('atlas');
+  assert.equal(solids.group.visible, false);
+  atlas.dispose();
+});
+
+test('a division behind the glass is picked through it', async () => {
+  const { atlas } = fixture(null, functional);
+  await atlas.initialize('a');
+  withGlassSolids(atlas);
+  atlas.setInternalVisible(false);
+  // The glass area sits in front of the division, on the same ray.
+  const front = meshOf(atlas, 'a-right');
+  front.position.set(0, 0, 0.02);
+  front.updateMatrix();
+  const ray = new Raycaster(new Vector3(0, 0, 0.1), new Vector3(0, 0, -1));
+  assert.equal(atlas.pick(ray).id, 'a-right');
+  atlas.setSurfaceColor('functional');
+  assert.equal(atlas.pick(ray).id, 'a-left');
+  // Where only the division's ribbon solid lies on the ray, the solid answers for it.
+  const patch = meshOf(atlas, 'a-left');
+  patch.position.set(0.5, 0, 0);
+  patch.updateMatrix();
+  assert.equal(atlas.pick(ray).id, 'a-left');
+  atlas.setFunctionalLevel('sections');
+  assert.equal(atlas.pick(ray).id, 'a-right');
+  atlas.dispose();
+});
+
+test('functional divisions need their atlas and their solids, and leaving the atlas leaves them', async () => {
+  const { atlas } = fixture(null, functional);
+  await atlas.initialize('b');
+  assert.throws(() => atlas.setSurfaceColor('functional'), /colour a areas; show that atlas first/);
+  await atlas.setAtlas('a');
+  assert.throws(() => atlas.setSurfaceColor('functional'), /solids must load/);
+  withGlassSolids(atlas);
+  atlas.setSurfaceColor('functional');
+  atlas.setFunctionalLevel('sections');
+  await atlas.setAtlas('b');
+  assert.equal(atlas.state.surfaceColor, 'atlas');
+  atlas.reset();
+  assert.equal(atlas.state.functionalLevel, 'named');
+  atlas.dispose();
+});
+
+test('a model without the divisions refuses them', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  assert.throws(() => atlas.setSurfaceColor('functional'), /no functional divisions/);
+  await assert.rejects(atlas.loadGlassSolids('https://example.invalid/'), /no functional divisions/);
+  atlas.dispose();
+});
+
 test('rejects cortex missing source morphometry instead of silently losing relief', async () => {
   const { atlas } = fixture();
   const load = atlas.loader.loadAsync;
@@ -588,7 +717,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false,
-    surfaceColor: 'atlas', isolatedRegion: null,
+    surfaceColor: 'atlas', functionalLevel: 'named', isolatedRegion: null,
     hiddenRegions: new Set(), dissectionCanUndo: false,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));

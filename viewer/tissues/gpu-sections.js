@@ -23,7 +23,7 @@ import { fetchPublished } from '../model/published-assets.js';
 import { loadVolume } from '../slices/volume.js';
 import { codeIndex, liftFor } from './highlight.js';
 import {
-  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesNetworkColors,
+  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesFunctionalColors, usesNetworkColors,
 } from './palette.js';
 import { createCutMaterial } from './shader.js';
 import { SolidSections } from './solid-sections.js';
@@ -77,8 +77,8 @@ export class TissueSections {
 
   /** What a cut label's colour is looked up in: its region and each published network palette. */
   get paletteLookup() {
-    const { regions, manifest, cabNp } = this.model;
-    return { regions, networks: manifest.networks, cabNp };
+    const { regions, manifest, cabNp, functionalRegions } = this.model;
+    return { regions, networks: manifest.networks, cabNp, functional: functionalRegions };
   }
 
   async loadMetadata() {
@@ -283,7 +283,7 @@ export class TissueSections {
       const constituents = state.internalConstituents
         ? [...state.internalConstituents].sort().join(',') : '';
       const paintKey = [
-        state.surfaceColor, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
+        state.surfaceColor, state.functionalLevel, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
         state.isolatedRegion, state.internalVisible, state.internalSystem, state.spinalCordVisible,
         state.detail, state.cutAtlas, state.cutActive, constituents,
         atlas, layer.wedged, this.whiteMatter?.active ?? false,
@@ -314,11 +314,13 @@ export class TissueSections {
     // Only tissue colour carries the T1 brightness it was tuned against; under
     // a published palette — atlas or network — that modulation would distort
     // the datum, and the cut would no longer match its key.
-    const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state);
+    const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state)
+      || usesFunctionalColors(state);
     layer.uniforms.tissueVariation.value = published
       ? 0 : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
       state.surfaceColor,
+      state.functionalLevel,
       state.hemisphere,
       state.cortexVisible,
       state.cortexOpacity,

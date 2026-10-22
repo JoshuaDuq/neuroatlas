@@ -12,7 +12,7 @@ from .gltf.export import add_region, compact_region, published_area_mm2, write_s
 from .labels import nextbrain, white_matter
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
-from .layers import cab_np, comparison, learning, networks, spinal_cord
+from .layers import cab_np, comparison, functional_regions, learning, networks, spinal_cord
 from .sources import (
     HEMISPHERES,
     read_color_table,
@@ -429,6 +429,7 @@ def main():
         "atlases": atlas_metadata,
         "networks": networks.metadata() if networks.is_available(config) else None,
         "cab_np": cab_np.export(config, regions),
+        "functional_regions": functional_regions.export(config, regions),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
@@ -452,6 +453,7 @@ def main():
             "A cut assigns each source triangle to the parcel holding most of its vertices, so a parcel boundary on a cut can differ from the surface's barycentric boundary by one triangle.",
             *network_limitations(config),
             *cab_np.limitations(),
+            *functional_regions.limitations(),
             *white_matter.limitations(config),
         ],
         "provenance": provenance,

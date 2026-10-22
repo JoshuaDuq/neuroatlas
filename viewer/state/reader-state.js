@@ -3,7 +3,7 @@ import { DEFAULTS } from './url-state.js';
 /** The scene fields a link carries with a fixed default. Layers default to what is loaded. */
 const SCENE_FIELDS = [
   'hemisphere', 'cortexVisible', 'cortexOpacity', 'internalVisible', 'spinalCordVisible',
-  'surfaceColor', 'internalSystem', 'view', 'cut', 'cutOffset', 'cutReverse', 'cutTilt',
+  'surfaceColor', 'functionalLevel', 'internalSystem', 'view', 'cut', 'cutOffset', 'cutReverse', 'cutTilt',
   'cutAzimuth', 'selectedRegion', 'isolatedRegion',
 ];
 
@@ -47,6 +47,7 @@ export async function applyReaderState(target, { model, sections, applyCamera, r
   if (!sameRegions(target.hiddenRegions, model.settings.hiddenRegions)) {
     model.loadHiddenRegions([...target.hiddenRegions]);
   }
+  if (target.functionalLevel !== model.settings.functionalLevel) model.setFunctionalLevel(target.functionalLevel);
   if (target.surfaceColor !== model.settings.surfaceColor) await sections.setSurfaceColor(target.surfaceColor);
   if (target.cutAtlas !== sections.state.cutAtlas) await sections.setCutAtlas(target.cutAtlas);
   if (target.cut === 'off') {
