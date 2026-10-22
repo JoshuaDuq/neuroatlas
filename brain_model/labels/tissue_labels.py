@@ -169,7 +169,7 @@ def export_tissue_labels(config, manifest):
             else "Derived nearest pial/white vertex labels, restricted to published cortical voxels AND native gray ribbon; other tissues unchanged"
         )
         atlases[atlas] = record
-    if nextbrain.is_available(config):
+    if nextbrain.is_declared(config):
         atlases[nextbrain.ATLAS_ID] = nextbrain.export_atlas(
             config, manifest["regions"]
         )
@@ -187,7 +187,7 @@ def export_tissue_labels(config, manifest):
     }
     if nextbrain.ATLAS_ID in atlases:
         metadata["limitations"].extend(nextbrain_limitations(config, atlases[nextbrain.ATLAS_ID]))
-    if white_matter.is_available(config):
+    if white_matter.is_declared(config):
         metadata["white_matter"] = white_matter.export_volume(
             config, manifest["regions"]
         )

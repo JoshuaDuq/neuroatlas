@@ -1,0 +1,144 @@
+{
+  "status": "complete",
+  "subject": "DIPY SNAIL bundles_2_subjects / subj_1",
+  "source": "https://hdl.handle.net/1773/38477",
+  "license": "CC0-1.0",
+  "input": "public/diffusion/snail-subject-1/t1_warped.nii.gz",
+  "input_sha256": "3cd3f2c5eba843c31970ee3107e4af07f6fb34554612fcd3f1066a7d992fa416",
+  "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+  "threads": 4,
+  "commands": [
+    {
+      "environment": {
+        "FS_V8_XOPTS": "0"
+      },
+      "command": [
+        "recon-all",
+        "-sd",
+        "data",
+        "-s",
+        "snail",
+        "-i",
+        "public/diffusion/snail-subject-1/t1_warped.nii.gz",
+        "-motioncor",
+        "-openmp",
+        "4"
+      ]
+    },
+    {
+      "command": [
+        "fspython",
+        "scripts/freesurfer/run_patched.py",
+        "$FREESURFER_HOME/python/scripts/mri_synthstrip",
+        "--threads",
+        "4",
+        "-i",
+        "data/snail/mri/orig.mgz",
+        "-o",
+        "data/snail/mri/synthstrip.mgz"
+      ]
+    },
+    {
+      "command": [
+        "recon-all",
+        "-sd",
+        "data",
+        "-s",
+        "snail",
+        "-all",
+        "-openmp",
+        "4"
+      ]
+    }
+  ],
+  "runtime": {
+    "scripts/freesurfer/run_patched.py": "40ce7e4ab456d27eb1b58ce283351d80937c44b123281cda88492604754655ba",
+    "scripts/freesurfer/conv3d_slices.py": "e6a9cd093e3997ee7b0277a8dd143f5eb9c01e83de443f4f40074f204943bf7e",
+    "/Applications/freesurfer/8.2.0/bin/recon-all": "780d860a9e91a4b1ae9f68f0146486025cfb2d8080cddf0d1e96c7967942b04d",
+    "/Applications/freesurfer/8.2.0/python/scripts/mri_synthstrip": "bbc2ff8f8779862039401b05d5cd6039fb4f3583e0032a793ac9adb3f4521590"
+  },
+  "synthstrip_runtime": "Sliced CPU convolution; same products, different summation order. Worst relative numerical difference from native torch conv3d: 6.19e-7. No model or input changes.",
+  "scanner_ras_to_surface_ras": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -7.4461669921875
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      -23.5394287109375
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -46.64009094238281
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "coordinate_method": "Exact FreeSurfer orig.mgz header transform; no anatomical registration.",
+  "limitations": [
+    "Source T1 is already skull stripped and warped as published.",
+    "Inferior image coverage ends at source scanner RAS z=-28.359909057617188 mm; absent tissue cannot be reconstructed.",
+    "This FreeSurfer aseg contains no left/right choroid-plexus (31/63) or optic-chiasm (85) labels; those coarse aseg regions are not exported.",
+    "The mixed learning overview omits the native callosal surface because it overlaps the finer fornix/septal estimates in this subject. The original callosal surface remains available in the FreeSurfer aseg detail level; source segmentations and tractograms are unchanged."
+  ],
+  "completed_at": "2026-10-05T16:08:42-04:00",
+  "exit_code": 0,
+  "runtime_hours": 1.633,
+  "output_sha256": {
+    "mri/orig.mgz": "a981e8c07bfae9ac476bec1c87b4d6e05eb5718add9efdfc57d0d6f38eb4c7bc",
+    "mri/aseg.mgz": "9fe5ffdefc49dd2a41bcd858e5582591cc78c45d1312fcb3ac98b66b28068377",
+    "mri/aparc.a2009s+aseg.mgz": "927027413577c3674f56359f97b7a6312623c1f9b19da993940c047c76b3a6d2",
+    "mri/ribbon.mgz": "4ac2568aed7838ab5eb1d759ca5e25802d5ccc981f8919ae235a5fbfd580753b",
+    "mri/brain.mgz": "4b57840fa60e488851e0321761bae81dd6359a6c83b3a7e187e26e070b9fdb8f",
+    "mri/wmparc.mgz": "4e561a2999191a5118b3c991005a31dbdffeedd683fe70cb3f172e9fd3bd1462",
+    "scripts/build-stamp.txt": "05e1fbf2faef4be22a0180c1aaf9a337bfdaccfdcdd7a34adaac27e1578458dd",
+    "surf/lh.pial": "5516bf468e41989811b034cc2c68e9eb56ae0e257aec62ea748dae1c50167223",
+    "surf/lh.white": "8a8a4e4856a52dd261795e5a841953ce912c831cacd22c1f67a829661b8baad7",
+    "surf/lh.sulc": "cbc3bce9a282418783eed3da46c9c5bb6ab245c8da7886d3a93918e49197c637",
+    "surf/lh.sphere.reg": "044e25c91a4fa30f097bcd4a127108196f99f4e4cfe8fae759abf282d395760d",
+    "label/lh.aparc.a2009s.annot": "22ddaf80729daeeed414ada32c71e6ae70bafe1b82d176e7d9dff5f23d941a5f",
+    "surf/rh.pial": "a42965ca34311b667c39e9991d7f3e161e9e726a9ee74b180cb237785f3ae88f",
+    "surf/rh.white": "920fa3964894404685dc2ccc313e2a6ca4f028f26eb4336758a445edc48dd617",
+    "surf/rh.sulc": "bf53258e5cb7caec5e1c1962b87e2307c52100e095237b53c63c0c0246f49781",
+    "surf/rh.sphere.reg": "b3b1e5228de4ecb375d43353888387033246b94b477f366853317bf39c9415dd",
+    "label/rh.aparc.a2009s.annot": "ca8bbef7365845d64c78a59ff2b5ff7a6862fad05111fa42a8561acaa603d6df"
+  },
+  "completion_marker_sha256": "0898438ced9e13ee7909f8cd40c20acfa3b5d9faba564d9dd3b5dda46d50c515",
+  "log": {
+    "path": "scripts/full-reconstruction.log",
+    "sha256": "1040464314243a27e71c6e17542f80852827e6a88283baeccb0cc0e14b9fb4fb"
+  },
+  "raw_import": {
+    "voxel_values": "exact",
+    "maximum_affine_error_mm": 0.0
+  },
+  "reference_restoration": {
+    "cause": "FreeSurfer recon-all BA_exvivo step replaces fsaverage when entorhinal_exvivo.thresh.label is absent.",
+    "restored_from_git": "6dfb995c9eccbc88a2e141d95060a477721bb29b",
+    "files": 18,
+    "checks": "Every restored file matches the existing data/sources.json SHA256.",
+    "runtime_symlink_preserved_at": "data/cache/fsaverage-runtime"
+  },
+  "learning_overview": {
+    "excluded_aseg_units": [
+      "corpus-callosum"
+    ],
+    "reason": "The native callosal estimate overlaps the finer fornix/septal estimates. Keep its original surface in the aseg detail level, omit it from the mixed learning overview.",
+    "original_cross_source_overlap_fraction": {
+      "septal": 0.5911557243624526,
+      "fornix": 0.6186612576064908
+    },
+    "aseg_sha256": "9fe5ffdefc49dd2a41bcd858e5582591cc78c45d1312fcb3ac98b66b28068377",
+    "nextbrain_sha256": "3f1514574cbc834ef67f1bf0f487e53a9e84c17a5166a8aaf82cd1ef326f3c77"
+  }
+}

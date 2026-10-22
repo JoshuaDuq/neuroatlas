@@ -15,7 +15,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
   deploy:
+    needs: tests
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -32,9 +36,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run tests
-        run: npm test
 
       - name: Build static site
         run: npm run build

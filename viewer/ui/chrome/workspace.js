@@ -5,8 +5,10 @@ import { regionGroup } from '../panels/navigator.js';
 
 export const MODES = ['anatomy', 'deficits', 'circuits', 'diffusion'];
 
+/** The selected tree row. */
+const SELECTED_ROW = '#tree [aria-selected="true"]';
 /** A list's current item, which a list that comes back into view shows. */
-const CURRENT_ITEM = '#tree [aria-current="true"], #deficit-list [aria-pressed="true"], '
+const CURRENT_ITEM = `${SELECTED_ROW}, #deficit-list [aria-pressed="true"], `
   + '#circuit-landmarks [aria-current="step"], #circuit-list [aria-pressed="true"]';
 
 /** Whether the current mode has anything for the detail view to show. */
@@ -47,12 +49,14 @@ export function stripVisible({ view, mode, selection }) {
 }
 
 /**
- * The location bar's path: the list the detail returns to, then, for a region
- * read from Anatomy, the tree group that holds it.
+ * The location bar's path: the mode the detail returns to, then the place in it: the tree
+ * group that holds a region read from Anatomy, or the `place` another mode names (a lesson's
+ * circuit, a deficit's group).
  */
 export function locationCrumbs({ mode, place, group, labels }) {
-  const crumbs = [{ kind: 'list', label: place ?? labels[mode] }];
-  if (mode === 'anatomy' && !place && group) crumbs.push({ kind: 'group', ...group });
+  const crumbs = [{ kind: 'list', label: labels[mode] }];
+  const inner = mode === 'anatomy' ? group : place && { label: place };
+  if (inner) crumbs.push({ kind: 'group', ...inner });
   return crumbs;
 }
 
@@ -163,12 +167,10 @@ export function createWorkspace({ catalog, onMode, onClear, onViewChange, onRetu
     path.setAttribute('aria-label', copy.path);
     backLabel.textContent = list.label;
     back.setAttribute('aria-label', copy.back(list.label));
-    if (place) back.title = place;
-    else back.removeAttribute('title');
     groupItem.hidden = !inGroup;
     if (inGroup) {
       groupCrumb.textContent = inGroup.label;
-      groupCrumb.title = copy.showInList(inGroup.label);
+      groupCrumb.dataset.tooltip = copy.showInList(inGroup.label);
       groupCrumb.setAttribute('aria-label', copy.showInList(inGroup.label));
     }
     stripName.textContent = selection.label ?? '';
@@ -180,12 +182,13 @@ export function createWorkspace({ catalog, onMode, onClear, onViewChange, onRetu
 
   const visible = node => node?.isConnected && node.checkVisibility?.() !== false;
 
-  /** Back in the list: the control that opened the detail, or the tab in front. */
+  /** Back in the list: the control that opened the detail, else the selected row, else the tab in front. */
   function restoreFocus() {
     const target = visible(opener) ? opener
       : opener?.id && navigator.querySelector(`#${CSS.escape(opener.id)}`);
     opener = null;
-    if (visible(target)) target.focus({ preventScroll: true });
+    const next = [target, navigator.querySelector(SELECTED_ROW)].find(visible);
+    if (next) next.focus({ preventScroll: true });
     else (owned ? desktopTabs : sheetTabs).selected()?.focus();
   }
 
@@ -226,10 +229,15 @@ export function createWorkspace({ catalog, onMode, onClear, onViewChange, onRetu
   }
 
   const onBack = returnToList;
-  // The group crumb returns to the region's own row: its group open, the row in view and focused.
+  // From Anatomy the group crumb returns to the region's own row: its group open, the row in view
+  // and focused. Elsewhere the place is the list itself, which comes back showing its current item.
   const onGroup = () => {
+    if (mode !== 'anatomy') {
+      returnToList();
+      return;
+    }
     onLocate?.();
-    const row = navigator.querySelector('#tree [aria-current="true"]');
+    const row = navigator.querySelector(SELECTED_ROW);
     if (row) opener = row;
     returnToList();
     if (!visible(row)) return;
@@ -266,7 +274,7 @@ export function createWorkspace({ catalog, onMode, onClear, onViewChange, onRetu
       bar.hidden = true;
       apply();
     },
-    /** `nextPlace` names where the detail sits when that is more than its mode, such as a circuit. */
+    /** `nextPlace` names where in its mode the detail sits: a lesson's circuit, a deficit's group. */
     update(state, nextSelection = {}, nextPlace = null) {
       const selectedId = state.selectedRegion?.id ?? null;
       lang = state.lang;
@@ -283,7 +291,7 @@ export function createWorkspace({ catalog, onMode, onClear, onViewChange, onRetu
       });
       previousSelection = selectedId;
       stripClear.setAttribute('aria-label', t(state.lang, 'inspector').clearSelection);
-      stripClear.title = t(state.lang, 'inspector').clearSelection;
+      stripClear.dataset.tooltip = t(state.lang, 'inspector').clearSelection;
       if (next !== view) setView(next);
       else apply();
     },

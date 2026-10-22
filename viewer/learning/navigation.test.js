@@ -2,60 +2,56 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { BrainAtlas } from '../model/brain-atlas.js';
-import { openCircuitLandmark, prepareCircuitMri } from './navigation.js';
+import { createSceneCommands } from '../state/scene-commands.js';
+import { createSession } from '../state/session.js';
+import { prepareCircuitMri, showCircuitLandmark } from './navigation.js';
 
-test('the actual model accepts a hidden landmark only after the tour reveals it', async () => {
+/** The real model on bert's manifest, its layers already loaded, opened through the scene commands. */
+function lesson() {
   const manifest = JSON.parse(readFileSync(new URL('../../public/models/bert/manifest.json', import.meta.url)));
   const model = new BrainAtlas(manifest, {});
   model.atlasId = 'destrieux';
   model.detailId = 'learning';
+  const commands = createSceneCommands({
+    model, sections: { async setMode() {} }, session: createSession({ views: ['oblique'] }), render() {},
+  });
+  const open = async step => {
+    assert.equal(await commands.openRegion(step.region, commands.begin()), true);
+    showCircuitLandmark(model, step);
+  };
+  return { model, open };
+}
+
+test('the actual model accepts a hidden landmark only after the tour reveals it', async () => {
+  const { model, open } = lesson();
   model.setInternalVisible(false);
   const step = { region: 'learning:midline:optic-chiasm' };
   assert.throws(() => model.select(step.region), /Region is not visible/);
-  await openCircuitLandmark(model, { async setMode() {} }, step);
+  await open(step);
   assert.equal(model.state.selectedRegion.id, step.region);
   assert.equal(model.state.internalVisible, true);
   model.dispose();
 });
 
 test('a deep cerebellar lesson uncovers the nucleus and returning restores its cortex', async () => {
-  const manifest = JSON.parse(readFileSync(new URL('../../public/models/bert/manifest.json', import.meta.url)));
-  const model = new BrainAtlas(manifest, {});
-  model.atlasId = 'destrieux';
-  model.detailId = 'learning';
-  const sections = { async setMode() {} };
+  const { model, open } = lesson();
   const cortex = 'learning:cerebellar-cortex-left';
-  await openCircuitLandmark(model, sections, {
-    region: 'learning:left:dentate', covering_region: cortex,
-  });
+  await open({ region: 'learning:left:dentate', covering_region: cortex });
   assert.equal(model.state.selectedRegion.id, 'learning:left:dentate');
   assert.ok(model.state.hiddenRegions.has(cortex));
-  await openCircuitLandmark(model, sections, { region: cortex });
+  await open({ region: cortex });
   assert.equal(model.state.selectedRegion.id, cortex);
   assert.ok(!model.state.hiddenRegions.has(cortex));
   model.dispose();
 });
 
-test('a lesson reveals hidden internal anatomy and selects its authored side', async () => {
-  const calls = [];
-  const region = { id: 'learning:left:fornix', kind: 'structure', atlas: 'learning', hemisphere: 'left' };
-  let visible = false;
-  const model = {
-    regions: new Map([[region.id, region]]), settings: { detail: 'nextbrain' },
-    async setDetail(id) { calls.push(['detail', id]); },
-    clearIsolation() {}, setInternalSystem() {}, setCortexVisible() {}, showRegions() {},
-    select(id) { assert.ok(visible, 'hidden anatomy cannot be selected'); calls.push(['select', id]); },
-    setInternalVisible(value) { visible = value; calls.push(['internal', value]); },
-    setHemisphere(value) { calls.push(['side', value]); },
-  };
-  const sections = { async setMode() {} };
-  await openCircuitLandmark(model, sections, { region: region.id });
-  assert.ok(calls.find(([key, value]) => key === 'internal' && value === true));
-  assert.deepEqual(calls.at(-1), ['side', 'left']);
-  model.setDetail = async () => { throw new Error('Landmark unavailable'); };
-  calls.length = 0;
-  await assert.rejects(openCircuitLandmark(model, sections, { region: region.id }), /Landmark unavailable/);
-  assert.deepEqual(calls, []);
+test('a lesson shows its landmark’s own side, and both for a midline one', async () => {
+  const { model, open } = lesson();
+  await open({ region: 'learning:left:fornix' });
+  assert.equal(model.state.hemisphere, 'left');
+  await open({ region: 'learning:midline:optic-chiasm' });
+  assert.equal(model.state.hemisphere, 'both');
+  model.dispose();
 });
 
 test('prepared MRI uses the actual selected landmark centroid and authored plane', async () => {

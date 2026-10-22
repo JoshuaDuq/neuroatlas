@@ -80,6 +80,8 @@ test('invalid references, planes and clinical targets are rejected', () => {
     d => { d.circuits.push(d.circuits[0]); },
     d => { d.context_margin_mm = -1; },
     d => { d.circuits[0].name.extra = 'unquoted comma'; },
+    d => { delete d.references[0].nbk; },
+    d => { d.references.find(r => r.pmcid).pmcid = '5608081'; },
   ]) {
     const invalid = structuredClone(data);
     change(invalid);

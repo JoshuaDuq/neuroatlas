@@ -27,7 +27,9 @@ The tours do not measure functional connectivity and do not reconstruct axons. S
 
 ## Progress and language
 
-Starting a tour again resets the landmarks it marks as seen. Reloading the page or switching brains resets learning progress. The anatomical URL still records the selected region and display state.
+Starting a tour again resets the landmarks it marks as seen. The link records the open tour and landmark, so a reload or a shared link returns to it; the landmarks marked as seen start over. Switching brains keeps the tour and starts its progress over.
+
+A region's details list the landmarks that involve it under **In guided circuits**: the landmark itself, a teaching-set structure that holds it, or a region it is made of. Each opens that step of its tour.
 
 English and French are available through the language control. In Circuits, **/** focuses the tour list, and **↑** and **↓** move between its buttons.
 

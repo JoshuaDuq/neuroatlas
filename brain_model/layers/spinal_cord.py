@@ -5,10 +5,12 @@ import numpy as np
 import trimesh
 
 from ..gltf.export import add_region, published_area_mm2, write_scene
-from ..sources import ROOT, sha256
+from ..labels.volumes import validate_same_grid
+from ..sources import ROOT, declares, sha256
 from ..surfaces.geometry import to_gltf
 
 ATLAS_ID = "zanatomy"
+BRAINSTEM = 16
 
 NOTES = {
     "en": "Z-Anatomy reference cord in its anatomical posture; seated below the "
@@ -28,8 +30,8 @@ SCHEMATIC = {
 }
 
 
-def is_available(config):
-    return "spinal_cord" in config and (ROOT / config["spinal_cord"]["source"]).exists()
+def is_declared(config):
+    return declares(config, "spinal_cord")
 
 
 def key_of(structure):
@@ -93,14 +95,49 @@ def read_structures(config):
     return meshes
 
 
-def placement(config, cord):
-    settings = config["spinal_cord"]
-    brain = nib.load(config["source_directory"] / "mri/aseg.mgz")
-    stem = nib.affines.apply_affine(
-        brain.header.get_vox2ras_tkr(), np.argwhere(np.asarray(brain.dataobj) == 16)
-    )
+def brainstem(config):
+    """Brainstem voxel centres in surface RAS, and where the scan cuts it off.
+
+    The scan ends inside the brainstem when its lowest labelled slice is also the
+    lowest slice holding any MRI signal: below it nothing was imaged, so its
+    lower end is the edge of the field of view, not the medulla's.
+    """
+    directory = config["source_directory"] / "mri"
+    aseg, orig = nib.load(directory / "aseg.mgz"), nib.load(directory / "orig.mgz")
+    validate_same_grid(orig, aseg)
+    affine = aseg.header.get_vox2ras_tkr()
+    stem = nib.affines.apply_affine(affine, np.argwhere(np.asarray(aseg.dataobj) == BRAINSTEM))
     if len(stem) == 0:
         raise ValueError("Brainstem label 16 is required to place the reference cord")
+    signal = np.argwhere(np.asarray(orig.dataobj) > 0) @ affine[2, :3] + affine[2, 3]
+    half = min(aseg.header.get_zooms()[:3]) / 2
+    lowest = stem[:, 2].min()
+    if lowest >= signal.min() + half:
+        return stem, None
+    on_slice = int(np.count_nonzero(stem[:, 2] < lowest + half))
+    return stem, {"surface_z_mm": float(lowest), "brainstem_voxels": on_slice}
+
+
+def truncation_limitation(cut):
+    return (
+        f"The scan ends at surface z = {cut['surface_z_mm']:g} mm with "
+        f"{cut['brainstem_voxels']} brainstem voxels still labelled on its last slice, "
+        "so the brainstem's lower end was not imaged. The Z-Anatomy reference cord is "
+        "seated against that end, so it is not published for this brain."
+    )
+
+
+def omission(config):
+    """Why an anatomy publishes no cord, where its scan is the reason."""
+    _, cut = brainstem(config)
+    return [] if cut is None else [truncation_limitation(cut)]
+
+
+def placement(config, cord):
+    settings = config["spinal_cord"]
+    stem, cut = brainstem(config)
+    if cut is not None:
+        raise ValueError(f"Cannot place the reference cord: {truncation_limitation(cut)}")
     depth = settings["brainstem_anchor_depth_mm"]
     if not np.isfinite(depth) or depth <= 0:
         raise ValueError("Brainstem anchor depth must be positive and finite")

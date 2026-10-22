@@ -56,7 +56,7 @@ function fixture() {
 test('a later appearance choice wins while MRI is loading', async () => {
   const { model, tissues, sections } = fixture();
   let finish;
-  tissues.loadAnatomy = () => new Promise(resolve => { finish = resolve; });
+  tissues.loadMri = () => new Promise(resolve => { finish = resolve; });
   model.setSurfaceColor = mode => { model.state.surfaceColor = mode; };
   model.setMriAnatomy = () => {};
   const pending = sections.setSurfaceColor('mri');
@@ -64,6 +64,25 @@ test('a later appearance choice wins while MRI is loading', async () => {
   finish();
   await pending;
   assert.equal(model.state.surfaceColor, 'tissue');
+  sections.dispose();
+});
+
+test('a colour overtaken by another scene command lands without changing the colour, and stops loading', async () => {
+  const { model, tissues, sections } = fixture();
+  let finish;
+  tissues.loadMri = () => new Promise(resolve => { finish = resolve; });
+  model.setSurfaceColor = mode => { model.state.surfaceColor = mode; };
+  model.setMriAnatomy = () => {};
+  model.state.surfaceColor = 'atlas';
+  let live = true;
+  const pending = sections.setSurfaceColor('mri', () => live);
+  assert.equal(sections.state.status, 'loading');
+  // Reset, or entering internal anatomy: a new command that sets no colour through the sections.
+  live = false;
+  finish();
+  await pending;
+  assert.equal(model.state.surfaceColor, 'atlas');
+  assert.equal(sections.state.status, 'ready');
   sections.dispose();
 });
 
@@ -211,9 +230,11 @@ test('a highlight reaches the tissue that draws the cut faces', () => {
   assert.deepEqual(seen, [{ hovered: 'aseg:left:10' }]);
 });
 
-test('oblique cut position range projects all anatomical bounds onto the normal', async () => {
+test('the oblique range is the projected bounds, cut back to where the crosshair stays legal', async () => {
   const { sections, model } = fixture();
-  model.manifest = manifest;
+  model.manifest = JSON.parse(
+    await readFile(new URL('../../public/models/bert/manifest.json', import.meta.url), 'utf8'),
+  );
   model.state.spinalCordVisible = true;
   await sections.setMode('oblique');
   sections.setAngles(15, 30);
@@ -231,10 +252,53 @@ test('oblique cut position range projects all anatomical bounds onto the normal'
   ];
   const normal = sections.frame.normal;
   const projections = corners.map(([x, y, z]) => x * normal.x + y * normal.y + z * normal.z);
-  const expected = [Math.min(...projections), Math.max(...projections)];
+  const reach = sections.coordinateLimit / Math.max(...normal.toArray().map(Math.abs));
+  const [low, high] = sections.offsetRange;
+  assert.ok(Math.abs(low - Math.max(Math.min(...projections), -reach)) < 1e-9);
+  assert.ok(Math.abs(high - Math.min(Math.max(...projections), reach)) < 1e-9);
+  // The cord still reaches far below the brain, and so does the plane.
+  assert.ok(low < -500);
+  sections.dispose();
+});
 
-  assert.ok(sections.offsetRange[0] < -720);
-  assert.deepEqual(sections.offsetRange, expected);
+test('every oblique position the slider can reach is a legal cut', async () => {
+  const { sections, model } = fixture();
+  model.manifest = manifest;
+  await sections.setMode('oblique');
+  for (const cordShown of [false, true]) {
+    model.state.spinalCordVisible = cordShown;
+    for (let tilt = 0; tilt <= 90; tilt += 5) {
+      for (let azimuth = -180; azimuth <= 180; azimuth += 15) {
+        sections.setAngles(tilt, azimuth);
+        const [minimum, maximum] = sections.offsetRange;
+        // The slider steps by half a millimetre from its minimum and also lands on its maximum.
+        for (let offset = minimum; offset <= maximum; offset += 0.5) sections.crosshairFor(offset);
+        sections.crosshairFor(maximum);
+        assert.throws(() => sections.crosshairFor(maximum + 0.01), RangeError);
+      }
+    }
+  }
+  // 30°/30° spanned ±198.3 mm, of which only ±147.8 mm was accepted.
+  model.state.spinalCordVisible = false;
+  sections.setAngles(30, 30);
+  assert.deepEqual(sections.offsetRange.map(value => Math.round(value * 10) / 10), [-147.8, 147.8]);
+  sections.dispose();
+});
+
+test('the linked MRI views reuse the T1 the cut holds and download only the segmentation', async t => {
+  const { sections, tissues } = fixture();
+  const header = { file: 'aseg.volume' };
+  const display = { field_of_view_mm: 256, texture_size: 256, window_center: 90, window_width: 180 };
+  const mri = { shape: [1, 1, 1] };
+  tissues.loadVolumeMetadata = async () => ({ schema_version: 1, display, segmentation: header, mri: { file: 'mri.volume' } });
+  tissues.loadMri = async () => ({ volume: mri });
+  tissues.setWindow = () => {};
+  t.mock.method(console, 'error', () => {});
+  const requested = [];
+  t.mock.method(globalThis, 'fetch', async url => { requested.push(String(url)); return new Response('', { status: 503 }); });
+  await assert.rejects(sections.load(), error => error.code === 'asset-fetch');
+  assert.deepEqual(requested, ['https://example.invalid/aseg.volume']);
+  assert.equal(sections.state.error, 'asset-fetch');
   sections.dispose();
 });
 

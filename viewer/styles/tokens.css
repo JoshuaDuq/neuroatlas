@@ -60,12 +60,17 @@
 
   --font-ui: "Source Sans 3 Variable", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --text-micro: 0.75rem;
-  --text-small: 0.8125rem;
+  /* 12 caption, 14 UI and prose, 16 title, 20 headline; 13 is the stage's register only. */
+  --text-caption: 0.75rem;
   --text-ui: 0.875rem;
-  --text-body: 0.9375rem;
   --text-title: 1rem;
   --text-headline: 1.25rem;
+  --text-stage: 0.8125rem;
+  /* 16/20/22/24px lines keep every box on the 4px grid; they grow with a larger reader text size. */
+  --lh-caption: max(16px, 1rem);
+  --lh-ui: max(20px, 1.25rem);
+  --lh-prose: max(22px, 1.375rem);
+  --lh-title: max(24px, 1.5rem);
   --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.12);
   --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.08);
 
@@ -81,21 +86,27 @@
   /* Instrument density on a fine pointer; phone.css raises both to 44px for touch. */
   --row-height: 32px;
   --control-height: 32px;
-  --tab-height: 40px;
-  --rail-width: 320px;
-  --header-height: 48px;
-  --footer-height: 28px;
+  /* The shell grows with the reader's text size; at 16px it is exactly 320, 48, 28 and 40px. */
+  --tab-height: max(40px, 2.5rem);
+  --rail-width: clamp(320px, 20rem, 40vw);
+  --header-height: max(48px, 3rem);
+  --footer-height: max(28px, 1.75rem);
+  /* The second text column: after a 12px chevron slot on the 16px column and an 8px gap. */
+  --indent: 36px;
   --radius-control: 4px;
   --radius-panel: 6px;
   --camera-transition: 240ms;
   --ui-transition: 140ms;
   --ease-ui: cubic-bezier(0.16, 1, 0.3, 1);
-  /* Press feedback, then anchored popovers (exit faster than entry) and centred dialogs. */
+  /* The iOS sheet curve: leaves at the speed the finger let go and settles softly. */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Press feedback, then anchored popovers (exit faster than entry), centred dialogs and tooltips. */
   --press-transition: 160ms;
   --press-scale: 0.97;
   --popover-transition: 180ms;
   --popover-exit: 120ms;
   --dialog-transition: 200ms;
+  --tooltip-transition: 125ms;
 }
 
 :root[data-theme="dark"] {
@@ -123,21 +134,4 @@
   --thumb-ring: #7a8189;
   --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.45);
   --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.3);
-}
-
-@media (prefers-contrast: more) {
-  :root,
-  :root[data-theme="dark"] {
-    --text-tertiary: var(--text-secondary);
-    --border-control: var(--text-primary);
-    --border-subtle: var(--border-control);
-    --thumb-ring: var(--text-primary);
-    --overlay-ink-muted: var(--overlay-ink);
-    --overlay-halo: rgb(6 9 13 / 0.95);
-    --overlay-plate: #0c0d0f;
-    --overlay-plate-hover: #1e2024;
-    --overlay-border: var(--overlay-ink);
-    --overlay-ink-faint: var(--overlay-ink);
-    --overlay-control-border: var(--overlay-ink);
-  }
 }

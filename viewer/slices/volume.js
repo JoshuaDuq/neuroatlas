@@ -1,5 +1,5 @@
 import { Matrix4 } from 'three';
-import { fetchPublished } from '../model/published-assets.js';
+import { fetchAsset, sha256Hex } from '../model/asset-cache.js';
 
 /** Native array, x-fastest; inverse affine maps source RAS to voxel centers. */
 export class Volume {
@@ -67,19 +67,12 @@ export class Volume {
   }
 }
 
-async function digest(buffer) {
-  return [...new Uint8Array(await crypto.subtle.digest('SHA-256', buffer))]
-    .map(value => value.toString(16).padStart(2,'0')).join('');
-}
-
 export async function loadVolume(metadata, baseUrl) {
-  const response = await fetchPublished(new URL(metadata.file, baseUrl));
-  if (!response.ok) throw new Error(`Volume download failed: HTTP ${response.status}`);
-  const compressed = await response.arrayBuffer();
-  if (await digest(compressed) !== metadata.sha256) throw new Error('Volume file checksum mismatch.');
+  const compressed = await fetchAsset(new URL(metadata.file, baseUrl));
+  if (await sha256Hex(compressed) !== metadata.sha256) throw new Error('Volume file checksum mismatch.');
   const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
   const buffer = await new Response(stream).arrayBuffer();
-  if (buffer.byteLength !== metadata.byte_length || await digest(buffer) !== metadata.decoded_sha256) {
+  if (buffer.byteLength !== metadata.byte_length || await sha256Hex(buffer) !== metadata.decoded_sha256) {
     throw new Error('Decoded volume integrity check failed.');
   }
   let data;
@@ -90,15 +83,4 @@ export async function loadVolume(metadata, baseUrl) {
     for (let i=0; i<data.length; i++) data[i] = view.getUint16(i*2, true);
   } else throw new Error(`Unsupported volume data type: ${metadata.dtype}`);
   return new Volume(metadata, data);
-}
-
-export async function loadVolumes(url) {
-  const response = await fetchPublished(url);
-  if (!response.ok) throw new Error(`Volume metadata failed: HTTP ${response.status}`);
-  const metadata = await response.json();
-  if (metadata.schema_version !== 1) throw new Error('Unsupported volume schema.');
-  const [mri, segmentation] = await Promise.all([
-    loadVolume(metadata.mri, url), loadVolume(metadata.segmentation, url),
-  ]);
-  return { metadata, mri, segmentation };
 }

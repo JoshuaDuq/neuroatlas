@@ -6,16 +6,16 @@
 # Colours distinguish display units; they are not a published palette. They were
 # chosen so regions that share a surface edge differ by an OKLab ΔE of at least
 # 15 under normal vision and simulated protanopia and deuteranopia.
-label: Functional divisions (Glasser 2016 sections; Glasser 2016 and Rolls 2023 named regions)
+label: Functional divisions (Glasser 2016 sections; Glasser 2016, Rolls 2022 and Rolls 2023 named regions)
 sources:
   glasser-2016:
     short: Glasser et al. (2016)
     citation: Glasser MF, Coalson TS, Robinson EC, et al. (2016) A multi-modal parcellation of human cerebral cortex. Nature 536:171–178
     doi: https://doi.org/10.1038/nature18933
     pmid: 27437579
-  rolls-2023-ofc:
-    short: Rolls et al. (2023), Cereb Cortex
-    citation: "Rolls ET, Deco G, Huang CC, Feng J (2023) The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. Cereb Cortex 33:330–356"
+  rolls-2022-ofc:
+    short: Rolls et al. (2022), Cereb Cortex
+    citation: "Rolls ET, Deco G, Huang CC, Feng J (2022) The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. Cereb Cortex 33:330–356"
     doi: https://doi.org/10.1093/cercor/bhac070
     pmid: 35233615
   rolls-2023-pcc:
@@ -76,12 +76,12 @@ levels:
     - {id: pef, source: glasser-2016, color: [6, 191, 168], short: PEF, short_fr: PEF, name: Premotor eye field (PEF), name_fr: Champ oculomoteur prémoteur (PEF), areas: [PEF]}
     - {id: broca, source: glasser-2016, color: [152, 95, 133], short: "Broca's area", short_fr: Aire de Broca, name: Broca's area, name_fr: Aire de Broca, areas: ['44', '45']}
     - {id: a1, source: glasser-2016, color: [85, 117, 169], short: A1, short_fr: A1, name: Primary auditory cortex (A1), name_fr: Cortex auditif primaire (A1), areas: [A1]}
-    - {id: lateral-ofc, source: rolls-2023-ofc, color: [250, 146, 241], short: Lateral OFC, short_fr: COF latéral, name: Lateral orbitofrontal cortex, name_fr: Cortex orbitofrontal latéral, areas: [47s, 47l, a47r, p47r, 47m]}
-    - {id: medial-ofc, source: rolls-2023-ofc, color: [196, 62, 73], short: Medial OFC, short_fr: COF médian, name: Medial orbitofrontal cortex, name_fr: Cortex orbitofrontal médian, areas: [11l, 13l, OFC, pOFC]}
-    - {id: subgenual-cingulate, source: rolls-2023-ofc, color: [96, 170, 243], short: Subgenual cingulate, short_fr: Cingulaire subgénual, name: Subgenual cingulate cortex, name_fr: Cortex cingulaire subgénual, areas: ['25']}
-    - {id: pregenual-acc, source: rolls-2023-ofc, color: [150, 107, 52], short: Pregenual ACC, short_fr: CCA prégénual, name: Pregenual anterior cingulate cortex, name_fr: Cortex cingulaire antérieur prégénual, areas: [s32, a24, p24, p32, d32]}
-    - {id: area-10, source: rolls-2023-ofc, color: [48, 222, 151], short: Area 10 and related vmPFC, short_fr: Aire 10 et régions du CPFvm, name: Area 10 and related ventromedial prefrontal cortex regions, name_fr: Aire 10 et régions apparentées du cortex préfrontal ventromédian, areas: [10v, 10r, 10d, 9m]}
-    - {id: supracallosal-acc, source: rolls-2023-ofc, color: [133, 87, 200], short: Supracallosal ACC, short_fr: CCA supracalleux, name: Supracallosal anterior cingulate cortex, name_fr: Cortex cingulaire antérieur supracalleux, areas: [a32pr, a24pr, 33pr, p32pr, p24pr]}
+    - {id: lateral-ofc, source: rolls-2022-ofc, color: [250, 146, 241], short: Lateral OFC, short_fr: COF latéral, name: Lateral orbitofrontal cortex, name_fr: Cortex orbitofrontal latéral, areas: [47s, 47l, a47r, p47r, 47m]}
+    - {id: medial-ofc, source: rolls-2022-ofc, color: [196, 62, 73], short: Medial OFC, short_fr: COF médian, name: Medial orbitofrontal cortex, name_fr: Cortex orbitofrontal médian, areas: [11l, 13l, OFC, pOFC]}
+    - {id: subgenual-cingulate, source: rolls-2022-ofc, color: [96, 170, 243], short: Subgenual cingulate, short_fr: Cingulaire subgénual, name: Subgenual cingulate cortex, name_fr: Cortex cingulaire subgénual, areas: ['25']}
+    - {id: pregenual-acc, source: rolls-2022-ofc, color: [150, 107, 52], short: Pregenual ACC, short_fr: CCA prégénual, name: Pregenual anterior cingulate cortex, name_fr: Cortex cingulaire antérieur prégénual, areas: [s32, a24, p24, p32, d32]}
+    - {id: area-10, source: rolls-2022-ofc, color: [48, 222, 151], short: Area 10 and related vmPFC, short_fr: Aire 10 et régions du CPFvm, name: Area 10 and related ventromedial prefrontal cortex regions, name_fr: Aire 10 et régions apparentées du cortex préfrontal ventromédian, areas: [10v, 10r, 10d, 9m]}
+    - {id: supracallosal-acc, source: rolls-2022-ofc, color: [133, 87, 200], short: Supracallosal ACC, short_fr: CCA supracalleux, name: Supracallosal anterior cingulate cortex, name_fr: Cortex cingulaire antérieur supracalleux, areas: [a32pr, a24pr, 33pr, p32pr, p24pr]}
     - {id: midcingulate, source: rolls-2023-pcc, color: [64, 209, 247], short: Midcingulate, short_fr: Cingulaire moyen, name: Midcingulate cortex, name_fr: Cortex cingulaire moyen, areas: [23c, 24dd, 24dv]}
     - {id: pcc-1, source: rolls-2023-pcc, color: [101, 130, 242], short: PCC group 1, short_fr: CCP groupe 1, name: Postero-ventral posterior cingulate division (group 1), name_fr: Division cingulaire postérieure postéro-ventrale (groupe 1), areas: [31pd, 31pv, 7m, d23ab, v23ab]}
     - {id: pcc-2, source: rolls-2023-pcc, color: [159, 141, 14], short: PCC group 2, short_fr: CCP groupe 2, name: Antero-dorsal posterior cingulate division (group 2), name_fr: Division cingulaire postérieure antéro-dorsale (groupe 2), areas: [RSC, 31a, 23d, PCV, POS2, POS1]}

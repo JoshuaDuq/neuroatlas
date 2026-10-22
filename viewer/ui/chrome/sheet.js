@@ -38,70 +38,94 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   let detent = 'peek';
   let lang = 'en';
   let phone = query.matches;
+  // The span last written, so a re-measured peek that has not moved writes nothing.
+  let applied = null;
+
+  // The device's safe areas (notch, home indicator) are only readable from a box env() sizes.
+  // The masthead takes the top one; the stage's other edges are the sheet's to report.
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position: fixed; visibility: hidden; pointer-events: none; '
+    + 'padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+  document.body.append(probe);
+  let safe = { right: 0, bottom: 0, left: 0 };
+  const measureSafe = () => {
+    const style = getComputedStyle(probe);
+    safe = { right: parseFloat(style.paddingRight), bottom: parseFloat(style.paddingBottom), left: parseFloat(style.paddingLeft) };
+  };
 
   /** The sheet's span along the axis it grows on: height, or width sideways. */
   const isSideways = () => landscapeQuery.matches;
-  const available = () => {
-    const rect = viewport.getBoundingClientRect();
-    return isSideways() ? globalThis.innerWidth : rect.height || globalThis.innerHeight;
-  };
-  // Upright, peek is wherever the grip ends, so a drag from rest starts where the sheet is.
-  const heights = () => detentHeights(available(), isSideways() ? SIDEWAYS_DETENTS : {
-    ...UPRIGHT_DETENTS,
-    peek: Math.round(grip.getBoundingClientRect().bottom - sheet.getBoundingClientRect().top),
-  });
+
+  /*
+   * Peek hugs the grip in both orientations, so a drag from rest starts where the sheet is.
+   * Upright it ends where the grip does, with the home indicator's band it pads only at peek;
+   * sideways it is as wide as the one row of tabs, from the sheet's safe-area edge.
+   */
+  function peekSpan() {
+    const box = sheet.getBoundingClientRect();
+    if (!isSideways()) {
+      const pad = parseFloat(getComputedStyle(grip).paddingBottom);
+      return Math.round(grip.getBoundingClientRect().bottom - pad - box.top + safe.bottom);
+    }
+    const last = tabs.lastElementChild?.getBoundingClientRect();
+    const row = last ? last.right + parseFloat(getComputedStyle(tabs).paddingRight) - box.left : 0;
+    return Math.ceil(Math.max(SIDEWAYS_DETENTS.peek + safe.left, row + parseFloat(getComputedStyle(sheet).borderRightWidth)));
+  }
+  const heights = () => (isSideways()
+    ? detentHeights(globalThis.innerWidth, { ...SIDEWAYS_DETENTS, peek: peekSpan() })
+    : detentHeights(viewport.getBoundingClientRect().height || globalThis.innerHeight,
+      { ...UPRIGHT_DETENTS, peek: peekSpan() }));
 
   /*
    * Written as the box's own size rather than an inherited custom property:
    * a property every descendant inherits restyled the whole panel, thousands
-   * of tree rows, on every frame of a drag.
+   * of tree rows, on every frame of a drag. Every rest is a length, peek
+   * included, so every change of rest is a transition.
    */
   function applySpan(pixels) {
-    const span = `${Math.round(pixels)}px`;
-    const dragging = Boolean(press?.dragging);
+    applied = Math.round(pixels);
+    const span = `${applied}px`;
     if (isSideways()) {
       // The viewport does not move during a drag; reading it there would force a layout.
-      if (!dragging) sheet.style.top = `${Math.round(viewport.getBoundingClientRect().top)}px`;
+      if (!press?.dragging) sheet.style.top = `${Math.round(viewport.getBoundingClientRect().top)}px`;
       sheet.style.width = span;
       sheet.style.removeProperty('height');
     } else {
-      // Settled at peek the stylesheet sizes the sheet to its grip.
-      if (detent === 'peek' && !dragging) sheet.style.removeProperty('height');
-      else sheet.style.height = span;
+      sheet.style.height = span;
       sheet.style.removeProperty('width');
       sheet.style.removeProperty('top');
     }
-    report(pixels);
+    report(applied);
   }
 
   /**
    * Tell the renderer how much of the canvas is covered, so framing and the
-   * viewport chrome agree about where the viewport is.
+   * viewport chrome agree about where the viewport is: the sheet, and the
+   * safe areas on the stage's other edges.
    *
    * The target span is reported, not the box: mid-transition the box is still
    * moving, and the framing that follows a detent change has to fit where the
-   * sheet will land. Upright peek at rest is the exception — it hugs the
-   * grip, so its height is only known by measuring. A drag from peek already
-   * knows its span.
+   * sheet will land. `settle` says the sheet is moving there on its own curve
+   * rather than under the finger, so the picture can follow it on that curve.
    */
-  function report(pixels) {
+  function report(span) {
+    const settle = !press?.dragging;
     if (!phone) {
-      onInsets?.({ top: 0, right: 0, bottom: 0, left: 0 });
+      onInsets?.({ top: 0, right: 0, bottom: 0, left: 0 }, { settle });
       return;
     }
-    const span = !isSideways() && detent === 'peek' && !press?.dragging
-      ? sheet.getBoundingClientRect().height || pixels
-      : pixels;
     onInsets?.(isSideways()
-      ? { top: 0, right: 0, bottom: 0, left: span }
-      : { top: 0, right: 0, bottom: span, left: 0 });
+      ? { top: 0, right: safe.right, bottom: safe.bottom, left: span }
+      : { top: 0, right: safe.right, bottom: span, left: safe.left }, { settle });
   }
+
+  // Three rests are not expanded-or-not, so the handle is named for what a press does.
+  const nameHandle = () => handle.setAttribute('aria-label', t(lang, 'sheet')[detent === 'full' ? 'collapse' : 'expand']);
 
   function setDetent(next, { notify = true } = {}) {
     detent = next;
     sheet.dataset.detent = next;
-    handle.setAttribute('aria-expanded', String(next !== 'peek'));
-    handle.setAttribute('aria-label', t(lang, 'sheet')[next === 'peek' ? 'expand' : 'collapse']);
+    nameHandle();
     applySpan(heights()[next]);
     if (notify) onDetent?.(next);
   }
@@ -194,11 +218,15 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   selectionClear.addEventListener('click', onClearClick);
   tabs.addEventListener('click', onTabClick);
 
-  // The grip is sized by its text, which arrives after setup; peek follows it.
+  // The grip and the tabs are sized by their text, which arrives after setup and changes with the
+  // language and the selection; a peek that follows them glides like any other change of rest.
   const observer = globalThis.ResizeObserver ? new ResizeObserver(() => {
-    if (phone && detent === 'peek' && !press?.dragging) report(heights().peek);
+    if (!phone || detent !== 'peek' || press?.dragging) return;
+    const peek = heights().peek;
+    if (peek !== applied) applySpan(peek);
   }) : null;
   observer?.observe(grip);
+  for (const tab of tabs.children) observer?.observe(tab);
 
   // ---- mode -------------------------------------------------------------
 
@@ -209,6 +237,7 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
     sheet.style.removeProperty('width');
     sheet.style.removeProperty('top');
     delete sheet.dataset.detent;
+    applied = null;
     report(0);
     onShell?.('rails');
   }
@@ -222,14 +251,21 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
 
   function onModeChange() {
     phone = query.matches;
+    measureSafe();
     if (phone) setup();
     else teardown();
   }
 
   query.addEventListener('change', onModeChange);
   landscapeQuery.addEventListener('change', onModeChange);
-  const onResize = () => { if (phone) applySpan(heights()[detent]); };
+  const onResize = () => {
+    measureSafe();
+    if (phone) applySpan(heights()[detent]);
+  };
   globalThis.addEventListener('resize', onResize);
+  // A rotation can move the safe areas after its resize event; the probe's own box says when.
+  const safeObserver = globalThis.ResizeObserver ? new ResizeObserver(onResize) : null;
+  safeObserver?.observe(probe, { box: 'border-box' });
 
   onModeChange();
 
@@ -241,10 +277,9 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
     revealOnSelect: raise,
     raise,
 
-    update(state, { label, side, clearable } = {}) {
+    update(state, { label, side, sideWord, clearable } = {}) {
       lang = state.lang;
-      const copy = t(state.lang, 'sheet');
-      handle.setAttribute('aria-label', copy[detent === 'peek' ? 'expand' : 'collapse']);
+      nameHandle();
       selection.hidden = !label;
       gripRow.dataset.selection = String(Boolean(label));
       selectionClear.hidden = !label || !clearable;
@@ -252,12 +287,16 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
       if (label) {
         selectionName.textContent = label;
         selectionSide.textContent = side ?? '';
+        // The side is drawn as a letter; it is said as a word.
+        selection.setAttribute('aria-label', t(state.lang, 'workspace').inspect(sideWord ? `${label}, ${sideWord}` : label));
       }
       disclaimer.textContent = t(state.lang, 'footer').statementAlone;
     },
 
     dispose() {
       observer?.disconnect();
+      safeObserver?.disconnect();
+      probe.remove();
       grip.removeEventListener('pointerdown', onPointerDown);
       globalThis.removeEventListener('pointermove', onPointerMove);
       globalThis.removeEventListener('pointerup', onPointerUp);

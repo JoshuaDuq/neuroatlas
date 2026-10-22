@@ -92,13 +92,14 @@ test('a region read from Anatomy carries its tree group in the location bar', ()
     [{ kind: 'list', label: 'Anatomy' }], 'a region the tree does not list has no group to return to');
 });
 
-test('Deficits, Circuits and Tracts keep their own single way back', () => {
+test('every mode reads Mode › Place: the way back is the mode, and a tree group belongs to Anatomy alone', () => {
   const labels = t('fr', 'workspace').modes;
   const group = { key: 'cortex:Frontal', label: 'Frontal' };
-  assert.deepEqual(locationCrumbs({ mode: 'deficits', place: null, group, labels }), [{ kind: 'list', label: 'Déficits' }]);
+  assert.deepEqual(locationCrumbs({ mode: 'deficits', place: 'Langage', group, labels }),
+    [{ kind: 'list', label: 'Déficits' }, { kind: 'group', label: 'Langage' }]);
   assert.deepEqual(locationCrumbs({ mode: 'diffusion', place: null, group, labels }), [{ kind: 'list', label: 'Faisceaux' }]);
   assert.deepEqual(locationCrumbs({ mode: 'circuits', place: 'Voie motrice', group, labels }),
-    [{ kind: 'list', label: 'Voie motrice' }]);
+    [{ kind: 'list', label: 'Circuits' }, { kind: 'group', label: 'Voie motrice' }]);
 });
 
 test('the path and its group crumb are named in both languages', () => {

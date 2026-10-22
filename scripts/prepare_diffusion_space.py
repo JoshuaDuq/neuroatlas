@@ -22,7 +22,7 @@ def main():
         raise ValueError("The SNAIL reference input checksum changed.")
     directory = config["source_directory"]
     stamp = (directory / "scripts/build-stamp.txt").read_text().strip()
-    if stamp != settings["freesurfer_build"]:
+    if stamp != config["freesurfer_build"]:
         raise ValueError("The SNAIL reference FreeSurfer build changed.")
     source = nib.load(source_path)
     raw = nib.load(directory / "mri/orig/001.mgz")

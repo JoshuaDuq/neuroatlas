@@ -1,6 +1,7 @@
-import { count, formatRas, quantity } from '../format.js';
+import { count, decimal, formatRas, percent, quantity } from '../format.js';
 import { cabNpName, networkBasis, networkCss, networkName, networksOf } from '../../catalog/networks.js';
 import { functionalName, functionalRegionOf } from '../../catalog/functional-regions.js';
+import { domainName, domainsOf } from '../../catalog/neuropsych-domains.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 
 /**
@@ -23,17 +24,30 @@ export function inspectorEmptyChrome({ selectedRegion, explorer }) {
 /** A learning-atlas union can carry fifty source ids; past this many they are counted. */
 const MAX_LISTED_SOURCE_IDS = 8;
 
+/**
+ * The source label row: the source atlas, then its label ids in the code voice. Two ids
+ * share the label's line; a longer list, or a reference with no id, takes the line under it.
+ */
+export function sourceLabel(region, lang) {
+  const ids = region.source_label_ids;
+  const sourceAtlas = atlasSwitchLabel(region.source_atlas ?? region.atlas, lang);
+  if (!ids && region.source_label_id == null) {
+    return { atlas: t(lang, 'atlases')[region.atlas] ?? sourceAtlas, ids: null, stacked: true };
+  }
+  if (!ids) return { atlas: sourceAtlas, ids: String(region.source_label_id), stacked: false };
+  if (ids.length > MAX_LISTED_SOURCE_IDS) {
+    return { atlas: `${sourceAtlas} · ${count(ids.length, 'label', lang)}`, ids: null, stacked: false, all: ids.join(', ') };
+  }
+  return { atlas: sourceAtlas, ids: ids.join(', '), stacked: ids.length > 2 };
+}
+
 /** The selected region: what it is, and what is measured about it. */
 export function createInspector({
-  catalog, networks, cabNp, functionalRegions, onFocus, onIsolate, onHide, onClear, centroidOf,
+  catalog, networks, cabNp, functionalRegions, domains, onFocus, onIsolate, onHide, onClear, centroidOf,
 }) {
   const inspectorPanel = document.getElementById('inspector');
   const title = document.getElementById('inspector-title');
   const empty = document.getElementById('selection-empty');
-  const emptyTitle = document.getElementById('selection-empty-title');
-  const metadata = document.getElementById('region-source');
-  const metadataTitle = document.getElementById('region-source-title');
-  const labelSelected = document.getElementById('label-selected');
   const factHemiLabel = document.getElementById('fact-hemisphere-label');
   const factGroupLabel = document.getElementById('fact-group-label');
   const factCoordsLabel = document.getElementById('fact-coords-label');
@@ -61,10 +75,15 @@ export function createInspector({
   const cabNpLabel = document.getElementById('label-cab-np');
   const cabNpList = document.getElementById('cab-np-list');
   const cabNpNote = document.getElementById('cab-np-note');
+  const networkCaveat = document.getElementById('network-caveat');
   const functionalSection = document.getElementById('region-functional');
   const functionalHeading = document.getElementById('label-functional');
   const functionalList = document.getElementById('functional-list');
   const functionalNote = document.getElementById('functional-note');
+  const domainsSection = document.getElementById('region-domains');
+  const domainsHeading = document.getElementById('label-domains');
+  const domainsList = document.getElementById('domains-list');
+  const domainsNote = document.getElementById('domains-note');
   const explorerPanel = document.getElementById('navigator');
 
   // The × leaves with the selection, so focus goes to whichever panel is now in front.
@@ -86,7 +105,7 @@ export function createInspector({
   hideRegion.addEventListener('click', onHide);
   clear.addEventListener('click', onClearClick);
 
-  function networkRow(share, lang, i18n, { colors, name }) {
+  function networkRow(share, lang, { colors, name }) {
     const row = document.createElement('li');
     row.className = 'network-row';
     const swatch = document.createElement('span');
@@ -104,7 +123,7 @@ export function createInspector({
     bar.append(fill);
     const value = document.createElement('span');
     value.className = 'network-share measure';
-    value.textContent = i18n.share(share.fraction);
+    value.textContent = percent(share.fraction, lang);
     row.append(swatch, label, bar, value);
     return row;
   }
@@ -128,12 +147,13 @@ export function createInspector({
     yeoLabel.textContent = i18n.yeo;
     networkNote.textContent = shares.length ? i18n.notes[networkBasis(region)] : '';
     networkList.replaceChildren(...shares.map(share => networkRow(
-      share, state.lang, i18n, { colors: networks?.colors, name: networkName })));
+      share, state.lang, { colors: networks?.colors, name: networkName })));
     for (const node of [cabNpLabel, cabNpList, cabNpNote]) node.hidden = !assigned;
     cabNpLabel.textContent = i18n.cabNp;
     cabNpNote.textContent = i18n.cabNpNote;
     cabNpList.replaceChildren(...(assigned ? [networkRow(
-      { network: assigned, fraction: 1 }, state.lang, i18n, { colors: cabNp.colors, name: cabNpName })] : []));
+      { network: assigned, fraction: 1 }, state.lang, { colors: cabNp.colors, name: cabNpName })] : []));
+    networkCaveat.textContent = i18n.caveat;
   }
 
   function divisionRow(record, level, lang, copy) {
@@ -180,24 +200,64 @@ export function createInspector({
     ].filter(Boolean).join(' ');
   }
 
+  /** The domains an HCP-MMP area reaches the threshold for, strongest first, each with its z. */
+  function showDomains(state) {
+    const region = state.selectedRegion;
+    domainsSection.hidden = !domains || region?.atlas !== domains.atlas || region.kind !== 'cortex';
+    if (domainsSection.hidden) return;
+    const copy = t(state.lang, 'domains');
+    const found = domainsOf(domains, region.id);
+    domainsHeading.textContent = copy.heading;
+    domainsList.replaceChildren(...found.map(record => {
+      const row = document.createElement('li');
+      row.className = 'network-row functional-row';
+      const swatch = document.createElement('span');
+      swatch.className = 'network-swatch';
+      swatch.style.background = networkCss(record.color);
+      const label = document.createElement('span');
+      label.className = 'network-row-name';
+      const recordName = document.createElement('span');
+      recordName.textContent = domainName(record, state.lang);
+      const meta = document.createElement('span');
+      meta.className = 'functional-row-meta';
+      meta.textContent = copy.score(record.term, decimal(record.z, 1, state.lang));
+      label.append(recordName, meta);
+      row.append(swatch, label);
+      return row;
+    }));
+    domainsNote.textContent = [
+      !found.length && copy.none(decimal(domains.threshold_z, 0, state.lang)),
+      copy.note(domains.sources[domains.scores_source].short),
+    ].filter(Boolean).join(' ');
+  }
+
+  function showSource(region, lang) {
+    const label = sourceLabel(region, lang);
+    const ids = label.ids && document.createElement('span');
+    if (ids) {
+      ids.className = 'code';
+      ids.textContent = label.ids;
+    }
+    source.replaceChildren(...(ids ? [`${label.atlas} · `, ids] : [label.atlas]));
+    for (const node of [factSourceLabel, source]) node.classList.toggle('stacked', label.stacked);
+    if (label.all) source.dataset.tooltip = label.all;
+    else delete source.dataset.tooltip;
+  }
+
   return {
     update(state) {
       const i18n = t(state.lang, 'inspector');
-      const atlasDict = t(state.lang, 'atlases');
       const sideWords = t(state.lang, 'sides').capitalized;
       const chrome = inspectorEmptyChrome(state);
       title.textContent = i18n.title;
       empty.hidden = Boolean(state.selectedRegion) || chrome.hideHint;
-      emptyTitle.textContent = i18n.emptyTitle;
-      metadata.hidden = chrome.hideFacts;
-      metadataTitle.textContent = i18n.sourceHeading;
+      empty.textContent = i18n.noRegionSelected;
 
-      if (inspectorPanel) inspectorPanel.setAttribute('aria-label', i18n.panelLabel);
-      if (labelSelected) labelSelected.textContent = i18n.selectedHeading;
-      if (factHemiLabel) factHemiLabel.textContent = i18n.hemisphere;
-      if (factGroupLabel) factGroupLabel.textContent = i18n.group;
-      if (factCoordsLabel) factCoordsLabel.textContent = i18n.centroid;
-      if (factSourceLabel) factSourceLabel.textContent = i18n.sourceLabel;
+      inspectorPanel.setAttribute('aria-label', i18n.panelLabel);
+      factHemiLabel.textContent = i18n.hemisphere;
+      factGroupLabel.textContent = i18n.group;
+      factCoordsLabel.textContent = i18n.centroid;
+      factSourceLabel.textContent = i18n.sourceLabel;
       focus.textContent = i18n.focus;
       hideRegion.textContent = t(state.lang, 'dissection').hideSelected;
       // Latched isolation otherwise reads as a button that did nothing.
@@ -207,23 +267,18 @@ export function createInspector({
       name.hidden = chrome.hideTitle;
       clear.hidden = !region;
       clear.setAttribute('aria-label', i18n.clearSelection);
-      clear.title = i18n.clearSelection;
-      if (actions) actions.hidden = chrome.hideActions;
-      if (regionMpr) {
-        regionMpr.hidden = chrome.hideActions;
-        regionMpr.textContent = i18n.linkedMri;
-      }
-      if (labelSelected) labelSelected.hidden = chrome.hideHint;
+      clear.dataset.tooltip = i18n.clearSelection;
+      actions.hidden = chrome.hideActions;
+      regionMpr.hidden = chrome.hideActions;
+      regionMpr.textContent = i18n.linkedMri;
+      facts.hidden = chrome.hideFacts;
 
       if (!region) {
-        name.textContent = i18n.noRegionSelected;
         hint.hidden = chrome.hideHint;
         hint.textContent = state.cortexVisible ? i18n.hintCortex : i18n.hintStructures;
-        facts.hidden = chrome.hideFacts;
-        if (factGroup) factGroup.textContent = '';
-        if (factCoords) factCoords.textContent = '';
         showNetworks(state);
         showFunctional(state);
+        showDomains(state);
         focus.disabled = true;
         isolate.disabled = true;
         hideRegion.disabled = true;
@@ -232,38 +287,25 @@ export function createInspector({
       }
 
       const label = catalog.label(region.id, state);
-      name.hidden = false;
       name.textContent = label.name;
       hint.hidden = !region.notes;
       hint.textContent = region.notes?.[state.lang] ?? '';
-      facts.hidden = false;
       hemisphere.textContent = sideWords[region.hemisphere] ?? region.hemisphere;
-      if (factGroup) factGroup.textContent = label.group ?? '—';
+      factGroup.textContent = label.group ?? '—';
 
       const measuredByVolume = region.kind === 'structure' || region.kind === 'tissue-region';
       metricLabel.textContent = measuredByVolume ? i18n.volume : i18n.surfaceArea;
       metric.textContent = measuredByVolume
         ? quantity(region.segmentation_volume_mm3, 'mm³', state.lang)
         : quantity(region.surface_area_mm2, 'mm²', state.lang);
-
-      if (factCoords) {
-        const coords = centroidOf?.(region.id);
-        factCoords.textContent = coords ? formatRas([...coords], state.lang) : '—';
-      }
-
+      const coords = centroidOf?.(region.id);
+      factCoords.textContent = coords ? formatRas([...coords], state.lang) : '—';
       // The masthead names the loaded atlas; the source keeps its own, which can
       // differ (a learning unit's constituents, a cut label, a structure's segmentation).
-      const ids = region.source_label_ids;
-      const counted = ids && ids.length > MAX_LISTED_SOURCE_IDS;
-      const sourceAtlas = atlasSwitchLabel(region.source_atlas ?? region.atlas, state.lang)
-        || atlasDict[region.atlas];
-      source.textContent = !ids && region.source_label_id == null ? atlasDict[region.atlas] ?? sourceAtlas
-        : !ids ? `${sourceAtlas} · ${region.source_label_id}`
-        : counted ? `${sourceAtlas} · ${count(ids.length, 'label', state.lang)}`
-        : `${sourceAtlas} · ${ids.join(', ')}`;
-      source.title = counted ? ids.join(', ') : '';
+      showSource(region, state.lang);
       showNetworks(state);
       showFunctional(state);
+      showDomains(state);
 
       focus.disabled = false;
       isolate.disabled = false;

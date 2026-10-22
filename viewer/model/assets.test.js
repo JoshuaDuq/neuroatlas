@@ -22,9 +22,9 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   const detail = manifest.detail_levels.find(level => level.id === atlas.defaultDetail);
   const supplemental = manifest.supplemental_layers.reduce((count, layer) => count + layer.region_count, 0);
   assert.equal(atlas.state.detail, 'learning');
-  // Reference layers load behind the first paint rather than holding it up.
-  await atlas.supplementalReady;
-  await atlas.setSpinalCordVisible(true);
+  // SNAIL's scan ends inside the medulla, so it publishes no reference cord to show.
+  assert.deepEqual(manifest.supplemental_layers, []);
+  await assert.rejects(atlas.setSpinalCordVisible(true), /does not publish a spinal cord/);
   // 148 Destrieux parcels plus the two non-region surfaces.
   assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + supplemental);
   for (const entry of manifest.atlases) {

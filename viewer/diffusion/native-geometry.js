@@ -1,5 +1,13 @@
-import { BufferAttribute, BufferGeometry } from 'three';
+import { BufferAttribute, BufferGeometry, Matrix4 } from 'three';
 import { streamlineLengths } from './streamlines.js';
+
+/** RAS millimeters → the normal viewer's R/S/−A meters; no registration. Applied as the lines' matrix. */
+export const RAS_MM_TO_WORLD = new Matrix4().set(
+  0.001, 0, 0, 0,
+  0, 0, 0.001, 0,
+  0, -0.001, 0, 0,
+  0, 0, 0, 1,
+);
 
 export function filterTractGeometry(geometry, offsets, lengths, minimum) {
   if (!Number.isFinite(minimum) || minimum < 1) {
@@ -46,17 +54,14 @@ function directionColors(points, offsets) {
   return colors;
 }
 
-/** RAS millimeters → the normal viewer's R/S/−A meters; no registration. */
-export function createTractGeometry(points, offsets) {
-  const lengths = streamlineLengths(points, offsets);
-  const positions = new Float32Array(points.length);
-  for (let index = 0; index < points.length; index += 3) {
-    positions[index] = points[index] / 1000;
-    positions[index + 1] = points[index + 2] / 1000;
-    positions[index + 2] = -points[index + 1] / 1000;
-  }
+/**
+ * Lines over the source points themselves, in RAS millimeters: draw them with
+ * RAS_MM_TO_WORLD as their matrix. The points are shared, never copied, so the
+ * MRI navigator can read the same decode.
+ */
+export function createTractGeometry(points, offsets, lengths = streamlineLengths(points, offsets)) {
   const geometry = new BufferGeometry();
-  geometry.setAttribute('position', new BufferAttribute(positions, 3));
+  geometry.setAttribute('position', new BufferAttribute(points, 3));
   geometry.setAttribute('color', new BufferAttribute(directionColors(points, offsets), 3, true));
   const segments = points.length / 3 - lengths.length;
   geometry.setIndex(new BufferAttribute(new Uint32Array(segments * 2), 1));

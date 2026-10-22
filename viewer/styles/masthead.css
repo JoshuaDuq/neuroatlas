@@ -16,7 +16,7 @@
 .brand {
   font-size: var(--text-title);
   font-weight: 650;
-  line-height: 1.2;
+  line-height: var(--lh-title);
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
@@ -27,7 +27,6 @@
   gap: var(--space-1);
   margin-left: auto;
 }
-.masthead-action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 #masthead-more[hidden] { display: inline-flex !important; visibility: hidden; }
 #menu-fullscreen, #menu-provenance { display: none; }
 
@@ -53,7 +52,7 @@
 }
 .skip-link:not(:focus) { width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
 
-/* Every value is a 28px tonal control, so captions and values share one line. */
+/* Four quiet fields: a caption outside, then a 28px select that is only text and a chevron until pointed at. */
 .masthead-data-wrap {
   position: relative;
   display: flex;
@@ -64,47 +63,56 @@
 #app:is([data-status="loading"], [data-status="error"]) .masthead-data-wrap { visibility: hidden; }
 .data-toggle { display: none; }
 .masthead-data { display: flex; align-items: center; gap: var(--space-6); min-width: 0; }
-.data-field { display: flex; flex: none; align-items: center; gap: var(--space-2); min-width: 0; }
+.data-field { display: flex; flex: none; align-items: center; gap: var(--space-1); min-width: 0; }
 .data-field:not(:has(> :not([hidden], .data-note))) { display: none; }
 .data-label {
   margin: 0;
-  font-size: var(--text-micro);
-  line-height: 1.45;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   color: var(--text-tertiary);
   white-space: nowrap;
 }
-/* The tooltip carries the explanation on the bar; the popover prints it. */
+/* The tooltip carries the note on the bar; the popover prints it. */
 .data-note { display: none; }
+/* One published subject is a name, set where a select's value would sit. */
 .study-name {
   min-width: 0;
+  padding: 0 var(--space-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: var(--text-small);
-  font-weight: 600;
+  font-size: var(--text-ui);
+  font-weight: 500;
   line-height: 28px;
   color: var(--text-primary);
 }
 
 #masthead-data select {
   width: auto;
-  max-width: 240px;
+  max-width: 320px;
   height: 28px;
   field-sizing: content;
   padding: 0 26px 0 var(--space-2);
   border-color: transparent;
-  background-color: var(--surface-tonal);
+  background-color: transparent;
   /* The caret ends 6px inside the control, 10px after the value. */
   background-position: calc(100% - 11px) calc(50% + 1px), calc(100% - 6px) calc(50% + 1px);
   color: var(--text-primary);
-  font-size: var(--text-small);
+  font-size: var(--text-ui);
   font-weight: 500;
+  line-height: var(--lh-ui);
+  /* Loading progress counts up inside the value without shaking it. */
+  font-variant-numeric: tabular-nums;
+  transition: background-color var(--ui-transition) var(--ease-ui);
 }
-#masthead-data select:is(:hover, :open):not(:disabled) { border-color: transparent; background-color: var(--surface-tonal-hover); }
-#masthead-data select:disabled { border-color: transparent; background-color: var(--surface-tonal); color: var(--text-tertiary); }
+#masthead-data select:is(:focus-visible, :open):not(:disabled) { background-color: var(--surface-tonal); }
+@media (hover: hover) and (pointer: fine) {
+  #masthead-data select:hover:not(:disabled) { border-color: transparent; background-color: var(--surface-tonal); }
+}
+#masthead-data select:disabled { border-color: transparent; background-color: transparent; color: var(--text-tertiary); }
 
-#masthead .segmented { flex: none; }
-#masthead .segmented button {
+#masthead-menu .segmented { flex: none; }
+#masthead-menu .segmented button {
   display: inline-flex;
   flex-direction: column;
   justify-content: center;
@@ -112,22 +120,18 @@
   min-width: 0;
   padding: 0 10px;
 }
-#masthead-data .segmented button { height: 24px; }
 /* The bold label's width is held, so a choice never moves its neighbours. */
-#masthead .segmented button::after {
+#masthead-menu .segmented button::after {
   content: attr(data-label);
   height: 0;
   overflow: hidden;
   visibility: hidden;
   font-weight: 600;
 }
-@media (prefers-contrast: more) {
-  #masthead-data select, #masthead-data select:is(:hover, :open):not(:disabled) { border-color: var(--border-control); }
-}
 
 /* Popovers grow from their trigger; closing is immediate. */
 :is(#masthead-menu, .masthead-data[data-open]) {
-  transition: opacity 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+  transition: opacity var(--popover-transition) var(--ease-ui), transform var(--popover-transition) var(--ease-ui);
 }
 @starting-style {
   :is(#masthead-menu, .masthead-data[data-open]) { opacity: 0; transform: scale(0.97); }
@@ -135,18 +139,25 @@
 
 /* Where the bar does not fit (header.js measures it), a summary button opens the same fields as a popover. */
 #masthead[data-collapsed] { gap: var(--space-4); }
-#masthead[data-collapsed] .masthead-data-wrap { flex: 1 1 auto; }
+/* The full bar height, so the popover drops from the masthead's edge as the settings menu does. */
+#masthead[data-collapsed] .masthead-data-wrap { flex: 1 1 auto; align-self: stretch; }
+/* The four fields folded into one: as quiet as they are, with the same chevron. */
 #masthead[data-collapsed] .data-toggle {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
   max-width: 100%;
-  padding: 0 var(--space-2) 0 var(--space-3);
+  height: 28px;
+  padding: 0 var(--space-2);
+  background: transparent;
   color: var(--text-primary);
   font-weight: 500;
 }
-#masthead[data-collapsed] .data-toggle[aria-expanded="true"] { background: var(--surface-tonal-hover); }
+#masthead[data-collapsed] .data-toggle[aria-expanded="true"] { background: var(--surface-tonal); }
+@media (hover: hover) and (pointer: fine) {
+  #masthead[data-collapsed] .data-toggle:hover { background: var(--surface-tonal); }
+}
 #masthead[data-collapsed] .data-toggle::after {
   content: "";
   flex: none;
@@ -171,14 +182,13 @@
 /* The bar turned on its side: one ruled field per row, caption, value, then what it means. */
 #masthead[data-collapsed] .masthead-data {
   position: absolute;
-  top: calc(100% + var(--space-3));
+  top: calc(100% + var(--space-1));
   left: 0;
   display: none;
   flex-direction: column;
   align-items: stretch;
   gap: 0;
-  /* Wide enough for the six French colour choices on one row. */
-  width: min(400px, calc(100vw - var(--space-6)));
+  width: min(320px, calc(100vw - var(--space-6)));
   max-height: calc(100dvh - var(--header-height) - var(--space-4));
   overflow-y: auto;
   background: var(--surface-base);
@@ -191,17 +201,20 @@
 #masthead[data-collapsed] .data-field {
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: var(--space-1);
   padding: var(--space-3) var(--space-4);
 }
 #masthead[data-collapsed] .data-field + .data-field { border-top: 1px solid var(--border-subtle); }
-/* A phone is narrower still: the choices wrap rather than spill past the popover. */
-#masthead[data-collapsed] .segmented { flex-wrap: wrap; }
-#masthead[data-collapsed] .segmented button { flex: 1 0 auto; }
+/* The value sits on the caption's column; its ground reaches out to the left when pointed at. */
+#masthead[data-collapsed] .masthead-data select {
+  max-width: calc(100% + var(--space-2));
+  margin-left: calc(-1 * var(--space-2));
+}
+#masthead[data-collapsed] .masthead-data .study-name { max-width: 100%; padding: 0; }
 #masthead[data-collapsed] .data-note {
   display: block;
-  font-size: var(--text-micro);
-  line-height: 1.4;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   color: var(--text-secondary);
 }
 
@@ -227,6 +240,8 @@
   top: calc(100% + var(--space-1));
   right: var(--space-2);
   display: grid;
+  /* One choice column for every row, as wide as the widest (Système | Clair | Sombre): nothing wraps, every edge aligns. */
+  grid-template-columns: minmax(0, 1fr) minmax(184px, max-content);
   width: max-content;
   min-width: 300px;
   max-width: calc(100vw - var(--space-6));
@@ -239,8 +254,8 @@
 }
 .menu-row {
   display: grid;
-  /* Wide enough for Système | Clair | Sombre at full weight. */
-  grid-template-columns: minmax(0, 1fr) 184px;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
   gap: var(--space-6);
   min-height: 44px;
@@ -253,6 +268,7 @@
 #masthead-menu #theme-switch button { flex: 1 1 auto; }
 .menu-item {
   display: flex;
+  grid-column: 1 / -1;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
@@ -266,7 +282,9 @@
   text-align: left;
 }
 .menu-item:not(:last-child) { border-bottom: 1px solid var(--border-subtle); }
-.menu-item:hover:not(:disabled) { background: var(--surface-hover); }
+@media (hover: hover) and (pointer: fine) {
+  .menu-item:hover:not(:disabled) { background: var(--surface-hover); }
+}
 .menu-item:focus-visible { outline-offset: -2px; }
 
 /* Phones: the mark alone names the app, the summary takes the room, fullscreen and provenance move into the menu. */
@@ -276,7 +294,8 @@
     grid-row: 1;
     gap: var(--space-2);
     min-height: 52px;
-    padding: env(safe-area-inset-top) max(var(--space-1), env(safe-area-inset-right)) 0 max(var(--space-3), env(safe-area-inset-left));
+    /* The mark stands on the sheet's text column, inside the safe area as the sheet's text does. */
+    padding: env(safe-area-inset-top) max(var(--space-1), env(safe-area-inset-right)) 0 calc(var(--space-4) + env(safe-area-inset-left));
   }
   .brand {
     position: absolute;
@@ -289,15 +308,22 @@
   .masthead-data-wrap { position: static; }
   .masthead-end { gap: 0; }
   #viewport-fullscreen { display: none; }
-  #menu-fullscreen:not([hidden]), #menu-provenance { display: flex; }
+  #menu-fullscreen:not([hidden]), #menu-provenance:not([hidden]) { display: flex; }
   #masthead[data-collapsed] .masthead-data {
+    /* Inset from both screen edges like the settings menu, so the two drop as one width. */
     left: max(var(--space-3), env(safe-area-inset-left));
-    width: min(360px, calc(100vw - 2 * var(--space-3)));
+    right: max(var(--space-3), env(safe-area-inset-right));
+    width: auto;
     /* Below the 52px bar, its rule, and a gutter. */
     max-height: calc(100dvh - env(safe-area-inset-top) - 52px - 1px - var(--space-1) - var(--space-3));
   }
   #masthead[data-reference] .data-label { display: none; }
-  #masthead-menu { right: max(var(--space-3), env(safe-area-inset-right)); }
+  #masthead-menu {
+    left: max(var(--space-3), env(safe-area-inset-left));
+    right: max(var(--space-3), env(safe-area-inset-right));
+    width: auto;
+    min-width: 0;
+  }
   /* The French labels and the three-way theme choice share a 390px screen. */
   .menu-row { gap: var(--space-4); }
 
@@ -305,20 +331,61 @@
 
 /* Touch: 44px targets wherever the choices sit in a popover rather than the 48px bar. */
 @media (pointer: coarse), (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
-  #masthead-data[data-open] .segmented button,
+  #masthead[data-collapsed] .data-toggle,
   #masthead-data[data-open] select,
-  #masthead-menu .segmented button { height: 44px; }
-  /* A fingertip needs the width too: the choices share the row. */
-  #masthead-data[data-open] .segmented { align-self: stretch; }
-  #masthead-data[data-open] .segmented button { align-items: center; }
+  #masthead-menu .segmented button,
+  .menu-item { height: 44px; }
   .menu-row { min-height: 52px; }
 }
 
 /* A phone on its side has width but little height: two columns, no scrolling. */
 @media (max-height: 480px) and (orientation: landscape) {
   #masthead { min-height: var(--header-height); }
+  /* A wide screen: each popover keeps its own width under its trigger. */
+  #masthead-menu { left: auto; width: max-content; }
   #masthead[data-collapsed] .masthead-data { width: min(640px, calc(100vw - 2 * var(--space-3))); }
   #masthead[data-collapsed] .masthead-data[data-open] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #masthead[data-collapsed] .data-field:nth-child(2) { border-top: 0; }
   #masthead[data-collapsed] .data-field:nth-child(even) { border-left: 1px solid var(--border-subtle); }
+}
+
+/* Status bar -------------------------------------------------------------- */
+/* One quiet line under the stage: the statement, what is loaded, the count, where it came from. */
+#colophon {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0 var(--space-2) 0 var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-base);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+#colophon-text { display: flex; flex: 1 1 auto; align-items: center; gap: var(--space-3); min-width: 0; }
+/* The statement never gives way; the description does. */
+#colophon-statement { flex: none; color: var(--text-primary); font-weight: 600; }
+#colophon-description {
+  min-width: 0;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--border-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#colophon-description:empty, #region-count:empty { display: none; }
+#region-count { flex: none; font-variant-numeric: tabular-nums; }
+#provenance {
+  flex: none;
+  height: 24px;
+  padding: 0 var(--space-2);
+  background: none;
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  font-weight: 500;
+}
+@media (hover: hover) and (pointer: fine) {
+  #provenance:hover { background: var(--surface-hover); color: var(--text-primary); }
 }

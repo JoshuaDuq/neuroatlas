@@ -1,6 +1,4 @@
-import { decimal } from '../ui/format.js';
-
-const NARROW_NBSP = '\u202f';
+import { decimal, percent, withUnit } from '../ui/format.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -84,37 +82,29 @@ export function tractRow(row, onVisible) {
   return section;
 }
 
-/** Each part's toggle is named in full; the metrics line shows only for a side that is drawn. */
+/** Each part's key is named in full; the metrics line shows only for a side that is drawn. */
 export function updateTractRow(section, row, { lang, loaded, glyphs, text }) {
   section.querySelector('.diffusion-bundle-name').textContent = tractRowName(row, lang);
-  let anyVisible = false;
   for (const { bundle, part } of row.members) {
     const metrics = loaded.get(bundle.id);
     const visible = Boolean(metrics?.visible);
-    anyVisible ||= visible;
     const check = section.querySelector(`#native-diffusion-bundle-${bundle.id}`);
     const glyph = row.sided ? glyphs[part] : part;
     check.checked = visible;
     check.setAttribute('aria-label', bundle.name[lang]);
+    check.dataset.tooltip = bundle.name[lang];
     check.nextElementSibling.textContent = glyph;
-    check.parentElement.title = bundle.name[lang];
     const meta = section.querySelector(`#native-diffusion-bundle-${bundle.id}-meta`);
-    meta.dataset.loaded = String(Boolean(metrics));
     meta.classList.toggle('visually-hidden', !visible);
     meta.querySelector('.diffusion-bundle-side').textContent = glyph;
     const count = meta.querySelector('.diffusion-bundle-count');
     const length = meta.querySelector('.diffusion-bundle-length');
-    if (!metrics) {
-      count.textContent = text.loadHint;
-      length.replaceChildren();
-      continue;
-    }
-    count.textContent = text.streamlines(visible ? metrics.shown : metrics.total, metrics.total);
+    // A bundle not yet loaded has nothing to describe its key with.
+    count.textContent = metrics ? text.streamlines(visible ? metrics.shown : metrics.total, metrics.total) : '';
     // The lengths are one span, so a line too narrow for both breaks after the count, never inside a measure.
-    const parts = metrics.shown && visible ? [lengthSummary(metrics, text, lang)] : visible ? [text.noShown] : [];
-    length.replaceChildren(...parts.flatMap((value, index) => [...(index ? [' '] : []), element('span', value)]));
+    const parts = metrics?.shown && visible ? [lengthSummary(metrics, text, lang)] : visible ? [text.noShown] : [];
+    length.replaceChildren(...parts.map(value => element('span', value)));
   }
-  section.dataset.visible = String(anyVisible);
   section.dataset.name = [tractRowName(row, lang), ...row.members.map(({ bundle }) => bundle.name[lang])]
     .join(' ').toLocaleLowerCase(lang);
 }
@@ -122,12 +112,12 @@ export function updateTractRow(section, row, { lang, loaded, glyphs, text }) {
 /** Mean with its range, as a paper writes it, in the reader's notation (decimal comma in French). */
 export function lengthSummary({ mean, min, max }, text, lang) {
   const mm = value => decimal(value, 1, lang);
-  return `${text.mean} ${mm(mean)}${NARROW_NBSP}mm (${text.range} ${mm(min)}–${mm(max)})`;
+  return `${text.mean} ${withUnit(mm(mean), 'mm', lang)} (${text.range} ${mm(min)}–${mm(max)})`;
 }
 
 /** The closed settings disclosure still says what it holds: opacity, then the length filter. */
 export function settingsReadout(opacity, minimum, lang) {
-  return `${Math.round(opacity * 100)}% · ≥${decimal(minimum, 0, lang)}${NARROW_NBSP}mm`;
+  return `${percent(opacity, lang)} · ≥${withUnit(decimal(minimum, 0, lang), 'mm', lang)}`;
 }
 
 export function saveLengths(bundles, minimum) {

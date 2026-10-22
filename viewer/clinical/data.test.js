@@ -4,12 +4,19 @@ import test from 'node:test';
 import { parse } from 'yaml';
 import { createClinicalCatalog } from './catalog.js';
 
-const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+const readJson = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
+const data = parse(await readFile(new URL('../../data/neuropsychology.yaml', import.meta.url), 'utf8'));
+const published = await readJson('../../public/models/anatomies.json');
+const manifests = await Promise.all(published.anatomies.map(async ({ id }) =>
+  [id, await readJson(`../../public/models/${id}/manifest.json`)]));
 
-test('published clinical content resolves to the actual atlas and cited evidence', async () => {
-  const data = parse(await readFile(new URL('../../data/neuropsychology.yaml', import.meta.url), 'utf8'));
-  const manifest = JSON.parse(await readFile(new URL(`../../public/models/${published}/manifest.json`, import.meta.url)));
-  const catalog = createClinicalCatalog(data, manifest);
+test('published clinical content resolves to the actual atlas and cited evidence', async t => {
+  for (const [anatomy, manifest] of manifests) {
+    await t.test(anatomy, () => checkAnatomy(createClinicalCatalog(data, manifest)));
+  }
+});
+
+function checkAnatomy(catalog) {
   assert.deepEqual(catalog.search('', 'en').map(d => d.id).sort(),
     ['abulia', 'acalculia', 'achromatopsia', 'agnosia', 'agraphia', 'akinetopsia', 'alexia', 'alien-hand',
       'amnesia', 'amusia', 'anosognosia',
@@ -65,4 +72,4 @@ test('published clinical content resolves to the actual atlas and cited evidence
   assert.deepEqual(catalog.grouped('', 'en').map(entry => entry.group.id),
     ['language', 'literacy', 'memory', 'attention', 'perception', 'praxis', 'motor', 'executive']);
   assert.deepEqual(catalog.mappedRegions('aphasia').slice(0, 2), ['destrieux:left:38', 'destrieux:left:34']);
-});
+}

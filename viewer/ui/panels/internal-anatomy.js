@@ -3,15 +3,15 @@ import { belongsToDetail } from '../../catalog/visibility.js';
 import { t } from '../../i18n/translations.js';
 import { insideInternal } from '../../state/internal-mode.js';
 import { bindRoving } from '../roving.js';
+import { groupDisplayName, sharedGroupNames } from './navigator.js';
 
 /** The list's scope: the whole brain, or one internal system with the cortex hidden. */
-export function createInternalAnatomy({ manifest, onToggle, onSystem }) {
+export function createInternalAnatomy({ catalog, manifest, onToggle, onSystem }) {
   const scope = document.getElementById('tree-scope');
   const choices = [...scope.querySelectorAll('button[data-scope]')];
   const panel = document.getElementById('internal-anatomy');
   const system = document.getElementById('internal-system');
   const systemLabel = document.getElementById('internal-system-label');
-  const note = document.getElementById('internal-note');
   let key = null;
   const chooseScope = event => {
     const button = event.target.closest('button[data-scope]');
@@ -36,14 +36,16 @@ export function createInternalAnatomy({ manifest, onToggle, onSystem }) {
       // Search replaces the tree, and its header with it.
       panel.hidden = state.explorer !== 'anatomy' || !inside || state.query.trim().length > 0;
       systemLabel.textContent = i18n.system;
-      note.textContent = i18n.cortexHiddenNote;
-      const nextKey = `${state.detail}:${state.lang}`;
+      // Named as the tree names them, which qualifies a name another vocabulary shares.
+      const shared = sharedGroupNames(catalog.groups({ ...state, internalSystem: null }));
+      const nextKey = `${state.detail}:${state.lang}:${[...shared].join()}`;
       if (nextKey !== key) {
         key = nextKey;
         const systems = new Map();
         for (const region of manifest.regions) {
           if (region.kind !== 'structure' || !belongsToDetail(region, state.detail)) continue;
-          systems.set(labelOf(region, 'en').group, labelOf(region, state.lang).group);
+          systems.set(labelOf(region, 'en').group,
+            groupDisplayName(labelOf(region, state.lang).group, region, shared, state.lang));
         }
         system.replaceChildren(new Option(i18n.allSystems, ''), ...[...systems]
           .sort((a, b) => a[1].localeCompare(b[1], state.lang))

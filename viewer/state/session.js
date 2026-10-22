@@ -38,6 +38,16 @@ export function shortcutsAllowed(target, key) {
 
 export function createSession({ views, theme = 'dark', lang = 'en' }) {
   const knownViews = new Set(views);
+  let holds = 0;
+  let held = null;
+  // One notice from several, each said once; the first action offered wins.
+  const joined = notices => {
+    const present = notices.filter(Boolean);
+    return {
+      text: present.reduce((text, { text: next }) => (text.includes(next) ? text : `${text} ${next}`.trim()), ''),
+      action: present.find(notice => notice.action)?.action ?? null,
+    };
+  };
   let state = {
     view: 'oblique',
     query: '',
@@ -96,49 +106,52 @@ export function createSession({ views, theme = 'dark', lang = 'en' }) {
     setProgress: progress => act({ status: 'loading', progress }),
 
     /**
-     * Swapping atlas is not first load. There is already a model on screen,
-     * so it stays visible and usable and only the atlas control reports.
+     * A download behind a model that is already on screen: the model stays
+     * usable and only the status bar reports. Progress is not an action, so a
+     * standing notice stays, and the first load keeps its own status.
      */
-    setSwitching: progress => act({ status: 'switching', progress }),
+    setSwitching(progress) {
+      if (state.status === 'ready' || state.status === 'switching') {
+        state = { ...state, status: 'switching', progress };
+      }
+    },
 
-    /**
-     * A failed swap leaves the working atlas in place; it is not a dead viewer.
-     *
-     * The reader is told which atlas failed. The underlying error is not
-     * shown: a missing file makes the glTF loader parse the 404 page and
-     * report "Unexpected token '<'", which describes the parser rather than
-     * anything the reader can act on. It goes to the console instead.
-     */
-    failSwitch(atlasLabel, error) {
-      console.error(error);
-      const isFr = state.lang === 'fr';
-      state = {
-        ...state,
-        status: 'ready',
-        progress: null,
-        error: null,
-        notice: isFr
-          ? `Impossible de charger ${atlasLabel}. Le fichier modèle est peut-être `
-            + 'indisponible — vérifiez votre connexion et réessayez.'
-          : `Could not load the ${atlasLabel}. The model file may be `
-            + 'unavailable — check your connection and try again.',
-      };
+    endSwitching() {
+      if (state.status === 'switching') state = { ...state, status: 'ready', progress: null };
     },
 
     setError: error => act({ status: 'error', error, progress: null }),
 
-    /** The GPU dropped the context. Recoverable, and said so plainly. */
-    setContextLost: () => act({
-      status: 'context-lost',
-      progress: null,
-      error: new Error(state.lang === 'fr'
-        ? 'La vue 3D a été interrompue par le pilote graphique. Restauration…'
-        : 'The 3D view was interrupted by the graphics driver. Restoring…'),
-    }),
+    /** The GPU dropped the context. Recoverable; the stage says so in the reader's language. */
+    setContextLost: () => act({ status: 'context-lost', progress: null, error: null }),
 
-    /** Notices are cleared by the next action, never by a timer. */
+    /**
+     * `{ text, action }`; cleared by the next action or by the reader, never by a timer.
+     * A notice arriving while another stands joins it, so neither goes unread.
+     */
     notify(notice) {
-      state = { ...state, notice };
+      if (notice !== null && typeof notice?.text !== 'string') throw new TypeError('A notice needs text.');
+      if (notice && held) held.push(notice);
+      else state = { ...state, notice: notice && joined([state.notice, notice]) };
+    },
+
+    /**
+     * While a link is applied its own steps are actions that would clear a notice
+     * raised meanwhile, so notices wait until the last hold is released.
+     */
+    holdNotices() {
+      holds += 1;
+      held ??= [];
+    },
+
+    /** Show what waited, after `lead` (the link's own notice), as one notice; the first action offered wins. */
+    releaseNotices(lead = null) {
+      if (lead) held.unshift(lead);
+      holds -= 1;
+      if (holds > 0) return;
+      const waiting = held;
+      held = null;
+      if (waiting.length) state = { ...state, notice: joined([state.notice, ...waiting]) };
     },
 
     /**

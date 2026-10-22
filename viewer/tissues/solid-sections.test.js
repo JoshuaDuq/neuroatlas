@@ -115,6 +115,39 @@ test('cut hits are inside closed anatomy, from either retained side', () => {
   sections.dispose();
 });
 
+test('a stencil-capped solid with front faces only is still picked inside and only inside', () => {
+  // A ribbon wedge is built as a bare Mesh, whose default material draws and casts front faces only.
+  const source = new Mesh(new BoxGeometry(0.1, 0.1, 0.1));
+  source.userData = { hemisphere: 'left', kind: 'ribbon', region_id: 'destrieux:left:2' };
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 1);
+  sections.update(plane);
+  const [solid] = sections.solids;
+  // What a non-manifold section does: the whole-plane stencil quad stands in for the face.
+  sections.place(solid, { fallback: true });
+  assert.equal(solid.sectioned, false);
+  assert.equal(solid.cap.scale.x > 0.1, true, 'the quad covers more than the solid');
+  const inside = sections.intersect(new Raycaster(new Vector3(0.012, 0.009, 0.2), new Vector3(0, 0, -1)));
+  assert.equal(inside?.region, 'destrieux:left:2');
+  assert.equal(sections.intersect(new Raycaster(new Vector3(0.08, 0, 0.2), new Vector3(0, 0, -1))), null);
+  sections.dispose();
+});
+
+test('a solid shares its source geometry and BVH and leaves both to their owner', () => {
+  const { sections, source } = fixture();
+  const [solid] = sections.solids;
+  const tree = source.geometry.boundsTree;
+  assert.equal(solid.probe.geometry, source.geometry);
+  const again = new SolidSections();
+  again.add(source, new MeshBasicMaterial(), 0);
+  assert.equal(source.geometry.boundsTree, tree, 'a second cut reuses the BVH');
+  let disposed = 0;
+  source.geometry.addEventListener('dispose', () => { disposed += 1; });
+  sections.dispose();
+  again.dispose();
+  assert.equal(disposed, 0);
+});
+
 test('a solid the plane misses is not drawn', () => {
   const { sections } = fixture();
   sections.update(new Plane(new Vector3(0, 0, -1), 0.4));

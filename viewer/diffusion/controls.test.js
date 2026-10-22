@@ -45,5 +45,5 @@ test('tract lengths read in the reader’s notation, and the settings readout na
   assert.equal(lengthSummary(metrics, DIFFUSION_TEXT.en, 'en'), 'mean 142.3\u202fmm (range 75.0–239.5)');
   assert.equal(lengthSummary(metrics, DIFFUSION_TEXT.fr, 'fr'), 'moyenne 142,3\u202fmm (étendue 75,0–239,5)');
   assert.equal(settingsReadout(0.16, 1, 'en'), '16% · ≥1\u202fmm');
-  assert.equal(settingsReadout(1, 40, 'fr'), '100% · ≥40\u202fmm');
+  assert.equal(settingsReadout(1, 40, 'fr'), '100\u202f% · ≥40\u202fmm');
 });

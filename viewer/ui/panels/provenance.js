@@ -1,15 +1,32 @@
 import { t } from '../../i18n/translations.js';
+import { domainName } from '../../catalog/neuropsych-domains.js';
+import { percent } from '../format.js';
 
 /** A URL as a reader scans it: no scheme, no trailing slash. */
 export const shortUrl = url => String(url).replace(/^https?:\/\//, '').replace(/\/$/, '');
 
 const link = href => (href ? { href, text: shortUrl(href) } : null);
 
+/** How much of each lesion-mapped parcel a domain's coloured areas cover, as one note. */
+function lesionCheck(checks, lang) {
+  const copy = t(lang, 'domains');
+  if (!checks.length) return copy.noLesionCheck;
+  return copy.lesionCheck(checks.map(check => copy.lesionItem(
+    check.deficit_name[lang], check.references.join(', '),
+    check.mappings.map(mapping => {
+      // Bilateral findings name one parcel twice; the side tells them apart.
+      const parcel = `${mapping.source_name} (${t(lang, 'sides').glyphs[mapping.region.split(':')[1]]})`;
+      return mapping.coverage === null ? copy.parcelOffSurface(parcel)
+        : copy.parcelCoverage(parcel, percent(mapping.coverage, lang));
+    }).join(', '),
+  )));
+}
+
 /**
  * What the loaded anatomy's own published records say about where it came from,
  * as labelled rows. Only fields present in the index entry and manifest appear.
  */
-export function provenanceRows(manifest, { lang = 'en', manifestUrl, indexUrl } = {}) {
+export function provenanceRows(manifest, { lang = 'en', manifestUrl, indexUrl, domains = null } = {}) {
   const copy = t(lang, 'footer');
   const names = t(lang, 'atlases');
   const anatomy = manifest.anatomy ?? {};
@@ -46,6 +63,19 @@ export function provenanceRows(manifest, { lang = 'en', manifestUrl, indexUrl } 
     { text: functional.label },
     ...functional.citations.map(citation => ({ link: link(citation) })),
   ] : []);
+  const domainCopy = t(lang, 'domains');
+  add(copy.domains, manifest.neuropsych_domains ? [
+    {
+      text: manifest.neuropsych_domains.label, note: manifest.neuropsych_domains.license,
+      link: link(manifest.neuropsych_domains.license_url),
+    },
+    ...manifest.neuropsych_domains.citations.map(citation => ({ link: link(citation) })),
+    // Each domain's term, and how much of each lesion-mapped parcel its coloured areas cover.
+    ...(domains?.domains ?? []).map(domain => ({
+      text: domainCopy.termOf(domainName(domain, lang), domain.term),
+      note: lesionCheck(domains.lesion_checks[domain.id], lang),
+    })),
+  ] : []);
   add(copy.supplemental, (manifest.supplemental_layers ?? []).map(layer => ({
     text: names[layer.id] ?? layer.label,
     note: [layer.license, layer.attribution].filter(Boolean).join(' · ') || null,
@@ -78,7 +108,7 @@ function renderItem(item) {
   node.className = 'provenance-item';
   const text = item.text && document.createElement('p');
   if (text) {
-    text.className = item.mono ? 'provenance-value measure' : 'provenance-value';
+    text.className = item.mono ? 'provenance-value code' : 'provenance-value';
     text.textContent = item.text;
   }
   const note = item.note && document.createElement('p');
@@ -88,7 +118,7 @@ function renderItem(item) {
   }
   const anchor = item.link && document.createElement('a');
   if (anchor) {
-    anchor.className = item.link.mono ? 'provenance-link measure' : 'provenance-link';
+    anchor.className = item.link.mono ? 'provenance-link code' : 'provenance-link';
     anchor.href = item.link.href;
     anchor.target = '_blank';
     anchor.rel = 'noreferrer';
@@ -100,7 +130,7 @@ function renderItem(item) {
 }
 
 /** The provenance sheet: a native modal dialog opened from the status bar or, on phones, the settings menu. */
-export function createProvenance({ manifest, manifestUrl, indexUrl, fallbackFocus }) {
+export function createProvenance({ manifest, manifestUrl, indexUrl, domains, fallbackFocus }) {
   const dialog = document.getElementById('provenance-dialog');
   const title = document.getElementById('provenance-title');
   const close = document.getElementById('provenance-close');
@@ -116,7 +146,7 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, fallbackFocu
     title.textContent = copy.provenance;
     close.textContent = copy.close;
     use.textContent = copy.intendedUse;
-    const rows = reference ? referenceRows(reference, lang) : provenanceRows(manifest, { lang, manifestUrl, indexUrl });
+    const rows = reference ? referenceRows(reference, lang) : provenanceRows(manifest, { lang, manifestUrl, indexUrl, domains });
     facts.replaceChildren(...rows.flatMap(row => {
       const dt = document.createElement('dt');
       dt.textContent = row.label;

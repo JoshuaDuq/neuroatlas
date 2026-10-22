@@ -14,9 +14,8 @@ from brain_model.surfaces.geometry import to_gltf
 
 @pytest.fixture(scope="module")
 def published(tmp_path_factory):
-    config = read_config()
-    if not spinal_cord.is_available(config):
-        pytest.skip("Run scripts/extract_spinal_cord.py to produce the reference cord")
+    config = read_config("bert")
+    assert spinal_cord.is_declared(config)
     config["output_directory"] = tmp_path_factory.mktemp("models")
     layer, regions = spinal_cord.build(config)
     scene = trimesh.load_scene(config["output_directory"] / layer["file"], process=False)
@@ -232,3 +231,42 @@ def test_validation_reports_the_published_assembly(published):
     assert report["mri_registered"] is False
     assert report["structure_count"] == len(config["spinal_cord"]["structures"])
     assert report["region_count"] == len(regions) == 58
+
+
+@pytest.mark.parametrize(
+    "anatomy,cut",
+    [("snail", {"surface_z_mm": -75.0, "brainstem_voxels": 183}), ("bert", None), ("aomic", None)],
+)
+def test_no_cord_is_placed_where_the_scan_ends_inside_the_brainstem(anatomy, cut):
+    config = read_config(anatomy)
+    assert spinal_cord.brainstem(config)[1] == cut
+    assert spinal_cord.is_declared(config) is (cut is None)
+    cord = spinal_cord.read_structures(config)[
+        spinal_cord.key_of(config["spinal_cord"]["structures"][0])
+    ]
+    if cut is None:
+        assert spinal_cord.omission(config) == []
+        spinal_cord.placement(config, cord)
+    else:
+        assert "-75 mm with 183 brainstem voxels" in spinal_cord.omission(config)[0]
+        with pytest.raises(ValueError, match="scan ends"):
+            spinal_cord.placement(config, cord)
+
+
+@pytest.mark.parametrize("signal_below", [0, 1])
+def test_the_scan_edge_is_the_lowest_slice_holding_any_signal(tmp_path, signal_below):
+    import nibabel as nib
+
+    (tmp_path / "mri").mkdir()
+    labels = np.zeros((6, 6, 6), np.int32)
+    labels[2:4, 2:5, 2:4] = spinal_cord.BRAINSTEM
+    intensity = np.where(labels > 0, 100, 0).astype(np.uint8)
+    # An MGH tkregister grid runs voxel j inferior, so j = 5 is one slice lower.
+    intensity[2:4, 5, 2:4] = 100 if signal_below else 0
+    for name, data in (("aseg", labels), ("orig", intensity)):
+        nib.save(nib.MGHImage(data, np.eye(4)), tmp_path / f"mri/{name}.mgz")
+    _, cut = spinal_cord.brainstem({"source_directory": tmp_path})
+    if signal_below:
+        assert cut is None
+    else:
+        assert cut["brainstem_voxels"] == 4

@@ -1,4 +1,4 @@
-revised: '2026-09-22'
+revised: '2026-10-22'
 
 groups:
   - id: language
@@ -123,11 +123,11 @@ deficits:
     domain: {en: Social cognition, fr: Cognition sociale}
     group: executive
     summary:
-      en: Difficulty recognizing emotions, especially fear, in facial expressions. This profile follows bilateral amygdala damage.
-      fr: Difficulté à reconnaître les émotions, surtout la peur, dans les expressions faciales. Ce profil concerne les atteintes bilatérales de l’amygdale.
+      en: Difficulty recognizing emotions from facial expressions or tone of voice. This profile covers fear recognition after bilateral amygdala damage and emotional prosody after focal brain lesions.
+      fr: Difficulté à reconnaître les émotions dans les expressions faciales ou le ton de la voix. Ce profil couvre la reconnaissance de la peur après une atteinte bilatérale de l’amygdale et celle de la prosodie émotionnelle après des lésions cérébrales focales.
     aliases:
-      en: [fear recognition, facial expressions, amygdala, emotion, social cognition]
-      fr: [reconnaissance de la peur, expressions faciales, amygdale, émotion, cognition sociale]
+      en: [fear recognition, facial expressions, emotional prosody, amygdala, emotion, social cognition]
+      fr: [reconnaissance de la peur, expressions faciales, prosodie émotionnelle, amygdale, émotion, cognition sociale]
 
   - id: optic-ataxia
     name: {en: Optic ataxia, fr: Ataxie optique}
@@ -193,7 +193,7 @@ deficits:
       fr: Poussée active à l’opposé du côté non parétique avec une perception inclinée de la verticale. Ce profil situe le chevauchement lésionnel dans une série de cas sévères.
     aliases:
       en: [contraversive pushing, lateropulsion, postural vertical, balance, thalamus, graviception]
-      fr: [poussée controversive, latéropulsion, verticale posturale, équilibre, thalamus, graviception]
+      fr: [poussée contraversive, latéropulsion, verticale posturale, équilibre, thalamus, graviception]
 
   - id: hemichorea
     name: {en: Hemichorea and hemiballism, fr: Hémichorée et hémiballisme}
@@ -559,7 +559,7 @@ references:
     doi: 10.1016/j.nicl.2022.103038
     pmid: '35569227'
     method: meta-analysis
-    scope: abstract
+    scope: full-text
     population:
       en: 2,007 individuals with post-stroke aphasia, pooled from 25 voxel-based lesion-symptom mapping studies.
       fr: 2 007 personnes avec aphasie post-AVC, regroupées à partir de 25 études de cartographie lésion–symptôme voxel par voxel.
@@ -715,10 +715,10 @@ references:
     doi: 10.1016/j.cortex.2012.03.001
     pmid: '22482693'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: A large sample of people with left-hemisphere lesions and varied naming deficits; the abstract gives no count.
-      fr: Un large échantillon de personnes avec lésions de l’hémisphère gauche et déficits variés de dénomination; le résumé n’indique pas l’effectif.
+      en: 96 right-handed people with a single left-hemisphere stroke, tested at least 10 months after onset; 33 scored within normal limits on the aphasia battery.
+      fr: 96 personnes droitières avec un AVC gauche unique, évaluées au moins 10 mois après l’accident; 33 obtenaient des scores normaux à la batterie d’aphasie.
 
   - id: karnath-baier-2005
     title: Awareness of the functioning of one’s own limbs mediated by the insular cortex?
@@ -741,10 +741,15 @@ references:
     doi: 10.1073/pnas.240279997
     pmid: '11087818'
     method: lesion-mapping
-    scope: abstract
+    scope: full-text
     population:
-      en: 23 consecutively admitted people with stroke and severe contraversive pushing.
-      fr: 23 personnes admises consécutivement avec AVC et poussée controversive sévère.
+      en: 23 consecutively admitted people with unilateral stroke and severe contraversive pushing, 15 with right- and 8 with left-hemisphere lesions, compared with 23 matched stroke patients without pushing.
+      fr: 23 personnes admises consécutivement avec AVC unilatéral et poussée contraversive sévère, 15 avec lésion droite et 8 avec lésion gauche, comparées à 23 patients appariés ayant un AVC sans poussée.
+    corrections:
+      - doi: 10.1073/pnas.98.2.777-e
+        summary:
+          en: Corrects the spelling “centrolateralis” in the discussion and a missing colon in the Table 2 legend. No finding is affected.
+          fr: Corrige l’orthographe « centrolateralis » dans la discussion et un deux-points manquant dans la légende du tableau 2. Aucun résultat n’est modifié.
 
   - id: lee-1994
     title: Movement disorders following lesions of the thalamus or subthalamic region
@@ -875,6 +880,11 @@ references:
     population:
       en: 92 published case reports of cerebral achromatopsia, with prosopagnosia cases analysed for comparison.
       fr: 92 cas publiés d’achromatopsie cérébrale, avec des cas de prosopagnosie analysés à titre de comparaison.
+    corrections:
+      - doi: 10.1093/cercor/bhl065
+        summary:
+          en: Corrects a Results sentence to state that two small locations within the high-overlap region were lesioned in 8 of the 11 achromatopsia cases, and corrects the slice labels of Figure 2.
+          fr: Corrige une phrase des résultats pour indiquer que deux petites zones de la région de fort chevauchement étaient lésées chez 8 des 11 cas d’achromatopsie, et corrige les étiquettes des coupes de la figure 2.
 
   - id: zihl-1983
     title: Selective disturbance of movement vision after bilateral brain damage
@@ -1201,6 +1211,45 @@ references:
       en: One original patient and a clinical–anatomical review of 20 previously reported alien-hand cases.
       fr: Un patient original et une revue clinico-anatomique de 20 cas de main étrangère précédemment publiés.
 
+  - id: johannsen-2006
+    title: '"Pusher syndrome" following cortical lesions that spare the thalamus'
+    authors: Johannsen L, Broetz D, Naegele T, Karnath HO
+    year: 2006
+    journal: Journal of Neurology
+    doi: 10.1007/s00415-005-0025-7
+    pmid: '16435080'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 45 acute patients with left- or right-sided cortical lesions sparing the thalamus, with and without contraversive pushing.
+      fr: 45 patients en phase aiguë avec lésions corticales gauches ou droites épargnant le thalamus, avec et sans poussée contraversive.
+
+  - id: fellows-2005
+    title: Different underlying impairments in decision-making following ventromedial and dorsolateral frontal lobe damage in humans
+    authors: Fellows LK, Farah MJ
+    year: 2005
+    journal: Cerebral Cortex
+    doi: 10.1093/cercor/bhh108
+    pmid: '15217900'
+    method: case-series
+    scope: abstract
+    population:
+      en: People with ventromedial or dorsolateral frontal damage, tested on the Iowa gambling task and on reversal learning; the abstract gives no count.
+      fr: Personnes avec atteinte frontale ventromédiane ou dorsolatérale, évaluées sur la tâche de jeu de l’Iowa et sur l’apprentissage par inversion; le résumé n’indique pas l’effectif.
+
+  - id: berti-2005
+    title: Shared cortical anatomy for motor awareness and motor control
+    authors: Berti A, Bottini G, Gandola M, Pia L, Smania N, Stracciari A, Castiglioni I, Vallar G, Paulesu E
+    year: 2005
+    journal: Science
+    doi: 10.1126/science.1110625
+    pmid: '16020740'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: Right-brain-damaged hemiplegic patients who denied their motor impairment; the abstract gives no count.
+      fr: Patients hémiplégiques avec lésion cérébrale droite qui niaient leur déficit moteur; le résumé n’indique pas l’effectif.
+
 associations:
   - id: aphasia-comprehension
     deficit: aphasia
@@ -1328,7 +1377,7 @@ associations:
     laterality: right
     finding:
       en: Four patients with right fusiform face-area involvement had impaired discrimination of facial feature positions.
-      fr: Quatre patients avec atteinte de l’aire fusiforme des visages discriminaient mal la position des traits du visage.
+      fr: Quatre patients avec atteinte de l’aire fusiforme des visages droite discriminaient mal la position des traits du visage.
     limitation:
       en: Small case series about one aspect of acquired face perception; it does not explain all visual agnosias or developmental prosopagnosia.
       fr: Petite série sur un aspect de la perception faciale acquise; elle n’explique ni toutes les agnosies visuelles ni la prosopagnosie développementale.
@@ -1387,14 +1436,14 @@ associations:
     network: {en: Left insular and motor speech system, fr: Système insulaire et moteur de la parole (gauche)}
     laterality: left
     finding:
-      en: Damage to insular and motor areas impaired speech while comprehension stayed relatively preserved; frontal lesions produced the same dissociation more severely.
-      fr: Les lésions des aires insulaires et motrices altéraient la parole en préservant relativement la compréhension; les lésions frontales produisaient la même dissociation de façon plus sévère.
+      en: Damage to insular and motor areas impaired speech with comprehension preserved; frontal lesions severely impaired speaking with relatively good comprehension.
+      fr: Les lésions des aires insulaires et motrices altéraient la parole en préservant la compréhension; les lésions frontales altéraient sévèrement la parole avec une compréhension relativement bonne.
     limitation:
-      en: The dissociation is between pooled task scores, not a claim that these parcels constitute a speech output system. Underlying white matter carried part of the effect.
-      fr: La dissociation porte sur des scores regroupés, et non sur l’affirmation que ces parcelles constituent un système de production de la parole. La substance blanche sous-jacente portait une partie de l’effet.
+      en: The dissociation compares pooled maps for different language functions; it does not make these parcels a speech output system. The meta-analysis pooled reported peak coordinates, not lesion maps.
+      fr: La dissociation compare des cartes regroupées pour différentes fonctions langagières; elle ne fait pas de ces parcelles un système de production de la parole. La méta-analyse regroupait des coordonnées de pics publiées, et non des cartes lésionnelles.
     mapping_note:
-      en: Whole insular and precentral parcels are shown. The pooled clusters covered parts of each together with adjacent white matter, which has no parcel here.
-      fr: Les parcelles insulaires et précentrale entières sont affichées. Les amas regroupés couvraient une partie de chacune ainsi que la substance blanche adjacente, qui n’a pas de parcelle ici.
+      en: Whole insular and precentral parcels are shown. The pooled production and fluency peaks were labelled insula and precentral gyrus; their clusters do not follow parcel borders.
+      fr: Les parcelles insulaires et précentrale entières sont affichées. Les pics regroupés de production et de fluence étaient attribués à l’insula et au gyrus précentral; leurs amas ne suivent pas les limites des parcelles.
     mappings:
       - {region: 'destrieux:left:17', source_name: G_Ins_lg_and_S_cent_ins}
       - {region: 'destrieux:left:18', source_name: G_insular_short}
@@ -1454,8 +1503,8 @@ associations:
       en: Boston Naming Test scores mapped to a left peri-Sylvian network; once visual recognition and motor speech were controlled, the critical region narrowed to the mid-posterior middle temporal gyrus and its underlying white matter.
       fr: Les scores au Boston Naming Test correspondaient à un réseau périsylvien gauche; après contrôle de la reconnaissance visuelle et de la parole motrice, la région critique se réduisait au gyrus temporal moyen mi-postérieur et à sa substance blanche sous-jacente.
     limitation:
-      en: Chronic left-hemisphere patients, with no sample size in the abstract. Anterior temporal contributions reported by other studies were not the critical site here.
-      fr: Patients chroniques de l’hémisphère gauche, sans effectif dans le résumé. Les contributions temporales antérieures rapportées par d’autres études n’étaient pas le site critique ici.
+      en: Single chronic left-hemisphere strokes in right-handed native English speakers, excluding clinical neglect and visual agnosia. Anterior temporal contributions reported by other studies were not the critical site here.
+      fr: AVC gauches uniques en phase chronique chez des droitiers de langue maternelle anglaise, sans négligence clinique ni agnosie visuelle. Les contributions temporales antérieures rapportées par d’autres études n’étaient pas le site critique ici.
     mapping_note:
       en: The whole middle temporal parcel is shown. The finding concerns its middle and posterior portions and the white matter beneath, which has no parcel.
       fr: La parcelle temporale moyenne entière est affichée. Le résultat concerne ses portions moyenne et postérieure et la substance blanche sous-jacente, qui n’a pas de parcelle.
@@ -1598,8 +1647,8 @@ associations:
       en: Lesion overlap centred on the lateral occipito-parietal junction between the inferior parietal lobule and superior occipital cortex, extending medially to the precuneus, rather than on the superior parietal lobule convexity.
       fr: Le chevauchement lésionnel se centrait sur la jonction occipito-pariétale latérale entre le lobule pariétal inférieur et le cortex occipital supérieur, s’étendant médialement au précunéus, plutôt que sur la convexité du lobule pariétal supérieur.
     limitation:
-      en: Lesion overlap in a selected clinical group without a comparison of patients lacking the deficit. In the left hemisphere the overlap also reached the junction of occipital cortex and superior parietal lobule.
-      fr: Chevauchement lésionnel dans un groupe clinique sélectionné sans comparaison avec des patients sans déficit. Dans l’hémisphère gauche, le chevauchement atteignait aussi la jonction entre cortex occipital et lobule pariétal supérieur.
+      en: Lesion overlap in patients selected for optic ataxia; the abstract does not report a comparison with patients lacking the deficit. In the left hemisphere the overlap also reached the junction of occipital cortex and superior parietal lobule.
+      fr: Chevauchement lésionnel chez des patients sélectionnés pour une ataxie optique; le résumé ne rapporte pas de comparaison avec des patients sans ce déficit. Dans l’hémisphère gauche, le chevauchement atteignait aussi la jonction entre cortex occipital et lobule pariétal supérieur.
     mapping_note:
       en: Angular, superior occipital and precuneus parcels bracket the reported junction on each side. The overlap crossed parcel borders and involved underlying white matter.
       fr: Les parcelles angulaire, occipitale supérieure et du précunéus encadrent la jonction rapportée de chaque côté. Le chevauchement traversait les limites des parcelles et impliquait la substance blanche sous-jacente.
@@ -1661,14 +1710,14 @@ associations:
     network: {en: Ventromedial prefrontal valuation system, fr: Système de valorisation préfrontal ventromédian}
     laterality: bilateral
     finding:
-      en: On a gambling task simulating real-life uncertainty, patients with ventromedial prefrontal damage kept choosing immediate gains despite larger future losses, unlike controls. In a 344-patient lesion map, value-based decision-making deficits localized to ventromedial prefrontal and orbitofrontal cortex, apart from cognitive control.
-      fr: Dans une tâche de jeu simulant l’incertitude de la vie réelle, les patients avec atteinte préfrontale ventromédiane continuaient à choisir les gains immédiats malgré des pertes futures plus grandes, contrairement aux témoins. Dans une cartographie lésionnelle de 344 patients, les déficits de décision fondée sur la valeur se localisaient au cortex préfrontal ventromédian et orbitofrontal, à part du contrôle cognitif.
+      en: On a new task simulating real-life decisions under uncertainty, reward and punishment, patients with ventromedial prefrontal damage, unlike controls, seemed oblivious to future consequences and guided by immediate prospects only. In a 344-patient lesion map, value-based decision-making deficits localized to ventromedial prefrontal and orbitofrontal cortex, apart from cognitive control.
+      fr: Dans une nouvelle tâche simulant les décisions de la vie réelle sous incertitude, avec récompenses et punitions, les patients avec atteinte préfrontale ventromédiane, contrairement aux témoins, semblaient ignorer les conséquences futures et n’être guidés que par les perspectives immédiates. Dans une cartographie lésionnelle de 344 patients, les déficits de décision fondée sur la valeur se localisaient au cortex préfrontal ventromédian et orbitofrontal, à part du contrôle cognitif.
     limitation:
-      en: The 1994 sample was small and the task has since been criticized for confounding risk, learning and reward sensitivity. Lesions in this territory are often bilateral and extend into orbitofrontal cortex.
-      fr: L’échantillon de 1994 était petit et la tâche a depuis été critiquée pour confondre risque, apprentissage et sensibilité à la récompense. Les lésions de ce territoire sont souvent bilatérales et s’étendent au cortex orbitofrontal.
+      en: The 1994 abstract gives no sample size. Fellows and Farah later found that dorsolateral frontal damage also impaired the Iowa gambling task, and that the ventromedial impairment was largely explained by a reversal-learning deficit.
+      fr: Le résumé de 1994 n’indique pas l’effectif. Fellows et Farah ont ensuite montré qu’une atteinte frontale dorsolatérale altérait aussi la tâche de jeu de l’Iowa, et que le déficit ventromédian s’expliquait largement par un trouble de l’apprentissage par inversion.
     mapping_note:
-      en: The gyrus rectus and medial orbital sulcus approximate ventromedial prefrontal cortex on each side. Neither study’s lesion maps follow these parcel borders.
-      fr: Le gyrus droit et le sillon orbitaire médial représentent approximativement le cortex préfrontal ventromédian de chaque côté. Les cartes lésionnelles des deux études ne suivent pas ces limites de parcelles.
+      en: The gyrus rectus and medial orbital sulcus approximate ventromedial prefrontal cortex on each side. The supporting studies’ lesion maps do not follow these parcel borders.
+      fr: Le gyrus droit et le sillon orbitaire médial représentent approximativement le cortex préfrontal ventromédian de chaque côté. Les cartes lésionnelles des études à l’appui ne suivent pas ces limites de parcelles.
     mappings:
       - {region: 'destrieux:left:31', source_name: G_rectus}
       - {region: 'destrieux:right:31', source_name: G_rectus}
@@ -1677,6 +1726,7 @@ associations:
     evidence:
       - {reference: bechara-1994, role: supporting}
       - {reference: glascher-2012, role: supporting}
+      - {reference: fellows-2005, role: qualifying}
 
   - id: amnesia-fornix
     deficit: amnesia
@@ -1729,8 +1779,8 @@ associations:
       en: In 27 stroke patients, the right posterior insula was commonly damaged in those with anosognosia for hemiplegia and significantly less involved in hemiparetic patients without it.
       fr: Chez 27 patients avec AVC, l’insula postérieure droite était souvent lésée chez ceux avec anosognosie de l’hémiplégie et significativement moins atteinte chez les hémiparétiques sans anosognosie.
     limitation:
-      en: A modest sample. Other work implicates additional right-hemisphere regions, and the function of the posterior insula remains debated.
-      fr: Échantillon modeste. D’autres travaux impliquent des régions supplémentaires de l’hémisphère droit, et la fonction de l’insula postérieure reste discutée.
+      en: A modest sample. Berti et al. associated denial of hemiplegia with lesions of premotor areas 6 and 44, motor area 4 and somatosensory cortex, and the function of the posterior insula remains debated.
+      fr: Échantillon modeste. Berti et al. associaient le déni de l’hémiplégie à des lésions des aires prémotrices 6 et 44, de l’aire motrice 4 et du cortex somatosensoriel, et la fonction de l’insula postérieure reste discutée.
     mapping_note:
       en: The long insular gyrus and central insular sulcus parcel covers the posterior insula. The lesion overlap does not follow its border.
       fr: La parcelle du gyrus long et du sillon central de l’insula couvre l’insula postérieure. Le chevauchement lésionnel ne suit pas sa limite.
@@ -1738,6 +1788,7 @@ associations:
       - {region: 'destrieux:right:17', source_name: G_Ins_lg_and_S_cent_ins}
     evidence:
       - {reference: karnath-baier-2005, role: supporting}
+      - {reference: berti-2005, role: qualifying}
 
   - id: lateropulsion-thalamus
     deficit: lateropulsion
@@ -1745,11 +1796,11 @@ associations:
     network: {en: Posterolateral thalamic graviceptive relay, fr: Relais graviceptif thalamique postérolatéral}
     laterality: bilateral
     finding:
-      en: The infarcts of 23 patients with severe contraversive pushing overlapped on the posterolateral thalamus, implicating its ventral posterior and lateral posterior nuclei in sensing body orientation relative to gravity.
-      fr: Les infarctus de 23 patients avec poussée controversive sévère se chevauchaient sur le thalamus postérolatéral, impliquant ses noyaux ventral postérieur et latéral postérieur dans la perception de l’orientation du corps par rapport à la gravité.
+      en: In 23 patients with severe contraversive pushing, 12 with infarcts and 11 with haemorrhages, lesions overlapped on the posterolateral thalamus, implicating its ventral posterior and lateral posterior nuclei in sensing body orientation relative to gravity.
+      fr: Chez 23 patients avec poussée contraversive sévère, 12 avec infarctus et 11 avec hémorragie, les lésions se chevauchaient sur le thalamus postérolatéral, impliquant ses noyaux ventral postérieur et latéral postérieur dans la perception de l’orientation du corps par rapport à la gravité.
     limitation:
-      en: Lesion overlap without a comparison group. Later work described cortical lesions producing the same behaviour.
-      fr: Chevauchement lésionnel sans groupe de comparaison. Des travaux ultérieurs ont décrit des lésions corticales produisant le même comportement.
+      en: Overlap plots were compared descriptively with those of 23 matched non-pushers, and the left-hemisphere overlap, in only eight patients, was a tendency. Johannsen et al. later found pushing after cortical lesions sparing the thalamus, centred on the insula and postcentral gyrus.
+      fr: Les cartes de chevauchement étaient comparées de façon descriptive à celles de 23 patients appariés sans poussée, et le chevauchement gauche, chez huit patients seulement, n’était qu’une tendance. Johannsen et al. ont ensuite observé une poussée après des lésions corticales épargnant le thalamus, centrées sur l’insula et le gyrus postcentral.
     mapping_note:
       en: The ventral posterolateral and lateral posterior nuclei are shown from the histological reference on both sides. Pushing occurs after lesions of either hemisphere.
       fr: Les noyaux ventral postérolatéral et latéral postérieur proviennent de la référence histologique des deux côtés. La poussée survient après des lésions de l’un ou l’autre hémisphère.
@@ -1762,6 +1813,7 @@ associations:
       - {region: 'nextbrain:right:10441', source_name: lateral_posterior_nucleus_of_thalamus}
     evidence:
       - {reference: karnath-2000, role: supporting}
+      - {reference: johannsen-2006, role: qualifying}
 
   - id: hemichorea-subthalamic
     deficit: hemichorea
@@ -1772,8 +1824,8 @@ associations:
       en: Of 17 reported cases with ballism-chorea after thalamic or subthalamic lesions, 15 had a unilateral lesion of the subthalamic nucleus or region, all with contralateral hemichorea or hemiballism.
       fr: Sur 17 cas rapportés de ballisme-chorée après lésion thalamique ou sous-thalamique, 15 avaient une lésion unilatérale du noyau ou de la région sous-thalamique, tous avec hémichorée ou hémiballisme controlatéral.
     limitation:
-      en: A review of published cases. Dewey and Jankovic found a non-stroke cause in half of 21 patients and involvement of other subcortical structures.
-      fr: Revue de cas publiés. Dewey et Jankovic ont trouvé une cause autre que l’AVC chez la moitié de 21 patients et une implication d’autres structures sous-corticales.
+      en: A review of published cases. Dewey and Jankovic found a cause other than stroke in almost half (10 of 21) of their patients, and noted that subcortical structures besides the subthalamic nucleus may be involved.
+      fr: Revue de cas publiés. Dewey et Jankovic ont trouvé une cause autre que l’AVC chez près de la moitié (10 sur 21) de leurs patients, et notaient que d’autres structures sous-corticales que le noyau sous-thalamique pouvaient être impliquées.
     mapping_note:
       en: The subthalamic nucleus is shown on both sides. Movements are contralateral to the lesion.
       fr: Le noyau sous-thalamique est affiché des deux côtés. Les mouvements sont controlatéraux à la lésion.
@@ -1835,8 +1887,8 @@ associations:
       en: Abulia was the most significant behavioural disturbance with caudate lesions (28%), sometimes alternating with disinhibition (11%). Caudate lesions rarely caused motor disorders, unlike lentiform lesions.
       fr: L’aboulie était le trouble comportemental le plus marqué avec les lésions du noyau caudé (28 %), alternant parfois avec une désinhibition (11 %). Les lésions caudées causaient rarement des troubles moteurs, contrairement aux lésions lenticulaires.
     limitation:
-      en: A review of published cases. Confusion and depression were non-specific, and haemorrhagic lesions often extended beyond the nucleus.
-      fr: Revue de cas publiés. La confusion et la dépression étaient non spécifiques, et les lésions hémorragiques dépassaient souvent le noyau.
+      en: A review of published cases, some with lesions extending into the internal capsule or periventricular white matter. Confusion was usually associated with intracerebral haemorrhage, and depression was a relatively non-specific finding.
+      fr: Revue de cas publiés, dont certains avec des lésions étendues à la capsule interne ou à la substance blanche périventriculaire. La confusion était généralement associée à une hémorragie intracérébrale, et la dépression était une observation relativement non spécifique.
     mapping_note:
       en: Whole caudate nuclei are shown. The review did not separate head, body and tail.
       fr: Les noyaux caudés entiers sont affichés. La revue ne distinguait pas la tête, le corps et la queue.
@@ -1872,8 +1924,8 @@ associations:
     network: {en: Globus pallidus and putamen, fr: Globus pallidus et putamen}
     laterality: bilateral
     finding:
-      en: Bilateral lesions of the lentiform nuclei, of the globus pallidus or the putamen, caused parkinsonism in 19% and dystonia-parkinsonism in 6% of published cases; parkinsonism was uncommon overall (6%).
-      fr: Les lésions bilatérales des noyaux lenticulaires, du globus pallidus ou du putamen, causaient un syndrome parkinsonien dans 19 % et une dystonie-parkinsonisme dans 6 % des cas publiés; le syndrome parkinsonien restait rare au total (6 %).
+      en: Bilateral lesions of the lentiform nuclei, of the globus pallidus or the putamen, caused parkinsonism in 19% and dystonia-parkinsonism in 6% of cases with bilateral lentiform lesions; across all 240 cases, parkinsonism was uncommon (6%).
+      fr: Les lésions bilatérales des noyaux lenticulaires, du globus pallidus ou du putamen, causaient un syndrome parkinsonien dans 19 % et une dystonie-parkinsonisme dans 6 % des cas avec lésions lenticulaires bilatérales; sur l’ensemble des 240 cas, le syndrome parkinsonien restait rare (6 %).
     limitation:
       en: A review of published cases. The abstract does not separate pallidal from putaminal lesions for this outcome.
       fr: Revue de cas publiés. Le résumé ne distingue pas les lésions pallidales des lésions putaminales pour ce résultat.
@@ -1967,8 +2019,8 @@ associations:
       en: In 64 people with post-stroke aphasia, semantic naming errors (horse for goat) were most strongly predicted by lesions of the left anterior to mid middle temporal gyrus, an effect that survived controlling for pre-lexical conceptual deficits.
       fr: Chez 64 personnes avec aphasie post-AVC, les erreurs sémantiques de dénomination (cheval pour chèvre) étaient le mieux prédites par des lésions du gyrus temporal moyen antérieur à moyen gauche, effet persistant après contrôle des déficits conceptuels prélexicaux.
     limitation:
-      en: The authors note this contradicts the classical linkage of semantic errors to Wernicke’s area. Stroke rarely damages the temporal pole itself, so its contribution is under-sampled.
-      fr: Les auteurs soulignent que ce résultat contredit le lien classique entre erreurs sémantiques et aire de Wernicke. L’AVC touche rarement le pôle temporal lui-même, dont la contribution est donc sous-échantillonnée.
+      en: The authors note this casts doubt on the classical linkage of semantic errors to Wernicke’s area. Stroke rarely damages the temporal pole itself, so its contribution is under-sampled.
+      fr: Les auteurs soulignent que ce résultat met en doute le lien classique entre erreurs sémantiques et aire de Wernicke. L’AVC touche rarement le pôle temporal lui-même, dont la contribution est donc sous-échantillonnée.
     mapping_note:
       en: The whole middle temporal parcel is shown; the finding concerns its anterior and middle portions, unlike the posterior focus of the comprehension and naming claims above.
       fr: La parcelle temporale moyenne entière est affichée; le résultat concerne ses portions antérieure et moyenne, contrairement au foyer postérieur des associations de compréhension et de dénomination ci-dessus.
@@ -2028,8 +2080,8 @@ associations:
       en: Lesion overlaps in 66 participants showed that recognizing emotions from prosody draws on the right frontoparietal operculum, the bilateral frontal pole and the left frontal operculum. The right frontoparietal cortex served both prosody and facial expressions.
       fr: Les chevauchements lésionnels chez 66 participants montraient que la reconnaissance des émotions par la prosodie repose sur l’opercule fronto-pariétal droit, le pôle frontal bilatéral et l’opercule frontal gauche. Le cortex fronto-pariétal droit servait à la fois la prosodie et les expressions faciales.
     limitation:
-      en: Lesion overlap weighted by performance, without a voxelwise statistical test. Temporal lobe regions also contributed asymmetrically and are not mapped here.
-      fr: Chevauchement lésionnel pondéré par la performance, sans test statistique voxel par voxel. Des régions temporales contribuaient aussi de façon asymétrique et ne sont pas cartographiées ici.
+      en: Lesion overlaps were mapped as a function of performance. Regions in the left and right temporal lobes also contributed disproportionately to recognizing emotion from faces or prosody, respectively, and are not mapped here.
+      fr: Les chevauchements lésionnels étaient cartographiés en fonction de la performance. Des régions des lobes temporaux gauche et droit contribuaient aussi de façon disproportionnée à la reconnaissance des émotions par le visage ou par la prosodie, respectivement, et ne sont pas cartographiées ici.
     mapping_note:
       en: The subcentral and opercular parcels approximate the frontoparietal operculum on the right; the transverse frontopolar parcels stand for the frontal poles. Borders are anatomical, not the study’s.
       fr: Les parcelles subcentrale et operculaire représentent approximativement l’opercule fronto-pariétal à droite; les parcelles frontopolaires transverses tiennent lieu de pôles frontaux. Les limites sont anatomiques, non celles de l’étude.
@@ -2048,11 +2100,11 @@ associations:
     network: {en: Ventral occipital colour pathway, fr: Voie occipitale ventrale des couleurs}
     laterality: bilateral
     finding:
-      en: Across 92 published cases, lesion overlap revealed a relatively small region of high overlap in ventral occipital cortex, near areas that neuroimaging links to colour perception. Nearly all cases also showed some loss of spatial vision.
-      fr: Sur 92 cas publiés, le chevauchement lésionnel révélait une région relativement petite de fort chevauchement dans le cortex occipital ventral, près des aires que la neuro-imagerie associe à la perception des couleurs. Presque tous les cas montraient aussi une perte de vision spatiale.
+      en: In a meta-analysis of 92 published case reports, lesion overlap analyses revealed a relatively small region of high overlap in ventral occipital cortex, near areas that neuroimaging links to colour perception. Nearly all cases also showed some loss of spatial vision.
+      fr: Dans une méta-analyse de 92 cas publiés, les analyses de chevauchement lésionnel révélaient une région relativement petite de fort chevauchement dans le cortex occipital ventral, près des aires que la neuro-imagerie associe à la perception des couleurs. Presque tous les cas montraient aussi une perte de vision spatiale.
     limitation:
-      en: Heterogeneous case reports of varying quality. The deficit was often incomplete and never restricted to colour, so the site is one stage among many colour-sensitive areas.
-      fr: Cas publiés hétérogènes et de qualité variable. Le déficit était souvent incomplet et jamais limité à la couleur; le site n’est donc qu’une étape parmi plusieurs aires sensibles à la couleur.
+      en: Heterogeneous case reports of varying quality; per the published erratum, two small locations within the region were lesioned in 8 of the 11 achromatopsia cases. The deficit was often incomplete and never restricted to colour, so the site is one stage among many colour-sensitive areas.
+      fr: Cas publiés hétérogènes et de qualité variable; selon l’erratum publié, deux petites zones de cette région étaient lésées chez 8 des 11 cas d’achromatopsie. Le déficit était souvent incomplet et jamais limité à la couleur; le site n’est donc qu’une étape parmi plusieurs aires sensibles à la couleur.
     mapping_note:
       en: Lingual and fusiform parcels frame the ventral occipital overlap on each side. Unilateral lesions produce hemiachromatopsia in the opposite field.
       fr: Les parcelles linguale et fusiforme encadrent le chevauchement occipital ventral de chaque côté. Les lésions unilatérales produisent une hémiachromatopsie du champ opposé.
@@ -2070,11 +2122,11 @@ associations:
     network: {en: Bilateral lateral occipitotemporal motion cortex, fr: Cortex occipito-temporal latéral bilatéral du mouvement}
     laterality: bilateral
     finding:
-      en: L.M. could only distinguish stationary from moving targets in the periphery and saw no movement in depth, with hearing and touch motion intact. MRI showed bilateral lesions of the upper occipital gyri and adjacent middle temporal gyri, centred on the upper banks of the anterior occipital sulcus, unchanged at follow-up.
-      fr: L.M. ne distinguait que cibles fixes et mobiles en périphérie et ne percevait aucun mouvement en profondeur, avec une perception du mouvement auditive et tactile intacte. L’IRM montrait des lésions bilatérales des gyrus occipitaux supérieurs et des gyrus temporaux moyens adjacents, centrées sur les berges supérieures du sillon occipital antérieur, inchangées au suivi.
+      en: L.M. could only distinguish stationary from moving targets in the periphery and saw no movement in depth, with hearing and touch motion intact; at follow-up the deficit had not changed significantly. MRI showed bilateral lesions of the upper occipital gyri and adjacent middle temporal gyri, centred on the upper banks of the anterior occipital sulcus.
+      fr: L.M. ne distinguait que cibles fixes et mobiles en périphérie et ne percevait aucun mouvement en profondeur, avec une perception du mouvement auditive et tactile intacte; au suivi, le déficit n’avait pas changé de façon significative. L’IRM montrait des lésions bilatérales des gyrus occipitaux supérieurs et des gyrus temporaux moyens adjacents, centrées sur les berges supérieures du sillon occipital antérieur.
     limitation:
-      en: A single patient with venous infarction; underlying white matter connecting occipital, temporal and parietal areas was also damaged bilaterally.
-      fr: Patiente unique avec infarctus veineux; la substance blanche sous-jacente reliant les aires occipitales, temporales et pariétales était aussi atteinte bilatéralement.
+      en: A single patient; fibre pathways connecting occipital, temporal and parietal areas were also damaged bilaterally.
+      fr: Patiente unique; les faisceaux de fibres reliant les aires occipitales, temporales et pariétales étaient aussi atteints bilatéralement.
     mapping_note:
       en: The anterior occipital sulcus, middle occipital and middle temporal parcels bracket the lesion on each side. Bilateral damage was required for the deficit.
       fr: Le sillon occipital antérieur et les parcelles occipitale moyenne et temporale moyenne encadrent la lésion de chaque côté. Une atteinte bilatérale était nécessaire au déficit.
@@ -2119,8 +2171,8 @@ associations:
       en: In 20 patients with disease confined to the cerebellum, executive, visuospatial, linguistic and personality changes were prominent with posterior lobe and vermis involvement, whereas anterior lobe lesions produced only minor executive and visuospatial changes.
       fr: Chez 20 patients avec maladie limitée au cervelet, des changements exécutifs, visuospatiaux, langagiers et de personnalité étaient marqués en cas d’atteinte du lobe postérieur et du vermis, alors que les lésions du lobe antérieur ne produisaient que des changements exécutifs et visuospatiaux mineurs.
     limitation:
-      en: Mixed aetiologies including stroke, tumour and atrophy, with bedside and neuropsychological testing rather than voxelwise mapping.
-      fr: Étiologies mixtes incluant AVC, tumeur et atrophie, avec tests au lit du malade et neuropsychologiques plutôt qu’une cartographie voxel par voxel.
+      en: The abstract does not break down the cerebellar diseases. Assessment relied on neurological examination, bedside mental state tests, neuropsychological studies and anatomical imaging rather than voxelwise mapping.
+      fr: Le résumé ne détaille pas les maladies cérébelleuses. L’évaluation reposait sur l’examen neurologique, des tests de l’état mental au lit du malade, des études neuropsychologiques et l’imagerie anatomique plutôt que sur une cartographie voxel par voxel.
     mapping_note:
       en: The whole cerebellar cortex is shown on each side; it is not divided into anterior and posterior lobes or vermis.
       fr: Le cortex cérébelleux entier est affiché de chaque côté; il n’est pas divisé en lobes antérieur et postérieur ni en vermis.
@@ -2163,8 +2215,8 @@ associations:
       en: In seven isolated cerebellar infarcts with dysarthria, the common site was the rostral paravermal anterior lobe in the superior cerebellar artery territory, six on the right. Voxel-based mapping in a separate series linked dysarthria to paravermal and hemispheral lobules V and VI.
       fr: Dans sept infarctus cérébelleux isolés avec dysarthrie, le site commun était le lobe antérieur paravermien rostral dans le territoire de l’artère cérébelleuse supérieure, six à droite. Une cartographie voxel par voxel dans une autre série reliait la dysarthrie aux lobules paravermiens et hémisphériques V et VI.
     limitation:
-      en: Small numbers, and 11 of 18 patients also had brainstem involvement. Right-sided predominance was observed in right-handed patients only.
-      fr: Petits effectifs, et 11 des 18 patients avaient aussi une atteinte du tronc cérébral. La prédominance droite n’a été observée que chez des droitiers.
+      en: Small numbers, and 11 of 18 patients also had brainstem involvement. All patients were right-handed, so the right-sided predominance may not generalise.
+      fr: Petits effectifs, et 11 des 18 patients avaient aussi une atteinte du tronc cérébral. Tous les patients étaient droitiers; la prédominance droite pourrait donc ne pas se généraliser.
     mapping_note:
       en: The whole cerebellar cortex is shown on each side; lobules and the paravermal zone are not delineated.
       fr: Le cortex cérébelleux entier est affiché de chaque côté; les lobules et la zone paravermienne ne sont pas délimités.

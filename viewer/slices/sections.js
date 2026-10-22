@@ -2,7 +2,7 @@ import { Group, Plane, Vector3 } from 'three';
 import { TissueSections } from '../tissues/gpu-sections.js';
 import { centeredFrame, clippingPlane } from './coordinates.js';
 import { renderSlice } from './sampling.js';
-import { loadVolumes } from './volume.js';
+import { loadVolume } from './volume.js';
 
 const MODES = ['off', 'sagittal', 'coronal', 'axial', 'oblique'];
 
@@ -66,6 +66,7 @@ export class BrainSections extends EventTarget {
         s.internalVisible,
         s.surfaceColor,
         s.functionalLevel,
+        s.domain,
         s.detail,
         s.spinalCordVisible,
         [...(s.hiddenRegions ?? [])].sort(),
@@ -94,6 +95,11 @@ export class BrainSections extends EventTarget {
   get active() {
     return this.state.mode !== 'off';
   }
+
+  /** Whether a cut can be drawn without first downloading the tissue envelopes it caps. */
+  get solidsReady() {
+    return Boolean(this.tissues.solidsReady);
+  }
   get frame() {
     return centeredFrame(this.active ? this.state.mode : 'axial', this.state.crosshair, this.state);
   }
@@ -119,37 +125,53 @@ export class BrainSections extends EventTarget {
     return Math.max(...this.coordinateBounds.flat().map(Math.abs));
   }
 
+  /**
+   * Where the plane may sit along its normal. An oblique crosshair is the
+   * plane's foot on the normal, so the range also stops where that point would
+   * leave the coordinate limit: every offset in it is then a legal cut.
+   */
   get offsetRange() {
     if (this.state.mode === 'oblique') {
-      return projectBounds(this.coordinateBounds, this.frame.normal);
+      const { normal } = this.frame;
+      const [minimum, maximum] = projectBounds(this.coordinateBounds, normal);
+      // A hair inside, so float rounding cannot put the foot a fraction past the limit.
+      const reach = this.coordinateLimit / Math.max(Math.abs(normal.x), Math.abs(normal.y), Math.abs(normal.z))
+        * (1 - 1e-12);
+      return [Math.max(minimum, -reach), Math.min(maximum, reach)];
     }
     const axis = { sagittal: 0, coronal: 1, axial: 2, off: 2 }[this.state.mode];
     return this.coordinateBounds.map(bound => bound[axis]);
   }
 
-  /** Load native MRI only when the separate reference views are requested. */
+  /**
+   * Load the linked MRI views: the T1 the cut and MRI colour already hold,
+   * plus the segmentation, which only these views read.
+   */
   async load() {
     if (this.disposed) throw new Error('BrainSections is disposed.');
     if (this.volumes) return;
     if (this.pending) return this.pending;
     this.state.status = 'loading';
     this.emit();
-    this.pending = loadVolumes(this.metadataUrl)
-      .then((volumes) => {
-        if (this.disposed) throw new Error('BrainSections disposed during loading.');
-        this.volumes = volumes;
-        const d = volumes.metadata.display;
-        this.display = {
-          fieldOfView: d.field_of_view_mm,
-          size: d.texture_size,
-          windowCenter: d.window_center,
-          windowWidth: d.window_width,
-        };
-        this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
-        this.state.status = 'ready';
-        this.state.error = null;
-        this.emit();
-      })
+    this.pending = (async () => {
+      const metadata = await this.tissues.loadVolumeMetadata();
+      const [anatomy, segmentation] = await Promise.all([
+        this.tissues.loadMri(), loadVolume(metadata.segmentation, this.metadataUrl),
+      ]);
+      if (this.disposed) throw new Error('BrainSections disposed during loading.');
+      this.volumes = { metadata, mri: anatomy.volume, segmentation };
+      const d = metadata.display;
+      this.display = {
+        fieldOfView: d.field_of_view_mm,
+        size: d.texture_size,
+        windowCenter: d.window_center,
+        windowWidth: d.window_width,
+      };
+      this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
+      this.state.status = 'ready';
+      this.state.error = null;
+      this.emit();
+    })()
       .catch((error) => {
         this.report(error);
         throw error;
@@ -178,24 +200,37 @@ export class BrainSections extends EventTarget {
     if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
   }
 
-  async setSurfaceColor(mode) {
+  /**
+   * Colour the surface. `current` is the scene command's intent check: a later
+   * command, or a later colour, overtakes this one, and the download it waited
+   * on then lands without changing the colour.
+   */
+  async setSurfaceColor(mode, current = () => true) {
     const request = ++this.appearanceRequest;
+    const live = () => request === this.appearanceRequest && !this.disposed && current();
+    // Overtaken by another command rather than another colour, the loading this began is over.
+    const settle = () => {
+      if (request !== this.appearanceRequest || this.disposed || this.state.status !== 'loading') return;
+      this.state.status = 'ready';
+      this.emit();
+    };
     if (mode === 'mri') {
       this.state.status = 'loading';
       this.emit();
       try {
-        await this.tissues.loadAnatomy();
+        await this.tissues.loadMri();
       } catch (error) {
-        if (request === this.appearanceRequest && !this.disposed) this.report(error);
+        if (live()) this.report(error);
+        else settle();
         throw error;
       }
-      if (request !== this.appearanceRequest || this.disposed) return;
+      if (!live()) return settle();
       if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
       this.model.setMriAnatomy(this.tissues.anatomy);
     }
     if (mode === 'functional') {
       await this.model.loadGlassSolids(this.metadataUrl);
-      if (request !== this.appearanceRequest || this.disposed) return;
+      if (!live()) return settle();
     }
     this.model.setSurfaceColor(mode);
     this.state.status = 'ready';
@@ -422,9 +457,10 @@ export class BrainSections extends EventTarget {
       : null;
   }
 
+  /** The status carries a code for the app to word: `asset-fetch`, `asset-updated` or `cut-failed`. */
   report(error) {
     this.state.status = 'error';
-    this.state.error = error.message;
+    this.state.error = error.code === 'asset-fetch' || error.code === 'asset-updated' ? error.code : 'cut-failed';
     console.error(error);
     this.emit();
   }

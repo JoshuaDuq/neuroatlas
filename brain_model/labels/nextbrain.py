@@ -8,13 +8,15 @@ import nibabel as nib
 import numpy as np
 from nibabel.affines import apply_affine
 
-from ..sources import ROOT, sha256
+from ..sources import ROOT, declares, sha256
 from .volumes import LabelGrid, encode_cropped_array, offset_by, place_crop
 
 ATLAS_ID = "nextbrain"
 
 # How an anatomy's volume was made, which decides what its limitations say,
-# and the script whose recorded provenance must agree.
+# and the script whose recorded provenance must agree. The MNI152 warp's
+# script was removed in 967fed9; `git show 967fed9^:scripts/warp_nextbrain.py`
+# recovers it, and fsaverage's recorded procedure still names it.
 SUBJECT_SEGMENTATION = "subject-segmentation"
 MNI152_WARP = "mni152-warp"
 PROCEDURE_SCRIPTS = {
@@ -32,12 +34,6 @@ BACKGROUND = 0
 # for both hemispheres, so every published cortical name contains this fragment
 # whichever side it describes. It names a label block, not a side.
 VESTIGIAL_CORTEX_PREFIX = re.compile(r"^ctx-[lr]h-")
-
-# Placement check: labelled NextBrain voxels that fall inside aseg's labelled
-# volume. Measured 0.98 for a subject segmentation and 0.93 for the MNI warps;
-# a volume placed by its own header's tkregister matrix scores 0.58.
-REGISTRATION_SAMPLES = 20000
-MINIMUM_SHARE_INSIDE_ASEG = 0.9
 
 
 def hemisphere_of(index):
@@ -81,10 +77,8 @@ def paths(config):
     return directory / settings["volume"], directory / settings["lut"]
 
 
-def is_available(config):
-    if ATLAS_ID not in config:
-        return False
-    return all(path.exists() for path in paths(config))
+def is_declared(config):
+    return declares(config, "nextbrain")
 
 
 def verify_procedure(config, provenance):
@@ -111,8 +105,9 @@ def scanner_to_surface(config):
 def share_inside_aseg(config, grid):
     aseg = nib.load(config["source_directory"] / "mri/aseg.mgz")
     labelled = np.flatnonzero(grid.labels.ravel() != BACKGROUND)
+    samples = config[ATLAS_ID]["registration_samples"]
     picked = np.random.default_rng(0).choice(
-        labelled, min(REGISTRATION_SAMPLES, len(labelled)), replace=False
+        labelled, min(samples, len(labelled)), replace=False
     )
     points = apply_affine(grid.voxel_to_surface, np.column_stack(
         np.unravel_index(picked, grid.labels.shape)
@@ -146,7 +141,7 @@ def load(config):
         [float(x) for x in image.header.get_zooms()[:3]],
     )
     share = share_inside_aseg(config, grid)
-    if share < MINIMUM_SHARE_INSIDE_ASEG:
+    if share < config[ATLAS_ID]["minimum_share_inside_aseg"]:
         raise ValueError(
             f"NextBrain volume is not registered to this brain: only {share:.0%} of "
             "its labelled voxels fall inside aseg"
@@ -185,7 +180,7 @@ def cortical_network_compositions(config):
 
     from ..layers import networks as yeo
 
-    if not yeo.is_available(config):
+    if not yeo.is_declared(config):
         return {}
     grid, table = load(config)
     labels = grid.labels
@@ -206,7 +201,7 @@ def cortical_network_compositions(config):
         annot_labels, colors, names = read_annot(path)
         if len(annot_labels) != len(pial):
             raise ValueError(f"{path.name} does not describe this surface's vertices")
-        yeo.verify_palette(colors, names)
+        yeo.verify_palette(colors, names, config["networks"]["maximum_color_jitter"])
         network_ids = yeo.network_indices(annot_labels, names)
         mask = np.isin(labels, ctx_ids)
         coordinates = np.argwhere(mask)
@@ -253,11 +248,15 @@ def build_regions(config, skip=()):
     return regions
 
 
-def cut_block(grid, spacing_mm):
+def block_size(source_mm, target_mm):
     """Whole source voxels per cut-label voxel edge: the block nearest the target."""
+    return max(1, round(target_mm / source_mm))
+
+
+def cut_block(grid, spacing_mm):
     if not np.allclose(grid.spacing_mm, grid.spacing_mm[0], rtol=1e-4):
         raise ValueError("Cut labels need an isotropic NextBrain grid.")
-    return max(1, round(spacing_mm / grid.spacing_mm[0]))
+    return block_size(grid.spacing_mm[0], spacing_mm)
 
 
 def volume_counts(labels):

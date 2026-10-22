@@ -1,9 +1,8 @@
-import { fetchPublished } from './published-assets.js';
+import { fetchAsset } from './asset-cache.js';
 
+/** The anatomy index, taken from the head script's early request when it started one. */
 export async function loadAnatomies(url) {
-  const response = await fetchPublished(url);
-  if (!response.ok) throw new Error(`Anatomy index request failed: HTTP ${response.status}`);
-  return response.json();
+  return JSON.parse(new TextDecoder().decode(await fetchAsset(url)));
 }
 
 /** An omitted choice uses the index default; an explicit choice must be published. */

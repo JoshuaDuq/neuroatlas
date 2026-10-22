@@ -19,17 +19,17 @@ import {
 import {
   clippingPlane, rasToWorld, worldToRas, worldToVoxelMatrix,
 } from '../slices/coordinates.js';
-import { fetchPublished } from '../model/published-assets.js';
+import { fetchAsset } from '../model/asset-cache.js';
 import { loadVolume } from '../slices/volume.js';
 import { codeIndex, liftFor } from './highlight.js';
 import {
-  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesFunctionalColors, usesNetworkColors,
+  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesDomainColors, usesFunctionalColors,
+  usesNetworkColors,
 } from './palette.js';
 import { createCutMaterial } from './shader.js';
 import { SolidSections } from './solid-sections.js';
 import {
-  BANDS, addSolidSources, indexLabels, loadRibbonSources, loadSolidSources,
-  loadStructureSources, loadSupplementalSources, paintSolids,
+  BANDS, addSolidSources, enclosingFirst, indexLabels, paintSolids, solidSource,
 } from './solid-assets.js';
 import { createWhiteMatter } from './white-matter.js';
 import {
@@ -37,6 +37,8 @@ import {
 } from '../render/mri-material.js';
 import { token } from '../state/theme.js';
 import { createCapLabels, updateCapLabels } from './cap-labels.js';
+
+const readJson = async url => JSON.parse(new TextDecoder().decode(await fetchAsset(url)));
 
 const _poseU = new Vector3();
 const _poseV = new Vector3();
@@ -63,13 +65,15 @@ export class TissueSections {
     this.pending = new Map();
     this.metadata = null;
     this.metadataLoading = null;
+    this.volumeMetadata = null;
+    this.volumeMetadataLoading = null;
     this.current = null;
     this.disposed = false;
     this.anatomy = null;
-    this.anatomyLoading = null;
-    this.envelopes = [];
+    this.mriLoading = null;
+    this.solidsReady = false;
+    this.solidsLoading = null;
     this.details = new Map();
-    this.detailsLoading = new Map();
     this.whiteMatter = null;
     this.solids = new SolidSections();
     this.group.add(this.solids.group);
@@ -77,17 +81,15 @@ export class TissueSections {
 
   /** What a cut label's colour is looked up in: its region and each published network palette. */
   get paletteLookup() {
-    const { regions, manifest, cabNp, functionalRegions } = this.model;
-    return { regions, networks: manifest.networks, cabNp, functional: functionalRegions };
+    const { regions, manifest, cabNp, functionalRegions, domains } = this.model;
+    return { regions, networks: manifest.networks, cabNp, functional: functionalRegions, domains };
   }
 
   async loadMetadata() {
     if (this.metadata) return;
     if (this.metadataLoading) return this.metadataLoading;
     this.metadataLoading = (async () => {
-      const response = await fetchPublished(new URL('tissue-labels.json', this.baseUrl));
-      if (!response.ok) throw new Error(`Tissue metadata request failed: HTTP ${response.status}`);
-      const metadata = await response.json();
+      const metadata = await readJson(new URL('tissue-labels.json', this.baseUrl));
       if (metadata.schema_version !== 1) throw new Error('Unsupported tissue label schema.');
       this.metadata = metadata;
     })().finally(() => {
@@ -96,63 +98,86 @@ export class TissueSections {
     return this.metadataLoading;
   }
 
-  async loadAnatomy() {
-    if (this.anatomyLoading) return this.anatomyLoading;
-    if (this.anatomy) return;
-    this.anatomyLoading = (async () => {
-      await this.loadMetadata();
-      const url = new URL('volumes.json', this.baseUrl);
-      const response = await fetchPublished(url);
-      if (!response.ok) throw new Error(`MRI metadata request failed: HTTP ${response.status}`);
-      const metadata = await response.json();
+  /** `volumes.json`: the MRI and segmentation headers and the default MRI window. */
+  async loadVolumeMetadata() {
+    if (this.volumeMetadata) return this.volumeMetadata;
+    if (this.volumeMetadataLoading) return this.volumeMetadataLoading;
+    this.volumeMetadataLoading = (async () => {
+      const metadata = await readJson(new URL('volumes.json', this.baseUrl));
       if (metadata.schema_version !== 1) throw new Error('Unsupported MRI schema.');
-      const parcels = this.metadata.white_matter;
-      const [volume, sources, parcelVolume, supplemental] = await Promise.all([
-        loadVolume(metadata.mri, url),
-        loadSolidSources(this.model.manifest, this.baseUrl),
-        parcels ? loadVolume(parcels, this.baseUrl) : null,
-        loadSupplementalSources(this.model.manifest, this.baseUrl),
-      ]);
-      if (this.disposed) {
-        for (const source of [...sources, ...supplemental]) {
-          source.geometry.dispose();
-          source.material.dispose();
-        }
-        throw new Error('Tissue sections disposed during MRI loading.');
-      }
-      this.anatomy = this.createAnatomy(volume);
-      this.setWindow(metadata.display.window_center, metadata.display.window_width);
-      this.whiteMatter = parcelVolume && createWhiteMatter(parcels, parcelVolume);
-      this.envelopes = sources;
-      addSolidSources(
-        this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.envelope,
-        this.whiteMatter,
-      );
-      addSolidSources(this.solids, supplemental, this.anatomy,
-        this.model.manifest.appearance, BANDS.structure);
-    })().finally(() => { this.anatomyLoading = null; });
-    return this.anatomyLoading;
+      this.volumeMetadata = metadata;
+      return metadata;
+    })().finally(() => { this.volumeMetadataLoading = null; });
+    return this.volumeMetadataLoading;
   }
 
+  /**
+   * The native T1 on the GPU. MRI surface colour needs nothing more, and the
+   * linked MRI views read the same volume rather than downloading it again.
+   */
+  async loadMri() {
+    if (this.anatomy) return this.anatomy;
+    if (this.mriLoading) return this.mriLoading;
+    this.mriLoading = (async () => {
+      const metadata = await this.loadVolumeMetadata();
+      const volume = await loadVolume(metadata.mri, new URL('volumes.json', this.baseUrl));
+      if (this.disposed) throw new Error('Tissue sections disposed during MRI loading.');
+      this.anatomy = this.createAnatomy(volume);
+      this.setWindow(metadata.display.window_center, metadata.display.window_width);
+      return this.anatomy;
+    })().finally(() => { this.mriLoading = null; });
+    return this.mriLoading;
+  }
+
+  /**
+   * The MRI, the tissue envelopes every cut caps and the cord, built from the
+   * model's own meshes; the first cut is what downloads the envelopes and cord
+   * when nothing has yet.
+   */
+  async loadAnatomy() {
+    if (this.solidsReady) return;
+    if (this.solidsLoading) return this.solidsLoading;
+    this.solidsLoading = (async () => {
+      await this.loadMetadata();
+      const parcels = this.metadata.white_matter;
+      const cord = this.model.manifest.supplemental_layers?.some(layer => layer.id === 'zanatomy');
+      const [, envelopes, parcelVolume] = await Promise.all([
+        this.loadMri(),
+        this.model.ensureEnvelopes(),
+        parcels ? loadVolume(parcels, this.baseUrl) : null,
+        cord ? this.model.ensureSpinalCord() : null,
+      ]);
+      if (this.disposed) throw new Error('Tissue sections disposed during MRI loading.');
+      this.whiteMatter = parcelVolume && createWhiteMatter(parcels, parcelVolume);
+      addSolidSources(
+        this.solids, envelopes.map(mesh => solidSource(mesh)), this.anatomy,
+        this.model.manifest.appearance, BANDS.envelope, this.whiteMatter,
+      );
+      if (cord) {
+        const meshes = this.model.manifest.supplemental_layers.flatMap(layer => this.model.layers.get(layer.id).meshes);
+        const sources = enclosingFirst(meshes.map(mesh => solidSource(mesh, { ...mesh.userData },
+          this.model.sourceColors.get(mesh))));
+        addSolidSources(this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.structure);
+      }
+      this.solidsReady = true;
+    })().finally(() => { this.solidsLoading = null; });
+    return this.solidsLoading;
+  }
+
+  /** Whether the cut caps the detail level the model now shows. */
   hasDetail(detail) {
     return this.details.has(detail);
   }
 
   /** Cap the internal anatomy the viewer is showing; both levels segment the same. */
-  async loadDetail(detail) {
+  addDetail(detail) {
     if (this.details.has(detail)) return;
-    if (this.detailsLoading.has(detail)) return this.detailsLoading.get(detail);
-    const pending = loadStructureSources(this.model.manifest, this.baseUrl, detail)
-      .then(sources => {
-        if (this.disposed) throw new Error('Tissue sections disposed during loading.');
-        addSolidSources(
-          this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.structure,
-        );
-        this.details.set(detail, sources.length);
-      })
-      .finally(() => this.detailsLoading.delete(detail));
-    this.detailsLoading.set(detail, pending);
-    return pending;
+    const layer = this.model.layers.get(detail);
+    if (!layer) throw new Error(`Detail level has not loaded: ${detail}`);
+    const sources = enclosingFirst(layer.meshes.map(mesh => solidSource(
+      mesh, { ...mesh.userData, detail }, this.model.sourceColors.get(mesh))));
+    addSolidSources(this.solids, sources, this.anatomy, this.model.manifest.appearance, BANDS.structure);
+    this.details.set(detail, sources.length);
   }
 
   createAnatomy(volume) {
@@ -192,21 +217,20 @@ export class TissueSections {
   async load(atlas) {
     if (this.disposed) throw new Error('Tissue sections disposed.');
     await Promise.all([this.loadMetadata(), this.loadAnatomy()]);
-    await this.loadDetail(this.model.state.detail);
+    this.addDetail(this.model.state.detail);
     if (this.layers.has(atlas)) return;
     if (this.pending.has(atlas)) return this.pending.get(atlas);
     const metadata = this.metadata.atlases[atlas];
     if (!metadata) throw new Error(`Missing tissue atlas: ${atlas}`);
     const pending = Promise.all([
       loadVolume(metadata, this.baseUrl),
-      loadRibbonSources(this.model.manifest, this.baseUrl, atlas, this.envelopes),
+      this.model.ensureRibbonWedges(atlas, this.baseUrl),
     ])
       .then(([volume, wedges]) => {
         if (this.disposed) throw new Error('Tissue sections disposed during loading.');
         const layer = this.createLayer(metadata, volume);
-        addSolidSources(
-          this.solids, wedges, this.anatomy, this.model.manifest.appearance, BANDS.ribbon,
-        );
+        addSolidSources(this.solids, wedges.map(wedge => solidSource(wedge)), this.anatomy,
+          this.model.manifest.appearance, BANDS.ribbon);
         layer.wedged = wedges.length > 0;
         this.layers.set(atlas, layer);
       })
@@ -284,7 +308,7 @@ export class TissueSections {
       const constituents = state.internalConstituents
         ? [...state.internalConstituents].sort().join(',') : '';
       const paintKey = [
-        state.surfaceColor, state.functionalLevel, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
+        state.surfaceColor, state.functionalLevel, state.domain, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
         state.isolatedRegion, state.internalVisible, state.internalSystem, state.spinalCordVisible,
         state.detail, state.cutAtlas, state.cutActive, constituents,
         atlas, layer.wedged, this.whiteMatter?.active ?? false,
@@ -316,12 +340,13 @@ export class TissueSections {
     // a published palette — atlas or network — that modulation would distort
     // the datum, and the cut would no longer match its key.
     const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state)
-      || usesFunctionalColors(state);
+      || usesFunctionalColors(state) || usesDomainColors(state);
     layer.uniforms.tissueVariation.value = published
       ? 0 : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
       state.surfaceColor,
       state.functionalLevel,
+      state.domain,
       state.hemisphere,
       state.cortexVisible,
       state.cortexOpacity,

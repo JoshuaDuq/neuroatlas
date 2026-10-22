@@ -6,28 +6,38 @@ import json
 
 import nibabel as nib
 import numpy as np
+from nibabel.freesurfer.io import read_annot, read_geometry
+from scipy.spatial import cKDTree
 
-from .labels.volumes import display_window, offset_by, place_crop
-from .sources import read_color_table, sha256
+from .labels.tissue_labels import describe_source_label
+from .labels.volumes import display_window, offset_by, place_crop, validate_same_grid
+from .sources import HEMISPHERES, read_color_table, sha256
+
+# FreeSurfer's ctx_lh_ / ctx_rh_ Destrieux blocks and the ribbon label of each
+# hemisphere's cortex, as the build restricts the HCP projection to them.
+CORTEX = {"lh": (11100, 3), "rh": (12100, 42)}
 
 
-def validate_record(config, record, source_name):
+def decode_record(config, record, name):
+    """The published grid, after both of its recorded checksums agree."""
     path = config["output_directory"] / record["file"]
     if record["compression"] != "gzip" or record["order"] != "F":
         raise ValueError("Unsupported volume storage contract.")
     if sha256(path) != record["sha256"]:
-        raise ValueError(f"Compressed volume checksum mismatch: {source_name}")
+        raise ValueError(f"Compressed volume checksum mismatch: {name}")
     payload = gzip.decompress(path.read_bytes())
     if (
         len(payload) != record["byte_length"]
         or hashlib.sha256(payload).hexdigest() != record["decoded_sha256"]
     ):
-        raise ValueError(f"Decoded volume checksum mismatch: {source_name}")
-    restored = np.frombuffer(payload, dtype=record["dtype"]).reshape(
+        raise ValueError(f"Decoded volume checksum mismatch: {name}")
+    return np.frombuffer(payload, dtype=record["dtype"]).reshape(
         record["shape"], order="F"
     )
-    image = nib.load(config["source_directory"] / "mri" / f"{source_name}.mgz")
-    source = np.asarray(image.dataobj)
+
+
+def on_source_grid(record, restored, image, name):
+    """Put a published grid back on its source grid, checking where it says it goes."""
     grid = image.header.get_vox2ras_tkr()
     cropped = "crop_corner_voxel" in record
     if cropped:
@@ -36,13 +46,21 @@ def validate_record(config, record, source_name):
         # voxel was carried, nothing outside the box was labelled, and the
         # affine puts the box back exactly where it was cut from.
         corner = np.array(record["crop_corner_voxel"], int)
-        if list(source.shape) != record["source_shape"]:
-            raise ValueError(f"Crop records the wrong source shape: {source_name}")
+        if list(image.shape) != record["source_shape"]:
+            raise ValueError(f"Crop records the wrong source shape: {name}")
         if not np.allclose(record["voxel_to_surface_ras_mm"], grid @ offset_by(corner)):
-            raise ValueError(f"Crop affine does not place the box: {source_name}")
-        restored = place_crop(record, restored, source.shape)
+            raise ValueError(f"Crop affine does not place the box: {name}")
+        restored = place_crop(record, restored, image.shape)
     elif not np.array_equal(record["voxel_to_surface_ras_mm"], grid):
-        raise ValueError(f"Source affine mismatch: {source_name}")
+        raise ValueError(f"Source affine mismatch: {name}")
+    return restored, cropped
+
+
+def validate_record(config, record, source_name):
+    restored = decode_record(config, record, source_name)
+    image = nib.load(config["source_directory"] / "mri" / f"{source_name}.mgz")
+    source = np.asarray(image.dataobj)
+    restored, cropped = on_source_grid(record, restored, image, source_name)
     if not np.array_equal(restored, source):
         raise ValueError(f"Source voxel mismatch: {source_name}")
     if not np.array_equal(record["voxel_spacing_mm"], image.header.get_zooms()[:3]):
@@ -82,3 +100,119 @@ def validate_volumes(config):
     if metadata["display"] != {**config["sections"], **window}:
         raise ValueError("Volume display metadata differs from build configuration.")
     return report
+
+
+def published_codes(config, record, image, name):
+    restored, _ = on_source_grid(record, decode_record(config, record, name), image, name)
+    if not np.array_equal(record["voxel_spacing_mm"], image.header.get_zooms()[:3]):
+        raise ValueError(f"Source voxel spacing mismatch: {name}")
+    if restored.max() >= len(record["labels"]):
+        raise ValueError(f"{name} holds a code its label table does not")
+    return restored
+
+
+def hcp_labels(annotation, hemisphere, regions):
+    """The label table rows the HCP cut appends for one hemisphere's annotation."""
+    _, colors, names = annotation
+    published = {
+        region["source_label_id"]: region
+        for region in regions
+        if region["atlas"] == "hcp-mmp" and region["hemisphere"] == hemisphere
+    }
+    return [
+        {
+            "source_label_id": label,
+            "name": name.decode(),
+            "color": colors[label, :3].tolist(),
+            "hemisphere": hemisphere,
+            "kind": "cortex",
+            "region_id": published[label]["id"]
+            if published[label]["kind"] == "cortex"
+            else None,
+        }
+        for label, name in enumerate(names)
+    ]
+
+
+def validate_tissue_volumes(config, manifest, tissues):
+    """The published cut-label grids, decoded and recomputed from their sources.
+
+    Destrieux must be aparc.a2009s+aseg itself. HCP-MMP must equal it off the
+    cortex, and on each hemisphere's cortex hold the projection the build
+    documents: the HCP label of the nearest pial or white vertex inside the
+    native gray ribbon, and the hemisphere's unlabelled code elsewhere.
+    """
+    directory = config["source_directory"]
+    source_path = directory / "mri/aparc.a2009s+aseg.mgz"
+    if tissues["source_sha256"] != sha256(source_path):
+        raise ValueError("Tissue labels were built from another aparc.a2009s+aseg.mgz")
+    image = nib.load(source_path)
+    source = np.asarray(image.dataobj)
+    table = read_color_table()
+    values, inverse = np.unique(source, return_inverse=True)
+    codes = inverse.reshape(source.shape)
+    labels = [describe_source_label(int(v), table, manifest["regions"]) for v in values]
+
+    destrieux = tissues["atlases"]["destrieux"]
+    if destrieux["labels"] != labels:
+        raise ValueError("Destrieux cut labels differ from the source label table")
+    if not np.array_equal(published_codes(config, destrieux, image, "destrieux"), codes):
+        raise ValueError("Destrieux cut volume differs from aparc.a2009s+aseg.mgz")
+
+    hcp = tissues["atlases"]["hcp-mmp"]
+    ribbon_image = nib.load(directory / "mri/ribbon.mgz")
+    validate_same_grid(ribbon_image, image)
+    ribbon = np.asarray(ribbon_image.dataobj)
+    tkr = image.header.get_vox2ras_tkr()
+    expected = codes.copy()
+    cortex = np.zeros(source.shape, bool)
+    counts = {}
+    for prefix, hemisphere in HEMISPHERES.items():
+        lower, ribbon_label = CORTEX[prefix]
+        annotation = read_annot(directory / "label" / f"{prefix}.HCPMMP1.annot")
+        first = len(labels)
+        labels += hcp_labels(annotation, hemisphere, manifest["regions"])
+        unlabelled = first + next(
+            i for i, row in enumerate(labels[first:]) if row["region_id"] is None
+        )
+        mask = (source > lower) & (source < lower + 100)
+        inside = mask & (ribbon == ribbon_label)
+        voxels = np.argwhere(inside)
+        pial, _ = read_geometry(directory / "surf" / f"{prefix}.pial")
+        white, _ = read_geometry(directory / "surf" / f"{prefix}.white")
+        nearest = cKDTree(np.vstack([pial, white])).query(
+            nib.affines.apply_affine(tkr, voxels)
+        )[1] % len(pial)
+        expected[mask] = unlabelled
+        expected[tuple(voxels.T)] = first + annotation[0][nearest]
+        cortex |= mask
+        counts[hemisphere] = {
+            "ribbon_voxels": len(voxels),
+            "cortical_voxels_outside_ribbon": int(np.count_nonzero(mask & ~inside)),
+        }
+    if hcp["labels"] != labels:
+        raise ValueError("HCP-MMP cut labels differ from the source label tables")
+    published = published_codes(config, hcp, image, "hcp-mmp")
+    if not np.array_equal(published[~cortex], codes[~cortex]):
+        raise ValueError("HCP-MMP cut volume relabels voxels outside the cortex")
+    if not np.array_equal(published[cortex], expected[cortex]):
+        raise ValueError("HCP-MMP cortical voxels differ from their nearest-vertex labels")
+    return {
+        "source_sha256": tissues["source_sha256"],
+        "destrieux": {
+            "file": destrieux["file"],
+            "sha256": destrieux["sha256"],
+            "decoded_sha256": destrieux["decoded_sha256"],
+            "identical_to_source_labels": True,
+            "label_count": len(destrieux["labels"]),
+        },
+        "hcp-mmp": {
+            "file": hcp["file"],
+            "sha256": hcp["sha256"],
+            "decoded_sha256": hcp["decoded_sha256"],
+            "non_cortical_voxels_identical_to_destrieux": True,
+            "cortical_voxels_match_nearest_vertex_labels": True,
+            "hemispheres": counts,
+            "label_count": len(hcp["labels"]),
+        },
+    }

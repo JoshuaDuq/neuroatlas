@@ -379,17 +379,6 @@
       }
     ]
   },
-  "spinal_cord": {
-    "source_shape_preserved": true,
-    "watertight": true,
-    "mri_registered": false,
-    "structure_count": 35,
-    "region_count": 58,
-    "triangle_count": 277236,
-    "volume_method": "Enclosed volume of the published closed surface",
-    "placement": "Rigid translation onto the brainstem; no rotation or scaling",
-    "division": "Mirrored objects publish their two disconnected halves; no triangle is cut"
-  },
   "solid_envelopes": {
     "file": "tissue-envelopes.glb",
     "sha256": "7a63f22b773ad8e538a5210fc8b345a0739c232d1596565902b66d2b7c680743",
@@ -466,6 +455,22 @@
         "section-13": 16,
         "section-14": 16
       }
+    }
+  },
+  "neuropsych_domains": {
+    "assigned_areas": 235,
+    "areas_per_domain": {
+      "executive": 17,
+      "working-memory": 79,
+      "long-term-memory": 34,
+      "language": 96,
+      "attention": 112,
+      "visuospatial": 47,
+      "social-cognition": 17,
+      "visual-perception": 139,
+      "motor": 116,
+      "auditory-perception": 97,
+      "emotion": 59
     }
   },
   "nextbrain_structures": {
@@ -3729,6 +3734,183 @@
         1.0,
         1.0
       ]
+    }
+  },
+  "tissue_volumes": {
+    "source_sha256": "927027413577c3674f56359f97b7a6312623c1f9b19da993940c047c76b3a6d2",
+    "destrieux": {
+      "file": "tissues-destrieux.volume",
+      "sha256": "5f9a2b5c06c0a7275a7e6b0b33a0b495fc6b438455ae3cea98aade9f29be525c",
+      "decoded_sha256": "0614764a246343069673b806a8550ca1924922dc5c357fabed8993c3718a66e0",
+      "identical_to_source_labels": true,
+      "label_count": 185
+    },
+    "hcp-mmp": {
+      "file": "tissues-hcp-mmp.volume",
+      "sha256": "bb5525714ddbb2b59386c9272403a991711da7d27af3273646b7000590cd5cae",
+      "decoded_sha256": "fc0685a6a1b76049ccb98d1201b0f7a7ad97651a1ebd958aff0f20f368f895f3",
+      "non_cortical_voxels_identical_to_destrieux": true,
+      "cortical_voxels_match_nearest_vertex_labels": true,
+      "hemispheres": {
+        "left": {
+          "ribbon_voxels": 261010,
+          "cortical_voxels_outside_ribbon": 223
+        },
+        "right": {
+          "ribbon_voxels": 261072,
+          "cortical_voxels_outside_ribbon": 304
+        }
+      },
+      "label_count": 547
+    }
+  },
+  "transforms": {
+    "projected_annotations": {
+      "HCPMMP1": {
+        "left": {
+          "target_vertices": 123524,
+          "sha256": "412d938ccd1800fc9f1a59fe1838734aca5984b296dc0336488828e15c172e68",
+          "byte_identical_to_rederivation": true
+        },
+        "right": {
+          "target_vertices": 130053,
+          "sha256": "2b902c85c9a854d51cdddd68669a895e9b444ae08a68216613570acfb892fd59",
+          "byte_identical_to_rederivation": true
+        }
+      },
+      "Schaefer2018_400Parcels_7Networks_order": {
+        "left": {
+          "target_vertices": 123524,
+          "sha256": "74465caa7ffc9b47c9f9f139508b569d5988d88df12df4ceac3cddac7ab3b605",
+          "byte_identical_to_rederivation": true
+        },
+        "right": {
+          "target_vertices": 130053,
+          "sha256": "37bca966bdd631a3643cf6d3d8bd96071bf758f69ce27e2921ee37c5cc45de08",
+          "byte_identical_to_rederivation": true
+        }
+      }
+    },
+    "diffusion_space": {
+      "file": "public/diffusion/snail-subject-1/surface-space.json",
+      "sha256": "457ca1f00c5cccb2a0659aa36c9e791ff74c56156d2ad779512ef03ae080e11d",
+      "scanner_ras_to_surface_ras": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -7.4461669921875
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -23.5394287109375
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -46.64009094238281
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "translation_equals_minus_c_ras": true,
+      "anchors": 3,
+      "maximum_difference_mm": 0.0
+    }
+  },
+  "layers": [
+    "networks",
+    "nextbrain",
+    "white_matter"
+  ],
+  "published_files": [
+    "aseg.volume",
+    "atlas-comparison.json",
+    "atlas-overlaps.glb",
+    "cab-np.json",
+    "cortex-destrieux.glb",
+    "cortex-hcp-mmp.glb",
+    "functional-regions.json",
+    "learning.glb",
+    "manifest.json",
+    "mri.volume",
+    "neuropsych-domains.json",
+    "nextbrain.glb",
+    "ribbon-destrieux.labels",
+    "ribbon-hcp-mmp.labels",
+    "structures.glb",
+    "tissue-envelopes.glb",
+    "tissue-labels.json",
+    "tissues-destrieux.volume",
+    "tissues-hcp-mmp.volume",
+    "tissues-nextbrain.volume",
+    "volumes.json",
+    "white-matter.volume"
+  ],
+  "segmentation_agreement": {
+    "method": "Dice of each NextBrain learning-unit union with the same structure's aseg label, aseg resampled onto the NextBrain grid by nearest neighbour",
+    "aseg_sha256": "9fe5ffdefc49dd2a41bcd858e5582591cc78c45d1312fcb3ac98b66b28068377",
+    "aseg_labels": {
+      "caudate": {
+        "left": 11,
+        "right": 50
+      },
+      "putamen": {
+        "left": 12,
+        "right": 51
+      },
+      "thalamus": {
+        "left": 10,
+        "right": 49
+      },
+      "hippocampus": {
+        "left": 17,
+        "right": 53
+      },
+      "amygdala": {
+        "left": 18,
+        "right": 54
+      }
+    },
+    "maximum_nearest_neighbour_shift_mm": 0.6928247898062719,
+    "minimum_dice": 0.8,
+    "dice": {
+      "caudate": {
+        "left": 0.8172863471684333,
+        "right": 0.8031341226078494
+      },
+      "putamen": {
+        "left": 0.8982285945799946,
+        "right": 0.8779070110179034
+      },
+      "thalamus": {
+        "left": 0.8865000198704447,
+        "right": 0.8772855098425788
+      },
+      "hippocampus": {
+        "left": 0.8451976603647079,
+        "right": 0.8445173401088378
+      },
+      "amygdala": {
+        "left": 0.8289515030899759,
+        "right": 0.8202335504154502
+      }
+    }
+  },
+  "reconstruction_quality": {
+    "source": "data/snail/stats/aseg.stats",
+    "sha256": "bd0a456ede75de475eb2abe120300a17f30d785dd0540f7230def159080d6f06",
+    "surface_holes": {
+      "left": 38,
+      "right": 43,
+      "total": 81
     }
   }
 }

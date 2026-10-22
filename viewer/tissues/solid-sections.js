@@ -14,6 +14,8 @@ const BOUNDS_SIZE = new Vector3();
 const PLANE_CENTER = new Vector3();
 const PLANE_ROTATION = new Quaternion();
 const SECTION_POINT = new Vector3();
+const INSIDE_NORMALS = new Matrix3();
+const INSIDE_NORMAL = new Vector3();
 
 function clearStencil(renderer) {
   renderer.clearStencil();
@@ -46,6 +48,9 @@ function boundDrawn(geometry, vertexCount) {
   sphere.radius = radius;
 }
 
+/** Every solid's inside test reads both faces: the exit from inside a closed surface is a back face. */
+const PROBE = new MeshBasicMaterial({ side: DoubleSide });
+
 function stencilMaterial(plane, side, operation) {
   return new MeshBasicMaterial({
     side, clippingPlanes: [plane], colorWrite: false,
@@ -55,7 +60,12 @@ function stencilMaterial(plane, side, operation) {
   });
 }
 
-/** Cap closed anatomical surfaces using Three.js's winding-count stencil method. */
+/**
+ * Cap closed anatomical surfaces using Three.js's winding-count stencil method.
+ *
+ * A source's geometry and BVH stay its owner's: the model's meshes are shared
+ * with the cut, not copied, so they are never disposed here.
+ */
 export class SolidSections {
   constructor() {
     this.group = new Group();
@@ -64,8 +74,7 @@ export class SolidSections {
     this.geometry = new PlaneGeometry(1, 1);
     this.solids = [];
     this.bounds = new Box3();
-    this.probe = new Raycaster();
-    this.probe.firstHitOnly = true;
+    this.insideRay = new Raycaster();
     this.nextSolidId = 1;
     this.generation = 0;
     this.worker = null;
@@ -77,8 +86,15 @@ export class SolidSections {
 
   add(source, material, band) {
     source.updateWorldMatrix(true, false);
-    source.geometry.boundsTree = computeBoundsTree.call(source.geometry, { indirect: true });
-    source.raycast = acceleratedRaycast;
+    const { geometry } = source;
+    geometry.boundsTree ??= computeBoundsTree.call(geometry, { indirect: true });
+    // The sectioner walks triangles in source order, which only an indirect BVH keeps.
+    if (!geometry.boundsTree.indirect) throw new Error('Solid sources need an indirect BVH.');
+    const probe = new Mesh(geometry, PROBE);
+    probe.matrixAutoUpdate = false;
+    probe.matrix.copy(source.matrixWorld);
+    probe.matrixWorld.copy(source.matrixWorld);
+    probe.raycast = acceleratedRaycast;
     const group = new Group();
     const back = new Mesh(source.geometry,
       stencilMaterial(this.plane, BackSide, IncrementWrapStencilOp));
@@ -106,7 +122,7 @@ export class SolidSections {
     source.geometry.computeBoundingBox();
     const bounds = source.geometry.boundingBox.clone().applyMatrix4(source.matrixWorld);
     this.solids.push({
-      source, bounds, group, back, front, cap, band,
+      source, probe, bounds, group, back, front, cap, band,
       id: this.nextSolidId++,
       // Until the painter says otherwise: an envelope answers for no region
       // until it is painted as one, and a parcel wedge answers for its own.
@@ -383,7 +399,7 @@ export class SolidSections {
   }
 
   /**
-   * An outward-facing first exit means the cut point lies inside the solid.
+   * A stencil cap covers the whole plane, so its hit counts only inside the solid.
    *
    * The hit carries the solid it landed in: that solid is the anatomy the
    * viewer drew there, so it, not a resampled voxel, says what was clicked.
@@ -408,13 +424,20 @@ export class SolidSections {
     return result;
   }
 
-  /** An outward-facing first exit means the point lies inside the solid. */
+  /**
+   * The stencil draws a cap where the faces behind it along the view wind to a
+   * nonzero count, exits minus entries; the same count says what was clicked.
+   * A first-exit test alone is fooled where a zero-thickness ribbon (pial on
+   * white) puts two opposite faces in one place.
+   */
   pointInside(solid, point, direction) {
-    this.probe.ray.set(point, direction);
-    const exit = this.probe.intersectObject(solid.source)[0];
-    return Boolean(exit && exit.face.normal.clone()
-      .applyNormalMatrix(new Matrix3().getNormalMatrix(solid.source.matrixWorld))
-      .dot(direction) > 0);
+    this.insideRay.ray.set(point, direction);
+    const normals = INSIDE_NORMALS.getNormalMatrix(solid.probe.matrixWorld);
+    let winding = 0;
+    for (const hit of this.insideRay.intersectObject(solid.probe)) {
+      winding += Math.sign(INSIDE_NORMAL.copy(hit.face.normal).applyNormalMatrix(normals).dot(direction));
+    }
+    return winding !== 0;
   }
 
   dispose() {
@@ -424,8 +447,7 @@ export class SolidSections {
     for (const pending of this.builds.values()) pending.resolve(null);
     this.builds.clear();
     for (const { source, back, front, cap, section } of this.solids) {
-      source.geometry.dispose();
-      source.material.dispose();
+      source.material?.dispose();
       back.material.dispose();
       front.material.dispose();
       cap.material.dispose();

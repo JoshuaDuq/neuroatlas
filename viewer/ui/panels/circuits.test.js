@@ -23,8 +23,9 @@ test('a lesson’s landmarks read as the current one, those seen, and those ahea
   assert.equal(stepProgress(0, { step: 0, visited: [0] }), 'current');
 });
 
-test('the lesson shows its own sequence, marked with aria-current, under the one location bar', async () => {
+test('the landmark leads its lesson; the sequence follows the landmark’s data, marked with aria-current', async () => {
   const source = await readFile(new URL('./circuits.js', import.meta.url), 'utf8');
-  assert.match(source, /profile\.replaceChildren\(heading, sequence, body\)/);
+  assert.match(source, /profile\.replaceChildren\(heading, body\)/);
+  assert.match(source, /notes\.replaceChildren\(landmarks,/);
   assert.match(source, /setAttribute\('aria-current', 'step'\)/);
 });

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   controlKeyAction, groupDisplayName, labelledGroups, matchesElsewhere, nextEnabledIndex, regionGroup,
-  sharedGroupNames, treeKeyAction, vocabularyOf,
+  rowStatesReason, sectionReasons, sharedGroupNames, treeKeyAction, vocabularyOf,
 } from './navigator.js';
 import { cutAtlasesOf } from '../../catalog/visibility.js';
 import { visibilityStateOf } from './visibility-control.js';
@@ -149,4 +149,25 @@ test('a match in another surface atlas offers that atlas', () => {
   const rows = [{ region: { id: 'v1', atlas: 'hcp-mmp' } }];
   assert.deepEqual(matchesElsewhere(rows, atlases, 'destrieux', region => [region.atlas])
     .map(({ atlas }) => atlas.id), ['hcp-mmp']);
+});
+
+const shown = { visible: true, reason: null };
+const hiddenBy = reason => ({ visible: false, reason });
+
+test('a setting that hides rows is said once per section, in the order met', () => {
+  const said = sectionReasons([
+    { kind: 'cortex', rows: [hiddenBy('cortex-hidden'), hiddenBy('cortex-hidden')] },
+    { kind: 'cortex', rows: [hiddenBy('cortex-hidden'), hiddenBy('hemisphere')] },
+    { kind: 'structure', rows: [shown, hiddenBy('removed'), hiddenBy('no-mri')] },
+    { kind: 'tissue', rows: [hiddenBy('no-cut')] },
+  ]);
+  assert.deepEqual([...said], [['cortex', ['cortex-hidden', 'hemisphere']], ['tissue', ['no-cut']]]);
+});
+
+test('a hidden row prints only a reason of its own', () => {
+  assert.equal(rowStatesReason(shown), false);
+  assert.equal(rowStatesReason(hiddenBy('hemisphere')), false, 'the caption says it');
+  assert.equal(rowStatesReason(hiddenBy('removed')), false, 'the struck eye says it');
+  assert.equal(rowStatesReason(hiddenBy('no-mri')), true);
+  assert.equal(rowStatesReason(hiddenBy('below-cut-resolution')), true);
 });

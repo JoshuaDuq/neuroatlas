@@ -1,19 +1,21 @@
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
-import { decimal } from '../format.js';
+import { decimal, withUnit } from '../format.js';
 
-const NARROW_NBSP = ' ';
 const ELLIPSIS = '…';
 
 /** Stage geometry in CSS pixels, matching stage.css: gutter, marking line height, caption gaps. */
 export const SNAPSHOT_LAYOUT = Object.freeze({ gutter: 16, line: 16, letterGap: 12, scaleGap: 8 });
+
+/** The stage's own type size (--text-stage): markings, the scale bar and the caption's first line. */
+const STAGE_TYPE = 13;
 
 /** Between the facts of one caption line, as in the masthead. */
 export const SEPARATOR = ' · ';
 
 /**
  * The exported image's caption: what was imaged, how it is labelled and coloured, and the view
- * or section it shows. Each line is a list of facts, each fact a list of runs; numbers are mono
- * runs, as on screen. Facts are joined by SEPARATOR and a narrow image breaks a line between them.
+ * or section it shows. Each line is a list of facts, each fact a list of runs. Facts are joined
+ * by SEPARATOR and a narrow image breaks a line between them.
  */
 export function snapshotCaption(lang, { subject, atlas, surfaceColor, detail, reference, view, section }) {
   const fact = (text, style = {}) => [{ text, ...style }];
@@ -27,10 +29,10 @@ export function snapshotCaption(lang, { subject, atlas, surfaceColor, detail, re
   if (section) {
     const cuts = t(lang, 'cuts');
     const line = [fact(cuts.sectionNames[section.plane]),
-      fact(`${decimal(section.offset, 1, lang, { signed: true })}${NARROW_NBSP}mm`, { mono: true })];
+      fact(withUnit(decimal(section.offset, 1, lang, { signed: true }), 'mm', lang))];
     if (section.plane === 'oblique') {
-      line.push([{ text: `${cuts.tiltShort} ` }, { text: `${decimal(section.tilt, 0, lang)}°`, mono: true }],
-        [{ text: `${cuts.azimuthShort} ` }, { text: `${decimal(section.azimuth, 0, lang, { signed: true })}°`, mono: true }]);
+      line.push(fact(`${cuts.tiltShort} ${decimal(section.tilt, 0, lang)}°`),
+        fact(`${cuts.azimuthShort} ${decimal(section.azimuth, 0, lang, { signed: true })}°`));
     }
     lines.push(line);
   } else if (view) {
@@ -103,23 +105,23 @@ function haloText(ctx, text, x, y, { ink, halo, haloCore }, ratio) {
   ctx.restore();
 }
 
-function runFont(run, fonts, size) {
-  return fontOf({ weight: run.strong ? 600 : 400, size, family: run.mono ? fonts.mono : fonts.ui });
+function runFont(run, family, size) {
+  return fontOf({ weight: run.strong ? 600 : 400, size, family });
 }
 
-function runsWidth(ctx, runs, fonts, size) {
+function runsWidth(ctx, runs, family, size) {
   return runs.reduce((total, run) => {
-    ctx.font = runFont(run, fonts, size);
+    ctx.font = runFont(run, family, size);
     return total + ctx.measureText(run.text).width;
   }, 0);
 }
 
 /** Shorten a line's runs from the end until they fit. */
-function fitRuns(ctx, runs, fonts, size, width) {
+function fitRuns(ctx, runs, family, size, width) {
   const kept = [];
   let used = 0;
   for (const run of runs) {
-    ctx.font = runFont(run, fonts, size);
+    ctx.font = runFont(run, family, size);
     const room = width - used;
     const measure = text => ctx.measureText(text).width;
     if (measure(run.text) <= room) {
@@ -133,16 +135,16 @@ function fitRuns(ctx, runs, fonts, size, width) {
   return kept;
 }
 
-function drawRuns(ctx, runs, x, y, fonts, size, palette, ratio) {
+function drawRuns(ctx, runs, x, y, family, size, palette, ratio) {
   let cursor = x;
   for (const run of runs) {
-    ctx.font = runFont(run, fonts, size);
+    ctx.font = runFont(run, family, size);
     haloText(ctx, run.text, cursor, y, palette, ratio);
     cursor += ctx.measureText(run.text).width;
   }
 }
 
-function drawScaleBar(ctx, { pixels, label }, x, y, fonts, palette, ratio) {
+function drawScaleBar(ctx, { pixels, label }, x, y, family, palette, ratio) {
   const { scaleGap } = SNAPSHOT_LAYOUT;
   // The rule is a 6px bracket open at the top, its foot a pixel below the line's centre.
   const foot = Math.round(y + 3) - 0.5;
@@ -163,16 +165,16 @@ function drawScaleBar(ctx, { pixels, label }, x, y, fonts, palette, ratio) {
   ctx.lineWidth = 1;
   ctx.stroke();
   ctx.restore();
-  ctx.font = fontOf({ size: 12, family: fonts.mono });
+  ctx.font = fontOf({ size: STAGE_TYPE, family });
   haloText(ctx, label, x + pixels + scaleGap, y, palette, ratio);
 }
 
 /** A colour key, redrawn from its on-screen plate: the plate, its swatches and its words. */
-function drawKey(ctx, key, palette) {
-  const { box, swatches, texts } = key;
+function drawKey(ctx, key) {
+  const { box, fill, edge, swatches, texts } = key;
   ctx.save();
-  ctx.fillStyle = palette.plate;
-  ctx.strokeStyle = palette.border;
+  ctx.fillStyle = fill;
+  ctx.strokeStyle = edge;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.roundRect(box.x + 0.5, box.y + 0.5, box.width - 1, box.height - 1, 4);
@@ -199,7 +201,7 @@ function drawKey(ctx, key, palette) {
  * drawn: the rendered anatomy under them is not resampled or filtered.
  */
 export function annotateSnapshot(canvas, plan) {
-  const { ratio, width, height, letters, caption, statement, scale, keys, fonts, palette } = plan;
+  const { ratio, width, height, letters, caption, statement, scale, keys, font, palette } = plan;
   const { gutter, line, letterGap } = SNAPSHOT_LAYOUT;
   const ctx = canvas.getContext('2d');
   ctx.save();
@@ -207,7 +209,7 @@ export function annotateSnapshot(canvas, plan) {
   ctx.textBaseline = 'middle';
 
   ctx.textAlign = 'center';
-  ctx.font = fontOf({ weight: 600, size: 13, family: fonts.ui });
+  ctx.font = fontOf({ weight: 600, size: STAGE_TYPE, family: font });
   for (const letter of letters) haloText(ctx, letter.text, letter.x, letter.y, palette, ratio);
   ctx.textAlign = 'left';
 
@@ -216,38 +218,39 @@ export function annotateSnapshot(canvas, plan) {
   const room = (top ? top.x - ctx.measureText(top.text).width / 2 - letterGap : width - gutter) - gutter;
   let y = gutter + line / 2;
   caption.forEach((facts, index) => {
-    const size = index === 0 ? 13 : 12;
-    const separator = runsWidth(ctx, [{ text: SEPARATOR }], fonts, size);
-    const widths = facts.map(runs => runsWidth(ctx, runs, fonts, size));
+    const size = index === 0 ? STAGE_TYPE : 12;
+    const separator = runsWidth(ctx, [{ text: SEPARATOR }], font, size);
+    const widths = facts.map(runs => runsWidth(ctx, runs, font, size));
     for (const row of packFacts(widths, separator, room)) {
       const runs = row.flatMap((fact, at) => (at ? [{ text: SEPARATOR }, ...facts[fact]] : facts[fact]));
-      const fitted = runsWidth(ctx, runs, fonts, size) > room ? fitRuns(ctx, runs, fonts, size, room) : runs;
-      drawRuns(ctx, fitted, gutter, y, fonts, size, palette, ratio);
+      const fitted = runsWidth(ctx, runs, font, size) > room ? fitRuns(ctx, runs, font, size, room) : runs;
+      drawRuns(ctx, fitted, gutter, y, font, size, palette, ratio);
       y += line;
     }
   });
 
-  for (const key of keys) drawKey(ctx, key, palette);
+  for (const key of keys) drawKey(ctx, key);
 
-  ctx.font = fontOf({ size: 12, family: fonts.ui });
+  ctx.font = fontOf({ size: 12, family: font });
   const statementWidth = ctx.measureText(statement).width;
-  ctx.font = fontOf({ size: 12, family: fonts.mono });
+  ctx.font = fontOf({ size: STAGE_TYPE, family: font });
   const scaleWidth = scale ? scale.pixels + SNAPSHOT_LAYOUT.scaleGap + ctx.measureText(scale.label).width : 0;
   const spots = bottomLine({ width, height, statementWidth, scaleWidth });
-  ctx.font = fontOf({ size: 12, family: fonts.ui });
+  ctx.font = fontOf({ size: 12, family: font });
   haloText(ctx, statement, spots.statement.x, spots.statement.y, palette, ratio);
-  if (scale) drawScaleBar(ctx, scale, spots.scale.x, spots.scale.y, fonts, palette, ratio);
+  if (scale) drawScaleBar(ctx, scale, spots.scale.x, spots.scale.y, font, palette, ratio);
   ctx.restore();
   return canvas;
 }
 
 /** Every face and weight the annotations use, loaded for exactly the words they will draw. */
 export function snapshotFonts(plan) {
-  const words = [plan.statement, ...plan.letters.map(letter => letter.text),
+  const words = [plan.statement, ...plan.letters.map(letter => letter.text), plan.scale?.label ?? '',
     SEPARATOR, ...plan.caption.flat(2).map(run => run.text), ...plan.keys.flatMap(key => key.texts.map(text => text.text))].join(' ');
   const faces = [
-    fontOf({ weight: 400, size: 12, family: plan.fonts.ui }),
-    fontOf({ weight: 600, size: 13, family: plan.fonts.ui }),
+    fontOf({ weight: 400, size: 12, family: plan.font }),
+    fontOf({ weight: 400, size: STAGE_TYPE, family: plan.font }),
+    fontOf({ weight: 600, size: STAGE_TYPE, family: plan.font }),
     ...new Set(plan.keys.flatMap(key => key.texts.map(text => text.font))),
   ];
   return Promise.all(faces.map(face => document.fonts.load(face, words)));

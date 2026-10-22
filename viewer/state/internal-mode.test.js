@@ -44,5 +44,18 @@ test('leaving speaks only for what entering took: the rest stays the reader\'s',
   const changes = leaveInternal(captureBeforeInternal(whole, 'learning'),
     { ...inside, hemisphere: 'left', cortexOpacity: 0.4, selectedRegion: { id: 'x' } });
   assert.deepEqual(Object.keys(changes).sort(),
-    ['cortexVisible', 'detail', 'internalSystem', 'surfaceColor']);
+    ['colourLost', 'cortexVisible', 'detail', 'internalSystem', 'surfaceColor']);
+});
+
+test('an atlas switched inside wins over a colouring defined on the atlas left behind', () => {
+  const required = { 'cab-np': 'hcp-mmp', functional: 'hcp-mmp' };
+  for (const colour of ['cab-np', 'functional']) {
+    const before = captureBeforeInternal({ ...whole, surfaceColor: colour, atlas: 'hcp-mmp' }, 'learning');
+    const switched = leaveInternal(before, { ...inside, atlas: 'destrieux' }, required);
+    assert.equal(switched.surfaceColor, 'atlas');
+    assert.equal(switched.colourLost, colour);
+    const kept = leaveInternal(before, { ...inside, atlas: 'hcp-mmp' }, required);
+    assert.equal(kept.surfaceColor, colour);
+    assert.equal(kept.colourLost, null);
+  }
 });

@@ -87,7 +87,16 @@ test('sideways rests leave more of the screen to the anatomy', () => {
     'half a wide screen leaves the brain a square too small to read');
   assert.ok(sideways.full < upright.full);
   assert.ok(sideways.peek > upright.peek,
-    'the sideways peek must still fit the strip and a wrapped tab bar');
+    'the narrowest side rail still holds the name, the statement and the handle');
+});
+
+test('sideways, the measured row of tabs is peek and half still opens past it', () => {
+  // The French tab row, with and without an iPhone's 47px notch inset, on a 844 and a 667 screen.
+  for (const [available, row] of [[844, 299 + 47], [844, 299], [667, 299]]) {
+    const sideways = detentHeights(available, { ...SIDEWAYS_DETENTS, peek: row });
+    assert.equal(sideways.peek, row);
+    assert.ok(sideways.half > sideways.peek && sideways.full > sideways.half, `${available}px: three distinct rests`);
+  }
 });
 
 test('sideways rests stay ordered and inside the screen', () => {

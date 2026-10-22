@@ -1,20 +1,19 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { count, decimal, formatRas, quantity } from './format.js';
+import { count, decimal, formatRas, grouped, quantity, millimetres, percent, withUnit } from './format.js';
 
 const NNBSP = '\u202f';
 const MINUS = '\u2212';
-const THIN = ' ';
 
 test('quantities carry four significant figures and their unit', () => {
-  assert.equal(quantity(3214.153, 'mm²'), `3214${THIN}mm²`);
-  assert.equal(quantity(775.634310225458, 'mm²'), `775.6${THIN}mm²`);
-  assert.equal(quantity(5.1234, 'mm³'), `5.123${THIN}mm³`);
+  assert.equal(quantity(3214.153, 'mm²'), `3214${NNBSP}mm²`);
+  assert.equal(quantity(775.634310225458, 'mm²'), `775.6${NNBSP}mm²`);
+  assert.equal(quantity(5.1234, 'mm³'), `5.123${NNBSP}mm³`);
 });
 
-test('five digits and up get a thin space between groups, not a comma', () => {
-  assert.equal(quantity(21472, 'mm³'), `21${THIN}470${THIN}mm³`);
-  assert.equal(quantity(64385, 'mm³'), `64${THIN}390${THIN}mm³`);
+test('five digits and up get a narrow no-break space between groups, not a comma', () => {
+  assert.equal(quantity(21472, 'mm³'), `21${NNBSP}470${NNBSP}mm³`);
+  assert.equal(quantity(64385, 'mm³'), `64${NNBSP}390${NNBSP}mm³`);
 });
 
 test('an absent quantity is an em dash, never a zero', () => {
@@ -24,12 +23,12 @@ test('an absent quantity is an em dash, never a zero', () => {
 });
 
 test('a genuine zero is shown as zero', () => {
-  assert.equal(quantity(0, 'mm²'), `0${THIN}mm²`);
+  assert.equal(quantity(0, 'mm²'), `0${NNBSP}mm²`);
 });
 
 test('trailing zeros from rounding are not shown as false precision', () => {
-  assert.equal(quantity(1000, 'mm²'), `1000${THIN}mm²`);
-  assert.equal(quantity(2.5, 'mm²'), `2.5${THIN}mm²`);
+  assert.equal(quantity(1000, 'mm²'), `1000${NNBSP}mm²`);
+  assert.equal(quantity(2.5, 'mm²'), `2.5${NNBSP}mm²`);
 });
 
 test('counts agree with their noun', () => {
@@ -40,12 +39,12 @@ test('counts agree with their noun', () => {
 });
 
 test('counts group their digits like every other number here', () => {
-  assert.equal(count(21472, 'match'), `21${THIN}472 matches`);
+  assert.equal(count(21472, 'match'), `21${NNBSP}472 matches`);
 });
 
 test('French quantities take a decimal comma', () => {
-  assert.equal(quantity(775.634, 'mm²', 'fr'), `775,6${THIN}mm²`);
-  assert.equal(quantity(21472, 'mm³', 'fr'), `21${THIN}470${THIN}mm³`);
+  assert.equal(quantity(775.634, 'mm²', 'fr'), `775,6${NNBSP}mm²`);
+  assert.equal(quantity(21472, 'mm³', 'fr'), `21${NNBSP}470${NNBSP}mm³`);
 });
 
 test('a RAS point is a signed triple with a true minus sign', () => {
@@ -77,4 +76,28 @@ test('a trimmed number drops the zeros a step size does not have', () => {
   assert.equal(decimal(1, 2, 'en', { trim: true }), '1');
   assert.equal(decimal(0.5, 1, 'en', { trim: true }), '0.5');
   assert.equal(decimal(Number.NaN), '—');
+});
+
+test('slider readouts and their spoken values give signed millimetres and percentages in the reader’s notation', () => {
+  assert.equal(millimetres(12.5, 'en'), '+12.5 mm');
+  assert.equal(millimetres(-3, 'fr'), '−3,0 mm');
+  assert.equal(millimetres(0, 'en'), '0.0 mm');
+  assert.equal(percent(0.4, 'en'), '40%');
+  assert.equal(percent(0.35, 'fr'), '35 %');
+  assert.equal(percent(1, 'en'), '100%');
+});
+
+test('a unit is held to its number by a narrow no-break space, never a breaking one', () => {
+  assert.equal(withUnit('5670', 'mm²'), `5670${NNBSP}mm²`);
+  assert.equal(withUnit('2797,9', 'mm²', 'fr'), `2797,9${NNBSP}mm²`);
+  assert.equal(withUnit('16', '%'), '16%');
+  assert.equal(withUnit('16', '%', 'fr'), `16${NNBSP}%`);
+  for (const text of [quantity(21472, 'mm³', 'fr'), formatRas([1, 2, 3], 'fr'), millimetres(-3, 'fr'), percent(0.5, 'fr')]) {
+    assert.doesNotMatch(text, /[\u0020\u2009](?:mm|%)/);
+  }
+});
+
+test('digit groups start past four digits, as in counts and quantities alike', () => {
+  assert.equal(grouped(1234), '1234');
+  assert.equal(grouped(123456), `123${NNBSP}456`);
 });

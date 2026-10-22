@@ -8,9 +8,10 @@ const LOADED = { atlas: 'destrieux', detail: 'learning', cutAtlas: 'destrieux' }
 test('an empty link is the default scene on the loaded layers, with nothing left implicit', () => {
   assert.deepEqual(readerState({}, LOADED), {
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true,
-    spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', internalSystem: null,
+    spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', domain: null, internalSystem: null,
     view: 'oblique', cut: 'off', cutOffset: 0, cutReverse: false, cutTilt: 30, cutAzimuth: 30,
-    selectedRegion: null, isolatedRegion: null, ...LOADED, hiddenRegions: new Set(), camera: 'view',
+    selectedRegion: null, isolatedRegion: null, orbit: null, mriWindow: null,
+    ...LOADED, hiddenRegions: new Set(), camera: 'view',
   });
 });
 
@@ -40,15 +41,23 @@ test('a captured scene encodes to the same link it was captured from', () => {
   const hash = 'atlas=hcp-mmp&cuts=aseg&system=Basal+ganglia&detail=aseg&region=aseg:left:11'
     + '&isolate=aseg:left:11&view=left&cut=coronal&pos=-12.5&rev=1&hemi=left&cortex=0'
     + '&internal=0&cord=1&colors=tissue&opacity=0.4&hidden=aseg:left:12,aseg:left:13';
-  const decoded = decodeState(hash);
+  const { state: decoded } = decodeState(hash);
   const state = readerState(decoded, LOADED);
-  assert.deepEqual(decodeState(encodeState(state)), decoded);
+  assert.deepEqual(decodeState(encodeState(state)).state, decoded);
 });
 
 test('layers a link does not name stay as loaded; a missing layer is an error, not a guess', () => {
   assert.equal(readerState({ atlas: 'hcp-mmp' }, LOADED).atlas, 'hcp-mmp');
   assert.equal(readerState({}, LOADED).detail, 'learning');
   assert.throws(() => readerState({}, { ...LOADED, cutAtlas: null }), /no cutAtlas/);
+});
+
+test('a link’s exact camera and MRI window ride along as given', () => {
+  const orbit = { position: [0, 0, 300], target: [1, 2, 3] };
+  const mriWindow = { center: 60, width: 120 };
+  const state = readerState({ orbit, mriWindow }, LOADED);
+  assert.equal(state.orbit, orbit);
+  assert.equal(state.mriWindow, mriWindow);
 });
 
 test('an exact camera pose rides along; otherwise the named view frames the scene', () => {
@@ -69,13 +78,14 @@ function restorationFixture() {
   const model = {
     settings: { ...target },
     state: { selectedRegion: null },
-    async setAtlas(id) { events.push('atlas'); this.settings.atlas = id; },
-    async setDetail(id) { events.push('detail'); this.settings.detail = id; },
     setInternalSystem(value) { events.push('system'); this.settings.internalSystem = value; },
     setHemisphere(value) { events.push('hemisphere'); this.settings.hemisphere = value; },
     setCortexVisible(value) { this.settings.cortexVisible = value; },
     setInternalVisible(value) { this.settings.internalVisible = value; },
-    async setSpinalCordVisible(value) { events.push('cord'); this.settings.spinalCordVisible = value; },
+    async setSpinalCordVisible(value) {
+      if (value !== this.settings.spinalCordVisible) events.push('cord');
+      this.settings.spinalCordVisible = value;
+    },
     setCortexOpacity(value) { this.settings.cortexOpacity = value; },
     setFunctionalLevel(value) { events.push('level'); this.settings.functionalLevel = value; },
     loadHiddenRegions(ids) { events.push('hidden'); this.settings.hiddenRegions = new Set(ids); },
@@ -83,42 +93,105 @@ function restorationFixture() {
     isolate() { events.push('isolation'); this.settings.isolatedRegion = this.state.selectedRegion.id; },
     clearIsolation() { this.settings.isolatedRegion = null; },
   };
+  const commands = {
+    async loadAtlas(id) { if (id !== model.settings.atlas) { events.push('atlas'); model.settings.atlas = id; } },
+    async loadDetail(id) { if (id !== model.settings.detail) { events.push('detail'); model.settings.detail = id; } },
+    async applySurfaceColor(value) {
+      if (value !== model.settings.surfaceColor) { events.push('color'); model.settings.surfaceColor = value; }
+      return true;
+    },
+    async showSpinalCord(visible) { await model.setSpinalCordVisible(visible); return true; },
+    async cut(mode) { await sections.setMode(mode); return true; },
+  };
   const sections = {
-    state: { cutAtlas: LOADED.cutAtlas }, active: false,
-    async setSurfaceColor(value) { events.push('color'); model.settings.surfaceColor = value; },
+    state: { cutAtlas: LOADED.cutAtlas }, active: false, offsetRange: [-128, 128],
     async setCutAtlas(value) { events.push('cut-atlas'); this.state.cutAtlas = value; },
     async setMode(mode) { events.push('cut'); this.active = mode !== 'off'; },
     setAngles() { events.push('angles'); },
     setDisplay() { events.push('cut-display'); },
-    setOffset() { events.push('cut-position'); },
+    setOffset(offset) {
+      const [minimum, maximum] = this.offsetRange;
+      if (offset < minimum || offset > maximum) throw new RangeError(`Cut position must be between ${minimum} and ${maximum} mm.`);
+      events.push('cut-position');
+    },
+    async load() { events.push('mri-load'); },
+    setWindow() { events.push('mri-window'); },
   };
-  return { target, events, model, sections,
-    applyCamera() { events.push('camera'); }, revealInTree() { events.push('tree'); } };
+  return { target, events, model, sections, commands, current: () => true,
+    applyCamera() { events.push('camera'); }, applyOrbit() { events.push('orbit'); },
+    revealInTree() { events.push('tree'); } };
 }
 
-test('startup restoration propagates requested layer failures', async () => {
+test('a failed layer is reported with its field, and the rest of the scene still applies', async () => {
   for (const key of ['atlas', 'detail', 'cutAtlas']) {
     const fixture = restorationFixture();
     fixture.target[key] = 'unavailable';
     const failure = new Error(`Requested ${key} unavailable`);
-    const owner = key === 'cutAtlas' ? fixture.sections : fixture.model;
-    const method = { atlas: 'setAtlas', detail: 'setDetail', cutAtlas: 'setCutAtlas' }[key];
+    const owner = key === 'cutAtlas' ? fixture.sections : fixture.commands;
+    const method = { atlas: 'loadAtlas', detail: 'loadDetail', cutAtlas: 'setCutAtlas' }[key];
     owner[method] = async () => { throw failure; };
-    await assert.rejects(restore(fixture.target, fixture), error => error === failure);
-    assert.equal(fixture.events.includes('camera'), false);
+    const failures = await restore(fixture.target, fixture);
+    assert.deepEqual(failures, [{ fields: [{ atlas: 'atlas', detail: 'detail', cutAtlas: 'cuts' }[key]], error: failure }]);
+    assert.equal(fixture.events.at(-1), 'camera', 'the camera is still framed');
   }
 });
 
-test('startup restoration propagates region, system and camera failures', async () => {
-  for (const [key, method] of [['selectedRegion', 'select'], ['internalSystem', 'setInternalSystem'],
-    ['view', 'applyCamera']]) {
+test('region, system and camera failures are reported under their own link fields', async () => {
+  for (const [key, method, field] of [['selectedRegion', 'select', 'region'],
+    ['internalSystem', 'setInternalSystem', 'system'], ['view', 'applyCamera', 'view']]) {
     const fixture = restorationFixture();
     fixture.target[key] = 'unavailable';
     const failure = new Error(`Requested ${key} unavailable`);
     const owner = method === 'applyCamera' ? fixture : fixture.model;
     owner[method] = () => { throw failure; };
-    await assert.rejects(restore(fixture.target, fixture), error => error === failure);
+    const failures = await restore(fixture.target, fixture);
+    assert.deepEqual(failures, [{ fields: [field], error: failure }]);
   }
+});
+
+test('a cut position outside the plane’s own range is the one field not applied', async () => {
+  const fixture = restorationFixture();
+  Object.assign(fixture.target, { cut: 'coronal', cutOffset: 150, selectedRegion: 'region' });
+  const failures = await restore(fixture.target, fixture);
+  assert.deepEqual(failures.map(({ fields }) => fields), [['pos']]);
+  assert.match(failures[0].error.message, /between -128 and 128/);
+  assert.deepEqual(fixture.events, ['cut', 'cut-display', 'selection', 'tree', 'camera']);
+});
+
+test('a plane that cannot be cut takes its position, angles and side with it', async () => {
+  const fixture = restorationFixture();
+  Object.assign(fixture.target, { cut: 'axial', cutOffset: 10 });
+  fixture.sections.setMode = async () => { throw new Error('Tissue volume unavailable'); };
+  const failures = await restore(fixture.target, fixture);
+  assert.deepEqual(failures.map(({ fields }) => fields), [['cut', 'tilt', 'az', 'rev', 'pos']]);
+  assert.equal(fixture.events.includes('cut-position'), false);
+});
+
+test('a restore that a later command overtakes stops applying', async () => {
+  const fixture = restorationFixture();
+  Object.assign(fixture.target, { atlas: 'hcp-mmp', hemisphere: 'left', selectedRegion: 'region' });
+  let live = true;
+  fixture.current = () => live;
+  fixture.commands.loadAtlas = async () => { live = false; };
+  assert.deepEqual(await restore(fixture.target, fixture), []);
+  assert.deepEqual(fixture.events, []);
+});
+
+test('a scene without an MRI window of its own returns a loaded scan to its published window', async () => {
+  const fixture = restorationFixture();
+  const windows = [];
+  fixture.sections.setWindow = (center, width) => windows.push([center, width]);
+  fixture.sections.volumes = { metadata: { display: { window_center: 128, window_width: 256 } } };
+  fixture.sections.display = { windowCenter: 60, windowWidth: 120 };
+  await restore(fixture.target, fixture);
+  assert.deepEqual(windows, [[128, 256]]);
+  fixture.sections.display = { windowCenter: 128, windowWidth: 256 };
+  await restore(fixture.target, fixture);
+  assert.equal(windows.length, 1, 'a window already published is left alone');
+  delete fixture.sections.volumes;
+  delete fixture.sections.display;
+  await restore(fixture.target, fixture);
+  assert.equal(windows.length, 1, 'an unloaded scan is not fetched for nothing');
 });
 
 test('startup restoration awaits requested cord anatomy before selection and framing', async () => {
@@ -142,9 +215,19 @@ test('startup restoration preserves layer, display, cut, selection and camera or
   Object.assign(fixture.target, { atlas: 'hcp-mmp', detail: 'aseg', internalSystem: 'Brainstem',
     hemisphere: 'left', spinalCordVisible: true, surfaceColor: 'tissue',
     hiddenRegions: new Set(['hidden']), cutAtlas: 'aseg', cut: 'oblique',
-    selectedRegion: 'region', isolatedRegion: 'region' });
-  await restore(fixture.target, fixture);
+    selectedRegion: 'region', isolatedRegion: 'region',
+    mriWindow: { center: 90, width: 180 }, orbit: { position: [0, 0, 300], target: [0, 0, 0] } });
+  assert.deepEqual(await restore(fixture.target, fixture), []);
   assert.deepEqual(fixture.events, ['atlas', 'detail', 'system', 'hemisphere', 'cord', 'hidden',
     'color', 'cut-atlas', 'angles', 'cut', 'cut-display', 'cut-position',
-    'selection', 'isolation', 'tree', 'camera']);
+    'selection', 'isolation', 'tree', 'mri-load', 'mri-window', 'camera', 'orbit']);
+});
+
+test('a scene without the cord hides it even while an earlier showing is still downloading', async () => {
+  const fixture = restorationFixture();
+  const asked = [];
+  // Still downloading, the earlier showing has not yet set the cord visible.
+  fixture.commands.showSpinalCord = async visible => { asked.push(visible); return true; };
+  await restore(fixture.target, fixture);
+  assert.deepEqual(asked, [false], 'asked, so the model drops the showing still on its way');
 });

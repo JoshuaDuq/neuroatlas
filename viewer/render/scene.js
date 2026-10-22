@@ -10,6 +10,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
+import { orbitPath } from './camera-path.js';
 import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.js';
 import { motionRatio, qualityProfile } from './quality.js';
 import { paintOutlineEdges, sameMeshSet } from './outline-edges.js';
@@ -19,6 +20,21 @@ const TRANSITION_MS = 240;
 const SETTLE_MS = 150;
 
 const easeInOut = t => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
+/** CSS's cubic-bezier(x1, y1, x2, y2) at progress `x`: Newton's method finds the curve's t for x. */
+function cubicBezier(x1, y1, x2, y2) {
+  const along = (a, b) => t => ((1 - 3 * b + 3 * a) * t + (3 * b - 6 * a)) * t * t + 3 * a * t;
+  const x = along(x1, x2);
+  const y = along(y1, y2);
+  const slope = t => (3 * (1 - 3 * x2 + 3 * x1) * t + 2 * (3 * x2 - 6 * x1)) * t + 3 * x1;
+  return progress => {
+    let t = progress;
+    for (let i = 0; i < 8; i += 1) t -= (x(t) - progress) / slope(t);
+    return y(Math.min(Math.max(t, 0), 1));
+  };
+}
+// The sheet's --ease-sheet, so the picture settles with the sheet that moved it.
+const easeSheet = cubicBezier(0.32, 0.72, 0, 1);
 
 const prefersReducedMotion = () =>
   globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
@@ -64,6 +80,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
 
   scene.add(camera);
   let lighting = null;
+  let appearance = null;
   let mriAppearance = false;
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -83,13 +100,22 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
    * the composer target and both outline passes on every frame of a drag.
    */
   let chromeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
-  // Framing also clears the stage dock, which `chromeInsets` must not include:
-  // the dock is placed by that rectangle and would lift itself by its own height.
-  let framingInset = 0;
-  let framingShown = 0;
+  // Planning reads where the sheet is going; the image is offset by where it is drawn, which
+  // eases after a settled sheet on its curve and tracks a dragged one.
+  let chromeShown = chromeInsets;
+  let chromeMove = null;
+  // Framing also clears the stage dock and any colour key, which `chromeInsets` must not include:
+  // they are placed by that rectangle and would push themselves along by their own size.
+  const NO_INSET = Object.freeze({ top: 0, right: 0, bottom: 0 });
+  let framingInset = NO_INSET;
+  let framingShown = NO_INSET;
   let insetMove = null;
-  const framingRect = (bottom = framingInset) =>
-    visibleRect(hostSize, { ...chromeInsets, bottom: chromeInsets.bottom + bottom });
+  const framingRect = (inset = framingInset, chrome = chromeInsets) => visibleRect(hostSize, {
+    top: chrome.top + inset.top,
+    right: chrome.right + inset.right,
+    bottom: chrome.bottom + inset.bottom,
+    left: chrome.left,
+  });
 
   function createPipeline() {
     const composer = new EffectComposer(renderer, new WebGLRenderTarget(1, 1, {
@@ -164,7 +190,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     invalidate();
   };
 
-  function setAppearance(appearance) {
+  function setAppearance(next) {
+    appearance = next;
     lighting?.dispose();
     lighting = createAnatomicalLighting(renderer, camera, appearance.lighting);
     scene.environment = lighting.texture;
@@ -205,7 +232,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   function applyViewOffset() {
     const { width, height } = hostSize;
     if (!width || !height) return;
-    const offset = viewOffset({ width, height }, framingRect(framingShown));
+    const offset = viewOffset({ width, height }, framingRect(framingShown, chromeShown));
     if (offset) {
       camera.setViewOffset(offset.fullWidth, offset.fullHeight,
         offset.offsetX, offset.offsetY, offset.width, offset.height);
@@ -281,41 +308,66 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       invalidate();
       return;
     }
+    // Callers write the destination's up before planning, and between frames it stays theirs.
+    const plan = { position: position.clone(), target: target.clone(), up: camera.up.clone(), near, far, minDistance, maxDistance };
     transition = {
-      from: { position: camera.position.clone(), target: controls.target.clone() },
-      to: { position: position.clone(), target: target.clone() },
-      plan: { position: position.clone(), target: target.clone(), near, far, minDistance, maxDistance },
+      path: orbitPath({ quaternion: camera.quaternion, position: camera.position, target: controls.target }, plan),
+      plan,
       started: performance.now(),
       arrive,
+      // A reframe for a settling sheet rides the sheet's curve, so the image arrives as one object.
+      ease: chromeMove ? easeSheet : easeInOut,
     };
     invalidate();
   }
 
+  /** An eased move between two sets of insets, as drawn at `now`. */
+  const insetsAt = ({ from, to, started, ease }, now) => {
+    const t = Math.min(Math.max((now - started) / TRANSITION_MS, 0), 1);
+    const eased = ease(t);
+    return { insets: Object.fromEntries(Object.keys(to).map(side => [side, from[side] + (to[side] - from[side]) * eased])), done: t === 1 };
+  };
+
   function step(now) {
-    if (insetMove || transition) lastMotion = now;
+    const easing = Boolean(insetMove || chromeMove);
+    if (easing || transition) lastMotion = now;
     if (insetMove) {
-      const t = Math.min((now - insetMove.started) / TRANSITION_MS, 1);
-      framingShown = insetMove.from + (insetMove.to - insetMove.from) * easeInOut(Math.max(t, 0));
-      if (t === 1) insetMove = null;
-      applyViewOffset();
+      const { insets, done } = insetsAt(insetMove, now);
+      framingShown = insets;
+      if (done) insetMove = null;
     }
+    if (chromeMove) {
+      const { insets, done } = insetsAt(chromeMove, now);
+      chromeShown = insets;
+      if (done) chromeMove = null;
+    }
+    if (easing) applyViewOffset();
     if (!transition) return;
-    const t = Math.min((now - transition.started) / TRANSITION_MS, 1);
-    const eased = easeInOut(t);
-    camera.position.lerpVectors(transition.from.position, transition.to.position, eased);
-    controls.target.lerpVectors(transition.from.target, transition.to.target, eased);
+    const t = Math.min(Math.max((now - transition.started) / TRANSITION_MS, 0), 1);
+    const pose = transition.path(transition.ease(t));
+    const { plan, arrive } = transition;
+    camera.position.copy(pose.position);
+    controls.target.copy(pose.target);
     if (t === 1) {
-      transition.arrive();
       transition = null;
+      arrive();
       // The last eased step can be below the controls' own change threshold; announce arrival.
       controls.dispatchEvent({ type: 'change' });
+    } else {
+      // The controls stand aside while the scene moves the camera, so the move announces itself,
+      // with the up it is drawing for whoever reads the frame; then the destination's is restored.
+      camera.quaternion.copy(pose.quaternion);
+      camera.up.copy(pose.up);
+      controls.dispatchEvent({ type: 'change' });
+      camera.up.copy(plan.up);
     }
     invalidate();
   }
 
   function tick(now) {
     step(now);
-    controls.update();
+    // Their damping and limits would pull against an orbit in flight; they take over on arrival.
+    if (!transition) controls.update();
     // Solid cuts interleave winding masks and caps in a defined render order.
     renderer.sortObjects = true;
     const inMotion = performance.now() - lastMotion < SETTLE_MS;
@@ -345,6 +397,8 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     onContextLost?.();
   };
   const handleRestored = () => {
+    // The environment map was rendered on the GPU and has no copy to re-upload: render it again.
+    if (appearance) setAppearance(appearance);
     applyTheme();
     setSize();
     onContextRestored?.();
@@ -355,6 +409,13 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   const observer = new ResizeObserver(setSize);
   observer.observe(host);
   controls.addEventListener('change', cameraMoved);
+  // A reader who takes hold of the camera mid-orbit keeps it where it is drawn, roll included.
+  const onGrab = () => {
+    if (!transition) return;
+    transition = null;
+    camera.up.set(0, 1, 0).applyQuaternion(camera.quaternion);
+  };
+  controls.addEventListener('start', onGrab);
 
   return {
     scene, camera, controls,
@@ -406,14 +467,23 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     /**
      * Declare how much of the canvas the interface covers. Reported upward as
      * a resize, because everything derived from the viewport — framing, the
-     * markers, the presets — is stale the moment it changes.
+     * markers, the presets — is stale the moment it changes. A `settle` is the
+     * sheet moving on its own curve, which the image's offset follows; otherwise
+     * a finger is moving it and the offset tracks at once.
      */
-    setChromeInsets(next) {
+    setChromeInsets(next, { settle = false } = {}) {
       const merged = { top: 0, right: 0, bottom: 0, left: 0, ...next };
       const same = Object.keys(merged).every(key => merged[key] === chromeInsets[key]);
       if (same) return;
       chromeInsets = merged;
-      applyViewOffset();
+      if (settle && !prefersReducedMotion()) {
+        chromeMove = { from: chromeShown, to: merged, started: performance.now(), ease: easeSheet };
+        invalidate();
+      } else {
+        chromeMove = null;
+        chromeShown = merged;
+        applyViewOffset();
+      }
       // Not a canvas resize: the sheet reports this on every frame of a drag,
       // and refitting there would fight the finger. The sheet reframes itself
       // when it settles on a detent.
@@ -421,18 +491,20 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     },
 
     /**
-     * Keep framing clear of the bottom `bottom` pixels of the visible rectangle.
-     * The image slides with the camera's eased move. Returns whether it changed.
+     * Keep framing clear of bands of the visible rectangle: the dock's at the bottom, a colour
+     * key's at the top or right. The image slides with the camera's eased move. Returns whether
+     * it changed.
      */
-    setFramingInset({ bottom = 0 } = {}, { immediate = false } = {}) {
-      if (bottom === framingInset) return false;
-      framingInset = bottom;
+    setFramingInset({ top = 0, right = 0, bottom = 0 } = {}, { immediate = false } = {}) {
+      const next = { top, right, bottom };
+      if (Object.keys(next).every(side => next[side] === framingInset[side])) return false;
+      framingInset = next;
       if (immediate || prefersReducedMotion()) {
         insetMove = null;
-        framingShown = bottom;
+        framingShown = next;
         applyViewOffset();
       } else {
-        insetMove = { from: framingShown, to: bottom, started: performance.now() };
+        insetMove = { from: framingShown, to: next, started: performance.now(), ease: chromeMove ? easeSheet : easeInOut };
         invalidate();
       }
       return true;
@@ -450,7 +522,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     get destination() {
       if (transition) return transition.plan;
       return {
-        position: camera.position.clone(), target: controls.target.clone(),
+        position: camera.position.clone(), target: controls.target.clone(), up: camera.up.clone(),
         near: camera.near, far: camera.far,
         minDistance: controls.minDistance, maxDistance: controls.maxDistance,
       };
@@ -486,6 +558,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       looping = false;
       observer.disconnect();
       controls.removeEventListener('change', cameraMoved);
+      controls.removeEventListener('start', onGrab);
       renderer.domElement.removeEventListener('webglcontextlost', handleLost);
       renderer.domElement.removeEventListener('webglcontextrestored', handleRestored);
       controls.dispose();

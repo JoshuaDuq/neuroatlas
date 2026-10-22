@@ -1,4 +1,4 @@
-/* Stage tools: the dock (view presets, section and display tools, section row), its popovers, the overlays drawn on the picture, the dialogs opened from them, and the status bar. */
+/* Stage tools: the dock (view, section and display tools, section row), its popovers and the overlays drawn on the picture. Dialogs: dialogs.css; status bar: masthead.css. */
 
 /*
  * Anything drawn on the stage is lit by the stage, in both themes: the ground
@@ -10,9 +10,12 @@
   --vis-right: 0px;
   --vis-bottom: 0px;
   --vis-left: 0px;
+  /* The band a colour key takes off the framing rectangle, along the top or down the right (viewport-chrome.js). */
+  --key-top: 0px;
+  --key-right: 0px;
   --dock-height: 38px;
   --stage-gutter: var(--space-4);
-  /* One elevation for every plate on the stage: a firm edge and a short, offset shadow. */
+  /* One edge for every plate on the stage; the dock and its popovers, which float, add a short shadow. */
   --stage-edge: color-mix(in srgb, var(--overlay-border) 60%, var(--overlay-control-border));
   --stage-elevation: 0 4px 12px rgb(0 0 0 / 0.5);
 }
@@ -71,8 +74,8 @@
   left: calc(var(--vis-left) + var(--stage-gutter));
   margin: 0;
   color: var(--overlay-ink-muted);
-  font-size: var(--text-micro);
-  line-height: 16px;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   white-space: nowrap;
   text-shadow: 0 0 2px var(--overlay-halo-core), 0 0 4px var(--overlay-halo-core), 0 0 8px var(--overlay-halo);
   pointer-events: none;
@@ -90,11 +93,11 @@
   z-index: 2;
   padding: 3px var(--space-2);
   background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
+  border: 1px solid var(--stage-edge);
   border-radius: var(--radius-control);
   color: var(--overlay-ink);
-  font-size: var(--text-micro);
-  line-height: 16px;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   pointer-events: none;
 }
 .hover-label { max-width: 280px; }
@@ -107,9 +110,10 @@
  * letter readable where the rim alone left white tissue touching the glyph.
  * snapshot.js draws the same rim and halo onto an exported image.
  */
+/* The letters frame what framing frames: the visible stage less a colour key's band. */
 .orientation {
   position: absolute;
-  inset: var(--vis-top) var(--vis-right) var(--vis-bottom) var(--vis-left);
+  inset: calc(var(--vis-top) + var(--key-top)) calc(var(--vis-right) + var(--key-right)) var(--vis-bottom) var(--vis-left);
   pointer-events: none;
 }
 .orientation > span,
@@ -126,9 +130,9 @@
 .orientation > span {
   position: absolute;
   z-index: 2;
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   font-weight: 600;
-  line-height: 16px;
+  line-height: var(--lh-caption);
   letter-spacing: 0.06em;
 }
 .orientation [data-edge="top"] { top: var(--space-3); left: 50%; transform: translateX(-50%); }
@@ -156,8 +160,8 @@
   align-items: center;
   gap: var(--space-2);
   pointer-events: none;
-  font-size: var(--text-micro);
-  line-height: 16px;
+  font-size: var(--text-stage);
+  line-height: var(--lh-caption);
 }
 .scale-bar-rule {
   height: 6px;
@@ -175,7 +179,11 @@
   bottom: calc(var(--vis-bottom) + var(--stage-gutter) + var(--dock-height) + 2 * var(--space-2) + 16px);
 }
 
-/* Colour keys, beside the picture they explain. */
+/*
+ * Colour keys, beside the picture they explain: top right, inside the framing's own band, so
+ * neither the anatomy nor a letter is ever under one. Each key is one flat plate: a 32px title row
+ * that names its map and folds the rows (Functional's level switch shares it), then 20px rows.
+ */
 .stage-keys {
   position: absolute;
   z-index: 2;
@@ -185,56 +193,93 @@
   flex-direction: column;
   align-items: flex-end;
   gap: var(--space-2);
-  pointer-events: none;
+  /* A long list scrolls rather than reach the dock's line, where the scale bar sits. */
+  max-width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter));
+  max-height: calc(100% - var(--vis-top) - var(--vis-bottom) - 3 * var(--stage-gutter) - var(--dock-height));
 }
 .stage-key {
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  padding: 0 var(--space-3);
   background: var(--overlay-plate);
-  border: 1px solid var(--overlay-border);
+  border: 1px solid var(--stage-edge);
   border-radius: var(--radius-control);
   color: var(--overlay-ink);
-  font-size: var(--text-micro);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
 }
-.network-legend,
-.direction-key ul,
-.functional-key ul {
+.stage-key-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 32px;
+}
+.stage-key-toggle {
+  display: inline-flex;
+  flex: 1 0 auto;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  margin: 0 calc(-1 * var(--space-3));
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--overlay-ink-muted);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  line-height: var(--lh-caption);
+  white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+  .stage-key-toggle:hover { color: var(--overlay-ink); }
+}
+/* The level switch shares the title row: a 24px track in the key's own 12px type, inset 4px like its height. */
+.functional-level { flex: none; margin-right: calc(-1 * var(--space-2)); }
+.stage-key .functional-level button { height: 20px; padding: 0 var(--space-2); font-size: var(--text-caption); line-height: var(--lh-caption); }
+.stage-key-list {
   display: grid;
   gap: var(--space-1);
+  min-height: 0;
   margin: 0;
-  padding: 0;
+  padding: 0 0 var(--space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   list-style: none;
 }
-.network-legend { padding: var(--space-2) var(--space-3); }
-.network-legend li,
-.direction-key li,
-.functional-key li { display: flex; align-items: center; gap: var(--space-2); }
-/* The functional key scrolls and its level switch is a control: both take the pointer the stage keys let through. */
-.functional-level,
-.functional-key { pointer-events: auto; }
-.functional-key { max-width: 14rem; }
-/* Phone only (phone.css): the key's title as its own disclosure, the whole plate wide. */
-.functional-key-toggle {
-  display: none;
+.stage-key-list li { display: flex; align-items: center; gap: var(--space-2); }
+/* A domain row is a toggle: pressing one shows that domain's every area, the others step back. */
+.domains-key-list button {
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  width: calc(100% + 2 * var(--space-3));
-  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3));
-  padding: var(--space-2) var(--space-3);
+  gap: var(--space-2);
+  width: 100%;
+  height: 20px;
+  padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
   font: inherit;
   text-align: left;
 }
-.functional-key-toggle .stage-key-title { margin: 0; }
-.functional-key-toggle[aria-expanded="true"] { margin-bottom: 0; }
-.functional-key ul { gap: 2px; max-height: min(28rem, 50vh); overflow-y: auto; line-height: 1.3; }
-.stage-key-title { margin-bottom: var(--space-2); color: var(--overlay-ink-muted); font-weight: 600; }
-.direction-key [data-direction="lr"] { background: var(--scene-direction-lr); }
-.direction-key [data-direction="ap"] { background: var(--scene-direction-ap); }
-.direction-key [data-direction="si"] { background: var(--scene-direction-si); }
+.domains-key-list[data-picked] button[aria-pressed="false"] { color: var(--overlay-ink-muted); }
+.domains-key-list button[aria-pressed="true"] { font-weight: 600; }
+@media (hover: hover) and (pointer: fine) {
+  .domains-key-list button:hover { color: var(--overlay-ink); }
+}
+.stage-key-note {
+  max-width: 24ch;
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  color: var(--overlay-ink-muted);
+}
+.stage-key-list li > span:last-child { overflow-wrap: anywhere; }
+#direction-key [data-direction="lr"] { background: var(--scene-direction-lr); }
+#direction-key [data-direction="ap"] { background: var(--scene-direction-ap); }
+#direction-key [data-direction="si"] { background: var(--scene-direction-si); }
 
 /* Loading and failure ----------------------------------------------------- */
 .stage {
@@ -249,8 +294,8 @@
   text-align: center;
   background: var(--scene-background);
   color: var(--overlay-ink-muted);
-  font-size: var(--text-small);
-  line-height: 20px;
+  font-size: var(--text-stage);
+  line-height: var(--lh-ui);
 }
 #stage-message { max-width: 44ch; font-variant-numeric: tabular-nums; text-wrap: pretty; }
 #app[data-status="loading"] .stage,
@@ -279,11 +324,11 @@
 }
 
 /*
- * viewport-chrome.js measures the dock's natural widths in this state, for one forced layout:
- * each row at its own width, the presets inline, the section row whole on one line.
+ * viewport-chrome.js measures the section row's natural width in this state, for one forced
+ * layout: the row at its own width, whole on one line.
  */
 .stage-dock[data-measure] { max-width: none; align-items: flex-start; }
-#viewport .stage-dock[data-measure] :is(.view-tool, .cut-more, .cut-angles, #cut-status) { display: none; }
+#viewport .stage-dock[data-measure] :is(.cut-more, .cut-angles, #cut-status) { display: none; }
 .stage-dock[data-measure] .section-bar-row { flex-wrap: nowrap; }
 
 /* Static, so the popovers inside it are placed against the whole dock and open above the section row. */
@@ -294,10 +339,8 @@
   padding: 2px;
 }
 
-/* The presets are one exclusive choice, drawn like every other: a track and a ringed thumb. */
-.stage-toolbar > .views { flex: none; }
-/* Never squashed or clipped: a truncated preset is a view the reader cannot name. */
-.views button { flex: none; padding: 0 var(--space-2); }
+/* Every choice in a stage popover speaks the stage's 13px register. */
+.stage-segmented button { font-size: var(--text-stage); }
 
 .stage-toolbar-sep {
   flex: none;
@@ -320,7 +363,7 @@
   border: 0;
   background: transparent;
   color: var(--overlay-ink);
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   white-space: nowrap;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -328,9 +371,13 @@
 }
 .stage-tool[aria-expanded="true"],
 .stage-tool[aria-expanded="true"]:hover { background: var(--overlay-track); }
-/* The chooser for the presets, where they do not fit the plate inline (viewport-chrome.js). */
-.view-tool { display: none; }
-#viewport[data-presets="menu"] .view-tool { display: inline-flex; }
+/*
+ * The view tool names the preset it holds. Every name it can show shares one grid cell, so it is
+ * as wide as the longest and a new view never moves Section and Display: it reads like a select.
+ */
+.view-tool-label { display: inline-grid; justify-items: start; }
+.view-tool-label > span { grid-area: 1 / 1; }
+.view-tool-label > span:not([data-current]) { visibility: hidden; }
 /* Drawn, like every disclosure chevron. It points up while its popover is open. */
 .stage-tool-chevron {
   flex: none;
@@ -352,7 +399,7 @@
   z-index: 3;
   bottom: calc(100% + var(--space-2));
   left: 0;
-  width: 288px;
+  width: 272px;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-3) var(--space-4) var(--space-4);
@@ -376,25 +423,23 @@
 @media (prefers-reduced-motion: reduce) {
   .stage-popover, .stage-popover[hidden] { transform: none; }
 }
-#display-popover { width: 272px; }
-#view-popover { width: 248px; }
 .stage-field-label {
   display: block;
   margin: 0 0 var(--space-2);
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   font-weight: 500;
-  line-height: 16px;
+  line-height: var(--lh-caption);
   color: var(--overlay-ink-muted);
 }
 .stage-field { margin-top: var(--space-4); }
 
-/* In View ▾: the oblique view, then one opposing pair per row. */
-#view-popover > .views {
+/* In View ▾: the oblique view, then one opposing pair per row, like the cutting planes. */
+#views {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-#view-popover > .views button { height: 36px; min-width: 0; }
-#view-popover > .views button:first-child { grid-column: 1 / -1; }
+#views button { height: 36px; min-width: 0; }
+#views button:first-child { grid-column: 1 / -1; }
 
 #cut-mode {
   display: grid;
@@ -423,7 +468,8 @@
   display: flex;
   justify-content: space-between;
   gap: var(--space-2);
-  font-size: var(--text-micro);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
 }
 .display-opacity output { color: var(--overlay-ink-faint); }
 #opacity { height: 24px; margin: 0; }
@@ -432,7 +478,7 @@
 .stage-command {
   height: var(--control-height);
   padding: 0 var(--space-3);
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   white-space: nowrap;
 }
 .stage-command-quiet {
@@ -442,8 +488,9 @@
 @media (hover: hover) and (pointer: fine) {
   .stage-command-quiet:hover:not(:disabled) { background: var(--overlay-plate-hover); color: var(--overlay-ink); }
 }
+/* At the View popover's foot, its icon on the popover's text column (past its padding and border). */
 #reset {
-  margin: var(--space-2) 0 0 calc(-1 * var(--space-2));
+  margin: var(--space-2) 0 0 calc(-1 * var(--space-2) - 1px);
   padding: 0 var(--space-2);
 }
 
@@ -465,7 +512,8 @@
 /* Section row ------------------------------------------------------------- */
 /* The dock's upper row while a plane is cut, ruled off from the tools under it. */
 .section-bar {
-  padding: var(--space-1) var(--space-1) var(--space-2) var(--space-3);
+  /* The plane's name starts on the tools' words: the toolbar's 2px inset and a tool's 8px padding. */
+  padding: var(--space-1) var(--space-1) var(--space-2) calc(2px + var(--space-2));
   border-bottom: 1px solid var(--overlay-border);
   color: var(--overlay-ink);
 }
@@ -478,7 +526,7 @@
 }
 .section-bar-name {
   flex: none;
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   font-weight: 600;
 }
 .section-bar-short { display: none; }
@@ -495,7 +543,8 @@
 .cut-end {
   flex: none;
   min-width: 1ch;
-  font-size: var(--text-micro);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-align: center;
@@ -505,16 +554,15 @@
   flex: none;
   width: 4.5rem;
   padding: 0 var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 .cut-position-row input[type="number"]::-webkit-outer-spin-button,
 .cut-position-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.cut-unit { margin-left: calc(-1 * var(--space-1)); font-size: var(--text-micro); color: var(--overlay-ink-muted); }
+.cut-unit { margin-left: calc(-1 * var(--space-1)); font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--overlay-ink-muted); }
 .cut-details { display: contents; }
-.cut-details .check { flex: none; min-height: var(--control-height); font-size: var(--text-small); white-space: nowrap; }
+.cut-details .check { flex: none; min-height: var(--control-height); font-size: var(--text-stage); white-space: nowrap; }
 .cut-more { display: none; }
 #cut-close { margin-left: auto; }
 .cut-angles { margin-top: var(--space-1); padding-right: var(--space-2); }
@@ -524,12 +572,13 @@
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
-  font-size: var(--text-small);
+  font-size: var(--text-stage);
   color: var(--overlay-ink-muted);
 }
 .cut-angle output {
   min-width: 5ch;
-  font-size: var(--text-micro);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   font-variant-numeric: tabular-nums;
   text-align: right;
   color: var(--overlay-ink);
@@ -537,8 +586,8 @@
 #cut-status {
   margin: var(--space-1) 0 0;
   padding-right: var(--space-2);
-  font-size: var(--text-micro);
-  line-height: 16px;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
   color: var(--overlay-ink-muted);
 }
 /* While the plane's anatomy is prepared, the bar names it and says so; there is nothing to move yet. */
@@ -568,347 +617,24 @@
   padding: 0 var(--space-2) var(--space-1) 0;
 }
 
-/* Dialogs ----------------------------------------------------------------- */
-#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog {
-  --dialog-inset: var(--space-5);
-  --dialog-top: var(--dialog-inset);
-  margin: auto;
-  padding: var(--dialog-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-panel);
-  background: var(--surface-base);
-  color: var(--text-primary);
-  overflow: auto;
-  overscroll-behavior: contain;
-  box-shadow: var(--shadow-popover);
-  /* Centred, so it settles in place rather than from a trigger; it closes faster than it opens. */
-  transition: opacity var(--popover-exit) var(--ease-ui), transform var(--popover-exit) var(--ease-ui),
-    overlay var(--popover-exit) allow-discrete, display var(--popover-exit) allow-discrete;
-}
-#shortcuts, #provenance-dialog {
-  width: min(560px, calc(100vw - var(--space-8)));
-  min-width: min(320px, 100vw);
-  max-height: calc(100dvh - var(--space-8));
-}
-#mpr-dialog, #diffusion-mri-dialog { width: min(1180px, 96vw); max-height: 94dvh; }
-:is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog):not([open]) { opacity: 0; transform: scale(0.98); }
-:is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog)[open] { transition-duration: var(--dialog-transition); }
-@starting-style {
-  :is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog)[open] { opacity: 0; transform: scale(0.98); }
-}
-:is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog)::backdrop {
-  background: rgb(8 9 11 / 0.5);
-  opacity: 0;
-  transition: opacity var(--popover-exit) var(--ease-ui),
-    overlay var(--popover-exit) allow-discrete, display var(--popover-exit) allow-discrete;
-}
-:is(#mpr-dialog, #diffusion-mri-dialog)::backdrop { background: rgb(8 9 11 / 0.72); }
-:is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog)[open]::backdrop {
-  opacity: 1;
-  transition-duration: var(--dialog-transition);
-}
-@starting-style {
-  :is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog)[open]::backdrop { opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  :is(#shortcuts, #provenance-dialog, #mpr-dialog, #diffusion-mri-dialog):not([open]) { transform: none; }
-}
-
-/*
- * Slices are read the way a workstation shows them: a light surround lowers
- * the perceived contrast of the grey scale, so the viewer is dark in both
- * themes. Its components follow because they read these tokens.
- */
-#mpr-dialog, #diffusion-mri-dialog {
-  color-scheme: dark;
-  --text-primary: var(--overlay-ink);
-  --text-secondary: var(--overlay-ink-muted);
-  --text-tertiary: #9ba2aa;
-  --accent: var(--overlay-accent);
-  --accent-hover: var(--overlay-accent-hover);
-  --accent-wash: var(--overlay-accent-wash);
-  --primary-fill: var(--overlay-primary-fill);
-  --primary-fill-hover: var(--overlay-primary-fill-hover);
-  --surface-base: #121315;
-  --surface-navigation: var(--overlay-plate);
-  --surface-sunken: #0b0c0d;
-  --surface-hover: #1f2124;
-  --surface-raised: var(--overlay-raised);
-  --surface-tonal: var(--overlay-track);
-  --surface-tonal-hover: var(--overlay-track-hover);
-  --border-subtle: #2a2c30;
-  --border-control: var(--overlay-control-border);
-  --danger: var(--overlay-danger);
-  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
-  border-color: var(--border-subtle);
-}
-@media (prefers-contrast: more) {
-  #mpr-dialog, #diffusion-mri-dialog {
-    --text-tertiary: var(--text-secondary);
-    --border-control: var(--text-primary);
-    --border-subtle: var(--border-control);
-  }
-}
-
-/* A sticky ruled header: the title, then Close. */
-.dialog-header {
-  position: sticky;
-  top: calc(-1 * var(--dialog-top));
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin: calc(-1 * var(--dialog-top)) calc(-1 * var(--dialog-inset)) 0;
-  padding: var(--space-4) var(--dialog-inset);
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-}
-.dialog-header > :first-child { min-width: 0; }
-.dialog-header h2 { font-size: var(--text-title); font-weight: 600; line-height: 24px; letter-spacing: -0.01em; }
-.mpr-header { align-items: start; }
-.mpr-header p, .mpr-note { margin-top: var(--space-1); font-size: var(--text-small); color: var(--text-secondary); }
-#mpr-close, #shortcuts-close, #provenance-close, #diffusion-mri-close { flex: none; background: var(--surface-tonal); color: var(--text-primary); }
-@media (hover: hover) and (pointer: fine) {
-  #mpr-close:hover, #shortcuts-close:hover, #provenance-close:hover, #diffusion-mri-close:hover { background: var(--surface-tonal-hover); }
-}
-:is(#shortcuts, #provenance-dialog) .dialog-header { min-height: 56px; padding-block: var(--space-3); }
-
-/* The two reference sheets: datasheet rows ruled between, never under the last. */
-.shortcuts-group {
-  padding: var(--space-6) 0 var(--space-1);
-  font-size: var(--text-small);
-  font-weight: 600;
-  line-height: 20px;
-  color: var(--text-secondary);
-}
-#shortcuts-list section:first-child .shortcuts-group { padding-top: var(--space-4); }
-#shortcuts-list dl {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  font-size: var(--text-ui);
-  line-height: 20px;
-}
-#shortcuts-list dt { display: flex; align-items: center; gap: var(--space-1); padding-right: var(--space-4); }
-#shortcuts-list dt, #shortcuts-list dd { padding-block: 6px; border-bottom: 1px solid var(--border-subtle); }
-#shortcuts-list dd { align-content: center; }
-#shortcuts-list dl > :nth-last-child(-n + 2) { border-bottom: 0; }
-.shortcuts-note { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: var(--text-small); color: var(--text-secondary); }
-
-#provenance-facts {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  margin-top: var(--space-1);
-  font-size: var(--text-ui);
-}
-#provenance-facts dt, #provenance-facts dd { padding: var(--space-3) 0; border-bottom: 1px solid var(--border-subtle); }
-#provenance-facts > :nth-last-child(-n + 2) { border-bottom: 0; }
-#provenance-facts dt { padding-right: var(--space-4); font-size: var(--text-small); line-height: 20px; color: var(--text-secondary); }
-#provenance-facts dd { display: grid; gap: var(--space-3); min-width: 0; line-height: 20px; }
-.provenance-item { display: grid; justify-items: start; gap: 2px; min-width: 0; }
-.provenance-value { overflow-wrap: anywhere; }
-.provenance-item .measure { font-size: var(--text-micro); }
-.provenance-note { font-size: var(--text-small); line-height: 18px; color: var(--text-secondary); }
-.provenance-link { color: var(--accent); font-size: var(--text-small); line-height: 18px; text-underline-offset: 3px; overflow-wrap: anywhere; }
-.provenance-link:hover { color: var(--accent-hover); }
-#provenance-use { margin-top: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
-
-/* Linked MRI: three planes side by side, the shared readout, then window and level. */
-#mpr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
-#mpr-grid article {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: var(--space-3);
-  align-items: center;
-}
-#mpr-grid h3 { grid-column: 1; grid-row: 1; font-size: var(--text-ui); font-weight: 600; }
-#mpr-grid canvas {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-top: var(--space-2);
-  background: #000;
-  cursor: crosshair;
-  border-radius: 2px;
-}
-#mpr-grid label,
-.mpr-display > label:not(.check) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  column-gap: var(--space-3);
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-small);
-}
-#mpr-grid label { grid-column: 1 / -1; grid-row: 3; }
-#mpr-grid label .measure,
-.mpr-display output { justify-self: end; color: var(--text-tertiary); font-size: var(--text-micro); }
-#mpr-grid input[type="range"],
-.mpr-display input[type="range"] { grid-column: 1 / -1; width: 100%; margin: var(--space-1) 0 0; }
-#mpr-grid .button-quiet {
-  grid-column: 2;
-  grid-row: 1;
-  height: 32px;
-  padding: 0 var(--space-2);
-  justify-self: end;
-  font-size: var(--text-small);
-}
-@media (pointer: coarse) { #mpr-grid .button-quiet { height: 44px; } }
-/* The crosshair's position and label: a tonal readout, not a boxed field. */
-#mpr-readout,
-#diffusion-mri-readout {
-  margin-top: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-control);
-  background: var(--surface-navigation);
-  font-size: var(--text-micro);
-  line-height: 20px;
-  overflow-wrap: anywhere;
-}
-#diffusion-mri-readout:empty { display: none; }
-.mpr-display {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-2) var(--space-6);
-  margin: var(--space-3) 0;
-  padding-top: var(--space-2);
-}
-.mpr-display .check { grid-column: 1 / -1; }
-.mpr-note { margin-top: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
-/* Notes keep a readable measure; source files and grids read as data, a step smaller in mono. */
-.mpr-header p,
-.mpr-note > p { max-width: 72ch; text-wrap: pretty; }
-.mpr-note > .measure { font-size: var(--text-micro); }
-
-/* MRI with tracts: the same reading-room pieces as the linked MRI sections. */
-#diffusion-mri-status { margin-top: var(--space-3); font-size: var(--text-small); }
-#diffusion-mri-status[data-error="true"] { color: var(--danger); }
-#diffusion-mri-retry { margin-top: var(--space-2); }
-#diffusion-mri-controls { min-width: 0; margin: var(--space-4) 0 0; padding: 0; border: 0; }
-.diffusion-mri-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-6);
-}
-.diffusion-mri-plane,
-.diffusion-mri-position > span {
-  font-size: var(--text-small);
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-.diffusion-mri-plane { display: flex; align-items: center; gap: var(--space-3); }
-.diffusion-mri-plane select { width: auto; min-width: 12rem; font-weight: 400; color: var(--text-primary); }
-.diffusion-mri-position { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
-.diffusion-mri-position label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-small);
-  color: var(--text-tertiary);
-}
-.diffusion-mri-position input {
-  width: 5.5rem;
-  padding: 0 var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-}
-.diffusion-mri-canvas {
-  height: min(52dvh, 520px);
-  min-height: 300px;
-  margin-top: var(--space-3);
-  overflow: hidden;
-  border-radius: 2px;
-  background: var(--scene-background);
-}
-#diffusion-mri-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
-.diffusion-mri-display { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.diffusion-mri-notes > p + p { margin-top: var(--space-1); }
-#diffusion-mri-grid { font-variant-numeric: tabular-nums; }
-@media (max-width: 700px) {
-  #mpr-grid,
-  .mpr-display { grid-template-columns: 1fr; }
-}
-@media (pointer: coarse) {
-  /* A 20px thumb on the coarse 2px track needs room above it, clear of the label. */
-  .diffusion-mri-display input[type="range"] { margin: 14px 0 10px; }
-}
-
-/* Status bar -------------------------------------------------------------- */
-/* One quiet line under the stage: the statement, what is loaded, the count, where it came from. */
-#colophon {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: 0 var(--space-2) 0 var(--space-4);
-  border-top: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-  font-size: var(--text-micro);
-  line-height: 16px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-#colophon-text { display: flex; flex: 1 1 auto; align-items: center; gap: var(--space-3); min-width: 0; }
-/* The statement never gives way; the description does. */
-#colophon-statement { flex: none; color: var(--text-primary); font-weight: 600; }
-#colophon-description {
-  min-width: 0;
-  padding-left: var(--space-3);
-  border-left: 1px solid var(--border-subtle);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#colophon-description:empty, #region-count:empty { display: none; }
-#region-count { flex: none; font-variant-numeric: tabular-nums; }
-#provenance {
-  flex: none;
-  height: 24px;
-  padding: 0 var(--space-2);
-  background: none;
-  color: var(--text-secondary);
-  font-size: var(--text-micro);
-  font-weight: 500;
-}
-@media (hover: hover) and (pointer: fine) {
-  #provenance:hover { background: var(--surface-hover); color: var(--text-primary); }
-}
-
 /* Phones ------------------------------------------------------------------ */
 /* The literal twin of PHONE_QUERY in render/device.js, as in phone.css. */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
   .hover-label { display: none; }
 
-  #provenance-facts { grid-template-columns: minmax(0, 1fr); }
-  #provenance-facts dt { padding: var(--space-3) 0 0; border: 0; }
-  #provenance-facts dd { padding: var(--space-1) 0 var(--space-3); }
-  .diffusion-mri-canvas { height: min(50dvh, 390px); }
-  .diffusion-mri-plane { flex: 1 1 100%; }
-  .diffusion-mri-plane select { flex: 1; min-width: 0; }
-  .diffusion-mri-position {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-    width: 100%;
-  }
-  .diffusion-mri-position > span { grid-column: 1 / -1; }
-  .diffusion-mri-position input { width: 100%; min-width: 0; }
-  #diffusion-mri-close { white-space: nowrap; }
-
-  /* Three worded tools share the plate across the stage; the presets open from View. */
+  /* The three tools share the plate across the stage, each a third of it. */
   .stage-dock { width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter)); }
-  .stage-toolbar-sep { display: none; }
-  .view-tool { display: inline-flex; }
   .stage-tool { flex: 1 1 0; min-width: 0; justify-content: center; }
-  .stage-tool > .control-icon { display: none; }
   .stage-tool > span:not(.stage-tool-chevron) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   /* Every choice in a phone popover is a full 44px target. */
   .stage-popover .segmented button,
-  #view-popover > .views button { height: 44px; }
+  #views button { height: 44px; }
+
+  /* A key's title row is a full target; its rows run in two columns, so the band it takes stays short. */
+  .stage-key-head,
+  .stage-key-toggle { height: 44px; }
+  .domains-key-list button { height: 44px; }
+  :is(#network-key, #functional-key, #domains-key) .stage-key-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-3); }
 
   /* Display, compact: the hemisphere choice beside its name, opacity on the cortex row. */
   #display-popover {
@@ -919,7 +645,7 @@
     padding: var(--space-2) var(--space-4);
   }
   #display-popover > .stage-field-label { margin: 0; }
-  #display-popover > :is(.display-visibility, #reset) { grid-column: 1 / -1; }
+  #display-popover > .display-visibility { grid-column: 1 / -1; }
   #display-popover .display-visibility {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -941,13 +667,12 @@
     white-space: nowrap;
   }
   #display-popover #opacity { flex: 1; min-width: 0; height: 44px; }
-  #display-popover #reset { justify-self: start; margin: 0 0 0 calc(-1 * var(--space-2)); }
 
   #cut-mode { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   #cut-mode button:first-child { grid-column: auto; }
-  #cut-mode button { flex-direction: column; justify-content: center; gap: 2px; padding: 0 var(--space-1); }
+  #cut-mode button { flex-direction: column; justify-content: center; gap: 2px; height: 44px; padding: 0 var(--space-1); }
   #cut-mode .control-label { display: none; }
-  #cut-mode .cut-mode-short { display: block; font-size: var(--text-micro); line-height: 16px; }
+  #cut-mode .cut-mode-short { display: block; font-size: var(--text-caption); line-height: var(--lh-caption); }
 
   /* The section row is always compact here (viewport-chrome.js), under the plane's short name. */
   .section-bar { padding: 0 0 0 var(--space-3); }
@@ -968,10 +693,10 @@
   }
   .section-bar[data-expanded="true"] #cut-status { padding-bottom: var(--space-2); }
 
-  /* The dock takes the whole bottom line, so the scale bar moves to the top left, S below it. */
+  /* The dock takes the whole bottom line, so the scale bar moves to the top left, under any key, S below it. */
   .scale-bar,
   #viewport[data-chrome] .scale-bar {
-    top: calc(var(--vis-top) + var(--space-3));
+    top: calc(var(--vis-top) + var(--key-top) + var(--space-3));
     bottom: auto;
     left: calc(var(--vis-left) + var(--space-3));
     right: auto;
@@ -984,14 +709,12 @@
   #viewport:has(.stage-popover:not([hidden])) :is(.scale-bar, .orientation) { visibility: hidden; }
 }
 
-/* A landscape phone is wide but short: the bar keeps its details on its one row instead of growing. */
+/*
+ * A landscape phone: the scale bar sits far to the left of a wide stage, so S keeps the top line.
+ * The section row folds its details as upright: beside a one-row side sheet they leave the slider no room.
+ */
 @media (max-height: 480px) and (orientation: landscape) {
-  /* The scale bar sits far to the left of a wide stage, so S keeps the top line. */
   .orientation [data-edge="top"] { top: var(--space-3); }
-  #section-bar .cut-more { display: none; }
-  #section-bar:not([data-pending="true"]) .cut-details { display: contents; }
-  #section-bar .section-bar-row:first-child { flex-wrap: nowrap; }
-  #section-bar:not([data-pending="true"]) .cut-angles { display: flex; flex-wrap: nowrap; }
 }
 
 /* A finger is not a cursor: stage targets follow --control-height, which phone.css raises for coarse pointers. */
@@ -999,11 +722,4 @@
   .display-opacity { padding-left: 28px; }
   .cut-position-row input[type="range"],
   .cut-angle input[type="range"] { height: 44px; }
-}
-
-@media (forced-colors: active) {
-  .orientation > span, .scale-bar { -webkit-text-stroke: 0; }
-  .stage-segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
-  .stage-dock, .stage-popover, .stage-key { border-color: CanvasText; }
-  #viewport:has(> canvas:focus-visible)::after { border-color: Highlight; }
 }

@@ -5,11 +5,13 @@ import { FRAME_FILL } from '../../render/camera-views.js';
 import { clearFraming } from '../../render/effective-viewport.js';
 import { cabNpName, networkCss, networkName } from '../../catalog/networks.js';
 import { functionalShortName } from '../../catalog/functional-regions.js';
+import { domainName } from '../../catalog/neuropsych-domains.js';
 import { t } from '../../i18n/translations.js';
+import { failureNotice } from '../../i18n/errors.js';
 import { isIndependentTractReference } from '../../diffusion/presentation.js';
-import { createStagePopovers, dockArrangement } from './stage-tools.js';
+import { compactSection, createStagePopovers } from './stage-tools.js';
 import { bindRoving } from '../roving.js';
-import { decimal } from '../format.js';
+import { decimal, withUnit } from '../format.js';
 import { subjectName } from './header.js';
 import { SNAPSHOT_LAYOUT, annotateSnapshot, snapshotCaption, snapshotFonts } from './snapshot.js';
 
@@ -23,6 +25,17 @@ const MARKING_GAP_PX = 8;
 
 /** Room the top orientation letter and its gap take from a hint that would reach it. */
 const TOP_LETTER_ROOM_PX = 20;
+
+/**
+ * A key longer than this many rows starts folded to its title where the stage is narrower than
+ * KEY_FOLD_WIDTH_PX, or where its rows (KEY_ROW_PX each, under KEY_HEAD_PX of title, foot and
+ * edges) would not fit above the dock. The hover chip names the colour under the pointer, so a
+ * folded key hides nothing the reader cannot reach; unfolded, its rows go into a saved image.
+ */
+const KEY_FOLD_ROWS = 8;
+const KEY_FOLD_WIDTH_PX = 1000;
+const KEY_ROW_PX = 20;
+const KEY_HEAD_PX = 42;
 
 /** Keys that move the camera while the canvas has focus. */
 const CAMERA_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-']);
@@ -68,35 +81,28 @@ export function paintLoadProgress(lang, loaded, total) {
  * the loading and error stage.
  */
 export function createViewportChrome({
-  networks, cabNp, functionalRegions, onView, onRetry, onSnapshot, onDock, onFunctionalLevel, controls,
+  networks, cabNp, functionalRegions, domains, onView, onRetry, onSnapshot, onDock, onFunctionalLevel, onDomain,
+  controls,
 }) {
   const orientation = document.getElementById('orientation');
   const edges = Object.fromEntries(
     [...orientation.children].map(node => [node.dataset.edge, node]));
   const views = document.getElementById('views');
-  const toolbar = document.getElementById('stage-toolbar');
-  const separator = toolbar.querySelector('.stage-toolbar-sep');
   const dock = document.getElementById('stage-dock');
   const sectionBar = document.getElementById('section-bar');
   const sectionRow = sectionBar.querySelector('.section-bar-row');
   const sectionToolLabel = document.getElementById('section-tool-label');
   const viewTool = document.getElementById('view-tool');
   const viewToolLabel = document.getElementById('view-tool-label');
-  const viewPopover = document.getElementById('view-popover');
   const viewPopoverLabel = document.getElementById('view-popover-label');
   const displayToolLabel = document.getElementById('display-tool-label');
   const bar = document.getElementById('scale-bar');
   const barRule = bar.querySelector('.scale-bar-rule');
   const barText = bar.querySelector('.measure');
   const hover = document.getElementById('hover-label');
-  const legend = document.getElementById('network-legend');
-  const functionalKey = document.getElementById('functional-key');
+  const keysHost = document.getElementById('stage-keys');
   const functionalLevel = document.getElementById('functional-level');
-  const functionalTitle = document.getElementById('functional-key-title');
-  const functionalList = document.getElementById('functional-key-list');
-  const functionalToggle = document.getElementById('functional-key-toggle');
-  const functionalToggleLabel = document.getElementById('functional-key-toggle-label');
-  const directionKey = document.getElementById('direction-key');
+  const domainsNote = document.getElementById('domains-key-note');
   const host = document.getElementById('viewport');
   const help = document.getElementById('viewport-help');
   const focusHint = document.getElementById('viewport-focus-hint');
@@ -131,59 +137,34 @@ export function createViewportChrome({
   };
 
   /*
-   * The dock's natural widths: the tools with the presets inline, and the section bar's first
-   * row with every control beside the slider. Read in one forced layout, and only when the words
-   * or the tools on show change, never on a resize or a sheet drag.
+   * The section row's natural width, with every control beside the slider. Read in one forced
+   * layout, and only when its words or state change, never on a resize or a sheet drag.
    */
-  let needs = null;
-  let needsKey = '';
-  function dockNeeds() {
-    // The preset labels arrive after the first fit, so they key the cache as well as the language.
-    const key = [currentLang, views.textContent, [...toolbar.children].map(node => Number(node.hidden)).join(''),
-      sectionBar.hidden, sectionBar.dataset.pending, sectionRow.textContent].join('|');
-    if (needs && key === needsKey) return needs;
-    needsKey = key;
+  let sectionWidth = 0;
+  let sectionKey = '';
+  function sectionNeed() {
+    if (sectionBar.hidden) return 0;
+    const key = [currentLang, sectionBar.dataset.pending, sectionRow.textContent].join('|');
+    if (key === sectionKey) return sectionWidth;
+    sectionKey = key;
     const compact = sectionBar.dataset.compact;
-    let probe = null;
-    if (views.parentElement !== toolbar) {
-      probe = views.cloneNode(true);
-      probe.removeAttribute('id');
-      separator.before(probe);
-    }
     delete sectionBar.dataset.compact;
     dock.dataset.measure = 'true';
     const style = getComputedStyle(dock);
-    const frame = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
-    needs = { tools: toolbar.offsetWidth + frame, section: sectionBar.hidden ? 0 : sectionBar.offsetWidth + frame };
+    sectionWidth = sectionBar.offsetWidth + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
     delete dock.dataset.measure;
     if (compact !== undefined) sectionBar.dataset.compact = compact;
-    probe?.remove();
-    return needs;
+    return sectionWidth;
   }
 
-  // Seven presets beside two tools need room; where there is none they open from View ▾.
-  function seatPresets(menu) {
-    const mode = menu ? 'menu' : 'inline';
-    if (host.dataset.presets !== mode) host.dataset.presets = mode;
-    const home = menu ? viewPopover : toolbar;
-    if (views.parentElement === home) return;
-    const hadFocus = views.contains(document.activeElement);
-    if (popovers.open === viewPopover.id) popovers.hide();
-    if (menu) viewPopover.append(views); else separator.before(views);
-    roving.sync();
-    if (hadFocus) (menu ? viewTool : views.querySelector('[tabindex="0"]'))?.focus({ preventScroll: true });
-  }
-
-  /** Presets inline or in View ▾, and the section bar whole or behind its disclosure, by measured room. */
+  /** The section row whole, or with its details behind the disclosure where it would wrap. */
   function fitDockLayout() {
     if (!lastRect?.width) return;
-    const onPhone = phone?.matches ?? false;
-    const { menu, compact } = dockArrangement({
+    const compact = String(compactSection({
       room: lastRect.width - 2 * gutter(),
-      needs: onPhone ? null : dockNeeds(),
-    });
-    seatPresets(menu);
-    if (sectionBar.dataset.compact !== String(compact)) sectionBar.dataset.compact = String(compact);
+      need: phone?.matches ? null : sectionNeed(),
+    }));
+    if (sectionBar.dataset.compact !== compact) sectionBar.dataset.compact = compact;
   }
 
   /*
@@ -251,99 +232,183 @@ export function createViewportChrome({
   function markingClearance(reach) {
     const clear = { top: 0, bottom: 0, left: 0, right: 0 };
     if (!lastRect || orientation.hidden || sheetRaised()) return clear;
-    const origin = host.getBoundingClientRect();
-    const top = lastRect.y;
-    const floor = lastRect.y + lastRect.height - reach;
-    const box = node => {
-      const r = node.getBoundingClientRect();
-      return { top: r.top - origin.top, bottom: r.bottom - origin.top, left: r.left - origin.left, right: r.right - origin.left };
-    };
-    const above = b => Math.max(0, b.bottom - top + MARKING_GAP_PX);
+    // Measured from the framing rectangle (the visible stage less any colour key's band) as it is
+    // drawn: on a phone it glides with a settling sheet, and the markings glide with it.
+    const frame = orientation.getBoundingClientRect();
+    const floor = frame.bottom - reach;
+    const box = edge => edges[edge].getBoundingClientRect();
+    const above = b => Math.max(0, b.bottom - frame.top + MARKING_GAP_PX);
     const below = b => Math.max(0, floor - b.top + MARKING_GAP_PX);
-    clear.top = above(box(edges.top));
-    if (host.dataset.dockTall !== 'true') clear.bottom = below(box(edges.bottom));
-    clear.left = Math.max(0, box(edges.left).right - lastRect.x + MARKING_GAP_PX);
-    clear.right = Math.max(0, lastRect.x + lastRect.width - box(edges.right).left + MARKING_GAP_PX);
+    clear.top = above(box('top'));
+    if (host.dataset.dockTall !== 'true') clear.bottom = below(box('bottom'));
+    clear.left = Math.max(0, box('left').right - frame.left + MARKING_GAP_PX);
+    clear.right = Math.max(0, frame.right - box('right').left + MARKING_GAP_PX);
     if (!bar.hidden) {
-      const b = box(bar);
-      if ((b.top + b.bottom) / 2 < (top + floor) / 2) clear.top = Math.max(clear.top, above(b));
+      const b = bar.getBoundingClientRect();
+      if ((b.top + b.bottom) / 2 < (frame.top + floor) / 2) clear.top = Math.max(clear.top, above(b));
       else clear.bottom = Math.max(clear.bottom, below(b));
     }
     return clear;
   }
 
-  /** The scene's framing inset and the scale for its fit, keeping anatomy clear of dock and markings. */
+  /** The scene's framing insets and the scale for its fit, keeping anatomy clear of dock, keys and markings. */
   function framing() {
     const reach = dockReach();
-    if (!lastRect?.height) return { inset: reach, scale: { horizontal: 1, vertical: 1 } };
-    return clearFraming(lastRect, reach, markingClearance(reach), FRAME_FILL);
+    fitKeys({ width: keysHost.offsetWidth, height: keysHost.offsetHeight });
+    if (!lastRect?.height) return { inset: { ...keyInset, bottom: reach }, scale: { horizontal: 1, vertical: 1 } };
+    const room = { width: lastRect.width - keyInset.right, height: lastRect.height - keyInset.top };
+    const { inset, scale } = clearFraming(room, reach, markingClearance(reach), FRAME_FILL);
+    return { inset: { ...keyInset, bottom: inset }, scale };
   }
 
   /*
-   * The key to the colours on the model. On the stage rather than in a panel:
-   * a key that is not beside the picture it explains is not a key.
+   * The colour keys. On the stage rather than in a panel: a key that is not beside the picture it
+   * explains is not a key. Each is one plate whose title row names its map and folds its rows;
+   * the reader's own fold of a map is kept for the visit.
    */
-  function showLegend(state) {
-    const key = {
-      network: networks && { ...networks, name: networkName },
-      'cab-np': cabNp && { ...cabNp, name: cabNpName },
-    }[state.surfaceColor];
-    legend.hidden = !key || !(state.status === 'ready' || state.status === 'switching');
-    if (legend.hidden) return;
-    legend.replaceChildren(...key.networks.map(network => {
-      const row = document.createElement('li');
-      const swatch = document.createElement('span');
-      swatch.className = 'network-swatch';
-      swatch.style.background = networkCss(key.colors[network]);
-      const label = document.createElement('span');
-      label.textContent = key.name(network, state.lang);
-      row.append(swatch, label);
-      return row;
-    }));
+  const plates = Object.fromEntries(['network', 'functional', 'domains', 'direction'].map(name => {
+    const node = document.getElementById(`${name}-key`);
+    return [name, {
+      plate: node,
+      title: document.getElementById(`${name}-key-title`),
+      toggle: node.querySelector('.stage-key-toggle'),
+      list: node.querySelector('.stage-key-list'),
+    }];
+  }));
+  const folds = new Map();
+
+  function keyRow(color, text) {
+    const row = document.createElement('li');
+    const swatch = document.createElement('span');
+    swatch.className = 'network-swatch';
+    swatch.style.background = networkCss(color);
+    const label = document.createElement('span');
+    label.textContent = text;
+    row.append(swatch, label);
+    return row;
   }
 
-  const onLevelClick = event => {
-    const button = event.target.closest('[data-level]');
-    if (button && button.getAttribute('aria-pressed') !== 'true') onFunctionalLevel(button.dataset.level);
-  };
-  functionalLevel.addEventListener('click', onLevelClick);
-  // A phone's stage is too short for 21 or 22 rows beside the anatomy, so there the key opens on request.
-  let functionalKeyOpen = false;
-  const onKeyToggle = () => {
-    functionalKeyOpen = !functionalKeyOpen;
-    if (lastState) showFunctionalKey(lastState);
-  };
-  functionalToggle.addEventListener('click', onKeyToggle);
+  /** One plate, for `map` or for nothing; `rows` replaces its list when given. */
+  function paintKey(name, map, title, count, rows = null) {
+    const { plate, toggle, list } = plates[name];
+    plate.hidden = !map;
+    if (!map) return;
+    plate.dataset.map = map;
+    plates[name].title.textContent = title;
+    if (rows) list.replaceChildren(...rows);
+    const crowded = Boolean(lastRect?.width) && (lastRect.width < KEY_FOLD_WIDTH_PX
+      || KEY_HEAD_PX + count * KEY_ROW_PX > lastRect.height - 3 * gutter() - dockHeight);
+    const open = folds.get(map) ?? !(count > KEY_FOLD_ROWS && crowded);
+    toggle.setAttribute('aria-expanded', String(open));
+    list.hidden = !open;
+  }
 
-  /** The level switch sits on the key it changes; outside the plate, so a snapshot draws the key alone. */
-  function showFunctionalKey(state) {
-    functionalKey.hidden = !functionalRegions || state.surfaceColor !== 'functional'
-      || !(state.status === 'ready' || state.status === 'switching');
-    functionalLevel.hidden = functionalKey.hidden;
-    if (functionalKey.hidden) return;
+  function showKeys(state, directionShown) {
+    const ready = state.status === 'ready' || state.status === 'switching';
+    // A key is titled as the masthead's Colour field names its map.
+    const maps = t(state.lang, 'display').surfaceColors;
+    const network = ready ? { network: networks, 'cab-np': cabNp }[state.surfaceColor] : null;
+    if (network) {
+      const name = state.surfaceColor === 'cab-np' ? cabNpName : networkName;
+      paintKey('network', state.surfaceColor, maps[state.surfaceColor], network.networks.length,
+        network.networks.map(key => keyRow(network.colors[key], name(key, state.lang))));
+    } else paintKey('network', null);
+
+    const functional = ready && functionalRegions && state.surfaceColor === 'functional'
+      ? functionalRegions.levels[state.functionalLevel] : null;
     const copy = t(state.lang, 'functional');
     functionalLevel.setAttribute('aria-label', copy.keyAria);
     for (const button of functionalLevel.querySelectorAll('[data-level]')) {
       button.textContent = copy.levels[button.dataset.level];
       button.setAttribute('aria-pressed', String(button.dataset.level === state.functionalLevel));
     }
-    functionalTitle.textContent = copy.keyTitles[state.functionalLevel];
-    functionalToggleLabel.textContent = copy.keyTitles[state.functionalLevel];
-    const collapsed = (phone?.matches ?? false) && !functionalKeyOpen;
-    functionalToggle.setAttribute('aria-expanded', String(!collapsed));
-    functionalList.hidden = collapsed;
-    functionalList.replaceChildren(...functionalRegions.levels[state.functionalLevel].map(record => {
-      const row = document.createElement('li');
-      const swatch = document.createElement('span');
-      swatch.className = 'network-swatch';
-      swatch.style.background = networkCss(record.color);
-      const label = document.createElement('span');
-      label.textContent = record.number
-        ? `${record.number} · ${functionalShortName(record, state.lang)}` : functionalShortName(record, state.lang);
-      row.append(swatch, label);
+    levelRoving.sync();
+    const division = record => (record.number ? `${record.number} · ` : '') + functionalShortName(record, state.lang);
+    paintKey('functional', functional && 'functional', maps.functional, functional?.length,
+      functional?.map(record => keyRow(record.color, division(record))));
+
+    // Each row is a toggle; the reader's pick shows that domain's every area. The rows are
+    // rebuilt on every paint, so the one holding focus hands it to its replacement.
+    const focusedDomain = plates.domains.list.contains(document.activeElement)
+      ? document.activeElement.dataset.domain : null;
+    const domainRows = ready && domains && state.surfaceColor === 'domains' ? domains.domains : null;
+    const domainCopy = t(state.lang, 'domains');
+    paintKey('domains', domainRows && 'domains', maps.domains, domainRows?.length, domainRows?.map(record => {
+      const row = keyRow(record.color, domainName(record, state.lang));
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.domain = record.id;
+      button.setAttribute('aria-pressed', String(record.id === state.domain));
+      button.append(...row.childNodes);
+      row.append(button);
       return row;
     }));
+    plates.domains.list.toggleAttribute('data-picked', Boolean(state.domain));
+    domainsNote.textContent = state.domain ? domainCopy.keyPicked : domainCopy.keyAll;
+    domainsNote.hidden = plates.domains.list.hidden;
+    if (focusedDomain) plates.domains.list.querySelector(`[data-domain="${focusedDomain}"]`)?.focus();
+    domainRoving.sync();
+
+    const directions = t(state.lang, 'viewport').directionKey;
+    paintKey('direction', directionShown && 'direction', directions.title, 3);
+    document.getElementById('direction-key-lr').textContent = directions.leftRight;
+    document.getElementById('direction-key-ap').textContent = directions.anteriorPosterior;
+    document.getElementById('direction-key-si').textContent = directions.superiorInferior;
   }
+
+  const onKeyToggle = event => {
+    const toggle = event.target.closest('.stage-key-toggle');
+    if (!toggle) return;
+    folds.set(toggle.closest('.stage-key').dataset.map, toggle.getAttribute('aria-expanded') !== 'true');
+    if (lastState) showKeys(lastState, !plates.direction.plate.hidden);
+  };
+  keysHost.addEventListener('click', onKeyToggle);
+
+  const onLevelClick = event => {
+    const button = event.target.closest('[data-level]');
+    if (button && button.getAttribute('aria-pressed') !== 'true') onFunctionalLevel(button.dataset.level);
+  };
+  functionalLevel.addEventListener('click', onLevelClick);
+  const levelRoving = bindRoving(functionalLevel);
+
+  const onDomainClick = event => {
+    const button = event.target.closest('[data-domain]');
+    if (button) onDomain(button.getAttribute('aria-pressed') === 'true' ? null : button.dataset.domain);
+  };
+  plates.domains.list.addEventListener('click', onDomainClick);
+  const domainRoving = bindRoving(plates.domains.list);
+
+  /*
+   * A shown key takes a band off the framing rectangle, the right column it stands in or the top
+   * strip down to its foot, whichever is the smaller share of its axis; the orientation letters
+   * frame what is left. Sizes come from the observer, so a sheet drag forces no layout.
+   */
+  let keySize = { width: 0, height: 0 };
+  let keyInset = { top: 0, right: 0 };
+  function fitKeys(size = keySize) {
+    keySize = size;
+    let next = { top: 0, right: 0 };
+    if (size.width && size.height && lastRect?.width && lastRect.height) {
+      const top = Math.round(gutter() + size.height);
+      const right = Math.round(gutter() + size.width);
+      next = top / lastRect.height <= right / lastRect.width ? { top, right: 0 } : { top: 0, right };
+    }
+    if (next.top === keyInset.top && next.right === keyInset.right) return false;
+    keyInset = next;
+    host.style.setProperty('--key-top', `${next.top}px`);
+    host.style.setProperty('--key-right', `${next.right}px`);
+    return true;
+  }
+  const keysObserver = globalThis.ResizeObserver
+    ? new ResizeObserver(([entry]) => {
+      const box = entry.borderBoxSize?.[0];
+      if (fitKeys({ width: box?.inlineSize ?? keysHost.offsetWidth, height: box?.blockSize ?? keysHost.offsetHeight })) {
+        fitHints();
+        onDock?.();
+      }
+    })
+    : null;
+  keysObserver?.observe(keysHost);
 
   let scale = null;
   function paintScale() {
@@ -356,7 +421,7 @@ export function createViewportChrome({
     // The bar is as wide as the camera makes it, so the fit is asked again
     // whenever it changes, not only when it appears.
     const pixels = `${Math.round(scale.pixels)}px`;
-    const text = `${decimal(scale.millimetres, 1, currentLang, { trim: true })} mm`;
+    const text = withUnit(decimal(scale.millimetres, 1, currentLang, { trim: true }), 'mm', currentLang);
     const changed = wasHidden || barRule.style.width !== pixels || barText.textContent !== text;
     if (barRule.style.width !== pixels) barRule.style.width = pixels;
     if (barText.textContent !== text) barText.textContent = text;
@@ -374,23 +439,16 @@ export function createViewportChrome({
     }
   }
 
-  function showDirectionKey(visible, copy) {
-    directionKey.hidden = !visible;
-    if (!visible) return;
-    document.getElementById('direction-key-title').textContent = copy.title;
-    document.getElementById('direction-key-lr').textContent = copy.leftRight;
-    document.getElementById('direction-key-ap').textContent = copy.anteriorPosterior;
-    document.getElementById('direction-key-si').textContent = copy.superiorInferior;
-  }
-
   /*
-   * The hints sit at the top left and never reach the top letter: on a stage too narrow for
-   * one line beside it, a hint is not drawn. Widths are read once per wording.
+   * The hints sit at the top left and never reach the top letter, nor a key in the top band: on a
+   * stage too narrow for one line beside them, a hint is not drawn. Widths are read once per wording.
    */
   const hintWidths = new Map();
   function fitHints() {
     if (!lastRect?.width) return;
-    const room = lastRect.width / 2 - gutter() - TOP_LETTER_ROOM_PX;
+    const room = keyInset.top
+      ? lastRect.width - 3 * gutter() - keySize.width
+      : (lastRect.width - keyInset.right) / 2 - gutter() - TOP_LETTER_ROOM_PX;
     for (const node of [help, focusHint]) {
       const text = node.textContent;
       if (!hintWidths.has(text)) hintWidths.set(text, node.offsetWidth);
@@ -420,13 +478,25 @@ export function createViewportChrome({
   });
   const roving = bindRoving(views);
 
-  /** View ▾ names the view the camera holds, so the chooser reads like the inline presets. */
+  // Every name the view tool can show, stacked in one cell, so naming another view never moves Section and Display.
+  const viewToolNames = ['', ...VIEW_KEYS].map(view => {
+    const name = document.createElement('span');
+    name.dataset.view = view;
+    viewToolLabel.append(name);
+    return name;
+  });
+
+  /** The view tool names the view the camera holds, or says View once the reader has turned away from it. */
   function paintViewTool() {
     const copy = t(currentLang, 'viewport');
-    const name = held && currentView ? t(currentLang, 'views')[currentView] : null;
-    const label = name ?? copy.viewTool;
-    if (viewToolLabel.textContent !== label) viewToolLabel.textContent = label;
-    viewTool.setAttribute('aria-label', name ? copy.viewToolAria(name) : copy.viewAria);
+    const names = t(currentLang, 'views');
+    const shown = held && currentView ? currentView : '';
+    for (const name of viewToolNames) {
+      const text = name.dataset.view ? names[name.dataset.view] : copy.viewTool;
+      if (name.textContent !== text) name.textContent = text;
+      name.toggleAttribute('data-current', name.dataset.view === shown);
+    }
+    viewTool.setAttribute('aria-label', shown ? copy.viewToolAria(names[shown]) : copy.viewAria);
   }
 
   function paintPresets() {
@@ -441,12 +511,12 @@ export function createViewportChrome({
 
   const onPhoneChange = () => {
     fitDockLayout();
-    if (lastState) showFunctionalKey(lastState);
+    if (lastState) showKeys(lastState, !plates.direction.plate.hidden);
   };
   phone?.addEventListener('change', onPhoneChange);
   // Widths measured in a fallback face are wrong once Source Sans arrives.
   const onFontsLoaded = () => {
-    needs = null;
+    sectionKey = '';
     hintWidths.clear();
     labelWidths.clear();
     fitDockLayout();
@@ -551,28 +621,41 @@ export function createViewportChrome({
     const letters = orientation.hidden ? [] : Object.entries(edges).map(([edge, node]) => {
       const box = local(node);
       const spot = { edge, text: node.textContent, x: box.x + box.width / 2, y: box.y + box.height / 2 };
-      // Without the dock the top letter needs no room under a phone's scale bar.
-      if (edge === 'top') spot.y = 12 + line / 2;
+      // Without the dock the top letter needs no room under a phone's scale bar; a key's band it keeps.
+      if (edge === 'top' && !keyInset.top) spot.y = 12 + line / 2;
       // Hidden over a tall dock; on the image it keeps the line above the statement.
       if (edge === 'bottom' && host.dataset.dockTall === 'true') {
         Object.assign(spot, { x: crop.width / 2, y: crop.height - margin - line * 2 });
       }
       return spot;
     });
-    const keys = [...host.querySelectorAll('.stage-key')].filter(node => !node.hidden).map(node => ({
-      box: local(node),
-      // A collapsed key draws what it shows: its title, not the rows it hides.
-      swatches: [...node.querySelectorAll('.network-swatch')].filter(visible).map(swatch => {
-        const style = getComputedStyle(swatch);
-        return { ...local(swatch), color: style.backgroundColor, radius: parseFloat(style.borderTopLeftRadius) || 0 };
-      }),
-      texts: [...node.querySelectorAll('li > span:not(.network-swatch), .stage-key-title')].filter(visible).map(word => {
-        const box = local(word);
-        const style = getComputedStyle(word);
-        return { text: word.textContent, x: box.x, y: box.y + box.height / 2, color: style.color,
-          font: `${style.fontWeight} ${style.fontSize} ${style.fontFamily}` };
-      }),
-    }));
+    // A key's words, title and the level shown included; a range measures the text, not its button.
+    const words = node => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const box = local(range);
+      const style = getComputedStyle(node);
+      return { text: node.textContent, x: box.x, y: box.y + box.height / 2, color: style.color,
+        font: `${style.fontWeight} ${style.fontSize} ${style.fontFamily}` };
+    };
+    const keys = [...keysHost.querySelectorAll('.stage-key')].filter(node => !node.hidden).map(node => {
+      const look = getComputedStyle(node);
+      const box = local(node);
+      // Rows scrolled out of a long list stay out of the image too.
+      const inside = mark => mark.y >= box.y && mark.y <= box.y + box.height;
+      return {
+        box,
+        fill: look.backgroundColor,
+        edge: look.borderTopColor,
+        // A folded key draws what it shows, its title; unfolded on screen, so is it in the image.
+        swatches: [...node.querySelectorAll('.network-swatch')].filter(visible).map(swatch => {
+          const style = getComputedStyle(swatch);
+          return { ...local(swatch), color: style.backgroundColor, radius: parseFloat(style.borderTopLeftRadius) || 0 };
+        }).filter(inside),
+        texts: [...node.querySelectorAll('.stage-key-toggle > span:not(.stage-tool-chevron), [aria-pressed="true"], li > span:not(.network-swatch)')]
+          .filter(visible).map(words).filter(inside),
+      };
+    });
     const scaleShown = !bar.hidden && scale;
     return {
       letters, keys,
@@ -602,6 +685,8 @@ export function createViewportChrome({
       host.style.setProperty('--vis-left', `${Math.round(rect.x)}px`);
       host.style.setProperty('--vis-right', `${Math.round(width - rect.x - rect.width)}px`);
       host.style.setProperty('--vis-bottom', `${Math.round(height - rect.y - rect.height)}px`);
+      // A desktop resize reframes at once; a phone's sheet reframes when it settles on a detent.
+      if (fitKeys() && !phone?.matches) onDock?.();
       fitDockLayout();
       fitChrome();
       fitDock();
@@ -622,7 +707,6 @@ export function createViewportChrome({
         ? i18nViewport.navigationHintTracts : i18nViewport.navigationHint;
       focusHint.textContent = i18nViewport.keyboardHint;
       const viewLabels = t(state.lang, 'views');
-      views.setAttribute('aria-label', i18nViewport.viewAria);
       viewPopoverLabel.textContent = i18nViewport.viewAria;
       sectionToolLabel.textContent = i18nViewport.sectionTool;
       displayToolLabel.textContent = i18nViewport.displayTool;
@@ -634,42 +718,22 @@ export function createViewportChrome({
       paintPresets();
       fitDockLayout();
       fitHints();
-      showLegend(state);
-      showFunctionalKey(state);
-      showDirectionKey(showKey, i18nViewport.directionKey);
+      showKeys(state, showKey);
       settlePopovers();
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
       if (ready) paintScale(); else bar.hidden = true;
-      if (snapshotButton) {
-        snapshotButton.setAttribute('aria-label', i18nViewport.snapshot);
-        snapshotButton.title = i18nViewport.snapshot;
-        snapshotButton.disabled = !ready;
-        const label = snapshotButton.querySelector('.masthead-action-label');
-        if (label) label.textContent = i18nViewport.snapshot;
-        const short = snapshotButton.querySelector('.masthead-action-short');
-        if (short) short.textContent = i18nViewport.snapshotShort;
-      }
-      if (fullscreenButton) {
-        fullscreenButton.setAttribute('aria-label', i18nViewport.fullscreen);
-        fullscreenButton.title = i18nViewport.fullscreen;
-        fullscreenButton.disabled = !ready;
-        const label = fullscreenButton.querySelector('.masthead-action-label');
-        if (label) label.textContent = i18nViewport.fullscreen;
-        const short = fullscreenButton.querySelector('.masthead-action-short');
-        if (short) short.textContent = i18nViewport.fullscreenShort;
-      }
 
       paintEdges();
 
       if (state.status === 'context-lost') {
-        stageMessage.textContent = state.error.message;
+        stageMessage.textContent = t(state.lang, 'errors').contextLost;
         stageProgress.hidden = true;
         retry.hidden = true;
         return;
       }
       if (state.status === 'error') {
-        stageMessage.textContent = state.error?.message ?? i18nViewport.error;
+        stageMessage.textContent = state.error ? failureNotice(state.error, state.lang, 'start').text : i18nViewport.error;
         stageProgress.hidden = true;
         retry.hidden = false;
         retry.textContent = i18nViewport.retry;
@@ -724,11 +788,8 @@ export function createViewportChrome({
         height: crop.height,
         caption,
         statement: t(lang, 'viewport').snapshotStatement,
-        fonts: { ui: token('--font-ui'), mono: token('--font-mono') },
-        palette: {
-          ink: token('--overlay-ink'), halo: token('--overlay-halo'), haloCore: token('--overlay-halo-core'),
-          plate: token('--overlay-plate'), border: token('--overlay-border'),
-        },
+        font: token('--font-ui'),
+        palette: { ink: token('--overlay-ink'), halo: token('--overlay-halo'), haloCore: token('--overlay-halo-core') },
       };
       await snapshotFonts(plan);
       const { canvas, ratio } = capture(crop);
@@ -780,18 +841,24 @@ export function createViewportChrome({
       controls?.removeEventListener('end', onGestureEnd);
       clearTimeout(watchTimer);
       dockObserver?.disconnect();
+      keysObserver?.disconnect();
       sectionObserver?.disconnect();
       roving.dispose();
+      levelRoving.dispose();
+      domainRoving.dispose();
+      plates.domains.list.removeEventListener('click', onDomainClick);
       phone?.removeEventListener('change', onPhoneChange);
       document.fonts?.removeEventListener('loadingdone', onFontsLoaded);
       popovers.dispose();
       snapshotButton?.removeEventListener('click', onSnapshotClick);
       fullscreenButton?.removeEventListener('click', onFullscreenClick);
       views.replaceChildren();
-      legend.replaceChildren();
+      viewToolLabel.replaceChildren();
       functionalLevel.removeEventListener('click', onLevelClick);
-      functionalToggle.removeEventListener('click', onKeyToggle);
-      functionalList.replaceChildren();
+      keysHost.removeEventListener('click', onKeyToggle);
+      plates.network.list.replaceChildren();
+      plates.functional.list.replaceChildren();
+      plates.domains.list.replaceChildren();
     },
   };
 }

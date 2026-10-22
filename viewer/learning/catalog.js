@@ -60,6 +60,13 @@ export function createCircuitCatalog(data, manifest, deficitIds) {
     requireText(reference.title, `${reference.id}.title`);
     requireText(reference.citation, `${reference.id}.citation`);
     if (new URL(reference.url).protocol !== 'https:') throw new Error(`Invalid reference URL: ${reference.id}`);
+    // references.test.js checks each identifier against its fetched record.
+    if (!/^\d+$/.test(reference.pmid ?? '') && !/^NBK\d+$/.test(reference.nbk ?? '')) {
+      throw new Error(`Missing PMID or NBK accession: ${reference.id}`);
+    }
+    if (Object.hasOwn(reference, 'pmcid') && !/^PMC\d+$/.test(reference.pmcid)) {
+      throw new Error(`Invalid PMCID: ${reference.id}`);
+    }
   }
   for (const circuit of circuits.values()) {
     for (const key of ['name', 'summary', 'route', 'scope', 'clinical']) requireTranslation(circuit[key], `${circuit.id}.${key}`);

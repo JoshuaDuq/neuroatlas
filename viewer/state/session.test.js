@@ -82,11 +82,30 @@ test('groups can be expanded or collapsed in bulk', () => {
 
 test('a notice survives until the next action, and is never timed out', () => {
   const s = session();
-  s.notify('Selection cleared — cortex hidden.');
-  assert.equal(s.assemble(modelState).notice, 'Selection cleared — cortex hidden.');
-  assert.equal(s.assemble(modelState).notice, 'Selection cleared — cortex hidden.');
+  s.notify({ text: 'Selection cleared — cortex hidden.' });
+  assert.deepEqual(s.assemble(modelState).notice, { text: 'Selection cleared — cortex hidden.', action: null });
+  assert.equal(s.assemble(modelState).notice.text, 'Selection cleared — cortex hidden.');
   s.setQuery('a');
   assert.equal(s.assemble(modelState).notice, null);
+  assert.throws(() => s.notify('bare text'), /needs text/);
+});
+
+test('download progress is not an action: a standing notice outlives it', () => {
+  const s = session();
+  s.setStatus('ready');
+  s.notify({ text: 'NeuroAtlas was updated. Reload to continue.', action: 'reload' });
+  s.setSwitching({ loaded: 1, total: 4 });
+  s.endSwitching();
+  assert.equal(s.assemble(modelState).notice.action, 'reload');
+  assert.equal(s.assemble(modelState).status, 'ready');
+});
+
+test('a download during the first load leaves the first load’s status alone', () => {
+  const s = session();
+  s.setSwitching({ loaded: 1, total: 4 });
+  assert.equal(s.assemble(modelState).status, 'loading');
+  s.endSwitching();
+  assert.equal(s.assemble(modelState).status, 'loading');
 });
 
 test('loading progress is carried through to the snapshot', () => {
@@ -146,30 +165,17 @@ test('switching atlas is a distinct status from first load', () => {
   const snapshot = s.assemble(modelState);
   assert.equal(snapshot.status, 'switching');
   assert.deepEqual(snapshot.progress, { loaded: 1, total: 4 });
-  s.setStatus('ready');
+  s.endSwitching();
   assert.equal(s.assemble(modelState).status, 'ready');
+  assert.equal(s.assemble(modelState).progress, null);
 });
 
-test('a failed atlas switch reports without declaring the viewer broken', () => {
+test('a lost GPU context is said by the stage in the reader’s language, not carried as English text', () => {
   const s = session();
   s.setStatus('ready');
-  s.failSwitch('HCP-MMP1.0 multimodal atlas', new Error('boom'));
-  const snapshot = s.assemble(modelState);
-  assert.equal(snapshot.status, 'ready', 'the model still on screen is still usable');
-  assert.equal(snapshot.error, null);
-  assert.match(snapshot.notice, /HCP-MMP1\.0 multimodal atlas/);
-});
-
-test('a failure message names the atlas, not the parser that gave up', () => {
-  // A missing file makes GLTFLoader parse the 404 page and report
-  // "Unexpected token '<'". That is an implementation detail leaking into
-  // the interface; the reader is told what failed instead.
-  const s = session();
-  s.failSwitch('HCP-MMP1.0 multimodal atlas',
-    new SyntaxError(`Unexpected token '<', "<!doctype "... is not valid JSON`));
-  const notice = s.assemble(modelState).notice;
-  assert.ok(!notice.includes('Unexpected token'), notice);
-  assert.ok(!notice.includes('doctype'), notice);
+  s.setContextLost();
+  assert.equal(s.assemble(modelState).status, 'context-lost');
+  assert.equal(s.assemble(modelState).error, null);
 });
 
 /**
@@ -198,4 +204,53 @@ test('no viewer module reads session.state, which the session never exposes', as
     }
   }
   assert.deepEqual(offences, []);
+});
+
+test('a notice raised while a link is applied outlives the link’s own steps, beside the link’s notice', () => {
+  const s = session();
+  s.setStatus('ready');
+  s.holdNotices();
+  s.notify({ text: 'Could not show the white matter.', action: null });
+  s.notify({ text: 'NeuroAtlas was updated.', action: 'reload' });
+  // The link's own steps are actions; without the hold they would clear both.
+  s.setExplorer('deficits');
+  s.setDeficit('aphasia');
+  assert.equal(s.assemble(modelState).notice, null, 'nothing shows until the link has settled');
+  s.releaseNotices({ text: 'Not applied from this link: language.' });
+  assert.deepEqual(s.assemble(modelState).notice, {
+    text: 'Not applied from this link: language. Could not show the white matter. NeuroAtlas was updated.',
+    action: 'reload',
+  });
+});
+
+test('overlapping links hold notices until the last settles; with nothing to say, nothing shows', () => {
+  const s = session();
+  s.holdNotices();
+  s.holdNotices();
+  s.notify({ text: 'A download failed.' });
+  s.releaseNotices();
+  assert.equal(s.assemble(modelState).notice, null);
+  s.releaseNotices({ text: 'Not applied from this link: view.' });
+  assert.equal(s.assemble(modelState).notice.text, 'Not applied from this link: view. A download failed.');
+  s.holdNotices();
+  s.releaseNotices(null);
+  assert.equal(s.assemble(modelState).notice.text, 'Not applied from this link: view. A download failed.');
+  s.notify({ text: 'Later.' });
+  assert.equal(s.assemble(modelState).notice.text, 'Not applied from this link: view. A download failed. Later.',
+    'released, notices show at once again');
+});
+
+test('a notice arriving while another stands joins it, once, until the next action clears both', () => {
+  const s = session();
+  s.notify({ text: 'Not applied from this link: view.' });
+  s.notify({ text: 'Could not show the white matter.', action: 'reload' });
+  s.notify({ text: 'Could not show the white matter.' });
+  assert.deepEqual(s.assemble(modelState).notice, {
+    text: 'Not applied from this link: view. Could not show the white matter.', action: 'reload',
+  });
+  s.setQuery('');
+  assert.equal(s.assemble(modelState).notice, null);
+  s.notify({ text: 'Fresh.' });
+  s.notify(null);
+  assert.equal(s.assemble(modelState).notice, null, 'dismissing clears everything shown');
 });

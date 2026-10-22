@@ -19,6 +19,8 @@
   border-right: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
+/* A word is never cut at the panel edge: at a large text size the last tab takes a second line. */
+#workspace-tabs { flex-wrap: wrap; }
 .workspace-selection-row {
   display: flex;
   flex: none;
@@ -41,27 +43,25 @@
   text-align: left;
 }
 #workspace-selection-clear { width: var(--tab-height); height: var(--tab-height); border-radius: 0; color: var(--text-tertiary); }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .workspace-selection:hover:not(:disabled) { background: var(--surface-hover); }
 }
 #workspace-selection-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 /* The side reads as part of the name, in the same sans as hemisphere words elsewhere. */
-#workspace-selection-side { flex: none; color: var(--text-secondary); font-size: var(--text-small); font-weight: 400; }
+#workspace-selection-side { flex: none; color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); font-weight: 400; }
 .workspace-selection svg { flex: none; margin-left: auto; color: var(--text-tertiary); }
 #navigator, #inspector { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
 
 /*
- * The detail's one location bar: a path back to the list (and, from Anatomy,
- * to the region's group), and in a lesson the place in its sequence. One
- * row: the group gives way to an ellipsis before the way back does.
+ * The detail's one location bar, alike in every mode: ‹ Mode › Place, then a lesson's stepper,
+ * then one quiet text action in the trailing slot. The place gives way to an ellipsis before the
+ * way back does.
  */
 .detail-location {
   display: flex;
   align-items: center;
   flex: none;
-  gap: var(--space-2);
   height: var(--tab-height);
-  padding-right: var(--space-1);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
@@ -69,16 +69,7 @@
 .detail-path ol { display: flex; height: 100%; margin: 0; padding: 0; list-style: none; }
 .detail-path li { display: flex; align-items: center; min-width: 0; }
 .detail-path li:has(+ li:not([hidden])) { flex: none; }
-.detail-path li + li::before {
-  content: "";
-  flex: none;
-  width: 6px;
-  height: 6px;
-  margin: 0 var(--space-1) 0 2px;
-  border-top: 1.5px solid var(--text-tertiary);
-  border-right: 1.5px solid var(--text-tertiary);
-  transform: rotate(45deg);
-}
+.detail-path li > .chevron { color: var(--text-tertiary); }
 .detail-back, .detail-crumb {
   display: flex;
   align-items: center;
@@ -92,7 +83,9 @@
   color: var(--text-secondary);
   text-align: left;
 }
+/* The chevron centres on x=22 and the mode's name starts on the indent column. */
 .detail-back { padding-left: var(--space-4); }
+.detail-back .chevron { --chevron-turn: 180deg; }
 .detail-crumb {
   display: block;
   overflow: hidden;
@@ -101,26 +94,49 @@
   color: var(--text-primary);
   font-weight: 600;
 }
-@media (hover: hover) {
-  .detail-back:hover:not(:disabled), .detail-crumb:hover:not(:disabled) { background: none; color: var(--accent); }
-}
-.detail-back-chevron {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  margin-left: 2px;
-  border-left: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: rotate(45deg);
-}
 #detail-back-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail-trailing { display: flex; flex: none; align-self: stretch; }
+.detail-trailing > button {
+  height: 100%;
+  padding: 0 var(--space-4) 0 var(--space-2);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+  white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+  .detail-back:hover:not(:disabled), .detail-crumb:hover:not(:disabled) { background: none; color: var(--accent); }
+  .detail-trailing > button:hover:not(:disabled) {
+    background: none;
+    color: var(--accent-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+.detail-trailing > button:focus-visible { outline-offset: -2px; }
 
-.rail-head { padding: var(--space-3) var(--space-4); }
+/* A list's head, pinned over it and ruled: the search, and in Anatomy the scope under it; 12 / 8 / 12. */
+.rail-head {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-base);
+}
+/* The keycap sits as far inside the field's end as it does inside its top and bottom. */
+.rail-head .search-shortcut { right: 6px; padding: 0 6px; }
+/* At a large reader text size the field grows around its words rather than spilling over the list. */
+.rail-head input[type="search"] { height: auto; min-height: var(--control-height); }
 .panel-heading {
   padding: var(--space-4) var(--space-4) 0;
   font-size: var(--text-title);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: var(--lh-title);
   letter-spacing: -0.01em;
 }
 .rail-body {
@@ -133,20 +149,37 @@
   /* A classic scrollbar arriving with a little overflow would narrow every row; the gutter is held instead. */
   scrollbar-gutter: stable;
 }
-.rail-body:hover { scrollbar-color: color-mix(in srgb, var(--text-tertiary) 55%, transparent) transparent; }
+@media (hover: hover) and (pointer: fine) {
+  .rail-body:hover { scrollbar-color: color-mix(in srgb, var(--text-tertiary) 55%, transparent) transparent; }
+}
 .panel-body { padding: var(--space-4); }
-#anatomy-search.rail-head, #deficit-search-head.rail-head { padding-top: var(--space-2); padding-bottom: var(--space-2); }
 #anatomy-browser { padding-bottom: var(--space-3); }
 /* A short detail ends on a rule over the recessed ground, like the foot of a datasheet, rather than in blank panel. */
 #inspector > .rail-body { display: flex; flex-direction: column; background: var(--surface-navigation); }
 #inspector .tab-group { padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); background: var(--surface-base); }
-#inspector-title, #label-selected { display: none; }
-.rail-notice {
-  padding: var(--space-2) var(--space-4);
-  border-top: 1px solid var(--border-subtle);
-  font-size: var(--text-micro);
-  color: var(--text-secondary);
+#inspector-title { display: none; }
+/* The one notice, under the mode tabs in both shells: tonal ground, primary ink, no colour of its own. */
+.notice {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-tonal);
+  color: var(--text-primary);
 }
+.notice[hidden] { display: none; }
+.notice-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 6px 0;
+  font-size: var(--text-ui);
+  line-height: var(--lh-ui);
+}
+.notice-reload { flex: none; align-self: center; }
+.notice-dismiss { flex: none; }
 
 
 /* Stage ------------------------------------------------------------------- */
@@ -162,9 +195,9 @@
  */
 #app:is([data-status="loading"], [data-status="error"]) #inspector { display: none; }
 #app[data-status="loading"] #tree:empty {
-  height: calc(10 * 33px);
-  margin: var(--space-3) var(--space-4) 0 36px;
-  background: repeating-linear-gradient(to bottom, var(--surface-tonal) 0 10px, transparent 10px 33px)
+  height: calc(10 * 32px);
+  margin: var(--space-3) var(--space-4) 0 var(--indent);
+  background: repeating-linear-gradient(to bottom, var(--surface-tonal) 0 10px, transparent 10px 32px)
     0 11px / 55% 100% no-repeat;
 }
 
@@ -178,5 +211,5 @@
 }
 
 @media (min-width: 641px) and (max-width: 1000px) {
-  :root { --rail-width: 300px; }
+  :root { --rail-width: clamp(300px, 18.75rem, 40vw); }
 }

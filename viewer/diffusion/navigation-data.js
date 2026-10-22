@@ -18,7 +18,7 @@ export function scannerVoxel(point, header) {
   return voxel.every((value, axis) => value >= 0 && value < header.dims[axis + 1]) ? voxel : null;
 }
 
-export function configureNavigationTract(mesh, minimum) {
+export function configureNavigationTract(mesh, minimum, lengths = streamlineLengths(mesh.pts, mesh.offsetPt0)) {
   // NiiVue skips rebuilding fibers at a zero minimum, which would leave the previous filter drawn.
   if (!Number.isFinite(minimum) || minimum < 1) throw new RangeError('Minimum tract length must be at least 1 mm.');
   mesh.fiberRadius = 0;
@@ -27,5 +27,5 @@ export function configureNavigationTract(mesh, minimum) {
   mesh.fiberDecimationStride = 1;
   mesh.fiberLength = minimum;
   // NiiVue normally stores rounded Uint32 lengths; retain the source precision.
-  mesh.fiberLengths = streamlineLengths(mesh.pts, mesh.offsetPt0);
+  mesh.fiberLengths = lengths;
 }

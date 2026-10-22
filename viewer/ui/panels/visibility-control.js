@@ -67,7 +67,7 @@ export function syncVisibilityControl(button, hiddenRegions) {
   button.dataset.state = shown ? 'shown' : 'hidden';
   button.dataset.partial = String(state === 'partial');
   button.setAttribute('aria-label', label);
-  button.title = label + (state === 'partial' ? ` · ${i18n.partial}` : '');
+  button.dataset.tooltip = label + (state === 'partial' ? ` · ${i18n.partial}` : '');
   if (shown) slash.remove();
   else if (slash.parentNode !== icon) icon.append(slash);
 }

@@ -2,6 +2,8 @@
 
 import numpy as np
 
+from ..sources import declares
+
 ATLAS_ID = "yeo7"
 ANNOTATION = "Schaefer2018_400Parcels_7Networks_order"
 LABEL = "Yeo 7-network cortical organisation"
@@ -17,7 +19,7 @@ NONE = 0
 # Published Yeo network colours. Schaefer jitters these per parcel so that 200
 # parcels stay distinguishable, so the annotation holds a cluster around each
 # rather than the colour itself; `verify_palette` checks the clusters still sit
-# where these say they do.
+# where these say they do, within config `networks.maximum_color_jitter`.
 COLORS = {
     "Vis": [120, 18, 134],
     "SomMot": [70, 130, 180],
@@ -27,10 +29,6 @@ COLORS = {
     "Cont": [230, 148, 34],
     "Default": [205, 62, 78],
 }
-
-# The widest observed jitter is 8 per channel. Loose enough not to be brittle,
-# tight enough that a republished palette fails the build instead of shipping.
-MAX_JITTER = 12
 
 # `7Networks_LH_Default_pCunPCC_11` -> prefix, hemisphere, network, then a
 # sub-region name that varies in length. Only the first three fields are read.
@@ -79,7 +77,7 @@ def composition(indices, minimum_fraction=0.0):
     return shares
 
 
-def verify_palette(ctab, names):
+def verify_palette(ctab, names, maximum_jitter):
     for index, raw in enumerate(names):
         name = raw if isinstance(raw, str) else raw.decode()
         network = network_of(name)
@@ -87,10 +85,10 @@ def verify_palette(ctab, names):
             continue
         published = np.array(COLORS[network])
         drift = int(np.abs(np.asarray(ctab[index, :3], dtype=int) - published).max())
-        if drift > MAX_JITTER:
+        if drift > maximum_jitter:
             raise ValueError(
                 f"{name}: {drift} from the published {network} colour, "
-                f"more than the {MAX_JITTER} Schaefer's jitter explains"
+                f"more than the {maximum_jitter} Schaefer's jitter explains"
             )
 
 
@@ -98,9 +96,8 @@ def annotation_path(directory, hemisphere):
     return directory / "label" / f"{hemisphere}.{ANNOTATION}.annot"
 
 
-def is_available(config):
-    directory = config["source_directory"]
-    return all(annotation_path(directory, h).exists() for h in ("lh", "rh"))
+def is_declared(config):
+    return declares(config, "networks")
 
 
 def metadata():

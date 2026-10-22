@@ -1,0 +1,14 @@
+{
+  "lh": {
+    "target_vertices": 123524,
+    "labels_preserved": 181,
+    "independent_nearest_vertex_samples": 512,
+    "method": "Forward nearest source vertex in sphere.reg space, no smoothing"
+  },
+  "rh": {
+    "target_vertices": 130053,
+    "labels_preserved": 181,
+    "independent_nearest_vertex_samples": 512,
+    "method": "Forward nearest source vertex in sphere.reg space, no smoothing"
+  }
+}

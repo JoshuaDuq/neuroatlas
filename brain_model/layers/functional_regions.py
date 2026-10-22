@@ -70,6 +70,11 @@ def read_definition(path=DEFINITION):
     for key, source in definition["sources"].items():
         if not all(source.get(field) for field in ("short", "citation", "doi", "pmid")):
             raise ValueError(f"Source {key} needs a short name, citation, DOI and PMID")
+        # That the DOI and PMID name the cited work is checked against the fetched
+        # records by viewer/learning/references.test.js.
+        if not (re.fullmatch(r"https://doi\.org/10\.\d{4,9}/\S+", source["doi"])
+                and isinstance(source["pmid"], int) and source["pmid"] > 0):
+            raise ValueError(f"Source {key} needs a doi.org DOI and an integer PMID")
     return definition
 
 
@@ -157,7 +162,7 @@ def validate(config, manifest):
 
 def limitations():
     return [
-        "Functional divisions are published groupings of HCP-MMP1.0 areas: the 22 sections of Glasser et al. (2016) and named regions from Glasser et al. (2016) and Rolls et al. (2023). They reach this brain through the HCP-MMP projection and are not measured in it.",
+        "Functional divisions are published groupings of HCP-MMP1.0 areas: the 22 sections of Glasser et al. (2016) and named regions from Glasser et al. (2016) and Rolls et al. (2022, 2023). They reach this brain through the HCP-MMP projection and are not measured in it.",
         "A functional division's borders are HCP-MMP's area borders. No border is drawn for a name no source defines as a set of HCP-MMP areas: dorsomedial prefrontal cortex, a dorsolateral prefrontal cortex narrower than Glasser's section, the temporoparietal junction and the intraparietal sulcus have no named region and are shown only within Glasser's sections.",
         "Glasser's supplement places six areas (23c, 52, PFcm, TF, a47r, pOFC) in one section in its Table 1 and in another in its section texts; the sections follow Table 1's primary column, and the alternative is published beside each.",
     ]

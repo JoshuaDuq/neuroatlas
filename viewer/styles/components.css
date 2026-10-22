@@ -13,7 +13,7 @@ button {
   color: var(--text-primary);
   font-size: var(--text-ui);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: var(--lh-ui);
   cursor: pointer;
   transition: background-color var(--ui-transition) var(--ease-ui),
     color var(--ui-transition) var(--ease-ui),
@@ -22,12 +22,17 @@ button {
     transform var(--press-transition) var(--ease-ui);
 }
 button:disabled { background: var(--surface-sunken); color: var(--text-tertiary); cursor: default; }
-/* Commands answer a press; rows, tabs, segments and text links are places, not commands, and stay still. */
+/*
+ * Commands answer a pointer press. Places stay still: rows, tabs, segments, menu items and
+ * full-bleed controls, whose scaled edges would leave their rules; so does a key press.
+ */
 @media (prefers-reduced-motion: no-preference) {
-  button:active:not(:disabled, .row, [role="tab"], [role="treeitem"], .segmented button, .comparison-row,
-    .workspace-selection, .detail-back, .detail-crumb, .constituents-list button, .empty button,
-    .comparison-export, .clinical-deficit, .clinical-association-toggle, .clinical-association-region,
-    .clinical-region-link, .clinical-restore, .circuit-choice, .circuit-step, .circuit-return button) {
+  button:active:not(:focus-visible, :disabled, .row, [role="tab"], [role="treeitem"], .segmented button, .comparison-row,
+    .workspace-selection, #workspace-selection-clear, .detail-back, .detail-crumb, .detail-trailing button,
+    .constituents-list button, .empty button,
+    .comparison-export, .clinical-deficit, .clinical-association-region,
+    .circuit-link, .circuit-choice, .circuit-step, .circuit-return button,
+    .menu-item, .sheet-selection, #sheet-handle, .stage-key-toggle) {
     transform: scale(var(--press-scale));
   }
 }
@@ -58,7 +63,6 @@ button:has(> .control-icon) {
   background: none;
   color: var(--text-secondary);
 }
-.button-quiet:disabled { background: none; }
 
 .icon-button {
   display: inline-flex;
@@ -70,7 +74,8 @@ button:has(> .control-icon) {
   color: var(--text-secondary);
 }
 .icon-button[aria-expanded="true"] { background: var(--surface-tonal); color: var(--text-primary); }
-.icon-button:disabled { background: none; }
+/* Quiet commands have no fill to lose, so a disabled one fades its ink below the secondary step. */
+:is(.button-quiet, .icon-button):disabled { background: none; color: color-mix(in srgb, var(--text-tertiary) 55%, transparent); }
 
 select, input[type="search"], input[type="number"] {
   height: var(--control-height);
@@ -177,8 +182,8 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
 }
 .search-box:has(.search-clear:not([hidden])) .search-shortcut { display: none; }
 
-/* Hover only where a pointer hovers; a tap must not leave a control lit. */
-@media (hover: hover) {
+/* Hover only where a pointer hovers; a tap must not leave a control lit. One query in every stylesheet. */
+@media (hover: hover) and (pointer: fine) {
   button:hover:not(:disabled) { background: var(--surface-tonal-hover); }
   .button-primary:hover:not(:disabled) {
     background: var(--primary-fill-hover);
@@ -209,10 +214,9 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
   border-radius: calc(var(--radius-control) - 1px);
   background: transparent;
   color: var(--text-secondary);
-  font-size: var(--text-small);
   white-space: nowrap;
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .segmented button:hover:not(:disabled) { background: var(--surface-tonal-hover); color: var(--text-primary); }
 }
 /* The ring, not the teal alone, marks the choice. */
@@ -224,20 +228,19 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
   box-shadow: inset 0 0 0 1px var(--thumb-ring), var(--shadow-thumb);
 }
 .segmented button:disabled { background: transparent; }
-.segmented button[data-loading="true"] { color: var(--text-tertiary); font-weight: 400; }
 
 label { display: block; font-size: var(--text-ui); color: var(--text-secondary); }
 .control-field { display: grid; gap: 6px; }
 .control-field + .control-field { margin-top: var(--space-4); }
 .control-field > label,
-.control-field > .control-label { font-size: var(--text-small); font-weight: 500; color: var(--text-secondary); }
+.control-field > .control-label { font-weight: 500; color: var(--text-secondary); }
 .control-field > label:has(output) {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
 }
-.control-field output { flex: none; font-weight: 400; color: var(--text-tertiary); font-size: var(--text-micro); }
+.control-field output { flex: none; font-weight: 400; color: var(--text-tertiary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 
 .check {
   display: flex;
@@ -279,7 +282,26 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
 .check input:checked:disabled { background: var(--text-tertiary); border-color: var(--text-tertiary); }
 .check:has(input:disabled) { color: var(--text-tertiary); cursor: default; }
 
-/* Unified disclosure: one chevron, one rhythm, for every <details> in the panel. */
+/* Chevron and disclosures ------------------------------------------------ */
+/*
+ * The one chevron: two 1.5px strokes of a 6px square, inked at the centre of a 12px slot (the
+ * 1.6px shift centres the ink, not the square), so on the 16px column it is centred at x=22 and
+ * its words start on --indent. It points right; --chevron-turn turns it (90deg down, 180deg left,
+ * -90deg up), and the turn animates.
+ */
+.chevron,
+details > summary::before {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin: 0 3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(var(--chevron-turn, 0deg)) translateX(-1.6px) rotate(-45deg);
+  transition: transform var(--ui-transition) var(--ease-ui);
+}
+
+/* Every <details>: a 36px summary, 14/20 500 primary, the chevron leading in its slot. */
 details > summary {
   display: flex;
   align-items: center;
@@ -289,25 +311,71 @@ details > summary {
   cursor: pointer;
   font-size: var(--text-ui);
   font-weight: 500;
+  line-height: var(--lh-ui);
   color: var(--text-primary);
 }
 details > summary::-webkit-details-marker { display: none; }
-details > summary::before {
-  content: "";
-  flex: none;
-  width: 6px;
-  height: 6px;
-  margin: 0 3px 0 1px;
-  border-right: 1.5px solid var(--text-tertiary);
-  border-bottom: 1.5px solid var(--text-tertiary);
-  transform: rotate(-45deg);
-  transition: transform var(--ui-transition) var(--ease-ui);
-}
-details[open] > summary::before { transform: translateY(-2px) rotate(45deg); }
-@media (hover: hover) {
+details > summary::before { content: ""; color: var(--text-tertiary); }
+details[open] > summary { --chevron-turn: 90deg; }
+@media (hover: hover) and (pointer: fine) {
   details > summary:hover { color: var(--accent); }
 }
 details > summary:focus-visible { outline-offset: -2px; }
+
+/* L3 inline disclosure ("15 more overlapping regions", "Method and sources"): a 32px line in secondary ink, no rule. */
+.inline-disclosure > summary { min-height: 32px; font-weight: 400; color: var(--text-secondary); }
+
+/*
+ * L2 detail section, in a 16px-inset body: a 14/20 600 heading 24px below what precedes it and
+ * 8px above its content, which draws its own rules. Collapsible, it is a <details> whose summary
+ * reads as the same heading, with the chevron at the right end (down closed, up open).
+ */
+.detail-section { margin-top: var(--space-6); }
+.detail-section-heading,
+details.detail-section > summary {
+  font-size: var(--text-ui);
+  font-weight: 600;
+  line-height: var(--lh-ui);
+  color: var(--text-primary);
+}
+.detail-section-heading { margin-bottom: var(--space-2); }
+:is(.detail-section-heading, details.detail-section > summary) + * { margin-top: 0; }
+details.detail-section { margin-top: var(--space-5); }
+details.detail-section > summary { justify-content: space-between; min-height: 0; padding-block: var(--space-1); }
+details.detail-section[open] > summary { margin-bottom: var(--space-1); }
+details.detail-section > summary::before { order: 1; --chevron-turn: 90deg; }
+details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
+
+/* A list's section caption (Cortex, a deficit group): 12/16 600 secondary under a rule. */
+.section-label {
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  line-height: var(--lh-caption);
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+
+/* Datasheet: label left in secondary, value right in primary with tabular figures; 36px rows, one rule each. */
+.datasheet {
+  display: grid;
+  grid-template-columns: minmax(min-content, max-content) minmax(min-content, 1fr);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--text-ui);
+  line-height: var(--lh-ui);
+}
+.datasheet dt,
+.datasheet dd {
+  padding: 7px 0 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.datasheet dt { padding-right: var(--space-3); color: var(--text-secondary); }
+.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; font-variant-numeric: tabular-nums; }
+/* A long value (a vector, a source id) stacks under its label instead of being squeezed beside it. */
+.datasheet-stacked { grid-template-columns: minmax(0, 1fr); }
+.datasheet-stacked dt { padding: 7px 0 0; border-bottom: 0; }
+.datasheet-stacked dd { padding: 0 0 8px; text-align: left; }
 
 /* Words never split: a long translation takes more of the row, or the row wraps. */
 .actions {
@@ -364,7 +432,7 @@ details > summary:focus-visible { outline-offset: -2px; }
   visibility: hidden;
   font-weight: 600;
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .rail-tabs button:hover:not(:disabled) { background: none; color: var(--text-primary); }
 }
 .rail-tabs button:focus-visible { outline-offset: -2px; }
@@ -380,486 +448,18 @@ details > summary:focus-visible { outline-offset: -2px; }
   background: var(--accent);
 }
 
-/* Region ------------------------------------------------------------------ */
-.selection-head { display: flex; align-items: flex-start; justify-content: flex-end; gap: var(--space-2); }
-.selection-head > #selected-name { flex: 1; min-width: 0; }
-#selection-clear { flex: none; margin: -4px calc(-1 * var(--space-2)) 0 0; color: var(--text-tertiary); }
-#selected-name {
-  font-size: var(--text-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 24px;
-  overflow-wrap: break-word;
-}
-#selected-hint {
-  margin-top: var(--space-2);
-  font-size: var(--text-ui);
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-/*
- * Under a lesson, the landmark's own region is already the headline above.
- * Any other selection is a smaller second subject, ruled off, with no caption.
- */
-#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body .selection-head { display: none; }
-#circuit-profile:not([hidden])[data-landmark-selected="false"] ~ .panel-body:has(.selection-head) { border-top: 1px solid var(--border-subtle); }
-#circuit-profile:not([hidden]) ~ .panel-body #selected-name { font-size: var(--text-title); }
-#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body { padding-top: 0; }
-#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body .actions { margin-top: 0; }
-.section-label + .panel-body { padding-top: var(--space-1); }
-.clinical-profile-name, #circuit-profile { scroll-margin-top: var(--space-4); }
-/* With nothing selected the view is a hint, set like the panel's other empty states. */
-#inspector .tab-group[data-tab="region"] > .panel-body:has(#selected-name[hidden]) { padding-top: var(--space-6); }
-.selection-empty-graphic {
-  display: block;
-  width: 24px;
-  height: 24px;
-  margin-bottom: var(--space-3);
-  color: var(--text-tertiary);
-}
-.selection-empty h3 { font-size: var(--text-title); font-weight: 600; line-height: 1.3; }
-#selection-empty:not([hidden]) ~ #selected-hint { margin-top: var(--space-1); }
-
-.datasheet {
-  display: grid;
-  grid-template-columns: minmax(min-content, max-content) minmax(min-content, 1fr);
-  margin-top: var(--space-4);
-  font-size: var(--text-ui);
-  border-top: 1px solid var(--border-subtle);
-}
-.datasheet dt,
-.datasheet dd {
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border-subtle);
-  line-height: 20px;
-}
-.datasheet dt { padding-right: var(--space-3); color: var(--text-secondary); font-size: var(--text-small); }
-.datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; font-variant-numeric: tabular-nums; }
-/* Mono sets wider and darker than the sans beside it, so measures run a step smaller. */
-.datasheet dd.measure { font-size: var(--text-micro); font-weight: 400; color: var(--text-primary); }
-/* Vectors and source ids are long, so their label sits above them rather than squeezed beside. */
-.datasheet-stacked { grid-template-columns: minmax(0, 1fr); }
-.datasheet-stacked dt { padding: var(--space-2) 0 0; border-bottom: 0; }
-.datasheet-stacked dd { padding: 2px 0 var(--space-2); text-align: left; }
-.metadata-details > summary { border-bottom: 1px solid var(--border-subtle); }
-.metadata-details[open] > summary { border-bottom: 0; }
-.metadata-details .datasheet { margin-top: 0; }
-.atlas-comparison { margin-top: var(--space-4); border-top: 1px solid var(--border-subtle); }
-.comparison-target { margin: var(--space-1) 0 2px; font-size: var(--text-ui); font-weight: 600; }
-.comparison-note { color: var(--text-secondary); font-size: var(--text-micro); line-height: 1.5; }
-.comparison-list { list-style: none; margin: 0; padding: 0; }
-/* One grid for the column heads, the rows and the unassigned remainder, so figures align down the table. */
-.comparison-columns,
-.comparison-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 5.5rem 3.5rem;
-  align-items: center;
-  gap: var(--space-2);
-  width: 100%;
-}
-.comparison-columns {
-  margin-top: var(--space-3);
-  padding-bottom: var(--space-1);
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: var(--text-micro);
-  line-height: 16px;
-  color: var(--text-tertiary);
-}
-.comparison-columns > :not(:first-child) { text-align: right; }
-.comparison-row {
-  height: auto;
-  min-height: var(--row-height);
-  padding: var(--space-2) 0;
-  border-radius: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  background: transparent;
-  color: var(--text-primary);
-  text-align: left;
-  font-size: var(--text-ui);
-}
-.comparison-row .measure { color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; text-align: right; }
-.comparison-name { min-width: 0; line-height: 1.35; overflow-wrap: break-word; }
-.comparison-row[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
-.comparison-row[aria-pressed="true"] .measure { color: var(--accent); }
-@media (hover: hover) {
-  .comparison-row:hover:not(:disabled) { background: var(--surface-hover); }
-  .comparison-row[aria-pressed="true"]:hover { background: var(--accent-wash); }
-}
-.comparison-row:focus-visible { outline-offset: -2px; }
-.comparison-unassigned { color: var(--text-secondary); }
-.comparison-export { margin-top: var(--space-2); padding-left: 0; color: var(--accent); background: transparent; }
-@media (hover: hover) {
-  .comparison-export:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
-}
-.comparison-sources { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) 0; font-size: var(--text-micro); }
-.comparison-method .comparison-note { margin-top: var(--space-1); }
-.inspector-disclosure > summary {
-  padding: var(--space-2) var(--space-4);
-  border-top: 1px solid var(--border-subtle);
-}
-/* A count follows its name, as on the tree's group rows. */
-.disclosure-count { font-size: var(--text-micro); font-weight: 400; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
-
-/* Functional networks: the swatch names the network, the bar measures it. */
-.network-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
-.network-swatch { width: 10px; height: 10px; flex: none; border-radius: 2px; }
-.network-row {
-  display: grid;
-  grid-template-columns: 10px minmax(0, 1fr) minmax(32px, 56px) 3.5rem;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: var(--row-height);
-  padding: var(--space-1) 0;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: var(--text-ui);
-}
-.network-row-name { min-width: 0; line-height: 1.35; }
-.functional-row { grid-template-columns: 10px minmax(0, 1fr); align-items: start; }
-.functional-row .network-swatch { margin-top: 4px; }
-.functional-row .network-row-name > span { display: block; }
-.functional-row-meta { font-size: var(--text-micro); color: var(--text-tertiary); }
-.network-bar { height: 4px; border-radius: 2px; overflow: hidden; background: var(--border-subtle); }
-.network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
-.network-share { text-align: right; color: var(--text-secondary); font-size: var(--text-micro); white-space: nowrap; }
-.network-note { margin-top: var(--space-3); font-size: var(--text-micro); line-height: 16px; color: var(--text-tertiary); }
-/* Which published map the list below it comes from. */
-.network-map { padding-bottom: var(--space-1); font-size: var(--text-micro); color: var(--text-secondary); }
-.network-note + .network-map { margin-top: var(--space-4); }
-/* A section of the detail: more room above its heading than below it; the ruled list under it draws the rule. */
-#inspector .tab-group > section > .section-label { padding: var(--space-5) var(--space-4) var(--space-2); border-top: 0; }
-#inspector .tab-group > section > .section-label + .panel-body { padding-top: 0; }
-
-/* Navigator --------------------------------------------------------------- */
-/* An index, not a menu: rows run edge to edge, names on the panel's 16px or 36px column, data in a right-hand column. */
-.row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  width: 100%;
-  min-height: var(--row-height);
-  height: auto;
-  margin: 0;
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
-  border: 0;
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  font-size: var(--text-ui);
-  color: var(--text-primary);
-  cursor: pointer;
-  user-select: none;
-  transition: background-color var(--ui-transition) var(--ease-ui),
-    color var(--ui-transition) var(--ease-ui);
-}
-.row:focus-visible { outline-offset: -2px; }
-@media (hover: hover) {
-  .row:hover { background: var(--surface-hover); }
-}
-/* Distinguish the keyboard target from the selected anatomical region. */
-.row[data-active="true"] {
-  background: var(--surface-hover);
-  outline: 1px solid var(--border-control);
-  outline-offset: -1px;
-}
-.row[data-selected="true"] { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
-.row[data-hidden="true"] { color: var(--text-tertiary); }
-.row[aria-disabled="true"] { cursor: default; }
-/* Lines of 20px and 16px keep one-, two- and three-line rows on the 4px grid. */
-.row-name { flex: 1; min-width: 0; line-height: 20px; overflow-wrap: break-word; }
-#results .row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
-  align-items: baseline;
-  gap: 0 var(--space-2);
-  padding-block: 6px;
-}
-#results .row-title { grid-column: 1; grid-row: 1; min-width: 0; line-height: 20px; }
-#results .row-name { display: inline; white-space: normal; }
-#results .row-alias { display: inline; margin-left: var(--space-1); white-space: nowrap; }
-#results .row-side { grid-column: 2; grid-row: 1; margin-left: 0; }
-#results .row-group,
-#results .row-reason {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin-left: 0;
-  max-width: none;
-  line-height: 16px;
-  white-space: normal;
-  text-align: left;
-}
-/* The tail never wraps or shrinks; the name gives way instead. */
-.row-side, .row-reason, .group-count {
-  flex: none;
-  margin-left: auto;
-  min-width: 2ch;
-  text-align: right;
-  white-space: nowrap;
-  color: var(--text-tertiary);
-  font-size: var(--text-micro);
-  font-variant-numeric: tabular-nums;
-}
-.row-side { color: var(--text-secondary); font-weight: 600; }
-.row[data-selected="true"] .row-side { color: inherit; }
-.row-group {
-  flex: none;
-  max-width: 42%;
-  margin-left: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-tertiary);
-  font-size: var(--text-micro);
-}
-.row-group + .row-side,
-.row-group + .row-reason { margin-left: var(--space-2); }
-.row-indent { padding-left: 36px; }
-.row-indent .row-reason { max-width: 96px; white-space: normal; line-height: 16px; }
-/* Both stand where the letter on an eye control stands. */
-.row-side-solo { min-width: 36px; padding-right: 5px; }
-.row-side-rest { min-width: 0; padding-right: 5px; }
-.tree-group { isolation: isolate; }
-.tree-group > .group-row { background: var(--surface-base); font-weight: 500; }
-@media (hover: hover) {
-  .tree-group > .group-row:hover { background: var(--surface-hover); }
-}
-/* An open group heads its rows on the recessed ground, and stays in view over them. */
-.tree-group > .group-row[aria-expanded="true"] {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--surface-navigation);
-  font-weight: 600;
-  box-shadow: inset 0 -1px 0 var(--border-subtle), inset 0 1px 0 var(--border-subtle);
-}
-@media (hover: hover) {
-  .tree-group > .group-row[aria-expanded="true"]:hover { background: var(--surface-hover); }
-}
-.tree-group .row-indent { scroll-margin-block: calc(var(--row-height) + var(--space-5)); }
-/* The count stands in the right-hand column a region's side letter uses; on a fine pointer the eyes lie over it. */
-.group-row { gap: var(--space-1); }
-.group-row > .row-name { flex: 1 1 auto; }
-.group-row > .group-count { min-width: 3ch; padding-right: 5px; font-weight: 400; }
-.disclosure {
-  display: flex;
-  width: 12px;
-  flex: none;
-  margin-right: var(--space-1);
-  color: var(--text-tertiary);
-  transition: transform var(--ui-transition) var(--ease-ui);
-}
-.group-row[aria-expanded="true"] .disclosure { color: var(--text-secondary); transform: rotate(90deg); }
-/* Cortex, Subcortical: captions of the index, set apart by space and a rule rather than size. */
-#tree > .section-label { padding: var(--space-5) var(--space-4) var(--space-1); line-height: 16px; }
-#tree > .section-label:first-child { border-top: 0; padding-top: var(--space-3); }
-
-/* Per-part visibility: eye, then side letter, in 36px columns. Hidden is neutral ink and a struck eye, never teal. */
-.row-eyes { display: flex; flex: none; align-items: center; gap: var(--space-1); }
-.visibility-control {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  gap: 3px;
-  width: 36px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-control);
-  color: var(--text-secondary);
-  background: transparent;
-}
-.visibility-control[data-visibility-key$=":midline"] { width: auto; min-width: 36px; padding: 0 var(--space-1); }
-.visibility-control svg { width: 16px; height: 16px; flex: none; }
-.visibility-side { font-size: var(--text-micro); font-weight: 600; color: var(--text-secondary); }
-@media (hover: hover) {
-  .visibility-control:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
-}
-.row[data-selected="true"] .visibility-side { color: var(--accent); }
-.visibility-control[data-state="hidden"],
-.visibility-control[data-state="hidden"] .visibility-side { color: var(--text-tertiary); }
-/* A group with every part hidden dims like a hidden region. */
-.group-row:has(> .row-eyes):not(:has(.visibility-control[data-state="shown"])) > .row-name { color: var(--text-tertiary); }
-.visibility-control:focus-visible { outline-offset: 0; }
-/* A mouse finds the eyes on the row it points at; touch keeps every eye in view. */
-@media (hover: hover) and (pointer: fine) {
-  /* Group eyes lie over the row end, so at rest the name has the whole row. */
-  .tree-group > .group-row { position: relative; }
-  .group-row > .row-eyes {
-    position: absolute;
-    top: 2px;
-    right: var(--space-2);
-    bottom: 2px;
-    padding-left: var(--space-2);
-    /* The row's own ground, so the eyes cover the count beneath them on any row. */
-    background: inherit;
-    opacity: 0;
-    transition: opacity var(--ui-transition) var(--ease-ui);
-  }
-  /* A shown region keeps only its letter at rest; the eye lies over the name's end, which is clipped under it. */
-  .row-indent[data-visible="true"] { position: relative; }
-  .row-indent[data-visible="true"] > .visibility-control { position: absolute; top: 2px; right: var(--space-2); bottom: 2px; height: auto; }
-  .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-name { clip-path: inset(0 16px 0 0); }
-  .row-indent[data-visible="true"]:is(:hover, :focus-within) > .row-side-rest { visibility: hidden; }
-  .row-indent[data-visible="true"] > .visibility-control { opacity: 0; transition: opacity var(--ui-transition) var(--ease-ui); }
-  /* Once a side is hidden the eyes take their own room and stay in view. */
-  .group-row > .row-eyes:has([data-state="hidden"], [data-partial="true"]) { position: static; padding: 0; opacity: 1; }
-  .row-eyes > .visibility-control:not([data-state="hidden"], [data-partial="true"]),
-  .row-indent > .visibility-control svg { opacity: 0; transition: opacity var(--ui-transition) var(--ease-ui); }
-  .row:is(:hover, :focus-within) > .row-eyes,
-  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control,
-  .row:is(:hover, :focus-within) > .visibility-control,
-  .row:is(:hover, :focus-within) > .visibility-control svg,
-  .visibility-control[data-state="hidden"] svg { opacity: 1; }
-}
-/* Touch keeps every eye in the row, and the eye carries the letter. */
-@media not ((hover: hover) and (pointer: fine)) {
-  .row-side-rest { display: none; }
-}
-
-.tree-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-4) var(--space-2);
-  border-bottom: 1px solid var(--border-subtle);
-}
-/* The list's scope is an exclusive choice; By system hides the cortex, and the note under it says so. */
-.tree-scope { flex: 1; min-width: 0; }
-.tree-scope button { flex: 1; min-width: 0; }
-.tree-toggle-all { flex: none; margin-right: calc(-1 * var(--space-2)); }
-#anatomy-search .search-shortcut { right: 6px; min-width: 20px; height: 20px; padding: 0 6px; line-height: 18px; }
-.query-match { background: transparent; color: var(--accent); font-weight: 600; }
-.row-alias {
-  flex: none;
-  white-space: nowrap;
-  color: var(--text-tertiary);
-  font-size: var(--text-micro);
-  margin-left: var(--space-1);
-}
-
-.empty {
-  padding: var(--space-4);
-  font-size: var(--text-ui);
-  color: var(--text-secondary);
-  line-height: 20px;
-}
-.empty + .empty { padding-top: 0; }
-.empty-title {
-  padding: var(--space-4) var(--space-4) 0;
-  font-size: var(--text-title);
-  font-weight: 600;
-  line-height: 24px;
-  overflow-wrap: anywhere;
-}
-.empty-title + .empty { padding-top: var(--space-1); }
-/* The sentence says where the other matches are; the action sits under it as link text. */
-.empty button {
-  display: block;
-  width: fit-content;
-  height: auto;
-  margin: var(--space-2) 0 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  color: var(--accent);
-  text-align: left;
-}
-@media (hover: hover) {
-  .empty button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
-}
-
-/*
- * Dissection: one ruled line at the foot of the explorer, as tall as the tab
- * row and the location bar. Idle, it teaches; with something to undo or
- * restore, the count and its quiet commands take the line.
- */
-.dissection-controls {
-  flex: none;
-  display: flex;
-  align-items: center;
-  min-height: calc(var(--tab-height) + 1px);
-  padding: 0 var(--space-4);
-  border-top: 1px solid var(--border-subtle);
-  background: var(--surface-navigation);
-}
-.dissection-heading-row { display: flex; flex: 1; align-items: center; gap: var(--space-1); min-width: 0; }
-.dissection-heading-row button { flex: none; padding: 0 var(--space-2); }
-.dissection-heading-row button:last-child { margin-right: calc(-1 * var(--space-2)); }
-#dissection-hint { flex: 1; min-width: 0; font-size: var(--text-micro); line-height: 16px; color: var(--text-secondary); }
-#dissection-status { flex: 1; min-width: 0; font-size: var(--text-small); font-weight: 500; line-height: 16px; }
-.dissection-controls:has(#dissection-undo:disabled):has(#dissection-restore:disabled) .dissection-heading-row {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-.dissection-controls:not(:has(#dissection-undo:disabled):has(#dissection-restore:disabled)) #dissection-hint { display: none; }
-#app[data-status="loading"] .dissection-controls { display: none; }
-
-/* By system: the system picker sits under the scope that opened it, label beside field. */
-.tree-header:has(+ .internal-controls:not([hidden])) { border-bottom: 0; }
-.internal-controls {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: var(--space-2) var(--space-3);
-  padding: 0 var(--space-4) var(--space-3);
-  border-bottom: 1px solid var(--border-subtle);
-}
-.internal-controls label { font-size: var(--text-small); font-weight: 500; }
-.internal-controls .internal-note { grid-column: 1 / -1; line-height: 16px; }
-.internal-note { font-size: var(--text-micro); line-height: 1.5; color: var(--text-secondary); margin: 0; }
-.constituents-list {
-  list-style: none;
-  padding: 0;
-  margin: var(--space-3) 0 0;
-  border-top: 1px solid var(--border-subtle);
-}
-.constituents-list li {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-  min-height: var(--row-height);
-  min-width: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: var(--text-ui);
-  line-height: 1.4;
-  color: var(--text-secondary);
-}
-.constituents-list li > :first-child { flex: 1; min-width: 0; }
-.constituents-list li > span:first-child { padding: 6px 0; }
-/* The tail names the internal-anatomy set the constituent opens in, or that it exists on cuts only. */
-.constituent-set { flex: none; font-size: var(--text-micro); color: var(--text-tertiary); white-space: nowrap; }
-.constituents-list button {
-  height: auto;
-  min-height: var(--row-height);
-  padding: 6px 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  white-space: normal;
-  font-weight: 400;
-  color: var(--accent);
-}
-@media (hover: hover) {
-  .constituents-list button:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
-}
-.constituents-list button:focus-visible { outline-offset: -2px; }
-
 /* Stage overlays and tools live in stage.css. */
 
 /* Keys ------------------------------------------------------------------- */
-/* A key is a thing you press, so it is drawn as one rather than quoted. */
+/* A key is a thing you press, so it is drawn as one rather than quoted: a 20px cap. */
 kbd {
   display: inline-block;
   min-width: 20px;
-  padding: 2px 5px;
+  height: 20px;
+  padding: 0 5px;
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  line-height: 1.2;
+  font-size: var(--text-caption);
+  line-height: 18px;
   text-align: center;
   color: var(--text-secondary);
   background: var(--surface-base);
@@ -867,16 +467,39 @@ kbd {
   border-radius: 3px;
   box-shadow: inset 0 -1px 0 var(--border-subtle);
 }
-.key-range { color: var(--text-tertiary); font-size: var(--text-micro); }
+.key-range { color: var(--text-tertiary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 
-/* Dialogs: stage.css. */
-
-/* Increased contrast: tonal fills alone are too faint to find a button by. */
-@media (prefers-contrast: more) {
-  button:not(.row, .button-quiet, .icon-button, .visibility-control, .rail-tabs button, .segmented button, .views button, .stage-tool, .stage-icon-button) {
-    border-color: var(--border-control);
-  }
-  .segmented { box-shadow: inset 0 0 0 1px var(--border-control); }
+/* Tooltip ---------------------------------------------------------------- */
+/*
+ * The one tooltip (ui/tooltip.js) for anything with data-tooltip: the stage's hover chip, in both
+ * themes, on whichever edge of its trigger has room, grown from that edge. It sits in the top
+ * layer, so it also clears an open dialog.
+ */
+.tooltip {
+  position: fixed;
+  inset: auto;
+  z-index: 70;
+  max-width: min(280px, calc(100vw - 2 * var(--space-2)));
+  margin: 0;
+  padding: 3px var(--space-2);
+  overflow: visible;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius-control);
+  background: var(--overlay-plate);
+  color: var(--overlay-ink);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: var(--lh-caption);
+  text-align: left;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  transform-origin: var(--tooltip-origin, 50% 0);
+  transition: opacity var(--tooltip-transition) var(--ease-ui), transform var(--tooltip-transition) var(--ease-ui),
+    overlay var(--tooltip-transition) allow-discrete, display var(--tooltip-transition) allow-discrete;
+}
+.tooltip:not(:popover-open) { opacity: 0; transform: scale(0.97); }
+@starting-style {
+  .tooltip:popover-open { opacity: 0; transform: scale(0.97); }
 }
 
 /* Rings on controls that sit flush against a clipped edge are drawn inside it. */

@@ -12,6 +12,7 @@ function stubDocument(t) {
       value: '',
       addEventListener: (type, listener) => listeners.set(type, listener),
       removeEventListener() {},
+      append() {},
       dispatch: (type, event) => listeners.get(type)?.(event),
     };
   };
@@ -21,6 +22,7 @@ function stubDocument(t) {
       if (!elements.has(id)) elements.set(id, element());
       return elements.get(id);
     },
+    createElement: element,
   };
   t.after(() => { globalThis.document = previous; });
   return id => globalThis.document.getElementById(id);

@@ -27,8 +27,14 @@ function fakeSystem(dark) {
   };
 }
 
+// Frames run when the test says so.
+let frames = [];
+const nextFrame = () => { const due = frames; frames = []; due.forEach(callback => callback()); };
+
 beforeEach(() => {
   globalThis.document = { documentElement: { dataset: {} } };
+  frames = [];
+  globalThis.requestAnimationFrame = callback => frames.push(callback);
 });
 
 test('with nothing stored the theme follows the system at load', () => {
@@ -109,6 +115,21 @@ test('choosing system again clears the stored value and resumes following', () =
 
   theme.dispose();
   assert.equal(system.listeners.size, 0);
+});
+
+test('a theme switch holds transitions off for two frames, so no colour fades between palettes', () => {
+  const theme = createTheme(() => {}, { storage: fakeStorage(), system: fakeSystem(false) });
+  nextFrame();
+  nextFrame();
+  assert.equal('themeSwitching' in document.documentElement.dataset, false);
+
+  theme.choose('dark');
+  assert.equal(document.documentElement.dataset.themeSwitching, '');
+  assert.equal(document.documentElement.dataset.theme, 'dark');
+  nextFrame();
+  assert.equal(document.documentElement.dataset.themeSwitching, '');
+  nextFrame();
+  assert.equal('themeSwitching' in document.documentElement.dataset, false);
 });
 
 test('an unknown choice is an error, not a silent fallback', () => {

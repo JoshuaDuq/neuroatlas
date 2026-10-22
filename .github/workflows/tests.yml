@@ -1,0 +1,67 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+  # Called by the deploy workflow, which publishes nothing unless this passes.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run Python tests
+        run: uv run pytest
+
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        anatomy: [snail, bert, aomic]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      # Re-checks every published asset of this anatomy against its sources.
+      - name: Validate the published anatomy
+        run: uv run python -m brain_model.validate --anatomy ${{ matrix.anatomy }}
+
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run viewer tests
+        run: npm test
