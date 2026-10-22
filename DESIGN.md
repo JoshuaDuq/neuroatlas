@@ -237,7 +237,7 @@ components:
 A calm clinical workspace in light or dark around a dark imaging stage. The
 masthead states what data is loaded, one task panel explores and drills into
 it, and the stage carries only the tools that act on the picture. Keep the
-NeuroAtlas name, the existing brain mark, and English and French copy.
+NeuroAtlas name, the cut-away brain mark, and English and French copy.
 
 This is a visual direction, not a clinical claim. Preserve the “not clinical
 anatomy” statement, scientific geometry, measurements, source labels,
