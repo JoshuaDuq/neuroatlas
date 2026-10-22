@@ -1,4 +1,5 @@
 import { count } from '../format.js';
+import { cutAtlasesOf } from '../../catalog/visibility.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 import { createVisibilityControl, syncVisibilityControl } from './visibility-control.js';
 
@@ -86,6 +87,22 @@ export function labelledGroups(groups, lang) {
 export function regionGroup(groups, id, lang) {
   const found = labelledGroups(groups, lang).find(({ group }) => group.rows.some(row => row.region.id === id));
   return found ? { key: found.group.key, label: found.label } : null;
+}
+
+/**
+ * Matches another atlas draws, under the first atlas (in manifest order) that draws each, so a
+ * switch offered for them is one that shows them. `drawnBy` lists the atlases that draw a region.
+ */
+export function matchesElsewhere(rows, atlases, current, drawnBy) {
+  const others = atlases.filter(atlas => atlas.id !== current);
+  const homes = rows.map(row => {
+    const home = others.find(atlas => drawnBy(row.region).includes(atlas.id));
+    if (!home) throw new Error(`No other atlas draws ${row.region.id}`);
+    return home;
+  });
+  return others
+    .map(atlas => ({ atlas, rows: rows.filter((_, index) => homes[index] === atlas) }))
+    .filter(group => group.rows.length);
 }
 
 /** Reasons that mean "in a different atlas" rather than "hidden here". */
@@ -394,19 +411,15 @@ export function createNavigator({
     }
     if (capped > 0) note(i18n.showingCapped(here.length, count(found.total, 'match', state.lang)));
 
-    // Matches in the other parcellation are reported, not dropped.
-    if (elsewhere.length) {
-      const other = atlases.find(atlas => atlas.id !== state.atlas);
-      const otherLabel = atlasDict[other?.id] ?? other?.label ?? '';
-      note(i18n.matchesInOther(count(elsewhere.length, 'match', state.lang), otherLabel),
-        i18n.switchAtlas, () => onAtlas(other.id));
+    // Matches in another parcellation are reported, not dropped.
+    for (const { atlas, rows } of matchesElsewhere(elsewhere, atlases, state.atlas, region => [region.atlas])) {
+      note(i18n.matchesInOther(count(rows.length, 'match', state.lang), atlasDict[atlas.id] ?? atlas.label),
+        i18n.switchAtlas, () => onAtlas(atlas.id));
     }
 
-    if (elsewhereCut.length) {
-      const other = cutAtlases.find(atlas => atlas.id !== state.cutAtlas);
-      const otherLabel = atlasDict[other?.id] ?? other?.label ?? '';
-      note(i18n.matchesInOtherCut(count(elsewhereCut.length, 'match', state.lang), otherLabel),
-        i18n.switchCutAtlas, () => onCutAtlas(other.id));
+    for (const { atlas, rows } of matchesElsewhere(elsewhereCut, cutAtlases, state.cutAtlas, cutAtlasesOf)) {
+      note(i18n.matchesInOtherCut(count(rows.length, 'match', state.lang), atlasDict[atlas.id] ?? atlas.label),
+        i18n.switchCutAtlas, () => onCutAtlas(atlas.id));
     }
     announce(spoken.join(' '));
 
@@ -629,7 +642,12 @@ export function createNavigator({
   };
 
   const onSearchKey = event => {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    // Marked handled: the page's own Escape would otherwise go on to clear the selection.
+    if (event.key === 'Escape' && search.value) {
+      event.preventDefault();
+      search.value = '';
+      onQuery('');
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       moveActiveOption(event.key === 'ArrowDown' ? 1 : -1);
     } else if (event.key === 'Enter') {
@@ -689,9 +707,9 @@ export function createNavigator({
       tree.setAttribute('aria-label', i18n.browseAnatomy);
       if (document.activeElement !== search) search.value = state.query;
 
-      // Rebuild only when the structure could have changed.
+      // Rebuild only when the structure could have changed. CAB-NP colouring regroups its atlas's areas.
       const key = [
-        state.atlas, state.detail, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
+        state.atlas, state.surfaceColor === 'cab-np', state.detail, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
         state.cortexVisible, state.cortexOpacity > 0, state.internalVisible,
         state.isolatedRegion, state.internalSystem, state.query, [...state.expanded].sort().join(),
       ].join('|');

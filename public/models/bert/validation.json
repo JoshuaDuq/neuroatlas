@@ -46,6 +46,7 @@
       "maximum_glb_coordinate_error_mm": 4.478685229098672e-06,
       "maximum_normal_component_error": 1.528694787489293e-05,
       "maximum_sulcal_depth_error": 2.799392033026038e-05,
+      "maximum_concavity_error": 1.1641387337335551e-05,
       "maximum_ribbon_T1_error": 0.0010697943474440308
     },
     {
@@ -91,6 +92,7 @@
       "maximum_glb_coordinate_error_mm": 4.478685229098672e-06,
       "maximum_normal_component_error": 1.528694787489293e-05,
       "maximum_sulcal_depth_error": 2.799395375463476e-05,
+      "maximum_concavity_error": 1.1641387337335551e-05,
       "maximum_ribbon_T1_error": 0.0010697943474440308
     }
   ],

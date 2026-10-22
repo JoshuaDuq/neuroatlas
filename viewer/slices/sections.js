@@ -63,6 +63,7 @@ export class BrainSections extends EventTarget {
         s.cortexOpacity,
         s.isolatedRegion,
         s.internalSystem,
+        s.internalVisible,
         s.surfaceColor,
         s.functionalLevel,
         s.detail,
@@ -276,7 +277,8 @@ export class BrainSections extends EventTarget {
     const plane = clippingPlane(frame, this.state.reverse);
     const generation = this.tissues.solids.generation;
     const built = await this.tissues.solids.build(plane);
-    if (this.disposed || generation !== this.tissues.solids.generation) return;
+    // Closing the cut does not bump the generation, so a build landing after it is stale too.
+    if (this.disposed || !this.active || generation !== this.tissues.solids.generation) return;
     if (!built) {
       assign();
       this.update();

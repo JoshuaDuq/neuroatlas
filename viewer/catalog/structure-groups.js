@@ -35,6 +35,7 @@ export const STRUCTURE_LABELS = {
   'Right-Thalamus-Proper': { name: 'Thalamus', system: 'Diencephalon' },
   'Left-VentralDC': { name: 'Ventral diencephalon', system: 'Diencephalon' },
   'Right-VentralDC': { name: 'Ventral diencephalon', system: 'Diencephalon' },
+  'Optic-Chiasm': { name: 'Optic chiasm', system: 'Diencephalon' },
 
   'Left-Cerebellum-Cortex': { name: 'Cerebellar cortex', system: 'Cerebellum' },
   'Right-Cerebellum-Cortex': { name: 'Cerebellar cortex', system: 'Cerebellum' },
@@ -42,7 +43,6 @@ export const STRUCTURE_LABELS = {
   'Right-Cerebellum-White-Matter': { name: 'Cerebellar white matter', system: 'Cerebellum' },
 
   'Brain-Stem': { name: 'Brainstem', system: 'Brainstem' },
-  'Optic-Chiasm': { name: 'Optic chiasm', system: 'Brainstem' },
 
   'CC_Anterior': { name: 'Corpus callosum, anterior', system: 'Corpus callosum' },
   'CC_Mid_Anterior': { name: 'Corpus callosum, mid-anterior', system: 'Corpus callosum' },

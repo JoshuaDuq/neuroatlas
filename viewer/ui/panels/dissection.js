@@ -21,7 +21,9 @@ export function createDissectionControls({ onUndo, onRestore }) {
       hint.textContent = pointer?.matches ? i18n.hintPointer : i18n.hint;
       undo.textContent = i18n.undo;
       restore.textContent = i18n.restoreAll;
-      status.textContent = i18n.hiddenCount(state.hiddenRegions.size);
+      const said = i18n.hiddenCount(state.hiddenRegions.size);
+      // A live region rewritten with the same words says them again on every render.
+      if (status.textContent !== said) status.textContent = said;
       const focused = document.activeElement;
       undo.disabled = !state.dissectionCanUndo;
       restore.disabled = state.hiddenRegions.size === 0;

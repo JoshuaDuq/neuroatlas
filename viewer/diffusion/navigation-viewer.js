@@ -1,6 +1,6 @@
 import { readDiffusionAsset } from './assets.js';
 import { validateVolume } from './validation.js';
-import { configureNavigationTract, sourceVoxelPoint } from './navigation-data.js';
+import { configureNavigationTract, scannerVoxel, sourceVoxelPoint } from './navigation-data.js';
 
 export async function createMriNavigationViewer(catalog, canvas, onLocation) {
   const { Niivue, NVImage, SHOW_RENDER, SLICE_TYPE, MULTIPLANAR_TYPE } = await import('@niivue/niivue');
@@ -53,7 +53,9 @@ export async function createMriNavigationViewer(catalog, canvas, onLocation) {
     setVoxel,
     moveVoxel(delta) { viewer.moveCrosshairInVox(...delta); },
     setScannerPoint(point) {
-      setVoxel(Array.from(viewer.volumes[0].mm2vox(point), Math.round));
+      const voxel = scannerVoxel(point, viewer.volumes[0].hdr);
+      if (voxel) setVoxel(voxel);
+      return Boolean(voxel);
     },
     setWindow(center, width) {
       if (!Number.isFinite(center) || !Number.isFinite(width) || width <= 0) {

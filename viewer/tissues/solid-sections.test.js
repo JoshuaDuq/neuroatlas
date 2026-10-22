@@ -124,6 +124,18 @@ test('a solid the plane misses is not drawn', () => {
   sections.dispose();
 });
 
+test('a solid shown again on an unmoved plane is cut and drawn', () => {
+  const { sections } = fixture();
+  sections.solids[0].visible = false;
+  sections.update(plane);
+  assert.equal(sections.solids[0].group.visible, false);
+  sections.solids[0].visible = true;
+  sections.update(plane);
+  assert.equal(sections.solids[0].group.visible, true);
+  assert.ok(drawnTriangles(sections.solids[0].cap) > 0);
+  sections.dispose();
+});
+
 test('a cut hit names the solid it landed in', () => {
   const { sections, source } = fixture();
   sections.update(plane);
@@ -203,4 +215,18 @@ test('nested solids order enclosing first with tiered polygon offsets and bit-id
   assert.ok(solidOuter.cap.scale.equals(solidInner.cap.scale));
 
   sections.dispose();
+});
+
+test('a warm-up that runs after dispose starts no worker', async () => {
+  const started = [];
+  globalThis.Worker = class { constructor() { started.push(this); } postMessage() {} terminate() {} };
+  try {
+    const { sections } = fixture();
+    sections.warm();
+    sections.dispose();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.equal(started.length, 0);
+  } finally {
+    delete globalThis.Worker;
+  }
 });

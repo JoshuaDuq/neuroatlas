@@ -9,6 +9,7 @@ from brain_model.gltf.encode import (
     INT16,
     UINT8,
     UINT16,
+    UINT32,
     decode_field,
     decode_normals,
     field_tolerance,
@@ -190,6 +191,15 @@ def test_a_value_outside_a_given_range_is_refused_rather_than_clamped():
         reencode(exported(cortical_scene(seed=2)), ranges=ranges)
 
 
+def test_a_field_the_given_ranges_omit_is_refused_rather_than_left_unquantized():
+    # Copied as float32 it would sit beside a published decode that omits it.
+    with pytest.raises(ValueError, match="_T1"):
+        reencode(
+            exported(cortical_scene()),
+            ranges={"_SULC": [-5.0, 5.0], "_CONCAVITY": [-2.0, 2.0]},
+        )
+
+
 def test_a_file_without_recorded_ranges_reads_straight_through(tmp_path):
     path = tmp_path / "plain.glb"
     path.write_bytes(exported(cortical_scene()))
@@ -243,3 +253,25 @@ def test_accessors_shared_between_surfaces_stay_shared():
     out = read_json_chunk(packed)
     primitive_list = list(primitives(out))
     assert primitive_list[0]["indices"] == primitive_list[1]["indices"]
+
+
+def test_an_index_of_65535_keeps_the_wide_index_type():
+    # 65535 is the uint16 primitive-restart value, which glTF forbids and
+    # WebGL 2 always honours: narrowing would silently drop this triangle.
+    count = 65536
+    points = np.column_stack([np.arange(count), np.zeros(count), np.zeros(count)])
+    points[1::2, 1] = 1.0
+    faces = np.array([[i, i + 1, i + 2] for i in range(count - 2)])
+    normals = np.tile([0.0, 0.0, 1.0], (count, 1))
+    region = {"id": "wide", "label": "Wide", "atlas": "test", "hemisphere": "left",
+              "source_label_id": 0, "kind": "cortex"}
+    scene = trimesh.Scene()
+    add_region(scene, points, faces, normals, region, [10, 20, 30])
+    packed, _ = reencode(exported(scene))
+    gltf = read_json_chunk(packed)
+    (primitive,) = primitives(gltf)
+    assert gltf["accessors"][primitive["indices"]]["componentType"] == UINT32
+    after = trimesh.load(
+        trimesh.util.wrap_as_stream(packed), file_type="glb", process=False
+    )
+    np.testing.assert_array_equal(next(iter(after.geometry.values())).faces, faces)

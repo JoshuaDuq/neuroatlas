@@ -172,3 +172,9 @@ test('every published Destrieux region resolves a label in both brains', async (
     }
   }
 });
+
+test('the aseg optic chiasm is grouped with the diencephalon, not the brainstem', () => {
+  const chiasm = { kind: 'structure', atlas: 'aseg', hemisphere: 'midline', source_name: 'Optic-Chiasm' };
+  assert.equal(labelOf(chiasm, 'en').group, 'Diencephalon');
+  assert.equal(labelOf(chiasm, 'fr').group, 'Diencéphale');
+});

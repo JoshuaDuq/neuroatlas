@@ -203,3 +203,11 @@ test('NextBrain regions without a French entry fall back to published English', 
 });
 
 
+
+test('NextBrain cerebellar cortical layers are not named as a periventricular area', () => {
+  for (const [source_name, source_label_id] of [['granular_cell_layer_of_pva', 597], ['molecular_layer_of_pva', 595]]) {
+    const label = labelOf({ kind: 'tissue-region', atlas: 'nextbrain', hemisphere: 'left', source_name, source_label_id }, 'fr');
+    assert.equal(label.name, source_name.replaceAll('_', ' '));
+    assert.equal(label.group, 'Cervelet');
+  }
+});

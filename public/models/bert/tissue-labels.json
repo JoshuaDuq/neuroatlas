@@ -593,7 +593,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "left",
           "kind": "tissue",
           "region_id": null
         },
@@ -605,7 +605,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "right",
           "kind": "tissue",
           "region_id": null
         },
@@ -2979,7 +2979,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "left",
           "kind": "tissue",
           "region_id": null
         },
@@ -2991,7 +2991,7 @@
             5,
             25
           ],
-          "hemisphere": "midline",
+          "hemisphere": "right",
           "kind": "tissue",
           "region_id": null
         },

@@ -153,12 +153,18 @@ def transfer_annotation(config, provenance, annotation_name, report_name):
     anatomy = config["anatomy"]
     source = anatomy["hcp_source_directory"]
     target = config["source_directory"]
+    annotations = {
+        hemisphere: source / "label" / f"{hemisphere}.{annotation_name}.annot"
+        for hemisphere in ("lh", "rh")
+    }
+    present = [path.exists() for path in annotations.values()]
+    if not any(present):
+        print(f"{anatomy['id']}: {annotation_name} is not present, skipping")
+        return {}
+    if not all(present):
+        raise SystemExit(f"{annotation_name} is published for one hemisphere only")
     reports = {}
-    for hemisphere in ("lh", "rh"):
-        annotation = source / "label" / f"{hemisphere}.{annotation_name}.annot"
-        if not annotation.exists():
-            print(f"{anatomy['id']}: {annotation.name} is not present, skipping")
-            return {}
+    for hemisphere, annotation in annotations.items():
         source_path = source / "surf" / f"{hemisphere}.sphere.reg"
         target_path = target / "surf" / f"{hemisphere}.sphere.reg"
         source_sphere, _ = read_geometry(source_path)

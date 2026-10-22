@@ -217,6 +217,7 @@ export class TissueSections {
 
   createLayer(metadata, volume) {
     if (!this.anatomy) throw new Error('MRI must load before creating tissue sections.');
+    if (!(volume.data instanceof Uint16Array)) throw new Error('Expected uint16 tissue labels.');
     const texture = new Data3DTexture(volume.data, ...volume.shape);
     texture.format = RedIntegerFormat;
     texture.type = UnsignedShortType;

@@ -32,6 +32,7 @@ from .surfaces.geometry import (
     to_gltf,
 )
 from .surfaces.ribbons import validate_ribbon_labels
+from .surfaces.shading import cortical_concavity
 from .surfaces.solids import validate_solid_envelopes
 from .validate_volumes import validate_volumes
 
@@ -226,6 +227,7 @@ def validate_atlas(config, atlas, records):
     max_error = 0.0
     normal_error = 0.0
     sulcal_error = 0.0
+    concavity_error = 0.0
     intensity_error = 0.0
     mri = nib.load(config["source_directory"] / "mri/orig.mgz")
     mri_data = np.asarray(mri.dataobj).astype(float)
@@ -244,6 +246,9 @@ def validate_atlas(config, atlas, records):
             faces, labels,
             read_morph_data(config["source_directory"] / "surf" / f"{prefix}.sulc"),
         )
+        concavity = partition_vertex_field(faces, labels, cortical_concavity(
+            trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+        ))
         white, _ = read_geometry(config["source_directory"] / "surf" / f"{prefix}.white")
         coordinates = nib.affines.apply_affine(
             np.linalg.inv(mri.header.get_vox2ras_tkr()), (vertices + white) / 2
@@ -266,6 +271,12 @@ def validate_atlas(config, atlas, records):
             intensity_error = max(intensity_error, float(np.abs(
                 decode_field(actual.vertex_attributes["_T1"].ravel(), ranges["_T1"])
                 - intensity[indices]
+            ).max()))
+            concavity_error = max(concavity_error, float(np.abs(
+                decode_field(
+                    actual.vertex_attributes["_CONCAVITY"].ravel(), ranges["_CONCAVITY"]
+                )
+                - concavity[indices]
             ).max()))
             if network_field is not None:
                 carried = actual.vertex_attributes.get("_NETWORK")
@@ -313,6 +324,7 @@ def validate_atlas(config, atlas, records):
             ("coordinate_mm", max_error, config["validation"]["coordinate_tolerance_mm"]),
             ("normal_component", normal_error, normal_tolerance()),
             ("sulcal_depth", sulcal_error, field_tolerance(ranges["_SULC"])),
+            ("concavity", concavity_error, field_tolerance(ranges["_CONCAVITY"])),
             ("ribbon_T1", intensity_error, field_tolerance(ranges["_T1"])),
         )
         if measured > bound
@@ -332,6 +344,7 @@ def validate_atlas(config, atlas, records):
         "maximum_glb_coordinate_error_mm": max_error,
         "maximum_normal_component_error": normal_error,
         "maximum_sulcal_depth_error": sulcal_error,
+        "maximum_concavity_error": concavity_error,
         "maximum_ribbon_T1_error": intensity_error,
     }
 
@@ -725,14 +738,18 @@ def main():
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
     validate_manifest(config, manifest)
+    atlases = [
+        validate_atlas(config, atlas, manifest["regions"]) for atlas in config["atlases"]
+    ]
+    # The viewer decodes every cortical file with the manifest's spans, not the file's.
+    for atlas in atlases:
+        if atlas["field_ranges"] != manifest["appearance"]["field_ranges"]:
+            raise ValueError(f"{atlas['file']} field ranges differ from the manifest's")
     report = {
         "status": "passed",
         "scope": "Source-to-asset conversion fidelity",
         "clinical_accuracy_validated": False,
-        "atlases": [
-            validate_atlas(config, atlas, manifest["regions"])
-            for atlas in config["atlases"]
-        ],
+        "atlases": atlases,
         "ribbon_labels": [
             validate_ribbon_labels(config, atlas, published["ribbon_labels"])
             for atlas, published in zip(config["atlases"], manifest["atlases"])

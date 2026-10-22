@@ -168,7 +168,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     await sections.setMode(plane);
     if (pendingPlane === plane) pendingPlane = null;
     update();
-    if (sections.active) {
+    // A plane chosen while this one was prepared replaced it; that choice frames its own cut.
+    if (sections.active && sections.state.mode === plane) {
       // A region is already chosen. The new plane should meet it, not the
       // midline the slider was left on.
       const region = getSelectedRegion?.();
@@ -476,8 +477,10 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const activeStatus = describeCut(decimal(offset, 1, currentLang, { signed: true }), atlasLabel,
       decimal(spacing, 2, currentLang, { trim: true }))
       + (colourNote ? ` · ${colourNote}` : '');
-    status.textContent = state.status === 'loading' ? cutsI18n.statusPreparing
+    const said = state.status === 'loading' ? cutsI18n.statusPreparing
       : state.error || (sections.active ? activeStatus : cutsI18n.statusFull);
+    // A live region rewritten with the same words says them again on every render.
+    if (status.textContent !== said) status.textContent = said;
 
     if (mprTitle) mprTitle.textContent = mprI18n.title;
     if (mprSubtitle) mprSubtitle.textContent = mprI18n.subtitle;
@@ -507,7 +510,8 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const sample = sections.sample(state.crosshair);
     const displayName = sampleDisplayName(sample);
     // The same signed RAS triple the region panel shows, so the two can be compared.
-    readout.textContent = mprI18n.readout(formatRas(state.crosshair, currentLang), displayName, sample.labelId);
+    const reading = mprI18n.readout(formatRas(state.crosshair, currentLang), displayName, sample.labelId);
+    if (readout.textContent !== reading) readout.textContent = reading;
     const imageKey = JSON.stringify([state.crosshair,state.overlay,sections.display.windowCenter,sections.display.windowWidth,currentLang]);
     if (imageKey === previousImage) return;
     previousImage = imageKey;

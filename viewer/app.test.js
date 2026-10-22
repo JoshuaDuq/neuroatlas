@@ -77,3 +77,53 @@ test('late comparison geometry cannot restart a disposed app renderer', async ()
   assert.equal(await pending, false);
   assert.equal(frames, 0);
 });
+
+const surfaceCommand = source.slice(source.indexOf('  // A later colour choice supersedes'),
+  source.indexOf('  /**\n   * Choose the label volume the cut samples.'));
+const bindSurfaceCommand = new Function('model', 'setAtlas', 'sections', 'session', 'render',
+  `${surfaceCommand}; return chooseSurfaceColor;`);
+
+function surfaceFixture() {
+  const applied = [];
+  const notices = [];
+  let finishAtlas;
+  const model = {
+    state: { atlas: 'destrieux', surfaceColor: 'atlas', internalVisible: false },
+    cabNp: { atlas: 'hcp-mmp' },
+    functionalRegions: { atlas: 'hcp-mmp' },
+  };
+  const setAtlas = id => new Promise(resolve => {
+    finishAtlas = loaded => { if (loaded) model.state.atlas = id; resolve(); };
+  });
+  const sections = { async setSurfaceColor(mode) { applied.push(mode); model.state.surfaceColor = mode; } };
+  const session = { notify: text => notices.push(text) };
+  const choose = bindSurfaceCommand(model, setAtlas, sections, session, () => {});
+  return { applied, notices, model, choose, finishAtlas: loaded => finishAtlas(loaded) };
+}
+
+test('a colour chosen while CAB-NP waits on its atlas is not overwritten when the atlas arrives', async () => {
+  const fixture = surfaceFixture();
+  const cabNp = fixture.choose('cab-np');
+  await fixture.choose('tissue');
+  fixture.finishAtlas(true);
+  await cabNp;
+  assert.deepEqual(fixture.applied, ['tissue']);
+  assert.equal(fixture.model.state.surfaceColor, 'tissue');
+});
+
+test('CAB-NP is applied once its atlas has loaded', async () => {
+  const fixture = surfaceFixture();
+  const cabNp = fixture.choose('cab-np');
+  fixture.finishAtlas(true);
+  await cabNp;
+  assert.deepEqual(fixture.applied, ['cab-np']);
+});
+
+test('a failed atlas switch leaves its own message rather than a second one', async () => {
+  const fixture = surfaceFixture();
+  const functional = fixture.choose('functional');
+  fixture.finishAtlas(false);
+  await functional;
+  assert.deepEqual(fixture.applied, []);
+  assert.deepEqual(fixture.notices, []);
+});

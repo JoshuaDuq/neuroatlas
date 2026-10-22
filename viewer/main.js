@@ -54,7 +54,8 @@ function keepAnatomyCached() {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
   navigator.serviceWorker
     .register(`${import.meta.env.BASE_URL}sw.js`, { scope: import.meta.env.BASE_URL })
-    .catch(() => {});
+    // The atlas works without it, but a missing or broken sw.js should not pass unseen.
+    .catch(error => console.warn('Service worker registration failed:', error));
 }
 
 const unsupported = webgl2Unavailable();

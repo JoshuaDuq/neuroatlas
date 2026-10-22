@@ -237,3 +237,34 @@ test('oblique cut position range projects all anatomical bounds onto the normal'
   assert.deepEqual(sections.offsetRange, expected);
   sections.dispose();
 });
+
+test('a drag build that lands after the cut closed does not reopen it', async () => {
+  const { model, tissues, sections } = fixture();
+  let finish;
+  tissues.solids = {
+    generation: 0,
+    build: () => new Promise(resolve => { finish = resolve; }),
+    applyBuild: () => true,
+    warm() {},
+  };
+  await sections.setMode('axial');
+  const drag = sections.setOffsetReady(10);
+  await sections.setMode('off');
+  finish([]);
+  await drag;
+  assert.equal(sections.group.visible, false);
+  assert.deepEqual(model.clippingPlanes, []);
+  assert.deepEqual(sections.state.crosshair, [0, 0, 0]);
+  sections.dispose();
+});
+
+test('hiding the internal anatomy repaints an open cut', async () => {
+  const { model, tissues, sections } = fixture();
+  await sections.setMode('axial');
+  let updates = 0;
+  tissues.update = () => { updates += 1; };
+  model.state.internalVisible = false;
+  model.dispatchEvent(new Event('change'));
+  assert.equal(updates, 1);
+  sections.dispose();
+});
