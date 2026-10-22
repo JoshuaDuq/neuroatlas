@@ -435,6 +435,61 @@
       "Ventral-Multimodal": 4
     }
   },
+  "functional_regions": {
+    "assigned_areas": {
+      "named": 114,
+      "sections": 360
+    },
+    "areas_per_region": {
+      "named": {
+        "v1": 2,
+        "m1": 2,
+        "s1": 8,
+        "fef": 2,
+        "pef": 2,
+        "pcc-2": 12,
+        "ffc": 2,
+        "mt": 2,
+        "a1": 2,
+        "pcc-1": 10,
+        "midcingulate": 6,
+        "sma": 6,
+        "supracallosal-acc": 10,
+        "pregenual-acc": 10,
+        "area-10": 8,
+        "lateral-ofc": 10,
+        "broca": 4,
+        "medial-ofc": 8,
+        "s2": 2,
+        "pcc-3": 4,
+        "subgenual-cingulate": 2
+      },
+      "sections": {
+        "section-1": 2,
+        "section-5": 18,
+        "section-3": 12,
+        "section-2": 6,
+        "section-4": 14,
+        "section-6": 10,
+        "section-8": 14,
+        "section-18": 26,
+        "section-10": 14,
+        "section-15": 10,
+        "section-22": 26,
+        "section-16": 20,
+        "section-7": 18,
+        "section-19": 32,
+        "section-20": 18,
+        "section-21": 18,
+        "section-9": 10,
+        "section-12": 24,
+        "section-11": 16,
+        "section-17": 20,
+        "section-13": 16,
+        "section-14": 16
+      }
+    }
+  },
   "nextbrain_structures": {
     "file": "nextbrain.glb",
     "sha256": "98b1182f46bd7f2f58b76cf4fcb017ca0b1ab234eb34040a2a87965b8aace2e4",

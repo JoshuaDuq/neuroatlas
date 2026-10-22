@@ -395,6 +395,9 @@ appearance:
     clearcoat_roughness: 0.45
     ior: 1.38
     specular_intensity: 0.55
+  # Opacity, as a fraction of the cortex's, of the cortex outside the functional
+  # divisions on show: the glass of the glass brain.
+  glass_opacity: 0.1
   intensity:
     low: 85
     high: 180

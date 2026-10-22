@@ -14,6 +14,12 @@ NeuroAtlas combines published neuroimaging datasets, peer-reviewed cortical atla
   Yeo, B. T. T., Krienen, F. M., Sepulcre, J., Sabuncu, M. R., Lashkari, D., Hollinshead, M., Roffman, J. L., Smoller, J. W., Zöllei, L., Polimeni, J. R., Fischl, B., Liu, H., & Buckner, R. L. (2011). The organization of the human cerebral cortex estimated by intrinsic functional connectivity. *Journal of Neurophysiology*, 106(3), 1125–1165. [doi:10.1152/jn.00338.2011](https://doi.org/10.1152/jn.00338.2011)
 - **Cole-Anticevic Brain-wide Network Partition (CAB-NP).**
   Ji, J. L., Spronk, M., Kulkarni, K., Repovš, G., Anticevic, A., & Cole, M. W. (2019). Mapping the human brain's cortical-subcortical functional network organization. *NeuroImage*, 185, 35–57. [doi:10.1016/j.neuroimage.2018.10.006](https://doi.org/10.1016/j.neuroimage.2018.10.006). Label key v1.1.6 from [ColeLab/ColeAnticevicNetPartition](https://github.com/ColeLab/ColeAnticevicNetPartition) at commit `e4ea9fd`.
+- **Orbitofrontal, ventromedial prefrontal and anterior cingulate groupings of HCP-MMP areas.**
+  Rolls, E. T., Deco, G., Huang, C.-C., & Feng, J. (2023). The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. *Cerebral Cortex*, 33(2), 330–356. [doi:10.1093/cercor/bhac070](https://doi.org/10.1093/cercor/bhac070). PMID 35233615.
+- **Posterior and midcingulate groupings of HCP-MMP areas.**
+  Rolls, E. T., Wirth, S., Deco, G., Huang, C.-C., & Feng, J. (2023). The human posterior cingulate, retrosplenial, and medial parietal cortex effective connectome, and implications for memory and navigation. *Human Brain Mapping*, 44(2), 629–655. [doi:10.1002/hbm.26089](https://doi.org/10.1002/hbm.26089). PMID 36178249.
+- **Glass-brain display of functional divisions.**
+  Carlén, M. (2017). What constitutes the prefrontal cortex? *Science*, 358(6362), 478–482. [doi:10.1126/science.aan8868](https://doi.org/10.1126/science.aan8868). PMID 29074767. The display follows its Fig. 1 in concept only; none of its borders are used.
 - **Schaefer multi-scale parcellation.**
   Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O., Zuo, X. N., Holmes, A. J., Eickhoff, S. B., & Yeo, B. T. T. (2018). Local-global parcellation of the human cerebral cortex from intrinsic functional connectivity MRI. *Cerebral Cortex*, 28(9), 3095–3114. [doi:10.1093/cercor/bhx179](https://doi.org/10.1093/cercor/bhx179)
 - **FreeSurfer automated segmentation (`aseg`, `wmparc`).**

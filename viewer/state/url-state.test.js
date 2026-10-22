@@ -33,10 +33,23 @@ test('CAB-NP colours survive a round trip', () => {
   assert.deepEqual(decodeState(encodeState({ surfaceColor: 'cab-np' })), { surfaceColor: 'cab-np' });
 });
 
+test('the functional divisions and their level survive a round trip; the named level is the default', () => {
+  const state = { surfaceColor: 'functional', functionalLevel: 'sections' };
+  assert.equal(encodeState(state), 'colors=functional&level=sections');
+  assert.deepEqual(decodeState(encodeState(state)), state);
+  assert.equal(encodeState({ surfaceColor: 'functional', functionalLevel: 'named' }), 'colors=functional');
+  assert.throws(() => decodeState('level=lobes'), /Invalid URL field level/);
+});
+
 test('tissue colors explicitly survive reload over the region default', () => {
   const saved = encodeState({ surfaceColor: 'tissue' });
   assert.equal(saved, 'colors=tissue');
   assert.equal({ surfaceColor: 'atlas', ...decodeState(saved) }.surfaceColor, 'tissue');
+});
+
+test('links from when colors was a flag still open with the colouring they meant', () => {
+  assert.deepEqual(decodeState('#colors=1'), { surfaceColor: 'atlas' });
+  assert.deepEqual(decodeState('#colors=0'), { surfaceColor: 'tissue' });
 });
 
 test('a leading hash is accepted, because that is what location.hash gives', () => {
@@ -54,7 +67,7 @@ test('invalid known URL fields reject the request and name the field', () => {
     anatomy: ['', ' '], atlas: [''], cuts: [''], system: [''], detail: [''],
     region: [''], isolate: [''], view: [''], hemi: ['banana'],
     opacity: ['5', '-0.1', '', ' ', 'NaN', 'Infinity', 'true'],
-    cortex: ['maybe'], internal: ['true'], cord: ['2'], colors: ['2', '0', '1'],
+    cortex: ['maybe'], internal: ['true'], cord: ['2'], colors: ['2', 'true'],
     cut: ['sideways'], pos: ['9999', '', ' '], tilt: ['91'], az: ['181'], rev: ['yes'],
     lang: ['es'],
   };

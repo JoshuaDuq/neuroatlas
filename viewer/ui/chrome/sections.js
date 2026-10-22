@@ -465,10 +465,12 @@ export function createSectionControls(sections, { anatomy, cutAtlases, onFaceVie
     const spacing = sections.tissues?.metadata?.atlases?.[state.cutAtlas]?.voxel_spacing_mm?.[0] ?? 1;
     // A cut is sampled from a label volume, so its network colour is per parcel
     // while the surface's is per vertex. Said here rather than left to be found.
-    // CAB-NP assigns HCP-MMP areas, so a cut through any other labels has none.
+    // CAB-NP and the functional divisions group HCP-MMP areas, so a cut through any other labels has none.
     const colourNote = {
       network: cutsI18n.networkByRegion,
       'cab-np': state.cutAtlas === sections.model.cabNp?.atlas ? cutsI18n.cabNpByArea : cutsI18n.cabNpOtherLabels,
+      functional: state.cutAtlas === sections.model.functionalRegions?.atlas
+        ? cutsI18n.functionalByArea : cutsI18n.functionalOtherLabels,
     }[lastAppState?.surfaceColor];
     const describeCut = lastAppState?.surfaceColor === 'mri' ? cutsI18n.statusMri : cutsI18n.statusActive;
     const activeStatus = describeCut(decimal(offset, 1, currentLang, { signed: true }), atlasLabel,

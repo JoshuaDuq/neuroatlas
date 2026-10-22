@@ -8,8 +8,8 @@ const LOADED = { atlas: 'destrieux', detail: 'learning', cutAtlas: 'destrieux' }
 test('an empty link is the default scene on the loaded layers, with nothing left implicit', () => {
   assert.deepEqual(readerState({}, LOADED), {
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true,
-    spinalCordVisible: false, surfaceColor: 'atlas', internalSystem: null, view: 'oblique',
-    cut: 'off', cutOffset: 0, cutReverse: false, cutTilt: 30, cutAzimuth: 30,
+    spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', internalSystem: null,
+    view: 'oblique', cut: 'off', cutOffset: 0, cutReverse: false, cutTilt: 30, cutAzimuth: 30,
     selectedRegion: null, isolatedRegion: null, ...LOADED, hiddenRegions: new Set(), camera: 'view',
   });
 });
@@ -77,6 +77,7 @@ function restorationFixture() {
     setInternalVisible(value) { this.settings.internalVisible = value; },
     async setSpinalCordVisible(value) { events.push('cord'); this.settings.spinalCordVisible = value; },
     setCortexOpacity(value) { this.settings.cortexOpacity = value; },
+    setFunctionalLevel(value) { events.push('level'); this.settings.functionalLevel = value; },
     loadHiddenRegions(ids) { events.push('hidden'); this.settings.hiddenRegions = new Set(ids); },
     select(id) { events.push('selection'); this.state.selectedRegion = id ? { id } : null; },
     isolate() { events.push('isolation'); this.settings.isolatedRegion = this.state.selectedRegion.id; },

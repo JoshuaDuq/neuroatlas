@@ -31,6 +31,7 @@ test('the sheet names the subject, its reconstruction and each atlas citation', 
   assert.ok(texts.includes(manifest.anatomy.display_name));
   assert.ok(texts.includes(manifest.anatomy.reconstruction));
   for (const atlas of manifest.atlases) assert.ok(hrefs(rows).includes(atlas.citation), atlas.id);
+  for (const citation of manifest.functional_regions.citations) assert.ok(hrefs(rows).includes(citation), citation);
   const files = rows.find(row => row.label === 'Published files');
   assert.match(files.items[0].note, new RegExp(`^${manifest.provenance.sources.length} source files`));
 });

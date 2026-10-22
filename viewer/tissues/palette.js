@@ -2,6 +2,7 @@ import { internalSystemAllows } from '../catalog/visibility.js';
 import { Color, SRGBColorSpace } from 'three';
 import { tissueColor } from '../render/materials.js';
 import { dominantNetwork } from '../catalog/networks.js';
+import { functionalRegionOf } from '../catalog/functional-regions.js';
 
 export function labelVisible(label, state, lookup) {
   if (state.hiddenRegions?.has(label.region_id)) return false;
@@ -29,6 +30,9 @@ export const usesNetworkColors = state => state.surfaceColor === 'network';
 
 /** Whether a cut face carries CAB-NP's colours, which only HCP-MMP's areas have. */
 export const usesCabNpColors = state => state.surfaceColor === 'cab-np';
+
+/** Whether a cut face carries the functional divisions' colours, which only HCP-MMP's areas have. */
+export const usesFunctionalColors = state => state.surfaceColor === 'functional';
 
 /*
  * The network a cut voxel is painted with.
@@ -71,6 +75,10 @@ export function labelAppearance(label, state, tissuePalette, lookup, color = new
   if (cabNpNetwork) {
     color.setRGB(...lookup.cabNp.colors[cabNpNetwork].map(value => value / 255), SRGBColorSpace);
   }
+  // Glass keeps its tissue colour on a cut, as on the surface.
+  const division = usesFunctionalColors(state)
+    ? functionalRegionOf(lookup?.functional, state.functionalLevel, label.region_id) : null;
+  if (division) color.setRGB(...division.color.map(value => value / 255), SRGBColorSpace);
   if (label.kind === 'cortex' && !label.region_id) color.set(tissuePalette.unlabelled);
   return { color, visible: labelVisible(label, state, lookup) };
 }

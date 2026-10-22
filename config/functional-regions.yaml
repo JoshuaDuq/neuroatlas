@@ -1,0 +1,88 @@
+# Published groupings of HCP-MMP1.0 areas. Nothing here draws a border: every
+# region is a list of Glasser et al. (2016) area names transcribed from its
+# source, and reaches a brain through that brain's HCP-MMP projection.
+# `short` is what the colour key prints: a published abbreviation, or the name
+# without "cortex" as HCPex shortens Glasser's section names.
+# Colours distinguish display units; they are not a published palette. They were
+# chosen so regions that share a surface edge differ by an OKLab ΔE of at least
+# 15 under normal vision and simulated protanopia and deuteranopia.
+label: Functional divisions (Glasser 2016 sections; Glasser 2016 and Rolls 2023 named regions)
+sources:
+  glasser-2016:
+    short: Glasser et al. (2016)
+    citation: Glasser MF, Coalson TS, Robinson EC, et al. (2016) A multi-modal parcellation of human cerebral cortex. Nature 536:171–178
+    doi: https://doi.org/10.1038/nature18933
+    pmid: 27437579
+  rolls-2023-ofc:
+    short: Rolls et al. (2023), Cereb Cortex
+    citation: "Rolls ET, Deco G, Huang CC, Feng J (2023) The human orbitofrontal cortex, vmPFC, and anterior cingulate cortex effective connectome: emotion, memory, and action. Cereb Cortex 33:330–356"
+    doi: https://doi.org/10.1093/cercor/bhac070
+    pmid: 35233615
+  rolls-2023-pcc:
+    short: Rolls et al. (2023), Hum Brain Mapp
+    citation: Rolls ET, Wirth S, Deco G, Huang CC, Feng J (2023) The human posterior cingulate, retrosplenial, and medial parietal cortex effective connectome, and implications for memory and navigation. Hum Brain Mapp 44:629–655
+    doi: https://doi.org/10.1002/hbm.26089
+    pmid: 36178249
+# Glasser's supplement places six areas in two ways: Table 1's bold (primary)
+# column, followed here as HCPex v1.1 follows it, and the opening text of each
+# section, which MNE's fetch_hcp_mmp_parcellation(combine=True) follows.
+contested:
+  23c: {section: 7, text_section: 18}
+  '52': {section: 10, text_section: 12}
+  PFcm: {section: 10, text_section: 9}
+  TF: {section: 13, text_section: 14}
+  a47r: {section: 21, text_section: 20}
+  pOFC: {section: 19, text_section: 20}
+levels:
+  # Glasser 2016, Neuroanatomical Supplementary Results, Table 1: the 22 section
+  # headings as printed, in sentence case, and each area in its bold (primary) section.
+  sections:
+    - {id: section-1, number: 1, source: glasser-2016, color: [251, 113, 140], short: V1, short_fr: V1, name: Primary visual cortex (V1), name_fr: Cortex visuel primaire (V1), areas: [V1]}
+    - {id: section-2, number: 2, source: glasser-2016, color: [147, 81, 189], short: Early visual, short_fr: Visuel précoce, name: Early visual cortex, name_fr: Cortex visuel précoce, areas: [V2, V3, V4]}
+    - {id: section-3, number: 3, source: glasser-2016, color: [238, 173, 137], short: Dorsal stream visual, short_fr: Visuel de la voie dorsale, name: Dorsal stream visual cortex, name_fr: Cortex visuel de la voie dorsale, areas: [V3A, V3B, V6, V6A, V7, IPS1]}
+    - {id: section-4, number: 4, source: glasser-2016, color: [133, 159, 246], short: Ventral stream visual, short_fr: Visuel de la voie ventrale, name: Ventral stream visual cortex, name_fr: Cortex visuel de la voie ventrale, areas: [V8, VVC, PIT, FFC, VMV1, VMV2, VMV3]}
+    - {id: section-5, number: 5, source: glasser-2016, color: [129, 117, 49], short: MT+ complex and neighbors, short_fr: Complexe MT+ et voisines, name: MT+ complex and neighboring visual areas, name_fr: Complexe MT+ et aires visuelles voisines, areas: [V3CD, LO1, LO2, LO3, V4t, FST, MT, MST, PH]}
+    - {id: section-6, number: 6, source: glasser-2016, color: [148, 207, 159], short: Somatosensory and motor, short_fr: Somatosensoriel et moteur, name: Somatosensory and motor cortex, name_fr: Cortex somatosensoriel et moteur, areas: ['4', 3a, 3b, '1', '2']}
+    - {id: section-7, number: 7, source: glasser-2016, color: [185, 64, 130], short: Paracentral and mid cingulate, short_fr: Paracentral et cingulaire moyen, name: Paracentral lobular and mid cingulate cortex, name_fr: Cortex du lobule paracentral et cingulaire moyen, areas: [24dd, 24dv, 6mp, 6ma, SCEF, 5m, 5L, 5mv, 23c]}
+    - {id: section-8, number: 8, source: glasser-2016, color: [141, 117, 235], short: Premotor, short_fr: Prémoteur, name: Premotor cortex, name_fr: Cortex prémoteur, areas: [55b, 6d, 6a, FEF, 6v, 6r, PEF]}
+    - {id: section-9, number: 9, source: glasser-2016, color: [224, 91, 74], short: Posterior opercular, short_fr: Operculaire postérieur, name: Posterior opercular cortex, name_fr: Cortex operculaire postérieur, areas: ['43', FOP1, OP4, OP1, OP2-3]}
+    - {id: section-10, number: 10, source: glasser-2016, color: [197, 198, 25], short: Early auditory, short_fr: Auditif précoce, name: Early auditory cortex, name_fr: Cortex auditif précoce, areas: [A1, LBelt, MBelt, PBelt, RI, '52', PFcm]}
+    - {id: section-11, number: 11, source: glasser-2016, color: [165, 122, 174], short: Auditory association, short_fr: Auditif associatif, name: Auditory association cortex, name_fr: Cortex auditif associatif, areas: [A4, A5, STSdp, STSda, STSvp, STSva, STGa, TA2]}
+    - {id: section-12, number: 12, source: glasser-2016, color: [145, 195, 246], short: Insular and frontal opercular, short_fr: Insulaire et operculaire frontal, name: Insular and frontal opercular cortex, name_fr: Cortex insulaire et operculaire frontal, areas: [PI, Ig, PoI1, PoI2, FOP2, FOP3, MI, AVI, AAIC, Pir, FOP4, FOP5]}
+    - {id: section-13, number: 13, source: glasser-2016, color: [163, 95, 85], short: Medial temporal, short_fr: Temporal médial, name: Medial temporal cortex, name_fr: Cortex temporal médial, areas: [H, PreS, EC, PeEc, PHA1, PHA2, PHA3, TF]}
+    - {id: section-14, number: 14, source: glasser-2016, color: [154, 176, 75], short: Lateral temporal, short_fr: Temporal latéral, name: Lateral temporal cortex, name_fr: Cortex temporal latéral, areas: [PHT, TE1p, TE1m, TE1a, TE2p, TE2a, TGv, TGd]}
+    - {id: section-15, number: 15, source: glasser-2016, color: [40, 214, 223], short: Temporo-parieto-occipital junction, short_fr: Jonction temporo-pariéto-occipitale, name: Temporo-parieto-occipital junction, name_fr: Jonction temporo-pariéto-occipitale, areas: [TPOJ1, TPOJ2, TPOJ3, STV, PSL]}
+    - {id: section-16, number: 16, source: glasser-2016, color: [190, 124, 28], short: Superior parietal, short_fr: Pariétal supérieur, name: Superior parietal cortex, name_fr: Cortex pariétal supérieur, areas: [LIPv, LIPd, VIP, AIP, MIP, 7PC, 7AL, 7Am, 7PL, 7Pm]}
+    - {id: section-17, number: 17, source: glasser-2016, color: [86, 147, 189], short: Inferior parietal, short_fr: Pariétal inférieur, name: Inferior parietal cortex, name_fr: Cortex pariétal inférieur, areas: [PGp, PGs, PGi, PFm, PF, PFt, PFop, IP0, IP1, IP2]}
+    - {id: section-18, number: 18, source: glasser-2016, color: [197, 131, 243], short: Posterior cingulate, short_fr: Cingulaire postérieur, name: Posterior cingulate cortex, name_fr: Cortex cingulaire postérieur, areas: [DVT, ProS, POS1, POS2, RSC, v23ab, d23ab, 31pv, 31pd, 31a, 23d, PCV, 7m]}
+    - {id: section-19, number: 19, source: glasser-2016, color: [246, 127, 47], short: Anterior cingulate and medial prefrontal, short_fr: Cingulaire antérieur et préfrontal médian, name: Anterior cingulate and medial prefrontal cortex, name_fr: Cortex cingulaire antérieur et préfrontal médian, areas: [33pr, p24pr, a24pr, p24, a24, p32pr, a32pr, d32, p32, s32, 8BM, 9m, 10v, 10r, '25', pOFC]}
+    - {id: section-20, number: 20, source: glasser-2016, color: [79, 105, 215], short: Orbital and polar frontal, short_fr: Frontal orbitaire et polaire, name: Orbital and polar frontal cortex, name_fr: Cortex frontal orbitaire et polaire, areas: [47s, 47m, 11l, 13l, a10p, p10p, 10pp, 10d, OFC]}
+    - {id: section-21, number: 21, source: glasser-2016, color: [99, 156, 111], short: Inferior frontal, short_fr: Frontal inférieur, name: Inferior frontal cortex, name_fr: Cortex frontal inférieur, areas: ['44', '45', IFJp, IFJa, IFSp, IFSa, 47l, p47r, a47r]}
+    - {id: section-22, number: 22, source: glasser-2016, color: [223, 169, 218], short: Dorsolateral prefrontal, short_fr: Préfrontal dorsolatéral, name: Dorsolateral prefrontal cortex, name_fr: Cortex préfrontal dorsolatéral, areas: [8C, 8Av, i6-8, s6-8, SFL, 8BL, 9p, 9a, 8Ad, p9-46v, a9-46v, '46', 9-46d]}
+  # Classic names, only where a source defines them as HCP-MMP areas. They do
+  # not repartition the sections: Rolls's groups cross them.
+  # Glasser: Neuroanatomical Supplementary Results pp. 19-36 and 73, and Table 1.
+  # Rolls (Cereb Cortex): Methods, p. 333, and Fig. 1. Rolls (Hum Brain Mapp):
+  # Methods 2.3, Fig. 1 and the headings of sections 3.2-3.5.
+  named:
+    - {id: v1, source: glasser-2016, color: [23, 167, 80], short: V1, short_fr: V1, name: Primary visual cortex (V1), name_fr: Cortex visuel primaire (V1), areas: [V1]}
+    - {id: mt, source: glasser-2016, color: [60, 155, 170], short: MT, short_fr: MT, name: Middle temporal area (MT), name_fr: Aire temporale moyenne (MT), areas: [MT]}
+    - {id: ffc, source: glasser-2016, color: [247, 113, 160], short: FFC, short_fr: FFC, name: Fusiform face complex (FFC), name_fr: Complexe fusiforme des visages (FFC), areas: [FFC]}
+    - {id: m1, source: glasser-2016, color: [197, 198, 25], short: M1, short_fr: M1, name: Primary motor cortex (M1), name_fr: Cortex moteur primaire (M1), areas: ['4']}
+    - {id: s1, source: glasser-2016, color: [205, 92, 172], short: S1, short_fr: S1, name: Primary somatosensory cortex (S1), name_fr: Cortex somatosensoriel primaire (S1), areas: [3a, 3b, '1', '2']}
+    - {id: s2, source: glasser-2016, color: [222, 96, 47], short: SII, short_fr: SII, name: Secondary somatosensory cortex (SII), name_fr: Cortex somatosensoriel secondaire (SII), areas: [OP1]}
+    - {id: sma, source: glasser-2016, color: [87, 129, 78], short: SMA, short_fr: AMS, name: Supplementary motor area (SMA), name_fr: Aire motrice supplémentaire (AMS), areas: [6mp, 6ma, SCEF]}
+    - {id: fef, source: glasser-2016, color: [148, 128, 187], short: FEF, short_fr: FEF, name: Frontal eye fields (FEF), name_fr: Champs oculomoteurs frontaux (FEF), areas: [FEF]}
+    - {id: pef, source: glasser-2016, color: [6, 191, 168], short: PEF, short_fr: PEF, name: Premotor eye field (PEF), name_fr: Champ oculomoteur prémoteur (PEF), areas: [PEF]}
+    - {id: broca, source: glasser-2016, color: [152, 95, 133], short: "Broca's area", short_fr: Aire de Broca, name: Broca's area, name_fr: Aire de Broca, areas: ['44', '45']}
+    - {id: a1, source: glasser-2016, color: [85, 117, 169], short: A1, short_fr: A1, name: Primary auditory cortex (A1), name_fr: Cortex auditif primaire (A1), areas: [A1]}
+    - {id: lateral-ofc, source: rolls-2023-ofc, color: [250, 146, 241], short: Lateral OFC, short_fr: COF latéral, name: Lateral orbitofrontal cortex, name_fr: Cortex orbitofrontal latéral, areas: [47s, 47l, a47r, p47r, 47m]}
+    - {id: medial-ofc, source: rolls-2023-ofc, color: [196, 62, 73], short: Medial OFC, short_fr: COF médian, name: Medial orbitofrontal cortex, name_fr: Cortex orbitofrontal médian, areas: [11l, 13l, OFC, pOFC]}
+    - {id: subgenual-cingulate, source: rolls-2023-ofc, color: [96, 170, 243], short: Subgenual cingulate, short_fr: Cingulaire subgénual, name: Subgenual cingulate cortex, name_fr: Cortex cingulaire subgénual, areas: ['25']}
+    - {id: pregenual-acc, source: rolls-2023-ofc, color: [150, 107, 52], short: Pregenual ACC, short_fr: CCA prégénual, name: Pregenual anterior cingulate cortex, name_fr: Cortex cingulaire antérieur prégénual, areas: [s32, a24, p24, p32, d32]}
+    - {id: area-10, source: rolls-2023-ofc, color: [48, 222, 151], short: Area 10 and related vmPFC, short_fr: Aire 10 et régions du CPFvm, name: Area 10 and related ventromedial prefrontal cortex regions, name_fr: Aire 10 et régions apparentées du cortex préfrontal ventromédian, areas: [10v, 10r, 10d, 9m]}
+    - {id: supracallosal-acc, source: rolls-2023-ofc, color: [133, 87, 200], short: Supracallosal ACC, short_fr: CCA supracalleux, name: Supracallosal anterior cingulate cortex, name_fr: Cortex cingulaire antérieur supracalleux, areas: [a32pr, a24pr, 33pr, p32pr, p24pr]}
+    - {id: midcingulate, source: rolls-2023-pcc, color: [64, 209, 247], short: Midcingulate, short_fr: Cingulaire moyen, name: Midcingulate cortex, name_fr: Cortex cingulaire moyen, areas: [23c, 24dd, 24dv]}
+    - {id: pcc-1, source: rolls-2023-pcc, color: [101, 130, 242], short: PCC group 1, short_fr: CCP groupe 1, name: Postero-ventral posterior cingulate division (group 1), name_fr: Division cingulaire postérieure postéro-ventrale (groupe 1), areas: [31pd, 31pv, 7m, d23ab, v23ab]}
+    - {id: pcc-2, source: rolls-2023-pcc, color: [159, 141, 14], short: PCC group 2, short_fr: CCP groupe 2, name: Antero-dorsal posterior cingulate division (group 2), name_fr: Division cingulaire postérieure antéro-dorsale (groupe 2), areas: [RSC, 31a, 23d, PCV, POS2, POS1]}
+    - {id: pcc-3, source: rolls-2023-pcc, color: [197, 131, 243], short: PCC group 3, short_fr: CCP groupe 3, name: Dorsal visual transitional area and ProS (group 3), name_fr: Aire visuelle dorsale de transition et ProS (groupe 3), areas: [DVT, ProS]}

@@ -3,7 +3,9 @@ import { DoubleSide, Mesh } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { fetchAsset } from '../model/asset-cache.js';
 import { tissueColor } from '../render/materials.js';
-import { labelAppearance, usesAtlasColors, usesCabNpColors, usesNetworkColors } from './palette.js';
+import {
+  labelAppearance, usesAtlasColors, usesCabNpColors, usesFunctionalColors, usesNetworkColors,
+} from './palette.js';
 import { buildRibbonWedges } from './ribbon-wedges.js';
 import { createSolidMaterial } from './solid-material.js';
 import { addMriAppearance } from '../render/mri-material.js';
@@ -184,7 +186,8 @@ export function paintSolids(sections, {
   // Only tissue colour carries the T1 brightness it was tuned against; under a
   // published palette that modulation would distort the datum, exactly as it
   // would on a voxel cut face. Relief is lighting, not colour, so it stays.
-  const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state);
+  const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state)
+    || usesFunctionalColors(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
   const sampledAtlas = state.surfaceColor === 'mri' && !wedged;
   const sampledIsolation = sampledAtlas && labels.byRegion.has(state.isolatedRegion) &&
