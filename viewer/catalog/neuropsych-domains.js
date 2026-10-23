@@ -25,6 +25,7 @@ export function validateNeuropsychDomains(partition, regions) {
   for (const domain of partition.domains) {
     if (!domain.id || domain.id === ALL_DOMAINS || ids.has(domain.id) || !domain.name || !domain.name_fr
         || !domain.term || !groups.has(domain.group) || typeof domain.overview !== 'boolean' || domain.color?.length !== 3
+        || !Number.isInteger(partition.derivation?.studies?.[domain.id])
         || !partition.lesion_checks?.[domain.id]) {
       throw new Error(`Invalid neuropsychological domain: ${domain.id}`);
     }

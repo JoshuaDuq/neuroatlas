@@ -36,8 +36,8 @@ def _rules(ink, quiet, accent, string, danger):
 
 
 class Light(Style):
-    background_color = "#f7f8f9"
-    styles = _rules("#1c242b", "#5d6872", "#156b6d", "#3f6285", "#a61b1b")
+    background_color = "#f8f9fa"
+    styles = _rules("#20272c", "#667078", "#156b6d", "#3f6285", "#a61b1b")
 
 
 class Dark(Style):

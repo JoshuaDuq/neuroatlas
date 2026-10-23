@@ -4,7 +4,7 @@ import { networkCss } from '../../catalog/networks.js';
 import {
   ALL_DOMAINS, domainAreas, domainName, domainRecord, groupedDomains, overviewDomains,
 } from '../../catalog/neuropsych-domains.js';
-import { decimal } from '../format.js';
+import { count, decimal } from '../format.js';
 import { createButtonLabel } from '../chrome/button-label.js';
 import { drillChevron, element, scrollToTop, stageMessage } from './clinical.js';
 import { checkedParcels } from './provenance.js';
@@ -217,7 +217,8 @@ export function createFunctionExplorer({
     meta.setAttribute('role', 'status');
     const body = element('div', null, 'panel-body clinical-content');
     body.append(name, meta,
-      element('p', all ? domainCopy.keyAll : copy.term(record.term), 'clinical-summary'),
+      element('p', all ? domainCopy.keyAll
+        : copy.term(record.term, count(domains.derivation.studies[id], 'study', lang)), 'clinical-summary'),
       element('p', domainCopy.note(domains.sources[domains.scores_source].short), 'clinical-note clinical-caveat'));
     if (all) body.append(overviewSection(lang));
     else body.append(areasSection(id, lang), lesionSection(id, lang));

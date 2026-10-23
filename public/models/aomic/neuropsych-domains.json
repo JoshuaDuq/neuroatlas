@@ -74,7 +74,46 @@
       "pain": 516,
       "theory-of-mind": 181,
       "fear": 363,
-      "reward": 922
+      "reward": 922,
+      "conflict-monitoring": 337,
+      "error-monitoring": 464,
+      "reasoning": 182,
+      "categorization": 163,
+      "recall": 244,
+      "autobiographical-memory": 143,
+      "skill-learning": 154,
+      "syntax": 169,
+      "spelling": 132,
+      "voice": 121,
+      "motion": 451,
+      "scenes": 228,
+      "mental-rotation": 102,
+      "imagery": 312,
+      "multisensory": 146,
+      "eye-movements": 116,
+      "timing": 186,
+      "empathy": 187,
+      "emotion-regulation": 247,
+      "motivation": 189,
+      "disgust": 103,
+      "language-comprehension": 107,
+      "lexical": 331,
+      "familiarity": 188,
+      "recollection": 157,
+      "intelligence": 116,
+      "facial-expressions": 250,
+      "action-observation": 118,
+      "sustained-attention": 74,
+      "verbal-fluency": 84,
+      "speech-perception": 97,
+      "arithmetic": 96,
+      "object-recognition": 86,
+      "navigation": 77,
+      "gestures": 85,
+      "taste": 80,
+      "smell": 74,
+      "interoception": 81,
+      "moral-reasoning": 87
     },
     "selection": "abstract TF-IDF >= 0.001",
     "map": "MKDAChi2 z_desc-uniformity, 6 mm kernel",
@@ -519,6 +558,513 @@
         0,
         135,
         90
+      ],
+      "overview": false
+    },
+    {
+      "id": "conflict-monitoring",
+      "term": "conflict",
+      "group": "attention-executive",
+      "name": "Conflict monitoring",
+      "name_fr": "D\u00e9tection des conflits",
+      "color": [
+        156,
+        31,
+        90
+      ],
+      "overview": false
+    },
+    {
+      "id": "error-monitoring",
+      "term": "error",
+      "group": "attention-executive",
+      "name": "Error monitoring",
+      "name_fr": "D\u00e9tection des erreurs",
+      "color": [
+        215,
+        48,
+        31
+      ],
+      "overview": false
+    },
+    {
+      "id": "reasoning",
+      "term": "reasoning",
+      "group": "attention-executive",
+      "name": "Reasoning",
+      "name_fr": "Raisonnement",
+      "color": [
+        94,
+        60,
+        153
+      ],
+      "overview": false
+    },
+    {
+      "id": "categorization",
+      "term": "categorization",
+      "group": "attention-executive",
+      "name": "Categorization",
+      "name_fr": "Cat\u00e9gorisation",
+      "color": [
+        43,
+        140,
+        190
+      ],
+      "overview": false
+    },
+    {
+      "id": "recall",
+      "term": "recall",
+      "group": "memory",
+      "name": "Recall",
+      "name_fr": "Rappel",
+      "color": [
+        8,
+        81,
+        156
+      ],
+      "overview": false
+    },
+    {
+      "id": "autobiographical-memory",
+      "term": "autobiographical",
+      "group": "memory",
+      "name": "Autobiographical memory",
+      "name_fr": "M\u00e9moire autobiographique",
+      "color": [
+        35,
+        139,
+        69
+      ],
+      "overview": false
+    },
+    {
+      "id": "skill-learning",
+      "term": "skill",
+      "group": "memory",
+      "name": "Skill learning",
+      "name_fr": "Apprentissage d\u2019habilet\u00e9s",
+      "color": [
+        106,
+        81,
+        163
+      ],
+      "overview": false
+    },
+    {
+      "id": "syntax",
+      "term": "syntactic",
+      "group": "language-number",
+      "name": "Syntax",
+      "name_fr": "Syntaxe",
+      "color": [
+        179,
+        88,
+        6
+      ],
+      "overview": false
+    },
+    {
+      "id": "spelling",
+      "term": "orthographic",
+      "group": "language-number",
+      "name": "Spelling",
+      "name_fr": "Orthographe",
+      "color": [
+        194,
+        24,
+        91
+      ],
+      "overview": false
+    },
+    {
+      "id": "voice",
+      "term": "voice",
+      "group": "perception",
+      "name": "Voice perception",
+      "name_fr": "Perception de la voix",
+      "color": [
+        8,
+        104,
+        172
+      ],
+      "overview": false
+    },
+    {
+      "id": "motion",
+      "term": "motion",
+      "group": "perception",
+      "name": "Motion perception",
+      "name_fr": "Perception du mouvement",
+      "color": [
+        123,
+        50,
+        148
+      ],
+      "overview": false
+    },
+    {
+      "id": "scenes",
+      "term": "scenes",
+      "group": "perception",
+      "name": "Scene processing",
+      "name_fr": "Traitement des sc\u00e8nes",
+      "color": [
+        26,
+        152,
+        80
+      ],
+      "overview": false
+    },
+    {
+      "id": "mental-rotation",
+      "term": "rotation",
+      "group": "perception",
+      "name": "Mental rotation",
+      "name_fr": "Rotation mentale",
+      "color": [
+        217,
+        95,
+        2
+      ],
+      "overview": false
+    },
+    {
+      "id": "imagery",
+      "term": "imagery",
+      "group": "perception",
+      "name": "Mental imagery",
+      "name_fr": "Imagerie mentale",
+      "color": [
+        77,
+        146,
+        33
+      ],
+      "overview": false
+    },
+    {
+      "id": "multisensory",
+      "term": "multisensory",
+      "group": "perception",
+      "name": "Multisensory integration",
+      "name_fr": "Int\u00e9gration multisensorielle",
+      "color": [
+        230,
+        85,
+        13
+      ],
+      "overview": false
+    },
+    {
+      "id": "eye-movements",
+      "term": "eye movements",
+      "group": "sensorimotor",
+      "name": "Eye movements",
+      "name_fr": "Mouvements oculaires",
+      "color": [
+        49,
+        130,
+        189
+      ],
+      "overview": false
+    },
+    {
+      "id": "timing",
+      "term": "timing",
+      "group": "sensorimotor",
+      "name": "Timing",
+      "name_fr": "Estimation temporelle",
+      "color": [
+        140,
+        45,
+        4
+      ],
+      "overview": false
+    },
+    {
+      "id": "empathy",
+      "term": "empathy",
+      "group": "social-emotional",
+      "name": "Empathy",
+      "name_fr": "Empathie",
+      "color": [
+        174,
+        1,
+        126
+      ],
+      "overview": false
+    },
+    {
+      "id": "emotion-regulation",
+      "term": "emotion regulation",
+      "group": "social-emotional",
+      "name": "Emotion regulation",
+      "name_fr": "R\u00e9gulation \u00e9motionnelle",
+      "color": [
+        0,
+        109,
+        44
+      ],
+      "overview": false
+    },
+    {
+      "id": "motivation",
+      "term": "motivation",
+      "group": "social-emotional",
+      "name": "Motivation",
+      "name_fr": "Motivation",
+      "color": [
+        84,
+        39,
+        143
+      ],
+      "overview": false
+    },
+    {
+      "id": "disgust",
+      "term": "disgust",
+      "group": "social-emotional",
+      "name": "Disgust",
+      "name_fr": "D\u00e9go\u00fbt",
+      "color": [
+        153,
+        52,
+        4
+      ],
+      "overview": false
+    },
+    {
+      "id": "language-comprehension",
+      "term": "language comprehension",
+      "group": "language-number",
+      "name": "Language comprehension",
+      "name_fr": "Compr\u00e9hension du langage",
+      "color": [
+        27,
+        120,
+        55
+      ],
+      "overview": false
+    },
+    {
+      "id": "lexical",
+      "term": "lexical",
+      "group": "language-number",
+      "name": "Lexical processing",
+      "name_fr": "Traitement lexical",
+      "color": [
+        118,
+        42,
+        131
+      ],
+      "overview": false
+    },
+    {
+      "id": "familiarity",
+      "term": "familiarity",
+      "group": "memory",
+      "name": "Familiarity",
+      "name_fr": "Familiarit\u00e9",
+      "color": [
+        178,
+        24,
+        43
+      ],
+      "overview": false
+    },
+    {
+      "id": "recollection",
+      "term": "recollection",
+      "group": "memory",
+      "name": "Recollection",
+      "name_fr": "Recollection",
+      "color": [
+        33,
+        102,
+        172
+      ],
+      "overview": false
+    },
+    {
+      "id": "intelligence",
+      "term": "intelligence",
+      "group": "attention-executive",
+      "name": "General intelligence",
+      "name_fr": "Intelligence g\u00e9n\u00e9rale",
+      "color": [
+        128,
+        115,
+        172
+      ],
+      "overview": false
+    },
+    {
+      "id": "facial-expressions",
+      "term": "facial expressions",
+      "group": "social-emotional",
+      "name": "Facial emotion recognition",
+      "name_fr": "Reconnaissance des expressions faciales",
+      "color": [
+        53,
+        151,
+        143
+      ],
+      "overview": false
+    },
+    {
+      "id": "action-observation",
+      "term": "action observation",
+      "group": "sensorimotor",
+      "name": "Action observation",
+      "name_fr": "Observation de l\u2019action",
+      "color": [
+        197,
+        27,
+        125
+      ],
+      "overview": false
+    },
+    {
+      "id": "sustained-attention",
+      "term": "sustained attention",
+      "group": "attention-executive",
+      "name": "Sustained attention",
+      "name_fr": "Attention soutenue",
+      "color": [
+        69,
+        117,
+        180
+      ],
+      "overview": false
+    },
+    {
+      "id": "verbal-fluency",
+      "term": "verbal fluency",
+      "group": "language-number",
+      "name": "Verbal fluency",
+      "name_fr": "Fluence verbale",
+      "color": [
+        1,
+        102,
+        94
+      ],
+      "overview": false
+    },
+    {
+      "id": "speech-perception",
+      "term": "speech perception",
+      "group": "language-number",
+      "name": "Speech perception",
+      "name_fr": "Perception de la parole",
+      "color": [
+        84,
+        39,
+        136
+      ],
+      "overview": false
+    },
+    {
+      "id": "arithmetic",
+      "term": "arithmetic",
+      "group": "language-number",
+      "name": "Arithmetic",
+      "name_fr": "Arithm\u00e9tique",
+      "color": [
+        165,
+        0,
+        38
+      ],
+      "overview": false
+    },
+    {
+      "id": "object-recognition",
+      "term": "object recognition",
+      "group": "perception",
+      "name": "Object recognition",
+      "name_fr": "Reconnaissance des objets",
+      "color": [
+        49,
+        54,
+        149
+      ],
+      "overview": false
+    },
+    {
+      "id": "navigation",
+      "term": "navigation",
+      "group": "perception",
+      "name": "Spatial navigation",
+      "name_fr": "Navigation spatiale",
+      "color": [
+        127,
+        59,
+        8
+      ],
+      "overview": false
+    },
+    {
+      "id": "gestures",
+      "term": "gestures",
+      "group": "sensorimotor",
+      "name": "Gestures",
+      "name_fr": "Gestes",
+      "color": [
+        45,
+        0,
+        75
+      ],
+      "overview": false
+    },
+    {
+      "id": "taste",
+      "term": "taste",
+      "group": "sensorimotor",
+      "name": "Taste",
+      "name_fr": "Go\u00fbt",
+      "color": [
+        0,
+        104,
+        55
+      ],
+      "overview": false
+    },
+    {
+      "id": "smell",
+      "term": "olfactory",
+      "group": "sensorimotor",
+      "name": "Smell",
+      "name_fr": "Odorat",
+      "color": [
+        5,
+        112,
+        176
+      ],
+      "overview": false
+    },
+    {
+      "id": "interoception",
+      "term": "interoceptive",
+      "group": "sensorimotor",
+      "name": "Interoception",
+      "name_fr": "Int\u00e9roception",
+      "color": [
+        122,
+        1,
+        119
+      ],
+      "overview": false
+    },
+    {
+      "id": "moral-reasoning",
+      "term": "moral",
+      "group": "social-emotional",
+      "name": "Moral reasoning",
+      "name_fr": "Raisonnement moral",
+      "color": [
+        158,
+        1,
+        66
       ],
       "overview": false
     }
@@ -1905,7 +2451,569 @@
           }
         ]
       }
-    ]
+    ],
+    "conflict-monitoring": [
+      {
+        "association": "executive-control",
+        "deficit": "executive",
+        "deficit_name": {
+          "en": "Executive dysfunction",
+          "fr": "Dysfonction ex\u00e9cutive"
+        },
+        "references": [
+          "Gl\u00e4scher et al. 2012"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:15",
+            "source_name": "G_front_middle",
+            "coverage": 0.236
+          },
+          {
+            "region": "destrieux:right:15",
+            "source_name": "G_front_middle",
+            "coverage": 0.183
+          },
+          {
+            "region": "destrieux:left:6",
+            "source_name": "G_and_S_cingul-Ant",
+            "coverage": 0.155
+          },
+          {
+            "region": "destrieux:right:6",
+            "source_name": "G_and_S_cingul-Ant",
+            "coverage": 0.368
+          }
+        ]
+      }
+    ],
+    "error-monitoring": [],
+    "reasoning": [],
+    "categorization": [],
+    "recall": [
+      {
+        "association": "hippocampal-amnesia",
+        "deficit": "amnesia",
+        "deficit_name": {
+          "en": "Amnesia",
+          "fr": "Amn\u00e9sie"
+        },
+        "references": [
+          "Zola-Morgan et al. 1986"
+        ],
+        "mappings": [
+          {
+            "region": "aseg:left:17",
+            "source_name": "Left-Hippocampus",
+            "coverage": 1.0
+          },
+          {
+            "region": "aseg:right:53",
+            "source_name": "Right-Hippocampus",
+            "coverage": 1.0
+          }
+        ]
+      },
+      {
+        "association": "amnesia-fornix",
+        "deficit": "amnesia",
+        "deficit_name": {
+          "en": "Amnesia",
+          "fr": "Amn\u00e9sie"
+        },
+        "references": [
+          "Aggleton et al. 2000"
+        ],
+        "mappings": [
+          {
+            "region": "learning:left:fornix",
+            "source_name": "Fornix",
+            "coverage": null
+          },
+          {
+            "region": "learning:right:fornix",
+            "source_name": "Fornix",
+            "coverage": null
+          }
+        ]
+      },
+      {
+        "association": "amnesia-diencephalic",
+        "deficit": "amnesia",
+        "deficit_name": {
+          "en": "Amnesia",
+          "fr": "Amn\u00e9sie"
+        },
+        "references": [
+          "Harding et al. 2000"
+        ],
+        "mappings": [
+          {
+            "region": "nextbrain:left:220",
+            "source_name": "anteroventral_nucleus_of_thalamus",
+            "coverage": null
+          },
+          {
+            "region": "nextbrain:right:10220",
+            "source_name": "anteroventral_nucleus_of_thalamus",
+            "coverage": null
+          },
+          {
+            "region": "learning:left:mammillary",
+            "source_name": "Mammillary nuclei",
+            "coverage": null
+          },
+          {
+            "region": "learning:right:mammillary",
+            "source_name": "Mammillary nuclei",
+            "coverage": null
+          }
+        ]
+      }
+    ],
+    "autobiographical-memory": [],
+    "skill-learning": [],
+    "syntax": [
+      {
+        "association": "aphasia-comprehension",
+        "deficit": "aphasia",
+        "deficit_name": {
+          "en": "Aphasia",
+          "fr": "Aphasie"
+        },
+        "references": [
+          "Dronkers et al. 2004"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:38",
+            "source_name": "G_temporal_middle",
+            "coverage": 0.285
+          }
+        ]
+      }
+    ],
+    "spelling": [
+      {
+        "association": "agraphia-orthographic-memory",
+        "deficit": "agraphia",
+        "deficit_name": {
+          "en": "Acquired dysgraphia",
+          "fr": "Dysgraphie acquise"
+        },
+        "references": [
+          "Rapp et al. 2016"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:57",
+            "source_name": "S_intrapariet&P_trans",
+            "coverage": 0.653
+          }
+        ]
+      }
+    ],
+    "voice": [],
+    "motion": [
+      {
+        "association": "akinetopsia-lateral",
+        "deficit": "akinetopsia",
+        "deficit_name": {
+          "en": "Akinetopsia",
+          "fr": "Akin\u00e9topsie"
+        },
+        "references": [
+          "Zihl et al. 1983",
+          "Zihl et al. 1991"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:60",
+            "source_name": "S_occipital_ant",
+            "coverage": 1.0
+          },
+          {
+            "region": "destrieux:right:60",
+            "source_name": "S_occipital_ant",
+            "coverage": 1.0
+          },
+          {
+            "region": "destrieux:left:19",
+            "source_name": "G_occipital_middle",
+            "coverage": 0.458
+          },
+          {
+            "region": "destrieux:right:19",
+            "source_name": "G_occipital_middle",
+            "coverage": 0.549
+          },
+          {
+            "region": "destrieux:left:38",
+            "source_name": "G_temporal_middle",
+            "coverage": 0.265
+          },
+          {
+            "region": "destrieux:right:38",
+            "source_name": "G_temporal_middle",
+            "coverage": 0.266
+          }
+        ]
+      }
+    ],
+    "scenes": [
+      {
+        "association": "topographical-retrosplenial",
+        "deficit": "topographical-disorientation",
+        "deficit_name": {
+          "en": "Topographical disorientation",
+          "fr": "D\u00e9sorientation topographique"
+        },
+        "references": [
+          "Takahashi et al. 1997"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:right:10",
+            "source_name": "G_cingul-Post-ventral",
+            "coverage": 0.244
+          },
+          {
+            "region": "destrieux:right:9",
+            "source_name": "G_cingul-Post-dorsal",
+            "coverage": 0.0
+          },
+          {
+            "region": "destrieux:right:30",
+            "source_name": "G_precuneus",
+            "coverage": 0.055
+          }
+        ]
+      }
+    ],
+    "mental-rotation": [],
+    "imagery": [],
+    "multisensory": [],
+    "eye-movements": [],
+    "timing": [],
+    "empathy": [],
+    "emotion-regulation": [],
+    "motivation": [
+      {
+        "association": "abulia-caudate",
+        "deficit": "abulia",
+        "deficit_name": {
+          "en": "Abulia",
+          "fr": "Aboulie"
+        },
+        "references": [
+          "Bhatia and Marsden 1994"
+        ],
+        "mappings": [
+          {
+            "region": "aseg:left:11",
+            "source_name": "Left-Caudate",
+            "coverage": 1.0
+          },
+          {
+            "region": "aseg:right:50",
+            "source_name": "Right-Caudate",
+            "coverage": 1.0
+          }
+        ]
+      }
+    ],
+    "disgust": [],
+    "language-comprehension": [
+      {
+        "association": "aphasia-comprehension",
+        "deficit": "aphasia",
+        "deficit_name": {
+          "en": "Aphasia",
+          "fr": "Aphasie"
+        },
+        "references": [
+          "Dronkers et al. 2004"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:38",
+            "source_name": "G_temporal_middle",
+            "coverage": 0.04
+          }
+        ]
+      }
+    ],
+    "lexical": [],
+    "familiarity": [
+      {
+        "association": "hippocampal-amnesia",
+        "deficit": "amnesia",
+        "deficit_name": {
+          "en": "Amnesia",
+          "fr": "Amn\u00e9sie"
+        },
+        "references": [
+          "Zola-Morgan et al. 1986"
+        ],
+        "mappings": [
+          {
+            "region": "aseg:left:17",
+            "source_name": "Left-Hippocampus",
+            "coverage": 0.0
+          },
+          {
+            "region": "aseg:right:53",
+            "source_name": "Right-Hippocampus",
+            "coverage": 0.0
+          }
+        ]
+      }
+    ],
+    "recollection": [
+      {
+        "association": "hippocampal-amnesia",
+        "deficit": "amnesia",
+        "deficit_name": {
+          "en": "Amnesia",
+          "fr": "Amn\u00e9sie"
+        },
+        "references": [
+          "Zola-Morgan et al. 1986"
+        ],
+        "mappings": [
+          {
+            "region": "aseg:left:17",
+            "source_name": "Left-Hippocampus",
+            "coverage": 1.0
+          },
+          {
+            "region": "aseg:right:53",
+            "source_name": "Right-Hippocampus",
+            "coverage": 1.0
+          }
+        ]
+      }
+    ],
+    "intelligence": [],
+    "facial-expressions": [
+      {
+        "association": "emotion-amygdala",
+        "deficit": "emotion-recognition",
+        "deficit_name": {
+          "en": "Impaired emotion recognition",
+          "fr": "Trouble de la reconnaissance des \u00e9motions"
+        },
+        "references": [
+          "Adolphs et al. 1994",
+          "Adolphs et al. 1999"
+        ],
+        "mappings": [
+          {
+            "region": "aseg:left:18",
+            "source_name": "Left-Amygdala",
+            "coverage": 1.0
+          },
+          {
+            "region": "aseg:right:54",
+            "source_name": "Right-Amygdala",
+            "coverage": 1.0
+          }
+        ]
+      }
+    ],
+    "action-observation": [
+      {
+        "association": "apraxia-hand",
+        "deficit": "apraxia",
+        "deficit_name": {
+          "en": "Limb apraxia",
+          "fr": "Apraxie gestuelle"
+        },
+        "references": [
+          "Goldenberg and Karnath 2006",
+          "Achilles et al. 2017"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:25",
+            "source_name": "G_pariet_inf-Angular",
+            "coverage": 0.0
+          },
+          {
+            "region": "destrieux:left:26",
+            "source_name": "G_pariet_inf-Supramar",
+            "coverage": 0.158
+          }
+        ]
+      }
+    ],
+    "sustained-attention": [],
+    "verbal-fluency": [],
+    "speech-perception": [
+      {
+        "association": "word-deafness-auditory",
+        "deficit": "word-deafness",
+        "deficit_name": {
+          "en": "Pure word deafness",
+          "fr": "Surdit\u00e9 verbale pure"
+        },
+        "references": [
+          "Coslett et al. 1984",
+          "Maffei et al. 2017"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:33",
+            "source_name": "G_temp_sup-G_T_transv",
+            "coverage": 1.0
+          },
+          {
+            "region": "destrieux:right:33",
+            "source_name": "G_temp_sup-G_T_transv",
+            "coverage": 0.977
+          }
+        ]
+      }
+    ],
+    "arithmetic": [
+      {
+        "association": "acalculia-parietal",
+        "deficit": "acalculia",
+        "deficit_name": {
+          "en": "Acalculia",
+          "fr": "Acalculie"
+        },
+        "references": [
+          "Baldo and Dronkers 2007"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:25",
+            "source_name": "G_pariet_inf-Angular",
+            "coverage": 0.113
+          },
+          {
+            "region": "destrieux:left:26",
+            "source_name": "G_pariet_inf-Supramar",
+            "coverage": 0.026
+          }
+        ]
+      }
+    ],
+    "object-recognition": [],
+    "navigation": [
+      {
+        "association": "topographical-retrosplenial",
+        "deficit": "topographical-disorientation",
+        "deficit_name": {
+          "en": "Topographical disorientation",
+          "fr": "D\u00e9sorientation topographique"
+        },
+        "references": [
+          "Takahashi et al. 1997"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:right:10",
+            "source_name": "G_cingul-Post-ventral",
+            "coverage": 0.43
+          },
+          {
+            "region": "destrieux:right:9",
+            "source_name": "G_cingul-Post-dorsal",
+            "coverage": 0.0
+          },
+          {
+            "region": "destrieux:right:30",
+            "source_name": "G_precuneus",
+            "coverage": 0.237
+          }
+        ]
+      }
+    ],
+    "gestures": [
+      {
+        "association": "apraxia-hand",
+        "deficit": "apraxia",
+        "deficit_name": {
+          "en": "Limb apraxia",
+          "fr": "Apraxie gestuelle"
+        },
+        "references": [
+          "Goldenberg and Karnath 2006",
+          "Achilles et al. 2017"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:25",
+            "source_name": "G_pariet_inf-Angular",
+            "coverage": 0.036
+          },
+          {
+            "region": "destrieux:left:26",
+            "source_name": "G_pariet_inf-Supramar",
+            "coverage": 0.071
+          }
+        ]
+      },
+      {
+        "association": "apraxia-finger",
+        "deficit": "apraxia",
+        "deficit_name": {
+          "en": "Limb apraxia",
+          "fr": "Apraxie gestuelle"
+        },
+        "references": [
+          "Goldenberg and Karnath 2006",
+          "Achilles et al. 2017"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:12",
+            "source_name": "G_front_inf-Opercular",
+            "coverage": 0.026
+          }
+        ]
+      }
+    ],
+    "taste": [
+      {
+        "association": "taste-insular",
+        "deficit": "taste-impairment",
+        "deficit_name": {
+          "en": "Central taste impairment",
+          "fr": "Trouble gustatif central"
+        },
+        "references": [
+          "Pritchard et al. 1999"
+        ],
+        "mappings": [
+          {
+            "region": "destrieux:left:18",
+            "source_name": "G_insular_short",
+            "coverage": 1.0
+          },
+          {
+            "region": "destrieux:right:18",
+            "source_name": "G_insular_short",
+            "coverage": 1.0
+          },
+          {
+            "region": "destrieux:left:17",
+            "source_name": "G_Ins_lg&S_cent_ins",
+            "coverage": 0.766
+          },
+          {
+            "region": "destrieux:right:17",
+            "source_name": "G_Ins_lg&S_cent_ins",
+            "coverage": 0.931
+          }
+        ]
+      }
+    ],
+    "smell": [],
+    "interoception": [],
+    "moral-reasoning": []
   },
   "regions": {
     "hcp-mmp:left:1": [
@@ -1916,8 +3024,32 @@
     ],
     "hcp-mmp:left:2": [
       {
+        "domain": "motion",
+        "z": 19.65
+      },
+      {
         "domain": "visual-perception",
         "z": 16.53
+      },
+      {
+        "domain": "object-recognition",
+        "z": 6.2
+      },
+      {
+        "domain": "action-observation",
+        "z": 7.49
+      },
+      {
+        "domain": "gestures",
+        "z": 5.07
+      },
+      {
+        "domain": "multisensory",
+        "z": 4.84
+      },
+      {
+        "domain": "eye-movements",
+        "z": 5.76
       },
       {
         "domain": "colour",
@@ -1948,6 +3080,10 @@
         "z": 6.44
       },
       {
+        "domain": "spelling",
+        "z": 3.47
+      },
+      {
         "domain": "reading",
         "z": 3.59
       },
@@ -1976,6 +3112,10 @@
         "z": 5.28
       },
       {
+        "domain": "spelling",
+        "z": 3.24
+      },
+      {
         "domain": "reading",
         "z": 3.48
       },
@@ -1985,6 +3125,10 @@
       }
     ],
     "hcp-mmp:left:7": [
+      {
+        "domain": "disgust",
+        "z": 4.32
+      },
       {
         "domain": "visual-perception",
         "z": 11.55
@@ -1998,12 +3142,24 @@
         "z": 4.38
       },
       {
+        "domain": "object-recognition",
+        "z": 3.62
+      },
+      {
         "domain": "faces",
         "z": 8.47
       },
       {
+        "domain": "multisensory",
+        "z": 3.06
+      },
+      {
         "domain": "phonological",
         "z": 3.63
+      },
+      {
+        "domain": "spelling",
+        "z": 3.57
       },
       {
         "domain": "reading",
@@ -2016,6 +3172,10 @@
       {
         "domain": "working-memory",
         "z": 3.03
+      },
+      {
+        "domain": "motion",
+        "z": 3.35
       }
     ],
     "hcp-mmp:left:8": [
@@ -2040,12 +3200,28 @@
     ],
     "hcp-mmp:left:10": [
       {
+        "domain": "eye-movements",
+        "z": 9.75
+      },
+      {
+        "domain": "timing",
+        "z": 3.71
+      },
+      {
         "domain": "spatial-attention",
         "z": 6.42
       },
       {
+        "domain": "imagery",
+        "z": 4.81
+      },
+      {
         "domain": "motor",
         "z": 12.19
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.79
       },
       {
         "domain": "attention",
@@ -2068,8 +3244,16 @@
         "z": 3.01
       },
       {
+        "domain": "lexical",
+        "z": 3.24
+      },
+      {
         "domain": "phonological",
         "z": 3.57
+      },
+      {
+        "domain": "syntax",
+        "z": 3.8
       },
       {
         "domain": "reading",
@@ -2082,6 +3266,10 @@
       {
         "domain": "touch",
         "z": 3.35
+      },
+      {
+        "domain": "motion",
+        "z": 3.46
       }
     ],
     "hcp-mmp:left:11": [
@@ -2092,6 +3280,14 @@
       {
         "domain": "phonological",
         "z": 11.12
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.95
+      },
+      {
+        "domain": "categorization",
+        "z": 5.68
       },
       {
         "domain": "working-memory",
@@ -2106,6 +3302,14 @@
         "z": 16.44
       },
       {
+        "domain": "familiarity",
+        "z": 3.35
+      },
+      {
+        "domain": "imagery",
+        "z": 5.94
+      },
+      {
         "domain": "reading",
         "z": 10.75
       },
@@ -2116,6 +3320,10 @@
       {
         "domain": "spatial-attention",
         "z": 6.26
+      },
+      {
+        "domain": "lexical",
+        "z": 6.54
       },
       {
         "domain": "attention",
@@ -2138,12 +3346,48 @@
         "z": 4.79
       },
       {
+        "domain": "recall",
+        "z": 3.36
+      },
+      {
         "domain": "visual-perception",
         "z": 11.94
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.57
+      },
+      {
         "domain": "visuospatial",
         "z": 5.08
+      },
+      {
+        "domain": "eye-movements",
+        "z": 5.44
+      },
+      {
+        "domain": "gestures",
+        "z": 3.97
+      },
+      {
+        "domain": "action-observation",
+        "z": 5.3
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 4.01
+      },
+      {
+        "domain": "spelling",
+        "z": 5.69
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.65
+      },
+      {
+        "domain": "syntax",
+        "z": 4.88
       },
       {
         "domain": "music",
@@ -2158,6 +3402,14 @@
         "z": 3.96
       },
       {
+        "domain": "speech-perception",
+        "z": 3.09
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.92
+      },
+      {
         "domain": "auditory-perception",
         "z": 8.08
       },
@@ -2166,14 +3418,30 @@
         "z": 3.81
       },
       {
+        "domain": "motion",
+        "z": 5.36
+      },
+      {
         "domain": "faces",
         "z": 3.81
       }
     ],
     "hcp-mmp:left:12": [
       {
+        "domain": "timing",
+        "z": 3.92
+      },
+      {
         "domain": "language",
         "z": 13.93
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 6.07
+      },
+      {
+        "domain": "lexical",
+        "z": 6.71
       },
       {
         "domain": "speech-production",
@@ -2188,12 +3456,32 @@
         "z": 8.74
       },
       {
+        "domain": "syntax",
+        "z": 8.07
+      },
+      {
         "domain": "motor",
         "z": 11.69
       },
       {
         "domain": "naming",
         "z": 3.93
+      },
+      {
+        "domain": "imagery",
+        "z": 3.85
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.81
+      },
+      {
+        "domain": "speech-perception",
+        "z": 4.41
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.38
       },
       {
         "domain": "working-memory",
@@ -2208,12 +3496,24 @@
         "z": 6.8
       },
       {
+        "domain": "voice",
+        "z": 3.61
+      },
+      {
         "domain": "auditory-perception",
         "z": 8.09
       },
       {
+        "domain": "spelling",
+        "z": 3.97
+      },
+      {
         "domain": "attention",
         "z": 5.06
+      },
+      {
+        "domain": "motion",
+        "z": 3.9
       }
     ],
     "hcp-mmp:left:16": [
@@ -2230,8 +3530,16 @@
         "z": 8.51
       },
       {
+        "domain": "eye-movements",
+        "z": 3.17
+      },
+      {
         "domain": "attention",
         "z": 4.02
+      },
+      {
+        "domain": "motion",
+        "z": 5.32
       },
       {
         "domain": "working-memory",
@@ -2262,8 +3570,16 @@
     ],
     "hcp-mmp:left:18": [
       {
+        "domain": "spelling",
+        "z": 13.87
+      },
+      {
         "domain": "reading",
         "z": 14.89
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.06
       },
       {
         "domain": "faces",
@@ -2274,8 +3590,24 @@
         "z": 17.83
       },
       {
+        "domain": "lexical",
+        "z": 8.42
+      },
+      {
+        "domain": "object-recognition",
+        "z": 6.91
+      },
+      {
         "domain": "phonological",
         "z": 9.12
+      },
+      {
+        "domain": "categorization",
+        "z": 4.76
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.85
       },
       {
         "domain": "naming",
@@ -2290,6 +3622,10 @@
         "z": 9.62
       },
       {
+        "domain": "scenes",
+        "z": 3.8
+      },
+      {
         "domain": "fear",
         "z": 3.78
       },
@@ -2300,6 +3636,14 @@
       {
         "domain": "attention",
         "z": 5.38
+      },
+      {
+        "domain": "motion",
+        "z": 6.21
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.01
       },
       {
         "domain": "working-memory",
@@ -2318,12 +3662,20 @@
       {
         "domain": "visual-perception",
         "z": 7.39
+      },
+      {
+        "domain": "motion",
+        "z": 4.46
       }
     ],
     "hcp-mmp:left:20": [
       {
         "domain": "visual-perception",
         "z": 9.64
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.06
       },
       {
         "domain": "reading",
@@ -2334,8 +3686,16 @@
         "z": 3.05
       },
       {
+        "domain": "spelling",
+        "z": 3.08
+      },
+      {
         "domain": "faces",
         "z": 4.22
+      },
+      {
+        "domain": "motion",
+        "z": 4.93
       },
       {
         "domain": "attention",
@@ -2346,6 +3706,14 @@
       {
         "domain": "visual-perception",
         "z": 16.23
+      },
+      {
+        "domain": "object-recognition",
+        "z": 6.13
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.08
       },
       {
         "domain": "naming",
@@ -2364,12 +3732,28 @@
         "z": 10.03
       },
       {
+        "domain": "spelling",
+        "z": 6.2
+      },
+      {
         "domain": "phonological",
         "z": 5.42
       },
       {
         "domain": "speech-production",
         "z": 3.19
+      },
+      {
+        "domain": "scenes",
+        "z": 3.27
+      },
+      {
+        "domain": "eye-movements",
+        "z": 3.91
+      },
+      {
+        "domain": "motion",
+        "z": 9.08
       },
       {
         "domain": "attention",
@@ -2386,8 +3770,16 @@
     ],
     "hcp-mmp:left:22": [
       {
+        "domain": "object-recognition",
+        "z": 5.95
+      },
+      {
         "domain": "faces",
         "z": 11.56
+      },
+      {
+        "domain": "spelling",
+        "z": 6.96
       },
       {
         "domain": "visual-perception",
@@ -2410,14 +3802,50 @@
         "z": 4.48
       },
       {
+        "domain": "motion",
+        "z": 5.18
+      },
+      {
         "domain": "attention",
         "z": 3.74
       }
     ],
     "hcp-mmp:left:23": [
       {
+        "domain": "motion",
+        "z": 26.32
+      },
+      {
+        "domain": "action-observation",
+        "z": 11.51
+      },
+      {
+        "domain": "gestures",
+        "z": 8.26
+      },
+      {
         "domain": "visual-perception",
         "z": 22.17
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 4.94
+      },
+      {
+        "domain": "multisensory",
+        "z": 6.0
+      },
+      {
+        "domain": "eye-movements",
+        "z": 7.99
+      },
+      {
+        "domain": "empathy",
+        "z": 4.42
+      },
+      {
+        "domain": "object-recognition",
+        "z": 5.34
       },
       {
         "domain": "spatial-attention",
@@ -2426,6 +3854,10 @@
       {
         "domain": "visuospatial",
         "z": 5.62
+      },
+      {
+        "domain": "scenes",
+        "z": 4.23
       },
       {
         "domain": "planning",
@@ -2474,12 +3906,24 @@
         "z": 28.93
       },
       {
+        "domain": "multisensory",
+        "z": 8.31
+      },
+      {
         "domain": "music",
         "z": 9.54
       },
       {
         "domain": "speech-production",
         "z": 6.22
+      },
+      {
+        "domain": "speech-perception",
+        "z": 8.09
+      },
+      {
+        "domain": "timing",
+        "z": 3.74
       },
       {
         "domain": "phonological",
@@ -2490,8 +3934,16 @@
         "z": 5.81
       },
       {
+        "domain": "voice",
+        "z": 4.5
+      },
+      {
         "domain": "language",
         "z": 6.97
+      },
+      {
+        "domain": "lexical",
+        "z": 3.5
       },
       {
         "domain": "motor",
@@ -2518,6 +3970,10 @@
       {
         "domain": "language",
         "z": 6.1
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.01
       },
       {
         "domain": "reading",
@@ -2554,6 +4010,10 @@
         "z": 3.68
       },
       {
+        "domain": "gestures",
+        "z": 3.33
+      },
+      {
         "domain": "phonological",
         "z": 4.72
       },
@@ -2562,12 +4022,32 @@
         "z": 7.14
       },
       {
+        "domain": "speech-perception",
+        "z": 3.73
+      },
+      {
+        "domain": "voice",
+        "z": 4.33
+      },
+      {
+        "domain": "lexical",
+        "z": 3.78
+      },
+      {
+        "domain": "syntax",
+        "z": 5.13
+      },
+      {
         "domain": "reading",
         "z": 4.89
       },
       {
         "domain": "auditory-perception",
         "z": 8.3
+      },
+      {
+        "domain": "motion",
+        "z": 4.68
       },
       {
         "domain": "visual-perception",
@@ -2592,6 +4072,10 @@
       {
         "domain": "long-term-memory",
         "z": 3.97
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.35
       }
     ],
     "hcp-mmp:left:31": [
@@ -2602,6 +4086,18 @@
       {
         "domain": "long-term-memory",
         "z": 4.31
+      },
+      {
+        "domain": "scenes",
+        "z": 4.17
+      },
+      {
+        "domain": "navigation",
+        "z": 3.42
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 5.17
       }
     ],
     "hcp-mmp:left:32": [
@@ -2620,12 +4116,24 @@
         "z": 5.46
       },
       {
+        "domain": "autobiographical-memory",
+        "z": 12.35
+      },
+      {
+        "domain": "recollection",
+        "z": 4.27
+      },
+      {
         "domain": "social-cognition",
         "z": 4.85
       },
       {
         "domain": "theory-of-mind",
         "z": 4.78
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.33
       },
       {
         "domain": "emotion",
@@ -2650,12 +4158,20 @@
     ],
     "hcp-mmp:left:34": [
       {
+        "domain": "recollection",
+        "z": 4.42
+      },
+      {
         "domain": "recognition-memory",
         "z": 3.6
       },
       {
         "domain": "long-term-memory",
         "z": 3.62
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.18
       },
       {
         "domain": "attention",
@@ -2672,12 +4188,24 @@
     ],
     "hcp-mmp:left:35": [
       {
+        "domain": "recollection",
+        "z": 3.31
+      },
+      {
         "domain": "theory-of-mind",
         "z": 3.81
       },
       {
+        "domain": "recall",
+        "z": 3.18
+      },
+      {
         "domain": "long-term-memory",
         "z": 3.91
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.56
       }
     ],
     "hcp-mmp:left:40": [
@@ -2706,6 +4234,10 @@
     ],
     "hcp-mmp:left:42": [
       {
+        "domain": "imagery",
+        "z": 3.7
+      },
+      {
         "domain": "motor",
         "z": 3.89
       }
@@ -2714,6 +4246,18 @@
       {
         "domain": "motor",
         "z": 23.09
+      },
+      {
+        "domain": "imagery",
+        "z": 8.63
+      },
+      {
+        "domain": "timing",
+        "z": 4.84
+      },
+      {
+        "domain": "skill-learning",
+        "z": 4.17
       },
       {
         "domain": "planning",
@@ -2732,8 +4276,16 @@
         "z": 4.36
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.92
+      },
+      {
         "domain": "working-memory",
         "z": 10.98
+      },
+      {
+        "domain": "lexical",
+        "z": 5.77
       },
       {
         "domain": "language",
@@ -2764,6 +4316,14 @@
         "z": 4.77
       },
       {
+        "domain": "eye-movements",
+        "z": 5.04
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 6.08
+      },
+      {
         "domain": "touch",
         "z": 6.54
       },
@@ -2772,8 +4332,16 @@
         "z": 3.49
       },
       {
+        "domain": "spelling",
+        "z": 5.57
+      },
+      {
         "domain": "visuospatial",
         "z": 3.62
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.76
       },
       {
         "domain": "number",
@@ -2782,6 +4350,18 @@
       {
         "domain": "decision-making",
         "z": 4.48
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.26
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.03
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.64
       },
       {
         "domain": "emotion",
@@ -2794,6 +4374,10 @@
       {
         "domain": "pain",
         "z": 3.44
+      },
+      {
+        "domain": "motion",
+        "z": 3.07
       }
     ],
     "hcp-mmp:left:45": [
@@ -2816,8 +4400,20 @@
         "z": 4.7
       },
       {
+        "domain": "imagery",
+        "z": 3.88
+      },
+      {
         "domain": "flexibility",
         "z": 3.38
+      },
+      {
+        "domain": "arithmetic",
+        "z": 3.78
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.08
       },
       {
         "domain": "visuospatial",
@@ -2838,12 +4434,32 @@
       {
         "domain": "motor",
         "z": 4.46
+      },
+      {
+        "domain": "motion",
+        "z": 3.34
       }
     ],
     "hcp-mmp:left:47": [
       {
+        "domain": "imagery",
+        "z": 6.08
+      },
+      {
+        "domain": "action-observation",
+        "z": 7.98
+      },
+      {
         "domain": "planning",
         "z": 4.67
+      },
+      {
+        "domain": "eye-movements",
+        "z": 6.29
+      },
+      {
+        "domain": "gestures",
+        "z": 4.27
       },
       {
         "domain": "motor",
@@ -2862,12 +4478,20 @@
         "z": 4.87
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.1
+      },
+      {
         "domain": "colour",
         "z": 3.75
       },
       {
         "domain": "visual-perception",
         "z": 9.83
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.35
       },
       {
         "domain": "touch",
@@ -2880,6 +4504,10 @@
       {
         "domain": "attention",
         "z": 5.91
+      },
+      {
+        "domain": "motion",
+        "z": 7.29
       },
       {
         "domain": "working-memory",
@@ -2904,6 +4532,14 @@
         "z": 10.9
       },
       {
+        "domain": "mental-rotation",
+        "z": 7.32
+      },
+      {
+        "domain": "eye-movements",
+        "z": 11.16
+      },
+      {
         "domain": "visual-perception",
         "z": 23.02
       },
@@ -2916,16 +4552,36 @@
         "z": 9.04
       },
       {
+        "domain": "intelligence",
+        "z": 3.92
+      },
+      {
         "domain": "flexibility",
         "z": 6.49
+      },
+      {
+        "domain": "imagery",
+        "z": 7.13
       },
       {
         "domain": "colour",
         "z": 7.4
       },
       {
+        "domain": "arithmetic",
+        "z": 7.67
+      },
+      {
         "domain": "executive",
         "z": 5.53
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.82
+      },
+      {
+        "domain": "categorization",
+        "z": 5.54
       },
       {
         "domain": "reading",
@@ -2934,6 +4590,10 @@
       {
         "domain": "motor",
         "z": 16.73
+      },
+      {
+        "domain": "timing",
+        "z": 3.49
       },
       {
         "domain": "working-memory",
@@ -2948,8 +4608,24 @@
         "z": 5.1
       },
       {
+        "domain": "spelling",
+        "z": 8.24
+      },
+      {
+        "domain": "multisensory",
+        "z": 4.61
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 6.91
+      },
+      {
         "domain": "decision-making",
         "z": 6.62
+      },
+      {
+        "domain": "lexical",
+        "z": 5.51
       },
       {
         "domain": "language",
@@ -2962,6 +4638,30 @@
       {
         "domain": "inhibition",
         "z": 3.73
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 3.49
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.63
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.38
+      },
+      {
+        "domain": "motion",
+        "z": 9.31
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.11
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.31
       },
       {
         "domain": "reward",
@@ -2982,8 +4682,24 @@
     ],
     "hcp-mmp:left:49": [
       {
+        "domain": "intelligence",
+        "z": 3.96
+      },
+      {
+        "domain": "eye-movements",
+        "z": 9.22
+      },
+      {
         "domain": "planning",
         "z": 6.38
+      },
+      {
+        "domain": "imagery",
+        "z": 5.41
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.15
       },
       {
         "domain": "colour",
@@ -3010,12 +4726,32 @@
         "z": 10.67
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.33
+      },
+      {
+        "domain": "navigation",
+        "z": 3.08
+      },
+      {
         "domain": "working-memory",
         "z": 8.52
       },
       {
+        "domain": "arithmetic",
+        "z": 3.87
+      },
+      {
         "domain": "number",
         "z": 3.9
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.85
+      },
+      {
+        "domain": "motion",
+        "z": 8.2
       },
       {
         "domain": "phonological",
@@ -3028,12 +4764,28 @@
     ],
     "hcp-mmp:left:50": [
       {
+        "domain": "familiarity",
+        "z": 4.38
+      },
+      {
         "domain": "colour",
         "z": 7.26
       },
       {
+        "domain": "mental-rotation",
+        "z": 4.77
+      },
+      {
+        "domain": "arithmetic",
+        "z": 6.24
+      },
+      {
         "domain": "visual-perception",
         "z": 14.85
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.06
       },
       {
         "domain": "reading",
@@ -3042,6 +4794,10 @@
       {
         "domain": "flexibility",
         "z": 4.16
+      },
+      {
+        "domain": "categorization",
+        "z": 4.09
       },
       {
         "domain": "number",
@@ -3064,6 +4820,10 @@
         "z": 7.11
       },
       {
+        "domain": "imagery",
+        "z": 4.62
+      },
+      {
         "domain": "attention",
         "z": 9.6
       },
@@ -3076,8 +4836,16 @@
         "z": 3.86
       },
       {
+        "domain": "spelling",
+        "z": 6.17
+      },
+      {
         "domain": "naming",
         "z": 3.56
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.34
       },
       {
         "domain": "motor",
@@ -3088,12 +4856,24 @@
         "z": 6.56
       },
       {
+        "domain": "lexical",
+        "z": 3.62
+      },
+      {
         "domain": "decision-making",
         "z": 3.99
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 4.04
+      },
+      {
         "domain": "reward",
         "z": 3.04
+      },
+      {
+        "domain": "motion",
+        "z": 3.9
       },
       {
         "domain": "auditory-perception",
@@ -3120,6 +4900,10 @@
         "z": 8.32
       },
       {
+        "domain": "action-observation",
+        "z": 3.69
+      },
+      {
         "domain": "visual-perception",
         "z": 3.78
       }
@@ -3140,6 +4924,10 @@
         "z": 11.64
       },
       {
+        "domain": "imagery",
+        "z": 3.07
+      },
+      {
         "domain": "touch",
         "z": 5.56
       }
@@ -3156,6 +4944,10 @@
         "z": 5.32
       },
       {
+        "domain": "imagery",
+        "z": 4.97
+      },
+      {
         "domain": "motor",
         "z": 13.28
       },
@@ -3166,6 +4958,10 @@
       {
         "domain": "naming",
         "z": 3.42
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.48
       },
       {
         "domain": "phonological",
@@ -3226,12 +5022,20 @@
         "z": 10.72
       },
       {
+        "domain": "empathy",
+        "z": 4.09
+      },
+      {
         "domain": "fear",
         "z": 4.82
       },
       {
         "domain": "inhibition",
         "z": 3.82
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.95
       },
       {
         "domain": "touch",
@@ -3260,8 +5064,16 @@
         "z": 3.84
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 6.45
+      },
+      {
         "domain": "pain",
         "z": 6.05
+      },
+      {
+        "domain": "empathy",
+        "z": 3.02
       },
       {
         "domain": "inhibition",
@@ -3310,6 +5122,10 @@
         "z": 6.14
       },
       {
+        "domain": "autobiographical-memory",
+        "z": 4.21
+      },
+      {
         "domain": "decision-making",
         "z": 3.91
       }
@@ -3320,12 +5136,36 @@
         "z": 5.65
       },
       {
+        "domain": "recollection",
+        "z": 3.53
+      },
+      {
+        "domain": "reasoning",
+        "z": 4.94
+      },
+      {
+        "domain": "empathy",
+        "z": 3.34
+      },
+      {
+        "domain": "recall",
+        "z": 3.01
+      },
+      {
         "domain": "long-term-memory",
         "z": 3.73
       },
       {
         "domain": "flexibility",
         "z": 3.16
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.09
+      },
+      {
+        "domain": "lexical",
+        "z": 4.07
       },
       {
         "domain": "language",
@@ -3344,6 +5184,10 @@
         "z": 5.88
       },
       {
+        "domain": "error-monitoring",
+        "z": 3.66
+      },
+      {
         "domain": "reading",
         "z": 4.49
       },
@@ -3358,6 +5202,10 @@
       {
         "domain": "attention",
         "z": 4.52
+      },
+      {
+        "domain": "spelling",
+        "z": 3.35
       },
       {
         "domain": "motor",
@@ -3404,6 +5252,10 @@
         "z": 3.93
       },
       {
+        "domain": "autobiographical-memory",
+        "z": 4.63
+      },
+      {
         "domain": "reward",
         "z": 6.3
       },
@@ -3414,12 +5266,24 @@
     ],
     "hcp-mmp:left:66": [
       {
+        "domain": "disgust",
+        "z": 3.4
+      },
+      {
+        "domain": "scenes",
+        "z": 3.9
+      },
+      {
         "domain": "fear",
         "z": 3.09
       },
       {
         "domain": "emotion",
         "z": 3.53
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.39
       },
       {
         "domain": "language",
@@ -3440,6 +5304,10 @@
     ],
     "hcp-mmp:left:69": [
       {
+        "domain": "moral-reasoning",
+        "z": 3.61
+      },
+      {
         "domain": "theory-of-mind",
         "z": 4.42
       },
@@ -3450,9 +5318,25 @@
       {
         "domain": "emotion",
         "z": 4.31
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.43
       }
     ],
     "hcp-mmp:left:73": [
+      {
+        "domain": "recollection",
+        "z": 3.25
+      },
+      {
+        "domain": "recall",
+        "z": 3.33
+      },
+      {
+        "domain": "lexical",
+        "z": 4.82
+      },
       {
         "domain": "long-term-memory",
         "z": 3.12
@@ -3470,8 +5354,16 @@
         "z": 6.43
       },
       {
+        "domain": "syntax",
+        "z": 4.73
+      },
+      {
         "domain": "reading",
         "z": 4.16
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.04
       },
       {
         "domain": "visual-perception",
@@ -3488,6 +5380,10 @@
     ],
     "hcp-mmp:left:74": [
       {
+        "domain": "syntax",
+        "z": 15.77
+      },
+      {
         "domain": "phonological",
         "z": 13.23
       },
@@ -3496,8 +5392,20 @@
         "z": 18.29
       },
       {
+        "domain": "lexical",
+        "z": 10.05
+      },
+      {
+        "domain": "timing",
+        "z": 3.99
+      },
+      {
         "domain": "naming",
         "z": 6.76
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 6.31
       },
       {
         "domain": "semantic-memory",
@@ -3508,8 +5416,32 @@
         "z": 10.87
       },
       {
+        "domain": "recall",
+        "z": 3.89
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 4.89
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 3.13
+      },
+      {
+        "domain": "imagery",
+        "z": 3.9
+      },
+      {
+        "domain": "empathy",
+        "z": 3.14
+      },
+      {
         "domain": "flexibility",
         "z": 3.3
+      },
+      {
+        "domain": "spelling",
+        "z": 6.29
       },
       {
         "domain": "executive",
@@ -3528,6 +5460,10 @@
         "z": 7.59
       },
       {
+        "domain": "speech-perception",
+        "z": 3.98
+      },
+      {
         "domain": "motor",
         "z": 8.06
       },
@@ -3544,6 +5480,18 @@
         "z": 7.74
       },
       {
+        "domain": "voice",
+        "z": 3.78
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.85
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.21
+      },
+      {
         "domain": "attention",
         "z": 4.59
       },
@@ -3557,6 +5505,22 @@
       }
     ],
     "hcp-mmp:left:75": [
+      {
+        "domain": "language-comprehension",
+        "z": 7.68
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 4.46
+      },
+      {
+        "domain": "lexical",
+        "z": 9.12
+      },
+      {
+        "domain": "syntax",
+        "z": 12.08
+      },
       {
         "domain": "language",
         "z": 15.41
@@ -3586,8 +5550,28 @@
         "z": 6.23
       },
       {
+        "domain": "empathy",
+        "z": 3.62
+      },
+      {
+        "domain": "recall",
+        "z": 3.19
+      },
+      {
         "domain": "naming",
         "z": 4.1
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 3.29
+      },
+      {
+        "domain": "spelling",
+        "z": 5.78
+      },
+      {
+        "domain": "voice",
+        "z": 3.77
       },
       {
         "domain": "visual-perception",
@@ -3608,8 +5592,20 @@
     ],
     "hcp-mmp:left:76": [
       {
+        "domain": "emotion-regulation",
+        "z": 4.74
+      },
+      {
         "domain": "theory-of-mind",
         "z": 5.06
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 5.61
+      },
+      {
+        "domain": "lexical",
+        "z": 5.92
       },
       {
         "domain": "language",
@@ -3640,6 +5636,18 @@
         "z": 3.08
       },
       {
+        "domain": "syntax",
+        "z": 5.19
+      },
+      {
+        "domain": "spelling",
+        "z": 4.4
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.64
+      },
+      {
         "domain": "faces",
         "z": 3.05
       }
@@ -3650,8 +5658,16 @@
         "z": 13.21
       },
       {
+        "domain": "imagery",
+        "z": 6.82
+      },
+      {
         "domain": "speech-production",
         "z": 5.75
+      },
+      {
+        "domain": "lexical",
+        "z": 8.11
       },
       {
         "domain": "planning",
@@ -3662,6 +5678,10 @@
         "z": 5.93
       },
       {
+        "domain": "verbal-fluency",
+        "z": 5.52
+      },
+      {
         "domain": "motor",
         "z": 14.08
       },
@@ -3670,8 +5690,20 @@
         "z": 11.8
       },
       {
+        "domain": "spelling",
+        "z": 8.13
+      },
+      {
         "domain": "reading",
         "z": 8.73
+      },
+      {
+        "domain": "action-observation",
+        "z": 5.4
+      },
+      {
+        "domain": "empathy",
+        "z": 3.23
       },
       {
         "domain": "flexibility",
@@ -3690,8 +5722,16 @@
         "z": 6.09
       },
       {
+        "domain": "language-comprehension",
+        "z": 3.13
+      },
+      {
         "domain": "attention",
         "z": 6.54
+      },
+      {
+        "domain": "syntax",
+        "z": 5.26
       },
       {
         "domain": "auditory-perception",
@@ -3702,14 +5742,30 @@
         "z": 3.34
       },
       {
+        "domain": "speech-perception",
+        "z": 3.14
+      },
+      {
         "domain": "pain",
         "z": 4.02
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.29
+      },
+      {
+        "domain": "motion",
+        "z": 3.76
       }
     ],
     "hcp-mmp:left:79": [
       {
         "domain": "phonological",
         "z": 13.28
+      },
+      {
+        "domain": "lexical",
+        "z": 10.77
       },
       {
         "domain": "semantic-memory",
@@ -3724,8 +5780,16 @@
         "z": 6.32
       },
       {
+        "domain": "familiarity",
+        "z": 3.3
+      },
+      {
         "domain": "flexibility",
         "z": 5.07
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 5.41
       },
       {
         "domain": "reading",
@@ -3736,8 +5800,20 @@
         "z": 5.59
       },
       {
+        "domain": "language-comprehension",
+        "z": 5.39
+      },
+      {
+        "domain": "recall",
+        "z": 3.54
+      },
+      {
         "domain": "executive",
         "z": 3.77
+      },
+      {
+        "domain": "syntax",
+        "z": 8.18
       },
       {
         "domain": "working-memory",
@@ -3752,12 +5828,36 @@
         "z": 11.35
       },
       {
+        "domain": "spelling",
+        "z": 6.64
+      },
+      {
         "domain": "speech-production",
         "z": 3.55
       },
       {
+        "domain": "arithmetic",
+        "z": 4.27
+      },
+      {
+        "domain": "imagery",
+        "z": 3.54
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.36
+      },
+      {
         "domain": "planning",
         "z": 3.06
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.34
+      },
+      {
+        "domain": "gestures",
+        "z": 3.12
       },
       {
         "domain": "emotion",
@@ -3772,12 +5872,24 @@
         "z": 9.29
       },
       {
+        "domain": "voice",
+        "z": 3.96
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.43
+      },
+      {
         "domain": "decision-making",
         "z": 3.95
       },
       {
         "domain": "motor",
         "z": 6.5
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.44
       },
       {
         "domain": "faces",
@@ -3790,12 +5902,28 @@
         "z": 8.97
       },
       {
+        "domain": "lexical",
+        "z": 10.45
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.34
+      },
+      {
         "domain": "phonological",
         "z": 11.64
       },
       {
         "domain": "naming",
         "z": 6.34
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 5.87
+      },
+      {
+        "domain": "categorization",
+        "z": 4.74
       },
       {
         "domain": "reading",
@@ -3814,6 +5942,10 @@
         "z": 11.39
       },
       {
+        "domain": "recall",
+        "z": 3.59
+      },
+      {
         "domain": "planning",
         "z": 4.23
       },
@@ -3822,12 +5954,32 @@
         "z": 12.64
       },
       {
+        "domain": "spelling",
+        "z": 7.4
+      },
+      {
+        "domain": "scenes",
+        "z": 3.82
+      },
+      {
+        "domain": "arithmetic",
+        "z": 4.42
+      },
+      {
         "domain": "recognition-memory",
         "z": 3.31
       },
       {
+        "domain": "gestures",
+        "z": 3.63
+      },
+      {
         "domain": "attention",
         "z": 8.14
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.58
       },
       {
         "domain": "speech-production",
@@ -3838,8 +5990,16 @@
         "z": 4.14
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 5.19
+      },
+      {
         "domain": "decision-making",
         "z": 4.98
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.62
       },
       {
         "domain": "spatial-attention",
@@ -3860,6 +6020,10 @@
       {
         "domain": "faces",
         "z": 4.88
+      },
+      {
+        "domain": "syntax",
+        "z": 3.1
       }
     ],
     "hcp-mmp:left:81": [
@@ -3868,12 +6032,40 @@
         "z": 20.26
       },
       {
+        "domain": "language-comprehension",
+        "z": 8.96
+      },
+      {
+        "domain": "lexical",
+        "z": 11.3
+      },
+      {
+        "domain": "syntax",
+        "z": 14.14
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.25
+      },
+      {
+        "domain": "recall",
+        "z": 5.77
+      },
+      {
         "domain": "phonological",
         "z": 11.26
       },
       {
+        "domain": "verbal-fluency",
+        "z": 6.53
+      },
+      {
         "domain": "long-term-memory",
         "z": 6.72
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.84
       },
       {
         "domain": "semantic-memory",
@@ -3896,6 +6088,10 @@
         "z": 4.14
       },
       {
+        "domain": "categorization",
+        "z": 3.84
+      },
+      {
         "domain": "working-memory",
         "z": 10.4
       },
@@ -3912,6 +6108,10 @@
         "z": 3.77
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 5.72
+      },
+      {
         "domain": "speech-production",
         "z": 3.23
       },
@@ -3920,12 +6120,36 @@
         "z": 9.37
       },
       {
+        "domain": "reasoning",
+        "z": 3.55
+      },
+      {
+        "domain": "spelling",
+        "z": 5.51
+      },
+      {
+        "domain": "arithmetic",
+        "z": 3.51
+      },
+      {
         "domain": "attention",
         "z": 5.76
       },
       {
         "domain": "auditory-perception",
         "z": 8.6
+      },
+      {
+        "domain": "voice",
+        "z": 3.72
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.17
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.26
       },
       {
         "domain": "motor",
@@ -3938,8 +6162,20 @@
     ],
     "hcp-mmp:left:82": [
       {
+        "domain": "familiarity",
+        "z": 3.68
+      },
+      {
         "domain": "phonological",
         "z": 9.64
+      },
+      {
+        "domain": "lexical",
+        "z": 8.19
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 6.12
       },
       {
         "domain": "language",
@@ -3950,6 +6186,10 @@
         "z": 5.4
       },
       {
+        "domain": "verbal-fluency",
+        "z": 5.01
+      },
+      {
         "domain": "semantic-memory",
         "z": 3.15
       },
@@ -3958,8 +6198,24 @@
         "z": 9.06
       },
       {
+        "domain": "syntax",
+        "z": 8.2
+      },
+      {
+        "domain": "spelling",
+        "z": 7.24
+      },
+      {
         "domain": "flexibility",
         "z": 3.73
+      },
+      {
+        "domain": "recall",
+        "z": 3.09
+      },
+      {
+        "domain": "categorization",
+        "z": 3.09
       },
       {
         "domain": "long-term-memory",
@@ -3968,6 +6224,10 @@
       {
         "domain": "colour",
         "z": 3.17
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.04
       },
       {
         "domain": "visual-perception",
@@ -3982,6 +6242,10 @@
         "z": 5.25
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 3.24
+      },
+      {
         "domain": "attention",
         "z": 3.74
       },
@@ -3991,6 +6255,18 @@
       }
     ],
     "hcp-mmp:left:83": [
+      {
+        "domain": "intelligence",
+        "z": 4.52
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.26
+      },
+      {
+        "domain": "recollection",
+        "z": 4.16
+      },
       {
         "domain": "flexibility",
         "z": 5.95
@@ -4008,12 +6284,24 @@
         "z": 5.53
       },
       {
+        "domain": "recall",
+        "z": 3.95
+      },
+      {
         "domain": "recognition-memory",
         "z": 4.11
       },
       {
+        "domain": "reasoning",
+        "z": 4.7
+      },
+      {
         "domain": "phonological",
         "z": 6.6
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 3.99
       },
       {
         "domain": "naming",
@@ -4024,8 +6312,24 @@
         "z": 3.11
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.17
+      },
+      {
+        "domain": "imagery",
+        "z": 3.71
+      },
+      {
+        "domain": "lexical",
+        "z": 4.49
+      },
+      {
         "domain": "attention",
         "z": 7.59
+      },
+      {
+        "domain": "arithmetic",
+        "z": 3.85
       },
       {
         "domain": "language",
@@ -4040,6 +6344,10 @@
         "z": 5.65
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 4.37
+      },
+      {
         "domain": "visual-perception",
         "z": 7.35
       },
@@ -4050,6 +6358,10 @@
       {
         "domain": "decision-making",
         "z": 3.73
+      },
+      {
+        "domain": "syntax",
+        "z": 3.49
       },
       {
         "domain": "auditory-perception",
@@ -4072,6 +6384,12 @@
         "z": 5.41
       }
     ],
+    "hcp-mmp:left:92": [
+      {
+        "domain": "smell",
+        "z": 3.44
+      }
+    ],
     "hcp-mmp:left:94": [
       {
         "domain": "emotion",
@@ -4080,6 +6398,10 @@
       {
         "domain": "fear",
         "z": 3.74
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.01
       },
       {
         "domain": "reward",
@@ -4092,12 +6414,20 @@
     ],
     "hcp-mmp:left:95": [
       {
+        "domain": "arithmetic",
+        "z": 9.48
+      },
+      {
         "domain": "colour",
         "z": 8.31
       },
       {
         "domain": "phonological",
         "z": 11.73
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.99
       },
       {
         "domain": "number",
@@ -4110,6 +6440,14 @@
       {
         "domain": "flexibility",
         "z": 6.08
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 4.76
+      },
+      {
+        "domain": "categorization",
+        "z": 5.42
       },
       {
         "domain": "executive",
@@ -4128,12 +6466,32 @@
         "z": 13.24
       },
       {
+        "domain": "spelling",
+        "z": 9.85
+      },
+      {
+        "domain": "recollection",
+        "z": 3.25
+      },
+      {
+        "domain": "recall",
+        "z": 3.86
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.21
+      },
+      {
         "domain": "planning",
         "z": 4.33
       },
       {
         "domain": "language",
         "z": 10.36
+      },
+      {
+        "domain": "lexical",
+        "z": 5.75
       },
       {
         "domain": "visuospatial",
@@ -4144,6 +6502,14 @@
         "z": 4.2
       },
       {
+        "domain": "imagery",
+        "z": 4.21
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 6.59
+      },
+      {
         "domain": "inhibition",
         "z": 3.78
       },
@@ -4152,12 +6518,20 @@
         "z": 5.94
       },
       {
+        "domain": "error-monitoring",
+        "z": 5.55
+      },
+      {
         "domain": "spatial-attention",
         "z": 4.22
       },
       {
         "domain": "motor",
         "z": 8.84
+      },
+      {
+        "domain": "eye-movements",
+        "z": 3.17
       },
       {
         "domain": "auditory-perception",
@@ -4172,6 +6546,10 @@
         "z": 4.51
       },
       {
+        "domain": "syntax",
+        "z": 3.09
+      },
+      {
         "domain": "faces",
         "z": 4.12
       }
@@ -4180,6 +6558,18 @@
       {
         "domain": "planning",
         "z": 5.69
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.55
+      },
+      {
+        "domain": "eye-movements",
+        "z": 6.05
+      },
+      {
+        "domain": "imagery",
+        "z": 4.63
       },
       {
         "domain": "spatial-attention",
@@ -4198,12 +6588,20 @@
         "z": 8.07
       },
       {
+        "domain": "action-observation",
+        "z": 4.81
+      },
+      {
         "domain": "visual-perception",
         "z": 8.48
       },
       {
         "domain": "working-memory",
         "z": 6.98
+      },
+      {
+        "domain": "motion",
+        "z": 4.43
       }
     ],
     "hcp-mmp:left:97": [
@@ -4236,6 +6634,10 @@
       {
         "domain": "music",
         "z": 3.21
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.05
       },
       {
         "domain": "motor",
@@ -4274,6 +6676,10 @@
         "z": 15.64
       },
       {
+        "domain": "interoception",
+        "z": 3.52
+      },
+      {
         "domain": "pain",
         "z": 8.8
       },
@@ -4296,6 +6702,10 @@
     ],
     "hcp-mmp:left:102": [
       {
+        "domain": "interoception",
+        "z": 3.03
+      },
+      {
         "domain": "touch",
         "z": 7.34
       },
@@ -4312,12 +6722,20 @@
     ],
     "hcp-mmp:left:104": [
       {
+        "domain": "multisensory",
+        "z": 4.79
+      },
+      {
         "domain": "speech-production",
         "z": 3.79
       },
       {
         "domain": "music",
         "z": 4.67
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.67
       },
       {
         "domain": "auditory-perception",
@@ -4334,6 +6752,10 @@
         "z": 12.82
       },
       {
+        "domain": "multisensory",
+        "z": 4.36
+      },
+      {
         "domain": "motor",
         "z": 10.84
       },
@@ -4346,12 +6768,20 @@
         "z": 3.55
       },
       {
+        "domain": "imagery",
+        "z": 3.58
+      },
+      {
         "domain": "speech-production",
         "z": 3.12
       },
       {
         "domain": "auditory-perception",
         "z": 10.61
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.65
       },
       {
         "domain": "phonological",
@@ -4372,8 +6802,20 @@
     ],
     "hcp-mmp:left:106": [
       {
+        "domain": "disgust",
+        "z": 4.16
+      },
+      {
         "domain": "pain",
         "z": 7.78
+      },
+      {
+        "domain": "taste",
+        "z": 3.45
+      },
+      {
+        "domain": "empathy",
+        "z": 3.16
       },
       {
         "domain": "touch",
@@ -4386,8 +6828,16 @@
         "z": 5.97
       },
       {
+        "domain": "speech-perception",
+        "z": 3.58
+      },
+      {
         "domain": "auditory-perception",
         "z": 7.99
+      },
+      {
+        "domain": "voice",
+        "z": 3.2
       },
       {
         "domain": "language",
@@ -4396,8 +6846,28 @@
     ],
     "hcp-mmp:left:108": [
       {
+        "domain": "interoception",
+        "z": 3.74
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 3.89
+      },
+      {
         "domain": "pain",
         "z": 9.42
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 3.78
+      },
+      {
+        "domain": "taste",
+        "z": 3.32
+      },
+      {
+        "domain": "empathy",
+        "z": 3.64
       },
       {
         "domain": "speech-production",
@@ -4408,8 +6878,20 @@
         "z": 6.13
       },
       {
+        "domain": "imagery",
+        "z": 3.63
+      },
+      {
         "domain": "emotion",
         "z": 4.95
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.8
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 3.3
       },
       {
         "domain": "touch",
@@ -4430,6 +6912,18 @@
       {
         "domain": "language",
         "z": 7.82
+      },
+      {
+        "domain": "lexical",
+        "z": 4.24
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.87
+      },
+      {
+        "domain": "motivation",
+        "z": 3.36
       },
       {
         "domain": "reward",
@@ -4456,18 +6950,54 @@
         "z": 4.22
       },
       {
+        "domain": "syntax",
+        "z": 3.89
+      },
+      {
         "domain": "auditory-perception",
         "z": 5.85
       }
     ],
     "hcp-mmp:left:109": [
       {
+        "domain": "interoception",
+        "z": 4.14
+      },
+      {
         "domain": "pain",
         "z": 13.1
       },
       {
+        "domain": "disgust",
+        "z": 4.2
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 4.59
+      },
+      {
+        "domain": "empathy",
+        "z": 5.6
+      },
+      {
+        "domain": "taste",
+        "z": 4.94
+      },
+      {
+        "domain": "smell",
+        "z": 3.17
+      },
+      {
+        "domain": "timing",
+        "z": 3.38
+      },
+      {
         "domain": "emotion",
         "z": 7.56
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 4.0
       },
       {
         "domain": "inhibition",
@@ -4482,8 +7012,16 @@
         "z": 5.04
       },
       {
+        "domain": "error-monitoring",
+        "z": 7.04
+      },
+      {
         "domain": "reward",
         "z": 8.78
+      },
+      {
+        "domain": "recall",
+        "z": 3.05
       },
       {
         "domain": "decision-making",
@@ -4500,6 +7038,18 @@
       {
         "domain": "attention",
         "z": 8.68
+      },
+      {
+        "domain": "motivation",
+        "z": 4.27
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.41
+      },
+      {
+        "domain": "lexical",
+        "z": 4.25
       },
       {
         "domain": "phonological",
@@ -4532,6 +7082,18 @@
     ],
     "hcp-mmp:left:110": [
       {
+        "domain": "smell",
+        "z": 4.24
+      },
+      {
+        "domain": "disgust",
+        "z": 3.42
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.56
+      },
+      {
         "domain": "fear",
         "z": 4.11
       },
@@ -4542,6 +7104,26 @@
     ],
     "hcp-mmp:left:111": [
       {
+        "domain": "recall",
+        "z": 6.53
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.77
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 6.37
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 8.26
+      },
+      {
+        "domain": "smell",
+        "z": 4.64
+      },
+      {
         "domain": "flexibility",
         "z": 7.52
       },
@@ -4550,8 +7132,28 @@
         "z": 8.89
       },
       {
+        "domain": "disgust",
+        "z": 4.61
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 5.31
+      },
+      {
         "domain": "decision-making",
         "z": 13.13
+      },
+      {
+        "domain": "intelligence",
+        "z": 4.34
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 11.9
+      },
+      {
+        "domain": "recollection",
+        "z": 4.41
       },
       {
         "domain": "executive",
@@ -4562,8 +7164,20 @@
         "z": 10.35
       },
       {
+        "domain": "arithmetic",
+        "z": 8.52
+      },
+      {
         "domain": "long-term-memory",
         "z": 7.39
+      },
+      {
+        "domain": "categorization",
+        "z": 6.4
+      },
+      {
+        "domain": "empathy",
+        "z": 6.07
       },
       {
         "domain": "recognition-memory",
@@ -4582,6 +7196,10 @@
         "z": 17.07
       },
       {
+        "domain": "motivation",
+        "z": 8.03
+      },
+      {
         "domain": "planning",
         "z": 6.31
       },
@@ -4590,8 +7208,16 @@
         "z": 15.84
       },
       {
+        "domain": "lexical",
+        "z": 8.7
+      },
+      {
         "domain": "reward",
         "z": 13.11
+      },
+      {
+        "domain": "moral-reasoning",
+        "z": 3.48
       },
       {
         "domain": "phonological",
@@ -4600,6 +7226,18 @@
       {
         "domain": "visual-perception",
         "z": 17.11
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 4.27
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 9.11
+      },
+      {
+        "domain": "reasoning",
+        "z": 6.05
       },
       {
         "domain": "theory-of-mind",
@@ -4626,6 +7264,26 @@
         "z": 8.53
       },
       {
+        "domain": "spelling",
+        "z": 7.61
+      },
+      {
+        "domain": "taste",
+        "z": 3.19
+      },
+      {
+        "domain": "navigation",
+        "z": 3.42
+      },
+      {
+        "domain": "imagery",
+        "z": 4.1
+      },
+      {
+        "domain": "syntax",
+        "z": 7.37
+      },
+      {
         "domain": "spatial-attention",
         "z": 4.61
       },
@@ -4650,15 +7308,47 @@
         "z": 10.81
       },
       {
+        "domain": "voice",
+        "z": 4.67
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.29
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.95
+      },
+      {
         "domain": "faces",
         "z": 7.37
       },
       {
+        "domain": "action-observation",
+        "z": 3.55
+      },
+      {
         "domain": "touch",
         "z": 4.72
+      },
+      {
+        "domain": "motion",
+        "z": 3.4
       }
     ],
     "hcp-mmp:left:112": [
+      {
+        "domain": "smell",
+        "z": 3.96
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 3.59
+      },
+      {
+        "domain": "taste",
+        "z": 3.64
+      },
       {
         "domain": "fear",
         "z": 4.99
@@ -4668,8 +7358,16 @@
         "z": 6.25
       },
       {
+        "domain": "motivation",
+        "z": 3.59
+      },
+      {
         "domain": "decision-making",
         "z": 4.85
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.96
       },
       {
         "domain": "reward",
@@ -4682,6 +7380,14 @@
     ],
     "hcp-mmp:left:113": [
       {
+        "domain": "timing",
+        "z": 3.08
+      },
+      {
+        "domain": "imagery",
+        "z": 5.21
+      },
+      {
         "domain": "motor",
         "z": 13.55
       },
@@ -4692,6 +7398,10 @@
       {
         "domain": "pain",
         "z": 8.06
+      },
+      {
+        "domain": "lexical",
+        "z": 3.62
       },
       {
         "domain": "phonological",
@@ -4716,12 +7426,24 @@
     ],
     "hcp-mmp:left:114": [
       {
+        "domain": "disgust",
+        "z": 4.65
+      },
+      {
         "domain": "pain",
         "z": 9.45
       },
       {
         "domain": "touch",
         "z": 8.15
+      },
+      {
+        "domain": "taste",
+        "z": 3.23
+      },
+      {
+        "domain": "lexical",
+        "z": 3.18
       },
       {
         "domain": "emotion",
@@ -4738,6 +7460,10 @@
     ],
     "hcp-mmp:left:115": [
       {
+        "domain": "interoception",
+        "z": 3.64
+      },
+      {
         "domain": "touch",
         "z": 9.07
       },
@@ -4746,11 +7472,19 @@
         "z": 7.0
       },
       {
+        "domain": "empathy",
+        "z": 3.21
+      },
+      {
         "domain": "motor",
         "z": 4.59
       }
     ],
     "hcp-mmp:left:116": [
+      {
+        "domain": "imagery",
+        "z": 4.14
+      },
       {
         "domain": "touch",
         "z": 6.96
@@ -4758,6 +7492,14 @@
       {
         "domain": "motor",
         "z": 9.54
+      },
+      {
+        "domain": "gestures",
+        "z": 3.32
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.94
       },
       {
         "domain": "pain",
@@ -4770,8 +7512,28 @@
     ],
     "hcp-mmp:left:117": [
       {
+        "domain": "familiarity",
+        "z": 3.83
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.83
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 5.17
+      },
+      {
+        "domain": "imagery",
+        "z": 6.0
+      },
+      {
         "domain": "flexibility",
         "z": 5.14
+      },
+      {
+        "domain": "intelligence",
+        "z": 3.0
       },
       {
         "domain": "colour",
@@ -4802,6 +7564,10 @@
         "z": 13.15
       },
       {
+        "domain": "gestures",
+        "z": 4.48
+      },
+      {
         "domain": "attention",
         "z": 9.88
       },
@@ -4810,8 +7576,24 @@
         "z": 11.83
       },
       {
+        "domain": "arithmetic",
+        "z": 4.91
+      },
+      {
         "domain": "spatial-attention",
         "z": 5.01
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.91
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.73
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.46
       },
       {
         "domain": "reading",
@@ -4822,34 +7604,98 @@
         "z": 6.54
       },
       {
+        "domain": "lexical",
+        "z": 3.48
+      },
+      {
         "domain": "decision-making",
         "z": 3.7
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.49
+      },
+      {
+        "domain": "spelling",
+        "z": 3.23
       },
       {
         "domain": "auditory-perception",
         "z": 6.33
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 3.02
+      },
+      {
         "domain": "touch",
         "z": 3.21
+      },
+      {
+        "domain": "motion",
+        "z": 4.88
       }
     ],
     "hcp-mmp:left:119": [
       {
+        "domain": "recollection",
+        "z": 4.24
+      },
+      {
         "domain": "long-term-memory",
         "z": 7.1
+      },
+      {
+        "domain": "recall",
+        "z": 4.29
+      },
+      {
+        "domain": "navigation",
+        "z": 3.45
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 5.77
+      },
+      {
+        "domain": "scenes",
+        "z": 3.43
       }
     ],
     "hcp-mmp:left:120": [
       {
+        "domain": "recollection",
+        "z": 3.97
+      },
+      {
         "domain": "long-term-memory",
         "z": 4.89
+      },
+      {
+        "domain": "recall",
+        "z": 3.63
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.74
       }
     ],
     "hcp-mmp:left:123": [
       {
+        "domain": "language-comprehension",
+        "z": 3.98
+      },
+      {
         "domain": "language",
         "z": 5.74
+      },
+      {
+        "domain": "syntax",
+        "z": 4.26
+      },
+      {
+        "domain": "voice",
+        "z": 3.12
       },
       {
         "domain": "reading",
@@ -4866,20 +7712,52 @@
         "z": 7.94
       },
       {
+        "domain": "speech-perception",
+        "z": 10.89
+      },
+      {
         "domain": "auditory-perception",
         "z": 28.54
+      },
+      {
+        "domain": "voice",
+        "z": 12.0
       },
       {
         "domain": "music",
         "z": 9.09
       },
       {
+        "domain": "timing",
+        "z": 3.71
+      },
+      {
         "domain": "phonological",
         "z": 8.25
       },
       {
+        "domain": "multisensory",
+        "z": 5.06
+      },
+      {
+        "domain": "lexical",
+        "z": 6.79
+      },
+      {
         "domain": "language",
         "z": 11.7
+      },
+      {
+        "domain": "syntax",
+        "z": 7.45
+      },
+      {
+        "domain": "categorization",
+        "z": 3.36
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.74
       },
       {
         "domain": "reading",
@@ -4900,6 +7778,18 @@
     ],
     "hcp-mmp:left:125": [
       {
+        "domain": "voice",
+        "z": 11.65
+      },
+      {
+        "domain": "speech-perception",
+        "z": 8.93
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 6.72
+      },
+      {
         "domain": "phonological",
         "z": 7.65
       },
@@ -4912,6 +7802,10 @@
         "z": 16.56
       },
       {
+        "domain": "lexical",
+        "z": 6.41
+      },
+      {
         "domain": "language",
         "z": 11.27
       },
@@ -4920,21 +7814,41 @@
         "z": 4.93
       },
       {
+        "domain": "syntax",
+        "z": 7.27
+      },
+      {
         "domain": "reading",
         "z": 5.3
       }
     ],
     "hcp-mmp:left:126": [
       {
+        "domain": "navigation",
+        "z": 4.6
+      },
+      {
         "domain": "semantic-memory",
         "z": 3.53
       },
       {
+        "domain": "scenes",
+        "z": 4.52
+      },
+      {
         "domain": "long-term-memory",
         "z": 4.35
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 5.89
       }
     ],
     "hcp-mmp:left:127": [
+      {
+        "domain": "scenes",
+        "z": 5.26
+      },
       {
         "domain": "semantic-memory",
         "z": 3.07
@@ -4954,6 +7868,10 @@
     ],
     "hcp-mmp:left:128": [
       {
+        "domain": "language-comprehension",
+        "z": 5.18
+      },
+      {
         "domain": "theory-of-mind",
         "z": 3.38
       },
@@ -4966,8 +7884,28 @@
         "z": 8.15
       },
       {
+        "domain": "syntax",
+        "z": 6.12
+      },
+      {
+        "domain": "voice",
+        "z": 4.71
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.96
+      },
+      {
+        "domain": "lexical",
+        "z": 4.04
+      },
+      {
         "domain": "phonological",
         "z": 3.92
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.57
       },
       {
         "domain": "auditory-perception",
@@ -4984,12 +7922,28 @@
         "z": 14.19
       },
       {
+        "domain": "language-comprehension",
+        "z": 6.17
+      },
+      {
         "domain": "theory-of-mind",
         "z": 4.07
       },
       {
+        "domain": "syntax",
+        "z": 9.87
+      },
+      {
         "domain": "reading",
         "z": 9.91
+      },
+      {
+        "domain": "speech-perception",
+        "z": 6.46
+      },
+      {
+        "domain": "lexical",
+        "z": 6.4
       },
       {
         "domain": "phonological",
@@ -5012,6 +7966,14 @@
         "z": 3.36
       },
       {
+        "domain": "voice",
+        "z": 3.66
+      },
+      {
+        "domain": "spelling",
+        "z": 3.25
+      },
+      {
         "domain": "visual-perception",
         "z": 4.37
       }
@@ -5026,8 +7988,20 @@
         "z": 9.5
       },
       {
+        "domain": "lexical",
+        "z": 5.14
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.4
+      },
+      {
         "domain": "reading",
         "z": 5.93
+      },
+      {
+        "domain": "syntax",
+        "z": 5.68
       },
       {
         "domain": "phonological",
@@ -5038,10 +8012,24 @@
         "z": 3.99
       }
     ],
+    "hcp-mmp:left:132": [
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.5
+      }
+    ],
     "hcp-mmp:left:136": [
+      {
+        "domain": "spelling",
+        "z": 5.89
+      },
       {
         "domain": "reading",
         "z": 5.24
+      },
+      {
+        "domain": "lexical",
+        "z": 3.28
       },
       {
         "domain": "phonological",
@@ -5053,6 +8041,10 @@
       }
     ],
     "hcp-mmp:left:137": [
+      {
+        "domain": "lexical",
+        "z": 4.36
+      },
       {
         "domain": "reading",
         "z": 4.67
@@ -5070,6 +8062,14 @@
         "z": 5.28
       },
       {
+        "domain": "syntax",
+        "z": 3.1
+      },
+      {
+        "domain": "motion",
+        "z": 4.5
+      },
+      {
         "domain": "auditory-perception",
         "z": 3.63
       }
@@ -5084,6 +8084,14 @@
         "z": 8.7
       },
       {
+        "domain": "spelling",
+        "z": 14.56
+      },
+      {
+        "domain": "lexical",
+        "z": 10.63
+      },
+      {
         "domain": "phonological",
         "z": 12.3
       },
@@ -5092,24 +8100,60 @@
         "z": 20.49
       },
       {
+        "domain": "familiarity",
+        "z": 4.08
+      },
+      {
         "domain": "colour",
         "z": 7.6
+      },
+      {
+        "domain": "scenes",
+        "z": 5.46
+      },
+      {
+        "domain": "object-recognition",
+        "z": 5.85
+      },
+      {
+        "domain": "categorization",
+        "z": 4.31
       },
       {
         "domain": "language",
         "z": 11.36
       },
       {
+        "domain": "multisensory",
+        "z": 4.22
+      },
+      {
         "domain": "recognition-memory",
         "z": 3.75
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.25
+      },
+      {
+        "domain": "gestures",
+        "z": 3.67
       },
       {
         "domain": "attention",
         "z": 8.03
       },
       {
+        "domain": "imagery",
+        "z": 3.44
+      },
+      {
         "domain": "faces",
         "z": 8.69
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.92
       },
       {
         "domain": "working-memory",
@@ -5118,6 +8162,14 @@
       {
         "domain": "emotion",
         "z": 3.28
+      },
+      {
+        "domain": "motion",
+        "z": 6.91
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.62
       },
       {
         "domain": "motor",
@@ -5130,8 +8182,16 @@
     ],
     "hcp-mmp:left:139": [
       {
+        "domain": "syntax",
+        "z": 10.94
+      },
+      {
         "domain": "reading",
         "z": 10.57
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.31
       },
       {
         "domain": "language",
@@ -5142,16 +8202,48 @@
         "z": 8.0
       },
       {
+        "domain": "language-comprehension",
+        "z": 5.38
+      },
+      {
+        "domain": "lexical",
+        "z": 6.71
+      },
+      {
+        "domain": "speech-perception",
+        "z": 5.82
+      },
+      {
+        "domain": "voice",
+        "z": 6.62
+      },
+      {
         "domain": "theory-of-mind",
         "z": 3.11
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.58
       },
       {
         "domain": "auditory-perception",
         "z": 11.71
       },
       {
+        "domain": "gestures",
+        "z": 3.11
+      },
+      {
+        "domain": "spelling",
+        "z": 4.67
+      },
+      {
         "domain": "visual-perception",
         "z": 7.13
+      },
+      {
+        "domain": "motion",
+        "z": 6.22
       },
       {
         "domain": "faces",
@@ -5168,6 +8260,26 @@
         "z": 3.62
       },
       {
+        "domain": "gestures",
+        "z": 4.81
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.48
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.64
+      },
+      {
+        "domain": "motion",
+        "z": 11.36
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.7
+      },
+      {
         "domain": "naming",
         "z": 3.15
       },
@@ -5176,8 +8288,16 @@
         "z": 7.92
       },
       {
+        "domain": "lexical",
+        "z": 3.31
+      },
+      {
         "domain": "language",
         "z": 5.63
+      },
+      {
+        "domain": "syntax",
+        "z": 3.52
       },
       {
         "domain": "attention",
@@ -5198,11 +8318,31 @@
         "z": 3.03
       },
       {
+        "domain": "multisensory",
+        "z": 3.62
+      },
+      {
+        "domain": "motion",
+        "z": 8.72
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.56
+      },
+      {
         "domain": "visual-perception",
         "z": 6.7
       }
     ],
     "hcp-mmp:left:144": [
+      {
+        "domain": "recollection",
+        "z": 3.35
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.05
+      },
       {
         "domain": "working-memory",
         "z": 10.66
@@ -5224,12 +8364,28 @@
         "z": 3.62
       },
       {
+        "domain": "arithmetic",
+        "z": 3.05
+      },
+      {
         "domain": "attention",
         "z": 5.78
       },
       {
+        "domain": "syntax",
+        "z": 4.68
+      },
+      {
+        "domain": "lexical",
+        "z": 3.25
+      },
+      {
         "domain": "visual-perception",
         "z": 6.32
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.42
       },
       {
         "domain": "language",
@@ -5250,8 +8406,20 @@
     ],
     "hcp-mmp:left:145": [
       {
+        "domain": "familiarity",
+        "z": 4.43
+      },
+      {
         "domain": "flexibility",
         "z": 6.79
+      },
+      {
+        "domain": "arithmetic",
+        "z": 8.34
+      },
+      {
+        "domain": "recollection",
+        "z": 4.1
       },
       {
         "domain": "long-term-memory",
@@ -5260,6 +8428,10 @@
       {
         "domain": "colour",
         "z": 5.44
+      },
+      {
+        "domain": "recall",
+        "z": 3.84
       },
       {
         "domain": "phonological",
@@ -5278,8 +8450,16 @@
         "z": 5.58
       },
       {
+        "domain": "categorization",
+        "z": 3.78
+      },
+      {
         "domain": "visual-perception",
         "z": 10.89
+      },
+      {
+        "domain": "navigation",
+        "z": 3.19
       },
       {
         "domain": "language",
@@ -5290,12 +8470,36 @@
         "z": 7.0
       },
       {
+        "domain": "lexical",
+        "z": 4.44
+      },
+      {
+        "domain": "imagery",
+        "z": 3.2
+      },
+      {
         "domain": "attention",
         "z": 7.09
       },
       {
+        "domain": "reasoning",
+        "z": 3.4
+      },
+      {
+        "domain": "spelling",
+        "z": 4.56
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.97
+      },
+      {
         "domain": "visuospatial",
         "z": 3.1
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.47
       },
       {
         "domain": "decision-making",
@@ -5306,11 +8510,19 @@
         "z": 4.91
       },
       {
+        "domain": "syntax",
+        "z": 3.12
+      },
+      {
         "domain": "auditory-perception",
         "z": 4.05
       }
     ],
     "hcp-mmp:left:146": [
+      {
+        "domain": "mental-rotation",
+        "z": 3.74
+      },
       {
         "domain": "visuospatial",
         "z": 4.0
@@ -5338,8 +8550,20 @@
         "z": 12.03
       },
       {
+        "domain": "empathy",
+        "z": 3.72
+      },
+      {
         "domain": "motor",
         "z": 10.6
+      },
+      {
+        "domain": "imagery",
+        "z": 3.48
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.34
       },
       {
         "domain": "fear",
@@ -5355,6 +8579,10 @@
       }
     ],
     "hcp-mmp:left:148": [
+      {
+        "domain": "imagery",
+        "z": 3.0
+      },
       {
         "domain": "motor",
         "z": 5.55
@@ -5386,6 +8614,10 @@
         "z": 4.73
       },
       {
+        "domain": "reasoning",
+        "z": 3.53
+      },
+      {
         "domain": "long-term-memory",
         "z": 3.14
       },
@@ -5404,18 +8636,38 @@
         "z": 6.1
       },
       {
+        "domain": "moral-reasoning",
+        "z": 3.39
+      },
+      {
         "domain": "social-cognition",
         "z": 3.8
       },
       {
         "domain": "language",
         "z": 4.75
+      },
+      {
+        "domain": "syntax",
+        "z": 3.67
       }
     ],
     "hcp-mmp:left:151": [
       {
+        "domain": "recollection",
+        "z": 3.76
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.02
+      },
+      {
         "domain": "long-term-memory",
         "z": 4.77
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.93
       },
       {
         "domain": "attention",
@@ -5424,6 +8676,16 @@
       {
         "domain": "visual-perception",
         "z": 3.77
+      }
+    ],
+    "hcp-mmp:left:153": [
+      {
+        "domain": "scenes",
+        "z": 4.38
+      },
+      {
+        "domain": "navigation",
+        "z": 3.15
       }
     ],
     "hcp-mmp:left:154": [
@@ -5440,11 +8702,23 @@
         "z": 5.7
       },
       {
+        "domain": "spelling",
+        "z": 3.35
+      },
+      {
         "domain": "reading",
         "z": 3.05
       }
     ],
     "hcp-mmp:left:155": [
+      {
+        "domain": "recollection",
+        "z": 4.93
+      },
+      {
+        "domain": "scenes",
+        "z": 7.86
+      },
       {
         "domain": "long-term-memory",
         "z": 7.9
@@ -5452,6 +8726,18 @@
       {
         "domain": "semantic-memory",
         "z": 4.06
+      },
+      {
+        "domain": "navigation",
+        "z": 4.64
+      },
+      {
+        "domain": "recall",
+        "z": 4.2
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 6.29
       },
       {
         "domain": "recognition-memory",
@@ -5476,8 +8762,40 @@
         "z": 23.77
       },
       {
+        "domain": "object-recognition",
+        "z": 9.26
+      },
+      {
+        "domain": "skill-learning",
+        "z": 4.17
+      },
+      {
+        "domain": "disgust",
+        "z": 3.62
+      },
+      {
         "domain": "visuospatial",
         "z": 7.07
+      },
+      {
+        "domain": "gestures",
+        "z": 5.58
+      },
+      {
+        "domain": "multisensory",
+        "z": 5.57
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.86
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.06
+      },
+      {
+        "domain": "motion",
+        "z": 16.55
       },
       {
         "domain": "colour",
@@ -5488,8 +8806,16 @@
         "z": 5.0
       },
       {
+        "domain": "action-observation",
+        "z": 6.38
+      },
+      {
         "domain": "attention",
         "z": 10.45
+      },
+      {
+        "domain": "scenes",
+        "z": 4.25
       },
       {
         "domain": "spatial-attention",
@@ -5498,6 +8824,14 @@
       {
         "domain": "reading",
         "z": 7.85
+      },
+      {
+        "domain": "spelling",
+        "z": 6.62
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.81
       },
       {
         "domain": "recognition-memory",
@@ -5520,6 +8854,10 @@
         "z": 8.49
       },
       {
+        "domain": "lexical",
+        "z": 3.73
+      },
+      {
         "domain": "emotion",
         "z": 3.7
       },
@@ -5538,6 +8876,10 @@
     ],
     "hcp-mmp:left:157": [
       {
+        "domain": "object-recognition",
+        "z": 9.04
+      },
+      {
         "domain": "naming",
         "z": 8.22
       },
@@ -5546,8 +8888,24 @@
         "z": 21.0
       },
       {
+        "domain": "multisensory",
+        "z": 7.17
+      },
+      {
         "domain": "colour",
         "z": 7.54
+      },
+      {
+        "domain": "empathy",
+        "z": 4.63
+      },
+      {
+        "domain": "gestures",
+        "z": 5.36
+      },
+      {
+        "domain": "lexical",
+        "z": 7.16
       },
       {
         "domain": "planning",
@@ -5558,6 +8916,26 @@
         "z": 3.73
       },
       {
+        "domain": "facial-expressions",
+        "z": 3.88
+      },
+      {
+        "domain": "action-observation",
+        "z": 6.76
+      },
+      {
+        "domain": "imagery",
+        "z": 5.05
+      },
+      {
+        "domain": "motion",
+        "z": 15.36
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 4.57
+      },
+      {
         "domain": "attention",
         "z": 10.04
       },
@@ -5566,12 +8944,28 @@
         "z": 6.88
       },
       {
+        "domain": "spelling",
+        "z": 7.22
+      },
+      {
         "domain": "reading",
         "z": 7.52
       },
       {
+        "domain": "scenes",
+        "z": 3.51
+      },
+      {
+        "domain": "categorization",
+        "z": 3.03
+      },
+      {
         "domain": "language",
         "z": 8.15
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.39
       },
       {
         "domain": "motor",
@@ -5600,12 +8994,24 @@
     ],
     "hcp-mmp:left:158": [
       {
+        "domain": "mental-rotation",
+        "z": 3.17
+      },
+      {
         "domain": "visual-perception",
         "z": 10.21
       },
       {
         "domain": "visuospatial",
         "z": 4.02
+      },
+      {
+        "domain": "scenes",
+        "z": 3.16
+      },
+      {
+        "domain": "eye-movements",
+        "z": 3.59
       },
       {
         "domain": "reading",
@@ -5616,11 +9022,19 @@
         "z": 4.2
       },
       {
+        "domain": "motion",
+        "z": 4.99
+      },
+      {
         "domain": "faces",
         "z": 4.03
       }
     ],
     "hcp-mmp:left:159": [
+      {
+        "domain": "multisensory",
+        "z": 3.55
+      },
       {
         "domain": "visual-perception",
         "z": 9.75
@@ -5628,6 +9042,18 @@
       {
         "domain": "spatial-attention",
         "z": 4.18
+      },
+      {
+        "domain": "motion",
+        "z": 10.23
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.3
+      },
+      {
+        "domain": "eye-movements",
+        "z": 3.36
       },
       {
         "domain": "attention",
@@ -5639,6 +9065,14 @@
       }
     ],
     "hcp-mmp:left:160": [
+      {
+        "domain": "familiarity",
+        "z": 3.22
+      },
+      {
+        "domain": "scenes",
+        "z": 4.37
+      },
       {
         "domain": "faces",
         "z": 3.79
@@ -5652,9 +9086,17 @@
       {
         "domain": "theory-of-mind",
         "z": 5.08
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.11
       }
     ],
     "hcp-mmp:left:163": [
+      {
+        "domain": "object-recognition",
+        "z": 4.13
+      },
       {
         "domain": "visual-perception",
         "z": 9.24
@@ -5674,6 +9116,14 @@
       {
         "domain": "reading",
         "z": 5.04
+      },
+      {
+        "domain": "spelling",
+        "z": 4.52
+      },
+      {
+        "domain": "lexical",
+        "z": 3.13
       },
       {
         "domain": "phonological",
@@ -5702,6 +9152,10 @@
     ],
     "hcp-mmp:left:168": [
       {
+        "domain": "taste",
+        "z": 3.43
+      },
+      {
         "domain": "pain",
         "z": 6.4
       },
@@ -5716,8 +9170,28 @@
         "z": 9.43
       },
       {
+        "domain": "emotion-regulation",
+        "z": 3.72
+      },
+      {
+        "domain": "lexical",
+        "z": 7.41
+      },
+      {
+        "domain": "empathy",
+        "z": 4.52
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 4.06
+      },
+      {
         "domain": "fear",
         "z": 5.45
+      },
+      {
+        "domain": "verbal-fluency",
+        "z": 4.75
       },
       {
         "domain": "executive",
@@ -5730,6 +9204,10 @@
       {
         "domain": "speech-production",
         "z": 4.15
+      },
+      {
+        "domain": "categorization",
+        "z": 3.84
       },
       {
         "domain": "flexibility",
@@ -5752,12 +9230,20 @@
         "z": 7.35
       },
       {
+        "domain": "spelling",
+        "z": 6.21
+      },
+      {
         "domain": "pain",
         "z": 5.96
       },
       {
         "domain": "colour",
         "z": 3.7
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.58
       },
       {
         "domain": "working-memory",
@@ -5784,6 +9270,18 @@
         "z": 4.62
       },
       {
+        "domain": "motivation",
+        "z": 3.38
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.33
+      },
+      {
+        "domain": "arithmetic",
+        "z": 3.23
+      },
+      {
         "domain": "reward",
         "z": 5.75
       },
@@ -5800,11 +9298,23 @@
         "z": 3.01
       },
       {
+        "domain": "syntax",
+        "z": 4.48
+      },
+      {
+        "domain": "voice",
+        "z": 3.01
+      },
+      {
         "domain": "faces",
         "z": 4.91
       }
     ],
     "hcp-mmp:left:171": [
+      {
+        "domain": "language-comprehension",
+        "z": 4.21
+      },
       {
         "domain": "phonological",
         "z": 4.41
@@ -5816,6 +9326,18 @@
       {
         "domain": "language",
         "z": 6.13
+      },
+      {
+        "domain": "lexical",
+        "z": 3.34
+      },
+      {
+        "domain": "spelling",
+        "z": 3.8
+      },
+      {
+        "domain": "syntax",
+        "z": 3.96
       }
     ],
     "hcp-mmp:left:173": [
@@ -5832,6 +9354,18 @@
         "z": 3.57
       },
       {
+        "domain": "multisensory",
+        "z": 3.5
+      },
+      {
+        "domain": "speech-perception",
+        "z": 4.22
+      },
+      {
+        "domain": "voice",
+        "z": 3.29
+      },
+      {
         "domain": "language",
         "z": 4.07
       }
@@ -5842,6 +9376,10 @@
         "z": 7.0
       },
       {
+        "domain": "multisensory",
+        "z": 7.26
+      },
+      {
         "domain": "auditory-perception",
         "z": 24.77
       },
@@ -5850,8 +9388,28 @@
         "z": 8.88
       },
       {
+        "domain": "speech-perception",
+        "z": 8.15
+      },
+      {
+        "domain": "timing",
+        "z": 3.5
+      },
+      {
+        "domain": "voice",
+        "z": 6.28
+      },
+      {
         "domain": "phonological",
         "z": 5.92
+      },
+      {
+        "domain": "categorization",
+        "z": 3.2
+      },
+      {
+        "domain": "lexical",
+        "z": 3.97
       },
       {
         "domain": "language",
@@ -5872,6 +9430,14 @@
     ],
     "hcp-mmp:left:175": [
       {
+        "domain": "speech-perception",
+        "z": 9.51
+      },
+      {
+        "domain": "voice",
+        "z": 11.02
+      },
+      {
         "domain": "speech-production",
         "z": 6.71
       },
@@ -5888,8 +9454,20 @@
         "z": 7.66
       },
       {
+        "domain": "lexical",
+        "z": 5.26
+      },
+      {
         "domain": "language",
         "z": 9.15
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.42
+      },
+      {
+        "domain": "syntax",
+        "z": 4.58
       },
       {
         "domain": "reading",
@@ -5903,6 +9481,10 @@
       }
     ],
     "hcp-mmp:left:179": [
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.49
+      },
       {
         "domain": "pain",
         "z": 3.23
@@ -5934,8 +9516,40 @@
     ],
     "hcp-mmp:right:2": [
       {
+        "domain": "motion",
+        "z": 24.75
+      },
+      {
+        "domain": "action-observation",
+        "z": 8.36
+      },
+      {
+        "domain": "eye-movements",
+        "z": 7.34
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.53
+      },
+      {
         "domain": "visual-perception",
         "z": 14.32
+      },
+      {
+        "domain": "multisensory",
+        "z": 4.88
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.67
+      },
+      {
+        "domain": "gestures",
+        "z": 4.34
+      },
+      {
+        "domain": "object-recognition",
+        "z": 4.61
       },
       {
         "domain": "spatial-attention",
@@ -5944,6 +9558,10 @@
       {
         "domain": "visuospatial",
         "z": 4.59
+      },
+      {
+        "domain": "imagery",
+        "z": 3.65
       },
       {
         "domain": "attention",
@@ -5972,6 +9590,10 @@
       {
         "domain": "faces",
         "z": 5.1
+      },
+      {
+        "domain": "motion",
+        "z": 3.28
       }
     ],
     "hcp-mmp:right:7": [
@@ -5998,6 +9620,10 @@
       {
         "domain": "attention",
         "z": 3.33
+      },
+      {
+        "domain": "motion",
+        "z": 3.39
       }
     ],
     "hcp-mmp:right:9": [
@@ -6008,8 +9634,20 @@
     ],
     "hcp-mmp:right:10": [
       {
+        "domain": "eye-movements",
+        "z": 9.04
+      },
+      {
         "domain": "spatial-attention",
         "z": 6.43
+      },
+      {
+        "domain": "imagery",
+        "z": 3.58
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.54
       },
       {
         "domain": "motor",
@@ -6028,6 +9666,10 @@
         "z": 4.05
       },
       {
+        "domain": "motion",
+        "z": 3.74
+      },
+      {
         "domain": "auditory-perception",
         "z": 3.28
       }
@@ -6036,6 +9678,10 @@
       {
         "domain": "attention",
         "z": 9.06
+      },
+      {
+        "domain": "imagery",
+        "z": 3.74
       },
       {
         "domain": "spatial-attention",
@@ -6062,6 +9708,14 @@
         "z": 6.71
       },
       {
+        "domain": "error-monitoring",
+        "z": 3.89
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.72
+      },
+      {
         "domain": "reading",
         "z": 3.71
       },
@@ -6074,11 +9728,19 @@
         "z": 4.79
       },
       {
+        "domain": "motion",
+        "z": 4.14
+      },
+      {
         "domain": "faces",
         "z": 3.12
       }
     ],
     "hcp-mmp:right:12": [
+      {
+        "domain": "eye-movements",
+        "z": 5.19
+      },
       {
         "domain": "spatial-attention",
         "z": 4.67
@@ -6094,6 +9756,10 @@
       {
         "domain": "motor",
         "z": 9.49
+      },
+      {
+        "domain": "imagery",
+        "z": 3.31
       },
       {
         "domain": "attention",
@@ -6114,12 +9780,20 @@
       {
         "domain": "language",
         "z": 3.36
+      },
+      {
+        "domain": "motion",
+        "z": 3.92
       }
     ],
     "hcp-mmp:right:16": [
       {
         "domain": "spatial-attention",
         "z": 4.46
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.35
       },
       {
         "domain": "visuospatial",
@@ -6130,11 +9804,19 @@
         "z": 5.94
       },
       {
+        "domain": "motion",
+        "z": 5.9
+      },
+      {
         "domain": "attention",
         "z": 4.09
       }
     ],
     "hcp-mmp:right:17": [
+      {
+        "domain": "mental-rotation",
+        "z": 3.06
+      },
       {
         "domain": "spatial-attention",
         "z": 3.53
@@ -6162,6 +9844,18 @@
         "z": 22.53
       },
       {
+        "domain": "facial-expressions",
+        "z": 6.46
+      },
+      {
+        "domain": "object-recognition",
+        "z": 7.62
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.43
+      },
+      {
         "domain": "emotion",
         "z": 6.91
       },
@@ -6172,6 +9866,14 @@
       {
         "domain": "fear",
         "z": 5.0
+      },
+      {
+        "domain": "scenes",
+        "z": 4.52
+      },
+      {
+        "domain": "categorization",
+        "z": 3.93
       },
       {
         "domain": "social-cognition",
@@ -6186,8 +9888,20 @@
         "z": 3.07
       },
       {
+        "domain": "voice",
+        "z": 4.27
+      },
+      {
         "domain": "reading",
         "z": 5.18
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.3
+      },
+      {
+        "domain": "spelling",
+        "z": 3.76
       },
       {
         "domain": "attention",
@@ -6196,6 +9910,10 @@
       {
         "domain": "language",
         "z": 4.44
+      },
+      {
+        "domain": "motion",
+        "z": 5.12
       },
       {
         "domain": "working-memory",
@@ -6214,6 +9932,10 @@
       {
         "domain": "visual-perception",
         "z": 4.43
+      },
+      {
+        "domain": "motion",
+        "z": 3.88
       }
     ],
     "hcp-mmp:right:20": [
@@ -6238,26 +9960,62 @@
         "z": 4.15
       },
       {
+        "domain": "motion",
+        "z": 5.53
+      },
+      {
         "domain": "faces",
         "z": 3.99
       }
     ],
     "hcp-mmp:right:21": [
       {
+        "domain": "disgust",
+        "z": 3.29
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 4.45
+      },
+      {
         "domain": "faces",
         "z": 11.64
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 3.64
+      },
+      {
+        "domain": "scenes",
+        "z": 3.89
       },
       {
         "domain": "visual-perception",
         "z": 10.76
       },
       {
+        "domain": "categorization",
+        "z": 3.21
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.32
+      },
+      {
         "domain": "spatial-attention",
         "z": 3.07
       },
       {
+        "domain": "spelling",
+        "z": 3.62
+      },
+      {
         "domain": "reading",
         "z": 3.73
+      },
+      {
+        "domain": "motion",
+        "z": 6.06
       },
       {
         "domain": "attention",
@@ -6270,14 +10028,50 @@
         "z": 13.6
       },
       {
+        "domain": "facial-expressions",
+        "z": 3.0
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.46
+      },
+      {
         "domain": "visual-perception",
         "z": 7.8
+      },
+      {
+        "domain": "motion",
+        "z": 3.84
       }
     ],
     "hcp-mmp:right:23": [
       {
+        "domain": "object-recognition",
+        "z": 7.45
+      },
+      {
+        "domain": "motion",
+        "z": 20.82
+      },
+      {
         "domain": "visual-perception",
         "z": 16.62
+      },
+      {
+        "domain": "multisensory",
+        "z": 5.42
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.47
+      },
+      {
+        "domain": "eye-movements",
+        "z": 6.44
+      },
+      {
+        "domain": "action-observation",
+        "z": 6.63
       },
       {
         "domain": "visuospatial",
@@ -6288,12 +10082,20 @@
         "z": 5.37
       },
       {
+        "domain": "scenes",
+        "z": 3.94
+      },
+      {
         "domain": "fear",
         "z": 3.38
       },
       {
         "domain": "attention",
         "z": 7.22
+      },
+      {
+        "domain": "gestures",
+        "z": 3.08
       },
       {
         "domain": "colour",
@@ -6318,8 +10120,16 @@
     ],
     "hcp-mmp:right:24": [
       {
+        "domain": "multisensory",
+        "z": 6.49
+      },
+      {
         "domain": "auditory-perception",
         "z": 20.83
+      },
+      {
+        "domain": "speech-perception",
+        "z": 6.13
       },
       {
         "domain": "speech-production",
@@ -6328,6 +10138,14 @@
       {
         "domain": "music",
         "z": 5.85
+      },
+      {
+        "domain": "voice",
+        "z": 5.24
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.13
       },
       {
         "domain": "touch",
@@ -6352,6 +10170,10 @@
         "z": 4.02
       },
       {
+        "domain": "action-observation",
+        "z": 5.14
+      },
+      {
         "domain": "spatial-attention",
         "z": 3.77
       },
@@ -6370,6 +10192,10 @@
       {
         "domain": "auditory-perception",
         "z": 6.2
+      },
+      {
+        "domain": "motion",
+        "z": 5.36
       },
       {
         "domain": "visual-perception",
@@ -6398,16 +10224,36 @@
         "z": 5.52
       },
       {
+        "domain": "facial-expressions",
+        "z": 4.5
+      },
+      {
         "domain": "social-cognition",
         "z": 3.71
+      },
+      {
+        "domain": "empathy",
+        "z": 3.61
       },
       {
         "domain": "spatial-attention",
         "z": 4.22
       },
       {
+        "domain": "action-observation",
+        "z": 3.73
+      },
+      {
         "domain": "attention",
         "z": 6.01
+      },
+      {
+        "domain": "eye-movements",
+        "z": 3.17
+      },
+      {
+        "domain": "motion",
+        "z": 7.42
       },
       {
         "domain": "auditory-perception",
@@ -6444,18 +10290,58 @@
       {
         "domain": "theory-of-mind",
         "z": 4.77
+      },
+      {
+        "domain": "moral-reasoning",
+        "z": 3.27
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.57
       }
     ],
     "hcp-mmp:right:31": [
       {
+        "domain": "navigation",
+        "z": 4.35
+      },
+      {
         "domain": "long-term-memory",
         "z": 4.21
+      },
+      {
+        "domain": "scenes",
+        "z": 3.92
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.88
       }
     ],
     "hcp-mmp:right:33": [
       {
+        "domain": "autobiographical-memory",
+        "z": 5.21
+      },
+      {
         "domain": "long-term-memory",
         "z": 3.2
+      }
+    ],
+    "hcp-mmp:right:34": [
+      {
+        "domain": "moral-reasoning",
+        "z": 3.51
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.14
+      }
+    ],
+    "hcp-mmp:right:35": [
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.36
       }
     ],
     "hcp-mmp:right:40": [
@@ -6472,12 +10358,24 @@
     ],
     "hcp-mmp:right:43": [
       {
+        "domain": "timing",
+        "z": 5.04
+      },
+      {
         "domain": "motor",
         "z": 19.51
       },
       {
+        "domain": "imagery",
+        "z": 7.04
+      },
+      {
         "domain": "planning",
         "z": 5.06
+      },
+      {
+        "domain": "eye-movements",
+        "z": 6.21
       },
       {
         "domain": "inhibition",
@@ -6516,6 +10414,14 @@
         "z": 8.14
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 4.64
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.01
+      },
+      {
         "domain": "auditory-perception",
         "z": 6.17
       },
@@ -6544,6 +10450,10 @@
     ],
     "hcp-mmp:right:45": [
       {
+        "domain": "navigation",
+        "z": 3.3
+      },
+      {
         "domain": "spatial-attention",
         "z": 4.11
       },
@@ -6557,6 +10467,10 @@
       }
     ],
     "hcp-mmp:right:46": [
+      {
+        "domain": "mental-rotation",
+        "z": 4.94
+      },
       {
         "domain": "executive",
         "z": 4.33
@@ -6578,6 +10492,10 @@
         "z": 4.74
       },
       {
+        "domain": "imagery",
+        "z": 3.99
+      },
+      {
         "domain": "attention",
         "z": 7.64
       },
@@ -6586,8 +10504,20 @@
         "z": 8.18
       },
       {
+        "domain": "eye-movements",
+        "z": 3.85
+      },
+      {
+        "domain": "arithmetic",
+        "z": 3.03
+      },
+      {
         "domain": "visual-perception",
         "z": 7.02
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.57
       },
       {
         "domain": "motor",
@@ -6600,12 +10530,24 @@
     ],
     "hcp-mmp:right:47": [
       {
+        "domain": "action-observation",
+        "z": 6.33
+      },
+      {
         "domain": "planning",
         "z": 3.8
       },
       {
+        "domain": "imagery",
+        "z": 3.1
+      },
+      {
         "domain": "visuospatial",
         "z": 3.7
+      },
+      {
+        "domain": "eye-movements",
+        "z": 3.52
       },
       {
         "domain": "motor",
@@ -6622,6 +10564,10 @@
       {
         "domain": "attention",
         "z": 4.65
+      },
+      {
+        "domain": "motion",
+        "z": 4.24
       }
     ],
     "hcp-mmp:right:48": [
@@ -6630,20 +10576,48 @@
         "z": 10.26
       },
       {
+        "domain": "imagery",
+        "z": 7.83
+      },
+      {
+        "domain": "eye-movements",
+        "z": 10.11
+      },
+      {
         "domain": "attention",
         "z": 16.63
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 6.04
       },
       {
         "domain": "visual-perception",
         "z": 19.39
       },
       {
+        "domain": "familiarity",
+        "z": 3.88
+      },
+      {
         "domain": "colour",
         "z": 6.96
       },
       {
+        "domain": "timing",
+        "z": 3.48
+      },
+      {
         "domain": "number",
         "z": 6.72
+      },
+      {
+        "domain": "arithmetic",
+        "z": 5.85
+      },
+      {
+        "domain": "multisensory",
+        "z": 4.38
       },
       {
         "domain": "visuospatial",
@@ -6674,12 +10648,36 @@
         "z": 6.6
       },
       {
+        "domain": "action-observation",
+        "z": 4.55
+      },
+      {
+        "domain": "motion",
+        "z": 8.7
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 4.52
+      },
+      {
+        "domain": "spelling",
+        "z": 4.38
+      },
+      {
         "domain": "decision-making",
         "z": 3.93
       },
       {
+        "domain": "lexical",
+        "z": 3.26
+      },
+      {
         "domain": "phonological",
         "z": 3.48
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.23
       },
       {
         "domain": "touch",
@@ -6700,8 +10698,20 @@
     ],
     "hcp-mmp:right:49": [
       {
+        "domain": "mental-rotation",
+        "z": 5.78
+      },
+      {
+        "domain": "eye-movements",
+        "z": 8.67
+      },
+      {
         "domain": "visuospatial",
         "z": 7.59
+      },
+      {
+        "domain": "imagery",
+        "z": 5.45
       },
       {
         "domain": "spatial-attention",
@@ -6720,12 +10730,24 @@
         "z": 10.87
       },
       {
+        "domain": "navigation",
+        "z": 3.11
+      },
+      {
         "domain": "colour",
         "z": 3.91
       },
       {
+        "domain": "action-observation",
+        "z": 4.39
+      },
+      {
         "domain": "motor",
         "z": 7.81
+      },
+      {
+        "domain": "motion",
+        "z": 7.68
       },
       {
         "domain": "working-memory",
@@ -6742,6 +10764,18 @@
         "z": 7.73
       },
       {
+        "domain": "familiarity",
+        "z": 3.45
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.94
+      },
+      {
+        "domain": "arithmetic",
+        "z": 6.62
+      },
+      {
         "domain": "visuospatial",
         "z": 6.81
       },
@@ -6752,6 +10786,10 @@
       {
         "domain": "visual-perception",
         "z": 14.79
+      },
+      {
+        "domain": "imagery",
+        "z": 5.21
       },
       {
         "domain": "flexibility",
@@ -6778,8 +10816,20 @@
         "z": 6.84
       },
       {
+        "domain": "eye-movements",
+        "z": 4.52
+      },
+      {
         "domain": "inhibition",
         "z": 3.4
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.1
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 4.05
       },
       {
         "domain": "phonological",
@@ -6788,6 +10838,10 @@
       {
         "domain": "decision-making",
         "z": 3.37
+      },
+      {
+        "domain": "spelling",
+        "z": 3.59
       },
       {
         "domain": "motor",
@@ -6800,6 +10854,10 @@
       {
         "domain": "language",
         "z": 3.04
+      },
+      {
+        "domain": "motion",
+        "z": 3.55
       },
       {
         "domain": "auditory-perception",
@@ -6823,6 +10881,10 @@
       }
     ],
     "hcp-mmp:right:54": [
+      {
+        "domain": "imagery",
+        "z": 3.59
+      },
       {
         "domain": "motor",
         "z": 7.95
@@ -6848,8 +10910,16 @@
         "z": 3.69
       },
       {
+        "domain": "imagery",
+        "z": 3.51
+      },
+      {
         "domain": "touch",
         "z": 4.77
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.19
       },
       {
         "domain": "visual-perception",
@@ -6892,8 +10962,16 @@
         "z": 4.58
       },
       {
+        "domain": "error-monitoring",
+        "z": 3.99
+      },
+      {
         "domain": "reward",
         "z": 4.33
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.07
       },
       {
         "domain": "touch",
@@ -6914,8 +10992,28 @@
         "z": 6.6
       },
       {
+        "domain": "emotion-regulation",
+        "z": 3.8
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 4.01
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 8.76
+      },
+      {
         "domain": "inhibition",
         "z": 4.76
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 7.02
+      },
+      {
+        "domain": "empathy",
+        "z": 3.69
       },
       {
         "domain": "touch",
@@ -6936,6 +11034,10 @@
       {
         "domain": "emotion",
         "z": 4.99
+      },
+      {
+        "domain": "motivation",
+        "z": 4.14
       },
       {
         "domain": "planning",
@@ -6972,8 +11074,16 @@
     ],
     "hcp-mmp:right:60": [
       {
+        "domain": "conflict-monitoring",
+        "z": 8.4
+      },
+      {
         "domain": "inhibition",
         "z": 4.9
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 3.69
       },
       {
         "domain": "flexibility",
@@ -6996,8 +11106,16 @@
         "z": 5.63
       },
       {
+        "domain": "imagery",
+        "z": 3.12
+      },
+      {
         "domain": "working-memory",
         "z": 5.99
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.75
       },
       {
         "domain": "emotion",
@@ -7052,15 +11170,31 @@
     ],
     "hcp-mmp:right:62": [
       {
+        "domain": "error-monitoring",
+        "z": 3.89
+      },
+      {
         "domain": "decision-making",
         "z": 3.53
       },
       {
         "domain": "reward",
         "z": 4.18
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.26
       }
     ],
     "hcp-mmp:right:63": [
+      {
+        "domain": "error-monitoring",
+        "z": 7.37
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 7.62
+      },
       {
         "domain": "inhibition",
         "z": 4.47
@@ -7068,6 +11202,10 @@
       {
         "domain": "decision-making",
         "z": 7.0
+      },
+      {
+        "domain": "categorization",
+        "z": 3.16
       },
       {
         "domain": "flexibility",
@@ -7080,6 +11218,10 @@
       {
         "domain": "colour",
         "z": 3.7
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.74
       },
       {
         "domain": "attention",
@@ -7134,6 +11276,10 @@
     ],
     "hcp-mmp:right:66": [
       {
+        "domain": "disgust",
+        "z": 3.5
+      },
+      {
         "domain": "emotion",
         "z": 3.93
       },
@@ -7160,8 +11306,24 @@
     ],
     "hcp-mmp:right:74": [
       {
+        "domain": "interoception",
+        "z": 3.57
+      },
+      {
         "domain": "inhibition",
         "z": 6.15
+      },
+      {
+        "domain": "empathy",
+        "z": 4.74
+      },
+      {
+        "domain": "timing",
+        "z": 3.08
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.58
       },
       {
         "domain": "motor",
@@ -7180,8 +11342,20 @@
         "z": 4.94
       },
       {
+        "domain": "lexical",
+        "z": 3.74
+      },
+      {
         "domain": "attention",
         "z": 5.81
+      },
+      {
+        "domain": "syntax",
+        "z": 4.63
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.72
       },
       {
         "domain": "visual-perception",
@@ -7194,6 +11368,10 @@
       {
         "domain": "working-memory",
         "z": 4.99
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.23
       },
       {
         "domain": "touch",
@@ -7218,6 +11396,10 @@
     ],
     "hcp-mmp:right:75": [
       {
+        "domain": "empathy",
+        "z": 7.05
+      },
+      {
         "domain": "social-cognition",
         "z": 4.59
       },
@@ -7226,8 +11408,16 @@
         "z": 4.04
       },
       {
+        "domain": "facial-expressions",
+        "z": 4.26
+      },
+      {
         "domain": "emotion",
         "z": 6.93
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 3.01
       },
       {
         "domain": "inhibition",
@@ -7246,6 +11436,10 @@
         "z": 4.75
       },
       {
+        "domain": "syntax",
+        "z": 3.24
+      },
+      {
         "domain": "attention",
         "z": 3.42
       },
@@ -7262,12 +11456,24 @@
       {
         "domain": "emotion",
         "z": 4.22
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.11
       }
     ],
     "hcp-mmp:right:78": [
       {
+        "domain": "empathy",
+        "z": 3.49
+      },
+      {
         "domain": "motor",
         "z": 9.84
+      },
+      {
+        "domain": "imagery",
+        "z": 3.63
       },
       {
         "domain": "visual-perception",
@@ -7310,6 +11516,14 @@
         "z": 3.95
       },
       {
+        "domain": "action-observation",
+        "z": 3.12
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.44
+      },
+      {
         "domain": "language",
         "z": 4.49
       },
@@ -7324,6 +11538,10 @@
       {
         "domain": "auditory-perception",
         "z": 5.44
+      },
+      {
+        "domain": "motion",
+        "z": 3.03
       }
     ],
     "hcp-mmp:right:79": [
@@ -7352,6 +11570,10 @@
       {
         "domain": "colour",
         "z": 3.23
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.39
       },
       {
         "domain": "phonological",
@@ -7384,8 +11606,16 @@
         "z": 3.16
       },
       {
+        "domain": "empathy",
+        "z": 3.33
+      },
+      {
         "domain": "emotion",
         "z": 5.09
+      },
+      {
+        "domain": "categorization",
+        "z": 3.11
       },
       {
         "domain": "long-term-memory",
@@ -7394,6 +11624,14 @@
       {
         "domain": "working-memory",
         "z": 6.33
+      },
+      {
+        "domain": "lexical",
+        "z": 3.27
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.56
       },
       {
         "domain": "language",
@@ -7406,6 +11644,10 @@
       {
         "domain": "faces",
         "z": 4.93
+      },
+      {
+        "domain": "syntax",
+        "z": 3.19
       },
       {
         "domain": "visual-perception",
@@ -7428,6 +11670,10 @@
         "z": 13.31
       },
       {
+        "domain": "skill-learning",
+        "z": 3.03
+      },
+      {
         "domain": "executive",
         "z": 3.98
       },
@@ -7438,6 +11684,18 @@
       {
         "domain": "inhibition",
         "z": 4.03
+      },
+      {
+        "domain": "recall",
+        "z": 3.06
+      },
+      {
+        "domain": "categorization",
+        "z": 3.28
+      },
+      {
+        "domain": "reasoning",
+        "z": 3.95
       },
       {
         "domain": "planning",
@@ -7452,12 +11710,24 @@
         "z": 5.07
       },
       {
+        "domain": "arithmetic",
+        "z": 3.13
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 4.3
+      },
+      {
         "domain": "phonological",
         "z": 3.82
       },
       {
         "domain": "visual-perception",
         "z": 6.7
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.54
       },
       {
         "domain": "emotion",
@@ -7520,11 +11790,19 @@
         "z": 3.18
       },
       {
+        "domain": "motivation",
+        "z": 3.62
+      },
+      {
         "domain": "reward",
         "z": 5.48
       }
     ],
     "hcp-mmp:right:95": [
+      {
+        "domain": "arithmetic",
+        "z": 9.82
+      },
       {
         "domain": "number",
         "z": 9.71
@@ -7536,6 +11814,14 @@
       {
         "domain": "flexibility",
         "z": 5.25
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 5.06
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.3
       },
       {
         "domain": "attention",
@@ -7550,6 +11836,10 @@
         "z": 13.16
       },
       {
+        "domain": "imagery",
+        "z": 5.17
+      },
+      {
         "domain": "visuospatial",
         "z": 6.13
       },
@@ -7562,8 +11852,20 @@
         "z": 4.32
       },
       {
+        "domain": "navigation",
+        "z": 3.58
+      },
+      {
+        "domain": "eye-movements",
+        "z": 5.35
+      },
+      {
         "domain": "reading",
         "z": 7.51
+      },
+      {
+        "domain": "spelling",
+        "z": 5.74
       },
       {
         "domain": "phonological",
@@ -7578,8 +11880,24 @@
         "z": 8.03
       },
       {
+        "domain": "lexical",
+        "z": 3.92
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.06
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 4.56
+      },
+      {
         "domain": "decision-making",
         "z": 4.01
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.79
       },
       {
         "domain": "language",
@@ -7599,6 +11917,10 @@
       }
     ],
     "hcp-mmp:right:96": [
+      {
+        "domain": "eye-movements",
+        "z": 7.17
+      },
       {
         "domain": "planning",
         "z": 4.09
@@ -7630,6 +11952,10 @@
       {
         "domain": "visual-perception",
         "z": 6.21
+      },
+      {
+        "domain": "motion",
+        "z": 3.48
       }
     ],
     "hcp-mmp:right:97": [
@@ -7672,6 +11998,10 @@
     ],
     "hcp-mmp:right:101": [
       {
+        "domain": "interoception",
+        "z": 3.18
+      },
+      {
         "domain": "touch",
         "z": 8.33
       },
@@ -7710,6 +12040,10 @@
         "z": 8.67
       },
       {
+        "domain": "multisensory",
+        "z": 4.12
+      },
+      {
         "domain": "pain",
         "z": 6.62
       },
@@ -7719,6 +12053,18 @@
       }
     ],
     "hcp-mmp:right:106": [
+      {
+        "domain": "interoception",
+        "z": 3.18
+      },
+      {
+        "domain": "disgust",
+        "z": 3.49
+      },
+      {
+        "domain": "taste",
+        "z": 4.45
+      },
       {
         "domain": "pain",
         "z": 8.14
@@ -7736,6 +12082,10 @@
       {
         "domain": "auditory-perception",
         "z": 9.17
+      },
+      {
+        "domain": "voice",
+        "z": 3.66
       }
     ],
     "hcp-mmp:right:108": [
@@ -7746,6 +12096,14 @@
       {
         "domain": "inhibition",
         "z": 4.94
+      },
+      {
+        "domain": "taste",
+        "z": 3.75
+      },
+      {
+        "domain": "empathy",
+        "z": 3.94
       },
       {
         "domain": "touch",
@@ -7768,8 +12126,16 @@
         "z": 8.83
       },
       {
+        "domain": "imagery",
+        "z": 3.03
+      },
+      {
         "domain": "emotion",
         "z": 3.74
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.89
       },
       {
         "domain": "attention",
@@ -7782,6 +12148,10 @@
       {
         "domain": "working-memory",
         "z": 5.27
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.45
       },
       {
         "domain": "visual-perception",
@@ -7802,8 +12172,28 @@
     ],
     "hcp-mmp:right:109": [
       {
+        "domain": "taste",
+        "z": 6.42
+      },
+      {
+        "domain": "disgust",
+        "z": 4.52
+      },
+      {
         "domain": "pain",
         "z": 13.34
+      },
+      {
+        "domain": "interoception",
+        "z": 3.5
+      },
+      {
+        "domain": "smell",
+        "z": 3.12
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 3.92
       },
       {
         "domain": "touch",
@@ -7818,6 +12208,10 @@
         "z": 3.93
       },
       {
+        "domain": "empathy",
+        "z": 3.09
+      },
+      {
         "domain": "emotion",
         "z": 5.05
       },
@@ -7826,8 +12220,20 @@
         "z": 6.51
       },
       {
+        "domain": "error-monitoring",
+        "z": 4.53
+      },
+      {
         "domain": "motor",
         "z": 7.8
+      },
+      {
+        "domain": "motivation",
+        "z": 3.25
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 4.33
       },
       {
         "domain": "attention",
@@ -7848,8 +12254,24 @@
     ],
     "hcp-mmp:right:110": [
       {
+        "domain": "disgust",
+        "z": 4.66
+      },
+      {
         "domain": "fear",
         "z": 7.3
+      },
+      {
+        "domain": "smell",
+        "z": 3.65
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 4.39
+      },
+      {
+        "domain": "taste",
+        "z": 3.57
       },
       {
         "domain": "emotion",
@@ -7914,20 +12336,108 @@
         "z": 17.69
       },
       {
+        "domain": "conflict-monitoring",
+        "z": 13.93
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 12.97
+      },
+      {
+        "domain": "reasoning",
+        "z": 9.31
+      },
+      {
+        "domain": "categorization",
+        "z": 7.43
+      },
+      {
+        "domain": "skill-learning",
+        "z": 5.07
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 5.42
+      },
+      {
+        "domain": "motivation",
+        "z": 10.02
+      },
+      {
+        "domain": "interoception",
+        "z": 4.2
+      },
+      {
+        "domain": "moral-reasoning",
+        "z": 4.77
+      },
+      {
+        "domain": "smell",
+        "z": 4.6
+      },
+      {
         "domain": "phonological",
         "z": 13.14
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.72
+      },
+      {
+        "domain": "recollection",
+        "z": 4.82
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 6.29
+      },
+      {
+        "domain": "empathy",
+        "z": 6.65
+      },
+      {
+        "domain": "intelligence",
+        "z": 4.26
+      },
+      {
+        "domain": "timing",
+        "z": 4.68
+      },
+      {
+        "domain": "lexical",
+        "z": 10.31
       },
       {
         "domain": "visual-perception",
         "z": 20.77
       },
       {
+        "domain": "taste",
+        "z": 5.51
+      },
+      {
         "domain": "long-term-memory",
         "z": 7.31
       },
       {
+        "domain": "arithmetic",
+        "z": 8.23
+      },
+      {
+        "domain": "recall",
+        "z": 5.29
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 5.13
+      },
+      {
         "domain": "planning",
         "z": 6.22
+      },
+      {
+        "domain": "spelling",
+        "z": 11.18
       },
       {
         "domain": "theory-of-mind",
@@ -7936,6 +12446,10 @@
       {
         "domain": "language",
         "z": 14.16
+      },
+      {
+        "domain": "disgust",
+        "z": 3.19
       },
       {
         "domain": "reading",
@@ -7962,12 +12476,28 @@
         "z": 6.36
       },
       {
+        "domain": "navigation",
+        "z": 4.18
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.33
+      },
+      {
         "domain": "naming",
         "z": 4.72
       },
       {
+        "domain": "language-comprehension",
+        "z": 4.42
+      },
+      {
         "domain": "faces",
         "z": 10.65
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.88
       },
       {
         "domain": "auditory-perception",
@@ -7978,15 +12508,59 @@
         "z": 4.6
       },
       {
+        "domain": "verbal-fluency",
+        "z": 3.68
+      },
+      {
         "domain": "touch",
         "z": 6.85
       },
       {
+        "domain": "scenes",
+        "z": 3.41
+      },
+      {
+        "domain": "voice",
+        "z": 4.92
+      },
+      {
+        "domain": "imagery",
+        "z": 3.32
+      },
+      {
         "domain": "music",
         "z": 3.59
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.01
+      },
+      {
+        "domain": "syntax",
+        "z": 4.9
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.51
+      },
+      {
+        "domain": "motion",
+        "z": 4.86
       }
     ],
     "hcp-mmp:right:112": [
+      {
+        "domain": "disgust",
+        "z": 3.77
+      },
+      {
+        "domain": "interoception",
+        "z": 3.13
+      },
+      {
+        "domain": "taste",
+        "z": 4.69
+      },
       {
         "domain": "inhibition",
         "z": 5.31
@@ -7994,6 +12568,10 @@
       {
         "domain": "fear",
         "z": 4.49
+      },
+      {
+        "domain": "sustained-attention",
+        "z": 3.0
       },
       {
         "domain": "reward",
@@ -8004,8 +12582,20 @@
         "z": 4.61
       },
       {
+        "domain": "error-monitoring",
+        "z": 4.37
+      },
+      {
+        "domain": "motivation",
+        "z": 3.25
+      },
+      {
         "domain": "pain",
         "z": 4.05
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.48
       },
       {
         "domain": "decision-making",
@@ -8026,6 +12616,10 @@
         "z": 6.58
       },
       {
+        "domain": "imagery",
+        "z": 3.14
+      },
+      {
         "domain": "motor",
         "z": 8.05
       }
@@ -8036,11 +12630,19 @@
         "z": 9.27
       },
       {
+        "domain": "taste",
+        "z": 3.14
+      },
+      {
         "domain": "touch",
         "z": 5.44
       }
     ],
     "hcp-mmp:right:115": [
+      {
+        "domain": "taste",
+        "z": 4.14
+      },
       {
         "domain": "pain",
         "z": 4.77
@@ -8070,6 +12672,14 @@
     ],
     "hcp-mmp:right:117": [
       {
+        "domain": "skill-learning",
+        "z": 3.1
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 3.85
+      },
+      {
         "domain": "visuospatial",
         "z": 5.45
       },
@@ -8090,6 +12700,14 @@
         "z": 4.77
       },
       {
+        "domain": "imagery",
+        "z": 3.67
+      },
+      {
+        "domain": "arithmetic",
+        "z": 4.05
+      },
+      {
         "domain": "attention",
         "z": 7.5
       },
@@ -8106,23 +12724,69 @@
         "z": 7.87
       },
       {
+        "domain": "eye-movements",
+        "z": 3.02
+      },
+      {
         "domain": "touch",
         "z": 3.24
+      },
+      {
+        "domain": "motion",
+        "z": 3.63
       }
     ],
     "hcp-mmp:right:119": [
       {
         "domain": "long-term-memory",
         "z": 6.28
+      },
+      {
+        "domain": "navigation",
+        "z": 5.06
+      },
+      {
+        "domain": "recall",
+        "z": 4.38
+      },
+      {
+        "domain": "recollection",
+        "z": 3.27
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.47
       }
     ],
     "hcp-mmp:right:120": [
       {
+        "domain": "navigation",
+        "z": 4.08
+      },
+      {
         "domain": "long-term-memory",
         "z": 4.66
+      },
+      {
+        "domain": "scenes",
+        "z": 3.51
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.04
+      }
+    ],
+    "hcp-mmp:right:121": [
+      {
+        "domain": "navigation",
+        "z": 3.08
       }
     ],
     "hcp-mmp:right:123": [
+      {
+        "domain": "language-comprehension",
+        "z": 4.31
+      },
       {
         "domain": "language",
         "z": 3.35
@@ -8142,8 +12806,24 @@
         "z": 27.92
       },
       {
+        "domain": "speech-perception",
+        "z": 8.68
+      },
+      {
         "domain": "speech-production",
         "z": 6.26
+      },
+      {
+        "domain": "voice",
+        "z": 9.08
+      },
+      {
+        "domain": "timing",
+        "z": 3.55
+      },
+      {
+        "domain": "multisensory",
+        "z": 5.71
       },
       {
         "domain": "language",
@@ -8154,6 +12834,14 @@
         "z": 4.81
       },
       {
+        "domain": "lexical",
+        "z": 4.02
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.06
+      },
+      {
         "domain": "visual-perception",
         "z": 5.56
       },
@@ -8162,11 +12850,23 @@
         "z": 5.0
       },
       {
+        "domain": "syntax",
+        "z": 3.33
+      },
+      {
         "domain": "attention",
         "z": 4.01
       }
     ],
     "hcp-mmp:right:125": [
+      {
+        "domain": "voice",
+        "z": 12.67
+      },
+      {
+        "domain": "speech-perception",
+        "z": 7.48
+      },
       {
         "domain": "music",
         "z": 6.79
@@ -8180,25 +12880,61 @@
         "z": 4.78
       },
       {
+        "domain": "language-comprehension",
+        "z": 5.34
+      },
+      {
+        "domain": "lexical",
+        "z": 5.12
+      },
+      {
         "domain": "language",
         "z": 8.61
       },
       {
         "domain": "phonological",
         "z": 5.59
+      },
+      {
+        "domain": "syntax",
+        "z": 5.25
       }
     ],
     "hcp-mmp:right:126": [
+      {
+        "domain": "navigation",
+        "z": 5.28
+      },
       {
         "domain": "semantic-memory",
         "z": 3.74
       },
       {
+        "domain": "recall",
+        "z": 3.27
+      },
+      {
         "domain": "long-term-memory",
         "z": 3.95
+      },
+      {
+        "domain": "scenes",
+        "z": 3.12
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.24
       }
     ],
     "hcp-mmp:right:127": [
+      {
+        "domain": "navigation",
+        "z": 4.93
+      },
+      {
+        "domain": "scenes",
+        "z": 5.81
+      },
       {
         "domain": "long-term-memory",
         "z": 3.12
@@ -8216,6 +12952,10 @@
       {
         "domain": "theory-of-mind",
         "z": 4.55
+      },
+      {
+        "domain": "voice",
+        "z": 3.86
       },
       {
         "domain": "music",
@@ -8236,8 +12976,20 @@
         "z": 3.41
       },
       {
+        "domain": "facial-expressions",
+        "z": 3.46
+      },
+      {
+        "domain": "speech-perception",
+        "z": 5.74
+      },
+      {
         "domain": "speech-production",
         "z": 3.53
+      },
+      {
+        "domain": "voice",
+        "z": 5.5
       },
       {
         "domain": "language",
@@ -8254,6 +13006,10 @@
       {
         "domain": "phonological",
         "z": 3.02
+      },
+      {
+        "domain": "syntax",
+        "z": 3.07
       },
       {
         "domain": "reading",
@@ -8280,12 +13036,36 @@
       {
         "domain": "visual-perception",
         "z": 4.33
+      },
+      {
+        "domain": "motion",
+        "z": 3.38
       }
     ],
     "hcp-mmp:right:138": [
       {
+        "domain": "disgust",
+        "z": 3.79
+      },
+      {
+        "domain": "object-recognition",
+        "z": 7.49
+      },
+      {
         "domain": "visual-perception",
         "z": 17.29
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.26
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.71
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.17
       },
       {
         "domain": "faces",
@@ -8296,16 +13076,32 @@
         "z": 4.21
       },
       {
+        "domain": "multisensory",
+        "z": 3.84
+      },
+      {
         "domain": "reading",
         "z": 7.31
+      },
+      {
+        "domain": "scenes",
+        "z": 3.73
       },
       {
         "domain": "attention",
         "z": 7.46
       },
       {
+        "domain": "spelling",
+        "z": 5.16
+      },
+      {
         "domain": "phonological",
         "z": 4.67
+      },
+      {
+        "domain": "lexical",
+        "z": 3.49
       },
       {
         "domain": "visuospatial",
@@ -8320,6 +13116,10 @@
         "z": 3.26
       },
       {
+        "domain": "motion",
+        "z": 6.97
+      },
+      {
         "domain": "working-memory",
         "z": 5.17
       },
@@ -8330,6 +13130,10 @@
     ],
     "hcp-mmp:right:139": [
       {
+        "domain": "facial-expressions",
+        "z": 5.33
+      },
+      {
         "domain": "social-cognition",
         "z": 3.46
       },
@@ -8338,8 +13142,28 @@
         "z": 3.21
       },
       {
+        "domain": "voice",
+        "z": 5.33
+      },
+      {
+        "domain": "gestures",
+        "z": 3.34
+      },
+      {
+        "domain": "speech-perception",
+        "z": 3.05
+      },
+      {
+        "domain": "action-observation",
+        "z": 3.21
+      },
+      {
         "domain": "faces",
         "z": 5.44
+      },
+      {
+        "domain": "motion",
+        "z": 5.85
       },
       {
         "domain": "auditory-perception",
@@ -8360,8 +13184,40 @@
         "z": 4.32
       },
       {
+        "domain": "facial-expressions",
+        "z": 4.55
+      },
+      {
+        "domain": "gestures",
+        "z": 5.34
+      },
+      {
+        "domain": "motion",
+        "z": 16.02
+      },
+      {
+        "domain": "action-observation",
+        "z": 6.43
+      },
+      {
+        "domain": "empathy",
+        "z": 3.71
+      },
+      {
+        "domain": "eye-movements",
+        "z": 5.27
+      },
+      {
         "domain": "visual-perception",
         "z": 9.93
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.6
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.22
       },
       {
         "domain": "emotion",
@@ -8384,7 +13240,23 @@
         "z": 3.04
       }
     ],
+    "hcp-mmp:right:141": [
+      {
+        "domain": "motion",
+        "z": 4.81
+      }
+    ],
+    "hcp-mmp:right:142": [
+      {
+        "domain": "navigation",
+        "z": 3.02
+      }
+    ],
     "hcp-mmp:right:143": [
+      {
+        "domain": "scenes",
+        "z": 4.1
+      },
       {
         "domain": "visual-perception",
         "z": 3.93
@@ -8392,8 +13264,28 @@
     ],
     "hcp-mmp:right:144": [
       {
+        "domain": "familiarity",
+        "z": 4.29
+      },
+      {
+        "domain": "intelligence",
+        "z": 3.25
+      },
+      {
+        "domain": "skill-learning",
+        "z": 3.17
+      },
+      {
+        "domain": "recollection",
+        "z": 3.01
+      },
+      {
         "domain": "working-memory",
         "z": 11.64
+      },
+      {
+        "domain": "arithmetic",
+        "z": 5.18
       },
       {
         "domain": "recognition-memory",
@@ -8424,6 +13316,10 @@
         "z": 7.28
       },
       {
+        "domain": "error-monitoring",
+        "z": 3.83
+      },
+      {
         "domain": "motor",
         "z": 5.93
       },
@@ -8442,8 +13338,20 @@
     ],
     "hcp-mmp:right:145": [
       {
+        "domain": "arithmetic",
+        "z": 8.07
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.81
+      },
+      {
         "domain": "flexibility",
         "z": 5.54
+      },
+      {
+        "domain": "recollection",
+        "z": 3.33
       },
       {
         "domain": "number",
@@ -8452,6 +13360,10 @@
       {
         "domain": "visuospatial",
         "z": 6.42
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 3.95
       },
       {
         "domain": "working-memory",
@@ -8470,8 +13382,16 @@
         "z": 10.66
       },
       {
+        "domain": "categorization",
+        "z": 3.28
+      },
+      {
         "domain": "recognition-memory",
         "z": 3.19
+      },
+      {
+        "domain": "imagery",
+        "z": 3.44
       },
       {
         "domain": "planning",
@@ -8480,6 +13400,10 @@
       {
         "domain": "inhibition",
         "z": 3.12
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 4.23
       },
       {
         "domain": "reading",
@@ -8492,6 +13416,10 @@
       {
         "domain": "decision-making",
         "z": 3.3
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.36
       },
       {
         "domain": "motor",
@@ -8512,12 +13440,24 @@
         "z": 6.03
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.99
+      },
+      {
         "domain": "spatial-attention",
         "z": 5.52
       },
       {
+        "domain": "navigation",
+        "z": 3.39
+      },
+      {
         "domain": "visual-perception",
         "z": 9.47
+      },
+      {
+        "domain": "scenes",
+        "z": 3.21
       },
       {
         "domain": "attention",
@@ -8526,6 +13466,10 @@
       {
         "domain": "working-memory",
         "z": 4.66
+      },
+      {
+        "domain": "motion",
+        "z": 4.22
       }
     ],
     "hcp-mmp:right:147": [
@@ -8542,6 +13486,10 @@
         "z": 8.66
       },
       {
+        "domain": "action-observation",
+        "z": 3.48
+      },
+      {
         "domain": "visual-perception",
         "z": 3.08
       }
@@ -8556,6 +13504,10 @@
         "z": 5.17
       },
       {
+        "domain": "action-observation",
+        "z": 3.07
+      },
+      {
         "domain": "motor",
         "z": 5.45
       }
@@ -8568,6 +13520,10 @@
       {
         "domain": "inhibition",
         "z": 4.36
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.42
       },
       {
         "domain": "attention",
@@ -8588,7 +13544,17 @@
         "z": 3.25
       }
     ],
+    "hcp-mmp:right:152": [
+      {
+        "domain": "motion",
+        "z": 3.88
+      }
+    ],
     "hcp-mmp:right:154": [
+      {
+        "domain": "scenes",
+        "z": 4.63
+      },
       {
         "domain": "faces",
         "z": 6.77
@@ -8600,8 +13566,28 @@
     ],
     "hcp-mmp:right:155": [
       {
+        "domain": "scenes",
+        "z": 8.37
+      },
+      {
+        "domain": "navigation",
+        "z": 7.0
+      },
+      {
+        "domain": "recollection",
+        "z": 3.67
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.1
+      },
+      {
         "domain": "long-term-memory",
         "z": 5.14
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.63
       },
       {
         "domain": "faces",
@@ -8614,8 +13600,28 @@
     ],
     "hcp-mmp:right:156": [
       {
+        "domain": "mental-rotation",
+        "z": 5.37
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 4.07
+      },
+      {
         "domain": "visual-perception",
         "z": 14.84
+      },
+      {
+        "domain": "scenes",
+        "z": 5.09
+      },
+      {
+        "domain": "object-recognition",
+        "z": 5.02
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.74
       },
       {
         "domain": "spatial-attention",
@@ -8628,6 +13634,22 @@
       {
         "domain": "naming",
         "z": 3.68
+      },
+      {
+        "domain": "motion",
+        "z": 10.82
+      },
+      {
+        "domain": "eye-movements",
+        "z": 4.58
+      },
+      {
+        "domain": "gestures",
+        "z": 3.14
+      },
+      {
+        "domain": "action-observation",
+        "z": 4.04
       },
       {
         "domain": "attention",
@@ -8644,8 +13666,44 @@
     ],
     "hcp-mmp:right:157": [
       {
+        "domain": "gestures",
+        "z": 7.4
+      },
+      {
+        "domain": "object-recognition",
+        "z": 7.39
+      },
+      {
         "domain": "visual-perception",
         "z": 17.59
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 4.59
+      },
+      {
+        "domain": "multisensory",
+        "z": 5.78
+      },
+      {
+        "domain": "motion",
+        "z": 17.88
+      },
+      {
+        "domain": "action-observation",
+        "z": 7.3
+      },
+      {
+        "domain": "mental-rotation",
+        "z": 4.13
+      },
+      {
+        "domain": "empathy",
+        "z": 3.59
+      },
+      {
+        "domain": "eye-movements",
+        "z": 5.52
       },
       {
         "domain": "attention",
@@ -8654,6 +13712,10 @@
       {
         "domain": "visuospatial",
         "z": 3.95
+      },
+      {
+        "domain": "imagery",
+        "z": 3.23
       },
       {
         "domain": "colour",
@@ -8694,6 +13756,14 @@
         "z": 11.83
       },
       {
+        "domain": "scenes",
+        "z": 4.12
+      },
+      {
+        "domain": "categorization",
+        "z": 3.02
+      },
+      {
         "domain": "visuospatial",
         "z": 3.02
       },
@@ -8706,6 +13776,10 @@
         "z": 4.98
       },
       {
+        "domain": "motion",
+        "z": 5.65
+      },
+      {
         "domain": "reading",
         "z": 3.37
       }
@@ -8716,11 +13790,19 @@
         "z": 6.66
       },
       {
+        "domain": "motion",
+        "z": 6.13
+      },
+      {
         "domain": "attention",
         "z": 3.33
       }
     ],
     "hcp-mmp:right:160": [
+      {
+        "domain": "scenes",
+        "z": 6.71
+      },
       {
         "domain": "faces",
         "z": 6.31
@@ -8734,9 +13816,25 @@
       {
         "domain": "theory-of-mind",
         "z": 4.47
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.54
       }
     ],
     "hcp-mmp:right:163": [
+      {
+        "domain": "scenes",
+        "z": 4.96
+      },
+      {
+        "domain": "navigation",
+        "z": 3.45
+      },
+      {
+        "domain": "object-recognition",
+        "z": 3.43
+      },
       {
         "domain": "faces",
         "z": 7.8
@@ -8780,8 +13878,24 @@
     ],
     "hcp-mmp:right:169": [
       {
+        "domain": "interoception",
+        "z": 3.67
+      },
+      {
         "domain": "inhibition",
         "z": 6.88
+      },
+      {
+        "domain": "empathy",
+        "z": 5.42
+      },
+      {
+        "domain": "categorization",
+        "z": 4.71
+      },
+      {
+        "domain": "facial-expressions",
+        "z": 3.57
       },
       {
         "domain": "colour",
@@ -8808,12 +13922,20 @@
         "z": 3.74
       },
       {
+        "domain": "taste",
+        "z": 3.16
+      },
+      {
         "domain": "attention",
         "z": 9.37
       },
       {
         "domain": "visual-perception",
         "z": 11.59
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.79
       },
       {
         "domain": "phonological",
@@ -8828,6 +13950,10 @@
         "z": 9.11
       },
       {
+        "domain": "mental-rotation",
+        "z": 3.05
+      },
+      {
         "domain": "music",
         "z": 4.43
       },
@@ -8840,6 +13966,14 @@
         "z": 3.21
       },
       {
+        "domain": "arithmetic",
+        "z": 3.97
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 5.39
+      },
+      {
         "domain": "motor",
         "z": 8.91
       },
@@ -8848,12 +13982,32 @@
         "z": 6.8
       },
       {
+        "domain": "error-monitoring",
+        "z": 4.81
+      },
+      {
+        "domain": "voice",
+        "z": 4.63
+      },
+      {
         "domain": "reading",
         "z": 5.82
       },
       {
         "domain": "spatial-attention",
         "z": 3.64
+      },
+      {
+        "domain": "lexical",
+        "z": 3.94
+      },
+      {
+        "domain": "motivation",
+        "z": 3.44
+      },
+      {
+        "domain": "spelling",
+        "z": 4.74
       },
       {
         "domain": "touch",
@@ -8880,6 +14034,18 @@
       {
         "domain": "speech-production",
         "z": 3.31
+      },
+      {
+        "domain": "speech-perception",
+        "z": 4.42
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.37
+      },
+      {
+        "domain": "voice",
+        "z": 3.91
       }
     ],
     "hcp-mmp:right:174": [
@@ -8892,8 +14058,24 @@
         "z": 5.95
       },
       {
+        "domain": "multisensory",
+        "z": 6.05
+      },
+      {
+        "domain": "speech-perception",
+        "z": 7.68
+      },
+      {
         "domain": "music",
         "z": 7.25
+      },
+      {
+        "domain": "voice",
+        "z": 7.22
+      },
+      {
+        "domain": "language-comprehension",
+        "z": 3.1
       },
       {
         "domain": "language",
@@ -8914,6 +14096,14 @@
     ],
     "hcp-mmp:right:175": [
       {
+        "domain": "voice",
+        "z": 10.45
+      },
+      {
+        "domain": "speech-perception",
+        "z": 7.67
+      },
+      {
         "domain": "music",
         "z": 7.32
       },
@@ -8926,8 +14116,20 @@
         "z": 5.16
       },
       {
+        "domain": "timing",
+        "z": 3.06
+      },
+      {
+        "domain": "multisensory",
+        "z": 3.12
+      },
+      {
         "domain": "phonological",
         "z": 4.29
+      },
+      {
+        "domain": "lexical",
+        "z": 3.32
       },
       {
         "domain": "language",
@@ -8944,6 +14146,14 @@
       {
         "domain": "inhibition",
         "z": 4.58
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 7.28
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 6.75
       },
       {
         "domain": "flexibility",
@@ -8970,6 +14180,10 @@
         "z": 6.94
       },
       {
+        "domain": "arithmetic",
+        "z": 3.28
+      },
+      {
         "domain": "emotion",
         "z": 3.66
       },
@@ -8992,8 +14206,16 @@
         "z": 7.26
       },
       {
+        "domain": "error-monitoring",
+        "z": 4.8
+      },
+      {
         "domain": "emotion",
         "z": 3.52
+      },
+      {
+        "domain": "conflict-monitoring",
+        "z": 3.74
       },
       {
         "domain": "pain",
@@ -9044,8 +14266,16 @@
         "z": 13.7
       },
       {
+        "domain": "motivation",
+        "z": 6.01
+      },
+      {
         "domain": "decision-making",
         "z": 3.99
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.09
       },
       {
         "domain": "working-memory",
@@ -9060,6 +14290,10 @@
       {
         "domain": "reward",
         "z": 7.86
+      },
+      {
+        "domain": "motivation",
+        "z": 3.4
       },
       {
         "domain": "motor",
@@ -9078,16 +14312,36 @@
     ],
     "aseg:left:17": [
       {
+        "domain": "recollection",
+        "z": 5.29
+      },
+      {
         "domain": "long-term-memory",
         "z": 7.22
+      },
+      {
+        "domain": "recall",
+        "z": 4.68
       },
       {
         "domain": "semantic-memory",
         "z": 3.15
       },
       {
+        "domain": "navigation",
+        "z": 3.58
+      },
+      {
         "domain": "recognition-memory",
         "z": 3.41
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 5.61
+      },
+      {
+        "domain": "scenes",
+        "z": 3.78
       },
       {
         "domain": "emotion",
@@ -9100,12 +14354,40 @@
     ],
     "aseg:left:18": [
       {
+        "domain": "facial-expressions",
+        "z": 13.19
+      },
+      {
+        "domain": "disgust",
+        "z": 9.13
+      },
+      {
         "domain": "emotion",
         "z": 20.35
       },
       {
         "domain": "fear",
         "z": 15.04
+      },
+      {
+        "domain": "emotion-regulation",
+        "z": 8.37
+      },
+      {
+        "domain": "smell",
+        "z": 5.69
+      },
+      {
+        "domain": "scenes",
+        "z": 8.3
+      },
+      {
+        "domain": "recollection",
+        "z": 4.63
+      },
+      {
+        "domain": "familiarity",
+        "z": 4.43
       },
       {
         "domain": "faces",
@@ -9120,12 +14402,32 @@
         "z": 4.92
       },
       {
+        "domain": "recall",
+        "z": 4.92
+      },
+      {
+        "domain": "empathy",
+        "z": 4.63
+      },
+      {
+        "domain": "taste",
+        "z": 4.15
+      },
+      {
         "domain": "theory-of-mind",
         "z": 3.32
       },
       {
         "domain": "reward",
         "z": 8.11
+      },
+      {
+        "domain": "motivation",
+        "z": 4.5
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 4.72
       },
       {
         "domain": "visual-perception",
@@ -9146,8 +14448,20 @@
         "z": 27.26
       },
       {
+        "domain": "motivation",
+        "z": 11.87
+      },
+      {
+        "domain": "taste",
+        "z": 4.68
+      },
+      {
         "domain": "decision-making",
         "z": 8.99
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 5.84
       },
       {
         "domain": "emotion",
@@ -9188,8 +14502,16 @@
         "z": 13.87
       },
       {
+        "domain": "motivation",
+        "z": 6.12
+      },
+      {
         "domain": "decision-making",
         "z": 5.16
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 3.43
       },
       {
         "domain": "motor",
@@ -9206,6 +14528,10 @@
         "z": 8.12
       },
       {
+        "domain": "motivation",
+        "z": 4.14
+      },
+      {
         "domain": "motor",
         "z": 5.83
       },
@@ -9215,6 +14541,14 @@
       }
     ],
     "aseg:right:52": [
+      {
+        "domain": "smell",
+        "z": 3.89
+      },
+      {
+        "domain": "motivation",
+        "z": 3.58
+      },
       {
         "domain": "reward",
         "z": 5.75
@@ -9226,8 +14560,28 @@
     ],
     "aseg:right:53": [
       {
+        "domain": "recollection",
+        "z": 3.49
+      },
+      {
         "domain": "long-term-memory",
         "z": 5.68
+      },
+      {
+        "domain": "navigation",
+        "z": 4.14
+      },
+      {
+        "domain": "recall",
+        "z": 3.04
+      },
+      {
+        "domain": "scenes",
+        "z": 3.34
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.81
       },
       {
         "domain": "emotion",
@@ -9240,20 +14594,56 @@
     ],
     "aseg:right:54": [
       {
+        "domain": "facial-expressions",
+        "z": 11.81
+      },
+      {
         "domain": "fear",
         "z": 15.75
+      },
+      {
+        "domain": "disgust",
+        "z": 7.78
       },
       {
         "domain": "emotion",
         "z": 18.69
       },
       {
+        "domain": "emotion-regulation",
+        "z": 6.93
+      },
+      {
+        "domain": "smell",
+        "z": 5.78
+      },
+      {
         "domain": "faces",
         "z": 20.54
       },
       {
+        "domain": "scenes",
+        "z": 7.6
+      },
+      {
+        "domain": "recollection",
+        "z": 3.96
+      },
+      {
+        "domain": "taste",
+        "z": 4.84
+      },
+      {
+        "domain": "familiarity",
+        "z": 3.49
+      },
+      {
         "domain": "social-cognition",
         "z": 4.3
+      },
+      {
+        "domain": "empathy",
+        "z": 4.9
       },
       {
         "domain": "long-term-memory",
@@ -9264,12 +14654,24 @@
         "z": 9.47
       },
       {
+        "domain": "recall",
+        "z": 3.3
+      },
+      {
+        "domain": "motivation",
+        "z": 4.82
+      },
+      {
         "domain": "recognition-memory",
         "z": 3.07
       },
       {
         "domain": "pain",
         "z": 5.04
+      },
+      {
+        "domain": "autobiographical-memory",
+        "z": 3.71
       },
       {
         "domain": "visual-perception",
@@ -9286,8 +14688,20 @@
         "z": 28.66
       },
       {
+        "domain": "motivation",
+        "z": 13.06
+      },
+      {
         "domain": "decision-making",
         "z": 8.84
+      },
+      {
+        "domain": "taste",
+        "z": 3.74
+      },
+      {
+        "domain": "error-monitoring",
+        "z": 6.01
       },
       {
         "domain": "emotion",

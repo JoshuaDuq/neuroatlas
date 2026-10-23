@@ -276,8 +276,261 @@ domains:
     name_fr: Récompense
     color: [0, 135, 90]
     lesion_checks: [decision-ventromedial, abulia-caudate]
+  - id: conflict-monitoring
+    term: conflict
+    group: attention-executive
+    name: Conflict monitoring
+    name_fr: Détection des conflits
+    color: [156, 31, 90]
+    lesion_checks: [executive-control]
+  - id: error-monitoring
+    term: error
+    group: attention-executive
+    name: Error monitoring
+    name_fr: Détection des erreurs
+    color: [215, 48, 31]
+  - id: reasoning
+    term: reasoning
+    group: attention-executive
+    name: Reasoning
+    name_fr: Raisonnement
+    color: [94, 60, 153]
+  - id: categorization
+    term: categorization
+    group: attention-executive
+    name: Categorization
+    name_fr: Catégorisation
+    color: [43, 140, 190]
+  - id: recall
+    term: recall
+    group: memory
+    name: Recall
+    name_fr: Rappel
+    color: [8, 81, 156]
+    lesion_checks: [hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic]
+  - id: autobiographical-memory
+    term: autobiographical
+    group: memory
+    name: Autobiographical memory
+    name_fr: Mémoire autobiographique
+    color: [35, 139, 69]
+  - id: skill-learning
+    term: skill
+    group: memory
+    name: Skill learning
+    name_fr: Apprentissage d’habiletés
+    color: [106, 81, 163]
+  - id: syntax
+    term: syntactic
+    group: language-number
+    name: Syntax
+    name_fr: Syntaxe
+    color: [179, 88, 6]
+    lesion_checks: [aphasia-comprehension]
+  - id: spelling
+    term: orthographic
+    group: language-number
+    name: Spelling
+    name_fr: Orthographe
+    color: [194, 24, 91]
+    lesion_checks: [agraphia-orthographic-memory]
+  - id: voice
+    term: voice
+    group: perception
+    name: Voice perception
+    name_fr: Perception de la voix
+    color: [8, 104, 172]
+  - id: motion
+    term: motion
+    group: perception
+    name: Motion perception
+    name_fr: Perception du mouvement
+    color: [123, 50, 148]
+    lesion_checks: [akinetopsia-lateral]
+  - id: scenes
+    term: scenes
+    group: perception
+    name: Scene processing
+    name_fr: Traitement des scènes
+    color: [26, 152, 80]
+    lesion_checks: [topographical-retrosplenial]
+  - id: mental-rotation
+    term: rotation
+    group: perception
+    name: Mental rotation
+    name_fr: Rotation mentale
+    color: [217, 95, 2]
+  - id: imagery
+    term: imagery
+    group: perception
+    name: Mental imagery
+    name_fr: Imagerie mentale
+    color: [77, 146, 33]
+  - id: multisensory
+    term: multisensory
+    group: perception
+    name: Multisensory integration
+    name_fr: Intégration multisensorielle
+    color: [230, 85, 13]
+  - id: eye-movements
+    term: eye movements
+    group: sensorimotor
+    name: Eye movements
+    name_fr: Mouvements oculaires
+    color: [49, 130, 189]
+  - id: timing
+    term: timing
+    group: sensorimotor
+    name: Timing
+    name_fr: Estimation temporelle
+    color: [140, 45, 4]
+  - id: empathy
+    term: empathy
+    group: social-emotional
+    name: Empathy
+    name_fr: Empathie
+    color: [174, 1, 126]
+  - id: emotion-regulation
+    term: emotion regulation
+    group: social-emotional
+    name: Emotion regulation
+    name_fr: Régulation émotionnelle
+    color: [0, 109, 44]
+  - id: motivation
+    term: motivation
+    group: social-emotional
+    name: Motivation
+    name_fr: Motivation
+    color: [84, 39, 143]
+    lesion_checks: [abulia-caudate]
+  - id: disgust
+    term: disgust
+    group: social-emotional
+    name: Disgust
+    name_fr: Dégoût
+    color: [153, 52, 4]
+  - id: language-comprehension
+    term: language comprehension
+    group: language-number
+    name: Language comprehension
+    name_fr: Compréhension du langage
+    color: [27, 120, 55]
+    lesion_checks: [aphasia-comprehension]
+  - id: lexical
+    term: lexical
+    group: language-number
+    name: Lexical processing
+    name_fr: Traitement lexical
+    color: [118, 42, 131]
+  - id: familiarity
+    term: familiarity
+    group: memory
+    name: Familiarity
+    name_fr: Familiarité
+    color: [178, 24, 43]
+    lesion_checks: [hippocampal-amnesia]
+  - id: recollection
+    term: recollection
+    group: memory
+    name: Recollection
+    name_fr: Recollection
+    color: [33, 102, 172]
+    lesion_checks: [hippocampal-amnesia]
+  - id: intelligence
+    term: intelligence
+    group: attention-executive
+    name: General intelligence
+    name_fr: Intelligence générale
+    color: [128, 115, 172]
+  - id: facial-expressions
+    term: facial expressions
+    group: social-emotional
+    name: Facial emotion recognition
+    name_fr: Reconnaissance des expressions faciales
+    color: [53, 151, 143]
+    lesion_checks: [emotion-amygdala]
+  - id: action-observation
+    term: action observation
+    group: sensorimotor
+    name: Action observation
+    name_fr: Observation de l’action
+    color: [197, 27, 125]
+    lesion_checks: [apraxia-hand]
+  - id: sustained-attention
+    term: sustained attention
+    group: attention-executive
+    name: Sustained attention
+    name_fr: Attention soutenue
+    color: [69, 117, 180]
+  - id: verbal-fluency
+    term: verbal fluency
+    group: language-number
+    name: Verbal fluency
+    name_fr: Fluence verbale
+    color: [1, 102, 94]
+  - id: speech-perception
+    term: speech perception
+    group: language-number
+    name: Speech perception
+    name_fr: Perception de la parole
+    color: [84, 39, 136]
+    lesion_checks: [word-deafness-auditory]
+  - id: arithmetic
+    term: arithmetic
+    group: language-number
+    name: Arithmetic
+    name_fr: Arithmétique
+    color: [165, 0, 38]
+    lesion_checks: [acalculia-parietal]
+  - id: object-recognition
+    term: object recognition
+    group: perception
+    name: Object recognition
+    name_fr: Reconnaissance des objets
+    color: [49, 54, 149]
+  - id: navigation
+    term: navigation
+    group: perception
+    name: Spatial navigation
+    name_fr: Navigation spatiale
+    color: [127, 59, 8]
+    lesion_checks: [topographical-retrosplenial]
+  - id: gestures
+    term: gestures
+    group: sensorimotor
+    name: Gestures
+    name_fr: Gestes
+    color: [45, 0, 75]
+    lesion_checks: [apraxia-hand, apraxia-finger]
+  - id: taste
+    term: taste
+    group: sensorimotor
+    name: Taste
+    name_fr: Goût
+    color: [0, 104, 55]
+    lesion_checks: [taste-insular]
+  - id: smell
+    term: olfactory
+    group: sensorimotor
+    name: Smell
+    name_fr: Odorat
+    color: [5, 112, 176]
+  - id: interoception
+    term: interoceptive
+    group: sensorimotor
+    name: Interoception
+    name_fr: Intéroception
+    color: [122, 1, 119]
+  - id: moral-reasoning
+    term: moral
+    group: social-emotional
+    name: Moral reasoning
+    name_fr: Raisonnement moral
+    color: [158, 1, 66]
 limitations:
   - Neuropsychological domains are Neurosynth consistency maps of the published activation literature, averaged over each HCP-MMP area on fsaverage and reaching this brain through its HCP-MMP projection. They show where studies using a domain's term report activation in groups of healthy people, not what this brain does, and not what damage to an area would impair.
+  - Most terms are used by at least 100 studies. Eleven clinically pertinent ones rest on fewer, down to 74 (sustained attention, smell, navigation, verbal fluency, taste, interoception, gestures, object recognition, moral reasoning, arithmetic, speech perception); their maps are weaker evidence, and every function names its study count.
+  - Consciousness (74 studies) was derived and left out: its map reached one area, MT, at z 3.1, and no structure.
   - Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.
   - Besides the cortex, each map is averaged over FreeSurfer's grey-matter structures (thalamus, caudate, putamen, pallidum, hippocampus, amygdala, accumbens, ventral diencephalon, cerebellar cortex and brainstem), each as a whole on fsaverage's own segmentation. The 6 mm kernel is large beside the smaller nuclei, the few millimetres between MNI305 and MNI152 matter more there, and studies report fewer subcortical coordinates, so these are weaker evidence than the cortical areas. White matter, NextBrain's finer nuclei and the teaching set's units are not scored, and a lesion check on them is reported as not measured.
   - Neurosynth's MNI152 maps are sampled on fsaverage's surfaces, whose MNI305 space differs from MNI152 by a few millimetres; whole-area averages absorb most, not all, of that difference.

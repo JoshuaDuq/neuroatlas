@@ -1,7 +1,7 @@
 /*
  * NeuroAtlas documentation: the viewer's instrument chrome, set on furo.
  * Palette and type come from viewer/styles/tokens.css via conf.py; this file
- * adds the shape: ruled bands, flat surfaces, 4px and 6px radii, no shadows.
+ * adds the shape: ruled bands, flat surfaces, 4px and 8px radii, no shadows.
  */
 
 @font-face {
@@ -22,7 +22,7 @@
 :root {
   --docs-header-height: 48px;
   --radius-control: 4px;
-  --radius-panel: 6px;
+  --radius-panel: 8px;
   --ui-transition: 140ms;
 }
 
@@ -32,10 +32,6 @@ body {
   --color-sidebar-link-text--top-level: var(--color-foreground-secondary);
   --color-code-background: var(--color-background-secondary);
   --color-code-foreground: var(--color-foreground-primary);
-  --sd-color-shadow: transparent;
-  --sd-color-card-border: var(--color-background-border);
-  --sd-color-card-border-hover: var(--color-brand-primary);
-  --sd-color-card-background: var(--color-background-primary);
   font-synthesis: none;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -78,7 +74,7 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
   padding-left: 8px;
   border-left: var(--rule);
   color: var(--color-foreground-muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .docs-sections {
@@ -163,7 +159,7 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
   gap: 8px;
   padding: 16px 16px 4px;
   color: var(--color-foreground-muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
 .sidebar-release span:first-child { font-family: var(--font-stack--monospace); }
 .sidebar-release span:last-child { padding-left: 8px; border-left: var(--rule); }
@@ -186,7 +182,7 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
 }
 .sidebar-tree .caption-text {
   color: var(--color-foreground-muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -199,13 +195,12 @@ html { scroll-padding-top: calc(var(--docs-header-height) + 1.5rem); }
 .sidebar-tree .reference:hover { background: var(--color-background-hover); }
 .sidebar-tree .current-page > .reference {
   background: var(--color-accent-surface);
-  box-shadow: inset 2px 0 var(--color-brand-primary);
   color: var(--color-brand-primary);
   font-weight: 600;
 }
 .sidebar-tree li > ul { margin-left: 8px; border-left: var(--rule); }
 .toc-title {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: none;
@@ -232,14 +227,14 @@ article h1, article h2, article h3, article h4 {
   letter-spacing: -0.015em;
   line-height: 1.25;
 }
-article h1 { margin: 0 0 1rem; font-size: 1.875rem; }
+article h1 { margin: 0 0 1rem; font-size: 1.5rem; }
 article h2 {
   margin: 2.5rem 0 1rem;
   padding-top: 1.25rem;
   border-top: var(--rule);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
 }
-article h3 { margin: 2rem 0 0.75rem; font-size: 1.0625rem; }
+article h3 { margin: 2rem 0 0.75rem; font-size: 1rem; }
 article h4 { margin: 1.5rem 0 0.5rem; font-size: 0.9375rem; }
 .headerlink { font-weight: 400; }
 
@@ -264,6 +259,24 @@ figcaption {
   font-size: 0.8125rem;
 }
 figcaption p { text-align: left; }
+
+/* The index's entry list: ruled rows, a link and one line each. */
+dl.myst {
+  margin: 0;
+  border-top: var(--rule);
+}
+dl.myst > dt {
+  margin: 0;
+  padding-top: 12px;
+  font-weight: 600;
+}
+dl.myst > dd {
+  margin: 2px 0 0;
+  padding-bottom: 12px;
+  border-bottom: var(--rule);
+  color: var(--color-foreground-secondary);
+}
+dl.myst > dd > p { margin: 0; }
 
 code.literal, kbd {
   border-radius: var(--radius-control);
@@ -321,13 +334,6 @@ table.docutils tr:last-child td { border-bottom: 0; }
 }
 .admonition > .admonition-title::before { display: none; }
 
-.sd-card {
-  border-radius: var(--radius-panel);
-  box-shadow: none;
-  transition: border-color var(--ui-transition);
-}
-.sd-card-hover:hover { transform: none; }
-.sd-card .sd-card-title { font-weight: 650; }
 
 /* Reference documentation */
 dl.py > dt.sig {
@@ -344,5 +350,5 @@ dl.py > dt.sig .sig-name { font-weight: 600; }
 .bottom-of-page {
   border-top: var(--rule);
   color: var(--color-foreground-muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
