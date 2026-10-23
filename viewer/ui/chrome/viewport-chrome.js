@@ -352,6 +352,9 @@ export function createViewportChrome({
     plates.paint.list.toggleAttribute('data-picked', Boolean(shownLegend?.rows.some(entry => entry.pressed)));
     paintNote.textContent = shownLegend?.note ?? '';
     paintNote.hidden = plates.paint.list.hidden;
+    // Where the stage leaves the key too little height, its rows keep the room and the note gives way.
+    const { list } = plates.paint;
+    if (!paintNote.hidden && list.scrollHeight > list.clientHeight) paintNote.hidden = true;
     if (focusedPick) plates.paint.list.querySelector(`[data-pick="${CSS.escape(focusedPick)}"]`)?.focus();
     paintRoving.sync();
 

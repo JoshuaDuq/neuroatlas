@@ -1,7 +1,7 @@
-# Neuropsychological domains as Neurosynth consistency maps on HCP-MMP1.0 areas.
+# Neuropsychological domains as Neurosynth consistency maps on HCP-MMP1.0 areas and aseg structures.
 # Each domain is one Neurosynth abstract term. scripts/derive_domain_scores.py
-# averages that term's uniformity (consistency) z map over every fsaverage area
-# into data/neuropsych-domains/area-scores.json; an area belongs to a domain when
+# averages that term's uniformity (consistency) z map over every fsaverage area and
+# grey-matter structure into data/neuropsych-domains/area-scores.json; an area belongs to a domain when
 # its mean z reaches `threshold_z`. Consistency z grows with the number of studies,
 # so the domain an area is drawn as when the overview is shown is the one, among the
 # domains marked `overview`, whose z there is the largest share of that domain's own
@@ -12,12 +12,13 @@
 # under normal vision and simulated protanopia and deuteranopia (Machado 2009,
 # severity 1). Every other domain, shown alone, differs from the cortex's tissue colour
 # by at least 15 in normal vision and 8 under simulated colour-vision deficiency.
-label: Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas)
+label: Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas and aseg structures)
 method: >-
   Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA
   chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and
-  pial surfaces and averaged per HCP-MMP area. An area belongs to every domain whose
-  mean z reaches 3; in the overview of the eleven assessment domains it takes the one
+  pial surfaces and averaged per HCP-MMP area, and resampled onto fsaverage's aseg and
+  averaged per grey-matter structure. An area or structure belongs to every domain whose
+  mean z reaches 3, its strength measured against the domain's cortical maximum; in the overview of the eleven assessment domains it takes the one
   whose z is the largest share of that domain's cortical maximum. Carried per area,
   never per vertex
 threshold_z: 3
@@ -278,5 +279,5 @@ domains:
 limitations:
   - Neuropsychological domains are Neurosynth consistency maps of the published activation literature, averaged over each HCP-MMP area on fsaverage and reaching this brain through its HCP-MMP projection. They show where studies using a domain's term report activation in groups of healthy people, not what this brain does, and not what damage to an area would impair.
   - Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.
-  - The maps are cortical. Subcortical structures, the cerebellum and white matter that neuropsychological deficits also follow are not coloured, and a lesion check on them is reported as off the cortical surface.
+  - Besides the cortex, each map is averaged over FreeSurfer's grey-matter structures (thalamus, caudate, putamen, pallidum, hippocampus, amygdala, accumbens, ventral diencephalon, cerebellar cortex and brainstem), each as a whole on fsaverage's own segmentation. The 6 mm kernel is large beside the smaller nuclei, the few millimetres between MNI305 and MNI152 matter more there, and studies report fewer subcortical coordinates, so these are weaker evidence than the cortical areas. White matter, NextBrain's finer nuclei and the teaching set's units are not scored, and a lesion check on them is reported as not measured.
   - Neurosynth's MNI152 maps are sampled on fsaverage's surfaces, whose MNI305 space differs from MNI152 by a few millimetres; whole-area averages absorb most, not all, of that difference.

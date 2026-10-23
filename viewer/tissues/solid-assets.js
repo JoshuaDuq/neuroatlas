@@ -1,5 +1,5 @@
 import { visibilityOf } from '../catalog/visibility.js';
-import { Mesh, MeshBasicMaterial } from 'three';
+import { Mesh, MeshBasicMaterial, SRGBColorSpace } from 'three';
 import { fetchAsset } from '../model/asset-cache.js';
 import { tissueColor } from '../render/materials.js';
 import {
@@ -199,9 +199,12 @@ export function paintSolids(sections, {
       solid.visible = (record?.kind === 'structure'
         ? visibilityOf(record, { ...capState, detail }).visible : tissueVisible(source, capState))
         || isolatedWhiteMatter;
+      const painted = usesPaint(state) ? state.paint.colors.get(source.userData.region_id) : null;
       if (boundary) {
         cap.material.color.set(appearance.tissue[boundary === 'pial' ? 'cortex' : 'white']);
-      } else if (usesAtlasColors(state)) {
+      } else if (painted) {
+        cap.material.color.setRGB(...painted.map(value => value / 255), SRGBColorSpace);
+      } else if (usesAtlasColors(state) && !usesPaint(state)) {
         // A detail level the cut atlas never labelled still has its own
         // published colour on the mesh, which is what the surface shows too.
         cap.material.color.copy(source.material.color);

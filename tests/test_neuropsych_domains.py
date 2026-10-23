@@ -1,4 +1,5 @@
 import copy
+import json
 
 import pytest
 import yaml
@@ -48,11 +49,38 @@ def test_an_area_takes_the_domains_it_reaches_strongest_share_of_peak_first():
         assert any(member["domain"] == domain["id"] for found in assigned.values() for member in found)
 
 
-def test_only_hcp_mmp_cortex_is_assigned():
+def test_a_structure_takes_the_domains_it_reaches_measured_against_their_cortical_peak():
+    definition = neuropsych_domains.read_definition()
+    scores = neuropsych_domains.read_scores(definition)
+    threshold = definition["threshold_z"]
+    peak = {domain: max(areas.values()) for domain, areas in scores["scores"].items()}
+    regions = [{"id": f"aseg:x:{code}", "atlas": "aseg", "kind": "structure", "source_name": name}
+               for code, name in neuropsych_domains.STRUCTURES.items()]
+    assigned = neuropsych_domains.assign(regions, definition, scores)
+    for region in regions:
+        found = assigned.get(region["id"], [])
+        z = {domain: values[region["source_name"]] for domain, values in scores["structure_scores"].items()}
+        assert {member["domain"] for member in found} == {d for d, value in z.items() if value >= threshold}
+        shares = [z[member["domain"]] / peak[member["domain"]] for member in found]
+        assert shares == sorted(shares, reverse=True)
+
+
+def test_structure_scores_must_name_every_sampled_structure(tmp_path):
+    scores = json.loads(neuropsych_domains.SCORES.read_text())
+    del scores["structure_scores"]["fear"]["Left-Amygdala"]
+    path = tmp_path / "scores.json"
+    path.write_text(json.dumps(scores))
+    with pytest.raises(ValueError, match="fear: structure scores must name every aseg structure"):
+        neuropsych_domains.read_scores(neuropsych_domains.read_definition(), path)
+
+
+def test_only_hcp_mmp_cortex_and_sampled_aseg_structures_are_assigned():
     definition = neuropsych_domains.read_definition()
     scores = neuropsych_domains.read_scores(definition)
     regions = [hcp_region("left", 1, "L_V1_ROI", kind="non-region"),
-               {**hcp_region("left", 2, "L_V1_ROI"), "atlas": "destrieux"}]
+               {**hcp_region("left", 2, "L_V1_ROI"), "atlas": "destrieux"},
+               {"id": "aseg:left:4", "atlas": "aseg", "kind": "structure", "source_name": "Left-Lateral-Ventricle"},
+               {"id": "nextbrain:left:7", "atlas": "nextbrain", "kind": "structure", "source_name": "Left-Amygdala"}]
     assert neuropsych_domains.assign(regions, definition, scores) == {}
     with pytest.raises(ValueError, match="not a left HCP-MMP area name"):
         neuropsych_domains.assign([hcp_region("left", 1, "R_V1_ROI")], definition, scores)
@@ -98,10 +126,14 @@ def test_lesion_checks_measure_cortical_parcels_and_mark_the_rest():
     checks = neuropsych_domains.lesion_checks(definition, neuropsych_domains.read_scores(definition))
     mappings = [mapping for domain in checks.values() for check in domain for mapping in check["mappings"]]
     assert mappings
+    sampled = set(neuropsych_domains.STRUCTURES.values())
     for mapping in mappings:
-        cortical = mapping["region"].startswith("destrieux:")
-        assert (mapping["coverage"] is None) != cortical
+        measured = mapping["region"].startswith("destrieux:") or (
+            mapping["region"].startswith("aseg:") and mapping["source_name"] in sampled)
+        assert (mapping["coverage"] is None) != measured
         assert mapping["coverage"] is None or 0 <= mapping["coverage"] <= 1
+        if mapping["region"].startswith("aseg:") and measured:
+            assert mapping["coverage"] in (0.0, 1.0)
 
 
 def test_short_citations_follow_the_author_count():

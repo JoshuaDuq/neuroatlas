@@ -32,7 +32,7 @@ test('failures are said in the reader’s language, never as the developer’s m
 });
 
 const settings = {
-  atlas: 'destrieux', colour: 'atlas', detail: 'learning', cut: false, isolated: false, hemisphere: 'both', cortex: true,
+  atlas: 'destrieux', cutAtlas: 'destrieux', colour: 'atlas', detail: 'learning', cut: false, isolated: false, hemisphere: 'both', cortex: true,
 };
 
 test('opening a deficit claims no change when nothing in the reader’s settings changed', () => {
@@ -46,6 +46,12 @@ test('what opening a deficit changed is said once, as one sentence naming only w
   const cut = { ...settings, cut: true, isolated: true };
   assert.equal(revealNotice('en', cut, after), 'Section closed, isolation cleared, and internal anatomy set to FreeSurfer aseg.');
   assert.equal(revealNotice('fr', cut, after), 'Coupe fermée, isolement retiré et anatomie interne réglée sur FreeSurfer aseg.');
+});
+
+test('cut labels the reveal moved onto the painted atlas are named', () => {
+  const after = { ...settings, cutAtlas: 'hcp-mmp' };
+  assert.equal(revealNotice('en', settings, after), 'Cut labels set to HCP-MMP.');
+  assert.equal(revealNotice('fr', settings, after), 'Étiquettes de coupe réglées sur HCP-MMP.');
 });
 
 test('an atlas, colouring, side or cortex the reveal changed is named; a cut or isolation is only ever cleared', () => {

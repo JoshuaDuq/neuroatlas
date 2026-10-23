@@ -11,7 +11,7 @@ const normalize = value => value.trim().toLowerCase().normalize('NFD').replace(/
 /** The published partition, checked against the regions it assigns. */
 export function validateNeuropsychDomains(partition, regions) {
   if (partition?.id !== 'neuropsych-domains' || !Array.isArray(partition.domains) || !partition.regions
-      || !Array.isArray(partition.groups)) {
+      || !Array.isArray(partition.groups) || !partition.structure_atlas || !Array.isArray(partition.structures)) {
     throw new Error('Invalid neuropsychological-domain partition.');
   }
   const groups = new Set();
@@ -32,7 +32,10 @@ export function validateNeuropsychDomains(partition, regions) {
   }
   if (!partition.domains.some(domain => domain.overview)) throw new Error('No neuropsychological domain is in the overview.');
   for (const [id, members] of Object.entries(partition.regions)) {
-    if (regions.get(id)?.atlas !== partition.atlas || !members.length
+    const region = regions.get(id);
+    const scored = region?.atlas === partition.atlas
+      || (region?.atlas === partition.structure_atlas && partition.structures.includes(region.source_name));
+    if (!scored || !members.length
         || members.some(member => !ids.has(member.domain) || !(member.z >= partition.threshold_z))) {
       throw new Error(`Invalid neuropsychological-domain assignment: ${id}`);
     }
@@ -73,7 +76,11 @@ export function groupedDomains(partition, query, lang) {
     .filter(entry => entry.domains.length > 0);
 }
 
-/** Every area that reaches a domain, strongest first; ties keep the published order. */
+/** Whether a region is one the domains are scored on: an area of their atlas, or a sampled structure. */
+export const scoredRegion = (partition, region) => (region?.atlas === partition.atlas && region.kind === 'cortex')
+  || (region?.atlas === partition.structure_atlas && partition.structures.includes(region.source_name));
+
+/** Every area or structure that reaches a domain, strongest first; ties keep the published order. */
 export function domainAreas(partition, id) {
   return Object.entries(partition.regions)
     .flatMap(([region, members]) => members.filter(member => member.domain === id)

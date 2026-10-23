@@ -859,8 +859,18 @@ export async function startApp() {
   /** The reader's own settings a reveal can change, compared after it to say which it did. */
   function revealSettings() {
     const { atlas, surfaceColor, detail, cutActive, isolatedRegion, hemisphere, cortexVisible } = model.settings;
-    return { atlas, colour: surfaceColor, detail, cut: cutActive, isolated: Boolean(isolatedRegion), hemisphere,
-      cortex: cortexVisible };
+    return { atlas, cutAtlas: sections.state.cutAtlas, colour: surfaceColor, detail, cut: cutActive,
+      isolated: Boolean(isolatedRegion), hemisphere, cortex: cortexVisible };
+  }
+
+  /**
+   * A paint names regions of the surface atlas, and a cut face can only take a colour its own labels
+   * carry, so the cut is labelled by that atlas too where one is published. The reveal has closed
+   * any cut, so this downloads nothing.
+   */
+  function cutLabelsFollowAtlas() {
+    const { atlas } = model.settings;
+    if (model.manifest.cut_atlases.some(entry => entry.id === atlas)) setCutAtlas(atlas);
   }
 
   function sayRevealed(before) {
@@ -883,6 +893,7 @@ export async function startApp() {
     showDetail();
     const before = revealSettings();
     if (!(await commands.revealRegions(regions, current))) return;
+    cutLabelsFollowAtlas();
     sayRevealed(before);
     frameRegions(regions);
     render();
@@ -900,6 +911,7 @@ export async function startApp() {
     showDetail();
     const before = revealSettings();
     if (!(await commands.revealRegions([...domainPaint(model.domains, id).colors.keys()], current))) return false;
+    cutLabelsFollowAtlas();
     sayRevealed(before);
     render();
     return true;

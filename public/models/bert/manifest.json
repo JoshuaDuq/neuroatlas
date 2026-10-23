@@ -815,13 +815,13 @@
     "id": "neuropsych-domains",
     "file": "neuropsych-domains.json",
     "atlas": "hcp-mmp",
-    "label": "Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas)",
+    "label": "Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas and aseg structures)",
     "citations": [
       "https://doi.org/10.1038/nmeth.1635"
     ],
     "license": "Open Database License (ODbL) 1.0; derived area scores shared under the same licence",
     "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
-    "method": "Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and pial surfaces and averaged per HCP-MMP area. An area belongs to every domain whose mean z reaches 3; in the overview of the eleven assessment domains it takes the one whose z is the largest share of that domain's cortical maximum. Carried per area, never per vertex"
+    "method": "Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and pial surfaces and averaged per HCP-MMP area, and resampled onto fsaverage's aseg and averaged per grey-matter structure. An area or structure belongs to every domain whose mean z reaches 3, its strength measured against the domain's cortical maximum; in the overview of the eleven assessment domains it takes the one whose z is the largest share of that domain's cortical maximum. Carried per area, never per vertex"
   },
   "cut_atlases": [
     {

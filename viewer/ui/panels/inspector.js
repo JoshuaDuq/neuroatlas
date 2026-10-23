@@ -1,7 +1,7 @@
 import { count, decimal, formatRas, percent, quantity } from '../format.js';
 import { cabNpName, networkBasis, networkCss, networkName, networksOf } from '../../catalog/networks.js';
 import { functionalName, functionalRegionOf } from '../../catalog/functional-regions.js';
-import { domainName, domainsOf } from '../../catalog/neuropsych-domains.js';
+import { domainName, domainsOf, scoredRegion } from '../../catalog/neuropsych-domains.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 
 /**
@@ -203,10 +203,10 @@ export function createInspector({
     ].filter(Boolean).join(' ');
   }
 
-  /** The domains an HCP-MMP area reaches the threshold for, strongest first, each with its z. */
+  /** The domains an HCP-MMP area or a sampled structure reaches the threshold for, strongest first, each with its z. */
   function showDomains(state) {
     const region = state.selectedRegion;
-    domainsSection.hidden = !domains || region?.atlas !== domains.atlas || region.kind !== 'cortex';
+    domainsSection.hidden = !domains || !scoredRegion(domains, region);
     if (domainsSection.hidden) return;
     const copy = t(state.lang, 'domains');
     const found = domainsOf(domains, region.id);
@@ -230,7 +230,7 @@ export function createInspector({
     }));
     domainsNote.textContent = [
       !found.length && copy.none(decimal(domains.threshold_z, 0, state.lang)),
-      copy.note(domains.sources[domains.scores_source].short),
+      (region.atlas === domains.atlas ? copy.note : copy.noteStructure)(domains.sources[domains.scores_source].short),
     ].filter(Boolean).join(' ');
   }
 
