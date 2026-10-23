@@ -10,6 +10,9 @@ function stubDocument(t) {
     const listeners = new Map();
     return {
       value: '',
+      classList: { add() {} },
+      setAttribute() {},
+      replaceChildren() {},
       addEventListener: (type, listener) => listeners.set(type, listener),
       removeEventListener() {},
       append() {},
@@ -23,6 +26,7 @@ function stubDocument(t) {
       return elements.get(id);
     },
     createElement: element,
+    createElementNS: element,
   };
   t.after(() => { globalThis.document = previous; });
   return id => globalThis.document.getElementById(id);

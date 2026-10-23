@@ -96,7 +96,8 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
     button.dataset.overlap = row.meshId;
     button.setAttribute('aria-pressed', String(active === row.meshId));
     button.setAttribute('aria-label',
-      copy.highlight(name, withUnit(overlapShare(row.fraction, state.lang), '%', state.lang)));
+      copy.highlight(name, withUnit(overlapArea(row.areaMm2, state.lang), 'mm²', state.lang),
+        withUnit(overlapShare(row.fraction, state.lang), '%', state.lang)));
     button.disabled = !state.outlineAvailable;
     button.append(element('span', name, 'comparison-name'),
       element('span', overlapArea(row.areaMm2, state.lang), 'measure'),

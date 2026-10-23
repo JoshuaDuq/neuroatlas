@@ -78,11 +78,13 @@ button:has(> .control-icon) {
 :is(.button-quiet, .icon-button):disabled { background: none; color: color-mix(in srgb, var(--text-tertiary) 55%, transparent); }
 
 select, input[type="search"], input[type="number"] {
+  appearance: none;
   height: var(--control-height);
   padding: 0 var(--space-3);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-control);
   background-color: var(--surface-base);
+  box-shadow: none;
   font-size: var(--text-ui);
 }
 select {
@@ -197,14 +199,14 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
   .search-clear:hover:not(:disabled) { color: var(--text-primary); background: var(--surface-hover); }
 }
 
-/* One visual language for exclusive settings: a tonal track and a raised thumb. */
+/* Exclusive settings use a quiet track and a crisp selected edge. */
 .segmented {
   display: flex;
   align-items: stretch;
   gap: 2px;
   padding: 2px;
   border-radius: var(--radius-control);
-  background: var(--surface-tonal);
+  background: var(--surface-navigation);
 }
 .segmented button {
   height: calc(var(--control-height) - 4px);
@@ -223,9 +225,9 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
 .segmented button[aria-pressed="true"],
 .segmented button[aria-pressed="true"]:hover {
   background: var(--surface-raised);
-  color: var(--accent);
+  color: var(--text-primary);
   font-weight: 600;
-  box-shadow: inset 0 0 0 1px var(--thumb-ring), var(--shadow-thumb);
+  box-shadow: inset 0 0 0 1px var(--thumb-ring);
 }
 .segmented button:disabled { background: transparent; }
 
@@ -346,14 +348,14 @@ details.detail-section[open] > summary { margin-bottom: var(--space-1); }
 details.detail-section > summary::before { order: 1; --chevron-turn: 90deg; }
 details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
 
-/* A list's section caption (Cortex, a deficit group): 12/16 600 secondary under a rule. */
+/* A section is named by type and space; rules stay with data and controls. */
 .section-label {
-  padding: var(--space-4) var(--space-4) var(--space-2);
-  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-4) var(--panel-inset) var(--space-2);
+  background: var(--surface-base);
   font-size: var(--text-caption);
   font-weight: 600;
   line-height: var(--lh-caption);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--text-secondary);
 }
 
@@ -384,33 +386,35 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
   gap: var(--space-2);
   margin-top: var(--space-4);
 }
-/* Padding sets only where the row wraps; the tonal commands grow to fill it, the primary keeps its width. */
+/* All commands share the available line; translations wrap the group only when needed. */
 .actions button {
   flex: 1 1 auto;
   height: auto;
   min-height: var(--control-height);
   padding: var(--space-1) 6px;
 }
-.actions .button-primary { flex: 0 0 auto; padding-inline: var(--space-3); }
+.actions .button-primary { padding-inline: var(--space-3); }
 #isolate[data-active="true"] { background: var(--accent-wash); color: var(--accent); }
 
 /*
  * The four content modes, mirrored in the phone sheet: words on the panel's
- * text column, the chosen one in primary ink over a 2px teal rule as wide as
- * the word. Tabs are never disabled.
+ * text column. A continuous rule identifies the current mode without filling a cell.
+ * Tabs are never disabled.
  */
 .rail-tabs {
   display: flex;
+  flex-wrap: wrap;
   flex: none;
-  gap: var(--space-1);
-  padding: 0 var(--space-2);
+  gap: 0;
+  padding: 0;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
 .rail-tabs button {
   position: relative;
   display: flex;
-  flex: none;
+  flex: 1 1 0;
+  min-width: min-content;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -422,7 +426,7 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
   background: none;
   color: var(--text-secondary);
   white-space: nowrap;
-  transition: color var(--ui-transition) var(--ease-ui);
+  transition: none;
 }
 /* The bold label's width is held, so choosing a mode moves nothing. */
 .rail-tabs button::after {
@@ -433,17 +437,19 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
   font-weight: 600;
 }
 @media (hover: hover) and (pointer: fine) {
-  .rail-tabs button:hover:not(:disabled) { background: none; color: var(--text-primary); }
+  .rail-tabs button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
 }
 .rail-tabs button:focus-visible { outline-offset: -2px; }
-.rail-tabs button[aria-selected="true"] {
+.rail-tabs button[aria-selected="true"],
+.rail-tabs button[aria-selected="true"]:hover {
+  background: var(--surface-base);
   color: var(--text-primary);
   font-weight: 600;
 }
 .rail-tabs button[aria-selected="true"]::before {
   content: "";
   position: absolute;
-  inset: auto var(--space-2) 0;
+  inset: auto var(--space-3) 0;
   height: 2px;
   background: var(--accent);
 }
@@ -492,7 +498,7 @@ kbd {
   line-height: var(--lh-caption);
   text-align: left;
   overflow-wrap: break-word;
-  pointer-events: none;
+  pointer-events: auto;
   transform-origin: var(--tooltip-origin, 50% 0);
   transition: opacity var(--tooltip-transition) var(--ease-ui), transform var(--tooltip-transition) var(--ease-ui),
     overlay var(--tooltip-transition) allow-discrete, display var(--tooltip-transition) allow-discrete;

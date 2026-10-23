@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { SHOW_DELAY, SKIP_WINDOW, createTooltipTiming, placeTooltip } from './tooltip.js';
+import { SHOW_DELAY, SKIP_WINDOW, createTooltipTiming, placeTooltip, startTooltips } from './tooltip.js';
 
 // A clock and timers the test advances by hand.
 function harness() {
@@ -96,6 +96,75 @@ test('a dismissal hides the open tooltip and cancels a waiting one', () => {
   timing.dismiss();
   advance(SHOW_DELAY);
   assert.equal(shown.length, 1);
+});
+
+test('the pointer can cross the gap and stay over the tooltip until it leaves', () => {
+  const { timing, hidden, advance } = harness();
+  timing.enter('save');
+  advance(SHOW_DELAY);
+  timing.leave('save', { delayed: true });
+  advance(100);
+  assert.equal(timing.open, 'save', 'crossing the gap keeps the tooltip open');
+  timing.enter('save');
+  advance(1000);
+  assert.deepEqual(hidden, [], 'entering the tooltip cancels its pending close');
+  timing.leave('save', { delayed: true });
+  advance(1000);
+  assert.deepEqual(hidden, ['save'], 'leaving the tooltip closes it');
+});
+
+test('returning to the trigger cancels its pending close without repeating its entry', () => {
+  const { timing, shown, hidden, advance } = harness();
+  timing.enter('save', { immediate: true });
+  timing.leave('save', { delayed: true });
+  advance(100);
+  timing.enter('save');
+  advance(1000);
+  assert.deepEqual(shown, [['save', true]]);
+  assert.deepEqual(hidden, []);
+});
+
+test('dismissal cancels a delayed close before another tooltip opens', () => {
+  const { timing, hidden, advance } = harness();
+  timing.enter('save', { immediate: true });
+  timing.leave('save', { delayed: true });
+  timing.dismiss();
+  timing.enter('fullscreen', { immediate: true });
+  advance(1000);
+  assert.equal(timing.open, 'fullscreen');
+  assert.deepEqual(hidden, ['save']);
+});
+
+test('tooltip disposal cancels a pending hover and removes its listeners and element', context => {
+  const previous = globalThis.document;
+  const previousElement = globalThis.Element;
+  const listeners = new Map();
+  let removed = false;
+  const tip = { setAttribute() {}, contains: () => false, remove() { removed = true; } };
+  class Trigger {
+    dataset = { tooltip: 'Explain this control' };
+    closest() { return this; }
+    getAttribute() { return null; }
+  }
+  globalThis.Element = Trigger;
+  globalThis.document = {
+    createElement: () => tip,
+    body: { append() {} },
+    addEventListener(type, listener) { listeners.set(type, listener); },
+    removeEventListener(type, listener) {
+      assert.equal(listeners.get(type), listener);
+      listeners.delete(type);
+    },
+  };
+  context.after(() => { globalThis.document = previous; globalThis.Element = previousElement; });
+  context.mock.timers.enable({ apis: ['setTimeout'] });
+  const tooltips = startTooltips();
+  assert.equal(listeners.size, 7);
+  listeners.get('pointerover')({ target: new Trigger(), pointerType: 'mouse' });
+  tooltips.dispose();
+  context.mock.timers.tick(SHOW_DELAY);
+  assert.equal(listeners.size, 0);
+  assert.equal(removed, true);
 });
 
 const viewport = { width: 1440, height: 900 };

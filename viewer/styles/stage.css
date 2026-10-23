@@ -15,7 +15,7 @@
   --key-right: 0px;
   --dock-height: 38px;
   --stage-gutter: var(--space-4);
-  /* One edge for every plate on the stage; the dock and its popovers, which float, add a short shadow. */
+  /* One edge for every plate on the stage. */
   --stage-edge: color-mix(in srgb, var(--overlay-border) 60%, var(--overlay-control-border));
   --stage-elevation: 0 4px 12px rgb(0 0 0 / 0.5);
 }
@@ -34,6 +34,7 @@
   --primary-fill: var(--overlay-primary-fill);
   --primary-fill-hover: var(--overlay-primary-fill-hover);
   --surface-base: var(--overlay-plate);
+  --surface-navigation: var(--overlay-track);
   --surface-sunken: var(--scene-background);
   --surface-hover: var(--overlay-plate-hover);
   --surface-tonal: var(--overlay-track);
@@ -320,7 +321,6 @@
   background: var(--overlay-plate);
   border: 1px solid var(--stage-edge);
   border-radius: var(--radius-control);
-  box-shadow: var(--stage-elevation);
 }
 
 /*

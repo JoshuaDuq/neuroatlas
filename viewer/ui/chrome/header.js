@@ -117,6 +117,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
 
   const onMore = event => {
     event.stopPropagation();
+    menu.toggleAttribute('data-instant', event.detail === 0);
     setOpen(!open());
   };
   // A setting chosen from the menu has been applied; leaving it open hides the anatomy it changed.
@@ -139,6 +140,11 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
     event.preventDefault();
     setOpen(false);
     moreButton.focus();
+  };
+  const onMenuKeyDown = event => {
+    // Segmented choices handle their own arrows; ordinary items must not move the anatomy tree.
+    if (!event.defaultPrevented && ['ArrowUp', 'ArrowDown'].includes(event.key)
+      && event.target.matches('button')) event.preventDefault();
   };
   const onLangClick = event => {
     const button = event.target.closest('[data-lang]');
@@ -164,6 +170,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
     [moreButton, 'click', onMore],
     [moreButton, 'focusout', onFocusOut],
     [menu, 'click', onMenuClick],
+    [menu, 'keydown', onMenuKeyDown],
     [menu, 'focusout', onFocusOut],
     [langContainer, 'click', onLangClick],
     [themeContainer, 'click', onThemeClick],
@@ -340,18 +347,22 @@ export function createHeader({
       && masthead.scrollWidth <= masthead.clientWidth;
     masthead.toggleAttribute('data-collapsed', !fits);
     if (fits) setDataOpen(false);
+    else if (data.contains(document.activeElement)) {
+      // A resize or translated label must not hide the control the reader is using.
+      data.toggleAttribute('data-instant', true);
+      setDataOpen(true);
+    }
     showTips();
   }
-  // The subject truncates first. Once it would be cut below about five letters, internal anatomy
-  // drops, then the atlas; the colouring is the last to go.
+  // Keep the subject complete: internal anatomy and colouring drop before the atlas.
+  // Only a subject that still does not fit on its own truncates.
   function fitSummary() {
     dataSummaryNode.removeAttribute('data-short');
     const subject = dataSummaryNode.querySelector('[data-part="subject"]');
     if (!collapsed() || !subject) return;
-    const tooShort = () => subject.clientWidth
-      < Math.min(subject.scrollWidth, 5 * parseFloat(getComputedStyle(subject).fontSize));
+    const tooShort = () => subject.clientWidth < subject.scrollWidth;
     const dropped = [];
-    for (const part of ['detail', 'atlas', 'colour']) {
+    for (const part of ['detail', 'colour', 'atlas']) {
       if (!tooShort()) return;
       if (!dataSummaryNode.querySelector(`[data-part="${part}"]`)) continue;
       dropped.push(part);
@@ -365,6 +376,7 @@ export function createHeader({
 
   const onDataToggle = event => {
     event.stopPropagation();
+    data.toggleAttribute('data-instant', event.detail === 0);
     setDataOpen(!dataOpen());
   };
   const onDocumentPointer = event => {

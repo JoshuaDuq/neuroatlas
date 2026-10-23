@@ -3,11 +3,13 @@
  *
  * A hover waits SHOW_DELAY, so a pointer crossing a toolbar shows nothing; once one has been
  * read, the next within SKIP_WINDOW of it closing appears at once and without its entry.
- * Keyboard focus shows it at once. Escape, a press or a scroll hides it. It sits on the edge of
- * its trigger that has room inside the viewport and grows from that edge (components.css).
+ * Keyboard focus shows it at once. The pointer can cross the gap to read the tooltip itself.
+ * Escape, a press or a scroll hides it. It sits on the edge of its trigger that has room inside
+ * the viewport and grows from that edge (components.css).
  */
 export const SHOW_DELAY = 500;
 export const SKIP_WINDOW = 300;
+const HIDE_DELAY = 150;
 const GAP = 8;
 const MARGIN = 8;
 
@@ -19,6 +21,7 @@ export function createTooltipTiming({ show, hide, now, schedule, cancel }) {
   let open = null;
   let waiting = null;
   let timer = null;
+  let leaveTimer = null;
   let closedAt = -Infinity;
 
   const stopWaiting = () => {
@@ -26,14 +29,20 @@ export function createTooltipTiming({ show, hide, now, schedule, cancel }) {
     timer = null;
     waiting = null;
   };
+  const stopLeaving = () => {
+    if (leaveTimer !== null) cancel(leaveTimer);
+    leaveTimer = null;
+  };
   const reveal = (trigger, instant) => {
     stopWaiting();
+    stopLeaving();
     if (open && open !== trigger) hide(open);
     open = trigger;
     show(trigger, instant);
   };
   const close = () => {
     stopWaiting();
+    stopLeaving();
     if (!open) return;
     hide(open);
     open = null;
@@ -44,6 +53,7 @@ export function createTooltipTiming({ show, hide, now, schedule, cancel }) {
     get open() { return open; },
     /** The pointer or keyboard focus reached `trigger`. */
     enter(trigger, { immediate = false } = {}) {
+      stopLeaving();
       if (trigger === open || trigger === waiting) return;
       if (immediate || open || now() - closedAt < SKIP_WINDOW) {
         reveal(trigger, true);
@@ -53,10 +63,14 @@ export function createTooltipTiming({ show, hide, now, schedule, cancel }) {
       waiting = trigger;
       timer = schedule(() => reveal(trigger, false), SHOW_DELAY);
     },
-    /** The pointer or focus left `trigger`. */
-    leave(trigger) {
+    /** Pointer travel gets time to cross the gap to the tooltip; focus leaves at once. */
+    leave(trigger, { delayed = false } = {}) {
       if (trigger === waiting) stopWaiting();
-      if (trigger === open) close();
+      if (trigger !== open) return;
+      if (delayed) {
+        stopLeaving();
+        leaveTimer = schedule(close, HIDE_DELAY);
+      } else close();
     },
     /** Escape, a press or a scroll. */
     dismiss: close,
@@ -131,15 +145,27 @@ export function startTooltips() {
   const triggerOf = target => (target instanceof Element ? target.closest('[data-tooltip]') : null);
   // A trigger whose own popover is open needs no tooltip over it.
   const wanted = trigger => Boolean(trigger?.dataset.tooltip) && trigger.getAttribute('aria-expanded') !== 'true';
+  const focused = trigger => document.activeElement === trigger && trigger.matches(':focus-visible');
 
   const listeners = {
     pointerover(event) {
+      if (event.pointerType === 'touch') return;
+      if (tip.contains(event.target)) {
+        if (timing.open) timing.enter(timing.open);
+        return;
+      }
       const trigger = triggerOf(event.target);
-      if (event.pointerType !== 'touch' && wanted(trigger)) timing.enter(trigger);
+      if (wanted(trigger)) timing.enter(trigger);
     },
     pointerout(event) {
+      if (tip.contains(event.target)) {
+        if (!tip.contains(event.relatedTarget) && timing.open && !focused(timing.open)) {
+          timing.leave(timing.open, { delayed: true });
+        }
+        return;
+      }
       const trigger = triggerOf(event.target);
-      if (trigger && !trigger.contains(event.relatedTarget)) timing.leave(trigger);
+      if (trigger && !trigger.contains(event.relatedTarget) && !focused(trigger)) timing.leave(trigger, { delayed: true });
     },
     focusin(event) {
       const trigger = triggerOf(event.target);
@@ -147,7 +173,7 @@ export function startTooltips() {
     },
     focusout(event) {
       const trigger = triggerOf(event.target);
-      if (trigger) timing.leave(trigger);
+      if (trigger && !trigger.matches(':hover') && !tip.matches(':hover')) timing.leave(trigger);
     },
     keydown(event) {
       if (event.key === 'Escape') timing.dismiss();
@@ -155,5 +181,13 @@ export function startTooltips() {
     pointerdown: () => timing.dismiss(),
     scroll: () => timing.dismiss(),
   };
-  for (const [type, listener] of Object.entries(listeners)) document.addEventListener(type, listener, { capture: true, passive: true });
+  const options = { capture: true, passive: true };
+  for (const [type, listener] of Object.entries(listeners)) document.addEventListener(type, listener, options);
+  return {
+    dispose() {
+      timing.dismiss();
+      for (const [type, listener] of Object.entries(listeners)) document.removeEventListener(type, listener, options);
+      tip.remove();
+    },
+  };
 }

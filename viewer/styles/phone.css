@@ -12,7 +12,7 @@
  * render/device.js; the two are kept in step by hand.
  */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
-  :root { --control-height: 44px; --row-height: 44px; --tab-height: 44px; }
+  :root { --control-height: 44px; --row-height: 44px; --tab-height: 44px; --header-height: 52px; --panel-inset: var(--space-4); }
   /*
    * The half detent should show rows, not chrome. The tree header draws 36px
    * and keeps a 44px hit area; section labels take 20px.
@@ -93,9 +93,6 @@
     min-height: 0;
     overflow: hidden;
   }
-
-  /* The grip already names the region; the panel heading would repeat it. */
-  #selected-name { display: none; }
 
   .sheet-grip {
     display: block;
@@ -350,8 +347,6 @@
   #tree .row-indent { margin-block: 0; }
   .search-shortcut { display: none; }
   .check input::before { width: 11px; height: 6px; }
-  /* A 16px field is the threshold below which iOS zooms the page on focus. */
-  input[type="search"], input[type="number"], select { font-size: 1rem; }
   /* The whole 44px box is the grab area; the 2px track is centred in it. */
   input[type="range"],
   #opacity,
@@ -359,4 +354,9 @@
   .mpr-display input[type="range"] { height: 44px; margin: 0; }
   input[type="range"]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -9px; }
   input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; }
+}
+
+/* Native fields stay at 16px so focusing them does not zoom the page on iOS. */
+@media (pointer: coarse), (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+  input[type="search"], input[type="number"], select, #masthead-data select { font-size: var(--text-title); }
 }

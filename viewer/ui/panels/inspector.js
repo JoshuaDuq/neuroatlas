@@ -53,6 +53,7 @@ export function createInspector({
   const factCoordsLabel = document.getElementById('fact-coords-label');
   const factSourceLabel = document.getElementById('fact-source-label');
   const name = document.getElementById('selected-name');
+  const context = document.getElementById('selected-context');
   const hint = document.getElementById('selected-hint');
   const facts = document.getElementById('selected-facts');
   const hemisphere = document.getElementById('fact-hemisphere');
@@ -85,6 +86,8 @@ export function createInspector({
   const domainsList = document.getElementById('domains-list');
   const domainsNote = document.getElementById('domains-note');
   const explorerPanel = document.getElementById('navigator');
+  let shownSourceRegion = null;
+  let shownSourceLang = null;
 
   // The × leaves with the selection, so focus goes to whichever panel is now in front.
   const onClearClick = () => {
@@ -232,16 +235,30 @@ export function createInspector({
   }
 
   function showSource(region, lang) {
+    // Preserve an open disclosure while the camera, isolation or other view settings change.
+    if (region === shownSourceRegion && lang === shownSourceLang) return;
     const label = sourceLabel(region, lang);
-    const ids = label.ids && document.createElement('span');
-    if (ids) {
+    if (label.all) {
+      const disclosure = document.createElement('details');
+      disclosure.className = 'inline-disclosure source-labels';
+      const summary = document.createElement('summary');
+      summary.textContent = label.atlas;
+      const ids = document.createElement('p');
       ids.className = 'code';
-      ids.textContent = label.ids;
+      ids.textContent = label.all;
+      disclosure.append(summary, ids);
+      source.replaceChildren(disclosure);
+    } else {
+      const ids = label.ids && document.createElement('span');
+      if (ids) {
+        ids.className = 'code';
+        ids.textContent = label.ids;
+      }
+      source.replaceChildren(...(ids ? [`${label.atlas} · `, ids] : [label.atlas]));
     }
-    source.replaceChildren(...(ids ? [`${label.atlas} · `, ids] : [label.atlas]));
-    for (const node of [factSourceLabel, source]) node.classList.toggle('stacked', label.stacked);
-    if (label.all) source.dataset.tooltip = label.all;
-    else delete source.dataset.tooltip;
+    for (const node of [factSourceLabel, source]) node.classList.toggle('stacked', label.stacked || Boolean(label.all));
+    shownSourceRegion = region;
+    shownSourceLang = lang;
   }
 
   return {
@@ -272,6 +289,7 @@ export function createInspector({
       regionMpr.hidden = chrome.hideActions;
       regionMpr.textContent = i18n.linkedMri;
       facts.hidden = chrome.hideFacts;
+      context.hidden = !region;
 
       if (!region) {
         hint.hidden = chrome.hideHint;

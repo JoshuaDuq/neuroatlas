@@ -1634,7 +1634,9 @@ export async function startApp() {
     if (nativeTracts.mriOpen) return;
     const mprDialog = document.getElementById('mpr-dialog');
     if (mprDialog?.open) {
-      if (event.key.toLowerCase() === 'm' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (event.key.toLowerCase() === 'm' && !event.metaKey && !event.ctrlKey && !event.altKey
+        && shortcutsAllowed(event.target, event.key)
+        && characterShortcutAllowed(event.target, keyPreference.enabled)) {
         event.preventDefault();
         mprDialog.close();
       }

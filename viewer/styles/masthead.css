@@ -1,20 +1,30 @@
-/* Masthead: identity, then what is loaded as caption and control pairs, then the actions. */
+/* Identity and data have separate columns, aligned with the workspace below. */
 #masthead {
+  --masthead-gap: var(--space-4);
   position: relative;
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--masthead-gap);
   min-width: 0;
-  padding: 0 var(--space-2) 0 var(--space-4);
+  padding: 0 var(--space-3) 0 var(--panel-inset);
   background: var(--surface-base);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 40;
 }
-.identity { display: flex; flex: none; align-items: center; gap: var(--space-2); }
+/* The data begins on the stage's column; identity belongs to the task panel. */
+.identity {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: stretch;
+  width: calc(var(--rail-width) - var(--panel-inset));
+  border-right: 1px solid var(--border-subtle);
+}
 .brand-mark { flex: none; width: 24px; height: 24px; color: var(--text-primary); }
 .brand {
-  font-size: var(--text-title);
+  font-size: var(--text-brand);
   font-weight: 650;
   line-height: var(--lh-title);
   letter-spacing: -0.02em;
@@ -26,6 +36,8 @@
   align-items: center;
   gap: var(--space-1);
   margin-left: auto;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--border-subtle);
 }
 #masthead-more[hidden] { display: inline-flex !important; visibility: hidden; }
 #menu-fullscreen, #menu-provenance { display: none; }
@@ -52,7 +64,7 @@
 }
 .skip-link:not(:focus) { width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
 
-/* Four quiet fields: a caption outside, then a 28px select that is only text and a chevron until pointed at. */
+/* A caption above each native select separates the dataset from its settings. */
 .masthead-data-wrap {
   position: relative;
   display: flex;
@@ -62,15 +74,24 @@
 }
 #app:is([data-status="loading"], [data-status="error"]) .masthead-data-wrap { visibility: hidden; }
 .data-toggle { display: none; }
-.masthead-data { display: flex; align-items: center; gap: var(--space-6); min-width: 0; }
-.data-field { display: flex; flex: none; align-items: center; gap: var(--space-1); min-width: 0; }
+.masthead-data { display: flex; align-items: center; min-width: 0; }
+.data-field {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding-right: var(--space-4);
+}
+.data-field + .data-field { padding-left: var(--space-4); border-left: 1px solid var(--border-subtle); }
 .data-field:not(:has(> :not([hidden], .data-note))) { display: none; }
 .data-label {
   margin: 0;
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   white-space: nowrap;
+  padding-inline: var(--space-2);
 }
 /* The tooltip carries the note on the bar; the popover prints it. */
 .data-note { display: none; }
@@ -133,12 +154,13 @@
 :is(#masthead-menu, .masthead-data[data-open]) {
   transition: opacity var(--popover-transition) var(--ease-ui), transform var(--popover-transition) var(--ease-ui);
 }
+:is(#masthead-menu, .masthead-data)[data-instant] { transition: none; }
 @starting-style {
   :is(#masthead-menu, .masthead-data[data-open]) { opacity: 0; transform: scale(0.97); }
 }
 
 /* Where the bar does not fit (header.js measures it), a summary button opens the same fields as a popover. */
-#masthead[data-collapsed] { gap: var(--space-4); }
+#masthead[data-collapsed] { --masthead-gap: var(--space-4); }
 /* The full bar height, so the popover drops from the masthead's edge as the settings menu does. */
 #masthead[data-collapsed] .masthead-data-wrap { flex: 1 1 auto; align-self: stretch; }
 /* The four fields folded into one: as quiet as they are, with the same chevron. */
@@ -148,7 +170,8 @@
   gap: var(--space-2);
   min-width: 0;
   max-width: 100%;
-  height: 28px;
+  min-height: var(--control-height);
+  height: auto;
   padding: 0 var(--space-2);
   background: transparent;
   color: var(--text-primary);
@@ -171,7 +194,7 @@
 }
 #masthead[data-collapsed] .data-toggle[aria-expanded="true"]::after { transform: translateY(1px) rotate(225deg); }
 #masthead[data-collapsed] .data-summary { display: flex; align-items: baseline; gap: 6px; min-width: 0; white-space: nowrap; }
-/* Only the subject truncates; header.js drops internal anatomy, then the atlas, then the colour. */
+/* Keep the subject readable; optional settings yield in order before its name truncates. */
 #masthead[data-collapsed] .data-summary > * { flex: none; }
 #masthead[data-collapsed] .data-summary > [data-part="subject"] { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
 #masthead[data-collapsed] .data-summary-sep { color: var(--text-tertiary); }
@@ -205,6 +228,8 @@
   padding: var(--space-3) var(--space-4);
 }
 #masthead[data-collapsed] .data-field + .data-field { border-top: 1px solid var(--border-subtle); }
+#masthead[data-collapsed] .data-field { border-left: 0; }
+#masthead[data-collapsed] .data-label { padding-inline: 0; }
 /* The value sits on the caption's column; its ground reaches out to the left when pointed at. */
 #masthead[data-collapsed] .masthead-data select {
   max-width: calc(100% + var(--space-2));
@@ -241,11 +266,14 @@
   right: var(--space-2);
   display: grid;
   /* One choice column for every row, as wide as the widest (Système | Clair | Sombre): nothing wraps, every edge aligns. */
-  grid-template-columns: minmax(0, 1fr) minmax(184px, max-content);
+  grid-template-columns: minmax(0, 1fr) minmax(11.5rem, max-content);
   width: max-content;
-  min-width: 300px;
+  min-width: min(22rem, calc(100vw - var(--space-6)));
   max-width: calc(100vw - var(--space-6));
-  overflow: hidden;
+  max-height: calc(100dvh - var(--header-height) - var(--space-3));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-panel);
@@ -262,7 +290,7 @@
   padding: 0 var(--space-2) 0 var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
 }
-.menu-label { font-size: var(--text-ui); color: var(--text-primary); }
+.menu-label { min-width: 0; font-size: var(--text-ui); color: var(--text-primary); overflow-wrap: anywhere; }
 #masthead-menu .segmented button { flex: 1; }
 /* Three words of unequal length: each keeps its own width and the spare room is shared. */
 #masthead-menu #theme-switch button { flex: 1 1 auto; }
@@ -290,6 +318,7 @@
 /* Phones: the mark alone names the app, the summary takes the room, fullscreen and provenance move into the menu. */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
   #masthead {
+    --masthead-gap: var(--space-2);
     grid-column: 1;
     grid-row: 1;
     gap: var(--space-2);
@@ -305,8 +334,9 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
+  .identity { width: auto; border-right: 0; }
   .masthead-data-wrap { position: static; }
-  .masthead-end { gap: 0; }
+  .masthead-end { gap: 0; padding-left: 0; border-left: 0; }
   #viewport-fullscreen { display: none; }
   #menu-fullscreen:not([hidden]), #menu-provenance:not([hidden]) { display: flex; }
   #masthead[data-collapsed] .masthead-data {
@@ -324,17 +354,26 @@
     width: auto;
     min-width: 0;
   }
-  /* The French labels and the three-way theme choice share a 390px screen. */
-  .menu-row { gap: var(--space-4); }
+  /* Rows wrap by their content, including when the reader enlarges the text. */
+  #masthead-menu { display: flex; flex-direction: column; }
+  .menu-row { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); padding: var(--space-3); }
+  .menu-label { flex: 1 0 8ch; }
+  #masthead-menu .segmented { flex: 1 1 11.5rem; min-width: 0; }
+  #masthead-menu .segmented button { padding: var(--space-1) var(--space-2); white-space: normal; overflow-wrap: anywhere; }
 
 }
 
 /* Touch: 44px targets wherever the choices sit in a popover rather than the 48px bar. */
+@media (max-width: 360px) {
+  .menu-label { flex-basis: 100%; }
+  #masthead-menu .segmented { width: 100%; }
+}
+
 @media (pointer: coarse), (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
   #masthead[data-collapsed] .data-toggle,
   #masthead-data[data-open] select,
-  #masthead-menu .segmented button,
   .menu-item { height: 44px; }
+  #masthead-menu .segmented button { height: auto; min-height: 44px; }
   .menu-row { min-height: 52px; }
 }
 
@@ -366,7 +405,7 @@
 }
 #colophon-text { display: flex; flex: 1 1 auto; align-items: center; gap: var(--space-3); min-width: 0; }
 /* The statement never gives way; the description does. */
-#colophon-statement { flex: none; color: var(--text-primary); font-weight: 600; }
+#colophon-statement { flex: none; color: var(--text-secondary); font-weight: 500; }
 #colophon-description {
   min-width: 0;
   padding-left: var(--space-3);

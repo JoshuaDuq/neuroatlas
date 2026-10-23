@@ -327,21 +327,23 @@
                       <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
                     </button>
                   </div>
+                  <dl id="selected-context" class="selection-context" hidden>
+                    <dt id="fact-hemisphere-label" class="visually-hidden">Hemisphere</dt><dd id="fact-hemisphere"></dd>
+                    <dt id="fact-group-label" class="visually-hidden">Lobe / System</dt><dd id="fact-group"></dd>
+                  </dl>
                   <h3 id="selection-empty" class="selection-empty">No region selected</h3>
                   <p id="selected-hint"></p>
+                  <dl id="selected-facts" class="datasheet" hidden>
+                    <dt id="fact-metric-label">Surface area</dt><dd id="fact-metric" class="measure"></dd>
+                    <dt id="fact-coords-label">Centroid (RAS)</dt><dd id="fact-coords" class="measure"></dd>
+                    <dt id="fact-source-label">Source label</dt><dd id="fact-source"></dd>
+                  </dl>
                   <div class="actions">
                     <button id="focus" type="button" disabled>Focus</button>
                     <button id="isolate" type="button" data-active="false" disabled>Isolate</button>
                     <button id="hide-region" type="button" disabled>Hide</button>
                     <button id="region-mpr" class="button-primary" type="button" hidden>Linked MRI</button>
                   </div>
-                  <dl id="selected-facts" class="datasheet" hidden>
-                    <dt id="fact-hemisphere-label">Hemisphere</dt><dd id="fact-hemisphere"></dd>
-                    <dt id="fact-group-label">Lobe / System</dt><dd id="fact-group"></dd>
-                    <dt id="fact-metric-label">Surface area</dt><dd id="fact-metric" class="measure"></dd>
-                    <dt id="fact-coords-label">Centroid (RAS)</dt><dd id="fact-coords" class="measure"></dd>
-                    <dt id="fact-source-label">Source label</dt><dd id="fact-source"></dd>
-                  </dl>
                   <section id="region-comparison" class="detail-section" hidden>
                     <h3 id="comparison-heading" class="detail-section-heading"></h3>
                     <p id="comparison-status" class="detail-note" role="status" hidden></p>
