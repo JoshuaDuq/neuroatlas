@@ -1,6 +1,34 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isIntegratedGpu } from './device.js';
+import { PHONE_QUERY, isIntegratedGpu, isPhone, pixelRatioCap } from './device.js';
+
+for (const { width, height, compact, phone } of [
+  { width: 390, height: 844, compact: true, phone: true },
+  { width: 681, height: 900, compact: true, phone: false },
+  { width: 800, height: 900, compact: true, phone: false },
+  { width: 821, height: 900, compact: false, phone: false },
+  { width: 1000, height: 900, compact: false, phone: false },
+  { width: 844, height: 390, compact: true, phone: true },
+]) {
+  test(`${width}×${height} selects its interface shell without changing the phone rendering budget`, t => {
+    const previousMedia = globalThis.matchMedia;
+    const previousRatio = globalThis.devicePixelRatio;
+    globalThis.devicePixelRatio = 2;
+    globalThis.matchMedia = query => {
+      const maxWidth = Number(query.match(/max-width:\s*(\d+)px/)?.[1] ?? 0);
+      return { matches: query !== '(pointer: coarse)'
+        && (width <= maxWidth || (height <= 480 && width > height)) };
+    };
+    t.after(() => {
+      globalThis.matchMedia = previousMedia;
+      globalThis.devicePixelRatio = previousRatio;
+    });
+    assert.equal(globalThis.matchMedia(PHONE_QUERY).matches, compact);
+    assert.equal(isPhone(), phone);
+    assert.equal(pixelRatioCap(), phone ? 1 : 2);
+    assert.equal(pixelRatioCap(true), phone ? 1 : 1.5);
+  });
+}
 
 test('Apple Silicon and Intel iGPUs are treated as integrated', () => {
   assert.equal(isIntegratedGpu('ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)'), true);

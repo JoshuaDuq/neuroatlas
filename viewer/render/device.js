@@ -1,18 +1,21 @@
 /**
  * What kind of device is reading this, asked in one place.
  *
- * The phone query is written out rather than reduced to a width, because a
+ * The compact interface query includes tablets and narrow desktop windows. A
  * phone held sideways is 812 by 375: a `max-width` alone would hand a
  * landscape phone the desktop layout, which is the shape it has least room
  * for. Height catches it instead.
  *
- * CSS repeats this query literally in `styles/phone.css`; the two are kept in
- * step by hand, and the constant below is the copy the interface reasons about.
+ * CSS repeats PHONE_QUERY literally in `styles/phone.css`; the two are kept in
+ * step by hand. The narrower phone device profile stays separate so changing
+ * the panel layout does not lower rendering quality or change MRI defaults.
  */
-export const PHONE_QUERY = '(max-width: 640px), (max-height: 480px) and (orientation: landscape)';
+export const PHONE_QUERY = '(max-width: 800px), (max-height: 480px) and (orientation: landscape)';
+
+const PHONE_DEVICE_QUERY = '(max-width: 640px), (max-height: 480px) and (orientation: landscape)';
 
 /** A phone-shaped viewport, in either orientation. */
-export const isPhone = () => globalThis.matchMedia?.(PHONE_QUERY).matches ?? false;
+export const isPhone = () => globalThis.matchMedia?.(PHONE_DEVICE_QUERY).matches ?? false;
 
 /** A finger rather than a mouse. Drives hit-target size. */
 export const isCoarse = () => globalThis.matchMedia?.('(pointer: coarse)').matches ?? false;

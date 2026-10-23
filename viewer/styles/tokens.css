@@ -1,12 +1,12 @@
 /* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
   color-scheme: light;
-  --text-primary: #20272c;
-  --text-secondary: #515b63;
-  --text-tertiary: #667078;
-  --accent: #156b6d;
-  --accent-hover: #0d5557;
-  --accent-wash: #e8f3f2;
+  --text-primary: #242a30;
+  --text-secondary: #59636d;
+  --text-tertiary: #68737d;
+  --accent: #246568;
+  --accent-hover: #194f52;
+  --accent-wash: #edf4f3;
   /* The one filled button. Dark keeps a deep fill so it does not outshine the anatomy. */
   --primary-fill: var(--accent);
   --primary-fill-hover: var(--accent-hover);
@@ -15,15 +15,15 @@
 
   /* Near-neutral greys: teal and the anatomy carry the only colour. */
   --surface-base: #ffffff;
-  --surface-navigation: #f8f9fa;
-  --surface-sunken: #f1f3f4;
+  --surface-navigation: #f7f8f9;
+  --surface-sunken: #f0f2f4;
   --surface-canvas: #eef0f2;
-  --surface-hover: #f3f5f6;
+  --surface-hover: #f5f7f8;
   --surface-raised: #ffffff;
-  --surface-tonal: #f1f3f4;
-  --surface-tonal-hover: #e7ebee;
-  --border-subtle: #e2e6e9;
-  --border-control: #7f8a94;
+  --surface-tonal: #f0f3f5;
+  --surface-tonal-hover: #e7ecef;
+  --border-subtle: #e4e8eb;
+  --border-control: #8b959e;
   /* Selected segment ring: 3:1 against the tonal track. */
   --thumb-ring: #78838d;
 
@@ -62,9 +62,9 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   /* A compact research scale; scientific stage labels keep their own register. */
   --text-caption: 0.8125rem;
-  --text-ui: 0.9375rem;
+  --text-ui: 0.875rem;
   --text-title: 1rem;
-  --text-brand: 1.125rem;
+  --text-brand: 1.0625rem;
   --text-headline: 1.5rem;
   --text-stage: 0.875rem;
   /* Captions remain readable beside the data; every role grows with reader text size. */
@@ -85,13 +85,13 @@
   --space-10: 40px;
 
   /* Instrument density on a fine pointer; phone.css raises both to 44px for touch. */
-  --row-height: 40px;
+  --row-height: 38px;
   --control-height: 36px;
   --tab-height: max(44px, 2.75rem);
-  --rail-width: clamp(340px, 25rem, 34vw);
-  --header-height: max(64px, 4rem);
+  --rail-width: clamp(340px, 22.5rem, 30vw);
+  --header-height: max(60px, 3.75rem);
   --footer-height: max(28px, 1.75rem);
-  --panel-inset: var(--space-6);
+  --panel-inset: var(--space-5);
   /* Names align after the disclosure slot, independently of panel width. */
   --indent: calc(var(--panel-inset) + 20px);
   --radius-control: 4px;
@@ -122,13 +122,13 @@
   --primary-fill: var(--overlay-primary-fill);
   --primary-fill-hover: var(--overlay-primary-fill-hover);
   --danger: #f1928f;
-  --surface-base: #1b1d20;
-  --surface-navigation: #18191c;
+  --surface-base: #1b1e21;
+  --surface-navigation: #191c1f;
   --surface-sunken: #141517;
   --surface-canvas: #111214;
   --surface-hover: #25272b;
-  --surface-raised: #3a3d42;
-  --surface-tonal: #27292d;
+  --surface-raised: #343a40;
+  --surface-tonal: #272d32;
   --surface-tonal-hover: #303338;
   --border-subtle: #303338;
   --border-control: #6d737b;

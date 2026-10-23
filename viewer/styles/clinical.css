@@ -17,7 +17,7 @@
   font-weight: 400;
 }
 .clinical-deficit:focus-visible { outline-offset: -2px; }
-.clinical-deficit-text { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+.clinical-deficit-text { display: flex; flex: 1 1 auto; flex-direction: column; gap: 2px; min-width: 0; }
 .clinical-deficit-name { font-weight: 500; line-height: var(--lh-ui); overflow-wrap: anywhere; }
 .clinical-deficit-domain { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); overflow-wrap: normal; }
 .clinical-deficit[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
@@ -57,7 +57,7 @@
 
 /* Function profile --------------------------------------------------------- */
 /* Areas, strongest first: the name reads as a link, its z sits in a right-hand column. */
-.function-areas, .function-lesions, .function-overview { margin-top: var(--space-8); }
+.function-areas, .function-lesions, .function-overview { margin-top: var(--space-6); }
 .function-area-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
 .function-area-list > li { border-bottom: 1px solid var(--border-subtle); }
 .function-area {
@@ -77,7 +77,7 @@
   line-height: var(--lh-ui);
 }
 .function-area-name { flex: 1; min-width: 0; overflow-wrap: normal; }
-.function-area-z { flex: none; color: var(--text-secondary); font-size: var(--text-caption); font-variant-numeric: tabular-nums; }
+.function-area-z { flex: none; color: var(--text-primary); font-size: var(--text-caption); font-weight: 500; font-variant-numeric: tabular-nums; }
 @media (hover: hover) and (pointer: fine) {
   .function-area:hover:not(:disabled) .function-area-name {
     color: var(--accent-hover);
@@ -115,7 +115,7 @@
   text-wrap: pretty;
 }
 .clinical-meta {
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
   color: var(--text-secondary);
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
@@ -124,9 +124,9 @@
 .clinical-meta[data-error="true"] { color: var(--danger); }
 .clinical-summary { margin-top: var(--space-4); }
 .clinical-content > .clinical-caveat { margin-top: var(--space-2); }
-.clinical-content > .clinical-sources { margin-top: var(--space-6); color: var(--text-tertiary); }
+.clinical-content > .clinical-sources { margin-top: var(--space-5); color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 .clinical-content a { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
-.clinical-associations { margin-top: var(--space-8); }
+.clinical-associations { margin-top: var(--space-6); }
 
 /*
  * Associations: ruled rows of a title, its mapped regions on the indent column, always in reach,
@@ -210,7 +210,7 @@
  * without doubling the body's trailing padding.
  */
 #region-detail:has(~ :is(#clinical-region, #circuit-notes, #circuit-region):not([hidden])) { padding-bottom: 0; }
-#clinical-region, #circuit-region { margin-top: var(--space-8); margin-bottom: var(--space-6); padding-inline: var(--panel-inset); }
+#clinical-region, #circuit-region { margin-top: var(--space-6); margin-bottom: var(--space-6); padding-inline: var(--panel-inset); }
 
 /* A region's Neuropsychology: ruled rows on the text column that open the deficit. */
 .clinical-related { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }

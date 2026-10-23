@@ -11,10 +11,10 @@
   min-height: var(--row-height);
   height: auto;
   margin: 0;
-  padding: 8px var(--panel-inset);
+  padding: 7px var(--panel-inset);
   border: 0;
   border-radius: 0;
-  background: none;
+  background: transparent;
   text-align: left;
   font-size: var(--text-ui);
   color: var(--text-primary);
@@ -95,7 +95,7 @@
 .row-side-solo { min-width: 32px; }
 .row-side-rest { display: none; }
 .tree-group { isolation: isolate; }
-.tree-group > .group-row { background: var(--surface-base); font-weight: 550; }
+.tree-group > .group-row { background: var(--surface-base); font-weight: 500; }
 @media (hover: hover) and (pointer: fine) {
   .tree-group > .group-row:hover { background: var(--surface-hover); }
 }
@@ -128,11 +128,11 @@
   align-items: baseline;
   gap: var(--space-2);
   margin-top: var(--space-4);
-  padding: var(--space-3) var(--panel-inset) var(--space-2);
+  padding: var(--space-4) var(--panel-inset) var(--space-2);
   border-top: 1px solid var(--border-subtle);
   background: none;
 }
-#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-4); border-top: 0; }
+#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-5); border-top: 0; }
 .section-state {
   min-width: 0;
   margin-left: auto;
@@ -196,7 +196,7 @@
   padding: var(--space-1) var(--space-2);
   white-space: normal;
   border-radius: var(--radius-control);
-  font-size: var(--text-ui);
+  font-size: var(--text-caption);
 }
 .tree-scope button[aria-pressed="true"],
 .tree-scope button[aria-pressed="true"]:hover {

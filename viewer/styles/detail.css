@@ -1,6 +1,6 @@
 /* Region ------------------------------------------------------------------ */
 /* The selected anatomy opens the sheet; commands and measurements follow as distinct groups. */
-#region-detail { padding-top: var(--space-6); }
+#region-detail { padding-top: var(--space-5); }
 .selection-head { display: flex; align-items: flex-start; justify-content: flex-end; gap: var(--space-3); }
 .selection-head > #selected-name { flex: 1; min-width: 0; }
 #selection-clear { flex: none; margin: -4px calc(-1 * var(--space-2)) -4px 0; color: var(--text-tertiary); }
@@ -18,10 +18,10 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-1) var(--space-2);
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
   color: var(--text-secondary);
-  font-size: var(--text-ui);
-  line-height: var(--lh-ui);
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
 }
 .selection-context dd { min-width: 0; overflow-wrap: anywhere; }
 .selection-context #fact-group { padding-left: var(--space-2); border-left: 1px solid var(--border-control); }
@@ -37,8 +37,7 @@
 #region-detail > .actions {
   gap: var(--space-1);
   margin-top: var(--space-4);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border-subtle);
+  padding-top: 0;
 }
 #region-detail > .actions button { flex: 1 1 auto; min-width: min-content; padding-inline: var(--space-2); }
 #region-detail > .actions #region-mpr { margin-left: auto; }
@@ -67,13 +66,14 @@
   align-items: baseline;
   margin-top: var(--space-5);
   padding-top: 0;
-  border-top: 0;
+  border-top: 1px solid var(--border-subtle);
 }
 #selected-facts dt,
-#selected-facts dd { min-width: 0; padding: var(--space-2) 0; border-bottom: 0; overflow-wrap: anywhere; }
-#selected-facts dt { font-size: var(--text-ui); line-height: var(--lh-ui); }
-#selected-facts dd { font-variant-numeric: tabular-nums; }
+#selected-facts dd { min-width: 0; padding: var(--space-2) 0; border-bottom: 1px solid var(--border-subtle); overflow-wrap: anywhere; }
+#selected-facts dt { font-size: var(--text-caption); line-height: var(--lh-caption); }
+#selected-facts dd { font-weight: 500; font-variant-numeric: tabular-nums; }
 #selected-facts #fact-metric { font-weight: 600; }
+#fact-source { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 #region-detail > .detail-section { margin-top: var(--space-6); }
 /* A value too long to share its label's line (a list of source ids, a reference's full name) takes the line under it. */
 #selected-facts .stacked { grid-column: 1 / -1; }
@@ -92,7 +92,7 @@
   border-bottom: 1px solid var(--border-subtle);
 }
 #region-detail > .evidence-section:not([hidden]) { padding-block: var(--space-1); }
-#region-detail > .evidence-section > summary { min-height: var(--control-height); }
+#region-detail > .evidence-section > summary { min-height: var(--control-height); font-weight: 500; }
 .evidence-section > summary h3 { font: inherit; }
 #region-detail > .evidence-section[open] { padding-bottom: var(--space-4); }
 .evidence-section .network-list { padding-top: var(--space-1); }
@@ -131,7 +131,7 @@
   font-weight: 400;
   text-align: left;
 }
-.comparison-row .measure { color: var(--text-secondary); white-space: nowrap; text-align: right; }
+.comparison-row .measure { color: var(--text-primary); font-size: var(--text-caption); line-height: var(--lh-caption); font-weight: 500; white-space: nowrap; text-align: right; }
 .comparison-name { min-width: 0; overflow-wrap: anywhere; text-wrap: pretty; }
 .comparison-row[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
 .comparison-row[aria-pressed="true"] .comparison-name { font-weight: 600; }
@@ -236,7 +236,7 @@
 .detail-note + .network-map { margin-top: var(--space-4); }
 
 /* The grip is a compact readout; the detail keeps the complete anatomical name. */
-@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+@media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   #region-detail { padding-top: var(--panel-inset); }
   #selected-name { font-size: var(--text-brand); line-height: var(--lh-title); }
   #region-detail > .selection-context { margin-top: var(--space-2); }

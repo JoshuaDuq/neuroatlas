@@ -260,7 +260,7 @@
 }
 
 /* The literal twin of PHONE_QUERY in render/device.js, as in phone.css. */
-@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+@media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   #provenance-facts { grid-template-columns: minmax(0, 1fr); }
   #provenance-facts dt { padding: 7px 0 0; border: 0; }
   #provenance-facts dd { padding: 0 0 8px; }

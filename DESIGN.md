@@ -2,26 +2,26 @@
 name: NeuroAtlas
 description: A clinical workspace around source-faithful brain anatomy on a dark stage.
 colors:
-  text-primary: "#20272c"
-  text-secondary: "#515b63"
-  text-tertiary: "#667078"
-  accent: "#156b6d"
-  accent-hover: "#0d5557"
-  accent-wash: "#e8f3f2"
-  primary-fill: "#156b6d"
-  primary-fill-hover: "#0d5557"
+  text-primary: "#242a30"
+  text-secondary: "#59636d"
+  text-tertiary: "#68737d"
+  accent: "#246568"
+  accent-hover: "#194f52"
+  accent-wash: "#edf4f3"
+  primary-fill: "#246568"
+  primary-fill-hover: "#194f52"
   primary-ink: "#ffffff"
   danger: "#a61b1b"
   surface-base: "#ffffff"
-  surface-navigation: "#f8f9fa"
-  surface-sunken: "#f1f3f4"
+  surface-navigation: "#f7f8f9"
+  surface-sunken: "#f0f2f4"
   surface-canvas: "#eef0f2"
-  surface-hover: "#f3f5f6"
+  surface-hover: "#f5f7f8"
   surface-raised: "#ffffff"
-  surface-tonal: "#f1f3f4"
-  surface-tonal-hover: "#e7ebee"
-  border-subtle: "#e2e6e9"
-  border-control: "#7f8a94"
+  surface-tonal: "#f0f3f5"
+  surface-tonal-hover: "#e7ecef"
+  border-subtle: "#e4e8eb"
+  border-control: "#8b959e"
   thumb-ring: "#78838d"
   dark-text-primary: "#e9ebee"
   dark-text-secondary: "#b6bcc3"
@@ -32,13 +32,13 @@ colors:
   dark-primary-fill: "#2a7678"
   dark-primary-fill-hover: "#24686a"
   dark-danger: "#f1928f"
-  dark-surface-base: "#1b1d20"
-  dark-surface-navigation: "#18191c"
+  dark-surface-base: "#1b1e21"
+  dark-surface-navigation: "#191c1f"
   dark-surface-sunken: "#141517"
   dark-surface-canvas: "#111214"
   dark-surface-hover: "#25272b"
-  dark-surface-raised: "#3a3d42"
-  dark-surface-tonal: "#27292d"
+  dark-surface-raised: "#343a40"
+  dark-surface-tonal: "#272d32"
   dark-surface-tonal-hover: "#303338"
   dark-border-subtle: "#303338"
   dark-border-control: "#6d737b"
@@ -64,7 +64,7 @@ colors:
 typography:
   brand:
     fontFamily: '"Source Sans 3 Variable", sans-serif'
-    fontSize: 1.125rem
+    fontSize: 1.0625rem
     fontWeight: 650
     lineHeight: max(28px, 1.75rem)
     letterSpacing: -0.02em
@@ -82,17 +82,17 @@ typography:
     letterSpacing: -0.01em
   body:
     fontFamily: '"Source Sans 3 Variable", sans-serif'
-    fontSize: 0.9375rem
+    fontSize: 0.875rem
     fontWeight: 400
     lineHeight: max(22px, 1.375rem)
   label:
     fontFamily: '"Source Sans 3 Variable", sans-serif'
-    fontSize: 0.9375rem
+    fontSize: 0.875rem
     fontWeight: 500
     lineHeight: max(20px, 1.25rem)
   field-label:
     fontFamily: '"Source Sans 3 Variable", sans-serif'
-    fontSize: 0.9375rem
+    fontSize: 0.875rem
     fontWeight: 400
     lineHeight: max(20px, 1.25rem)
   caption:
@@ -108,7 +108,7 @@ typography:
     letterSpacing: 0.06em
   measurement:
     fontFamily: '"Source Sans 3 Variable", sans-serif'
-    fontSize: 0.9375rem
+    fontSize: 0.875rem
     fontWeight: 400
     lineHeight: max(20px, 1.25rem)
   source-data:
@@ -160,7 +160,7 @@ components:
     height: 36px
   workspace-panel:
     backgroundColor: "{colors.surface-base}"
-    width: clamp(340px, 25rem, 34vw)
+    width: clamp(340px, 22.5rem, 30vw)
   workspace-panel-compact:
     width: 340px
   masthead-select:
@@ -179,7 +179,7 @@ components:
     height: auto
     width: 100%
   mode-tab:
-    backgroundColor: "{colors.surface-navigation}"
+    backgroundColor: "{colors.surface-base}"
     textColor: "{colors.text-secondary}"
     typography: "{typography.label}"
     rounded: "{rounded.flat}"
@@ -193,9 +193,9 @@ components:
     padding: 8px 4px
     height: auto
   task-controls:
-    backgroundColor: "{colors.surface-navigation}"
+    backgroundColor: "{colors.surface-base}"
     rounded: "{rounded.flat}"
-    padding: 16px 24px
+    padding: 20px 20px 12px
   visibility-control:
     backgroundColor: transparent
     textColor: "{colors.text-secondary}"
@@ -212,10 +212,10 @@ components:
     backgroundColor: "{colors.surface-navigation}"
     textColor: "{colors.text-secondary}"
     rounded: "{rounded.flat}"
-    padding: 0 8px 0 24px
+    padding: 0 8px 0 20px
     height: 44px
   segmented-track:
-    backgroundColor: "{colors.surface-navigation}"
+    backgroundColor: "{colors.surface-tonal}"
     rounded: "{rounded.control}"
     padding: 2px
     height: 36px
@@ -229,7 +229,7 @@ components:
   browse-scope-selected:
     backgroundColor: "{colors.surface-tonal}"
     textColor: "{colors.text-primary}"
-    typography: "{typography.label}"
+    typography: "{typography.caption}"
     rounded: "{rounded.control}"
     padding: 4px 8px
     height: 32px
@@ -237,8 +237,8 @@ components:
     backgroundColor: "{colors.accent-wash}"
     textColor: "{colors.accent}"
     rounded: "{rounded.flat}"
-    padding: 8px 24px
-    height: 40px
+    padding: 7px 20px
+    height: 38px
   tract-part-selected:
     backgroundColor: "{colors.accent-wash}"
     textColor: "{colors.accent}"
@@ -249,7 +249,7 @@ components:
   dissection-dock:
     backgroundColor: "{colors.surface-navigation}"
     rounded: "{rounded.flat}"
-    padding: 0 24px
+    padding: 0 20px
     height: 41px
   stage-toolbar:
     backgroundColor: "{colors.overlay-plate}"
@@ -307,7 +307,7 @@ theme-independent stage palette.
 ### Primary
 
 Restrained teal marks selected anatomy, links, and the selected mode’s text
-and full-cell underline. Browse scope remains neutral. The one filled button reads `--primary-fill`; in the dark
+and inset underline. Browse scope remains neutral. The one filled button reads `--primary-fill`; in the dark
 theme, on the stage, and in the MRI viewer that fill is a deeper teal so it
 does not outshine the anatomy, with white ink.
 
@@ -315,8 +315,8 @@ does not outshine the anatomy, with white ink.
 
 Three near-neutral inks set hierarchy. Base panels sit on a cool canvas; navigation,
 sunken, hover, and tonal surfaces separate controls by small tonal shifts.
-The search area and mode-tab row use the pale navigation surface, with a white
-selected tab and white index separated by fine rules. Browse scope has a transparent group and a neutral
+The search area, mode-tab row, and index share the base surface, with fine
+rules and an inset selection underline providing structure. Browse scope has a transparent group and a neutral
 tonal fill on the selected button, without a ring or shadow. The status and
 detail-location bars use the pale navigation ground.
 Subtle borders divide content; control borders (3:1) identify fields; the
@@ -340,11 +340,11 @@ measurements and coordinates without changing their face or size. The
 monospace stack is reserved for copied source IDs, file names, and voxel
 indices (13px). No decorative display face.
 
-The research scale: brand (18px); selected region, deficit, and circuit landmark
+The research scale: brand (17px); selected region, deficit, and circuit landmark
 headlines (24px); dialog, empty-state, and second-subject titles (16px);
-body, controls, lists, datasheets, field labels, and segmented choices
-(15px); scientific stage controls and orientation (14px); masthead captions,
-notes, status bar, and list group headings (13px). Panel names live in the tabs; visible panel
+body, controls, lists, datasheet values, field labels, and segmented choices
+(14px); scientific stage controls and orientation (14px); masthead captions,
+notes, status bar, browse scope, facts labels, and list group headings (13px). Panel names live in the tabs; visible panel
 headings are not repeated (their h2s stay for assistive technology).
 Clinical and circuit prose use 22px lines; list rows use 20px lines; title
 and headline lines use at least 28px. These line heights grow with the reader's text size. Selected labels strengthen
@@ -361,21 +361,21 @@ groups; an absent value is an em dash, never zero.
 
 ## Layout
 
-Desktop is a full-height grid: masthead (`max(64px, 4rem)`) across, task panel
-(`clamp(340px, 25rem, 34vw)`, usually 400px at the default text size on a wide desktop) beside the stage, status bar (`max(28px, 1.75rem)`)
-across. At 641–1000px the panel is 340px wide. No outer
-padding; 1px separators; panel insets (24px desktop, 16px tablet and phone);
+Desktop is a full-height grid: masthead (`max(60px, 3.75rem)`) across, task panel
+(`clamp(340px, 22.5rem, 30vw)`, usually 360px at the default text size on a wide desktop) beside the stage, status bar (`max(28px, 1.75rem)`)
+across. At 801–1000px the panel is 340px wide. No outer
+padding; 1px separators; panel insets (20px desktop, 16px tablet and phone);
 shared 4px rhythm. The grid fits the visible viewport without a fixed minimum
 height. Text-aware dimensions grow with the reader's text size.
 
-**Masthead (data).** A 24px cut-away mark and 18px name occupy the panel
+**Masthead (data).** A 22px cut-away mark and 17px name occupy the panel
 column, with a vertical divider aligned to the panel edge. Mode tabs remain
 in the task panel at every desktop width, keeping navigation stable and
 leaving room for labelled native data controls. The data bar starts
 on the stage column; field spacing groups Subject and Atlas, with a single
 subtle vertical rule before Colour separating identity from presentation. A 13px caption sits above each 28px native select,
-with a 15px/500 value for Subject, Atlas, Colour (Tissue, T1, Regions,
-Networks), and Internal anatomy. Native selects are transparent at rest;
+with 14px values: weight 600 for Subject and 500 for Atlas, Colour (Tissue,
+T1, Regions, Networks), and Internal anatomy. Native selects are transparent at rest;
 hover, focus, or opening adds the tonal ground. Popover selects use the pale
 navigation ground.
 When the bar does not fit (measured, not a fixed breakpoint;
@@ -396,10 +396,10 @@ Anatomy, Functions, Deficits, Circuits, Tracts. Below 340px of row width the
 labels step down to caption size. Tabs have automatic height and allow labels
 to wrap within their cell when the reader enlarges text. Functions and Deficits paint the brain while in front: named
 regions in their colours, every other region in tissue colour, keyed on the stage. The selected tab uses teal text on the base surface
-and a full-cell 2px teal bottom rule on the pale navigation row. A 40px search field
+and a 2px teal bottom rule inset 8px from each tab edge on the base surface. A 40px search field
 starts each searchable task, with compact scope controls below it. Browse scope
 uses neutral text and a grey selected button in a transparent group. They share
-a pale task-control area with 16px top and bottom padding and an 8px gap, separated from
+a flat task-control area with 20px top padding, 12px bottom padding and a 12px gap, separated from
 the white index by a thin neutral rule. Each mode is a list; opening an item
 drills into
 its detail under one location bar (44px, navigation ground): “‹ mode” back,
@@ -430,16 +430,17 @@ does), then “N visible regions” (tract bundles in Tracts) with tabular digit
 and a quiet 24px Provenance text button opening a dialog of labelled rows
 built from the anatomy index and manifest.
 
-**Phones** (≤640px, or landscape ≤480px tall). The canvas is full bleed under
+**Phones and narrow windows** (≤800px, or landscape ≤480px tall). The canvas is full bleed under
 the sheet with peek, half, and full detents; short landscape uses a side
 sheet. The masthead (`max(52px, 3.25rem)`) shows the mark and the two-line data
 summary, growing with the reader's text size. The grip
-merges the selection name, side, and clear with the “Not clinical anatomy”
-statement on one row; the status bar hides. The stage plate holds the current view,
+groups the selection name, side, clear command, and “Not clinical anatomy”
+statement; the status bar hides. The stage plate holds the current view,
 Section ▾, Display ▾ as equal worded tools, with 4px label-to-chevron gaps
 and 4px horizontal padding; presets live in the View popover.
-Orientation letters and scale bar hide while a stage popover is open and at
-the full detent. Fine-pointer controls (36px) and rows (40px) become (44px) on
+The scale sits at the top left, with the top orientation letter 24px below
+it in upright and short landscape layouts. Orientation letters and scale bar
+hide while a stage popover is open and at the full detent. Fine-pointer controls (36px) and rows (38px) become (44px) on
 phones and coarse pointers. Keep safe-area insets and the one visible-viewport
 rectangle shared by renderer and chrome. The upright working detent shares the available height evenly with the anatomy;
 phone search controls use 8px gaps and vertical padding. The sheet settles on the iOS
@@ -451,7 +452,10 @@ of its handle, selection, or tabs marks the sheet `data-instant`, so the panel
 and its attached dock, orientation, and scale markings change immediately;
 subsequent pointer detent changes restore the normal transition.
 Sheet tabs mirror the desktop tabs without a rule above; peek pads for the home
-indicator.
+indicator. In short landscape, the selection occupies the first grip row and
+the disclaimer the second. Tabs use their natural full-label width, with
+nonshrinking, unwrapped labels and 12px inline padding; the measured tab row
+sets the side sheet’s peek width, preventing fragmented labels.
 
 Dialogs share sticky ruled headers and insets (20px desktop, 16px phone);
 Shortcuts and Provenance are bounded (560px), MRI viewers wide (1180px); all
@@ -460,14 +464,15 @@ go full-screen on phones.
 ## Elevation & Depth
 
 The workspace is flat: tonal fills and fine rules, no card shadows. Browse
-scope uses a neutral selected fill without a ring or shadow. Shadows are the
+scope uses a neutral selected fill without a ring or shadow. Selected segmented
+thumbs have a subtle 0 1px 2px contact shadow beneath their 1px state ring. Other shadows are the
 popover shadow (neutral
 black, 0 6px 16px plus a 1px contact shadow) on the masthead popovers, skip
 link, and dialogs, and the stronger overlay shadow on stage popovers. Tab
 underlines are state rules, not elevation. Stage markings are type with an
 opaque 3px rim and a stacked dark halo, not plates.
 
-**The Flat Workspace Rule.** Use tonal surfaces and fine borders for the workspace. Reserve shadows for popovers and dialogs.
+**The Flat Workspace Rule.** Use tonal surfaces and fine borders for the workspace. Reserve elevation for popovers and dialogs; segmented thumbs use only a subtle contact shadow.
 
 ## Shapes
 
@@ -503,23 +508,23 @@ spans and hidden from assistive technology.
 - **Segmented choices:** one vocabulary for every exclusive choice (atlas,
   colour, language, theme, single-key shortcuts, presets, cutting
   plane, hemisphere, MRI plane): quiet track, raised thumb with a 1px ring,
-  primary 600 label and no thumb shadow. The ring, not teal alone, marks the choice. Every group is
+  primary 600 label and a subtle contact shadow. The ring, not teal alone, marks the choice. Every group is
   one Tab stop with arrow, Home, and End movement (viewer/ui/roving.js).
-  The explorer scope uses a transparent group with a 4px gap, 15px labels,
+  The explorer scope uses a transparent group with a 4px gap, 13px labels,
   and a neutral tonal fill on the selected button, without a ring or shadow.
   Its buttons have a 32px desktop minimum height; phones draw 36px controls
   inside a 44px hit area. Keyboard and focus behavior stays the same.
 - **Mode tabs:** words with no cell dividers, at least 44px in the task panel
   at every desktop width and mirrored in the phone sheet. Automatic height,
   8px vertical padding, and wrapping labels accommodate enlarged reader text.
-  Selected is teal 600 on the base surface with a full-cell 2px teal bottom rule.
-  The row uses the pale navigation surface. Hover adds the
+  Selected is teal 600 on the base surface with a 2px teal bottom rule inset 8px.
+  The row uses the base surface. Hover adds the
   hover surface; bold width is held so nothing shifts. Tabs are never
   disabled. Repeated navigation responds immediately, without a colour fade.
 - **Anatomy tree:** a Whole brain | By system scope over the tree (By system
   opens the System picker beneath it and says the cortex is hidden). Whitespace
   and section labels separate the index
-  sections, with thin neutral category rules after the first; 40px rows leave
+  sections, with thin neutral category rules after the first; 38px rows leave
   anatomical names readable. Open
   group captions use weight 500 and stay on the base surface without a filled band or bottom
   rule. They remain sticky, with indentation distinguishing their regions; a group name shared by two vocabularies is
@@ -530,18 +535,19 @@ spans and hidden from assistive technology.
   their space without clipping or reflowing names. Targets are 32×32px on fine
   pointers and 44×44px on coarse pointers. Hidden is a struck eye in tertiary
   ink, never teal.
-- **Region detail:** a 24px intro inset and 24px/650 headline with a quiet
+- **Region detail:** a 20px intro inset and 24px/650 headline with a quiet
   clear (×), followed by hemisphere and anatomical group as subordinate
-  context. Their semantic labels remain accessible without repeating the
+  13px context. Their semantic labels remain accessible without repeating the
   values. Notes and research facts follow: area or volume, centroid, and source
-  label, with aligned 15px labels and tabular values. A thin neutral rule then
-  separates the compact action row: tonal Focus and Isolate, quiet Hide, and
+  label, with 13px labels and 14px tabular values in a lightly ruled ledger.
+  Values use weight 500, the main area or volume uses 600, and source text
+  recedes to 13px. The compact action row follows with 16px separation: tonal Focus and Isolate, quiet Hide, and
   the filled Linked MRI action. All four share a row where they fit and wrap
   by content at enlarged text sizes. Long
   source values stack; long ID lists open as a native disclosure accessible
   with keyboard and touch. The atlas comparison
   follows, with Region / Area / Share caption headings, a flexible name
-  column, 4.5rem area and 3.25rem share columns, aligned tabular figures, and
+  column, 4.5rem area and 3.25rem share columns, aligned 13px/500 tabular figures, and
   rules only at the header and unassigned remainder. Detail sections are
   separated by 24px; functional-network rows use space rather than rules.
   Functional division, Neuropsychological domains, and Functional networks are
@@ -551,30 +557,31 @@ spans and hidden from assistive technology.
   the source notes and caveats beside their map.
   On phones the grip carries a compact readout at peek and while browsing.
   An open detail keeps its clear command in a 44px grip and shows the complete,
-  wrapping name once in the body at 18px before its context.
+  wrapping name once in the body at 17px before its context.
   Constituents, neuropsychology, and guided-circuit links follow.
 - **Deficit profile:** a ruled status strip first, saying what the stage now
   shows, with a quiet “Restore previous view” when there is one; then
   headline, definition, caveat, and collapsible association rows whose
   mapped regions stay in reach while closed.
 - **Circuit lesson:** headline, role, description, the landmark's actions and
-  datasheet, then the lesson's notes as full-width disclosures at the foot. A
+  datasheet, then the lesson's notes as a cohesive index of ruled disclosures at the foot. A
   selection that is not the landmark becomes a ruled 16px second subject.
-- **Tracts:** one row per tract at a 32px pitch, separated by space not
+- **Tracts:** one flexible-height row per tract, separated by space not
   rules; name then lettered L | R (or numbered segment) 28×24 tonal keys drawn
-  as selection: teal wash, doubled teal edge, 600 letter. Metrics in one 12px
-  line. Deficit and circuit group headings share the Anatomy section label.
+  as selection: teal wash, 1px teal edge, 600 letter. Names use weight 500;
+  metrics use 13px tabular type with stronger counts. Settings and provenance
+  follow with a fine rule. Deficit and circuit group headings share the Anatomy section label.
   With a mouse, list-row chevrons show on hover, focus, or selection only. Scope notes in an “About this data”
   disclosure.
 - **Notice:** one row under the mode tabs, square, on the tonal ground with
-  primary ink at 15px; in the phone sheet it sits in the grip, so it shows at
+  primary ink at 14px; in the phone sheet it sits in the grip, so it shows at
   every detent and beside any detail. It says in the reader's words what
   changed or failed (a dropped colouring, a download, link fields not
   applied), stays until the next action, and ends with a quiet × that
   dismisses it. When only a reload can help, a tonal Reload sits before the
   ×. No colour of its own, not danger red; the page's announcer speaks it, so
   the row is not a live region.
-- **Disclosure:** every disclosure shares one rhythm: 36px summary, 15px/500
+- **Disclosure:** every disclosure shares one rhythm: 36px summary, 14px/500
   primary ink, a stroked chevron that turns on open, teal on hover.
 - **Dissection dock:** the hint alone while nothing can be undone; otherwise
   “N parts hidden · Undo · Restore all”. Absent while loading and, on phones,

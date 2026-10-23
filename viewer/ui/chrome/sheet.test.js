@@ -39,13 +39,16 @@ function sheetFixture(t, callbacks = {}, { width = 390, height = 800 } = {}) {
   };
   Object.assign(doc, { getElementById: byId, createElement: element, body: { append() {} } });
   globalThis.document = doc;
+  const matches = query => {
+    const landscape = width > height;
+    const maxWidth = Number(query.match(/max-width:\s*(\d+)px/)?.[1] ?? 0);
+    return query === '(orientation: landscape)' ? landscape
+      : width <= maxWidth || (height <= 480 && landscape);
+  };
   globalThis.matchMedia = query => {
     if (!queries.has(query)) {
       const media = new EventTarget();
-      const landscape = width > height;
-      media.matches = query === PHONE_QUERY ? width <= 640 || (height <= 480 && landscape)
-        : query === '(orientation: landscape)' ? landscape
-        : height <= 480 && landscape;
+      media.matches = matches(query);
       queries.set(query, media);
     }
     return queries.get(query);
@@ -75,14 +78,59 @@ function sheetFixture(t, callbacks = {}, { width = 390, height = 800 } = {}) {
     Object.defineProperties(event, { detail: { value: detail }, target: { value: target } });
     byId(id).dispatchEvent(event);
   }
+  function resize(nextWidth = width, nextHeight = height) {
+    width = nextWidth;
+    height = nextHeight;
+    globalThis.innerWidth = width;
+    for (const [query, media] of queries) {
+      const next = matches(query);
+      if (next === media.matches) continue;
+      media.matches = next;
+      media.dispatchEvent(new Event('change'));
+    }
+    windowEvents.dispatchEvent(new Event('resize'));
+  }
   return {
     doc, byId, pointer, click, controller,
     blur: () => windowEvents.dispatchEvent(new Event('blur')),
-    resize: () => windowEvents.dispatchEvent(new Event('resize')),
+    resize,
     landscape: matches => changeMedia(true, matches),
     phone: matches => changeMedia(false, matches),
   };
 }
+
+test('a 681px viewport uses sheet detents through 800px and restores desktop rails above them', t => {
+  const shells = [];
+  const insets = [];
+  const { byId, click, controller, resize } = sheetFixture(t, {
+    onShell: shell => shells.push(shell),
+    onInsets: next => insets.push(next),
+  }, { width: 681, height: 800 });
+  const sheet = byId('sheet');
+  assert.equal(controller.isPhone, true);
+  assert.equal(shells.at(-1), 'sheet');
+  assert.equal(sheet.style.height, '132px');
+  click('sheet-handle', 0);
+  assert.equal(sheet.style.height, '400px');
+  click('sheet-handle', 0);
+  assert.equal(sheet.style.height, '672px');
+
+  resize(821);
+  assert.equal(controller.isPhone, false);
+  assert.equal(shells.at(-1), 'rails');
+  assert.equal(sheet.style.height, undefined);
+  assert.equal(byId('sheet-grip').hidden, true);
+  assert.deepEqual(insets.at(-1), { top: 0, right: 0, bottom: 0, left: 0 });
+
+  resize(800);
+  assert.equal(controller.isPhone, true);
+  assert.equal(sheet.style.height, '672px', 'returning to the sheet preserves its previous detent');
+  assert.equal(byId('sheet-grip').hidden, false);
+  resize(1000);
+  assert.equal(controller.isPhone, false);
+  assert.equal(sheet.style.height, undefined);
+  assert.equal(shells.at(-1), 'rails');
+});
 
 test('a narrow landscape viewport taller than 480px keeps the bottom-sheet axis', t => {
   const insets = [];
