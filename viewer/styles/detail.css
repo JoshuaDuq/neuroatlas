@@ -18,7 +18,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-1) var(--space-2);
-  margin-top: var(--space-2);
+  margin-top: var(--space-1);
   color: var(--text-secondary);
   font-size: var(--text-ui);
   line-height: var(--lh-ui);
@@ -35,11 +35,17 @@
 .selection-empty { font-size: var(--text-title); font-weight: 600; line-height: var(--lh-title); overflow-wrap: normal; }
 .selection-empty:not([hidden]) + #selected-hint { margin-top: var(--space-1); line-height: var(--lh-ui); }
 #region-detail > .actions {
-  gap: var(--space-2);
+  gap: var(--space-1);
   margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
 }
-#region-detail > .actions button { flex: 1 1 5rem; min-width: min-content; }
-#region-detail > .actions #region-mpr { flex-basis: 100%; }
+#region-detail > .actions button { flex: 1 1 auto; min-width: min-content; padding-inline: var(--space-2); }
+#region-detail > .actions #region-mpr { margin-left: auto; }
+#region-detail > .actions #hide-region { background: transparent; color: var(--text-secondary); }
+@media (hover: hover) and (pointer: fine) {
+  #region-detail > .actions #hide-region:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+}
 /*
  * Under a lesson, the landmark's own region is already the headline above.
  * Any other selection is a smaller second subject, ruled off, with no caption.
@@ -53,17 +59,21 @@
 /* Neuropsychology and In guided circuits follow this body as sections of their own and bring their own 24px. */
 #region-detail:has(~ :is(#clinical-region, #circuit-region):not([hidden])) { padding-bottom: 0; }
 
-/* One rule introduces the facts. Aligned labels and space separate their rows. */
+/* A quiet ledger keeps labels, measurements and source information easy to scan. */
 .datasheet { margin-top: var(--space-4); }
 #selected-facts {
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.5fr);
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  column-gap: var(--space-3);
   align-items: baseline;
-  margin-top: var(--space-4);
-  padding-top: var(--space-1);
+  margin-top: var(--space-5);
+  padding-top: 0;
+  border-top: 0;
 }
 #selected-facts dt,
-#selected-facts dd { min-width: 0; padding-block: 5px; border-bottom: 0; overflow-wrap: anywhere; }
-#selected-facts dt { font-size: var(--text-caption); line-height: var(--lh-caption); }
+#selected-facts dd { min-width: 0; padding: var(--space-2) 0; border-bottom: 0; overflow-wrap: anywhere; }
+#selected-facts dt { font-size: var(--text-ui); line-height: var(--lh-ui); }
+#selected-facts dd { font-variant-numeric: tabular-nums; }
+#selected-facts #fact-metric { font-weight: 600; }
 #region-detail > .detail-section { margin-top: var(--space-6); }
 /* A value too long to share its label's line (a list of source ids, a reference's full name) takes the line under it. */
 #selected-facts .stacked { grid-column: 1 / -1; }
@@ -75,6 +85,18 @@
 
 /* A section's note or caveat, under the rows it qualifies. */
 .detail-note { margin-top: var(--space-2); font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
+
+/* Supporting maps read as a compact index; each disclosure retains its state between selections. */
+#region-detail > .evidence-section {
+  margin-top: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+#region-detail > .evidence-section:not([hidden]) { padding-block: var(--space-1); }
+#region-detail > .evidence-section > summary { min-height: var(--control-height); }
+.evidence-section > summary h3 { font: inherit; }
+#region-detail > .evidence-section[open] { padding-bottom: var(--space-4); }
+.evidence-section .network-list { padding-top: var(--space-1); }
+.evidence-section .network-map { padding-top: var(--space-2); }
 
 /* Overlap with the other atlas ------------------------------------------- */
 .comparison-list { list-style: none; margin: 0; padding: 0; }
@@ -207,9 +229,8 @@
 .network-map {
   padding-bottom: var(--space-2);
   font-size: var(--text-caption);
-  font-weight: 600;
+  font-weight: 500;
   line-height: var(--lh-caption);
-  letter-spacing: 0.02em;
   color: var(--text-secondary);
 }
 .detail-note + .network-map { margin-top: var(--space-4); }

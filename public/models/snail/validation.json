@@ -458,7 +458,7 @@
     }
   },
   "neuropsych_domains": {
-    "assigned_areas": 235,
+    "assigned_areas": 264,
     "areas_per_domain": {
       "executive": 17,
       "working-memory": 79,
@@ -470,7 +470,27 @@
       "visual-perception": 139,
       "motor": 116,
       "auditory-perception": 97,
-      "emotion": 59
+      "emotion": 59,
+      "inhibition": 31,
+      "flexibility": 33,
+      "planning": 41,
+      "decision-making": 41,
+      "spatial-attention": 49,
+      "recognition-memory": 13,
+      "semantic-memory": 12,
+      "reading": 78,
+      "naming": 33,
+      "phonological": 69,
+      "speech-production": 34,
+      "number": 18,
+      "faces": 69,
+      "colour": 46,
+      "music": 28,
+      "touch": 73,
+      "pain": 59,
+      "theory-of-mind": 30,
+      "fear": 29,
+      "reward": 44
     }
   },
   "nextbrain_structures": {

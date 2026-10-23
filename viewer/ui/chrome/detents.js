@@ -19,12 +19,12 @@ export const DETENTS = ['peek', 'half', 'full'];
 /**
  * Sheet spans in pixels for the space available, in detent order.
  *
- * Upright the sheet grows over a tall screen: half is a little over half of
- * it, five list rows on a 390 by 844 phone with the brain still clear above,
+ * Upright the sheet grows over a tall screen: half shares the screen evenly
+ * between the working panel and the anatomy,
  * and full leaves a fixed band of picture rather than a fraction, so the
  * preview above a raised sheet is the same deliberate size on every phone.
- * Sideways it grows across a wide screen, where the same half leaves the
- * anatomy a square too small to read, so it takes less.
+ * Sideways the working rest also shares the screen evenly; its full rest is
+ * narrower so the model remains readable beside it.
  */
 export function detentHeights(available, { peek, half, full = 1, picture = 0 }) {
   const span = Math.max(0, available);
@@ -38,7 +38,7 @@ export function detentHeights(available, { peek, half, full = 1, picture = 0 }) 
 }
 
 /** Peek is the grip's own height when it can be measured; this is the fallback. */
-export const UPRIGHT_DETENTS = { peek: 132, half: 0.58, picture: 128 };
+export const UPRIGHT_DETENTS = { peek: 132, half: 0.5, picture: 128 };
 
 /**
  * Proportions for a sheet that grows across the screen rather than up it. Peek is the narrowest

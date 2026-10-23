@@ -3,18 +3,19 @@ import { t } from '../../i18n/translations.js';
 import { isIndependentTractReference } from '../../diffusion/presentation.js';
 import { regionGroup } from '../panels/navigator.js';
 
-export const MODES = ['anatomy', 'deficits', 'circuits', 'diffusion'];
+export const MODES = ['anatomy', 'functions', 'deficits', 'circuits', 'diffusion'];
 
 /** The selected tree row. */
 const SELECTED_ROW = '#tree [aria-selected="true"]';
 /** A list's current item, which a list that comes back into view shows. */
-const CURRENT_ITEM = `${SELECTED_ROW}, #deficit-list [aria-pressed="true"], `
+const CURRENT_ITEM = `${SELECTED_ROW}, #function-list [aria-pressed="true"], #deficit-list [aria-pressed="true"], `
   + '#circuit-landmarks [aria-current="step"], #circuit-list [aria-pressed="true"]';
 
 /** Whether the current mode has anything for the detail view to show. */
 export function detailAvailable(state) {
   if (isIndependentTractReference(state)) return false;
   if (state.selectedRegion) return true;
+  if (state.explorer === 'functions') return Boolean(state.selectedFunction);
   if (state.explorer === 'deficits') return Boolean(state.selectedDeficit);
   if (state.explorer === 'circuits') return Boolean(state.lesson?.circuit);
   return false;
@@ -36,6 +37,7 @@ export function viewAfterUpdate({ view, reference, wasAvailable, available, prev
 const LISTED_IN = {
   region: ['anatomy'],
   landmark: ['anatomy', 'circuits'],
+  function: ['functions'],
   deficit: ['deficits'],
   lesson: ['circuits'],
 };
@@ -51,7 +53,7 @@ export function stripVisible({ view, mode, selection }) {
 /**
  * The location bar's path: the mode the detail returns to, then the place in it: the tree
  * group that holds a region read from Anatomy, or the `place` another mode names (a lesson's
- * circuit, a deficit's group).
+ * circuit, a function's group, a deficit's group).
  */
 export function locationCrumbs({ mode, place, group, labels }) {
   const crumbs = [{ kind: 'list', label: labels[mode] }];
@@ -78,6 +80,11 @@ function createModeTabs(bar, prefix, onChoose) {
   const onKeyDown = event => {
     const index = buttons.indexOf(document.activeElement);
     if (index < 0) return;
+    // Vertical arrows must not leave this horizontal tab row for the page's anatomy tree.
+    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+      event.preventDefault();
+      return;
+    }
     const last = buttons.length - 1;
     const next = {
       ArrowRight: index === last ? 0 : index + 1,
@@ -111,7 +118,7 @@ function createModeTabs(bar, prefix, onChoose) {
 }
 
 /**
- * The task panel: four content modes over a list, and a drill-in detail view.
+ * The task panel: five content modes over a list, and a drill-in detail view.
  * It owns the mode tabs, the detail's location bar and the list/detail switch
  * in both shells; the phone sheet only decides how much of the panel is on screen.
  * `onReturn` reports the reader stepping back to a list, as opposed to a list
@@ -133,9 +140,9 @@ export function createWorkspace({ catalog, onMode, onClear, onViewChange, onRetu
   const groupCrumb = document.getElementById('detail-group');
   const groupItem = groupCrumb.closest('li');
   const query = globalThis.matchMedia(PHONE_QUERY);
-  const desktopTabs = createModeTabs(document.getElementById('workspace-tabs'), 'workspace-tab', choose);
-  const sheetTabs = createModeTabs(document.getElementById('sheet-tabs'), 'sheet-tab', choose);
   const bar = document.getElementById('workspace-tabs');
+  const desktopTabs = createModeTabs(bar, 'workspace-tab', choose);
+  const sheetTabs = createModeTabs(document.getElementById('sheet-tabs'), 'sheet-tab', choose);
   let owned = false;
   let view = 'list';
   let mode = 'anatomy';

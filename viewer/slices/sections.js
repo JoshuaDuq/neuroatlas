@@ -66,7 +66,7 @@ export class BrainSections extends EventTarget {
         s.internalVisible,
         s.surfaceColor,
         s.functionalLevel,
-        s.domain,
+        s.paint?.id ?? null,
         s.detail,
         s.spinalCordVisible,
         [...(s.hiddenRegions ?? [])].sort(),

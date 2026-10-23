@@ -256,6 +256,9 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
       if (!matchingAnatomy) throw new Error('Tracts can only overlay their own SNAIL anatomy.');
       overlayVisible = true;
     },
+    disableOverlay() {
+      overlayVisible = false;
+    },
     setClippingPlanes: engine.setClippingPlanes,
     reference(language) {
       return { label: catalog.name[language], description: DIFFUSION_TEXT[language].outlineLimit,

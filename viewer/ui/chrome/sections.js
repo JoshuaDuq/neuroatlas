@@ -2,6 +2,7 @@ import { Vector3 } from 'three';
 import { centeredFrame, offsetThrough, pointOnFrame } from '../../slices/coordinates.js';
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 import { failureNotice } from '../../i18n/errors.js';
+import { paintKind } from '../../state/paint.js';
 import { PHONE_QUERY } from '../../render/device.js';
 import { STRUCTURE_LABELS } from '../../catalog/structure-groups.js';
 import { STRUCTURE_LABELS_FR } from '../../catalog/structure-groups.fr.js';
@@ -490,12 +491,15 @@ export function createSectionControls(sections, {
       'cab-np': state.cutAtlas === sections.model.cabNp?.atlas ? cutsI18n.cabNpByArea : cutsI18n.cabNpOtherLabels,
       functional: state.cutAtlas === sections.model.functionalRegions?.atlas
         ? cutsI18n.functionalByArea : cutsI18n.functionalOtherLabels,
-      domains: state.cutAtlas === sections.model.domains?.atlas
-        ? cutsI18n.domainsByArea : cutsI18n.domainsOtherLabels,
-    }[lastAppState?.surfaceColor];
-    const mri = lastAppState?.surfaceColor === 'mri';
+    }[lastAppState?.paint ? null : lastAppState?.surfaceColor];
+    // A function's paint, like the masthead's HCP-MMP colourings, has areas only on HCP-MMP labels.
+    const paintNote = paintKind(lastAppState?.paint) === 'function'
+      ? (state.cutAtlas === sections.model.domains?.atlas ? cutsI18n.domainsByArea : cutsI18n.domainsOtherLabels)
+      : null;
+    const mri = lastAppState?.surfaceColor === 'mri' && !lastAppState?.paint;
     const spacingText = decimal(spacing, 2, currentLang, { trim: true });
-    const note = colourNote ? ` · ${colourNote}` : '';
+    const shownNote = colourNote ?? paintNote;
+    const note = shownNote ? ` · ${shownNote}` : '';
     // The sections report a failure by its code; the words are the reader's.
     const said = state.status === 'loading' ? cutsI18n.statusPreparing
       : state.error ? failureNotice({ code: state.error }, currentLang, 'section').text

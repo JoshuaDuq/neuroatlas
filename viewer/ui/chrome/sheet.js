@@ -32,7 +32,8 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   const viewport = document.getElementById('viewport');
 
   const query = globalThis.matchMedia?.(PHONE_QUERY) ?? { matches: false, addEventListener() {}, removeEventListener() {} };
-  const landscapeQuery = globalThis.matchMedia?.('(orientation: landscape)')
+  // Match the side-sheet rule in phone.css; a narrow, taller landscape window still uses the bottom sheet.
+  const landscapeQuery = globalThis.matchMedia?.('(max-height: 480px) and (orientation: landscape)')
     ?? { matches: false, addEventListener() {}, removeEventListener() {} };
 
   let detent = 'peek';
@@ -122,22 +123,28 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   // Three rests are not expanded-or-not, so the handle is named for what a press does.
   const nameHandle = () => handle.setAttribute('aria-label', t(lang, 'sheet')[detent === 'full' ? 'collapse' : 'expand']);
 
-  function setDetent(next, { notify = true } = {}) {
+  function setDetent(next, { notify = true, instant = false } = {}) {
     detent = next;
     sheet.dataset.detent = next;
+    sheet.toggleAttribute('data-instant', instant);
     nameHandle();
     applySpan(heights()[next]);
     if (notify) onDetent?.(next);
   }
 
   /** Content chosen with the sheet at rest should be seen; a raised sheet stays where it was put. */
-  function raise() {
-    if (phone && detent === 'peek') setDetent('half');
+  function raise({ instant = false } = {}) {
+    if (phone && detent === 'peek') setDetent('half', { instant });
   }
 
   // ---- dragging ---------------------------------------------------------
 
   let press = null;
+
+  function cancelPress() {
+    press = null;
+    sheet.dataset.dragging = 'false';
+  }
 
   const onPointerDown = event => {
     // A second finger mid-drag would make the sheet jump to it.
@@ -189,14 +196,27 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
     setDetent(settleDetent(detent, span, heights(), velocity));
   };
 
-  const onHandle = () => {
-    setDetent(detent === 'peek' ? 'half' : stepDetent(detent, detent === 'full' ? -2 : 1));
+  // A release outside the app may never reach the window after it loses focus.
+  const onBlur = () => {
+    if (!press) return;
+    cancelPress();
+    if (phone) setDetent(detent);
   };
-  const onStrip = () => {
+  const onPointerCancel = event => {
+    if (press?.id === event.pointerId) onBlur();
+  };
+
+  const onHandle = event => {
+    setDetent(detent === 'peek' ? 'half' : stepDetent(detent, detent === 'full' ? -2 : 1), { instant: event.detail === 0 });
+  };
+  const onStrip = event => {
+    const focused = document.activeElement === selection;
+    raise({ instant: event.detail === 0 });
     onSelection?.();
-    raise();
+    // The raised detail hides the grip title, including when reopening the same detail from peek.
+    if (focused) document.getElementById('detail-back').focus({ preventScroll: true });
   };
-  const onTabClick = event => { if (event.target.closest('[role="tab"]')) raise(); };
+  const onTabClick = event => { if (event.target.closest('[role="tab"]')) raise({ instant: event.detail === 0 }); };
 
   /*
    * The press starts on the grip but the finger leaves it at once, so the
@@ -207,7 +227,8 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   grip.addEventListener('pointerdown', onPointerDown);
   globalThis.addEventListener('pointermove', onPointerMove);
   globalThis.addEventListener('pointerup', onPointerUp);
-  globalThis.addEventListener('pointercancel', onPointerUp);
+  globalThis.addEventListener('pointercancel', onPointerCancel);
+  globalThis.addEventListener('blur', onBlur);
   handle.addEventListener('click', onHandle);
   selection.addEventListener('click', onStrip);
   // The name and its clear vanish with the selection; the tab in front is always on screen.
@@ -233,6 +254,7 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   /** Hand the panel back to the grid. */
   function teardown() {
     grip.hidden = true;
+    sheet.toggleAttribute('data-instant', false);
     sheet.style.removeProperty('height');
     sheet.style.removeProperty('width');
     sheet.style.removeProperty('top');
@@ -250,6 +272,8 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   }
 
   function onModeChange() {
+    // A press measured in the old shell or orientation cannot continue in the new one.
+    cancelPress();
     phone = query.matches;
     measureSafe();
     if (phone) setup();
@@ -259,6 +283,7 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   query.addEventListener('change', onModeChange);
   landscapeQuery.addEventListener('change', onModeChange);
   const onResize = () => {
+    cancelPress();
     measureSafe();
     if (phone) applySpan(heights()[detent]);
   };
@@ -300,7 +325,8 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
       grip.removeEventListener('pointerdown', onPointerDown);
       globalThis.removeEventListener('pointermove', onPointerMove);
       globalThis.removeEventListener('pointerup', onPointerUp);
-      globalThis.removeEventListener('pointercancel', onPointerUp);
+      globalThis.removeEventListener('pointercancel', onPointerCancel);
+      globalThis.removeEventListener('blur', onBlur);
       handle.removeEventListener('click', onHandle);
       selection.removeEventListener('click', onStrip);
       selectionClear.removeEventListener('click', onClearClick);

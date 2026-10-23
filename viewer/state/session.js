@@ -52,8 +52,14 @@ export function createSession({ views, theme = 'dark', lang = 'en' }) {
     view: 'oblique',
     query: '',
     explorer: 'anatomy',
+    functionQuery: '',
+    selectedFunction: null,
     clinicalQuery: '',
     selectedDeficit: null,
+    // One of the open deficit's findings shown alone, or null for all of them.
+    selectedFinding: null,
+    // The reader chose a masthead colour or atlas over the open function's or deficit's paint.
+    paintLifted: false,
     expanded: new Set(),
     theme,
     lang: ['en', 'fr'].includes(lang) ? lang : 'en',
@@ -78,14 +84,18 @@ export function createSession({ views, theme = 'dark', lang = 'en' }) {
     setQuery: query => act({ query }),
 
     setExplorer(explorer) {
-      if (!['anatomy', 'deficits', 'circuits', 'diffusion'].includes(explorer)) {
+      if (!['anatomy', 'functions', 'deficits', 'circuits', 'diffusion'].includes(explorer)) {
         throw new Error(`Unknown explorer: ${explorer}`);
       }
-      return act({ explorer });
+      return act({ explorer, paintLifted: false });
     },
 
+    setFunctionQuery: functionQuery => act({ functionQuery }),
+    setFunction: selectedFunction => act({ selectedFunction, paintLifted: false }),
     setClinicalQuery: clinicalQuery => act({ clinicalQuery }),
-    setDeficit: selectedDeficit => act({ selectedDeficit }),
+    setDeficit: selectedDeficit => act({ selectedDeficit, selectedFinding: null, paintLifted: false }),
+    setFinding: selectedFinding => act({ selectedFinding, paintLifted: false }),
+    liftPaint: () => act({ paintLifted: true }),
 
     toggleGroup(name) {
       const expanded = new Set(state.expanded);

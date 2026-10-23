@@ -2,9 +2,9 @@
 name: NeuroAtlas
 description: A clinical workspace around source-faithful brain anatomy on a dark stage.
 colors:
-  text-primary: "#1c242b"
-  text-secondary: "#4b5660"
-  text-tertiary: "#5d6872"
+  text-primary: "#20272c"
+  text-secondary: "#515b63"
+  text-tertiary: "#667078"
   accent: "#156b6d"
   accent-hover: "#0d5557"
   accent-wash: "#e8f3f2"
@@ -13,14 +13,14 @@ colors:
   primary-ink: "#ffffff"
   danger: "#a61b1b"
   surface-base: "#ffffff"
-  surface-navigation: "#f6f8f9"
-  surface-sunken: "#f0f3f5"
-  surface-canvas: "#e4e7ea"
-  surface-hover: "#f2f4f5"
+  surface-navigation: "#f8f9fa"
+  surface-sunken: "#f1f3f4"
+  surface-canvas: "#eef0f2"
+  surface-hover: "#f3f5f6"
   surface-raised: "#ffffff"
-  surface-tonal: "#eef1f3"
-  surface-tonal-hover: "#e3e8eb"
-  border-subtle: "#e1e4e7"
+  surface-tonal: "#f1f3f4"
+  surface-tonal-hover: "#e7ebee"
+  border-subtle: "#e2e6e9"
   border-control: "#7f8a94"
   thumb-ring: "#78838d"
   dark-text-primary: "#e9ebee"
@@ -121,7 +121,7 @@ rounded:
   track: 1px
   swatch: 2px
   thumb: 3px
-  control: 5px
+  control: 4px
   panel: 8px
 spacing:
   space-1: 4px
@@ -158,8 +158,13 @@ components:
     rounded: "{rounded.control}"
     padding: 0 12px
     height: 36px
+  workspace-panel:
+    backgroundColor: "{colors.surface-base}"
+    width: clamp(340px, 25rem, 34vw)
+  workspace-panel-compact:
+    width: 340px
   masthead-select:
-    backgroundColor: "transparent"
+    backgroundColor: transparent
     textColor: "{colors.text-primary}"
     typography: "{typography.label}"
     rounded: "{rounded.control}"
@@ -171,17 +176,40 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.control}"
     padding: 0 36px 0 32px
-    height: 40px
+    height: auto
     width: 100%
-  mode-tab-selected:
-    backgroundColor: "{colors.surface-base}"
-    textColor: "{colors.text-primary}"
+  mode-tab:
+    backgroundColor: "{colors.surface-navigation}"
+    textColor: "{colors.text-secondary}"
     typography: "{typography.label}"
     rounded: "{rounded.flat}"
-    padding: 0 8px
-    height: 44px
-  location-bar:
+    padding: 8px 4px
+    height: auto
+  mode-tab-selected:
     backgroundColor: "{colors.surface-base}"
+    textColor: "{colors.accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.flat}"
+    padding: 8px 4px
+    height: auto
+  task-controls:
+    backgroundColor: "{colors.surface-navigation}"
+    rounded: "{rounded.flat}"
+    padding: 16px 24px
+  visibility-control:
+    backgroundColor: transparent
+    textColor: "{colors.text-secondary}"
+    rounded: "{rounded.control}"
+    size: 32px
+  visibility-control-touch:
+    size: 44px
+  supporting-map-summary:
+    textColor: "{colors.text-primary}"
+    rounded: "{rounded.flat}"
+    padding: 4px 0
+    height: auto
+  location-bar:
+    backgroundColor: "{colors.surface-navigation}"
     textColor: "{colors.text-secondary}"
     rounded: "{rounded.flat}"
     padding: 0 8px 0 24px
@@ -198,12 +226,19 @@ components:
     rounded: "{rounded.thumb}"
     padding: 0 12px
     height: 32px
+  browse-scope-selected:
+    backgroundColor: "{colors.surface-tonal}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.label}"
+    rounded: "{rounded.control}"
+    padding: 4px 8px
+    height: 32px
   anatomical-row-selected:
     backgroundColor: "{colors.accent-wash}"
     textColor: "{colors.accent}"
     rounded: "{rounded.flat}"
     padding: 8px 24px
-    height: 36px
+    height: 40px
   tract-part-selected:
     backgroundColor: "{colors.accent-wash}"
     textColor: "{colors.accent}"
@@ -214,7 +249,7 @@ components:
   dissection-dock:
     backgroundColor: "{colors.surface-navigation}"
     rounded: "{rounded.flat}"
-    padding: 0 20px
+    padding: 0 24px
     height: 41px
   stage-toolbar:
     backgroundColor: "{colors.overlay-plate}"
@@ -259,7 +294,7 @@ independent palettes.
 **Key Characteristics:**
 
 - Anatomy leads; controls support it.
-- Three homes: masthead = data, panel = modes and drill-in, stage = section and display tools.
+- Three homes: masthead = data, panel = modes, task controls and drill-in, stage = section and display tools.
 - One task panel with clear task groups and quiet scientific tables; small corners only on controls.
 - Three button ranks, one segmented vocabulary, one disclosure, one chevron.
 - Flat surfaces; clear selected, focused, and disabled states.
@@ -271,8 +306,8 @@ theme-independent stage palette.
 
 ### Primary
 
-Restrained teal marks selected anatomy, scope selection washes, links, and
-the mode tab’s inset underline; the selected mode’s text stays neutral. The one filled button reads `--primary-fill`; in the dark
+Restrained teal marks selected anatomy, links, and the selected mode’s text
+and full-cell underline. Browse scope remains neutral. The one filled button reads `--primary-fill`; in the dark
 theme, on the stage, and in the MRI viewer that fill is a deeper teal so it
 does not outshine the anatomy, with white ink.
 
@@ -280,6 +315,10 @@ does not outshine the anatomy, with white ink.
 
 Three near-neutral inks set hierarchy. Base panels sit on a cool canvas; navigation,
 sunken, hover, and tonal surfaces separate controls by small tonal shifts.
+The search area and mode-tab row use the pale navigation surface, with a white
+selected tab and white index separated by fine rules. Browse scope has a transparent group and a neutral
+tonal fill on the selected button, without a ring or shadow. The status and
+detail-location bars use the pale navigation ground.
 Subtle borders divide content; control borders (3:1) identify fields; the
 thumb ring (3:1 against the track) marks a selected segment. Danger is for
 errors only. The dark theme keeps every role in neutral graphite.
@@ -322,42 +361,60 @@ groups; an absent value is an em dash, never zero.
 
 ## Layout
 
-Desktop is a full-height grid: masthead (56px) across, task panel (352px;
-300px at 641–1000px) beside the stage, status bar (32px) across. No outer
+Desktop is a full-height grid: masthead (`max(64px, 4rem)`) across, task panel
+(`clamp(340px, 25rem, 34vw)`, usually 400px at the default text size on a wide desktop) beside the stage, status bar (`max(28px, 1.75rem)`)
+across. At 641–1000px the panel is 340px wide. No outer
 padding; 1px separators; panel insets (24px desktop, 16px tablet and phone);
-shared 4px rhythm. These dimensions grow with the reader's text size.
+shared 4px rhythm. The grid fits the visible viewport without a fixed minimum
+height. Text-aware dimensions grow with the reader's text size.
 
 **Masthead (data).** A 24px cut-away mark and 18px name occupy the panel
-column, with a vertical divider aligned to the panel edge. The left-weighted
-data bar starts on the stage column; fine vertical rules and 16px insets
-separate its fields. A 13px caption sits above each 28px native select,
+column, with a vertical divider aligned to the panel edge. Mode tabs remain
+in the task panel at every desktop width, keeping navigation stable and
+leaving room for labelled native data controls. The data bar starts
+on the stage column; field spacing groups Subject and Atlas, with a single
+subtle vertical rule before Colour separating identity from presentation. A 13px caption sits above each 28px native select,
 with a 15px/500 value for Subject, Atlas, Colour (Tissue, T1, Regions,
-Networks), and Internal anatomy. Selects are transparent until hover, focus,
-or opening adds the tonal ground. A fine rule separates the trailing actions.
+Networks), and Internal anatomy. Native selects are transparent at rest;
+hover, focus, or opening adds the tonal ground. Popover selects use the pale
+navigation ground.
 When the bar does not fit (measured, not a fixed breakpoint;
-always in short landscape) it collapses to a summary button, “Subject · Atlas ·
-Colour”, that opens the same fields as a 320px popover; as room shrinks the
-internal anatomy drops, then colour, then atlas before the subject truncates. At the end:
+always in short landscape) it collapses to a two-line summary button: the
+600-weight subject above quieter 13px Atlas · Colour · Internal anatomy settings.
+It opens the same fields as a 320px popover. As room shrinks, internal anatomy,
+then colour, then atlas drop from the second line; the subject truncates on
+its own line. The accessible name retains every value. At the end:
 fullscreen, Save image, and a ⋯ settings popover of labelled rows (Language,
 Theme, Single-key shortcuts), then Keyboard shortcuts as a menu item; on
 phones Full screen and Provenance join the menu. Settings are bounded by
 the available viewport height and scroll vertically when needed. A “Skip to model” link is
 the first Tab stop, invisible until focused.
 
-**Task panel (modes and drill-in).** One row of word tabs (44px):
-Anatomy, Deficits, Circuits, Tracts. The selected tab uses primary neutral
-text on the base surface and a 2px teal bottom rule inset 12px from each edge. A 40px search field starts each searchable task,
-with compact scope controls below it. Each mode is a list; opening an item
+**Task panel (task controls and drill-in).** One row of word tabs (at least
+44px, `max(44px, 2.75rem)` on desktop) sits in the panel at every desktop width:
+Anatomy, Functions, Deficits, Circuits, Tracts. Below 340px of row width the
+labels step down to caption size. Tabs have automatic height and allow labels
+to wrap within their cell when the reader enlarges text. Functions and Deficits paint the brain while in front: named
+regions in their colours, every other region in tissue colour, keyed on the stage. The selected tab uses teal text on the base surface
+and a full-cell 2px teal bottom rule on the pale navigation row. A 40px search field
+starts each searchable task, with compact scope controls below it. Browse scope
+uses neutral text and a grey selected button in a transparent group. They share
+a pale task-control area with 16px top and bottom padding and an 8px gap, separated from
+the white index by a thin neutral rule. Each mode is a list; opening an item
 drills into
-its detail under one location bar (44px, base ground): “‹ mode” back,
+its detail under one location bar (44px, navigation ground): “‹ mode” back,
 or in a lesson the circuit name with a “n of N” stepper. A selection strip
 (44px) appears only when the panel is not already showing the selection.
 Dissection docks at the explorer foot as one 41px line. Tracts docks its
 single primary at the foot.
 
 **Stage (picture tools).** A dock at the bottom-left of the visible stage: a
-dark plate holding the view presets as a segmented group, a rule, then
-Section ▾ and Display ▾. Cutting a plane adds the section bar above the
+dark plate holding the view, Section ▾, and Display ▾ tools, with 4px gaps
+inside each tool and 8px horizontal padding. The view tool
+names the held preset and returns to View after free rotation. Its hidden
+localized names reserve the widest label, so changing presets never shifts
+the other tools. Presets are inside its popover; its accessible name reports
+the held preset. Cutting a plane adds the section bar above the
 toolbar (position slider and mm field, Reverse side, Linked MRI, close); this
 is the only Linked MRI entry on the stage. Popovers open above the whole dock,
 section bar included. Orientation letters sit at the visible edges, the scale
@@ -375,17 +432,24 @@ built from the anatomy index and manifest.
 
 **Phones** (≤640px, or landscape ≤480px tall). The canvas is full bleed under
 the sheet with peek, half, and full detents; short landscape uses a side
-sheet. The masthead (52px min) shows the mark and the data summary. The grip
+sheet. The masthead (`max(52px, 3.25rem)`) shows the mark and the two-line data
+summary, growing with the reader's text size. The grip
 merges the selection name, side, and clear with the “Not clinical anatomy”
-statement on one row; the status bar hides. The stage plate holds View ▾,
-Section ▾, Display ▾ as equal worded tools; presets live in the View popover.
+statement on one row; the status bar hides. The stage plate holds the current view,
+Section ▾, Display ▾ as equal worded tools, with 4px label-to-chevron gaps
+and 4px horizontal padding; presets live in the View popover.
 Orientation letters and scale bar hide while a stage popover is open and at
-the full detent. Fine-pointer controls and rows (36px) become (44px) on
+the full detent. Fine-pointer controls (36px) and rows (40px) become (44px) on
 phones and coarse pointers. Keep safe-area insets and the one visible-viewport
-rectangle shared by renderer and chrome. The sheet settles on the iOS
+rectangle shared by renderer and chrome. The upright working detent shares the available height evenly with the anatomy;
+phone search controls use 8px gaps and vertical padding. The sheet settles on the iOS
 drawer curve; a release faster than 0.4 px/ms over the last 100ms moves one
 detent, a slower one settles by position; past either limit it gives with
 rubber-band resistance capped at 72px; extra touches are ignored mid-drag.
+Pointer cancellation returns the sheet to its prior detent. Keyboard activation
+of its handle, selection, or tabs marks the sheet `data-instant`, so the panel
+and its attached dock, orientation, and scale markings change immediately;
+subsequent pointer detent changes restore the normal transition.
 Sheet tabs mirror the desktop tabs without a rule above; peek pads for the home
 indicator.
 
@@ -395,8 +459,9 @@ go full-screen on phones.
 
 ## Elevation & Depth
 
-The workspace is flat: tonal fills and fine rules, no card shadows. Shadows
-are the popover shadow (neutral
+The workspace is flat: tonal fills and fine rules, no card shadows. Browse
+scope uses a neutral selected fill without a ring or shadow. Shadows are the
+popover shadow (neutral
 black, 0 6px 16px plus a 1px contact shadow) on the masthead popovers, skip
 link, and dialogs, and the stronger overlay shadow on stage popovers. Tab
 underlines are state rules, not elevation. Stage markings are type with an
@@ -406,7 +471,7 @@ opaque 3px rim and a stacked dark halo, not plates.
 
 ## Shapes
 
-Controls, plates, and chips (5px); popovers, dialogs, and the sheet's
+Controls, plates, and chips (4px); popovers, dialogs, and the sheet's
 exposed corners (8px); rows, the panel, tabs, location bar, and docks are square.
 Functional small radii are part of the system: segmented thumbs, checkboxes,
 keycaps, and tract toggles (3px); network swatches, bars, and MPR canvases
@@ -422,16 +487,17 @@ spans and hidden from assistive technology.
 
 - **Buttons:** three ranks. One filled primary per view: Linked MRI in the
   region detail, “MRI with tracts” in Tracts. Tonal for every other command
-  (Focus, Isolate, Hide, Close); an active Isolate takes the teal wash. Quiet
-  text for recessive actions (Undo, Restore all, Reset view). Text-link
+  (Focus, Isolate, Close); an active Isolate takes the teal wash. Quiet
+  text for recessive actions (Hide, Undo, Restore all, Reset view). Text-link
   actions (Restore previous view, return to landmark, mapped regions) are
   teal and underline on hover. Disabled: sunken ground, tertiary ink. Under
   increased contrast tonal buttons gain the control border. Commands answer a
   press with scale(0.97); rows, tabs, segments, tree items, and text links
   stay still. Hover styles apply only on hover-capable pointers.
 - **Fields:** search, numbers, and panel selects use the base surface with the
-  control border; hover darkens it. Masthead selects are transparent and
-  borderless, with a tonal hover and focus surface. Every select carries the
+  control border; hover darkens it. Masthead selects use transparent ground
+  and borders at rest, with a tonal hover and focus surface; the collapsed
+  popover uses the pale navigation ground. Every select carries the
   stroked chevron. Ranges
   are hollow rings on a 2px track. Fields grow to 16px text on coarse pointers.
 - **Segmented choices:** one vocabulary for every exclusive choice (atlas,
@@ -439,38 +505,53 @@ spans and hidden from assistive technology.
   plane, hemisphere, MRI plane): quiet track, raised thumb with a 1px ring,
   primary 600 label and no thumb shadow. The ring, not teal alone, marks the choice. Every group is
   one Tab stop with arrow, Home, and End movement (viewer/ui/roving.js).
-  The explorer scope uses quiet choices with a teal selected wash and no
-  ring; its keyboard and focus behavior stays the same.
-- **Mode tabs:** words with no cell dividers, 44px; selected is
-  primary neutral 600 on the base surface with a 2px teal bottom rule
-  inset 12px on each side. Hover adds the
+  The explorer scope uses a transparent group with a 4px gap, 15px labels,
+  and a neutral tonal fill on the selected button, without a ring or shadow.
+  Its buttons have a 32px desktop minimum height; phones draw 36px controls
+  inside a 44px hit area. Keyboard and focus behavior stays the same.
+- **Mode tabs:** words with no cell dividers, at least 44px in the task panel
+  at every desktop width and mirrored in the phone sheet. Automatic height,
+  8px vertical padding, and wrapping labels accommodate enlarged reader text.
+  Selected is teal 600 on the base surface with a full-cell 2px teal bottom rule.
+  The row uses the pale navigation surface. Hover adds the
   hover surface; bold width is held so nothing shifts. Tabs are never
   disabled. Repeated navigation responds immediately, without a colour fade.
 - **Anatomy tree:** a Whole brain | By system scope over the tree (By system
   opens the System picker beneath it and says the cortex is hidden). Whitespace
-  separates the index sections; 36px rows leave anatomical names readable. Open
-  group captions stay on the base surface without a filled band or bottom
+  and section labels separate the index
+  sections, with thin neutral category rules after the first; 40px rows leave
+  anatomical names readable. Open
+  group captions use weight 500 and stay on the base surface without a filled band or bottom
   rule. They remain sticky, with indentation distinguishing their regions; a group name shared by two vocabularies is
   qualified (“Limbic lobe”, “Limbic system”). Selected rows take the teal
   wash; the keyboard target has a separate control-coloured outline. On fine
-  pointers the eye columns retain their space: icons appear on
-  hover or focus and stay once something is hidden, without clipping or reflowing names. Hidden is a struck eye in
-  tertiary ink, never teal. Touch keeps every eye in view.
+  pointers the 16px eye SVGs stay visible at rest in tertiary ink beside the
+  hemisphere letters, strengthening on row hover or focus. Their columns retain
+  their space without clipping or reflowing names. Targets are 32×32px on fine
+  pointers and 44×44px on coarse pointers. Hidden is a struck eye in tertiary
+  ink, never teal.
 - **Region detail:** a 24px intro inset and 24px/650 headline with a quiet
   clear (×), followed by hemisphere and anatomical group as subordinate
   context. Their semantic labels remain accessible without repeating the
-  values. Notes follow, then the research facts under one rule: area or volume,
-  centroid, and source label, with aligned 13px labels and 15px values. Long
+  values. Notes and research facts follow: area or volume, centroid, and source
+  label, with aligned 15px labels and tabular values. A thin neutral rule then
+  separates the compact action row: tonal Focus and Isolate, quiet Hide, and
+  the filled Linked MRI action. All four share a row where they fit and wrap
+  by content at enlarged text sizes. Long
   source values stack; long ID lists open as a native disclosure accessible
-  with keyboard and touch. Three equal secondary commands (Focus, Isolate,
-  Hide) follow the facts, wrapping by content at enlarged text sizes; Linked
-  MRI spans the next line as the one primary action. The atlas comparison
+  with keyboard and touch. The atlas comparison
   follows, with Region / Area / Share caption headings, a flexible name
   column, 4.5rem area and 3.25rem share columns, aligned tabular figures, and
   rules only at the header and unassigned remainder. Detail sections are
   separated by 24px; functional-network rows use space rather than rules.
-  On phones the grip carries a compact readout; the body repeats the complete,
-  wrapping name at 18px before its context so long anatomical names stay readable.
+  Functional division, Neuropsychological domains, and Functional networks are
+  collapsed native disclosures with fine bottom rules, 4px vertical section
+  padding, and at least 36px summary targets (44px on touch). Each retains its
+  open state between selections; opening adds 16px bottom padding and leaves
+  the source notes and caveats beside their map.
+  On phones the grip carries a compact readout at peek and while browsing.
+  An open detail keeps its clear command in a 44px grip and shows the complete,
+  wrapping name once in the body at 18px before its context.
   Constituents, neuropsychology, and guided-circuit links follow.
 - **Deficit profile:** a ruled status strip first, saying what the stage now
   shows, with a quiet “Restore previous view” when there is one; then
@@ -505,6 +586,8 @@ spans and hidden from assistive technology.
   the side and hides while the camera moves; the navigation hint fades after
   the first turn or zoom. The loading and error states use the overlay palette
   with a 200×2px progress bar and a tonal Retry.
+  Functional-division and paint-key controls retain a 44px minimum target on
+  phones and coarse pointers, including touch tablets.
 - **Linked MRI viewer:** dark in both themes, like a reading workstation,
   because a light surround lowers perceived contrast in grey-scale slices. It
   re-scopes the panel tokens, so its components need no special cases.
@@ -551,7 +634,7 @@ and recorded; overlay tokens belong to the stage, not to panel backgrounds.
 ### Do:
 
 - Do use the shared palette, spacing, typography, and radius tokens in viewer/styles/tokens.css.
-- Do keep data in the masthead, modes and drill-in in the panel, and picture tools on the stage.
+- Do keep data in the masthead, modes, task controls, and drill-in in the panel, and picture tools on the stage.
 - Do preserve visible focus, ARIA semantics, keyboard operation, and English and French at every breakpoint.
 - Do maintain readable hover, selected, disabled, empty, loading, and error states in both themes; text at least 4.5:1, field outlines and state edges at least 3:1.
 - Do verify UI changes in the browser and with the existing tests.

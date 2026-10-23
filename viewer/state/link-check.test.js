@@ -9,13 +9,14 @@ const known = {
   details: new Set(['aseg', 'nextbrain', 'learning']),
   cutAtlases: new Set(['destrieux', 'hcp-mmp', 'nextbrain']),
   views: new Set(['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior']),
-  explorers: new Set(['anatomy', 'deficits', 'circuits', 'diffusion']),
+  explorers: new Set(['anatomy', 'functions', 'deficits', 'circuits', 'diffusion']),
   surfaceColors: new Set(['tissue', 'mri', 'atlas', 'network', 'cab-np']),
   regions: new Map([
     ['destrieux:left:29', { kind: 'cortex' }],
     ['aseg:left:17', { kind: 'structure' }],
     ['destrieux:left:medial-wall', { kind: 'non-region' }],
   ]),
+  functions: new Set(['all', 'language']),
   deficits: new Set(['aphasia']),
   circuits: new Map([['visual', 4]]),
   spinalCord: true,
@@ -25,7 +26,7 @@ const check = hash => checkLink(decodeState(hash).state, known);
 
 test('a link naming only what this anatomy publishes passes whole', () => {
   const hash = '#atlas=hcp-mmp&detail=aseg&cuts=nextbrain&view=left&colors=cab-np&region=destrieux:left:29'
-    + '&isolate=aseg:left:17&hidden=destrieux:left:medial-wall&tab=circuits&deficit=aphasia&circuit=visual&step=4';
+    + '&isolate=aseg:left:17&hidden=destrieux:left:medial-wall&tab=circuits&function=language&deficit=aphasia&circuit=visual&step=4';
   const { state, rejected } = check(hash);
   assert.deepEqual(rejected, []);
   assert.deepEqual(state, decodeState(hash).state);
@@ -33,9 +34,9 @@ test('a link naming only what this anatomy publishes passes whole', () => {
 
 test('each unknown name is dropped and reported under its link parameter', () => {
   const { state, rejected } = check('#atlas=yeo&detail=fine&cuts=x&view=Left&colors=functional&region=nope'
-    + '&isolate=destrieux:left:medial-wall&hidden=aseg:left:17,nope&tab=diffusion&deficit=x&circuit=y&step=2&hemi=left');
+    + '&isolate=destrieux:left:medial-wall&hidden=aseg:left:17,nope&tab=diffusion&function=praxis&deficit=x&circuit=y&step=2&hemi=left');
   assert.deepEqual(rejected, ['atlas', 'detail', 'cuts', 'view', 'colors', 'region', 'isolate', 'hidden',
-    'deficit', 'circuit', 'step']);
+    'function', 'deficit', 'circuit', 'step']);
   assert.deepEqual(state, { explorer: 'diffusion', hemisphere: 'left' });
 });
 

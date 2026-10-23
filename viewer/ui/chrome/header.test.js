@@ -157,6 +157,20 @@ test('a masthead collapse leaves the data disclosure closed when focus is elsewh
   assert.equal(byId('masthead-data-toggle').getAttribute('aria-expanded'), 'false');
 });
 
+test('widening a focused data summary hands focus to the first visible native choice', t => {
+  const { byId, doc, resize } = headerDocument(t);
+  byId('anatomy-switch').hidden = true;
+  byId('masthead-data-wrap').clientWidth = 400;
+  resize();
+  byId('masthead-data-toggle').focus();
+  byId('masthead-data-wrap').clientWidth = 900;
+
+  resize();
+
+  assert.equal(byId('masthead').hasAttribute('data-collapsed'), false);
+  assert.equal(doc.activeElement, byId('atlas-switch'));
+});
+
 test('the data disclosure uses an immediate keyboard open and a pointer transition', t => {
   const { byId } = headerDocument(t);
   const data = byId('masthead-data');
@@ -170,47 +184,49 @@ test('the data disclosure uses an immediate keyboard open and a pointer transiti
   assert.equal(data.hasAttribute('data-instant'), false);
 });
 
-test('a compact masthead drops internal anatomy and colouring before shortening its subject', t => {
+test('a compact masthead drops internal anatomy and colouring when its settings line overflows', t => {
   const { byId, resize } = headerDocument(t);
   const summary = byId('masthead-data-summary');
-  const subject = {
-    scrollWidth: 160,
-    get clientWidth() {
+  const context = {
+    clientWidth: 160,
+    get scrollWidth() {
       const omitted = summary.dataset.short?.split(' ') ?? [];
-      return 100 + omitted.length * 30;
+      return 220 - omitted.length * 30;
     },
   };
-  summary.querySelector = selector => selector.includes('subject') ? subject : {};
+  summary.querySelector = selector => selector.includes('context') ? context : {};
   byId('masthead-data-wrap').clientWidth = 400;
 
   resize();
 
   assert.equal(summary.dataset.short, 'detail colour');
-  assert.equal(subject.clientWidth, subject.scrollWidth);
+  assert.equal(context.clientWidth, context.scrollWidth);
 });
 
 test('a compact masthead without internal anatomy omits colouring before its atlas', t => {
   const { byId, resize } = headerDocument(t);
   const summary = byId('masthead-data-summary');
-  const subject = {
-    scrollWidth: 160,
-    get clientWidth() { return summary.dataset.short ? 160 : 100; },
+  const context = {
+    clientWidth: 160,
+    get scrollWidth() { return summary.dataset.short ? 160 : 220; },
   };
-  summary.querySelector = selector => selector.includes('subject') ? subject
+  summary.querySelector = selector => selector.includes('context') ? context
     : selector.includes('detail') ? null : {};
   byId('masthead-data-wrap').clientWidth = 400;
 
   resize();
 
   assert.equal(summary.dataset.short, 'colour');
-  assert.equal(subject.clientWidth, subject.scrollWidth);
+  assert.equal(context.clientWidth, context.scrollWidth);
 });
 
-test('a compact masthead keeps every summary part when the whole subject fits', t => {
+test('a compact masthead keeps fitting settings even when the subject must shorten on its own line', t => {
   const { byId, resize } = headerDocument(t);
   const summary = byId('masthead-data-summary');
-  const subject = { scrollWidth: 160, clientWidth: 160 };
-  summary.querySelector = selector => selector.includes('subject') ? subject : {};
+  const subject = { scrollWidth: 360, clientWidth: 160 };
+  const context = { scrollWidth: 160, clientWidth: 160 };
+  summary.querySelector = selector => selector.includes('context') ? context
+    : selector.includes('subject') ? subject : {};
   byId('masthead-data-wrap').clientWidth = 400;
 
   resize();
@@ -218,21 +234,21 @@ test('a compact masthead keeps every summary part when the whole subject fits', 
   assert.equal(summary.dataset.short, undefined);
 });
 
-test('a compact masthead shortens a long subject only after every optional part is dropped', t => {
+test('a compact masthead omits the atlas last when even one setting cannot fit', t => {
   const { byId, resize } = headerDocument(t);
   const summary = byId('masthead-data-summary');
-  const subject = {
-    scrollWidth: 360,
-    get clientWidth() {
+  const context = {
+    clientWidth: 40,
+    get scrollWidth() {
       const omitted = summary.dataset.short?.split(' ') ?? [];
-      return 100 + omitted.length * 60;
+      return 220 - omitted.length * 60;
     },
   };
-  summary.querySelector = selector => selector.includes('subject') ? subject : {};
+  summary.querySelector = selector => selector.includes('context') ? context : {};
   byId('masthead-data-wrap').clientWidth = 400;
 
   resize();
 
   assert.equal(summary.dataset.short, 'detail colour atlas');
-  assert.ok(subject.clientWidth < subject.scrollWidth);
+  assert.equal(context.scrollWidth, 40);
 });

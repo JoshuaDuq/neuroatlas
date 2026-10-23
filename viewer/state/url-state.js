@@ -13,7 +13,6 @@ export const DEFAULTS = {
   spinalCordVisible: false,
   surfaceColor: 'atlas',
   functionalLevel: 'named',
-  domain: null,
   view: 'oblique',
   cut: 'off',
   cutOffset: 0,
@@ -25,6 +24,7 @@ export const DEFAULTS = {
   internalSystem: null,
   anatomy: null,
   explorer: 'anatomy',
+  selectedFunction: null,
   selectedDeficit: null,
   circuit: null,
   circuitStep: 0,
@@ -33,9 +33,9 @@ export const DEFAULTS = {
 };
 
 const HEMISPHERES = ['both', 'left', 'right'];
-const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional', 'domains'];
+const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'];
 const FUNCTIONAL_LEVELS = ['named', 'sections'];
-const EXPLORERS = ['anatomy', 'deficits', 'circuits', 'diffusion'];
+const EXPLORERS = ['anatomy', 'functions', 'deficits', 'circuits', 'diffusion'];
 
 /**
  * `colors` was a flag before the surface could be coloured several ways. Links
@@ -169,7 +169,6 @@ const FIELDS = [
   { key: 'spinalCordVisible', param: 'cord', read: flag, write: value => (value ? '1' : '0') },
   { key: 'surfaceColor', param: 'colors', read: surfaceColor },
   { key: 'functionalLevel', param: 'level', read: oneOf(FUNCTIONAL_LEVELS) },
-  { key: 'domain', param: 'domain', read: nonempty },
   {
     key: 'cortexOpacity',
     param: 'opacity',
@@ -186,6 +185,7 @@ const FIELDS = [
     write: ({ center, width }) => `${tenths(center)},${tenths(width)}`,
   },
   { key: 'explorer', param: 'tab', read: oneOf(EXPLORERS) },
+  { key: 'selectedFunction', param: 'function', read: nonempty },
   { key: 'selectedDeficit', param: 'deficit', read: nonempty },
   { key: 'circuit', param: 'circuit', read: nonempty },
   { key: 'circuitStep', param: 'step', read: circuitStep, write: value => String(value + 1) },

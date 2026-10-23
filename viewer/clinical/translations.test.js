@@ -29,15 +29,15 @@ test('panel copy names no tab the redesign removed', () => {
 
 test('an open deficit says how much of its mapping the stage outlines, or only shows while cut', () => {
   const { en, fr } = CLINICAL_TEXT;
-  assert.equal(en.regionsMarked(7, 7, true), '7 regions outlined');
-  assert.equal(en.regionsMarked(10, 11, true), '10 of 11 regions outlined');
-  assert.equal(en.regionsMarked(1, 1, true), '1 region outlined');
-  assert.equal(en.regionsMarked(0, 1, true), '0 of 1 region outlined');
+  assert.equal(en.regionsMarked(7, 7, true), '7 regions coloured');
+  assert.equal(en.regionsMarked(10, 11, true), '10 of 11 regions coloured');
+  assert.equal(en.regionsMarked(1, 1, true), '1 region coloured');
+  assert.equal(en.regionsMarked(0, 1, true), '0 of 1 region coloured');
   assert.equal(en.regionsMarked(7, 7, false), '7 regions visible');
-  assert.equal(fr.regionsMarked(7, 7, true), '7 régions entourées');
-  assert.equal(fr.regionsMarked(10, 11, true), '10 régions sur 11 entourées');
-  assert.equal(fr.regionsMarked(1, 1, true), '1 région entourée');
-  assert.equal(fr.regionsMarked(1, 3, true), '1 région sur 3 entourée');
+  assert.equal(fr.regionsMarked(7, 7, true), '7 régions colorées');
+  assert.equal(fr.regionsMarked(10, 11, true), '10 régions sur 11 colorées');
+  assert.equal(fr.regionsMarked(1, 1, true), '1 région colorée');
+  assert.equal(fr.regionsMarked(1, 3, true), '1 région sur 3 colorée');
   assert.equal(fr.regionsMarked(2, 3, false), '2 régions sur 3 visibles');
   assert.equal(fr.regionsMarked(1, 1, false), '1 région visible');
 });

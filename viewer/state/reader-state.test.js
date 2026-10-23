@@ -8,7 +8,7 @@ const LOADED = { atlas: 'destrieux', detail: 'learning', cutAtlas: 'destrieux' }
 test('an empty link is the default scene on the loaded layers, with nothing left implicit', () => {
   assert.deepEqual(readerState({}, LOADED), {
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true,
-    spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', domain: null, internalSystem: null,
+    spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', internalSystem: null,
     view: 'oblique', cut: 'off', cutOffset: 0, cutReverse: false, cutTilt: 30, cutAzimuth: 30,
     selectedRegion: null, isolatedRegion: null, orbit: null, mriWindow: null,
     ...LOADED, hiddenRegions: new Set(), camera: 'view',

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createClinicalCatalog, groupDeficits, mappedRegionIds } from './catalog.js';
+import { FINDING_COLORS, createClinicalCatalog, findingPaint, groupDeficits, mappedRegionIds } from './catalog.js';
 
 const text = { en: 'Memory', fr: 'Mémoire' };
 const manifest = { regions: [{
@@ -98,4 +98,29 @@ test('a deficit maps each cited region once, in citation order', () => {
   const catalog = createClinicalCatalog(fixture(), manifest);
   assert.deepEqual(catalog.mappedRegions('amnesia'), ['aseg:left:17']);
   assert.throws(() => catalog.mappedRegions('unknown'), /Unknown deficit/);
+});
+
+test('each finding takes the next colour, a region shared by two the first, and one finding can be shown alone', () => {
+  const associations = [
+    { id: 'naming', mappings: [{ region: 'a' }, { region: 'b' }] },
+    { id: 'repetition', mappings: [{ region: 'b' }, { region: 'c' }] },
+  ];
+  const all = findingPaint('aphasia', associations);
+  assert.deepEqual(all.findings.map(({ association, color }) => [association.id, color]),
+    [['naming', FINDING_COLORS[0]], ['repetition', FINDING_COLORS[1]]]);
+  assert.equal(all.paint.id, 'deficit:aphasia');
+  assert.deepEqual([...all.paint.colors], [['a', FINDING_COLORS[0]], ['b', FINDING_COLORS[0]], ['c', FINDING_COLORS[1]]]);
+  const alone = findingPaint('aphasia', associations, 'repetition');
+  assert.equal(alone.paint.id, 'deficit:aphasia:repetition');
+  assert.deepEqual([...alone.paint.colors], [['b', FINDING_COLORS[1]], ['c', FINDING_COLORS[1]]]);
+  assert.throws(() => findingPaint('aphasia', associations, 'reading'), /aphasia has no finding reading/);
+});
+
+test('every published deficit has a colour for each of its findings', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { parse } = await import('yaml');
+  const data = parse(readFileSync(new URL('../../data/neuropsychology.yaml', import.meta.url), 'utf8'));
+  for (const deficit of data.deficits) {
+    findingPaint(deficit.id, data.associations.filter(association => association.deficit === deficit.id));
+  }
 });

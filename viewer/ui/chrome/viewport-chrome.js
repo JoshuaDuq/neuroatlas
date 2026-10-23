@@ -5,7 +5,6 @@ import { FRAME_FILL } from '../../render/camera-views.js';
 import { clearFraming } from '../../render/effective-viewport.js';
 import { cabNpName, networkCss, networkName } from '../../catalog/networks.js';
 import { functionalShortName } from '../../catalog/functional-regions.js';
-import { domainName } from '../../catalog/neuropsych-domains.js';
 import { t } from '../../i18n/translations.js';
 import { failureNotice } from '../../i18n/errors.js';
 import { isIndependentTractReference } from '../../diffusion/presentation.js';
@@ -81,7 +80,7 @@ export function paintLoadProgress(lang, loaded, total) {
  * the loading and error stage.
  */
 export function createViewportChrome({
-  networks, cabNp, functionalRegions, domains, onView, onRetry, onSnapshot, onDock, onFunctionalLevel, onDomain,
+  networks, cabNp, functionalRegions, onView, onRetry, onSnapshot, onDock, onFunctionalLevel, onPaintPick,
   controls,
 }) {
   const orientation = document.getElementById('orientation');
@@ -102,7 +101,7 @@ export function createViewportChrome({
   const hover = document.getElementById('hover-label');
   const keysHost = document.getElementById('stage-keys');
   const functionalLevel = document.getElementById('functional-level');
-  const domainsNote = document.getElementById('domains-key-note');
+  const paintNote = document.getElementById('paint-key-note');
   const host = document.getElementById('viewport');
   const help = document.getElementById('viewport-help');
   const focusHint = document.getElementById('viewport-focus-hint');
@@ -114,6 +113,7 @@ export function createViewportChrome({
   const phone = globalThis.matchMedia?.(PHONE_QUERY);
   let currentLang = 'en';
   let lastState = null;
+  let lastLegend = null;
   // The region selected when the stage first drew; a later selection means "click to inspect" was learned.
   let firstSelection;
   // Letters as of the last camera move. A language change re-words them; it never re-reads
@@ -266,7 +266,7 @@ export function createViewportChrome({
    * explains is not a key. Each is one plate whose title row names its map and folds its rows;
    * the reader's own fold of a map is kept for the visit.
    */
-  const plates = Object.fromEntries(['network', 'functional', 'domains', 'direction'].map(name => {
+  const plates = Object.fromEntries(['network', 'functional', 'paint', 'direction'].map(name => {
     const node = document.getElementById(`${name}-key`);
     return [name, {
       plate: node,
@@ -303,18 +303,23 @@ export function createViewportChrome({
     list.hidden = !open;
   }
 
-  function showKeys(state, directionShown) {
+  /**
+   * `legend` keys the paint a tab draws: `{ map, title, note, rows: [{ id, color, label, pressed }] }`,
+   * or null. With more than one row each is a toggle that shows that row alone.
+   */
+  function showKeys(state, directionShown, legend) {
     const ready = state.status === 'ready' || state.status === 'switching';
     // A key is titled as the masthead's Colour field names its map.
     const maps = t(state.lang, 'display').surfaceColors;
-    const network = ready ? { network: networks, 'cab-np': cabNp }[state.surfaceColor] : null;
+    // A paint is drawn over the masthead's colour, so that colour's key would explain nothing on screen.
+    const network = ready && !legend ? { network: networks, 'cab-np': cabNp }[state.surfaceColor] : null;
     if (network) {
       const name = state.surfaceColor === 'cab-np' ? cabNpName : networkName;
       paintKey('network', state.surfaceColor, maps[state.surfaceColor], network.networks.length,
         network.networks.map(key => keyRow(network.colors[key], name(key, state.lang))));
     } else paintKey('network', null);
 
-    const functional = ready && functionalRegions && state.surfaceColor === 'functional'
+    const functional = ready && !legend && functionalRegions && state.surfaceColor === 'functional'
       ? functionalRegions.levels[state.functionalLevel] : null;
     const copy = t(state.lang, 'functional');
     functionalLevel.setAttribute('aria-label', copy.keyAria);
@@ -327,27 +332,28 @@ export function createViewportChrome({
     paintKey('functional', functional && 'functional', maps.functional, functional?.length,
       functional?.map(record => keyRow(record.color, division(record))));
 
-    // Each row is a toggle; the reader's pick shows that domain's every area. The rows are
-    // rebuilt on every paint, so the one holding focus hands it to its replacement.
-    const focusedDomain = plates.domains.list.contains(document.activeElement)
-      ? document.activeElement.dataset.domain : null;
-    const domainRows = ready && domains && state.surfaceColor === 'domains' ? domains.domains : null;
-    const domainCopy = t(state.lang, 'domains');
-    paintKey('domains', domainRows && 'domains', maps.domains, domainRows?.length, domainRows?.map(record => {
-      const row = keyRow(record.color, domainName(record, state.lang));
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.dataset.domain = record.id;
-      button.setAttribute('aria-pressed', String(record.id === state.domain));
-      button.append(...row.childNodes);
-      row.append(button);
-      return row;
-    }));
-    plates.domains.list.toggleAttribute('data-picked', Boolean(state.domain));
-    domainsNote.textContent = state.domain ? domainCopy.keyPicked : domainCopy.keyAll;
-    domainsNote.hidden = plates.domains.list.hidden;
-    if (focusedDomain) plates.domains.list.querySelector(`[data-domain="${focusedDomain}"]`)?.focus();
-    domainRoving.sync();
+    // The rows are rebuilt on every paint, so the one holding focus hands it to its replacement.
+    const focusedPick = plates.paint.list.contains(document.activeElement)
+      ? document.activeElement.dataset.pick : null;
+    const shownLegend = ready ? legend : null;
+    const pickable = shownLegend?.rows.length > 1;
+    paintKey('paint', shownLegend?.map ?? null, shownLegend?.title, shownLegend?.rows.length,
+      shownLegend?.rows.map(entry => {
+        const row = keyRow(entry.color, entry.label);
+        if (!pickable) return row;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.pick = entry.id;
+        button.setAttribute('aria-pressed', String(entry.pressed));
+        button.append(...row.childNodes);
+        row.append(button);
+        return row;
+      }));
+    plates.paint.list.toggleAttribute('data-picked', Boolean(shownLegend?.rows.some(entry => entry.pressed)));
+    paintNote.textContent = shownLegend?.note ?? '';
+    paintNote.hidden = plates.paint.list.hidden;
+    if (focusedPick) plates.paint.list.querySelector(`[data-pick="${CSS.escape(focusedPick)}"]`)?.focus();
+    paintRoving.sync();
 
     const directions = t(state.lang, 'viewport').directionKey;
     paintKey('direction', directionShown && 'direction', directions.title, 3);
@@ -360,7 +366,7 @@ export function createViewportChrome({
     const toggle = event.target.closest('.stage-key-toggle');
     if (!toggle) return;
     folds.set(toggle.closest('.stage-key').dataset.map, toggle.getAttribute('aria-expanded') !== 'true');
-    if (lastState) showKeys(lastState, !plates.direction.plate.hidden);
+    if (lastState) showKeys(lastState, !plates.direction.plate.hidden, lastLegend);
   };
   keysHost.addEventListener('click', onKeyToggle);
 
@@ -371,12 +377,12 @@ export function createViewportChrome({
   functionalLevel.addEventListener('click', onLevelClick);
   const levelRoving = bindRoving(functionalLevel);
 
-  const onDomainClick = event => {
-    const button = event.target.closest('[data-domain]');
-    if (button) onDomain(button.getAttribute('aria-pressed') === 'true' ? null : button.dataset.domain);
+  const onPickClick = event => {
+    const button = event.target.closest('[data-pick]');
+    if (button) onPaintPick(button.getAttribute('aria-pressed') === 'true' ? null : button.dataset.pick);
   };
-  plates.domains.list.addEventListener('click', onDomainClick);
-  const domainRoving = bindRoving(plates.domains.list);
+  plates.paint.list.addEventListener('click', onPickClick);
+  const paintRoving = bindRoving(plates.paint.list);
 
   /*
    * A shown key takes a band off the framing rectangle, the right column it stands in or the top
@@ -478,7 +484,7 @@ export function createViewportChrome({
   });
   const roving = bindRoving(views);
 
-  // Every name the view tool can show, stacked in one cell, so naming another view never moves Section and Display.
+  // Keep all localized names in one grid cell so changing views never moves the other tools.
   const viewToolNames = ['', ...VIEW_KEYS].map(view => {
     const name = document.createElement('span');
     name.dataset.view = view;
@@ -486,7 +492,7 @@ export function createViewportChrome({
     return name;
   });
 
-  /** The view tool names the view the camera holds, or says View once the reader has turned away from it. */
+  /** Name the held preset, or return to View once the reader moves the camera freely. */
   function paintViewTool() {
     const copy = t(currentLang, 'viewport');
     const names = t(currentLang, 'views');
@@ -511,7 +517,7 @@ export function createViewportChrome({
 
   const onPhoneChange = () => {
     fitDockLayout();
-    if (lastState) showKeys(lastState, !plates.direction.plate.hidden);
+    if (lastState) showKeys(lastState, !plates.direction.plate.hidden, lastLegend);
   };
   phone?.addEventListener('change', onPhoneChange);
   // Widths measured in a fallback face are wrong once Source Sans arrives.
@@ -694,9 +700,10 @@ export function createViewportChrome({
       settlePopovers();
     },
 
-    update(state, { directionKey: showKey = false } = {}) {
+    update(state, { directionKey: showKey = false, legend = null } = {}) {
       currentLang = state.lang;
       lastState = state;
+      lastLegend = legend;
       const selected = state.selectedRegion?.id ?? null;
       if (state.status === 'ready' && firstSelection === undefined) firstSelection = selected;
       else if (selected && firstSelection !== undefined && selected !== firstSelection) dismissHelp();
@@ -718,7 +725,7 @@ export function createViewportChrome({
       paintPresets();
       fitDockLayout();
       fitHints();
-      showKeys(state, showKey);
+      showKeys(state, showKey, legend);
       settlePopovers();
       const ready = state.status === 'ready' || state.status === 'switching';
       orientation.hidden = !ready;
@@ -845,8 +852,8 @@ export function createViewportChrome({
       sectionObserver?.disconnect();
       roving.dispose();
       levelRoving.dispose();
-      domainRoving.dispose();
-      plates.domains.list.removeEventListener('click', onDomainClick);
+      paintRoving.dispose();
+      plates.paint.list.removeEventListener('click', onPickClick);
       phone?.removeEventListener('change', onPhoneChange);
       document.fonts?.removeEventListener('loadingdone', onFontsLoaded);
       popovers.dispose();
@@ -858,7 +865,7 @@ export function createViewportChrome({
       keysHost.removeEventListener('click', onKeyToggle);
       plates.network.list.replaceChildren();
       plates.functional.list.replaceChildren();
-      plates.domains.list.replaceChildren();
+      plates.paint.list.replaceChildren();
     },
   };
 }

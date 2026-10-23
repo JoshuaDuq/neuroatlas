@@ -30,7 +30,7 @@ button:disabled { background: var(--surface-sunken); color: var(--text-tertiary)
   button:active:not(:focus-visible, :disabled, .row, [role="tab"], [role="treeitem"], .segmented button, .comparison-row,
     .workspace-selection, #workspace-selection-clear, .detail-back, .detail-crumb, .detail-trailing button,
     .constituents-list button, .empty button,
-    .comparison-export, .clinical-deficit, .clinical-association-region,
+    .comparison-export, .clinical-deficit, .clinical-association-region, .function-area,
     .circuit-link, .circuit-choice, .circuit-step, .circuit-return button,
     .menu-item, .sheet-selection, #sheet-handle, .stage-key-toggle) {
     transform: scale(var(--press-scale));
@@ -162,7 +162,9 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
 .search-box input[type="search"] {
   padding-left: 32px;
   padding-right: 36px;
+  transition: border-color var(--ui-transition) var(--ease-ui);
 }
+.search-box input[type="search"]:focus { border-color: var(--accent); }
 .search-clear {
   position: absolute;
   inset-block: 0;
@@ -397,36 +399,45 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
 #isolate[data-active="true"] { background: var(--accent-wash); color: var(--accent); }
 
 /*
- * The four content modes, mirrored in the phone sheet: words on the panel's
+ * The five content modes, mirrored in the phone sheet: words on the panel's
  * text column. A continuous rule identifies the current mode without filling a cell.
  * Tabs are never disabled.
  */
 .rail-tabs {
+  container-type: inline-size;
   display: flex;
   flex-wrap: wrap;
   flex: none;
   gap: 0;
   padding: 0;
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-base);
+  background: var(--surface-navigation);
 }
 .rail-tabs button {
   position: relative;
   display: flex;
   flex: 1 1 0;
-  min-width: min-content;
+  min-width: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: var(--tab-height);
+  min-height: var(--tab-height);
+  height: auto;
   margin-bottom: -1px;
-  padding: 0 var(--space-2);
+  padding: var(--space-2) var(--space-1);
   border: 0;
   border-radius: 0;
   background: none;
   color: var(--text-secondary);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: var(--lh-ui);
+  text-align: center;
   transition: none;
+}
+/* Compact phone labels keep their full names. Larger reader text wraps inside its own tab. */
+@container (max-width: 339px) {
+  .rail-tabs button { font-size: var(--text-caption); }
 }
 /* The bold label's width is held, so choosing a mode moves nothing. */
 .rail-tabs button::after {
@@ -443,13 +454,13 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
 .rail-tabs button[aria-selected="true"],
 .rail-tabs button[aria-selected="true"]:hover {
   background: var(--surface-base);
-  color: var(--text-primary);
+  color: var(--accent);
   font-weight: 600;
 }
 .rail-tabs button[aria-selected="true"]::before {
   content: "";
   position: absolute;
-  inset: auto var(--space-3) 0;
+  inset: auto 0 0;
   height: 2px;
   background: var(--accent);
 }

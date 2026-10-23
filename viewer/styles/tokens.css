@@ -1,9 +1,9 @@
 /* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
   color-scheme: light;
-  --text-primary: #1c242b;
-  --text-secondary: #4b5660;
-  --text-tertiary: #5d6872;
+  --text-primary: #20272c;
+  --text-secondary: #515b63;
+  --text-tertiary: #667078;
   --accent: #156b6d;
   --accent-hover: #0d5557;
   --accent-wash: #e8f3f2;
@@ -15,14 +15,14 @@
 
   /* Near-neutral greys: teal and the anatomy carry the only colour. */
   --surface-base: #ffffff;
-  --surface-navigation: #f6f8f9;
-  --surface-sunken: #f0f3f5;
-  --surface-canvas: #e4e7ea;
-  --surface-hover: #f2f4f5;
+  --surface-navigation: #f8f9fa;
+  --surface-sunken: #f1f3f4;
+  --surface-canvas: #eef0f2;
+  --surface-hover: #f3f5f6;
   --surface-raised: #ffffff;
-  --surface-tonal: #eef1f3;
-  --surface-tonal-hover: #e3e8eb;
-  --border-subtle: #e1e4e7;
+  --surface-tonal: #f1f3f4;
+  --surface-tonal-hover: #e7ebee;
+  --border-subtle: #e2e6e9;
   --border-control: #7f8a94;
   /* Selected segment ring: 3:1 against the tonal track. */
   --thumb-ring: #78838d;
@@ -85,16 +85,16 @@
   --space-10: 40px;
 
   /* Instrument density on a fine pointer; phone.css raises both to 44px for touch. */
-  --row-height: 36px;
+  --row-height: 40px;
   --control-height: 36px;
   --tab-height: max(44px, 2.75rem);
-  --rail-width: clamp(336px, 22rem, 38vw);
-  --header-height: max(56px, 3.5rem);
-  --footer-height: max(32px, 2rem);
+  --rail-width: clamp(340px, 25rem, 34vw);
+  --header-height: max(64px, 4rem);
+  --footer-height: max(28px, 1.75rem);
   --panel-inset: var(--space-6);
   /* Names align after the disclosure slot, independently of panel width. */
   --indent: calc(var(--panel-inset) + 20px);
-  --radius-control: 5px;
+  --radius-control: 4px;
   --radius-panel: 8px;
   --camera-transition: 240ms;
   --ui-transition: 140ms;

@@ -1,5 +1,6 @@
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 import { requiredAtlas } from '../../state/scene-commands.js';
+import { paintKind } from '../../state/paint.js';
 import { percent } from '../format.js';
 import { createProvenance } from '../panels/provenance.js';
 import { bindRoving } from '../roving.js';
@@ -9,8 +10,11 @@ const COLOUR_GROUPS = [
   ['appearance', ['tissue', 'mri']],
   ['parcellation', ['atlas']],
   ['networks', ['network', 'cab-np']],
-  [null, ['functional', 'domains']],
+  [null, ['functional']],
 ];
+
+/** The Colour field's value while a tab's paint is drawn over the colour chosen here; it is never offered. */
+const PAINT = 'paint';
 
 // The label is also kept as data-label, which the masthead's CSS uses to hold the bold width.
 const setLabel = (button, text) => {
@@ -44,10 +48,8 @@ export function dataSummary({ subject, atlas, colour, detail, reference }) {
 }
 
 /** The Colour field's optgroups, offering only the colourings this build publishes. */
-export function colourGroups({ networks, cabNp, functionalRegions, domains }) {
-  const published = {
-    network: Boolean(networks), 'cab-np': Boolean(cabNp), functional: Boolean(functionalRegions), domains: Boolean(domains),
-  };
+export function colourGroups({ networks, cabNp, functionalRegions }) {
+  const published = { network: Boolean(networks), 'cab-np': Boolean(cabNp), functional: Boolean(functionalRegions) };
   return COLOUR_GROUPS
     .map(([group, modes]) => [group, modes.filter(mode => published[mode] ?? true)])
     .filter(([, modes]) => modes.length);
@@ -272,7 +274,7 @@ export function createHeader({
     detail: document.getElementById('detail-note'),
   };
   const fallbackDetail = detailLevels[0]?.id ?? null;
-  const required = colour => requiredAtlas({ cabNp, functionalRegions, domains }, colour);
+  const required = colour => requiredAtlas({ cabNp, functionalRegions }, colour);
 
   const option = value => {
     const node = document.createElement('option');
@@ -290,8 +292,11 @@ export function createHeader({
     selects.subject.value = anatomy.id;
   }
   selects.atlas.append(...atlases.map(atlas => option(atlas.id)));
+  const paintOption = option(PAINT);
+  paintOption.hidden = true;
+  selects.colour.append(paintOption);
   const optgroups = [];
-  for (const [group, modes] of colourGroups({ networks, cabNp, functionalRegions, domains })) {
+  for (const [group, modes] of colourGroups({ networks, cabNp, functionalRegions })) {
     const options = modes.map(option);
     if (!group) {
       selects.colour.append(...options);
@@ -341,26 +346,28 @@ export function createHeader({
   }
   // Measured rather than a breakpoint: subject names, French labels and loading progress change the bar's width.
   function fitBar() {
+    const summaryFocused = document.activeElement === dataToggle;
     masthead.removeAttribute('data-collapsed');
     const fits = !shortLandscape?.matches
       && data.scrollWidth <= dataWrap.clientWidth
       && masthead.scrollWidth <= masthead.clientWidth;
     masthead.toggleAttribute('data-collapsed', !fits);
-    if (fits) setDataOpen(false);
-    else if (data.contains(document.activeElement)) {
+    if (fits) {
+      setDataOpen(false);
+      if (summaryFocused) Object.values(selects).find(select => !select.hidden && !select.disabled)?.focus();
+    } else if (data.contains(document.activeElement)) {
       // A resize or translated label must not hide the control the reader is using.
       data.toggleAttribute('data-instant', true);
       setDataOpen(true);
     }
     showTips();
   }
-  // Keep the subject complete: internal anatomy and colouring drop before the atlas.
-  // Only a subject that still does not fit on its own truncates.
+  // The subject has its own line. Settings yield in order to fit the line below it.
   function fitSummary() {
     dataSummaryNode.removeAttribute('data-short');
-    const subject = dataSummaryNode.querySelector('[data-part="subject"]');
-    if (!collapsed() || !subject) return;
-    const tooShort = () => subject.clientWidth < subject.scrollWidth;
+    const context = dataSummaryNode.querySelector('.data-summary-context');
+    if (!collapsed() || !context) return;
+    const tooShort = () => context.clientWidth < context.scrollWidth;
     const dropped = [];
     for (const part of ['detail', 'colour', 'atlas']) {
       if (!tooShort()) return;
@@ -415,19 +422,30 @@ export function createHeader({
     const key = parts.map(({ part, text }) => `${part}:${text}`).join('\n');
     if (key === paintedSummary) return false;
     paintedSummary = key;
-    dataSummaryNode.replaceChildren(...parts.flatMap(({ part, text }, index) => {
+    const context = document.createElement('span');
+    context.className = 'data-summary-context';
+    const subject = [];
+    let settings = 0;
+    for (const { part, text } of parts) {
       const node = document.createElement('span');
       node.className = 'data-summary-part';
       node.dataset.part = part;
       node.textContent = text;
-      if (!index) return [node];
-      const dot = document.createElement('span');
-      dot.className = 'data-summary-sep';
-      dot.dataset.part = part;
-      dot.setAttribute('aria-hidden', 'true');
-      dot.textContent = '·';
-      return [dot, node];
-    }));
+      if (part === 'subject') subject.push(node);
+      else {
+        if (settings++) {
+          const dot = document.createElement('span');
+          dot.className = 'data-summary-sep';
+          dot.dataset.part = part;
+          dot.setAttribute('aria-hidden', 'true');
+          dot.textContent = '·';
+          context.append(dot);
+        }
+        context.append(node);
+      }
+    }
+    dataSummaryNode.replaceChildren(...subject, context);
+    dataToggle.setAttribute('aria-label', parts.map(({ text }) => text).join(' · '));
     return true;
   }
 
@@ -443,7 +461,9 @@ export function createHeader({
       const atlasNote = id => i18n.notes[id] ?? t(lang, 'atlases')[id] ?? '';
 
       // A choice is held only while it downloads: once it lands, fails or is overtaken, the select shows the state.
-      const values = { atlas: state.atlas, colour: state.surfaceColor, detail: state.detail ?? fallbackDetail };
+      const painted = reference ? null : paintKind(state.paint);
+      const values = { atlas: state.atlas, colour: painted ? PAINT : state.surfaceColor,
+        detail: state.detail ?? fallbackDetail };
       for (const field of Object.keys(chosen)) {
         if (!switching || chosen[field] === values[field]) chosen[field] = null;
       }
@@ -458,8 +478,10 @@ export function createHeader({
         setText(node, text('atlas', id, atlasSwitchLabel(id, lang), atlasOption(lang, id, required(shown('colour')))));
       }
       for (const optgroup of optgroups) optgroup.label = i18n.colourGroups[optgroup.dataset.group];
+      setText(paintOption, painted ? display.paints[painted] : '');
       for (const node of selects.colour.options) {
         const mode = node.value;
+        if (mode === PAINT) continue;
         setText(node, text('colour', mode, display.surfaceColors[mode],
           colourOption(lang, mode, { atlas: shown('atlas'), required: required(mode) })));
       }
@@ -485,7 +507,7 @@ export function createHeader({
       labels.detail.textContent = display.internalAnatomy;
       setNote(notes.subject, kind);
       setNote(notes.atlas, atlasNote(shown('atlas')));
-      setNote(notes.colour, display.surfaceColorTitles[shown('colour')] ?? '');
+      setNote(notes.colour, (painted ? display.paintTitles[painted] : display.surfaceColorTitles[shown('colour')]) ?? '');
       setNote(notes.detail, offersDetail ? atlasNote(shown('detail')) : '');
       tips = [...Object.entries(selects).map(([field, select]) => [select, notes[field].textContent]),
         [studyName, reference?.description ?? kind]];

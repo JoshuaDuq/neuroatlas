@@ -4,7 +4,7 @@
   grid-template-columns: var(--rail-width) minmax(0, 1fr);
   grid-template-rows: var(--header-height) minmax(0, 1fr) var(--footer-height);
   height: 100dvh;
-  min-height: 560px;
+  min-height: 0;
 }
 #sheet { display: contents; }
 #workspace-panel { grid-column: 1; grid-row: 2; }
@@ -125,9 +125,10 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--panel-inset) var(--space-3);
-  background: var(--surface-base);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--panel-inset);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-navigation);
 }
 /* The keycap sits as far inside the field's end as it does inside its top and bottom. */
 .rail-head .search-shortcut { right: 6px; padding: 0 6px; }
@@ -214,5 +215,5 @@
 }
 
 @media (min-width: 641px) and (max-width: 1000px) {
-  :root { --rail-width: clamp(300px, 18.75rem, 42vw); --panel-inset: var(--space-4); }
+  :root { --rail-width: 340px; --panel-inset: var(--space-4); }
 }

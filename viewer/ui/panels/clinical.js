@@ -3,8 +3,9 @@ import { CLINICAL_TEXT } from '../../clinical/translations.js';
 import { visibilityOf } from '../../catalog/visibility.js';
 import { failureNotice } from '../../i18n/errors.js';
 import { createButtonLabel } from '../chrome/button-label.js';
+import { networkCss } from '../../catalog/networks.js';
 
-function element(tag, text, className) {
+export function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text) node.textContent = text;
   if (className) node.className = className;
@@ -84,13 +85,17 @@ export function publishedCorrections(reference, lang) {
  * One association: its title, its mapped regions always in reach, and its evidence behind a disclosure.
  * `sideOnRow` is false when the profile states the one side all its associations share.
  */
-function associationSection(association, clinical, anatomy, lang, { open, sideOnRow }) {
+function associationSection(association, clinical, anatomy, lang, { open, sideOnRow, color }) {
   const text = CLINICAL_TEXT[lang];
   const sides = t(lang, 'sides').capitalized;
   const section = element('article', null, 'clinical-association');
   section.dataset.association = association.id;
   const title = element('h4', null, 'clinical-association-title');
-  title.append(element('span', association.title[lang]));
+  // The colour this finding's regions take on the brain, as the stage key shows it.
+  const swatch = element('span', null, 'network-swatch clinical-finding-swatch');
+  swatch.setAttribute('aria-hidden', 'true');
+  swatch.style.background = networkCss(color);
+  title.append(swatch, element('span', association.title[lang]));
   // The short side reads on screen; a screen reader hears the full one even when the profile states it.
   if (sideOnRow) {
     const shown = element('span', text.lateralityShort[association.laterality], 'clinical-association-side');
@@ -276,6 +281,7 @@ export function createClinicalExplorer({
     const text = CLINICAL_TEXT[state.lang];
     const deficit = clinical.get(state.selectedDeficit);
     const found = clinical.forDeficit(deficit.id);
+    const colors = new Map(clinical.paint(deficit.id).findings.map(({ association, color }) => [association.id, color]));
     profileSide = sharedSide(found.map(association => association.laterality));
     const name = element('h2', deficit.name[state.lang], 'clinical-profile-name');
     name.id = 'clinical-title';
@@ -287,7 +293,7 @@ export function createClinicalExplorer({
     heading.id = 'clinical-associations-heading';
     associations.setAttribute('aria-labelledby', heading.id);
     associations.append(heading, ...found.map(association => associationSection(association, clinical, anatomy,
-      state.lang, { open: expanded.has(association.id), sideOnRow: !profileSide })));
+      state.lang, { open: expanded.has(association.id), sideOnRow: !profileSide, color: colors.get(association.id) })));
     const body = element('div', null, 'panel-body clinical-content');
     body.append(name, meta, element('p', deficit.summary[state.lang], 'clinical-summary'),
       element('p', text.referenceOnly, 'clinical-note clinical-caveat'), associations,
@@ -298,10 +304,11 @@ export function createClinicalExplorer({
 
   /** Counted from what is drawn now, so the meta line stays true as the reader hides, cuts or isolates. */
   function stageView(state) {
-    const ids = clinical.mappedRegions(state.selectedDeficit);
+    // The regions painted: every mapped one, or one finding's alone. A masthead colour chosen over
+    // the paint leaves them drawn but not coloured.
+    const ids = state.paint ? [...state.paint.colors.keys()] : clinical.mappedRegions(state.selectedDeficit);
     const shown = ids.filter(id => visibilityOf(anatomy.get(id).region, state).visible).length;
-    // A cut turns the stage's outlines off.
-    return { shown, total: ids.length, outlined: !state.cutActive };
+    return { shown, total: ids.length, coloured: Boolean(state.paint) };
   }
 
   function renderRelated(state) {
@@ -325,12 +332,13 @@ export function createClinicalExplorer({
   function updateAction() {
     for (const button of profile.querySelectorAll('[data-clinical-region]')) button.disabled = opening;
     const open = current?.explorer === 'deficits' && Boolean(current.selectedDeficit);
-    trailing.hidden = !open || opening || !restorable;
+    restore.hidden = !open || opening || !restorable;
+    trailing.hidden = [...trailing.children].every(child => child.hidden);
     const metaLine = document.getElementById('clinical-meta');
     if (!metaLine || !open) return;
     const text = CLINICAL_TEXT[language];
     const view = stageView(current);
-    const shown = text.regionsMarked(view.shown, view.total, view.outlined);
+    const shown = text.regionsMarked(view.shown, view.total, view.coloured);
     const said = stageMessage(text, { opening, busy, error: actionError, failure, operation, lang: language,
       restored, status: profileSide ? `${text.laterality[profileSide]} · ${shown}` : shown });
     // Rewriting the same words would have the live region say them again on every render.

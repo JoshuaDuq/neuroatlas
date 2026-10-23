@@ -79,8 +79,8 @@ export function createStagePopovers(host, { visibleRect, fill }) {
     pair.popover.hidden = false;
     pair.button.setAttribute('aria-expanded', 'true');
     place();
-    const target = pair.popover.querySelector('[aria-pressed="true"]')
-      ?? [...pair.popover.querySelectorAll(FOCUSABLE)].find(visibleIn);
+    const controls = [...pair.popover.querySelectorAll(FOCUSABLE)].filter(visibleIn);
+    const target = controls.find(control => control.getAttribute('aria-pressed') === 'true') ?? controls[0];
     target?.focus({ preventScroll: true });
   }
 

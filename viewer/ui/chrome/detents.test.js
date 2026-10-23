@@ -8,7 +8,7 @@ import {
 const heights = detentHeights(800, UPRIGHT_DETENTS);
 
 test('heights rise through the three rests', () => {
-  assert.deepEqual(heights, { peek: 132, half: 464, full: 672 });
+  assert.deepEqual(heights, { peek: 132, half: 400, full: 672 });
 });
 
 test('a measured grip is the peek rest', () => {
@@ -80,11 +80,11 @@ test('an unknown rest falls back to the lowest', () => {
   assert.deepEqual(DETENTS, ['peek', 'half', 'full']);
 });
 
-test('sideways rests leave more of the screen to the anatomy', () => {
+test('both working rests leave half the screen to the anatomy', () => {
   const upright = detentHeights(812, UPRIGHT_DETENTS);
   const sideways = detentHeights(812, SIDEWAYS_DETENTS);
-  assert.ok(sideways.half < upright.half,
-    'half a wide screen leaves the brain a square too small to read');
+  assert.equal(upright.half, 406);
+  assert.equal(sideways.half, upright.half);
   assert.ok(sideways.full < upright.full);
   assert.ok(sideways.peek > upright.peek,
     'the narrowest side rail still holds the name, the statement and the handle');

@@ -127,6 +127,15 @@ test('a cut carries the functional division of the level on show, and glass keep
     assert.ok(Math.abs(value - cortex.toArray()[channel]) < 1e-7));
 });
 
+test('a paint colours a cut as it colours the surface, over the atlas colours, and tissue elsewhere', () => {
+  const paint = { id: 'deficit:aphasia', colors: new Map([['destrieux:left:1', [0, 0, 255]]]) };
+  const palette = createPalette(labels, { ...state, paint }, appearance.tissue, { regions: new Map() });
+  const blue = new Color().setRGB(0, 0, 1, SRGBColorSpace);
+  const white = new Color(tissueColor({ ...labels[2], source_name: labels[2].name }, appearance.tissue));
+  for (const [channel, value] of blue.toArray().entries()) assert.ok(Math.abs(palette[4 + channel] - value) < 1e-7);
+  for (const [channel, value] of white.toArray().entries()) assert.ok(Math.abs(palette[8 + channel] - value) < 1e-7);
+});
+
 test('a NextBrain cortical cut parcel carries the network colour of its region', () => {
   // NextBrain cut labels are kind `tissue` — they have no surface — but its
   // cortical parcels still have a region record, and that record can carry
