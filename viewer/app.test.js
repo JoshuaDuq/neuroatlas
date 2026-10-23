@@ -2,11 +2,45 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { VIEW_DIRECTIONS } from './render/camera-views.js';
-import { createSession } from './state/session.js';
+import { createSession, shortcutsAllowed } from './state/session.js';
+import { characterShortcutAllowed } from './ui/chrome/shortcuts.js';
 import { Group } from 'three';
 import { createComparisonOverlay } from './comparison/overlay.js';
 
 const source = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
+const mriKeys = source.slice(source.indexOf('  const onKeyDown = event => {'),
+  source.indexOf('    if (event.metaKey || event.ctrlKey || event.altKey) return;'));
+const bindMriKeys = new Function('document', 'nativeTracts', 'keyPreference', 'shortcutsAllowed',
+  'characterShortcutAllowed', `${mriKeys}\n}; return onKeyDown;`);
+
+function mriShortcut({ enabled = true, key = 'm', target = { tagName: 'BUTTON' }, ...modifiers } = {}) {
+  let closed = false;
+  let prevented = false;
+  const dialog = { open: true, close() { closed = true; } };
+  const press = bindMriKeys({ getElementById: () => dialog }, { mriOpen: false }, { enabled },
+    shortcutsAllowed, characterShortcutAllowed);
+  press({ key, target, ...modifiers, preventDefault() { prevented = true; } });
+  return { closed, prevented };
+}
+
+test('the linked MRI M shortcut respects the disabled single-key preference', () => {
+  assert.deepEqual(mriShortcut({ enabled: false }), { closed: false, prevented: false });
+});
+
+test('the linked MRI M shortcut leaves editable inputs and modified keys alone', () => {
+  for (const target of [{ tagName: 'INPUT', type: 'text' }, { tagName: 'TEXTAREA' }, { isContentEditable: true }]) {
+    assert.deepEqual(mriShortcut({ target }), { closed: false, prevented: false });
+  }
+  for (const modifier of ['ctrlKey', 'metaKey', 'altKey']) {
+    assert.deepEqual(mriShortcut({ [modifier]: true }), { closed: false, prevented: false });
+  }
+});
+
+test('enabled M closes linked MRI while Escape remains the native dialog action', () => {
+  assert.deepEqual(mriShortcut({ key: 'M' }), { closed: true, prevented: true });
+  assert.deepEqual(mriShortcut({ enabled: false, key: 'Escape' }), { closed: false, prevented: false });
+});
+
 const startup = source.slice(source.indexOf('  // The camera starts inside the brain;'),
   source.indexOf('  // Before the stage reports ready,'));
 assert.ok(startup, 'The app restores shared state before reporting ready.');

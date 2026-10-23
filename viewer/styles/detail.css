@@ -1,24 +1,45 @@
 /* Region ------------------------------------------------------------------ */
-/* L1: the headline sits on the body's 16px inset under the location bar; its quiet × centres on the 24px line. */
-.selection-head { display: flex; align-items: flex-start; justify-content: flex-end; gap: var(--space-2); }
+/* The selected anatomy opens the sheet; commands and measurements follow as distinct groups. */
+#region-detail { padding-top: var(--space-6); }
+.selection-head { display: flex; align-items: flex-start; justify-content: flex-end; gap: var(--space-3); }
 .selection-head > #selected-name { flex: 1; min-width: 0; }
 #selection-clear { flex: none; margin: -4px calc(-1 * var(--space-2)) -4px 0; color: var(--text-tertiary); }
 #selected-name {
   font-size: var(--text-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   line-height: var(--lh-title);
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
+.selection-context {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-ui);
+  line-height: var(--lh-ui);
+}
+.selection-context dd { min-width: 0; overflow-wrap: anywhere; }
+.selection-context #fact-group { padding-left: var(--space-2); border-left: 1px solid var(--border-control); }
 #selected-hint {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   font-size: var(--text-ui);
   color: var(--text-secondary);
   line-height: var(--lh-prose);
 }
 /* With nothing selected: a title and one line, set like the panel's other empty states. */
-.selection-empty { font-size: var(--text-title); font-weight: 600; line-height: var(--lh-title); overflow-wrap: anywhere; }
+.selection-empty { font-size: var(--text-title); font-weight: 600; line-height: var(--lh-title); overflow-wrap: normal; }
 .selection-empty:not([hidden]) + #selected-hint { margin-top: var(--space-1); line-height: var(--lh-ui); }
+#region-detail > .actions {
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+#region-detail > .actions button { flex: 1 1 5rem; min-width: min-content; }
+#region-detail > .actions #region-mpr { flex-basis: 100%; }
 /*
  * Under a lesson, the landmark's own region is already the headline above.
  * Any other selection is a smaller second subject, ruled off, with no caption.
@@ -27,18 +48,30 @@
 #circuit-profile:not([hidden])[data-landmark-selected="false"] ~ .panel-body:has(.selection-head) { border-top: 1px solid var(--border-subtle); }
 #circuit-profile:not([hidden]) ~ .panel-body #selected-name { font-size: var(--text-title); }
 #circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body { padding-top: 0; }
-#circuit-profile:not([hidden])[data-landmark-selected="true"] ~ .panel-body .actions { margin-top: 0; }
 .clinical-profile-name, #circuit-profile { scroll-margin-top: var(--space-4); }
 
 /* Neuropsychology and In guided circuits follow this body as sections of their own and bring their own 24px. */
 #region-detail:has(~ :is(#clinical-region, #circuit-region):not([hidden])) { padding-bottom: 0; }
 
-/* The datasheet itself is a shared primitive (components.css). */
+/* One rule introduces the facts. Aligned labels and space separate their rows. */
 .datasheet { margin-top: var(--space-4); }
+#selected-facts {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.5fr);
+  align-items: baseline;
+  margin-top: var(--space-4);
+  padding-top: var(--space-1);
+}
+#selected-facts dt,
+#selected-facts dd { min-width: 0; padding-block: 5px; border-bottom: 0; overflow-wrap: anywhere; }
+#selected-facts dt { font-size: var(--text-caption); line-height: var(--lh-caption); }
+#region-detail > .detail-section { margin-top: var(--space-6); }
 /* A value too long to share its label's line (a list of source ids, a reference's full name) takes the line under it. */
 #selected-facts .stacked { grid-column: 1 / -1; }
 #selected-facts dt.stacked { padding-bottom: 0; border-bottom: 0; }
 #selected-facts dd.stacked { padding: 0 0 8px; text-align: left; }
+/* Long source lists are readable and selectable by keyboard and touch, without a tooltip. */
+.source-labels > summary { font-size: var(--text-caption); line-height: var(--lh-caption); }
+.source-labels > .code { padding: var(--space-1) 0 var(--space-2); color: var(--text-secondary); }
 
 /* A section's note or caveat, under the rows it qualifies. */
 .detail-note { margin-top: var(--space-2); font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
@@ -49,25 +82,26 @@
 .comparison-columns,
 .comparison-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 5.5rem 3.5rem;
+  grid-template-columns: minmax(0, 1fr) 4.5rem 3.25rem;
   align-items: start;
   gap: var(--space-2);
 }
 .comparison-columns {
-  padding-bottom: var(--space-1);
+  padding-block: var(--space-1) var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
   color: var(--text-secondary);
 }
 .comparison-columns > :not(:first-child) { text-align: right; }
-/* Rows are full-bleed so a wash never crowds the names; their rules stay on the text column. */
+/* Rows share a steady pitch and aligned figures; only the header and remainder need rules. */
 .comparison-row {
   position: relative;
-  width: calc(100% + 2 * var(--space-4));
+  width: calc(100% + 2 * var(--panel-inset));
   height: auto;
-  margin-inline: calc(-1 * var(--space-4));
-  padding: 7px var(--space-4) 9px;
+  min-height: var(--control-height);
+  margin-inline: calc(-1 * var(--panel-inset));
+  padding: var(--space-2) var(--panel-inset);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -75,15 +109,8 @@
   font-weight: 400;
   text-align: left;
 }
-.comparison-row::after {
-  content: "";
-  position: absolute;
-  inset: auto var(--space-4) 0;
-  height: 1px;
-  background: var(--border-subtle);
-}
 .comparison-row .measure { color: var(--text-secondary); white-space: nowrap; text-align: right; }
-.comparison-name { min-width: 0; overflow-wrap: break-word; }
+.comparison-name { min-width: 0; overflow-wrap: anywhere; text-wrap: pretty; }
 .comparison-row[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent); }
 .comparison-row[aria-pressed="true"] .comparison-name { font-weight: 600; }
 .comparison-row[aria-pressed="true"] .measure { color: var(--accent); }
@@ -95,15 +122,22 @@
 }
 .comparison-row:focus-visible { outline-offset: -2px; }
 .comparison-unassigned { color: var(--text-secondary); }
-/* The remaining rows open in place, above Unassigned, so the summary keeps the table's pitch and rule. */
-.comparison-more > summary { min-height: 36px; border-bottom: 1px solid var(--border-subtle); }
+.comparison-unassigned::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--panel-inset) auto;
+  height: 1px;
+  background: var(--border-subtle);
+}
+/* The remaining rows open in place, above Unassigned, keeping the table's pitch. */
+.comparison-more > summary { min-height: var(--control-height); }
 /* The note and its action share the first line's baseline, so a wrapped note leaves the link where it was. */
-.comparison-foot { display: flex; align-items: first baseline; justify-content: space-between; gap: var(--space-3); min-height: 32px; }
-.comparison-foot > p { font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
+.comparison-foot { display: flex; flex-wrap: wrap; align-items: first baseline; justify-content: space-between; gap: 0 var(--space-3); min-height: var(--control-height); padding-top: var(--space-1); }
+.comparison-foot > p { flex: 1 1 18ch; font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
 .comparison-export {
   flex: none;
   height: auto;
-  min-height: 32px;
+  min-height: var(--control-height);
   padding: 0;
   background: none;
   color: var(--accent);
@@ -115,7 +149,7 @@
   .comparison-export:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 }
 /* What an inline disclosure holds sits under its words, on the indent column. */
-.comparison-method > :not(summary) { margin: 0 0 0 calc(var(--indent) - var(--space-4)); }
+.comparison-method > :not(summary) { margin: 0 0 0 calc(var(--indent) - var(--panel-inset)); }
 .comparison-sources { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); padding-top: var(--space-2); font-size: var(--text-caption); line-height: var(--lh-caption); }
 
 /* Constituent regions ----------------------------------------------------- */
@@ -130,7 +164,7 @@
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-secondary);
 }
-.constituents-list li > :first-child { flex: 1; min-width: 0; padding: 7px 0 8px; }
+.constituents-list li > :first-child { flex: 1; min-width: 0; padding: var(--space-2) 0; overflow-wrap: normal; }
 /* The tail names the internal-anatomy set the constituent opens in, or that it exists on cuts only. */
 .constituent-set { flex: none; font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-tertiary); white-space: nowrap; }
 .constituents-list .row-side { margin-left: 0; }
@@ -150,20 +184,19 @@
 .constituents-list button:focus-visible { outline-offset: -2px; }
 
 /* Functional division and networks: the swatch names the network, the bar measures it. */
-.network-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
+.network-list { margin: 0; padding: 0; list-style: none; }
 .network-row {
   display: grid;
   grid-template-columns: 10px minmax(0, 1fr) minmax(32px, 56px) 3rem;
   align-items: start;
   gap: var(--space-2);
-  padding: 7px 0 8px;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-2) 0;
   font-size: var(--text-ui);
   line-height: var(--lh-ui);
 }
 /* Swatch and bar centre on the first line, so a wrapped name reads as one row. */
 .network-swatch { width: 10px; height: 10px; margin-top: 5px; border-radius: 2px; }
-.network-row-name { min-width: 0; }
+.network-row-name { min-width: 0; overflow-wrap: normal; }
 .network-bar { height: 4px; margin-top: 8px; border-radius: 2px; overflow: hidden; background: var(--border-subtle); }
 .network-bar > span { display: block; height: 100%; background: var(--text-tertiary); }
 .network-share { text-align: right; color: var(--text-secondary); white-space: nowrap; }
@@ -181,10 +214,11 @@
 }
 .detail-note + .network-map { margin-top: var(--space-4); }
 
-/* On a phone the sheet's grip names the selection and clears it, so the body opens on the actions. */
+/* The grip is a compact readout; the detail keeps the complete anatomical name. */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
-  #region-detail > .selection-head { display: none; }
-  #region-detail > #selected-hint[hidden] + .actions { margin-top: 0; }
+  #region-detail { padding-top: var(--panel-inset); }
+  #selected-name { font-size: var(--text-brand); line-height: var(--lh-title); }
+  #region-detail > .selection-context { margin-top: var(--space-2); }
 }
 
 /* A coarse pointer gets the 44px target the rest of the panel gives it. */

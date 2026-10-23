@@ -2,6 +2,7 @@ import { t, atlasSwitchLabel } from '../../i18n/translations.js';
 import { CLINICAL_TEXT } from '../../clinical/translations.js';
 import { visibilityOf } from '../../catalog/visibility.js';
 import { failureNotice } from '../../i18n/errors.js';
+import { createButtonLabel } from '../chrome/button-label.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -193,9 +194,11 @@ export function createClinicalExplorer({
   const related = document.getElementById('clinical-region');
   // The way back is the location bar's one trailing action.
   const trailing = document.getElementById('detail-trailing');
-  const restore = element('button', null, 'clinical-restore');
+  const restore = element('button', null, 'clinical-restore icon-button');
   restore.type = 'button';
   restore.id = 'clinical-restore';
+  const restoreLabel = createButtonLabel(restore, 'restore');
+  restoreLabel.classList.add('visually-hidden');
   trailing.append(restore);
   let listKey = null;
   let profileKey = null;
@@ -408,7 +411,8 @@ export function createClinicalExplorer({
         deficitSearchClear.setAttribute('aria-label', t(language, 'navigator').clearSearch);
       }
       if (document.activeElement !== search) search.value = state.clinicalQuery;
-      restore.textContent = text.restore;
+      restoreLabel.textContent = text.restore;
+      restore.dataset.tooltip = text.restore;
       coverage.textContent = text.coverage.replace('{count}', String(clinical.search('', language).length));
       list.setAttribute('aria-label', text.deficits);
 

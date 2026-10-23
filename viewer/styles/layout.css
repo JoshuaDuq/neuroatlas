@@ -19,8 +19,6 @@
   border-right: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
-/* A word is never cut at the panel edge: at a large text size the last tab takes a second line. */
-#workspace-tabs { flex-wrap: wrap; }
 .workspace-selection-row {
   display: flex;
   flex: none;
@@ -35,7 +33,7 @@
   flex: 1;
   min-width: 0;
   height: var(--tab-height);
-  padding: 0 var(--space-2) 0 var(--space-4);
+  padding: 0 var(--space-2) 0 var(--panel-inset);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -63,7 +61,7 @@
   flex: none;
   height: var(--tab-height);
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-base);
+  background: var(--surface-navigation);
 }
 .detail-path { flex: 1; align-self: stretch; min-width: 0; }
 .detail-path ol { display: flex; height: 100%; margin: 0; padding: 0; list-style: none; }
@@ -84,7 +82,7 @@
   text-align: left;
 }
 /* The chevron centres on x=22 and the mode's name starts on the indent column. */
-.detail-back { padding-left: var(--space-4); }
+.detail-back { padding-left: var(--panel-inset); }
 .detail-back .chevron { --chevron-turn: 180deg; }
 .detail-crumb {
   display: block;
@@ -117,21 +115,24 @@
   }
 }
 .detail-trailing > button:focus-visible { outline-offset: -2px; }
+.detail-trailing > .icon-button { width: var(--tab-height); padding: 0; color: var(--text-secondary); }
+@media (hover: hover) and (pointer: fine) {
+  .detail-trailing > .icon-button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
+}
 
-/* A list's head, pinned over it and ruled: the search, and in Anatomy the scope under it; 12 / 8 / 12. */
+/* Search is the task's starting point; compact scope controls sit below it. */
 .rail-head {
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-3);
+  padding: var(--space-4) var(--panel-inset) var(--space-3);
   background: var(--surface-base);
 }
 /* The keycap sits as far inside the field's end as it does inside its top and bottom. */
 .rail-head .search-shortcut { right: 6px; padding: 0 6px; }
 /* At a large reader text size the field grows around its words rather than spilling over the list. */
-.rail-head input[type="search"] { height: auto; min-height: var(--control-height); }
+.rail-head input[type="search"] { height: auto; min-height: max(40px, var(--control-height)); }
 .panel-heading {
   padding: var(--space-4) var(--space-4) 0;
   font-size: var(--text-title);
@@ -140,6 +141,8 @@
   letter-spacing: -0.01em;
 }
 .rail-body {
+  /* Keep absolutely positioned accessibility text inside its scrolling panel. */
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -152,11 +155,11 @@
 @media (hover: hover) and (pointer: fine) {
   .rail-body:hover { scrollbar-color: color-mix(in srgb, var(--text-tertiary) 55%, transparent) transparent; }
 }
-.panel-body { padding: var(--space-4); }
+.panel-body { padding: var(--panel-inset); }
 #anatomy-browser { padding-bottom: var(--space-3); }
-/* A short detail ends on a rule over the recessed ground, like the foot of a datasheet, rather than in blank panel. */
-#inspector > .rail-body { display: flex; flex-direction: column; background: var(--surface-navigation); }
-#inspector .tab-group { padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); background: var(--surface-base); }
+/* Detail remains one reading surface from its record through its supporting evidence. */
+#inspector > .rail-body { display: flex; flex-direction: column; background: var(--surface-base); }
+#inspector .tab-group { padding-bottom: var(--space-4); background: var(--surface-base); }
 #inspector-title { display: none; }
 /* The one notice, under the mode tabs in both shells: tonal ground, primary ink, no colour of its own. */
 .notice {
@@ -195,9 +198,9 @@
  */
 #app:is([data-status="loading"], [data-status="error"]) #inspector { display: none; }
 #app[data-status="loading"] #tree:empty {
-  height: calc(10 * 32px);
-  margin: var(--space-3) var(--space-4) 0 var(--indent);
-  background: repeating-linear-gradient(to bottom, var(--surface-tonal) 0 10px, transparent 10px 32px)
+  height: calc(10 * var(--row-height));
+  margin: var(--space-3) var(--panel-inset) 0 var(--indent);
+  background: repeating-linear-gradient(to bottom, var(--surface-tonal) 0 10px, transparent 10px var(--row-height))
     0 11px / 55% 100% no-repeat;
 }
 
@@ -211,5 +214,5 @@
 }
 
 @media (min-width: 641px) and (max-width: 1000px) {
-  :root { --rail-width: clamp(300px, 18.75rem, 40vw); }
+  :root { --rail-width: clamp(300px, 18.75rem, 42vw); --panel-inset: var(--space-4); }
 }

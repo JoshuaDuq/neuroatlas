@@ -169,7 +169,7 @@ export const TRANSLATIONS = {
     comparison: {
       heading: target => `Overlap with ${target}`,
       denominator: 'Shares of this region’s full pial surface.',
-      highlight: (name, share) => `Highlight overlap with ${name}, ${share} of this region`,
+      highlight: (name, area, share) => `Highlight overlap with ${name}, ${area}, ${share} of this region`,
       more: count => `${count} more overlapping ${count === 1 ? 'region' : 'regions'}`,
       columns: ['Region', 'Area (mm²)', 'Share (%)'],
       unassigned: 'Unassigned',
@@ -638,7 +638,7 @@ export const TRANSLATIONS = {
     comparison: {
       heading: target => `Recouvrement avec ${target}`,
       denominator: 'Parts de toute la surface piale de cette région.',
-      highlight: (name, share) => `Tracer le recouvrement avec ${name}, ${share} de cette région`,
+      highlight: (name, area, share) => `Tracer le recouvrement avec ${name}, ${area}, ${share} de cette région`,
       more: count => count === 1 ? '1 autre région en recouvrement' : `${count} autres régions en recouvrement`,
       columns: ['Région', 'Surface (mm²)', 'Part (%)'],
       unassigned: 'Non assigné',

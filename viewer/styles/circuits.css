@@ -1,14 +1,14 @@
-/* Circuits list: full-bleed square rows on the 16px column, the landmark count in the right column. */
+/* Circuit names share the index inset; landmark counts hold the quiet trailing column. */
 #circuit-list { display: grid; padding: var(--space-2) 0; }
 .circuit-choice {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   width: 100%;
   height: auto;
   min-height: var(--row-height);
   margin: 0;
-  padding: 6px var(--space-4);
+  padding: var(--space-2) var(--panel-inset);
   border: 0;
   border-radius: 0;
   background: none;
@@ -18,7 +18,7 @@
   line-height: var(--lh-ui);
 }
 .circuit-choice:focus-visible { outline-offset: -2px; }
-.circuit-choice-name { flex: 1 1 auto; min-width: 0; }
+.circuit-choice-name { flex: 1 1 auto; min-width: 0; font-weight: 500; overflow-wrap: anywhere; }
 .circuit-count {
   flex: none;
   color: var(--text-tertiary);
@@ -55,13 +55,14 @@
 .circuit-stepper .icon-button { height: var(--control-height); }
 .circuit-stepper .icon-button:focus-visible { outline-offset: -2px; }
 
-/* The landmark: headline, a 4px step to its role, 12px to its explanation. */
-.circuit-content { font-size: var(--text-ui); line-height: var(--lh-prose); overflow-wrap: anywhere; }
+/* The landmark: a headline and attached role, with room before the explanation. */
+.circuit-content { font-size: var(--text-ui); line-height: var(--lh-prose); overflow-wrap: normal; }
 .circuit-content .circuit-title {
   font-size: var(--text-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   line-height: var(--lh-title);
+  text-wrap: pretty;
 }
 .circuit-content .circuit-role {
   margin-top: var(--space-1);
@@ -69,7 +70,7 @@
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
 }
-.circuit-explanation { margin-top: var(--space-3); }
+.circuit-explanation { margin-top: var(--space-4); }
 .circuit-note { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 /* Back to the prepared view, offered only once the reader has wandered off the landmark. */
 .circuit-content > .circuit-return { margin-top: var(--space-3); }
@@ -93,22 +94,22 @@
 
 /*
  * The lesson's sequence and notes, after the landmark's data. The sequence is a list like any
- * other: full-bleed rows, the step's ring centred on the chevron slot (x=22), its name on --indent.
+ * other: full-bleed rows, a stable number column and complete landmark names.
  */
-#circuit-notes { margin-bottom: var(--space-4); font-size: var(--text-ui); line-height: var(--lh-prose); overflow-wrap: anywhere; }
-#circuit-notes > .detail-section { margin-inline: var(--space-4); }
+#circuit-notes { margin-bottom: var(--space-6); font-size: var(--text-ui); line-height: var(--lh-prose); overflow-wrap: normal; }
+#circuit-notes > .detail-section { margin-top: var(--space-8); margin-inline: var(--panel-inset); }
 #circuit-notes > .circuit-landmarks { margin-inline: 0; }
-.circuit-landmarks > .detail-section-heading { padding-inline: var(--space-4); }
+.circuit-landmarks > .detail-section-heading { padding-inline: var(--panel-inset); }
 .circuit-steps { margin: 0; padding: 0; list-style: none; }
 .circuit-step {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   width: 100%;
   height: auto;
   min-height: var(--row-height);
   margin: 0;
-  padding: 6px var(--space-4) 6px var(--space-3);
+  padding: var(--space-2) var(--panel-inset);
   border: 0;
   border-radius: 0;
   background: none;
@@ -119,7 +120,7 @@
 }
 .circuit-step:focus-visible { outline-offset: -2px; }
 .circuit-step:disabled { background: none; }
-.circuit-step-name { min-width: 0; }
+.circuit-step-name { min-width: 0; overflow-wrap: normal; }
 /* Ahead is an open ring, seen a filled disc, the current one the selection: shape tells them apart, not ink alone. */
 .circuit-step-number {
   flex: none;
@@ -160,7 +161,7 @@
   white-space: normal;
 }
 .circuit-route { color: var(--text-primary); font-weight: 500; }
-.circuit-source a { font-weight: 500; }
+.circuit-source a { font-weight: 500; overflow-wrap: anywhere; }
 .circuit-source span { display: block; margin-top: var(--space-1); }
 #circuit-action-status { font-size: var(--text-ui); line-height: var(--lh-prose); }
 #circuit-action-status[data-error="true"] { color: var(--danger); }
@@ -173,7 +174,7 @@
   gap: var(--space-2);
   width: 100%;
   height: auto;
-  min-height: 36px;
+  min-height: var(--control-height);
   margin: 0;
   padding: 7px 0 8px;
   border: 0;
@@ -186,7 +187,7 @@
   line-height: var(--lh-ui);
 }
 .circuit-link:focus-visible { outline-offset: -2px; }
-.circuit-link-name { flex: 1 1 auto; min-width: 0; }
+.circuit-link-name { flex: 1 1 auto; min-width: 0; overflow-wrap: normal; }
 .circuit-link-step {
   flex: none;
   color: var(--text-tertiary);
@@ -201,6 +202,6 @@
 }
 
 @media (pointer: coarse) {
-  .circuit-choice, .circuit-step { min-height: 44px; }
+  .circuit-choice, .circuit-step, .circuit-link { min-height: 44px; }
   .circuit-disclosure > summary { min-height: 44px; }
 }
