@@ -9,9 +9,9 @@ export const CLINICAL_TEXT = {
     studyFinding: 'Reported finding', limits: 'Interpretation',
     mapping: 'Approximate anatomical mapping', openRegion: 'Open region',
     // Outlined unless a cut is on, which turns the outlines off.
-    regionsMarked: (shown, total, outlined) => {
+    regionsMarked: (shown, total, coloured) => {
       const count = shown === total ? `${total}` : `${shown} of ${total}`;
-      return `${count} ${total === 1 ? 'region' : 'regions'} ${outlined ? 'outlined' : 'visible'}`;
+      return `${count} ${total === 1 ? 'region' : 'regions'} ${coloured ? 'coloured' : 'visible'}`;
     },
     // What revealing a deficit's regions changed in the reader's own settings, one clause each.
     changed: {
@@ -44,10 +44,10 @@ export const CLINICAL_TEXT = {
     studyFinding: 'Résultat rapporté', limits: 'Interprétation',
     mapping: 'Correspondance anatomique approximative', openRegion: 'Voir la région',
     // French agrees with the count shown: « 10 régions sur 11 », « 1 région sur 3 ».
-    regionsMarked: (shown, total, outlined) => {
+    regionsMarked: (shown, total, coloured) => {
       const plural = shown > 1 ? 's' : '';
       const count = shown === total ? `${shown} région${plural}` : `${shown} région${plural} sur ${total}`;
-      return `${count} ${outlined ? 'entourée' : 'visible'}${plural}`;
+      return `${count} ${coloured ? 'colorée' : 'visible'}${plural}`;
     },
     changed: {
       cut: 'coupe fermée', isolation: 'isolement retiré', hemisphere: 'deux hémisphères affichés',

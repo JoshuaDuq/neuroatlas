@@ -259,6 +259,23 @@
                 <select id="internal-system"></select>
               </div>
             </div>
+            <div id="function-search-head" class="rail-head" hidden>
+              <label id="function-search-label" class="visually-hidden" for="function-search">Search functions</label>
+              <div class="search-box">
+                <svg class="search-affordance" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+                </svg>
+                <input id="function-search" type="search" autocomplete="off" aria-controls="function-list" />
+                <kbd class="search-shortcut" aria-hidden="true">/</kbd>
+                <button id="function-search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <path d="m6 6 12 12M6 18 18 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
             <div id="deficit-search-head" class="rail-head" hidden>
               <label id="deficit-search-label" class="visually-hidden" for="deficit-search">Search deficits</label>
               <div class="search-box">
@@ -280,6 +297,10 @@
               <div id="results" role="listbox" aria-label="Search results" hidden></div>
               <div id="results-notes" hidden></div>
               <div id="tree" role="tree" aria-label="Browse anatomy"></div>
+            </div>
+            <div id="function-browser" class="rail-body" hidden>
+              <div id="function-list" aria-label="Functions"></div>
+              <p id="function-coverage" class="scope-note"></p>
             </div>
             <div id="deficit-browser" class="rail-body" hidden>
               <div id="deficit-list" aria-label="Deficits"></div>
@@ -319,6 +340,7 @@
                 <h2 id="inspector-title" class="panel-heading">Region details</h2>
                 <section id="circuit-profile" hidden aria-labelledby="circuit-heading"></section>
                 <p id="circuit-action-status" class="panel-body" role="status" hidden></p>
+                <section id="function-profile" hidden aria-labelledby="function-title"></section>
                 <section id="clinical-profile" hidden aria-labelledby="clinical-title"></section>
                 <div id="region-detail" class="panel-body">
                   <div class="selection-head">
@@ -375,18 +397,18 @@
                     <ul id="constituents-list" class="constituents-list"></ul>
                     <p id="constituents-note" class="detail-note"></p>
                   </details>
-                  <section id="region-functional" class="detail-section" hidden>
-                    <h3 id="label-functional" class="detail-section-heading">Functional division</h3>
+                  <details id="region-functional" class="detail-section evidence-section" hidden>
+                    <summary><h3 id="label-functional">Functional division</h3></summary>
                     <ul id="functional-list" class="network-list"></ul>
                     <p id="functional-note" class="detail-note"></p>
-                  </section>
-                  <section id="region-domains" class="detail-section" hidden>
-                    <h3 id="label-domains" class="detail-section-heading">Neuropsychological domains</h3>
+                  </details>
+                  <details id="region-domains" class="detail-section evidence-section" hidden>
+                    <summary><h3 id="label-domains">Neuropsychological domains</h3></summary>
                     <ul id="domains-list" class="network-list"></ul>
                     <p id="domains-note" class="detail-note"></p>
-                  </section>
-                  <section id="region-networks" class="detail-section" hidden>
-                    <h3 id="label-networks" class="detail-section-heading">Functional networks</h3>
+                  </details>
+                  <details id="region-networks" class="detail-section evidence-section" hidden>
+                    <summary><h3 id="label-networks">Functional networks</h3></summary>
                     <p id="label-yeo" class="network-map"></p>
                     <ul id="network-list" class="network-list"></ul>
                     <p id="network-note" class="detail-note"></p>
@@ -394,7 +416,7 @@
                     <ul id="cab-np-list" class="network-list" hidden></ul>
                     <p id="cab-np-note" class="detail-note" hidden></p>
                     <p id="network-caveat" class="detail-note"></p>
-                  </section>
+                  </details>
                 </div>
 
                 <section id="clinical-region" class="detail-section" hidden></section>
@@ -413,7 +435,7 @@
           <span data-edge="top"></span><span data-edge="right"></span>
           <span data-edge="bottom"></span><span data-edge="left"></span>
         </div>
-        <!-- One plate of three worded tools: the view (named by the preset it holds), Section and Display. The section row sits above them while a plane is cut. -->
+        <!-- One plate of three worded tools: View, Section and Display. The section row sits above them while a plane is cut. -->
         <div id="stage-dock" class="stage-dock">
           <div id="stage-toolbar" class="stage-toolbar">
             <button id="view-tool" class="stage-tool" type="button" aria-haspopup="dialog"
@@ -538,15 +560,15 @@
             </div>
             <ul id="functional-key-list" class="stage-key-list" aria-labelledby="functional-key-title"></ul>
           </div>
-          <div id="domains-key" class="stage-key" hidden>
+          <div id="paint-key" class="stage-key" hidden>
             <div class="stage-key-head">
-              <button class="stage-key-toggle" type="button" aria-expanded="true" aria-controls="domains-key-list">
-                <span id="domains-key-title">Neuropsychological domains</span>
+              <button class="stage-key-toggle" type="button" aria-expanded="true" aria-controls="paint-key-list">
+                <span id="paint-key-title"></span>
                 <span class="stage-tool-chevron" aria-hidden="true"></span>
               </button>
             </div>
-            <ul id="domains-key-list" class="stage-key-list domains-key-list" aria-labelledby="domains-key-title"></ul>
-            <p id="domains-key-note" class="stage-key-note"></p>
+            <ul id="paint-key-list" class="stage-key-list paint-key-list" aria-labelledby="paint-key-title"></ul>
+            <p id="paint-key-note" class="stage-key-note"></p>
           </div>
           <div id="direction-key" class="stage-key" hidden>
             <div class="stage-key-head">

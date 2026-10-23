@@ -23,8 +23,8 @@ import { fetchAsset } from '../model/asset-cache.js';
 import { loadVolume } from '../slices/volume.js';
 import { codeIndex, liftFor } from './highlight.js';
 import {
-  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesDomainColors, usesFunctionalColors,
-  usesNetworkColors,
+  createPalette, labelVisible, usesAtlasColors, usesCabNpColors, usesFunctionalColors, usesNetworkColors,
+  usesPaint,
 } from './palette.js';
 import { createCutMaterial } from './shader.js';
 import { SolidSections } from './solid-sections.js';
@@ -81,8 +81,8 @@ export class TissueSections {
 
   /** What a cut label's colour is looked up in: its region and each published network palette. */
   get paletteLookup() {
-    const { regions, manifest, cabNp, functionalRegions, domains } = this.model;
-    return { regions, networks: manifest.networks, cabNp, functional: functionalRegions, domains };
+    const { regions, manifest, cabNp, functionalRegions } = this.model;
+    return { regions, networks: manifest.networks, cabNp, functional: functionalRegions };
   }
 
   async loadMetadata() {
@@ -294,7 +294,7 @@ export class TissueSections {
     const state = this.model.state;
     // A cut-only atlas has no surface to cut parcels out of, so its published
     // colours still have to come from the label volume.
-    const mri = state.surfaceColor === 'mri';
+    const mri = state.surfaceColor === 'mri' && !usesPaint(state);
     this.anatomy.mriUniforms.scanEnabled.value = mri;
     updateCapLabels(this.anatomy.capLabels, layer, state);
     const solid = layer.wedged || state.surfaceColor === 'tissue' || mri;
@@ -308,7 +308,7 @@ export class TissueSections {
       const constituents = state.internalConstituents
         ? [...state.internalConstituents].sort().join(',') : '';
       const paintKey = [
-        state.surfaceColor, state.functionalLevel, state.domain, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
+        state.surfaceColor, state.functionalLevel, state.paint?.id, state.atlas, state.hemisphere, state.cortexVisible, state.cortexOpacity,
         state.isolatedRegion, state.internalVisible, state.internalSystem, state.spinalCordVisible,
         state.detail, state.cutAtlas, state.cutActive, constituents,
         atlas, layer.wedged, this.whiteMatter?.active ?? false,
@@ -340,13 +340,13 @@ export class TissueSections {
     // a published palette — atlas or network — that modulation would distort
     // the datum, and the cut would no longer match its key.
     const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state)
-      || usesFunctionalColors(state) || usesDomainColors(state);
+      || usesFunctionalColors(state) || usesPaint(state);
     layer.uniforms.tissueVariation.value = published
       ? 0 : this.model.manifest.appearance.intensity.cut_strength;
     const key = JSON.stringify([
       state.surfaceColor,
       state.functionalLevel,
-      state.domain,
+      state.paint?.id ?? null,
       state.hemisphere,
       state.cortexVisible,
       state.cortexOpacity,

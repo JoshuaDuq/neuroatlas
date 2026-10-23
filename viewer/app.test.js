@@ -1,13 +1,16 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { VIEW_DIRECTIONS } from './render/camera-views.js';
+import { FRAME_FILL, VIEW_DIRECTIONS, fitDistance, frameTo, upFor } from './render/camera-views.js';
+import { planFraming } from './render/scene.js';
+import { orbitPath } from './render/camera-path.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
 import { characterShortcutAllowed } from './ui/chrome/shortcuts.js';
-import { Group } from 'three';
+import { Box3, Group, PerspectiveCamera, Vector3 } from 'three';
 import { createComparisonOverlay } from './comparison/overlay.js';
 
 const source = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
+const sceneSource = readFileSync(new URL('./render/scene.js', import.meta.url), 'utf8');
 const mriKeys = source.slice(source.indexOf('  const onKeyDown = event => {'),
   source.indexOf('    if (event.metaKey || event.ctrlKey || event.altKey) return;'));
 const bindMriKeys = new Function('document', 'nativeTracts', 'keyPreference', 'shortcutsAllowed',
@@ -96,6 +99,117 @@ test('a published view frames the real camera session', () => {
   assert.deepEqual(frames, [{ immediate: true }]);
 });
 
+const currentFrameCommand = source.slice(source.indexOf('  function frameCurrent('),
+  source.indexOf('  /** The lesson step whose landmark'));
+const viewportRefitCommand = source.slice(source.indexOf('  refitViewport = () => {'),
+  source.indexOf('  // Framing fits above'));
+const resetCommand = source.match(/onReset: \(\) => \{([\s\S]*?)\n    \},/)[1];
+const bindViewportFraming = new Function('dependencies', `
+  const { scene, session, model, bounds, VIEW_DIRECTIONS, frameTo, upFor, planFraming, fitDistance, Vector3 } = dependencies;
+  let framed = true, zoom = 0.2, refitViewport;
+  let fit = { horizontal: 1, vertical: 0.45 };
+  const framingFit = () => fit, framingBounds = () => bounds, framingPoints = () => null;
+  const isTargetingSpine = () => false, chrome = { holdView() {} }, render = () => {};
+  const commands = { begin() {} }, sections = { setMode() {} };
+  const viewDirection = () => scene.camera.position.clone().sub(scene.controls.target).normalize();
+  const fittedDistance = direction => fitDistance(scene.camera, bounds, direction, fit);
+  const moveCamera = (plan, options) => scene.moveTo(plan, options);
+  ${currentFrameCommand}
+  ${viewportRefitCommand}
+  return {
+    applyView,
+    reset() { ${resetCommand} },
+    resize() {
+      scene.camera.aspect = 537 / 695;
+      scene.camera.updateProjectionMatrix();
+      fit = { horizontal: 1, vertical: 1 };
+      refitViewport();
+    },
+  };
+`);
+
+const cameraMoveCommand = sceneSource.slice(sceneSource.indexOf('  function moveTo('),
+  sceneSource.indexOf('  /** An eased move between'));
+const cameraStepCommand = sceneSource.slice(sceneSource.indexOf('  function step('), sceneSource.indexOf('  function tick('));
+const bindCameraMovement = new Function('camera', 'controls', 'orbitPath', `
+  let transition = null, chromeMove = null, insetMove = null, lastMotion = 0;
+  const TRANSITION_MS = 240, invalidate = () => {}, prefersReducedMotion = () => false;
+  const easeSheet = t => t, easeInOut = t => t;
+  ${cameraMoveCommand}
+  ${cameraStepCommand}
+  return {
+    moveTo,
+    finish() { step(performance.now() + 1000); },
+    get destination() {
+      return transition?.plan ?? {
+        position: camera.position.clone(), target: controls.target.clone(), up: camera.up.clone(),
+        near: camera.near, far: camera.far, minDistance: controls.minDistance, maxDistance: controls.maxDistance,
+      };
+    },
+  };
+`);
+
+function viewportFramingFixture({ animated = false } = {}) {
+  const bounds = new Box3(new Vector3(-0.08, -0.07, -0.1), new Vector3(0.08, 0.11, 0.1));
+  const camera = new PerspectiveCamera(35, 390 / 792, 0.001, 10);
+  const controls = {
+    target: new Vector3(), minDistance: 0, maxDistance: Infinity, dispatchEvent() {},
+    update() { camera.lookAt(this.target); camera.updateMatrixWorld(); },
+  };
+  const movement = bindCameraMovement(camera, controls, orbitPath);
+  const scene = {
+    camera, controls, invalidate() {},
+    moveTo(plan, options) { movement.moveTo(plan, animated ? options : { immediate: true }); },
+    get destination() { return movement.destination; },
+  };
+  const model = { state: {}, reset() {} };
+  const session = createSession({ views: Object.keys(VIEW_DIRECTIONS) });
+  const framing = bindViewportFraming({ scene, session, model, bounds, VIEW_DIRECTIONS, frameTo, upFor, planFraming, fitDistance, Vector3 });
+  const assertBrainFits = () => {
+    for (const x of [bounds.min.x, bounds.max.x]) {
+      for (const y of [bounds.min.y, bounds.max.y]) {
+        for (const z of [bounds.min.z, bounds.max.z]) {
+          const projected = new Vector3(x, y, z).project(camera);
+          assert.ok(Math.abs(projected.x) <= FRAME_FILL + 1e-9, 'brain stays inside the horizontal frame');
+          assert.ok(Math.abs(projected.y) <= FRAME_FILL + 1e-9, 'brain stays inside the vertical frame');
+        }
+      }
+    }
+  };
+  return { ...framing, assertBrainFits, finish: movement.finish, camera, controls };
+}
+
+test('Reset view replaces an earlier close zoom across a phone-to-desktop resize', () => {
+  const framing = viewportFramingFixture();
+  framing.reset();
+  framing.assertBrainFits();
+  framing.resize();
+  framing.assertBrainFits();
+});
+
+test('named view presets replace an earlier close zoom before the next resize', () => {
+  for (const view of ['left', 'superior']) {
+    const framing = viewportFramingFixture();
+    framing.applyView(view, { immediate: true });
+    framing.assertBrainFits();
+    framing.resize();
+    framing.assertBrainFits();
+  }
+});
+
+test('resizing during an animated Reset cancels the old viewport endpoint', () => {
+  const framing = viewportFramingFixture({ animated: true });
+  framing.applyView('left', { immediate: true });
+  framing.reset();
+  framing.resize();
+  const resizedPosition = framing.camera.position.clone();
+  const resizedTarget = framing.controls.target.clone();
+  framing.finish();
+  assert.deepEqual(framing.camera.position.toArray(), resizedPosition.toArray(), 'the phone-fit tween cannot overwrite the resized frame');
+  assert.deepEqual(framing.controls.target.toArray(), resizedTarget.toArray());
+  framing.assertBrainFits();
+});
+
 const comparisonCommand = source.match(/highlight: async id => \{([\s\S]*?)\n    \},/)[1];
 const bindComparisonCommand = new AsyncFunction('overlapOverlay', 'outline', 'id', comparisonCommand);
 
@@ -134,29 +248,31 @@ test('another subject keeps the cut, view and panel, replaces the link in place 
   });
 });
 
-const restoreCommand = source.slice(source.indexOf('  async function restoreBeforeDeficit() {'),
+const restoreCommand = source.slice(source.indexOf('  async function restoreBeforeExcursion() {'),
   source.indexOf('  /** Closing a deficit ends its excursion'));
 const bindRestore = new Function('dependencies', `
-  let { commands, applyReaderState, render, beforeDeficit } = dependencies;
+  let { commands, applyReaderState, render, session, beforeExcursion } = dependencies;
   ${restoreCommand}
-  return { restore: restoreBeforeDeficit, get before() { return beforeDeficit; } };
+  return { restore: restoreBeforeExcursion, get before() { return beforeExcursion; } };
 `);
 
-test('a restore that a later command overtakes says so, and keeps the scene to restore', async () => {
+test('a restore that a later command overtakes says so, and keeps the scene to restore; one that lands lifts the paint', async () => {
   let live = true;
   const scene = { view: 'left' };
   const restoring = bindRestore({
-    commands: { begin: () => () => live }, render() {}, beforeDeficit: scene,
+    commands: { begin: () => () => live }, render() {}, session: { liftPaint() {} }, beforeExcursion: scene,
     async applyReaderState() { live = false; return []; },
   });
   assert.equal(await restoring.restore(), false);
   assert.equal(restoring.before, scene);
   const finished = bindRestore({
-    commands: { begin: () => () => true }, render() {}, beforeDeficit: scene,
-    async applyReaderState() { return []; },
+    commands: { begin: () => () => true }, render() {}, session: { liftPaint() { lifted = true; } },
+    beforeExcursion: scene, async applyReaderState() { return []; },
   });
+  let lifted = false;
   assert.equal(await finished.restore(), true);
   assert.equal(finished.before, null);
+  assert.equal(lifted, true, 'the previous view had no paint');
 });
 
 const leaveCommand = source.slice(source.indexOf('  async function leaveLesson() {'),

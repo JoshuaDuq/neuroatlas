@@ -5,7 +5,7 @@ import { validateCabNp } from '../catalog/networks.js';
 import {
   FUNCTIONAL_LEVELS, functionalRegionOf, validateFunctionalRegions,
 } from '../catalog/functional-regions.js';
-import { shownDomain, validateNeuropsychDomains } from '../catalog/neuropsych-domains.js';
+import { validateNeuropsychDomains } from '../catalog/neuropsych-domains.js';
 import { belongsToDetail, visibilityOf } from '../catalog/visibility.js';
 import { worldToRas } from '../slices/coordinates.js';
 import { fetchAsset } from './asset-cache.js';
@@ -58,12 +58,11 @@ function asOptions(onProgressOrOptions) {
  * `tissue` is the modelled tissue class, `atlas` the parcellation's own
  * published colours, `network` the Yeo palette carried per vertex,
  * `cab-np` CAB-NP's network for each HCP-MMP area as a whole, and
- * `functional` the published functional divisions, drawn solid inside glass,
- * and `domains` each area's neuropsychological domains on opaque cortex.
+ * and `functional` the published functional divisions, drawn solid inside glass.
  * They are one setting rather than several toggles because the surface can
- * only show one of them at a time.
+ * only show one of them at a time. A paint (`setPaint`) is drawn over whichever is chosen.
  */
-export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional', 'domains'];
+export const SURFACE_COLORS = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'];
 
 function validateManifest(manifest) {
   // Named individually because these fail together for one boring reason — a
@@ -163,8 +162,8 @@ export class BrainAtlas extends EventTarget {
     this.functionalRegions = functionalRegions && validateFunctionalRegions(functionalRegions, this.regions);
     this.functionalLevel = 'named';
     this.domains = domains && validateNeuropsychDomains(domains, this.regions);
-    // The domain the reader picked from the key, or null for every area's strongest.
-    this.domain = null;
+    // A panel's colours for named regions, every other region in tissue colour; null for none.
+    this.paint = null;
     this.glassSolids = null;
     this.dissection = createDissection(this.regions);
     this.layers = new Map();
@@ -427,7 +426,6 @@ export class BrainAtlas extends EventTarget {
     // CAB-NP and the functional divisions group one atlas's areas; any other atlas has none to colour.
     if (this.surfaceColor === 'cab-np' && id !== this.cabNp.atlas) this.surfaceColor = 'atlas';
     if (this.surfaceColor === 'functional' && id !== this.functionalRegions.atlas) this.surfaceColor = 'atlas';
-    if (this.surfaceColor === 'domains' && id !== this.domains.atlas) this.surfaceColor = 'atlas';
     this.isolatedId = null;
     this.select(null);
   }
@@ -482,7 +480,7 @@ export class BrainAtlas extends EventTarget {
       spinalCordVisible: this.spinalCordVisible,
       surfaceColor: this.surfaceColor,
       functionalLevel: this.functionalLevel,
-      domain: this.domain,
+      paint: this.paint,
       isolatedRegion: this.isolatedId,
       ...this.dissection.state,
     };
@@ -511,10 +509,10 @@ export class BrainAtlas extends EventTarget {
     if (!this.whiteMatterSurfaces && !this.pending.has(ENVELOPES)
         && exposedWhiteMatter(settings, this.regions).size) this.loadEnvelopesBehind();
     this.whiteMatterSurfaces?.update(settings, this.regions, this.clippingPlanes);
-    const mri = this.surfaceColor === 'mri';
+    const paint = this.paint;
+    const mri = this.surfaceColor === 'mri' && !paint;
     if (this.mriUniforms) this.mriUniforms.scanEnabled.value = mri;
-    const functional = this.surfaceColor === 'functional';
-    const domains = this.surfaceColor === 'domains';
+    const functional = this.surfaceColor === 'functional' && !paint;
     const shownCortex = new Set();
     for (const [id, layer] of this.layers) {
       layer.scene.visible = id === this.detailId || id === this.atlasId ||
@@ -522,12 +520,10 @@ export class BrainAtlas extends EventTarget {
       for (const mesh of layer.meshes) {
         const region = this.regions.get(mesh.userData.region_id);
         const cortex = region.kind === 'cortex' || region.kind === 'non-region';
-        const cabNpNetwork = this.surfaceColor === 'cab-np' ? this.cabNp.regions[region.id] : null;
-        const division = !cortex ? null
-          : functional ? functionalRegionOf(this.functionalRegions, this.functionalLevel, region.id)
-            : domains ? shownDomain(this.domains, region.id, this.domain) : null;
-        // Cortex outside every division of the level is the glass the divisions sit in; an
-        // area that reaches no domain keeps the plain tissue colour, opaque.
+        const cabNpNetwork = this.surfaceColor === 'cab-np' && !paint ? this.cabNp.regions[region.id] : null;
+        const division = cortex && functional
+          ? functionalRegionOf(this.functionalRegions, this.functionalLevel, region.id) : null;
+        // Cortex outside every division of the level is the glass the divisions sit in.
         const glass = functional && cortex && !division;
         mesh.visible = visibilityOf(region, settings).visible;
         if (mesh.visible && layer.scene.visible) shownCortex.add(region.id);
@@ -535,11 +531,11 @@ export class BrainAtlas extends EventTarget {
         if (cortex) {
           // Only tissue colour carries the T1 brightness it was tuned against;
           // under a published palette that modulation would distort the datum.
-          material.userData.tissueVariation.value = this.surfaceColor === 'tissue'
+          material.userData.tissueVariation.value = this.surfaceColor === 'tissue' && !paint
             ? this.manifest.appearance.intensity.surface_strength : 0;
           if (material.userData.networkMix) {
             material.userData.networkMix.value =
-              this.surfaceColor === 'network' ? 1 : 0;
+              this.surfaceColor === 'network' && !paint ? 1 : 0;
           }
         }
         if (material.clippingPlanes !== this.clippingPlanes) {
@@ -549,7 +545,12 @@ export class BrainAtlas extends EventTarget {
         // Under network colour this shows only where no network reaches: the
         // medial wall keeps the tissue it always had.
         material.color.copy(this.sourceColors.get(mesh));
-        if (cabNpNetwork) {
+        const painted = paint?.colors.get(region.id);
+        if (painted) {
+          material.color.setRGB(...painted.map(value => value / 255), SRGBColorSpace);
+        } else if (paint) {
+          material.color.set(tissueColor(region, this.manifest.appearance.tissue));
+        } else if (cabNpNetwork) {
           // Published sRGB, converted as the per-vertex network colours are.
           material.color.setRGB(
             ...this.cabNp.colors[cabNpNetwork].map(value => value / 255), SRGBColorSpace);
@@ -791,12 +792,6 @@ export class BrainAtlas extends EventTarget {
       }
       if (!this.glassSolids) throw new Error('Glass-brain solids must load before selecting functional divisions.');
     }
-    if (mode === 'domains') {
-      if (!this.domains) throw new Error('This model carries no neuropsychological domains.');
-      if (this.atlasId !== this.domains.atlas) {
-        throw new Error(`Neuropsychological domains colour ${this.domains.atlas} areas; show that atlas first.`);
-      }
-    }
     this.surfaceColor = mode;
     this.update();
   }
@@ -807,12 +802,16 @@ export class BrainAtlas extends EventTarget {
     this.update();
   }
 
-  /** Show one domain's every area, or with null each area's strongest domain. */
-  setDomain(id) {
-    if (id !== null && !this.domains?.domains.some(domain => domain.id === id)) {
-      throw new TypeError(`Unknown neuropsychological domain: ${id}`);
+  /**
+   * Draw `{ id, colors }` over the surface colour: each region in `colors` takes its sRGB
+   * bytes, every other region its tissue colour. A paint is replaced whole, by id; null lifts it.
+   */
+  setPaint(paint) {
+    if (paint !== null && (typeof paint?.id !== 'string' || !(paint.colors instanceof Map))) {
+      throw new TypeError('A paint needs an id and a Map of region colours.');
     }
-    this.domain = id;
+    if ((paint?.id ?? null) === (this.paint?.id ?? null)) return;
+    this.paint = paint;
     this.update();
   }
 
@@ -886,7 +885,6 @@ export class BrainAtlas extends EventTarget {
     this.spinalCordVisible = false;
     this.surfaceColor = 'atlas';
     this.functionalLevel = 'named';
-    this.domain = null;
     this.isolatedId = null;
     this.select(null);
   }

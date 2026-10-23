@@ -718,53 +718,31 @@ test('functional divisions need their atlas and their solids, and leaving the at
   atlas.dispose();
 });
 
-const domains = {
-  id: 'neuropsych-domains', atlas: 'a', threshold_z: 3,
-  domains: [
-    { id: 'language', term: 'language', name: 'Language', name_fr: 'Langage', color: [255, 0, 0] },
-    { id: 'memory', term: 'episodic memory', name: 'Memory', name_fr: 'Mémoire', color: [0, 0, 255] },
-  ],
-  lesion_checks: { language: [], memory: [] },
-  regions: {
-    'a-left': [{ domain: 'language', z: 6 }, { domain: 'memory', z: 4 }],
-    'a-right': [{ domain: 'memory', z: 5 }],
-  },
-};
-
-test('each area shows its strongest domain on opaque cortex, and a picked domain shows its every area', async () => {
-  const { atlas } = fixture(null, functional, domains);
+test('a paint colours the regions it names over any surface colour, every other region in tissue colour', async () => {
+  const { atlas } = fixture(null, functional);
   await atlas.initialize('a');
-  atlas.setSurfaceColor('domains');
+  withGlassSolids(atlas);
+  atlas.setSurfaceColor('functional');
   const red = new Color().setRGB(1, 0, 0, SRGBColorSpace).getHex();
-  const blue = new Color().setRGB(0, 0, 1, SRGBColorSpace).getHex();
   const tissue = new Color(appearance.tissue.cortex).getHex();
+  const changes = [];
+  atlas.addEventListener('change', () => changes.push(true));
+  atlas.setPaint({ id: 'deficit:aphasia', colors: new Map([['a-left', [255, 0, 0]]]) });
   assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), red);
-  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), blue);
-  // An area no domain reaches is plain cortex, not glass.
+  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), tissue);
+  // Paint is opaque: the functional glass does not show through it.
   for (const id of ['a-left', 'a-right', 'a-wall']) {
     assert.equal(meshOf(atlas, id).material.opacity, 1);
     assert.equal(meshOf(atlas, id).material.userData.glass, false);
   }
-  atlas.setDomain('memory');
-  // Memory is a-left's weaker domain; picked, it is drawn there too.
-  assert.equal(meshOf(atlas, 'a-left').material.color.getHex(), blue);
-  atlas.setDomain('language');
-  assert.equal(meshOf(atlas, 'a-right').material.color.getHex(), tissue);
-  assert.equal(meshOf(atlas, 'a-right').material.opacity, 1);
-  assert.throws(() => atlas.setDomain('praxis'), /Unknown neuropsychological domain: praxis/);
-  atlas.reset();
-  assert.equal(atlas.state.domain, null);
-  atlas.dispose();
-});
-
-test('domains need their atlas, and leaving the atlas leaves them', async () => {
-  const { atlas } = fixture(null, functional, domains);
-  await atlas.initialize('b');
-  assert.throws(() => atlas.setSurfaceColor('domains'), /colour a areas; show that atlas first/);
-  await atlas.setAtlas('a');
-  atlas.setSurfaceColor('domains');
-  await atlas.setAtlas('b');
-  assert.equal(atlas.state.surfaceColor, 'atlas');
+  assert.equal(atlas.state.paint.id, 'deficit:aphasia');
+  // The same paint again changes nothing; the surface colour underneath is kept.
+  atlas.setPaint({ id: 'deficit:aphasia', colors: new Map() });
+  assert.equal(changes.length, 1);
+  assert.equal(atlas.state.surfaceColor, 'functional');
+  atlas.setPaint(null);
+  assert.equal(meshOf(atlas, 'a-wall').material.userData.glass, true);
+  assert.throws(() => atlas.setPaint({ id: 'x', colors: {} }), /Map of region colours/);
   atlas.dispose();
 });
 
@@ -772,7 +750,7 @@ test('a model without the divisions refuses them', async () => {
   const { atlas } = fixture();
   await atlas.initialize('a');
   assert.throws(() => atlas.setSurfaceColor('functional'), /no functional divisions/);
-  assert.throws(() => atlas.setSurfaceColor('domains'), /no neuropsychological domains/);
+  assert.throws(() => atlas.setSurfaceColor('domains'), /Unknown surface colour: domains/);
   await assert.rejects(atlas.loadGlassSolids('https://example.invalid/'), /no functional divisions/);
   atlas.dispose();
 });
@@ -866,7 +844,7 @@ test('settings is a cheap snapshot that does not walk the scene graph', async ()
   assert.deepEqual(atlas.settings, {
     atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: new Set(), cutAtlas: null, cutActive: false,
     hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false,
-    surfaceColor: 'atlas', functionalLevel: 'named', domain: null, isolatedRegion: null,
+    surfaceColor: 'atlas', functionalLevel: 'named', paint: null, isolatedRegion: null,
     hiddenRegions: new Set(), dissectionCanUndo: false,
   });
   assert.ok(!('visibleMeshCount' in atlas.settings));

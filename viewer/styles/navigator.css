@@ -95,7 +95,7 @@
 .row-side-solo { min-width: 32px; }
 .row-side-rest { display: none; }
 .tree-group { isolation: isolate; }
-.tree-group > .group-row { background: var(--surface-base); font-weight: 600; }
+.tree-group > .group-row { background: var(--surface-base); font-weight: 550; }
 @media (hover: hover) and (pointer: fine) {
   .tree-group > .group-row:hover { background: var(--surface-hover); }
 }
@@ -122,17 +122,17 @@
 .group-row[aria-expanded="true"] > .chevron { --chevron-turn: 90deg; color: var(--text-secondary); }
 .group-row > .row-name { flex: 1 1 auto; }
 .group-row > .group-count { min-width: 3ch; font-weight: 400; }
-/* Cortex and Subcortical divide the index with whitespace, not full-width panels. */
+/* Category headings divide the index without introducing another panel surface. */
 #tree > .section-label {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
   margin-top: var(--space-4);
-  padding: var(--space-2) var(--panel-inset) var(--space-1);
-  border: 0;
+  padding: var(--space-3) var(--panel-inset) var(--space-2);
+  border-top: 1px solid var(--border-subtle);
   background: none;
 }
-#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-3); }
+#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-4); border-top: 0; }
 .section-state {
   min-width: 0;
   margin-left: auto;
@@ -155,9 +155,9 @@
   flex: none;
   gap: 3px;
   width: 32px;
-  height: 24px;
-  /* In a row's flow it takes no more height than the 20px line, so the row keeps its 32px pitch. */
-  margin-block: -2px;
+  height: 32px;
+  /* The target fills the row without increasing its 40px pitch. */
+  margin-block: -4px;
   padding: 0 var(--space-1) 0 0;
   border: 0;
   border-radius: var(--radius-control);
@@ -176,32 +176,36 @@
 .visibility-control[data-state="hidden"],
 .visibility-control[data-state="hidden"] .visibility-side { color: var(--text-tertiary); }
 .visibility-control:focus-visible { outline-offset: 0; }
-/* A mouse finds the eyes on the row it points at; touch keeps every eye in view. */
+/* Visibility is a core operation: the eyes stay discoverable before the first hover. */
 @media (hover: hover) and (pointer: fine) {
-  /* Eyes keep their place in the flex row: names wrap once and counts never move on hover. */
-  .group-row > .row-eyes { opacity: 0; }
-  /* A shown region keeps its side letter visible; only the eye itself appears on hover. */
-  .group-row > .row-eyes:has([data-state="hidden"], [data-partial="true"]) { opacity: 1; }
-  .row-eyes > .visibility-control:not([data-state="hidden"], [data-partial="true"]),
-  .row-indent > .visibility-control svg { opacity: 0; }
-  .row:is(:hover, :focus-within) > .row-eyes,
-  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control,
-  .row:is(:hover, :focus-within) > .visibility-control,
+  /* Letters and counts stay fixed; the icon gains emphasis on hover or focus. */
+  .row-eyes > .visibility-control:not([data-state="hidden"], [data-partial="true"]) svg,
+  .row-indent > .visibility-control svg { color: var(--text-tertiary); }
+  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control svg,
   .row:is(:hover, :focus-within) > .visibility-control svg,
-  .visibility-control[data-state="hidden"] svg { opacity: 1; }
+  .visibility-control[data-state="hidden"] svg { color: inherit; }
 }
-/* Scope is secondary to search: quiet choices, one selected wash, then expand all. */
-.tree-header { display: flex; align-items: center; gap: var(--space-2); }
-.tree-scope { flex: 1; min-width: 0; gap: var(--space-1); padding: 0; background: none; }
-.tree-scope button { flex: 1; min-width: 0; height: auto; min-height: var(--control-height); }
+/* Scope is a compact neutral choice, distinct from the mode tabs above. */
+.tree-header { display: flex; align-items: center; gap: var(--space-3); }
+.tree-scope { flex: 1; min-width: 0; gap: var(--space-1); padding: 0; background: transparent; }
+.tree-scope button {
+  flex: 0 1 auto;
+  min-width: 0;
+  height: auto;
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
+  white-space: normal;
+  border-radius: var(--radius-control);
+  font-size: var(--text-ui);
+}
 .tree-scope button[aria-pressed="true"],
 .tree-scope button[aria-pressed="true"]:hover {
-  background: var(--accent-wash);
-  color: var(--accent);
+  background: var(--surface-tonal);
+  color: var(--text-primary);
   box-shadow: none;
 }
 @media (hover: hover) and (pointer: fine) {
-  .tree-scope button:hover:not(:disabled, [aria-pressed="true"]) { background: var(--surface-hover); }
+  .tree-scope button:hover:not(:disabled, [aria-pressed="true"]) { background: var(--surface-hover); color: var(--text-primary); }
 }
 /* The icon's ink ends on the data column. */
 .tree-toggle-all { flex: none; margin-right: calc(-1 * var(--space-2)); }

@@ -22,11 +22,11 @@ export function checkLink(link, known) {
     cutAtlas: id => known.cutAtlases.has(id),
     view: id => known.views.has(id),
     surfaceColor: id => known.surfaceColors.has(id),
-    domain: id => known.domains.has(id),
     explorer: id => known.explorers.has(id),
     selectedRegion: region,
     isolatedRegion: region,
     hiddenRegions: ids => ids.every(id => known.regions.has(id)),
+    selectedFunction: id => known.functions.has(id),
     selectedDeficit: id => known.deficits.has(id),
     circuit: id => known.circuits.has(id),
   };

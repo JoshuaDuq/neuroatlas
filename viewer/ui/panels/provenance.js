@@ -7,19 +7,23 @@ export const shortUrl = url => String(url).replace(/^https?:\/\//, '').replace(/
 
 const link = href => (href ? { href, text: shortUrl(href) } : null);
 
-/** How much of each lesion-mapped parcel a domain's coloured areas cover, as one note. */
+/** How much of each parcel one lesion check maps a domain's coloured areas cover. */
+export function checkedParcels(check, lang) {
+  const copy = t(lang, 'domains');
+  return check.mappings.map(mapping => {
+    // Bilateral findings name one parcel twice; the side tells them apart.
+    const parcel = `${mapping.source_name} (${t(lang, 'sides').glyphs[mapping.region.split(':')[1]]})`;
+    return mapping.coverage === null ? copy.parcelOffSurface(parcel)
+      : copy.parcelCoverage(parcel, percent(mapping.coverage, lang));
+  }).join(', ');
+}
+
+/** Every lesion check of a domain, as one note. */
 function lesionCheck(checks, lang) {
   const copy = t(lang, 'domains');
   if (!checks.length) return copy.noLesionCheck;
   return copy.lesionCheck(checks.map(check => copy.lesionItem(
-    check.deficit_name[lang], check.references.join(', '),
-    check.mappings.map(mapping => {
-      // Bilateral findings name one parcel twice; the side tells them apart.
-      const parcel = `${mapping.source_name} (${t(lang, 'sides').glyphs[mapping.region.split(':')[1]]})`;
-      return mapping.coverage === null ? copy.parcelOffSurface(parcel)
-        : copy.parcelCoverage(parcel, percent(mapping.coverage, lang));
-    }).join(', '),
-  )));
+    check.deficit_name[lang], check.references.join(', '), checkedParcels(check, lang))));
 }
 
 /**

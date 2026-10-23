@@ -73,6 +73,26 @@ def test_a_lesion_check_must_name_a_published_association(tmp_path):
         neuropsych_domains.read_definition(write_definition(tmp_path / "d.yaml", invent))
 
 
+def test_a_domain_must_belong_to_a_defined_group(tmp_path):
+    def regroup(definition):
+        definition["domains"][0]["group"] = "metacognition"
+    with pytest.raises(ValueError, match="unknown group"):
+        neuropsych_domains.read_definition(write_definition(tmp_path / "d.yaml", regroup))
+
+
+def test_the_overview_flag_is_a_boolean_and_holds_some_domain(tmp_path):
+    def stringly(definition):
+        definition["domains"][0]["overview"] = "yes"
+    with pytest.raises(ValueError, match="overview must be true or false"):
+        neuropsych_domains.read_definition(write_definition(tmp_path / "a.yaml", stringly))
+
+    def none(definition):
+        for domain in definition["domains"]:
+            domain.pop("overview", None)
+    with pytest.raises(ValueError, match="At least one domain must be in the overview"):
+        neuropsych_domains.read_definition(write_definition(tmp_path / "b.yaml", none))
+
+
 def test_lesion_checks_measure_cortical_parcels_and_mark_the_rest():
     definition = neuropsych_domains.read_definition()
     checks = neuropsych_domains.lesion_checks(definition, neuropsych_domains.read_scores(definition))

@@ -28,6 +28,23 @@ test('clinical navigation preserves anatomical search and selection independentl
   assert.throws(() => s.setExplorer('unknown'), /Unknown explorer/);
 });
 
+test('a masthead choice lifts the open paint until a function, a deficit or a tab is chosen again', () => {
+  const s = session();
+  s.setExplorer('functions');
+  s.setFunctionQuery('memory');
+  s.setFunction('language');
+  assert.equal(s.assemble(modelState).paintLifted, false);
+  for (const choose of [() => s.setFunction('all'), () => s.setDeficit('aphasia'), () => s.setExplorer('functions')]) {
+    s.liftPaint();
+    assert.equal(s.assemble(modelState).paintLifted, true);
+    choose();
+    assert.equal(s.assemble(modelState).paintLifted, false);
+  }
+  const snapshot = s.assemble(modelState);
+  assert.equal(snapshot.functionQuery, 'memory');
+  assert.equal(snapshot.selectedFunction, 'all');
+});
+
 test('assembly merges model state and view state into one snapshot', () => {
   const s = session();
   s.setView('left');

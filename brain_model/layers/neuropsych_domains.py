@@ -37,14 +37,26 @@ def read_definition(path=DEFINITION):
         association["id"]
         for association in yaml.safe_load(NEUROPSYCHOLOGY.read_text())["associations"]
     }
+    groups = set()
+    for group in definition["groups"]:
+        for field in ("id", "name", "name_fr"):
+            if not group.get(field):
+                raise ValueError(f"Group {group.get('id')} has no {field}")
+        if group["id"] in groups:
+            raise ValueError(f"Group {group['id']} is defined twice")
+        groups.add(group["id"])
     seen = set()
     for domain in definition["domains"]:
-        for field in ("id", "term", "name", "name_fr", "color"):
+        for field in ("id", "term", "group", "name", "name_fr", "color"):
             if not domain.get(field):
                 raise ValueError(f"Domain {domain.get('id')} has no {field}")
         if domain["id"] in seen:
             raise ValueError(f"Domain {domain['id']} is defined twice")
         seen.add(domain["id"])
+        if domain["group"] not in groups:
+            raise ValueError(f"{domain['id']}: unknown group {domain['group']}")
+        if not isinstance(domain.get("overview", False), bool):
+            raise ValueError(f"{domain['id']}: overview must be true or false")
         color = domain["color"]
         if (len(color) != 3
                 or any(not isinstance(value, int) or not 0 <= value <= 255 for value in color)):
@@ -52,6 +64,8 @@ def read_definition(path=DEFINITION):
         unknown = set(domain.get("lesion_checks", [])) - associations
         if unknown:
             raise ValueError(f"{domain['id']}: no lesion association {sorted(unknown)}")
+    if not any(domain.get("overview") for domain in definition["domains"]):
+        raise ValueError("At least one domain must be in the overview")
     if not definition["threshold_z"] > 0:
         raise ValueError("The membership threshold must be a positive z")
     return definition
@@ -180,8 +194,10 @@ def partition(regions):
         "sources": definition["sources"],
         "scores_source": definition["scores_source"],
         "derivation": scores["derivation"],
+        "groups": definition["groups"],
         "domains": [
-            {key: domain[key] for key in ("id", "term", "name", "name_fr", "color")}
+            {**{key: domain[key] for key in ("id", "term", "group", "name", "name_fr", "color")},
+             "overview": domain.get("overview", False)}
             for domain in definition["domains"]
         ],
         "lesion_checks": lesion_checks(definition, scores),

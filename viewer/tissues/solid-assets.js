@@ -3,7 +3,7 @@ import { Mesh, MeshBasicMaterial } from 'three';
 import { fetchAsset } from '../model/asset-cache.js';
 import { tissueColor } from '../render/materials.js';
 import {
-  labelAppearance, usesAtlasColors, usesCabNpColors, usesDomainColors, usesFunctionalColors, usesNetworkColors,
+  labelAppearance, usesAtlasColors, usesCabNpColors, usesFunctionalColors, usesNetworkColors, usesPaint,
 } from './palette.js';
 import { buildRibbonWedges } from './ribbon-wedges.js';
 import { createSolidMaterial } from './solid-material.js';
@@ -168,9 +168,10 @@ export function paintSolids(sections, {
   // published palette that modulation would distort the datum, exactly as it
   // would on a voxel cut face. Relief is lighting, not colour, so it stays.
   const published = usesAtlasColors(state) || usesNetworkColors(state) || usesCabNpColors(state)
-    || usesFunctionalColors(state) || usesDomainColors(state);
+    || usesFunctionalColors(state) || usesPaint(state);
   const variation = published ? 0 : appearance.intensity.cut_strength;
-  const sampledAtlas = state.surfaceColor === 'mri' && !wedged;
+  const mri = state.surfaceColor === 'mri' && !usesPaint(state);
+  const sampledAtlas = mri && !wedged;
   const sampledIsolation = sampledAtlas && labels.byRegion.has(state.isolatedRegion) &&
     !sections.solids.some(solid => solid.source.userData.region_id === state.isolatedRegion);
   for (const solid of sections.solids) {
@@ -178,7 +179,7 @@ export function paintSolids(sections, {
       solid.source.userData.mri_registered === false ? 0 : variation;
     const { source, cap } = solid;
     if (!partOfCut(source, { atlas, detail, wedged }) ||
-        (state.surfaceColor === 'mri' && source.userData.mri_registered === false)) {
+        (mri && source.userData.mri_registered === false)) {
       solid.visible = false;
       continue;
     }

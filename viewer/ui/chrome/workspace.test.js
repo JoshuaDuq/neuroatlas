@@ -1,22 +1,140 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { MODES, detailAvailable, locationCrumbs, stripVisible, viewAfterUpdate } from './workspace.js';
+import { MODES, createWorkspace, detailAvailable, locationCrumbs, stripVisible, viewAfterUpdate } from './workspace.js';
 import { t } from '../../i18n/translations.js';
 
-test('the tab row is the four content modes, in session order', () => {
-  assert.deepEqual(MODES, ['anatomy', 'deficits', 'circuits', 'diffusion']);
+test('the tab row is the five content modes, in session order', () => {
+  assert.deepEqual(MODES, ['anatomy', 'functions', 'deficits', 'circuits', 'diffusion']);
 });
+
+/** The workspace DOM, without a renderer or downloaded anatomy. */
+function workspaceDocument(t) {
+  const previousDocument = globalThis.document;
+  const previousMatchMedia = globalThis.matchMedia;
+  const nodes = new Map();
+  const doc = { activeElement: null };
+  function element(id) {
+    const attributes = new Map();
+    const listeners = new Map();
+    const node = {
+      id, children: [], dataset: {}, parentElement: null, isConnected: true,
+      addEventListener(type, listener) { listeners.set(type, listener); },
+      removeEventListener(type, listener) { if (listeners.get(type) === listener) listeners.delete(type); },
+      dispatch(type, event) { listeners.get(type)?.(event); },
+      setAttribute(name, value) { attributes.set(name, String(value)); },
+      getAttribute(name) { return attributes.get(name) ?? null; },
+      querySelector() { return null; },
+      querySelectorAll() { return []; },
+      closest() { return element('li'); },
+      contains(target) { return target === node || node.children.some(child => child.contains(target)); },
+      checkVisibility() { return !node.hidden && (!node.parentElement || node.parentElement.checkVisibility()); },
+      scrollIntoView() {},
+      append(...children) {
+        for (const child of children) {
+          if (child.parentElement) {
+            child.parentElement.children = child.parentElement.children.filter(item => item !== child);
+            if (child.contains(doc.activeElement)) doc.activeElement = null;
+          }
+          child.parentElement = node;
+          node.children.push(child);
+        }
+      },
+      prepend(child) { node.append(child); node.children.unshift(node.children.pop()); },
+      replaceChildren() { node.children = []; },
+      focus() { doc.activeElement = node; },
+    };
+    return node;
+  }
+  doc.createElement = element;
+  doc.getElementById = id => {
+    if (!nodes.has(id)) nodes.set(id, element(id));
+    return nodes.get(id);
+  };
+  globalThis.document = doc;
+  globalThis.matchMedia = () => ({ matches: false });
+  const byId = doc.getElementById;
+  byId('workspace-panel').append(byId('workspace-tabs'), byId('navigator'), byId('inspector'));
+  byId('inspector').append(byId('detail-back'));
+  t.after(() => {
+    globalThis.document = previousDocument;
+    globalThis.matchMedia = previousMatchMedia;
+  });
+  return { doc, byId };
+}
+
+test('desktop navigation stays in the task panel with a separate phone mirror', context => {
+  const { byId } = workspaceDocument(context);
+  const workspace = createWorkspace();
+  context.after(() => workspace.dispose());
+  assert.equal(byId('workspace-tabs').parentElement, byId('workspace-panel'));
+  assert.deepEqual(byId('workspace-tabs').children.map(button => button.dataset.mode), MODES);
+  assert.deepEqual(byId('sheet-tabs').children.map(button => button.dataset.mode), MODES);
+});
+
+test('desktop and phone navigation follow the workspace language', context => {
+  const { byId } = workspaceDocument(context);
+  const workspace = createWorkspace();
+  context.after(() => workspace.dispose());
+  for (const lang of ['en', 'fr']) {
+    workspace.update({ lang, explorer: 'anatomy' });
+    for (const id of ['workspace-tabs', 'sheet-tabs']) {
+      assert.equal(byId(id).getAttribute('aria-label'), t(lang, 'workspace').tabsAria);
+      assert.deepEqual(byId(id).children.map(button => button.textContent),
+        MODES.map(mode => t(lang, 'workspace').modes[mode]));
+    }
+  }
+});
+
+test('vertical arrows on a mode tab stay out of the page anatomy-tree navigation', t => {
+  const { doc, byId } = workspaceDocument(t);
+  const modes = [];
+  const workspace = createWorkspace({ onMode: mode => modes.push(mode) });
+  t.after(() => workspace.dispose());
+  for (const id of ['workspace-tabs', 'sheet-tabs']) {
+    const bar = byId(id);
+    const tab = bar.children[0];
+    tab.focus();
+    for (const key of ['ArrowUp', 'ArrowDown']) {
+      const event = { key, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+      bar.dispatch('keydown', event);
+      assert.equal(event.defaultPrevented, true, `${id}: ${key} must not move anatomy-tree focus`);
+      assert.equal(doc.activeElement, tab);
+    }
+  }
+  assert.deepEqual(modes, [], 'vertical arrows never choose a mode');
+});
+
+for (const selectedRow of [true, false]) {
+  test(`Back from the phone detail focuses ${selectedRow ? 'the selected list row' : 'the current tab when no row is available'}`, t => {
+    const { doc, byId } = workspaceDocument(t);
+    const workspace = createWorkspace({ catalog: { groups: () => [] } });
+    t.after(() => workspace.dispose());
+    const row = selectedRow ? byId('selected-row') : null;
+    if (row) byId('navigator').append(row);
+    byId('navigator').querySelector = () => row;
+    byId('navigator').querySelectorAll = () => row ? [row] : [];
+    workspace.update({ lang: 'en', explorer: 'anatomy', selectedRegion: { id: 'left:1' } },
+      { kind: 'region', label: 'Precentral gyrus' });
+    byId('detail-back').focus();
+    workspace.back();
+    assert.equal(workspace.view, 'list');
+    assert.equal(doc.activeElement, row ?? byId('sheet-tabs').children[0]);
+  });
+}
 
 const tracts = { explorer: 'diffusion', anatomy: 'bert', referenceAnatomy: 'bert' };
 
 test('a selected region is detail in any mode', () => {
-  for (const explorer of ['anatomy', 'deficits', 'circuits']) {
+  for (const explorer of ['anatomy', 'functions', 'deficits', 'circuits']) {
     assert.equal(detailAvailable({ explorer, selectedRegion: { id: 'a' } }), true, explorer);
   }
   assert.equal(detailAvailable({ ...tracts, selectedRegion: { id: 'a' } }), true);
 });
 
-test('a deficit or a lesson is detail only in its own mode', () => {
+test('a function, a deficit or a lesson is detail only in its own mode', () => {
+  assert.equal(detailAvailable({ explorer: 'functions', selectedFunction: 'all' }), true);
+  assert.equal(detailAvailable({ explorer: 'functions', selectedFunction: null }), false);
+  assert.equal(detailAvailable({ explorer: 'deficits', selectedFunction: 'language' }), false);
   assert.equal(detailAvailable({ explorer: 'deficits', selectedDeficit: 'aphasia' }), true);
   assert.equal(detailAvailable({ explorer: 'anatomy', selectedDeficit: 'aphasia' }), false);
   assert.equal(detailAvailable({ explorer: 'circuits', lesson: { circuit: 'motor' } }), true);
@@ -76,6 +194,8 @@ test('the selection strip leads only from a list that does not show the selectio
   assert.equal(strip('diffusion', 'region'), true);
   assert.equal(strip('circuits', 'landmark'), false, 'the step list shows the current landmark');
   assert.equal(strip('deficits', 'deficit'), false);
+  assert.equal(strip('functions', 'function'), false);
+  assert.equal(strip('anatomy', 'function'), true);
   assert.equal(strip('circuits', 'lesson'), false);
   assert.equal(stripVisible({ view: 'list', mode: 'deficits', selection: {} }), false);
   assert.throws(() => strip('anatomy', 'atlas'), /kind/);

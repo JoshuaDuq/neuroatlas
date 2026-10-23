@@ -3,7 +3,7 @@ import { DEFAULTS } from './url-state.js';
 /** The scene fields a link carries with a fixed default. Layers default to what is loaded. */
 const SCENE_FIELDS = [
   'hemisphere', 'cortexVisible', 'cortexOpacity', 'internalVisible', 'spinalCordVisible',
-  'surfaceColor', 'functionalLevel', 'domain', 'internalSystem', 'view', 'cut', 'cutOffset', 'cutReverse', 'cutTilt',
+  'surfaceColor', 'functionalLevel', 'internalSystem', 'view', 'cut', 'cutOffset', 'cutReverse', 'cutTilt',
   'cutAzimuth', 'selectedRegion', 'isolatedRegion', 'orbit', 'mriWindow',
 ];
 
@@ -81,9 +81,6 @@ export async function applyReaderState(target, {
   });
   await step(['level'], () => {
     if (target.functionalLevel !== settings().functionalLevel) model.setFunctionalLevel(target.functionalLevel);
-  });
-  await step(['domain'], () => {
-    if (target.domain !== settings().domain) model.setDomain(target.domain);
   });
   await step(['colors'], () => commands.applySurfaceColor(target.surfaceColor, current));
   await step(['cuts'], async () => {

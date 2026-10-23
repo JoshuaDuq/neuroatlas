@@ -3,19 +3,23 @@
 # averages that term's uniformity (consistency) z map over every fsaverage area
 # into data/neuropsych-domains/area-scores.json; an area belongs to a domain when
 # its mean z reaches `threshold_z`. Consistency z grows with the number of studies,
-# so the domain an area is drawn as when all are shown is the one whose z there is
-# the largest share of that domain's own cortical maximum.
-# Colours distinguish domains; they are not a published palette. Domains whose areas
-# share a border differ by an OKLab ΔE of at least 14, and any two by at least 11,
+# so the domain an area is drawn as when the overview is shown is the one, among the
+# domains marked `overview`, whose z there is the largest share of that domain's own
+# cortical maximum. The overview holds the eleven domains an assessment reports; the
+# others overlap them (reading within language) and are only ever shown one at a time.
+# Colours distinguish domains; they are not a published palette. Overview domains whose
+# areas share a border differ by an OKLab ΔE of at least 14, and any two by at least 11,
 # under normal vision and simulated protanopia and deuteranopia (Machado 2009,
-# severity 1).
+# severity 1). Every other domain, shown alone, differs from the cortex's tissue colour
+# by at least 15 in normal vision and 8 under simulated colour-vision deficiency.
 label: Neuropsychological domains (Neurosynth consistency maps on HCP-MMP areas)
 method: >-
   Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA
   chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and
   pial surfaces and averaged per HCP-MMP area. An area belongs to every domain whose
-  mean z reaches 3; shown alone, it takes the domain whose z is the largest share of
-  that domain's cortical maximum. Carried per area, never per vertex
+  mean z reaches 3; in the overview of the eleven assessment domains it takes the one
+  whose z is the largest share of that domain's cortical maximum. Carried per area,
+  never per vertex
 threshold_z: 3
 scores_source: neurosynth
 sources:
@@ -26,72 +30,251 @@ sources:
     pmid: 21706013
     license: Open Database License (ODbL) 1.0; derived area scores shared under the same licence
     license_url: https://opendatacommons.org/licenses/odbl/1-0/
+# Groups order the viewer's list of functions; they change no score or assignment.
+groups:
+  - id: attention-executive
+    name: Attention and executive functions
+    name_fr: Attention et fonctions exécutives
+  - id: memory
+    name: Memory
+    name_fr: Mémoire
+  - id: language-number
+    name: Language, reading and number
+    name_fr: Langage, lecture et nombres
+  - id: perception
+    name: Perception and visuospatial abilities
+    name_fr: Perception et habiletés visuospatiales
+  - id: sensorimotor
+    name: Sensorimotor functions
+    name_fr: Fonctions sensorimotrices
+  - id: social-emotional
+    name: Social and emotional functions
+    name_fr: Fonctions sociales et émotionnelles
 domains:
   - id: executive
     term: executive function
+    group: attention-executive
+    overview: true
     name: Executive functions
     name_fr: Fonctions exécutives
     color: [104, 206, 23]
     lesion_checks: [executive-control]
   - id: working-memory
     term: working memory
+    group: attention-executive
+    overview: true
     name: Working memory
     name_fr: Mémoire de travail
     color: [111, 150, 232]
   - id: long-term-memory
     term: episodic memory
+    group: memory
+    overview: true
     name: Long-term memory (episodic)
     name_fr: Mémoire à long terme (épisodique)
     color: [186, 255, 63]
     lesion_checks: [hippocampal-amnesia]
   - id: language
     term: language
+    group: language-number
+    overview: true
     name: Language
     name_fr: Langage
     color: [125, 217, 251]
     lesion_checks: [aphasia-comprehension, aphasia-repetition, aphasia-production, aphasia-naming, aphasia-semantic, aphasia-phonological]
   - id: attention
     term: attention
+    group: attention-executive
+    overview: true
     name: Attention
     name_fr: Attention
     color: [159, 254, 186]
     lesion_checks: [neglect-perceptual, neglect-exploratory, neglect-egocentric, neglect-allocentric, extinction-temporoparietal]
   - id: visuospatial
     term: visuospatial
+    group: perception
+    overview: true
     name: Visuospatial abilities
     name_fr: Habiletés visuospatiales
     color: [201, 91, 10]
     lesion_checks: [neglect-perceptual, constructional-visual-thalamic]
   - id: social-cognition
     term: social cognition
+    group: social-emotional
+    overview: true
     name: Social cognition
     name_fr: Cognition sociale
     color: [152, 62, 27]
     lesion_checks: [emotion-amygdala, emotion-prosody]
   - id: visual-perception
     term: visual
+    group: perception
+    overview: true
     name: Visual perception
     name_fr: Perception visuelle
     color: [153, 30, 133]
     lesion_checks: [hemianopia-occipital, achromatopsia-ventral, akinetopsia-lateral, agnosia-face]
   - id: motor
     term: motor
+    group: sensorimotor
+    overview: true
     name: Motor functions
     name_fr: Fonctions motrices
     color: [34, 88, 229]
     lesion_checks: [hand-paresis-precentral]
   - id: auditory-perception
     term: auditory
+    group: perception
+    overview: true
     name: Auditory perception
     name_fr: Perception auditive
     color: [126, 179, 150]
     lesion_checks: [word-deafness-auditory, amusia-temporal]
   - id: emotion
     term: emotion
+    group: social-emotional
+    overview: true
     name: Emotion
     name_fr: Émotion
     color: [177, 102, 126]
     lesion_checks: [emotion-amygdala, decision-ventromedial]
+  - id: inhibition
+    term: response inhibition
+    group: attention-executive
+    name: Inhibition
+    name_fr: Inhibition
+    color: [228, 26, 28]
+    lesion_checks: [executive-control]
+  - id: flexibility
+    term: switching
+    group: attention-executive
+    name: Cognitive flexibility
+    name_fr: Flexibilité cognitive
+    color: [230, 97, 0]
+  - id: planning
+    term: planning
+    group: attention-executive
+    name: Planning
+    name_fr: Planification
+    color: [166, 86, 40]
+  - id: decision-making
+    term: decision making
+    group: attention-executive
+    name: Decision-making
+    name_fr: Prise de décision
+    color: [197, 27, 125]
+    lesion_checks: [decision-ventromedial]
+  - id: spatial-attention
+    term: spatial attention
+    group: attention-executive
+    name: Spatial attention
+    name_fr: Attention spatiale
+    color: [0, 158, 115]
+    lesion_checks: [neglect-perceptual, neglect-exploratory, neglect-egocentric, neglect-allocentric, extinction-temporoparietal]
+  - id: recognition-memory
+    term: recognition memory
+    group: memory
+    name: Recognition memory
+    name_fr: Mémoire de reconnaissance
+    color: [86, 180, 233]
+    lesion_checks: [hippocampal-amnesia]
+  - id: semantic-memory
+    term: semantic memory
+    group: memory
+    name: Semantic memory
+    name_fr: Mémoire sémantique
+    color: [0, 114, 178]
+    lesion_checks: [aphasia-semantic]
+  - id: reading
+    term: reading
+    group: language-number
+    name: Reading
+    name_fr: Lecture
+    color: [213, 94, 0]
+    lesion_checks: [alexia-occipitotemporal]
+  - id: naming
+    term: naming
+    group: language-number
+    name: Naming
+    name_fr: Dénomination
+    color: [158, 61, 143]
+    lesion_checks: [aphasia-naming]
+  - id: phonological
+    term: phonological
+    group: language-number
+    name: Phonological processing
+    name_fr: Traitement phonologique
+    color: [117, 112, 179]
+    lesion_checks: [aphasia-phonological]
+  - id: speech-production
+    term: speech production
+    group: language-number
+    name: Speech production
+    name_fr: Production de la parole
+    color: [1, 121, 111]
+    lesion_checks: [speech-apraxia-insula, speech-apraxia-frontal]
+  - id: number
+    term: numerical
+    group: language-number
+    name: Number processing
+    name_fr: Traitement des nombres
+    color: [255, 204, 0]
+    lesion_checks: [acalculia-parietal]
+  - id: faces
+    term: faces
+    group: perception
+    name: Face processing
+    name_fr: Traitement des visages
+    color: [231, 41, 138]
+    lesion_checks: [agnosia-face]
+  - id: colour
+    term: color
+    group: perception
+    name: Colour perception
+    name_fr: Perception des couleurs
+    color: [102, 166, 30]
+    lesion_checks: [achromatopsia-ventral]
+  - id: music
+    term: music
+    group: perception
+    name: Music perception
+    name_fr: Perception musicale
+    color: [166, 118, 29]
+    lesion_checks: [amusia-temporal]
+  - id: touch
+    term: somatosensory
+    group: sensorimotor
+    name: Touch (somatosensation)
+    name_fr: Toucher (somesthésie)
+    color: [31, 120, 180]
+    lesion_checks: [somatosensory-operculum, tactile-agnosia-parietal]
+  - id: pain
+    term: pain
+    group: sensorimotor
+    name: Pain
+    name_fr: Douleur
+    color: [178, 24, 43]
+    lesion_checks: [central-pain-thalamus]
+  - id: theory-of-mind
+    term: theory mind
+    group: social-emotional
+    name: Theory of mind
+    name_fr: Théorie de l’esprit
+    color: [118, 42, 131]
+  - id: fear
+    term: fear
+    group: social-emotional
+    name: Fear
+    name_fr: Peur
+    color: [140, 81, 10]
+    lesion_checks: [emotion-amygdala]
+  - id: reward
+    term: reward
+    group: social-emotional
+    name: Reward
+    name_fr: Récompense
+    color: [0, 135, 90]
+    lesion_checks: [decision-ventromedial, abulia-caudate]
 limitations:
   - Neuropsychological domains are Neurosynth consistency maps of the published activation literature, averaged over each HCP-MMP area on fsaverage and reaching this brain through its HCP-MMP projection. They show where studies using a domain's term report activation in groups of healthy people, not what this brain does, and not what damage to an area would impair.
   - Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.

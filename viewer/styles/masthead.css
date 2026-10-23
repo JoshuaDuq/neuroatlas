@@ -37,7 +37,6 @@
   gap: var(--space-1);
   margin-left: auto;
   padding-left: var(--space-3);
-  border-left: 1px solid var(--border-subtle);
 }
 #masthead-more[hidden] { display: inline-flex !important; visibility: hidden; }
 #menu-fullscreen, #menu-provenance { display: none; }
@@ -83,7 +82,9 @@
   min-width: 0;
   padding-right: var(--space-4);
 }
-.data-field + .data-field { padding-left: var(--space-4); border-left: 1px solid var(--border-subtle); }
+.data-field + .data-field { padding-left: var(--space-2); }
+/* Dataset identity first, then the presentation choices, separated once. */
+#surface-field { margin-left: var(--space-2); padding-left: var(--space-4); border-left: 1px solid var(--border-subtle); }
 .data-field:not(:has(> :not([hidden], .data-note))) { display: none; }
 .data-label {
   margin: 0;
@@ -163,19 +164,20 @@
 #masthead[data-collapsed] { --masthead-gap: var(--space-4); }
 /* The full bar height, so the popover drops from the masthead's edge as the settings menu does. */
 #masthead[data-collapsed] .masthead-data-wrap { flex: 1 1 auto; align-self: stretch; }
-/* The four fields folded into one: as quiet as they are, with the same chevron. */
+/* The subject anchors the first line; the quieter settings line sits directly below. */
 #masthead[data-collapsed] .data-toggle {
   display: inline-flex;
+  flex: 1 1 auto;
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
   max-width: 100%;
   min-height: var(--control-height);
   height: auto;
-  padding: 0 var(--space-2);
+  padding: var(--space-1) var(--space-2);
   background: transparent;
-  color: var(--text-primary);
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 #masthead[data-collapsed] .data-toggle[aria-expanded="true"] { background: var(--surface-tonal); }
 @media (hover: hover) and (pointer: fine) {
@@ -193,20 +195,46 @@
   transition: transform var(--ui-transition) var(--ease-ui);
 }
 #masthead[data-collapsed] .data-toggle[aria-expanded="true"]::after { transform: translateY(1px) rotate(225deg); }
-#masthead[data-collapsed] .data-summary { display: flex; align-items: baseline; gap: 6px; min-width: 0; white-space: nowrap; }
-/* Keep the subject readable; optional settings yield in order before its name truncates. */
-#masthead[data-collapsed] .data-summary > * { flex: none; }
-#masthead[data-collapsed] .data-summary > [data-part="subject"] { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+#masthead[data-collapsed] .data-summary {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  white-space: nowrap;
+  text-align: left;
+}
+#masthead[data-collapsed] .data-summary > [data-part="subject"] {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: var(--lh-ui);
+}
+#masthead[data-collapsed] .data-summary-context {
+  display: flex;
+  align-self: stretch;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--text-caption);
+  line-height: var(--lh-caption);
+}
+#masthead[data-collapsed] .data-summary-context > * { flex: none; }
 #masthead[data-collapsed] .data-summary-sep { color: var(--text-tertiary); }
-#masthead[data-collapsed] .data-summary[data-short~="detail"] > [data-part="detail"],
-#masthead[data-collapsed] .data-summary[data-short~="atlas"] > [data-part="atlas"],
-#masthead[data-collapsed] .data-summary[data-short~="colour"] > [data-part="colour"] { display: none; }
+#masthead[data-collapsed] .data-summary[data-short~="detail"] .data-summary-context > [data-part="detail"],
+#masthead[data-collapsed] .data-summary[data-short~="atlas"] .data-summary-context > [data-part="atlas"],
+#masthead[data-collapsed] .data-summary[data-short~="colour"] .data-summary-context > [data-part="colour"] { display: none; }
 
 /* The bar turned on its side: one ruled field per row, caption, value, then what it means. */
 #masthead[data-collapsed] .masthead-data {
   position: absolute;
   top: calc(100% + var(--space-1));
-  left: 0;
+  /* The available header room ends before its actions, keeping the popover on screen. */
+  right: 0;
+  left: auto;
   display: none;
   flex-direction: column;
   align-items: stretch;
@@ -218,7 +246,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-panel);
   box-shadow: var(--shadow-popover);
-  transform-origin: top left;
+  transform-origin: top right;
 }
 #masthead[data-collapsed] .masthead-data[data-open] { display: flex; }
 #masthead[data-collapsed] .data-field {
@@ -226,6 +254,7 @@
   align-items: flex-start;
   gap: var(--space-1);
   padding: var(--space-3) var(--space-4);
+  margin-left: 0;
 }
 #masthead[data-collapsed] .data-field + .data-field { border-top: 1px solid var(--border-subtle); }
 #masthead[data-collapsed] .data-field { border-left: 0; }
@@ -234,6 +263,7 @@
 #masthead[data-collapsed] .masthead-data select {
   max-width: calc(100% + var(--space-2));
   margin-left: calc(-1 * var(--space-2));
+  background-color: var(--surface-navigation);
 }
 #masthead[data-collapsed] .masthead-data .study-name { max-width: 100%; padding: 0; }
 #masthead[data-collapsed] .data-note {
@@ -322,7 +352,7 @@
     grid-column: 1;
     grid-row: 1;
     gap: var(--space-2);
-    min-height: 52px;
+    min-height: var(--header-height);
     /* The mark stands on the sheet's text column, inside the safe area as the sheet's text does. */
     padding: env(safe-area-inset-top) max(var(--space-1), env(safe-area-inset-right)) 0 calc(var(--space-4) + env(safe-area-inset-left));
   }
@@ -344,8 +374,8 @@
     left: max(var(--space-3), env(safe-area-inset-left));
     right: max(var(--space-3), env(safe-area-inset-right));
     width: auto;
-    /* Below the 52px bar, its rule, and a gutter. */
-    max-height: calc(100dvh - env(safe-area-inset-top) - 52px - 1px - var(--space-1) - var(--space-3));
+    /* Below the text-aware bar, its rule, and a gutter. */
+    max-height: calc(100dvh - env(safe-area-inset-top) - var(--header-height) - 1px - var(--space-1) - var(--space-3));
   }
   #masthead[data-reference] .data-label { display: none; }
   #masthead-menu {
@@ -397,7 +427,7 @@
   gap: var(--space-4);
   padding: 0 var(--space-2) 0 var(--space-4);
   border-top: 1px solid var(--border-subtle);
-  background: var(--surface-base);
+  background: var(--surface-navigation);
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
   color: var(--text-secondary);

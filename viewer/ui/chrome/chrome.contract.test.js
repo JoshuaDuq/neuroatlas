@@ -301,18 +301,17 @@ test('provenance opens a dialog, not a raw JSON file', () => {
   assert.equal(/href="models\/anatomies\.json" target/.test(html), false);
 });
 
-test('Colour groups appearance, the atlas regions and networks, with the functional divisions and domains last', () => {
-  const all = { networks: {}, cabNp: {}, functionalRegions: {}, domains: {} };
+test('Colour groups appearance, the atlas regions and networks, with the functional divisions last', () => {
+  const all = { networks: {}, cabNp: {}, functionalRegions: {} };
   assert.deepEqual(colourGroups(all), [
     ['appearance', ['tissue', 'mri']], ['parcellation', ['atlas']], ['networks', ['network', 'cab-np']],
-    [null, ['functional', 'domains']],
+    [null, ['functional']],
   ]);
   assert.deepEqual(colourGroups({ networks: {} }), [
     ['appearance', ['tissue', 'mri']], ['parcellation', ['atlas']], ['networks', ['network']],
   ], 'a colouring the build does not publish is not offered');
   assert.deepEqual(Object.values(t('en', 'display').surfaceColors),
-    ['Tissue', 'T1 MRI', 'Regions', 'Yeo 7 networks', 'CAB-NP networks', 'Functional divisions',
-      'Neuropsychological domains']);
+    ['Tissue', 'T1 MRI', 'Regions', 'Yeo 7 networks', 'CAB-NP networks', 'Functional divisions']);
   for (const lang of ['en', 'fr']) {
     assert.deepEqual(Object.keys(t(lang, 'header').colourGroups), ['appearance', 'parcellation', 'networks']);
   }

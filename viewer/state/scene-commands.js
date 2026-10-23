@@ -6,8 +6,8 @@ import { atlasSwitchLabel, t } from '../i18n/translations.js';
 export const publishesSpinalCord = manifest => (manifest.supplemental_layers ?? []).some(layer => layer.id === 'zanatomy');
 
 /** Colours that are defined on one atlas's areas, and so need that atlas shown. */
-export const requiredAtlas = ({ cabNp, functionalRegions, domains }, colour) => (colour === 'cab-np' ? cabNp?.atlas
-  : colour === 'functional' ? functionalRegions?.atlas : colour === 'domains' ? domains?.atlas : null);
+export const requiredAtlas = ({ cabNp, functionalRegions }, colour) => (colour === 'cab-np' ? cabNp?.atlas
+  : colour === 'functional' ? functionalRegions?.atlas : null);
 
 /**
  * The scene changes that wait on downloads: layer switches, surface colours and

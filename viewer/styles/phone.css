@@ -12,12 +12,13 @@
  * render/device.js; the two are kept in step by hand.
  */
 @media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
-  :root { --control-height: 44px; --row-height: 44px; --tab-height: 44px; --header-height: 52px; --panel-inset: var(--space-4); }
+  :root { --control-height: 44px; --row-height: 44px; --tab-height: 44px; --header-height: max(52px, 3.25rem); --panel-inset: var(--space-4); }
   /*
    * The half detent should show rows, not chrome. The tree header draws 36px
    * and keeps a 44px hit area; section labels take 20px.
    */
-  .tree-header button { position: relative; height: 36px; }
+  .tree-header button { position: relative; height: auto; min-height: 36px; }
+  .rail-head { gap: var(--space-2); padding-block: var(--space-2); }
   .tree-header button::after { content: ""; position: absolute; inset: -4px 0; }
   #tree > .section-label { padding: 1px var(--space-4) 0; line-height: 18px; }
   /* The list head's rule already sits over the first caption. */
@@ -80,6 +81,7 @@
   #app:has(#sheet[data-dragging="false"]) :is(.stage-dock, .orientation, .scale-bar) {
     transition: inset var(--camera-transition) var(--ease-sheet), width var(--camera-transition) var(--ease-sheet);
   }
+  #app:has(#sheet[data-instant]) :is(.stage-dock, .orientation, .scale-bar) { transition: none; }
 
   /*
    * Peek is the grip: handle, selection, tabs, disclaimer. Anatomy/Deficits
@@ -119,10 +121,10 @@
   .sheet-grip-row[data-selection="true"] { grid-template-rows: 16px 20px auto 8px; }
   /* With nothing chosen the statement shares the handle's line: it on the left, the handle centred. */
   .sheet-grip-row:not([data-selection="true"]) {
-    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
-    min-height: 32px;
+    grid-template-columns: minmax(0, 1fr) 64px;
+    min-height: 44px;
   }
-  .sheet-grip-row:not([data-selection="true"]) #sheet-handle { align-items: center; padding: 0; }
+  .sheet-grip-row:not([data-selection="true"]) #sheet-handle { align-items: center; justify-content: flex-end; padding: 0 var(--space-4); }
   #sheet-handle {
     position: absolute;
     inset: 0;
@@ -197,6 +199,24 @@
     align-self: start;
     padding: 0 var(--space-2) 0 var(--space-4);
     text-align: left;
+  }
+
+  /* The detail owns its complete title; the grip keeps the clear command and room around the handle. */
+  @media (orientation: portrait) {
+    #sheet[data-view="detail"]:not([data-detent="peek"]) .sheet-grip-row {
+      grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+      grid-template-rows: auto;
+      min-height: 44px;
+    }
+    #sheet[data-view="detail"]:not([data-detent="peek"]) .sheet-selection { display: none; }
+    #sheet[data-view="detail"]:not([data-detent="peek"]) #sheet-selection-clear { grid-column: 3; grid-row: 1; justify-self: end; align-self: center; }
+    #sheet[data-view="detail"]:not([data-detent="peek"]) #sheet-handle { align-items: center; padding: 0; }
+    #sheet[data-view="detail"]:not([data-detent="peek"]) .sheet-disclaimer {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      padding: var(--space-2) 0 var(--space-2) var(--space-4);
+    }
   }
 
   /* At rest the tabs are the sheet's last line, so they clear the home indicator. */

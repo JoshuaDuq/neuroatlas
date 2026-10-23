@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { compactSection, placePopover } from './stage-tools.js';
+import { compactSection, createStagePopovers, placePopover } from './stage-tools.js';
 
 const desktop = { x: 0, y: 0, width: 1120, height: 824 };
 
@@ -53,4 +53,51 @@ test('the section row folds its details behind the disclosure only where its one
 
 test('a phone always takes the compact section row', () => {
   assert.equal(compactSection({ room: 358, need: null }), true);
+});
+
+function popoverFixture(t, controls) {
+  const previous = globalThis.document;
+  const doc = new EventTarget();
+  doc.activeElement = null;
+  const button = new EventTarget();
+  button.getAttribute = () => 'display-popover';
+  button.setAttribute = () => {};
+  button.contains = target => target === button;
+  const popover = new EventTarget();
+  popover.id = 'display-popover';
+  popover.toggleAttribute = () => {};
+  popover.contains = target => controls.includes(target);
+  popover.querySelector = () => controls.find(control => control.pressed);
+  popover.querySelectorAll = selector => selector.startsWith('.segmented') ? [] : controls.filter(control => !control.disabled);
+  for (const control of controls) {
+    control.getAttribute = () => String(Boolean(control.pressed));
+    control.checkVisibility = () => !control.hidden;
+    control.focus = () => { if (!control.hidden && !control.disabled) doc.activeElement = control; };
+  }
+  doc.getElementById = () => popover;
+  globalThis.document = doc;
+  const controller = createStagePopovers({ querySelectorAll: () => [button] }, {
+    visibleRect: () => null, fill: () => false,
+  });
+  t.after(() => {
+    controller.dispose();
+    globalThis.document = previous;
+  });
+  return { doc, open: () => button.dispatchEvent(new Event('click')) };
+}
+
+for (const unavailable of [{ hidden: true }, { disabled: true }]) {
+  test(`opening a stage popover skips a ${Object.keys(unavailable)[0]} selected choice`, t => {
+    const fallback = {};
+    const { doc, open } = popoverFixture(t, [{ ...unavailable, pressed: true }, fallback]);
+    open();
+    assert.equal(doc.activeElement, fallback);
+  });
+}
+
+test('a stage popover focuses a visible selected choice before other controls', t => {
+  const selected = { pressed: true };
+  const { doc, open } = popoverFixture(t, [{}, selected]);
+  open();
+  assert.equal(doc.activeElement, selected);
 });
