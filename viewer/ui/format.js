@@ -22,8 +22,9 @@ export function withUnit(number, unit, lang = 'en') {
   return unit === '%' && lang !== 'fr' ? `${number}%` : `${number}${NARROW_NBSP}${unit}`;
 }
 
-/** English adds -es after a sibilant: one match, two matches. */
-const plural = noun => (/(?:s|x|z|ch|sh)$/.test(noun) ? `${noun}es` : `${noun}s`);
+/** English adds -es after a sibilant, and -ies for a y after a consonant: two matches, two studies. */
+const plural = noun => (/(?:s|x|z|ch|sh)$/.test(noun) ? `${noun}es`
+  : /[^aeiou]y$/.test(noun) ? `${noun.slice(0, -1)}ies` : `${noun}s`);
 
 const FRENCH_NOUNS = {
   region: { one: 'région', other: 'régions' },
@@ -31,6 +32,7 @@ const FRENCH_NOUNS = {
   label: { one: 'étiquette', other: 'étiquettes' },
   région: { one: 'région', other: 'régions' },
   correspondance: { one: 'correspondance', other: 'correspondances' },
+  study: { one: 'étude', other: 'études' },
 };
 
 /** A count and its noun, in agreement. "1 regions" is how software looks unfinished. */

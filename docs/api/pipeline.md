@@ -1,10 +1,10 @@
 # Pipeline modules
 
-The modules that drive a build, check its output, and read the source configuration.
+Build, validation and source configuration.
 
 ## `brain_model.build`
 
-Compiles a declared anatomy into the published assets. Its `main()` runs the steps in [Building an anatomy](../guides/building.md#run-the-pipeline).
+Compiles a declared anatomy into its published files.
 
 ```{eval-rst}
 .. automodule:: brain_model.build
@@ -13,7 +13,7 @@ Compiles a declared anatomy into the published assets. Its `main()` runs the ste
 
 ## `brain_model.validate`
 
-Reads a built anatomy back from disk and checks it against its raw sources. It writes `validation.json`. Its checks are described in [Validation](../validation.md#what-validation-checks).
+Reads a build back against its sources and writes `validation.json`. See [Validation](../validation.md#what-is-checked).
 
 ```{eval-rst}
 .. automodule:: brain_model.validate
@@ -22,7 +22,7 @@ Reads a built anatomy back from disk and checks it against its raw sources. It w
 
 ## `brain_model.validate_learning`
 
-Independent checks on the learning overview: source membership of each unit, and the exported display geometry.
+Source membership and display geometry of the teaching set.
 
 ```{eval-rst}
 .. automodule:: brain_model.validate_learning
@@ -31,7 +31,7 @@ Independent checks on the learning overview: source membership of each unit, and
 
 ## `brain_model.validate_volumes`
 
-Reconciles the transported volumes with their native MRI sources, including the crop and its affine.
+Published volumes against their native sources, crop and affine included.
 
 ```{eval-rst}
 .. automodule:: brain_model.validate_volumes
@@ -40,7 +40,7 @@ Reconciles the transported volumes with their native MRI sources, including the 
 
 ## `brain_model.validate_segmentation`
 
-How far each brain's NextBrain segmentation agrees with its own FreeSurfer aseg, and FreeSurfer's count of surface defect holes before repair.
+NextBrain agreement with the subject's aseg, and FreeSurfer's pre-repair defect count.
 
 ```{eval-rst}
 .. automodule:: brain_model.validate_segmentation
@@ -49,7 +49,7 @@ How far each brain's NextBrain segmentation agrees with its own FreeSurfer aseg,
 
 ## `brain_model.validate_transforms`
 
-Re-derives the annotations projected from `fsaverage` and the tract reference's scanner-to-surface transform from their sources.
+Re-derives projected annotations and the tract reference transform.
 
 ```{eval-rst}
 .. automodule:: brain_model.validate_transforms
@@ -58,7 +58,7 @@ Re-derives the annotations projected from `fsaverage` and the tract reference's 
 
 ## `brain_model.sources`
 
-The source configuration and integrity checks. It reads `config/model.yaml` and `data/sources.json`, verifies SHA-256 checksums, and reads the colour tables.
+Reads `config/model.yaml` and `data/sources.json` and verifies SHA-256 checksums.
 
 ```{eval-rst}
 .. automodule:: brain_model.sources

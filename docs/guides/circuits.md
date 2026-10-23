@@ -1,38 +1,22 @@
 # Guided circuits
 
-Choose the **Circuits** tab beside **Anatomy** and **Deficits**. Eight bilingual tours cover vision, memory, basal ganglia motor loops, hearing, touch, language, spatial attention and cerebellar output. Together they offer 33 landmarks.
+The **Circuits** tab holds eight bilingual tours with 33 landmarks: vision, memory, basal ganglia motor loops, hearing, touch, language, spatial attention and cerebellar output. Choose a tour, then a numbered landmark, or step with the “n of N” arrows in the location bar.
 
-Choose a tour, then select a numbered landmark, or step with the arrows beside the landmark count at the top of the lesson. On a phone, selecting a tour opens the lesson in the sheet. Scroll the sheet to reach the notes.
+Each landmark opens its source atlas, reveals its anatomy and frames it.
 
-## What a landmark does
+- **Focus** returns to that framing; **Return to landmark** does so after you select another region.
+- **Linked MRI** centres the sections on this brain's landmark centroid and cuts on the authored plane. The centroid can fall outside a curved structure such as the fornix.
 
-Each landmark opens its source atlas, reveals its anatomy and prepares an orientation.
+A region's detail lists the landmarks that involve it under **In guided circuits**. The link records the tour and landmark, so a reload or shared link returns to it.
 
-- The landmark's own **Focus** returns to that prepared framing.
-- Its **Linked MRI** centres the linked sections on that brain's actual landmark centroid, cuts the model on the authored plane and opens that plane on phones. MRI volume labels may use a different or finer atlas than the selected teaching solid, and the centroid can fall outside a curved structure such as the fornix.
-- After you select another region, **Return to landmark** restores the prepared view.
+## What the tours claim
 
-## What the lesson claims
+The notes at the foot of each lesson separate teaching relationships from the source geometry and from the published evidence. The tours do not measure connectivity or reconstruct axons. Some simplify on purpose:
 
-**Connections and scope**, **What this atlas shows**, **Clinical context** and **Sources** separate teaching relationships from the actual source geometry and from the published evidence.
+- Memory stops at a coarse thalamic union.
+- Motor switches explicitly from the direct to the indirect branch.
+- Hearing shows the **dorsal** geniculate division, distinct from the ventral relay to A1.
+- Language and attention visit interacting territories, not a serial chain.
+- The cerebellar tour crosses from left dentate to right thalamus and motor cortex; its dentate step hides the cerebellar cortex.
 
-The tours do not measure functional connectivity and do not reconstruct axons. Some tours state their simplifications on purpose:
-
-- The memory tour stops at a coarse thalamic union.
-- The motor tour explicitly changes from the direct to the indirect branch.
-- The hearing tour identifies the displayed **dorsal** geniculate division and distinguishes it from the ventral relay to A1.
-- The touch tour separates a whole thalamic union from the specific sensory relays within it.
-- The language and attention tours visit interacting network territories rather than implying a serial chain. The right attention landmarks do not make the dorsal network exclusively right-sided.
-- The cerebellar tour changes from left dentate and superior peduncle to right thalamus and motor cortex after the explained crossing. Its dentate step hides the covering cerebellar cortex to expose the deep nucleus. Returning to the cortex landmark restores that layer. Linked MRI always keeps the complete source volume.
-
-## Progress and language
-
-Starting a tour again resets the landmarks it marks as seen. The link records the open tour and landmark, so a reload or a shared link returns to it; the landmarks marked as seen start over. Switching brains keeps the tour and starts its progress over.
-
-A region's details list the landmarks that involve it under **In guided circuits**: the landmark itself, a teaching-set structure that holds it, or a region it is made of. Each opens that step of its tour.
-
-English and French are available through the language control. In Circuits, **/** focuses the tour list, and **↑** and **↓** move between its buttons.
-
-## Where the content lives
-
-Lesson text, mappings, source links, orientations and context margin are in [`data/circuits.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/data/circuits.yaml). The catalog checks each landmark's exact source name against every published anatomy. A missing landmark or translation is an error, never a silent substitution. The catalog tests read each published manifest in turn.
+Lessons, mappings and sources are in [`data/circuits.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/data/circuits.yaml). A landmark missing from any published anatomy, or a missing translation, fails the tests.

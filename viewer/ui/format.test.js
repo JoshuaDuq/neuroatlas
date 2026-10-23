@@ -35,6 +35,10 @@ test('counts agree with their noun', () => {
   assert.equal(count(0, 'region'), '0 regions');
   assert.equal(count(1, 'region'), '1 region');
   assert.equal(count(2, 'region'), '2 regions');
+  assert.equal(count(1, 'study'), '1 study');
+  assert.equal(count(80, 'study'), '80 studies');
+  assert.equal(count(1831, 'study', 'fr'), '1831 études');
+  assert.equal(count(2, 'day'), '2 days');
   assert.equal(count(185, 'region'), '185 regions');
 });
 

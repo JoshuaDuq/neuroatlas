@@ -175,7 +175,8 @@ export const TRANSLATIONS = {
       allDetail: 'Each area in its strongest core assessment function',
       coverage: count => `${count} functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.`,
       noResults: 'Try another name, or a Neurosynth term such as “memory”.',
-      term: term => `Neurosynth term “${term}”`,
+      // The study count arrives as words (format.js count).
+      term: (term, studies) => `Neurosynth term “${term}” · ${studies}`,
       areas: (areas, structures, threshold) => `${areas} HCP-MMP ${areas === 1 ? 'area' : 'areas'}`
         + (structures ? ` and ${structures} ${structures === 1 ? 'structure' : 'structures'}` : '')
         + ` ${areas + structures === 1 ? 'reaches' : 'reach'} z\u00a0${threshold}`,
@@ -676,7 +677,7 @@ export const TRANSLATIONS = {
       allDetail: 'Chaque aire dans la plus forte des fonctions de base de l’évaluation',
       coverage: count => `${count} fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.`,
       noResults: 'Essayez un autre nom, ou un terme Neurosynth comme «\u00a0memory\u00a0».',
-      term: term => `Terme Neurosynth «\u00a0${term}\u00a0»`,
+      term: (term, studies) => `Terme Neurosynth «\u00a0${term}\u00a0» · ${studies}`,
       areas: (areas, structures, threshold) => `${areas} ${areas === 1 ? 'aire HCP-MMP' : 'aires HCP-MMP'}`
         + (structures ? ` et ${structures} ${structures === 1 ? 'structure' : 'structures'}` : '')
         + ` ${areas + structures === 1 ? 'atteint' : 'atteignent'} z\u00a0${threshold}`,

@@ -1,10 +1,10 @@
 # glTF modules
 
-The quantized encoding of the published meshes, and the scene export that names each region and records its source.
+The quantized mesh encoding and the scene export.
 
 ## `brain_model.gltf.encode`
 
-Container re-encoding for the published glTF meshes. It quantizes the attributes against one range per file, so a parcel's values stay comparable with every other parcel's. It also writes the decode ranges and the `KHR_mesh_quantization` declaration. The bounds are in [Architecture](../concepts/architecture.md#quantization-and-encoding).
+Quantizes attributes against one range per file and declares `KHR_mesh_quantization`. Bounds are in [Architecture](../concepts/architecture.md#encoding).
 
 ```{eval-rst}
 .. automodule:: brain_model.gltf.encode
@@ -13,7 +13,7 @@ Container re-encoding for the published glTF meshes. It quantizes the attributes
 
 ## `brain_model.gltf.export`
 
-Named regions, shared-frame geometry and source metadata. Each region becomes a named mesh with its atlas, hemisphere, source label and stable identifier.
+Writes each region as a named mesh with its atlas, hemisphere, source label and stable id.
 
 ```{eval-rst}
 .. automodule:: brain_model.gltf.export

@@ -30,7 +30,6 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.intersphinx",
     "myst_parser",
-    "sphinx_design",
     "sphinx_copybutton",
 ]
 
@@ -108,23 +107,23 @@ html_theme_options = {
     # Light: --surface-base, --surface-navigation, --text-primary, --accent, ...
     "light_css_variables": {
         "color-background-primary": "#ffffff",
-        "color-background-secondary": "#f7f8f9",
-        "color-background-hover": "#f2f4f5",
-        "color-background-border": "#e1e4e7",
-        "color-foreground-primary": "#1c242b",
-        "color-foreground-secondary": "#4b5660",
-        "color-foreground-muted": "#5d6872",
+        "color-background-secondary": "#f8f9fa",
+        "color-background-hover": "#f3f5f6",
+        "color-background-border": "#e2e6e9",
+        "color-foreground-primary": "#20272c",
+        "color-foreground-secondary": "#515b63",
+        "color-foreground-muted": "#667078",
         "color-foreground-border": "#7f8a94",
         "color-brand-primary": "#156b6d",
         "color-brand-content": "#156b6d",
         "color-brand-visited": "#0d5557",
         "color-highlight-on-target": "#e8f3f2",
         "color-highlighted-background": "#e8f3f2",
-        "color-admonition-background": "#f7f8f9",
+        "color-admonition-background": "#f8f9fa",
         "color-api-name": "#156b6d",
-        "color-api-pre-name": "#5d6872",
-        "color-api-background": "#f7f8f9",
-        "color-api-background-hover": "#f2f4f5",
+        "color-api-pre-name": "#667078",
+        "color-api-background": "#f8f9fa",
+        "color-api-background-hover": "#f3f5f6",
         "color-accent-surface": "#e8f3f2",
         "color-on-accent": "#ffffff",
         "color-primary-fill": "#156b6d",
@@ -133,7 +132,7 @@ html_theme_options = {
         "font-stack": '"Source Sans 3 Variable", -apple-system, "Segoe UI", sans-serif',
         "font-stack--monospace": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
     },
-    # Dark: the graphite variant of tokens.css, not the blue slate in DESIGN.md.
+    # Dark: the graphite variant of tokens.css.
     "dark_css_variables": {
         "color-background-primary": "#1b1d20",
         "color-background-secondary": "#18191c",

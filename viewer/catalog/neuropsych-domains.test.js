@@ -21,6 +21,7 @@ const partition = () => ({
     { id: 'visual', term: 'visual', group: 'perception', name: 'Visual', name_fr: 'Visuel', overview: true, color: [7, 8, 9] },
   ],
   lesion_checks: { language: [], memory: [], visual: [] },
+  derivation: { studies: { language: 1101, memory: 332, visual: 3110 } },
   regions: {
     'hcp-mmp:left:1': [{ domain: 'memory', z: 7.5 }, { domain: 'language', z: 3.2 }],
     'hcp-mmp:right:1': [{ domain: 'language', z: 4.1 }],
@@ -49,6 +50,7 @@ test('a domain assigned below the threshold, off its atlas or unknown is rejecte
     [p => { p.domains[2].id = ALL_DOMAINS; }, /domain: all/],
     [p => { p.groups.push({ id: 'cognition', name: 'Again', name_fr: 'Encore' }); }, /group: cognition/],
     [p => { delete p.domains[2].overview; }, /domain: visual/],
+    [p => { delete p.derivation.studies.visual; }, /domain: visual/],
     [p => { for (const domain of p.domains) domain.overview = false; }, /No neuropsychological domain is in the overview/],
   ]) {
     const broken = partition();
