@@ -1,4 +1,4 @@
-"""Average each domain term's Neurosynth consistency map over every fsaverage HCP-MMP area.
+"""Average each domain term's Neurosynth consistency map over every fsaverage HCP-MMP area and aseg structure.
 
 Run once, with the meta-analysis tools the build does not need:
 
@@ -15,12 +15,13 @@ from importlib.metadata import version
 from pathlib import Path
 
 import nibabel as nib
-from nilearn import surface
+import numpy as np
+from nilearn import image, surface
 from nimare.extract import fetch_neurosynth
 from nimare.meta.cbma.mkda import MKDAChi2
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from brain_model.layers.neuropsych_domains import FSAVERAGE, SCORES, read_definition
+from brain_model.layers.neuropsych_domains import FSAVERAGE, SCORES, STRUCTURES, read_definition
 from brain_model.sources import HEMISPHERES, ROOT, sha256, write_json
 
 CACHE = ROOT / "data/cache/neurosynth"
@@ -48,13 +49,23 @@ def area_means(image):
     return means
 
 
+def structure_means(image_):
+    """The map resampled onto fsaverage's aseg grid, averaged per grey-matter structure."""
+    aseg = nib.load(FSAVERAGE / "mri" / "aseg.mgz")
+    labels = np.asarray(aseg.dataobj)
+    values = image.resample_to_img(image_, aseg, interpolation="continuous",
+                                   force_resample=True, copy_header=True).get_fdata()
+    return {name: float(values[labels == code].mean()) for code, name in STRUCTURES.items()}
+
+
 def consistency(term):
-    """The term's study count and its consistency map's mean per area."""
+    """The term's study count and its consistency map's mean per area and per structure."""
     ids = dataset.get_studies_by_label(f"terms_abstract_tfidf__{term}", label_threshold=LABEL_THRESHOLD)
     others = sorted(set(dataset.ids) - set(ids))
     result = MKDAChi2(kernel__r=KERNEL_RADIUS_MM).fit(dataset.slice(ids), dataset.slice(others))
     print(f"{term}: {len(ids)} studies", flush=True)
-    return len(ids), area_means(result.get_map(MAP))
+    consistency_map = result.get_map(MAP)
+    return len(ids), area_means(consistency_map), structure_means(consistency_map)
 
 
 def main():
@@ -69,8 +80,9 @@ def main():
     with multiprocessing.get_context("fork").Pool(WORKERS) as pool:
         results = pool.map(consistency, terms)
     ids = [domain["id"] for domain in definition["domains"]]
-    studies = {key: count for key, (count, _) in zip(ids, results)}
-    scores = {key: means for key, (_, means) in zip(ids, results)}
+    studies = {key: count for key, (count, _, _) in zip(ids, results)}
+    scores = {key: means for key, (_, means, _) in zip(ids, results)}
+    structures = {key: means for key, (_, _, means) in zip(ids, results)}
     write_json(SCORES, {
         "terms": {domain["id"]: domain["term"] for domain in definition["domains"]},
         "derivation": {
@@ -80,9 +92,11 @@ def main():
             "selection": f"abstract TF-IDF >= {LABEL_THRESHOLD}",
             "map": f"MKDAChi2 {MAP}, {KERNEL_RADIUS_MM} mm kernel",
             "projection": "nilearn vol_to_surf between fsaverage white and pial, mean per HCP-MMP area",
+            "structures": "resampled (continuous) onto fsaverage's aseg, mean per grey-matter structure",
             "software": {name: version(name) for name in ("nimare", "nilearn", "numpy")},
         },
         "scores": {key: dict(sorted(values.items())) for key, values in scores.items()},
+        "structure_scores": {key: dict(sorted(values.items())) for key, values in structures.items()},
     })
 
 

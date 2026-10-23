@@ -157,6 +157,19 @@ test('a nucleus the cut atlas never labelled keeps its own published colour', ()
   }
 });
 
+test('under a paint, a nucleus the cut atlas never labelled takes its paint colour, or tissue colour', () => {
+  const nucleus = id => {
+    const entry = solid({ hemisphere: 'left', region_id: id, detail: 'nextbrain' });
+    entry.source.material = { color: published(60, 180, 90) };
+    return entry;
+  };
+  const state = { detail: 'nextbrain', surfaceColor: 'atlas',
+    paint: { id: 'deficit:amnesia', colors: new Map([['nextbrain:left:7', [0, 0, 255]]]) } };
+  const [painted, other] = paint([nucleus('nextbrain:left:7'), nucleus('nextbrain:left:8')], state);
+  assert.ok(painted.cap.material.color.equals(published(0, 0, 255)));
+  assert.equal(other.cap.material.color.getHexString(), appearance.tissue.gray.slice(1));
+});
+
 test('a painted solid answers for the region its colour came from', () => {
   const white = solid({ hemisphere: 'left', boundary: 'white' });
   const [parcel, envelope] = paint([wedge(), white]);

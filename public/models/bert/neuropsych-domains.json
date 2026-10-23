@@ -1,6 +1,28 @@
 {
   "id": "neuropsych-domains",
   "atlas": "hcp-mmp",
+  "structure_atlas": "aseg",
+  "structures": [
+    "Brain-Stem",
+    "Left-Accumbens-area",
+    "Left-Amygdala",
+    "Left-Caudate",
+    "Left-Cerebellum-Cortex",
+    "Left-Hippocampus",
+    "Left-Pallidum",
+    "Left-Putamen",
+    "Left-Thalamus-Proper",
+    "Left-VentralDC",
+    "Right-Accumbens-area",
+    "Right-Amygdala",
+    "Right-Caudate",
+    "Right-Cerebellum-Cortex",
+    "Right-Hippocampus",
+    "Right-Pallidum",
+    "Right-Putamen",
+    "Right-Thalamus-Proper",
+    "Right-VentralDC"
+  ],
   "threshold_z": 3,
   "sources": {
     "neurosynth": {
@@ -57,6 +79,7 @@
     "selection": "abstract TF-IDF >= 0.001",
     "map": "MKDAChi2 z_desc-uniformity, 6 mm kernel",
     "projection": "nilearn vol_to_surf between fsaverage white and pial, mean per HCP-MMP area",
+    "structures": "resampled (continuous) onto fsaverage's aseg, mean per grey-matter structure",
     "software": {
       "nimare": "0.22.1",
       "nilearn": "0.13.1",
@@ -552,12 +575,12 @@
           {
             "region": "aseg:left:17",
             "source_name": "Left-Hippocampus",
-            "coverage": null
+            "coverage": 1.0
           },
           {
             "region": "aseg:right:53",
             "source_name": "Right-Hippocampus",
-            "coverage": null
+            "coverage": 1.0
           }
         ]
       }
@@ -867,12 +890,12 @@
           {
             "region": "aseg:left:10",
             "source_name": "Left-Thalamus-Proper",
-            "coverage": null
+            "coverage": 0.0
           },
           {
             "region": "aseg:right:49",
             "source_name": "Right-Thalamus-Proper",
-            "coverage": null
+            "coverage": 0.0
           },
           {
             "region": "destrieux:left:22",
@@ -908,12 +931,12 @@
           {
             "region": "aseg:left:18",
             "source_name": "Left-Amygdala",
-            "coverage": null
+            "coverage": 1.0
           },
           {
             "region": "aseg:right:54",
             "source_name": "Right-Amygdala",
-            "coverage": null
+            "coverage": 1.0
           }
         ]
       },
@@ -1177,12 +1200,12 @@
           {
             "region": "aseg:left:18",
             "source_name": "Left-Amygdala",
-            "coverage": null
+            "coverage": 1.0
           },
           {
             "region": "aseg:right:54",
             "source_name": "Right-Amygdala",
-            "coverage": null
+            "coverage": 1.0
           }
         ]
       },
@@ -1448,12 +1471,12 @@
           {
             "region": "aseg:left:17",
             "source_name": "Left-Hippocampus",
-            "coverage": null
+            "coverage": 1.0
           },
           {
             "region": "aseg:right:53",
             "source_name": "Right-Hippocampus",
-            "coverage": null
+            "coverage": 0.0
           }
         ]
       }
@@ -1813,12 +1836,12 @@
           {
             "region": "aseg:left:18",
             "source_name": "Left-Amygdala",
-            "coverage": null
+            "coverage": 1.0
           },
           {
             "region": "aseg:right:54",
             "source_name": "Right-Amygdala",
-            "coverage": null
+            "coverage": 1.0
           }
         ]
       }
@@ -1873,12 +1896,12 @@
           {
             "region": "aseg:left:11",
             "source_name": "Left-Caudate",
-            "coverage": null
+            "coverage": 1.0
           },
           {
             "region": "aseg:right:50",
             "source_name": "Right-Caudate",
-            "coverage": null
+            "coverage": 1.0
           }
         ]
       }
@@ -8983,6 +9006,298 @@
       {
         "domain": "attention",
         "z": 3.27
+      }
+    ],
+    "aseg:left:10": [
+      {
+        "domain": "pain",
+        "z": 6.02
+      },
+      {
+        "domain": "motor",
+        "z": 7.61
+      },
+      {
+        "domain": "touch",
+        "z": 5.1
+      },
+      {
+        "domain": "reward",
+        "z": 4.13
+      },
+      {
+        "domain": "attention",
+        "z": 3.51
+      },
+      {
+        "domain": "visual-perception",
+        "z": 4.28
+      },
+      {
+        "domain": "auditory-perception",
+        "z": 3.51
+      }
+    ],
+    "aseg:left:11": [
+      {
+        "domain": "reward",
+        "z": 13.7
+      },
+      {
+        "domain": "decision-making",
+        "z": 3.99
+      },
+      {
+        "domain": "working-memory",
+        "z": 3.61
+      },
+      {
+        "domain": "motor",
+        "z": 3.91
+      }
+    ],
+    "aseg:left:12": [
+      {
+        "domain": "reward",
+        "z": 7.86
+      },
+      {
+        "domain": "motor",
+        "z": 6.44
+      }
+    ],
+    "aseg:left:13": [
+      {
+        "domain": "reward",
+        "z": 6.34
+      },
+      {
+        "domain": "motor",
+        "z": 7.87
+      }
+    ],
+    "aseg:left:17": [
+      {
+        "domain": "long-term-memory",
+        "z": 7.22
+      },
+      {
+        "domain": "semantic-memory",
+        "z": 3.15
+      },
+      {
+        "domain": "recognition-memory",
+        "z": 3.41
+      },
+      {
+        "domain": "emotion",
+        "z": 3.27
+      },
+      {
+        "domain": "faces",
+        "z": 3.16
+      }
+    ],
+    "aseg:left:18": [
+      {
+        "domain": "emotion",
+        "z": 20.35
+      },
+      {
+        "domain": "fear",
+        "z": 15.04
+      },
+      {
+        "domain": "faces",
+        "z": 20.5
+      },
+      {
+        "domain": "long-term-memory",
+        "z": 7.33
+      },
+      {
+        "domain": "social-cognition",
+        "z": 4.92
+      },
+      {
+        "domain": "theory-of-mind",
+        "z": 3.32
+      },
+      {
+        "domain": "reward",
+        "z": 8.11
+      },
+      {
+        "domain": "visual-perception",
+        "z": 7.08
+      },
+      {
+        "domain": "pain",
+        "z": 4.17
+      },
+      {
+        "domain": "attention",
+        "z": 4.81
+      }
+    ],
+    "aseg:left:26": [
+      {
+        "domain": "reward",
+        "z": 27.26
+      },
+      {
+        "domain": "decision-making",
+        "z": 8.99
+      },
+      {
+        "domain": "emotion",
+        "z": 3.63
+      }
+    ],
+    "aseg:left:28": [
+      {
+        "domain": "reward",
+        "z": 5.05
+      }
+    ],
+    "aseg:right:49": [
+      {
+        "domain": "pain",
+        "z": 5.74
+      },
+      {
+        "domain": "touch",
+        "z": 4.47
+      },
+      {
+        "domain": "motor",
+        "z": 6.02
+      },
+      {
+        "domain": "reward",
+        "z": 4.58
+      },
+      {
+        "domain": "visual-perception",
+        "z": 3.51
+      }
+    ],
+    "aseg:right:50": [
+      {
+        "domain": "reward",
+        "z": 13.87
+      },
+      {
+        "domain": "decision-making",
+        "z": 5.16
+      },
+      {
+        "domain": "motor",
+        "z": 4.43
+      },
+      {
+        "domain": "attention",
+        "z": 3.42
+      }
+    ],
+    "aseg:right:51": [
+      {
+        "domain": "reward",
+        "z": 8.12
+      },
+      {
+        "domain": "motor",
+        "z": 5.83
+      },
+      {
+        "domain": "pain",
+        "z": 3.02
+      }
+    ],
+    "aseg:right:52": [
+      {
+        "domain": "reward",
+        "z": 5.75
+      },
+      {
+        "domain": "motor",
+        "z": 6.62
+      }
+    ],
+    "aseg:right:53": [
+      {
+        "domain": "long-term-memory",
+        "z": 5.68
+      },
+      {
+        "domain": "emotion",
+        "z": 3.19
+      },
+      {
+        "domain": "faces",
+        "z": 3.57
+      }
+    ],
+    "aseg:right:54": [
+      {
+        "domain": "fear",
+        "z": 15.75
+      },
+      {
+        "domain": "emotion",
+        "z": 18.69
+      },
+      {
+        "domain": "faces",
+        "z": 20.54
+      },
+      {
+        "domain": "social-cognition",
+        "z": 4.3
+      },
+      {
+        "domain": "long-term-memory",
+        "z": 4.99
+      },
+      {
+        "domain": "reward",
+        "z": 9.47
+      },
+      {
+        "domain": "recognition-memory",
+        "z": 3.07
+      },
+      {
+        "domain": "pain",
+        "z": 5.04
+      },
+      {
+        "domain": "visual-perception",
+        "z": 5.1
+      },
+      {
+        "domain": "attention",
+        "z": 3.84
+      }
+    ],
+    "aseg:right:58": [
+      {
+        "domain": "reward",
+        "z": 28.66
+      },
+      {
+        "domain": "decision-making",
+        "z": 8.84
+      },
+      {
+        "domain": "emotion",
+        "z": 3.69
+      }
+    ],
+    "aseg:right:60": [
+      {
+        "domain": "reward",
+        "z": 5.63
       }
     ]
   }

@@ -22,6 +22,16 @@ FSAVERAGE = ROOT / "data/fsaverage"
 CHECKED_ATLAS = "destrieux"
 CHECKED_ANNOTATION = "aparc.a2009s"
 SIDES = {"left": "L", "right": "R"}
+# The grey-matter structures of FreeSurfer's aseg each map is also averaged over, on fsaverage's own
+# segmentation: the same template, and so the same MNI305 frame, the cortical areas are sampled in.
+STRUCTURE_ATLAS = "aseg"
+STRUCTURES = {
+    8: "Left-Cerebellum-Cortex", 10: "Left-Thalamus-Proper", 11: "Left-Caudate", 12: "Left-Putamen",
+    13: "Left-Pallidum", 16: "Brain-Stem", 17: "Left-Hippocampus", 18: "Left-Amygdala",
+    26: "Left-Accumbens-area", 28: "Left-VentralDC", 47: "Right-Cerebellum-Cortex",
+    49: "Right-Thalamus-Proper", 50: "Right-Caudate", 51: "Right-Putamen", 52: "Right-Pallidum",
+    53: "Right-Hippocampus", 54: "Right-Amygdala", 58: "Right-Accumbens-area", 60: "Right-VentralDC",
+}
 
 
 def read_definition(path=DEFINITION):
@@ -83,28 +93,34 @@ def read_scores(definition, path=SCORES):
             raise ValueError(f"{domain}: scores must name all {2 * AREAS_PER_HEMISPHERE} areas")
         if not all(math.isfinite(value) for value in areas.values()):
             raise ValueError(f"{domain}: every score must be finite")
-    if set(scores["scores"]) != set(terms):
+    if set(scores["scores"]) != set(terms) or set(scores["structure_scores"]) != set(terms):
         raise ValueError("Scores and domains disagree")
+    for domain, structures in scores["structure_scores"].items():
+        if set(structures) != set(STRUCTURES.values()):
+            raise ValueError(f"{domain}: structure scores must name every aseg structure sampled")
+        if not all(math.isfinite(value) for value in structures.values()):
+            raise ValueError(f"{domain}: every structure score must be finite")
     if any(max(areas.values()) < definition["threshold_z"] for areas in scores["scores"].values()):
         raise ValueError("Every domain must reach the threshold somewhere")
     return scores
 
 
-def members(scores, definition, area_name):
+def members(scores, definition, name, table="scores"):
     """
-    The domains an area reaches the threshold for, strongest first.
+    The domains an area, or with `table="structure_scores"` a structure, reaches the threshold for,
+    strongest first.
 
-    Strength is the area's z as a share of the domain's own cortical maximum:
-    consistency z grows with a term's study count, so raw z would hand every
-    shared area to the largest literature.
+    Strength is the z as a share of the domain's own cortical maximum: consistency z grows with a
+    term's study count, so raw z would hand every shared area to the largest literature. Structures
+    are measured against the same cortical maximum, so adding them changes no area's order.
     """
     share = {}
     for domain in definition["domains"]:
-        areas = scores["scores"][domain["id"]]
-        if areas[area_name] >= definition["threshold_z"]:
-            share[domain["id"]] = areas[area_name] / max(areas.values())
+        z = scores[table][domain["id"]][name]
+        if z >= definition["threshold_z"]:
+            share[domain["id"]] = z / max(scores["scores"][domain["id"]].values())
     return [
-        {"domain": domain, "z": round(scores["scores"][domain][area_name], 2)}
+        {"domain": domain, "z": round(scores[table][domain][name], 2)}
         for domain in sorted(share, key=lambda domain: -share[domain])
     ]
 
@@ -112,10 +128,13 @@ def members(scores, definition, area_name):
 def assign(regions, definition, scores):
     assigned = {}
     for region in regions:
-        if region["atlas"] != SURFACE_ATLAS or region["kind"] != "cortex":
+        if region["atlas"] == SURFACE_ATLAS and region["kind"] == "cortex":
+            area_of(region)
+            found = members(scores, definition, region["source_name"])
+        elif region["atlas"] == STRUCTURE_ATLAS and region["source_name"] in STRUCTURES.values():
+            found = members(scores, definition, region["source_name"], "structure_scores")
+        else:
             continue
-        area_of(region)
-        found = members(scores, definition, region["source_name"])
         if found:
             assigned[region["id"]] = found
     return assigned
@@ -132,7 +151,10 @@ def short_citation(reference):
 
 
 def lesion_checks(definition, scores):
-    """How much of each lesion-mapped Destrieux parcel the domain's areas cover on fsaverage."""
+    """
+    How much of each lesion-mapped Destrieux parcel the domain's areas cover on fsaverage, and whether
+    the domain reaches each lesion-mapped aseg structure it samples, as a share of 1 or 0.
+    """
     evidence = yaml.safe_load(NEUROPSYCHOLOGY.read_text())
     associations = {association["id"]: association for association in evidence["associations"]}
     deficits = {deficit["id"]: deficit["name"] for deficit in evidence["deficits"]}
@@ -152,6 +174,12 @@ def lesion_checks(definition, scores):
             mappings = []
             for mapping in association["mappings"]:
                 atlas, hemisphere, label = mapping["region"].split(":")
+                if atlas == STRUCTURE_ATLAS and mapping["source_name"] in STRUCTURES.values():
+                    reached = any(member["domain"] == domain["id"] for member in members(
+                        scores, definition, mapping["source_name"], "structure_scores"))
+                    mappings.append({"region": mapping["region"], "source_name": mapping["source_name"],
+                                     "coverage": 1.0 if reached else 0.0})
+                    continue
                 if atlas != CHECKED_ATLAS:
                     mappings.append({"region": mapping["region"],
                                      "source_name": mapping["source_name"], "coverage": None})
@@ -190,6 +218,8 @@ def partition(regions):
     return {
         "id": ATLAS_ID,
         "atlas": SURFACE_ATLAS,
+        "structure_atlas": STRUCTURE_ATLAS,
+        "structures": sorted(STRUCTURES.values()),
         "threshold_z": definition["threshold_z"],
         "sources": definition["sources"],
         "scores_source": definition["scores_source"],
@@ -230,11 +260,15 @@ def validate(config, manifest):
     published = json.loads((config["output_directory"] / FILENAME).read_text())
     if published != partition(manifest["regions"]):
         raise ValueError("Neuropsychological-domain assignments changed")
-    counts = {domain["id"]: 0 for domain in published["domains"]}
-    for found in published["regions"].values():
+    counts = {atlas: {domain["id"]: 0 for domain in published["domains"]}
+              for atlas in (SURFACE_ATLAS, STRUCTURE_ATLAS)}
+    for region, found in published["regions"].items():
         for member in found:
-            counts[member["domain"]] += 1
-    return {"assigned_areas": len(published["regions"]), "areas_per_domain": counts}
+            counts[region.split(":")[0]][member["domain"]] += 1
+    structures = [region for region in published["regions"] if region.startswith(f"{STRUCTURE_ATLAS}:")]
+    return {"assigned_areas": len(published["regions"]) - len(structures),
+            "assigned_structures": len(structures),
+            "areas_per_domain": counts[SURFACE_ATLAS], "structures_per_domain": counts[STRUCTURE_ATLAS]}
 
 
 def limitations():

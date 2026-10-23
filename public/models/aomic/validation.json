@@ -494,6 +494,7 @@
   },
   "neuropsych_domains": {
     "assigned_areas": 264,
+    "assigned_structures": 16,
     "areas_per_domain": {
       "executive": 17,
       "working-memory": 79,
@@ -526,6 +527,39 @@
       "theory-of-mind": 30,
       "fear": 29,
       "reward": 44
+    },
+    "structures_per_domain": {
+      "executive": 0,
+      "working-memory": 1,
+      "long-term-memory": 4,
+      "language": 0,
+      "attention": 4,
+      "visuospatial": 0,
+      "social-cognition": 2,
+      "visual-perception": 4,
+      "motor": 8,
+      "auditory-perception": 1,
+      "emotion": 6,
+      "inhibition": 0,
+      "flexibility": 0,
+      "planning": 0,
+      "decision-making": 4,
+      "spatial-attention": 0,
+      "recognition-memory": 2,
+      "semantic-memory": 1,
+      "reading": 0,
+      "naming": 0,
+      "phonological": 0,
+      "speech-production": 0,
+      "number": 0,
+      "faces": 4,
+      "colour": 0,
+      "music": 0,
+      "touch": 2,
+      "pain": 5,
+      "theory-of-mind": 1,
+      "fear": 2,
+      "reward": 14
     }
   },
   "nextbrain_structures": {

@@ -155,7 +155,8 @@ export const TRANSLATIONS = {
       heading: 'Neuropsychological functions',
       // Numbers arrive formatted (format.js decimal).
       score: (term, z) => `“${term}” · z\u00a0${z}`,
-      none: threshold => `No function reaches z\u00a0${threshold} in this area.`,
+      none: threshold => `No function reaches z\u00a0${threshold} here.`,
+      noteStructure: source => `Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term (${source}). Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.`,
       note: source => `Mean meta-analytic consistency over this whole HCP-MMP area for each term (${source}): where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.`,
       keyTitle: 'Neuropsychological functions',
       keyAll: 'Each area shows its strongest function; tissue-coloured areas reach none. Choose one to see all its areas.',
@@ -164,7 +165,7 @@ export const TRANSLATIONS = {
       lesionCheck: items => `Lesion check: ${items.join('; ')}.`,
       lesionItem: (deficit, references, parcels) => `${deficit} (${references}): ${parcels}`,
       parcelCoverage: (parcel, share) => `${parcel} ${share} coloured`,
-      parcelOffSurface: parcel => `${parcel}, not on the cortical surface`,
+      parcelOffSurface: parcel => `${parcel}, not measured`,
       noLesionCheck: 'No lesion study in NeuroAtlas’s deficit evidence checks this domain.',
     },
     functions: {
@@ -175,9 +176,11 @@ export const TRANSLATIONS = {
       coverage: count => `${count} functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.`,
       noResults: 'Try another name, or a Neurosynth term such as “memory”.',
       term: term => `Neurosynth term “${term}”`,
-      areas: (count, threshold) => `${count} HCP-MMP ${count === 1 ? 'area reaches' : 'areas reach'} z\u00a0${threshold}`,
-      none: threshold => `No HCP-MMP area reaches z\u00a0${threshold}.`,
-      areasHeading: 'Areas, strongest first',
+      areas: (areas, structures, threshold) => `${areas} HCP-MMP ${areas === 1 ? 'area' : 'areas'}`
+        + (structures ? ` and ${structures} ${structures === 1 ? 'structure' : 'structures'}` : '')
+        + ` ${areas + structures === 1 ? 'reaches' : 'reach'} z\u00a0${threshold}`,
+      none: threshold => `No HCP-MMP area or structure reaches z\u00a0${threshold}.`,
+      areasHeading: 'Areas and structures, strongest first',
       more: count => `${count} more ${count === 1 ? 'area' : 'areas'}`,
       openArea: 'Show area',
       overviewHeading: 'Functions',
@@ -653,7 +656,8 @@ export const TRANSLATIONS = {
     domains: {
       heading: 'Fonctions neuropsychologiques',
       score: (term, z) => `« ${term} » · z\u00a0${z}`,
-      none: threshold => `Aucune fonction n’atteint z\u00a0${threshold} dans cette aire.`,
+      none: threshold => `Aucune fonction n’atteint z\u00a0${threshold} ici.`,
+      noteStructure: source => `Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme (${source}). Données plus faibles que pour une aire corticale\u202f: le noyau de lissage de 6\u00a0mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.`,
       note: source => `Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme (${source})\u202f: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.`,
       keyTitle: 'Fonctions neuropsychologiques',
       keyAll: 'Chaque aire montre sa fonction la plus forte\u202f; les aires couleur tissu n’en atteignent aucune. Choisissez-en une pour voir toutes ses aires.',
@@ -662,7 +666,7 @@ export const TRANSLATIONS = {
       lesionCheck: items => `Vérification lésionnelle\u202f: ${items.join('\u202f; ')}.`,
       lesionItem: (deficit, references, parcels) => `${deficit} (${references})\u202f: ${parcels}`,
       parcelCoverage: (parcel, share) => `${parcel} colorée à ${share}`,
-      parcelOffSurface: parcel => `${parcel}, hors de la surface corticale`,
+      parcelOffSurface: parcel => `${parcel}, non mesurée`,
       noLesionCheck: 'Aucune étude lésionnelle des données de déficits de NeuroAtlas ne vérifie ce domaine.',
     },
     functions: {
@@ -673,9 +677,11 @@ export const TRANSLATIONS = {
       coverage: count => `${count} fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.`,
       noResults: 'Essayez un autre nom, ou un terme Neurosynth comme «\u00a0memory\u00a0».',
       term: term => `Terme Neurosynth «\u00a0${term}\u00a0»`,
-      areas: (count, threshold) => `${count} ${count === 1 ? 'aire HCP-MMP atteint' : 'aires HCP-MMP atteignent'} z\u00a0${threshold}`,
-      none: threshold => `Aucune aire HCP-MMP n’atteint z\u00a0${threshold}.`,
-      areasHeading: 'Aires, de la plus forte à la plus faible',
+      areas: (areas, structures, threshold) => `${areas} ${areas === 1 ? 'aire HCP-MMP' : 'aires HCP-MMP'}`
+        + (structures ? ` et ${structures} ${structures === 1 ? 'structure' : 'structures'}` : '')
+        + ` ${areas + structures === 1 ? 'atteint' : 'atteignent'} z\u00a0${threshold}`,
+      none: threshold => `Aucune aire HCP-MMP ni structure n’atteint z\u00a0${threshold}.`,
+      areasHeading: 'Aires et structures, de la plus forte à la plus faible',
       more: count => `${count} ${count === 1 ? 'autre aire' : 'autres aires'}`,
       openArea: 'Afficher l’aire',
       overviewHeading: 'Fonctions',

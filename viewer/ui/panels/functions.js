@@ -26,9 +26,12 @@ function functionButton(id, name, detail, color) {
   return button;
 }
 
-/** The count of areas a domain reaches, said as the list and the overview say it. */
-const areaCount = (partition, id, lang) => t(lang, 'functions')
-  .areas(domainAreas(partition, id).length, decimal(partition.threshold_z, 0, lang));
+/** The areas and structures a domain reaches, counted apart, as the list and the overview say it. */
+function areaCount(partition, id, lang) {
+  const reached = domainAreas(partition, id);
+  const structures = reached.filter(({ region }) => region.startsWith(`${partition.structure_atlas}:`)).length;
+  return t(lang, 'functions').areas(reached.length - structures, structures, decimal(partition.threshold_z, 0, lang));
+}
 
 /**
  * The Functions tab: Neurosynth domains under their groups, and a drill-in profile of one, or of

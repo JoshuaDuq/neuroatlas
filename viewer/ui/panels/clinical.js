@@ -153,6 +153,7 @@ export function revealNotice(lang, before, after) {
   if (before.cut && !after.cut) clauses.push(said.cut);
   if (before.isolated && !after.isolated) clauses.push(said.isolation);
   if (before.atlas !== after.atlas) clauses.push(said.atlas(atlasSwitchLabel(after.atlas, lang)));
+  if (before.cutAtlas !== after.cutAtlas) clauses.push(said.cutAtlas(atlasSwitchLabel(after.cutAtlas, lang)));
   if (before.colour !== after.colour) clauses.push(said.colour(t(lang, 'display').surfaceColors[after.colour]));
   if (before.detail !== after.detail) clauses.push(said.detail(atlasSwitchLabel(after.detail, lang)));
   if (before.hemisphere !== after.hemisphere) clauses.push(said.hemisphere);
