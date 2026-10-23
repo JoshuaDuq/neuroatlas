@@ -16,7 +16,7 @@
   --dock-height: 38px;
   --stage-gutter: var(--space-4);
   /* One edge for every plate on the stage. */
-  --stage-edge: color-mix(in srgb, var(--overlay-border) 60%, var(--overlay-control-border));
+  --stage-edge: var(--overlay-border);
   --stage-elevation: 0 4px 12px rgb(0 0 0 / 0.5);
 }
 
@@ -101,7 +101,7 @@
   line-height: var(--lh-caption);
   pointer-events: none;
 }
-.hover-label { max-width: 280px; }
+.hover-label { max-width: min(280px, calc(100% - 16px)); overflow-wrap: anywhere; }
 
 /* Markings ---------------------------------------------------------------- */
 /*
@@ -616,7 +616,7 @@
 
 /* Phones ------------------------------------------------------------------ */
 /* The literal twin of PHONE_QUERY in render/device.js, as in phone.css. */
-@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+@media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   .hover-label { display: none; }
 
   /* The three tools share the plate across the stage, each a third of it. */
@@ -707,16 +707,8 @@
   #viewport:has(.stage-popover:not([hidden])) :is(.scale-bar, .orientation) { visibility: hidden; }
 }
 
-/*
- * A landscape phone: the scale bar sits far to the left of a wide stage, so S keeps the top line.
- * The section row folds its details as upright: beside a one-row side sheet they leave the slider no room.
- */
-@media (max-height: 480px) and (orientation: landscape) {
-  .orientation [data-edge="top"] { top: var(--space-3); }
-}
-
 /* Compact legend overrides must not shrink touch targets on phones or touch computers. */
-@media (pointer: coarse), (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+@media (pointer: coarse), (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   .stage-key-head:has(.functional-level) { height: auto; min-height: 48px; }
   .stage-key .functional-level button,
   .paint-key-list button { height: auto; min-height: 44px; }

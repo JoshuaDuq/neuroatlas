@@ -836,9 +836,9 @@ export function createViewportChrome({
       if (!hoverBounds) hoverBounds = hover.parentElement.getBoundingClientRect();
       if (!hoverSize) hoverSize = { width: hover.offsetWidth, height: hover.offsetHeight };
       hover.style.left =
-        `${Math.min(position.x + 14, hoverBounds.width - hoverSize.width - 8)}px`;
+        `${Math.max(8, Math.min(position.x + 14, hoverBounds.width - hoverSize.width - 8))}px`;
       hover.style.top =
-        `${Math.min(position.y + 14, hoverBounds.height - hoverSize.height - 8)}px`;
+        `${Math.max(8, Math.min(position.y + 14, hoverBounds.height - hoverSize.height - 8))}px`;
     },
 
     dispose() {

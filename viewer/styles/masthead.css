@@ -17,12 +17,12 @@
   display: flex;
   flex: none;
   align-items: center;
-  gap: var(--space-2);
+  gap: 10px;
   align-self: stretch;
   width: calc(var(--rail-width) - var(--panel-inset));
   border-right: 1px solid var(--border-subtle);
 }
-.brand-mark { flex: none; width: 24px; height: 24px; color: var(--text-primary); }
+.brand-mark { flex: none; width: 22px; height: 22px; color: var(--text-primary); }
 .brand {
   font-size: var(--text-brand);
   font-weight: 650;
@@ -90,7 +90,7 @@
   margin: 0;
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   white-space: nowrap;
   padding-inline: var(--space-2);
 }
@@ -132,6 +132,8 @@
   #masthead-data select:hover:not(:disabled) { border-color: transparent; background-color: var(--surface-tonal); }
 }
 #masthead-data select:disabled { border-color: transparent; background-color: transparent; color: var(--text-tertiary); }
+/* Subject identity is the anchor; atlas and rendering remain supporting settings. */
+#masthead-data #anatomy-switch, .study-name { font-weight: 600; }
 
 #masthead-menu .segmented { flex: none; }
 #masthead-menu .segmented button {
@@ -346,7 +348,7 @@
 .menu-item:focus-visible { outline-offset: -2px; }
 
 /* Phones: the mark alone names the app, the summary takes the room, fullscreen and provenance move into the menu. */
-@media (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+@media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   #masthead {
     --masthead-gap: var(--space-2);
     grid-column: 1;
@@ -399,7 +401,7 @@
   #masthead-menu .segmented { width: 100%; }
 }
 
-@media (pointer: coarse), (max-width: 640px), (max-height: 480px) and (orientation: landscape) {
+@media (pointer: coarse), (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   #masthead[data-collapsed] .data-toggle,
   #masthead-data[data-open] select,
   .menu-item { height: 44px; }

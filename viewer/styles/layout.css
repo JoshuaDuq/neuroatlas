@@ -125,10 +125,10 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--panel-inset);
+  gap: var(--space-3);
+  padding: var(--space-5) var(--panel-inset) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-navigation);
+  background: var(--surface-base);
 }
 /* The keycap sits as far inside the field's end as it does inside its top and bottom. */
 .rail-head .search-shortcut { right: 6px; padding: 0 6px; }
@@ -205,7 +205,7 @@
     0 11px / 55% 100% no-repeat;
 }
 
-@media (min-width: 641px) and (min-height: 481px), (min-width: 641px) and (orientation: portrait) {
+@media (min-width: 801px) and (min-height: 481px), (min-width: 801px) and (orientation: portrait) {
   #app:is([data-status="loading"], [data-status="error"]) #workspace-panel::before {
     content: "";
     flex: none;
@@ -214,6 +214,6 @@
   }
 }
 
-@media (min-width: 641px) and (max-width: 1000px) {
+@media (min-width: 801px) and (max-width: 1000px) {
   :root { --rail-width: 340px; --panel-inset: var(--space-4); }
 }

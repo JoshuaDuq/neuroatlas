@@ -65,7 +65,7 @@
   text-wrap: pretty;
 }
 .circuit-content .circuit-role {
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
   color: var(--text-secondary);
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
@@ -97,9 +97,11 @@
  * other: full-bleed rows, a stable number column and complete landmark names.
  */
 #circuit-notes { margin-bottom: var(--space-6); font-size: var(--text-ui); line-height: var(--lh-prose); overflow-wrap: normal; }
-#circuit-notes > .detail-section { margin-top: var(--space-8); margin-inline: var(--panel-inset); }
+#circuit-notes > .detail-section { margin-top: 0; margin-inline: var(--panel-inset); padding-block: var(--space-1); border-bottom: 1px solid var(--border-subtle); }
+#circuit-notes > .detail-section > summary { min-height: var(--control-height); font-weight: 500; }
+#circuit-notes > .detail-section[open] { padding-bottom: var(--space-4); }
 #circuit-notes > .circuit-landmarks { margin-inline: 0; }
-.circuit-landmarks > .detail-section-heading { padding-inline: var(--panel-inset); }
+.circuit-landmarks > .detail-section-heading { padding: var(--space-5) var(--panel-inset) var(--space-1); }
 .circuit-steps { margin: 0; padding: 0; list-style: none; }
 .circuit-step {
   display: flex;
@@ -161,6 +163,7 @@
   white-space: normal;
 }
 .circuit-route { color: var(--text-primary); font-weight: 500; }
+.circuit-source { padding-top: var(--space-2); font-size: var(--text-caption); line-height: var(--lh-caption); }
 .circuit-source a { font-weight: 500; overflow-wrap: anywhere; }
 .circuit-source span { display: block; margin-top: var(--space-1); }
 #circuit-action-status { font-size: var(--text-ui); line-height: var(--lh-prose); }

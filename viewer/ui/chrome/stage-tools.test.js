@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { compactSection, createStagePopovers, placePopover } from './stage-tools.js';
+import { createViewportChrome } from './viewport-chrome.js';
 
 const desktop = { x: 0, y: 0, width: 1120, height: 824 };
 
@@ -101,3 +102,68 @@ test('a stage popover focuses a visible selected choice before other controls', 
   open();
   assert.equal(doc.activeElement, selected);
 });
+
+function hoverFixture(t, bounds, size) {
+  const previous = globalThis.document;
+  const storage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: undefined });
+  const doc = new EventTarget();
+  const nodes = new Map();
+  function element(id) {
+    const node = new EventTarget();
+    Object.assign(node, {
+      id, children: [], dataset: {}, style: {},
+      querySelectorAll: () => [],
+      querySelector: selector => byId(`${id} ${selector}`),
+      append(...children) { this.children.push(...children); },
+      replaceChildren(...children) { this.children = children; },
+    });
+    return node;
+  }
+  function byId(id) {
+    if (!nodes.has(id)) nodes.set(id, element(id));
+    return nodes.get(id);
+  }
+  doc.getElementById = byId;
+  doc.createElement = element;
+  globalThis.document = doc;
+  const hover = byId('hover-label');
+  hover.parentElement = byId('viewport');
+  hover.parentElement.getBoundingClientRect = () => bounds;
+  hover.offsetWidth = size.width;
+  hover.offsetHeight = size.height;
+  const chrome = createViewportChrome({ onRetry() {} });
+  t.after(() => {
+    chrome.dispose();
+    globalThis.document = previous;
+    if (storage) Object.defineProperty(globalThis, 'localStorage', storage);
+    else delete globalThis.localStorage;
+  });
+  return { chrome, hover };
+}
+
+for (const { name, bounds, size, pointer, expected } of [
+  {
+    name: 'follows the pointer when there is room',
+    bounds: { width: 320, height: 240 }, size: { width: 80, height: 40 },
+    pointer: { x: 12, y: 14 }, expected: { left: '26px', top: '28px' },
+  },
+  {
+    name: 'stays inside the right and bottom edges',
+    bounds: { width: 320, height: 240 }, size: { width: 80, height: 40 },
+    pointer: { x: 310, y: 230 }, expected: { left: '232px', top: '192px' },
+  },
+  {
+    name: 'keeps its top and left visible when larger than the stage',
+    bounds: { width: 120, height: 36 }, size: { width: 280, height: 60 },
+    pointer: { x: 110, y: 30 }, expected: { left: '8px', top: '8px' },
+  },
+]) {
+  test(`the region hover label ${name}`, t => {
+    const { chrome, hover } = hoverFixture(t, bounds, size);
+    chrome.showHover('Superior temporal sulcus', pointer);
+    assert.equal(hover.hidden, false);
+    assert.equal(hover.style.left, expected.left);
+    assert.equal(hover.style.top, expected.top);
+  });
+}
