@@ -166,14 +166,14 @@ def published_window(anatomy, output):
     return config, export_volumes(config)["display"]
 
 
-@pytest.mark.parametrize("anatomy", ["bert", "aomic"])
+@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
 def test_published_window_does_not_clip_the_measured_signal(anatomy, tmp_path):
     config, display = published_window(anatomy, tmp_path)
     high = display["window_center"] + display["window_width"] / 2
     assert (displayed_signal(config) >= high).mean() < 0.005
 
 
-@pytest.mark.parametrize("anatomy", ["bert", "aomic"])
+@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
 def test_published_window_maps_signal_to_grey_proportionally(anatomy, tmp_path):
     # Floor at zero, so a tissue twice as bright on T1 is twice as bright on
     # screen. A raised floor would add an offset and break that on every
@@ -184,6 +184,6 @@ def test_published_window_maps_signal_to_grey_proportionally(anatomy, tmp_path):
 
 def test_window_follows_the_subject_rather_than_the_configuration(tmp_path):
     # orig.mgz is not intensity normalised, so one constant cannot serve two scans.
-    _, bert = published_window("bert", tmp_path / "bert")
-    _, aomic = published_window("aomic", tmp_path / "aomic")
-    assert bert["window_width"] != aomic["window_width"]
+    _, snail = published_window("snail", tmp_path / "snail")
+    _, cdmd = published_window("cdmd", tmp_path / "cdmd")
+    assert snail["window_width"] != cdmd["window_width"]

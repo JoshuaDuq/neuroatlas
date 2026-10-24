@@ -3,24 +3,24 @@
 [`brain_model/validate.py`](https://github.com/JoshuaDuq/neuroatlas/blob/main/brain_model/validate.py) reads each built anatomy back and checks it against its sources. It establishes conversion fidelity, not clinical accuracy: every published `validation.json` has status `passed` and `clinical_accuracy_validated: false`.
 
 ```bash
-uv run python -m brain_model.validate --anatomy bert
+uv run python -m brain_model.validate --anatomy cdmd
 uv run pytest
 npm test
 ```
 
-CI runs all three for `snail`, `bert` and `aomic` on every pull request and deployment. A validation takes about two and a half minutes and at most 4.7 GB.
+CI runs all three for `snail` and `cdmd` on every pull request and deployment. A validation takes about two and a half minutes and at most 4.7 GB.
 
 ## Geometry
 
-| | `snail` | `bert` | `aomic` |
-| :--- | ---: | ---: | ---: |
-| Pial vertices, source = export | 253,577 | 266,922 | 271,009 |
-| Pial triangles, source = export | 507,146 | 533,836 | 542,010 |
-| Position error (mm), bound 2e-5 | 4.298e-6 | 4.479e-6 | 4.441e-6 |
-| Normal component, bound 1.54e-5 | 1.529e-5 | 1.529e-5 | 1.529e-5 |
-| Sulcal depth (source units) | 2.338e-4 | 2.799e-5 | 2.380e-4 |
-| Concavity | 9.831e-6 | 1.164e-5 | 1.044e-5 |
-| Ribbon T1 (intensity units) | 1.368e-3 | 1.070e-3 | 1.823e-3 |
+| | `snail` | `cdmd` |
+| :--- | ---: | ---: |
+| Pial vertices, source = export | 253,577 | 216,726 |
+| Pial triangles, source = export | 507,146 | 433,444 |
+| Position error (mm), bound 2e-5 | 4.298e-6 | 5.038e-6 |
+| Normal component, bound 1.54e-5 | 1.529e-5 | 1.529e-5 |
+| Sulcal depth (source units) | 2.338e-4 | 2.399e-4 |
+| Concavity | 9.831e-6 | 9.099e-6 |
+| Ribbon T1 (intensity units) | 1.368e-3 | 1.259e-3 |
 
 Counts are before barycentric partition; area is conserved across it to a relative $10^{-6}$. Scalar errors are within half a `uint16` step of each file's source range, $(\max - \min) / (2 \times 65535)$, in source units.
 
@@ -53,8 +53,8 @@ Tests in `viewer/diffusion/` verify byte-exact NIfTI, lossless TRK, all 27 bundl
 1. **One individual.** Folds, depths and asymmetries belong to that person and are not normative.
 2. **1 mm scan.** The MRI and FreeSurfer labels are 1 mm. NextBrain's 0.4 mm grid is estimated from that same scan; where structures share T1 contrast, the atlas prior places the boundary. Cortical layers and fibres are not resolved.
 3. **HCP-MMP is projected**, two registrations from HCP space.
-4. **NextBrain is a model estimate.** Against each brain's own aseg, caudate, putamen, thalamus, hippocampus and amygdala score Dice 0.803–0.898 on `snail`, 0.817–0.886 on `bert` and 0.803–0.886 on `aomic`. Agreement bounds how far two segmentations differ, not how far either is from the anatomy. The claustrum is still fragmented.
+4. **NextBrain is a model estimate.** Against each brain's own aseg, caudate, putamen, thalamus, hippocampus and amygdala score Dice 0.803–0.898 on `snail` and 0.772–0.892 on `cdmd`, whose left amygdala (0.772) is a documented exception to the 0.8 floor. Agreement bounds how far two segmentations differ, not how far either is from the anatomy. The claustrum is still fragmented.
 5. **Cut faces are coarser** than NextBrain surfaces (0.8 mm blocks).
-6. **Non-manifold contacts.** On `bert`, 133 of 363 solids touch themselves across voxel corners; enclosed volumes stay definite.
-7. **FreeSurfer surface defects** before repair: 81 holes on `snail`, 59 on `bert`, 20 on `aomic`.
+6. **Non-manifold contacts.** On `snail`, 134 of 338 solids touch themselves across voxel corners (116 of 324 on `cdmd`); enclosed volumes stay definite.
+7. **FreeSurfer surface defects** before repair: 81 holes on `snail`, 8 on `cdmd`.
 8. **Shading is illustrative.** T1 relief and tissue colours are not measured optical or histological properties.

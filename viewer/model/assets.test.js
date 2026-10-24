@@ -4,9 +4,9 @@ import test from 'node:test';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { BrainAtlas } from './brain-atlas.js';
 
-const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
+const { anatomies } = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8'));
 
-test('published GLBs load in Three.js with manifest metadata and unchanged geometry', async () => {
+for (const { id: published } of anatomies) test(`${published}: published GLBs load in Three.js with manifest metadata and unchanged geometry`, async () => {
   const directory = new URL(`../../public/models/${published}/`, import.meta.url);
   const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
   const gltfLoader = new GLTFLoader();
@@ -20,13 +20,17 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
   const atlas = new BrainAtlas(manifest, loader);
   await atlas.initialize('destrieux');
   const detail = manifest.detail_levels.find(level => level.id === atlas.defaultDetail);
-  const supplemental = manifest.supplemental_layers.reduce((count, layer) => count + layer.region_count, 0);
   assert.equal(atlas.state.detail, 'learning');
-  // SNAIL's scan ends inside the medulla, so it publishes no reference cord to show.
-  assert.deepEqual(manifest.supplemental_layers, []);
-  await assert.rejects(atlas.setSpinalCordVisible(true), /does not publish a spinal cord/);
-  // 148 Destrieux parcels plus the two non-region surfaces.
-  assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + supplemental);
+  // 148 Destrieux parcels plus the two non-region surfaces; a published cord waits to be shown.
+  assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count);
+  // A scan that ends inside the medulla (SNAIL's) publishes no reference cord to show.
+  if (manifest.supplemental_layers.length) {
+    const [cord] = manifest.supplemental_layers;
+    assert.deepEqual(manifest.supplemental_layers.map(layer => layer.id), ['zanatomy']);
+    await atlas.setSpinalCordVisible(true);
+    assert.equal(atlas.visibleMeshes.length, 150 + detail.region_count + cord.region_count);
+    await atlas.setSpinalCordVisible(false);
+  } else await assert.rejects(atlas.setSpinalCordVisible(true), /does not publish a spinal cord/);
   for (const entry of manifest.atlases) {
     await atlas.setAtlas(entry.id);
     const corticalMeshes = atlas.visibleMeshes.filter(mesh => mesh.userData.kind === 'cortex');
@@ -47,7 +51,7 @@ test('published GLBs load in Three.js with manifest metadata and unchanged geome
     assert.equal(atlas.state.selectedRegion.atlas, entry.id);
   }
   atlas.setCortexVisible(false);
-  assert.equal(atlas.visibleMeshes.length, detail.region_count + supplemental);
+  assert.equal(atlas.visibleMeshes.length, detail.region_count);
   atlas.select(atlas.visibleMeshes[0].userData.region_id);
   assert.equal(atlas.state.selectedRegion.kind, 'structure');
   atlas.setInternalSystem('Basal ganglia');

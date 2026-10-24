@@ -25,9 +25,11 @@ test('missing, nonfinite or nonrigid coordinate mappings surface as errors', () 
   ]) assert.throws(() => createReferenceTransform(matrix), /rigid/);
 });
 
-test('published header mapping matches independent NiBabel voxel anchors and its exact source', async () => {
-  const root = new URL('../../', import.meta.url);
-  const catalog = parse(await readFile(new URL('data/diffusion.yaml', root), 'utf8'));
+const root = new URL('../../', import.meta.url);
+const { tract_catalogs: paths } = parse(await readFile(new URL('config/model.yaml', root), 'utf8'));
+const catalogs = await Promise.all(paths.map(async path => parse(await readFile(new URL(path, root), 'utf8'))));
+
+for (const catalog of catalogs) test(`${catalog.id}: published header mapping matches independent NiBabel voxel anchors and its exact source`, async () => {
   const space = JSON.parse(await readFile(new URL(`public/diffusion/${catalog.reference_space}`, root), 'utf8'));
   const source = await readFile(new URL(space.source, root));
   assert.equal(createHash('sha256').update(source).digest('hex'), space.source_sha256);

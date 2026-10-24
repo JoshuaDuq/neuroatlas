@@ -60,11 +60,22 @@ def segmentation_agreement(config):
         side, name = group["id"].split(":")
         aseg_label = settings["aseg_labels"][name][side]
         scores.setdefault(name, {})[side] = dice(units == code, coarse == aseg_label)
+    # An anatomy may lower the floor for one structure on one side, with the
+    # measurements that justify it; one the score no longer needs is refused.
+    exceptions = config["anatomy"].get("segmentation_agreement_exceptions", {})
+    floors = {}
+    for name, sides in exceptions.items():
+        for side, exception in sides.items():
+            if name not in scores or side not in scores[name]:
+                raise ValueError(f"Segmentation agreement exception names no score: {name} {side}")
+            if scores[name][side] >= settings["minimum_dice"]:
+                raise ValueError(f"{name} {side} meets Dice {settings['minimum_dice']}; remove its exception")
+            floors[(name, side)] = exception["minimum_dice"]
     low = {
         f"{name} {side}": round(score, 3)
         for name, sides in scores.items()
         for side, score in sides.items()
-        if score < settings["minimum_dice"]
+        if score < floors.get((name, side), settings["minimum_dice"])
     }
     if low:
         raise ValueError(f"NextBrain disagrees with aseg below Dice {settings['minimum_dice']}: {low}")
@@ -75,5 +86,6 @@ def segmentation_agreement(config):
         "aseg_labels": settings["aseg_labels"],
         "maximum_nearest_neighbour_shift_mm": shift,
         "minimum_dice": settings["minimum_dice"],
+        **({"exceptions": exceptions} if exceptions else {}),
         "dice": scores,
     }

@@ -1,16 +1,10 @@
 {
-  "default": "snail",
+  "default": "cdmd",
   "anatomies": [
     {
-      "id": "aomic",
-      "display_name": "AOMIC-PIOP1 \u201csub-0022\u201d",
-      "label": "AOMIC-PIOP1 single-subject reconstruction",
-      "individual": true
-    },
-    {
-      "id": "bert",
-      "display_name": "FreeSurfer \u201cbert\u201d",
-      "label": "FreeSurfer bert single-subject reconstruction",
+      "id": "cdmd",
+      "display_name": "MGH CDMD \u201csub_013\u201d",
+      "label": "MGH CDMD single-subject reconstruction",
       "individual": true
     },
     {

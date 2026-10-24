@@ -151,9 +151,9 @@ def display_window(mri, labels, ceiling=99.9):
     """The default contrast window, measured from the tissue the viewer draws.
 
     orig.mgz is conformed but not intensity normalised, so white matter sits
-    wherever the scanner left it — 164 in bert, 176 in the AOMIC subject. One
-    constant ceiling clipped half of the brighter subject's white matter to
-    flat white, which is measured signal thrown away.
+    wherever the scanner left it — a median of 221 in SNAIL, 144 in CDMD. One
+    constant ceiling clipped half of a brighter subject's white matter to flat
+    white, which is measured signal thrown away.
 
     The floor stays at zero so displayed grey is proportional to T1 signal:
     a raised floor would buy contrast by adding an offset, and surfaces and

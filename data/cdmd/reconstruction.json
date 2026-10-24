@@ -1,0 +1,123 @@
+{
+  "status": "complete",
+  "subject": "sub_013",
+  "source": "https://doi.org/10.6084/m9.figshare.c.5315474.v1",
+  "input": "data/cdmd/input/sub_013_t1w.nii.gz",
+  "input_sha256": "16e9137160f20c3dfb39fbd04ce1299415c5252ba96e8b0266f5f9402c60730b",
+  "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+  "threads": 4,
+  "commands": [
+    {
+      "environment": {
+        "FS_V8_XOPTS": "0"
+      },
+      "command": [
+        "recon-all",
+        "-sd",
+        "/Users/joduq24/Desktop/neuroatlas/data/cache/freesurfer-subjects",
+        "-s",
+        "cdmd",
+        "-i",
+        "data/cdmd/input/sub_013_t1w.nii.gz",
+        "-motioncor",
+        "-openmp",
+        "4"
+      ]
+    },
+    {
+      "command": [
+        "fspython",
+        "scripts/freesurfer/run_patched.py",
+        "$FREESURFER_HOME/python/scripts/mri_synthstrip",
+        "--threads",
+        "4",
+        "-i",
+        "data/cache/freesurfer-subjects/cdmd/mri/orig.mgz",
+        "-o",
+        "data/cache/freesurfer-subjects/cdmd/mri/synthstrip.mgz"
+      ]
+    },
+    {
+      "command": [
+        "recon-all",
+        "-sd",
+        "/Users/joduq24/Desktop/neuroatlas/data/cache/freesurfer-subjects",
+        "-s",
+        "cdmd",
+        "-all",
+        "-openmp",
+        "4"
+      ]
+    }
+  ],
+  "runtime": {
+    "scripts/freesurfer/run_patched.py": "40ce7e4ab456d27eb1b58ce283351d80937c44b123281cda88492604754655ba",
+    "scripts/freesurfer/conv3d_slices.py": "e6a9cd093e3997ee7b0277a8dd143f5eb9c01e83de443f4f40074f204943bf7e",
+    "/Applications/freesurfer/8.2.0/bin/recon-all": "780d860a9e91a4b1ae9f68f0146486025cfb2d8080cddf0d1e96c7967942b04d",
+    "/Applications/freesurfer/8.2.0/python/scripts/mri_synthstrip": "bbc2ff8f8779862039401b05d5cd6039fb4f3583e0032a793ac9adb3f4521590"
+  },
+  "synthstrip_runtime": "Sliced CPU convolution; same products, different summation order. No model or input changes.",
+  "completed_at": "2026-10-24T11:52:17-04:00",
+  "exit_code": 0,
+  "runtime_hours": 0.761,
+  "output_sha256": {
+    "mri/orig.mgz": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81",
+    "mri/aseg.mgz": "d8e1e9fbd8d3cf34ee259ac708147da4c61319faf293dd3671584d655f611cbc",
+    "mri/aparc.a2009s+aseg.mgz": "c859c5b38010b319862f8c3d5deb0828bd73524be27ed1cd483eefc234781d0e",
+    "mri/ribbon.mgz": "42a9d24c0dc202caa7776bc2f10bf3da2279dcacde2e23ce4614e64c1e6db9e7",
+    "mri/brain.mgz": "2d9d847b16bc29ac94dff4960ef1d83ce9282a0075bcb9d9c4d0f50654599abe",
+    "mri/wmparc.mgz": "a080190a2ba6d2b77cddd158786f4ccb99185b8abb9906b550820248ce45131f",
+    "scripts/build-stamp.txt": "05e1fbf2faef4be22a0180c1aaf9a337bfdaccfdcdd7a34adaac27e1578458dd",
+    "stats/aseg.stats": "07001d0adb81bee401752883a1ee84a97fee9aae0535e26c65ed99e075c2ce47",
+    "surf/lh.pial": "75ba707c512c289ad0d6e7aabefbcac854ae5bdf2b3e8ceecddf9834e162cee2",
+    "surf/lh.white": "abd03f82ea7574ec42740d72550d253504cd66fb9420cb793d1556e2d99f732c",
+    "surf/lh.sulc": "7601bb5ce22309153ac8226a952dd0ce14c992a1948c636589ff1753eb09c595",
+    "surf/lh.sphere.reg": "410f20030632c9bfc31684b900a9636464f6e979f343ad9d6f62c63c9418df70",
+    "label/lh.aparc.a2009s.annot": "a0a16110336901d3fa893d64e7dc00df89dd8826020902797d6851416f1716f4",
+    "surf/rh.pial": "bcee0a1346002663e77d9832202d4c04793402c96a3162aefbdb3ff7d7d256f9",
+    "surf/rh.white": "6357b680737a2813b2c9c946525a389087748d13845c4c4d6218e738c1919b93",
+    "surf/rh.sulc": "fcfc9dabbe52462ff9bcfcd09f30a31703212540584d6c7471f5fea71330b3a0",
+    "surf/rh.sphere.reg": "ef0bf345caf85a7f430c612d85ffa7a5d2b9eb44123ce36a1b491129ca33cc8d",
+    "label/rh.aparc.a2009s.annot": "5fc2cddc9cb4c1652b7512dc689227e07f7ac4dfb6bc7dccc4bcce04de368742"
+  },
+  "completion_marker_sha256": "bc9d1adfa821e1cea6d647ebe4f50222c60dc5e71ab285712dead512e27986d3",
+  "log": {
+    "path": "scripts/full-reconstruction.log",
+    "sha256": "dc82d4af90b937c021142b9cd92f479be68cd96d916ce7217fc2b574017f2836"
+  },
+  "raw_import": {
+    "voxel_values": "exact",
+    "maximum_affine_error_mm": 0.0
+  },
+  "scanner_ras_to_surface_ras": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -2.5373077392578125
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      -2.6237411499023438
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      14.066368103027344
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "coordinate_method": "Exact FreeSurfer orig.mgz header transform; no anatomical registration.",
+  "limitations": [
+    "The source T1 was defaced before release: facial features were obscured; the brain was not altered.",
+    "This FreeSurfer aseg contains no left choroid plexus (31), right choroid plexus (63), optic chiasm (85) labels; those coarse aseg regions are not exported."
+  ]
+}

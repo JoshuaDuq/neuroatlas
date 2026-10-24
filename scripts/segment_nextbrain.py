@@ -51,8 +51,10 @@ WORKAROUNDS = {
         "scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution "
         "as a sum over kernel depth of 2D convolutions of shifted slices: the same "
         "products in a different summation order, matching torch conv3d to 1e-5 "
-        "relative. FireANTs keeps the builtin F.conv3d, which its TorchScript "
-        "functions bind when they compile."
+        "relative. Only a convolution whose im2col buffer would reach 1 GiB is "
+        "sliced; smaller ones run in torch itself, so NextBrain's bias field fit "
+        "keeps the exact zeros it takes logs of. FireANTs keeps the builtin "
+        "F.conv3d, which its TorchScript functions bind when they compile."
     ),
     "supersynth_memory_releases": (
         "SuperSynth's inference.py drops its first-pass network outputs before the "
@@ -70,7 +72,9 @@ WORKAROUNDS = {
 
 def tree_sha256(directory):
     digest = hashlib.sha256()
-    for path in sorted(p for p in directory.rglob("*") if p.is_file()):
+    # macOS writes `._name` AppleDouble metadata beside every file on the exFAT cache
+    # drive; they are not atlas content, and NextBrain reads only label_*.npz.
+    for path in sorted(p for p in directory.rglob("*") if p.is_file() and not p.name.startswith("._")):
         digest.update(f"{path.relative_to(directory)}\0{sha256(path)}\n".encode())
     return digest.hexdigest()
 

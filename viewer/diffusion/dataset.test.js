@@ -11,8 +11,13 @@ import { Vector3 } from 'three';
 import { RAS_MM_TO_WORLD, createTractGeometry } from './native-geometry.js';
 
 const directory = new URL('../../public/diffusion/', import.meta.url);
-const catalog = parse(await readFile(new URL('../../data/diffusion.yaml', import.meta.url), 'utf8'));
-const provenance = JSON.parse(await readFile(new URL(catalog.provenance, directory), 'utf8'));
+const root = new URL('../../', import.meta.url);
+const { tract_catalogs: paths } = parse(await readFile(new URL('config/model.yaml', root), 'utf8'));
+const catalogs = await Promise.all(paths.map(async path => {
+  const catalog = parse(await readFile(new URL(path, root), 'utf8'));
+  return { catalog, provenance: JSON.parse(await readFile(new URL(catalog.provenance, directory), 'utf8')) };
+}));
+const BUNDLES = { 'snail-subject-1': 27, 'cdmd-sub-013': 17 };
 const digest = buffer => createHash('sha256').update(buffer).digest('hex');
 const arrayBuffer = buffer => buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
 
@@ -20,7 +25,7 @@ function near(actual, expected, tolerance = 0.0001) {
   assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} differs from ${expected}`);
 }
 
-test('bundled scalar maps retain original NIfTI bytes and their declared grid', async () => {
+for (const { catalog, provenance } of catalogs) test(`${catalog.id}: bundled scalar maps retain original NIfTI bytes and their declared grid`, async () => {
   for (const map of catalog.maps) {
     const record = provenance.files.find(file => map.file.endsWith(`/${file.file}`));
     const data = await readFile(new URL(map.file, directory));
@@ -34,8 +39,8 @@ test('bundled scalar maps retain original NIfTI bytes and their declared grid', 
   }
 });
 
-test('all named bundles decode in the NiBabel RAS+ space with matching geometry', async () => {
-  assert.equal(catalog.bundles.length, 27);
+for (const { catalog, provenance } of catalogs) test(`${catalog.id}: all named bundles decode in the NiBabel RAS+ space with matching geometry`, async () => {
+  assert.equal(catalog.bundles.length, BUNDLES[catalog.id]);
   assert.equal(new Set(catalog.bundles.map(bundle => bundle.id)).size, catalog.bundles.length);
   for (const bundle of catalog.bundles) {
     const record = provenance.files.find(file => bundle.file.endsWith(`/${file.file}`));
@@ -43,7 +48,8 @@ test('all named bundles decode in the NiBabel RAS+ space with matching geometry'
     const compressed = await readFile(new URL(bundle.file, directory));
     assert.equal(digest(compressed), record.published_sha256);
     const original = gunzipSync(compressed);
-    assert.equal(digest(original), record.source_sha256);
+    // Packaged losslessly, a file decompresses to its source; resampled, to its resampled TRK.
+    assert.equal(digest(original), record.resampled_sha256 ?? record.source_sha256);
     const mesh = await NVMeshLoaders.readTRK(arrayBuffer(original));
     assert.equal(mesh.pts.length / 3, record.points);
     assert.equal(mesh.offsetPt0.length - 1, record.streamlines);

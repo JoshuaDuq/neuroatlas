@@ -161,9 +161,14 @@ def test_validation_refuses_a_cut_block_that_lost_its_majority(config):
     record = nextbrain.export_atlas(config, nextbrain.build_regions(config))
     path = config["output_directory"] / record["file"]
     codes = np.frombuffer(gzip.decompress(path.read_bytes()), record["dtype"]).copy()
-    labelled = np.flatnonzero(codes)
-    codes[labelled[len(labelled) // 2]] = 0
-    payload = codes.tobytes()
+    # A block inside one structure, so clearing it cannot leave background tied.
+    grid = codes.reshape(record["shape"], order="F")
+    core = grid[1:-1, 1:-1, 1:-1]
+    inside = (core != 0) & np.all([core == np.roll(grid, shift, axis)[1:-1, 1:-1, 1:-1]
+                                   for axis in range(3) for shift in (1, -1)], axis=0)
+    target = np.argwhere(inside)[len(np.argwhere(inside)) // 2] + 1
+    grid[tuple(target)] = 0
+    payload = grid.tobytes(order="F")
     path.write_bytes(gzip.compress(payload, mtime=0))
     record.update(sha256=sha256(path), decoded_sha256=hashlib.sha256(payload).hexdigest())
 

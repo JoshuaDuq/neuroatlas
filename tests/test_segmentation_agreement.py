@@ -21,14 +21,17 @@ def test_dice_counts_overlap_against_both_sizes():
     assert dice(a, a) == 1
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "bert", "aomic"])
+@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
 def test_every_declared_structure_clears_the_floor_and_is_the_published_score(anatomy):
     config = read_config(anatomy)
     report = segmentation_agreement(config)
     settings = config["validation"]["segmentation_agreement"]
     assert set(report["dice"]) == set(settings["aseg_labels"])
     assert all(set(sides) == {"left", "right"} for sides in report["dice"].values())
-    assert min(s for sides in report["dice"].values() for s in sides.values()) >= 0.8
+    exceptions = config["anatomy"].get("segmentation_agreement_exceptions", {})
+    for name, sides in report["dice"].items():
+        for side, score in sides.items():
+            assert score >= exceptions.get(name, {}).get(side, {}).get("minimum_dice", 0.8)
     published = json.loads((config["output_directory"] / "validation.json").read_text())
     assert published["segmentation_agreement"] == json.loads(json.dumps(report))
 
@@ -37,6 +40,28 @@ def test_a_score_below_the_floor_fails_validation():
     config = read_config()
     config["validation"]["segmentation_agreement"]["minimum_dice"] = 0.85
     with pytest.raises(ValueError, match="below Dice 0.85"):
+        segmentation_agreement(config)
+
+
+def test_an_anatomy_exception_lowers_only_its_own_floor():
+    config = read_config("cdmd")
+    assert segmentation_agreement(config)["dice"]["amygdala"]["left"] < 0.8
+    config["anatomy"]["segmentation_agreement_exceptions"]["amygdala"]["left"]["minimum_dice"] = 0.78
+    with pytest.raises(ValueError, match="amygdala left"):
+        segmentation_agreement(config)
+
+
+def test_an_exception_the_score_no_longer_needs_is_refused():
+    config = read_config()
+    config["anatomy"]["segmentation_agreement_exceptions"] = {"thalamus": {"left": {"minimum_dice": 0.7}}}
+    with pytest.raises(ValueError, match="remove its exception"):
+        segmentation_agreement(config)
+
+
+def test_an_exception_for_no_score_is_refused():
+    config = read_config()
+    config["anatomy"]["segmentation_agreement_exceptions"] = {"pallidum": {"left": {"minimum_dice": 0.7}}}
+    with pytest.raises(ValueError, match="names no score"):
         segmentation_agreement(config)
 
 
@@ -49,7 +74,8 @@ def test_a_structure_learning_does_not_define_is_refused():
 
 
 @pytest.mark.parametrize(
-    "anatomy,holes", [("snail", (38, 43)), ("bert", (26, 33)), ("aomic", (11, 9))]
+    "anatomy,holes",
+    [("snail", (38, 43)), ("cdmd", (3, 5))],
 )
 def test_surface_holes_are_freesurfers_own_count_and_the_published_one(anatomy, holes):
     config = read_config(anatomy)

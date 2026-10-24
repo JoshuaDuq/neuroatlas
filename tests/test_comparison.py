@@ -300,12 +300,11 @@ def test_real_source_marginals_match_published_float32_surface_areas():
                 assert abs(area - region["surface_area_mm2"]) <= tolerance
 
 
-def test_only_snail_is_configured_for_comparison():
+def test_the_published_individuals_are_configured_for_comparison():
     from brain_model.layers.comparison import is_enabled
 
-    assert is_enabled(read_config("snail"))
-    for anatomy in ["bert", "aomic", "fsaverage"]:
-        assert not is_enabled(read_config(anatomy))
+    assert is_enabled(read_config("snail")) and is_enabled(read_config("cdmd"))
+    assert not is_enabled(read_config("fsaverage"))
 
 
 def test_published_geometry_contains_only_the_exact_joint_cells():

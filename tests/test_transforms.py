@@ -10,7 +10,7 @@ from brain_model import validate_transforms
 from brain_model.sources import ROOT, read_config
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "bert", "aomic"])
+@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
 def test_every_projected_annotation_is_its_rederivation_byte_for_byte(anatomy):
     report = validate_transforms.validate_projected_annotations(read_config(anatomy))
     assert set(report) == {"HCPMMP1", "Schaefer2018_400Parcels_7Networks_order"}
@@ -40,7 +40,13 @@ def test_the_tract_reference_transform_is_orig_mgz_own():
     space = report["diffusion_space"]
     assert space["translation_equals_minus_c_ras"] is True
     assert space["maximum_difference_mm"] == 0
-    assert "diffusion_space" not in validate_transforms.validate_transforms(read_config("bert"))
+    assert "diffusion_space" not in validate_transforms.validate_transforms(read_config("fsaverage"))
+
+
+def test_cdmds_own_tracts_share_its_reconstructions_frame():
+    space = validate_transforms.validate_transforms(read_config("cdmd"))["diffusion_space"]
+    assert space["translation_equals_minus_c_ras"] is True
+    assert space["maximum_difference_mm"] == 0
 
 
 def test_a_shifted_tract_reference_is_refused(tmp_path, monkeypatch):

@@ -43,5 +43,9 @@ data/snail/label/*
 !data/snail/stats/
 data/snail/stats/*
 !data/snail/stats/aseg.stats
+# CDMD sub_013's recon-all tree stays in data/cache/freesurfer-subjects; as with
+# SNAIL, its completion marker and log stay local too.
+data/cdmd/scripts/*
+!data/cdmd/scripts/build-stamp.txt
 docs/_build/
 data/nextbrain/

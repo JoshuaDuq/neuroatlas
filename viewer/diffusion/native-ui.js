@@ -1,4 +1,4 @@
-import catalog from '../../data/diffusion.yaml';
+import { tractCatalog } from './catalogs.js';
 import { createNativeTractViewer } from './native-viewer.js';
 import { DIFFUSION_TEXT, diffusionError, diffusionErrorCode } from './translations.js';
 import { createTractLoader } from './tract-file.js';
@@ -79,6 +79,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   const entry = document.getElementById('diffusion-browser');
   entry.innerHTML = MARKUP;
   const get = name => entry.querySelector(`#native-tract-${name}`);
+  const catalog = tractCatalog(anatomy);
   const loadTract = createTractLoader();
   const engine = createNativeTractViewer(catalog, scene.invalidate, loadTract);
   const matchingAnatomy = anatomy === catalog.anatomy;
@@ -99,7 +100,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
   let disposed = false;
   let overlayVisible = false;
   let cortexOpacity = 1;
-  const copy = () => DIFFUSION_TEXT[lang];
+  const copy = () => ({ ...DIFFUSION_TEXT[lang], ...catalog.text[lang] });
   const mri = createMriNavigator({ catalog, loadTract,
     getTracts: engine.snapshot,
     getMinimum: () => Number(get('minimum').value),
@@ -253,7 +254,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     get mriOpen() { return mri.isOpen; },
     openMri: mri.open,
     enableOverlay() {
-      if (!matchingAnatomy) throw new Error('Tracts can only overlay their own SNAIL anatomy.');
+      if (!matchingAnatomy) throw new Error('Tracts can only overlay their own anatomy.');
       overlayVisible = true;
     },
     disableOverlay() {
@@ -262,7 +263,7 @@ export function createNativeTractExplorer({ scene, anatomy, onActive, onReady, o
     setClippingPlanes: engine.setClippingPlanes,
     reference(language) {
       return { label: catalog.name[language], description: DIFFUSION_TEXT[language].outlineLimit,
-        detail: DIFFUSION_TEXT[language].bundleCollection,
+        detail: DIFFUSION_TEXT[language].bundleCollection(catalog.bundles.length),
         canvasLabel: DIFFUSION_TEXT[language].nativeCanvas };
     },
     update(state) {

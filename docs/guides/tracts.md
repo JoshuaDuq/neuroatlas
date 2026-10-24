@@ -1,12 +1,12 @@
 # Diffusion and tracts
 
-The **Tracts** tab shows 27 reconstructed bundles from subject 1 of DIPY's SNAIL example dataset ([CC0](https://hdl.handle.net/1773/38477)). Three are on at first; switch on a side (L, R, or a numbered callosal segment) to load more. Colour encodes local direction: left–right red, anterior–posterior green, inferior–superior blue.
+The **Tracts** tab shows each anatomy's own tracts. On SNAIL they are the 27 reconstructed bundles of subject 1 of DIPY's SNAIL example dataset ([CC0](https://hdl.handle.net/1773/38477)); on CDMD, 17 bundles tracked here from its own diffusion scan with DIPY (multi-shell CSD, particle filtering, RecoBundles against the HCP842 atlas) and resampled from 0.2 mm to 0.5 mm steps, which moves no point more than 0.056 mm. A few are on at first; switch on a side (L, R, or a numbered callosal segment) to load more. Colour encodes local direction: left–right red, anterior–posterior green, inferior–superior blue.
 
-## On SNAIL and elsewhere
+## On their own anatomy
 
-SNAIL is reconstructed from the tract dataset's own T1, so the tracts sit on its real cortex through the exact scanner-to-surface transform. Regions, atlases, colours and the Section tool all work with tracts. **Cortex opacity** is shared with Display. Returning to Anatomy keeps the tracts; **Show tracts with anatomy** turns them off.
+SNAIL and CDMD are each reconstructed from the T1 their tracts were tracked against, so the tracts sit on the real cortex through the exact scanner-to-surface transform. Regions, atlases, colours and the Section tool all work with tracts. **Cortex opacity** is shared with Display. Returning to Anatomy keeps the tracts; **Show tracts with anatomy** turns them off.
 
-On `bert` or `aomic`, Tracts shows SNAIL alone, inside an outline drawn from its T1. That outline is an MRI isosurface, not a pial surface, and region details and stage tools are hidden. SNAIL tracts are never placed on another brain.
+An anatomy without tracts of its own would show SNAIL's alone, inside an outline drawn from its T1: an MRI isosurface, not a pial surface, with region details and stage tools hidden. Tracts are never placed on another brain. Each anatomy's tracts are named in one catalog, listed under `tract_catalogs` in `config/model.yaml`.
 
 ## Reading the list
 
@@ -14,7 +14,7 @@ Each row gives the streamline count, mean length and range. Counts are reconstru
 
 ## MRI with tracts
 
-**MRI with tracts** (or <kbd>M</kbd>) opens SNAIL's T1 and FA with linked slices, a crosshair, zero-based voxel inputs and the selected tracts. Click, scroll, or use the arrows and Page Up/Down on a slice to move one voxel. On SNAIL the crosshair also positions the cutting plane.
+**MRI with tracts** (or <kbd>M</kbd>) opens the tract reference's MRI (SNAIL's T1 and FA, CDMD's T1) with linked slices, a crosshair, zero-based voxel inputs and the selected tracts. Click, scroll, or use the arrows and Page Up/Down on a slice to move one voxel. On the tracts' own anatomy the crosshair also positions the cutting plane.
 
 ## Data
 

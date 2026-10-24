@@ -5,19 +5,23 @@ import test from 'node:test';
 import { parse } from 'yaml';
 
 const root = new URL('../../', import.meta.url);
-const catalog = parse(await readFile(new URL('data/diffusion.yaml', root), 'utf8'));
+const { tract_catalogs: paths } = parse(await readFile(new URL('config/model.yaml', root), 'utf8'));
+const catalogs = await Promise.all(paths.map(async path => parse(await readFile(new URL(path, root), 'utf8'))));
 const directory = new URL('public/diffusion/', root);
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 
-test('the MRI outline belongs to the exact tract reference and has explicit processing provenance', async () => {
+for (const catalog of catalogs) test(`${catalog.id}: the MRI outline belongs to the tract reference and has explicit processing provenance`, async () => {
   const settings = catalog.brain_outline;
   const provenance = JSON.parse(await readFile(new URL(settings.provenance, directory), 'utf8'));
   const original = JSON.parse(await readFile(new URL(catalog.provenance, directory), 'utf8'));
-  const source = await readFile(new URL(provenance.source, directory));
+  // A skull-stripped map is outlined on its own grid; otherwise the catalog names
+  // a skull-stripped volume in the same scanner frame.
+  const source = await readFile(settings.source_map ? new URL(provenance.source, directory) : new URL(settings.source, root));
   const published = await readFile(new URL(settings.file, directory));
   assert.equal(digest(source), provenance.source_sha256);
   assert.equal(digest(published), provenance.published_sha256);
-  assert.deepEqual(provenance.source_affine, original.files[0].affine);
+  if (settings.source_map) assert.deepEqual(provenance.source_affine, original.files[0].affine);
+  else assert.equal(provenance.source, settings.source);
   assert.equal(provenance.intensity_threshold, settings.intensity_threshold);
   assert.equal(provenance.step_size_voxels, settings.step_size);
   assert.match(provenance.limitations, /not a pial or labeled/);

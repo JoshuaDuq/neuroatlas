@@ -16,7 +16,7 @@ renderer.localClippingEnabled = true;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.01, 10);
 
-const manifestUrl = new URL('./models/bert/manifest.json', import.meta.url);
+const manifestUrl = new URL('./models/cdmd/manifest.json', import.meta.url);
 const brain = await BrainAtlas.load(manifestUrl, 'destrieux');
 const sections = new BrainSections(brain, new URL('volumes.json', manifestUrl));
 scene.add(brain.group, sections.group);
@@ -42,7 +42,7 @@ addEventListener('pointerdown', event => {
 });
 ```
 
-Serve a published `models/bert/` directory next to the module; `npm run build` produces that layout in `dist/`. Without `stencil: true`, a non-manifold cut face fills the whole plane.
+Serve a published `models/cdmd/` directory next to the module; `npm run build` produces that layout in `dist/`. Without `stencil: true`, a non-manifold cut face fills the whole plane.
 
 ## BrainAtlas
 

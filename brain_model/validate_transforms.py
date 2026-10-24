@@ -6,13 +6,12 @@ from pathlib import Path
 
 import nibabel as nib
 import numpy as np
-import yaml
 from nibabel.affines import apply_affine
 from nibabel.freesurfer.io import read_annot, read_geometry, write_annot
 from scipy.spatial import cKDTree
 
 from .layers import networks
-from .sources import HEMISPHERES, ROOT, sha256
+from .sources import HEMISPHERES, ROOT, sha256, tract_catalog
 
 
 def projected_annotation_names(config):
@@ -58,7 +57,7 @@ def validate_diffusion_space(config):
     A conformed volume's surface RAS is its scanner RAS shifted by -c_ras, so
     the transform must also be that pure translation, read from the header.
     """
-    catalog = yaml.safe_load((ROOT / "data/diffusion.yaml").read_text())
+    catalog = tract_catalog(config)
     path = ROOT / "public/diffusion" / catalog["reference_space"]
     recorded = json.loads(path.read_text())
     orig_path = config["source_directory"] / "mri/orig.mgz"
@@ -106,7 +105,6 @@ def validate_transforms(config):
     report = {}
     if "project_hcp_from" in config["anatomy"]:
         report["projected_annotations"] = validate_projected_annotations(config)
-    catalog = yaml.safe_load((ROOT / "data/diffusion.yaml").read_text())
-    if catalog["anatomy"] == config["anatomy"]["id"]:
+    if tract_catalog(config) is not None:
         report["diffusion_space"] = validate_diffusion_space(config)
     return report

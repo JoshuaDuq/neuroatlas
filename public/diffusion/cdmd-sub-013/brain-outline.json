@@ -1,0 +1,55 @@
+{
+  "source": "data/cdmd/mri/brain.mgz",
+  "source_sha256": "2d9d847b16bc29ac94dff4960ef1d83ce9282a0075bcb9d9c4d0f50654599abe",
+  "published_sha256": "8f416398ca5e51aefe65b2bf6c6e7cb6cf58cee222b41a67b2773787e5a128be",
+  "method": "Lewiner marching cubes on the largest connected T1 component above the configured intensity threshold",
+  "intensity_threshold": 1,
+  "step_size_voxels": 2,
+  "source_affine": [
+    [
+      -1.0,
+      0.0,
+      0.0,
+      130.5373077392578
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -125.37625885009766
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0,
+      113.93363189697266
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "display_transform": "RAS mm to (R, S, -A) meters; no registration",
+  "vertices": 25461,
+  "triangles": 50526,
+  "ras_bounds_mm": [
+    [
+      -65.43412780761719,
+      -82.70959091186523,
+      -68.02469635009766
+    ],
+    [
+      68.43730926513672,
+      70.55707550048828,
+      77.87957763671875
+    ]
+  ],
+  "limitations": "MRI-derived display outline, not a pial or labeled cortical reconstruction; limited to the source field of view",
+  "software": {
+    "nibabel": "5.4.2",
+    "numpy": "2.4.6",
+    "trimesh": "5.1.0"
+  }
+}

@@ -24,7 +24,7 @@ uv sync --locked
 uv run pytest
 ```
 
-`--locked` installs exactly what `uv.lock` records. The tests read the committed sources of `snail`, `bert` and `aomic`. Run pipeline commands through `uv run`; the [build guide](guides/building.md) lists them.
+`--locked` installs exactly what `uv.lock` records. The tests read the committed sources of `snail` and `cdmd`. Run pipeline commands through `uv run`; the [build guide](guides/building.md) lists them.
 
 CI runs `uv run pytest`, `npm test` and `python -m brain_model.validate` for each published anatomy on every pull request and before each deployment.
 

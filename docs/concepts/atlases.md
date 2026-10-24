@@ -1,16 +1,16 @@
 # Atlases and layers
 
-Every layer shares one spatial frame. Counts are for `bert` unless noted; SNAIL has 79 teaching solids, 32 aseg structures and 306 NextBrain meshes. Each subject's `manifest.json` is authoritative.
+Every layer shares one spatial frame. Counts are for SNAIL unless noted; CDMD has 80 teaching solids, 32 aseg structures and 292 NextBrain meshes of 514 labels. Each subject's `manifest.json` is authoritative.
 
 | Layer | Granularity | Source | Route to the subject |
 | :--- | :--- | :--- | :--- |
 | Destrieux (`aparc.a2009s`) | 148 parcels | Subject `.annot` | Native; no projection |
 | HCP-MMP1.0 | 360 areas | `fs_LR` → `fsaverage` | Nearest vertex on registered spheres |
-| Teaching set | 82 solids | NextBrain and aseg unions | Bounded smoothing |
-| FreeSurfer aseg | 35 structures | `aseg.mgz` | Marching cubes, bounded smoothing |
-| NextBrain | 515 labels, 328 meshed | Subject segmentation at 0.4 mm | Native |
+| Teaching set | 79 solids | NextBrain and aseg unions | Bounded smoothing |
+| FreeSurfer aseg | 32 structures | `aseg.mgz` | Marching cubes, bounded smoothing |
+| NextBrain | 515 labels, 306 meshed | Subject segmentation at 0.4 mm | Native |
 | Gyral white matter | 68 parcels | `wmparc.mgz` | Native; cut faces only |
-| Spinal cord | 58 structures | Z-Anatomy | Rigid translation below the brainstem |
+| Spinal cord | 58 structures, CDMD only | Z-Anatomy | Rigid translation below the brainstem |
 | Yeo 7 | 7 networks | Schaefer 2018 on `fsaverage` | Per vertex, registered spheres |
 | CAB-NP | 12 networks | Ji et al. 2019 | One network per HCP-MMP area |
 | Functional divisions | 22 sections, 21 named regions | Glasser 2016; Rolls 2022, 2023 | Per HCP-MMP area |
@@ -26,7 +26,7 @@ Every layer shares one spatial frame. Counts are for `bert` unless noted; SNAIL 
 
 ## Comparing Destrieux and HCP-MMP
 
-On SNAIL the region detail lists overlaps with the other atlas. Each triangle gives one third of its area to each corner's cell, the same convention as the boundaries above, and joint label pairs sum those cells in float64 mm². A share is the pair area over the selected region's **whole** pial area, unassigned cells included, so the two directions differ: SNAIL's left precentral gyrus shares about 563.0 mm² with area 4, 22.7% of the gyrus and 33.9% of area 4. Nothing is dropped or renormalised. Overlap is spatial, not functional equivalence.
+On SNAIL and CDMD the region detail lists overlaps with the other atlas. Each triangle gives one third of its area to each corner's cell, the same convention as the boundaries above, and joint label pairs sum those cells in float64 mm². A share is the pair area over the selected region's **whole** pial area, unassigned cells included, so the two directions differ: SNAIL's left precentral gyrus shares about 563.0 mm² with area 4, 22.7% of the gyrus and 33.9% of area 4. Nothing is dropped or renormalised. Overlap is spatial, not functional equivalence.
 
 ## Internal anatomy
 

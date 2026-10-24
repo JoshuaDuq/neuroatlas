@@ -21,7 +21,7 @@ On phones the panel becomes a sheet with peek, half and full positions; in short
 
 | Field | Choices |
 | :--- | :--- |
-| Subject | SNAIL, `bert`, `aomic` |
+| Subject | SNAIL, MGH CDMD |
 | Atlas | Destrieux (74 regions per hemisphere) or HCP-MMP (180 areas per hemisphere) |
 | Colour | Tissue, T1 MRI, Regions, Yeo 7 networks, CAB-NP networks, Functional divisions |
 | Internal anatomy | Teaching set, FreeSurfer aseg, NextBrain |

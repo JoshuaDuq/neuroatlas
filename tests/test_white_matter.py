@@ -175,17 +175,17 @@ def test_cut_only_regions_from_an_unknown_source_are_rejected(tmp_path):
         validate_cut_only_regions(config, regions)
 
 
-def test_bert_white_matter_round_trips_through_its_published_box(tmp_path):
-    config = read_config("bert")
+def test_cdmd_white_matter_round_trips_through_its_published_box(tmp_path):
+    config = read_config("cdmd")
     config["output_directory"] = tmp_path
     regions = white_matter.build_regions(config)
     record = white_matter.export_volume(config, regions)
 
     assert len(regions) == 68
-    assert record["shape"] == [121, 105, 178]
+    assert record["shape"] == [122, 94, 141]
     source = np.asarray(nib.load(config["source_directory"] / "mri/wmparc.mgz").dataobj)
     parcels = np.where((source > 3000) & (source < 5000), source, 0)
-    box = parcels[67:188, 61:166, 26:204]
+    box = parcels[69:191, 48:142, 49:190]
     assert np.count_nonzero(box) == np.count_nonzero(parcels)
     ids = np.array([label["source_label_id"] for label in record["labels"]])
     np.testing.assert_array_equal(ids[decode(config, record)], box)

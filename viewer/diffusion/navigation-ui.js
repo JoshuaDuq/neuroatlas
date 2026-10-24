@@ -7,26 +7,22 @@ import { decimal, percent, withUnit } from '../ui/format.js';
 
 const TEXT = {
   en: {
-    title: 'MRI with tracts · SNAIL subject 1', close: 'Close',
+    close: 'Close',
     hint: 'Click a slice to position the crosshair. Scroll through slices; arrow keys move one voxel.',
     plane: 'View', all: 'Linked slices + 3D', axial: 'Axial', coronal: 'Coronal', sagittal: 'Sagittal',
     voxel: 'Source voxel (0-based)', go: 'Go to voxel', window: 'Window',
     center: 'Level', faOpacity: 'FA opacity',
     loading: 'Loading the reference MRI and selected tracts…', retry: 'Reload MRI',
-    canvas: 'Linked SNAIL MRI slices and tracts. Click to position the crosshair; arrows move one voxel.',
-    scope: 'Scanner RAS millimetres · R/L marked. Tracts use the complete source geometry and current length filter. The published scan has cropped inferior coverage; cortical atlas parcels remain surface labels.',
     outside: 'The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position.',
     grid: (dims, spacing) => `${dims.join(' × ')} source voxels · ${spacing} spacing`,
   },
   fr: {
-    title: 'IRM avec faisceaux · SNAIL sujet 1', close: 'Fermer',
+    close: 'Fermer',
     hint: 'Cliquer une coupe pour placer le réticule. Défiler pour parcourir les coupes ; les flèches déplacent d’un voxel.',
     plane: 'Vue', all: 'Coupes liées + 3D', axial: 'Axiale', coronal: 'Coronale', sagittal: 'Sagittale',
     voxel: 'Voxel source (indice 0)', go: 'Aller au voxel', window: 'Fenêtre',
     center: 'Niveau', faOpacity: 'Opacité FA',
     loading: 'Chargement de l’IRM de référence et des faisceaux sélectionnés…', retry: 'Recharger l’IRM',
-    canvas: 'Coupes IRM SNAIL liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.',
-    scope: 'Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux conservent la géométrie source complète et le filtre de longueur courant. La couverture inférieure de l’image publiée est tronquée ; les régions corticales restent des étiquettes de surface.',
     outside: 'Le réticule de l’atlas est hors du champ de cette image ; l’IRM garde sa position.',
     grid: (dims, spacing) => `${dims.join(' × ')} voxels source · espacement de ${spacing}`,
   },
@@ -57,9 +53,14 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
   get('center').max = map.range[1];
   get('center').value = (map.range[0] + map.range[1]) / 2;
   get('plane').value = isPhone() ? 'AXIAL' : 'MULTIPLANAR';
+  // The second map, when there is one, is FA.
+  const hasFa = catalog.maps.length > 1;
+  get('fa').closest('label').hidden = !hasFa;
+  dialog.querySelector('.diffusion-source-file').textContent = catalog.maps.map(map => map.file.split('/').pop()).join(' · ');
 
   function render() {
-    const copy = TEXT[language];
+    const dataset = catalog.text[language];
+    const copy = { ...TEXT[language], title: dataset.mriTitle, canvas: dataset.mriCanvas, scope: dataset.mriScope };
     for (const node of dialog.querySelectorAll('[data-mri-copy]')) node.textContent = copy[node.dataset.mriCopy];
     canvas.setAttribute('aria-label', copy.canvas);
     canvas.tabIndex = busy || !engine ? -1 : 0;
@@ -82,7 +83,7 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
     }
     if (location) {
       get('readout').textContent = mriReadout(Array.from(location.mm).slice(0, 3),
-        location.values[0].value, location.values[1].value, language);
+        location.values[0].value, location.values[1]?.value, language);
     }
   }
 
@@ -111,7 +112,7 @@ export function createMriNavigator({ catalog, getTracts, getMinimum, getPoint, o
         engine = loaded;
         // Reopened, it resumes where the reader left it.
         engine.setWindow(Number(get('center').value), Number(get('window').value));
-        engine.setFaOpacity(Number(get('fa').value));
+        if (hasFa) engine.setFaOpacity(Number(get('fa').value));
         engine.setVoxel(location ? Array.from(location.vox, Math.round)
           : engine.header.dims.slice(1, 4).map(size => Math.floor(size / 2)));
       }

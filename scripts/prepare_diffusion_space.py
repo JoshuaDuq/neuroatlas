@@ -1,39 +1,46 @@
-"""Record the exact image-header mapping from source tracts to SNAIL surface RAS."""
+"""Record the exact image-header mapping from an anatomy's own tracts to its surface RAS."""
 
+import argparse
 import json
 import sys
 from pathlib import Path
 
 import nibabel as nib
 import numpy as np
-import yaml
 from nibabel.affines import apply_affine
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from brain_model.sources import ROOT, read_config, sha256, write_json
+from brain_model.sources import ROOT, read_config, sha256, tract_catalog, write_json
 
 
 def main():
-    catalog = yaml.safe_load((ROOT / "data/diffusion.yaml").read_text())
-    config = read_config(catalog["anatomy"])
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--anatomy", help="this declared anatomy instead of the selected one")
+    config = read_config(parser.parse_args().anatomy)
+    catalog = tract_catalog(config)
+    if catalog is None:
+        raise SystemExit(f"{config['anatomy']['id']} has no tract catalog")
     settings = config["anatomy"]["reconstruction"]
     source_path = ROOT / settings["input"]
     if sha256(source_path) != settings["input_sha256"]:
-        raise ValueError("The SNAIL reference input checksum changed.")
+        raise ValueError("The tract reference T1 checksum changed.")
     directory = config["source_directory"]
     stamp = (directory / "scripts/build-stamp.txt").read_text().strip()
     if stamp != config["freesurfer_build"]:
-        raise ValueError("The SNAIL reference FreeSurfer build changed.")
-    source = nib.load(source_path)
-    raw = nib.load(directory / "mri/orig/001.mgz")
-    if not (np.array_equal(np.asarray(source.dataobj), np.asarray(raw.dataobj))
-            and np.allclose(source.affine, raw.affine, rtol=0, atol=1e-5)):
+        raise ValueError("The reconstruction's FreeSurfer build changed.")
+    # recon-all imported the tract reference T1 itself; its record says so.
+    reconstruction = json.loads((directory / settings["provenance"]).read_text())
+    imported = reconstruction["raw_import"]
+    if (reconstruction["input_sha256"] != settings["input_sha256"]
+            or imported["voxel_values"] != "exact" or imported["maximum_affine_error_mm"] > 1e-5):
         raise ValueError("The reconstruction import is not the exact tract reference T1.")
+    source = nib.load(source_path)
     orig_path = directory / "mri/orig.mgz"
     orig = nib.load(orig_path)
     surface_affine = orig.header.get_vox2ras_tkr().astype(np.float64)
     scanner_to_surface = surface_affine @ np.linalg.inv(orig.affine)
-    anchors = np.array([[0, 0, 0], [128, 128, 75], [255, 255, 149]])
+    shape = np.array(source.shape[:3])
+    anchors = np.array([[0, 0, 0], shape // 2, shape - 1])
     scanner = apply_affine(source.affine, anchors)
     surface = apply_affine(surface_affine, apply_affine(np.linalg.inv(orig.affine), scanner))
     report = {

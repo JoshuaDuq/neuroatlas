@@ -321,7 +321,7 @@ def published(anatomy):
     )
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "bert", "aomic"])
+@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
 def test_each_published_anatomy_holds_exactly_its_declared_layers(anatomy):
     from brain_model.validate import validate_layers
 
@@ -341,7 +341,7 @@ def test_each_published_anatomy_holds_exactly_its_declared_layers(anatomy):
 def test_a_published_layer_that_is_not_declared_is_refused(layer, field):
     from brain_model.validate import validate_layers
 
-    config, manifest, tissues = published("bert")
+    config, manifest, tissues = published("cdmd")
     config["anatomy"]["layers"] = [x for x in config["anatomy"]["layers"] if x != layer]
     with pytest.raises(ValueError, match=field):
         validate_layers(config, manifest, tissues)
@@ -350,28 +350,27 @@ def test_a_published_layer_that_is_not_declared_is_refused(layer, field):
 def test_a_declared_layer_that_is_not_published_is_refused():
     from brain_model.validate import validate_layers
 
-    config, manifest, tissues = published("bert")
+    config, manifest, tissues = published("cdmd")
     manifest["supplemental_layers"] = []
     with pytest.raises(ValueError, match="supplemental_layers"):
         validate_layers(config, manifest, tissues)
-    config, manifest, tissues = published("bert")
+    config, manifest, tissues = published("cdmd")
     del tissues["white_matter"]
     with pytest.raises(ValueError, match="white_matter"):
         validate_layers(config, manifest, tissues)
 
 
-@pytest.mark.parametrize("anatomy", ["bert", "aomic"])
-def test_every_published_file_is_one_the_metadata_names(anatomy):
+def test_every_published_file_is_one_the_metadata_names():
     from brain_model.validate import validate_published_files
 
-    config, manifest, _ = published(anatomy)
+    config, manifest, _ = published("cdmd")
     assert "spinal-cord.glb" in validate_published_files(config, manifest)
 
 
 def test_a_file_no_metadata_names_is_refused(tmp_path):
     from brain_model.validate import validate_published_files
 
-    config, manifest, _ = published("bert")
+    config, manifest, _ = published("cdmd")
     for path in config["output_directory"].iterdir():
         (tmp_path / path.name).symlink_to(path)
     (tmp_path / "stale.glb").write_bytes(b"")

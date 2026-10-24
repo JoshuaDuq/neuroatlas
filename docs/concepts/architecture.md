@@ -19,7 +19,7 @@ Each anatomy publishes `public/models/<anatomy>/`:
 | `cortex-destrieux.glb`, `cortex-hcp-mmp.glb` | Cortical parcels of each atlas |
 | `learning.glb`, `structures.glb`, `nextbrain.glb` | The three internal-anatomy levels |
 | `tissue-envelopes.glb` | Native pial and white surfaces, for exposed white matter, the glass brain and cuts |
-| `spinal-cord.glb` | Z-Anatomy reference cord (`bert`, `aomic`) |
+| `spinal-cord.glb` | Z-Anatomy reference cord (`cdmd`) |
 | `tissues-*.volume`, `white-matter.volume` | Gzipped categorical label grids for cut faces |
 | `mri.volume`, `aseg.volume` | T1 intensities and segmentation for relief and linked MRI |
 | `manifest.json`, `volumes.json` | Regions, colours, provenance, limitations; volume shapes and affines |

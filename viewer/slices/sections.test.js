@@ -233,7 +233,7 @@ test('a highlight reaches the tissue that draws the cut faces', () => {
 test('the oblique range is the projected bounds, cut back to where the crosshair stays legal', async () => {
   const { sections, model } = fixture();
   model.manifest = JSON.parse(
-    await readFile(new URL('../../public/models/bert/manifest.json', import.meta.url), 'utf8'),
+    await readFile(new URL('../../public/models/cdmd/manifest.json', import.meta.url), 'utf8'),
   );
   model.state.spinalCordVisible = true;
   await sections.setMode('oblique');

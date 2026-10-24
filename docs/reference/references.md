@@ -33,8 +33,14 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 
 ### Reference datasets and tools
 
-- **Amsterdam Open MRI Collection (AOMIC-PIOP1).**
-  Snoek, L., van der Miesen, M. M., Beemsterboer, T., van der Leij, A., Eigenhuis, A., & Scholte, H. S. (2021). The Amsterdam Open MRI Collection, a set of multimodal MRI datasets for individual difference analyses. *Scientific Data*, 8(1), 85. [doi:10.1038/s41597-021-00870-6](https://doi.org/10.1038/s41597-021-00870-6). PMID 33741990. OpenNeuro dataset [ds002785](https://openneuro.org/datasets/ds002785).
+- **MGH Connectome Diffusion Microstructure Dataset (CDMD).**
+  Tian, Q., Fan, Q., Witzel, T., Polackal, M. N., Ohringer, N. A., Ngamsombat, C., Russo, A. W., Machado, N., Brewer, K., Wang, F., Setsompop, K., Polimeni, J. R., Keil, B., Wald, L. L., Rosen, B. R., Klawiter, E. C., Nummenmaa, A., & Huang, S. Y. (2022). Comprehensive diffusion MRI dataset for in vivo human brain microstructure mapping using 300 mT/m gradients. *Scientific Data*, 9(1), 7. [doi:10.1038/s41597-021-01092-6](https://doi.org/10.1038/s41597-021-01092-6). PMID 35042861. Figshare collection [10.6084/m9.figshare.c.5315474.v1](https://doi.org/10.6084/m9.figshare.c.5315474.v1).
+- **DIPY.**
+  Garyfallidis, E., Brett, M., Amirbekian, B., Rokem, A., van der Walt, S., Descoteaux, M., Nimmo-Smith, I., & Dipy Contributors (2014). Dipy, a library for the analysis of diffusion MRI data. *Frontiers in Neuroinformatics*, 8, 8. [doi:10.3389/fninf.2014.00008](https://doi.org/10.3389/fninf.2014.00008). PMID 24600385. CDMD's tracts are fitted, tracked and recognised with DIPY 1.12.1.
+- **RecoBundles.**
+  Garyfallidis, E., Côté, M.-A., Rheault, F., Sidhu, J., Hau, J., Petit, L., Fortin, D., Cunanne, S., & Descoteaux, M. (2018). Recognition of white matter bundles using local and global streamline-based registration and clustering. *NeuroImage*, 170, 283–295. [doi:10.1016/j.neuroimage.2017.07.015](https://doi.org/10.1016/j.neuroimage.2017.07.015). PMID 28712994.
+- **HCP842 bundle atlas.**
+  Yeh, F.-C., Panesar, S., Fernandes, D., Meola, A., Yoshino, M., Fernandez-Miranda, J. C., Vettel, J. M., & Verstynen, T. (2018). Population-averaged atlas of the macroscale human structural connectome and its network topology. *NeuroImage*, 178, 57–68. [doi:10.1016/j.neuroimage.2018.05.027](https://doi.org/10.1016/j.neuroimage.2018.05.027). PMID 29758339. Its RecoBundles curation ([figshare 7375883](https://doi.org/10.6084/m9.figshare.7375883.v2), CC BY 4.0) serves only as the recognition model; none of its streamlines are published.
 - **Z-Anatomy Open Anatomy Project.**
   The Z-Anatomy open anatomical scene, licensed under CC BY-SA 4.0, incorporating BodyParts3D (CC BY-SA 2.1 JP). [z-anatomy.com](https://www.z-anatomy.com/)
 
@@ -42,8 +48,8 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 
 | Files | Source | Licence |
 | :--- | :--- | :--- |
-| `bert`, `fsaverage` assets | FreeSurfer distribution | FreeSurfer Software License |
-| `aomic` assets | OpenNeuro ds002785 | CC0 1.0 |
+| `fsaverage` assets (built locally, not published) | FreeSurfer distribution | FreeSurfer Software License |
+| `cdmd` assets and tracts | MGH CDMD, figshare | CC0 1.0 |
 | `snail` assets and tract reference | SNAIL, via DIPY | CC0 1.0 |
 | HCP-MMP-derived files | Human Connectome Project | WU-Minn HCP Open Access Data Use Terms |
 | `cab-np.json` | CAB-NP (Rutgers, Yale) | Non-commercial |
@@ -54,7 +60,7 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 
 The MIT licence covers code only, not data.
 
-### FreeSurfer Software License (`bert`, `fsaverage`)
+### FreeSurfer Software License (`fsaverage`)
 
 These are modified versions of FreeSurfer data: converted, resampled and re-encoded, not the original files. They are distributed under Part B of the FreeSurfer Software License Agreement (Version 1.0, February 2011), reproduced as it requires:
 
@@ -66,9 +72,9 @@ These are modified versions of FreeSurfer data: converted, resampled and re-enco
 
 The complete agreement is in [`public/models/licenses/FreeSurfer.html`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/FreeSurfer.html).
 
-### CC0 1.0 (`aomic`, SNAIL)
+### CC0 1.0 (SNAIL, CDMD)
 
-Both are dedicated to the public domain. The SNAIL T1 and FA NIfTI files in `public/diffusion/snail-subject-1/` are kept byte for byte, and all 27 TRK bundles are gzipped without geometric processing. The SNAIL reconstruction is derived from that T1 alone.
+Both are dedicated to the public domain. The SNAIL T1 and FA NIfTI files in `public/diffusion/snail-subject-1/` are kept byte for byte, and all 27 TRK bundles are gzipped without geometric processing. The SNAIL reconstruction is derived from that T1 alone. CDMD's T1 in `public/diffusion/cdmd-sub-013/` is the file its reconstruction imported, byte for byte; its 17 TRK bundles were tracked here from its own diffusion data and resampled to 0.5 mm steps, as `provenance.json` records.
 
 ### NextBrain
 
