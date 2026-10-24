@@ -10,6 +10,7 @@ data/cache/
 deliverables/*.blend
 deliverables/*.png
 .agents/skills/impeccable/scripts/bin/
+.impeccable/live/
 # CDMD sub_013's recon-all tree stays in data/cache/freesurfer-subjects; its
 # completion marker and log stay local too.
 data/cdmd/scripts/*
