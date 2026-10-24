@@ -6,12 +6,6 @@
       "display_name": "MGH CDMD \u201csub_013\u201d",
       "label": "MGH CDMD single-subject reconstruction",
       "individual": true
-    },
-    {
-      "id": "snail",
-      "display_name": "SNAIL \u201csubj_1\u201d",
-      "label": "SNAIL subject 1 single-subject reconstruction",
-      "individual": true
     }
   ]
 }

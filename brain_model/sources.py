@@ -11,7 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 HEMISPHERES = {"lh": "left", "rh": "right"}
 
 # What an anatomy may publish beside its cortex, aseg structures and volumes.
-LAYERS = ("networks", "nextbrain", "white_matter", "spinal_cord")
+LAYERS = ("networks", "nextbrain", "cerebellar_lobules", "white_matter", "spinal_cord",
+          "neurosynth_terms")
 
 
 def resolve_config(document):

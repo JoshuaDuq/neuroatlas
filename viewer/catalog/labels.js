@@ -43,6 +43,15 @@ function alphabeticalBucket(code) {
  * measured on this surface rather than asserted. Destrieux keeps its lobes:
  * those name where a fold is, which is what that atlas is for.
  */
+/** Systems outside the cerebral hemispheres: a see-through cerebral cortex reveals nothing of them. */
+const OUTSIDE_CEREBRUM = new Set(['Cerebellum', 'Brainstem']);
+
+/**
+ * Whether the cerebral cortex hides a region: a structure of the forebrain's deep systems (basal
+ * ganglia, thalamus, limbic structures, fornix, corpus callosum), not one of the cerebellum or brainstem.
+ */
+export const beneathCortex = region => region.kind === 'structure' && !OUTSIDE_CEREBRUM.has(labelOf(region, 'en').group);
+
 export function labelOf(region, lang = 'en') {
   const isFr = lang === 'fr';
   if (region.kind === 'non-region') return isFr ? UNLABELLED.fr : UNLABELLED.en;

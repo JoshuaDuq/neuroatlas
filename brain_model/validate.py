@@ -19,13 +19,14 @@ from .gltf.encode import (
     published_field_ranges,
 )
 from .gltf.export import compact_region
-from .labels import nextbrain, white_matter
+from .labels import cerebellum, nextbrain, white_matter
 from .labels.volumes import conformed_grid
 from .layers import (
     cab_np,
     functional_regions,
     networks,
     neuropsych_domains,
+    neurosynth_terms,
     spinal_cord,
 )
 from .sources import read_color_table, read_config, sha256, verify_sources, write_json
@@ -41,7 +42,7 @@ from .surfaces.geometry import (
 from .surfaces.ribbons import validate_ribbon_labels
 from .surfaces.shading import cortical_concavity
 from .surfaces.solids import validate_solid_envelopes
-from .validate_segmentation import segmentation_agreement, surface_holes
+from .validate_segmentation import cerebellar_agreement, segmentation_agreement, surface_holes
 from .validate_transforms import validate_transforms
 from .validate_volumes import validate_tissue_volumes, validate_volumes
 
@@ -749,14 +750,20 @@ def validate_layers(config, manifest, tissues):
         "cut_atlases": cut + fine,
         "tissue_atlases": sorted(cut + fine),
         "white_matter": "white_matter" in declared,
+        "cerebellar_lobules": "cerebellar_lobules" in declared,
         "supplemental_layers": [spinal_cord.ATLAS_ID] if "spinal_cord" in declared else [],
+        "neurosynth_terms": neurosynth_terms.metadata() if "neurosynth_terms" in declared else None,
     }
     published = {
         "networks": manifest["networks"],
         "cut_atlases": [atlas["id"] for atlas in manifest["cut_atlases"]],
         "tissue_atlases": sorted(tissues["atlases"]),
         "white_matter": "white_matter" in tissues,
+        "cerebellar_lobules": any(
+            region.get("source_atlas") == cerebellum.ATLAS_ID for region in manifest["regions"]
+        ),
         "supplemental_layers": [layer["id"] for layer in manifest["supplemental_layers"]],
+        "neurosynth_terms": manifest["neurosynth_terms"],
     }
     differ = [key for key in expected if published[key] != expected[key]]
     if differ:
@@ -839,6 +846,8 @@ def main():
         "cab_np": cab_np.validate(config, manifest),
         "functional_regions": functional_regions.validate(config, manifest),
         "neuropsych_domains": neuropsych_domains.validate(config, manifest),
+        **({"neurosynth_terms": neurosynth_terms.validate(config, manifest)}
+           if neurosynth_terms.is_declared(config) else {}),
         **(
             {"nextbrain_structures": validate_nextbrain_structures(config),
              "nextbrain_cut_labels": nextbrain.validate_volume(
@@ -861,6 +870,11 @@ def main():
         **(
             {"segmentation_agreement": segmentation_agreement(config)}
             if nextbrain.is_declared(config)
+            else {}
+        ),
+        **(
+            {"cerebellar_agreement": cerebellar_agreement(config)}
+            if cerebellum.is_declared(config)
             else {}
         ),
         **(

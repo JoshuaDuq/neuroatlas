@@ -28,16 +28,38 @@ function requireRecord(index, id, context) {
   return record;
 }
 
+/**
+ * The one authored form of a step this anatomy publishes. A step may name
+ * alternatives for anatomies divided differently (the cerebellar cortex whole
+ * or as lobules); exactly one form's regions must all exist here.
+ */
+function resolveStep(step, regions) {
+  const { alternatives = [], ...base } = step;
+  if (!alternatives.length) return base;
+  const forms = [base, ...alternatives.map(alternative => ({ ...base, ...alternative }))];
+  const present = forms.filter(form =>
+    [form.region, ...(form.covering_regions ?? [])].every(id => regions.has(id)));
+  if (present.length !== 1) {
+    throw new Error(`${present.length} forms of landmark ${step.id} resolve in this anatomy: ${step.region}`);
+  }
+  return present[0];
+}
+
 function validateStep(step, regions) {
   const region = requireRecord(regions, step.region, 'region');
   if (region.source_name !== step.source_name) throw new Error(`Source mismatch: ${step.region}`);
   if (!['cortex', 'structure'].includes(region.kind)) throw new Error(`Unsupported landmark: ${step.region}`);
-  if (Object.hasOwn(step, 'covering_region')) {
-    const covering = requireRecord(regions, step.covering_region, 'covering region');
-    if (region.kind !== 'structure' || covering.kind !== 'structure' ||
-        covering.id === region.id || covering.atlas !== region.atlas ||
-        covering.hemisphere !== region.hemisphere) {
-      throw new Error(`Invalid covering region: ${step.covering_region}`);
+  if (Object.hasOwn(step, 'covering_regions')) {
+    if (!Array.isArray(step.covering_regions) || !step.covering_regions.length) {
+      throw new Error(`Empty covering regions: ${step.id}`);
+    }
+    for (const id of step.covering_regions) {
+      const covering = requireRecord(regions, id, 'covering region');
+      if (region.kind !== 'structure' || covering.kind !== 'structure' ||
+          covering.id === region.id || covering.atlas !== region.atlas ||
+          covering.hemisphere !== region.hemisphere) {
+        throw new Error(`Invalid covering region: ${id}`);
+      }
     }
   }
   for (const key of ['name', 'role', 'explanation', 'mapping']) requireTranslation(step[key], `${step.id}.${key}`);
@@ -73,9 +95,16 @@ export function createCircuitCatalog(data, manifest, deficitIds) {
     if (!deficits.has(circuit.deficit)) throw new Error(`Unknown clinical target: ${circuit.deficit}`);
     if (!Array.isArray(circuit.references) || !circuit.references.length) throw new Error(`Missing references: ${circuit.id}`);
     for (const id of circuit.references) requireRecord(references, id, 'reference');
-    const landmarks = indexRecords(circuit.steps, `${circuit.id} landmark`);
+    const resolved = circuit.steps.map(step => resolveStep(step, regions));
+    // What other landmarks cover is uncovered again on arriving at this one.
+    const covered = new Set(resolved.flatMap(step => step.covering_regions ?? []));
+    const landmarks = indexRecords(resolved.map(step => ({
+      ...step,
+      restores: [...covered].filter(id => !(step.covering_regions ?? []).includes(id)),
+    })), `${circuit.id} landmark`);
     for (const step of landmarks.values()) validateStep(step, regions);
     steps.set(circuit.id, landmarks);
+    circuits.set(circuit.id, { ...circuit, steps: [...landmarks.values()] });
   }
   return {
     all: [...circuits.values()],

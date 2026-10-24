@@ -81,7 +81,7 @@
   color: var(--text-secondary);
   text-align: left;
 }
-/* The chevron centres on x=22 and the mode's name starts on the indent column. */
+/* Breadcrumbs share the panel's content column. */
 .detail-back { padding-left: var(--panel-inset); }
 .detail-back .chevron { --chevron-turn: 180deg; }
 .detail-crumb {
@@ -125,8 +125,8 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5) var(--panel-inset) var(--space-3);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--panel-inset) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
@@ -135,7 +135,7 @@
 /* At a large reader text size the field grows around its words rather than spilling over the list. */
 .rail-head input[type="search"] { height: auto; min-height: max(40px, var(--control-height)); }
 .panel-heading {
-  padding: var(--space-4) var(--space-4) 0;
+  padding: var(--space-4) var(--panel-inset) 0;
   font-size: var(--text-title);
   font-weight: 600;
   line-height: var(--lh-title);
@@ -163,11 +163,13 @@
 #inspector .tab-group { padding-bottom: var(--space-4); background: var(--surface-base); }
 #inspector-title { display: none; }
 /* The one notice, under the mode tabs in both shells: tonal ground, primary ink, no colour of its own. */
+/* Its one action sits under the words it answers, so a long label never narrows them. */
 .notice {
-  display: flex;
+  display: grid;
   flex: none;
-  align-items: flex-start;
-  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: var(--space-2);
   padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-tonal);
@@ -182,8 +184,19 @@
   font-size: var(--text-ui);
   line-height: var(--lh-ui);
 }
-.notice-reload { flex: none; align-self: center; }
-.notice-dismiss { flex: none; }
+.notice-text { grid-column: 1; grid-row: 1; }
+/* A tonal command on the tonal notice would have no ground, so its one action takes the raised surface. */
+.notice-action {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  margin-bottom: var(--space-2);
+  background: var(--surface-raised);
+}
+@media (hover: hover) and (pointer: fine) {
+  .notice-action:hover { background: var(--surface-tonal-hover); }
+}
+.notice-dismiss { grid-column: 2; grid-row: 1; }
 
 
 /* Stage ------------------------------------------------------------------- */
@@ -206,14 +219,9 @@
 }
 
 @media (min-width: 801px) and (min-height: 481px), (min-width: 801px) and (orientation: portrait) {
-  #app:is([data-status="loading"], [data-status="error"]) #workspace-panel::before {
-    content: "";
-    flex: none;
-    height: calc(var(--tab-height) + 1px);
-    border-bottom: 1px solid var(--border-subtle);
-  }
+  #app:is([data-status="loading"], [data-status="error"]) #workspace-panel { padding-top: 0; }
 }
 
 @media (min-width: 801px) and (max-width: 1000px) {
-  :root { --rail-width: 340px; --panel-inset: var(--space-4); }
+  :root { --rail-width: 320px; --panel-inset: var(--space-5); }
 }

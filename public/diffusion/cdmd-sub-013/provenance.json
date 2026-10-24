@@ -1,10 +1,10 @@
 {
-  "dataset": "MGH CDMD sub_013, tracked for NeuroAtlas",
+  "dataset": "MGH CDMD sub_013, tracked for Planum",
   "subject": "sub_013",
   "source": "https://doi.org/10.6084/m9.figshare.c.5315474.v1",
   "license": "CC0-1.0",
   "tracking": {
-    "procedure": "scripts/cdmd_pilot.py: MSMT-CSD (DIPY), particle filtering tractography, RecoBundles against DIPY's HCP842 80-bundle atlas",
+    "procedure": "scripts/cdmd_pilot.py: MSMT-CSD (DIPY), particle filtering tractography, RecoBundles against DIPY's HCP842 80-bundle atlas; every file whose method is RecoBundles",
     "tractogram": {
       "seeds": 398808,
       "streamlines": 363819,
@@ -53,7 +53,113 @@
       "CC_ForcepsMinor": 4133
     }
   },
-  "processing": "Every recognised streamline kept and resampled to 0.5 mm arc-length steps by linear interpolation; the map is the reconstruction's pinned input T1, unchanged.",
+  "tractseg": {
+    "procedure": "scripts/tractseg_cdmd.py",
+    "selected_volumes": {
+      "volumes": 242,
+      "b_values": [
+        0,
+        800,
+        1500,
+        2400,
+        3450
+      ],
+      "diffusion_time_ms": 19
+    },
+    "peaks": "MRtrix3 3.0.8: dwi2response dhollander, dwi2fod msmt_csd, sh2peaks (TractSeg csd_msmt)",
+    "mni_alignment": {
+      "method": "mrregister -type rigid of tensor FA (b = 0, 800, 1500) to TractSeg's MNI_FA_template; FODs moved with mrtransform -reorient_fod yes",
+      "template_sha256": "3a047037655723292724335508967f671d5ba9a92acfa17af51274147f2924bd",
+      "mni_to_dwi_world": [
+        [
+          0.996700760724116,
+          0.0717799514633476,
+          0.0378844577615759,
+          3.21087974838954
+        ],
+        [
+          -0.0582186958912849,
+          0.95749773091785,
+          -0.282504298614884,
+          7.85914023768077
+        ],
+        [
+          -0.0565524271865255,
+          0.27936666561186,
+          0.958517651962771,
+          12.1250991407071
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mean_diffusion_fa_under_template_fa_above_0.6": 0.5052548998256562
+    },
+    "tractseg": {
+      "version": "2.10",
+      "outputs": [
+        "tract_segmentation",
+        "endings_segmentation",
+        "TOM"
+      ],
+      "tracking": "TractSeg probabilistic TOM tracking, 2,000 streamlines per bundle",
+      "numpy_seed": 13,
+      "weights_sha256": {
+        "pretrained_weights_tract_segmentation_v3.npz": "2723d8d358eade8a6f08abada6ca05895f36cf499db1937449f9eb7b8cfef8d9",
+        "pretrained_weights_endings_segmentation_v4.npz": "df91b21201c2c7d326ef350103ecc0f695b5c518869033fb4e1e76c1310c9d8b",
+        "pretrained_weights_peak_regression_part1_v2.npz": "73ab1d889b4c07c5972f00b44fd5013f9cfd1f25bf251e777fc973f68b0aab34",
+        "pretrained_weights_peak_regression_part2_v2.npz": "ce4a486d11a57a638028de26cd2e5a5468623693d704ef38465059ea76995789",
+        "pretrained_weights_peak_regression_part3_v2.npz": "1841a9abdd3d40c34277860c91eb577b7cc289f3fc7f2fdef932228cbc4a673e",
+        "pretrained_weights_peak_regression_part4_v2.npz": "f19a48c8ba4bd1f4ee280ee28aeebb191328134c5ccd38d69028e8b863e5ff4d"
+      },
+      "bundles": {
+        "SLF_I_left": "slf1.left",
+        "SLF_I_right": "slf1.right",
+        "SLF_II_left": "slf2.left",
+        "SLF_II_right": "slf2.right",
+        "SLF_III_left": "slf3.left",
+        "SLF_III_right": "slf3.right",
+        "CC_1": "callosum_1",
+        "CC_2": "callosum_2",
+        "CC_3": "callosum_3",
+        "CC_4": "callosum_4",
+        "CC_5": "callosum_5",
+        "CC_6": "callosum_6",
+        "CC_7": "callosum_7"
+      },
+      "streamlines": {
+        "slf1.left": 2000,
+        "slf1.right": 2000,
+        "slf2.left": 2000,
+        "slf2.right": 2000,
+        "slf3.left": 2000,
+        "slf3.right": 2000,
+        "callosum_1": 2000,
+        "callosum_2": 2000,
+        "callosum_3": 2000,
+        "callosum_4": 2000,
+        "callosum_5": 2000,
+        "callosum_6": 2000,
+        "callosum_7": 2000
+      }
+    },
+    "mrtrix": {
+      "url": "https://github.com/MRtrix3/mrtrix3/releases/download/3.0.8/mrtrix3-macos-3.0.8.tar.gz",
+      "sha256": "91fb80ffc9f26136d094e4a5310d051f52db9cb5faa35ad3f3e6156598090c39"
+    },
+    "fa": {
+      "tensor_shells": "0,800,1500",
+      "resampling": "trilinear onto the T1 grid through dwi_to_t1_world"
+    },
+    "runtime_workarounds": {
+      "single_openmp": "torch, dipy and scikit-learn each bundle libomp 5.0; dipy's and scikit-learn's are symlinks to torch's, so one runtime loads. KMP_DUPLICATE_LIB_OK is not used.",
+      "fork_start_method": "TractSeg's Tracking passes worker state through module globals, which only reach workers under fork; it runs through a wrapper that selects it."
+    }
+  },
+  "processing": "Every streamline kept and resampled to 0.5 mm arc-length steps by linear interpolation; the T1 is the reconstruction's pinned input, unchanged, and FA is the tensor FA of the subject's own diffusion scan resampled onto it.",
   "spatial_validation": "Map shape and affine agree with every TRK header at absolute tolerance 1e-5.",
   "geometry_validation": "NiBabel RAS+ millimetre samples and float64 polyline lengths provide independent checks of the browser's TRK decoder.",
   "files": [
@@ -93,7 +199,43 @@
       ]
     },
     {
+      "file": "fa.nii.gz",
+      "source_sha256": "88637ac7e59a290fe6d8640fe69b5a521618bfbc62b09762a67f0700d261a0c1",
+      "shape": [
+        176,
+        220,
+        220
+      ],
+      "affine": [
+        [
+          -1.0,
+          0.0,
+          0.0,
+          90.53730773925781
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.37625885009766
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -124.06636810302734
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
       "file": "af.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "d22640a146e929f816532604f31cb9bdf34cbcf4d809a06d1789d4db30d9f79c",
       "resampled_sha256": "5576e06688184c270a8e6d68ff3aac94a851b0efcc10c1bfb28574e15bbfdd03",
       "published_sha256": "927bf52c1a0568fb9ad20c93da1d496636f899dc8e2f32f2c7d63c955eeafd98",
@@ -170,6 +312,7 @@
     },
     {
       "file": "af.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "2fadbfa4a6b2d43cc81610d265840316b5d34da60bce28c9473e875c8c4d7a4d",
       "resampled_sha256": "9771d6b50bdbf3e08269dfc0ded9c339a798ab5dd049344205e131302d9e4893",
       "published_sha256": "c654789486895c002ef4ea4d97d6c6225f51cf75b75454f8ee6cbe3e9ada7f48",
@@ -246,6 +389,7 @@
     },
     {
       "file": "cst.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "d8ec8130094af52c3ed7a2632851efe196ec14899d16cefc1e1c4999db894632",
       "resampled_sha256": "cc1983ce81e57208423f6f7371116f8e2a1b487850efecc72afb3117b7800ce9",
       "published_sha256": "b4f21956a62d08bf526569a7804beb4d398c65743556e30aa25398299ad8fe4c",
@@ -322,6 +466,7 @@
     },
     {
       "file": "cst.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "222418877884268286a445502fab71716bdda201539e619a27cf8d85bf7aa089",
       "resampled_sha256": "62846713d6af82a5333ee9246854e626e61c27c0a4d42f2584e09c60fecbf644",
       "published_sha256": "6fa36742b9ac359edfdf45401d8307a4f57f69ee072a4bc83a54a3d307879a6a",
@@ -398,6 +543,7 @@
     },
     {
       "file": "cg.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "d2fe32df48377601715cfebf216baeb3284d4b87dea56edd39efe378980166e0",
       "resampled_sha256": "648c07b5514fc5937ab9a9ea94888820f9811163ab8f09c8c14185b07ea5d507",
       "published_sha256": "ffb707985fa5557de3011ffea3689debb910cd3c083ac526e5f66a906d32d6b0",
@@ -474,6 +620,7 @@
     },
     {
       "file": "cg.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "90ee7ec5c6a6104b51b649158cab2ee40bd79bfd3c1031915d6acd9e19ae72fc",
       "resampled_sha256": "7ae100e0b70a5a0097bf670b218f0562b899da5a73b58c29926acf53431d9441",
       "published_sha256": "2998c8540bf7b9ee55ab0a3ca3fb6cbb6ac9d0a20b9b69b62f8fa8844aafd66d",
@@ -550,6 +697,7 @@
     },
     {
       "file": "uf.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "519a086387f43b9b4cb44b39677e8b44b5b88e564871b52a3a3bcd7615ea011f",
       "resampled_sha256": "bca2473f40e734c2e9ce023b93d789d65f657e60e677f91558616c48ac58a6d8",
       "published_sha256": "95011f0057780b81a5b2c2a97232a4616c69f625bec94f966435aad9d4d50147",
@@ -626,6 +774,7 @@
     },
     {
       "file": "uf.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "690115c4d5c13ebbae163d2b2e7e4b01746672cae164234a129d033471078227",
       "resampled_sha256": "2c443f83496f1badb0e2d17dc8c88001d016a0185f3751081955de35cdcfe880",
       "published_sha256": "ed3567e9ddf4f8ad3fd839352211940583d9461a551f070c1895d18064b08d35",
@@ -702,6 +851,7 @@
     },
     {
       "file": "ifof.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "49bd59a7862b23bc6f1677def7b9e66003cf2ec567c640cc68b24127f9544cd6",
       "resampled_sha256": "1d6ac8e9a1a2356d16427acf3a587d62b46ddfa3957fc12f68ffc438fa5b90b9",
       "published_sha256": "2cbdb771beba9b8f8d7a574a70bea36c4c1ba99ffeb13b24a24560c5fa5fb79c",
@@ -778,6 +928,7 @@
     },
     {
       "file": "ifof.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "88788c2c1c59f92260fe9917a9f656f8c5d98dbb0b24c645a8c8b718dc5d2338",
       "resampled_sha256": "737404eeca81365f442027834d7e5c547efec24131c1c43e148ac1e4e9cb9791",
       "published_sha256": "48afd675fd18e098ac47b5fbc852f14ae4b94c52e08f8c68f1df224e9930a22d",
@@ -854,6 +1005,7 @@
     },
     {
       "file": "ilf.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "189ea4009aa788ac0d3591bdb9b44852f30ae21e818884b4ffea723d5f8a7d60",
       "resampled_sha256": "f72c7ccb55abb6c9a362f92142dd7249b4e35784a56f7d828e9e7b6237ef4dab",
       "published_sha256": "2f901146268e62c59267bac07b0b7bf8d78442e72c6f886f54c84bc52ac4fd9e",
@@ -930,6 +1082,7 @@
     },
     {
       "file": "ilf.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "00cbed09a4c45ac7e48e8d2b8012d69f5beb11686cd66aec85ba3bb9d5b1a410",
       "resampled_sha256": "264a43370d27184ea12c62790dbc51a9fbc2f48965c3ad5c59a93a43d9b96c20",
       "published_sha256": "70150c8b227b4cb410abfaf32375ad9298d1c091ffaac226ff8093803755ac30",
@@ -1006,6 +1159,7 @@
     },
     {
       "file": "mdlf.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "efe30c6b144caecc633da8b6b18f4739901dc8f13ac15b45fe24c89f62e40d7d",
       "resampled_sha256": "388255dc758608e6f8500e94a9c844da3f9e42e7cfa5dce99ce7d3f1da7bf665",
       "published_sha256": "e85df4b86fcf68b264feb136ee16eeba0cb4baaebdc724de97426160fe13ec49",
@@ -1082,6 +1236,7 @@
     },
     {
       "file": "mdlf.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "073baec6a76c41dd497113453d2ca92a8cdc1223035417c4c729f527d0680098",
       "resampled_sha256": "70ba4e70703837df3e4705b629f55b7ee778e2bae94d190517d853aeaffca869",
       "published_sha256": "d3340bd73cdd7196a7df77064eebc27d1a8bfc237e84b1945338714b2be5c865",
@@ -1158,6 +1313,7 @@
     },
     {
       "file": "slf.left.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "41e24b6f2a3ec490be516f59c0619b8bd3970e76fdcec6d66e70960a130bfd04",
       "resampled_sha256": "2a30b652984d75d4b527cb361e65ba900035066a793332109cb8368a40103ded",
       "published_sha256": "92ab987d342798151e1b753e5f4878181317d70cf7bcff8e6f800c322018e608",
@@ -1234,6 +1390,7 @@
     },
     {
       "file": "slf.right.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "e77ce9b9d36a6ad3191a55bba1b1ba4f9b3dc3ca5278a2b1799914c25f01175d",
       "resampled_sha256": "45a5bf48e58f9470582ea47bf8a66cd97bc53cbc13cba03d4089fb658b05fd57",
       "published_sha256": "9fa9696cc2b1cd312e3f0f2edc23d7cfa3ea8b92c4554e6bdbbf95abe8698b55",
@@ -1310,6 +1467,7 @@
     },
     {
       "file": "cc.trk.gz",
+      "method": "RecoBundles",
       "source_sha256": "e1cf12057755df875804fea565d01269206b3ac78304ba1483a3862d9a811970",
       "resampled_sha256": "58ccc30fd09b2b0a5eb2824c8c5b4c4a6dccdd7cfa1124a4dd32e7caffdfc815",
       "published_sha256": "491fc2c8f12dabde00856e1f543fc40e49ab7b1c520f72a3a63186c53d7b69c9",
@@ -1381,6 +1539,1007 @@
           "mean_mm": 207.10749147424667,
           "min_mm": 200.23183905193642,
           "max_mm": 220.03624741082353
+        }
+      ]
+    },
+    {
+      "file": "slf1.left.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "3a84c7040cbf907fd6f025a598c8e3fe699b18544a6e7c825bd6c758ef189b5f",
+      "resampled_sha256": "a1fc08e785c7aa368291d48830a893eb62581202240b0dc9dd0416e8436a78d4",
+      "published_sha256": "b26485d8a307ef6e0b1b64a725759e1a23dd8a4ccddebf69d66c46d14b07c7a8",
+      "source_bytes": 471840,
+      "published_bytes": 2749496,
+      "source_points": 38570,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998214840888977,
+          "max": 0.5033339262008667
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.040441177220281406,
+          "max": 0.071691081711822
+        },
+        "length_change_mm_max": 0.41817198544239886,
+        "relative_length_change": {
+          "median": 0.0006354915939623899,
+          "max": 0.005095280712970139
+        }
+      },
+      "streamlines": 2000,
+      "points": 262288,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            0.11719512939453125,
+            -13.530845642089844,
+            57.23369598388672
+          ]
+        },
+        {
+          "index": 131144,
+          "position": [
+            -21.982818603515625,
+            -25.16014862060547,
+            34.759239196777344
+          ]
+        },
+        {
+          "index": 262287,
+          "position": [
+            -8.327156066894531,
+            3.3380355834960938,
+            55.710533142089844
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 65.02850244217359,
+          "min_mm": 34.64351670841194,
+          "max_mm": 93.6438617236708
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf1.right.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "994b8926f19721aa98d725163a9d46b206150b230d0840e8d33404532fa40819",
+      "resampled_sha256": "953cd2174dbd25ac11c8788b3b876f2350a31bee35fff38856b5435e1f89fc42",
+      "published_sha256": "ebed6ec856e11790829734d07e7cfe32dccb47c5b95ee2c46a19eabed77551b9",
+      "source_bytes": 500388,
+      "published_bytes": 2876243,
+      "source_points": 40949,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49981963634490967,
+          "max": 0.5031339526176453
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.04427043291202319,
+          "max": 0.07578182127998137
+        },
+        "length_change_mm_max": 0.4018380972058395,
+        "relative_length_change": {
+          "median": 0.0007052828007575855,
+          "max": 0.010115111337038617
+        }
+      },
+      "streamlines": 2000,
+      "points": 275107,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            34.247169494628906,
+            3.9280853271484375,
+            38.208656311035156
+          ]
+        },
+        {
+          "index": 137553,
+          "position": [
+            25.437881469726562,
+            -49.78445053100586,
+            46.33281707763672
+          ]
+        },
+        {
+          "index": 275106,
+          "position": [
+            20.681243896484375,
+            -63.04738998413086,
+            23.21106719970703
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 68.22742768322532,
+          "min_mm": 34.27426211748712,
+          "max_mm": 113.94889701337439
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 16,
+          "mean_mm": 106.1379919691832,
+          "min_mm": 100.47973151866486,
+          "max_mm": 113.94889701337439
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf2.left.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "e2867aecd30917e627a20d426e2f0edd567bfd437d87599826058598177ad3fa",
+      "resampled_sha256": "79a4d71e07eb310f0b5f6a2e05512f4bfd6671367fab60e90d96778922dd75e4",
+      "published_sha256": "961a20e1cb57bece0f8c26775091f0b554f65c0f0448803354a57e5fc555162e",
+      "source_bytes": 639624,
+      "published_bytes": 3741261,
+      "source_points": 52552,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998900592327118,
+          "max": 0.502302348613739
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.041317392471499875,
+          "max": 0.06962477205363506
+        },
+        "length_change_mm_max": 0.20510368741526008,
+        "relative_length_change": {
+          "median": 0.0006490521587210443,
+          "max": 0.0018424955859603707
+        }
+      },
+      "streamlines": 2000,
+      "points": 355482,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -34.90864562988281,
+            -51.76730728149414,
+            33.422950744628906
+          ]
+        },
+        {
+          "index": 177741,
+          "position": [
+            -23.36591339111328,
+            -17.405929565429688,
+            40.258399963378906
+          ]
+        },
+        {
+          "index": 355481,
+          "position": [
+            -27.28685760498047,
+            15.746360778808594,
+            53.58631134033203
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 88.31525566398332,
+          "min_mm": 46.17210693180509,
+          "max_mm": 133.16811362435385
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 447,
+          "mean_mm": 111.365427221371,
+          "min_mm": 100.0447889354061,
+          "max_mm": 133.16811362435385
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf2.right.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "d26137d3ecd404f072fc421437024b0c17ca7b0715443d3e34f3f7865116d726",
+      "resampled_sha256": "dfd24a42ae3ec68e4db44dec4f7831f955e48112e4cb93ad61b7991f9aedcc52",
+      "published_sha256": "2ddfef2f7da695e1b7917b7d8c61e12c25fb3b5e2df08234ba208034f753f717",
+      "source_bytes": 570192,
+      "published_bytes": 3400284,
+      "source_points": 46766,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998093843460083,
+          "max": 0.5023651123046875
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.042081853307648485,
+          "max": 0.08452941511458362
+        },
+        "length_change_mm_max": 0.17801401504559067,
+        "relative_length_change": {
+          "median": 0.0006359300687138391,
+          "max": 0.002041725197788652
+        }
+      },
+      "streamlines": 2000,
+      "points": 322702,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            31.756362915039062,
+            -43.265968322753906,
+            27.73535919189453
+          ]
+        },
+        {
+          "index": 161351,
+          "position": [
+            34.34874725341797,
+            -50.060672760009766,
+            5.723670959472656
+          ]
+        },
+        {
+          "index": 322701,
+          "position": [
+            39.095027923583984,
+            -0.3377838134765625,
+            50.12108612060547
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 80.11956726802845,
+          "min_mm": 47.196987857835275,
+          "max_mm": 117.85560804829859
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 74,
+          "mean_mm": 103.48444038491917,
+          "min_mm": 100.00713570120475,
+          "max_mm": 117.85560804829859
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf3.left.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "5c84c9e44964892fe39bf144060239d369dae219cfacae731185ece45af51769",
+      "resampled_sha256": "6b83c8a9bb71c63485a957c6e206727a78b7f392f404daebd99764d22ff7a9e4",
+      "published_sha256": "3497499fcb836fe0cffcd066c978f1d01c28e1d18b7f98f964eedc0d424431b8",
+      "source_bytes": 474624,
+      "published_bytes": 2781385,
+      "source_points": 38802,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4997222125530243,
+          "max": 0.503000020980835
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.03923210513833716,
+          "max": 0.09892778306972716
+        },
+        "length_change_mm_max": 0.45404679264134984,
+        "relative_length_change": {
+          "median": 0.000617900901130736,
+          "max": 0.006082478806768883
+        }
+      },
+      "streamlines": 2000,
+      "points": 268125,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -40.72038269042969,
+            15.387313842773438,
+            26.68212127685547
+          ]
+        },
+        {
+          "index": 134062,
+          "position": [
+            -33.93421936035156,
+            -27.63782501220703,
+            25.23676300048828
+          ]
+        },
+        {
+          "index": 268124,
+          "position": [
+            -43.02815246582031,
+            15.009231567382812,
+            32.270484924316406
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 66.48086231408072,
+          "min_mm": 34.41460211073477,
+          "max_mm": 98.7449547891219
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf3.right.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "16598980e7647309415270da54a10556c7a40bb84cee2e306b528b60f2a977c0",
+      "resampled_sha256": "960c80b25ef196a44d995b1ee18bbac2eb07842492e243c9ca1c289fa09f0523",
+      "published_sha256": "9f269833131c89171a0bbe02417071c12a9b347887894343c7c520238a209aaf",
+      "source_bytes": 494472,
+      "published_bytes": 2993215,
+      "source_points": 40456,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998357594013214,
+          "max": 0.5032941102981567
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.04017600888494527,
+          "max": 0.10168732709010449
+        },
+        "length_change_mm_max": 0.20137840380462535,
+        "relative_length_change": {
+          "median": 0.0005805605563388701,
+          "max": 0.0022677624401734675
+        }
+      },
+      "streamlines": 2000,
+      "points": 286734,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            44.784812927246094,
+            -36.95343780517578,
+            26.250953674316406
+          ]
+        },
+        {
+          "index": 143367,
+          "position": [
+            35.058773040771484,
+            -11.84130859375,
+            25.210044860839844
+          ]
+        },
+        {
+          "index": 286733,
+          "position": [
+            30.146644592285156,
+            27.07215118408203,
+            25.758628845214844
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 71.13973622733607,
+          "min_mm": 33.492916259205096,
+          "max_mm": 98.36966219471566
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_1.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "9a228673c3e64204cc2a9794e282758b65819a3a970a59e7d4bb8d8774018bc0",
+      "resampled_sha256": "eff5ae5aaf43f9f0a5bcb5384d134538ffca79d69f9c35a65d3bbbe270168158",
+      "published_sha256": "6b451bd124ea252cb35805884bb441f4318095241b300eccd8d07b2f85f92880",
+      "source_bytes": 544920,
+      "published_bytes": 2915086,
+      "source_points": 44660,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998045563697815,
+          "max": 0.5031237006187439
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.03498893735189373,
+          "max": 0.04972060946894261
+        },
+        "length_change_mm_max": 0.36349497410648723,
+        "relative_length_change": {
+          "median": 0.0006666614096487603,
+          "max": 0.004848385341496175
+        }
+      },
+      "streamlines": 2000,
+      "points": 283122,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -7.563079833984375,
+            55.503456115722656,
+            16.08983612060547
+          ]
+        },
+        {
+          "index": 141561,
+          "position": [
+            12.898902893066406,
+            31.63121795654297,
+            17.01367950439453
+          ]
+        },
+        {
+          "index": 283121,
+          "position": [
+            -5.228889465332031,
+            52.37865447998047,
+            24.026039123535156
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 70.23634898023693,
+          "min_mm": 35.07676747858441,
+          "max_mm": 94.13935276805731
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_2.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "e78ecc91581975ef48114380eaf2c291a6a277ad78bf49bf509a044f2a1de64c",
+      "resampled_sha256": "7544de602ce45b2cc7712d58811bda3b5d7c7d262d9d16d321cfea7a3dc3dfdb",
+      "published_sha256": "bf07a170e65c76db5578a412e9cf2020114a603b8abcad2a0fb29bd323145468",
+      "source_bytes": 601944,
+      "published_bytes": 3406644,
+      "source_points": 49412,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49977394938468933,
+          "max": 0.5023835897445679
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.038489034362519534,
+          "max": 0.09445245819843474
+        },
+        "length_change_mm_max": 0.19985691008916717,
+        "relative_length_change": {
+          "median": 0.0006634976549530269,
+          "max": 0.002446945437656238
+        }
+      },
+      "streamlines": 2000,
+      "points": 324620,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -5.249908447265625,
+            32.714012145996094,
+            33.150962829589844
+          ]
+        },
+        {
+          "index": 162310,
+          "position": [
+            10.719749450683594,
+            -2.3886032104492188,
+            30.16901397705078
+          ]
+        },
+        {
+          "index": 324619,
+          "position": [
+            23.96643829345703,
+            51.368003845214844,
+            29.996925354003906
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 80.59679020551667,
+          "min_mm": 39.7458562918729,
+          "max_mm": 101.11343485782243
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 3,
+          "mean_mm": 100.56676567001011,
+          "min_mm": 100.19870984381237,
+          "max_mm": 101.11343485782243
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_3.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "d6d94ce372d3e3ee8ca2752f5a577635f814b85f8004a75eaa26366b79e03768",
+      "resampled_sha256": "53fa6b335b35633448459530e9c4c76ae1c3707c97a1812285dc63d8954e0447",
+      "published_sha256": "a6f7defa15806eed074fe9c39dec4128b83f88816c4bfdc42fa7cfc3bef01883",
+      "source_bytes": 490260,
+      "published_bytes": 3227545,
+      "source_points": 40105,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49983835220336914,
+          "max": 0.5022175908088684
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.032713328497583544,
+          "max": 0.06460793107326498
+        },
+        "length_change_mm_max": 0.2622863720545041,
+        "relative_length_change": {
+          "median": 0.00037308915757992855,
+          "max": 0.0031318722492870163
+        }
+      },
+      "streamlines": 2000,
+      "points": 308383,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -24.03913116455078,
+            12.164894104003906,
+            54.050575256347656
+          ]
+        },
+        {
+          "index": 154191,
+          "position": [
+            16.41314697265625,
+            4.495124816894531,
+            33.016822814941406
+          ]
+        },
+        {
+          "index": 308382,
+          "position": [
+            -18.091720581054688,
+            2.396728515625,
+            51.19280242919922
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 76.56352798343654,
+          "min_mm": 52.45131547480517,
+          "max_mm": 97.29829453772436
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_4.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "1d2c996f39e16dec2c9a37cd8b1de46b2618e16d8dd4ad4bbbbfc42c969ea368",
+      "resampled_sha256": "65bebd36c969dc7e644e46902ced5af97436b7ff6cd6104ed948e4a2965512c2",
+      "published_sha256": "fb89b1d6b6abbe083a493b077c62ded8f7952ce7fc369f2673b909ce9bc094b7",
+      "source_bytes": 618756,
+      "published_bytes": 3888357,
+      "source_points": 50813,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998832046985626,
+          "max": 0.5018094182014465
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.03740420204921209,
+          "max": 0.05407748069116182
+        },
+        "length_change_mm_max": 0.10258968679288216,
+        "relative_length_change": {
+          "median": 0.0004868606067144461,
+          "max": 0.0011102877726941807
+        }
+      },
+      "streamlines": 2000,
+      "points": 371157,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            44.75843811035156,
+            -2.10565185546875,
+            35.365318298339844
+          ]
+        },
+        {
+          "index": 185578,
+          "position": [
+            -14.155914306640625,
+            -0.791717529296875,
+            37.345008850097656
+          ]
+        },
+        {
+          "index": 371156,
+          "position": [
+            -5.8263397216796875,
+            -29.465408325195312,
+            61.767478942871094
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 92.24334957244442,
+          "min_mm": 52.268096670193714,
+          "max_mm": 115.37999554175198
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 408,
+          "mean_mm": 104.05081330160796,
+          "min_mm": 100.01075828598934,
+          "max_mm": 115.37999554175198
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_5.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "1d2e9e7fe4ba127c173d935a8da1afb96aac6ab8c73e5febdd6466b25f9bb654",
+      "resampled_sha256": "16ff4ad504c08b4cbeb4d57c68c3126952dd7766923798697cdf362d9038576b",
+      "published_sha256": "f053189176ace03ea1f2fdb1c9ca256188bf1245da995e35043a00a635b110fe",
+      "source_bytes": 583788,
+      "published_bytes": 3396042,
+      "source_points": 47899,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49979665875434875,
+          "max": 0.5031415224075317
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.03814149574504276,
+          "max": 0.055453973333251146
+        },
+        "length_change_mm_max": 0.11668608477879161,
+        "relative_length_change": {
+          "median": 0.0006069417950047289,
+          "max": 0.001260016356690561
+        }
+      },
+      "streamlines": 2000,
+      "points": 324158,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -1.3506393432617188,
+            -23.846336364746094,
+            47.98853302001953
+          ]
+        },
+        {
+          "index": 162079,
+          "position": [
+            -11.092369079589844,
+            -20.5035400390625,
+            36.88904571533203
+          ]
+        },
+        {
+          "index": 324157,
+          "position": [
+            14.607246398925781,
+            -18.39769744873047,
+            59.00714874267578
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 80.48739474262156,
+          "min_mm": 34.40255553322838,
+          "max_mm": 124.24914345168663
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 440,
+          "mean_mm": 108.8046396577368,
+          "min_mm": 100.0074881211376,
+          "max_mm": 124.24914345168663
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_6.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "06acc75e6e2ed5c6c6e6aa9e84c1afdc6842f964fba3da676d15cb82134a3586",
+      "resampled_sha256": "f26bfbddee614a0d818a7506af1e0ef4ceceea25dcce79b4abb34523f29636fe",
+      "published_sha256": "98f9f9d7afc509a98b71d8ea14f2303d37dc91955c4c47e9d82c32896509bbce",
+      "source_bytes": 772020,
+      "published_bytes": 4356125,
+      "source_points": 63585,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998607635498047,
+          "max": 0.503535807132721
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.0457783464301936,
+          "max": 0.14140831035710177
+        },
+        "length_change_mm_max": 0.23896059690338234,
+        "relative_length_change": {
+          "median": 0.0007072591141468048,
+          "max": 0.005151939095105256
+        }
+      },
+      "streamlines": 2000,
+      "points": 414360,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -14.852569580078125,
+            -52.24910354614258,
+            53.12383270263672
+          ]
+        },
+        {
+          "index": 207180,
+          "position": [
+            5.796821594238281,
+            -26.18939971923828,
+            13.415901184082031
+          ]
+        },
+        {
+          "index": 414359,
+          "position": [
+            -5.985786437988281,
+            -55.142330169677734,
+            22.13494110107422
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 103.01334854163875,
+          "min_mm": 34.13004209783646,
+          "max_mm": 143.30635986093074
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 1302,
+          "mean_mm": 113.60405590942534,
+          "min_mm": 100.02244607709437,
+          "max_mm": 143.30635986093074
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "callosum_7.trk.gz",
+      "method": "TractSeg",
+      "source_sha256": "2021dfee05eb00d5a854cca33274f98d6e519cd64a790fbb00fd33ed7778cc49",
+      "resampled_sha256": "7c6d7d7ea8a51c92efef60b036a1f837ba70c8156c9e052baf4e249bde84d7e8",
+      "published_sha256": "6f43385b2deea465bede8e0909b42c38962aec8b7f97319cdd481ae4ead167dc",
+      "source_bytes": 866148,
+      "published_bytes": 4708305,
+      "source_points": 71429,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4998732805252075,
+          "max": 0.5033941268920898
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 80,
+          "median": 0.044291076247542985,
+          "max": 0.23561556225312988
+        },
+        "length_change_mm_max": 0.784347962824782,
+        "relative_length_change": {
+          "median": 0.0007526555944056051,
+          "max": 0.007217430077228989
+        }
+      },
+      "streamlines": 2000,
+      "points": 451705,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            3.6041336059570312,
+            -73.28588104248047,
+            7.803367614746094
+          ]
+        },
+        {
+          "index": 225852,
+          "position": [
+            25.130935668945312,
+            -35.24568176269531,
+            12.120872497558594
+          ]
+        },
+        {
+          "index": 451704,
+          "position": [
+            15.947601318359375,
+            -67.8462905883789,
+            -15.665245056152344
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2000,
+          "mean_mm": 112.33906821772642,
+          "min_mm": 32.05476834820625,
+          "max_mm": 144.6932919117285
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 1480,
+          "mean_mm": 121.68525688680792,
+          "min_mm": 100.0807687852997,
+          "max_mm": 144.6932919117285
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
         }
       ]
     }

@@ -17,7 +17,7 @@ const catalogs = await Promise.all(paths.map(async path => {
   const catalog = parse(await readFile(new URL(path, root), 'utf8'));
   return { catalog, provenance: JSON.parse(await readFile(new URL(catalog.provenance, directory), 'utf8')) };
 }));
-const BUNDLES = { 'snail-subject-1': 27, 'cdmd-sub-013': 17 };
+const BUNDLES = { 'snail-subject-1': 27, 'cdmd-sub-013': 30 };
 const digest = buffer => createHash('sha256').update(buffer).digest('hex');
 const arrayBuffer = buffer => buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
 

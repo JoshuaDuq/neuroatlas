@@ -9,7 +9,7 @@ import trimesh
 from nibabel.freesurfer.io import read_annot, read_geometry, read_morph_data
 
 from .gltf.export import add_region, compact_region, published_area_mm2, write_scene
-from .labels import nextbrain, white_matter
+from .labels import cerebellum, nextbrain, white_matter
 from .labels.tissue_labels import export_tissue_labels
 from .labels.volumes import conformed_grid, export_volumes
 from .layers import (
@@ -19,6 +19,7 @@ from .layers import (
     learning,
     networks,
     neuropsych_domains,
+    neurosynth_terms,
     spinal_cord,
 )
 from .sources import (
@@ -72,8 +73,10 @@ def require_layer_inputs(config):
             for prefix in HEMISPHERES
         ],
         "nextbrain": lambda: nextbrain.paths(config),
+        "cerebellar_lobules": lambda: [cerebellum.path(config)],
         "white_matter": lambda: [white_matter.path(config)],
         "spinal_cord": lambda: [ROOT / config["spinal_cord"]["source"]],
+        "neurosynth_terms": lambda: [neurosynth_terms.DEFINITION, neurosynth_terms.SCORES],
     }
     missing = [
         str(path)
@@ -356,6 +359,23 @@ def resolution_limitations(config, fine):
     ]
 
 
+def cerebellum_limitations(config):
+    limitations = [
+        "Learning publishes the cerebellar cortex and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
+    ]
+    if not cerebellum.is_declared(config):
+        return [
+            *limitations,
+            "Learning units come from two segmentations of the same brain, so an aseg-sourced and a NextBrain-sourced surface can overlap slightly where they meet.",
+        ]
+    return [
+        *limitations,
+        "Learning cerebellar lobules are FastSurfer CerebNet's segmentation of this brain's 1 mm T1 in SUIT nomenclature; vermis I–V is part of lobules I–IV and V, and folia are not resolved.",
+        "Cerebellar lobules are published as teaching surfaces only; MRI cuts carry no lobule labels.",
+        "Learning units come from three segmentations of the same brain (aseg, NextBrain and CerebNet), so surfaces from different sources can overlap slightly where they meet.",
+    ]
+
+
 def network_limitations(config):
     if not networks.is_declared(config):
         return []
@@ -464,6 +484,7 @@ def main():
         "cab_np": cab_np.export(config, regions),
         "functional_regions": functional_regions.export(config, regions),
         "neuropsych_domains": neuropsych_domains.export(config, regions),
+        "neurosynth_terms": neurosynth_terms.export(config, regions),
         "cut_atlases": cut_atlases(config),
         "detail_levels": levels,
         "regions": regions,
@@ -476,8 +497,7 @@ def main():
             *resolution_limitations(config, fine),
             f"Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to {learning.read_definition(config)['smoothing']['maximum_displacement_mm']:g} mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
             "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
-            "Learning publishes the cerebellar cortical mantle and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
-            "Learning units come from two segmentations of the same brain, so an aseg-sourced and a NextBrain-sourced surface can overlap slightly where they meet.",
+            *cerebellum_limitations(config),
             "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
             "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
             f"Internal solids are marching-cubes surfaces smoothed for display by at most {config['structures']['smoothing']['maximum_displacement_mm']:g} mm and never across a voxel centre; between voxel centres their boundaries are a display convention, not a measurement.",
@@ -489,6 +509,7 @@ def main():
             *cab_np.limitations(),
             *functional_regions.limitations(),
             *neuropsych_domains.limitations(),
+            *neurosynth_terms.limitations(config),
             *white_matter.limitations(config),
         ],
         "provenance": provenance,

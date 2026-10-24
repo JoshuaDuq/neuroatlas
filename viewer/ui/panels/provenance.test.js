@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { provenanceRows, referenceRows, shortUrl } from './provenance.js';
+import { createProvenance, provenanceRows, referenceRows, shortUrl } from './provenance.js';
 
-const manifest = JSON.parse(await readFile(new URL('../../../public/models/snail/manifest.json', import.meta.url), 'utf8'));
-const urls = { manifestUrl: '/neuroatlas/models/snail/manifest.json', indexUrl: '/neuroatlas/models/anatomies.json' };
+const manifest = JSON.parse(await readFile(new URL('../../../public/models/cdmd/manifest.json', import.meta.url), 'utf8'));
+const urls = { manifestUrl: '/neuroatlas/models/cdmd/manifest.json', indexUrl: '/neuroatlas/models/anatomies.json' };
 
 const items = rows => rows.flatMap(row => row.items);
 const hrefs = rows => items(rows).map(item => item.link?.href).filter(Boolean);
@@ -63,4 +63,49 @@ test('a tract reference lists its own sources, not the hidden anatomy', () => {
 test('URLs read without their scheme', () => {
   assert.equal(shortUrl('https://doi.org/10.1/x'), 'doi.org/10.1/x');
   assert.equal(shortUrl('https://www.z-anatomy.com/'), 'www.z-anatomy.com');
+});
+
+test('provenance opens and closes immediately for keyboard activation and Escape', t => {
+  const previous = globalThis.document;
+  const nodes = new Map();
+  const element = () => {
+    const node = new EventTarget();
+    const attributes = new Set();
+    node.replaceChildren = () => {};
+    node.toggleAttribute = (name, force) => force ? attributes.add(name) : attributes.delete(name);
+    node.hasAttribute = name => attributes.has(name);
+    return node;
+  };
+  const byId = id => {
+    if (!nodes.has(id)) nodes.set(id, element());
+    return nodes.get(id);
+  };
+  const open = element();
+  const dialog = byId('provenance-dialog');
+  dialog.showModal = () => { dialog.open = true; };
+  dialog.close = () => { dialog.open = false; };
+  globalThis.document = {
+    getElementById: byId,
+    querySelectorAll: () => [open],
+    activeElement: open,
+  };
+  const provenance = createProvenance({ manifest: {} });
+  t.after(() => { provenance.dispose(); globalThis.document = previous; });
+  const click = (node, detail) => {
+    const event = new Event('click');
+    Object.defineProperty(event, 'detail', { value: detail });
+    node.dispatchEvent(event);
+  };
+
+  click(open, 0);
+  assert.equal(dialog.open, true);
+  assert.equal(dialog.hasAttribute('data-instant'), true);
+  click(byId('provenance-close'), 0);
+  assert.equal(dialog.open, false);
+  assert.equal(dialog.hasAttribute('data-instant'), true);
+
+  click(open, 1);
+  assert.equal(dialog.hasAttribute('data-instant'), false, 'pointer activation restores the dialog transition');
+  dialog.dispatchEvent(new Event('cancel'));
+  assert.equal(dialog.hasAttribute('data-instant'), true, 'native Escape dismissal remains immediate');
 });

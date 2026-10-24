@@ -4,7 +4,7 @@ The window has three homes. The **masthead** says what data is loaded. The **pan
 
 ```
 +------------------------------------------------------------------------+
-| NeuroAtlas | Subject  Atlas | Colour  Internal anatomy   Full screen ⋯ |
+| Planum | Subject  Atlas | Colour  Internal anatomy   Full screen ⋯     |
 +------------------------+-----------------------------------------------+
 | Anatomy Functions      |                                               |
 | Deficits Circuits      |                    3D stage                   |
@@ -21,7 +21,7 @@ On phones the panel becomes a sheet with peek, half and full positions; in short
 
 | Field | Choices |
 | :--- | :--- |
-| Subject | SNAIL, MGH CDMD |
+| Subject | MGH CDMD (and `fsaverage` when built locally) |
 | Atlas | Destrieux (74 regions per hemisphere) or HCP-MMP (180 areas per hemisphere) |
 | Colour | Tissue, T1 MRI, Regions, Yeo 7 networks, CAB-NP networks, Functional divisions |
 | Internal anatomy | Teaching set, FreeSurfer aseg, NextBrain |
@@ -42,7 +42,7 @@ Search by name, or browse the **Whole brain** or **By system**. Select a region 
 
 - Hemisphere, lobe or system, surface area or volume, centroid in RAS millimetres, and the source label.
 - **Focus**, **Isolate**, **Hide** and **Linked MRI**.
-- **Overlap with** the other cortical atlas (SNAIL only; see below).
+- **Overlap with** the other cortical atlas (see below).
 - **Functional division**, **Neuropsychological functions** and **Functional networks**, as disclosures that stay open between selections.
 - The deficits and guided-circuit landmarks that involve the region, each opening in its own tab.
 
@@ -52,7 +52,7 @@ The eye beside a row hides that region or group; **L** and **R** act on each sid
 
 ### Atlas overlap
 
-On SNAIL, a Destrieux or HCP-MMP region lists the regions of the other atlas it shares pial surface with: the shared area in mm² and its share of the selected region's **whole** surface, with the unassigned remainder shown. The two directions therefore give different percentages. Activate a row to outline that intersection; a section turns outlines off. **Download CSV** exports every pair at full precision with checksums and citations. The method is in [Atlases](../concepts/atlases.md#comparing-destrieux-and-hcp-mmp).
+A Destrieux or HCP-MMP region lists the regions of the other atlas it shares pial surface with: the shared area in mm² and its share of the selected region's **whole** surface, with the unassigned remainder shown. The two directions therefore give different percentages. Activate a row to outline that intersection; a section turns outlines off. **Download CSV** exports every pair at full precision with checksums and citations. The method is in [Atlases](../concepts/atlases.md#comparing-destrieux-and-hcp-mmp).
 
 ## Stage
 
@@ -64,7 +64,7 @@ The dock at the bottom left holds three tools.
 
 A cut adds the section bar above the dock: a slider and a millimetre field for the position, tilt and azimuth for an oblique plane, **Reverse side**, **Linked MRI**, and × to return to the full brain. Positions are surface RAS millimetres: +R right, +A anterior, +S superior. Each solid is capped where the plane meets it, and the cap samples the label volume of the chosen cut labels.
 
-SNAIL publishes no spinal cord, because its scan ends inside the brainstem; Display says so.
+An anatomy whose scan ends inside the brainstem publishes no spinal cord; Display says so.
 
 ### Linked MRI
 
@@ -89,7 +89,7 @@ The address bar holds a link to what is on screen. It carries only what differs 
 | `tab`, `deficit`, `circuit`, `step` | Panel tab, deficit, circuit and landmark |
 | `lang` | Language |
 
-A link is applied field by field. A field the subject cannot apply is left out and named in a notice under the tabs. Notices say what changed or failed, stay until your next action, and offer **Reload** when a newer NeuroAtlas has been published.
+A link is applied field by field. A field the subject cannot apply is left out and named in a notice under the tabs. Notices say what changed or failed, stay until your next action, and offer **Reload** when a newer Planum has been published.
 
 ## Keyboard
 

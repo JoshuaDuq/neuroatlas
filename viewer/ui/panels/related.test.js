@@ -21,7 +21,7 @@ test('a grouped structure involves its source regions, and each source region th
 });
 
 test('every published constituent is itself a published region', () => {
-  const manifest = JSON.parse(readFileSync(new URL('../../../public/models/snail/manifest.json', import.meta.url)));
+  const manifest = JSON.parse(readFileSync(new URL('../../../public/models/cdmd/manifest.json', import.meta.url)));
   const published = new Map(manifest.regions.map(region => [region.id, region]));
   const involved = createInvolvement(published);
   for (const region of manifest.regions.filter(entry => entry.constituent_regions)) {

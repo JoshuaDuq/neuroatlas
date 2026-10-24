@@ -4,7 +4,7 @@ import { AssetError, fetchPublished, publishedRecord } from './published-assets.
  * One in-flight request per URL.
  *
  * The head script starts the anatomy downloads before this module graph has
- * even parsed. Those Response promises live on `globalThis.__neuroatlasAssets`
+ * even parsed. Those Response promises live on `globalThis.__planumAssets`
  * and are consumed here so a second fetch of the same 25 MB file never opens.
  */
 
@@ -84,8 +84,8 @@ export function fetchAsset(url, { onProgress } = {}) {
   const notify = event => {
     for (const listener of listeners) listener(event);
   };
-  const early = globalThis.__neuroatlasAssets?.[key];
-  if (early) delete globalThis.__neuroatlasAssets[key];
+  const early = globalThis.__planumAssets?.[key];
+  if (early) delete globalThis.__planumAssets[key];
   const promise = download(key, early, notify).finally(() => inflight.delete(key));
   inflight.set(key, { promise, listeners });
   return promise;

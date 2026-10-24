@@ -39,6 +39,10 @@ test('the linked MRI M shortcut leaves editable inputs and modified keys alone',
   }
 });
 
+test('a key used by an input composition does not trigger the linked MRI shortcut', () => {
+  assert.deepEqual(mriShortcut({ isComposing: true }), { closed: false, prevented: false });
+});
+
 test('enabled M closes linked MRI while Escape remains the native dialog action', () => {
   assert.deepEqual(mriShortcut({ key: 'M' }), { closed: true, prevented: true });
   assert.deepEqual(mriShortcut({ enabled: false, key: 'Escape' }), { closed: false, prevented: false });

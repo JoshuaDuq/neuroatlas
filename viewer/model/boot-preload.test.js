@@ -19,7 +19,7 @@ const read = async name =>
 
 const boot = async () => {
   const html = await read('index.html');
-  const script = html.match(/window\.__neuroatlasAssets[\s\S]*?\}\)\(\);/);
+  const script = html.match(/window\.__planumAssets[\s\S]*?\}\)\(\);/);
   assert.ok(script, 'index.html has no preload script');
   return script[0];
 };
@@ -82,7 +82,7 @@ test('the default brain is read from the index rather than assumed', async () =>
 });
 
 test('the preload script asks for each file at the version the build publishes for it', async () => {
-  const script = (await read('index.html')).match(/<script>\s*(window\.__neuroatlasAssets[\s\S]*?\}\)\(\);)\s*<\/script>/)[1];
+  const script = (await read('index.html')).match(/<script>\s*(window\.__planumAssets[\s\S]*?\}\)\(\);)\s*<\/script>/)[1];
   const versions = {
     'models/anatomies.json': 'index0000000000a', 'models/bert/manifest.json': 'manifest00000000',
     'models/bert/cortex-hcp-mmp.glb': 'hcp0000000000000', 'models/bert/nextbrain.glb': 'fine000000000000',
@@ -99,7 +99,7 @@ test('the preload script asks for each file at the version the build publishes f
     'https://example.org/neuroatlas/models/bert/manifest.json?v=manifest00000000',
     'https://example.org/neuroatlas/models/bert/nextbrain.glb?v=fine000000000000',
   ]);
-  assert.deepEqual(Object.keys(window.__neuroatlasAssets).sort(), requested.map(url => url.split('?')[0]).sort());
+  assert.deepEqual(Object.keys(window.__planumAssets).sort(), requested.map(url => url.split('?')[0]).sort());
 });
 
 test('the first frame does not wait for the tissue envelopes or the cord', async () => {

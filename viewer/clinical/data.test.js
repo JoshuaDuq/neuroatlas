@@ -70,6 +70,6 @@ function checkAnatomy(catalog) {
   // Every deficit sits in one group, and the groups are what the list is read by.
   assert.equal(catalog.grouped('', 'en').flatMap(entry => entry.deficits).length, data.deficits.length);
   assert.deepEqual(catalog.grouped('', 'en').map(entry => entry.group.id),
-    ['language', 'literacy', 'memory', 'attention', 'perception', 'praxis', 'motor', 'executive']);
+    ['attention-executive', 'memory', 'language-number', 'perception', 'sensorimotor', 'social-emotional']);
   assert.deepEqual(catalog.mappedRegions('aphasia').slice(0, 2), ['destrieux:left:38', 'destrieux:left:34']);
 }

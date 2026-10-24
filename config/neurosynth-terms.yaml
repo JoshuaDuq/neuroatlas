@@ -1,0 +1,373 @@
+# Neurosynth terms a reader can search beyond the curated functions, published only by anatomies
+# that declare the neurosynth_terms layer. scripts/derive_term_scores.py derives every version 7
+# abstract term with the domains' method into data/neurosynth-terms/term-scores.json; this file
+# chooses which of them are offered. Most of the 3,228 are report language ("accordingly",
+# "analyzed using"), anatomy ("angular gyrus") or method ("voxel"), whose maps say where papers
+# using the word report activation and name no function. Offered are the terms that name a mental
+# function, task, stimulus, state or behaviour, and, under `populations`, the clinical groups
+# whose studies the term gathers. A term whose map reaches no area or structure at z 3 is not
+# offered. Terms the curated functions already use stay under their curated name.
+# A term is shown alone, in one colour: Okabe–Ito blue, an OKLab ΔE of 28 from the cortex's
+# tissue colour, 22 under simulated protanopia and 29 under deuteranopia.
+label: Neurosynth term search (consistency maps of chosen version 7 abstract terms on HCP-MMP areas and aseg structures)
+method: >-
+  Neurosynth version 7 abstract terms naming a function, task, stimulus, state, behaviour or
+  clinical population, each derived as the domains are: studies whose abstract uses the term at a
+  TF-IDF of at least 0.001 against every other study, MKDA chi-square uniformity z with a 6 mm
+  kernel, averaged per HCP-MMP area between fsaverage's white and pial surfaces and per aseg
+  grey-matter structure. An area or structure is drawn where its mean z reaches 3. Carried per
+  area, never per vertex
+color: [0, 114, 178]
+limitations:
+  - Searched terms are words chosen from Neurosynth's vocabulary for naming a function, task, stimulus, state or behaviour; unlike the curated functions, no map was checked against what it names or against lesion studies. A term's map shows where studies whose abstract uses it report activation, whatever their task.
+  - A population term (schizophrenia, aphasia, smokers) gathers studies of that group, most comparing it with healthy people. Its map shows where those studies report activation, not where damage causes the condition.
+  - Consistency z grows with study count, so a term with few studies reaches fewer areas, and every term names its study count.
+functions:
+  - acoustic
+  - action
+  - action observation
+  - actions
+  - affect
+  - affective
+  - anger
+  - angry
+  - anticipation
+  - anticipatory
+  - anxiety
+  - appraisal
+  - arithmetic
+  - arousal
+  - articulatory
+  - attention
+  - attentional
+  - attentional control
+  - attribution
+  - audiovisual
+  - auditory
+  - auditory stimuli
+  - autobiographical
+  - autobiographical memory
+  - autonomic
+  - aversive
+  - avoidance
+  - awareness
+  - belief
+  - beliefs
+  - binding
+  - calculation
+  - categorization
+  - choice
+  - choices
+  - cognitive control
+  - color
+  - communication
+  - comprehension
+  - conceptual
+  - conditioned
+  - conditioning
+  - conflict
+  - congruency
+  - consciousness
+  - consolidation
+  - craving
+  - decision
+  - decision making
+  - decisions
+  - discrimination
+  - disgust
+  - distraction
+  - distractor
+  - distress
+  - eating
+  - economic
+  - effort
+  - emotion
+  - emotion regulation
+  - emotional
+  - emotional faces
+  - emotional stimuli
+  - emotional valence
+  - emotions
+  - empathic
+  - empathy
+  - encoding
+  - encoding retrieval
+  - episodic
+  - episodic memory
+  - error
+  - errors
+  - executive
+  - executive control
+  - executive function
+  - executive functions
+  - expectancy
+  - expectation
+  - expectations
+  - extinction
+  - eye movement
+  - eye movements
+  - face
+  - face recognition
+  - faces
+  - facial
+  - facial expression
+  - facial expressions
+  - familiarity
+  - fear
+  - fearful
+  - fearful faces
+  - feedback
+  - feeling
+  - feelings
+  - finger movements
+  - finger tapping
+  - fluency
+  - food
+  - gambling
+  - gaze
+  - gestures
+  - goal directed
+  - grasping
+  - hand movements
+  - happy
+  - happy faces
+  - hearing
+  - imagery
+  - imagine
+  - imagined
+  - imitation
+  - impulsive
+  - impulsivity
+  - incentive
+  - inference
+  - inhibition
+  - inhibitory control
+  - intelligence
+  - intention
+  - intentions
+  - interference
+  - interoceptive
+  - interpersonal
+  - judgment
+  - judgments
+  - language
+  - language comprehension
+  - learning
+  - letter
+  - letters
+  - lexical
+  - lexical decision
+  - linguistic
+  - listening
+  - losses
+  - memories
+  - memory
+  - memory encoding
+  - memory load
+  - memory retrieval
+  - mental imagery
+  - mental state
+  - mental states
+  - mentalizing
+  - monetary
+  - monetary incentive
+  - monetary reward
+  - money
+  - monitoring
+  - mood
+  - moral
+  - motion
+  - motivation
+  - motivational
+  - motor
+  - motor control
+  - motor imagery
+  - movement
+  - movements
+  - multisensory
+  - music
+  - musical
+  - naming
+  - navigation
+  - negative affect
+  - negative emotional
+  - negative emotions
+  - negative feedback
+  - nociceptive
+  - nogo
+  - nouns
+  - novelty
+  - noxious
+  - number
+  - numbers
+  - numerical
+  - object recognition
+  - objects
+  - oddball
+  - olfactory
+  - orienting
+  - orthographic
+  - pain
+  - painful
+  - perception
+  - perceptual
+  - personality
+  - personality traits
+  - phonological
+  - pitch
+  - placebo
+  - planning
+  - pleasant
+  - prediction
+  - prediction error
+  - preference
+  - preferences
+  - priming
+  - pseudowords
+  - punishment
+  - reading
+  - reappraisal
+  - reasoning
+  - recall
+  - recognition
+  - recognition memory
+  - recollection
+  - rehearsal
+  - reinforcement
+  - reinforcement learning
+  - remember
+  - remembering
+  - repetition suppression
+  - response inhibition
+  - response selection
+  - retrieval
+  - reward
+  - reward anticipation
+  - rewarding
+  - rewards
+  - rhythm
+  - risk taking
+  - risky
+  - rotation
+  - saccade
+  - saccades
+  - sad
+  - salience
+  - scene
+  - scenes
+  - selective attention
+  - self
+  - self referential
+  - semantic
+  - semantic memory
+  - semantics
+  - sensorimotor
+  - sentence
+  - sentence comprehension
+  - sentences
+  - sexual
+  - shifting
+  - skill
+  - sleep
+  - social
+  - social cognition
+  - social interaction
+  - social interactions
+  - somatosensory
+  - sounds
+  - spatial
+  - spatial attention
+  - speech
+  - speech perception
+  - speech production
+  - spoken
+  - stop signal
+  - stress
+  - stroop
+  - sustained attention
+  - switching
+  - syntactic
+  - tactile
+  - target detection
+  - taste
+  - theory mind
+  - threat
+  - threatening
+  - timing
+  - tom
+  - tones
+  - tool
+  - tools
+  - touch
+  - uncertainty
+  - unpleasant
+  - updating
+  - valence
+  - verb
+  - verbal
+  - verbal fluency
+  - verbs
+  - vision
+  - visual
+  - visual attention
+  - visual motion
+  - visual perception
+  - visual stimuli
+  - visual word
+  - visuo spatial
+  - visuomotor
+  - visuospatial
+  - vocal
+  - voice
+  - word
+  - word form
+  - word recognition
+  - words
+  - working memory
+  - written
+populations:
+  - abuse
+  - addiction
+  - adhd
+  - alcohol
+  - alzheimer
+  - alzheimer disease
+  - amnestic
+  - anxiety disorders
+  - aphasia
+  - asd
+  - attention deficit
+  - autism
+  - autism spectrum
+  - bipolar
+  - bipolar disorder
+  - blind
+  - chronic pain
+  - dementia
+  - depressed
+  - depression
+  - depressive disorder
+  - dyslexia
+  - epilepsy
+  - major depression
+  - major depressive
+  - mci
+  - mdd
+  - mild cognitive
+  - multiple sclerosis
+  - obsessive compulsive
+  - ocd
+  - parkinson
+  - parkinson disease
+  - posttraumatic
+  - psychosis
+  - psychotic
+  - ptsd
+  - schizophrenia
+  - schizophrenic
+  - smokers
+  - smoking
+  - stress disorder
+  - stroke
+  - substance
+  - trauma

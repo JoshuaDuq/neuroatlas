@@ -76,7 +76,7 @@ function keepAnatomyCached() {
 }
 
 let savedLang = null;
-try { savedLang = localStorage.getItem('neuroatlas-lang'); } catch {}
+try { savedLang = localStorage.getItem('planum-lang'); } catch {}
 const lang = startLanguage(globalThis.location.hash, savedLang);
 startTooltips();
 const missing = missingWebgl();

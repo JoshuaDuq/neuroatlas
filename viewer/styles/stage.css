@@ -14,10 +14,9 @@
   --key-top: 0px;
   --key-right: 0px;
   --dock-height: 38px;
-  --stage-gutter: var(--space-4);
+  --stage-gutter: var(--space-5);
   /* One edge for every plate on the stage. */
-  --stage-edge: var(--overlay-border);
-  --stage-elevation: 0 4px 12px rgb(0 0 0 / 0.5);
+  --stage-edge: color-mix(in srgb, var(--overlay-border) 75%, var(--overlay-plate));
 }
 
 /* Controls on the stage read the overlay palette through the panel's token names. */
@@ -44,7 +43,6 @@
   --border-control: var(--overlay-control-border);
   /* 3.3:1 against the track, so the selected thumb keeps an edge without its shadow. */
   --thumb-ring: var(--overlay-control-border);
-  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
   color: var(--overlay-ink);
 }
 
@@ -356,10 +354,10 @@
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   height: var(--control-height);
   margin: 0;
-  padding: 0 var(--space-2);
+  padding: 0 10px;
   border: 0;
   background: transparent;
   color: var(--overlay-ink);
@@ -403,7 +401,6 @@
   background: var(--overlay-plate);
   border: 1px solid var(--stage-edge);
   border-radius: var(--radius-panel);
-  box-shadow: var(--stage-elevation);
   color: var(--overlay-ink);
   font-size: var(--text-ui);
   text-align: left;
@@ -509,8 +506,8 @@
 /* Section row ------------------------------------------------------------- */
 /* The dock's upper row while a plane is cut, ruled off from the tools under it. */
 .section-bar {
-  /* The plane's name starts on the tools' words: the toolbar's 2px inset and a tool's 8px padding. */
-  padding: var(--space-1) var(--space-1) var(--space-2) calc(2px + var(--space-2));
+  /* The plane's name starts on the tools' words: the toolbar's 4px inset and a tool's 10px padding. */
+  padding: var(--space-1) var(--space-1) var(--space-2) calc(var(--space-3) + 2px);
   border-bottom: 1px solid var(--overlay-border);
   color: var(--overlay-ink);
 }
@@ -599,7 +596,6 @@
 .section-bar[data-compact="true"] .cut-position-row { flex: 1 1 0; }
 .section-bar[data-compact="true"] .cut-position-row input[type="range"] { min-width: 40px; }
 .section-bar[data-compact="true"] .cut-position-row input[type="number"] { width: 4rem; }
-.section-bar[data-compact="true"] .cut-unit { display: none; }
 .section-bar[data-compact="true"] .cut-more { display: inline-flex; }
 .section-bar[data-compact="true"] #cut-close { margin-left: 0; }
 .section-bar[data-compact="true"] .cut-details { display: none; }
@@ -720,4 +716,9 @@
   .display-opacity { padding-left: 28px; }
   .cut-position-row input[type="range"],
   .cut-angle input[type="range"] { height: 44px; }
+}
+
+/* At the narrowest phone widths, the position field keeps its spoken unit while the slider keeps room. */
+@media (max-width: 360px) {
+  .section-bar[data-compact="true"] .cut-unit { display: none; }
 }

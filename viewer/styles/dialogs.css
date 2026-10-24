@@ -69,7 +69,6 @@
   --border-subtle: #2a2c30;
   --border-control: var(--overlay-control-border);
   --danger: var(--overlay-danger);
-  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.5);
   border-color: var(--border-subtle);
 }
 

@@ -80,7 +80,7 @@ test('digest failures propagate as the original error', async context => {
 });
 
 test('published comparison JSON and geometry match their declared SHA256 checksums', async context => {
-  const directory = new URL('../../public/models/snail/', import.meta.url);
+  const directory = new URL('../../public/models/cdmd/', import.meta.url);
   const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
   context.mock.method(globalThis, 'fetch', async address => {
     const file = new URL(address).pathname.split('/').at(-1);

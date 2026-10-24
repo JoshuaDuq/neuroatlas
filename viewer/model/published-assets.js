@@ -50,7 +50,7 @@ export const fetchPublished = (url, options) => fetch(versioned(url), { ...REVAL
 export async function reloadWithoutStoredModels() {
   try {
     for (const name of await caches.keys()) {
-      if (name.startsWith('neuroatlas-models')) await caches.delete(name);
+      if (name.startsWith('planum-models')) await caches.delete(name);
     }
   } catch {
     // No Cache Storage (or blocked): a plain reload is all there is.

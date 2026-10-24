@@ -1,4 +1,4 @@
-import { ALL_DOMAINS, domainName, domainPaint, domainRecord, overviewDomains } from '../catalog/neuropsych-domains.js';
+import { ALL_DOMAINS, domainName, domainPaint, domainRecord, isTermId, overviewDomains } from '../catalog/neuropsych-domains.js';
 import { t } from '../i18n/translations.js';
 
 /** Which tab a paint belongs to, by its id: `function:…` or `deficit:…`. */
@@ -32,7 +32,7 @@ export function legendFor(state, { domains, clinical }) {
       id: record.id, color: record.color, label: domainName(record, state.lang), pressed: record === picked,
     });
     return picked
-      ? { map: 'function', title: copy.keyTitle, note: copy.keyPicked, rows: [row(picked)] }
+      ? { map: 'function', title: isTermId(picked.id) ? copy.keyTitleTerm : copy.keyTitle, note: copy.keyPicked, rows: [row(picked)] }
       : { map: 'function', title: copy.keyTitle, note: copy.keyAll, rows: overviewDomains(domains).map(row) };
   }
   if (kind === 'deficit') {

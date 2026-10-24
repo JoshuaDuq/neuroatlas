@@ -1,4 +1,4 @@
-revised: '2026-10-22'
+revised: '2026-10-24'
 context_margin_mm: 12
 references:
   - id: visual-pathways
@@ -97,12 +97,47 @@ references:
     citation: Perrini et al. · Neurosurgical Review · 2013
     pmid: '22933248'
     url: https://pubmed.ncbi.nlm.nih.gov/22933248/
+  - id: cerebellar-motor-loops
+    title: Cerebellar loops with motor cortex and prefrontal cortex of a nonhuman primate
+    citation: Kelly & Strick · Journal of Neuroscience · 2003
+    pmid: '12968006'
+    pmcid: PMC6740694
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6740694/
   - id: cortical-parcellation
     title: A multi-modal parcellation of human cerebral cortex
     citation: Glasser et al. · Nature · 2016
     pmid: '27437579'
     pmcid: PMC4990127
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4990127/
+  - id: action-systems
+    title: Two action systems in the human brain
+    citation: Binkofski & Buxbaum · Brain and Language · 2013
+    pmid: '22889467'
+    pmcid: PMC4311762
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4311762/
+  - id: dorsal-streams
+    title: 'Two different streams form the dorsal visual system: anatomy and functions'
+    citation: Rizzolatti & Matelli · Experimental Brain Research · 2003
+    pmid: '14610633'
+    url: https://pubmed.ncbi.nlm.nih.gov/14610633/
+  - id: tool-network
+    title: 'The neural network for tool-related cognition: An activation likelihood estimation meta-analysis of 70 neuroimaging contrasts'
+    citation: Ishibashi et al. · Cognitive Neuropsychology · 2016
+    pmid: '27362967'
+    pmcid: PMC4989859
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4989859/
+  - id: tool-use-evolution
+    title: 'The representation of tool use in humans and monkeys: common and uniquely human features'
+    citation: Peeters et al. · Journal of Neuroscience · 2009
+    pmid: '19759300'
+    pmcid: PMC6665774
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6665774/
+  - id: apraxia-parietal
+    title: Limb apraxia and the left parietal lobe
+    citation: Buxbaum & Randerath · Handbook of Clinical Neurology · 2018
+    pmid: '29519468'
+    pmcid: PMC8139361
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8139361/
 
 circuits:
   - id: vision
@@ -610,7 +645,7 @@ circuits:
       en: Compare these output landmarks with cerebellar ataxia evidence. Lesion location within the cerebellum matters; the entire cortex is not one uniform motor territory.
       fr: Comparez ces repères de sortie aux données sur l’ataxie cérébelleuse. La localisation lésionnelle dans le cervelet importe ; tout le cortex ne constitue pas un territoire moteur uniforme.
     deficit: ataxia
-    references: [cerebellar-organization, cerebellar-peduncles, cortical-parcellation]
+    references: [cerebellar-organization, cerebellar-peduncles, cerebellar-motor-loops, cortical-parcellation]
     steps:
       - id: cortex
         region: learning:cerebellar-cortex-left
@@ -625,10 +660,21 @@ circuits:
           fr: Tout le cortex cérébelleux gauche est sélectionné, et non seulement le territoire latéral projetant vers le noyau dentelé ni ses subdivisions motrices.
         view: posterior
         plane: coronal
+        # Where the brain publishes cerebellar lobules, the whole cortex is no single landmark.
+        alternatives:
+          - region: learning:lobule-v-left
+            source_name: Lobule V
+            name: { en: Left lobule V, fr: Lobule V gauche }
+            explanation:
+              en: Purkinje cells provide inhibitory output from cerebellar cortex toward deep nuclei. In macaques, the arm area of primary motor cortex receives cerebellar output mainly from Purkinje cells in lobules IV–VI, the anterior-lobe territory that includes lobule V.
+              fr: Les cellules de Purkinje fournissent une sortie inhibitrice du cortex cérébelleux vers les noyaux profonds. Chez le macaque, l’aire du bras du cortex moteur primaire reçoit la sortie cérébelleuse surtout de cellules de Purkinje des lobules IV à VI, le territoire du lobe antérieur qui comprend le lobule V.
+            mapping:
+              en: Only lobule V is highlighted, though the territory described also spans lobules IV and VI. The lobule boundaries are FastSurfer CerebNet’s segmentation of this brain, and the circuit evidence comes from monkeys.
+              fr: Seul le lobule V est sélectionné, bien que le territoire décrit s’étende aussi aux lobules IV et VI. Les limites des lobules sont la segmentation FastSurfer CerebNet de ce cerveau, et les données sur le circuit proviennent du singe.
       - id: dentate
         region: learning:left:dentate
         source_name: Cerebellar dentate nucleus
-        covering_region: learning:cerebellar-cortex-left
+        covering_regions: [learning:cerebellar-cortex-left]
         name: { en: Left cerebellar dentate nucleus, fr: Noyau dentelé cérébelleux gauche }
         role: { en: Deep cerebellar output, fr: Sortie cérébelleuse profonde }
         explanation:
@@ -639,6 +685,24 @@ circuits:
           fr: Le noyau dentelé entier est affiché sans séparer les territoires moteurs et non moteurs. Revenir au repère du cortex cérébelleux rétablit sa couche de couverture. L’IRM conserve le volume complet.
         view: posterior
         plane: coronal
+        alternatives:
+          - covering_regions:
+              - learning:lobules-i-iv-left
+              - learning:lobule-v-left
+              - learning:lobule-vi-left
+              - learning:crus-i-left
+              - learning:crus-ii-left
+              - learning:lobule-viib-left
+              - learning:lobule-viiia-left
+              - learning:lobule-viiib-left
+              - learning:lobule-ix-left
+              - learning:lobule-x-left
+            explanation:
+              en: The left hemispheric lobules are hidden to expose this deep nucleus. Dentate output ascends through the superior cerebellar peduncle toward targets that include the contralateral thalamus.
+              fr: Les lobules hémisphériques gauches sont masqués pour exposer ce noyau profond. La sortie du noyau dentelé monte par le pédoncule cérébelleux supérieur vers des cibles comprenant le thalamus controlatéral.
+            mapping:
+              en: The whole dentate is shown without separate motor and nonmotor territories. Returning to the lobule V landmark restores the hidden lobules; the vermis stays in place. MRI retains the complete volume.
+              fr: Le noyau dentelé entier est affiché sans séparer les territoires moteurs et non moteurs. Revenir au repère du lobule V rétablit les lobules masqués ; le vermis reste en place. L’IRM conserve le volume complet.
       - id: superior-peduncle
         region: learning:left:superior-cerebellar-peduncle
         source_name: Superior cerebellar peduncle
@@ -678,3 +742,99 @@ circuits:
           fr: Cette parcelle de l’aire 4 de HCP-MMP est un repère moteur de référence. Ni le tractus corticospinal ni une carte motrice propre au sujet ne sont reconstruits dans ce parcours.
         view: right
         plane: axial
+
+  - id: praxis
+    name: { en: Praxis and action systems, fr: Praxies et systèmes de l’action }
+    summary:
+      en: Compare the Grasp and Use action systems, and temporal-lobe knowledge of tools, through six left-sided landmarks.
+      fr: Comparez les systèmes d’action de saisie et d’utilisation, ainsi que les connaissances du lobe temporal sur les outils, à travers six repères gauches.
+    route:
+      en: Grasp system · superior parietal MIP ↔ dorsal premotor 6a. Use system · MT → anterior inferior parietal PFt ↔ ventral premotor 6v. Tool and action knowledge · middle temporal gyrus.
+      fr: Système de saisie (Grasp) · MIP pariétal supérieur ↔ prémoteur dorsal 6a. Système d’utilisation (Use) · MT → PFt pariétal inférieur antérieur ↔ prémoteur ventral 6v. Connaissances sur les outils et les actions · gyrus temporal moyen.
+    scope:
+      en: The Grasp system is bilateral; this tour shows only its left-sided landmarks. The Use system is left-lateralized. The systems are interacting territories, not serial chains. Parietofrontal fibres, the corpus callosum, the cerebellum, the basal ganglia and the development of these systems are outside this tour.
+      fr: Le système de saisie est bilatéral ; ce parcours montre seulement ses repères gauches. Le système d’utilisation est latéralisé à gauche. Ces systèmes sont des territoires en interaction, et non des chaînes sérielles. Les fibres pariéto-frontales, le corps calleux, le cervelet, les ganglions de la base et le développement de ces systèmes sont hors de ce parcours.
+    clinical:
+      en: Compare these landmarks with the limb apraxia evidence. Apraxia follows damage at varied sites of a left temporo-parieto-frontal network, and it dissociates from optic ataxia, which follows damage to the Grasp system.
+      fr: Comparez ces repères aux données sur l’apraxie gestuelle. L’apraxie suit des lésions de sites variés d’un réseau temporo-pariéto-frontal gauche, et elle se dissocie de l’ataxie optique, qui suit des lésions du système de saisie.
+    deficit: apraxia
+    references: [action-systems, dorsal-streams, tool-network, tool-use-evolution, apraxia-parietal, cortical-parcellation]
+    steps:
+      - id: mip
+        region: hcp-mmp:left:50
+        source_name: L_MIP_ROI
+        name: { en: Left medial intraparietal area MIP, fr: Aire intrapariétale médiane MIP gauche }
+        role: { en: Grasp system · online control, fr: Système de saisie · contrôle en ligne }
+        explanation:
+          en: Start in the superior parietal lobule. The dorso-dorsal stream, through V6A and MIP, controls reaching and grasping online from an object’s current size, shape and orientation. Its damage leads to optic ataxia.
+          fr: Commencez dans le lobule pariétal supérieur. La voie dorso-dorsale, par V6A et MIP, contrôle en ligne l’atteinte et la saisie à partir de la taille, de la forme et de l’orientation actuelles de l’objet. Sa lésion entraîne une ataxie optique.
+        mapping:
+          en: This HCP-MMP parcel lies mostly in the intraparietal sulcus. It is an atlas label mapped onto the individual surface, not a reaching localizer, and V6A is not shown.
+          fr: Cette parcelle HCP-MMP se trouve surtout dans le sillon intrapariétal. C’est une étiquette d’atlas projetée sur la surface individuelle, et non une localisation de l’atteinte ; V6A n’est pas affichée.
+        view: superior
+        plane: coronal
+      - id: dorsal-premotor
+        region: hcp-mmp:left:96
+        source_name: L_6a_ROI
+        name: { en: Left premotor area 6a, fr: Aire prémotrice 6a gauche }
+        role: { en: Grasp system · dorsal premotor, fr: Système de saisie · prémoteur dorsal }
+        explanation:
+          en: Superior parietal territories send segregated input to dorsal premotor cortex. Imagining or executing actions with tools engages both, while tool-general processing lies elsewhere in the network.
+          fr: Les territoires pariétaux supérieurs envoient des entrées distinctes au cortex prémoteur dorsal. Imaginer ou exécuter des actions avec des outils sollicite les deux, tandis que le traitement général des outils se situe ailleurs dans le réseau.
+        mapping:
+          en: Area 6a lies along the superior precentral and superior frontal sulci. It is one HCP-MMP premotor parcel, not the whole dorsal premotor cortex, and no connection is traced from MIP.
+          fr: L’aire 6a longe les sillons précentral supérieur et frontal supérieur. C’est une parcelle prémotrice HCP-MMP, et non tout le cortex prémoteur dorsal ; aucune connexion n’est tracée depuis MIP.
+        view: superior
+        plane: axial
+      - id: mt
+        region: hcp-mmp:left:23
+        source_name: L_MT_ROI
+        name: { en: Left middle temporal area MT, fr: Aire temporale moyenne MT gauche }
+        role: { en: Use system · visual entry, fr: Système d’utilisation · entrée visuelle }
+        explanation:
+          en: Now change systems. MT is the main visual node of the ventro-dorsal stream, which reaches the inferior parietal lobule and contributes to action understanding. In Functions, the Gestures and Action observation maps both peak here.
+          fr: Changez maintenant de système. MT est le principal nœud visuel de la voie ventro-dorsale, qui rejoint le lobule pariétal inférieur et contribue à la compréhension de l’action. Dans Fonctions, les cartes Gestes et Observation de l’action culminent toutes deux ici.
+        mapping:
+          en: This HCP-MMP parcel is mapped onto the individual surface. It is not a motion localizer measured in this brain.
+          fr: Cette parcelle HCP-MMP est projetée sur la surface individuelle. Elle ne constitue pas une localisation du mouvement mesurée dans ce cerveau.
+        view: left
+        plane: coronal
+      - id: anterior-inferior-parietal
+        region: hcp-mmp:left:116
+        source_name: L_PFt_ROI
+        name: { en: Left anterior inferior parietal area PFt, fr: Aire pariétale inférieure antérieure PFt gauche }
+        role: { en: Use system · tool use, fr: Système d’utilisation · usage des outils }
+        explanation:
+          en: The ventro-dorsal Use system stores the skilled actions associated with familiar objects. Tool studies converge on the left inferior parietal lobule, and watching actions done with tools engages a rostral sector of it that was not found in monkeys.
+          fr: Le système d’utilisation ventro-dorsal conserve les actions expertes associées aux objets familiers. Les études sur les outils convergent vers le lobule pariétal inférieur gauche, et l’observation d’actions réalisées avec des outils en sollicite un secteur rostral qui n’a pas été observé chez le singe.
+        mapping:
+          en: PFt lies mostly in the postcentral sulcus and extends onto the anterior supramarginal gyrus. Published tool sites are group activation peaks, not this parcel’s boundary, and apraxia lesions extend beyond it.
+          fr: PFt se situe surtout dans le sillon postcentral et s’étend sur la partie antérieure du gyrus supramarginal. Les sites publiés pour les outils sont des pics d’activation de groupe, et non la limite de cette parcelle ; les lésions apraxiques la dépassent.
+        view: left
+        plane: coronal
+      - id: ventral-premotor
+        region: hcp-mmp:left:56
+        source_name: L_6v_ROI
+        name: { en: Left ventral premotor area 6v, fr: Aire prémotrice ventrale 6v gauche }
+        role: { en: Use system · ventral premotor, fr: Système d’utilisation · prémoteur ventral }
+        explanation:
+          en: Inferior parietal territories send segregated input to ventral premotor cortex. With the left inferior parietal lobule, it forms the task-general core of tool processing, engaged whether tools are identified or used.
+          fr: Les territoires pariétaux inférieurs envoient des entrées distinctes au cortex prémoteur ventral. Avec le lobule pariétal inférieur gauche, il forme le noyau général du traitement des outils, sollicité qu’on identifie ou qu’on utilise un outil.
+        mapping:
+          en: Area 6v lies on the precentral gyrus. It is one HCP-MMP parcel, not the whole ventral premotor cortex, and no connection is traced from PFt.
+          fr: L’aire 6v se trouve sur le gyrus précentral. C’est une parcelle HCP-MMP, et non tout le cortex prémoteur ventral ; aucune connexion n’est tracée depuis PFt.
+        view: left
+        plane: axial
+      - id: middle-temporal
+        region: destrieux:left:38
+        source_name: G_temporal_middle
+        name: { en: Left middle temporal gyrus, fr: Gyrus temporal moyen gauche }
+        role: { en: Tool and action knowledge, fr: Connaissances sur les outils et les actions }
+        explanation:
+          en: End in the temporal lobe. Naming tools engages the left posterior middle temporal gyrus, and left posterior temporal damage has been associated with deficits in recognizing actions. Use representations lie close to this semantic knowledge of manipulable objects.
+          fr: Terminez dans le lobe temporal. La dénomination d’outils sollicite la partie postérieure du gyrus temporal moyen gauche, et des lésions temporales postérieures gauches ont été associées à des déficits de reconnaissance des actions. Les représentations d’utilisation sont proches de ces connaissances sémantiques sur les objets manipulables.
+        mapping:
+          en: This Destrieux parcel covers the whole gyrus. The tool-related territory is its posterior part, near MT.
+          fr: Cette parcelle Destrieux couvre le gyrus entier. Le territoire lié aux outils en est la partie postérieure, près de MT.
+        view: left
+        plane: coronal

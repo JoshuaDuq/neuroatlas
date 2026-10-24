@@ -321,7 +321,7 @@ def published(anatomy):
     )
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
+@pytest.mark.parametrize("anatomy", ["cdmd"])
 def test_each_published_anatomy_holds_exactly_its_declared_layers(anatomy):
     from brain_model.validate import validate_layers
 

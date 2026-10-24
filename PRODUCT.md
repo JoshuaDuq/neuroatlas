@@ -1,4 +1,4 @@
-# NeuroAtlas
+# Planum
 
 <!-- impeccable:product-schema 1 -->
 
@@ -21,7 +21,7 @@ No additional user roles were established for this UI redesign.
 - Explore and search cortical and internal anatomical regions.
 - Inspect source labels, measurements, functional networks, and documented
   neuropsychological associations.
-- Compare SNAIL's Destrieux and HCP-MMP atlases by pial surface area, outline
+- Compare the Destrieux and HCP-MMP atlases by pial surface area, outline
   exact intersections, and export every contribution in CSV at full precision.
 - Switch anatomies, cortical atlases, surface appearances, and hemispheres.
 - Hide and restore anatomical parts, create anatomical cuts, and inspect linked
@@ -35,10 +35,14 @@ No additional user roles were established for this UI redesign.
 
 ## Brand Commitments
 
-Keep the NeuroAtlas name and the cut-away mark: SNAIL subj_1's left hemisphere,
+Keep the Planum name and the cut-away mark: SNAIL subj_1's left hemisphere,
 traced from its surfaces, solid behind a coronal cut and outlined in front. The
 user requested a clean, clinical, professional interface and selected a light
 clinical workspace.
+
+The planned domain is planumbrain.com. Until it is set up, the site stays at
+https://joshuaduq.github.io/neuroatlas/, which a grant proposal cites and must
+keep resolving; the repository therefore stays named `neuroatlas`.
 
 ## Evidence on Hand
 

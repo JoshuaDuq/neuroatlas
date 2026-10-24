@@ -110,7 +110,7 @@ test('a notice survives until the next action, and is never timed out', () => {
 test('download progress is not an action: a standing notice outlives it', () => {
   const s = session();
   s.setStatus('ready');
-  s.notify({ text: 'NeuroAtlas was updated. Reload to continue.', action: 'reload' });
+  s.notify({ text: 'Planum was updated. Reload to continue.', action: 'reload' });
   s.setSwitching({ loaded: 1, total: 4 });
   s.endSwitching();
   assert.equal(s.assemble(modelState).notice.action, 'reload');
@@ -228,14 +228,14 @@ test('a notice raised while a link is applied outlives the link’s own steps, b
   s.setStatus('ready');
   s.holdNotices();
   s.notify({ text: 'Could not show the white matter.', action: null });
-  s.notify({ text: 'NeuroAtlas was updated.', action: 'reload' });
+  s.notify({ text: 'Planum was updated.', action: 'reload' });
   // The link's own steps are actions; without the hold they would clear both.
   s.setExplorer('deficits');
   s.setDeficit('aphasia');
   assert.equal(s.assemble(modelState).notice, null, 'nothing shows until the link has settled');
   s.releaseNotices({ text: 'Not applied from this link: language.' });
   assert.deepEqual(s.assemble(modelState).notice, {
-    text: 'Not applied from this link: language. Could not show the white matter. NeuroAtlas was updated.',
+    text: 'Not applied from this link: language. Could not show the white matter. Planum was updated.',
     action: 'reload',
   });
 });

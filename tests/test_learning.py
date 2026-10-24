@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from brain_model.labels import nextbrain
+from brain_model.labels import cerebellum, nextbrain
 from brain_model.labels.volumes import load_on_grid, resample_nearest
 from brain_model.layers.learning import combine_labels, read_definition
 from brain_model.sources import read_config
@@ -9,8 +9,8 @@ from brain_model.surfaces.geometry import extract_structure, smooth_display
 
 
 def test_subject_overview_exclusions_preserve_other_units_and_subjects():
-    shared = read_definition({"anatomy": {}})
-    selected = read_definition({"anatomy": {"learning": {
+    shared = read_definition({"anatomy": {"layers": []}})
+    selected = read_definition({"anatomy": {"layers": [], "learning": {
         "exclude_aseg_units": ["corpus-callosum"],
     }}})
     assert "corpus-callosum" not in {unit["id"] for unit in selected["aseg"]}
@@ -23,7 +23,7 @@ def test_subject_overview_exclusions_preserve_other_units_and_subjects():
 
 def test_an_unknown_overview_exclusion_is_refused():
     with pytest.raises(ValueError, match="Unknown aseg overview units"):
-        read_definition({"anatomy": {"learning": {
+        read_definition({"anatomy": {"layers": [], "learning": {
             "exclude_aseg_units": ["not-a-region"],
         }}})
 
@@ -106,9 +106,11 @@ def test_the_cerebellum_is_published_as_a_body_not_only_its_deep_nuclei():
     # them: NextBrain has no cerebellar cortex, so on this level the cerebellum
     # was two small bodies in open space. aseg has the mantle; it comes from
     # there, the way the ventricles and corpus callosum already do.
+    # Where CerebNet's lobules are declared, they are that mantle, subdivided.
     definition = read_definition(read_config())
     claimed = {label for unit in definition["aseg"] for label in unit["labels"]}
-    assert {8, 47} <= claimed
+    lobules = {label for unit in definition["cerebnet"] for label in unit["labels"]}
+    assert {8, 47} <= claimed or lobules == cerebellum.LOBULES
 
 
 def test_no_display_unit_is_buried_inside_a_unit_from_the_other_source():

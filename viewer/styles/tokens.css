@@ -1,12 +1,12 @@
 /* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
   color-scheme: light;
-  --text-primary: #242a30;
-  --text-secondary: #59636d;
-  --text-tertiary: #68737d;
-  --accent: #246568;
-  --accent-hover: #194f52;
-  --accent-wash: #edf4f3;
+  --text-primary: #232a30;
+  --text-secondary: #59636c;
+  --text-tertiary: #68727b;
+  --accent: #28615d;
+  --accent-hover: #1d4d49;
+  --accent-wash: #edf3f1;
   /* The one filled button. Dark keeps a deep fill so it does not outshine the anatomy. */
   --primary-fill: var(--accent);
   --primary-fill-hover: var(--accent-hover);
@@ -16,13 +16,13 @@
   /* Near-neutral greys: teal and the anatomy carry the only colour. */
   --surface-base: #ffffff;
   --surface-navigation: #f7f8f9;
-  --surface-sunken: #f0f2f4;
-  --surface-canvas: #eef0f2;
-  --surface-hover: #f5f7f8;
+  --surface-sunken: #f0f2f3;
+  --surface-canvas: #f3f4f5;
+  --surface-hover: #f1f4f4;
   --surface-raised: #ffffff;
-  --surface-tonal: #f0f3f5;
-  --surface-tonal-hover: #e7ecef;
-  --border-subtle: #e4e8eb;
+  --surface-tonal: #eef1f2;
+  --surface-tonal-hover: #e4e9eb;
+  --border-subtle: #e0e5e7;
   --border-control: #8b959e;
   /* Selected segment ring: 3:1 against the tonal track. */
   --thumb-ring: #78838d;
@@ -64,7 +64,7 @@
   --text-caption: 0.8125rem;
   --text-ui: 0.875rem;
   --text-title: 1rem;
-  --text-brand: 1.0625rem;
+  --text-brand: 1.1875rem;
   --text-headline: 1.5rem;
   --text-stage: 0.875rem;
   /* Captions remain readable beside the data; every role grows with reader text size. */
@@ -72,7 +72,6 @@
   --lh-ui: max(20px, 1.25rem);
   --lh-prose: max(22px, 1.375rem);
   --lh-title: max(28px, 1.75rem);
-  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.12);
   --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.08);
 
   --space-1: 4px;
@@ -85,17 +84,17 @@
   --space-10: 40px;
 
   /* Instrument density on a fine pointer; phone.css raises both to 44px for touch. */
-  --row-height: 38px;
+  --row-height: 40px;
   --control-height: 36px;
   --tab-height: max(44px, 2.75rem);
-  --rail-width: clamp(340px, 22.5rem, 30vw);
-  --header-height: max(60px, 3.75rem);
-  --footer-height: max(28px, 1.75rem);
-  --panel-inset: var(--space-5);
+  --rail-width: 360px;
+  --header-height: max(56px, 3.5rem);
+  --footer-height: max(32px, 2rem);
+  --panel-inset: var(--space-6);
   /* Names align after the disclosure slot, independently of panel width. */
   --indent: calc(var(--panel-inset) + 20px);
   --radius-control: 4px;
-  --radius-panel: 8px;
+  --radius-panel: 6px;
   --camera-transition: 240ms;
   --ui-transition: 140ms;
   --ease-ui: cubic-bezier(0.16, 1, 0.3, 1);
@@ -133,6 +132,5 @@
   --border-subtle: #303338;
   --border-control: #6d737b;
   --thumb-ring: #7a8189;
-  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.45);
   --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.3);
 }

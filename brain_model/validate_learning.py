@@ -4,10 +4,11 @@ import numpy as np
 import trimesh
 
 from .gltf.encode import published_display_colors
-from .labels import nextbrain
+from .labels import cerebellum, nextbrain
 from .labels.volumes import load_on_grid, resample_nearest
 from .layers.learning import (
-    constituent_id,
+    constituents,
+    family_order,
     read_definition,
     source_grids,
     source_groups,
@@ -16,17 +17,27 @@ from .sources import sha256
 from .surfaces.geometry import extract_structure, misclassified_voxels
 
 
-def validate_source_overlap(config):
-    definition = read_definition(config)
-    grid, table = nextbrain.load(config)
-    image = load_on_grid(config, config["source_directory"] / "mri/aseg.mgz")
+def on_nextbrain_grid(config, path, grid):
+    image = load_on_grid(config, path)
     coarse, _ = resample_nearest(
         np.asarray(image.dataobj), image.header.get_vox2ras_tkr(),
         grid.voxel_to_surface, grid.labels.shape,
     )
-    covered = np.isin(coarse, [
-        label for unit in definition["aseg"] for label in unit["labels"]
-    ])
+    return coarse
+
+
+def validate_source_overlap(config):
+    definition = read_definition(config)
+    grid, table = nextbrain.load(config)
+    covered = np.isin(
+        on_nextbrain_grid(config, config["source_directory"] / "mri/aseg.mgz", grid),
+        [label for unit in definition["aseg"] for label in unit["labels"]],
+    )
+    if definition["cerebnet"]:
+        covered |= np.isin(
+            on_nextbrain_grid(config, cerebellum.path(config), grid),
+            [label for unit in definition["cerebnet"] for label in unit["labels"]],
+        )
     counts = np.bincount(grid.labels.ravel(), minlength=max(table) + 1)
     overlaps = np.bincount(grid.labels[covered], minlength=len(counts))
     reports = []
@@ -68,15 +79,14 @@ def expected_metadata(config):
                 "display_color": group["color"],
                 "source_atlas": source,
                 "source_label_ids": members,
+                **constituents(source, side, members),
+                **family_order(group),
                 "label": f"{group['name']} · {side}",
                 "display_names": {"en": group["name"], "fr": group["name_fr"]},
                 "system_names": {"en": group["system"], "fr": group["system_fr"]},
                 "voxel_count": count,
                 "segmentation_volume_mm3": count * grid.voxel_volume_mm3,
                 "voxel_size_mm": grid.spacing_mm,
-                "constituent_regions": [
-                    constituent_id(source, side, label) for label in members
-                ],
             }
     return records, source_grids(grids)
 
@@ -101,7 +111,7 @@ def validate(config, manifest):
             record = regions[region_id]
             if not np.allclose(colors[region_id], group["color"], rtol=0, atol=1e-6):
                 raise ValueError(f"Learning palette mismatch: {region_id}")
-            for member in record["constituent_regions"]:
+            for member in record.get("constituent_regions", []):
                 if member not in regions:
                     raise ValueError(f"Missing constituent region: {member}")
             # Invert the glTF coordinate convention, compare in physical mm.

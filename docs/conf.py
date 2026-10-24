@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 # ---------------------------------------------------------------------------
 # Project metadata
 # ---------------------------------------------------------------------------
-project = "NeuroAtlas"
+project = "Planum"
 author = "Joshua Duquette"
 copyright = "2026, Joshua Duquette"
 # The Python package's version, so the site cannot name another one. The
@@ -88,7 +88,7 @@ intersphinx_mapping = {
 # HTML output: furo, coloured from the viewer's own tokens (viewer/styles/tokens.css)
 # ---------------------------------------------------------------------------
 html_theme = "furo"
-html_title = "NeuroAtlas"
+html_title = "Planum"
 html_baseurl = "https://joshuaduq.github.io/neuroatlas/docs/"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
@@ -97,8 +97,8 @@ html_show_sphinx = False
 html_favicon = "_static/favicon.svg"
 templates_path = ["_templates"]
 highlight_language = "none"
-pygments_style = "neuroatlas_style.Light"
-pygments_dark_style = "neuroatlas_style.Dark"
+pygments_style = "planum_style.Light"
+pygments_dark_style = "planum_style.Dark"
 copybutton_prompt_text = r"\$ |>>> |\.\.\. "
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"

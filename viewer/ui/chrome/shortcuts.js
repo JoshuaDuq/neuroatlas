@@ -1,6 +1,6 @@
 import { t } from '../../i18n/translations.js';
 
-const SINGLE_KEYS_STORAGE = 'neuroatlas.single-key-shortcuts';
+const SINGLE_KEYS_STORAGE = 'planum.single-key-shortcuts';
 
 /**
  * Pressable controls in the panels and the masthead. Form fields are

@@ -1,6 +1,7 @@
 import { atlasSwitchLabel, t } from '../../i18n/translations.js';
 import { requiredAtlas } from '../../state/scene-commands.js';
 import { paintKind } from '../../state/paint.js';
+import { isCoarse, PHONE_QUERY } from '../../render/device.js';
 import { percent } from '../format.js';
 import { createProvenance } from '../panels/provenance.js';
 import { bindRoving } from '../roving.js';
@@ -188,6 +189,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
   const rovingGroups = [langContainer, themeContainer, singleKeysContainer].map(group => bindRoving(group));
   moreButton.hidden = false;
   skipLink.hidden = false;
+  fullscreenButton.hidden = !document.fullscreenEnabled;
   menuFullscreen.hidden = !document.fullscreenEnabled;
   setOpen(false);
 
@@ -221,6 +223,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
         button.setAttribute('aria-pressed', String(option === themeChoice));
       }
       singleKeysLabel.textContent = i18n.singleKeys;
+      document.documentElement.dataset.singleKeys = singleKeys ? 'on' : 'off';
       for (const button of singleKeyButtons) {
         const on = button.dataset.singleKeys === 'on';
         setLabel(button, on ? i18n.singleKeysOn : i18n.singleKeysOff);
@@ -240,7 +243,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
 }
 
 /**
- * The masthead's data: subject, atlas, colour and internal anatomy as four native selects,
+ * The masthead's data: atlas, colour and internal anatomy, plus a subject choice when published,
  * a bar where it fits and a popover behind a summary where it does not; and the status bar.
  */
 export function createHeader({
@@ -254,6 +257,7 @@ export function createHeader({
   const dataSummaryNode = document.getElementById('masthead-data-summary');
   const data = document.getElementById('masthead-data');
   const studyName = document.getElementById('study-name');
+  const subjectField = document.getElementById('subject-field');
   const surfaceField = document.getElementById('surface-field');
   const labels = {
     subject: document.getElementById('subject-label'),
@@ -328,7 +332,7 @@ export function createHeader({
   ];
   for (const [select, listener] of changes) select.addEventListener('change', listener);
 
-  const shortLandscape = globalThis.matchMedia?.('(max-height: 480px) and (orientation: landscape)');
+  const phone = globalThis.matchMedia?.(PHONE_QUERY);
   const collapsed = () => masthead.hasAttribute('data-collapsed');
   const dataOpen = () => dataToggle.getAttribute('aria-expanded') === 'true';
   function setDataOpen(open) {
@@ -348,7 +352,7 @@ export function createHeader({
   function fitBar() {
     const summaryFocused = document.activeElement === dataToggle;
     masthead.removeAttribute('data-collapsed');
-    const fits = !shortLandscape?.matches
+    const fits = !phone?.matches && !isCoarse()
       && data.scrollWidth <= dataWrap.clientWidth
       && masthead.scrollWidth <= masthead.clientWidth;
     masthead.toggleAttribute('data-collapsed', !fits);
@@ -362,14 +366,14 @@ export function createHeader({
     }
     showTips();
   }
-  // The subject has its own line. Settings yield in order to fit the line below it.
+  // Supporting settings yield first; the atlas stays visible and truncates if necessary.
   function fitSummary() {
     dataSummaryNode.removeAttribute('data-short');
     const context = dataSummaryNode.querySelector('.data-summary-context');
     if (!collapsed() || !context) return;
     const tooShort = () => context.clientWidth < context.scrollWidth;
     const dropped = [];
-    for (const part of ['detail', 'colour', 'atlas']) {
+    for (const part of ['detail', 'colour']) {
       if (!tooShort()) return;
       if (!dataSummaryNode.querySelector(`[data-part="${part}"]`)) continue;
       dropped.push(part);
@@ -411,6 +415,9 @@ export function createHeader({
   ];
   for (const [target, type, listener] of listeners) target.addEventListener(type, listener);
   setDataOpen(false);
+  // Available space can change independently of the window, including font and shell changes.
+  const widthObserver = new ResizeObserver(onResize);
+  widthObserver.observe(dataWrap);
   document.fonts?.ready.then(onResize);
 
   const provenance = createProvenance({
@@ -418,8 +425,8 @@ export function createHeader({
   });
 
   let paintedSummary = '';
-  function paintSummary(parts) {
-    const key = parts.map(({ part, text }) => `${part}:${text}`).join('\n');
+  function paintSummary(parts, label) {
+    const key = [label, ...parts.map(({ part, text }) => `${part}:${text}`)].join('\n');
     if (key === paintedSummary) return false;
     paintedSummary = key;
     const context = document.createElement('span');
@@ -445,7 +452,7 @@ export function createHeader({
       }
     }
     dataSummaryNode.replaceChildren(...subject, context);
-    dataToggle.setAttribute('aria-label', parts.map(({ text }) => text).join(' · '));
+    dataToggle.setAttribute('aria-label', `${label}: ${parts.map(({ text }) => text).join(' · ')}`);
     return true;
   }
 
@@ -495,6 +502,7 @@ export function createHeader({
       masthead.toggleAttribute('data-reference', Boolean(reference));
       if (reference && dataOpen()) setDataOpen(false);
       studyName.textContent = reference?.label ?? subjectName(anatomy);
+      subjectField.hidden = !offerAnatomies && !reference;
       studyName.hidden = offerAnatomies && !reference;
       surfaceField.hidden = Boolean(reference);
       selects.subject.hidden = !offerAnatomies || Boolean(reference);
@@ -515,12 +523,12 @@ export function createHeader({
 
       const selected = field => selects[field].selectedOptions[0]?.textContent ?? '';
       const changed = paintSummary(dataSummary({
-        subject: subjectName(anatomy),
+        subject: offerAnatomies ? subjectName(anatomy) : null,
         atlas: selected('atlas'),
         colour: selected('colour'),
         detail: offersDetail ? selected('detail') : null,
         reference: reference?.label,
-      }));
+      }), i18n.dataSummary);
       if (changed || lang !== fittedLang) {
         fittedLang = lang;
         onResize();
@@ -541,6 +549,7 @@ export function createHeader({
       } : null);
     },
     dispose() {
+      widthObserver.disconnect();
       for (const [target, type, listener] of listeners) target.removeEventListener(type, listener);
       for (const [select, listener] of changes) select.removeEventListener('change', listener);
       provenance.dispose();

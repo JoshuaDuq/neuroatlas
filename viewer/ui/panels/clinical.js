@@ -4,6 +4,7 @@ import { visibilityOf } from '../../catalog/visibility.js';
 import { failureNotice } from '../../i18n/errors.js';
 import { createButtonLabel } from '../chrome/button-label.js';
 import { networkCss } from '../../catalog/networks.js';
+import { createAnnouncer } from '../announce.js';
 
 export function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -17,6 +18,15 @@ export function drillChevron() {
   const chevron = element('span', null, 'chevron drill-chevron');
   chevron.setAttribute('aria-hidden', 'true');
   return chevron;
+}
+
+/** A quiet link to the other evidence tab's matches for the same words. */
+export function bridgeButton(text, dataset) {
+  const button = element('button', null, 'search-bridge');
+  button.type = 'button';
+  Object.assign(button.dataset, dataset);
+  button.append(element('span', text), drillChevron());
+  return button;
 }
 
 function deficitButton(deficit, lang) {
@@ -178,15 +188,35 @@ export function relatedRegionVisible(selectedRegion, deficitCount) {
   return Boolean(selectedRegion) && deficitCount > 0;
 }
 
+/** An activation map a deficit's lesion evidence checks: its colour on the brain, its name, and the way to it. */
+function checkedMapButton({ id, name, color }) {
+  const button = element('button', null, 'clinical-deficit function-row');
+  button.type = 'button';
+  button.dataset.checkedFunction = id;
+  const swatch = element('span', null, 'network-swatch function-swatch');
+  swatch.setAttribute('aria-hidden', 'true');
+  swatch.style.background = networkCss(color);
+  const text = element('span', null, 'clinical-deficit-text');
+  text.append(element('span', name, 'clinical-deficit-name'));
+  button.append(swatch, text, drillChevron());
+  const item = element('li');
+  item.append(button);
+  return item;
+}
+
 /**
  * Deficit navigation and evidence share the existing session render cycle.
  * `involved` gives the regions a selection shares anatomy with (related.js), so
  * the region inspector lists the deficits mapped on any of them. `onFailure`
- * hears each failure the meta line reports.
+ * hears each failure the meta line reports. `checkedMaps` names the Functions tab's
+ * maps a deficit's associations check, which `onFunction` opens; `functionsMatching`
+ * counts that tab's matches for the same words, and `onSearchFunctions` carries the query there.
  */
 export function createClinicalExplorer({
-  clinical, anatomy, involved, onQuery, onDeficit, onRegion, onRestore, onFailure,
+  clinical, anatomy, involved, checkedMaps, functionsMatching, onQuery, onDeficit, onRegion, onFunction,
+  onSearchFunctions, onRestore, onFailure,
 }) {
+  const announce = createAnnouncer();
   const anatomySearch = document.getElementById('anatomy-search');
   const deficitSearchHead = document.getElementById('deficit-search-head');
   const anatomyBrowser = document.getElementById('anatomy-browser');
@@ -295,9 +325,21 @@ export function createClinicalExplorer({
     associations.setAttribute('aria-labelledby', heading.id);
     associations.append(heading, ...found.map(association => associationSection(association, clinical, anatomy,
       state.lang, { open: expanded.has(association.id), sideOnRow: !profileSide, color: colors.get(association.id) })));
+    const maps = checkedMaps(deficit.id, state.lang);
+    const checked = element('section', null, 'detail-section clinical-checked-maps');
+    if (maps.length) {
+      const mapsHeading = element('h3', text.checkedMaps, 'detail-section-heading');
+      mapsHeading.id = 'clinical-checked-heading';
+      checked.setAttribute('aria-labelledby', mapsHeading.id);
+      const rows = element('ul', null, 'clinical-related');
+      rows.append(...maps.map(checkedMapButton));
+      checked.append(mapsHeading, rows);
+    }
     const body = element('div', null, 'panel-body clinical-content');
-    body.append(name, meta, element('p', deficit.summary[state.lang], 'clinical-summary'),
+    body.append(name, meta, element('p', text.evidenceKind(found.length), 'clinical-kind'),
+      element('p', deficit.summary[state.lang], 'clinical-summary'),
       element('p', text.referenceOnly, 'clinical-note clinical-caveat'), associations,
+      ...(maps.length ? [checked] : []),
       element('p', `${text.sources} · ${text.revised}: ${clinical.revised}`, 'clinical-note clinical-sources'));
     profile.append(body);
     updateAction();
@@ -349,6 +391,7 @@ export function createClinicalExplorer({
 
   const onInput = event => onQuery(event.target.value);
   const onSearchKey = event => {
+    if (event.isComposing) return;
     if (event.key === 'Escape' && search.value) {
       event.preventDefault();
       // The field keeps focus, so the render that follows leaves its text alone.
@@ -361,6 +404,8 @@ export function createClinicalExplorer({
     }
   };
   const onDeficitClick = event => {
+    const bridge = event.target.closest('[data-search-functions]');
+    if (bridge) return onSearchFunctions(bridge.dataset.searchFunctions);
     const button = event.target.closest('[data-deficit]');
     if (button) selectDeficit(button.dataset.deficit);
   };
@@ -373,6 +418,8 @@ export function createClinicalExplorer({
     if (next) next.focus();
   };
   const onProfileClick = event => {
+    const map = event.target.closest('[data-checked-function]');
+    if (map) return onFunction(map.dataset.checkedFunction);
     const button = event.target.closest('[data-clinical-region]');
     if (button && !opening) run(() => onRegion(button.dataset.clinicalRegion), { failed: 'region' });
   };
@@ -428,17 +475,22 @@ export function createClinicalExplorer({
       const nextListKey = `${language}|${state.clinicalQuery}`;
       if (nextListKey !== listKey) {
         listKey = nextListKey;
-        const groups = clinical.grouped(state.clinicalQuery, language);
+        const query = state.clinicalQuery.trim();
+        const groups = clinical.grouped(query, language);
         list.replaceChildren(...groups.map(entry => deficitGroup(entry, language)));
         // No match reads as the Anatomy search does; the collection's scope returns with the list.
         coverage.hidden = !groups.length;
         if (!groups.length) {
-          list.append(element('p', t(language, 'navigator').noMatch(state.clinicalQuery.trim()), 'empty-title'),
+          list.append(element('p', t(language, 'navigator').noMatch(query), 'empty-title'),
             element('p', text.noResults, 'empty'));
         }
+        const functions = query ? functionsMatching(query, language) : 0;
+        if (functions) list.append(bridgeButton(text.functionBridge(functions, query), { searchFunctions: query }));
+        if (query) announce(text.results(groups.reduce((sum, entry) => sum + entry.deficits.length, 0)));
       }
       for (const button of list.querySelectorAll('.clinical-deficit')) {
-        button.setAttribute('aria-pressed', String(button.dataset.deficit === state.selectedDeficit));
+        if (button.dataset.deficit === state.selectedDeficit) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
       }
       const nextProfileKey = `${language}|${state.selectedDeficit}`;
       if (nextProfileKey !== profileKey) {

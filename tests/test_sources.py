@@ -338,7 +338,7 @@ def test_a_projection_whose_source_annotation_is_missing_is_refused(tmp_path):
         prepare.transfer_annotation(config, {"sources": []}, "HCPMMP1", "hcp.json")
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
+@pytest.mark.parametrize("anatomy", ["cdmd"])
 def test_every_source_a_published_anatomy_builds_from_is_committed_and_unchanged(anatomy):
     # A pinned path that is a symlink is read through its target, so a link
     # committed without its target fails here as surely as a missing file.

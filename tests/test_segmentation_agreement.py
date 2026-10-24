@@ -21,7 +21,7 @@ def test_dice_counts_overlap_against_both_sizes():
     assert dice(a, a) == 1
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
+@pytest.mark.parametrize("anatomy", ["cdmd"])
 def test_every_declared_structure_clears_the_floor_and_is_the_published_score(anatomy):
     config = read_config(anatomy)
     report = segmentation_agreement(config)
@@ -75,7 +75,7 @@ def test_a_structure_learning_does_not_define_is_refused():
 
 @pytest.mark.parametrize(
     "anatomy,holes",
-    [("snail", (38, 43)), ("cdmd", (3, 5))],
+    [("cdmd", (3, 5))],
 )
 def test_surface_holes_are_freesurfers_own_count_and_the_published_one(anatomy, holes):
     config = read_config(anatomy)

@@ -92,7 +92,7 @@ test('CAB-NP networks read as Ji et al. name them, in both languages', () => {
 
 test('the published partition names every network the viewer can name', () => {
   const partition = JSON.parse(readFileSync(
-    new URL('../../public/models/snail/cab-np.json', import.meta.url), 'utf8'));
+    new URL('../../public/models/cdmd/cab-np.json', import.meta.url), 'utf8'));
   for (const network of partition.networks) {
     assert.ok(cabNpName(network, 'en') && cabNpName(network, 'fr'));
   }

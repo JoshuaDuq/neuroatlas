@@ -1,5 +1,5 @@
 /**
- * Bilingual UI strings (English and French) for NeuroAtlas.
+ * Bilingual UI strings (English and French) for Planum.
  */
 
 const megabytes = bytes => (bytes / 1_048_576).toFixed(1);
@@ -49,9 +49,10 @@ export const TRANSLATIONS = {
     atlases: {
       destrieux: 'Destrieux anatomical atlas',
       'hcp-mmp': 'HCP-MMP1.0 multimodal atlas',
-      learning: 'Teaching set: overview structures grouped from NextBrain and aseg labels',
+      learning: 'Teaching set: overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published',
       aseg: 'FreeSurfer subcortical segmentation',
       nextbrain: 'NextBrain histological atlas',
+      cerebnet: 'FastSurfer CerebNet cerebellar lobules',
       wmparc: 'FreeSurfer white-matter parcellation',
       zanatomy: 'Z-Anatomy spinal cord reference',
     },
@@ -62,6 +63,7 @@ export const TRANSLATIONS = {
         learning: 'Teaching set',
         aseg: 'FreeSurfer aseg',
         nextbrain: 'NextBrain',
+        cerebnet: 'CerebNet',
         wmparc: 'wmparc',
         zanatomy: 'Spinal cord',
       },
@@ -72,12 +74,12 @@ export const TRANSLATIONS = {
       // Said in the option, before it is chosen: what else choosing it changes.
       atlasBecomes: (colour, atlas) => `${colour} (atlas becomes ${atlas})`,
       colourBecomes: (atlas, colour) => `${atlas} (colour becomes ${colour})`,
-      dataSummary: 'Subject, atlas, colour and internal anatomy',
+      dataSummary: 'Atlas and display settings',
       // What each loaded choice is, in a line: the field's tooltip and the summary popover's note.
       notes: {
         destrieux: 'Sulcal and gyral regions, 74 per hemisphere',
         'hcp-mmp': 'Multimodal areas, 180 per hemisphere (Glasser 2016)',
-        learning: 'Overview structures grouped from NextBrain and aseg labels',
+        learning: 'Overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published',
         aseg: 'FreeSurfer’s standard automatic subcortical segmentation',
         nextbrain: 'Histology-based atlas, segmented on this subject at 0.4\u202fmm',
       },
@@ -156,9 +158,10 @@ export const TRANSLATIONS = {
       // Numbers arrive formatted (format.js decimal).
       score: (term, z) => `“${term}” · z\u00a0${z}`,
       none: threshold => `No function reaches z\u00a0${threshold} here.`,
-      noteStructure: source => `Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term (${source}). Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.`,
-      note: source => `Mean meta-analytic consistency over this whole HCP-MMP area for each term (${source}): where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.`,
+      noteStructure: source => `Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from ${source}. Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.`,
+      note: source => `Mean meta-analytic consistency over this whole HCP-MMP area for each term, from ${source}: where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.`,
       keyTitle: 'Neuropsychological functions',
+      keyTitleTerm: 'Neurosynth term',
       keyAll: 'Each area shows its strongest function; tissue-coloured areas reach none. Choose one to see all its areas.',
       keyPicked: 'Every area that reaches it, overlaps included.',
       termOf: (name, term) => `${name}: “${term}”`,
@@ -166,20 +169,24 @@ export const TRANSLATIONS = {
       lesionItem: (deficit, references, parcels) => `${deficit} (${references}): ${parcels}`,
       parcelCoverage: (parcel, share) => `${parcel} ${share} coloured`,
       parcelOffSurface: parcel => `${parcel}, not measured`,
-      noLesionCheck: 'No lesion study in NeuroAtlas’s deficit evidence checks this domain.',
+      noLesionCheck: 'No lesion study in Planum’s deficit evidence checks this domain.',
     },
     functions: {
       search: 'Search functions',
       list: 'Functions',
       all: 'All functions',
       allDetail: 'Each area in its strongest core assessment function',
-      coverage: count => `${count} functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.`,
-      noResults: 'Try another name, or a Neurosynth term such as “memory”.',
+      coverage: (count, terms) => `${count} functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas`
+        + (terms ? `; searching also finds ${terms} more Neurosynth terms and clinical groups` : '')
+        + '. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.',
+      noResults: 'Search a function, task or stimulus, such as “faces” or “reward”, or a clinical group such as “aphasia”.',
       // The study count arrives as words (format.js count).
-      term: (term, studies) => `Neurosynth term “${term}” · ${studies}`,
+      term: (term, studies) => `Activation evidence · Neurosynth term “${term}” · ${studies}`,
       areas: (areas, structures, threshold) => `${areas} HCP-MMP ${areas === 1 ? 'area' : 'areas'}`
         + (structures ? ` and ${structures} ${structures === 1 ? 'structure' : 'structures'}` : '')
-        + ` ${areas + structures === 1 ? 'reaches' : 'reach'} z\u00a0${threshold}`,
+        + ` at z\u00a0≥\u00a0${threshold}`,
+      areasShort: (areas, structures) => `${areas} ${areas === 1 ? 'area' : 'areas'}`
+        + (structures ? `, ${structures} ${structures === 1 ? 'structure' : 'structures'}` : ''),
       none: threshold => `No HCP-MMP area or structure reaches z\u00a0${threshold}.`,
       areasHeading: 'Areas and structures, strongest first',
       more: count => `${count} more ${count === 1 ? 'area' : 'areas'}`,
@@ -190,6 +197,21 @@ export const TRANSLATIONS = {
       loading: 'Preparing the HCP-MMP areas…',
       failed: 'The HCP-MMP areas could not be shown.',
       shown: 'Shown on the HCP-MMP areas',
+      termsHeading: 'Neurosynth terms',
+      populationsHeading: 'Neurosynth clinical groups',
+      // The region's name and side arrive as the list shows them.
+      deepStrongest: (name, side) => `Its strongest region, ${name} (${side}), lies beneath the cortex.`,
+      suggest: name => `Did you mean “${name}”?`,
+      // The study count arrives as words (format.js count).
+      termDetail: (studies, areas) => `${studies} · ${areas}`,
+      termsMore: count => `${count} more ${count === 1 ? 'term matches' : 'terms match'}; type more to narrow the list.`,
+      termCaveat: 'A Neurosynth term, not a curated function: chosen for naming a function, task or stimulus, but its map was not checked against what it names or against lesion studies.',
+      populationCaveat: 'A clinical group: its studies mostly compare people with the condition with healthy people. The map shows where they report activation, not where damage causes the condition.',
+      lesionHeading: 'Lesion evidence',
+      // The query arrives as typed.
+      deficitBridge: (count, query) => `Deficits: ${count} lesion ${count === 1 ? 'profile matches' : 'profiles match'} “${query}”`,
+      results: (functions, terms) => (functions + terms ? [functions && `${functions} ${functions === 1 ? 'function' : 'functions'}`,
+        terms && `${terms} Neurosynth ${terms === 1 ? 'term' : 'terms'}`].filter(Boolean).join(' and ') : 'No match'),
     },
     deficitKey: {
       keyAll: 'One colour per finding; a region several findings cite takes the first one’s colour, and tissue-coloured regions are not cited. Choose a finding to show it alone.',
@@ -298,6 +320,8 @@ export const TRANSLATIONS = {
     },
     display: {
       hemisphere: 'Hemisphere',
+      seeThrough: 'See through the cortex',
+      seenThrough: 'Cortex made see-through. Display sets its opacity; Restore previous view puts it back.',
       both: 'Both',
       left: 'Left',
       right: 'Right',
@@ -404,7 +428,7 @@ export const TRANSLATIONS = {
       snapshot: 'Save image (PNG)',
       // Written onto the exported image, which travels without the page around it.
       snapshotView: name => `${name} view`,
-      snapshotStatement: 'NeuroAtlas · Not clinical anatomy',
+      snapshotStatement: 'Planum · Not clinical anatomy',
       fullscreen: 'Full screen',
       loadingAnatomy: 'Loading anatomy…',
       loadingWithTotal: (l, t) => `Loading anatomy · ${megabytes(l)} / ${megabytes(t)} MB`,
@@ -437,7 +461,7 @@ export const TRANSLATIONS = {
       index: 'Index of the published anatomies',
       tractReference: 'Tract reference',
       sources: 'Sources',
-      intendedUse: 'For research and education. NeuroAtlas is not a medical device and must not be used for diagnosis, treatment or any other clinical decision.',
+      intendedUse: 'For research and education. Planum is not a medical device and must not be used for diagnosis, treatment or any other clinical decision.',
     },
 
     workspace: {
@@ -467,11 +491,11 @@ export const TRANSLATIONS = {
 
     // What the reader is told when something fails; the raw error goes to the console.
     errors: {
-      updated: 'NeuroAtlas was updated. Reload to continue.',
+      updated: 'Planum was updated. Reload to continue.',
       download: 'A file could not be downloaded. Check the connection and try again.',
       reload: 'Reload',
       dismiss: 'Dismiss',
-      linkRetry: 'Retry opens NeuroAtlas without this link.',
+      linkRetry: 'Retry opens Planum without this link.',
       webgl2: 'This viewer needs WebGL 2, which this browser or device does not provide. A current desktop Firefox, Chrome, Edge or Safari will run it.',
       floatTargets: 'This viewer needs WebGL 2 with floating-point render targets (EXT_color_buffer_float), which this browser or device does not provide. A current desktop Firefox, Chrome, Edge or Safari will run it.',
       contextLost: 'The 3D view was interrupted by the graphics driver. Restoring…',
@@ -556,9 +580,10 @@ export const TRANSLATIONS = {
     atlases: {
       destrieux: 'Atlas anatomique de Destrieux',
       'hcp-mmp': 'Atlas multimodal HCP-MMP1.0',
-      learning: 'Ensemble pédagogique : grandes structures regroupant des étiquettes NextBrain et aseg',
+      learning: 'Ensemble pédagogique : grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés',
       aseg: 'Segmentation sous-corticale FreeSurfer',
       nextbrain: 'Atlas histologique NextBrain',
+      cerebnet: 'Lobules cérébelleux FastSurfer CerebNet',
       wmparc: 'Parcellisation de la substance blanche FreeSurfer',
       zanatomy: 'Moelle épinière de référence Z-Anatomy',
     },
@@ -569,6 +594,7 @@ export const TRANSLATIONS = {
         learning: 'Ensemble pédagogique',
         aseg: 'FreeSurfer aseg',
         nextbrain: 'NextBrain',
+        cerebnet: 'CerebNet',
         wmparc: 'wmparc',
         zanatomy: 'Moelle',
       },
@@ -578,11 +604,11 @@ export const TRANSLATIONS = {
       colourGroups: { appearance: 'Apparence', parcellation: 'Parcellisation', networks: 'Réseaux' },
       atlasBecomes: (colour, atlas) => `${colour} (l’atlas devient ${atlas})`,
       colourBecomes: (atlas, colour) => `${atlas} (la couleur devient ${colour})`,
-      dataSummary: 'Sujet, atlas, couleur et anatomie interne',
+      dataSummary: 'Réglages de l’atlas et de l’affichage',
       notes: {
         destrieux: 'Régions des sillons et des gyrus, 74 par hémisphère',
         'hcp-mmp': 'Aires multimodales, 180 par hémisphère (Glasser 2016)',
-        learning: 'Grandes structures regroupant des étiquettes NextBrain et aseg',
+        learning: 'Grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés',
         aseg: 'Segmentation sous-corticale automatique standard de FreeSurfer',
         nextbrain: 'Atlas d’origine histologique, segmenté sur ce sujet à 0,4\u202fmm',
       },
@@ -658,9 +684,10 @@ export const TRANSLATIONS = {
       heading: 'Fonctions neuropsychologiques',
       score: (term, z) => `« ${term} » · z\u00a0${z}`,
       none: threshold => `Aucune fonction n’atteint z\u00a0${threshold} ici.`,
-      noteStructure: source => `Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme (${source}). Données plus faibles que pour une aire corticale\u202f: le noyau de lissage de 6\u00a0mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.`,
-      note: source => `Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme (${source})\u202f: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.`,
+      noteStructure: source => `Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après ${source}. Données plus faibles que pour une aire corticale\u202f: le noyau de lissage de 6\u00a0mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.`,
+      note: source => `Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après ${source}\u202f: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.`,
       keyTitle: 'Fonctions neuropsychologiques',
+      keyTitleTerm: 'Terme Neurosynth',
       keyAll: 'Chaque aire montre sa fonction la plus forte\u202f; les aires couleur tissu n’en atteignent aucune. Choisissez-en une pour voir toutes ses aires.',
       keyPicked: 'Toutes les aires qui l’atteignent, chevauchements compris.',
       termOf: (name, term) => `${name}\u202f: « ${term} »`,
@@ -668,19 +695,23 @@ export const TRANSLATIONS = {
       lesionItem: (deficit, references, parcels) => `${deficit} (${references})\u202f: ${parcels}`,
       parcelCoverage: (parcel, share) => `${parcel} colorée à ${share}`,
       parcelOffSurface: parcel => `${parcel}, non mesurée`,
-      noLesionCheck: 'Aucune étude lésionnelle des données de déficits de NeuroAtlas ne vérifie ce domaine.',
+      noLesionCheck: 'Aucune étude lésionnelle des données de déficits de Planum ne vérifie ce domaine.',
     },
     functions: {
       search: 'Rechercher une fonction',
       list: 'Fonctions',
       all: 'Toutes les fonctions',
       allDetail: 'Chaque aire dans la plus forte des fonctions de base de l’évaluation',
-      coverage: count => `${count} fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.`,
-      noResults: 'Essayez un autre nom, ou un terme Neurosynth comme «\u00a0memory\u00a0».',
-      term: (term, studies) => `Terme Neurosynth «\u00a0${term}\u00a0» · ${studies}`,
+      coverage: (count, terms) => `${count} fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP`
+        + (terms ? `\u202f; la recherche trouve aussi ${terms} autres termes et groupes cliniques Neurosynth` : '')
+        + '. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.',
+      noResults: 'Cherchez une fonction, une tâche ou un stimulus, comme «\u00a0faces\u00a0» ou «\u00a0reward\u00a0», ou un groupe clinique comme «\u00a0aphasia\u00a0».',
+      term: (term, studies) => `Données d’activation · terme Neurosynth «\u00a0${term}\u00a0» · ${studies}`,
       areas: (areas, structures, threshold) => `${areas} ${areas === 1 ? 'aire HCP-MMP' : 'aires HCP-MMP'}`
         + (structures ? ` et ${structures} ${structures === 1 ? 'structure' : 'structures'}` : '')
-        + ` ${areas + structures === 1 ? 'atteint' : 'atteignent'} z\u00a0${threshold}`,
+        + ` à z\u00a0≥\u00a0${threshold}`,
+      areasShort: (areas, structures) => `${areas} ${areas === 1 ? 'aire' : 'aires'}`
+        + (structures ? `, ${structures} ${structures === 1 ? 'structure' : 'structures'}` : ''),
       none: threshold => `Aucune aire HCP-MMP ni structure n’atteint z\u00a0${threshold}.`,
       areasHeading: 'Aires et structures, de la plus forte à la plus faible',
       more: count => `${count} ${count === 1 ? 'autre aire' : 'autres aires'}`,
@@ -691,6 +722,18 @@ export const TRANSLATIONS = {
       loading: 'Préparation des aires HCP-MMP…',
       failed: 'Les aires HCP-MMP n’ont pas pu être affichées.',
       shown: 'Affichée sur les aires HCP-MMP',
+      termsHeading: 'Termes Neurosynth',
+      populationsHeading: 'Groupes cliniques Neurosynth',
+      deepStrongest: (name, side) => `Sa région la plus forte, ${name} (${side}), se trouve sous le cortex.`,
+      suggest: name => `Vouliez-vous dire «\u00a0${name}\u00a0»\u202f?`,
+      termDetail: (studies, areas) => `${studies} · ${areas}`,
+      termsMore: count => `${count} ${count === 1 ? 'autre terme correspond' : 'autres termes correspondent'}\u202f; précisez la recherche pour réduire la liste.`,
+      termCaveat: 'Un terme Neurosynth, et non une fonction retenue\u202f: choisi parce qu’il désigne une fonction, une tâche ou un stimulus, mais sa carte n’a été vérifiée ni par rapport à ce qu’il désigne ni par des études lésionnelles.',
+      populationCaveat: 'Un groupe clinique\u202f: ses études comparent surtout des personnes atteintes à des personnes en bonne santé. La carte montre où elles rapportent une activation, et non où une lésion cause l’affection.',
+      lesionHeading: 'Données lésionnelles',
+      deficitBridge: (count, query) => `Déficits\u202f: ${count} ${count === 1 ? 'profil lésionnel correspond' : 'profils lésionnels correspondent'} à «\u00a0${query}\u00a0»`,
+      results: (functions, terms) => (functions + terms ? [functions && `${functions} ${functions === 1 ? 'fonction' : 'fonctions'}`,
+        terms && `${terms} ${terms === 1 ? 'terme' : 'termes'} Neurosynth`].filter(Boolean).join(' et ') : 'Aucun résultat'),
     },
     deficitKey: {
       keyAll: 'Une couleur par constat\u202f; une région citée par plusieurs constats prend la couleur du premier, et les régions couleur tissu ne sont pas citées. Choisissez un constat pour l’afficher seul.',
@@ -794,6 +837,8 @@ export const TRANSLATIONS = {
     },
     display: {
       hemisphere: 'Hémisphère',
+      seeThrough: 'Voir à travers le cortex',
+      seenThrough: 'Cortex rendu transparent. Affichage règle son opacité\u202f; Rétablir la vue précédente le rétablit.',
       both: 'Les deux',
       left: 'Gauche',
       right: 'Droite',
@@ -904,7 +949,7 @@ export const TRANSLATIONS = {
       },
       snapshot: 'Enregistrer l’image (PNG)',
       snapshotView: name => `Vue ${name.toLowerCase()}`,
-      snapshotStatement: 'NeuroAtlas · Pas une anatomie clinique',
+      snapshotStatement: 'Planum · Pas une anatomie clinique',
       fullscreen: 'Plein écran',
       loadingAnatomy: 'Chargement de l’anatomie…',
       loadingWithTotal: (l, t) => `Chargement de l’anatomie · ${megabytes(l)} / ${megabytes(t)} Mo`,
@@ -937,7 +982,7 @@ export const TRANSLATIONS = {
       index: 'Index des anatomies publiées',
       tractReference: 'Référence des faisceaux',
       sources: 'Sources',
-      intendedUse: 'Pour la recherche et l’enseignement. NeuroAtlas n’est pas un dispositif médical et ne doit pas servir au diagnostic, au traitement ni à aucune autre décision clinique.',
+      intendedUse: 'Pour la recherche et l’enseignement. Planum n’est pas un dispositif médical et ne doit pas servir au diagnostic, au traitement ni à aucune autre décision clinique.',
     },
 
     workspace: {
@@ -966,11 +1011,11 @@ export const TRANSLATIONS = {
     },
 
     errors: {
-      updated: 'NeuroAtlas a été mis à jour. Rechargez la page pour continuer.',
+      updated: 'Planum a été mis à jour. Rechargez la page pour continuer.',
       download: 'Un fichier n’a pas pu être téléchargé. Vérifiez la connexion et réessayez.',
       reload: 'Recharger',
       dismiss: 'Fermer',
-      linkRetry: 'Réessayer ouvre NeuroAtlas sans ce lien.',
+      linkRetry: 'Réessayer ouvre Planum sans ce lien.',
       webgl2: 'Cette visionneuse nécessite WebGL 2, que ce navigateur ou cet appareil ne fournit pas. Une version récente de Firefox, Chrome, Edge ou Safari pour ordinateur la fera fonctionner.',
       floatTargets: 'Cette visionneuse nécessite WebGL 2 avec des cibles de rendu à virgule flottante (EXT_color_buffer_float), que ce navigateur ou cet appareil ne fournit pas. Une version récente de Firefox, Chrome, Edge ou Safari pour ordinateur la fera fonctionner.',
       contextLost: 'La vue 3D a été interrompue par le pilote graphique. Restauration…',

@@ -38,6 +38,12 @@ test('empty inspector has no duplicate view-status datasheet', () => {
 test('the content modes are the panel\'s one tab row, with no segmented row under it', () => {
   assert.match(tagWithId('workspace-tabs'), /role="tablist"/);
   assert.match(tagWithId('sheet-tabs'), /role="tablist"/);
+  const panel = html.indexOf('<div id="workspace-panel"');
+  const tabs = html.indexOf('id="workspace-tabs"');
+  const navigator = html.indexOf('<aside id="navigator"');
+  assert.ok(panel !== -1 && tabs > panel && tabs < navigator,
+    'desktop modes belong to the task panel, before its content');
+  assert.equal(mastheadHtml().includes('id="workspace-tabs"'), false);
   assert.equal(/id="explorer-switch"|data-explorer=/.test(html), false);
   assert.equal(/data-tab="(find|cuts|display)"/.test(html), false);
 });
@@ -238,7 +244,7 @@ test('subject names keep the dataset with the subject, without quotation marks',
   assert.equal(subjectName({ id: 'y' }), 'y');
 });
 
-test('the data summary names subject, atlas, colour and internal anatomy, or the tract reference alone', () => {
+test('the data summary names available choices, or the tract reference alone', () => {
   const texts = parts => parts.map(({ text }) => text);
   const full = dataSummary({ subject: 'SNAIL subj_1', atlas: 'Destrieux', colour: 'Regions', detail: 'Teaching set' });
   assert.deepEqual(texts(full), ['SNAIL subj_1', 'Destrieux', 'Regions', 'Teaching set']);
@@ -246,6 +252,13 @@ test('the data summary names subject, atlas, colour and internal anatomy, or the
   assert.deepEqual(dataSummary({ subject: 'bert', atlas: 'Destrieux', colour: 'Regions', reference: 'SNAIL' }),
     [{ part: 'subject', text: 'SNAIL' }]);
   assert.deepEqual(texts(dataSummary({ subject: 'bert', atlas: 'Destrieux', detail: null })), ['bert', 'Destrieux']);
+  assert.deepEqual(dataSummary({ subject: null, atlas: 'Destrieux', colour: 'Regions', detail: 'Teaching set' }), [
+    { part: 'atlas', text: 'Destrieux' },
+    { part: 'colour', text: 'Regions' },
+    { part: 'detail', text: 'Teaching set' },
+  ], 'an immutable subject can be omitted without adding a blank summary part');
+  assert.deepEqual(dataSummary({ atlas: 'Destrieux' }), [{ part: 'atlas', text: 'Destrieux' }],
+    'the atlas still identifies a summary with no subject or supporting settings');
 });
 
 test('every masthead data choice is explained in a line, in both languages', () => {

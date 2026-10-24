@@ -233,27 +233,29 @@ def test_validation_reports_the_published_assembly(published):
     assert report["region_count"] == len(regions) == 58
 
 
-@pytest.mark.parametrize(
-    "anatomy,cut",
-    [
-        ("snail", {"surface_z_mm": -75.0, "brainstem_voxels": 183}),
-        ("cdmd", None),
-    ],
-)
-def test_no_cord_is_placed_where_the_scan_ends_inside_the_brainstem(anatomy, cut):
-    config = read_config(anatomy)
-    assert spinal_cord.brainstem(config)[1] == cut
-    assert spinal_cord.is_declared(config) is (cut is None)
+def test_the_cord_is_placed_where_the_scan_reaches_below_the_brainstem():
+    config = read_config("cdmd")
+    assert spinal_cord.brainstem(config)[1] is None
+    assert spinal_cord.is_declared(config)
+    assert spinal_cord.omission(config) == []
+    spinal_cord.placement(config, spinal_cord.read_structures(config)[
+        spinal_cord.key_of(config["spinal_cord"]["structures"][0])
+    ])
+
+
+def test_no_cord_is_placed_where_the_scan_ends_inside_the_brainstem(monkeypatch):
+    # The removed SNAIL scan measured this cut: no signal below -75 mm, with 183
+    # brainstem voxels on its lowest slice.
+    config = read_config("cdmd")
+    stem, _ = spinal_cord.brainstem(config)
+    cut = {"surface_z_mm": -75.0, "brainstem_voxels": 183}
+    monkeypatch.setattr(spinal_cord, "brainstem", lambda config: (stem, cut))
     cord = spinal_cord.read_structures(config)[
         spinal_cord.key_of(config["spinal_cord"]["structures"][0])
     ]
-    if cut is None:
-        assert spinal_cord.omission(config) == []
+    assert "-75 mm with 183 brainstem voxels" in spinal_cord.omission(config)[0]
+    with pytest.raises(ValueError, match="scan ends"):
         spinal_cord.placement(config, cord)
-    else:
-        assert "-75 mm with 183 brainstem voxels" in spinal_cord.omission(config)[0]
-        with pytest.raises(ValueError, match="scan ends"):
-            spinal_cord.placement(config, cord)
 
 
 @pytest.mark.parametrize("signal_below", [0, 1])

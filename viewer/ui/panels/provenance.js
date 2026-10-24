@@ -160,13 +160,18 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, domains, fal
     }));
   }
 
-  const show = () => {
+  const show = event => {
     if (dialog.open) return;
     opener = document.activeElement;
     render();
+    dialog.toggleAttribute('data-instant', event.detail === 0);
     dialog.showModal();
   };
-  const hide = () => dialog.close();
+  const hide = event => {
+    dialog.toggleAttribute('data-instant', event.detail === 0);
+    dialog.close();
+  };
+  const onCancel = () => dialog.toggleAttribute('data-instant', true);
   // The page's own keys (Escape clears the selection, letters change the view) stay out of the dialog.
   const onKeyDown = event => event.stopPropagation();
   const onClose = () => {
@@ -180,6 +185,7 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, domains, fal
     button.hidden = false;
   }
   close.addEventListener('click', hide);
+  dialog.addEventListener('cancel', onCancel);
   dialog.addEventListener('keydown', onKeyDown);
   dialog.addEventListener('close', onClose);
 
@@ -194,6 +200,7 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, domains, fal
     dispose() {
       for (const button of openers) button.removeEventListener('click', show);
       close.removeEventListener('click', hide);
+      dialog.removeEventListener('cancel', onCancel);
       dialog.removeEventListener('keydown', onKeyDown);
       dialog.removeEventListener('close', onClose);
     },

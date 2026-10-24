@@ -10,7 +10,7 @@ from brain_model import validate_transforms
 from brain_model.sources import ROOT, read_config
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
+@pytest.mark.parametrize("anatomy", ["cdmd"])
 def test_every_projected_annotation_is_its_rederivation_byte_for_byte(anatomy):
     report = validate_transforms.validate_projected_annotations(read_config(anatomy))
     assert set(report) == {"HCPMMP1", "Schaefer2018_400Parcels_7Networks_order"}
@@ -35,32 +35,25 @@ def test_a_projected_annotation_that_differs_by_one_vertex_is_refused(tmp_path):
         validate_transforms.validate_projected_annotations(config)
 
 
-def test_the_tract_reference_transform_is_orig_mgz_own():
-    report = validate_transforms.validate_transforms(read_config("snail"))
-    space = report["diffusion_space"]
+def test_cdmds_own_tracts_share_its_reconstructions_frame():
+    space = validate_transforms.validate_transforms(read_config("cdmd"))["diffusion_space"]
     assert space["translation_equals_minus_c_ras"] is True
     assert space["maximum_difference_mm"] == 0
     assert "diffusion_space" not in validate_transforms.validate_transforms(read_config("fsaverage"))
 
 
-def test_cdmds_own_tracts_share_its_reconstructions_frame():
-    space = validate_transforms.validate_transforms(read_config("cdmd"))["diffusion_space"]
-    assert space["translation_equals_minus_c_ras"] is True
-    assert space["maximum_difference_mm"] == 0
-
-
 def test_a_shifted_tract_reference_is_refused(tmp_path, monkeypatch):
-    catalog = ROOT / "data/diffusion.yaml"
+    catalog = ROOT / "data/diffusion-cdmd.yaml"
     (tmp_path / "data").mkdir()
-    shutil.copy(catalog, tmp_path / "data/diffusion.yaml")
-    recorded = json.loads((ROOT / "public/diffusion/snail-subject-1/surface-space.json").read_text())
+    shutil.copy(catalog, tmp_path / "data/diffusion-cdmd.yaml")
+    recorded = json.loads((ROOT / "public/diffusion/cdmd-sub-013/surface-space.json").read_text())
     recorded["anchors"][1]["surface_ras_mm"][2] += 0.001
-    destination = tmp_path / "public/diffusion/snail-subject-1"
+    destination = tmp_path / "public/diffusion/cdmd-sub-013"
     destination.mkdir(parents=True)
     (destination / "surface-space.json").write_text(json.dumps(recorded))
-    (destination / "t1_warped.nii.gz").symlink_to(
-        ROOT / "public/diffusion/snail-subject-1/t1_warped.nii.gz"
-    )
+    source = recorded["source"]
+    (tmp_path / source).parent.mkdir(parents=True)
+    (tmp_path / source).symlink_to(ROOT / source)
     monkeypatch.setattr(validate_transforms, "ROOT", tmp_path)
     with pytest.raises(ValueError, match="differs from orig.mgz"):
-        validate_transforms.validate_diffusion_space(read_config("snail"))
+        validate_transforms.validate_diffusion_space(read_config("cdmd"))

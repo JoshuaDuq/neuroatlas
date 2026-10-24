@@ -1,19 +1,27 @@
 import { t } from '../../i18n/translations.js';
 import { CLINICAL_TEXT } from '../../clinical/translations.js';
 import { networkCss } from '../../catalog/networks.js';
+import { functionalName, functionalRegionOf } from '../../catalog/functional-regions.js';
 import {
-  ALL_DOMAINS, domainAreas, domainName, domainRecord, groupedDomains, overviewDomains,
+  ALL_DOMAINS, domainAreas, domainName, domainRecord, domainStudies, groupedDomains, isTermId, matchingTerms,
+  nearestName, overviewDomains,
 } from '../../catalog/neuropsych-domains.js';
 import { count, decimal } from '../format.js';
+import { createAnnouncer } from '../announce.js';
 import { createButtonLabel } from '../chrome/button-label.js';
-import { drillChevron, element, scrollToTop, stageMessage } from './clinical.js';
+import { bridgeButton, drillChevron, element, scrollToTop, stageMessage } from './clinical.js';
 import { checkedParcels } from './provenance.js';
 
 /** Areas listed before the rest fold under a disclosure. */
 const AREAS_SHOWN = 12;
+/** Searched terms listed under the curated functions; the rest wait for a narrower query. */
+const TERMS_SHOWN = 20;
 
-/** A function's row: its colour on the brain, its name, a line under it, and the chevron that opens it. */
-function functionButton(id, name, detail, color) {
+/**
+ * A function's row: its colour on the brain, its name, a line under it, and the chevron that opens it.
+ * A searched term has no colour of its own to show, and is English whatever the reader's language.
+ */
+function functionButton(id, name, detail, color, nameLang = null) {
   const button = element('button', null, 'clinical-deficit function-row');
   button.type = 'button';
   button.dataset.function = id;
@@ -21,26 +29,51 @@ function functionButton(id, name, detail, color) {
   swatch.setAttribute('aria-hidden', 'true');
   if (color) swatch.style.background = networkCss(color);
   const text = element('span', null, 'clinical-deficit-text');
-  text.append(element('span', name, 'clinical-deficit-name'), element('span', detail, 'clinical-deficit-domain'));
+  const label = element('span', name, 'clinical-deficit-name');
+  if (nameLang) label.lang = nameLang;
+  text.append(label, element('span', detail, 'clinical-deficit-domain'));
   button.append(swatch, text, drillChevron());
   return button;
 }
 
-/** The areas and structures a domain reaches, counted apart, as the list and the overview say it. */
-function areaCount(partition, id, lang) {
+/** How many of the regions a domain reaches are areas and how many structures. */
+function reachedCounts(partition, id) {
   const reached = domainAreas(partition, id);
   const structures = reached.filter(({ region }) => region.startsWith(`${partition.structure_atlas}:`)).length;
-  return t(lang, 'functions').areas(reached.length - structures, structures, decimal(partition.threshold_z, 0, lang));
+  return [reached.length - structures, structures];
 }
 
+/** The areas and structures a domain reaches at the threshold, as the profile and the overview say it. */
+const areaCount = (partition, id, lang) => t(lang, 'functions')
+  .areas(...reachedCounts(partition, id), decimal(partition.threshold_z, 0, lang));
+
+/** The same count as a list row says it, beside the row's other facts. */
+const areaCountShort = (partition, id, lang) => t(lang, 'functions').areasShort(...reachedCounts(partition, id));
+
+/** A list group under its heading, labelled by it for assistive technology. */
+function listGroup(id, name, rows) {
+  const section = element('div', null, 'deficit-group');
+  const heading = element('h3', name, 'section-label deficit-group-heading');
+  heading.id = `function-group-${id}`;
+  section.setAttribute('role', 'group');
+  section.setAttribute('aria-labelledby', heading.id);
+  section.append(heading, ...rows);
+  return section;
+}
+
+
 /**
- * The Functions tab: Neurosynth domains under their groups, and a drill-in profile of one, or of
- * all at once. It shares the session render cycle as the Deficits tab does. `onFunction` draws the
- * choice on the brain and may download; `onRegion` and `onDeficit` open what the profile names.
+ * The Functions tab: Neurosynth domains under their groups, matching Neurosynth terms while searching,
+ * and a drill-in profile of one, or of all at once. It shares the session render cycle as the Deficits
+ * tab does. `onFunction` draws the choice on the brain and may download; `onRegion` and `onDeficit` open
+ * what the profile names. `deficitsMatching` counts the Deficits tab's profiles for the same words, and
+ * `onSearchDeficits` carries the query there.
  */
 export function createFunctionExplorer({
-  domains, anatomy, onQuery, onFunction, onRegion, onDeficit, onRestore, onFailure,
+  domains, anatomy, functionalRegions, deficitsMatching, onQuery, onFunction, onRegion, onDeficit,
+  onSearchDeficits, onRestore, onFailure,
 }) {
+  const announce = createAnnouncer();
   const head = document.getElementById('function-search-head');
   const browser = document.getElementById('function-browser');
   const search = document.getElementById('function-search');
@@ -117,15 +150,22 @@ export function createFunctionExplorer({
     focusTitle();
   }
 
+  /** An area's row names its HCP-MMP code and side, and under it the functional division the code belongs to. */
   function areaButton({ region, z }, lang) {
     const entry = anatomy.get(region);
     const side = t(lang, 'sides').capitalized[entry.region.hemisphere];
+    const division = functionalRegionOf(functionalRegions, 'named', region)
+      ?? functionalRegionOf(functionalRegions, 'sections', region);
+    const divisionName = division && functionalName(division, lang);
     const button = element('button', null, 'function-area');
     button.type = 'button';
     button.dataset.functionRegion = region;
-    button.setAttribute('aria-label', `${t(lang, 'functions').openArea}: ${entry.label.name} · ${side}, z ${decimal(z, 1, lang)}`);
-    button.append(element('span', `${entry.label.name} · ${side}`, 'function-area-name'),
-      element('span', `z ${decimal(z, 1, lang)}`, 'function-area-z'));
+    button.setAttribute('aria-label', [`${t(lang, 'functions').openArea}: ${entry.label.name} · ${side}`, divisionName,
+      `z ${decimal(z, 1, lang)}`].filter(Boolean).join(', '));
+    const name = element('span', null, 'function-area-name');
+    name.append(element('span', `${entry.label.name} · ${side}`));
+    if (divisionName) name.append(element('span', divisionName, 'function-area-division'));
+    button.append(name, element('span', `z ${decimal(z, 1, lang)}`, 'function-area-z'));
     const item = element('li');
     item.append(button);
     return item;
@@ -194,11 +234,24 @@ export function createFunctionExplorer({
     const rows = element('ul', null, 'clinical-related');
     for (const record of overviewDomains(domains)) {
       const item = element('li');
-      item.append(functionButton(record.id, domainName(record, lang), areaCount(domains, record.id, lang), record.color));
+      item.append(functionButton(record.id, domainName(record, lang), areaCountShort(domains, record.id, lang), record.color));
       rows.append(item);
     }
     section.append(heading, rows);
     return section;
+  }
+
+  /** A clinical group's lesion profiles, where the Deficits tab has some for the same words. */
+  function lesionBridge(record, lang) {
+    const copy = t(lang, 'functions');
+    const found = deficitsMatching(record.term, lang);
+    if (!found) return [];
+    const section = element('section', null, 'detail-section function-lesions');
+    const heading = element('h3', copy.lesionHeading, 'detail-section-heading');
+    heading.id = 'function-lesions-heading';
+    section.setAttribute('aria-labelledby', heading.id);
+    section.append(heading, bridgeButton(copy.deficitBridge(found, record.term), { searchDeficits: record.term }));
+    return [section];
   }
 
   function renderProfile(state) {
@@ -209,18 +262,26 @@ export function createFunctionExplorer({
     const copy = t(lang, 'functions');
     const domainCopy = t(lang, 'domains');
     const all = id === ALL_DOMAINS;
+    const searched = isTermId(id);
     const record = all ? null : domainRecord(domains, id);
     const name = element('h2', all ? copy.all : domainName(record, lang), 'clinical-profile-name');
+    if (searched) name.lang = 'en';
     name.id = 'function-title';
     const meta = element('p', null, 'clinical-meta');
     meta.id = 'function-meta';
     meta.setAttribute('role', 'status');
     const body = element('div', null, 'panel-body clinical-content');
     body.append(name, meta,
-      element('p', all ? domainCopy.keyAll
-        : copy.term(record.term, count(domains.derivation.studies[id], 'study', lang)), 'clinical-summary'),
-      element('p', domainCopy.note(domains.sources[domains.scores_source].short), 'clinical-note clinical-caveat'));
+      all ? element('p', domainCopy.keyAll, 'clinical-summary')
+        : element('p', copy.term(record.term, count(domainStudies(domains, id), 'study', lang)), 'clinical-kind'));
+    // What kind of word a searched term is comes before what every map's numbers mean.
+    if (searched) {
+      body.append(element('p', record.kind === 'population' ? copy.populationCaveat : copy.termCaveat,
+        'clinical-note clinical-caveat'));
+    }
+    body.append(element('p', domainCopy.note(domains.sources[domains.scores_source].short), 'clinical-note clinical-caveat'));
     if (all) body.append(overviewSection(lang));
+    else if (searched) body.append(...(record.kind === 'population' ? lesionBridge(record, lang) : []), areasSection(id, lang));
     else body.append(areasSection(id, lang), lesionSection(id, lang));
     body.append(element('p', domains.sources[domains.scores_source].citation, 'clinical-note clinical-sources'));
     profile.append(body);
@@ -245,6 +306,7 @@ export function createFunctionExplorer({
 
   const onInput = event => onQuery(event.target.value);
   const onSearchKey = event => {
+    if (event.isComposing) return;
     if (event.key === 'Escape' && search.value) {
       event.preventDefault();
       search.value = '';
@@ -262,6 +324,15 @@ export function createFunctionExplorer({
     search.focus();
   };
   const onListClick = event => {
+    const suggestion = event.target.closest('[data-suggest]');
+    if (suggestion) {
+      search.value = suggestion.dataset.suggest;
+      onQuery(suggestion.dataset.suggest);
+      search.focus();
+      return;
+    }
+    const bridge = event.target.closest('[data-search-deficits]');
+    if (bridge) return onSearchDeficits(bridge.dataset.searchDeficits);
     const button = event.target.closest('[data-function]');
     if (button) selectFunction(button.dataset.function);
   };
@@ -273,6 +344,8 @@ export function createFunctionExplorer({
     if (next) next.focus();
   };
   const onProfileClick = event => {
+    const bridge = event.target.closest('[data-search-deficits]');
+    if (bridge) return onSearchDeficits(bridge.dataset.searchDeficits);
     const fn = event.target.closest('[data-function]');
     if (fn) return selectFunction(fn.dataset.function);
     const deficit = event.target.closest('[data-deficit]');
@@ -308,33 +381,47 @@ export function createFunctionExplorer({
       if (document.activeElement !== search) search.value = state.functionQuery;
       restoreLabel.textContent = CLINICAL_TEXT[lang].restore;
       restore.dataset.tooltip = CLINICAL_TEXT[lang].restore;
-      coverage.textContent = copy.coverage(domains.domains.length);
+      coverage.textContent = copy.coverage(domains.domains.length, domains.search?.terms.size ?? 0);
       list.setAttribute('aria-label', copy.list);
 
       const nextListKey = `${lang}|${state.functionQuery}`;
       if (nextListKey !== listKey) {
         listKey = nextListKey;
-        const groups = groupedDomains(domains, state.functionQuery, lang);
+        const query = state.functionQuery.trim();
+        const groups = groupedDomains(domains, query, lang);
+        const terms = matchingTerms(domains, query);
+        const shown = terms.slice(0, TERMS_SHOWN);
+        const termRow = record => functionButton(record.id, record.term,
+          copy.termDetail(count(record.studies, 'study', lang), areaCountShort(domains, record.id, lang)), null,
+          lang === 'en' ? null : 'en');
         const overview = element('div', null, 'deficit-group function-overview-row');
         overview.append(functionButton(ALL_DOMAINS, copy.all, copy.allDetail, null));
-        list.replaceChildren(...(state.functionQuery.trim() ? [] : [overview]), ...groups.map(({ group, name, domains: members }) => {
-          const section = element('div', null, 'deficit-group');
-          const heading = element('h3', name, 'section-label deficit-group-heading');
-          heading.id = `function-group-${group.id}`;
-          section.setAttribute('role', 'group');
-          section.setAttribute('aria-labelledby', heading.id);
-          section.append(heading, ...members.map(record =>
-            functionButton(record.id, domainName(record, lang), areaCount(domains, record.id, lang), record.color)));
-          return section;
-        }));
-        coverage.hidden = !groups.length;
-        if (!groups.length) {
-          list.append(element('p', t(lang, 'navigator').noMatch(state.functionQuery.trim()), 'empty-title'),
-            element('p', copy.noResults, 'empty'));
+        list.replaceChildren(...(query ? [] : [overview]), ...groups.map(({ group, name, domains: members }) =>
+          listGroup(group.id, name, members.map(record =>
+            functionButton(record.id, domainName(record, lang), areaCountShort(domains, record.id, lang), record.color)))));
+        // Searched terms follow the curated functions, clinical groups apart from the rest.
+        for (const kind of ['function', 'population']) {
+          const rows = shown.filter(record => record.kind === kind);
+          if (rows.length) {
+            list.append(listGroup(`terms-${kind}`, kind === 'function' ? copy.termsHeading : copy.populationsHeading,
+              rows.map(termRow)));
+          }
         }
+        if (terms.length > TERMS_SHOWN) list.append(element('p', copy.termsMore(terms.length - TERMS_SHOWN), 'clinical-note'));
+        if (query && !groups.length && !terms.length) {
+          list.append(element('p', t(lang, 'navigator').noMatch(query), 'empty-title'), element('p', copy.noResults, 'empty'));
+          const near = nearestName(domains, query, lang);
+          if (near) list.append(bridgeButton(copy.suggest(near), { suggest: near }));
+        }
+        const deficits = query ? deficitsMatching(query, lang) : 0;
+        if (deficits) list.append(bridgeButton(copy.deficitBridge(deficits, query), { searchDeficits: query }));
+        // The list's scope stands under the whole list; a search says its count instead.
+        coverage.hidden = Boolean(query);
+        if (query) announce(copy.results(groups.reduce((sum, entry) => sum + entry.domains.length, 0), terms.length));
       }
       for (const button of list.querySelectorAll('.function-row')) {
-        button.setAttribute('aria-pressed', String(button.dataset.function === state.selectedFunction));
+        if (button.dataset.function === state.selectedFunction) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
       }
       const nextProfileKey = `${lang}|${state.selectedFunction}`;
       if (nextProfileKey !== profileKey) {

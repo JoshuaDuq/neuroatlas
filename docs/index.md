@@ -1,13 +1,13 @@
-# NeuroAtlas
+# Planum
 
 ```{rst-class} hero-lede
 Source-faithful brain anatomy in the browser, for neuroscience teaching and anatomical research.
 ```
 
-NeuroAtlas renders individual FreeSurfer reconstructions at native resolution, with their cortical atlases, internal structures and linked MRI. A Python pipeline (`brain-model` {{ release }}) compiles each reconstruction into the files the viewer loads. It is not clinical anatomy.
+Planum renders individual FreeSurfer reconstructions at native resolution, with their cortical atlases, internal structures and linked MRI. A Python pipeline (`brain-model` {{ release }}) compiles each reconstruction into the files the viewer loads. It is not clinical anatomy.
 
 ```{figure} ../public/preview.png
-:alt: A cortical parcellation rendered in the NeuroAtlas viewer
+:alt: A cortical parcellation rendered in the Planum viewer
 :class: hero-figure
 
 A cortical parcellation in the viewer. Each colour is one region.
@@ -31,7 +31,6 @@ A cortical parcellation in the viewer. Each colour is one region.
 
 | Subject | Source | Licence |
 | :--- | :--- | :--- |
-| `snail` | SNAIL subject 1, the tract dataset's own T1, FreeSurfer 8.2 | CC0 1.0 |
 | `cdmd` (default) | MGH CDMD `sub_013`, its own diffusion tracts, FreeSurfer 8.2 | CC0 1.0 |
 
 Each is one person's brain. Folds, ventricles and asymmetries belong to that individual and are not normative. See [Anatomies](concepts/anatomies.md).

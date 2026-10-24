@@ -604,6 +604,42 @@
    "pages": "23-51",
    "corrections": []
   },
+  "pmid:12968006": {
+   "pmid": "12968006",
+   "pmcid": "PMC6740694",
+   "doi": "10.1523/jneurosci.23-23-08432.2003",
+   "doi_source": "pubmed",
+   "title": "Cerebellar loops with motor cortex and prefrontal cortex of a nonhuman primate",
+   "authors": [
+    "Kelly RM",
+    "Strick PL"
+   ],
+   "year": 2003,
+   "pubdate": "2003 Sep 10",
+   "journal": "J Neurosci",
+   "volume": "23",
+   "issue": "23",
+   "pages": "8432-44",
+   "corrections": []
+  },
+  "pmid:14610633": {
+   "pmid": "14610633",
+   "pmcid": null,
+   "doi": "10.1007/s00221-003-1588-0",
+   "doi_source": "pubmed",
+   "title": "Two different streams form the dorsal visual system: anatomy and functions",
+   "authors": [
+    "Rizzolatti G",
+    "Matelli M"
+   ],
+   "year": 2003,
+   "pubdate": "2003 Nov",
+   "journal": "Exp Brain Res",
+   "volume": "153",
+   "issue": "2",
+   "pages": "146-57",
+   "corrections": []
+  },
   "pmid:14654453": {
    "pmid": "14654453",
    "pmcid": null,
@@ -1031,6 +1067,29 @@
    "pages": "1146-51",
    "corrections": []
   },
+  "pmid:19759300": {
+   "pmid": "19759300",
+   "pmcid": "PMC6665774",
+   "doi": "10.1523/jneurosci.2040-09.2009",
+   "doi_source": "pubmed",
+   "title": "The representation of tool use in humans and monkeys: common and uniquely human features",
+   "authors": [
+    "Peeters R",
+    "Simone L",
+    "Nelissen K",
+    "Fabbri-Destro M",
+    "Vanduffel W",
+    "Rizzolatti G",
+    "Orban GA"
+   ],
+   "year": 2009,
+   "pubdate": "2009 Sep 16",
+   "journal": "J Neurosci",
+   "volume": "29",
+   "issue": "37",
+   "pages": "11523-39",
+   "corrections": []
+  },
   "pmid:19778911": {
    "pmid": "19778911",
    "pmcid": null,
@@ -1315,6 +1374,24 @@
    "pages": "393-402",
    "corrections": []
   },
+  "pmid:22889467": {
+   "pmid": "22889467",
+   "pmcid": "PMC4311762",
+   "doi": "10.1016/j.bandl.2012.07.007",
+   "doi_source": "pubmed",
+   "title": "Two action systems in the human brain",
+   "authors": [
+    "Binkofski F",
+    "Buxbaum LJ"
+   ],
+   "year": 2013,
+   "pubdate": "2013 Nov",
+   "journal": "Brain Lang",
+   "volume": "127",
+   "issue": "2",
+   "pages": "222-9",
+   "corrections": []
+  },
   "pmid:22907997": {
    "pmid": "22907997",
    "pmcid": "PMC3415822",
@@ -1576,6 +1653,26 @@
    "pages": "622-634",
    "corrections": []
   },
+  "pmid:27362967": {
+   "pmid": "27362967",
+   "pmcid": "PMC4989859",
+   "doi": "10.1080/02643294.2016.1188798",
+   "doi_source": "pubmed",
+   "title": "The neural network for tool-related cognition: An activation likelihood estimation meta-analysis of 70 neuroimaging contrasts",
+   "authors": [
+    "Ishibashi R",
+    "Pobric G",
+    "Saito S",
+    "Lambon Ralph MA"
+   ],
+   "year": 2016,
+   "pubdate": "2016",
+   "journal": "Cogn Neuropsychol",
+   "volume": "33",
+   "issue": "3-4",
+   "pages": "241-56",
+   "corrections": []
+  },
   "pmid:27437579": {
    "pmid": "27437579",
    "pmcid": "PMC4990127",
@@ -1757,6 +1854,24 @@
    "pages": "240-254",
    "corrections": []
   },
+  "pmid:29519468": {
+   "pmid": "29519468",
+   "pmcid": "PMC8139361",
+   "doi": "10.1016/b978-0-444-63622-5.00017-6",
+   "doi_source": "pubmed",
+   "title": "Limb apraxia and the left parietal lobe",
+   "authors": [
+    "Buxbaum LJ",
+    "Randerath J"
+   ],
+   "year": 2018,
+   "pubdate": "2018",
+   "journal": "Handb Clin Neurol",
+   "volume": "151",
+   "issue": null,
+   "pages": "349-363",
+   "corrections": []
+  },
   "pmid:29758339": {
    "pmid": "29758339",
    "pmcid": "PMC6921501",
@@ -1781,6 +1896,25 @@
    "pages": "57-68",
    "corrections": []
   },
+  "pmid:30086412": {
+   "pmid": "30086412",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2018.07.070",
+   "doi_source": "pubmed",
+   "title": "TractSeg - Fast and accurate white matter tract segmentation",
+   "authors": [
+    "Wasserthal J",
+    "Neher P",
+    "Maier-Hein KH"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Dec",
+   "journal": "Neuroimage",
+   "volume": "183",
+   "issue": null,
+   "pages": "239-253",
+   "corrections": []
+  },
   "pmid:30291974": {
    "pmid": "30291974",
    "pmcid": "PMC6289683",
@@ -1801,6 +1935,32 @@
    "volume": "185",
    "issue": null,
    "pages": "35-57",
+   "corrections": []
+  },
+  "pmid:31473352": {
+   "pmid": "31473352",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2019.116137",
+   "doi_source": "pubmed",
+   "title": "MRtrix3: A fast, flexible and open software framework for medical image processing and visualisation",
+   "authors": [
+    "Tournier JD",
+    "Smith R",
+    "Raffelt D",
+    "Tabbara R",
+    "Dhollander T",
+    "Pietsch M",
+    "Christiaens D",
+    "Jeurissen B",
+    "Yeh CH",
+    "Connelly A"
+   ],
+   "year": 2019,
+   "pubdate": "2019 Nov 15",
+   "journal": "Neuroimage",
+   "volume": "202",
+   "issue": null,
+   "pages": "116137",
    "corrections": []
   },
   "pmid:32132227": {
@@ -1936,6 +2096,39 @@
    "volume": "44",
    "issue": "2",
    "pages": "629-655",
+   "corrections": []
+  },
+  "pmid:36349595": {
+   "pmid": "36349595",
+   "pmcid": "PMC9771831",
+   "doi": "10.1016/j.neuroimage.2022.119703",
+   "doi_source": "pubmed",
+   "title": "CerebNet: A fast and reliable deep-learning pipeline for detailed cerebellum sub-segmentation",
+   "authors": [
+    "Faber J",
+    "Kügler D",
+    "Bahrami E",
+    "Heinz LS",
+    "Timmann D",
+    "Ernst TM",
+    "Deike-Hofmann K",
+    "Klockgether T",
+    "van de Warrenburg B",
+    "van Gaalen J",
+    "Reetz K",
+    "Romanzetti S",
+    "Oz G",
+    "Joers JM",
+    "Diedrichsen J",
+    "ESMI MRI Study Group",
+    "Reuter M"
+   ],
+   "year": 2022,
+   "pubdate": "2022 Dec 01",
+   "journal": "Neuroimage",
+   "volume": "264",
+   "issue": null,
+   "pages": "119703",
    "corrections": []
   },
   "pmid:38433712": {

@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
+import { parse } from 'yaml';
 import { BrainAtlas } from '../model/brain-atlas.js';
 import { createSceneCommands } from '../state/scene-commands.js';
 import { createSession } from '../state/session.js';
+import { createCircuitCatalog } from './catalog.js';
 import { prepareCircuitMri, showCircuitLandmark } from './navigation.js';
 
 /** The real model on cdmd's manifest, its layers already loaded, opened through the scene commands. */
@@ -19,13 +21,16 @@ function lesson() {
     assert.equal(await commands.openRegion(step.region, commands.begin()), true);
     showCircuitLandmark(model, step);
   };
-  return { model, open };
+  const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
+  const deficits = parse(read('../../data/neuropsychology.yaml')).deficits.map(deficit => deficit.id);
+  const catalog = createCircuitCatalog(parse(read('../../data/circuits.yaml')), manifest, deficits);
+  return { model, open, catalog };
 }
 
 test('the actual model accepts a hidden landmark only after the tour reveals it', async () => {
   const { model, open } = lesson();
   model.setInternalVisible(false);
-  const step = { region: 'learning:midline:optic-chiasm' };
+  const step = { region: 'learning:midline:optic-chiasm', restores: [] };
   assert.throws(() => model.select(step.region), /Region is not visible/);
   await open(step);
   assert.equal(model.state.selectedRegion.id, step.region);
@@ -33,23 +38,25 @@ test('the actual model accepts a hidden landmark only after the tour reveals it'
   model.dispose();
 });
 
-test('a deep cerebellar lesson uncovers the nucleus and returning restores its cortex', async () => {
-  const { model, open } = lesson();
-  const cortex = 'learning:cerebellar-cortex-left';
-  await open({ region: 'learning:left:dentate', covering_region: cortex });
+test('a deep cerebellar lesson uncovers the nucleus and returning restores every covering lobule', async () => {
+  const { model, open, catalog } = lesson();
+  const [cortex, dentate] = catalog.get('cerebellar').steps;
+  assert.equal(cortex.region, 'learning:lobule-v-left');
+  assert.equal(dentate.covering_regions.length, 10);
+  await open(dentate);
   assert.equal(model.state.selectedRegion.id, 'learning:left:dentate');
-  assert.ok(model.state.hiddenRegions.has(cortex));
-  await open({ region: cortex });
-  assert.equal(model.state.selectedRegion.id, cortex);
-  assert.ok(!model.state.hiddenRegions.has(cortex));
+  for (const id of dentate.covering_regions) assert.ok(model.state.hiddenRegions.has(id), id);
+  await open(cortex);
+  assert.equal(model.state.selectedRegion.id, cortex.region);
+  for (const id of dentate.covering_regions) assert.ok(!model.state.hiddenRegions.has(id), id);
   model.dispose();
 });
 
 test('a lesson shows its landmark’s own side, and both for a midline one', async () => {
   const { model, open } = lesson();
-  await open({ region: 'learning:left:fornix' });
+  await open({ region: 'learning:left:fornix', restores: [] });
   assert.equal(model.state.hemisphere, 'left');
-  await open({ region: 'learning:midline:optic-chiasm' });
+  await open({ region: 'learning:midline:optic-chiasm', restores: [] });
   assert.equal(model.state.hemisphere, 'both');
   model.dispose();
 });

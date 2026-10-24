@@ -66,7 +66,9 @@ test('desktop navigation stays in the task panel with a separate phone mirror', 
   const { byId } = workspaceDocument(context);
   const workspace = createWorkspace();
   context.after(() => workspace.dispose());
+  workspace.activate();
   assert.equal(byId('workspace-tabs').parentElement, byId('workspace-panel'));
+  assert.equal(byId('workspace-tabs').hidden, false);
   assert.deepEqual(byId('workspace-tabs').children.map(button => button.dataset.mode), MODES);
   assert.deepEqual(byId('sheet-tabs').children.map(button => button.dataset.mode), MODES);
 });

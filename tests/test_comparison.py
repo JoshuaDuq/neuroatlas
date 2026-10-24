@@ -272,7 +272,7 @@ def quantization_area_bounds(vertices, faces):
 def test_real_source_marginals_match_published_float32_surface_areas():
     from brain_model.layers.comparison import compare_surface
 
-    config = read_config("snail")
+    config = read_config("cdmd")
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     regions = {region["id"]: region for region in manifest["regions"]}
     for prefix, hemisphere in [("lh", "left"), ("rh", "right")]:
@@ -303,14 +303,14 @@ def test_real_source_marginals_match_published_float32_surface_areas():
 def test_the_published_individuals_are_configured_for_comparison():
     from brain_model.layers.comparison import is_enabled
 
-    assert is_enabled(read_config("snail")) and is_enabled(read_config("cdmd"))
+    assert is_enabled(read_config("cdmd"))
     assert not is_enabled(read_config("fsaverage"))
 
 
 def test_published_geometry_contains_only_the_exact_joint_cells():
     from brain_model.layers.comparison import compare_surface
 
-    config = read_config("snail")
+    config = read_config("cdmd")
     output = config["output_directory"]
     record = json.loads((output / "atlas-comparison.json").read_text())
     scene = trimesh.load(

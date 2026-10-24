@@ -59,6 +59,6 @@ test('a failed start keeps the link for a download failure and drops it otherwis
   assert.deepEqual(updated, { text: t('fr', 'errors').updated, button: 'Recharger', dropLink: false });
   const fromLink = startFailure(new Error('Unknown view: Left'), 'en', true);
   assert.equal(fromLink.dropLink, true);
-  assert.equal(fromLink.text, 'Could not open this link. Retry opens NeuroAtlas without this link.');
+  assert.equal(fromLink.text, 'Could not open this link. Retry opens Planum without this link.');
   assert.equal(startFailure(new Error('boom'), 'en', false).dropLink, false);
 });

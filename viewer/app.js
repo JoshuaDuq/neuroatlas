@@ -3,14 +3,18 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createCatalog } from './catalog/catalog.js';
 import { readComparisonGeometry } from './comparison/assets.js';
 import { createComparisonOverlay } from './comparison/overlay.js';
+import { beneathCortex } from './catalog/labels.js';
 import { visibilityOf } from './catalog/visibility.js';
 import { loadClinicalCatalog } from './clinical/load.js';
+import { CLINICAL_TEXT } from './clinical/translations.js';
 import { loadCircuitCatalog } from './learning/load.js';
 import { createCircuitSession } from './learning/session.js';
 import { prepareCircuitMri, showCircuitLandmark } from './learning/navigation.js';
 import { BrainAtlas } from './model/brain-atlas.js';
 import { functionalName, functionalRegionOf } from './catalog/functional-regions.js';
-import { ALL_DOMAINS, domainName, domainPaint, domainRecord, domainsOf } from './catalog/neuropsych-domains.js';
+import {
+  ALL_DOMAINS, domainAreas, domainName, domainPaint, domainRecord, domainsOf, groupedDomains, isTermId, matchingTerms,
+} from './catalog/neuropsych-domains.js';
 import { cabNpName, networkName } from './catalog/networks.js';
 import { loadAnatomies, resolveAnatomy } from './model/published-anatomy.js';
 import { reloadWithoutStoredModels } from './model/published-assets.js';
@@ -87,7 +91,7 @@ export async function startApp() {
   const link = decodeState(globalThis.location.hash);
   const wanted = link.state;
   let savedLang = null;
-  try { savedLang = localStorage.getItem('neuroatlas-lang'); } catch {}
+  try { savedLang = localStorage.getItem('planum-lang'); } catch {}
   const initialLang = startLanguage(globalThis.location.hash, savedLang);
   // Spoken at the start, end and failure of the load, not at every progress tick.
   const announce = text => { announcer.textContent = text; };
@@ -595,7 +599,7 @@ export async function startApp() {
 
   function setLang(lang) {
     session.setLang(lang);
-    try { localStorage.setItem('neuroatlas-lang', lang); } catch {}
+    try { localStorage.setItem('planum-lang', lang); } catch {}
     repaint();
   }
 
@@ -873,9 +877,53 @@ export async function startApp() {
     if (model.manifest.cut_atlases.some(entry => entry.id === atlas)) setCutAtlas(atlas);
   }
 
-  function sayRevealed(before) {
+  /** What a reveal changed, and after it any hint about seeing what it revealed, as one notice. */
+  function sayRevealed(before, hint = null) {
     const said = revealNotice(session.assemble({}).lang, before, revealSettings());
-    if (said) session.notify({ text: said });
+    if (said || hint) session.notify({ text: [said, hint?.text].filter(Boolean).join(' '), action: hint?.action ?? null });
+  }
+
+  const cortexOpaque = () => model.settings.cortexVisible && model.settings.cortexOpacity >= 1;
+
+  /**
+   * A function whose strongest region is a structure the opaque cortex hides says so, and offers to see
+   * through the cortex; null for the overview, a peak the cortex does not hide, or a cortex already
+   * see-through or hidden.
+   */
+  function deepHint(id) {
+    if (id === ALL_DOMAINS || !cortexOpaque()) return null;
+    const { region } = domainAreas(model.domains, id)[0];
+    if (!beneathCortex(model.regions.get(region))) return null;
+    const { lang } = session.assemble({});
+    // Mid-sentence, the side is a common word.
+    const side = t(lang, 'sides').capitalized[model.regions.get(region).hemisphere].toLocaleLowerCase(lang);
+    return { text: t(lang, 'functions').deepStrongest(catalog.get(region).label.name, side), action: 'see-through' };
+  }
+
+  /**
+   * A deficit whose mapped regions include structures the opaque cortex hides names them, its first
+   * associations' first, two of them when there are more than three, and offers to see through the cortex.
+   */
+  function deficitDeepHint(id) {
+    if (!cortexOpaque()) return null;
+    const names = [...new Set(clinicalCatalog.mappedRegions(id)
+      .filter(region => beneathCortex(model.regions.get(region))).map(region => catalog.get(region).label.name))];
+    if (!names.length) return null;
+    const { lang } = session.assemble({});
+    const text = CLINICAL_TEXT[lang];
+    const shown = names.length > 3 ? names.slice(0, 2) : names;
+    const items = shown.length < names.length ? [...shown, text.otherMapped(names.length - shown.length)] : shown;
+    return { text: text.deepMapped(new Intl.ListFormat(lang, { type: 'conjunction' }).format(items), names.length),
+      action: 'see-through' };
+  }
+
+  /** The notice's offer to see an opened map's deep structures: the cortex turns see-through, and stays undoable. */
+  function seeThroughCortex() {
+    model.setCortexOpacity(model.manifest.appearance.see_through_opacity);
+    // The hint is answered, so the confirmation replaces it rather than joining it.
+    session.notify(null);
+    session.notify({ text: t(session.assemble({}).lang, 'display').seenThrough });
+    render();
   }
 
   /** The profile opens at once; the mapped regions are then drawn together and framed once. */
@@ -894,12 +942,12 @@ export async function startApp() {
     const before = revealSettings();
     if (!(await commands.revealRegions(regions, current))) return;
     cutLabelsFollowAtlas();
-    sayRevealed(before);
+    sayRevealed(before, deficitDeepHint(id));
     frameRegions(regions);
     render();
   }
 
-  /** The profile opens at once; the function's HCP-MMP areas are then drawn, and painted by `syncPaint`. */
+  /** The profile opens at once; the function's HCP-MMP areas are then drawn and framed, and painted by `syncPaint`. */
   async function openFunction(id) {
     const current = commands.begin();
     beforeExcursion ??= beforeLesson ?? captureReaderState();
@@ -910,9 +958,12 @@ export async function startApp() {
     render();
     showDetail();
     const before = revealSettings();
-    if (!(await commands.revealRegions([...domainPaint(model.domains, id).colors.keys()], current))) return false;
+    const regions = [...domainPaint(model.domains, id).colors.keys()];
+    if (!(await commands.revealRegions(regions, current))) return false;
     cutLabelsFollowAtlas();
-    sayRevealed(before);
+    sayRevealed(before, deepHint(id));
+    // Framed as a deficit's regions are, so the map fills the stage left beside or above the panel.
+    frameRegions(regions);
     render();
     return true;
   }
@@ -960,26 +1011,54 @@ export async function startApp() {
     render();
   }
 
+  if (!model.domains) throw new Error('This build publishes no neuropsychological domains for the Functions tab.');
+  /** The curated functions whose lesion checks cite one of a deficit's associations, as the deficit lists them. */
+  const checkedMaps = (deficit, lang) => model.domains.domains
+    .filter(domain => model.domains.lesion_checks[domain.id].some(check => check.deficit === deficit))
+    .map(domain => ({ id: domain.id, name: domainName(domain, lang), color: domain.color }));
+  /** How many functions and Neurosynth terms the Functions tab finds for the same words. */
+  const functionsMatching = (query, lang) => matchingTerms(model.domains, query).length
+    + groupedDomains(model.domains, query, lang).reduce((sum, entry) => sum + entry.domains.length, 0);
+
+  /** A search carried to the other evidence tab opens that tab's list on the same words. */
+  function searchIn(mode, query) {
+    if (mode === 'functions') {
+      session.setFunction(null);
+      session.setFunctionQuery(query);
+    } else {
+      session.setDeficit(null);
+      session.setClinicalQuery(query);
+    }
+    beforeExcursion = null;
+    chooseMode(mode);
+  }
+
   const involved = createInvolvement(model.regions);
   const clinicalExplorer = createClinicalExplorer({
     clinical: clinicalCatalog,
     anatomy: catalog,
     involved,
+    checkedMaps,
+    functionsMatching,
     onQuery: query => { session.setClinicalQuery(query); render(); },
     onDeficit: openDeficit,
     onRegion: openListedRegion,
+    onFunction: id => functionExplorer.openFunction(id),
+    onSearchFunctions: query => searchIn('functions', query),
     onRestore: restoreBeforeExcursion,
     onFailure: offerReload,
   });
 
-  if (!model.domains) throw new Error('This build publishes no neuropsychological domains for the Functions tab.');
   const functionExplorer = createFunctionExplorer({
     domains: model.domains,
     anatomy: catalog,
+    functionalRegions: model.functionalRegions,
+    deficitsMatching: (query, lang) => clinicalCatalog.search(query, lang).length,
     onQuery: query => { session.setFunctionQuery(query); render(); },
     onFunction: openFunction,
     onRegion: openListedRegion,
     onDeficit: id => clinicalExplorer.openDeficit(id),
+    onSearchDeficits: query => searchIn('deficits', query),
     onRestore: restoreBeforeExcursion,
     onFailure: offerReload,
   });
@@ -1220,10 +1299,15 @@ export async function startApp() {
     await leaveLesson();
     if (modeWanted !== value) return;
     chooseExplorer(value);
-    // Back on Functions after another tab changed the atlas: the open function's areas are drawn again.
-    const { selectedFunction, atlas } = session.assemble(model.state);
+    // Back on Functions or Deficits after another tab changed the atlas: the open item's regions are
+    // drawn again, so its key never describes a brain that does not carry them.
+    const { selectedFunction, selectedDeficit, atlas } = session.assemble(model.state);
     if (value === 'functions' && selectedFunction && atlas !== model.domains.atlas) {
       functionExplorer.openFunction(selectedFunction);
+    }
+    if (value === 'deficits' && selectedDeficit && clinicalCatalog.mappedRegions(selectedDeficit)
+      .some(id => model.regions.get(id).kind === 'cortex' && model.regions.get(id).atlas !== atlas)) {
+      clinicalExplorer.openDeficit(selectedDeficit);
     }
   }
 
@@ -1319,7 +1403,7 @@ export async function startApp() {
         referenceLabel: lang => nativeTracts.reference(lang).label,
       });
       const link = document.createElement('a');
-      link.download = `neuroatlas-${model.state.atlas ?? 'brain'}.png`;
+      link.download = `planum-${model.state.atlas ?? 'brain'}.png`;
       link.href = dataUrl;
       link.click();
     } catch (error) {
@@ -1347,7 +1431,7 @@ export async function startApp() {
       render();
       rescueFocus();
     },
-    onReload: reloadWithoutStoredModels,
+    onAction: action => (action === 'reload' ? reloadWithoutStoredModels() : seeThroughCortex()),
   });
 
   // Built before the sheet: the sheet decides on construction which shell owns
@@ -1460,6 +1544,11 @@ export async function startApp() {
   function detailPlace(state) {
     if (state.explorer === 'functions' && state.selectedFunction) {
       if (state.selectedFunction === ALL_DOMAINS) return functionLabel(ALL_DOMAINS, state.lang);
+      if (isTermId(state.selectedFunction)) {
+        const copy = t(state.lang, 'functions');
+        return domainRecord(model.domains, state.selectedFunction).kind === 'population'
+          ? copy.populationsHeading : copy.termsHeading;
+      }
       const { group } = domainRecord(model.domains, state.selectedFunction);
       const record = model.domains.groups.find(entry => entry.id === group);
       return state.lang === 'fr' ? record.name_fr : record.name;
@@ -1578,10 +1667,13 @@ export async function startApp() {
     const yeo = surfaceColor === 'network' && model.regions.get(region.id)?.networks;
     const network = cabNp ? cabNpName(cabNp, lang) : yeo?.length === 1 ? networkName(yeo[0].network, lang) : null;
     // While the functions are painted: the overview's functions the area reaches, strongest first, or the one shown alone.
-    const domains = paintKind(paint) === 'function'
-      ? domainsOf(model.domains, region.id)
-        .filter(record => (selectedFunction === ALL_DOMAINS ? record.overview : record.id === selectedFunction))
-        .map(record => domainName(record, lang)).join(', ') : null;
+    const domains = paintKind(paint) !== 'function' ? null
+      : isTermId(selectedFunction)
+        ? (domainAreas(model.domains, selectedFunction).some(area => area.region === region.id)
+          ? domainRecord(model.domains, selectedFunction).term : null)
+        : domainsOf(model.domains, region.id)
+          .filter(record => (selectedFunction === ALL_DOMAINS ? record.overview : record.id === selectedFunction))
+          .map(record => domainName(record, lang)).join(', ');
     const side = t(lang, 'sides').capitalized[region.hemisphere];
     return [label, division && functionalName(division, lang), network, domains, side].filter(Boolean).join(' · ');
   }
@@ -1735,7 +1827,7 @@ export async function startApp() {
   }
 
   const onKeyDown = event => {
-    if (event.defaultPrevented) return;
+    if (event.defaultPrevented || event.isComposing) return;
     if (nativeTracts.mriOpen) return;
     const mprDialog = document.getElementById('mpr-dialog');
     if (mprDialog?.open) {
@@ -1851,7 +1943,8 @@ export async function startApp() {
     explorers: new Set(MODES),
     surfaceColors: new Set(['tissue', 'mri', 'atlas', ...(model.manifest.networks ? ['network'] : []),
       ...(model.cabNp ? ['cab-np'] : []), ...(model.functionalRegions ? ['functional'] : [])]),
-    functions: new Set([ALL_DOMAINS, ...model.domains.domains.map(domain => domain.id)]),
+    functions: new Set([ALL_DOMAINS, ...model.domains.domains.map(domain => domain.id),
+      ...(model.domains.search?.terms.keys() ?? [])]),
     regions: model.regions,
     deficits: new Set(clinicalCatalog.search('', 'en').map(deficit => deficit.id)),
     circuits: new Map(circuitCatalog.all.map(circuit => [circuit.id, circuit.steps.length])),

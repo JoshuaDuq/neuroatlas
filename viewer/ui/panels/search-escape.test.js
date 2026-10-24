@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createClinicalExplorer } from './clinical.js';
+import { createFunctionExplorer } from './functions.js';
 import { createNavigator } from './navigator.js';
 
 /** Just enough of a document for a panel to bind its listeners. */
@@ -16,6 +17,8 @@ function stubDocument(t) {
       addEventListener: (type, listener) => listeners.set(type, listener),
       removeEventListener() {},
       append() {},
+      querySelector() { return null; },
+      querySelectorAll() { return []; },
       dispatch: (type, event) => listeners.get(type)?.(event),
     };
   };
@@ -34,11 +37,14 @@ function stubDocument(t) {
 
 const escape = () => ({ key: 'Escape', defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } });
 
-// The field keeps focus, and the render that follows leaves a focused field's text alone.
-for (const [panel, id, create] of [
+const searches = [
   ['deficit', 'deficit-search', onQuery => createClinicalExplorer({ onQuery })],
+  ['function', 'function-search', onQuery => createFunctionExplorer({ onQuery })],
   ['anatomy', 'search', onQuery => createNavigator({ onQuery })],
-]) {
+];
+
+// The field keeps focus, and the render that follows leaves a focused field's text alone.
+for (const [panel, id, create] of searches) {
   test(`Escape in the ${panel} search empties the field as well as the query`, t => {
     const byId = stubDocument(t);
     const queries = [];
@@ -51,4 +57,33 @@ for (const [panel, id, create] of [
     assert.deepEqual(queries, ['']);
     assert.ok(event.defaultPrevented, 'and the page does not go on to clear the selection');
   });
+
+  test(`Escape while composing in the ${panel} search leaves the text and composition alone`, t => {
+    const byId = stubDocument(t);
+    const queries = [];
+    create(query => queries.push(query));
+    const search = byId(id);
+    search.value = '認知';
+    const event = { ...escape(), isComposing: true };
+    search.dispatch('keydown', event);
+    assert.equal(search.value, '認知');
+    assert.deepEqual(queries, []);
+    assert.equal(event.defaultPrevented, false);
+  });
+}
+
+for (const [panel, id, create] of searches.filter(([panel]) => panel !== 'anatomy')) {
+  for (const key of ['Enter', 'ArrowDown']) {
+    test(`${key} while composing in the ${panel} search does not move focus to results`, t => {
+      const byId = stubDocument(t);
+      create(() => {});
+      let focused = false;
+      byId(`${panel}-list`).querySelector = () => ({ focus() { focused = true; } });
+      const event = { key, isComposing: true, defaultPrevented: false,
+        preventDefault() { this.defaultPrevented = true; } };
+      byId(id).dispatch('keydown', event);
+      assert.equal(focused, false);
+      assert.equal(event.defaultPrevented, false);
+    });
+  }
 }

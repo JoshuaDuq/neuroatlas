@@ -1,16 +1,16 @@
 # Atlases and layers
 
-Every layer shares one spatial frame. Counts are for SNAIL unless noted; CDMD has 80 teaching solids, 32 aseg structures and 292 NextBrain meshes of 514 labels. Each subject's `manifest.json` is authoritative.
+Every layer shares one spatial frame. Counts are for CDMD. Each subject's `manifest.json` is authoritative.
 
 | Layer | Granularity | Source | Route to the subject |
 | :--- | :--- | :--- | :--- |
 | Destrieux (`aparc.a2009s`) | 148 parcels | Subject `.annot` | Native; no projection |
 | HCP-MMP1.0 | 360 areas | `fs_LR` → `fsaverage` | Nearest vertex on registered spheres |
-| Teaching set | 79 solids | NextBrain and aseg unions | Bounded smoothing |
+| Teaching set | 105 solids | NextBrain, aseg and CerebNet unions | Bounded smoothing |
 | FreeSurfer aseg | 32 structures | `aseg.mgz` | Marching cubes, bounded smoothing |
-| NextBrain | 515 labels, 306 meshed | Subject segmentation at 0.4 mm | Native |
+| NextBrain | 514 labels, 292 meshed | Subject segmentation at 0.4 mm | Native |
 | Gyral white matter | 68 parcels | `wmparc.mgz` | Native; cut faces only |
-| Spinal cord | 58 structures, CDMD only | Z-Anatomy | Rigid translation below the brainstem |
+| Spinal cord | 58 structures | Z-Anatomy | Rigid translation below the brainstem |
 | Yeo 7 | 7 networks | Schaefer 2018 on `fsaverage` | Per vertex, registered spheres |
 | CAB-NP | 12 networks | Ji et al. 2019 | One network per HCP-MMP area |
 | Functional divisions | 22 sections, 21 named regions | Glasser 2016; Rolls 2022, 2023 | Per HCP-MMP area |
@@ -26,13 +26,13 @@ Every layer shares one spatial frame. Counts are for SNAIL unless noted; CDMD ha
 
 ## Comparing Destrieux and HCP-MMP
 
-On SNAIL and CDMD the region detail lists overlaps with the other atlas. Each triangle gives one third of its area to each corner's cell, the same convention as the boundaries above, and joint label pairs sum those cells in float64 mm². A share is the pair area over the selected region's **whole** pial area, unassigned cells included, so the two directions differ: SNAIL's left precentral gyrus shares about 563.0 mm² with area 4, 22.7% of the gyrus and 33.9% of area 4. Nothing is dropped or renormalised. Overlap is spatial, not functional equivalence.
+The region detail lists overlaps with the other atlas. Each triangle gives one third of its area to each corner's cell, the same convention as the boundaries above, and joint label pairs sum those cells in float64 mm². A share is the pair area over the selected region's **whole** pial area, unassigned cells included, so the two directions differ: CDMD's left precentral gyrus shares about 447.8 mm² with area 4, 20.6% of the gyrus and 31.6% of area 4. Nothing is dropped or renormalised. Overlap is spatial, not functional equivalence.
 
 ## Internal anatomy
 
 Three exclusive levels.
 
-- **Teaching set.** Eight systems (basal ganglia, diencephalon, limbic, brainstem, basal forebrain, cerebellum, ventricles, white-matter pathways), each unit an explicit union of source labels in [`config/learning-anatomy.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/config/learning-anatomy.yaml). Midline units stay whole.
+- **Teaching set.** Eight systems (basal ganglia, diencephalon, limbic, brainstem, basal forebrain, cerebellum, ventricles, white-matter pathways), each unit an explicit union of source labels in [`config/learning-anatomy.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/config/learning-anatomy.yaml). Midline units stay whole. The cerebellar cortex is FastSurfer CerebNet's 25 SUIT lobules (vermis VI–X midline; vermis I–V lies in lobules I–IV and V) where an anatomy declares them, and one aseg unit per side otherwise.
 - **FreeSurfer aseg.** Marching cubes at 0.5 on the 1 mm `aseg.mgz`.
 - **NextBrain.** This brain's own NextBrain segmentation (FreeSurfer 8.2, `invivo` mode), each hemisphere joined onto one 0.4 mm grid in surface RAS, moving no label more than 0.25 mm. Midline voxels both sides claim follow SuperSynth's MNI $x$, as FreeSurfer splits hemispheres. The volume is placed through `orig.mgz`'s transform, never its own header. Structures of at least 10 mm³ are meshed; the rest are cut labels. Cut faces sample 0.8 mm blocks, so fragments of ≤ 4.5 mm³ that win no block are absent from cuts but still searchable.
 
@@ -44,7 +44,7 @@ Every display surface uses a Taubin filter bounded to 0.6 mm of the raw surface,
 
 ## Spinal cord
 
-58 Z-Anatomy structures (roots, ganglia, cauda equina, 19 tracts, horns with Rexed laminae), translated to sit below the brainstem without rotation or scaling. It is a schematic reference, not registered to the MRI. The build refuses it when the scan ends inside the brainstem, which is why SNAIL (scan ending at z = −75 mm) has none. Licensed CC BY-SA 4.0.
+58 Z-Anatomy structures (roots, ganglia, cauda equina, 19 tracts, horns with Rexed laminae), translated to sit below the brainstem without rotation or scaling. It is a schematic reference, not registered to the MRI. The build refuses it when the scan ends inside the brainstem. Licensed CC BY-SA 4.0.
 
 ## Functional networks
 
@@ -57,7 +57,7 @@ Both are group resting-state networks reaching this brain through registration, 
 
 Two levels of published HCP-MMP groupings, kept apart because they cross. Glasser's 22 sections (2016, supplementary Table 1) partition the cortex. 21 named regions are those a source defines as area lists: eleven from Glasser (V1, MT, fusiform face complex, M1, S1, SII, SMA, FEF, PEF, Broca's area, A1), six from Rolls et al. 2022 (orbitofrontal, subgenual and anterior cingulate, area 10 and vmPFC) and four from Rolls et al. 2023 (midcingulate and posterior cingulate). Names no source defines as area lists, such as dmPFC or TPJ, are not drawn.
 
-Six areas (23c, 52, PFcm, TF, a47r, pOFC) sit in one section in Table 1 and another in the section texts. NeuroAtlas follows Table 1, as HCPex does, and shows the alternative in the region detail.
+Six areas (23c, 52, PFcm, TF, a47r, pOFC) sit in one section in Table 1 and another in the section texts. Planum follows Table 1, as HCPex does, and shows the alternative in the region detail.
 
 The colour mode draws the divisions solid inside a glass brain, after Carlén (2017). Neighbouring colours differ by OKLab ΔE ≥ 15 under normal and simulated red-green vision.
 

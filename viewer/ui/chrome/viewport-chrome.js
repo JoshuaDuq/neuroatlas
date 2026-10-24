@@ -43,7 +43,7 @@ const CAMERA_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 
 const MOVED_EPSILON = 1e-6;
 
 /** The reader has rotated or clicked the model once; the drag-and-scroll hint stays retired. */
-const HINT_STORAGE_KEY = 'neuroatlas.stage-hint';
+const HINT_STORAGE_KEY = 'planum.stage-hint';
 
 function hintRetired() {
   try { return globalThis.localStorage?.getItem(HINT_STORAGE_KEY) === 'retired'; } catch { return false; }

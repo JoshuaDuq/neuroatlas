@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://joshuaduq.github.io/neuroatlas/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/neuroatlas-dark.svg">
-      <img src=".github/assets/neuroatlas-light.svg" alt="NeuroAtlas" width="300">
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/planum-dark.svg">
+      <img src=".github/assets/planum-light.svg" alt="Planum" width="238">
     </picture>
   </a>
 </p>
@@ -36,7 +36,7 @@
   </a>
 </p>
 
-Most 3D brain atlases are drawn on an averaged template. NeuroAtlas is built from one real scan at a time: the cortex, the subcortical structures, the label volumes and the MRI all come from an individual FreeSurfer reconstruction at its native resolution, and they stay in that subject's own millimetres. The viewer runs in the browser. You can select any structure, cut the brain along any plane, and check what you see against the MRI it came from.
+Most 3D brain atlases are drawn on an averaged template. Planum is built from one real scan at a time: the cortex, the subcortical structures, the label volumes and the MRI all come from an individual FreeSurfer reconstruction at its native resolution, and they stay in that subject's own millimetres. The viewer runs in the browser. You can select any structure, cut the brain along any plane, and check what you see against the MRI it came from.
 
 ## Highlights
 
@@ -44,35 +44,34 @@ Most 3D brain atlases are drawn on an averaged template. NeuroAtlas is built fro
 - **Check it against the scan.** Linked MRI opens three orthogonal T1 sections that share a 3D crosshair with the model, with window and centre contrast, voxel-exact label inspection and PNG export.
 - **Eight layers in one frame.** Two cortical parcellations, teaching solids, subcortical segmentations, NextBrain histology, gyral white matter, the spinal cord and resting-state networks share one spatial frame (see the table below).
 - **Six ways to colour it.** Regions, Tissue (grey and white matter with T1 relief), T1, Yeo 7, CAB-NP's 12 networks, and published functional divisions (Glasser 2016; Rolls 2022, 2023) drawn as solid cortex inside a glass brain.
-- **Learn with it.** Functions colours the HCP-MMP areas and deep grey-matter structures where studies of 70 neuropsychological functions consistently report activation (Neurosynth consistency maps), from inhibition, syntax and recall to motion perception and theory of mind. The eleven functions an assessment reports can be shown together; the rest are shown one at a time, and each is checked against the lesion evidence where NeuroAtlas has some. Deficits colours the regions documented neuropsychological deficits involve, one colour per finding, with the evidence and limitations of each association. Eight bilingual guided circuits cover vision, memory, basal ganglia motor loops, hearing, touch, language, spatial attention and cerebellar output, across 33 landmarks.
-- **Follow the wiring.** 27 named tract bundles from DIPY's SNAIL example dataset, drawn over the cortex reconstructed from that subject's own T1.
-- **Compare atlases.** On SNAIL, see how a Destrieux region and HCP-MMP areas overlap by shared pial surface area, in either direction. You can outline any exact intersection and download every contribution as CSV at full precision.
+- **Learn with it.** Functions colours the HCP-MMP areas and deep grey-matter structures where studies of 70 neuropsychological functions consistently report activation (Neurosynth consistency maps), from inhibition, syntax and recall to motion perception and theory of mind. The eleven functions an assessment reports can be shown together; the rest are shown one at a time, and each is checked against the lesion evidence where Planum has some. Deficits colours the regions documented neuropsychological deficits involve, one colour per finding, with the evidence and limitations of each association. Nine bilingual guided circuits cover vision, memory, basal ganglia motor loops, hearing, touch, language, spatial attention, cerebellar output and praxis, across 39 landmarks.
+- **Follow the wiring.** 30 named tract bundles tracked from the subject's own diffusion scan, including SLF I–III and seven callosal segments, drawn over the cortex reconstructed from the same session's T1.
+- **Compare atlases.** See how a Destrieux region and HCP-MMP areas overlap by shared pial surface area, in either direction. You can outline any exact intersection and download every contribution as CSV at full precision.
 - **Share exactly what you see.** Every view is a link. The viewer is in English and French, with light and dark themes, keyboard navigation and a draggable sheet on phones.
 
 ## Anatomy at a glance
 
-Counts describe the `snail` publication unless noted. Each subject's manifest is authoritative for the structures it actually contains.
+Counts describe the `cdmd` publication. Each subject's manifest is authoritative for the structures it actually contains.
 
 | Layer | Granularity |
 | :--- | :--- |
 | Destrieux cortex (`aparc.a2009s`) | 148 parcels and 2 medial-wall surfaces |
 | HCP-MMP1.0 cortex | 360 multimodal areas |
-| Learning anatomy | 79 teaching solids in `snail` (80 in `cdmd`) |
+| Learning anatomy | 105 teaching solids, including 25 cerebellar lobules |
 | FreeSurfer aseg | 32 subcortical structures |
-| NextBrain histology | 306 meshes of 515 ROIs in `snail` (292 of 514 in `cdmd`) |
+| NextBrain histology | 292 meshes of 514 ROIs |
 | Gyral white matter (`wmparc`) | 68 parcels |
-| Spinal cord | 58 tracts and horns (Z-Anatomy reference), in `cdmd` only: the `snail` scan ends inside the medulla |
+| Spinal cord | 58 tracts and horns (Z-Anatomy reference) |
 | Yeo 7 networks | 7 resting-state networks |
 
 [Atlases and parcellations](https://joshuaduq.github.io/neuroatlas/docs/concepts/atlases.html) describes how each layer was derived.
 
 ## Anatomies
 
-The viewer publishes two individual reconstructions. Each one is a single person's brain, with tracts from its own diffusion scan.
+The viewer publishes one individual reconstruction: a single person's brain, with tracts from its own diffusion scan.
 
 | Anatomy | Subject |
 | :--- | :--- |
-| `snail` | SNAIL subject 1, reconstructed with FreeSurfer 8.2 from the reference MRI used by the bundled tractography |
 | `cdmd` (default) | MGH CDMD `sub_013`, reconstructed with FreeSurfer 8.2 from its own T1; tracts tracked from its own diffusion scan |
 
 [Anatomies](https://joshuaduq.github.io/neuroatlas/docs/concepts/anatomies.html) explains why each subject was chosen and which candidates were excluded.
@@ -105,7 +104,7 @@ The NextBrain step needs FreeSurfer 8.2 and takes about 20 minutes on a CPU. See
 ```bash
 npm test
 uv run pytest
-uv run python -m brain_model.validate --anatomy snail
+uv run python -m brain_model.validate --anatomy cdmd
 uv sync --locked --group docs
 uv run sphinx-build -W -b html docs docs/_build/html
 ```
@@ -132,7 +131,7 @@ The renderer needs `localClippingEnabled = true`. The [embedding guide](https://
 
 ## How it works
 
-NeuroAtlas is two programs that meet only at the published files.
+Planum is two programs that meet only at the published files.
 
 ```
 FreeSurfer reconstruction      surfaces, segmentations, NextBrain labels, T1
@@ -168,7 +167,6 @@ Each anatomy is one person's brain, not a template, and is **not clinically norm
 
 - **Code** (pipeline and viewer): MIT, see [`LICENSE`](LICENSE). It covers the code only; each data asset below keeps its own terms.
 - **`fsaverage` assets** (built locally, not published): FreeSurfer Software License.
-- **SNAIL tract reference:** CC0 1.0.
 - **CDMD `sub_013` assets and tracts:** CC0 1.0 (public domain).
 - **HCP-MMP1.0 annotation:** HCP Open Access Data Use Terms.
 - **CAB-NP network assignments (`cab-np.json`):** CAB-NP License (Rutgers University and Yale University), non-commercial use only, kept as an isolated file beside its licence and original label key.
@@ -177,8 +175,8 @@ Each anatomy is one person's brain, not a template, and is **not clinically norm
 
 The full terms and citations are on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.
 
-NeuroAtlas is for research and education. It is not a medical device and must not be used for diagnosis, treatment or any other clinical decision.
+Planum is for research and education. It is not a medical device and must not be used for diagnosis, treatment or any other clinical decision.
 
 ## Acknowledgements
 
-NeuroAtlas builds on openly shared science: FreeSurfer, NextBrain, the Destrieux and HCP-MMP1.0 parcellations, the Yeo 7 and CAB-NP network assignments, the Neurosynth database, DIPY's SNAIL dataset, the Amsterdam Open MRI Collection and Z-Anatomy. Each is cited on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.
+Planum builds on openly shared science: FreeSurfer, NextBrain, the Destrieux and HCP-MMP1.0 parcellations, the Yeo 7 and CAB-NP network assignments, the Neurosynth database, MGH CDMD, DIPY, TractSeg, MRtrix3 and FastSurfer, the Amsterdam Open MRI Collection and Z-Anatomy. Each is cited on the [references](https://joshuaduq.github.io/neuroatlas/docs/reference/references.html) page.

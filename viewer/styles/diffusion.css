@@ -16,7 +16,7 @@
   font-size: var(--text-caption);
   line-height: var(--lh-caption);
   color: var(--text-secondary);
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
 }
 .diffusion-status { padding: var(--space-3) var(--panel-inset) 0; }
 #native-tract-status[data-error="true"] { color: var(--danger); }
@@ -42,14 +42,15 @@
 .diffusion-scope { padding: var(--space-3) var(--panel-inset) 0; color: var(--text-tertiary); }
 
 /* One full-bleed row per tract: its name, then a key per side (or per segment) ending on the right column. */
-.diffusion-bundle { padding: var(--space-2) var(--panel-inset); }
+.diffusion-bundle { padding: var(--space-3) var(--panel-inset); }
+.diffusion-bundle + .diffusion-bundle { border-top: 1px solid var(--border-subtle); }
 .diffusion-bundle-head {
   display: flex;
   align-items: center;
   gap: var(--space-1) var(--space-3);
   min-height: 24px;
 }
-.diffusion-bundle-name { flex: 1; min-width: 0; font-size: var(--text-ui); line-height: var(--lh-ui); font-weight: 500; text-wrap: pretty; overflow-wrap: normal; }
+.diffusion-bundle-name { flex: 1; min-width: 0; font-size: var(--text-ui); line-height: var(--lh-ui); font-weight: 500; text-wrap: pretty; overflow-wrap: anywhere; }
 .diffusion-bundle-parts { display: flex; flex: none; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-1); }
 /* Numbered segments take their own line and begin on the name's column. */
 .diffusion-bundle[data-layout="segments"] .diffusion-bundle-head { flex-wrap: wrap; }
@@ -72,7 +73,7 @@
   width: 28px;
   height: 24px;
   margin: 0;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-control);
   border-radius: 3px;
   background: var(--surface-tonal);
   cursor: pointer;
@@ -110,9 +111,9 @@
 .diffusion-bundle-side { font-weight: 600; }
 .diffusion-bundle-values { display: flex; flex-wrap: wrap; column-gap: var(--space-2); overflow-x: clip; }
 .diffusion-bundle-values > * { min-width: 0; }
-.diffusion-bundle-count { color: var(--text-primary); font-weight: 500; white-space: nowrap; }
+.diffusion-bundle-count { color: var(--text-primary); font-weight: 500; }
 .diffusion-bundle-length { display: contents; }
-.diffusion-bundle-length > span { position: relative; white-space: nowrap; }
+.diffusion-bundle-length > span { position: relative; white-space: normal; }
 /* The dot is centred in the gap, so one that would start a wrapped line falls outside the clip. */
 .diffusion-bundle-length > span::before {
   content: "·";

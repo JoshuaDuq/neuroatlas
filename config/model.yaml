@@ -7,49 +7,14 @@
 anatomy: cdmd
 
 # The one FreeSurfer install every locally generated source was made with: the
-# SNAIL reconstruction and each subject's NextBrain segmentation.
+# CDMD reconstruction and each subject's NextBrain segmentation.
 freesurfer_build: freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45
 
 # Every anatomy lists the optional layers it publishes, out of networks,
-# nextbrain, white_matter and spinal_cord. Build and validate fail when a
-# declared layer's input is missing and publish no layer that is undeclared.
+# nextbrain, cerebellar_lobules, white_matter, spinal_cord and neurosynth_terms. Build and
+# validate fail when a declared layer's input is missing and publish no layer
+# that is undeclared.
 anatomies:
-  snail:
-    subject: subj_1
-    display_name: SNAIL “subj_1”
-    label: SNAIL subject 1 single-subject reconstruction
-    individual: true
-    directory: data/snail
-    source_url: https://hdl.handle.net/1773/38477
-    # No spinal_cord: the scan ends inside the brainstem, so the cord has no
-    # imaged lower end to be seated against (spinal_cord.brainstem).
-    layers: [networks, nextbrain, white_matter]
-    reconstruction:
-      input: public/diffusion/snail-subject-1/t1_warped.nii.gz
-      input_sha256: 3cd3f2c5eba843c31970ee3107e4af07f6fb34554612fcd3f1066a7d992fa416
-      threads: 4
-      provenance: reconstruction.json
-      completion_marker: scripts/recon-all.done
-      # Recorded after reconstruction.json was written, so data/sources.json
-      # alone pins it.
-      unreported_outputs: [stats/aseg.stats]
-    # FreeSurfer's own measures of this reconstruction; validation records
-    # its count of surface defect holes before repair.
-    statistics: stats/aseg.stats
-    project_hcp_from: fsaverage
-    structures:
-      # This source aseg has no choroid-plexus (31/63) or optic-chiasm (85) labels.
-      labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28,
-               43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 58, 60,
-               251, 252, 253, 254, 255]
-    learning:
-      # The coarse callosal estimate overlaps the finer fornix/septal estimates.
-      # Keep it in aseg; omit its surface from this mixed-source overview.
-      exclude_aseg_units: [corpus-callosum]
-    nextbrain:
-      directory: data/nextbrain-snail
-      volume: nextbrain-snail.mgz
-      procedure: subject-segmentation
   fsaverage:
     subject: fsaverage
     display_name: FreeSurfer fsaverage
@@ -77,8 +42,8 @@ anatomies:
     # fewest surface defect holes (14); its own diffusion scan gives the tracts
     # their frame.
     source_url: https://doi.org/10.6084/m9.figshare.c.5315474.v1
-    layers: [networks, nextbrain, white_matter, spinal_cord]
-    # Reconstructed here with FreeSurfer 8.2, as SNAIL was, from the T1 the
+    layers: [networks, nextbrain, cerebellar_lobules, white_matter, spinal_cord, neurosynth_terms]
+    # Reconstructed here with FreeSurfer 8.2 from the T1 the
     # published FreeSurfer 6 run imported (voxel for voxel). With that run's
     # aseg, NextBrain's left amygdala met it at Dice 0.793, below the floor.
     # scripts/reconstruct_subject.py reads the T1 out of the subject's 2 GB zip.
@@ -96,8 +61,8 @@ anatomies:
     statistics: stats/aseg.stats
     project_hcp_from: fsaverage
     structures:
-      # As with SNAIL's, this FreeSurfer 8.2 aseg has no choroid-plexus (31/63)
-      # or optic-chiasm (85) labels.
+      # This FreeSurfer 8.2 aseg has no choroid-plexus (31/63) or optic-chiasm
+      # (85) labels.
       labels: [4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 28,
                43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 58, 60,
                251, 252, 253, 254, 255]
@@ -133,7 +98,7 @@ anatomies:
 output_directory: public/models
 # Each anatomy with tracts of its own names them in one catalog; the viewer's
 # viewer/diffusion/catalogs.js imports the same files.
-tract_catalogs: [data/diffusion.yaml, data/diffusion-cdmd.yaml]
+tract_catalogs: [data/diffusion-cdmd.yaml]
 # scripts/prepare_subject.py checks this many evenly spaced vertices of every
 # annotation it projects against a brute-force nearest source vertex.
 annotation_projection:
@@ -451,6 +416,11 @@ appearance:
   # Opacity, as a fraction of the cortex's, of the cortex outside the functional
   # divisions on show: the glass of the glass brain.
   glass_opacity: 0.1
+  # Cortex opacity the notice's "See through the cortex" sets when an opened
+  # function's strongest region is a structure the cortex hides. At 0.3 the
+  # painted amygdala of Fear was still veiled; at 0.15 it reads, near the 0.16
+  # the Tracts overlay uses.
+  see_through_opacity: 0.15
   intensity:
     low: 85
     high: 180
@@ -476,7 +446,7 @@ appearance:
     samples: 32
     intensity: 0.9
 atlas_comparison:
-  enabled_anatomies: [snail, cdmd]
+  enabled_anatomies: [cdmd]
   atlases: [destrieux, hcp-mmp]
 atlases:
   - id: destrieux
@@ -542,6 +512,12 @@ validation:
       thalamus: {left: 10, right: 49}
       hippocampus: {left: 17, right: 53}
       amygdala: {left: 18, right: 54}
+  # CerebNet's lobules together against aseg's cerebellar cortex, same grid.
+  # CDMD measured 0.918. The since-removed SNAIL's cut-off, resampled T1
+  # measured 0.697, with the inferior third of its cerebellum unlabelled.
+  cerebellar_agreement:
+    minimum_dice: 0.85
+    aseg_labels: [8, 47]
 sections:
   field_of_view_mm: 256
   texture_size: 512

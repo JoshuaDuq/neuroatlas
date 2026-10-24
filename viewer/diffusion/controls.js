@@ -130,6 +130,6 @@ export function saveLengths(bundles, minimum) {
       ...[bundle.mean, bundle.min, bundle.max].map(value => shown ? value : '')].join(','));
   }
   const url = URL.createObjectURL(new Blob([`${rows.join('\n')}\n`], { type: 'text/csv;charset=utf-8' }));
-  download(url, 'neuroatlas-streamline-lengths.csv');
+  download(url, 'planum-streamline-lengths.csv');
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

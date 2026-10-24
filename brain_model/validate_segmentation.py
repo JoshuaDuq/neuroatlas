@@ -5,8 +5,8 @@ import re
 import nibabel as nib
 import numpy as np
 
-from .labels import nextbrain
-from .labels.volumes import resample_nearest
+from .labels import cerebellum, nextbrain
+from .labels.volumes import load_on_grid, resample_nearest
 from .layers.learning import combine_labels, expand_nextbrain, read_definition
 from .sources import HEMISPHERES, ROOT, sha256
 
@@ -88,4 +88,32 @@ def segmentation_agreement(config):
         "minimum_dice": settings["minimum_dice"],
         **({"exceptions": exceptions} if exceptions else {}),
         "dice": scores,
+    }
+
+
+def cerebellar_agreement(config):
+    """Dice of CerebNet's lobules, together, with aseg's cerebellar cortex.
+
+    Both are on the subject's conformed 1 mm grid, so no voxel is resampled.
+    aseg divides the vermis between its two hemispheres, so only the whole
+    cortex is compared.
+    """
+    settings = config["validation"]["cerebellar_agreement"]
+    lobules = np.isin(cerebellum.load(config).labels, list(cerebellum.LOBULES))
+    path = config["source_directory"] / "mri/aseg.mgz"
+    aseg = np.isin(np.asarray(load_on_grid(config, path).dataobj), settings["aseg_labels"])
+    score = dice(lobules, aseg)
+    if score < settings["minimum_dice"]:
+        raise ValueError(
+            f"CerebNet disagrees with aseg's cerebellar cortex: Dice {score:.3f} "
+            f"below {settings['minimum_dice']}"
+        )
+    return {
+        "method": "Dice of the union of CerebNet's 25 lobules with aseg's cerebellar "
+        "cortex, both on the conformed grid",
+        "cerebnet_sha256": sha256(cerebellum.path(config)),
+        "aseg_sha256": sha256(path),
+        "aseg_labels": settings["aseg_labels"],
+        "minimum_dice": settings["minimum_dice"],
+        "dice": score,
     }

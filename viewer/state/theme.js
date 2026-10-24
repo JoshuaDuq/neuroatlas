@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'neuroatlas.theme';
+const STORAGE_KEY = 'planum.theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 const THEME_CHOICES = ['system', 'light', 'dark'];
 

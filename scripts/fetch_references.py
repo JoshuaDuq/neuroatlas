@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data/reference-records.json"
 EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 CROSSREF = "https://api.crossref.org/works"
-HEADERS = {"User-Agent": "NeuroAtlas reference check (https://github.com/JoshuaDuq/neuroatlas)"}
+HEADERS = {"User-Agent": "Planum reference check (https://github.com/JoshuaDuq/neuroatlas)"}
 # NCBI allows three requests a second without a key; Crossref's public pool, one.
 PAUSE_S = {"eutils": 0.5, "crossref": 1.2}
 RETRIES_ON_429 = 3

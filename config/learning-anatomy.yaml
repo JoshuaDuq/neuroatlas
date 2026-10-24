@@ -69,6 +69,7 @@ nextbrain:
   - {id: inferior-colliculus, color: [126, 152, 94], name: Inferior colliculus central nucleus, name_fr: Noyau central du colliculus inférieur, system: Brainstem, system_fr: Tronc cérébral, labels: [541]}
   - {id: dentate, color: [139, 139, 193], name: Cerebellar dentate nucleus, name_fr: Noyau dentelé du cervelet, system: Cerebellum, system_fr: Cervelet, labels: [721]}
   - {id: interposed, color: [187, 151, 103], name: Interposed nuclei, name_fr: Noyaux interposés, system: Cerebellum, system_fr: Cervelet, labels: [751, 752]}
+  - {id: fastigial, color: [116, 168, 150], name: Fastigial nucleus, name_fr: Noyau fastigial, system: Cerebellum, system_fr: Cervelet, labels: [715]}
 aseg:
   - {id: ventricles-left, color: [87, 139, 194], hemisphere: left, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [4, 5]}
   - {id: ventricles-right, color: [87, 139, 194], hemisphere: right, name: Lateral ventricle, name_fr: Ventricule latéral, system: Ventricles and CSF, system_fr: Ventricules et LCR, labels: [43, 44]}
@@ -81,3 +82,34 @@ aseg:
   # cerebellar white matter stays out: the deep nuclei sit inside that label.
   - {id: cerebellar-cortex-left, color: [138, 122, 110], hemisphere: left, name: Cerebellar cortex, name_fr: Cortex cérébelleux, system: Cerebellum, system_fr: Cervelet, labels: [8]}
   - {id: cerebellar-cortex-right, color: [138, 122, 110], hemisphere: right, name: Cerebellar cortex, name_fr: Cortex cérébelleux, system: Cerebellum, system_fr: Cervelet, labels: [47]}
+# FastSurfer CerebNet's lobules (SUIT nomenclature) for anatomies declaring
+# cerebellar_lobules. They subdivide the cortical mantle aseg publishes whole,
+# so those units are replaced. SUIT folds vermis I–V into lobules I–IV and V.
+cerebnet:
+  replaces_aseg_units: [cerebellar-cortex-left, cerebellar-cortex-right]
+  units:
+    - {id: lobules-i-iv-left, color: [176, 120, 92], hemisphere: left, name: Lobules I–IV, name_fr: Lobules I–IV, system: Cerebellum, system_fr: Cervelet, labels: [601]}
+    - {id: lobules-i-iv-right, color: [176, 120, 92], hemisphere: right, name: Lobules I–IV, name_fr: Lobules I–IV, system: Cerebellum, system_fr: Cervelet, labels: [602]}
+    - {id: lobule-v-left, color: [92, 140, 176], hemisphere: left, name: Lobule V, name_fr: Lobule V, system: Cerebellum, system_fr: Cervelet, labels: [603]}
+    - {id: lobule-v-right, color: [92, 140, 176], hemisphere: right, name: Lobule V, name_fr: Lobule V, system: Cerebellum, system_fr: Cervelet, labels: [604]}
+    - {id: lobule-vi-left, color: [190, 168, 96], hemisphere: left, name: Lobule VI, name_fr: Lobule VI, system: Cerebellum, system_fr: Cervelet, labels: [605]}
+    - {id: lobule-vi-right, color: [190, 168, 96], hemisphere: right, name: Lobule VI, name_fr: Lobule VI, system: Cerebellum, system_fr: Cervelet, labels: [607]}
+    - {id: vermis-vi, color: [136, 182, 168], hemisphere: midline, name: Vermis VI (declive), name_fr: Vermis VI (déclive), system: Cerebellum, system_fr: Cervelet, labels: [606]}
+    - {id: crus-i-left, color: [120, 104, 170], hemisphere: left, name: Crus I, name_fr: Crus I, system: Cerebellum, system_fr: Cervelet, labels: [608]}
+    - {id: crus-i-right, color: [120, 104, 170], hemisphere: right, name: Crus I, name_fr: Crus I, system: Cerebellum, system_fr: Cervelet, labels: [610]}
+    - {id: crus-ii-left, color: [104, 168, 132], hemisphere: left, name: Crus II, name_fr: Crus II, system: Cerebellum, system_fr: Cervelet, labels: [611]}
+    - {id: crus-ii-right, color: [104, 168, 132], hemisphere: right, name: Crus II, name_fr: Crus II, system: Cerebellum, system_fr: Cervelet, labels: [613]}
+    - {id: lobule-viib-left, color: [196, 116, 140], hemisphere: left, name: Lobule VIIb, name_fr: Lobule VIIb, system: Cerebellum, system_fr: Cervelet, labels: [614]}
+    - {id: lobule-viib-right, color: [196, 116, 140], hemisphere: right, name: Lobule VIIb, name_fr: Lobule VIIb, system: Cerebellum, system_fr: Cervelet, labels: [616]}
+    - {id: vermis-vii, color: [206, 172, 120], hemisphere: midline, name: Vermis VII (folium and tuber), name_fr: Vermis VII (folium et tuber), system: Cerebellum, system_fr: Cervelet, labels: [630]}
+    - {id: lobule-viiia-left, color: [88, 160, 168], hemisphere: left, name: Lobule VIIIa, name_fr: Lobule VIIIa, system: Cerebellum, system_fr: Cervelet, labels: [617]}
+    - {id: lobule-viiia-right, color: [88, 160, 168], hemisphere: right, name: Lobule VIIIa, name_fr: Lobule VIIIa, system: Cerebellum, system_fr: Cervelet, labels: [619]}
+    - {id: lobule-viiib-left, color: [168, 140, 84], hemisphere: left, name: Lobule VIIIb, name_fr: Lobule VIIIb, system: Cerebellum, system_fr: Cervelet, labels: [620]}
+    - {id: lobule-viiib-right, color: [168, 140, 84], hemisphere: right, name: Lobule VIIIb, name_fr: Lobule VIIIb, system: Cerebellum, system_fr: Cervelet, labels: [622]}
+    - {id: vermis-viii, color: [124, 140, 196], hemisphere: midline, name: Vermis VIII (pyramis), name_fr: Vermis VIII (pyramide), system: Cerebellum, system_fr: Cervelet, labels: [631]}
+    - {id: lobule-ix-left, color: [146, 124, 180], hemisphere: left, name: Lobule IX (tonsil), name_fr: Lobule IX (tonsille), system: Cerebellum, system_fr: Cervelet, labels: [623]}
+    - {id: lobule-ix-right, color: [146, 124, 180], hemisphere: right, name: Lobule IX (tonsil), name_fr: Lobule IX (tonsille), system: Cerebellum, system_fr: Cervelet, labels: [625]}
+    - {id: vermis-ix, color: [190, 132, 112], hemisphere: midline, name: Vermis IX (uvula), name_fr: Vermis IX (luette), system: Cerebellum, system_fr: Cervelet, labels: [624]}
+    - {id: lobule-x-left, color: [204, 150, 96], hemisphere: left, name: Lobule X (flocculus), name_fr: Lobule X (flocculus), system: Cerebellum, system_fr: Cervelet, labels: [626]}
+    - {id: lobule-x-right, color: [204, 150, 96], hemisphere: right, name: Lobule X (flocculus), name_fr: Lobule X (flocculus), system: Cerebellum, system_fr: Cervelet, labels: [628]}
+    - {id: vermis-x, color: [150, 190, 120], hemisphere: midline, name: Vermis X (nodulus), name_fr: Vermis X (nodule), system: Cerebellum, system_fr: Cervelet, labels: [627]}

@@ -8,7 +8,7 @@ import test from 'node:test';
 import { publishedFiles, publishedRecord } from './published-version.mjs';
 
 function publishedTree(t) {
-  const directory = mkdtempSync(join(tmpdir(), 'neuroatlas-version-'));
+  const directory = mkdtempSync(join(tmpdir(), 'planum-version-'));
   t.after(() => rmSync(directory, { recursive: true }));
   for (const name of ['models/bert', 'diffusion', 'assets']) mkdirSync(join(directory, name), { recursive: true });
   writeFileSync(join(directory, 'models', 'bert', 'anatomy.glb'), 'anatomy');

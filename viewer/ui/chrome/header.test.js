@@ -25,7 +25,10 @@ function settingsDocument(t) {
       },
       getAttribute(name) { return attributes.get(name) ?? null; },
       setAttribute(name, value) { attributes.set(name, String(value)); },
-      removeAttribute(name) { attributes.delete(name); },
+      removeAttribute(name) {
+        attributes.delete(name);
+        if (name.startsWith('data-')) delete this.dataset[name.slice(5).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())];
+      },
       toggleAttribute(name, force = !attributes.has(name)) {
         if (force) attributes.set(name, ''); else attributes.delete(name);
       },
@@ -47,6 +50,7 @@ function settingsDocument(t) {
   };
   doc.createElement = element;
   doc.querySelectorAll = () => [];
+  doc.documentElement = element('html');
   const events = element('document');
   doc.addEventListener = events.addEventListener;
   doc.removeEventListener = events.removeEventListener;
@@ -78,6 +82,14 @@ function headerDocument(t) {
   const listeners = new Map();
   const previousAdd = globalThis.addEventListener;
   const previousRemove = globalThis.removeEventListener;
+  const previousObserver = globalThis.ResizeObserver;
+  const observers = [];
+  globalThis.ResizeObserver = class {
+    observed = new Set();
+    constructor(callback) { this.callback = callback; observers.push(this); }
+    observe(node) { this.observed.add(node); }
+    disconnect() { this.observed.clear(); }
+  };
   globalThis.addEventListener = (type, listener) => listeners.set(type, listener);
   globalThis.removeEventListener = type => listeners.delete(type);
   let header;
@@ -85,6 +97,7 @@ function headerDocument(t) {
     header.dispose();
     globalThis.addEventListener = previousAdd;
     globalThis.removeEventListener = previousRemove;
+    globalThis.ResizeObserver = previousObserver;
   });
   const data = stub.byId('masthead-data');
   data.children = ['anatomy-switch', 'atlas-switch', 'surface-switch', 'detail'].map(stub.byId);
@@ -95,7 +108,13 @@ function headerDocument(t) {
   const masthead = stub.byId('masthead');
   masthead.clientWidth = masthead.scrollWidth = 1200;
   header = createHeader({ atlases: [], detailLevels: [], anatomy: { id: 'snail' }, manifest: {} });
-  return { ...stub, resize: () => listeners.get('resize')() };
+  return { ...stub, header, observers, resize: () => listeners.get('resize')(),
+    resizeAvailable() {
+      for (const observer of observers) {
+        if (observer.observed.has(wrap)) observer.callback([{ target: wrap }]);
+      }
+    },
+  };
 }
 
 function keyEvent(key, target) {
@@ -137,6 +156,28 @@ test('Settings opened by a keyboard appears immediately; a pointer keeps the pop
   assert.equal(menu.hasAttribute('data-instant'), false);
 });
 
+for (const supported of [true, false]) {
+  test(`fullscreen controls are ${supported ? 'available' : 'absent'} when the browser ${supported ? 'supports' : 'does not support'} fullscreen`, t => {
+    const { byId, doc } = settingsDocument(t);
+    doc.fullscreenEnabled = supported;
+    const settings = createSettings({});
+    t.after(() => settings.dispose());
+    settings.update({ lang: 'en', status: 'ready' }, { singleKeys: true, themeChoice: 'system' });
+    assert.equal(byId('viewport-fullscreen').hidden, !supported);
+    assert.equal(byId('menu-fullscreen').hidden, !supported);
+  });
+}
+
+test('the document exposes the current single-key shortcut preference for its hints', t => {
+  const { doc } = settingsDocument(t);
+  const settings = createSettings({});
+  t.after(() => settings.dispose());
+  for (const singleKeys of [true, false, true]) {
+    settings.update({ lang: 'en', status: 'ready' }, { singleKeys, themeChoice: 'system' });
+    assert.equal(doc.documentElement.dataset.singleKeys, singleKeys ? 'on' : 'off');
+  }
+});
+
 test('a focused data field remains available when the masthead collapses', t => {
   const { byId, doc, resize } = headerDocument(t);
   const field = byId('atlas-switch');
@@ -155,6 +196,29 @@ test('a masthead collapse leaves the data disclosure closed when focus is elsewh
   byId('masthead-data-wrap').clientWidth = 400;
   resize();
   assert.equal(byId('masthead-data-toggle').getAttribute('aria-expanded'), 'false');
+});
+
+test('the phone shell always puts data choices in a disclosure, even when they fit', t => {
+  const previous = globalThis.matchMedia;
+  globalThis.matchMedia = query => ({ matches: query.includes('max-width: 800px') });
+  t.after(() => { globalThis.matchMedia = previous; });
+  const { byId, resize } = headerDocument(t);
+
+  resize();
+
+  assert.equal(byId('masthead').hasAttribute('data-collapsed'), true);
+  assert.equal(byId('masthead-data-toggle').getAttribute('aria-expanded'), 'false');
+});
+
+test('touch controls stay in the disclosure on a wide screen', t => {
+  const previous = globalThis.matchMedia;
+  globalThis.matchMedia = query => ({ matches: query === '(pointer: coarse)' });
+  t.after(() => { globalThis.matchMedia = previous; });
+  const { byId, resize } = headerDocument(t);
+
+  resize();
+
+  assert.equal(byId('masthead').hasAttribute('data-collapsed'), true);
 });
 
 test('widening a focused data summary hands focus to the first visible native choice', t => {
@@ -234,7 +298,7 @@ test('a compact masthead keeps fitting settings even when the subject must short
   assert.equal(summary.dataset.short, undefined);
 });
 
-test('a compact masthead omits the atlas last when even one setting cannot fit', t => {
+test('a compact masthead retains the atlas when its name must truncate', t => {
   const { byId, resize } = headerDocument(t);
   const summary = byId('masthead-data-summary');
   const context = {
@@ -249,6 +313,39 @@ test('a compact masthead omits the atlas last when even one setting cannot fit',
 
   resize();
 
-  assert.equal(summary.dataset.short, 'detail colour atlas');
-  assert.equal(context.scrollWidth, 40);
+  assert.equal(summary.dataset.short, 'detail colour');
+  assert.ok(context.scrollWidth > context.clientWidth);
+});
+
+test('the compact summary refits when its available space changes without a window resize', t => {
+  const { byId, resize, resizeAvailable } = headerDocument(t);
+  const summary = byId('masthead-data-summary');
+  const wrap = byId('masthead-data-wrap');
+  const context = {
+    get clientWidth() { return wrap.clientWidth; },
+    get scrollWidth() {
+      const omitted = summary.dataset.short?.split(' ') ?? [];
+      return 280 - (omitted.includes('detail') ? 80 : 0)
+        - (omitted.includes('colour') ? 100 : 0);
+    },
+  };
+  summary.querySelector = selector => selector.includes('context') ? context : {};
+  wrap.clientWidth = 60;
+  resize();
+  assert.equal(summary.dataset.short, 'detail colour');
+
+  wrap.clientWidth = 206;
+  resizeAvailable();
+
+  assert.equal(summary.dataset.short, 'detail', 'atlas and colouring return without another window resize');
+});
+
+test('disposing the header stops observing its available data width', t => {
+  const { byId, header, observers } = headerDocument(t);
+  assert.equal(observers.length, 1);
+  assert.ok(observers[0].observed.has(byId('masthead-data-wrap')));
+
+  header.dispose();
+
+  assert.equal(observers[0].observed.size, 0);
 });

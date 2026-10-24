@@ -71,7 +71,7 @@ test('a region without a source or a colour is rejected', () => {
 });
 
 test('each published anatomy assigns every HCP-MMP area a section', () => {
-  for (const anatomy of ['snail', 'cdmd']) {
+  for (const anatomy of ['cdmd']) {
     const base = new URL(`../../public/models/${anatomy}/`, import.meta.url);
     const manifest = JSON.parse(readFileSync(new URL('manifest.json', base), 'utf8'));
     const published = JSON.parse(readFileSync(new URL(manifest.functional_regions.file, base), 'utf8'));

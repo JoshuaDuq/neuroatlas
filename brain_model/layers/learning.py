@@ -5,7 +5,7 @@ import trimesh
 import yaml
 
 from ..gltf.export import add_region, published_area_mm2, write_scene
-from ..labels import nextbrain
+from ..labels import cerebellum, nextbrain
 from ..labels.volumes import conformed_grid, load_on_grid
 from ..sources import ROOT, read_color_table
 from ..surfaces.geometry import extract_structure, smooth_display
@@ -18,10 +18,15 @@ def read_definition(config):
     excluded = config["anatomy"].get("learning", {}).get("exclude_aseg_units", [])
     if not isinstance(excluded, list) or any(not isinstance(unit, str) for unit in excluded):
         raise ValueError("Overview exclusions must be a list of unit names")
-    unknown = set(excluded) - {unit["id"] for unit in definition["aseg"]}
+    lobules = definition["cerebnet"]
+    replaced = lobules["replaces_aseg_units"] if cerebellum.is_declared(config) else []
+    unknown = set(excluded + replaced) - {unit["id"] for unit in definition["aseg"]}
     if unknown:
         raise ValueError(f"Unknown aseg overview units: {sorted(unknown)}")
-    definition["aseg"] = [unit for unit in definition["aseg"] if unit["id"] not in excluded]
+    definition["aseg"] = [
+        unit for unit in definition["aseg"] if unit["id"] not in excluded + replaced
+    ]
+    definition["cerebnet"] = lobules["units"] if cerebellum.is_declared(config) else []
     return definition
 
 
@@ -89,6 +94,17 @@ def source_groups(config):
         if set(group["labels"]) - set(table):
             raise ValueError(f"Unknown aseg constituent: {group['id']}")
     yield "aseg", grid, table, definition["aseg"]
+    if definition["cerebnet"]:
+        for group in definition["cerebnet"]:
+            if set(group["labels"]) - cerebellum.LOBULES:
+                raise ValueError(f"Unknown CerebNet lobule: {group['id']}")
+        # Listed in the configured anatomical order, a lobule's sides together.
+        names = list(dict.fromkeys(group["name"] for group in definition["cerebnet"]))
+        groups = [
+            {**group, "family_order": names.index(group["name"])}
+            for group in definition["cerebnet"]
+        ]
+        yield "cerebnet", cerebellum.load(config), cerebellum.LOBULES, groups
 
 
 def source_grids(grids):
@@ -106,6 +122,19 @@ def constituent_id(source, side, label):
     return f"{source}:{hemisphere}:{label}"
 
 
+def family_order(group):
+    return {"family_order": group["family_order"]} if "family_order" in group else {}
+
+
+def constituents(source, side, members):
+    """Published regions a unit is the union of; CerebNet publishes none of its own."""
+    if source == cerebellum.ATLAS_ID:
+        return {}
+    return {
+        "constituent_regions": [constituent_id(source, side, label) for label in members]
+    }
+
+
 def region_record(group, source, volume):
     members = [label for label in group["labels"] if np.any(volume == label)]
     side = group["hemisphere"]
@@ -120,9 +149,8 @@ def region_record(group, source, volume):
         "source_label_id": None,
         "source_atlas": source,
         "source_label_ids": members,
-        "constituent_regions": [
-            constituent_id(source, side, label) for label in members
-        ],
+        **constituents(source, side, members),
+        **family_order(group),
         "display_names": {"en": group["name"], "fr": group["name_fr"]},
         "system_names": {"en": group["system"], "fr": group["system_fr"]},
         "display_color": group["color"],

@@ -193,7 +193,13 @@ export function createSectionControls(sections, {
   });
   listen(cutAtlas, 'change', () => sections.setCutAtlas(cutAtlas.value));
   listen(position, 'input', () => slide(() => sections.setOffsetReady(Number(position.value))));
-  listen(number, 'change', () => sections.setOffset(Number(number.value)));
+  listen(number, 'change', () => {
+    if (number.value === '') {
+      number.value = new Vector3(...sections.state.crosshair).dot(sections.frame.normal).toFixed(1);
+      return;
+    }
+    sections.setOffset(Number(number.value));
+  });
   listen(reverse, 'change', () => { sections.setDisplay({ reverse: reverse.checked }); onFaceView(); });
   listen(mprOverlay, 'change', () => sections.setDisplay({ overlay: mprOverlay.checked }));
   for (const angle of [tilt, azimuth]) {
@@ -203,13 +209,14 @@ export function createSectionControls(sections, {
   const drag = trackDrag([position, tilt, azimuth], () => update());
   // Arrow steps on the position slider are spoken by the slider; the sentence waits until it is left.
   listen(position, 'blur', () => update());
-  function showMpr() {
+  function showMpr({ instant = false } = {}) {
+    dialog.toggleAttribute('data-instant', instant);
     dialog.showModal();
     previousImage = null;
     update();
   }
 
-  async function openMpr({ atRegion = false } = {}) {
+  async function openMpr({ atRegion = false, instant = false } = {}) {
     const region = getSelectedRegion?.();
     if (atRegion && region) {
       const coords = centroidOf?.(region.id);
@@ -224,10 +231,10 @@ export function createSectionControls(sections, {
       }
     }
     await sections.load();
-    showMpr();
+    showMpr({ instant });
   }
-  listen(mprOpenBtn, 'click', () => openMpr());
-  if (regionMpr) listen(regionMpr, 'click', () => openMpr({ atRegion: true }));
+  listen(mprOpenBtn, 'click', event => openMpr({ instant: event.detail === 0 }));
+  if (regionMpr) listen(regionMpr, 'click', event => openMpr({ atRegion: true, instant: event.detail === 0 }));
   listen(cutClose, 'click', async () => {
     pendingPlane = null;
     sectionTool.focus({ preventScroll: true });
@@ -238,7 +245,11 @@ export function createSectionControls(sections, {
     cutMore.setAttribute('aria-expanded', String(expanded));
     sectionBar.dataset.expanded = String(expanded);
   });
-  listen(mprCloseBtn, 'click', () => dialog.close());
+  listen(mprCloseBtn, 'click', event => {
+    dialog.toggleAttribute('data-instant', event.detail === 0);
+    dialog.close();
+  });
+  listen(dialog, 'cancel', () => dialog.toggleAttribute('data-instant', true));
   listen(width, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
   listen(center, 'input', () => schedule(() => sections.setWindow(Number(center.value), Number(width.value))));
 

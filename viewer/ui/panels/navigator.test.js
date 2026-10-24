@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  controlKeyAction, groupDisplayName, labelledGroups, matchesElsewhere, nextEnabledIndex, regionGroup,
+  controlKeyAction, createNavigator, groupDisplayName, labelledGroups, matchesElsewhere, nextEnabledIndex, regionGroup,
   rowStatesReason, sectionReasons, sharedGroupNames, treeKeyAction, vocabularyOf,
 } from './navigator.js';
-import { cutAtlasesOf } from '../../catalog/visibility.js';
+import { cutAtlasesOf, visibilityOf } from '../../catalog/visibility.js';
 import { visibilityStateOf } from './visibility-control.js';
 
 test('an arrow moves past a row that cannot be chosen', () => {
@@ -170,4 +170,220 @@ test('a hidden row prints only a reason of its own', () => {
   assert.equal(rowStatesReason(hiddenBy('removed')), false, 'the struck eye says it');
   assert.equal(rowStatesReason(hiddenBy('no-mri')), true);
   assert.equal(rowStatesReason(hiddenBy('below-cut-resolution')), true);
+});
+
+/** The tree's real render path, without a renderer or downloaded anatomy. */
+function navigatorDocument(t, catalog) {
+  const previous = globalThis.document;
+  const previousCss = globalThis.CSS;
+  const nodes = new Map();
+  const doc = { activeElement: null };
+  function element() {
+    const attributes = new Map();
+    const listeners = new Map();
+    const node = {
+      children: [], dataset: {}, value: '', classList: { add() {} },
+      addEventListener(type, listener) { listeners.set(type, listener); },
+      removeEventListener(type) { listeners.delete(type); },
+      dispatch(type, event) { event.target ??= node; listeners.get(type)?.(event); },
+      scrollIntoView() {},
+      setAttribute(name, value) { attributes.set(name, String(value)); },
+      getAttribute(name) { return attributes.get(name) ?? null; },
+      removeAttribute(name) { attributes.delete(name); },
+      append(...children) {
+        for (const child of children) {
+          child.parentNode = node;
+          node.children.push(child);
+        }
+      },
+      replaceChildren(...children) { node.children = []; node.append(...children); },
+      contains(target) { return target === node || node.children.some(child => child.contains(target)); },
+      closest(selector) {
+        const matches = selector === '[role="treeitem"]' ? node.getAttribute('role') === 'treeitem'
+          : node.className?.split(' ').includes(selector.slice(1));
+        return matches ? node : node.parentNode?.closest(selector);
+      },
+      querySelector(selector) {
+        if (selector === ':scope > .group-row') return node.children.find(child => child.className?.includes('group-row'));
+        return node.querySelectorAll(selector)[0] ?? null;
+      },
+      querySelectorAll(selector) {
+        const role = selector.match(/^\[role="(\w+)"\]$/)?.[1];
+        const key = selector.match(/^\[data-group-key="([^"]+)"\]$/)?.[1];
+        return node.children.flatMap(child => [
+          ...((role && child.getAttribute('role') === role) || (key && child.dataset.groupKey === key) ? [child] : []),
+          ...child.querySelectorAll(selector),
+        ]);
+      },
+      remove() {
+        if (node.parentNode) node.parentNode.children = node.parentNode.children.filter(child => child !== node);
+        node.parentNode = null;
+      },
+      focus() { doc.activeElement = node; },
+    };
+    Object.defineProperty(node, 'childElementCount', { get: () => node.children.length });
+    return node;
+  }
+  doc.getElementById = id => {
+    if (id === 'tree-toggle-all') return null;
+    if (!nodes.has(id)) nodes.set(id, element());
+    return nodes.get(id);
+  };
+  doc.createElement = doc.createElementNS = doc.createDocumentFragment = element;
+  doc.createTextNode = text => Object.assign(element(), { textContent: text });
+  globalThis.document = doc;
+  globalThis.CSS = { escape: value => value };
+  t.after(() => { globalThis.document = previous; globalThis.CSS = previousCss; });
+  const rows = ['a', 'b'].map(id => ({
+    region: { id, kind: 'cortex', atlas: 'destrieux', hemisphere: 'left' },
+    label: { name: id, group: 'Frontal lobe' }, visible: true,
+  }));
+  const group = { key: 'cortex:Frontal lobe', name: 'Frontal lobe', kind: 'cortex', rows };
+  const state = { lang: 'en', query: '', expanded: new Set([group.key]), hiddenRegions: new Set() };
+  const selected = [];
+  const navigator = createNavigator({
+    catalog: catalog ?? {
+      groups: () => [group],
+      search(query) {
+        const found = rows.filter(row => row.label.name.includes(query.trim()));
+        return { rows: found, total: found.length };
+      },
+    },
+    atlases: [], cutAtlases: [],
+    onSelect: id => selected.push(id),
+    onQuery: query => navigator.update({ ...state, query }),
+  });
+  t.after(() => navigator.dispose());
+  navigator.update(state);
+  const tree = doc.getElementById('tree');
+  return { navigator, state, tree, selected, byId: doc.getElementById,
+    items: () => tree.querySelectorAll('[role="treeitem"]') };
+}
+
+test('expanded tree parents own their child groups across rerenders', t => {
+  const { navigator, state, items } = navigatorDocument(t);
+  const parent = items()[0];
+  const children = parent.parentNode.children[1];
+  assert.ok(children.id, 'the child group has an addressable id');
+  assert.doesNotMatch(children.id, /\s/, 'an owned id is one token even for a multiword group');
+  assert.equal(parent.getAttribute('aria-owns'), children.id);
+  navigator.update({ ...state, lang: 'fr' });
+  assert.equal(items()[0].getAttribute('aria-owns'), children.id, 'the same group keeps its id across a rerender');
+  navigator.update({ ...state, expanded: new Set() });
+  assert.equal(items()[0].getAttribute('aria-owns'), null, 'a collapsed parent has no missing owned group');
+});
+
+test('selectable tree regions expose both selected and unselected states', t => {
+  const { navigator, state, items } = navigatorDocument(t);
+  assert.deepEqual(items().map(item => item.getAttribute('aria-selected')), [null, 'false', 'false']);
+  navigator.update({ ...state, selectedRegion: { id: 'a' } });
+  assert.deepEqual(items().map(item => item.getAttribute('aria-selected')), [null, 'true', 'false']);
+  navigator.update(state);
+  assert.deepEqual(items().map(item => item.getAttribute('aria-selected')), [null, 'false', 'false']);
+});
+
+for (const searching of [false, true]) {
+  test(`spinal cord visibility refreshes ${searching ? 'search results' : 'the anatomy tree'}`, t => {
+    const cord = { id: 'cord', kind: 'structure', atlas: 'zanatomy', hemisphere: 'midline', supplemental: true };
+    const rows = state => [{ region: cord, label: { name: 'Spinal cord', group: 'Spinal cord' },
+      ...visibilityOf(cord, state) }];
+    const catalog = {
+      groups: state => [{ key: 'cord', name: 'Spinal cord', kind: 'structure', rows: rows(state) }],
+      search: (query, state) => ({ rows: rows(state), total: 1 }),
+    };
+    const { navigator, state, items, byId } = navigatorDocument(t, catalog);
+    const current = { ...state, query: searching ? 'cord' : '', expanded: new Set(['cord']), spinalCordVisible: false };
+    const row = () => searching ? byId('results').querySelector('[role="option"]') : items().at(-1);
+
+    navigator.update(current);
+    assert.equal(row().dataset.visible, 'false');
+    assert.equal(row().dataset.reason, 'spinal-cord-hidden');
+
+    navigator.update({ ...current, spinalCordVisible: true });
+    assert.equal(row().dataset.visible, 'true');
+    assert.equal(row().dataset.reason, undefined);
+
+    navigator.update(current);
+    assert.equal(row().dataset.visible, 'false');
+    assert.equal(row().dataset.reason, 'spinal-cord-hidden');
+  });
+}
+
+const searchKey = key => ({ key, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } });
+
+test('Enter in an anatomy search still chooses its visible active result', t => {
+  const { navigator, state, byId, selected } = navigatorDocument(t);
+  navigator.update({ ...state, query: 'a' });
+  const event = searchKey('Enter');
+
+  byId('search').dispatch('keydown', event);
+
+  assert.deepEqual(selected, ['a']);
+  assert.equal(event.defaultPrevented, true);
+});
+
+test('Enter used to confirm composition cannot select an active anatomy result', t => {
+  const { navigator, state, byId, selected } = navigatorDocument(t);
+  navigator.update({ ...state, query: 'a' });
+  const event = { ...searchKey('Enter'), isComposing: true };
+
+  byId('search').dispatch('keydown', event);
+
+  assert.deepEqual(selected, []);
+  assert.equal(event.defaultPrevented, false);
+});
+
+test('clearing an anatomy search removes its active result from the combobox', t => {
+  const { navigator, state, byId } = navigatorDocument(t);
+  navigator.update({ ...state, query: 'a' });
+  const search = byId('search');
+  assert.ok(search.getAttribute('aria-activedescendant'));
+  search.focus();
+
+  search.dispatch('keydown', searchKey('Escape'));
+
+  assert.equal(search.value, '');
+  assert.equal(search.getAttribute('aria-expanded'), 'false');
+  assert.equal(search.getAttribute('aria-activedescendant'), null);
+  assert.equal(byId('results').querySelectorAll('[role="option"]').some(option => option.dataset.active === 'true'), false);
+});
+
+test('Enter in an empty anatomy search cannot activate a previous result', t => {
+  const { navigator, state, byId, selected } = navigatorDocument(t);
+  navigator.update({ ...state, query: 'a' });
+  const search = byId('search');
+  search.focus();
+  search.dispatch('keydown', searchKey('Escape'));
+  const event = searchKey('Enter');
+
+  search.dispatch('keydown', event);
+
+  assert.deepEqual(selected, []);
+  assert.equal(event.defaultPrevented, false);
+});
+
+test('arrow keys in an empty anatomy search cannot arm hidden results', t => {
+  const { navigator, state, byId } = navigatorDocument(t);
+  navigator.update({ ...state, query: 'a' });
+  const search = byId('search');
+  search.focus();
+  search.dispatch('keydown', searchKey('Escape'));
+
+  for (const key of ['ArrowDown', 'ArrowUp']) {
+    const event = searchKey(key);
+    search.dispatch('keydown', event);
+    assert.equal(event.defaultPrevented, false);
+    assert.equal(search.getAttribute('aria-activedescendant'), null);
+  }
+});
+
+test('whitespace in an anatomy search remains clearable while the tree is shown', t => {
+  const { navigator, state, byId } = navigatorDocument(t);
+  navigator.update({ ...state, query: '   ' });
+
+  assert.equal(byId('results').hidden, true);
+  assert.equal(byId('search-clear').hidden, false);
+  byId('search-clear').dispatch('click', {});
+  assert.equal(byId('search').value, '');
+  assert.equal(byId('search-clear').hidden, true);
 });

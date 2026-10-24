@@ -75,6 +75,7 @@
       "specular_intensity": 0.55
     },
     "glass_opacity": 0.1,
+    "see_through_opacity": 0.15,
     "intensity": {
       "low": 85,
       "high": 180,
@@ -823,6 +824,18 @@
     "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
     "method": "Each domain's Neurosynth abstract term (version 7, TF-IDF at least 0.001); MKDA chi-square uniformity z with a 6 mm kernel, sampled between fsaverage's white and pial surfaces and averaged per HCP-MMP area, and resampled onto fsaverage's aseg and averaged per grey-matter structure. An area or structure belongs to every domain whose mean z reaches 3, its strength measured against the domain's cortical maximum; in the overview of the eleven assessment domains it takes the one whose z is the largest share of that domain's cortical maximum. Carried per area, never per vertex"
   },
+  "neurosynth_terms": {
+    "id": "neurosynth-terms",
+    "file": "neurosynth-terms.json",
+    "atlas": "hcp-mmp",
+    "label": "Neurosynth term search (consistency maps of chosen version 7 abstract terms on HCP-MMP areas and aseg structures)",
+    "citations": [
+      "https://doi.org/10.1038/nmeth.1635"
+    ],
+    "license": "Open Database License (ODbL) 1.0; derived area scores shared under the same licence",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "method": "Neurosynth version 7 abstract terms naming a function, task, stimulus, state, behaviour or clinical population, each derived as the domains are: studies whose abstract uses the term at a TF-IDF of at least 0.001 against every other study, MKDA chi-square uniformity z with a 6 mm kernel, averaged per HCP-MMP area between fsaverage's white and pial surfaces and per aseg grey-matter structure. An area or structure is drawn where its mean z reaches 3. Carried per area, never per vertex"
+  },
   "cut_atlases": [
     {
       "id": "destrieux",
@@ -935,7 +948,7 @@
       "id": "learning",
       "label": "Learning anatomy",
       "file": "learning.glb",
-      "region_count": 80,
+      "region_count": 105,
       "source_grids": {
         "nextbrain": {
           "voxel_to_surface_ras_mm": [
@@ -971,6 +984,39 @@
           ]
         },
         "aseg": {
+          "voxel_to_surface_ras_mm": [
+            [
+              -1.0,
+              0.0,
+              0.0,
+              128.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -128.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              128.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "voxel_size_mm": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "cerebnet": {
           "voxel_to_surface_ras_mm": [
             [
               -1.0,
@@ -24139,6 +24185,86 @@
       "surface_area_mm2": 146.88294292133057
     },
     {
+      "id": "learning:left:fastigial",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Fastigial nucleus \u00b7 left",
+      "source_name": "Fastigial nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        715
+      ],
+      "constituent_regions": [
+        "nextbrain:left:715"
+      ],
+      "display_names": {
+        "en": "Fastigial nucleus",
+        "fr": "Noyau fastigial"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        116,
+        168,
+        150
+      ],
+      "voxel_count": 162,
+      "voxel_size_mm": [
+        0.4000000059604645,
+        0.4000000059604645,
+        0.4000000059604645
+      ],
+      "segmentation_volume_mm3": 10.368000463485721,
+      "display_maximum_displacement_mm": 0.17731282760863318,
+      "vertex_count": 347,
+      "triangle_count": 686,
+      "surface_area_mm2": 33.996222408159724
+    },
+    {
+      "id": "learning:right:fastigial",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Fastigial nucleus \u00b7 right",
+      "source_name": "Fastigial nucleus",
+      "source_label_id": null,
+      "source_atlas": "nextbrain",
+      "source_label_ids": [
+        10715
+      ],
+      "constituent_regions": [
+        "nextbrain:right:10715"
+      ],
+      "display_names": {
+        "en": "Fastigial nucleus",
+        "fr": "Noyau fastigial"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        116,
+        168,
+        150
+      ],
+      "voxel_count": 142,
+      "voxel_size_mm": [
+        0.4000000059604645,
+        0.4000000059604645,
+        0.4000000059604645
+      ],
+      "segmentation_volume_mm3": 9.088000406265262,
+      "display_maximum_displacement_mm": 0.17654035541765634,
+      "vertex_count": 309,
+      "triangle_count": 602,
+      "surface_area_mm2": 29.21782812752091
+    },
+    {
       "id": "learning:ventricles-left",
       "atlas": "learning",
       "kind": "structure",
@@ -24351,84 +24477,954 @@
       "surface_area_mm2": 2336.737315457034
     },
     {
-      "id": "learning:cerebellar-cortex-left",
+      "id": "learning:lobules-i-iv-left",
       "atlas": "learning",
       "kind": "structure",
       "hemisphere": "left",
-      "label": "Cerebellar cortex \u00b7 left",
-      "source_name": "Cerebellar cortex",
+      "label": "Lobules I\u2013IV \u00b7 left",
+      "source_name": "Lobules I\u2013IV",
       "source_label_id": null,
-      "source_atlas": "aseg",
+      "source_atlas": "cerebnet",
       "source_label_ids": [
-        8
+        601
       ],
-      "constituent_regions": [
-        "aseg:left:8"
-      ],
+      "family_order": 0,
       "display_names": {
-        "en": "Cerebellar cortex",
-        "fr": "Cortex c\u00e9r\u00e9belleux"
+        "en": "Lobules I\u2013IV",
+        "fr": "Lobules I\u2013IV"
       },
       "system_names": {
         "en": "Cerebellum",
         "fr": "Cervelet"
       },
       "display_color": [
-        138,
-        122,
-        110
+        176,
+        120,
+        92
       ],
-      "voxel_count": 49786,
+      "voxel_count": 2818,
       "voxel_size_mm": [
         1.0,
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 49786.0,
-      "display_maximum_displacement_mm": 0.5152398646777423,
-      "vertex_count": 24607,
-      "triangle_count": 49514,
-      "surface_area_mm2": 16590.181006555682
+      "segmentation_volume_mm3": 2818.0,
+      "display_maximum_displacement_mm": 0.4939677416902838,
+      "vertex_count": 2744,
+      "triangle_count": 5600,
+      "surface_area_mm2": 1751.267021994529
     },
     {
-      "id": "learning:cerebellar-cortex-right",
+      "id": "learning:lobules-i-iv-right",
       "atlas": "learning",
       "kind": "structure",
       "hemisphere": "right",
-      "label": "Cerebellar cortex \u00b7 right",
-      "source_name": "Cerebellar cortex",
+      "label": "Lobules I\u2013IV \u00b7 right",
+      "source_name": "Lobules I\u2013IV",
       "source_label_id": null,
-      "source_atlas": "aseg",
+      "source_atlas": "cerebnet",
       "source_label_ids": [
-        47
+        602
       ],
-      "constituent_regions": [
-        "aseg:right:47"
-      ],
+      "family_order": 0,
       "display_names": {
-        "en": "Cerebellar cortex",
-        "fr": "Cortex c\u00e9r\u00e9belleux"
+        "en": "Lobules I\u2013IV",
+        "fr": "Lobules I\u2013IV"
       },
       "system_names": {
         "en": "Cerebellum",
         "fr": "Cervelet"
       },
       "display_color": [
-        138,
-        122,
-        110
+        176,
+        120,
+        92
       ],
-      "voxel_count": 49860,
+      "voxel_count": 2579,
       "voxel_size_mm": [
         1.0,
         1.0,
         1.0
       ],
-      "segmentation_volume_mm3": 49860.0,
-      "display_maximum_displacement_mm": 0.5126912561420894,
-      "vertex_count": 24294,
-      "triangle_count": 48780,
-      "surface_area_mm2": 16305.287850906021
+      "segmentation_volume_mm3": 2579.0,
+      "display_maximum_displacement_mm": 0.5222783943859243,
+      "vertex_count": 2599,
+      "triangle_count": 5290,
+      "surface_area_mm2": 1655.5670291697986
+    },
+    {
+      "id": "learning:lobule-v-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule V \u00b7 left",
+      "source_name": "Lobule V",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        603
+      ],
+      "family_order": 1,
+      "display_names": {
+        "en": "Lobule V",
+        "fr": "Lobule V"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        92,
+        140,
+        176
+      ],
+      "voxel_count": 3190,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3190.0,
+      "display_maximum_displacement_mm": 0.5164241076950034,
+      "vertex_count": 3251,
+      "triangle_count": 6598,
+      "surface_area_mm2": 2033.125826900419
+    },
+    {
+      "id": "learning:lobule-v-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule V \u00b7 right",
+      "source_name": "Lobule V",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        604
+      ],
+      "family_order": 1,
+      "display_names": {
+        "en": "Lobule V",
+        "fr": "Lobule V"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        92,
+        140,
+        176
+      ],
+      "voxel_count": 3155,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3155.0,
+      "display_maximum_displacement_mm": 0.4842922169680645,
+      "vertex_count": 3290,
+      "triangle_count": 6700,
+      "surface_area_mm2": 2060.7598144251497
+    },
+    {
+      "id": "learning:lobule-vi-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule VI \u00b7 left",
+      "source_name": "Lobule VI",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        605
+      ],
+      "family_order": 2,
+      "display_names": {
+        "en": "Lobule VI",
+        "fr": "Lobule VI"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        190,
+        168,
+        96
+      ],
+      "voxel_count": 5862,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 5862.0,
+      "display_maximum_displacement_mm": 0.49551086215698337,
+      "vertex_count": 4653,
+      "triangle_count": 9326,
+      "surface_area_mm2": 2912.075563800582
+    },
+    {
+      "id": "learning:lobule-vi-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule VI \u00b7 right",
+      "source_name": "Lobule VI",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        607
+      ],
+      "family_order": 2,
+      "display_names": {
+        "en": "Lobule VI",
+        "fr": "Lobule VI"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        190,
+        168,
+        96
+      ],
+      "voxel_count": 6033,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6033.0,
+      "display_maximum_displacement_mm": 0.48324750043713305,
+      "vertex_count": 4758,
+      "triangle_count": 9492,
+      "surface_area_mm2": 2968.9624677057095
+    },
+    {
+      "id": "learning:vermis-vi",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Vermis VI (declive) \u00b7 midline",
+      "source_name": "Vermis VI (declive)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        606
+      ],
+      "family_order": 3,
+      "display_names": {
+        "en": "Vermis VI (declive)",
+        "fr": "Vermis VI (d\u00e9clive)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        136,
+        182,
+        168
+      ],
+      "voxel_count": 1312,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1312.0,
+      "display_maximum_displacement_mm": 0.4810497617089957,
+      "vertex_count": 1124,
+      "triangle_count": 2248,
+      "surface_area_mm2": 776.3347507249534
+    },
+    {
+      "id": "learning:crus-i-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Crus I \u00b7 left",
+      "source_name": "Crus I",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        608
+      ],
+      "family_order": 4,
+      "display_names": {
+        "en": "Crus I",
+        "fr": "Crus I"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        120,
+        104,
+        170
+      ],
+      "voxel_count": 10728,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10728.0,
+      "display_maximum_displacement_mm": 0.4928437120467505,
+      "vertex_count": 7513,
+      "triangle_count": 15130,
+      "surface_area_mm2": 5143.625632002088
+    },
+    {
+      "id": "learning:crus-i-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Crus I \u00b7 right",
+      "source_name": "Crus I",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        610
+      ],
+      "family_order": 4,
+      "display_names": {
+        "en": "Crus I",
+        "fr": "Crus I"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        120,
+        104,
+        170
+      ],
+      "voxel_count": 10637,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 10637.0,
+      "display_maximum_displacement_mm": 0.49485200267258617,
+      "vertex_count": 6924,
+      "triangle_count": 13892,
+      "surface_area_mm2": 4699.046528013345
+    },
+    {
+      "id": "learning:crus-ii-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Crus II \u00b7 left",
+      "source_name": "Crus II",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        611
+      ],
+      "family_order": 5,
+      "display_names": {
+        "en": "Crus II",
+        "fr": "Crus II"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        104,
+        168,
+        132
+      ],
+      "voxel_count": 6208,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6208.0,
+      "display_maximum_displacement_mm": 0.4939934582146962,
+      "vertex_count": 4826,
+      "triangle_count": 9696,
+      "surface_area_mm2": 3263.0049191307594
+    },
+    {
+      "id": "learning:crus-ii-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Crus II \u00b7 right",
+      "source_name": "Crus II",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        613
+      ],
+      "family_order": 5,
+      "display_names": {
+        "en": "Crus II",
+        "fr": "Crus II"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        104,
+        168,
+        132
+      ],
+      "voxel_count": 6968,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 6968.0,
+      "display_maximum_displacement_mm": 0.4958867806699114,
+      "vertex_count": 5309,
+      "triangle_count": 10666,
+      "surface_area_mm2": 3505.793194986841
+    },
+    {
+      "id": "learning:lobule-viib-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule VIIb \u00b7 left",
+      "source_name": "Lobule VIIb",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        614
+      ],
+      "family_order": 6,
+      "display_names": {
+        "en": "Lobule VIIb",
+        "fr": "Lobule VIIb"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        196,
+        116,
+        140
+      ],
+      "voxel_count": 3931,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3931.0,
+      "display_maximum_displacement_mm": 0.4968044655343244,
+      "vertex_count": 3794,
+      "triangle_count": 7648,
+      "surface_area_mm2": 2439.193127302414
+    },
+    {
+      "id": "learning:lobule-viib-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule VIIb \u00b7 right",
+      "source_name": "Lobule VIIb",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        616
+      ],
+      "family_order": 6,
+      "display_names": {
+        "en": "Lobule VIIb",
+        "fr": "Lobule VIIb"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        196,
+        116,
+        140
+      ],
+      "voxel_count": 4001,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4001.0,
+      "display_maximum_displacement_mm": 0.4786706606641092,
+      "vertex_count": 3816,
+      "triangle_count": 7660,
+      "surface_area_mm2": 2470.0971379287885
+    },
+    {
+      "id": "learning:vermis-vii",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Vermis VII (folium and tuber) \u00b7 midline",
+      "source_name": "Vermis VII (folium and tuber)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        630
+      ],
+      "family_order": 7,
+      "display_names": {
+        "en": "Vermis VII (folium and tuber)",
+        "fr": "Vermis VII (folium et tuber)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        206,
+        172,
+        120
+      ],
+      "voxel_count": 665,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 665.0,
+      "display_maximum_displacement_mm": 0.4495836135407635,
+      "vertex_count": 706,
+      "triangle_count": 1408,
+      "surface_area_mm2": 469.45690893377997
+    },
+    {
+      "id": "learning:lobule-viiia-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule VIIIa \u00b7 left",
+      "source_name": "Lobule VIIIa",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        617
+      ],
+      "family_order": 8,
+      "display_names": {
+        "en": "Lobule VIIIa",
+        "fr": "Lobule VIIIa"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        88,
+        160,
+        168
+      ],
+      "voxel_count": 4732,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 4732.0,
+      "display_maximum_displacement_mm": 0.513234221474637,
+      "vertex_count": 3757,
+      "triangle_count": 7570,
+      "surface_area_mm2": 2405.8087897455316
+    },
+    {
+      "id": "learning:lobule-viiia-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule VIIIa \u00b7 right",
+      "source_name": "Lobule VIIIa",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        619
+      ],
+      "family_order": 8,
+      "display_names": {
+        "en": "Lobule VIIIa",
+        "fr": "Lobule VIIIa"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        88,
+        160,
+        168
+      ],
+      "voxel_count": 3919,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3919.0,
+      "display_maximum_displacement_mm": 0.5399797409875126,
+      "vertex_count": 3387,
+      "triangle_count": 6838,
+      "surface_area_mm2": 2249.7976084770617
+    },
+    {
+      "id": "learning:lobule-viiib-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule VIIIb \u00b7 left",
+      "source_name": "Lobule VIIIb",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        620
+      ],
+      "family_order": 9,
+      "display_names": {
+        "en": "Lobule VIIIb",
+        "fr": "Lobule VIIIb"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        168,
+        140,
+        84
+      ],
+      "voxel_count": 2826,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2826.0,
+      "display_maximum_displacement_mm": 0.5327878408349929,
+      "vertex_count": 2656,
+      "triangle_count": 5348,
+      "surface_area_mm2": 1718.087315843958
+    },
+    {
+      "id": "learning:lobule-viiib-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule VIIIb \u00b7 right",
+      "source_name": "Lobule VIIIb",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        622
+      ],
+      "family_order": 9,
+      "display_names": {
+        "en": "Lobule VIIIb",
+        "fr": "Lobule VIIIb"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        168,
+        140,
+        84
+      ],
+      "voxel_count": 2937,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 2937.0,
+      "display_maximum_displacement_mm": 0.48751150863526604,
+      "vertex_count": 2717,
+      "triangle_count": 5502,
+      "surface_area_mm2": 1754.1604266120582
+    },
+    {
+      "id": "learning:vermis-viii",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Vermis VIII (pyramis) \u00b7 midline",
+      "source_name": "Vermis VIII (pyramis)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        631
+      ],
+      "family_order": 10,
+      "display_names": {
+        "en": "Vermis VIII (pyramis)",
+        "fr": "Vermis VIII (pyramide)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        124,
+        140,
+        196
+      ],
+      "voxel_count": 1808,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 1808.0,
+      "display_maximum_displacement_mm": 0.47933191208722115,
+      "vertex_count": 1287,
+      "triangle_count": 2574,
+      "surface_area_mm2": 869.9354396060751
+    },
+    {
+      "id": "learning:lobule-ix-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule IX (tonsil) \u00b7 left",
+      "source_name": "Lobule IX (tonsil)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        623
+      ],
+      "family_order": 11,
+      "display_names": {
+        "en": "Lobule IX (tonsil)",
+        "fr": "Lobule IX (tonsille)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        146,
+        124,
+        180
+      ],
+      "voxel_count": 3075,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3075.0,
+      "display_maximum_displacement_mm": 0.47633022081078047,
+      "vertex_count": 2263,
+      "triangle_count": 4558,
+      "surface_area_mm2": 1501.9259243150207
+    },
+    {
+      "id": "learning:lobule-ix-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule IX (tonsil) \u00b7 right",
+      "source_name": "Lobule IX (tonsil)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        625
+      ],
+      "family_order": 11,
+      "display_names": {
+        "en": "Lobule IX (tonsil)",
+        "fr": "Lobule IX (tonsille)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        146,
+        124,
+        180
+      ],
+      "voxel_count": 3003,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 3003.0,
+      "display_maximum_displacement_mm": 0.4845955775166066,
+      "vertex_count": 2225,
+      "triangle_count": 4470,
+      "surface_area_mm2": 1462.765070605603
+    },
+    {
+      "id": "learning:vermis-ix",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Vermis IX (uvula) \u00b7 midline",
+      "source_name": "Vermis IX (uvula)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        624
+      ],
+      "family_order": 12,
+      "display_names": {
+        "en": "Vermis IX (uvula)",
+        "fr": "Vermis IX (luette)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        190,
+        132,
+        112
+      ],
+      "voxel_count": 753,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 753.0,
+      "display_maximum_displacement_mm": 0.49996480246003555,
+      "vertex_count": 770,
+      "triangle_count": 1536,
+      "surface_area_mm2": 524.0409547719935
+    },
+    {
+      "id": "learning:lobule-x-left",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "left",
+      "label": "Lobule X (flocculus) \u00b7 left",
+      "source_name": "Lobule X (flocculus)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        626
+      ],
+      "family_order": 13,
+      "display_names": {
+        "en": "Lobule X (flocculus)",
+        "fr": "Lobule X (flocculus)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        204,
+        150,
+        96
+      ],
+      "voxel_count": 405,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 405.0,
+      "display_maximum_displacement_mm": 0.46314937043176674,
+      "vertex_count": 496,
+      "triangle_count": 988,
+      "surface_area_mm2": 325.9170496512098
+    },
+    {
+      "id": "learning:lobule-x-right",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "right",
+      "label": "Lobule X (flocculus) \u00b7 right",
+      "source_name": "Lobule X (flocculus)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        628
+      ],
+      "family_order": 13,
+      "display_names": {
+        "en": "Lobule X (flocculus)",
+        "fr": "Lobule X (flocculus)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        204,
+        150,
+        96
+      ],
+      "voxel_count": 504,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 504.0,
+      "display_maximum_displacement_mm": 0.5099706884367117,
+      "vertex_count": 584,
+      "triangle_count": 1164,
+      "surface_area_mm2": 387.0951051795856
+    },
+    {
+      "id": "learning:vermis-x",
+      "atlas": "learning",
+      "kind": "structure",
+      "hemisphere": "midline",
+      "label": "Vermis X (nodulus) \u00b7 midline",
+      "source_name": "Vermis X (nodulus)",
+      "source_label_id": null,
+      "source_atlas": "cerebnet",
+      "source_label_ids": [
+        627
+      ],
+      "family_order": 14,
+      "display_names": {
+        "en": "Vermis X (nodulus)",
+        "fr": "Vermis X (nodule)"
+      },
+      "system_names": {
+        "en": "Cerebellum",
+        "fr": "Cervelet"
+      },
+      "display_color": [
+        150,
+        190,
+        120
+      ],
+      "voxel_count": 327,
+      "voxel_size_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "segmentation_volume_mm3": 327.0,
+      "display_maximum_displacement_mm": 0.47585659589241136,
+      "vertex_count": 394,
+      "triangle_count": 784,
+      "surface_area_mm2": 264.49786995200384
     },
     {
       "id": "nextbrain:left:7",
@@ -33106,8 +34102,10 @@
     "NextBrain labels are this brain's own Bayesian segmentation at 0.4 mm, estimated from a 1 mm T1 with a histological atlas as prior: where neighbouring structures share their T1 contrast, the atlas rather than the scan places the boundary between them.",
     "Learning anatomy is a derived overview of explicit label unions, with display smoothing bounded to 0.6 mm. Measurements remain source-voxel counts; smoothness does not add anatomical resolution.",
     "Learning brainstem territories omit separately displayed nuclei and pathways; they are not complete brainstem subdivisions.",
-    "Learning publishes the cerebellar cortical mantle and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
-    "Learning units come from two segmentations of the same brain, so an aseg-sourced and a NextBrain-sourced surface can overlap slightly where they meet.",
+    "Learning publishes the cerebellar cortex and the deep nuclei, but not cerebellar white matter, which would enclose the nuclei; the nuclei therefore sit in the space it occupies.",
+    "Learning cerebellar lobules are FastSurfer CerebNet's segmentation of this brain's 1 mm T1 in SUIT nomenclature; vermis I\u2013V is part of lobules I\u2013IV and V, and folia are not resolved.",
+    "Cerebellar lobules are published as teaching surfaces only; MRI cuts carry no lobule labels.",
+    "Learning units come from three segmentations of the same brain (aseg, NextBrain and CerebNet), so surfaces from different sources can overlap slightly where they meet.",
     "NextBrain nuclei below the geometry threshold, its white matter, its cerebellar cortical layers and its cortical parcels have no mesh and remain cut labels only.",
     "Only one internal-anatomy detail level is drawn at a time; the coarse and fine layers segment the same anatomy.",
     "Internal solids are marching-cubes surfaces smoothed for display by at most 0.6 mm and never across a voxel centre; between voxel centres their boundaries are a display convention, not a measurement.",
@@ -33132,6 +34130,9 @@
     "Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.",
     "Besides the cortex, each map is averaged over FreeSurfer's grey-matter structures (thalamus, caudate, putamen, pallidum, hippocampus, amygdala, accumbens, ventral diencephalon, cerebellar cortex and brainstem), each as a whole on fsaverage's own segmentation. The 6 mm kernel is large beside the smaller nuclei, the few millimetres between MNI305 and MNI152 matter more there, and studies report fewer subcortical coordinates, so these are weaker evidence than the cortical areas. White matter, NextBrain's finer nuclei and the teaching set's units are not scored, and a lesion check on them is reported as not measured.",
     "Neurosynth's MNI152 maps are sampled on fsaverage's surfaces, whose MNI305 space differs from MNI152 by a few millimetres; whole-area averages absorb most, not all, of that difference.",
+    "Searched terms are words chosen from Neurosynth's vocabulary for naming a function, task, stimulus, state or behaviour; unlike the curated functions, no map was checked against what it names or against lesion studies. A term's map shows where studies whose abstract uses it report activation, whatever their task.",
+    "A population term (schizophrenia, aphasia, smokers) gathers studies of that group, most comparing it with healthy people. Its map shows where those studies report activation, not where damage causes the condition.",
+    "Consistency z grows with study count, so a term with few studies reaches fewer areas, and every term names its study count.",
     "Gyral white matter is FreeSurfer's wmparc: each voxel within 5 mm of cortex takes the nearest Desikan cortical label whichever surface atlas is shown, and deeper white matter is unsegmented and belongs to no region."
   ],
   "provenance": {
@@ -33576,6 +34577,50 @@
         "sha256": "e8eec343ddbe2f5c428bd551e2cc246c540078efb3ae264010efc9fa9afb7e0f",
         "anatomy": "cdmd",
         "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+      },
+      {
+        "path": "data/cdmd/mri/cerebellum.CerebNet.mgz",
+        "sha256": "884ffe5c2cd9e616b5cd1bcf635ce4193f7dd60f9ba9cf76ae90502a07340ec3",
+        "anatomy": "cdmd",
+        "optional": true,
+        "derived_from": [
+          {
+            "path": "data/cdmd/mri/orig.mgz",
+            "sha256": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81"
+          },
+          {
+            "url": "https://github.com/Deep-MI/FastSurfer",
+            "tag": "v2.6.0",
+            "commit": "1dc024735371f65bc4b94a272cf596be6ddf4f21"
+          },
+          {
+            "checkpoint": "aparc_vinn_axial_v2.0.0.pkl",
+            "sha256": "81ab25ccbfc432cc41fb6089d11ff2a45b5a88e659092096cb1e067269f806b8"
+          },
+          {
+            "checkpoint": "aparc_vinn_coronal_v2.0.0.pkl",
+            "sha256": "73813957e83ec99d2c4e22f7854308916ec276d66ab7ed8ef8bf3998ba05e289"
+          },
+          {
+            "checkpoint": "aparc_vinn_sagittal_v2.0.0.pkl",
+            "sha256": "edae6262d69526fea39a019f2dfd8df75eb705f8f025b9b97166e3e17b917414"
+          },
+          {
+            "checkpoint": "CerebNet_axial_v1.0.0.pkl",
+            "sha256": "7e93f3e69dc6a8e7b11d223b59069a9f09f7f48474eb3bd31ea70cee3f603e33"
+          },
+          {
+            "checkpoint": "CerebNet_coronal_v1.0.0.pkl",
+            "sha256": "3a6fb6c3ea1b5f549d00f99840cc9dd406dd1c0552213c7871f5fc0ef5ca9036"
+          },
+          {
+            "checkpoint": "CerebNet_sagittal_v1.0.0.pkl",
+            "sha256": "182a3984905035dd99eac640943292ce5a5872e77e0ba87823622758bc3fc495"
+          }
+        ],
+        "procedure": "scripts/segment_cerebellum.py: FastSurfer run_fastsurfer.sh --seg_only --no_hypothal --no_cc --no_biasfield --device cpu --threads 4 on orig.mgz; mri/cerebellum.CerebNet.nii.gz rewritten with orig.mgz's header, labels unchanged",
+        "citation": "https://doi.org/10.1016/j.neuroimage.2022.119703",
+        "license": "FastSurfer and its CerebNet models are Apache-2.0."
       }
     ]
   },

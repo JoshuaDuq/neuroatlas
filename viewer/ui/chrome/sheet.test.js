@@ -16,6 +16,7 @@ function sheetFixture(t, callbacks = {}, { width = 390, height = 800 } = {}) {
     node.dataset = {};
     node.style = { removeProperty(name) { delete this[name]; } };
     node.children = [];
+    node.contains = target => target === node || node.children.some(child => child.contains(target));
     node.setAttribute = (name, value) => attributes.set(name, String(value));
     node.hasAttribute = name => attributes.has(name);
     node.toggleAttribute = (name, force = !attributes.has(name)) => {
@@ -143,6 +144,34 @@ test('a narrow landscape viewport taller than 480px keeps the bottom-sheet axis'
   pointer('pointerdown', 700);
   pointer('pointermove', 600);
   assert.equal(sheet.style.height, '232px', 'the bottom sheet continues to grow vertically');
+});
+
+for (const id of ['search', 'detail-back']) {
+  test(`entering the phone shell keeps the focused ${id} control visible`, t => {
+    const { doc, byId, controller, resize } = sheetFixture(t, {}, { width: 1024, height: 800 });
+    const control = byId(id);
+    byId('workspace-panel').children.push(control);
+    control.checkVisibility = () => !controller.isPhone || controller.detent !== 'peek';
+    control.focus();
+
+    resize(390);
+
+    assert.equal(controller.detent, 'half');
+    assert.equal(control.checkVisibility(), true);
+    assert.equal(doc.activeElement, control);
+    assert.equal(byId('sheet').hasAttribute('data-instant'), true);
+  });
+}
+
+test('entering the phone shell leaves a resting panel at peek when focus is elsewhere', t => {
+  const { doc, byId, controller, resize } = sheetFixture(t, {}, { width: 1024, height: 800 });
+  const other = byId('masthead-more');
+  other.focus();
+
+  resize(390);
+
+  assert.equal(controller.detent, 'peek');
+  assert.equal(doc.activeElement, other);
 });
 
 test('losing window focus settles an active sheet drag and permits another drag', t => {

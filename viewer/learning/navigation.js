@@ -1,6 +1,7 @@
 /** Once the landmark is drawn and selected: uncover it and show its own side. */
 export function showCircuitLandmark(model, step) {
-  if (step.covering_region) model.hideRegions([step.covering_region]);
+  if (step.restores.length) model.showRegions(step.restores);
+  if (step.covering_regions) model.hideRegions(step.covering_regions);
   const region = model.regions.get(step.region);
   model.setHemisphere(region.hemisphere === 'midline' ? 'both' : region.hemisphere);
 }

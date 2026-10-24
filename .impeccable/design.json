@@ -1,91 +1,91 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T21:07:49Z",
-  "title": "Design System: NeuroAtlas",
+  "generatedAt": "2026-10-24T16:58:00.200Z",
+  "title": "Design System: Planum",
   "extensions": {
     "colorMeta": {
       "text-primary": {
         "role": "neutral",
         "displayName": "Primary Neutral Ink",
         "tonalRamp": [
-          "oklch(15.00% 0.0140 248.32)",
-          "oklch(26.43% 0.0140 248.32)",
-          "oklch(37.86% 0.0140 248.32)",
-          "oklch(49.29% 0.0140 248.32)",
-          "oklch(60.71% 0.0140 248.32)",
-          "oklch(72.14% 0.0140 248.32)",
-          "oklch(83.57% 0.0140 248.32)",
-          "oklch(95.00% 0.0140 248.32)"
+          "oklch(15.00% 0.0125 243.29)",
+          "oklch(26.43% 0.0125 243.29)",
+          "oklch(37.86% 0.0125 243.29)",
+          "oklch(49.29% 0.0125 243.29)",
+          "oklch(60.71% 0.0125 243.29)",
+          "oklch(72.14% 0.0125 243.29)",
+          "oklch(83.57% 0.0125 243.29)",
+          "oklch(95.00% 0.0125 243.29)"
         ]
       },
       "text-secondary": {
         "role": "neutral",
         "displayName": "Secondary Neutral Ink",
         "tonalRamp": [
-          "oklch(15.00% 0.0202 248.24)",
-          "oklch(26.43% 0.0202 248.24)",
-          "oklch(37.86% 0.0202 248.24)",
-          "oklch(49.29% 0.0202 248.24)",
-          "oklch(60.71% 0.0202 248.24)",
-          "oklch(72.14% 0.0202 248.24)",
-          "oklch(83.57% 0.0202 248.24)",
-          "oklch(95.00% 0.0202 248.24)"
+          "oklch(15.00% 0.0190 245.34)",
+          "oklch(26.43% 0.0190 245.34)",
+          "oklch(37.86% 0.0190 245.34)",
+          "oklch(49.29% 0.0190 245.34)",
+          "oklch(60.71% 0.0190 245.34)",
+          "oklch(72.14% 0.0190 245.34)",
+          "oklch(83.57% 0.0190 245.34)",
+          "oklch(95.00% 0.0190 245.34)"
         ]
       },
       "text-tertiary": {
         "role": "neutral",
         "displayName": "Supporting Neutral Ink",
         "tonalRamp": [
-          "oklch(15.00% 0.0205 245.61)",
-          "oklch(26.43% 0.0205 245.61)",
-          "oklch(37.86% 0.0205 245.61)",
-          "oklch(49.29% 0.0205 245.61)",
-          "oklch(60.71% 0.0205 245.61)",
-          "oklch(72.14% 0.0205 245.61)",
-          "oklch(83.57% 0.0205 245.61)",
-          "oklch(95.00% 0.0205 245.61)"
+          "oklch(15.00% 0.0185 245.29)",
+          "oklch(26.43% 0.0185 245.29)",
+          "oklch(37.86% 0.0185 245.29)",
+          "oklch(49.29% 0.0185 245.29)",
+          "oklch(60.71% 0.0185 245.29)",
+          "oklch(72.14% 0.0185 245.29)",
+          "oklch(83.57% 0.0185 245.29)",
+          "oklch(95.00% 0.0185 245.29)"
         ]
       },
       "accent": {
         "role": "primary",
         "displayName": "Clinical Teal",
         "tonalRamp": [
-          "oklch(15.00% 0.0649 199.46)",
-          "oklch(26.43% 0.0649 199.46)",
-          "oklch(37.86% 0.0649 199.46)",
-          "oklch(49.29% 0.0649 199.46)",
-          "oklch(60.71% 0.0649 199.46)",
-          "oklch(72.14% 0.0649 199.46)",
-          "oklch(83.57% 0.0649 199.46)",
-          "oklch(95.00% 0.0649 199.46)"
+          "oklch(15.00% 0.0598 189.03)",
+          "oklch(26.43% 0.0598 189.03)",
+          "oklch(37.86% 0.0598 189.03)",
+          "oklch(49.29% 0.0598 189.03)",
+          "oklch(60.71% 0.0598 189.03)",
+          "oklch(72.14% 0.0598 189.03)",
+          "oklch(83.57% 0.0598 189.03)",
+          "oklch(95.00% 0.0598 189.03)"
         ]
       },
       "accent-hover": {
         "role": "primary",
         "displayName": "Deep Teal",
         "tonalRamp": [
-          "oklch(15.00% 0.0557 200.36)",
-          "oklch(26.43% 0.0557 200.36)",
-          "oklch(37.86% 0.0557 200.36)",
-          "oklch(49.29% 0.0557 200.36)",
-          "oklch(60.71% 0.0557 200.36)",
-          "oklch(72.14% 0.0557 200.36)",
-          "oklch(83.57% 0.0557 200.36)",
-          "oklch(95.00% 0.0557 200.36)"
+          "oklch(15.00% 0.0522 187.78)",
+          "oklch(26.43% 0.0522 187.78)",
+          "oklch(37.86% 0.0522 187.78)",
+          "oklch(49.29% 0.0522 187.78)",
+          "oklch(60.71% 0.0522 187.78)",
+          "oklch(72.14% 0.0522 187.78)",
+          "oklch(83.57% 0.0522 187.78)",
+          "oklch(95.00% 0.0522 187.78)"
         ]
       },
       "accent-wash": {
         "role": "primary",
         "displayName": "Teal Selection Wash",
         "tonalRamp": [
-          "oklch(15.00% 0.0075 186.89)",
-          "oklch(26.43% 0.0075 186.89)",
-          "oklch(37.86% 0.0075 186.89)",
-          "oklch(49.29% 0.0075 186.89)",
-          "oklch(60.71% 0.0075 186.89)",
-          "oklch(72.14% 0.0075 186.89)",
-          "oklch(83.57% 0.0075 186.89)",
-          "oklch(95.00% 0.0075 186.89)"
+          "oklch(15.00% 0.0069 174.38)",
+          "oklch(26.43% 0.0069 174.38)",
+          "oklch(37.86% 0.0069 174.38)",
+          "oklch(49.29% 0.0069 174.38)",
+          "oklch(60.71% 0.0069 174.38)",
+          "oklch(72.14% 0.0069 174.38)",
+          "oklch(83.57% 0.0069 174.38)",
+          "oklch(95.00% 0.0069 174.38)"
         ]
       },
       "danger": {
@@ -134,34 +134,6 @@
         "role": "neutral",
         "displayName": "Sunken Slate Ground",
         "tonalRamp": [
-          "oklch(15.00% 0.0034 247.86)",
-          "oklch(26.43% 0.0034 247.86)",
-          "oklch(37.86% 0.0034 247.86)",
-          "oklch(49.29% 0.0034 247.86)",
-          "oklch(60.71% 0.0034 247.86)",
-          "oklch(72.14% 0.0034 247.86)",
-          "oklch(83.57% 0.0034 247.86)",
-          "oklch(95.00% 0.0034 247.86)"
-        ]
-      },
-      "surface-canvas": {
-        "role": "neutral",
-        "displayName": "Cool Canvas Ground",
-        "tonalRamp": [
-          "oklch(15.00% 0.0034 247.86)",
-          "oklch(26.43% 0.0034 247.86)",
-          "oklch(37.86% 0.0034 247.86)",
-          "oklch(49.29% 0.0034 247.86)",
-          "oklch(60.71% 0.0034 247.86)",
-          "oklch(72.14% 0.0034 247.86)",
-          "oklch(83.57% 0.0034 247.86)",
-          "oklch(95.00% 0.0034 247.86)"
-        ]
-      },
-      "surface-hover": {
-        "role": "neutral",
-        "displayName": "Hover Ground",
-        "tonalRamp": [
           "oklch(15.00% 0.0025 228.78)",
           "oklch(26.43% 0.0025 228.78)",
           "oklch(37.86% 0.0025 228.78)",
@@ -172,18 +144,46 @@
           "oklch(95.00% 0.0025 228.78)"
         ]
       },
+      "surface-canvas": {
+        "role": "neutral",
+        "displayName": "Cool Canvas Ground",
+        "tonalRamp": [
+          "oklch(15.00% 0.0017 247.84)",
+          "oklch(26.43% 0.0017 247.84)",
+          "oklch(37.86% 0.0017 247.84)",
+          "oklch(49.29% 0.0017 247.84)",
+          "oklch(60.71% 0.0017 247.84)",
+          "oklch(72.14% 0.0017 247.84)",
+          "oklch(83.57% 0.0017 247.84)",
+          "oklch(95.00% 0.0017 247.84)"
+        ]
+      },
+      "surface-hover": {
+        "role": "neutral",
+        "displayName": "Hover Ground",
+        "tonalRamp": [
+          "oklch(15.00% 0.0032 197.10)",
+          "oklch(26.43% 0.0032 197.10)",
+          "oklch(37.86% 0.0032 197.10)",
+          "oklch(49.29% 0.0032 197.10)",
+          "oklch(60.71% 0.0032 197.10)",
+          "oklch(72.14% 0.0032 197.10)",
+          "oklch(83.57% 0.0032 197.10)",
+          "oklch(95.00% 0.0032 197.10)"
+        ]
+      },
       "border-subtle": {
         "role": "neutral",
         "displayName": "Subtle Slate Border",
         "tonalRamp": [
-          "oklch(15.00% 0.0059 239.82)",
-          "oklch(26.43% 0.0059 239.82)",
-          "oklch(37.86% 0.0059 239.82)",
-          "oklch(49.29% 0.0059 239.82)",
-          "oklch(60.71% 0.0059 239.82)",
-          "oklch(72.14% 0.0059 239.82)",
-          "oklch(83.57% 0.0059 239.82)",
-          "oklch(95.00% 0.0059 239.82)"
+          "oklch(15.00% 0.0061 223.46)",
+          "oklch(26.43% 0.0061 223.46)",
+          "oklch(37.86% 0.0061 223.46)",
+          "oklch(49.29% 0.0061 223.46)",
+          "oklch(60.71% 0.0061 223.46)",
+          "oklch(72.14% 0.0061 223.46)",
+          "oklch(83.57% 0.0061 223.46)",
+          "oklch(95.00% 0.0061 223.46)"
         ]
       },
       "border-control": {
@@ -540,28 +540,28 @@
         "role": "primary",
         "displayName": "Primary Fill",
         "tonalRamp": [
-          "oklch(15.00% 0.0649 199.46)",
-          "oklch(26.43% 0.0649 199.46)",
-          "oklch(37.86% 0.0649 199.46)",
-          "oklch(49.29% 0.0649 199.46)",
-          "oklch(60.71% 0.0649 199.46)",
-          "oklch(72.14% 0.0649 199.46)",
-          "oklch(83.57% 0.0649 199.46)",
-          "oklch(95.00% 0.0649 199.46)"
+          "oklch(15.00% 0.0598 189.03)",
+          "oklch(26.43% 0.0598 189.03)",
+          "oklch(37.86% 0.0598 189.03)",
+          "oklch(49.29% 0.0598 189.03)",
+          "oklch(60.71% 0.0598 189.03)",
+          "oklch(72.14% 0.0598 189.03)",
+          "oklch(83.57% 0.0598 189.03)",
+          "oklch(95.00% 0.0598 189.03)"
         ]
       },
       "primary-fill-hover": {
         "role": "primary",
         "displayName": "Primary Fill Hover",
         "tonalRamp": [
-          "oklch(15.00% 0.0557 200.36)",
-          "oklch(26.43% 0.0557 200.36)",
-          "oklch(37.86% 0.0557 200.36)",
-          "oklch(49.29% 0.0557 200.36)",
-          "oklch(60.71% 0.0557 200.36)",
-          "oklch(72.14% 0.0557 200.36)",
-          "oklch(83.57% 0.0557 200.36)",
-          "oklch(95.00% 0.0557 200.36)"
+          "oklch(15.00% 0.0522 187.78)",
+          "oklch(26.43% 0.0522 187.78)",
+          "oklch(37.86% 0.0522 187.78)",
+          "oklch(49.29% 0.0522 187.78)",
+          "oklch(60.71% 0.0522 187.78)",
+          "oklch(72.14% 0.0522 187.78)",
+          "oklch(83.57% 0.0522 187.78)",
+          "oklch(95.00% 0.0522 187.78)"
         ]
       },
       "primary-ink": {
@@ -596,28 +596,28 @@
         "role": "neutral",
         "displayName": "Tonal Fill",
         "tonalRamp": [
-          "oklch(15.00% 0.0042 236.50)",
-          "oklch(26.43% 0.0042 236.50)",
-          "oklch(37.86% 0.0042 236.50)",
-          "oklch(49.29% 0.0042 236.50)",
-          "oklch(60.71% 0.0042 236.50)",
-          "oklch(72.14% 0.0042 236.50)",
-          "oklch(83.57% 0.0042 236.50)",
-          "oklch(95.00% 0.0042 236.50)"
+          "oklch(15.00% 0.0035 219.53)",
+          "oklch(26.43% 0.0035 219.53)",
+          "oklch(37.86% 0.0035 219.53)",
+          "oklch(49.29% 0.0035 219.53)",
+          "oklch(60.71% 0.0035 219.53)",
+          "oklch(72.14% 0.0035 219.53)",
+          "oklch(83.57% 0.0035 219.53)",
+          "oklch(95.00% 0.0035 219.53)"
         ]
       },
       "surface-tonal-hover": {
         "role": "neutral",
         "displayName": "Tonal Fill Hover",
         "tonalRamp": [
-          "oklch(15.00% 0.0067 233.64)",
-          "oklch(26.43% 0.0067 233.64)",
-          "oklch(37.86% 0.0067 233.64)",
-          "oklch(49.29% 0.0067 233.64)",
-          "oklch(60.71% 0.0067 233.64)",
-          "oklch(72.14% 0.0067 233.64)",
-          "oklch(83.57% 0.0067 233.64)",
-          "oklch(95.00% 0.0067 233.64)"
+          "oklch(15.00% 0.0060 223.46)",
+          "oklch(26.43% 0.0060 223.46)",
+          "oklch(37.86% 0.0060 223.46)",
+          "oklch(49.29% 0.0060 223.46)",
+          "oklch(60.71% 0.0060 223.46)",
+          "oklch(72.14% 0.0060 223.46)",
+          "oklch(83.57% 0.0060 223.46)",
+          "oklch(95.00% 0.0060 223.46)"
         ]
       },
       "thumb-ring": {
@@ -834,11 +834,11 @@
     "typographyMeta": {
       "brand": {
         "displayName": "Identity",
-        "purpose": "NeuroAtlas wordmark at 17px; visually hidden in the phone masthead."
+        "purpose": "Planum wordmark at 19px and weight 600; visually hidden in the phone masthead."
       },
       "headline": {
         "displayName": "Anatomical Headline",
-        "purpose": "Selected region, deficit, and circuit landmark names."
+        "purpose": "Selected region, deficit, and circuit landmark names at 22px and weight 600."
       },
       "title": {
         "displayName": "Title",
@@ -963,26 +963,26 @@
   },
   "components": [
     {
-      "name": "Primary MRI Button",
+      "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The filled MRI action uses the only UI accent.",
-      "html": "<button type=\"button\" class=\"ds-button ds-button-primary\">Linked MRI</button>",
+      "description": "Filled actions such as MRI with tracts use the deep UI accent; the region MRI instrument remains quiet.",
+      "html": "<button type=\"button\" class=\"ds-button ds-button-primary\">MRI with tracts</button>",
       "css": ".ds-button { height:var(--control-height); padding:0 var(--space-3); border:1px solid transparent; border-radius:var(--radius-control); background:var(--surface-tonal); color:var(--text-primary); font-family:var(--font-ui); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui),color var(--ui-transition) var(--ease-ui),border-color var(--ui-transition) var(--ease-ui),transform var(--press-transition) var(--ease-ui); } .ds-button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-button:disabled { background:var(--surface-sunken); color:var(--text-tertiary); cursor:default; } @media (hover: hover) and (pointer: fine) { .ds-button:hover:not(:disabled) { background:var(--surface-tonal-hover); } } @media (prefers-reduced-motion:no-preference) { .ds-button:active:not(:focus-visible,:disabled) { transform:scale(var(--press-scale)); } } .ds-button-primary { background:var(--primary-fill); border-color:var(--primary-fill); color:var(--primary-ink); } @media (hover: hover) and (pointer: fine) { .ds-button-primary:hover:not(:disabled) { background:var(--primary-fill-hover); border-color:var(--primary-fill-hover); } }"
     },
     {
       "name": "Tonal Button",
       "kind": "button",
       "refersTo": "button-tonal",
-      "description": "Focus and Isolate use a quiet tonal ground beside the quiet Hide command and filled MRI action.",
-      "html": "<button type=\"button\" class=\"ds-button\">Focus</button>",
+      "description": "General secondary commands use the quiet tonal ground.",
+      "html": "<button type=\"button\" class=\"ds-button\">Close</button>",
       "css": ".ds-button { height:var(--control-height); padding:0 var(--space-3); border:1px solid transparent; border-radius:var(--radius-control); background:var(--surface-tonal); color:var(--text-primary); font-family:var(--font-ui); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui),color var(--ui-transition) var(--ease-ui),border-color var(--ui-transition) var(--ease-ui),transform var(--press-transition) var(--ease-ui); } .ds-button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-button:disabled { background:var(--surface-sunken); color:var(--text-tertiary); cursor:default; } @media (hover: hover) and (pointer: fine) { .ds-button:hover:not(:disabled) { background:var(--surface-tonal-hover); } } @media (prefers-reduced-motion:no-preference) { .ds-button:active:not(:focus-visible,:disabled) { transform:scale(var(--press-scale)); } }"
     },
     {
       "name": "Quiet Button",
       "kind": "button",
       "refersTo": "button-quiet",
-      "description": "Recessive actions, including Hide in the region action row, use secondary text and a hover surface.",
+      "description": "Recessive actions such as Restore all use secondary text and a hover surface.",
       "html": "<button type=\"button\" class=\"ds-button ds-button-quiet\">Restore all</button>",
       "css": ".ds-button { height:var(--control-height); padding:0 var(--space-3); border:1px solid transparent; border-radius:var(--radius-control); background:var(--surface-tonal); color:var(--text-primary); font-family:var(--font-ui); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui),color var(--ui-transition) var(--ease-ui),border-color var(--ui-transition) var(--ease-ui),transform var(--press-transition) var(--ease-ui); } .ds-button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-button:disabled { background:var(--surface-sunken); color:var(--text-tertiary); cursor:default; } @media (hover: hover) and (pointer: fine) { .ds-button:hover:not(:disabled) { background:var(--surface-tonal-hover); } } @media (prefers-reduced-motion:no-preference) { .ds-button:active:not(:focus-visible,:disabled) { transform:scale(var(--press-scale)); } } .ds-button-quiet { background:none; color:var(--text-secondary); } .ds-button-quiet:disabled { background:none; color:color-mix(in srgb,var(--text-tertiary) 55%,transparent); } @media (hover: hover) and (pointer: fine) { .ds-button-quiet:hover:not(:disabled) { background:var(--surface-hover); color:var(--text-primary); } }"
     },
@@ -990,25 +990,25 @@
       "name": "Region Search",
       "kind": "input",
       "refersTo": "search-field",
-      "description": "A base-surface search field starts each searchable task on the same flat surface as navigation and the index, with a 12px gap to scope controls, 20px top and 12px bottom padding, and a fine rule above the index. Its 40px minimum grows with reader text and touch targets.",
+      "description": "A navigation-ground search field starts each searchable task in a flat base-surface control area, with an 8px gap to scope controls and 16px top / 12px bottom padding. The control area flows into the index without a rule. Focus returns the field to the base surface; its 40px minimum grows with reader text and touch targets.",
       "html": "<div class=\"ds-task-controls\"><div class=\"ds-search\"><svg class=\"ds-search-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"M20 20l-3.5-3.5\"/></svg><input type=\"search\" aria-label=\"Search regions\" placeholder=\"Search regions\"/></div></div>",
-      "css": ".ds-task-controls { display:flex; flex-direction:column; gap:var(--space-3); padding:var(--space-5) var(--panel-inset) var(--space-3); border-bottom:1px solid var(--border-subtle); background:var(--surface-base); } .ds-search { position:relative; display:flex; align-items:center; width:100%; } .ds-search-icon { position:absolute; left:10px; width:14px; height:14px; color:var(--text-tertiary); pointer-events:none; } .ds-search input { width:100%; min-height:max(40px,var(--control-height)); padding:0 36px 0 32px; border:1px solid var(--border-control); border-radius:var(--radius-control); background:var(--surface-base); color:var(--text-primary); caret-color:var(--accent); font-family:var(--font-ui); font-size:var(--text-ui); line-height:var(--lh-ui); transition:border-color var(--ui-transition) var(--ease-ui); } .ds-search input::placeholder { color:var(--text-tertiary); opacity:1; } .ds-search input:focus { border-color:var(--accent); } .ds-search input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } @media (hover: hover) and (pointer: fine) { .ds-search input:hover:not(:disabled) { border-color:var(--text-secondary); } } .ds-search input:disabled { color:var(--text-tertiary); cursor:default; } @media(pointer:coarse),(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-search input { font-size:var(--text-title); } } @media(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-task-controls { padding-block:var(--space-2); } }"
+      "css": ".ds-task-controls { display:flex; flex-direction:column; gap:var(--space-2); padding:var(--space-4) var(--panel-inset) var(--space-3); background:var(--surface-base); } .ds-search { position:relative; display:flex; align-items:center; width:100%; } .ds-search-icon { position:absolute; left:10px; width:14px; height:14px; color:var(--text-tertiary); pointer-events:none; } .ds-search input { width:100%; min-height:max(40px,var(--control-height)); padding:0 36px 0 32px; border:1px solid var(--border-control); border-radius:var(--radius-control); background:var(--surface-base); color:var(--text-primary); caret-color:var(--accent); font-family:var(--font-ui); font-size:var(--text-ui); line-height:var(--lh-ui); transition:border-color var(--ui-transition) var(--ease-ui); } .ds-search input::placeholder { color:var(--text-tertiary); opacity:1; } .ds-search input:not(:focus) { background-color:var(--surface-navigation); } .ds-search input:focus { border-color:var(--accent); } .ds-search input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } @media (hover: hover) and (pointer: fine) { .ds-search input:hover:not(:disabled) { border-color:var(--text-secondary); } } .ds-search input:disabled { color:var(--text-tertiary); cursor:default; } @media(pointer:coarse),(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-search input { font-size:var(--text-title); } } @media(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-task-controls { padding-block:var(--space-2); } }"
     },
     {
       "name": "Masthead Data Controls",
       "kind": "custom",
       "refersTo": "masthead-select",
-      "description": "Native masthead selects are transparent at rest, with a tonal hover or focus ground and one separator before Colour. The 14px subject uses weight 600; other values use 500 and captions use tertiary ink. When the measured bar no longer fits, a two-line summary keeps the subject above secondary settings; internal anatomy, colour, then atlas yield to width while the accessible name retains every value. Phone mastheads grow with max(52px, 3.25rem).",
+      "description": "Native masthead selects are transparent at rest, with a tonal hover or focus ground and one separator before Colour. Subject uses weight 600; other 14px values use 500. Selects have automatic height, at least max(30px, 1.875rem), and 4px vertical padding below tertiary-ink captions. The identity column aligns with the task-panel edge. When the measured bar no longer fits, a two-line summary keeps the subject above secondary settings; internal anatomy, colour, then atlas yield to width while the accessible name retains every value. Menu commands use automatic height, a max(40px, 2.5rem) minimum, and 44px coarse-pointer targets.",
       "html": "<div class=\"ds-data-bar\"><label class=\"ds-data-field\"><span>Subject</span><select aria-label=\"Subject\"><option>SNAIL subj_1</option></select></label><label class=\"ds-data-field\"><span>Atlas</span><select aria-label=\"Atlas\"><option>Destrieux</option></select></label><label class=\"ds-data-field ds-presentation-field\"><span>Colour</span><select aria-label=\"Colour\"><option>Tissue</option></select></label></div><button type=\"button\" class=\"ds-data-toggle\" aria-label=\"SNAIL subj_1 · Destrieux · Tissue · aseg\" aria-expanded=\"false\"><span class=\"ds-data-summary\"><span class=\"ds-data-subject\">SNAIL subj_1</span><span class=\"ds-data-context\"><span data-part=\"atlas\">Destrieux</span><span class=\"ds-data-sep\" data-part=\"colour\" aria-hidden=\"true\">·</span><span data-part=\"colour\">Tissue</span><span class=\"ds-data-sep\" data-part=\"detail\" aria-hidden=\"true\">·</span><span data-part=\"detail\">aseg</span></span></span></button>",
-      "css": ".ds-data-bar { display:flex; align-items:center; min-width:0; font-family:var(--font-ui); } .ds-data-field { display:flex; flex:none; flex-direction:column; align-items:flex-start; min-width:0; padding-right:var(--space-4); } .ds-data-field + .ds-data-field { padding-left:var(--space-2); } .ds-presentation-field { margin-left:var(--space-2); padding-left:var(--space-4) !important; border-left:1px solid var(--border-subtle); } .ds-data-field > span { padding-inline:var(--space-2); color:var(--text-tertiary); font-size:var(--text-caption); line-height:var(--lh-caption); white-space:nowrap; } .ds-data-field select { appearance:none; width:auto; max-width:320px; height:28px; padding:0 26px 0 var(--space-2); border:1px solid transparent; border-radius:var(--radius-control); background-color:transparent; background-image:linear-gradient(45deg,transparent calc(50% - 0.9px),var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px),transparent calc(50% + 0.6px)),linear-gradient(-45deg,transparent calc(50% - 0.9px),var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px),transparent calc(50% + 0.6px)); background-position:calc(100% - 11px) calc(50% + 1px),calc(100% - 6px) calc(50% + 1px); background-size:5px 5px,5px 5px; background-repeat:no-repeat; color:var(--text-primary); font:500 var(--text-ui)/var(--lh-ui) var(--font-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui); } .ds-data-field:first-child select { font-weight:600; } .ds-data-field select:is(:focus-visible,:open) { background-color:var(--surface-tonal); } .ds-data-field select:focus-visible,.ds-data-toggle:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-data-field select:disabled { background-color:transparent; color:var(--text-tertiary); cursor:default; } .ds-data-toggle { display:inline-flex; align-items:center; gap:var(--space-2); min-width:0; max-width:100%; min-height:var(--control-height); height:auto; padding:var(--space-1) var(--space-2); border:0; border-radius:var(--radius-control); background:transparent; color:var(--text-secondary); font:400 var(--text-ui)/var(--lh-ui) var(--font-ui); cursor:pointer; } .ds-data-toggle[aria-expanded=\"true\"] { background:var(--surface-tonal); } .ds-data-toggle::after { content:\"\"; flex:none; width:6px; height:6px; margin:0 4px 0 2px; border-right:1.5px solid var(--text-secondary); border-bottom:1.5px solid var(--text-secondary); transform:translateY(-2px) rotate(45deg); transition:transform var(--ui-transition) var(--ease-ui); } .ds-data-toggle[aria-expanded=\"true\"]::after { transform:translateY(1px) rotate(225deg); } .ds-data-summary { display:flex; flex:1; flex-direction:column; align-items:flex-start; min-width:0; white-space:nowrap; text-align:left; } .ds-data-subject { max-width:100%; overflow:hidden; text-overflow:ellipsis; color:var(--text-primary); font-weight:600; line-height:var(--lh-ui); } .ds-data-context { display:flex; align-self:stretch; align-items:baseline; gap:6px; min-width:0; overflow:hidden; font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-data-context > * { flex:none; } .ds-data-sep { color:var(--text-tertiary); } .ds-data-summary[data-short~=\"detail\"] [data-part=\"detail\"],.ds-data-summary[data-short~=\"colour\"] [data-part=\"colour\"],.ds-data-summary[data-short~=\"atlas\"] [data-part=\"atlas\"] { display:none; } @media(hover:hover) and (pointer:fine) { .ds-data-field select:hover:not(:disabled),.ds-data-toggle:hover { background-color:var(--surface-tonal); } }"
+      "css": ".ds-data-bar { display:flex; align-items:center; min-width:0; font-family:var(--font-ui); } .ds-data-field { display:flex; flex:none; flex-direction:column; align-items:flex-start; min-width:0; padding-right:var(--space-3); } .ds-data-field + .ds-data-field { padding-left:var(--space-2); } .ds-presentation-field { margin-left:var(--space-1); padding-left:var(--space-4) !important; border-left:1px solid var(--border-subtle); } .ds-data-field > span { padding-inline:var(--space-2); color:var(--text-tertiary); font-size:var(--text-caption); line-height:var(--lh-caption); white-space:nowrap; } .ds-data-field select { appearance:none; width:auto; max-width:320px; height:auto; min-height:max(30px,1.875rem); padding:var(--space-1) 26px var(--space-1) var(--space-2); border:1px solid transparent; border-radius:var(--radius-control); background-color:transparent; background-image:linear-gradient(45deg,transparent calc(50% - 0.9px),var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px),transparent calc(50% + 0.6px)),linear-gradient(-45deg,transparent calc(50% - 0.9px),var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px),transparent calc(50% + 0.6px)); background-position:calc(100% - 11px) calc(50% + 1px),calc(100% - 6px) calc(50% + 1px); background-size:5px 5px,5px 5px; background-repeat:no-repeat; color:var(--text-primary); font:500 var(--text-ui)/var(--lh-ui) var(--font-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui); } .ds-data-field:first-child select { font-weight:600; } .ds-data-field select:is(:focus-visible,:open) { background-color:var(--surface-tonal); } .ds-data-field select:focus-visible,.ds-data-toggle:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-data-field select:disabled { background-color:transparent; color:var(--text-tertiary); cursor:default; } .ds-data-toggle { display:inline-flex; align-items:center; gap:var(--space-2); min-width:0; max-width:100%; min-height:var(--control-height); height:auto; padding:var(--space-1) var(--space-2); border:0; border-radius:var(--radius-control); background:transparent; color:var(--text-secondary); font:400 var(--text-ui)/var(--lh-ui) var(--font-ui); cursor:pointer; } .ds-data-toggle[aria-expanded=\"true\"] { background:var(--surface-tonal); } .ds-data-toggle::after { content:\"\"; flex:none; width:6px; height:6px; margin:0 4px 0 2px; border-right:1.5px solid var(--text-secondary); border-bottom:1.5px solid var(--text-secondary); transform:translateY(-2px) rotate(45deg); transition:transform var(--ui-transition) var(--ease-ui); } .ds-data-toggle[aria-expanded=\"true\"]::after { transform:translateY(1px) rotate(225deg); } .ds-data-summary { display:flex; flex:1; flex-direction:column; align-items:flex-start; min-width:0; white-space:nowrap; text-align:left; } .ds-data-subject { max-width:100%; overflow:hidden; text-overflow:ellipsis; color:var(--text-primary); font-weight:600; line-height:var(--lh-ui); } .ds-data-context { display:flex; align-self:stretch; align-items:baseline; gap:6px; min-width:0; overflow:hidden; font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-data-context > * { flex:none; } .ds-data-sep { color:var(--text-tertiary); } .ds-data-summary[data-short~=\"detail\"] [data-part=\"detail\"],.ds-data-summary[data-short~=\"colour\"] [data-part=\"colour\"],.ds-data-summary[data-short~=\"atlas\"] [data-part=\"atlas\"] { display:none; } @media(hover:hover) and (pointer:fine) { .ds-data-field select:hover:not(:disabled),.ds-data-toggle:hover { background-color:var(--surface-tonal); } } @media(pointer:coarse) { .ds-data-field select { min-height:44px; } }"
     },
     {
       "name": "Workspace Navigation",
       "kind": "nav",
       "refersTo": "mode-tab-selected",
-      "description": "Five modes stay in the task panel at every desktop width and mirror in the phone sheet. Tabs share the base surface with search and the index; selected teal text and a 2px underline inset 8px provide emphasis. Their 44px minimum and automatic height allow enlarged labels to wrap. Browse scope uses caption-size labels and a neutral selected fill; fine category rules and weighted headings organize the index. In short landscape, tabs retain their natural full-label width, with nonshrinking unwrapped labels and 12px inline padding; their measured row sets the side sheet peek width.",
+      "description": "Five 14px medium modes stay in the task panel at every desktop width and mirror in the phone sheet; compact desktop and narrowest-phone labels use 13px. Intrinsic label widths share one flex row on the base ground. Selected teal text, a teal wash, and a full-width 1px underline provide emphasis. Their 48px desktop minimum, 44px phone minimum, and automatic height allow enlarged labels to wrap. Browse scope stays neutral; task controls flow into the index without a rule. Short-landscape tabs retain natural full-label widths and set the side-sheet peek width.",
       "html": "<div class=\"ds-tabs\" role=\"tablist\" aria-label=\"Explore the atlas\"><button type=\"button\" role=\"tab\" aria-selected=\"true\">Anatomy</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Functions</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Deficits</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Circuits</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Tracts</button></div><div class=\"ds-task-controls\"><div class=\"ds-scope\" role=\"group\" aria-label=\"Browse\"><button type=\"button\" aria-pressed=\"true\">Whole brain</button><button type=\"button\" aria-pressed=\"false\" tabindex=\"-1\">By system</button></div></div><p class=\"ds-section-label\">Cortex</p><p class=\"ds-tree-heading\">Frontal</p><p class=\"ds-section-label\">Internal anatomy</p>",
-      "css": ".ds-tabs { container-type:inline-size; display:flex; flex-wrap:wrap; gap:0; padding:0; border-bottom:1px solid var(--border-subtle); background:var(--surface-base); font-family:var(--font-ui); } .ds-tabs button { position:relative; display:flex; flex:1 1 0; flex-direction:column; align-items:center; justify-content:center; min-width:0; min-height:var(--tab-height); height:auto; margin-bottom:-1px; padding:var(--space-2) var(--space-1); border:0; border-radius:0; background:none; color:var(--text-secondary); font-size:var(--text-stage); font-weight:500; line-height:var(--lh-ui); white-space:normal; overflow-wrap:anywhere; text-align:center; cursor:pointer; transition:none; } .ds-tabs button[aria-selected=\"true\"] { background:var(--surface-base); color:var(--accent); font-weight:600; } .ds-tabs button[aria-selected=\"true\"]::before { content:\"\"; position:absolute; inset:auto var(--space-2) 0; height:2px; background:var(--accent); } @media (hover: hover) and (pointer: fine) { .ds-tabs button:hover { background:var(--surface-hover); color:var(--text-primary); } .ds-tabs button[aria-selected=\"true\"]:hover { background:var(--surface-base); color:var(--accent); } .ds-scope button:hover:not([aria-pressed=\"true\"]) { background:var(--surface-hover); } } .ds-tabs button:focus-visible,.ds-scope button:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; } .ds-task-controls { padding:var(--space-5) var(--panel-inset) var(--space-3); border-bottom:1px solid var(--border-subtle); background:var(--surface-base); } .ds-scope { display:flex; align-items:stretch; gap:var(--space-1); padding:0; background:transparent; font-family:var(--font-ui); } .ds-scope button { flex:0 1 auto; min-width:0; min-height:32px; padding:var(--space-1) var(--space-2); border:0; border-radius:var(--radius-control); background:none; color:var(--text-secondary); font:500 var(--text-caption)/var(--lh-ui) var(--font-ui); white-space:normal; cursor:pointer; } .ds-scope button[aria-pressed=\"true\"] { background:var(--surface-tonal); color:var(--text-primary); font-weight:600; box-shadow:none; } .ds-tree-heading { margin:var(--space-4) 0 0; padding:var(--space-2) 0; background:var(--surface-base); color:var(--text-primary); font:500 var(--text-ui)/var(--lh-ui) var(--font-ui); } .ds-section-label { display:flex; align-items:baseline; gap:var(--space-2); margin:var(--space-4) 0 0; padding:var(--space-4) var(--panel-inset) var(--space-2); border-top:1px solid var(--border-subtle); color:var(--text-secondary); font:600 var(--text-caption)/var(--lh-caption) var(--font-ui); } @media(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-scope button { position:relative; min-height:36px; } .ds-scope button::after { content:\"\"; position:absolute; inset:-4px 0; } } .ds-task-controls + .ds-section-label { margin-top:0; padding-top:var(--space-5); border-top:0; } @container(max-width:339px) { .ds-tabs button { font-size:var(--text-caption); } } @media(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-task-controls { padding-block:var(--space-2); } .ds-section-label { padding:1px var(--space-4) 0; line-height:18px; } .ds-task-controls + .ds-section-label { padding-top:1px; } } @media(max-height:480px) and (orientation:landscape) { .ds-tabs { container-type:normal; width:max-content; flex-wrap:nowrap; } .ds-tabs button { flex:0 0 auto; padding-inline:var(--space-3); white-space:nowrap; overflow-wrap:normal; } }"
+      "css": ".ds-tabs { container-type:inline-size; display:flex; gap:0; padding:0 var(--space-2); border-bottom:1px solid var(--border-subtle); background:var(--surface-base); font-family:var(--font-ui); } .ds-tabs button { position:relative; display:flex; flex:1 1 auto; flex-direction:column; align-items:center; justify-content:center; min-width:0; min-height:var(--tab-height); height:auto; margin-bottom:-1px; padding:var(--space-2) var(--space-1); border:0; border-radius:0; background:none; color:var(--text-secondary); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); white-space:normal; overflow-wrap:anywhere; text-align:center; cursor:pointer; transition:none; } .ds-tabs button[aria-selected=\"true\"] { background:var(--accent-wash); color:var(--accent); font-weight:600; } .ds-tabs button[aria-selected=\"true\"]::before { content:\"\"; position:absolute; inset:auto 0 0; height:1px; background:var(--accent); } @media (hover: hover) and (pointer: fine) { .ds-tabs button:hover { background:var(--surface-hover); color:var(--text-primary); } .ds-tabs button[aria-selected=\"true\"]:hover { background:var(--accent-wash); color:var(--accent); } .ds-scope button:hover:not([aria-pressed=\"true\"]) { background:var(--surface-hover); } } .ds-tabs button:focus-visible,.ds-scope button:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; } .ds-task-controls { padding:var(--space-4) var(--panel-inset) var(--space-3); background:var(--surface-base); } .ds-scope { display:flex; align-items:stretch; gap:var(--space-1); padding:0; background:transparent; font-family:var(--font-ui); } .ds-scope button { flex:0 1 auto; min-width:0; min-height:32px; padding:var(--space-1) var(--space-2); border:0; border-radius:var(--radius-control); background:none; color:var(--text-secondary); font:500 var(--text-caption)/var(--lh-ui) var(--font-ui); white-space:normal; cursor:pointer; } .ds-scope button[aria-pressed=\"true\"] { background:var(--surface-tonal); color:var(--text-primary); font-weight:600; box-shadow:none; } .ds-tree-heading { margin:var(--space-4) 0 0; padding:var(--space-2) 0; background:var(--surface-base); color:var(--text-primary); font:600 var(--text-ui)/var(--lh-ui) var(--font-ui); } .ds-section-label { display:flex; align-items:baseline; gap:var(--space-2); margin:var(--space-3) 0 0; padding:var(--space-3) var(--panel-inset) var(--space-2); border-top:1px solid var(--border-subtle); color:var(--text-secondary); font:600 var(--text-caption)/var(--lh-caption) var(--font-ui); } @media(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-scope button { position:relative; min-height:36px; } .ds-scope button::after { content:\"\"; position:absolute; inset:-4px 0; } } .ds-task-controls + .ds-section-label { margin-top:0; padding-top:var(--space-4); border-top:0; } @media(min-width:801px) and (max-width:1000px),(max-width:360px) { .ds-tabs button { padding-inline:2px; font-size:var(--text-caption); } } @media(max-width:800px),(max-height:480px) and (orientation:landscape) { .ds-task-controls { padding-block:var(--space-2); } .ds-tabs button { min-height:44px; } .ds-section-label { padding:1px var(--space-4) 0; line-height:18px; } .ds-task-controls + .ds-section-label { padding-top:1px; } } @media(max-height:480px) and (orientation:landscape) { .ds-tabs { container-type:normal; width:max-content; flex-wrap:nowrap; } .ds-tabs button { flex:0 0 auto; padding-inline:var(--space-3); white-space:nowrap; overflow-wrap:normal; } }"
     },
     {
       "name": "Segmented Setting",
@@ -1022,16 +1022,16 @@
       "name": "Selected Anatomical Row",
       "kind": "custom",
       "refersTo": "anatomical-row-selected",
-      "description": "The selected region uses a 38px desktop row and retains an explicit hemisphere label beside a visible 16px eye. Visibility targets stay 32px on mouse and 44px on touch; their icons use tertiary ink at rest and strengthen on hover or focus without moving the name.",
+      "description": "A selected region uses a 40px desktop row and explicit hemisphere letters. On fine pointers, visible anatomy shows no control boxes at rest; the 14px eyes and subtle control edges appear on row hover or focus without moving the name. Hidden and partial states keep their eyes explicit, with hidden hemisphere letters struck through and a sunken ground. Visibility targets are 32×28px on fine pointers and 44×44px on touch, where eyes remain visible. Long names wrap within the rail.",
       "html": "<div class=\"ds-row\" role=\"treeitem\" tabindex=\"0\" aria-label=\"Gyrus précentral, left\" data-selected=\"true\"><span class=\"ds-row-name\">Gyrus précentral</span><button type=\"button\" class=\"ds-visibility\" aria-label=\"Hide Gyrus précentral, left\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg><span class=\"ds-visibility-side\" aria-hidden=\"true\">G</span></button></div>",
-      "css": ".ds-row { display:flex; align-items:center; gap:var(--space-2); width:100%; min-height:var(--row-height); height:auto; margin:0; padding:7px var(--panel-inset); border:0; border-radius:0; background:transparent; color:var(--text-primary); text-align:left; font-family:var(--font-ui); font-size:var(--text-ui); cursor:pointer; transition:none; } .ds-row[data-active=\"true\"] { background:var(--surface-hover); outline:1px solid var(--border-control); outline-offset:-1px; } .ds-row[data-selected=\"true\"] { background:var(--accent-wash); color:var(--accent); font-weight:600; } .ds-row:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; } .ds-row-name { flex:1; min-width:0; line-height:var(--lh-ui); overflow-wrap:break-word; } .ds-row-side { flex:none; margin-left:auto; color:inherit; font-size:var(--text-caption); line-height:var(--lh-caption); font-weight:600; white-space:nowrap; } @media (hover: hover) and (pointer: fine) { .ds-row:hover { background:var(--surface-hover); } .ds-row[data-selected=\"true\"]:hover { background:var(--accent-wash); } } .ds-visibility { display:inline-flex; align-items:center; justify-content:flex-end; flex:none; gap:3px; width:32px; height:32px; margin-block:-4px; margin-right:calc(-1 * var(--space-2)); padding:0 var(--space-1) 0 0; border:0; border-radius:var(--radius-control); color:var(--text-secondary); background:transparent; cursor:pointer; } .ds-visibility svg { width:16px; height:16px; flex:none; } .ds-visibility-side { font:600 var(--text-caption)/var(--lh-caption) var(--font-ui); color:var(--accent); } .ds-visibility:focus-visible { outline:2px solid var(--accent); outline-offset:0; } @media(hover:hover) and (pointer:fine) { .ds-visibility svg { color:var(--text-tertiary); } .ds-row:is(:hover,:focus-within) .ds-visibility svg { color:inherit; } .ds-visibility:hover { background:var(--surface-tonal); color:var(--text-primary); } } @media(pointer:coarse) { .ds-visibility { width:44px; height:44px; } .ds-row { padding-block:0; } }"
+      "css": ".ds-row { display:flex; align-items:center; gap:var(--space-2); width:100%; min-height:var(--row-height); height:auto; margin:0; padding:7px var(--panel-inset); border:0; border-radius:0; background:transparent; color:var(--text-primary); text-align:left; font-family:var(--font-ui); font-size:var(--text-ui); font-weight:400; cursor:pointer; transition:none; } .ds-row[data-active=\"true\"] { background:var(--surface-hover); outline:1px solid var(--border-control); outline-offset:-1px; } .ds-row[data-selected=\"true\"] { background:var(--accent-wash); color:var(--accent); font-weight:600; } .ds-row:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; } .ds-row-name { flex:1; min-width:0; line-height:var(--lh-ui); overflow-wrap:anywhere; } .ds-row-side { flex:none; margin-left:auto; color:inherit; font-size:var(--text-caption); line-height:var(--lh-caption); font-weight:600; white-space:nowrap; } @media (hover: hover) and (pointer: fine) { .ds-row:hover { background:var(--surface-hover); } .ds-row[data-selected=\"true\"]:hover { background:var(--accent-wash); } } .ds-visibility { display:inline-flex; align-items:center; justify-content:center; flex:none; gap:3px; width:32px; height:28px; margin:-2px 0; padding:0 var(--space-1); border:1px solid transparent; border-radius:var(--radius-control); color:var(--text-primary); background:transparent; cursor:pointer; } .ds-visibility svg { width:14px; height:14px; flex:none; } .ds-visibility-side { font:600 var(--text-caption)/var(--lh-caption) var(--font-ui); color:var(--accent); } .ds-visibility:focus-visible { outline:2px solid var(--accent); outline-offset:0; } @media(hover:hover) and (pointer:fine) { .ds-visibility:not([data-state=\"hidden\"],[data-partial=\"true\"]) svg { opacity:0; } .ds-row:is(:hover,:focus-within) .ds-visibility { border-color:var(--border-subtle); } .ds-row:is(:hover,:focus-within) .ds-visibility svg { opacity:1; } .ds-visibility:hover { background:var(--surface-tonal); color:var(--text-primary); } } @media(pointer:coarse) { .ds-visibility { width:44px; height:44px; margin-block:0; } .ds-row { padding-block:0; } } .ds-visibility[data-state=\"hidden\"] { background:var(--surface-sunken); color:var(--text-tertiary); } .ds-visibility[data-state=\"hidden\"] .ds-visibility-side { color:var(--text-tertiary); text-decoration:line-through; } .ds-visibility[data-partial=\"true\"] { background:var(--surface-tonal); }"
     },
     {
       "name": "Region Details",
       "kind": "custom",
-      "description": "A 24px headline and 13px hemisphere/group context lead into a ruled facts ledger with 13px labels, 14px tabular values, stronger area or volume, and quieter source text. The wrapping action row follows with 16px separation: tonal Focus and Isolate, quiet Hide, and one filled Linked MRI action. Functional division, Neuropsychological domains, and Functional networks follow as cohesive collapsed native disclosures with fine bottom rules and 36px summary targets, growing to 44px on touch. Each retains its open state between selections.",
-      "html": "<section class=\"ds-panel\" aria-label=\"Region details\"><h2 class=\"ds-selected-name\">Gyrus précentral</h2><dl class=\"ds-context\"><dt class=\"ds-sr-only\">Hemisphere</dt><dd>Left</dd><dt class=\"ds-sr-only\">Lobe / System</dt><dd>Frontal</dd></dl><dl class=\"ds-facts\"><dt>Surface area</dt><dd>—</dd><dt>Centroid (RAS)</dt><dd>—</dd><dt>Source label</dt><dd class=\"ds-fact-source\">Destrieux · <span class=\"ds-code\">29</span></dd></dl><div class=\"ds-detail-actions\"><button type=\"button\" class=\"ds-button\">Focus</button><button type=\"button\" class=\"ds-button\">Isolate</button><button type=\"button\" class=\"ds-button ds-button-quiet\">Hide</button><button type=\"button\" class=\"ds-button ds-button-primary\">Linked MRI</button></div><details class=\"ds-evidence\"><summary><h3>Functional division</h3></summary><ul class=\"ds-network-list\"></ul></details><details class=\"ds-evidence\"><summary><h3>Neuropsychological domains</h3></summary><ul class=\"ds-network-list\"></ul></details><details class=\"ds-evidence\"><summary><h3>Functional networks</h3></summary><ul class=\"ds-network-list\"></ul></details></section>",
-      "css": ".ds-button { height:var(--control-height); padding:0 var(--space-3); border:1px solid transparent; border-radius:var(--radius-control); background:var(--surface-tonal); color:var(--text-primary); font-family:var(--font-ui); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui),color var(--ui-transition) var(--ease-ui),border-color var(--ui-transition) var(--ease-ui),transform var(--press-transition) var(--ease-ui); } .ds-button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-button:disabled { background:var(--surface-sunken); color:var(--text-tertiary); cursor:default; } @media (hover: hover) and (pointer: fine) { .ds-button:hover:not(:disabled) { background:var(--surface-tonal-hover); } } @media (prefers-reduced-motion:no-preference) { .ds-button:active:not(:focus-visible,:disabled) { transform:scale(var(--press-scale)); } } .ds-button-primary { background:var(--primary-fill); border-color:var(--primary-fill); color:var(--primary-ink); } @media (hover: hover) and (pointer: fine) { .ds-button-primary:hover:not(:disabled) { background:var(--primary-fill-hover); border-color:var(--primary-fill-hover); } } .ds-panel { padding:var(--space-5) var(--panel-inset) var(--panel-inset); background:var(--surface-base); color:var(--text-primary); border:0; border-radius:0; font-family:var(--font-ui); font-size:var(--text-ui); line-height:var(--lh-ui); } .ds-selected-name { margin:0; font-size:var(--text-headline); font-weight:650; line-height:var(--lh-title); letter-spacing:-0.02em; overflow-wrap:anywhere; text-wrap:pretty; } .ds-context { position:relative; display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--space-1) var(--space-2); margin:var(--space-2) 0 0; color:var(--text-secondary); font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-context dd { margin:0; min-width:0; overflow-wrap:anywhere; } .ds-context dd:last-child { padding-left:var(--space-2); border-left:1px solid var(--border-control); } .ds-sr-only { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; } .ds-facts { display:grid; grid-template-columns:minmax(0,max-content) minmax(0,1fr); column-gap:var(--space-3); align-items:baseline; margin:var(--space-5) 0 0; padding-top:0; border-top:1px solid var(--border-subtle); } .ds-facts dt,.ds-facts dd { min-width:0; margin:0; padding:var(--space-2) 0; border-bottom:1px solid var(--border-subtle); overflow-wrap:anywhere; } .ds-facts dt { color:var(--text-secondary); font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-facts dd { text-align:right; font-weight:500; font-variant-numeric:tabular-nums; } .ds-facts dd:first-of-type { font-weight:600; } .ds-facts .ds-fact-source { color:var(--text-secondary); font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-code { font-family:var(--font-mono); font-size:var(--text-caption); } .ds-detail-actions { display:flex; flex-wrap:wrap; gap:var(--space-1); margin-top:var(--space-4); padding-top:0; } .ds-detail-actions .ds-button { flex:1 1 auto; min-width:min-content; height:auto; min-height:var(--control-height); padding:var(--space-1) var(--space-2); } .ds-detail-actions .ds-button-primary { margin-left:auto; } .ds-button-quiet { background:transparent; color:var(--text-secondary); } @media (hover: hover) and (pointer: fine) { .ds-button-quiet:hover:not(:disabled) { background:var(--surface-hover); color:var(--text-primary); } } .ds-evidence { margin-top:0; padding-block:var(--space-1); border-bottom:1px solid var(--border-subtle); } .ds-evidence > summary { display:flex; align-items:center; justify-content:space-between; gap:var(--space-2); min-height:var(--control-height); padding-block:var(--space-1); list-style:none; color:var(--text-primary); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; } .ds-evidence > summary::-webkit-details-marker { display:none; } .ds-evidence > summary h3 { margin:0; font:inherit; } .ds-evidence > summary::before { content:\"\"; order:1; flex:none; width:6px; height:6px; margin:0 3px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; color:var(--text-tertiary); transform:rotate(90deg) translateX(-1.6px) rotate(-45deg); transition:transform var(--ui-transition) var(--ease-ui); } .ds-evidence[open] { padding-bottom:var(--space-4); } .ds-evidence[open] > summary { margin-bottom:var(--space-1); } .ds-evidence[open] > summary::before { transform:rotate(-90deg) translateX(-1.6px) rotate(-45deg); } .ds-evidence > summary:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; } .ds-network-list { margin:0; padding:var(--space-1) 0 0; list-style:none; } @media(hover:hover) and (pointer:fine) { .ds-evidence > summary:hover { color:var(--accent); } } @media(pointer:coarse) { .ds-evidence > summary { min-height:44px; } }"
+      "description": "A 24px/600 headline and 13px hemisphere/group context lead into one bounded neutral instrument group after 16px. Focus, Isolate, and Hide share three columns; Linked MRI spans a quiet second row with teal text. Wrapping labels grow the controls; active Isolate uses the teal wash and focus stays inset. The facts ledger follows after 16px, with outer rules, flexible 1fr / 1.5fr columns, 13px labels, 14px tabular values and stronger main measurement. Supporting maps remain collapsed native disclosures with 40px summary targets, growing to 44px on touch.",
+      "html": "<section class=\"ds-panel\" aria-label=\"Region details\"><h2 class=\"ds-selected-name\">Gyrus précentral</h2><dl class=\"ds-context\"><dt class=\"ds-sr-only\">Hemisphere</dt><dd>Left</dd><dt class=\"ds-sr-only\">Lobe / System</dt><dd>Frontal</dd></dl><div class=\"ds-detail-actions\"><button type=\"button\" class=\"ds-button\">Focus</button><button type=\"button\" class=\"ds-button\">Isolate</button><button type=\"button\" class=\"ds-button\">Hide</button><button type=\"button\" class=\"ds-button ds-region-mri\">Linked MRI</button></div><dl class=\"ds-facts\"><dt>Surface area</dt><dd>—</dd><dt>Centroid (RAS)</dt><dd>—</dd><dt>Source label</dt><dd class=\"ds-fact-source\">Destrieux · <span class=\"ds-code\">29</span></dd></dl><details class=\"ds-evidence\"><summary><h3>Functional division</h3></summary><ul class=\"ds-network-list\"></ul></details><details class=\"ds-evidence\"><summary><h3>Neuropsychological domains</h3></summary><ul class=\"ds-network-list\"></ul></details><details class=\"ds-evidence\"><summary><h3>Functional networks</h3></summary><ul class=\"ds-network-list\"></ul></details></section>",
+      "css": ".ds-button { height:var(--control-height); padding:0 var(--space-3); border:1px solid transparent; border-radius:var(--radius-control); background:var(--surface-tonal); color:var(--text-primary); font-family:var(--font-ui); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; transition:background-color var(--ui-transition) var(--ease-ui),color var(--ui-transition) var(--ease-ui),border-color var(--ui-transition) var(--ease-ui),transform var(--press-transition) var(--ease-ui); } .ds-button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .ds-button:disabled { background:var(--surface-sunken); color:var(--text-tertiary); cursor:default; } @media (hover: hover) and (pointer: fine) { .ds-button:hover:not(:disabled) { background:var(--surface-tonal-hover); } } @media (prefers-reduced-motion:no-preference) { .ds-button:active:not(:focus-visible,:disabled) { transform:scale(var(--press-scale)); } } .ds-button-primary { background:var(--primary-fill); border-color:var(--primary-fill); color:var(--primary-ink); } @media (hover: hover) and (pointer: fine) { .ds-button-primary:hover:not(:disabled) { background:var(--primary-fill-hover); border-color:var(--primary-fill-hover); } } .ds-panel { padding:var(--space-5) var(--panel-inset) var(--panel-inset); background:var(--surface-base); color:var(--text-primary); border:0; border-radius:0; font-family:var(--font-ui); font-size:var(--text-ui); line-height:var(--lh-ui); } .ds-selected-name { margin:0; font-size:var(--text-headline); font-weight:600; line-height:var(--lh-title); letter-spacing:-0.02em; overflow-wrap:anywhere; text-wrap:pretty; } .ds-context { position:relative; display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--space-1) var(--space-2); margin:var(--space-2) 0 0; color:var(--text-secondary); font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-context dd { margin:0; min-width:0; overflow-wrap:anywhere; } .ds-context dd:last-child { padding-left:var(--space-2); border-left:1px solid var(--border-control); } .ds-sr-only { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; } .ds-facts { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); column-gap:var(--space-3); align-items:baseline; margin:var(--space-4) 0 0; padding-top:0; border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle); } .ds-facts dt,.ds-facts dd { min-width:0; margin:0; padding:var(--space-2) 0; border-bottom:0; overflow-wrap:anywhere; } .ds-facts dt { color:var(--text-secondary); font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-facts dd { text-align:right; font-weight:500; font-variant-numeric:tabular-nums; } .ds-facts dd:first-of-type { font-weight:600; } .ds-facts .ds-fact-source { color:var(--text-secondary); font-size:var(--text-caption); line-height:var(--lh-caption); } .ds-code { font-family:var(--font-mono); font-size:var(--text-caption); } .ds-detail-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; margin-top:var(--space-4); padding-top:0; border:1px solid var(--border-subtle); border-radius:var(--radius-control); background:var(--border-subtle); } .ds-detail-actions .ds-button { min-width:0; max-width:100%; height:auto; min-height:var(--control-height); padding:var(--space-1) var(--space-2); border:0; border-radius:0; background:var(--surface-base); color:var(--text-secondary); white-space:normal; overflow-wrap:anywhere; } .ds-detail-actions .ds-button:focus-visible { outline-offset:-2px; } .ds-detail-actions .ds-button:disabled { background:var(--surface-base); color:var(--text-tertiary); } .ds-detail-actions .ds-button[data-active=\"true\"] { background:var(--accent-wash); color:var(--accent); } .ds-detail-actions .ds-button:first-child { border-top-left-radius:var(--radius-control); } .ds-detail-actions .ds-button:nth-child(3) { border-top-right-radius:var(--radius-control); } .ds-detail-actions .ds-region-mri { grid-column:1 / -1; border-radius:0 0 var(--radius-control) var(--radius-control); background:var(--surface-navigation); color:var(--accent); } @media(hover:hover) and (pointer:fine) { .ds-detail-actions .ds-button:hover:not(:disabled,[data-active=\"true\"]) { background:var(--surface-hover); color:var(--text-primary); } .ds-detail-actions .ds-region-mri:hover:not(:disabled) { color:var(--accent-hover); } } .ds-evidence { margin-top:0; padding-block:var(--space-1); border-bottom:1px solid var(--border-subtle); } .ds-evidence > summary { display:flex; align-items:center; justify-content:space-between; gap:var(--space-2); min-height:max(40px,var(--control-height)); padding-block:var(--space-1); list-style:none; color:var(--text-primary); font-size:var(--text-ui); font-weight:500; line-height:var(--lh-ui); cursor:pointer; } .ds-evidence > summary::-webkit-details-marker { display:none; } .ds-evidence > summary h3 { margin:0; font:inherit; } .ds-evidence > summary::before { content:\"\"; order:1; flex:none; width:6px; height:6px; margin:0 3px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; color:var(--text-tertiary); transform:rotate(90deg) translateX(-1.6px) rotate(-45deg); transition:transform var(--ui-transition) var(--ease-ui); } .ds-evidence[open] { padding-bottom:var(--space-4); } .ds-evidence[open] > summary { margin-bottom:var(--space-1); } .ds-evidence[open] > summary::before { transform:rotate(-90deg) translateX(-1.6px) rotate(-45deg); } .ds-evidence > summary:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; } .ds-network-list { margin:0; padding:var(--space-1) 0 0; list-style:none; } @media(hover:hover) and (pointer:fine) { .ds-evidence > summary:hover { color:var(--accent); } } @media(pointer:coarse) { .ds-evidence > summary { min-height:44px; } }"
     },
     {
       "name": "Viewport Chip",
@@ -1051,16 +1051,16 @@
   ],
   "narrative": {
     "northStar": "The Clinical Reading Room",
-    "overview": "A calm clinical workspace in light or dark around a dark imaging stage. The masthead states what data is loaded, one task panel explores and drills into it, and the stage carries only the tools that act on the picture. Keep the NeuroAtlas name, the cut-away brain mark, and English and French copy.\n\nThis is a visual direction, not a clinical claim. Preserve the “not clinical anatomy” statement, scientific geometry, measurements, source labels, provenance, and published data colours. Panel theme and renderer keep independent palettes.",
+    "overview": "A calm clinical workspace in light or dark around a dark imaging stage. The masthead states what data is loaded, one task panel explores and drills into it, and the stage carries only the tools that act on the picture. Keep the Planum name, the cut-away brain mark, and English and French copy.\n\nThis is a visual direction, not a clinical claim. Preserve the “not clinical anatomy” statement, scientific geometry, measurements, source labels, provenance, and published data colours. Panel theme and renderer keep independent palettes.",
     "keyCharacteristics": [
       "Anatomy leads; controls support it.",
       "Three homes: masthead = data, panel = modes, task controls and drill-in, stage = section and display tools.",
-      "One task panel with a 20px desktop inset, compact scientific facts before actions, flat task controls, navigation, and index on the base surface, and small corners only on controls.",
+      "One continuous workspace with a 24px desktop panel inset, compact neutral instruments before scientific facts, and one fine rule separating navigation from the stage.",
       "Three button ranks, one segmented vocabulary, one disclosure, one chevron.",
       "Flat surfaces; clear selected, focused, and disabled states.",
-      "Desktop uses a max(60px, 3.75rem) masthead, clamp(340px, 22.5rem, 30vw) task panel, and 20px panel inset; compact workspaces use a 340px rail and 16px inset.",
+      "Desktop uses a max(64px, 4rem) masthead, 384px task panel, and max(32px, 2rem) footer; compact workspaces at 801–1000px use a 336px rail and 16px panel inset. The masthead identity column aligns with the task panel edge.",
       "The stage tool names the current preset or View after free rotation, reserves stable label width, and keeps functional-division and paint-key targets at least 44px on touch devices.",
-      "Phones and narrow windows at 800px and below use the responsive sheet shell; desktop workspaces at 801–1000px retain a 340px task rail.",
+      "Phones and narrow windows at 800px and below use the responsive sheet shell; desktop workspaces at 801–1000px retain a 336px task rail.",
       "Short-landscape grip selection and disclaimer occupy separate rows. The side sheet peek uses the tabs’ natural full-label width, and the top orientation letter remains 24px below the top-left scale bar."
     ],
     "rules": [

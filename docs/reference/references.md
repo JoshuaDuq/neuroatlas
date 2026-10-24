@@ -41,6 +41,12 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
   Garyfallidis, E., Côté, M.-A., Rheault, F., Sidhu, J., Hau, J., Petit, L., Fortin, D., Cunanne, S., & Descoteaux, M. (2018). Recognition of white matter bundles using local and global streamline-based registration and clustering. *NeuroImage*, 170, 283–295. [doi:10.1016/j.neuroimage.2017.07.015](https://doi.org/10.1016/j.neuroimage.2017.07.015). PMID 28712994.
 - **HCP842 bundle atlas.**
   Yeh, F.-C., Panesar, S., Fernandes, D., Meola, A., Yoshino, M., Fernandez-Miranda, J. C., Vettel, J. M., & Verstynen, T. (2018). Population-averaged atlas of the macroscale human structural connectome and its network topology. *NeuroImage*, 178, 57–68. [doi:10.1016/j.neuroimage.2018.05.027](https://doi.org/10.1016/j.neuroimage.2018.05.027). PMID 29758339. Its RecoBundles curation ([figshare 7375883](https://doi.org/10.6084/m9.figshare.7375883.v2), CC BY 4.0) serves only as the recognition model; none of its streamlines are published.
+- **TractSeg.**
+  Wasserthal, J., Neher, P., & Maier-Hein, K. H. (2018). TractSeg - Fast and accurate white matter tract segmentation. *NeuroImage*, 183, 239–253. [doi:10.1016/j.neuroimage.2018.07.070](https://doi.org/10.1016/j.neuroimage.2018.07.070). PMID 30086412. CDMD's SLF I–III and seven callosal segments are TractSeg 2.10's (Apache-2.0), with its pretrained weights (CC BY 4.0, Zenodo).
+- **MRtrix3.**
+  Tournier, J.-D., Smith, R., Raffelt, D., Tabbara, R., Dhollander, T., Pietsch, M., Christiaens, D., Jeurissen, B., Yeh, C.-H., & Connelly, A. (2019). MRtrix3: A fast, flexible and open software framework for medical image processing and visualisation. *NeuroImage*, 202, 116137. [doi:10.1016/j.neuroimage.2019.116137](https://doi.org/10.1016/j.neuroimage.2019.116137). PMID 31473352. Version 3.0.8 (MPL-2.0) fits the CSD peaks TractSeg reads, aligns them to its template and fits CDMD's tensor FA.
+- **CerebNet.**
+  Faber, J., Kügler, D., Bahrami, E., Heinz, L.-S., Timmann, D., Ernst, T. M., … Diedrichsen, J., & Reuter, M. (2022). CerebNet: A fast and reliable deep-learning pipeline for detailed cerebellum sub-segmentation. *NeuroImage*, 264, 119703. [doi:10.1016/j.neuroimage.2022.119703](https://doi.org/10.1016/j.neuroimage.2022.119703). PMID 36349595. CDMD's cerebellar lobules are FastSurfer v2.6.0's CerebNet segmentation (Apache-2.0) of its own T1.
 - **Z-Anatomy Open Anatomy Project.**
   The Z-Anatomy open anatomical scene, licensed under CC BY-SA 4.0, incorporating BodyParts3D (CC BY-SA 2.1 JP). [z-anatomy.com](https://www.z-anatomy.com/)
 
@@ -50,7 +56,7 @@ Every DOI and PMID here, and in the clinical and circuit data, is checked agains
 | :--- | :--- | :--- |
 | `fsaverage` assets (built locally, not published) | FreeSurfer distribution | FreeSurfer Software License |
 | `cdmd` assets and tracts | MGH CDMD, figshare | CC0 1.0 |
-| `snail` assets and tract reference | SNAIL, via DIPY | CC0 1.0 |
+| `cdmd` SLF I–III and callosal segments | TractSeg pretrained weights | CC BY 4.0 (attribution) |
 | HCP-MMP-derived files | Human Connectome Project | WU-Minn HCP Open Access Data Use Terms |
 | `cab-np.json` | CAB-NP (Rutgers, Yale) | Non-commercial |
 | `neuropsych-domains.json`, area scores | Neurosynth | ODbL 1.0 |
@@ -72,13 +78,13 @@ These are modified versions of FreeSurfer data: converted, resampled and re-enco
 
 The complete agreement is in [`public/models/licenses/FreeSurfer.html`](https://github.com/JoshuaDuq/neuroatlas/blob/main/public/models/licenses/FreeSurfer.html).
 
-### CC0 1.0 (SNAIL, CDMD)
+### CC0 1.0 (CDMD)
 
-Both are dedicated to the public domain. The SNAIL T1 and FA NIfTI files in `public/diffusion/snail-subject-1/` are kept byte for byte, and all 27 TRK bundles are gzipped without geometric processing. The SNAIL reconstruction is derived from that T1 alone. CDMD's T1 in `public/diffusion/cdmd-sub-013/` is the file its reconstruction imported, byte for byte; its 17 TRK bundles were tracked here from its own diffusion data and resampled to 0.5 mm steps, as `provenance.json` records.
+CDMD is dedicated to the public domain. Its T1 in `public/diffusion/cdmd-sub-013/` is the file its reconstruction imported, byte for byte; its 30 TRK bundles were tracked here from its own diffusion data (17 by RecoBundles, 13 by TractSeg) and resampled to 0.5 mm steps, and its FA map is the tensor FA of that diffusion data resampled onto the T1, as `provenance.json` records.
 
 ### NextBrain
 
-The atlas and SuperSynth model come from FreeSurfer's distribution server; the segmentation tool ships in FreeSurfer 8.2. The NextBrain paper names no separate licence, so NeuroAtlas claims none beyond FreeSurfer's. The earlier MNI-warped NextBrain source published no licence; the unpublished `fsaverage` still uses it, so that volume is not redistributed.
+The atlas and SuperSynth model come from FreeSurfer's distribution server; the segmentation tool ships in FreeSurfer 8.2. The NextBrain paper names no separate licence, so Planum claims none beyond FreeSurfer's. The earlier MNI-warped NextBrain source published no licence; the unpublished `fsaverage` still uses it, so that volume is not redistributed.
 
 ### HCP Open Access Data Use Terms
 
@@ -100,4 +106,4 @@ Attribute Z-Anatomy and BodyParts3D, and share adaptations under the same licenc
 
 ## Intended use
 
-Research and education only. NeuroAtlas is not a medical device, has not been reviewed by any regulator, and must not be used for diagnosis, treatment or any clinical decision.
+Research and education only. Planum is not a medical device, has not been reviewed by any regulator, and must not be used for diagnosis, treatment or any clinical decision.

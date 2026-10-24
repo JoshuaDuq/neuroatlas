@@ -616,6 +616,10 @@
       "moral-reasoning": 0
     }
   },
+  "neurosynth_terms": {
+    "function": 232,
+    "population": 45
+  },
   "nextbrain_structures": {
     "file": "nextbrain.glb",
     "sha256": "a4b5fed4be54e064baad11eef36e6cff5503bc501ea9456e7ebab8aa79e94ac1",
@@ -3007,7 +3011,7 @@
   },
   "learning_structures": {
     "file": "learning.glb",
-    "sha256": "745870080fd6a13fa9f205bef16ade33e102d4ba3dac67e56fe924049eaec7f4",
+    "sha256": "6e68245ad01152f40f9f17034edb0e80e8ab63f497efefe81e4d8d0978162546",
     "regions": [
       {
         "id": "learning:left:caudate",
@@ -3521,6 +3525,20 @@
         "misclassified_voxel_centres": 0
       },
       {
+        "id": "learning:left:fastigial",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 162,
+        "maximum_display_displacement_mm": 0.177312352637913,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:right:fastigial",
+        "source_atlas": "nextbrain",
+        "source_voxel_count": 142,
+        "maximum_display_displacement_mm": 0.1765408366918733,
+        "misclassified_voxel_centres": 0
+      },
+      {
         "id": "learning:ventricles-left",
         "source_atlas": "aseg",
         "source_voxel_count": 7127,
@@ -3556,17 +3574,178 @@
         "misclassified_voxel_centres": 0
       },
       {
-        "id": "learning:cerebellar-cortex-left",
-        "source_atlas": "aseg",
-        "source_voxel_count": 49786,
-        "maximum_display_displacement_mm": 0.5152391513280069,
+        "id": "learning:lobules-i-iv-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 2818,
+        "maximum_display_displacement_mm": 0.4939678965303884,
         "misclassified_voxel_centres": 0
       },
       {
-        "id": "learning:cerebellar-cortex-right",
-        "source_atlas": "aseg",
-        "source_voxel_count": 49860,
-        "maximum_display_displacement_mm": 0.5126915356443491,
+        "id": "learning:lobules-i-iv-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 2579,
+        "maximum_display_displacement_mm": 0.5222790452750438,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-v-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 3190,
+        "maximum_display_displacement_mm": 0.5164246300393025,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-v-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 3155,
+        "maximum_display_displacement_mm": 0.484291620699159,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-vi-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 5862,
+        "maximum_display_displacement_mm": 0.4955097877668831,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-vi-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 6033,
+        "maximum_display_displacement_mm": 0.48324703981379336,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:vermis-vi",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 1312,
+        "maximum_display_displacement_mm": 0.48104956089408,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:crus-i-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 10728,
+        "maximum_display_displacement_mm": 0.4928433649740213,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:crus-i-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 10637,
+        "maximum_display_displacement_mm": 0.49485244294292985,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:crus-ii-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 6208,
+        "maximum_display_displacement_mm": 0.49399181240350715,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:crus-ii-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 6968,
+        "maximum_display_displacement_mm": 0.4958856103957918,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-viib-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 3931,
+        "maximum_display_displacement_mm": 0.4968047595201921,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-viib-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 4001,
+        "maximum_display_displacement_mm": 0.47866900764606535,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:vermis-vii",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 665,
+        "maximum_display_displacement_mm": 0.4495825394915594,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-viiia-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 4732,
+        "maximum_display_displacement_mm": 0.513233421942794,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-viiia-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 3919,
+        "maximum_display_displacement_mm": 0.5399796958211003,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-viiib-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 2826,
+        "maximum_display_displacement_mm": 0.5327880185502418,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-viiib-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 2937,
+        "maximum_display_displacement_mm": 0.48751083094424935,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:vermis-viii",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 1808,
+        "maximum_display_displacement_mm": 0.47933053406776593,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-ix-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 3075,
+        "maximum_display_displacement_mm": 0.47632964350079393,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-ix-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 3003,
+        "maximum_display_displacement_mm": 0.4845960183318446,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:vermis-ix",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 753,
+        "maximum_display_displacement_mm": 0.4999643899836679,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-x-left",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 405,
+        "maximum_display_displacement_mm": 0.4631508081306549,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:lobule-x-right",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 504,
+        "maximum_display_displacement_mm": 0.5099709524566108,
+        "misclassified_voxel_centres": 0
+      },
+      {
+        "id": "learning:vermis-x",
+        "source_atlas": "cerebnet",
+        "source_voxel_count": 327,
+        "maximum_display_displacement_mm": 0.47585579642209686,
         "misclassified_voxel_centres": 0
       }
     ],
@@ -3683,7 +3862,7 @@
       },
       {
         "unit": "superior-cerebellar-peduncle",
-        "cross_source_overlap_fraction": 0.00627327974906881
+        "cross_source_overlap_fraction": 0.004116839835326407
       },
       {
         "unit": "inferior-cerebellar-peduncle",
@@ -3699,7 +3878,7 @@
       },
       {
         "unit": "medulla",
-        "cross_source_overlap_fraction": 0.0036880290205562275
+        "cross_source_overlap_fraction": 0.002388149939540508
       },
       {
         "unit": "red-nucleus",
@@ -3715,11 +3894,15 @@
       },
       {
         "unit": "dentate",
-        "cross_source_overlap_fraction": 0.0002489667878305034
+        "cross_source_overlap_fraction": 0.0
       },
       {
         "unit": "interposed",
-        "cross_source_overlap_fraction": 0.0
+        "cross_source_overlap_fraction": 0.00041220115416323167
+      },
+      {
+        "unit": "fastigial",
+        "cross_source_overlap_fraction": 0.15460526315789475
       }
     ]
   },
@@ -3869,8 +4052,10 @@
   "layers": [
     "networks",
     "nextbrain",
+    "cerebellar_lobules",
     "white_matter",
-    "spinal_cord"
+    "spinal_cord",
+    "neurosynth_terms"
   ],
   "published_files": [
     "aseg.volume",
@@ -3884,6 +4069,7 @@
     "manifest.json",
     "mri.volume",
     "neuropsych-domains.json",
+    "neurosynth-terms.json",
     "nextbrain.glb",
     "ribbon-destrieux.labels",
     "ribbon-hcp-mmp.labels",
@@ -3968,6 +4154,17 @@
         "right": 0.8304158031659244
       }
     }
+  },
+  "cerebellar_agreement": {
+    "method": "Dice of the union of CerebNet's 25 lobules with aseg's cerebellar cortex, both on the conformed grid",
+    "cerebnet_sha256": "884ffe5c2cd9e616b5cd1bcf635ce4193f7dd60f9ba9cf76ae90502a07340ec3",
+    "aseg_sha256": "d8e1e9fbd8d3cf34ee259ac708147da4c61319faf293dd3671584d655f611cbc",
+    "aseg_labels": [
+      8,
+      47
+    ],
+    "minimum_dice": 0.85,
+    "dice": 0.9176031913009968
   },
   "reconstruction_quality": {
     "source": "data/cdmd/stats/aseg.stats",

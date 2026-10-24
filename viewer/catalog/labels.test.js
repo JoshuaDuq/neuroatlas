@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { labelOf } from './labels.js';
+import { beneathCortex, labelOf } from './labels.js';
 
 const published = JSON.parse(await readFile(new URL('../../public/models/anatomies.json', import.meta.url), 'utf8')).default;
 
@@ -177,4 +177,20 @@ test('the aseg optic chiasm is grouped with the diencephalon, not the brainstem'
   const chiasm = { kind: 'structure', atlas: 'aseg', hemisphere: 'midline', source_name: 'Optic-Chiasm' };
   assert.equal(labelOf(chiasm, 'en').group, 'Diencephalon');
   assert.equal(labelOf(chiasm, 'fr').group, 'Diencéphale');
+});
+
+test('the cortex hides the forebrain\u2019s deep structures, not the cerebellum, brainstem or cortex itself', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../../public/models/cdmd/manifest.json', import.meta.url)));
+  const regions = new Map(manifest.regions.map(region => [region.id, region]));
+  const hidden = id => beneathCortex(regions.get(id));
+  assert.equal(hidden('aseg:left:17'), true, 'hippocampus');
+  assert.equal(hidden('aseg:left:12'), true, 'putamen');
+  assert.equal(hidden('aseg:midline:253'), true, 'corpus callosum');
+  assert.equal(hidden('learning:left:fornix'), true);
+  assert.equal(hidden('learning:left:subthalamic'), true);
+  assert.equal(hidden('aseg:left:8'), false, 'cerebellar cortex');
+  assert.equal(hidden('learning:left:pons'), false);
+  assert.equal(hidden('learning:left:dentate'), false, 'inside the cerebellum, not the cerebrum');
+  assert.equal(hidden('nextbrain:left:352'), false, 'substantia nigra, a brainstem nucleus');
+  assert.equal(hidden('destrieux:left:38'), false);
 });

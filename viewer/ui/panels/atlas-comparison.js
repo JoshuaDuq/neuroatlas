@@ -180,8 +180,12 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
   const onRetry = () => load();
   const onExport = () => downloadCsv(catalog.exportCsv(sourceId, state.lang),
     `${manifest.anatomy.id}-${sourceId.replaceAll(':', '-')}-atlas-comparison.csv`);
+  const onToggle = () => {
+    if (!panel.open) { clear(); paint(); }
+  };
   retry.addEventListener('click', onRetry);
   exportButton.addEventListener('click', onExport);
+  panel.addEventListener('toggle', onToggle);
 
   return {
     get data() { return comparisonData; },
@@ -206,6 +210,7 @@ export function createAtlasComparison({ manifest, manifestUrl, highlight, clearH
       clear();
       retry.removeEventListener('click', onRetry);
       exportButton.removeEventListener('click', onExport);
+      panel.removeEventListener('toggle', onToggle);
       list.replaceChildren();
       moreList.replaceChildren();
     },

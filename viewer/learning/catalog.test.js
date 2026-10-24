@@ -12,13 +12,14 @@ const published = await readJson('../../public/models/anatomies.json');
 const manifests = await Promise.all(published.anatomies.map(({ id }) =>
   readJson(`../../public/models/${id}/manifest.json`)));
 
-test('all eight tours resolve exact source landmarks on every published anatomy', () => {
+test('all nine tours resolve exact source landmarks on every published anatomy', () => {
   for (const manifest of manifests) {
     const catalog = createCircuitCatalog(data, manifest, deficitIds);
     assert.deepEqual(catalog.all.map(c => c.id), [
       'vision', 'memory', 'motor', 'hearing', 'touch', 'language', 'attention', 'cerebellar',
+      'praxis',
     ]);
-    assert.equal(catalog.all.reduce((count, circuit) => count + circuit.steps.length, 0), 33);
+    assert.equal(catalog.all.reduce((count, circuit) => count + circuit.steps.length, 0), 39);
     assert.equal(catalog.contextMarginMm, 12);
     assert.equal(catalog.get('vision').steps.at(-1).region, 'hcp-mmp:left:1');
     assert.equal(catalog.get('memory').steps.at(-1).source_name, 'Thalamus');
@@ -43,7 +44,16 @@ test('cerebellar output changes to contralateral thalamus after the left peduncl
     const catalog = createCircuitCatalog(data, manifest, deficitIds);
     const regions = new Map(manifest.regions.map(region => [region.id, region]));
     const circuit = catalog.get('cerebellar');
-    assert.equal(circuit.steps[1].covering_region, 'learning:cerebellar-cortex-left');
+    // Where the brain publishes lobules, a lobule is the landmark and the left ones cover the dentate.
+    if (regions.has('learning:lobule-v-left')) {
+      assert.equal(circuit.steps[0].region, 'learning:lobule-v-left');
+      assert.equal(circuit.steps[1].covering_regions.length, 10);
+      assert.ok(circuit.steps[1].covering_regions.every(id => regions.get(id).hemisphere === 'left'));
+    } else {
+      assert.equal(circuit.steps[0].region, 'learning:cerebellar-cortex-left');
+      assert.deepEqual(circuit.steps[1].covering_regions, ['learning:cerebellar-cortex-left']);
+    }
+    assert.deepEqual(circuit.steps[0].restores, circuit.steps[1].covering_regions);
     assert.deepEqual(circuit.steps.map(step => regions.get(step.region).hemisphere),
       ['left', 'left', 'left', 'right', 'right']);
     assert.equal(circuit.steps[2].source_name, 'Superior cerebellar peduncle');
@@ -52,14 +62,41 @@ test('cerebellar output changes to contralateral thalamus after the left peduncl
   }
 });
 
+test('praxis visits the Grasp system, then the Use system, on the left hemisphere only', () => {
+  for (const manifest of manifests) {
+    const catalog = createCircuitCatalog(data, manifest, deficitIds);
+    const regions = new Map(manifest.regions.map(region => [region.id, region]));
+    const circuit = catalog.get('praxis');
+    assert.equal(circuit.deficit, 'apraxia');
+    assert.ok(circuit.steps.every(step => regions.get(step.region).hemisphere === 'left'));
+    assert.deepEqual(circuit.steps.map(step => step.source_name),
+      ['L_MIP_ROI', 'L_6a_ROI', 'L_MT_ROI', 'L_PFt_ROI', 'L_6v_ROI', 'G_temporal_middle']);
+  }
+});
+
 test('covering geometry must be a different structure in the landmark’s atlas and hemisphere', () => {
-  for (const coveringRegion of [
-    'missing', 'learning:left:dentate', 'learning:cerebellar-cortex-right', 'hcp-mmp:left:24',
+  for (const coveringRegions of [
+    ['missing'], ['learning:left:dentate'], ['learning:right:dentate'], ['hcp-mmp:left:24'], [],
   ]) {
     const invalid = structuredClone(data);
-    invalid.circuits.find(circuit => circuit.id === 'cerebellar')
-      .steps[1].covering_region = coveringRegion;
+    const step = invalid.circuits.find(circuit => circuit.id === 'cerebellar').steps[1];
+    delete step.alternatives;
+    step.covering_regions = coveringRegions;
     assert.throws(() => createCircuitCatalog(invalid, manifests[0], deficitIds), /covering/i);
+  }
+});
+
+test('a landmark with alternatives resolves to exactly one of them in each anatomy', () => {
+  for (const manifest of manifests) {
+    const both = structuredClone(data);
+    const step = both.circuits.find(circuit => circuit.id === 'cerebellar').steps[2];
+    step.alternatives = [{ name: step.name }];
+    assert.throws(() => createCircuitCatalog(both, manifest, deficitIds), /2 forms/);
+    const neither = structuredClone(data);
+    const cortex = neither.circuits.find(circuit => circuit.id === 'cerebellar').steps[0];
+    cortex.alternatives[0].region = 'learning:missing';
+    cortex.region = 'learning:missing';
+    assert.throws(() => createCircuitCatalog(neither, manifest, deficitIds), /0 forms/);
   }
 });
 

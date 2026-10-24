@@ -7,6 +7,8 @@ The viewer and the pipeline install separately. The published anatomies are alre
 | Viewer | Node.js with npm (CI uses Node 24); a browser with WebGL 2 |
 | Pipeline | [uv](https://docs.astral.sh/uv/); Python 3.12 or 3.13, which uv installs if missing |
 | NextBrain segmentation | FreeSurfer 8.2; about 20 minutes of CPU per brain |
+| CDMD TractSeg bundles | MRtrix3 3.0.8's macOS release at `data/cache/mrtrix3`; TractSeg 2.10 with torch in `data/cache/tractseg-venv`, dipy's and scikit-learn's bundled `libomp.dylib` symlinked to torch's so one OpenMP runtime loads, and its weights in `~/.tractseg` |
+| Cerebellar lobules | FastSurfer v2.6.0 cloned to `data/cache/fastsurfer/src` with its pinned requirements in `data/cache/fastsurfer-venv`; about 8 minutes of CPU per brain |
 
 ## Viewer
 
@@ -24,7 +26,7 @@ uv sync --locked
 uv run pytest
 ```
 
-`--locked` installs exactly what `uv.lock` records. The tests read the committed sources of `snail` and `cdmd`. Run pipeline commands through `uv run`; the [build guide](guides/building.md) lists them.
+`--locked` installs exactly what `uv.lock` records. The tests read the committed sources of `cdmd`. Run pipeline commands through `uv run`; the [build guide](guides/building.md) lists them.
 
 CI runs `uv run pytest`, `npm test` and `python -m brain_model.validate` for each published anatomy on every pull request and before each deployment.
 

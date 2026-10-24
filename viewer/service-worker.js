@@ -17,7 +17,7 @@
  */
 
 const PUBLISHED = __PUBLISHED_VERSIONS__;
-const CACHE = 'neuroatlas-models';
+const CACHE = 'planum-models';
 
 /** A same-origin URL's path from the published root, or null. */
 function publishedPath(url) {
@@ -41,8 +41,9 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     for (const name of await caches.keys()) {
-      // One cache per model version, from before files were versioned one by one.
-      if (name.startsWith('neuroatlas-models-')) await caches.delete(name);
+      // Caches from before the rename to Planum, including the one per model
+      // version kept before files were versioned one by one.
+      if (name.startsWith('neuroatlas-models')) await caches.delete(name);
     }
     const cache = await caches.open(CACHE);
     for (const request of await cache.keys()) {

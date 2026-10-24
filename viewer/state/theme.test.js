@@ -71,7 +71,7 @@ test('choosing light or dark persists it and stops following the system', () => 
   theme.choose('dark');
   assert.equal(theme.choice, 'dark');
   assert.equal(theme.current, 'dark');
-  assert.equal(storage.store['neuroatlas.theme'], 'dark');
+  assert.equal(storage.store['planum.theme'], 'dark');
   assert.equal(system.listeners.size, 0);
 
   system.flip(true);
@@ -80,20 +80,20 @@ test('choosing light or dark persists it and stops following the system', () => 
   assert.deepEqual(notified, ['light', 'dark']);
 
   theme.choose('light');
-  assert.equal(storage.store['neuroatlas.theme'], 'light');
+  assert.equal(storage.store['planum.theme'], 'light');
   assert.equal(document.documentElement.dataset.theme, 'light');
 });
 
 test('a stored choice wins over the system and attaches no listener', () => {
   const system = fakeSystem(false);
-  const theme = createTheme(() => {}, { storage: fakeStorage({ 'neuroatlas.theme': 'dark' }), system });
+  const theme = createTheme(() => {}, { storage: fakeStorage({ 'planum.theme': 'dark' }), system });
   assert.equal(theme.choice, 'dark');
   assert.equal(theme.current, 'dark');
   assert.equal(system.listeners.size, 0);
 });
 
 test('choosing system again clears the stored value and resumes following', () => {
-  const storage = fakeStorage({ 'neuroatlas.theme': 'light' });
+  const storage = fakeStorage({ 'planum.theme': 'light' });
   const system = fakeSystem(true);
   const notified = [];
   const theme = createTheme(t => notified.push(t), { storage, system });
@@ -102,7 +102,7 @@ test('choosing system again clears the stored value and resumes following', () =
   theme.choose('system');
   assert.equal(theme.choice, 'system');
   assert.equal(theme.current, 'dark');
-  assert.equal('neuroatlas.theme' in storage.store, false);
+  assert.equal('planum.theme' in storage.store, false);
   assert.equal(system.listeners.size, 1);
 
   // Choosing it twice must not double the listener.
@@ -162,7 +162,7 @@ test('without options it reads the page localStorage and matchMedia', () => {
     assert.deepEqual(queries, ['(prefers-color-scheme: dark)']);
     assert.equal(theme.current, 'dark');
     theme.choose('light');
-    assert.equal(globalThis.localStorage.store['neuroatlas.theme'], 'light');
+    assert.equal(globalThis.localStorage.store['planum.theme'], 'light');
   } finally {
     delete globalThis.matchMedia;
     delete globalThis.localStorage;

@@ -29,7 +29,7 @@ export function linkNotice(params, lang) {
 /**
  * A failed start, worded for the reader, with its button. Anything but a
  * download failure may come from the link that opened the page, so the retry
- * then opens NeuroAtlas without it (`dropLink`).
+ * then opens Planum without it (`dropLink`).
  */
 export function startFailure(error, lang, linked) {
   const copy = t(lang, 'errors');

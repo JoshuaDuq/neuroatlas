@@ -4,30 +4,31 @@ name:
   fr: MGH CDMD · sub_013
 source: https://doi.org/10.6084/m9.figshare.c.5315474.v1
 license: CC0-1.0
-# Tracked here from the subject's own diffusion scan by scripts/cdmd_pilot.py,
-# packaged by scripts/prepare_diffusion_cdmd.py.
+# Tracked here from the subject's own diffusion scan: RecoBundles tracts by
+# scripts/cdmd_pilot.py; SLF I–III, the callosal segments and FA by
+# scripts/tractseg_cdmd.py; all packaged by scripts/prepare_diffusion_cdmd.py.
 provenance: cdmd-sub-013/provenance.json
 anatomy: cdmd
 reference_space: cdmd-sub-013/surface-space.json
 overlay_cortex_opacity: 0.16
-# The step the pilot's 0.2 mm tracking is resampled to, the published SNAIL
-# tracts' own; provenance records how far that moves the geometry.
+# The step the pilot's 0.2 mm tracking is resampled to, the step of the DIPY
+# SNAIL tracts Planum first published; provenance records how far that moves the geometry.
 resample_step_mm: 0.5
 text:
   en:
     dataset: MGH CDMD · sub_013
     otherAnatomy: The selected anatomical atlas uses a different subject from these MGH CDMD tracts.
-    files: "Files: each tract is one TRK streamline file, resampled to 0.5 mm steps; the MRI is sub_013_t1w.nii.gz."
+    files: "Files: each tract is one TRK streamline file, resampled to 0.5 mm steps; the MRI is sub_013_t1w.nii.gz and FA is fa.nii.gz."
     mriTitle: MRI with tracts · MGH CDMD sub_013
     mriCanvas: Linked MGH CDMD MRI slices and tracts. Click to position the crosshair; arrows move one voxel.
-    mriScope: Scanner RAS millimetres · R/L marked. Tracts were tracked in this scan’s own diffusion data and are drawn at 0.5 mm steps with the current length filter. Cortical atlas parcels remain surface labels.
+    mriScope: Scanner RAS millimetres · R/L marked. Tracts were tracked in this scan’s own diffusion data and are drawn at 0.5 mm steps with the current length filter; SLF I–III and the callosal segments are TractSeg’s, the others RecoBundles’. Cortical atlas parcels remain surface labels.
   fr:
     dataset: MGH CDMD · sub_013
     otherAnatomy: L’atlas anatomique sélectionné utilise un autre sujet que ces faisceaux MGH CDMD.
-    files: "Fichiers : chaque faisceau est un fichier de trajectoires TRK, rééchantillonné à des pas de 0,5 mm ; l’IRM est sub_013_t1w.nii.gz."
+    files: "Fichiers : chaque faisceau est un fichier de trajectoires TRK, rééchantillonné à des pas de 0,5 mm ; l’IRM est sub_013_t1w.nii.gz et la FA est fa.nii.gz."
     mriTitle: IRM avec faisceaux · MGH CDMD sub_013
     mriCanvas: Coupes IRM MGH CDMD liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.
-    mriScope: Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux ont été suivis dans les données de diffusion de cette même image et sont tracés à des pas de 0,5 mm avec le filtre de longueur courant. Les régions corticales restent des étiquettes de surface.
+    mriScope: Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux ont été suivis dans les données de diffusion de cette même image et sont tracés à des pas de 0,5 mm avec le filtre de longueur courant ; le FLS I–III et les segments calleux viennent de TractSeg, les autres de RecoBundles. Les régions corticales restent des étiquettes de surface.
 brain_outline:
   file: cdmd-sub-013/brain-outline.glb
   provenance: cdmd-sub-013/brain-outline.json
@@ -42,9 +43,16 @@ maps:
     file: cdmd-sub-013/sub_013_t1w.nii.gz
     name: { en: T1 reference, fr: Référence T1 }
     colormap: gray
-    # 0 to just above the scan's maximum (523.8), as SNAIL's map runs to its own.
+    # 0 to just above the scan's maximum (523.8).
     range: [0, 525]
     opacity: 1
+  # Tensor FA (b = 0, 800, 1500) of the subject's own diffusion scan, resampled onto the T1 grid.
+  - id: fa
+    file: cdmd-sub-013/fa.nii.gz
+    name: { en: Fractional anisotropy (FA), fr: Anisotropie fractionnelle (FA) }
+    colormap: viridis
+    range: [0, 1]
+    opacity: 0
 bundles:
   - id: af-left
     file: cdmd-sub-013/af.left.trk.gz
@@ -99,3 +107,46 @@ bundles:
   - id: cc-1
     file: cdmd-sub-013/cc.trk.gz
     name: { en: Corpus callosum · whole, fr: Corps calleux · entier }
+# TractSeg's subdivisions, which DIPY's HCP842 atlas does not make.
+  - id: slf1-left
+    file: cdmd-sub-013/slf1.left.trk.gz
+    name: { en: Superior longitudinal fasciculus I · left, fr: Faisceau longitudinal supérieur I · gauche }
+  - id: slf1-right
+    file: cdmd-sub-013/slf1.right.trk.gz
+    name: { en: Superior longitudinal fasciculus I · right, fr: Faisceau longitudinal supérieur I · droit }
+  - id: slf2-left
+    file: cdmd-sub-013/slf2.left.trk.gz
+    name: { en: Superior longitudinal fasciculus II · left, fr: Faisceau longitudinal supérieur II · gauche }
+  - id: slf2-right
+    file: cdmd-sub-013/slf2.right.trk.gz
+    name: { en: Superior longitudinal fasciculus II · right, fr: Faisceau longitudinal supérieur II · droit }
+  - id: slf3-left
+    file: cdmd-sub-013/slf3.left.trk.gz
+    name: { en: Superior longitudinal fasciculus III · left, fr: Faisceau longitudinal supérieur III · gauche }
+  - id: slf3-right
+    file: cdmd-sub-013/slf3.right.trk.gz
+    name: { en: Superior longitudinal fasciculus III · right, fr: Faisceau longitudinal supérieur III · droit }
+# TractSeg's CC_1–CC_7: rostrum, genu, rostral body (premotor), anterior
+# midbody (primary motor), posterior midbody (primary somatosensory), isthmus
+# and splenium.
+  - id: callosum-1
+    file: cdmd-sub-013/callosum_1.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 1, fr: Corps calleux · segment TractSeg 1 }
+  - id: callosum-2
+    file: cdmd-sub-013/callosum_2.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 2, fr: Corps calleux · segment TractSeg 2 }
+  - id: callosum-3
+    file: cdmd-sub-013/callosum_3.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 3, fr: Corps calleux · segment TractSeg 3 }
+  - id: callosum-4
+    file: cdmd-sub-013/callosum_4.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 4, fr: Corps calleux · segment TractSeg 4 }
+  - id: callosum-5
+    file: cdmd-sub-013/callosum_5.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 5, fr: Corps calleux · segment TractSeg 5 }
+  - id: callosum-6
+    file: cdmd-sub-013/callosum_6.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 6, fr: Corps calleux · segment TractSeg 6 }
+  - id: callosum-7
+    file: cdmd-sub-013/callosum_7.trk.gz
+    name: { en: Corpus callosum · TractSeg segment 7, fr: Corps calleux · segment TractSeg 7 }

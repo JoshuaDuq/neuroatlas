@@ -34,7 +34,7 @@ test('a bundle with neither side nor segment, or members that disagree, is an er
 });
 
 test('each published collection reads as one row per tract in both languages', () => {
-  const tracts = { 'snail-subject-1': 11, 'cdmd-sub-013': 9 };
+  const tracts = { 'snail-subject-1': 11, 'cdmd-sub-013': 13 };
   for (const catalog of catalogs) {
     const rows = tractRows(catalog.bundles);
     assert.equal(rows.reduce((total, row) => total + row.members.length, 0), catalog.bundles.length);

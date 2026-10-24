@@ -551,7 +551,9 @@ export function createNavigator({
       if (!expanded) continue;
       // Children exist only while open: 360 areas need not all be DOM.
       const children = document.createElement('div');
+      children.id = `tree-children-${encodeURIComponent(group.key)}`;
       children.setAttribute('role', 'group');
+      header.setAttribute('aria-owns', children.id);
       for (const row of group.rows) {
         children.append(buildRow(row, {
           role: 'treeitem', level: 2, lang: state.lang, hiddenRegions: state.hiddenRegions,
@@ -606,11 +608,12 @@ export function createNavigator({
       if (item.getAttribute('role') === 'option') {
         item.setAttribute('aria-selected', String(selected));
       } else if (selected) {
-        // A single-selection tree marks only the selected item.
+        // A single-selection tree has at most one selected item.
         item.setAttribute('aria-selected', 'true');
         selectedRow = item;
       } else {
-        item.removeAttribute('aria-selected');
+        if (item.getAttribute('aria-disabled') === 'true') item.removeAttribute('aria-selected');
+        else item.setAttribute('aria-selected', 'false');
       }
       if (selected) selectedItem = item;
     }
@@ -699,12 +702,16 @@ export function createNavigator({
   };
 
   const onSearchKey = event => {
+    if (event.isComposing) return;
     // Marked handled: the page's own Escape would otherwise go on to clear the selection.
     if (event.key === 'Escape' && search.value) {
       event.preventDefault();
       search.value = '';
       onQuery('');
-    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      return;
+    }
+    if (results.hidden) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       moveActiveOption(event.key === 'ArrowDown' ? 1 : -1);
     } else if (event.key === 'Enter') {
@@ -741,6 +748,10 @@ export function createNavigator({
       if (!searching) {
         clearTimeout(announceTimer);
         announced = null;
+        activeIndex = -1;
+        search.removeAttribute('aria-activedescendant');
+        results.replaceChildren();
+        notes.replaceChildren();
       }
       tree.hidden = searching;
       if (treeHeader) treeHeader.hidden = searching;
@@ -753,7 +764,7 @@ export function createNavigator({
         treeToggleAll.querySelector('path').setAttribute('d', allExpanded ? COLLAPSE_ICON : EXPAND_ICON);
       }
       if (searchClear) {
-        searchClear.hidden = !searching;
+        searchClear.hidden = !state.query;
         searchClear.setAttribute('aria-label', i18n.clearSearch);
       }
       search.setAttribute('aria-expanded', String(searching));
@@ -767,7 +778,7 @@ export function createNavigator({
       // Rebuild only when the structure could have changed. CAB-NP colouring regroups its atlas's areas.
       const key = [
         state.atlas, state.surfaceColor === 'cab-np', state.detail, state.cutAtlas, state.cutActive, state.lang, state.hemisphere,
-        state.cortexVisible, state.cortexOpacity > 0, state.internalVisible,
+        state.cortexVisible, state.cortexOpacity > 0, state.internalVisible, state.spinalCordVisible,
         state.isolatedRegion, state.internalSystem, state.query, [...state.expanded].sort().join(),
       ].join('|');
       const hidden = [...state.hiddenRegions].sort().join();

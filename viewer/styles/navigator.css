@@ -1,7 +1,7 @@
 /* Navigator --------------------------------------------------------------- */
 /*
- * An index, not a menu: rows run edge to edge, names on the panel's 16px or 36px column, data
- * (side letters, counts) ending on the right-hand column 16px from the edge.
+ * An index, not a menu: rows run edge to edge, with aligned name, count and
+ * hemisphere-control columns inside the panel's shared inset.
  */
 .row {
   display: flex;
@@ -17,6 +17,7 @@
   background: transparent;
   text-align: left;
   font-size: var(--text-ui);
+  font-weight: 400;
   color: var(--text-primary);
   cursor: pointer;
   user-select: none;
@@ -24,7 +25,7 @@
 }
 .row:focus-visible { outline-offset: -2px; }
 @media (hover: hover) and (pointer: fine) {
-  .row:hover { background: var(--surface-hover); }
+  .row:hover:not([aria-disabled="true"], [data-selected="true"]) { background: var(--surface-hover); }
 }
 /* Distinguish the keyboard target from the selected anatomical region. */
 .row[data-active="true"] {
@@ -36,7 +37,7 @@
 .row[data-hidden="true"] { color: var(--text-tertiary); }
 .row[aria-disabled="true"] { cursor: default; }
 /* Names wrap freely; the quieter second line gives search results their own rhythm. */
-.row-name { flex: 1; min-width: 0; line-height: var(--lh-ui); overflow-wrap: break-word; text-wrap: pretty; }
+.row-name { flex: 1; min-width: 0; line-height: var(--lh-ui); overflow-wrap: anywhere; text-wrap: pretty; }
 #results .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
@@ -95,7 +96,13 @@
 .row-side-solo { min-width: 32px; }
 .row-side-rest { display: none; }
 .tree-group { isolation: isolate; }
-.tree-group > .group-row { background: var(--surface-base); font-weight: 500; }
+.tree-group > .group-row {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) 3ch max-content;
+  gap: var(--space-2);
+  background: var(--surface-base);
+  font-weight: 500;
+}
 @media (hover: hover) and (pointer: fine) {
   .tree-group > .group-row:hover { background: var(--surface-hover); }
 }
@@ -120,82 +127,101 @@
 }
 .group-row > .chevron { color: var(--text-tertiary); }
 .group-row[aria-expanded="true"] > .chevron { --chevron-turn: 90deg; color: var(--text-secondary); }
-.group-row > .row-name { flex: 1 1 auto; }
-.group-row > .group-count { min-width: 3ch; font-weight: 400; }
+/* Each group takes only the room its hemisphere controls need. */
+.group-row > :is(.chevron, .row-name, .group-count, .row-eyes) { grid-row: 1; }
+.group-row > .chevron { grid-column: 1; }
+.group-row > .row-name { grid-column: 2; }
+.group-row > .group-count { grid-column: 3; min-width: 0; margin-left: 0; font-weight: 400; }
+.group-row > .row-eyes { grid-column: 4; justify-self: end; margin-left: 0; }
 /* Category headings divide the index without introducing another panel surface. */
 #tree > .section-label {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  margin-top: var(--space-4);
-  padding: var(--space-4) var(--panel-inset) var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--panel-inset) var(--space-2);
   border-top: 1px solid var(--border-subtle);
   background: none;
+  color: var(--text-secondary);
 }
-#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-5); border-top: 0; }
+#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-2); border-top: 0; }
+#tree > .section-label > :first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .section-state {
+  flex: 0 1 48%;
   min-width: 0;
   margin-left: auto;
   text-align: right;
   font-weight: 400;
   letter-spacing: 0;
   color: var(--text-tertiary);
+  overflow-wrap: anywhere;
 }
 
-/*
- * Per-part visibility: an eye, then its side letter, the letter ending 8px inside the control
- * so that the control's last 8px overhang the row's 16px inset and the letter stands on the
- * data column. Hidden is neutral ink and a struck eye, never teal.
- */
-.row-eyes { display: flex; flex: none; align-items: center; gap: 0; }
+/* Hemisphere labels and visibility stay readable, with stronger edges on interaction. */
+.row-eyes {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0;
+  margin-block: -4px;
+  border-radius: var(--radius-control);
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+}
 .visibility-control {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   flex: none;
   gap: 3px;
   width: 32px;
   height: 32px;
-  /* The target fills the row without increasing its 40px pitch. */
-  margin-block: -4px;
-  padding: 0 var(--space-1) 0 0;
+  margin: -4px 0;
+  padding: 0 var(--space-1);
   border: 0;
   border-radius: var(--radius-control);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   background: transparent;
 }
-.row-indent > .visibility-control { margin-right: calc(-1 * var(--space-2)); }
-.visibility-control[data-visibility-key$=":midline"] { width: auto; min-width: 40px; padding-left: 6px; }
-.visibility-control svg { width: 16px; height: 16px; flex: none; }
+.row-eyes > .visibility-control { margin-block: 0; border-radius: 0; }
+.row-eyes > .visibility-control:first-child { border-radius: var(--radius-control) 0 0 var(--radius-control); }
+.row-eyes > .visibility-control:last-child { border-radius: 0 var(--radius-control) var(--radius-control) 0; }
+.row-eyes > .visibility-control + .visibility-control { border-left: 1px solid transparent; }
+.row-indent > .visibility-control { border: 1px solid transparent; }
+.visibility-control[data-visibility-key$=":midline"] { width: 40px; min-width: 40px; padding-inline: 2px; }
+.visibility-control svg { width: 14px; height: 14px; flex: none; }
 .visibility-side { font-size: var(--text-caption); line-height: var(--lh-caption); font-weight: 600; color: var(--text-secondary); }
 @media (hover: hover) and (pointer: fine) {
   .visibility-control:hover:not(:disabled) { background: var(--surface-tonal); color: var(--text-primary); }
 }
 .row[data-selected="true"] .visibility-side { color: var(--accent); }
+.row[data-selected="true"] > .visibility-control { color: var(--accent); }
 .row[data-hidden="true"] .visibility-side { color: var(--text-tertiary); }
 .visibility-control[data-state="hidden"],
 .visibility-control[data-state="hidden"] .visibility-side { color: var(--text-tertiary); }
+.visibility-control[data-state="hidden"] { background: var(--surface-sunken); }
+.visibility-control[data-state="hidden"] .visibility-side { text-decoration: line-through; }
+.visibility-control[data-partial="true"] { background: var(--surface-tonal); }
 .visibility-control:focus-visible { outline-offset: 0; }
-/* Visibility is a core operation: the eyes stay discoverable before the first hover. */
+/* The row in use strengthens the eye and exposes its shared control boundary. */
 @media (hover: hover) and (pointer: fine) {
-  /* Letters and counts stay fixed; the icon gains emphasis on hover or focus. */
-  .row-eyes > .visibility-control:not([data-state="hidden"], [data-partial="true"]) svg,
-  .row-indent > .visibility-control svg { color: var(--text-tertiary); }
+  .row:is(:hover, :focus-within) > .row-eyes { outline-color: var(--border-subtle); }
+  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control + .visibility-control,
+  .row:is(:hover, :focus-within) > .visibility-control { border-color: var(--border-subtle); }
   .row:is(:hover, :focus-within) > .row-eyes > .visibility-control svg,
-  .row:is(:hover, :focus-within) > .visibility-control svg,
-  .visibility-control[data-state="hidden"] svg { color: inherit; }
+  .row:is(:hover, :focus-within) > .visibility-control svg { color: var(--text-primary); }
 }
 /* Scope is a compact neutral choice, distinct from the mode tabs above. */
 .tree-header { display: flex; align-items: center; gap: var(--space-3); }
-.tree-scope { flex: 1; min-width: 0; gap: var(--space-1); padding: 0; background: transparent; }
+.tree-scope { flex: 0 1 auto; min-width: 0; gap: var(--space-1); padding: 0; background: transparent; }
 .tree-scope button {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-width: 0;
   height: auto;
   min-height: 32px;
   padding: var(--space-1) var(--space-2);
   white-space: normal;
-  border-radius: var(--radius-control);
+  border-radius: calc(var(--radius-control) - 1px);
   font-size: var(--text-caption);
 }
 .tree-scope button[aria-pressed="true"],
@@ -208,7 +234,7 @@
   .tree-scope button:hover:not(:disabled, [aria-pressed="true"]) { background: var(--surface-hover); color: var(--text-primary); }
 }
 /* The icon's ink ends on the data column. */
-.tree-toggle-all { flex: none; margin-right: calc(-1 * var(--space-2)); }
+.tree-toggle-all { flex: none; margin-left: auto; margin-right: calc(-1 * var(--space-2)); }
 /* By system: the system picker sits under the scope that opened it, label beside field. */
 .internal-controls {
   display: grid;
@@ -218,6 +244,10 @@
 }
 .internal-controls label { font-size: var(--text-ui); font-weight: 500; }
 .internal-note { font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); margin: 0; }
+
+@media (pointer: coarse) {
+  .row-eyes, .visibility-control { margin-block: 0; }
+}
 
 .query-match { background: transparent; color: var(--accent); font-weight: 600; }
 .row-alias {

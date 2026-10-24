@@ -40,11 +40,11 @@ test('fetchAsset reuses an in-flight request and fans progress out to every list
 
 test('fetchAsset consumes a head-started response instead of opening a second download', async t => {
   t.mock.method(globalThis, 'fetch', async () => { throw new Error('network fetch should not run'); });
-  globalThis.__neuroatlasAssets = { 'https://example.test/b.glb': Promise.resolve(responseFor(4)) };
-  t.after(() => { delete globalThis.__neuroatlasAssets; });
+  globalThis.__planumAssets = { 'https://example.test/b.glb': Promise.resolve(responseFor(4)) };
+  t.after(() => { delete globalThis.__planumAssets; });
   const buffer = await fetchAsset('https://example.test/b.glb');
   assert.equal(buffer.byteLength, 4);
-  assert.equal(globalThis.__neuroatlasAssets['https://example.test/b.glb'], undefined);
+  assert.equal(globalThis.__planumAssets['https://example.test/b.glb'], undefined);
 });
 
 test('bytes that are not the published file’s fail as an update, not as data', async t => {

@@ -58,13 +58,13 @@ export function mriReadout(mm, t1, fa, lang) {
 const ERRORS = {
   en: {
     'asset-fetch': 'The reference data could not be downloaded. Check the connection, then try again.',
-    'asset-updated': 'NeuroAtlas was updated while this page was open. Reload the page to load the new data.',
+    'asset-updated': 'Planum was updated while this page was open. Reload the page to load the new data.',
     'invalid-data': 'The reference data could not be read.',
     failed: 'The reference data could not be displayed.',
   },
   fr: {
     'asset-fetch': 'Les données de référence n’ont pas pu être téléchargées. Vérifiez la connexion, puis réessayez.',
-    'asset-updated': 'NeuroAtlas a été mis à jour pendant que cette page était ouverte. Rechargez la page pour charger les nouvelles données.',
+    'asset-updated': 'Planum a été mis à jour pendant que cette page était ouverte. Rechargez la page pour charger les nouvelles données.',
     'invalid-data': 'Les données de référence n’ont pas pu être lues.',
     failed: 'Les données de référence n’ont pas pu être affichées.',
   },

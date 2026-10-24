@@ -230,8 +230,8 @@ test('CSV retains every target label, full numeric precision and reproducible pr
   assert.throws(() => catalog.exportCsv(ids.d1, 'missing'), /language/i);
 });
 
-test('published SNAIL data conserves every cortical source in both directions', () => {
-  const directory = new URL('../../public/models/snail/', import.meta.url);
+test('published CDMD data conserves every cortical source in both directions', () => {
+  const directory = new URL('../../public/models/cdmd/', import.meta.url);
   const manifest = JSON.parse(readFileSync(new URL('manifest.json', directory), 'utf8'));
   const data = JSON.parse(readFileSync(new URL(manifest.atlas_comparison.file, directory), 'utf8'));
   const catalog = createComparisonCatalog(data, manifest);

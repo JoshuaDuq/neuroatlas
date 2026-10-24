@@ -143,3 +143,10 @@ def test_short_citations_follow_the_author_count():
     assert neuropsych_domains.short_citation(
         {"authors": "Van Valin RD Jr, Dronkers NF, Baldo JV", "year": 2004}) == "Van Valin et al. 2004"
 
+
+
+def test_deficits_sit_under_the_functions_groups_in_the_same_order_and_words():
+    deficits = yaml.safe_load(neuropsych_domains.NEUROPSYCHOLOGY.read_text())["groups"]
+    functions = neuropsych_domains.read_definition()["groups"]
+    assert [(group["id"], group["name"]["en"], group["name"]["fr"]) for group in deficits] == [
+        (group["id"], group["name"], group["name_fr"]) for group in functions]

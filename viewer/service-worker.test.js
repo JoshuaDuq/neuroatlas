@@ -92,7 +92,7 @@ function bootWorker({ published = deploy(DEFAULT_FILES) } = {}) {
 
 const urlOf = (worker, path, version = worker.published.files[path]) =>
   `${ORIGIN}/neuroatlas/${path}${version === null ? '' : `?v=${version}`}`;
-const stored = worker => [...(worker.storage.get('neuroatlas-models')?.keys() ?? [])];
+const stored = worker => [...(worker.storage.get('planum-models')?.keys() ?? [])];
 
 test('a published file is stored on first request and served from storage after', async () => {
   const worker = bootWorker();
@@ -145,11 +145,12 @@ test('a new deploy deletes only the files it no longer publishes', async () => {
   }
   const second = bootWorker({ published: { ...first.published, files: {
     ...first.published.files, 'models/bert/structures.glb': 'changedstructure' } } });
-  second.storage.set('neuroatlas-models', first.storage.get('neuroatlas-models'));
+  second.storage.set('planum-models', first.storage.get('planum-models'));
+  second.storage.set('neuroatlas-models', new Map([['/old.glb', new Response('')]]));
   second.storage.set('neuroatlas-models-oldglobal', new Map([['/old.glb', new Response('')]]));
   second.storage.set('something-else', new Map([['/keep', new Response('')]]));
   await second.activate();
-  assert.deepEqual([...second.storage.keys()].sort(), ['neuroatlas-models', 'something-else']);
+  assert.deepEqual([...second.storage.keys()].sort(), ['planum-models', 'something-else']);
   assert.deepEqual(stored(second), [`/neuroatlas/models/bert/cortex-destrieux.glb?v=${first.published.files['models/bert/cortex-destrieux.glb']}`]);
   assert.ok(second.self.claimed, 'and takes over the open pages');
 });

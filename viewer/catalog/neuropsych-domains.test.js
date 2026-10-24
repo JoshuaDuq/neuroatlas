@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ALL_DOMAINS, domainAreas, domainPaint, domainsOf, groupedDomains, overviewDomains, scoredRegion, shownDomain,
-  validateNeuropsychDomains,
+  ALL_DOMAINS, domainAreas, domainPaint, domainRecord, domainsOf, domainStudies, groupedDomains, matchingTerms,
+  nearestName, overviewDomains, scoredRegion, shownDomain, validateNeuropsychDomains,
 } from './neuropsych-domains.js';
 
 const regions = new Map([['hcp-mmp:left:1', { atlas: 'hcp-mmp', kind: 'cortex' }],
@@ -106,4 +106,64 @@ test('a sampled structure is scored like an area; another structure, or another 
   assert.equal(scoredRegion(published, regions.get('destrieux:left:1')), false);
   assert.deepEqual(domainAreas(published, 'memory'), [{ region: 'hcp-mmp:left:1', z: 7.5 }, { region: 'aseg:left:18', z: 3.5 }]);
   assert.deepEqual(domainPaint(published, 'memory').colors.get('aseg:left:18'), [4, 5, 6]);
+});
+
+const terms = () => ({
+  id: 'neurosynth-terms', atlas: 'hcp-mmp', structure_atlas: 'aseg', threshold_z: 3, color: [0, 114, 178],
+  derivation: {}, regions: ['aseg:left:18', 'hcp-mmp:left:1', 'hcp-mmp:right:1'],
+  terms: [
+    ['fear', 363, 'function', [[0, 9.1], [1, 3.4]]],
+    ['fear conditioning', 120, 'function', [[0, 6.2]]],
+    ['conditioned fear', 90, 'function', [[2, 3]]],
+    ['interference', 400, 'function', [[2, 3]]],
+    ['aphasia', 205, 'population', [[1, 4]]],
+  ],
+});
+
+test('searched terms paint the regions they reach in one colour and keep their kind', () => {
+  const published = validateNeuropsychDomains(partition(), regions, terms());
+  assert.equal(domainRecord(published, 'term:language'), null);
+  assert.equal(domainRecord(published, 'term:aphasia').kind, 'population');
+  assert.equal(domainStudies(published, 'term:fear'), 363);
+  assert.equal(domainStudies(published, 'language'), 1101);
+  assert.deepEqual(domainAreas(published, 'term:fear'), [{ region: 'aseg:left:18', z: 9.1 }, { region: 'hcp-mmp:left:1', z: 3.4 }]);
+  assert.deepEqual([...domainPaint(published, 'term:fear').colors], [['aseg:left:18', [0, 114, 178]], ['hcp-mmp:left:1', [0, 114, 178]]]);
+  assert.equal(domainPaint(published, 'term:fear').id, 'function:term:fear');
+  assert.throws(() => domainPaint(published, 'term:praxis'), /Unknown neuropsychological domain: term:praxis/);
+});
+
+test('a term search ranks the term itself, then word starts, then the rest, larger literatures first', () => {
+  const published = validateNeuropsychDomains(partition(), regions, terms());
+  assert.deepEqual(matchingTerms(published, ' Fear ').map(record => record.term), ['fear', 'fear conditioning', 'conditioned fear']);
+  assert.deepEqual(matchingTerms(published, 'cond').map(record => record.term), ['fear conditioning', 'conditioned fear']);
+  assert.deepEqual(matchingTerms(published, 'fer').map(record => record.term), ['interference']);
+  assert.deepEqual(matchingTerms(published, ''), []);
+  assert.deepEqual(matchingTerms(validateNeuropsychDomains(partition(), regions), 'fear'), []);
+});
+
+test('a term below the threshold, reaching nothing, of no kind, repeating a curated function or off its atlas is rejected', () => {
+  for (const [change, message] of [
+    [p => { p.terms[0][3][1][1] = 2.9; }, /term: fear/],
+    [p => { p.terms[0][3][1][0] = 7; }, /term: fear/],
+    [p => { p.terms.push(['fear', 1, 'function', [[0, 4]]]); }, /term: fear/],
+    [p => { p.terms[2][3] = []; }, /term: conditioned fear/],
+    [p => { p.terms[0][2] = 'anatomy'; }, /term: fear/],
+    [p => { p.terms.push(['language', 1101, 'function', [[1, 5]]]); }, /term: language/],
+    [p => { p.regions.push('aseg:left:4'); }, /term region: aseg:left:4/],
+    [p => { p.threshold_z = 2; }, /Invalid Neurosynth term search/],
+    [p => { p.atlas = 'destrieux'; }, /Invalid Neurosynth term search/],
+  ]) {
+    const broken = terms();
+    change(broken);
+    assert.throws(() => validateNeuropsychDomains(partition(), regions, broken), message);
+  }
+});
+
+test('a misspelt query is offered the closest name or term within one edit per four letters', () => {
+  const published = validateNeuropsychDomains(partition(), regions, terms());
+  assert.equal(nearestName(published, 'Langauge', 'en'), 'Language');
+  assert.equal(nearestName(published, 'interferance', 'en'), 'interference');
+  assert.equal(nearestName(published, 'memoire', 'fr'), 'Mémoire');
+  assert.equal(nearestName(published, 'nicotine', 'en'), null);
+  assert.equal(nearestName(published, 'fea', 'en'), null);
 });

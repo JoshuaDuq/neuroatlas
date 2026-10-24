@@ -77,6 +77,8 @@ function validateManifest(manifest) {
     ['native tissue envelopes', Boolean(manifest.solid_envelopes?.file)],
     ['appearance.glass_opacity', !manifest.functional_regions
       || (manifest.appearance?.glass_opacity > 0 && manifest.appearance.glass_opacity < 1)],
+    ['appearance.see_through_opacity', !manifest.neuropsych_domains
+      || (manifest.appearance?.see_through_opacity > 0 && manifest.appearance.see_through_opacity < 1)],
     ['anatomy', Boolean(manifest.anatomy?.subject && manifest.anatomy?.display_name)
       && typeof manifest.anatomy.individual === 'boolean'],
   ].filter(([, present]) => !present).map(([field]) => field);
@@ -127,8 +129,8 @@ export class BrainAtlas extends EventTarget {
     const url = new URL(manifestUrl, globalThis.location.href);
     const bytes = await fetchAsset(url.href);
     const manifest = JSON.parse(new TextDecoder().decode(bytes));
-    const [cabNp, functionalRegions, domains] = await Promise.all(
-      [manifest.cab_np, manifest.functional_regions, manifest.neuropsych_domains].map(async pointer => (pointer
+    const [cabNp, functionalRegions, domains, terms] = await Promise.all(
+      [manifest.cab_np, manifest.functional_regions, manifest.neuropsych_domains, manifest.neurosynth_terms].map(async pointer => (pointer
         ? JSON.parse(new TextDecoder().decode(await fetchAsset(new URL(pointer.file, url).href)))
         : null)),
     );
@@ -140,7 +142,7 @@ export class BrainAtlas extends EventTarget {
       const buffer = await fetchAsset(asset, { onProgress });
       return loader.parseAsync(buffer, loader.path);
     };
-    const model = new BrainAtlas(manifest, loader, cabNp, functionalRegions, domains);
+    const model = new BrainAtlas(manifest, loader, cabNp, functionalRegions, domains, terms);
     try {
       await model.initialize(atlasId, options);
       return model;
@@ -150,7 +152,7 @@ export class BrainAtlas extends EventTarget {
     }
   }
 
-  constructor(manifest, loader, cabNp = null, functionalRegions = null, domains = null) {
+  constructor(manifest, loader, cabNp = null, functionalRegions = null, domains = null, terms = null) {
     super();
     validateManifest(manifest);
     this.manifest = manifest;
@@ -161,7 +163,7 @@ export class BrainAtlas extends EventTarget {
     this.cabNp = cabNp && validateCabNp(cabNp, this.regions);
     this.functionalRegions = functionalRegions && validateFunctionalRegions(functionalRegions, this.regions);
     this.functionalLevel = 'named';
-    this.domains = domains && validateNeuropsychDomains(domains, this.regions);
+    this.domains = domains && validateNeuropsychDomains(domains, this.regions, terms);
     // A panel's colours for named regions, every other region in tissue colour; null for none.
     this.paint = null;
     this.glassSolids = null;
@@ -722,7 +724,7 @@ export class BrainAtlas extends EventTarget {
     this.internalSystem = system;
     this.internalConstituents = new Set(this.manifest.regions
       .filter(region => region.atlas === 'learning' && region.system_names.en === system)
-      .flatMap(region => region.constituent_regions));
+      .flatMap(region => region.constituent_regions ?? []));
     this.isolatedId = null;
     this.update();
   }

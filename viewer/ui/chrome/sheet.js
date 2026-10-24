@@ -20,6 +20,7 @@ const DRAG_THRESHOLD_PX = 8;
  */
 export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear } = {}) {
   const sheet = document.getElementById('sheet');
+  const panel = document.getElementById('workspace-panel');
   const grip = document.getElementById('sheet-grip');
   const gripRow = grip.querySelector('.sheet-grip-row');
   const handle = document.getElementById('sheet-handle');
@@ -265,10 +266,12 @@ export function createSheet({ onInsets, onDetent, onShell, onSelection, onClear 
   }
 
   function setup() {
+    const panelFocused = panel.contains(document.activeElement);
     onShell?.('sheet');
     grip.hidden = false;
     sheet.dataset.dragging = 'false';
-    setDetent(detent, { notify: false });
+    // Peek hides the panels, so a control already in use keeps its panel exposed on the new shell.
+    setDetent(panelFocused && detent === 'peek' ? 'half' : detent, { notify: false, instant: panelFocused });
   }
 
   function onModeChange() {

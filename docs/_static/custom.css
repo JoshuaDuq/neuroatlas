@@ -1,5 +1,5 @@
 /*
- * NeuroAtlas documentation: the viewer's instrument chrome, set on furo.
+ * Planum documentation: the viewer's instrument chrome, set on furo.
  * Palette and type come from viewer/styles/tokens.css via conf.py; this file
  * adds the shape: ruled bands, flat surfaces, 4px and 8px radii, no shadows.
  */
