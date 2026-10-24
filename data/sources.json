@@ -164,602 +164,12 @@
       "optional": true
     },
     {
-      "path": "data/bert/mri/orig.mgz",
-      "sha256": "80c30d6cf9a2356bfeb2c59023572005fbae34224126121df6e6526de1bcebdf",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/orig.mgz"
-    },
-    {
-      "path": "data/bert/mri/aseg.mgz",
-      "sha256": "9f5ac7681752483e8e1a6d9b4653d59c1037bdb0e6685b9fd48a8b02781ada0d",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/aseg.mgz"
-    },
-    {
-      "path": "data/bert/mri/aparc.a2009s+aseg.mgz",
-      "sha256": "4684f83dbcea1001afa60fa36641240c3df68a519d9c356fc32d80f0e81b50ea",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/aparc.a2009s+aseg.mgz"
-    },
-    {
-      "path": "data/bert/mri/ribbon.mgz",
-      "sha256": "50fe080bac8fdeb2116e9ea11bac135ae82c62d8475193bbb12b8fd75ed2ee2c",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/ribbon.mgz"
-    },
-    {
-      "path": "data/bert/mri/brain.mgz",
-      "sha256": "180f6d846446e2d4b6e3e89efc6826a0146d2ca15949df7a328e98c76839a310",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/brain.mgz"
-    },
-    {
-      "path": "data/bert/mri/wmparc.mgz",
-      "sha256": "3721ac792dd05a1b3bb0ab9b1f6798b6d34563b553d68d2754d8fce2ed5bb68e",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/mri/wmparc.mgz"
-    },
-    {
-      "path": "data/bert/scripts/build-stamp.txt",
-      "sha256": "029f07b4c0da720c62ea17ef12c4901b4995e1658202f5d6c3c4b5d706d09e60",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/scripts/build-stamp.txt"
-    },
-    {
-      "path": "data/bert/surf/lh.pial",
-      "sha256": "d2adfa3691f72437e1c66ef06a46736154edf9227ef528730e8bec389e3c36d9",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.pial"
-    },
-    {
-      "path": "data/bert/surf/lh.white",
-      "sha256": "07226a5b2ec8c576769c1ff8156e3539ca9fe64fa2c057b3f58bebd2e7fbc473",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.white"
-    },
-    {
-      "path": "data/bert/surf/lh.sulc",
-      "sha256": "8fd3e3b3d7e72fd4c50db6907d99dcd9459bd51568ff7620f4fa8963b377682a",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.sulc"
-    },
-    {
-      "path": "data/bert/surf/lh.sphere.reg",
-      "sha256": "c3756f9af1b37bcecc45dc9294d0ae4390b2f7ca2dd0e750ba08fb89ba332458",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/lh.sphere.reg"
-    },
-    {
-      "path": "data/bert/label/lh.aparc.a2009s.annot",
-      "sha256": "09c1ca584c68934c9fc1272ddd1d5198b7fa8ff315569445c63b460504e8a13c",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/label/lh.aparc.a2009s.annot"
-    },
-    {
-      "path": "data/bert/surf/rh.pial",
-      "sha256": "dde11169c863d1683aa4e3ec1ec4d91d5ab379be67ec2a939f0908d95d44d6c0",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.pial"
-    },
-    {
-      "path": "data/bert/surf/rh.white",
-      "sha256": "d052d9fcacd44ea317db1359e962ca1a01e1e9a7cd3b308a5f56b9ebea7dd5f7",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.white"
-    },
-    {
-      "path": "data/bert/surf/rh.sulc",
-      "sha256": "7350c3870b02f283bbe04309a7abc0d9695fc94204bb877702ebd9c95987f411",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.sulc"
-    },
-    {
-      "path": "data/bert/surf/rh.sphere.reg",
-      "sha256": "80e7256f1e56a90a20451a47efda79e397ef285e625b3ee1987872e900dbc542",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/surf/rh.sphere.reg"
-    },
-    {
-      "path": "data/bert/label/rh.aparc.a2009s.annot",
-      "sha256": "17bddf30ae264299e2e2ff81536755bd7d88a6da41e9901001e26a03e7fd54da",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/label/rh.aparc.a2009s.annot"
-    },
-    {
-      "path": "data/bert/label/lh.HCPMMP1.annot",
-      "sha256": "8ae6a9c497ffab5af29ede3443b6c8c2f15b6afc797d84d39a0143659b472e70",
-      "anatomy": "bert",
-      "derived_from": [
-        "data/fsaverage/label/lh.HCPMMP1.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/bert/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/bert/label/rh.HCPMMP1.annot",
-      "sha256": "5ed681dff01676fcdbdabd9140da83c6043d0f20f0960fa4ef72270447f382d6",
-      "anatomy": "bert",
-      "derived_from": [
-        "data/fsaverage/label/rh.HCPMMP1.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/bert/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/bert/hcp-registration.json",
-      "sha256": "5da282c9e3e833d49d935ed8c6b96e88825ee3d3a153ac1a2f0f5e0c2aaab7b2",
-      "anatomy": "bert",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
-    },
-    {
-      "path": "data/bert/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
-      "sha256": "c31c668b9bd494ce1b20d83cc131946be51e07c9ee0cdeddb415d0a34e8a3a77",
-      "anatomy": "bert",
-      "derived_from": [
-        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/bert/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/bert/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
-      "sha256": "93d157f8bf07f4c7e8871bf34dec707e88bd495e739f6659bc6691326cb83108",
-      "anatomy": "bert",
-      "derived_from": [
-        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/bert/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/bert/network-registration.json",
-      "sha256": "03349c9c8f2923afd789cbac5c21ce17795d9c91195e823f67fd01024d4dd646",
-      "anatomy": "bert",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
-    },
-    {
       "path": "data/z-anatomy/spinal-cord.npz",
       "sha256": "7857f095bd44b74d4c4ce0ef6ee2059b02e1c1a478aa08116d1c6f5364fdcb51",
       "optional": true,
       "derived_from": "https://www.z-anatomy.com/",
       "procedure": "scripts/extract_spinal_cord.py: evaluated Blender modifiers, interior sheets dropped, open sweep ends filled",
       "citation": "https://www.z-anatomy.com/"
-    },
-    {
-      "path": "data/aomic/mri/orig.mgz",
-      "sha256": "eeb0465eac7fc7acdb34ee2b90ec6c0028dbbc380d4cb2b1c561cb7fd0849808",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/orig.mgz"
-    },
-    {
-      "path": "data/aomic/mri/aseg.mgz",
-      "sha256": "d56c9b5c7cd25bd7a18aa9fe8cbba2caca2f0be65ccab059207182d74cc0c607",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/aseg.mgz"
-    },
-    {
-      "path": "data/aomic/mri/aparc.a2009s+aseg.mgz",
-      "sha256": "d6a1e2ffc2e12434a525f5bf39a366923f24a4bd31f685c2029bbc76b859bd98",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/aparc.a2009s%2Baseg.mgz"
-    },
-    {
-      "path": "data/aomic/mri/ribbon.mgz",
-      "sha256": "7c228a82904def46455c24ae9f75469b67d37cd316441b07b4cfc75176059d87",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/ribbon.mgz"
-    },
-    {
-      "path": "data/aomic/mri/brain.mgz",
-      "sha256": "aa85b761f9aa787339bfac6f37caad04a265959b5197aa6986ddd36d223b0165",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/brain.mgz"
-    },
-    {
-      "path": "data/aomic/mri/wmparc.mgz",
-      "sha256": "891c54dfdcc2e72994564f003c1b049ad897fc2cd3d007481e93f5d2f04354e7",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/mri/wmparc.mgz"
-    },
-    {
-      "path": "data/aomic/scripts/build-stamp.txt",
-      "sha256": "8ed8477aaa24bb885e8aefeb14b03c0ec1bc2d11ccdfe6ea932433888947c0da",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/scripts/build-stamp.txt"
-    },
-    {
-      "path": "data/aomic/surf/lh.pial",
-      "sha256": "4aa6132c59e891bd1e0b6b92d64c9caf7b27a322a11d2b22ae6fb65f3c928f00",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.pial"
-    },
-    {
-      "path": "data/aomic/surf/lh.white",
-      "sha256": "1a8a41425ed098ece8383d4ac90d54ab380e638441da9182b59cc3edd9f9652e",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.white"
-    },
-    {
-      "path": "data/aomic/surf/lh.sulc",
-      "sha256": "f719fbf5d32e23ed12db7fe7f8fcdee6672293f645d74f9400117687034804c4",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.sulc"
-    },
-    {
-      "path": "data/aomic/surf/lh.sphere.reg",
-      "sha256": "f7cdb356d8ca07daa1aaa492c62c11b0192927a1bcf0b382de4ddd115ef601fe",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/lh.sphere.reg"
-    },
-    {
-      "path": "data/aomic/label/lh.aparc.a2009s.annot",
-      "sha256": "b5390f48e75c58221c11bfe3366b96325683e5181b0b947e2fb654afadb9d8d4",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/label/lh.aparc.a2009s.annot"
-    },
-    {
-      "path": "data/aomic/surf/rh.pial",
-      "sha256": "3a7dfc82af882cd9fd8aad3441130727b5270ff12fdda40872f144ff6bded6bd",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.pial"
-    },
-    {
-      "path": "data/aomic/surf/rh.white",
-      "sha256": "242822c758f3cd92be80f5be9779f8a8940fff59cbbbbdae847bef4a6dbe0b64",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.white"
-    },
-    {
-      "path": "data/aomic/surf/rh.sulc",
-      "sha256": "b8f3e722ae6bfa3d632a20dbe86ecc2312d2b42e05f346bdf5ebafe5416c63d4",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.sulc"
-    },
-    {
-      "path": "data/aomic/surf/rh.sphere.reg",
-      "sha256": "cae83bb669a9be29bb2ebc2e602993f116a04e742b55bce7ae0b2f08511f7bc5",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/surf/rh.sphere.reg"
-    },
-    {
-      "path": "data/aomic/label/rh.aparc.a2009s.annot",
-      "sha256": "6f00a832faea5b79a716ed01c33815b477684f2f8547fa1da02f0e063dd55994",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/label/rh.aparc.a2009s.annot"
-    },
-    {
-      "path": "data/aomic/label/lh.HCPMMP1.annot",
-      "sha256": "04adc7e7f8f75d33df9bb65ad380fb02c1acd77e77be6aaa7d0825f9f0b7a05c",
-      "anatomy": "aomic",
-      "derived_from": [
-        "data/fsaverage/label/lh.HCPMMP1.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/aomic/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/aomic/label/rh.HCPMMP1.annot",
-      "sha256": "d821790e13cef659d279de322d37271626549ae660b70d6dd7f4d90c1d79f61d",
-      "anatomy": "aomic",
-      "derived_from": [
-        "data/fsaverage/label/rh.HCPMMP1.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/aomic/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/aomic/hcp-registration.json",
-      "sha256": "1c82e50e4081dbcef0107be8303c46eaf4cb39d96601180b921cfc317dc18b72",
-      "anatomy": "aomic",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
-    },
-    {
-      "path": "data/aomic/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
-      "sha256": "9119240b6dd612753568843e7490ea1f12922a70384dd8b0ba2191125e373ea8",
-      "anatomy": "aomic",
-      "derived_from": [
-        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
-        "data/fsaverage/surf/lh.sphere.reg",
-        "data/aomic/surf/lh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/aomic/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
-      "sha256": "618d199e32e02c2c5cf8fd6a4affc1331a6488deb9316a0e32f7ffd8e84bfe5b",
-      "anatomy": "aomic",
-      "derived_from": [
-        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
-        "data/fsaverage/surf/rh.sphere.reg",
-        "data/aomic/surf/rh.sphere.reg"
-      ],
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
-      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
-    },
-    {
-      "path": "data/aomic/network-registration.json",
-      "sha256": "c0a1bd2df4f93a0d1b148b6869f1e5eacd07c3bc822e784f5afa1b2a2d66699d",
-      "anatomy": "aomic",
-      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
-    },
-    {
-      "path": "data/nextbrain-bert/nextbrain-bert.mgz",
-      "sha256": "c25bc99c8b338e88075d3121f222584eb984bcd960a19eec9f1ac621d1d13b18",
-      "anatomy": "bert",
-      "optional": true,
-      "derived_from": [
-        {
-          "path": "data/bert/mri/orig.mgz",
-          "sha256": "80c30d6cf9a2356bfeb2c59023572005fbae34224126121df6e6526de1bcebdf"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/SuperSynth_Iglesias_2025/SuperSynth_August_2025.pth",
-          "sha256": "7f75926757070f53e1e43c4bf31dafe2e599ef56438ce60347f12e9133bffd1d"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/Histo_Atlas_Iglesias_2023/atlas_simplified.zip",
-          "sha256": "8ea7c5aa8f162007e2405f6bdbb4a74013e2e296bc4790ba21344ffa37e78f19",
-          "extracted_tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2"
-        }
-      ],
-      "procedure": "scripts/segment_nextbrain.py: SuperSynth, then NextBrain Bayesian segmentation (segment_fireants.py --mode invivo --device cpu) of each hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid",
-      "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
-      "crop": {
-        "source": "orig.mgz",
-        "rule": "bounding box of brain.mgz > 0, plus 20 voxels, within the grid",
-        "corner_voxel": [
-          42,
-          30,
-          0
-        ],
-        "shape": [
-          172,
-          196,
-          228
-        ]
-      },
-      "hemisphere_join": {
-        "spacing_mm": 0.4,
-        "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
-        "maximum_nearest_neighbour_shift_mm": {
-          "left": 0.2428,
-          "right": 0.2441
-        },
-        "voxels_labelled_by_both_sides": 9677,
-        "overlap_rule": "sign of SuperSynth's MNI x coordinate at the voxel centre, the rule FreeSurfer splits hemispheres by",
-        "right_hemisphere_label_offset": 10000
-      },
-      "nextbrain_cpu_threads": [
-        10
-      ],
-      "runtime_workarounds": {
-        "conv3d_slices": "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a whole-volume im2col buffer (about 90 GB for SuperSynth). scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution as a sum over kernel depth of 2D convolutions of shifted slices: the same products in a different summation order, matching torch conv3d to 1e-5 relative. FireANTs keeps the builtin F.conv3d, which its TorchScript functions bind when they compile.",
-        "supersynth_memory_releases": "SuperSynth's inference.py drops its first-pass network outputs before the flipped pass, and the flipped outputs once they are averaged in. Only when memory is freed changes.",
-        "opencv_stand_in": "FreeSurfer 8.2's macOS Python has no OpenCV, yet ERC_bayesian_segmentation's ext/my_functions.py imports cv2 at module level for one helper that asserts False on entry. A stand-in module lets the import succeed and raises if any attribute of it is used."
-      },
-      "citation": "https://doi.org/10.1038/s41586-025-09708-2",
-      "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
-    },
-    {
-      "path": "data/nextbrain-bert/nextbrain-lut.txt",
-      "sha256": "c821820c543e14c9fe11cb059d7eefeeee4a1e35540fd2fdc45b02f5fe79dd07",
-      "anatomy": "bert",
-      "optional": true,
-      "derived_from": [
-        {
-          "path": "data/bert/mri/orig.mgz",
-          "sha256": "80c30d6cf9a2356bfeb2c59023572005fbae34224126121df6e6526de1bcebdf"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/SuperSynth_Iglesias_2025/SuperSynth_August_2025.pth",
-          "sha256": "7f75926757070f53e1e43c4bf31dafe2e599ef56438ce60347f12e9133bffd1d"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/Histo_Atlas_Iglesias_2023/atlas_simplified.zip",
-          "sha256": "8ea7c5aa8f162007e2405f6bdbb4a74013e2e296bc4790ba21344ffa37e78f19",
-          "extracted_tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2"
-        }
-      ],
-      "procedure": "scripts/segment_nextbrain.py: SuperSynth, then NextBrain Bayesian segmentation (segment_fireants.py --mode invivo --device cpu) of each hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid",
-      "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
-      "crop": {
-        "source": "orig.mgz",
-        "rule": "bounding box of brain.mgz > 0, plus 20 voxels, within the grid",
-        "corner_voxel": [
-          42,
-          30,
-          0
-        ],
-        "shape": [
-          172,
-          196,
-          228
-        ]
-      },
-      "hemisphere_join": {
-        "spacing_mm": 0.4,
-        "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
-        "maximum_nearest_neighbour_shift_mm": {
-          "left": 0.2428,
-          "right": 0.2441
-        },
-        "voxels_labelled_by_both_sides": 9677,
-        "overlap_rule": "sign of SuperSynth's MNI x coordinate at the voxel centre, the rule FreeSurfer splits hemispheres by",
-        "right_hemisphere_label_offset": 10000
-      },
-      "nextbrain_cpu_threads": [
-        10
-      ],
-      "runtime_workarounds": {
-        "conv3d_slices": "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a whole-volume im2col buffer (about 90 GB for SuperSynth). scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution as a sum over kernel depth of 2D convolutions of shifted slices: the same products in a different summation order, matching torch conv3d to 1e-5 relative. FireANTs keeps the builtin F.conv3d, which its TorchScript functions bind when they compile.",
-        "supersynth_memory_releases": "SuperSynth's inference.py drops its first-pass network outputs before the flipped pass, and the flipped outputs once they are averaged in. Only when memory is freed changes.",
-        "opencv_stand_in": "FreeSurfer 8.2's macOS Python has no OpenCV, yet ERC_bayesian_segmentation's ext/my_functions.py imports cv2 at module level for one helper that asserts False on entry. A stand-in module lets the import succeed and raises if any attribute of it is used."
-      },
-      "citation": "https://doi.org/10.1038/s41586-025-09708-2",
-      "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
-    },
-    {
-      "path": "data/nextbrain-aomic/nextbrain-aomic.mgz",
-      "sha256": "64f0e678e6ba8bce6a99f027639ce18a6ac4855f41f5ccc244228d25e13b9ec3",
-      "anatomy": "aomic",
-      "optional": true,
-      "derived_from": [
-        {
-          "path": "data/aomic/mri/orig.mgz",
-          "sha256": "eeb0465eac7fc7acdb34ee2b90ec6c0028dbbc380d4cb2b1c561cb7fd0849808"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/SuperSynth_Iglesias_2025/SuperSynth_August_2025.pth",
-          "sha256": "7f75926757070f53e1e43c4bf31dafe2e599ef56438ce60347f12e9133bffd1d"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/Histo_Atlas_Iglesias_2023/atlas_simplified.zip",
-          "sha256": "8ea7c5aa8f162007e2405f6bdbb4a74013e2e296bc4790ba21344ffa37e78f19",
-          "extracted_tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2"
-        }
-      ],
-      "procedure": "scripts/segment_nextbrain.py: SuperSynth, then NextBrain Bayesian segmentation (segment_fireants.py --mode invivo --device cpu) of each hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid",
-      "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
-      "crop": {
-        "source": "orig.mgz",
-        "rule": "bounding box of brain.mgz > 0, plus 20 voxels, within the grid",
-        "corner_voxel": [
-          37,
-          42,
-          17
-        ],
-        "shape": [
-          181,
-          187,
-          213
-        ]
-      },
-      "hemisphere_join": {
-        "spacing_mm": 0.4,
-        "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
-        "maximum_nearest_neighbour_shift_mm": {
-          "left": 0.1707,
-          "right": 0.2449
-        },
-        "voxels_labelled_by_both_sides": 3,
-        "overlap_rule": "sign of SuperSynth's MNI x coordinate at the voxel centre, the rule FreeSurfer splits hemispheres by",
-        "right_hemisphere_label_offset": 10000
-      },
-      "nextbrain_cpu_threads": [
-        10
-      ],
-      "runtime_workarounds": {
-        "conv3d_slices": "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a whole-volume im2col buffer (about 90 GB for SuperSynth). scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution as a sum over kernel depth of 2D convolutions of shifted slices: the same products in a different summation order, matching torch conv3d to 1e-5 relative. FireANTs keeps the builtin F.conv3d, which its TorchScript functions bind when they compile.",
-        "supersynth_memory_releases": "SuperSynth's inference.py drops its first-pass network outputs before the flipped pass, and the flipped outputs once they are averaged in. Only when memory is freed changes.",
-        "opencv_stand_in": "FreeSurfer 8.2's macOS Python has no OpenCV, yet ERC_bayesian_segmentation's ext/my_functions.py imports cv2 at module level for one helper that asserts False on entry. A stand-in module lets the import succeed and raises if any attribute of it is used."
-      },
-      "citation": "https://doi.org/10.1038/s41586-025-09708-2",
-      "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
-    },
-    {
-      "path": "data/nextbrain-aomic/nextbrain-lut.txt",
-      "sha256": "c821820c543e14c9fe11cb059d7eefeeee4a1e35540fd2fdc45b02f5fe79dd07",
-      "anatomy": "aomic",
-      "optional": true,
-      "derived_from": [
-        {
-          "path": "data/aomic/mri/orig.mgz",
-          "sha256": "eeb0465eac7fc7acdb34ee2b90ec6c0028dbbc380d4cb2b1c561cb7fd0849808"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/SuperSynth_Iglesias_2025/SuperSynth_August_2025.pth",
-          "sha256": "7f75926757070f53e1e43c4bf31dafe2e599ef56438ce60347f12e9133bffd1d"
-        },
-        {
-          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/Histo_Atlas_Iglesias_2023/atlas_simplified.zip",
-          "sha256": "8ea7c5aa8f162007e2405f6bdbb4a74013e2e296bc4790ba21344ffa37e78f19",
-          "extracted_tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2"
-        }
-      ],
-      "procedure": "scripts/segment_nextbrain.py: SuperSynth, then NextBrain Bayesian segmentation (segment_fireants.py --mode invivo --device cpu) of each hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid",
-      "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
-      "crop": {
-        "source": "orig.mgz",
-        "rule": "bounding box of brain.mgz > 0, plus 20 voxels, within the grid",
-        "corner_voxel": [
-          37,
-          42,
-          17
-        ],
-        "shape": [
-          181,
-          187,
-          213
-        ]
-      },
-      "hemisphere_join": {
-        "spacing_mm": 0.4,
-        "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
-        "maximum_nearest_neighbour_shift_mm": {
-          "left": 0.1707,
-          "right": 0.2449
-        },
-        "voxels_labelled_by_both_sides": 3,
-        "overlap_rule": "sign of SuperSynth's MNI x coordinate at the voxel centre, the rule FreeSurfer splits hemispheres by",
-        "right_hemisphere_label_offset": 10000
-      },
-      "nextbrain_cpu_threads": [
-        10
-      ],
-      "runtime_workarounds": {
-        "conv3d_slices": "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a whole-volume im2col buffer (about 90 GB for SuperSynth). scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution as a sum over kernel depth of 2D convolutions of shifted slices: the same products in a different summation order, matching torch conv3d to 1e-5 relative. FireANTs keeps the builtin F.conv3d, which its TorchScript functions bind when they compile.",
-        "supersynth_memory_releases": "SuperSynth's inference.py drops its first-pass network outputs before the flipped pass, and the flipped outputs once they are averaged in. Only when memory is freed changes.",
-        "opencv_stand_in": "FreeSurfer 8.2's macOS Python has no OpenCV, yet ERC_bayesian_segmentation's ext/my_functions.py imports cv2 at module level for one helper that asserts False on entry. A stand-in module lets the import succeed and raises if any attribute of it is used."
-      },
-      "citation": "https://doi.org/10.1038/s41586-025-09708-2",
-      "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
     },
     {
       "path": "data/nextbrain-snail/nextbrain-snail.mgz",
@@ -1146,18 +556,376 @@
       "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
     },
     {
-      "path": "data/bert/stats/aseg.stats",
-      "sha256": "f4bec57ca02cdefc485dceb10152c126e3bb4c5df58d849a5618368247cb442c",
-      "anatomy": "bert",
-      "url": "https://surfer.nmr.mgh.harvard.edu/pub/data/archive/bert.recon.tgz",
-      "archive_sha256": "a68ef88b0ddc794ebe57060ede9ed625a881a90b6f8cb65d8664b59036a62908",
-      "archive_member": "bert/stats/aseg.stats"
+      "path": "data/nextbrain-cdmd/nextbrain-cdmd.mgz",
+      "sha256": "960e602c4c8aa885c5c3421928c9edc7198905706958ce0441d331b881bdd673",
+      "anatomy": "cdmd",
+      "optional": true,
+      "derived_from": [
+        {
+          "path": "data/cdmd/mri/orig.mgz",
+          "sha256": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81"
+        },
+        {
+          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/SuperSynth_Iglesias_2025/SuperSynth_August_2025.pth",
+          "sha256": "7f75926757070f53e1e43c4bf31dafe2e599ef56438ce60347f12e9133bffd1d"
+        },
+        {
+          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/Histo_Atlas_Iglesias_2023/atlas_simplified.zip",
+          "sha256": "8ea7c5aa8f162007e2405f6bdbb4a74013e2e296bc4790ba21344ffa37e78f19",
+          "extracted_tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2"
+        }
+      ],
+      "procedure": "scripts/segment_nextbrain.py: SuperSynth, then NextBrain Bayesian segmentation (segment_fireants.py --mode invivo --device cpu) of each hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid",
+      "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+      "crop": {
+        "source": "orig.mgz",
+        "rule": "bounding box of brain.mgz > 0, plus 20 voxels, within the grid",
+        "corner_voxel": [
+          44,
+          18,
+          24
+        ],
+        "shape": [
+          172,
+          184,
+          191
+        ]
+      },
+      "hemisphere_join": {
+        "spacing_mm": 0.4,
+        "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
+        "maximum_nearest_neighbour_shift_mm": {
+          "left": 0.2995,
+          "right": 0.1704
+        },
+        "voxels_labelled_by_both_sides": 0,
+        "overlap_rule": "sign of SuperSynth's MNI x coordinate at the voxel centre, the rule FreeSurfer splits hemispheres by",
+        "right_hemisphere_label_offset": 10000
+      },
+      "nextbrain_cpu_threads": [
+        10
+      ],
+      "runtime_workarounds": {
+        "conv3d_slices": "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a whole-volume im2col buffer (about 90 GB for SuperSynth). scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution as a sum over kernel depth of 2D convolutions of shifted slices: the same products in a different summation order, matching torch conv3d to 1e-5 relative. Only a convolution whose im2col buffer would reach 1 GiB is sliced; smaller ones run in torch itself, so NextBrain's bias field fit keeps the exact zeros it takes logs of. FireANTs keeps the builtin F.conv3d, which its TorchScript functions bind when they compile.",
+        "supersynth_memory_releases": "SuperSynth's inference.py drops its first-pass network outputs before the flipped pass, and the flipped outputs once they are averaged in. Only when memory is freed changes.",
+        "opencv_stand_in": "FreeSurfer 8.2's macOS Python has no OpenCV, yet ERC_bayesian_segmentation's ext/my_functions.py imports cv2 at module level for one helper that asserts False on entry. A stand-in module lets the import succeed and raises if any attribute of it is used."
+      },
+      "citation": "https://doi.org/10.1038/s41586-025-09708-2",
+      "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
     },
     {
-      "path": "data/aomic/stats/aseg.stats",
-      "sha256": "2ccc8da56f1c60da8e2a150066183abdbb55f193bd4c724bb65b0f1846680e78",
-      "anatomy": "aomic",
-      "url": "https://s3.amazonaws.com/openneuro.org/ds002785/derivatives/freesurfer/sub-0022/stats/aseg.stats"
+      "path": "data/nextbrain-cdmd/nextbrain-lut.txt",
+      "sha256": "c821820c543e14c9fe11cb059d7eefeeee4a1e35540fd2fdc45b02f5fe79dd07",
+      "anatomy": "cdmd",
+      "optional": true,
+      "derived_from": [
+        {
+          "path": "data/cdmd/mri/orig.mgz",
+          "sha256": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81"
+        },
+        {
+          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/SuperSynth_Iglesias_2025/SuperSynth_August_2025.pth",
+          "sha256": "7f75926757070f53e1e43c4bf31dafe2e599ef56438ce60347f12e9133bffd1d"
+        },
+        {
+          "url": "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/Histo_Atlas_Iglesias_2023/atlas_simplified.zip",
+          "sha256": "8ea7c5aa8f162007e2405f6bdbb4a74013e2e296bc4790ba21344ffa37e78f19",
+          "extracted_tree_sha256": "20d9c58f370755a9b9fb8c137274d76e150f29be6966c10965f13082133235e2"
+        }
+      ],
+      "procedure": "scripts/segment_nextbrain.py: SuperSynth, then NextBrain Bayesian segmentation (segment_fireants.py --mode invivo --device cpu) of each hemisphere at 0.4 mm, joined on one 0.4 mm surface-RAS grid",
+      "freesurfer_build": "freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45",
+      "crop": {
+        "source": "orig.mgz",
+        "rule": "bounding box of brain.mgz > 0, plus 20 voxels, within the grid",
+        "corner_voxel": [
+          44,
+          18,
+          24
+        ],
+        "shape": [
+          172,
+          184,
+          191
+        ]
+      },
+      "hemisphere_join": {
+        "spacing_mm": 0.4,
+        "method": "nearest neighbour from each hemisphere's own grid onto one surface-RAS grid",
+        "maximum_nearest_neighbour_shift_mm": {
+          "left": 0.2995,
+          "right": 0.1704
+        },
+        "voxels_labelled_by_both_sides": 0,
+        "overlap_rule": "sign of SuperSynth's MNI x coordinate at the voxel centre, the rule FreeSurfer splits hemispheres by",
+        "right_hemisphere_label_offset": 10000
+      },
+      "nextbrain_cpu_threads": [
+        10
+      ],
+      "runtime_workarounds": {
+        "conv3d_slices": "FreeSurfer 8.2's arm64 torch 2.1.2 has no oneDNN, so CPU conv3d builds a whole-volume im2col buffer (about 90 GB for SuperSynth). scripts/freesurfer/conv3d_slices.py computes the same stride-1 convolution as a sum over kernel depth of 2D convolutions of shifted slices: the same products in a different summation order, matching torch conv3d to 1e-5 relative. Only a convolution whose im2col buffer would reach 1 GiB is sliced; smaller ones run in torch itself, so NextBrain's bias field fit keeps the exact zeros it takes logs of. FireANTs keeps the builtin F.conv3d, which its TorchScript functions bind when they compile.",
+        "supersynth_memory_releases": "SuperSynth's inference.py drops its first-pass network outputs before the flipped pass, and the flipped outputs once they are averaged in. Only when memory is freed changes.",
+        "opencv_stand_in": "FreeSurfer 8.2's macOS Python has no OpenCV, yet ERC_bayesian_segmentation's ext/my_functions.py imports cv2 at module level for one helper that asserts False on entry. A stand-in module lets the import succeed and raises if any attribute of it is used."
+      },
+      "citation": "https://doi.org/10.1038/s41586-025-09708-2",
+      "license": "Distributed with FreeSurfer; the NextBrain paper names no separate licence for the atlas."
+    },
+    {
+      "path": "data/cdmd/input/sub_013_t1w.nii.gz",
+      "sha256": "16e9137160f20c3dfb39fbd04ce1299415c5252ba96e8b0266f5f9402c60730b",
+      "anatomy": "cdmd",
+      "url": "https://doi.org/10.6084/m9.figshare.c.5315474.v1"
+    },
+    {
+      "path": "data/cdmd/mri/orig.mgz",
+      "sha256": "9e32d45483acf4f992fc987bf6ad31337b5ec1f738c693f1fa80142fd136db81",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/aseg.mgz",
+      "sha256": "d8e1e9fbd8d3cf34ee259ac708147da4c61319faf293dd3671584d655f611cbc",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/aparc.a2009s+aseg.mgz",
+      "sha256": "c859c5b38010b319862f8c3d5deb0828bd73524be27ed1cd483eefc234781d0e",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/ribbon.mgz",
+      "sha256": "42a9d24c0dc202caa7776bc2f10bf3da2279dcacde2e23ce4614e64c1e6db9e7",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/brain.mgz",
+      "sha256": "2d9d847b16bc29ac94dff4960ef1d83ce9282a0075bcb9d9c4d0f50654599abe",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/mri/wmparc.mgz",
+      "sha256": "a080190a2ba6d2b77cddd158786f4ccb99185b8abb9906b550820248ce45131f",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/scripts/build-stamp.txt",
+      "sha256": "05e1fbf2faef4be22a0180c1aaf9a337bfdaccfdcdd7a34adaac27e1578458dd",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/stats/aseg.stats",
+      "sha256": "07001d0adb81bee401752883a1ee84a97fee9aae0535e26c65ed99e075c2ce47",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.pial",
+      "sha256": "75ba707c512c289ad0d6e7aabefbcac854ae5bdf2b3e8ceecddf9834e162cee2",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.white",
+      "sha256": "abd03f82ea7574ec42740d72550d253504cd66fb9420cb793d1556e2d99f732c",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.sulc",
+      "sha256": "7601bb5ce22309153ac8226a952dd0ce14c992a1948c636589ff1753eb09c595",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/lh.sphere.reg",
+      "sha256": "410f20030632c9bfc31684b900a9636464f6e979f343ad9d6f62c63c9418df70",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/label/lh.aparc.a2009s.annot",
+      "sha256": "a0a16110336901d3fa893d64e7dc00df89dd8826020902797d6851416f1716f4",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.pial",
+      "sha256": "bcee0a1346002663e77d9832202d4c04793402c96a3162aefbdb3ff7d7d256f9",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.white",
+      "sha256": "6357b680737a2813b2c9c946525a389087748d13845c4c4d6218e738c1919b93",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.sulc",
+      "sha256": "fcfc9dabbe52462ff9bcfcd09f30a31703212540584d6c7471f5fea71330b3a0",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/surf/rh.sphere.reg",
+      "sha256": "ef0bf345caf85a7f430c612d85ffa7a5d2b9eb44123ce36a1b491129ca33cc8d",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/label/rh.aparc.a2009s.annot",
+      "sha256": "5fc2cddc9cb4c1652b7512dc689227e07f7ac4dfb6bc7dccc4bcce04de368742",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/reconstruction.json",
+      "sha256": "fa83e9dc513d548bf7f949d29daff0caf408de4e565b0b47d6cfd15c196f9a1d",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/cdmd/input/sub_013_t1w.nii.gz"
+      ],
+      "procedure": "FreeSurfer recon-all; see reconstruction.json for exact commands",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all"
+    },
+    {
+      "path": "data/cdmd/label/lh.HCPMMP1.annot",
+      "sha256": "be26cfba13236a274f46da127d0e2776abcae89f10b7f9489bbd8188aebc1386",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/lh.HCPMMP1.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/cdmd/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/label/rh.HCPMMP1.annot",
+      "sha256": "257aa1f069fee38517686fa1d9f4224a643efb7de4ac7cac278b3d5be2bb8206",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/rh.HCPMMP1.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/cdmd/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/hcp-registration.json",
+      "sha256": "e5c2ce2b88d0ef4898ea7613cfd55a4581e102efa01bb34a668267d30e74b94f",
+      "anatomy": "cdmd",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
+    },
+    {
+      "path": "data/cdmd/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "c604116e027c27a5ac3b9e302b14c436ac2672fe67c01d7b54f3c896ec4fc6b4",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/lh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/lh.sphere.reg",
+        "data/cdmd/surf/lh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+      "sha256": "a099dbed4242930a1f378a98756e62b9649c83fcb2fb667d198a047253718a9f",
+      "anatomy": "cdmd",
+      "derived_from": [
+        "data/fsaverage/label/rh.Schaefer2018_400Parcels_7Networks_order.annot",
+        "data/fsaverage/surf/rh.sphere.reg",
+        "data/cdmd/surf/rh.sphere.reg"
+      ],
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer",
+      "citation": "https://surfer.nmr.mgh.harvard.edu/fswiki/mri_surf2surf"
+    },
+    {
+      "path": "data/cdmd/network-registration.json",
+      "sha256": "e8eec343ddbe2f5c428bd551e2cc246c540078efb3ae264010efc9fa9afb7e0f",
+      "anatomy": "cdmd",
+      "procedure": "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
     }
   ]
 }

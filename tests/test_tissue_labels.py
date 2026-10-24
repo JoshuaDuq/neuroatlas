@@ -269,5 +269,7 @@ def test_the_published_cut_volumes_match_their_sources():
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
     tissues = json.loads((config["output_directory"] / "tissue-labels.json").read_text())
     report = validate_tissue_volumes(config, manifest, tissues)
-    for counts in report["hcp-mmp"]["hemispheres"].values():
-        assert counts["ribbon_voxels"] > 200_000
+    ribbon = np.asarray(nib.load(config["source_directory"] / "mri/ribbon.mgz").dataobj)
+    # Nearly all of each hemisphere's cortical ribbon carries an HCP-MMP label.
+    for side, counts in report["hcp-mmp"]["hemispheres"].items():
+        assert counts["ribbon_voxels"] >= 0.9 * np.count_nonzero(ribbon == {"left": 3, "right": 42}[side])

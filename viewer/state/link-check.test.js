@@ -48,7 +48,7 @@ test('a lesson step must exist in its circuit', () => {
 
 test('the cord field is not applied where the subject publishes no cord; hiding it always is', async () => {
   const { readFileSync } = await import('node:fs');
-  const manifest = JSON.parse(readFileSync(new URL('../../public/models/bert/manifest.json', import.meta.url)));
+  const manifest = JSON.parse(readFileSync(new URL('../../public/models/cdmd/manifest.json', import.meta.url)));
   // A subject whose scan ends inside the medulla publishes no cord layer.
   const cordless = { ...manifest, supplemental_layers: (manifest.supplemental_layers ?? []).filter(layer => layer.id !== 'zanatomy') };
   assert.equal(publishesSpinalCord(manifest), true);

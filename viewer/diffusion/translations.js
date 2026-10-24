@@ -3,16 +3,14 @@ import { DiffusionInputError } from './validation.js';
 
 export const DIFFUSION_TEXT = {
   en: {
-    dataset: 'SNAIL reference · subject 1', bundleCollection: '27 tract bundles', bundles: 'Tract bundles',
+    bundleCollection: count => `${count} tract bundles`, bundles: 'Tract bundles',
     brainOpacity: 'Brain outline opacity', minimum: 'Minimum length (mm)',
     cortexOpacity: 'Cortex opacity', showOverlay: 'Show tracts with anatomy',
     mriOpen: 'MRI with tracts',
     nativeReference: 'Tracts in their own T1 reference brain.',
     nativeCanvas: 'Reference brain and tracts. Drag or use arrow keys to rotate, scroll or press plus and minus to zoom. Select tract bundles in the side panel.',
     outlineLimit: 'MRI-derived brain outline; no cortical atlas labels on this outline.',
-    otherAnatomy: 'The selected anatomical atlas uses a different subject from these SNAIL tracts.',
     mriHint: 'The linked MRI uses the same scan, and a cut slices both layers together.',
-    files: 'Files: each tract is one bundles_*.trk.gz streamline file; the MRI is t1_warped.nii.gz.',
     metricsScope: 'Counts and lengths use complete source streamlines after the length filter. Section cuts affect the view only.',
     outlineProvenance: 'Brain outline method and provenance',
     search: 'Search tracts', noMatchHint: 'Try another tract name.',
@@ -26,16 +24,14 @@ export const DIFFUSION_TEXT = {
     source: 'Dataset source · CC0', about: 'About this data', settings: 'Tract display',
   },
   fr: {
-    dataset: 'Référence SNAIL · sujet 1', bundleCollection: '27 faisceaux', bundles: 'Faisceaux',
+    bundleCollection: count => `${count} faisceaux`, bundles: 'Faisceaux',
     brainOpacity: 'Opacité du contour cérébral', minimum: 'Longueur minimale (mm)',
     cortexOpacity: 'Opacité du cortex', showOverlay: 'Afficher les faisceaux avec l’anatomie',
     mriOpen: 'IRM avec faisceaux',
     nativeReference: 'Faisceaux dans leur propre cerveau de référence T1.',
     nativeCanvas: 'Cerveau de référence et faisceaux. Glisser ou utiliser les flèches pour tourner, défiler ou appuyer sur plus et moins pour zoomer. Sélectionner les faisceaux dans le panneau.',
     outlineLimit: 'Contour cérébral dérivé de l’IRM, sans étiquettes corticales sur ce contour.',
-    otherAnatomy: 'L’atlas anatomique sélectionné utilise un autre sujet que ces faisceaux SNAIL.',
     mriHint: 'L’IRM liée utilise la même image, et une coupe tranche les deux couches ensemble.',
-    files: 'Fichiers : chaque faisceau est un fichier de trajectoires bundles_*.trk.gz ; l’IRM est t1_warped.nii.gz.',
     metricsScope: 'Les nombres et longueurs utilisent les trajectoires sources complètes après le filtre de longueur. Les coupes modifient seulement la vue.',
     outlineProvenance: 'Méthode et provenance du contour cérébral',
     search: 'Rechercher des faisceaux', noMatchHint: 'Essayez un autre nom de faisceau.',
@@ -51,10 +47,12 @@ export const DIFFUSION_TEXT = {
 };
 
 /** The MRI crosshair as the house writes a point, signed RAS, then the T1 and FA samples under it. */
+/** `fa` is undefined for a dataset that publishes no FA map. */
 export function mriReadout(mm, t1, fa, lang) {
   // French sets a narrow no-break space before a colon; a label never wraps away from its value.
   const colon = lang === 'fr' ? '\u202f:\u00a0' : ':\u00a0';
-  return `RAS${colon}${formatRas(mm, lang)} · T1${colon}${decimal(t1, 0, lang)} · FA${colon}${decimal(fa, 2, lang)}`;
+  const readout = `RAS${colon}${formatRas(mm, lang)} · T1${colon}${decimal(t1, 0, lang)}`;
+  return fa === undefined ? readout : `${readout} · FA${colon}${decimal(fa, 2, lang)}`;
 }
 
 const ERRORS = {

@@ -3,10 +3,7 @@
 import argparse
 import json
 import sys
-import tarfile
 from pathlib import Path
-from urllib.parse import quote
-from urllib.request import urlopen
 
 import numpy as np
 from nibabel.freesurfer.io import read_annot, read_geometry, write_annot
@@ -17,7 +14,6 @@ from brain_model.layers import networks
 from brain_model.sources import ROOT, declares, read_config, sha256, write_json
 from brain_model.surfaces.registration import resample_surface_labels
 
-CACHE = ROOT / "data/cache"
 PROCEDURE = (
     "scripts/prepare_subject.py: forward nearest-neighbour sphere.reg transfer"
 )
@@ -117,57 +113,10 @@ def record_reconstruction(config, provenance, rerecord=False):
 
 def obtain_subject(config, provenance, rerecord=False):
     anatomy = config["anatomy"]
-    if "archive" in anatomy:
-        extract_subject(config, provenance, rerecord)
-    elif "download" in anatomy:
-        download_subject(config, provenance)
-    elif "reconstruction" in anatomy:
+    if "reconstruction" in anatomy:
         record_reconstruction(config, provenance, rerecord)
     else:
         print(f"{anatomy['id']}: files are committed, nothing to fetch")
-
-
-def download_subject(config, provenance):
-    anatomy = config["anatomy"]
-    base = anatomy["download"]["base_url"].rstrip("/")
-    recorded = {source["path"]: source.get("sha256") for source in provenance["sources"]}
-    for name in SUBJECT_FILES:
-        destination = config["source_directory"] / name
-        relative = str(destination.relative_to(ROOT))
-        url = f"{base}/{quote(name)}"
-        if not destination.exists():
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            with urlopen(url) as response:
-                destination.write_bytes(response.read())
-        expected = recorded.get(relative)
-        if expected is not None and sha256(destination) != expected:
-            raise SystemExit(f"{relative} does not match its recorded checksum.")
-        record_source(provenance, destination, anatomy=anatomy["id"], url=url)
-
-
-def extract_subject(config, provenance, rerecord=False):
-    anatomy = config["anatomy"]
-    url, settings = anatomy["source_url"], anatomy["archive"]
-    path = CACHE / url.rsplit("/", 1)[-1].split("?")[0]
-    if not path.exists():
-        raise SystemExit(f"Download {url} to {path.relative_to(ROOT)} and run again.")
-    if sha256(path) != settings["sha256"]:
-        raise SystemExit(f"{path.relative_to(ROOT)} does not match its checksum.")
-    with tarfile.open(path) as archive:
-        for name in SUBJECT_FILES:
-            member = settings["member_prefix"] + name
-            destination = config["source_directory"] / name
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(archive.extractfile(member).read())
-            record_source(
-                provenance,
-                destination,
-                rerecord,
-                anatomy=anatomy["id"],
-                url=url,
-                archive_sha256=settings["sha256"],
-                archive_member=member,
-            )
 
 
 def transfer_annotation(config, provenance, annotation_name, report_name, rerecord=False):

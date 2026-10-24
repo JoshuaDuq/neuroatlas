@@ -192,7 +192,7 @@ def linear(color):
     return np.where(srgb <= 0.04045, srgb / 12.92, ((srgb + 0.055) / 1.055) ** 2.4)
 
 
-@pytest.mark.parametrize("subject", ["fsaverage", "bert"])
+@pytest.mark.parametrize("subject", ["fsaverage", "cdmd"])
 @pytest.mark.parametrize("level", functional_regions.LEVELS)
 def test_regions_that_share_a_surface_edge_differ_in_colour_for_dichromats_too(subject, level):
     definition = functional_regions.read_definition()

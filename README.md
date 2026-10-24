@@ -51,30 +51,29 @@ Most 3D brain atlases are drawn on an averaged template. NeuroAtlas is built fro
 
 ## Anatomy at a glance
 
-Counts describe the default `snail` publication unless noted. Each subject's manifest is authoritative for the structures it actually contains.
+Counts describe the `snail` publication unless noted. Each subject's manifest is authoritative for the structures it actually contains.
 
 | Layer | Granularity |
 | :--- | :--- |
 | Destrieux cortex (`aparc.a2009s`) | 148 parcels and 2 medial-wall surfaces |
 | HCP-MMP1.0 cortex | 360 multimodal areas |
-| Learning anatomy | 79 teaching solids in `snail` (82 in `bert`) |
-| FreeSurfer aseg | 32 subcortical structures in `snail` (35 in `bert`) |
-| NextBrain histology | 306 meshes in `snail` (328 in `bert`), 515 ROIs in `bert` |
+| Learning anatomy | 79 teaching solids in `snail` (80 in `cdmd`) |
+| FreeSurfer aseg | 32 subcortical structures |
+| NextBrain histology | 306 meshes of 515 ROIs in `snail` (292 of 514 in `cdmd`) |
 | Gyral white matter (`wmparc`) | 68 parcels |
-| Spinal cord | 58 tracts and horns (Z-Anatomy reference), in `bert` and `aomic` only: the `snail` scan ends inside the medulla |
+| Spinal cord | 58 tracts and horns (Z-Anatomy reference), in `cdmd` only: the `snail` scan ends inside the medulla |
 | Yeo 7 networks | 7 resting-state networks |
 
 [Atlases and parcellations](https://joshuaduq.github.io/neuroatlas/docs/concepts/atlases.html) describes how each layer was derived.
 
 ## Anatomies
 
-The viewer publishes three individual reconstructions. Each one is a single person's brain.
+The viewer publishes two individual reconstructions. Each one is a single person's brain, with tracts from its own diffusion scan.
 
 | Anatomy | Subject |
 | :--- | :--- |
-| `snail` (default) | SNAIL subject 1, reconstructed with FreeSurfer 8.2 from the reference MRI used by the bundled tractography |
-| `bert` | FreeSurfer's canonical single-subject example |
-| `aomic` | AOMIC-PIOP1 `sub-0022`, open (CC0) data from the Amsterdam Open MRI Collection |
+| `snail` | SNAIL subject 1, reconstructed with FreeSurfer 8.2 from the reference MRI used by the bundled tractography |
+| `cdmd` (default) | MGH CDMD `sub_013`, reconstructed with FreeSurfer 8.2 from its own T1; tracts tracked from its own diffusion scan |
 
 [Anatomies](https://joshuaduq.github.io/neuroatlas/docs/concepts/anatomies.html) explains why each subject was chosen and which candidates were excluded.
 
@@ -93,10 +92,10 @@ Open the address Vite prints. It ends in `/neuroatlas/`, for example `http://127
 
 ```bash
 uv sync --locked
-uv run python scripts/prepare_subject.py --anatomy bert
-uv run python scripts/segment_nextbrain.py --anatomy bert --record
-uv run python -m brain_model.build --anatomy bert
-uv run python -m brain_model.validate --anatomy bert
+uv run python scripts/prepare_subject.py --anatomy cdmd
+uv run python scripts/segment_nextbrain.py --anatomy cdmd --record
+uv run python -m brain_model.build --anatomy cdmd
+uv run python -m brain_model.validate --anatomy cdmd
 ```
 
 The NextBrain step needs FreeSurfer 8.2 and takes about 20 minutes on a CPU. See the [installation](https://joshuaduq.github.io/neuroatlas/docs/install.html) and [build](https://joshuaduq.github.io/neuroatlas/docs/guides/building.html) guides for requirements and the outputs of each step.
@@ -119,7 +118,7 @@ uv run sphinx-build -W -b html docs docs/_build/html
 import { BrainAtlas } from './viewer/model/brain-atlas.js';
 import { BrainSections } from './viewer/slices/sections.js';
 
-const manifestUrl = new URL('./models/bert/manifest.json', import.meta.url);
+const manifestUrl = new URL('./models/cdmd/manifest.json', import.meta.url);
 const brain = await BrainAtlas.load(manifestUrl, 'destrieux');
 const sections = new BrainSections(brain, new URL('volumes.json', manifestUrl));
 scene.add(brain.group, sections.group);
@@ -168,9 +167,9 @@ Each anatomy is one person's brain, not a template, and is **not clinically norm
 ## Licensing
 
 - **Code** (pipeline and viewer): MIT, see [`LICENSE`](LICENSE). It covers the code only; each data asset below keeps its own terms.
-- **`bert` and `fsaverage` assets:** FreeSurfer Software License.
-- **`aomic` `sub-0022` assets:** CC0 1.0 (public domain).
+- **`fsaverage` assets** (built locally, not published): FreeSurfer Software License.
 - **SNAIL tract reference:** CC0 1.0.
+- **CDMD `sub_013` assets and tracts:** CC0 1.0 (public domain).
 - **HCP-MMP1.0 annotation:** HCP Open Access Data Use Terms.
 - **CAB-NP network assignments (`cab-np.json`):** CAB-NP License (Rutgers University and Yale University), non-commercial use only, kept as an isolated file beside its licence and original label key.
 - **Neuropsychological domain scores (`neuropsych-domains.json`, `data/neuropsych-domains/area-scores.json`):** derived from the Neurosynth database, Open Database License (ODbL) 1.0, shared under the same licence.

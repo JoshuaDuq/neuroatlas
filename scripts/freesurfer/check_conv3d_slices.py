@@ -15,6 +15,8 @@ def relative(got, ref):
 
 
 torch.manual_seed(0)
+# These volumes are small, so slicing is forced to exercise it.
+conv3d_slices.IM2COL_BYTES = 0
 worst = 0.0
 cases = [
     ((1, 5, 9, 11, 7), (6, 5, 3, 3, 3), 1, True),
@@ -41,3 +43,11 @@ worst = max(worst, relative(conv3d_by_slices(x, w, None, 1, 1), _conv3d(x, w, No
 
 print(f'max relative difference from torch conv3d: {worst:.2e}')
 assert worst < 1e-5
+
+# NextBrain's bias field smoothing: a 1x1x3 kernel on a sparse mask. It fits im2col,
+# so it runs in torch itself and keeps exact zeros, which the sliced path does not.
+conv3d_slices.IM2COL_BYTES = 2**30
+x = (torch.rand(1, 1, 40, 44, 46) > 0.7).float()
+w = torch.tensor([0.0, 1.0, 0.0])[None, None, None, None] + 0.2
+assert torch.equal(conv3d_by_slices(x, w, None, 1, [0, 0, 1]), _conv3d(x, w, None, 1, [0, 0, 1]))
+print('small convolutions run in torch itself')

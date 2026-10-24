@@ -5,7 +5,9 @@ import { parse } from 'yaml';
 import { lengthSummary, settingsReadout, tractRowName, tractRows } from './controls.js';
 import { DIFFUSION_TEXT } from './translations.js';
 
-const catalog = parse(await readFile(new URL('../../data/diffusion.yaml', import.meta.url), 'utf8'));
+const root = new URL('../../', import.meta.url);
+const { tract_catalogs: paths } = parse(await readFile(new URL('config/model.yaml', root), 'utf8'));
+const catalogs = await Promise.all(paths.map(async path => parse(await readFile(new URL(path, root), 'utf8'))));
 const bundle = (id, en, fr = en) => ({ id, name: { en, fr } });
 
 test('a tract’s left and right files share one row, left first', () => {
@@ -31,12 +33,15 @@ test('a bundle with neither side nor segment, or members that disagree, is an er
   assert.throws(() => tractRowName(row, 'en'), /disagree/);
 });
 
-test('the published collection reads as one row per tract in both languages', () => {
-  const rows = tractRows(catalog.bundles);
-  assert.equal(rows.reduce((total, row) => total + row.members.length, 0), catalog.bundles.length);
-  assert.equal(rows.length, 11);
-  for (const row of rows) {
-    for (const lang of ['en', 'fr']) assert.ok(tractRowName(row, lang));
+test('each published collection reads as one row per tract in both languages', () => {
+  const tracts = { 'snail-subject-1': 11, 'cdmd-sub-013': 9 };
+  for (const catalog of catalogs) {
+    const rows = tractRows(catalog.bundles);
+    assert.equal(rows.reduce((total, row) => total + row.members.length, 0), catalog.bundles.length);
+    assert.equal(rows.length, tracts[catalog.id], catalog.id);
+    for (const row of rows) {
+      for (const lang of ['en', 'fr']) assert.ok(tractRowName(row, lang));
+    }
   }
 });
 

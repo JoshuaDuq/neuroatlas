@@ -5,6 +5,9 @@ an im2col buffer 27 times the input: about 90 GB at SuperSynth's 96
 full-resolution channels. A stride-1 3D convolution is exactly a sum over
 kernel depth of 2D convolutions of shifted depth slices, computed here a block
 of slices at a time. The products are the same; only the summation order is not.
+Only a convolution whose im2col buffer would be large is sliced: sliced, conv2d
+can return -3e-7 where conv3d returns exactly 0, and NextBrain's bias field fit
+takes the log of sums of such values.
 """
 import sys
 
@@ -13,6 +16,8 @@ import torch.nn.functional as F
 
 _conv3d = F.conv3d
 BLOCK_BYTES = 256 * 2**20
+# Below this im2col buffer, torch's own conv3d runs: it fits, and its zeros stay zero.
+IM2COL_BYTES = 2**30
 # Above this many multiply-adds, a convolution handed back to torch is worth a
 # warning: it is the im2col path this module exists to avoid.
 LARGE_CONVOLUTION = 2e8
@@ -38,6 +43,8 @@ def conv3d_by_slices(input, weight, bias=None, stride=1, padding=0, dilation=1, 
     cout, _, kd, kh, kw = weight.shape
     out_depth = depth + 2 * pd - kd + 1
     out_h, out_w = height + 2 * ph - kh + 1, width + 2 * pw - kw + 1
+    if cin * kd * kh * kw * out_depth * out_h * out_w * input.element_size() < IM2COL_BYTES:
+        return _conv3d(input, weight, bias, stride, (pd, ph, pw), dilation, groups)
     out = torch.empty((n, cout, out_depth, out_h, out_w), dtype=input.dtype)
     step = max(1, int(BLOCK_BYTES // (max(cin, cout) * height * width * input.element_size())))
     for b in range(n):

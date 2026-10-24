@@ -1,0 +1,1388 @@
+{
+  "dataset": "MGH CDMD sub_013, tracked for NeuroAtlas",
+  "subject": "sub_013",
+  "source": "https://doi.org/10.6084/m9.figshare.c.5315474.v1",
+  "license": "CC0-1.0",
+  "tracking": {
+    "procedure": "scripts/cdmd_pilot.py: MSMT-CSD (DIPY), particle filtering tractography, RecoBundles against DIPY's HCP842 80-bundle atlas",
+    "tractogram": {
+      "seeds": 398808,
+      "streamlines": 363819,
+      "seconds": 37.177621994167566
+    },
+    "recognition_settings": {
+      "af.left": "20/10",
+      "af.right": "20/10",
+      "cst.left": "15/7+refine",
+      "cst.right": "15/7+refine",
+      "cg.left": "20/10",
+      "cg.right": "20/10",
+      "uf.left": "20/10",
+      "uf.right": "20/10",
+      "ifof.left": "20/10",
+      "ifof.right": "20/10",
+      "ilf.left": "20/10",
+      "ilf.right": "20/10",
+      "mdlf.left": "20/10",
+      "mdlf.right": "20/10",
+      "slf.left": "20/10",
+      "slf.right": "20/10",
+      "cc": "15/7+refine"
+    },
+    "recognition_rng": "each recognition from the post-construction state of default_rng(2001)",
+    "atlas_counts": {
+      "AF_L": 3639,
+      "AF_R": 2191,
+      "CST_L": 731,
+      "CST_R": 964,
+      "C_L": 2167,
+      "C_R": 1744,
+      "UF_L": 911,
+      "UF_R": 895,
+      "IFOF_L": 440,
+      "IFOF_R": 220,
+      "ILF_L": 3745,
+      "ILF_R": 1704,
+      "MdLF_L": 3178,
+      "MdLF_R": 2212,
+      "SLF_L": 4285,
+      "SLF_R": 3478,
+      "CC": 26208,
+      "CCMid": 10771,
+      "CC_ForcepsMajor": 1490,
+      "CC_ForcepsMinor": 4133
+    }
+  },
+  "processing": "Every recognised streamline kept and resampled to 0.5 mm arc-length steps by linear interpolation; the map is the reconstruction's pinned input T1, unchanged.",
+  "spatial_validation": "Map shape and affine agree with every TRK header at absolute tolerance 1e-5.",
+  "geometry_validation": "NiBabel RAS+ millimetre samples and float64 polyline lengths provide independent checks of the browser's TRK decoder.",
+  "files": [
+    {
+      "file": "sub_013_t1w.nii.gz",
+      "source_sha256": "16e9137160f20c3dfb39fbd04ce1299415c5252ba96e8b0266f5f9402c60730b",
+      "shape": [
+        176,
+        220,
+        220
+      ],
+      "affine": [
+        [
+          -1.0,
+          0.0,
+          0.0,
+          90.53730773925781
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.37625885009766
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -124.06636810302734
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "file": "af.left.trk.gz",
+      "source_sha256": "d22640a146e929f816532604f31cb9bdf34cbcf4d809a06d1789d4db30d9f79c",
+      "resampled_sha256": "5576e06688184c270a8e6d68ff3aac94a851b0efcc10c1bfb28574e15bbfdd03",
+      "published_sha256": "927bf52c1a0568fb9ad20c93da1d496636f899dc8e2f32f2c7d63c955eeafd98",
+      "source_bytes": 25467904,
+      "published_bytes": 8903034,
+      "source_points": 2121029,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49546438455581665,
+          "max": 0.5015098452568054
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 146,
+          "median": 0.046441471569041104,
+          "max": 0.052979774851481753
+        },
+        "length_change_mm_max": 1.7989695679162025,
+        "relative_length_change": {
+          "median": 0.009582109094705346,
+          "max": 0.010836228270918197
+        }
+      },
+      "streamlines": 3639,
+      "points": 850570,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -39.323486328125,
+            -17.50409698486328,
+            -8.831245422363281
+          ]
+        },
+        {
+          "index": 425285,
+          "position": [
+            -32.135772705078125,
+            -28.672042846679688,
+            16.26836395263672
+          ]
+        },
+        {
+          "index": 850569,
+          "position": [
+            -58.02375793457031,
+            -5.6905059814453125,
+            1.765289306640625
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 3639,
+          "mean_mm": 115.25906955188131,
+          "min_mm": 58.46950787016473,
+          "max_mm": 180.30315833509184
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 2787,
+          "mean_mm": 122.78900573682508,
+          "min_mm": 100.00921620727371,
+          "max_mm": 180.30315833509184
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "af.right.trk.gz",
+      "source_sha256": "2fadbfa4a6b2d43cc81610d265840316b5d34da60bce28c9473e875c8c4d7a4d",
+      "resampled_sha256": "9771d6b50bdbf3e08269dfc0ded9c339a798ab5dd049344205e131302d9e4893",
+      "published_sha256": "c654789486895c002ef4ea4d97d6c6225f51cf75b75454f8ee6cbe3e9ada7f48",
+      "source_bytes": 15492332,
+      "published_bytes": 5444380,
+      "source_points": 1290214,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4954611659049988,
+          "max": 0.5012383460998535
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 88,
+          "median": 0.04635156003911664,
+          "max": 0.05128545108493448
+        },
+        "length_change_mm_max": 1.71239495206558,
+        "relative_length_change": {
+          "median": 0.009555326736485811,
+          "max": 0.010654485564844671
+        }
+      },
+      "streamlines": 2191,
+      "points": 517400,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            25.538665771484375,
+            16.66735076904297,
+            52.577064514160156
+          ]
+        },
+        {
+          "index": 258700,
+          "position": [
+            34.54667663574219,
+            4.3624420166015625,
+            25.48383331298828
+          ]
+        },
+        {
+          "index": 517399,
+          "position": [
+            24.352188110351562,
+            56.585350036621094,
+            36.927268981933594
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2191,
+          "mean_mm": 116.450566625149,
+          "min_mm": 65.74997888098224,
+          "max_mm": 176.90217628085753
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 1701,
+          "mean_mm": 123.3665176586048,
+          "min_mm": 100.02864396595666,
+          "max_mm": 176.90217628085753
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "cst.left.trk.gz",
+      "source_sha256": "d8ec8130094af52c3ed7a2632851efe196ec14899d16cefc1e1c4999db894632",
+      "resampled_sha256": "cc1983ce81e57208423f6f7371116f8e2a1b487850efecc72afb3117b7800ce9",
+      "published_sha256": "b4f21956a62d08bf526569a7804beb4d398c65743556e30aa25398299ad8fe4c",
+      "source_bytes": 5902908,
+      "published_bytes": 2041836,
+      "source_points": 491582,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49545857310295105,
+          "max": 0.5008878707885742
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 30,
+          "median": 0.04798109721943524,
+          "max": 0.0541673081811658
+        },
+        "length_change_mm_max": 1.5850179002022173,
+        "relative_length_change": {
+          "median": 0.009596040646189909,
+          "max": 0.010630975261114017
+        }
+      },
+      "streamlines": 731,
+      "points": 197063,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -3.5174942016601562,
+            -5.568511962890625,
+            -43.62389373779297
+          ]
+        },
+        {
+          "index": 98531,
+          "position": [
+            -2.945281982421875,
+            -6.800178527832031,
+            -38.067039489746094
+          ]
+        },
+        {
+          "index": 197062,
+          "position": [
+            -12.92474365234375,
+            -67.40862274169922,
+            20.38733673095703
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 731,
+          "mean_mm": 133.0061579359361,
+          "min_mm": 105.59144782655117,
+          "max_mm": 163.82964176736562
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 731,
+          "mean_mm": 133.0061579359361,
+          "min_mm": 105.59144782655117,
+          "max_mm": 163.82964176736562
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "cst.right.trk.gz",
+      "source_sha256": "222418877884268286a445502fab71716bdda201539e619a27cf8d85bf7aa089",
+      "resampled_sha256": "62846713d6af82a5333ee9246854e626e61c27c0a4d42f2584e09c60fecbf644",
+      "published_sha256": "6fa36742b9ac359edfdf45401d8307a4f57f69ee072a4bc83a54a3d307879a6a",
+      "source_bytes": 7752860,
+      "published_bytes": 2694097,
+      "source_points": 645667,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49544113874435425,
+          "max": 0.5009114146232605
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 39,
+          "median": 0.04689476828146055,
+          "max": 0.052039171982243095
+        },
+        "length_change_mm_max": 1.6764017892689935,
+        "relative_length_change": {
+          "median": 0.00954475847234105,
+          "max": 0.01044255120714336
+        }
+      },
+      "streamlines": 964,
+      "points": 258858,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            1.6054840087890625,
+            -10.492149353027344,
+            -58.726051330566406
+          ]
+        },
+        {
+          "index": 129429,
+          "position": [
+            18.970123291015625,
+            -3.5410308837890625,
+            7.273002624511719
+          ]
+        },
+        {
+          "index": 258857,
+          "position": [
+            13.471420288085938,
+            1.0036163330078125,
+            61.09784698486328
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 964,
+          "mean_mm": 132.4794539331908,
+          "min_mm": 101.5849132005109,
+          "max_mm": 160.12356875623837
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 964,
+          "mean_mm": 132.4794539331908,
+          "min_mm": 101.5849132005109,
+          "max_mm": 160.12356875623837
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "cg.left.trk.gz",
+      "source_sha256": "d2fe32df48377601715cfebf216baeb3284d4b87dea56edd39efe378980166e0",
+      "resampled_sha256": "648c07b5514fc5937ab9a9ea94888820f9811163ab8f09c8c14185b07ea5d507",
+      "published_sha256": "ffb707985fa5557de3011ffea3689debb910cd3c083ac526e5f66a906d32d6b0",
+      "source_bytes": 12125024,
+      "published_bytes": 4218777,
+      "source_points": 1009613,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4953841269016266,
+          "max": 0.5020371675491333
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 87,
+          "median": 0.047169197982020704,
+          "max": 0.05379160466771172
+        },
+        "length_change_mm_max": 1.9039110744027141,
+        "relative_length_change": {
+          "median": 0.009678425691149028,
+          "max": 0.011303779848690338
+        }
+      },
+      "streamlines": 2167,
+      "points": 405156,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -3.9158248901367188,
+            -31.917320251464844,
+            35.478721618652344
+          ]
+        },
+        {
+          "index": 202578,
+          "position": [
+            0.686614990234375,
+            -0.26644134521484375,
+            37.79326629638672
+          ]
+        },
+        {
+          "index": 405155,
+          "position": [
+            -34.678306579589844,
+            4.501701354980469,
+            -9.430870056152344
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2167,
+          "mean_mm": 92.08188003321858,
+          "min_mm": 45.93063587248334,
+          "max_mm": 196.10887170340243
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 823,
+          "mean_mm": 121.96951715016635,
+          "min_mm": 100.00405488420672,
+          "max_mm": 196.10887170340243
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "cg.right.trk.gz",
+      "source_sha256": "90ee7ec5c6a6104b51b649158cab2ee40bd79bfd3c1031915d6acd9e19ae72fc",
+      "resampled_sha256": "7ae100e0b70a5a0097bf670b218f0562b899da5a73b58c29926acf53431d9441",
+      "published_sha256": "2998c8540bf7b9ee55ab0a3ca3fb6cbb6ac9d0a20b9b69b62f8fa8844aafd66d",
+      "source_bytes": 10344704,
+      "published_bytes": 3598642,
+      "source_points": 861394,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4954462945461273,
+          "max": 0.5020880699157715
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 70,
+          "median": 0.046609664008872925,
+          "max": 0.05453039327098161
+        },
+        "length_change_mm_max": 1.926983254136701,
+        "relative_length_change": {
+          "median": 0.009588037072802817,
+          "max": 0.010941399227516238
+        }
+      },
+      "streamlines": 1744,
+      "points": 345595,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            58.339561462402344,
+            16.55353546142578,
+            19.42790985107422
+          ]
+        },
+        {
+          "index": 172797,
+          "position": [
+            8.075347900390625,
+            -7.864753723144531,
+            30.432762145996094
+          ]
+        },
+        {
+          "index": 345594,
+          "position": [
+            18.20953369140625,
+            47.92267608642578,
+            26.915748596191406
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 1744,
+          "mean_mm": 97.63829290970646,
+          "min_mm": 46.1628383690048,
+          "max_mm": 190.67303287664885
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 831,
+          "mean_mm": 119.69507538260822,
+          "min_mm": 100.02857863910643,
+          "max_mm": 190.67303287664885
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "uf.left.trk.gz",
+      "source_sha256": "519a086387f43b9b4cb44b39677e8b44b5b88e564871b52a3a3bcd7615ea011f",
+      "resampled_sha256": "bca2473f40e734c2e9ce023b93d789d65f657e60e677f91558616c48ac58a6d8",
+      "published_sha256": "95011f0057780b81a5b2c2a97232a4616c69f625bec94f966435aad9d4d50147",
+      "source_bytes": 3943932,
+      "published_bytes": 1359816,
+      "source_points": 328274,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49520668387413025,
+          "max": 0.5020880699157715
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 37,
+          "median": 0.04658108983884855,
+          "max": 0.052436338548615555
+        },
+        "length_change_mm_max": 1.4173375396143513,
+        "relative_length_change": {
+          "median": 0.009867315403228341,
+          "max": 0.011375428249459326
+        }
+      },
+      "streamlines": 911,
+      "points": 131882,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -33.27848815917969,
+            20.445777893066406,
+            -14.05145263671875
+          ]
+        },
+        {
+          "index": 65941,
+          "position": [
+            -23.727996826171875,
+            15.39959716796875,
+            3.1505050659179688
+          ]
+        },
+        {
+          "index": 131881,
+          "position": [
+            -53.52659606933594,
+            13.719322204589844,
+            10.642051696777344
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 911,
+          "mean_mm": 71.15873446544016,
+          "min_mm": 45.61837150216671,
+          "max_mm": 134.18262482140932
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 54,
+          "mean_mm": 108.53225358689798,
+          "min_mm": 100.05705560501997,
+          "max_mm": 134.18262482140932
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "uf.right.trk.gz",
+      "source_sha256": "690115c4d5c13ebbae163d2b2e7e4b01746672cae164234a129d033471078227",
+      "resampled_sha256": "2c443f83496f1badb0e2d17dc8c88001d016a0185f3751081955de35cdcfe880",
+      "published_sha256": "ed3567e9ddf4f8ad3fd839352211940583d9461a551f070c1895d18064b08d35",
+      "source_bytes": 4217576,
+      "published_bytes": 1475812,
+      "source_points": 351083,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4953085482120514,
+          "max": 0.501932680606842
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 36,
+          "median": 0.04672347391367652,
+          "max": 0.051896126270145684
+        },
+        "length_change_mm_max": 1.3449828473342222,
+        "relative_length_change": {
+          "median": 0.009753004724105025,
+          "max": 0.011273169993990015
+        }
+      },
+      "streamlines": 895,
+      "points": 140983,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            34.548770904541016,
+            36.900856018066406,
+            9.444908142089844
+          ]
+        },
+        {
+          "index": 70491,
+          "position": [
+            21.760772705078125,
+            44.75731658935547,
+            18.82390594482422
+          ]
+        },
+        {
+          "index": 140982,
+          "position": [
+            -7.8579864501953125,
+            25.99970245361328,
+            13.796897888183594
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 895,
+          "mean_mm": 77.49087305496867,
+          "min_mm": 45.555535087377166,
+          "max_mm": 134.85934215491056
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 79,
+          "mean_mm": 109.65651419250479,
+          "min_mm": 100.58430671202802,
+          "max_mm": 134.85934215491056
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "ifof.left.trk.gz",
+      "source_sha256": "49bd59a7862b23bc6f1677def7b9e66003cf2ec567c640cc68b24127f9544cd6",
+      "resampled_sha256": "1d6ac8e9a1a2356d16427acf3a587d62b46ddfa3957fc12f68ffc438fa5b90b9",
+      "published_sha256": "2cbdb771beba9b8f8d7a574a70bea36c4c1ba99ffeb13b24a24560c5fa5fb79c",
+      "source_bytes": 3851928,
+      "published_bytes": 1340427,
+      "source_points": 320764,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4953567385673523,
+          "max": 0.5007919669151306
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 18,
+          "median": 0.04672205105262932,
+          "max": 0.05319446142513733
+        },
+        "length_change_mm_max": 1.827458374625337,
+        "relative_length_change": {
+          "median": 0.009783283258033484,
+          "max": 0.010669816386507509
+        }
+      },
+      "streamlines": 440,
+      "points": 128570,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -19.943984985351562,
+            -62.74018859863281,
+            -11.093780517578125
+          ]
+        },
+        {
+          "index": 64285,
+          "position": [
+            -19.97168731689453,
+            21.607872009277344,
+            9.155647277832031
+          ]
+        },
+        {
+          "index": 128569,
+          "position": [
+            -38.85136413574219,
+            -50.97801971435547,
+            5.859046936035156
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 440,
+          "mean_mm": 144.1788328590229,
+          "min_mm": 101.22482570450467,
+          "max_mm": 180.62030635380353
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 440,
+          "mean_mm": 144.1788328590229,
+          "min_mm": 101.22482570450467,
+          "max_mm": 180.62030635380353
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "ifof.right.trk.gz",
+      "source_sha256": "88788c2c1c59f92260fe9917a9f656f8c5d98dbb0b24c645a8c8b718dc5d2338",
+      "resampled_sha256": "737404eeca81365f442027834d7e5c547efec24131c1c43e148ac1e4e9cb9791",
+      "published_sha256": "48afd675fd18e098ac47b5fbc852f14ae4b94c52e08f8c68f1df224e9930a22d",
+      "source_bytes": 1939340,
+      "published_bytes": 677556,
+      "source_points": 161455,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49543696641921997,
+          "max": 0.5009503960609436
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 9,
+          "median": 0.04658024396461505,
+          "max": 0.05056112947633614
+        },
+        "length_change_mm_max": 1.7440489328310775,
+        "relative_length_change": {
+          "median": 0.009649915535769434,
+          "max": 0.010390280195830536
+        }
+      },
+      "streamlines": 220,
+      "points": 64710,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            33.010643005371094,
+            31.30315399169922,
+            3.1828460693359375
+          ]
+        },
+        {
+          "index": 32355,
+          "position": [
+            22.566314697265625,
+            40.461036682128906,
+            19.737815856933594
+          ]
+        },
+        {
+          "index": 64709,
+          "position": [
+            13.4771728515625,
+            56.50237274169922,
+            10.663246154785156
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 220,
+          "mean_mm": 145.1612256602816,
+          "min_mm": 102.59418061330584,
+          "max_mm": 173.65592380799305
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 220,
+          "mean_mm": 145.1612256602816,
+          "min_mm": 102.59418061330584,
+          "max_mm": 173.65592380799305
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "ilf.left.trk.gz",
+      "source_sha256": "189ea4009aa788ac0d3591bdb9b44852f30ae21e818884b4ffea723d5f8a7d60",
+      "resampled_sha256": "f72c7ccb55abb6c9a362f92142dd7249b4e35784a56f7d828e9e7b6237ef4dab",
+      "published_sha256": "2f901146268e62c59267bac07b0b7bf8d78442e72c6f886f54c84bc52ac4fd9e",
+      "source_bytes": 21602768,
+      "published_bytes": 7470589,
+      "source_points": 1798899,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49538716673851013,
+          "max": 0.5017578601837158
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 150,
+          "median": 0.046392793333847424,
+          "max": 0.05598426101368117
+        },
+        "length_change_mm_max": 1.5372080525542344,
+        "relative_length_change": {
+          "median": 0.009710107251466017,
+          "max": 0.011036129140150506
+        }
+      },
+      "streamlines": 3745,
+      "points": 721807,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            6.7922210693359375,
+            -62.47550964355469,
+            -1.1037445068359375
+          ]
+        },
+        {
+          "index": 360903,
+          "position": [
+            -34.34253692626953,
+            -24.31604766845703,
+            -0.9224929809570312
+          ]
+        },
+        {
+          "index": 721806,
+          "position": [
+            -19.68682098388672,
+            -69.09194946289062,
+            24.502281188964844
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 3745,
+          "mean_mm": 94.93899212948168,
+          "min_mm": 47.693988996730084,
+          "max_mm": 148.06276812871891
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 1401,
+          "mean_mm": 111.07328617668233,
+          "min_mm": 100.0114324385973,
+          "max_mm": 148.06276812871891
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "ilf.right.trk.gz",
+      "source_sha256": "00cbed09a4c45ac7e48e8d2b8012d69f5beb11686cd66aec85ba3bb9d5b1a410",
+      "resampled_sha256": "264a43370d27184ea12c62790dbc51a9fbc2f48965c3ad5c59a93a43d9b96c20",
+      "published_sha256": "70150c8b227b4cb410abfaf32375ad9298d1c091ffaac226ff8093803755ac30",
+      "source_bytes": 9891436,
+      "published_bytes": 3432196,
+      "source_points": 823635,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4953487515449524,
+          "max": 0.5017848014831543
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 69,
+          "median": 0.04629242796226239,
+          "max": 0.05422717333911478
+        },
+        "length_change_mm_max": 1.6481110090437028,
+        "relative_length_change": {
+          "median": 0.009781839627753818,
+          "max": 0.011255264127214807
+        }
+      },
+      "streamlines": 1704,
+      "points": 330476,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            64.13983917236328,
+            -24.33148956298828,
+            -13.473007202148438
+          ]
+        },
+        {
+          "index": 165238,
+          "position": [
+            32.748252868652344,
+            -28.972434997558594,
+            8.330879211425781
+          ]
+        },
+        {
+          "index": 330475,
+          "position": [
+            42.22855758666992,
+            21.53656768798828,
+            -17.84095001220703
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 1704,
+          "mean_mm": 95.52646266661407,
+          "min_mm": 47.76446253284749,
+          "max_mm": 167.5518722957152
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 681,
+          "mean_mm": 113.58195596401436,
+          "min_mm": 100.02060094148308,
+          "max_mm": 167.5518722957152
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "mdlf.left.trk.gz",
+      "source_sha256": "efe30c6b144caecc633da8b6b18f4739901dc8f13ac15b45fe24c89f62e40d7d",
+      "resampled_sha256": "388255dc758608e6f8500e94a9c844da3f9e42e7cfa5dce99ce7d3f1da7bf665",
+      "published_sha256": "e85df4b86fcf68b264feb136ee16eeba0cb4baaebdc724de97426160fe13ec49",
+      "source_bytes": 17104568,
+      "published_bytes": 5990615,
+      "source_points": 1424238,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49539798498153687,
+          "max": 0.5019629001617432
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 128,
+          "median": 0.04580677599230781,
+          "max": 0.052243496002293846
+        },
+        "length_change_mm_max": 1.4809643267013257,
+        "relative_length_change": {
+          "median": 0.00966267723753265,
+          "max": 0.01113345719193042
+        }
+      },
+      "streamlines": 3178,
+      "points": 571599,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -37.44886779785156,
+            21.74791717529297,
+            -11.150001525878906
+          ]
+        },
+        {
+          "index": 285799,
+          "position": [
+            -30.66680908203125,
+            -27.50629425048828,
+            13.495429992675781
+          ]
+        },
+        {
+          "index": 571598,
+          "position": [
+            -12.194419860839844,
+            -64.57337951660156,
+            31.87842559814453
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 3178,
+          "mean_mm": 88.56615587826454,
+          "min_mm": 47.127271554924974,
+          "max_mm": 148.31901831013676
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 782,
+          "mean_mm": 110.8561045195411,
+          "min_mm": 100.00939986561454,
+          "max_mm": 148.31901831013676
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "mdlf.right.trk.gz",
+      "source_sha256": "073baec6a76c41dd497113453d2ca92a8cdc1223035417c4c729f527d0680098",
+      "resampled_sha256": "70ba4e70703837df3e4705b629f55b7ee778e2bae94d190517d853aeaffca869",
+      "published_sha256": "d3340bd73cdd7196a7df77064eebc27d1a8bfc237e84b1945338714b2be5c865",
+      "source_bytes": 11690696,
+      "published_bytes": 4107299,
+      "source_points": 973404,
+      "resampling": {
+        "step_mm": {
+          "median": 0.495394229888916,
+          "max": 0.5021283626556396
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 89,
+          "median": 0.04644706186309159,
+          "max": 0.05248505151272098
+        },
+        "length_change_mm_max": 1.506840770963663,
+        "relative_length_change": {
+          "median": 0.009749100560545728,
+          "max": 0.011126134432453142
+        }
+      },
+      "streamlines": 2212,
+      "points": 390661,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            66.21232604980469,
+            -27.11357879638672,
+            9.572853088378906
+          ]
+        },
+        {
+          "index": 195330,
+          "position": [
+            35.50529098510742,
+            -20.96930694580078,
+            7.421318054199219
+          ]
+        },
+        {
+          "index": 390660,
+          "position": [
+            44.0592155456543,
+            -16.690956115722656,
+            -1.4291534423828125
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 2212,
+          "mean_mm": 86.95466455606578,
+          "min_mm": 46.33187334510255,
+          "max_mm": 146.69314261357835
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 482,
+          "mean_mm": 109.98167792583922,
+          "min_mm": 100.00305177126612,
+          "max_mm": 146.69314261357835
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf.left.trk.gz",
+      "source_sha256": "41e24b6f2a3ec490be516f59c0619b8bd3970e76fdcec6d66e70960a130bfd04",
+      "resampled_sha256": "2a30b652984d75d4b527cb361e65ba900035066a793332109cb8368a40103ded",
+      "published_sha256": "92ab987d342798151e1b753e5f4878181317d70cf7bcff8e6f800c322018e608",
+      "source_bytes": 19461716,
+      "published_bytes": 6816115,
+      "source_points": 1620298,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4953559935092926,
+          "max": 0.5021819472312927
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 172,
+          "median": 0.04585337215606844,
+          "max": 0.05209409402188678
+        },
+        "length_change_mm_max": 1.3771274665966757,
+        "relative_length_change": {
+          "median": 0.009714991051914482,
+          "max": 0.01167904007944103
+        }
+      },
+      "streamlines": 4285,
+      "points": 650704,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -7.801727294921875,
+            54.58422088623047,
+            28.84143829345703
+          ]
+        },
+        {
+          "index": 325352,
+          "position": [
+            -27.181793212890625,
+            -7.696571350097656,
+            36.78913116455078
+          ]
+        },
+        {
+          "index": 650703,
+          "position": [
+            -34.19536590576172,
+            14.000808715820312,
+            41.694252014160156
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 4285,
+          "mean_mm": 74.69464113504169,
+          "min_mm": 45.13448609103773,
+          "max_mm": 142.4338839184858
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 560,
+          "mean_mm": 110.08827042935383,
+          "min_mm": 100.00921620727371,
+          "max_mm": 142.4338839184858
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "slf.right.trk.gz",
+      "source_sha256": "e77ce9b9d36a6ad3191a55bba1b1ba4f9b3dc3ca5278a2b1799914c25f01175d",
+      "resampled_sha256": "45a5bf48e58f9470582ea47bf8a66cd97bc53cbc13cba03d4089fb658b05fd57",
+      "published_sha256": "9fa9696cc2b1cd312e3f0f2edc23d7cfa3ea8b92c4554e6bdbbf95abe8698b55",
+      "source_bytes": 17770184,
+      "published_bytes": 6233174,
+      "source_points": 1479606,
+      "resampling": {
+        "step_mm": {
+          "median": 0.4954303503036499,
+          "max": 0.5021785497665405
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 140,
+          "median": 0.04582857577523329,
+          "max": 0.05181525805268139
+        },
+        "length_change_mm_max": 1.5769811996573253,
+        "relative_length_change": {
+          "median": 0.009581554797528462,
+          "max": 0.011494769092414064
+        }
+      },
+      "streamlines": 3478,
+      "points": 593936,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            53.76049041748047,
+            34.01958465576172,
+            30.31694793701172
+          ]
+        },
+        {
+          "index": 296968,
+          "position": [
+            37.49043273925781,
+            -53.54877471923828,
+            12.060920715332031
+          ]
+        },
+        {
+          "index": 593935,
+          "position": [
+            7.216087341308594,
+            1.4465866088867188,
+            45.52472686767578
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 3478,
+          "mean_mm": 84.07137040409926,
+          "min_mm": 45.73565649993086,
+          "max_mm": 159.65139376177456
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 819,
+          "mean_mm": 114.60572933028308,
+          "min_mm": 100.00303597937764,
+          "max_mm": 159.65139376177456
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 0,
+          "mean_mm": null,
+          "min_mm": null,
+          "max_mm": null
+        }
+      ]
+    },
+    {
+      "file": "cc.trk.gz",
+      "source_sha256": "e1cf12057755df875804fea565d01269206b3ac78304ba1483a3862d9a811970",
+      "resampled_sha256": "58ccc30fd09b2b0a5eb2824c8c5b4c4a6dccdd7cfa1124a4dd32e7caffdfc815",
+      "published_sha256": "491fc2c8f12dabde00856e1f543fc40e49ab7b1c520f72a3a63186c53d7b69c9",
+      "source_bytes": 190565788,
+      "published_bytes": 66422425,
+      "source_points": 15869864,
+      "resampling": {
+        "step_mm": {
+          "median": 0.49543997645378113,
+          "max": 0.5022255182266235
+        },
+        "deviation_mm": {
+          "sampled_streamlines": 1265,
+          "median": 0.046239002466977965,
+          "max": 0.05583994089803413
+        },
+        "length_change_mm_max": 2.163735204231301,
+        "relative_length_change": {
+          "median": 0.009568407574461557,
+          "max": 0.01109845334677197
+        }
+      },
+      "streamlines": 31605,
+      "points": 6366902,
+      "rasmm_samples": [
+        {
+          "index": 0,
+          "position": [
+            -48.23478698730469,
+            -25.231155395507812,
+            38.953819274902344
+          ]
+        },
+        {
+          "index": 3183451,
+          "position": [
+            18.75513458251953,
+            8.108596801757812,
+            36.868385314941406
+          ]
+        },
+        {
+          "index": 6366901,
+          "position": [
+            -57.75447082519531,
+            -11.315177917480469,
+            15.777320861816406
+          ]
+        }
+      ],
+      "length_summaries": [
+        {
+          "minimum_mm": 1,
+          "shown": 31605,
+          "mean_mm": 99.26692317680474,
+          "min_mm": 44.74209005429647,
+          "max_mm": 220.03624741082353
+        },
+        {
+          "minimum_mm": 100,
+          "shown": 11978,
+          "mean_mm": 120.07147909685868,
+          "min_mm": 100.00609027134394,
+          "max_mm": 220.03624741082353
+        },
+        {
+          "minimum_mm": 200,
+          "shown": 28,
+          "mean_mm": 207.10749147424667,
+          "min_mm": 200.23183905193642,
+          "max_mm": 220.03624741082353
+        }
+      ]
+    }
+  ]
+}

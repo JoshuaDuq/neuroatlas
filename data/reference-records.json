@@ -1,5 +1,5 @@
 {
- "fetched": "2026-10-22",
+ "fetched": "2026-10-24",
  "sources": "PubMed efetch, Bookshelf esummary and Crossref; no abstracts",
  "year": "PubMed's journal-issue publication year (PubDate, or the first year of a MedlineDate range), not the online-first year; for a Bookshelf chapter, the book's publication year",
  "records": {
@@ -1457,6 +1457,30 @@
    "pages": "2760-7",
    "corrections": []
   },
+  "pmid:24600385": {
+   "pmid": "24600385",
+   "pmcid": "PMC3931231",
+   "doi": "10.3389/fninf.2014.00008",
+   "doi_source": "pubmed",
+   "title": "Dipy, a library for the analysis of diffusion MRI data",
+   "authors": [
+    "Garyfallidis E",
+    "Brett M",
+    "Amirbekian B",
+    "Rokem A",
+    "van der Walt S",
+    "Descoteaux M",
+    "Nimmo-Smith I",
+    "Dipy Contributors"
+   ],
+   "year": 2014,
+   "pubdate": "2014",
+   "journal": "Front Neuroinform",
+   "volume": "8",
+   "issue": null,
+   "pages": "8",
+   "corrections": []
+  },
   "pmid:25726260": {
    "pmid": "25726260",
    "pmcid": null,
@@ -1602,6 +1626,31 @@
    "pages": "8872-81",
    "corrections": []
   },
+  "pmid:28712994": {
+   "pmid": "28712994",
+   "pmcid": null,
+   "doi": "10.1016/j.neuroimage.2017.07.015",
+   "doi_source": "pubmed",
+   "title": "Recognition of white matter bundles using local and global streamline-based registration and clustering",
+   "authors": [
+    "Garyfallidis E",
+    "Côté MA",
+    "Rheault F",
+    "Sidhu J",
+    "Hau J",
+    "Petit L",
+    "Fortin D",
+    "Cunanne S",
+    "Descoteaux M"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Apr 15",
+   "journal": "Neuroimage",
+   "volume": "170",
+   "issue": null,
+   "pages": "283-295",
+   "corrections": []
+  },
   "pmid:28822751": {
    "pmid": "28822751",
    "pmcid": "PMC5692920",
@@ -1708,6 +1757,30 @@
    "pages": "240-254",
    "corrections": []
   },
+  "pmid:29758339": {
+   "pmid": "29758339",
+   "pmcid": "PMC6921501",
+   "doi": "10.1016/j.neuroimage.2018.05.027",
+   "doi_source": "pubmed",
+   "title": "Population-averaged atlas of the macroscale human structural connectome and its network topology",
+   "authors": [
+    "Yeh FC",
+    "Panesar S",
+    "Fernandes D",
+    "Meola A",
+    "Yoshino M",
+    "Fernandez-Miranda JC",
+    "Vettel JM",
+    "Verstynen T"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Sep",
+   "journal": "Neuroimage",
+   "volume": "178",
+   "issue": null,
+   "pages": "57-68",
+   "corrections": []
+  },
   "pmid:30291974": {
    "pmid": "30291974",
    "pmcid": "PMC6289683",
@@ -1750,26 +1823,38 @@
    "pages": "547-559",
    "corrections": []
   },
-  "pmid:33741990": {
-   "pmid": "33741990",
-   "pmcid": "PMC7979787",
-   "doi": "10.1038/s41597-021-00870-6",
+  "pmid:35042861": {
+   "pmid": "35042861",
+   "pmcid": "PMC8766594",
+   "doi": "10.1038/s41597-021-01092-6",
    "doi_source": "pubmed",
-   "title": "The Amsterdam Open MRI Collection, a set of multimodal MRI datasets for individual difference analyses",
+   "title": "Comprehensive diffusion MRI dataset for in vivo human brain microstructure mapping using 300 mT/m gradients",
    "authors": [
-    "Snoek L",
-    "van der Miesen MM",
-    "Beemsterboer T",
-    "van der Leij A",
-    "Eigenhuis A",
-    "Steven Scholte H"
+    "Tian Q",
+    "Fan Q",
+    "Witzel T",
+    "Polackal MN",
+    "Ohringer NA",
+    "Ngamsombat C",
+    "Russo AW",
+    "Machado N",
+    "Brewer K",
+    "Wang F",
+    "Setsompop K",
+    "Polimeni JR",
+    "Keil B",
+    "Wald LL",
+    "Rosen BR",
+    "Klawiter EC",
+    "Nummenmaa A",
+    "Huang SY"
    ],
-   "year": 2021,
-   "pubdate": "2021 Mar 19",
+   "year": 2022,
+   "pubdate": "2022 Jan 18",
    "journal": "Sci Data",
-   "volume": "8",
+   "volume": "9",
    "issue": "1",
-   "pages": "85",
+   "pages": "7",
    "corrections": []
   },
   "pmid:35233615": {

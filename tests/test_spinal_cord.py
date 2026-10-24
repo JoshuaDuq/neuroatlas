@@ -14,7 +14,7 @@ from brain_model.surfaces.geometry import to_gltf
 
 @pytest.fixture(scope="module")
 def published(tmp_path_factory):
-    config = read_config("bert")
+    config = read_config("cdmd")
     assert spinal_cord.is_declared(config)
     config["output_directory"] = tmp_path_factory.mktemp("models")
     layer, regions = spinal_cord.build(config)
@@ -235,7 +235,10 @@ def test_validation_reports_the_published_assembly(published):
 
 @pytest.mark.parametrize(
     "anatomy,cut",
-    [("snail", {"surface_z_mm": -75.0, "brainstem_voxels": 183}), ("bert", None), ("aomic", None)],
+    [
+        ("snail", {"surface_z_mm": -75.0, "brainstem_voxels": 183}),
+        ("cdmd", None),
+    ],
 )
 def test_no_cord_is_placed_where_the_scan_ends_inside_the_brainstem(anatomy, cut):
     config = read_config(anatomy)

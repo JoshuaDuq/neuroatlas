@@ -411,8 +411,8 @@ test('the first cut builds its solids from the model’s meshes instead of downl
   const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
   const { BrainAtlas } = await import('../model/brain-atlas.js');
   const { BrainSections } = await import('../slices/sections.js');
-  // bert publishes the cord the first cut also brings.
-  const directory = new URL('../../public/models/bert/', import.meta.url);
+  // cdmd publishes the cord the first cut also brings.
+  const directory = new URL('../../public/models/cdmd/', import.meta.url);
   const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));
   const parsed = [];
   const loader = { async loadAsync(file) {

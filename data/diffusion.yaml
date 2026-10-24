@@ -11,6 +11,21 @@ provenance: snail-subject-1/provenance.json
 anatomy: snail
 reference_space: snail-subject-1/surface-space.json
 overlay_cortex_opacity: 0.16
+text:
+  en:
+    dataset: SNAIL reference · subject 1
+    otherAnatomy: The selected anatomical atlas uses a different subject from these SNAIL tracts.
+    files: "Files: each tract is one bundles_*.trk.gz streamline file; the MRI is t1_warped.nii.gz."
+    mriTitle: MRI with tracts · SNAIL subject 1
+    mriCanvas: Linked SNAIL MRI slices and tracts. Click to position the crosshair; arrows move one voxel.
+    mriScope: Scanner RAS millimetres · R/L marked. Tracts use the complete source geometry and current length filter. The published scan has cropped inferior coverage; cortical atlas parcels remain surface labels.
+  fr:
+    dataset: Référence SNAIL · sujet 1
+    otherAnatomy: L’atlas anatomique sélectionné utilise un autre sujet que ces faisceaux SNAIL.
+    files: "Fichiers : chaque faisceau est un fichier de trajectoires bundles_*.trk.gz ; l’IRM est t1_warped.nii.gz."
+    mriTitle: IRM avec faisceaux · SNAIL sujet 1
+    mriCanvas: Coupes IRM SNAIL liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.
+    mriScope: Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux conservent la géométrie source complète et le filtre de longueur courant. La couverture inférieure de l’image publiée est tronquée ; les régions corticales restent des étiquettes de surface.
 brain_outline:
   file: snail-subject-1/t1-outline.glb
   provenance: snail-subject-1/t1-outline.json

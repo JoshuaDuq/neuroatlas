@@ -1,5 +1,6 @@
-"""Derive a display outline from the tract reference's skull-stripped T1."""
+"""Derive a display outline from an anatomy's skull-stripped tract reference brain."""
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -7,22 +8,25 @@ from pathlib import Path
 import nibabel as nib
 import numpy as np
 import trimesh
-import yaml
 from scipy import ndimage
 from skimage.measure import marching_cubes
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from brain_model.sources import ROOT, sha256
+from brain_model.sources import ROOT, read_config, sha256, tract_catalog
 
 
-def prepare_outline():
-    catalog = yaml.safe_load((ROOT / "data/diffusion.yaml").read_text())
+def prepare_outline(anatomy):
+    catalog = tract_catalog(read_config(anatomy))
     settings = catalog["brain_outline"]
-    descriptor = next(
-        item for item in catalog["maps"] if item["id"] == settings["source_map"]
-    )
     directory = ROOT / "public/diffusion"
-    source = directory / descriptor["file"]
+    # A skull-stripped map is its own outline source; otherwise the catalog
+    # names a skull-stripped volume in the same scanner frame.
+    if "source_map" in settings:
+        relative = next(item for item in catalog["maps"] if item["id"] == settings["source_map"])["file"]
+        source = directory / relative
+    else:
+        relative = settings["source"]
+        source = ROOT / relative
     image = nib.load(source)
     values = image.get_fdata(dtype=np.float32)
     if values.ndim != 3 or not np.isfinite(values).all():
@@ -50,7 +54,7 @@ def prepare_outline():
     target = directory / settings["file"]
     target.write_bytes(mesh.export(file_type="glb"))
     provenance = {
-        "source": descriptor["file"],
+        "source": relative,
         "source_sha256": sha256(source),
         "published_sha256": sha256(target),
         "method": "Lewiner marching cubes on the largest connected T1 "
@@ -75,4 +79,6 @@ def prepare_outline():
 
 
 if __name__ == "__main__":
-    prepare_outline()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--anatomy", help="this declared anatomy instead of the selected one")
+    prepare_outline(parser.parse_args().anatomy)

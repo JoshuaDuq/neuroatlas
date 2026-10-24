@@ -31,9 +31,8 @@ A cortical parcellation in the viewer. Each colour is one region.
 
 | Subject | Source | Licence |
 | :--- | :--- | :--- |
-| `snail` (default) | SNAIL subject 1, the tract dataset's own T1, FreeSurfer 8.2 | CC0 1.0 |
-| `bert` | FreeSurfer's worked example, FreeSurfer 5.2.0 | FreeSurfer Software License |
-| `aomic` | AOMIC-PIOP1 `sub-0022`, FreeSurfer 6.0.1 | CC0 1.0 |
+| `snail` | SNAIL subject 1, the tract dataset's own T1, FreeSurfer 8.2 | CC0 1.0 |
+| `cdmd` (default) | MGH CDMD `sub_013`, its own diffusion tracts, FreeSurfer 8.2 | CC0 1.0 |
 
 Each is one person's brain. Folds, ventricles and asymmetries belong to that individual and are not normative. See [Anatomies](concepts/anatomies.md).
 

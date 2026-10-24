@@ -63,6 +63,15 @@ def declares(config, layer):
     return layer in config["anatomy"]["layers"]
 
 
+def tract_catalog(config):
+    """The tract catalog of the selected anatomy's own tracts, or None."""
+    catalogs = [yaml.safe_load((ROOT / path).read_text()) for path in config["tract_catalogs"]]
+    own = [catalog for catalog in catalogs if catalog["anatomy"] == config["anatomy"]["id"]]
+    if len(own) > 1:
+        raise ValueError(f"{config['anatomy']['id']} has more than one tract catalog")
+    return own[0] if own else None
+
+
 def sha256(path):
     digest = hashlib.sha256()
     with open(path, "rb") as handle:

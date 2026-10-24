@@ -6,9 +6,9 @@ import { createSceneCommands } from '../state/scene-commands.js';
 import { createSession } from '../state/session.js';
 import { prepareCircuitMri, showCircuitLandmark } from './navigation.js';
 
-/** The real model on bert's manifest, its layers already loaded, opened through the scene commands. */
+/** The real model on cdmd's manifest, its layers already loaded, opened through the scene commands. */
 function lesson() {
-  const manifest = JSON.parse(readFileSync(new URL('../../public/models/bert/manifest.json', import.meta.url)));
+  const manifest = JSON.parse(readFileSync(new URL('../../public/models/cdmd/manifest.json', import.meta.url)));
   const model = new BrainAtlas(manifest, {});
   model.atlasId = 'destrieux';
   model.detailId = 'learning';

@@ -9,8 +9,8 @@ import { visibilityOf } from '../catalog/visibility.js';
 import { SolidSections } from '../tissues/solid-sections.js';
 import { addSolidSources, indexLabels, paintSolids } from '../tissues/solid-assets.js';
 
-// SNAIL's scan ends inside the medulla, so only bert and aomic publish the reference cord.
-const published = 'bert';
+// SNAIL's scan ends inside the medulla, so only cdmd publishes the reference cord.
+const published = 'cdmd';
 
 const directory = new URL(`../../public/models/${published}/`, import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('manifest.json', directory), 'utf8'));

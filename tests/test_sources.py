@@ -1,7 +1,6 @@
 """Which brain gets published is a configuration choice, not a code path."""
 
 import json
-from urllib.parse import quote
 
 import pytest
 import yaml
@@ -29,7 +28,7 @@ def document():
                 "individual": True,
                 "directory": "data/second",
                 "source_url": "https://example.invalid/second",
-                "archive": {"sha256": "0" * 64, "member_prefix": "second/"},
+                "reconstruction": {"input": "second.nii.gz", "input_sha256": "0" * 64},
                 "project_hcp_from": "first",
                 "layers": ["nextbrain", "spinal_cord"],
                 "nextbrain": {"directory": "data/nb-second", "volume": "second.mgz"},
@@ -63,8 +62,8 @@ def test_switching_the_selection_moves_every_path_at_once():
     assert switched["nextbrain"]["directory"] == ROOT / "data/nb-first"
     assert switched["nextbrain"]["volume"] == "first.mgz"
     assert switched["anatomy"]["individual"] is False
-    # Nothing to unpack and no spheres to resample: absence is the declaration.
-    assert "archive" not in switched["anatomy"]
+    # Nothing to reconstruct and no spheres to resample: absence is the declaration.
+    assert "reconstruction" not in switched["anatomy"]
     assert "project_hcp_from" not in switched["anatomy"]
     assert "hcp_source_directory" not in switched["anatomy"]
 
@@ -146,10 +145,7 @@ def test_every_declared_anatomy_resolves_and_every_source_tag_names_one():
     for name in names:
         resolved = resolve_config({**declared, "anatomy": name})
         assert resolved["anatomy"]["id"] == name
-        # A brain whose files this repository does not redistribute is absent
-        # from a fresh checkout until prepare_subject.py fetches it.
-        obtainable = {"archive", "download"} & set(resolved["anatomy"])
-        assert resolved["source_directory"].is_dir() or obtainable
+        assert resolved["source_directory"].is_dir()
     tagged = {
         source.get("anatomy")
         for source in json.loads((ROOT / "data/sources.json").read_text())["sources"]
@@ -178,7 +174,7 @@ def test_a_brain_can_be_prepared_without_being_the_selected_one():
     from brain_model.sources import read_config
 
     selected = read_config()
-    other = "fsaverage" if selected["anatomy"]["id"] != "fsaverage" else "bert"
+    other = "fsaverage" if selected["anatomy"]["id"] != "fsaverage" else "snail"
     assert read_config(other)["anatomy"]["id"] == other
     assert read_config()["anatomy"]["id"] == selected["anatomy"]["id"]
 
@@ -308,67 +304,6 @@ def test_rerecording_an_unchanged_reconstruction_needs_no_flag(tmp_path, monkeyp
     )
 
 
-class Response:
-    def __init__(self, payload):
-        self.payload = payload
-
-    def read(self):
-        return self.payload
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *exception):
-        return False
-
-
-def downloadable(tmp_path, monkeypatch, files):
-    """A `download` anatomy whose files are served from memory."""
-    prepare = load_prepare_subject()
-    base = "https://example.invalid/sub-0001"
-    served = {f"{base}/{quote(name)}": data for name, data in files.items()}
-    monkeypatch.setattr(prepare, "ROOT", tmp_path)
-    monkeypatch.setattr(prepare, "SUBJECT_FILES", list(files))
-    monkeypatch.setattr(prepare, "urlopen", lambda url: Response(served[url]))
-    config = {
-        "source_directory": tmp_path / "data/example",
-        "anatomy": {"id": "example", "download": {"base_url": base}},
-    }
-    return prepare, config
-
-
-def test_a_downloaded_reconstruction_records_a_checksum_for_every_file(tmp_path, monkeypatch):
-    # The `+` in aparc.a2009s+aseg.mgz is a real path character, and an S3 key
-    # that leaves it unescaped is a 404 rather than a wrong file.
-    files = {"mri/aparc.a2009s+aseg.mgz": b"labels", "surf/lh.pial": b"surface"}
-    prepare, config = downloadable(tmp_path, monkeypatch, files)
-    provenance = {"sources": []}
-
-    prepare.download_subject(config, provenance)
-
-    written = {
-        source["path"]: source for source in provenance["sources"]
-    }
-    assert set(written) == {"data/example/mri/aparc.a2009s+aseg.mgz", "data/example/surf/lh.pial"}
-    for record in written.values():
-        assert record["anatomy"] == "example"
-        assert len(record["sha256"]) == 64
-    assert (config["source_directory"] / "surf/lh.pial").read_bytes() == b"surface"
-
-
-def test_a_downloaded_file_whose_bytes_changed_is_refused_rather_than_rebuilt(tmp_path, monkeypatch):
-    files = {"surf/lh.pial": b"surface"}
-    prepare, config = downloadable(tmp_path, monkeypatch, files)
-    provenance = {"sources": []}
-    prepare.download_subject(config, provenance)
-
-    # An already-present file is never re-fetched, so tampering must be caught
-    # by the recorded checksum or it would be built from silently.
-    (config["source_directory"] / "surf/lh.pial").write_bytes(b"tampered")
-    with pytest.raises(SystemExit, match="recorded checksum"):
-        prepare.download_subject(config, provenance)
-
-
 def test_both_hemispheres_white_matter_is_drawn_in_one_colour():
     # The bundled 2012 table paints label 41 green, which turned one hemisphere's
     # white matter green on every cut. FreeSurfer's current table corrected it.
@@ -403,7 +338,7 @@ def test_a_projection_whose_source_annotation_is_missing_is_refused(tmp_path):
         prepare.transfer_annotation(config, {"sources": []}, "HCPMMP1", "hcp.json")
 
 
-@pytest.mark.parametrize("anatomy", ["snail", "bert", "aomic"])
+@pytest.mark.parametrize("anatomy", ["snail", "cdmd"])
 def test_every_source_a_published_anatomy_builds_from_is_committed_and_unchanged(anatomy):
     # A pinned path that is a symlink is read through its target, so a link
     # committed without its target fails here as surely as a missing file.

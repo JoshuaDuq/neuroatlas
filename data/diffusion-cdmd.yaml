@@ -1,0 +1,101 @@
+id: cdmd-sub-013
+name:
+  en: MGH CDMD · sub_013
+  fr: MGH CDMD · sub_013
+source: https://doi.org/10.6084/m9.figshare.c.5315474.v1
+license: CC0-1.0
+# Tracked here from the subject's own diffusion scan by scripts/cdmd_pilot.py,
+# packaged by scripts/prepare_diffusion_cdmd.py.
+provenance: cdmd-sub-013/provenance.json
+anatomy: cdmd
+reference_space: cdmd-sub-013/surface-space.json
+overlay_cortex_opacity: 0.16
+# The step the pilot's 0.2 mm tracking is resampled to, the published SNAIL
+# tracts' own; provenance records how far that moves the geometry.
+resample_step_mm: 0.5
+text:
+  en:
+    dataset: MGH CDMD · sub_013
+    otherAnatomy: The selected anatomical atlas uses a different subject from these MGH CDMD tracts.
+    files: "Files: each tract is one TRK streamline file, resampled to 0.5 mm steps; the MRI is sub_013_t1w.nii.gz."
+    mriTitle: MRI with tracts · MGH CDMD sub_013
+    mriCanvas: Linked MGH CDMD MRI slices and tracts. Click to position the crosshair; arrows move one voxel.
+    mriScope: Scanner RAS millimetres · R/L marked. Tracts were tracked in this scan’s own diffusion data and are drawn at 0.5 mm steps with the current length filter. Cortical atlas parcels remain surface labels.
+  fr:
+    dataset: MGH CDMD · sub_013
+    otherAnatomy: L’atlas anatomique sélectionné utilise un autre sujet que ces faisceaux MGH CDMD.
+    files: "Fichiers : chaque faisceau est un fichier de trajectoires TRK, rééchantillonné à des pas de 0,5 mm ; l’IRM est sub_013_t1w.nii.gz."
+    mriTitle: IRM avec faisceaux · MGH CDMD sub_013
+    mriCanvas: Coupes IRM MGH CDMD liées et faisceaux. Cliquer pour placer le réticule ; les flèches déplacent d’un voxel.
+    mriScope: Millimètres RAS du scanner · L/R (gauche/droite) indiquées. Les faisceaux ont été suivis dans les données de diffusion de cette même image et sont tracés à des pas de 0,5 mm avec le filtre de longueur courant. Les régions corticales restent des étiquettes de surface.
+brain_outline:
+  file: cdmd-sub-013/brain-outline.glb
+  provenance: cdmd-sub-013/brain-outline.json
+  # The T1 keeps the skull, so the outline is the reconstruction's own
+  # skull-stripped brain, in the same scanner frame.
+  source: data/cdmd/mri/brain.mgz
+  intensity_threshold: 1
+  step_size: 2
+  opacity: 0.16
+maps:
+  - id: t1
+    file: cdmd-sub-013/sub_013_t1w.nii.gz
+    name: { en: T1 reference, fr: Référence T1 }
+    colormap: gray
+    # 0 to just above the scan's maximum (523.8), as SNAIL's map runs to its own.
+    range: [0, 525]
+    opacity: 1
+bundles:
+  - id: af-left
+    file: cdmd-sub-013/af.left.trk.gz
+    name: { en: Arcuate fasciculus · left, fr: Faisceau arqué · gauche }
+    initial: true
+  - id: af-right
+    file: cdmd-sub-013/af.right.trk.gz
+    name: { en: Arcuate fasciculus · right, fr: Faisceau arqué · droit }
+  - id: cst-left
+    file: cdmd-sub-013/cst.left.trk.gz
+    name: { en: Corticospinal tract · left, fr: Faisceau corticospinal · gauche }
+  - id: cst-right
+    file: cdmd-sub-013/cst.right.trk.gz
+    name: { en: Corticospinal tract · right, fr: Faisceau corticospinal · droit }
+    initial: true
+  - id: cg-left
+    file: cdmd-sub-013/cg.left.trk.gz
+    name: { en: Cingulum · left, fr: Cingulum · gauche }
+  - id: cg-right
+    file: cdmd-sub-013/cg.right.trk.gz
+    name: { en: Cingulum · right, fr: Cingulum · droit }
+  - id: uf-left
+    file: cdmd-sub-013/uf.left.trk.gz
+    name: { en: Uncinate fasciculus · left, fr: Faisceau unciné · gauche }
+  - id: uf-right
+    file: cdmd-sub-013/uf.right.trk.gz
+    name: { en: Uncinate fasciculus · right, fr: Faisceau unciné · droit }
+  - id: ifof-left
+    file: cdmd-sub-013/ifof.left.trk.gz
+    name: { en: Inferior fronto-occipital fasciculus · left, fr: Faisceau fronto-occipital inférieur · gauche }
+  - id: ifof-right
+    file: cdmd-sub-013/ifof.right.trk.gz
+    name: { en: Inferior fronto-occipital fasciculus · right, fr: Faisceau fronto-occipital inférieur · droit }
+  - id: ilf-left
+    file: cdmd-sub-013/ilf.left.trk.gz
+    name: { en: Inferior longitudinal fasciculus · left, fr: Faisceau longitudinal inférieur · gauche }
+  - id: ilf-right
+    file: cdmd-sub-013/ilf.right.trk.gz
+    name: { en: Inferior longitudinal fasciculus · right, fr: Faisceau longitudinal inférieur · droit }
+  - id: mdlf-left
+    file: cdmd-sub-013/mdlf.left.trk.gz
+    name: { en: Middle longitudinal fasciculus · left, fr: Faisceau longitudinal moyen · gauche }
+  - id: mdlf-right
+    file: cdmd-sub-013/mdlf.right.trk.gz
+    name: { en: Middle longitudinal fasciculus · right, fr: Faisceau longitudinal moyen · droit }
+  - id: slf-left
+    file: cdmd-sub-013/slf.left.trk.gz
+    name: { en: Superior longitudinal fasciculus · left, fr: Faisceau longitudinal supérieur · gauche }
+  - id: slf-right
+    file: cdmd-sub-013/slf.right.trk.gz
+    name: { en: Superior longitudinal fasciculus · right, fr: Faisceau longitudinal supérieur · droit }
+  - id: cc-1
+    file: cdmd-sub-013/cc.trk.gz
+    name: { en: Corpus callosum · whole, fr: Corps calleux · entier }
