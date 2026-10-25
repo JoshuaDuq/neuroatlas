@@ -20,12 +20,15 @@
       media: Pick<Media, 'phone' | 'coarsePointer'>;
     };
     sources: HoverSources;
+    /** The stage's size in CSS pixels. */
+    width?: number;
+    height?: number;
   }
 
-  let { engine, stage, live, sources }: Props = $props();
+  let { engine, stage, live, sources, width = 900, height = 600 }: Props = $props();
 </script>
 
-<main id="viewport" tabindex="-1">
+<main id="viewport" tabindex="-1" style:width="{width}px" style:height="{height}px">
   <canvas id="stage-canvas" tabindex="0" aria-label="Brain model"></canvas>
   <StageOverlay
     {engine}
@@ -39,14 +42,13 @@
     {sources}
   />
 </main>
+<dialog id="modal"><button type="button">Close</button></dialog>
 
 <style>
   @layer features {
     main {
       position: relative;
       overflow: hidden;
-      width: 900px;
-      height: 600px;
       background: var(--scene-background);
     }
     canvas {

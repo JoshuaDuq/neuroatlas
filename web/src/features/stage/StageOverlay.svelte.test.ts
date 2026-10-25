@@ -73,17 +73,24 @@ function liveState(overrides: Partial<Live>): Live {
 
 async function mount(
   overrides: Partial<Live> = {},
-  options: { dock?: boolean; retired?: boolean } = {},
+  options: { dock?: boolean; retired?: boolean; width?: number; height?: number } = {},
 ) {
-  engine = createFakeEngine({ manifest: published, hostSize: { width: 900, height: 600 } });
+  const { width = 900, height = 600 } = options;
+  engine = createFakeEngine({ manifest: published, hostSize: { width, height } });
   if (options.retired) localStorage.setItem(PREF_KEYS.stageHint, 'retired');
   live = liveState(overrides);
   cleanups.push(
     $effect.root(() => {
-      stage = createStageLayout();
+      stage = createStageLayout({
+        media: {
+          get phone() {
+            return live.media.phone;
+          },
+        },
+      });
     }),
   );
-  const result = await render(Fixture, { engine, stage, live, sources });
+  const result = await render(Fixture, { engine, stage, live, sources, width, height });
   if (options.dock) stage.setDock({ width: 300, height: 38 });
   flushSync();
   return result;
@@ -246,12 +253,13 @@ describe('scale bar', () => {
   test('its width, rule and label, decides how the dock and the bar share a line', async () => {
     await mount({}, { dock: true });
     emitScale(10, 100);
-    flushSync();
+    await vi.waitFor(() =>
+      expect(find('#scale-bar').getBoundingClientRect().width).toBeGreaterThan(100),
+    );
     expect(host().dataset.chrome).toBe('wide');
     // A 300 px dock, the bar and 48 px of margins need more than a 440 px stage has.
     engine.camera.setChromeInsets({ right: 460 }, {});
-    flushSync();
-    expect(host().dataset.chrome).toBe('tight');
+    await vi.waitFor(() => expect(host().dataset.chrome).toBe('tight'));
   });
 });
 
@@ -458,15 +466,113 @@ describe('hints', () => {
 
   test('are not drawn where one line would not fit clear of the top letter', async () => {
     await mount();
-    flushSync();
-    expect(help().dataset.room).toBe('true');
+    await vi.waitFor(() => expect(help().dataset.room).toBe('true'));
     engine.camera.setChromeInsets({ right: 540 }, {});
-    flushSync();
-    expect(help().dataset.room).toBe('false');
+    await vi.waitFor(() => expect(help().dataset.room).toBe('false'));
     expect(getComputedStyle(help()).visibility).toBe('hidden');
     engine.camera.setChromeInsets({ right: 0 }, {});
-    flushSync();
-    expect(help().dataset.room).toBe('true');
+    await vi.waitFor(() => expect(help().dataset.room).toBe('true'));
+  });
+
+  test('take the reader contrast setting', async () => {
+    await mount();
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], () => {
+      expect(getComputedStyle(help()).color).toBe(
+        getComputedStyle(find('[data-edge="top"]')).color,
+      );
+    });
+  });
+});
+
+describe('text size and spacing set after the stage is up (WCAG 1.4.4, 1.4.12)', () => {
+  const SPACING = `* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }`;
+  const rect = (selector: string) => find(selector).getBoundingClientRect();
+  /** A hint that is drawn must end before the top letter begins. */
+  const hintClear = () =>
+    getComputedStyle(help()).visibility === 'hidden' ||
+    rect('#viewport-help').right <= rect('[data-edge="top"]').left;
+  const help = () => find('#viewport-help');
+  let style: HTMLStyleElement | null = null;
+
+  afterEach(() => {
+    document.documentElement.style.fontSize = '';
+    style?.remove();
+    style = null;
+  });
+
+  const cases = [
+    ['320 px wide at 568 tall (400 % zoom)', 320, 400, 320, 568],
+    ['844 × 390 landscape', 844, 300, 844, 390],
+    ['a 700 px stage', 700, 500, 1280, 800],
+    ['a desktop stage', 900, 600, 1280, 800],
+  ] as const;
+
+  test.each(cases)(
+    '%s: 200 % text keeps the hint off the top letter and the chip inside',
+    async (_name, width, height, viewportWidth, viewportHeight) => {
+      await page.viewport(viewportWidth, viewportHeight);
+      await mount({}, { width, height });
+      await vi.waitFor(() => expect(help().dataset.room).toBeDefined());
+      pointerAt(regionA, width - 2, height - 2);
+      document.documentElement.style.fontSize = '200%';
+      await vi.waitFor(() => expect(hintClear()).toBe(true));
+      await vi.waitFor(() => {
+        const chipBox = chip().getBoundingClientRect();
+        const stageBox = host().getBoundingClientRect();
+        expect(chipBox.right).toBeLessThanOrEqual(stageBox.right + 0.5);
+        expect(chipBox.bottom).toBeLessThanOrEqual(stageBox.bottom + 0.5);
+        expect(chipBox.left).toBeGreaterThanOrEqual(stageBox.left - 0.5);
+        expect(chipBox.top).toBeGreaterThanOrEqual(stageBox.top - 0.5);
+      });
+    },
+  );
+
+  test.each(cases)(
+    '%s: text spacing keeps the hint off the top letter and the chip inside',
+    async (_name, width, height, viewportWidth, viewportHeight) => {
+      await page.viewport(viewportWidth, viewportHeight);
+      await mount({}, { width, height });
+      await vi.waitFor(() => expect(help().dataset.room).toBeDefined());
+      pointerAt(regionA, width - 2, height - 2);
+      style = document.head.appendChild(document.createElement('style'));
+      style.textContent = SPACING;
+      await vi.waitFor(() => expect(hintClear()).toBe(true));
+      await vi.waitFor(() => {
+        const chipBox = chip().getBoundingClientRect();
+        const stageBox = host().getBoundingClientRect();
+        expect(chipBox.right).toBeLessThanOrEqual(stageBox.right + 0.5);
+        expect(chipBox.bottom).toBeLessThanOrEqual(stageBox.bottom + 0.5);
+      });
+    },
+  );
+
+  test('the scale bar width follows the text, so the dock and the bar are refitted', async () => {
+    await mount({}, { dock: true });
+    engine.emit('camera', { ...engine.camera.view, scale: { millimetres: 10, pixels: 100 } });
+    const narrow = await vi.waitFor(() => {
+      const width = find('#scale-bar').getBoundingClientRect().width;
+      expect(width).toBeGreaterThan(100);
+      return width;
+    });
+    document.documentElement.style.fontSize = '200%';
+    await vi.waitFor(() =>
+      expect(find('#scale-bar').getBoundingClientRect().width).toBeGreaterThan(narrow),
+    );
+  });
+});
+
+describe('Escape and dialogs', () => {
+  test('an Escape inside a modal dialog closes the dialog and leaves the chip alone', async () => {
+    await mount();
+    pointerAt(regionA, 100, 100);
+    const modal = find<HTMLDialogElement>('#modal');
+    modal.showModal();
+    await userEvent.keyboard('{Escape}');
+    expect(modal.open).toBe(false);
+    expect(chip().hidden).toBe(false);
+    // With the dialog gone, the next Escape dismisses the chip.
+    await userEvent.keyboard('{Escape}');
+    expect(chip().hidden).toBe(true);
   });
 });
 

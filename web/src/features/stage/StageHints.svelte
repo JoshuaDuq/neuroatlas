@@ -45,25 +45,27 @@
 
   let navigationNode: HTMLElement;
   let focusNode: HTMLElement;
-  let navigationFits = $state(true);
-  let focusFits = $state(true);
-
-  // Each wording is measured once: its width does not change until its words do.
-  const widths = new Map<string, number>();
-  const fits = (node: HTMLElement, room: number) => {
-    const text = node.textContent!;
-    if (!widths.has(text)) widths.set(text, node.offsetWidth);
-    return widths.get(text)! <= room;
-  };
+  // Each hint's own border box: a late webfont, larger text or text spacing changes it, and a width
+  // remembered per wording would not follow (WCAG 1.4.4, 1.4.12).
+  let navigationWidth = $state(0);
+  let focusWidth = $state(0);
 
   $effect(() => {
-    void navigation;
-    void copy.keyboardHint;
-    const room = stage.hintRoom;
-    if (room === null) return;
-    navigationFits = fits(navigationNode, room);
-    focusFits = fits(focusNode, room);
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.borderBoxSize[0]!.inlineSize;
+        if (entry.target === navigationNode) navigationWidth = width;
+        else focusWidth = width;
+      }
+    });
+    observer.observe(navigationNode);
+    observer.observe(focusNode);
+    return () => observer.disconnect();
   });
+
+  const room = $derived(stage.hintRoom);
+  const navigationFits = $derived(room === null || navigationWidth <= room);
+  const focusFits = $derived(room === null || focusWidth <= room);
 </script>
 
 <p

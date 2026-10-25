@@ -6,11 +6,13 @@ import { PREF_KEYS } from './prefs.ts';
 import { fakeStorage } from './test-support.ts';
 import { createStageLayout } from './stage-layout.svelte.ts';
 
+const media = { phone: false };
+
 const rect = (width: number, height: number) => ({ x: 0, y: 0, width, height });
 
 /** A store with a stage of this visible size, a 20 px gutter and a dock of the given size. */
 function stageOf(width: number, height: number, dock = { width: 300, height: 38 }) {
-  const stage = createStageLayout({ storage: null });
+  const stage = createStageLayout({ media, storage: null });
   stage.setViewport(rect(width, height), { width, height });
   stage.setGutter(20);
   stage.setDock(dock);
@@ -45,7 +47,7 @@ describe('layout derivations', () => {
   });
 
   test('without a visible rectangle the chrome is wide and the dock not tall', () => {
-    const stage = createStageLayout({ storage: null });
+    const stage = createStageLayout({ media, storage: null });
     stage.setDock({ width: 900, height: 400 });
     expect(stage.chrome).toBe('wide');
     expect(stage.dockTall).toBe(false);
@@ -84,7 +86,7 @@ describe('layout derivations', () => {
   });
 
   test('the dock element is watched, and its size reaches the store', async () => {
-    const stage = createStageLayout({ storage: null });
+    const stage = createStageLayout({ media, storage: null });
     const dock = document.body.appendChild(document.createElement('div'));
     dock.style.cssText = 'position: fixed; width: 321px; height: 45px;';
     const stop = stage.observeDock(dock);
@@ -95,9 +97,64 @@ describe('layout derivations', () => {
   });
 });
 
+describe('the section row', () => {
+  test('folds its details only where one line would not fit between the gutters', () => {
+    const stage = stageOf(500, 600);
+    stage.sectionNeed = 460;
+    expect(stage.sectionCompact).toBe(false);
+    stage.sectionNeed = 461;
+    expect(stage.sectionCompact).toBe(true);
+    stage.setViewport(rect(600, 600), { width: 600, height: 600 });
+    expect(stage.sectionCompact).toBe(false);
+  });
+
+  test('is always folded on a phone, and never before the stage has a size', () => {
+    const stage = createStageLayout({ media: { phone: true }, storage: null });
+    expect(stage.sectionCompact).toBe(false);
+    stage.setViewport(rect(500, 600), { width: 500, height: 600 });
+    expect(stage.sectionCompact).toBe(true);
+  });
+
+  test('counts the webfont arrivals for whoever measured before one', () => {
+    const stage = stageOf(500, 600);
+    const before = stage.fontEpoch;
+    stage.fontsLoaded();
+    expect(stage.fontEpoch).toBe(before + 1);
+  });
+});
+
+describe('the dock and the keys tell the camera', () => {
+  test('a dock resize calls onDock once the dock is measured', async () => {
+    const calls: number[] = [];
+    const stage = createStageLayout({
+      media,
+      storage: null,
+      onDock: () => calls.push(stage.dock.height),
+    });
+    const dock = document.body.appendChild(document.createElement('div'));
+    dock.style.cssText = 'position: fixed; width: 300px; height: 40px;';
+    const stop = stage.observeDock(dock);
+    await vi.waitFor(() => expect(calls).toEqual([40]));
+    dock.style.height = '90px';
+    await vi.waitFor(() => expect(calls).toEqual([40, 90]));
+    stop();
+  });
+
+  test('a changed key band calls onDock, an unchanged one does not', () => {
+    let calls = 0;
+    const stage = createStageLayout({ media, storage: null, onDock: () => (calls += 1) });
+    stage.setKeys({ top: 0, right: 90 }, { width: 90, height: 200 });
+    expect(calls).toBe(1);
+    stage.setKeys({ top: 0, right: 90 }, { width: 90, height: 220 });
+    expect(calls).toBe(1);
+    stage.setKeys({ top: 30, right: 0 }, { width: 200, height: 30 });
+    expect(calls).toBe(2);
+  });
+});
+
 describe('framing', () => {
   test('before the stage has a size, the dock alone is cleared', () => {
-    const stage = createStageLayout({ storage: null });
+    const stage = createStageLayout({ media, storage: null });
     stage.setGutter(20);
     stage.setDock({ width: 300, height: 38 });
     expect(stage.framing()).toEqual({
@@ -215,6 +272,56 @@ describe('framing', () => {
     expect(stage.framing().inset.bottom).toBe(0);
   });
 
+  test('writes the dock variables the moment the dock is measured', () => {
+    const stage = stageOf(800, 600);
+    const host = document.body.appendChild(document.createElement('div'));
+    const stop = stage.attachHost(host);
+    stage.setDock({ width: 300, height: 120 });
+    expect(host.style.getPropertyValue('--dock-height')).toBe('120px');
+    expect(host.dataset.dockTall).toBe('false');
+    stage.setDock({ width: 300, height: 300 });
+    expect(host.dataset.dockTall).toBe('true');
+    stop();
+  });
+
+  test('measures the markings against a dock that changed in the same task', () => {
+    const stage = stageOf(800, 600);
+    const host = document.body.appendChild(document.createElement('div'));
+    host.style.cssText =
+      'position: absolute; left: 0; top: 0; width: 800px; height: 600px; --dock-height: 38px;';
+    const frame = host.appendChild(document.createElement('div'));
+    frame.style.cssText = 'position: absolute; inset: 0;';
+    const letters = {
+      top: 'left: 395px; top: 12px;',
+      bottom: 'left: 395px; bottom: calc(20px + var(--dock-height) + 8px);',
+      left: 'left: 12px; top: 250px;',
+      right: 'left: 778px; top: 250px;',
+    };
+    for (const [edge, css] of Object.entries(letters)) {
+      const node = frame.appendChild(document.createElement('span'));
+      node.dataset.edge = edge;
+      node.style.cssText = `position: absolute; width: 10px; height: 20px; ${css}`;
+    }
+    stage.registerOrientation(frame);
+    const stop = stage.attachHost(host);
+    stage.setDock({ width: 300, height: 38 });
+    stage.setDock({ width: 300, height: 120 });
+    // Reach is the dock and the 20 px gutter; the bottom letter sits 148 px above the bottom: top at 432.
+    const reach = 120 + 20;
+    const clear = {
+      top: 12 + 20 + 8,
+      bottom: 600 - reach - 432 < 0 ? 0 : 600 - reach - 432 + 8,
+      left: 12 + 10 + 8,
+      right: 800 - 778 + 8,
+    };
+    const expected = clearFraming({ width: 800, height: 600 }, reach, clear, FRAME_FILL);
+    expect(stage.framing()).toEqual({
+      inset: { top: 0, right: 0, bottom: expected.inset },
+      scale: expected.scale,
+    });
+    stop();
+  });
+
   test('the dock is measured again at framing, in case the observer has not run', () => {
     const stage = stageOf(800, 600);
     const dock = document.body.appendChild(document.createElement('div'));
@@ -229,21 +336,25 @@ describe('framing', () => {
 describe('the navigation hint', () => {
   test('is retired for good by the first retirement, and remembered', () => {
     const storage = fakeStorage();
-    const stage = createStageLayout({ storage: storage as unknown as Storage });
+    const stage = createStageLayout({ media, storage: storage as unknown as Storage });
     expect(stage.hintRetired).toBe(false);
     stage.retireHint();
     expect(stage.hintRetired).toBe(true);
     expect(storage.store[PREF_KEYS.stageHint]).toBe('retired');
-    expect(createStageLayout({ storage: storage as unknown as Storage }).hintRetired).toBe(true);
+    expect(createStageLayout({ media, storage: storage as unknown as Storage }).hintRetired).toBe(
+      true,
+    );
   });
 
   test('is already retired when an earlier visit retired it', () => {
     const storage = fakeStorage({ [PREF_KEYS.stageHint]: 'retired' });
-    expect(createStageLayout({ storage: storage as unknown as Storage }).hintRetired).toBe(true);
+    expect(createStageLayout({ media, storage: storage as unknown as Storage }).hintRetired).toBe(
+      true,
+    );
   });
 
   test('retires for this visit where site data is blocked', () => {
-    const stage = createStageLayout({ storage: null });
+    const stage = createStageLayout({ media, storage: null });
     stage.retireHint();
     expect(stage.hintRetired).toBe(true);
   });

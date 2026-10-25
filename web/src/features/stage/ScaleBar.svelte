@@ -1,8 +1,9 @@
 <!--
   The scale bar (viewport-chrome.js:445-463; stage.css:152-179): a rule in true millimetres on a 1-2-5
   sequence, from the engine's `camera` event. Its rule and label are written straight into the DOM on every
-  camera move; only its width goes to the stage-layout store, where it decides whether the dock and the bar
-  share a line. The label's width is read once per wording, so a fit during a sheet drag forces no layout.
+  camera move; only its width, from a ResizeObserver, goes to the stage-layout store, where it decides
+  whether the dock and the bar share a line. No width is remembered per wording, so a late webfont, larger
+  text or text spacing refits it, and a fit during a sheet drag forces no layout.
 -->
 <script lang="ts">
   import { untrack } from 'svelte';
@@ -26,24 +27,26 @@
   let label: HTMLElement;
   // The scale the camera last reported; the engine is the stage's for its whole life.
   let scale: CameraView['scale'] = untrack(() => engine.camera.view.scale);
-  const labelWidths = new Map<string, number>();
 
   function paint() {
     bar.hidden = !(ready && scale);
-    if (bar.hidden) {
-      stage.setScaleBarWidth(0);
-      return;
-    }
+    if (bar.hidden) return;
     const { millimetres, pixels } = scale!;
-    const ruleWidth = Math.round(pixels);
+    const ruleWidth = `${Math.round(pixels)}px`;
     const text = withUnit(decimal(millimetres, 1, lang, { trim: true }), 'mm', lang);
-    const width = `${ruleWidth}px`;
-    if (rule.style.width !== width) rule.style.width = width;
+    if (rule.style.width !== ruleWidth) rule.style.width = ruleWidth;
     if (label.textContent !== text) label.textContent = text;
-    if (!labelWidths.has(text)) labelWidths.set(text, bar.scrollWidth - ruleWidth);
-    // The bar is as wide as the camera makes it, so the fit is asked again whenever it changes.
-    stage.setScaleBarWidth(ruleWidth + labelWidths.get(text)!);
   }
+
+  // The bar is as wide as the camera and the text make it (a rule, a gap and a label, in whatever face and
+  // size the reader has), so its own border box is watched, not a width remembered per wording.
+  $effect(() => {
+    const observer = new ResizeObserver(([entry]) => {
+      stage.setScaleBarWidth(bar.hidden ? 0 : Math.round(entry!.borderBoxSize[0]!.inlineSize));
+    });
+    observer.observe(bar);
+    return () => observer.disconnect();
+  });
 
   // Re-worded and re-shown when the language or the status changes, from the scale already held.
   $effect(paint);

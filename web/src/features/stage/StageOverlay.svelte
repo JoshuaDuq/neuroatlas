@@ -76,14 +76,18 @@
     style.setProperty('--key-right', `${stage.keyInset.right}px`);
   });
 
-  // Until the dock is measured, the stylesheet's own height stands.
-  $effect(() => {
-    if (stage.dock.height) host().style.setProperty('--dock-height', `${stage.dock.height}px`);
-  });
+  // The dock's height and tallness are written by the store itself, as the dock is measured.
+  $effect(() => untrack(() => stage.attachHost(host())));
 
   $effect(() => {
     host().dataset.chrome = stage.chrome;
-    host().dataset.dockTall = String(stage.dockTall);
+  });
+
+  // Widths measured in a fallback face are wrong once Source Sans arrives (viewport-chrome.js:551-558).
+  $effect(() => {
+    const onFonts = () => stage.fontsLoaded();
+    document.fonts.addEventListener('loadingdone', onFonts);
+    return () => document.fonts.removeEventListener('loadingdone', onFonts);
   });
 
   // Once the reader has moved or clicked the model, the instruction has done its work, for good.

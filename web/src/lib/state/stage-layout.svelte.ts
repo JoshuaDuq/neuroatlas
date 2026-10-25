@@ -1,6 +1,7 @@
 import type { FramingClearance, Rect, Size } from '../engine/api.ts';
 import { FRAME_FILL } from '../engine/render/camera-views.ts';
 import { clearFraming } from '../engine/render/effective-viewport.ts';
+import type { Media } from './media.svelte.ts';
 import { PREF_KEYS, defaultStorage, readPref, writePref } from './prefs.ts';
 
 export type Edge = 'top' | 'right' | 'bottom' | 'left';
@@ -31,8 +32,15 @@ const sameSize = (a: Size, b: Size) => a.width === b.width && a.height === b.hei
  * read. The camera and hover events never come through here.
  */
 export function createStageLayout({
+  media,
+  onDock,
   storage = defaultStorage(),
-}: { storage?: Storage | null } = {}) {
+}: {
+  media: Pick<Media, 'phone'>;
+  /** The dock or the colour keys changed size: the camera keeps its fit (`engine.camera.refitDock`, app.js:388). */
+  onDock?: () => void;
+  storage?: Storage | null;
+}) {
   let visibleRect = $state.raw<Rect | null>(null);
   let hostSize = $state.raw<Size | null>(null);
   let dock = $state.raw<Size>({ width: 0, height: 0 });
@@ -42,6 +50,7 @@ export function createStageLayout({
   let sectionNeed = $state(0);
   let gutter = $state(0);
   let scaleBarWidth = $state(0);
+  let fontEpoch = $state(0);
   let hintRetired = $state(readPref(PREF_KEYS.stageHint, storage) === RETIRED);
 
   // Elements the framing measures where they are drawn.
@@ -49,6 +58,7 @@ export function createStageLayout({
   let orientation: HTMLElement | null = null;
   let scaleBar: HTMLElement | null = null;
   let keyFitter: (() => void) | null = null;
+  let host: HTMLElement | null = null;
 
   const chrome = $derived.by((): ChromeMode => {
     if (!visibleRect?.width) return 'wide';
@@ -60,6 +70,15 @@ export function createStageLayout({
 
   const dockTall = $derived(
     Boolean(visibleRect?.height) && dock.height + DOCK_TALL_MARGIN_PX > visibleRect!.height / 2,
+  );
+
+  /**
+   * Whether the section row folds Reverse side and Linked MRI behind its disclosure: always on a phone,
+   * elsewhere only when its one line, `sectionNeed` pixels wide, would not fit between the gutters
+   * (stage-tools.js `compactSection`, viewport-chrome.js:169-176).
+   */
+  const sectionCompact = $derived(
+    Boolean(visibleRect?.width) && (media.phone || sectionNeed > visibleRect!.width - 2 * gutter),
   );
 
   /** The room one line of a hint has before it would reach the top letter or a key, or null before the stage has a size. */
@@ -76,7 +95,7 @@ export function createStageLayout({
     if (dockElement) {
       // The observer may not have run since the dock last changed.
       const measured = Math.round(dockElement.offsetHeight);
-      if (measured !== dock.height) dock = { ...dock, height: measured };
+      if (measured !== dock.height) setDock({ ...dock, height: measured });
     }
     return dock.height + gutter;
   }
@@ -110,8 +129,21 @@ export function createStageLayout({
     return clear;
   }
 
+  /**
+   * `--dock-height` and `data-dock-tall` are written the moment the dock's height is known, not after the
+   * next effect flush: `framing()` measures the markings against them in the same task (viewport-chrome.js:198-203).
+   * Until the dock is measured, the stylesheet's own height stands.
+   */
+  function writeDock() {
+    if (!host) return;
+    if (dock.height) host.style.setProperty('--dock-height', `${dock.height}px`);
+    host.dataset.dockTall = String(dockTall);
+  }
+
   function setDock(size: Size) {
-    if (!sameSize(dock, size)) dock = size;
+    if (sameSize(dock, size)) return;
+    dock = size;
+    writeDock();
   }
 
   return {
@@ -156,6 +188,17 @@ export function createStageLayout({
     set sectionNeed(width: number) {
       sectionNeed = width;
     },
+    /** The section row folds its details behind the disclosure (G4 reads it for `data-compact`). */
+    get sectionCompact() {
+      return sectionCompact;
+    },
+    /** Counts the webfont arrivals: widths measured before one are wrong after it (G4's section measure reads it). */
+    get fontEpoch() {
+      return fontEpoch;
+    },
+    fontsLoaded() {
+      fontEpoch += 1;
+    },
     get hintRetired() {
       return hintRetired;
     },
@@ -179,6 +222,16 @@ export function createStageLayout({
       }
       visibleRect = rect;
       hostSize = size;
+      writeDock();
+    },
+
+    /** The stage host, whose dock variables are written at once; returns the function that lets go. */
+    attachHost(element: HTMLElement): () => void {
+      host = element;
+      writeDock();
+      return () => {
+        if (host === element) host = null;
+      };
     },
 
     /** The stage gutter in pixels, read from the host's `--stage-gutter` (it differs on a phone). */
@@ -194,6 +247,7 @@ export function createStageLayout({
       const observer = new ResizeObserver(([entry]) => {
         const box = entry!.borderBoxSize[0]!;
         setDock({ width: Math.round(box.inlineSize), height: Math.round(box.blockSize) });
+        onDock?.();
       });
       observer.observe(element);
       return () => {
@@ -204,8 +258,10 @@ export function createStageLayout({
 
     /** The band the colour keys take off the framing rectangle (G3), and the size of the keys' host. */
     setKeys(inset: { top: number; right: number }, size: Size) {
+      const changed = inset.top !== keyInset.top || inset.right !== keyInset.right;
       keyInset = inset;
       keySize = size;
+      if (changed) onDock?.();
     },
 
     /** G3's fitting of the keys, run at the start of every framing so it sees the keys as they now are (viewport-chrome.js:265). */

@@ -49,11 +49,35 @@
       chip.textContent = text;
       size = null;
     }
+    place(position);
+  }
+
+  function place(position: { x: number; y: number }) {
     bounds ??= chip.parentElement!.getBoundingClientRect();
     size ??= { width: chip.offsetWidth, height: chip.offsetHeight };
     chip.style.left = `${Math.max(EDGE_PX, Math.min(position.x + POINTER_OFFSET_PX, bounds.width - size.width - EDGE_PX))}px`;
     chip.style.top = `${Math.max(EDGE_PX, Math.min(position.y + POINTER_OFFSET_PX, bounds.height - size.height - EDGE_PX))}px`;
   }
+
+  // The chip's and the stage's boxes change with a late webfont, larger text or text spacing as well as
+  // with the words, so both are watched (WCAG 1.4.4, 1.4.12): the chip stays inside the stage.
+  $effect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === chip) {
+          if (chip.hidden) continue;
+          const box = entry.borderBoxSize[0]!;
+          size = { width: box.inlineSize, height: box.blockSize };
+        } else {
+          bounds = null;
+        }
+      }
+      if (!chip.hidden && last?.position) place(last.position);
+    });
+    observer.observe(chip);
+    observer.observe(chip.parentElement!);
+    return () => observer.disconnect();
+  });
 
   $effect(() => {
     const stops = [
@@ -78,6 +102,8 @@
   $effect(() => {
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented || chip.hidden) return;
+      // An Escape inside an open dialog closes the dialog; the chip has no claim on it.
+      if (event.target instanceof Element && event.target.closest('dialog[open]')) return;
       // The next Escape, with the chip gone, is the page's: the keymap skips an event already handled.
       event.preventDefault();
       dismissed = last!.region!.id;
