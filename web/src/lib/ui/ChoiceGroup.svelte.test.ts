@@ -59,15 +59,15 @@ describe('ChoiceGroup', () => {
 
   test('Tab leaves the group from the checked item; Shift+Tab re-enters on it', async () => {
     render(ChoiceGroup, { options: hemispheres, value: 'both', label: 'Hemisphere' });
+    const after = document.body.appendChild(document.createElement('button'));
+    after.textContent = 'After';
     el('Both').focus();
     await userEvent.keyboard('{ArrowRight}');
     await userEvent.tab();
-    expect(document.activeElement).not.toBe(el('Right'));
-    expect(document.querySelector('[role=radiogroup]')?.contains(document.activeElement)).toBe(
-      false,
-    );
+    expect(document.activeElement).toBe(after);
     await userEvent.tab({ shift: true });
     expect(document.activeElement).toBe(el('Left'));
+    after.remove();
   });
 
   test('Space and a click select; a disabled option is skipped', async () => {
