@@ -22,6 +22,7 @@ let engine: FakeEngine;
 let region: HTMLElement;
 let detach: () => void;
 let cleanups: (() => void)[];
+const page = { hash: '', pathname: '/', search: '', reload() {} };
 
 /** The stores a page builds, in an effect root as a component would; `announce` says the view's changes. */
 function build({ announce }: { announce: boolean }) {
@@ -50,7 +51,10 @@ function build({ announce }: { announce: boolean }) {
           model: engine.model,
           sections: engine.sections,
           // The scene commands read the session through `assemble`, which the store replaces with `state`.
-          session: { ...session, assemble: () => session.state } as never,
+          session: {
+            ...session,
+            assemble: (state: object) => ({ ...state, ...session.state }),
+          } as never,
           render() {},
         }),
         clinical: { search: () => [] },
@@ -66,8 +70,11 @@ function build({ announce }: { announce: boolean }) {
           openFunction() {},
           openDeficit() {},
         },
+        followLanguage: (lang) => {
+          document.documentElement.lang = lang;
+        },
         defaultAnatomy: published.anatomy.id,
-        page: window,
+        page: { history: window.history, location: page } as never,
       });
     }),
   );
@@ -86,6 +93,19 @@ afterEach(() => {
   for (const cleanup of cleanups) cleanup();
   detach();
   vi.useRealTimers();
+});
+
+describe('a link-edited language', () => {
+  test('is followed by <html lang> and never saved as the reader’s choice', async () => {
+    localStorage.setItem('planum-lang', 'en');
+    document.documentElement.lang = 'en';
+    const { links } = build({ announce: false });
+    page.hash = '#lang=fr';
+    await links.onHashChange();
+    expect(document.documentElement.lang).toBe('fr');
+    expect(localStorage.getItem('planum-lang')).toBe('en');
+    document.documentElement.lang = 'en';
+  });
 });
 
 describe('a restored link and the announcer', () => {

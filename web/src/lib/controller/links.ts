@@ -5,7 +5,7 @@ import type { CircuitCatalog, Landmark } from '../core/learning/catalog.ts';
 import { checkLink } from '../core/state/link-check.ts';
 import type { KnownLinkIds } from '../core/state/link-check.ts';
 import { sameSubject } from '../core/state/link-writer.ts';
-import { applyReaderState, readerState } from '../core/state/reader-state.ts';
+import { applyReaderState as applyScene, readerState } from '../core/state/reader-state.ts';
 import type { ReaderState } from '../core/state/reader-state.ts';
 import { publishesSpinalCord } from '../core/state/scene-commands.ts';
 import type { SceneCommands } from '../core/state/scene-commands.ts';
@@ -16,7 +16,7 @@ import type { LinkStore } from '../state/link.svelte.ts';
 import type { LessonStore, SessionStore } from '../state/session.svelte.ts';
 import type { ViewStore } from '../state/view.svelte.ts';
 import { MODES } from '../types/constants.ts';
-import type { Explorer, LinkInput, LinkState, ViewName } from '../types/index.ts';
+import type { Explorer, Language, LinkInput, LinkState, ViewName } from '../types/index.ts';
 
 const CUT_LINKS: ReadonlySet<string> = new Set(['sagittal', 'coronal', 'axial', 'oblique']);
 
@@ -31,8 +31,8 @@ export interface LinkHooks {
   tractsExcursionOpen(): boolean;
   /** Forget the scenes kept to return to after an excursion and after a lesson (app.js:2043-2044). */
   forgetScenes(): void;
-  /** Keep the scene as it now stands, to return to when the lesson a link opened is left (app.js:2061). */
-  rememberLessonScene(): void;
+  /** Keep the scene as it now stands (`captureReaderState()`), to return to when the lesson a link opened is left (app.js:2061). */
+  rememberLessonScene(scene: ReaderState): void;
   /** Draw, select and frame a lesson's landmark; false once a later command took over (app.js:1311). */
   openLandmark(step: Landmark, current: () => boolean): Promise<boolean>;
   /** Open the tree branch that holds a region (app.js:527). */
@@ -57,6 +57,8 @@ export interface LinksOptions {
   clinical: Pick<ClinicalCatalog, 'search'>;
   circuits: Pick<CircuitCatalog, 'all' | 'get'>;
   hooks: LinkHooks;
+  /** Make the page's language the link's, without saving it as the reader's choice (`<html lang>`, WCAG 3.1.1). */
+  followLanguage(lang: Language): void;
   /** The anatomy a link without one opens (the published default). */
   defaultAnatomy: string;
   /** The page whose address bar carries the link. */
@@ -82,6 +84,7 @@ export function createLinks({
   clinical,
   circuits,
   hooks,
+  followLanguage,
   defaultAnatomy,
   page,
 }: LinksOptions) {
@@ -187,17 +190,52 @@ export function createLinks({
     camera.applyView(name, movement);
   }
 
-  /** The scene's camera for a restored state: the cut faced, the named view, or an exact pose (app.js:770). */
-  function applyCamera(target: ReaderState, movement: MoveOptions) {
-    if (target.camera === 'cut' && sections.active) {
-      const faced = camera.faceCut(movement);
-      if (faced) session.setView(faced);
-    } else if (target.camera === 'cut' || target.camera === 'view') {
-      applyView(target.view as ViewName, movement);
-    } else {
-      session.setView(target.view);
-      camera.restore(target.view as ViewName, target.camera, movement);
-    }
+  /** The layers on screen, which a scene without its own keeps (app.js:749). */
+  const loadedLayers = () => ({
+    atlas: model.settings.atlas,
+    detail: model.settings.detail,
+    cutAtlas: sections.state.cutAtlas,
+  });
+
+  /** The scene as its link carries it, plus the exact camera a link leaves out (app.js:754). */
+  function captureReaderState(): ReaderState {
+    return readerState(
+      {
+        ...view.current,
+        cutAtlas: view.current.cutAtlas ?? undefined,
+        ...cutState(),
+        mriWindow: sections.mriWindowLink(),
+        camera: camera.capture(),
+      },
+      loadedLayers(),
+    );
+  }
+
+  /** Apply a whole scene under `current`; returns the steps that failed, each with its link fields (app.js:770). */
+  function applyReaderState(
+    target: ReaderState,
+    current: () => boolean,
+    movement: MoveOptions = {},
+  ) {
+    return applyScene(target, {
+      model,
+      sections,
+      commands,
+      current,
+      revealInTree: hooks.revealInTree,
+      applyCamera: () => {
+        if (target.camera === 'cut' && sections.active) {
+          const faced = camera.faceCut(movement);
+          if (faced) session.setView(faced);
+        } else if (target.camera === 'cut' || target.camera === 'view') {
+          applyView(target.view as ViewName, movement);
+        } else {
+          session.setView(target.view);
+          camera.restore(target.view as ViewName, target.camera, movement);
+        }
+      },
+      applyOrbit: (orbit) => camera.placeOrbit(orbit, movement),
+    });
   }
 
   /**
@@ -235,15 +273,7 @@ export function createLinks({
         },
         { atlas, detail: model.defaultDetail, cutAtlas: valid.cutAtlas ?? atlas },
       );
-      const failures = await applyReaderState(target, {
-        model,
-        sections,
-        commands,
-        current,
-        revealInTree: hooks.revealInTree,
-        applyCamera: (state) => applyCamera(state, movement),
-        applyOrbit: (orbit) => camera.placeOrbit(orbit, movement),
-      });
+      const failures = await applyReaderState(target, current, movement);
       if (!current()) return null;
       const present = new Set(Object.keys(linked).map((key) => PARAMS[key]));
       for (const { fields, error } of failures) {
@@ -266,7 +296,7 @@ export function createLinks({
       // returns to the rest of the link.
       if (explorer === 'circuits' && valid.circuit && !valid.selectedRegion) {
         const { circuit, step } = lesson.state;
-        hooks.rememberLessonScene();
+        hooks.rememberLessonScene(captureReaderState());
         try {
           if (!(await hooks.openLandmark(circuits.get(circuit!).steps[step]!, current))) {
             return null;
@@ -311,11 +341,23 @@ export function createLinks({
       page.location.reload();
       return;
     }
-    if (decoded.state.lang) session.setLang(decoded.state.lang);
+    if (decoded.state.lang) {
+      session.setLang(decoded.state.lang);
+      followLanguage(decoded.state.lang);
+    }
     report(await restore(decoded, {}));
   }
 
-  return { linkState, write, switchAnatomy, restore, report, onHashChange };
+  return {
+    linkState,
+    write,
+    switchAnatomy,
+    captureReaderState,
+    applyReaderState,
+    restore,
+    report,
+    onHashChange,
+  };
 }
 
 export type Links = ReturnType<typeof createLinks>;

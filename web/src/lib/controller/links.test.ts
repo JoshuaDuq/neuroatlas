@@ -1,20 +1,21 @@
 import assert from 'node:assert/strict';
 import { describe, expect, it, vi } from 'vitest';
-import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import { createLinkWriter } from '../core/state/link-writer.ts';
 import { createSceneCommands } from '../core/state/scene-commands.ts';
 import { decodeState } from '../core/state/url-state.ts';
 import { createFakeEngine } from '../engine/fake.ts';
 import { createLessonStore, createSessionStore } from '../state/session.svelte.ts';
 import type { Manifest } from '../types/index.ts';
+import { readRepoJson } from '../../../test/repo.ts';
 import { createLinks } from './links.ts';
 
-const published = manifest as unknown as Manifest;
+const published = readRepoJson<Manifest>('public/models/cdmd/manifest.json');
 const domains = { atlas: 'none', domains: [], lesion_checks: {} };
 const mri = { fieldOfView: 256, size: 64, windowCenter: 100, windowWidth: 200 };
 
 /** Links over the fake engine, with a page that records the address bar instead of moving it. */
 function setup(viewState: object = {}, anatomy = published.anatomy.id) {
+  const followed: string[] = [];
   const engine = createFakeEngine({ manifest: published, domains, mri });
   const session = createSessionStore({ views: ['oblique', 'left', 'right'] });
   const lesson = createLessonStore({ get: () => ({ steps: [{}] }) as never });
@@ -40,7 +41,10 @@ function setup(viewState: object = {}, anatomy = published.anatomy.id) {
     model: engine.model,
     sections: engine.sections,
     // The scene commands read the session through `assemble`, which the store replaces with `state`.
-    session: { ...session, assemble: () => session.state } as never,
+    session: {
+      ...session,
+      assemble: (state: object) => ({ ...state, ...session.state }),
+    } as never,
     render() {},
   });
   const links = createLinks({
@@ -48,12 +52,15 @@ function setup(viewState: object = {}, anatomy = published.anatomy.id) {
     session,
     lesson,
     view: {
-      current: {
-        anatomy,
-        lesson: lesson.state,
-        hiddenRegions: new Set<string>(),
-        lang: 'en',
-        ...viewState,
+      get current() {
+        return {
+          ...engine.model.state,
+          ...session.state,
+          lesson: lesson.state,
+          anatomy,
+          referenceAnatomy: anatomy,
+          ...viewState,
+        };
       },
     } as never,
     link,
@@ -72,9 +79,10 @@ function setup(viewState: object = {}, anatomy = published.anatomy.id) {
       openDeficit() {},
     },
     defaultAnatomy: 'cdmd',
+    followLanguage: (lang) => followed.push(lang),
     page: page as never,
   });
-  return { engine, session, links, page, calls, link, commands };
+  return { followed, engine, session, links, page, calls, link, commands };
 }
 
 describe('writing the link', () => {
@@ -113,6 +121,9 @@ describe('another subject', () => {
     );
     await engine.sections.setMode('coronal');
     engine.sections.setOffset(12.34);
+    await engine.sections.load();
+    engine.sections.setWindow(50, 60);
+    expect(links.linkState().mriWindow).toEqual({ center: 50, width: 60 });
     links.switchAnatomy('bert');
     expect(calls.map(([kind]) => kind)).toEqual(['cancel', 'replace', 'reload']);
     const { state } = decodeState(calls[1]![1] as string);
@@ -120,6 +131,8 @@ describe('another subject', () => {
       anatomy: 'bert',
       atlas: 'hcp-mmp',
       cut: 'coronal',
+      cutAtlas: 'destrieux',
+      detail: 'learning',
       cutOffset: 12.3,
       view: 'left',
       explorer: 'deficits',
@@ -151,6 +164,23 @@ describe('a link edited in place', () => {
     expect(engine.model.settings.hemisphere).toBe('left');
     expect(session.state.lang).toBe('fr');
     expect(session.state.notice?.text).toMatch(/atlas/i);
+  });
+
+  it('makes the page follow the language of the edited link, and only then', async () => {
+    const { links, page, followed } = setup();
+    page.location.hash = '#hemi=left';
+    await links.onHashChange();
+    expect(followed).toEqual([]);
+    page.location.hash = '#lang=fr';
+    await links.onHashChange();
+    expect(followed).toEqual(['fr']);
+  });
+
+  it('reloads for a link without a brain when the page is on another than the default', async () => {
+    const { links, page, calls } = setup({}, 'snail');
+    page.location.hash = '#hemi=left';
+    await links.onHashChange();
+    expect(calls).toEqual([['reload']]);
   });
 });
 
@@ -185,5 +215,55 @@ describe('restoring a link', () => {
     expect(release).toHaveBeenCalledOnce();
     expect(() => links.report(null)).not.toThrow();
     expect(session.state.notice).toBeNull();
+  });
+});
+
+describe('the scene as a link carries it', () => {
+  it('keeps an oblique cut with its tilt, azimuth and direction', async () => {
+    const { engine, links } = setup();
+    await engine.sections.setMode('oblique');
+    engine.sections.setAngles(40, -60);
+    engine.sections.setDisplay({ reverse: true });
+    expect(links.linkState()).toMatchObject({
+      cut: 'oblique',
+      cutReverse: true,
+      cutTilt: 40,
+      cutAzimuth: -60,
+    });
+  });
+
+  it('keeps the cut atlas of the sections when no cut is drawn', async () => {
+    const { engine, links } = setup();
+    await engine.sections.setCutAtlas('hcp-mmp');
+    expect(links.captureReaderState().cutAtlas).toBe('hcp-mmp');
+  });
+
+  it('puts back a captured scene: layers, display, cut, window and the exact camera pose', async () => {
+    const { engine, links, commands } = setup();
+    engine.model.setHemisphere('left');
+    await engine.sections.setCutAtlas('hcp-mmp');
+    await engine.sections.setMode('coronal');
+    await engine.sections.load();
+    engine.sections.setWindow(50, 60);
+    engine.camera.applyView('left');
+    const scene = links.captureReaderState();
+    expect(scene).toMatchObject({
+      cutAtlas: 'hcp-mmp',
+      hemisphere: 'left',
+      cut: 'coronal',
+      mriWindow: { center: 50, width: 60 },
+    });
+
+    engine.model.setHemisphere('both');
+    await engine.sections.setMode('off');
+    engine.sections.setWindow(90, 180);
+    engine.camera.applyView('right');
+    const before = engine.calls.length;
+    const failures = await links.applyReaderState(scene, commands.begin());
+    expect(failures).toEqual([]);
+    expect(engine.model.settings.hemisphere).toBe('left');
+    expect(engine.sections.state.mode).toBe('coronal');
+    expect(engine.sections.display).toMatchObject({ windowCenter: 50, windowWidth: 60 });
+    expect(engine.calls.slice(before).filter((call) => call.method === 'restore')).toHaveLength(1);
   });
 });

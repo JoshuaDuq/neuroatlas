@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { Vector3 } from 'three';
 import { afterEach, describe, it, vi } from 'vitest';
 import {
   cutFacingView,
@@ -28,7 +29,7 @@ import { createLinks } from '../src/lib/controller/links.ts';
 import type { LinkHooks } from '../src/lib/controller/links.ts';
 import { createLinkWriter } from '../src/lib/core/state/link-writer.ts';
 import { createSceneCommands } from '../src/lib/core/state/scene-commands.ts';
-import { decodeState } from '../src/lib/core/state/url-state.ts';
+import { decodeState, encodeState } from '../src/lib/core/state/url-state.ts';
 import { createFakeEngine } from '../src/lib/engine/fake.ts';
 import type { FakeEngine } from '../src/lib/engine/fake.ts';
 import { createLessonStore, createSessionStore } from '../src/lib/state/session.svelte.ts';
@@ -52,6 +53,7 @@ const slice = (from: string, to: string) => {
   return source.slice(start, end);
 };
 const knownSource = slice('const known = {', '  /**\n   * Apply a decoded link');
+const linkStateSource = slice('const CUT_LINKS', '  function focusPoint');
 const restoreSource = slice('async function restoreLink(', '  /** A link edited in place');
 
 const domains = {
@@ -81,6 +83,12 @@ interface Scenario {
   tractsOpen?: boolean;
   /** A later scene command overtakes the restore once this model method is reached. */
   overtakeAt?: string;
+  /** This sections method throws, as a failed download does. */
+  failAt?: string;
+  /** Start from a scene a hash edit can find: a lesson open, a region selected, a cut on, the window moved. */
+  busy?: boolean;
+  /** Boot's `{ immediate: true }`, or the `{}` of a hash edit. */
+  immediate?: boolean;
 }
 
 interface Outcome {
@@ -93,17 +101,51 @@ interface Outcome {
   excursion: unknown;
 }
 
-function engineFor(overtake: (() => void) | undefined, overtakeAt: string | undefined) {
-  const engine = createFakeEngine({ manifest, domains, mri }) as FakeEngine;
-  if (overtakeAt) {
-    const target = engine.model as unknown as Record<string, (...args: unknown[]) => unknown>;
-    const original = target[overtakeAt]!;
-    target[overtakeAt] = (...args) => {
-      overtake!();
+const cabNp = { atlas: 'destrieux', regions: {} };
+const functionalRegions = { atlas: 'hcp-mmp' };
+
+const createEngine = () =>
+  createFakeEngine({
+    manifest,
+    domains: { ...domains, search: { terms: new Map([['term-a', {}]]) } },
+    cabNp,
+    functionalRegions,
+    mri,
+  }) as FakeEngine;
+
+/** The scene before the link arrives, on either side: the same calls, then a clean log. */
+async function prepare(
+  engine: FakeEngine,
+  session: { setExplorer(explorer: never): unknown },
+  lesson: { start(id: string): unknown; go(step: number): unknown },
+) {
+  session.setExplorer('circuits' as never);
+  lesson.start('language');
+  lesson.go(1);
+  engine.model.setHemisphere('left');
+  engine.model.select('destrieux:left:1');
+  await engine.sections.setMode('coronal');
+  await engine.sections.load();
+  engine.sections.setWindow(50, 60);
+  (engine.calls as unknown[]).length = 0;
+}
+
+/** After the scene is set: a later command overtakes the restore, or a download fails. */
+function intercept(engine: FakeEngine, { overtakeAt, failAt }: Scenario, overtake: () => void) {
+  const wrap = (target: object, method: string, before: () => void) => {
+    const record = target as Record<string, (...args: unknown[]) => unknown>;
+    const original = record[method]!;
+    record[method] = (...args) => {
+      before();
       return original(...args);
     };
+  };
+  if (overtakeAt) wrap(engine.model, overtakeAt, overtake);
+  if (failAt) {
+    wrap(engine.sections, failAt, () => {
+      throw new Error(`${failAt} failed`);
+    });
   }
-  return engine;
 }
 
 /** The calls into the engine, with each callback (an intent check or a progress report) named by its kind. */
@@ -120,12 +162,29 @@ async function runLegacy({
   landmark = 'opens',
   tractsOpen = false,
   overtakeAt,
+  failAt,
+  busy,
+  immediate,
 }: Scenario): Promise<Outcome> {
   const spy = errors();
   let commands: ReturnType<typeof legacyCommands>;
-  const engine = engineFor(() => commands.begin(), overtakeAt);
-  const { sections, camera } = engine;
-  // The contract renames three legacy members: `layers` is `hasLayer`, `envelopes` is `envelopesLoaded`
+  const engine = createEngine();
+  const { camera } = engine;
+  // The contract's `publishedWindow` is legacy's `volumes.metadata.display`.
+  const sections = new Proxy(engine.sections, {
+    get: (target, key) =>
+      key === 'volumes'
+        ? target.publishedWindow && {
+            metadata: {
+              display: {
+                window_center: target.publishedWindow.center,
+                window_width: target.publishedWindow.width,
+              },
+            },
+          }
+        : Reflect.get(target, key),
+  });
+  // The contract renames three legacy members of the model: `layers` is `hasLayer`, `envelopes` is `envelopesLoaded`
   // and `spinalCordLoadState` is `spinalCordLoad`.
   const renamed: Record<string, (target: FakeEngine['model']) => unknown> = {
     layers: (target) => ({ has: (id: string) => target.hasLayer(id) }),
@@ -171,7 +230,7 @@ async function runLegacy({
     const clinicalExplorer = { openDeficit: id => hookCalls.push(['openDeficit', id]) };
     const render = () => {};
     const scheduleUrl = linkWriter.schedule;
-    const captureReaderState = () => { hookCalls.push(['rememberLessonScene']); return 'captured'; };
+    const captureReaderState = () => { hookCalls.push(['rememberLessonScene']); sections.mriWindowLink(); camera.capture(); return 'captured'; };
     const applyReaderState = (target, current, movement = {}) => restoreReaderState(target, {
       model, sections, commands, current, revealInTree,
       applyCamera: () => {
@@ -213,7 +272,9 @@ async function runLegacy({
     restoreReaderState: legacyApply,
     tractsOpen,
   });
-  const notApplied = await app.restoreLink(legacyDecode(hash), {});
+  if (busy) await prepare(engine, session, circuitSession);
+  intercept(engine, { hash, overtakeAt, failAt }, () => commands.begin());
+  const notApplied = await app.restoreLink(legacyDecode(hash), immediate ? { immediate } : {});
   linkWriter.cancel();
   session.releaseNotices();
   const outcome = {
@@ -234,16 +295,19 @@ async function runNew({
   landmark = 'opens',
   tractsOpen = false,
   overtakeAt,
+  failAt,
+  busy,
+  immediate,
 }: Scenario): Promise<Outcome> {
   const spy = errors();
   let commands: ReturnType<typeof createSceneCommands>;
-  const engine = engineFor(() => commands.begin(), overtakeAt);
+  const engine = createEngine();
   const session = createSessionStore({ views: Object.keys(legacyDirections) });
   const lesson = createLessonStore(circuits as never);
   commands = createSceneCommands({
     model: engine.model,
     sections: engine.sections,
-    session: { ...session, assemble: () => session.state } as never,
+    session: { ...session, assemble: (state: object) => ({ ...state, ...session.state }) } as never,
     render() {},
   });
   const link = createLinkWriter(() => {});
@@ -258,7 +322,8 @@ async function runNew({
     forgetScenes: () => {
       scenes = [null, null];
     },
-    rememberLessonScene: () => {
+    rememberLessonScene: (scene) => {
+      assert.ok(scene.camera);
       hookCalls.push(['rememberLessonScene']);
       scenes[1] = 'captured';
     },
@@ -283,10 +348,13 @@ async function runNew({
     clinical: clinical as never,
     circuits: circuits as never,
     hooks,
+    followLanguage() {},
     defaultAnatomy: manifest.anatomy.id,
     page: {} as never,
   });
-  const notApplied = await links.restore(decodeState(hash), {});
+  if (busy) await prepare(engine, session, lesson);
+  intercept(engine, { hash, overtakeAt, failAt }, () => commands.begin());
+  const notApplied = await links.restore(decodeState(hash), immediate ? { immediate } : {});
   link.cancel();
   session.releaseNotices();
   const outcome = {
@@ -340,7 +408,7 @@ const OPTIONS: Record<string, string[]> = {
   opacity: ['0.4', '1'],
   mri: ['90,180', '100,200', '300,2'],
   tab: ['anatomy', 'functions', 'deficits', 'circuits', 'diffusion', 'bogus'],
-  function: ['all', 'language', 'bogus'],
+  function: ['all', 'language', 'term-a', 'bogus'],
   deficit: ['aphasia', 'neglect', 'bogus'],
   circuit: ['language', 'bogus'],
   step: ['1', '2', '3', '9'],
@@ -389,6 +457,19 @@ const fixed: Scenario[] = [
   { hash: 'hemi=left&cortex=0&opacity=0.4', overtakeAt: 'setCortexOpacity' },
   { hash: 'region=a&region=b&lang=fr&lang=de' },
   { hash: 'pos=abc&tilt=999&opacity=2&mri=1,2,3' },
+  { hash: 'tab=functions&function=language&atlas=destrieux' },
+  { hash: 'tab=functions&function=term-a' },
+  { hash: 'colors=cab-np' },
+  { hash: 'colors=functional&level=sections' },
+  { hash: 'hemi=right', busy: true },
+  { hash: '', busy: true },
+  { hash: 'tab=circuits&circuit=language&step=3', busy: true, immediate: true },
+  { hash: 'cut=axial&rev=1&view=superior', busy: true, immediate: true },
+  { hash: 'cam=10,20,300,0,0,0,0,1,0&mri=100,200', busy: true },
+  { hash: 'hemi=left', busy: true, failAt: 'setMode' },
+  { hash: 'cut=coronal&pos=3&rev=1', busy: true, failAt: 'setMode' },
+  { hash: 'cut=coronal', busy: true, failAt: 'setMode' },
+  { hash: 'mri=90,180', busy: true, failAt: 'load' },
 ];
 
 afterEach(() => vi.restoreAllMocks());
@@ -402,6 +483,8 @@ describe('S4 parity: restoring a link', () => {
         hash: randomHash(random),
         tractsOpen: random() < 0.1,
         landmark: random() < 0.2 ? 'throws' : 'opens',
+        busy: random() < 0.4,
+        immediate: index % 2 === 0,
       });
     }
     const seen = { overtaken: 0, reported: 0, clean: 0 };
@@ -415,5 +498,105 @@ describe('S4 parity: restoring a link', () => {
     }
     // The corpus must reach every way a restore ends.
     assert.ok(seen.overtaken > 0 && seen.reported > 10 && seen.clean > 10, JSON.stringify(seen));
+  });
+
+  it('writes the same link state as legacy, over the scenes a link is written from', async () => {
+    const scenes: ((engine: FakeEngine) => Promise<void>)[] = [
+      async () => {},
+      async (engine) => engine.sections.setMode('sagittal'),
+      async (engine) => {
+        await engine.sections.setMode('oblique');
+        engine.sections.setAngles(40, -60);
+        engine.sections.setDisplay({ reverse: true });
+      },
+      async (engine) => {
+        await engine.sections.setMode('coronal');
+        engine.sections.setOffset(12.34);
+        await engine.sections.load();
+        engine.sections.setWindow(50, 60);
+        engine.model.setHemisphere('right');
+        engine.camera.applyView('left');
+      },
+      async (engine) => {
+        engine.camera.placeOrbit({ position: [10, 20, 300], target: [0, 0, 0] });
+        engine.model.loadHiddenRegions(['destrieux:left:1']);
+      },
+    ];
+    for (const [index, scene] of scenes.entries()) {
+      for (const lessonOpen of [false, true]) {
+        const engine = createEngine();
+        const session = createSessionStore({ views: Object.keys(legacyDirections) });
+        const lesson = createLessonStore(circuits as never);
+        const legacyOnly = legacySession({ views: Object.keys(legacyDirections) });
+        const circuitSession = legacyLesson(circuits as never);
+        await scene(engine);
+        if (lessonOpen) {
+          lesson.start('language');
+          lesson.go(2);
+          circuitSession.start('language');
+          circuitSession.go(2);
+        }
+        const anatomy = manifest.anatomy.id;
+        const legacy = new Function(
+          'd',
+          `
+          const { Vector3, sections, session, model, anatomy, circuitSession, camera } = d;
+          const orbitLink = () => camera.orbitLink();
+          const mriWindowLink = () => sections.mriWindowLink();
+          ${linkStateSource}
+          return linkState();
+        `,
+        )({
+          Vector3,
+          // Legacy frames are Vector3s; the contract's are tuples.
+          sections: new Proxy(engine.sections, {
+            get: (target, key) =>
+              key === 'frame'
+                ? { normal: new Vector3(...target.frame.normal) }
+                : Reflect.get(target, key),
+          }),
+          session: legacyOnly,
+          model: engine.model,
+          anatomy,
+          circuitSession,
+          camera: engine.camera,
+        });
+        const links = createLinks({
+          engine,
+          session,
+          lesson,
+          view: {
+            get current() {
+              return {
+                ...engine.model.state,
+                ...session.state,
+                lesson: lesson.state,
+                anatomy,
+                referenceAnatomy: anatomy,
+              };
+            },
+          } as never,
+          link: createLinkWriter(() => {}),
+          commands: {} as never,
+          clinical: clinical as never,
+          circuits: circuits as never,
+          hooks: {} as never,
+          followLanguage() {},
+          defaultAnatomy: anatomy,
+          page: {} as never,
+        });
+        const next = links.linkState();
+        // An absent field and a null one are the same link: the encoder skips both.
+        for (const key of Object.keys(legacy)) {
+          assert.deepStrictEqual(
+            next[key as keyof typeof next] ?? null,
+            legacy[key] ?? null,
+            `scene ${index} ${key}`,
+          );
+        }
+        assert.equal(encodeState(next), encodeState(legacy), `scene ${index}`);
+        assert.ok(Object.keys(next).length >= Object.keys(legacy).length);
+      }
+    }
   });
 });
