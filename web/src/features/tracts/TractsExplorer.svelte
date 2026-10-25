@@ -31,6 +31,7 @@
   import { ASSET_BASE } from '../../../build/site.ts';
   import EmptyState from '../../lib/ui/EmptyState.svelte';
   import Disclosure from '../../lib/ui/Disclosure.svelte';
+  import { iconGraphic } from '../../lib/ui/IconButton.svelte';
   import RangeField from '../../lib/ui/RangeField.svelte';
   import StatusLine from '../../lib/ui/StatusLine.svelte';
   import { announce, createDebouncedAnnouncer } from '../../lib/ui/announcer.svelte.ts';
@@ -123,7 +124,7 @@
   $effect(() => results.dispose);
 
   $effect(() => {
-    if (matching) tracts.setOverlay(overlay);
+    tracts.setOverlay(overlay);
   });
 
   let wasActive = false;
@@ -132,8 +133,9 @@
     untrack(() => {
       if (next === wasActive) return;
       wasActive = next;
-      if (next && !tracts.ready) void load(() => tracts.setActive(true));
-      else void tracts.setActive(next);
+      if (next && !tracts.ready && !runner.busy) void load(() => tracts.setActive(true));
+      // Every change reaches the engine; during the first load it joins the download in flight.
+      else void tracts.setActive(next).catch((error) => console.error(error));
     });
   });
 
@@ -236,7 +238,7 @@
       for (const bundle of tracts.snapshot()) {
         tracts.setVisible(
           bundle.id,
-          Boolean(catalog.bundles.find((b) => b.id === bundle.id)?.initial),
+          Boolean(catalog.bundles.find((b) => b.id === bundle.id)!.initial),
         );
       }
     });
@@ -327,7 +329,7 @@
 
   <div class="body">
     <h3 class="visually-hidden">{dataset.dataset}</h3>
-    <div class="status" class:visually-hidden={ready && !busy && !failure}>
+    <div class="status" class:idle={failure} class:visually-hidden={ready && !busy && !failure}>
       <StatusLine text={statusText} />
     </div>
     {#if failure && errorCode}
@@ -432,7 +434,9 @@
         <p class="note">{text.metricsScope}</p>
         <p class="note">{dataset.files}</p>
         <a class="source" href={catalog.source} target="_blank" rel="noreferrer">
-          {text.source}<span class="visually-hidden"> {added.newTab}</span>
+          {text.source}<span class="visually-hidden"> {added.newTab}</span>{@render iconGraphic(
+            'external-link',
+          )}
         </a>
         {#if !matching}
           <a
@@ -441,7 +445,9 @@
             target="_blank"
             rel="noreferrer"
           >
-            {text.outlineProvenance}<span class="visually-hidden"> {added.newTab}</span>
+            {text.outlineProvenance}<span class="visually-hidden">
+              {added.newTab}</span
+            >{@render iconGraphic('external-link')}
           </a>
         {/if}
       </Disclosure>
@@ -560,6 +566,10 @@
     .status {
       padding: var(--space-3) var(--panel-inset) 0;
     }
+    /* The alert has its own line and padding; the empty status above it adds none. */
+    .status.idle {
+      padding: 0;
+    }
     .alert {
       color: var(--danger);
     }
@@ -670,8 +680,18 @@
     .settings[open] .readout {
       display: none;
     }
-    .settings > :global(.control-field) {
+    .settings > .check + :global(.control-field) {
+      margin-top: var(--space-2);
+    }
+    .settings > :global(.control-field + .control-field) {
       margin-top: var(--space-4);
+    }
+    /* A mouse still gets a 24px hit area; touch raises it to 44px. */
+    @media (pointer: fine) {
+      .settings :global(input[type='range']) {
+        height: 24px;
+        margin: 2px 0 0;
+      }
     }
     .check {
       display: flex;
@@ -683,12 +703,45 @@
       cursor: pointer;
     }
     .check input {
-      flex: none;
+      appearance: none;
       width: 16px;
       height: 16px;
       margin: 0;
-      accent-color: var(--accent);
+      flex: none;
+      display: grid;
+      place-content: center;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-small);
+      background: var(--surface-base);
       cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        border-color var(--ui-transition) var(--ease-ui);
+    }
+    .check input::before {
+      content: '';
+      width: 8px;
+      height: 4px;
+      border-left: 1.5px solid transparent;
+      border-bottom: 1.5px solid transparent;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+    .check input:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .check input:checked::before {
+      border-color: var(--surface-base);
+    }
+    .check input:disabled {
+      border-color: var(--border-subtle);
+      background: transparent;
+      cursor: default;
+    }
+    /* A checked control that the current view has turned off still has to read as on. */
+    .check input:checked:disabled {
+      background: var(--text-tertiary);
+      border-color: var(--text-tertiary);
     }
     .check:has(input:disabled) {
       color: var(--text-tertiary);
@@ -745,6 +798,10 @@
       line-height: var(--lh-caption);
       overflow-wrap: anywhere;
     }
+    .source :global(.control-icon) {
+      margin-left: var(--space-1);
+      vertical-align: -1px;
+    }
 
     .dock {
       display: flex;
@@ -788,7 +845,31 @@
         color: var(--accent);
       }
     }
+    /* The phone layout (PHONE_QUERY; phone.css:26, 46). */
+    @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+      .search-clear {
+        width: 36px;
+        height: 36px;
+      }
+      .search-shortcut {
+        display: none;
+      }
+    }
+    /* Native fields stay at 16px so focusing them does not zoom the page on iOS (phone.css:346-347). */
+    @media (pointer: coarse), (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+      input[type='search'] {
+        font-size: var(--text-title);
+      }
+    }
     @media (pointer: coarse) {
+      .check input {
+        width: 20px;
+        height: 20px;
+      }
+      .check input::before {
+        width: 11px;
+        height: 6px;
+      }
       .search-clear {
         width: 44px;
         height: 44px;
@@ -801,7 +882,8 @@
         display: none;
       }
       .quiet,
-      .settings > summary {
+      .settings > summary,
+      .about :global(summary) {
         min-height: 44px;
       }
     }
@@ -826,6 +908,15 @@
       input[type='search']:focus-visible,
       .check input:focus-visible {
         outline: 2px solid Highlight;
+      }
+      /* The drawn tick would be forced to ink on every box: the system control draws itself. */
+      .check input {
+        appearance: auto;
+        background: Canvas;
+        border-color: CanvasText;
+      }
+      .check input::before {
+        content: none;
       }
     }
   }

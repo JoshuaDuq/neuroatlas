@@ -9,7 +9,7 @@ Status: fix (decision 17 and 42, B8); listed in the T1 PR
 
 ## New behaviour
 
-A visually hidden "(opens in a new tab)" / "(s’ouvre dans un nouvel onglet)" follows each link's text, the same cue as the other external links (decision 17). The shared icon arrives with the shared string in C1's amendment.
+A visually hidden "(opens in a new tab)" / "(s’ouvre dans un nouvel onglet)" follows each link's text, the same cue as the other external links (decision 17). The `external-link` icon (12 px, `lib/ui/icons.ts`, a hand-over from U3 for this one entry) follows the text, drawn by the shared icon snippet.
 
 ## Standard cited
 

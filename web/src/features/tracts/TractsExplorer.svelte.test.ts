@@ -2,7 +2,7 @@
 // event order. Ported from viewer/diffusion/native-ui.test.js (source-text checks became DOM checks)
 // and chrome.contract.test.js:226.
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
@@ -580,6 +580,255 @@ describe('targets and media', () => {
       await page.getByText(lang === 'en' ? 'About this data' : 'À propos de ces données').click();
       await expectAxeClean();
       view.unmount();
+    }
+  });
+});
+
+describe('the engine follows the tab', () => {
+  test('open, close and reopen during the first load reaches the engine as true, false, true', async () => {
+    const load = deferred();
+    const base = createEngine();
+    const calls: boolean[] = [];
+    const engine = slowEngine(base, {
+      setActive: (active: boolean) => {
+        calls.push(active);
+        return load.promise;
+      },
+    });
+    const view = await render(TractsExplorer, props(engine, { active: true }));
+    await view.rerender(props(engine, { active: false }));
+    await view.rerender(props(engine, { active: true }));
+    expect(calls).toEqual([true, false, true]);
+    load.resolve();
+  });
+});
+
+const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
+
+describe('keys and sliders', () => {
+  test('Enter and Space press the clear button, the summaries and the MRI button', async () => {
+    const onOpenMri = vi.fn();
+    await ready(createEngine(), { onOpenMri });
+    await search().fill('cing');
+    const clear = page.getByRole('button', { name: 'Clear search' }).element() as HTMLElement;
+    clear.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(searchEl().value).toBe('');
+    expect(document.activeElement).toBe(searchEl());
+    await search().fill('cing');
+    (page.getByRole('button', { name: 'Clear search' }).element() as HTMLElement).focus();
+    await userEvent.keyboard(' ');
+    expect(searchEl().value).toBe('');
+
+    const summaries = [...document.querySelectorAll<HTMLElement>('summary')];
+    expect(summaries).toHaveLength(2);
+    for (const summary of summaries) {
+      const details = summary.parentElement as HTMLDetailsElement;
+      summary.focus();
+      await userEvent.keyboard('{Enter}');
+      expect(details.open).toBe(true);
+      await userEvent.keyboard(' ');
+      expect(details.open).toBe(false);
+      expect(document.activeElement).toBe(summary);
+    }
+
+    (page.getByRole('button', { name: 'MRI with tracts' }).element() as HTMLElement).focus();
+    await userEvent.keyboard('{Enter}');
+    await userEvent.keyboard(' ');
+    expect(onOpenMri).toHaveBeenCalledTimes(2);
+  });
+
+  test('PageUp, PageDown, Home and End move both sliders; the length filter applies on each', async () => {
+    const onCortexOpacity = vi.fn();
+    const { engine } = await ready(createEngine(), { onCortexOpacity });
+    await page.getByText('Tract display').click();
+    const opacity = page.getByRole('slider', { name: 'Cortex opacity' }).element() as HTMLElement;
+    opacity.focus();
+    await userEvent.keyboard('{Home}');
+    expect(onCortexOpacity).toHaveBeenLastCalledWith(0);
+    await userEvent.keyboard('{End}');
+    expect(onCortexOpacity).toHaveBeenLastCalledWith(1);
+    await userEvent.keyboard('{PageDown}');
+    expect(onCortexOpacity.mock.lastCall![0]).toBeLessThan(0.98);
+    const minimum = page
+      .getByRole('slider', { name: 'Minimum length (mm)' })
+      .element() as HTMLElement;
+    minimum.focus();
+    const applied = () =>
+      engine.calls.filter((call) => call.method === 'setMinimum').map((call) => call.args[0]);
+    await userEvent.keyboard('{End}');
+    expect(applied().at(-1)).toBe(250);
+    await userEvent.keyboard('{PageDown}');
+    expect(applied().at(-1)).toBeLessThan(250);
+    await userEvent.keyboard('{Home}');
+    expect(applied().at(-1)).toBe(1);
+    await userEvent.keyboard('{PageUp}');
+    expect(applied().at(-1)).toBeGreaterThan(1);
+  });
+
+  test('a language switch keeps the search text, the open sections and the focused key, and says nothing', async () => {
+    const engine = createEngine();
+    const view = await render(TractsExplorer, props(engine));
+    await expect.poll(() => !el('Cingulum · left').closest('fieldset')!.disabled).toBe(true);
+    await search().fill('cing');
+    await settle();
+    await page.getByText('Tract display').click();
+    el('Cingulum · left').focus();
+    region.textContent = '';
+    await view.rerender(props(engine, { lang: 'fr' }));
+    expect(searchEl().value).toBe('cing');
+    expect(settings().open).toBe(true);
+    expect(document.activeElement).toBe(el('Cingulum · gauche'));
+    await settle();
+    expect(region.textContent).toBe('');
+  });
+
+  test('the search head carries the aria-hidden / keycap and the caption comes before the list', async () => {
+    await ready();
+    const keycap = document.querySelector('.head kbd')!;
+    expect(keycap.textContent).toBe('/');
+    expect(keycap.getAttribute('aria-hidden')).toBe('true');
+    const heading = document.querySelector('h4')!;
+    const list = document.getElementById('native-tract-bundles')!;
+    expect(heading.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(document.querySelectorAll('details')).toHaveLength(2);
+  });
+});
+
+/** A phone-sized stage: the panel fills the window, its list scrolls under a pinned head and dock. */
+async function stage(width: number, height: number) {
+  document.documentElement.style.height = '100%';
+  document.body.style.height = '100%';
+  document.body.style.margin = '0';
+  await page.viewport(width, height);
+}
+afterEach(async () => {
+  document.documentElement.style.height = '';
+  document.body.style.height = '';
+  document.body.style.margin = '';
+  await page.viewport(1280, 800);
+});
+
+describe('media, reflow and targets', () => {
+  test('contrast: more draws the key edge in the control-edge colour', async () => {
+    await ready();
+    const probe = document.body.appendChild(document.createElement('i'));
+    probe.style.border = '1px solid var(--border-control)';
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
+      const box = el('Arcuate fasciculus · right');
+      expect(getComputedStyle(box).borderTopColor).toBe(getComputedStyle(probe).borderTopColor);
+    });
+    probe.remove();
+  });
+
+  test('reduced motion stops the chevron turning', async () => {
+    await ready();
+    const summary = document.querySelector<HTMLElement>('.settings > summary')!;
+    await withMedia([{ name: 'prefers-reduced-motion', value: 'reduce' }], async () => {
+      expect(getComputedStyle(summary, '::after').transitionDuration).toBe('0s');
+    });
+  });
+
+  test('at 320 px (400 % zoom) nothing scrolls sideways and no name is cut off', async () => {
+    await ready();
+    await page.getByText('Tract display').click();
+    await page.getByText('About this data').click();
+    await stage(320, 700);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(320);
+    const body = document.querySelector<HTMLElement>('.body')!;
+    expect(body.scrollWidth).toBeLessThanOrEqual(body.clientWidth);
+    for (const node of document.querySelectorAll<HTMLElement>('.name, .meta, .values')) {
+      expect(node.scrollWidth, node.textContent!).toBeLessThanOrEqual(node.clientWidth + 1);
+    }
+  });
+
+  test('the text-spacing override (WCAG 1.4.12) clips nothing', async () => {
+    await ready();
+    const spacing = document.head.appendChild(document.createElement('style'));
+    spacing.textContent =
+      '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }';
+    await stage(390, 800);
+    for (const node of document.querySelectorAll<HTMLElement>(
+      '.name, .meta, .values, .list-heading',
+    )) {
+      expect(node.scrollWidth, node.textContent!).toBeLessThanOrEqual(node.clientWidth + 1);
+      expect(node.scrollHeight, node.textContent!).toBeLessThanOrEqual(node.clientHeight + 1);
+    }
+    spacing.remove();
+  });
+
+  test('a short landscape window hides the keycap, takes a 36 px clear button and 16 px text', async () => {
+    await ready();
+    await stage(740, 400);
+    const keycap = document.querySelector<HTMLElement>('.search-shortcut')!;
+    expect(getComputedStyle(keycap).display).toBe('none');
+    expect(getComputedStyle(searchEl()).fontSize).toBe('16px');
+    await search().fill('c');
+    const clear = document.querySelector<HTMLElement>('.search-clear')!;
+    expect(clear.getBoundingClientRect().width).toBe(36);
+    expect(clear.getBoundingClientRect().height).toBe(36);
+  });
+
+  test('on a phone a focused key is never under the dock (WCAG 2.4.11)', async () => {
+    await ready();
+    await stage(390, 700);
+    const dock = document.querySelector<HTMLElement>('.dock')!.getBoundingClientRect();
+    const head = document.querySelector<HTMLElement>('.head')!.getBoundingClientRect();
+    searchEl().focus();
+    for (let step = 0; step < 30; step += 1) {
+      await userEvent.tab();
+      const box = (document.activeElement as HTMLElement).getBoundingClientRect();
+      expect(box.bottom, `key ${step + 1}`).toBeLessThanOrEqual(dock.top + 0.5);
+      expect(box.top, `key ${step + 1}`).toBeGreaterThanOrEqual(head.bottom - 0.5);
+    }
+  });
+
+  test('fine pointers get 24 px sliders', async () => {
+    await ready();
+    await page.getByText('Tract display').click();
+    for (const slider of document.querySelectorAll<HTMLElement>('input[type="range"]')) {
+      expect(slider.getBoundingClientRect().height).toBe(24);
+    }
+  });
+
+  test('touch emulation raises keys, clear button, summaries, sliders and the checkbox', async () => {
+    await ready();
+    await page.getByText('Tract display').click();
+    await search().fill('c');
+    const session = cdp();
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+    await session.send('Emulation.setEmulatedMedia', {
+      features: [
+        { name: 'pointer', value: 'coarse' },
+        { name: 'hover', value: 'none' },
+      ],
+    });
+    try {
+      expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+      await settle();
+      const sized = (selector: string) => {
+        const nodes = [...document.querySelectorAll<HTMLElement>(selector)].filter((node) =>
+          node.checkVisibility(),
+        );
+        expect(nodes.length, selector).toBeGreaterThan(0);
+        for (const node of nodes) {
+          expect(node.getBoundingClientRect().height, selector).toBeGreaterThanOrEqual(44);
+        }
+      };
+      sized('section:not([hidden]) input[type="checkbox"]');
+      sized('.search-clear');
+      sized('summary');
+      sized('input[type="range"]');
+      sized('.quiet');
+      expect(document.querySelector('.check input')!.getBoundingClientRect().height).toBe(20);
+    } finally {
+      await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+      await session.send('Emulation.setEmulatedMedia', {
+        features: [
+          { name: 'pointer', value: '' },
+          { name: 'hover', value: '' },
+        ],
+      });
     }
   });
 });

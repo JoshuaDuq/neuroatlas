@@ -19,7 +19,7 @@ test.beforeEach(async ({ app }, testInfo) => {
   await app.ready();
   // The reference dataset downloads on the first opening; the list is usable once its keys are enabled.
   await expect(app.page.getByRole('checkbox', { name: AF_LEFT, exact: true })).toBeEnabled({
-    timeout: 90_000,
+    timeout: 200_000,
   });
 });
 
@@ -160,4 +160,13 @@ test('the dock holds only the MRI command', async ({ app }) => {
 
 test('the tracts panel is accessible', async ({ app }) => {
   await app.expectAccessible('tracts');
+});
+
+test('the first row’s accessibility tree is the legacy baseline', async ({ app }) => {
+  await expect(app.page.getByRole('group', { name: 'Arcuate fasciculus', exact: true }))
+    .toMatchAriaSnapshot(`
+    - group "Arcuate fasciculus":
+      - checkbox "Arcuate fasciculus · left" [checked]
+      - checkbox "Arcuate fasciculus · right"
+  `);
 });
