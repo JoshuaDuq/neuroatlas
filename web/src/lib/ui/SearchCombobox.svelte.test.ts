@@ -1,7 +1,7 @@
 // SearchCombobox in Chromium against the APG combobox (list autocomplete) keyboard table.
 import axe from 'axe-core';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { attachAnnouncer } from './announcer.svelte.ts';
 import '../../styles/index.css';
@@ -91,9 +91,10 @@ describe('SearchCombobox', () => {
     document.removeEventListener('keydown', record);
   });
 
-  test('Escape during IME composition leaves the text and the list alone', async () => {
+  test('Escape during IME composition is not handled, leaves the text and keeps the armed option', async () => {
     render(Fixture, { picks: [] });
     await type('am');
+    await expect.poll(() => armed()?.textContent).toBe('Amygdala');
     const event = new KeyboardEvent('keydown', {
       key: 'Escape',
       isComposing: true,
@@ -101,8 +102,59 @@ describe('SearchCombobox', () => {
       cancelable: true,
     });
     input().dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
     expect(input().value).toBe('am');
     expect(input().getAttribute('aria-expanded')).toBe('true');
+    expect(armed()?.textContent).toBe('Amygdala');
+  });
+
+  test('while results show, Escape outside the field is not handled', async () => {
+    render(Fixture, { picks: [] });
+    await type('h');
+    await expect.poll(() => armed()).not.toBeNull();
+    page.getByRole('button', { name: 'Switch atlas' }).element().focus();
+    const seen: boolean[] = [];
+    const record = (event: KeyboardEvent) => seen.push(event.defaultPrevented);
+    document.addEventListener('keydown', record);
+    await userEvent.keyboard('{Escape}');
+    document.removeEventListener('keydown', record);
+    expect(seen).toEqual([false]);
+    expect(input().value).toBe('h');
+  });
+
+  test('while results show, a modal dialog still closes on Escape', async () => {
+    render(Fixture, { picks: [] });
+    await type('h');
+    await expect.poll(() => armed()).not.toBeNull();
+    const dialog = document.body.appendChild(document.createElement('dialog'));
+    dialog.innerHTML = '<button type="button">Close</button>';
+    dialog.showModal();
+    await userEvent.keyboard('{Escape}');
+    expect(dialog.open).toBe(false);
+    dialog.remove();
+  });
+
+  test('the armed option survives Enter, so Down moves it again', async () => {
+    const picks: string[] = [];
+    render(Fixture, { picks });
+    await type('h');
+    await expect.poll(() => armed()?.textContent).toBe('Hypothalamus');
+    await userEvent.keyboard('{Enter}');
+    expect(picks).toEqual(['hypothalamus']);
+    await userEvent.keyboard('{ArrowDown}');
+    expect(armed()?.textContent).toBe('Thalamus');
+  });
+
+  test('the armed option survives Tab out and back, so Down moves it again', async () => {
+    render(Fixture, { picks: [] });
+    await type('h');
+    await expect.poll(() => armed()?.textContent).toBe('Hypothalamus');
+    await userEvent.tab();
+    expect(document.activeElement).not.toBe(input());
+    await userEvent.tab({ shift: true });
+    expect(document.activeElement).toBe(input());
+    await userEvent.keyboard('{ArrowDown}');
+    expect(armed()?.textContent).toBe('Thalamus');
   });
 
   test('the clear button empties the field and returns focus to it', async () => {
@@ -210,6 +262,26 @@ describe('SearchCombobox', () => {
           [],
         );
       });
+    }
+  });
+
+  test('forced colours: the focused field takes the Highlight outline', async () => {
+    const session = cdp() as unknown as {
+      send(method: string, params: object): Promise<unknown>;
+    };
+    await session.send('Emulation.setEmulatedMedia', {
+      features: [{ name: 'forced-colors', value: 'active' }],
+    });
+    try {
+      render(Fixture, { picks: [] });
+      await userEvent.keyboard('{Tab}');
+      expect(document.activeElement).toBe(input());
+      const probe = document.body.appendChild(document.createElement('div'));
+      probe.style.color = 'Highlight';
+      expect(getComputedStyle(input()).outlineColor).toBe(getComputedStyle(probe).color);
+      probe.remove();
+    } finally {
+      await session.send('Emulation.setEmulatedMedia', { features: [] });
     }
   });
 });

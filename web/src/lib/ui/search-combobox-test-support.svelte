@@ -42,7 +42,7 @@
     onselect={(value) => picks.push(value)}
   >
     {#snippet option(item)}<span style:display="block" style:min-height={tall ? '200px' : undefined}
-        >{item.label}</span
+        >{all.find((row) => row.value === item.value)?.label}</span
       >{/snippet}
     {#snippet notes()}
       {#if query.trim() !== '' && found.length === 0}
@@ -56,10 +56,12 @@
 </div>
 
 <style>
-  /* In the app the field sits outside the scrolling list; keep it in view so typing never scrolls it back. */
-  div :global(.search-box) {
-    position: sticky;
-    top: 0;
-    z-index: 1;
+  @layer components {
+    /* In the app the field sits outside the scrolling list; keep it in view so typing never scrolls it back. */
+    div :global(.search-box) {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
   }
 </style>
