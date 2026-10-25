@@ -17,6 +17,12 @@
     grid-column: 1 / -1;
     grid-row: 3;
   }
+  /* The status bar holds the Provenance button, 44px on a coarse pointer (H4, deviations/h4-coarse-target.md). */
+  @media (pointer: coarse) {
+    #app {
+      --footer-height: 45px; /* 44px target below the bar's 1px rule */
+    }
+  }
   #workspace-panel {
     grid-column: 1;
     grid-row: 2;

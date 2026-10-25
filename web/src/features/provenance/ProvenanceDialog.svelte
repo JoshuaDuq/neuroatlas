@@ -18,6 +18,7 @@
   import {
     provenanceRows,
     referenceRows,
+    type ProvenanceItem,
     type ProvenanceLink,
     type ProvenanceRow,
   } from '../../lib/core/panels/provenance.ts';
@@ -58,7 +59,8 @@
 
   // Rows have the same shape in every language, and a value the sheet does not translate is
   // identical in both: that value is the published English.
-  const english = $derived(lang === 'en' ? null : rowsIn('en'));
+  // A tract reference's label arrives in the interface language already, so it is never marked.
+  const english = $derived(lang === 'en' || reference ? null : rowsIn('en'));
   const dataLang = (
     text: string | null | undefined,
     row: number,
@@ -75,6 +77,23 @@
     }
   });
 </script>
+
+{#snippet note(item: ProvenanceItem, row: number, index: number)}
+  {#if item.note}
+    <p class="provenance-note" lang={dataLang(item.note, row, index, 'note')}>{item.note}</p>
+  {/if}
+{/snippet}
+
+{#snippet link(item: ProvenanceItem)}
+  {#if item.link}
+    <a
+      class={['provenance-link', item.link.mono && 'code']}
+      href={item.link.href}
+      target="_blank"
+      rel="noreferrer">{item.link.text}</a
+    >
+  {/if}
+{/snippet}
 
 <Dialog bind:open bind:instant {fallbackFocus} isolateKeys closeLabel={copy.close}>
   {#snippet heading(id)}
@@ -98,19 +117,11 @@
               >
                 {item.text}
               </p>
-            {/if}
-            {#if item.note}
-              <p class="provenance-note" lang={dataLang(item.note, rowIndex, itemIndex, 'note')}>
-                {item.note}
-              </p>
-            {/if}
-            {#if item.link}
-              <a
-                class={['provenance-link', item.link.mono && 'code']}
-                href={item.link.href}
-                target="_blank"
-                rel="noreferrer">{item.link.text}</a
-              >
+              {@render note(item, rowIndex, itemIndex)}
+              {@render link(item)}
+            {:else}
+              {@render link(item)}
+              {@render note(item, rowIndex, itemIndex)}
             {/if}
           </div>
         {/each}
@@ -141,6 +152,7 @@
     }
     .provenance-facts dt {
       padding-right: var(--space-4);
+      overflow-wrap: anywhere;
       color: var(--text-secondary);
     }
     .provenance-facts dd {
@@ -161,6 +173,7 @@
       overflow-wrap: anywhere;
     }
     .provenance-note {
+      overflow-wrap: anywhere;
       font-size: var(--text-caption);
       line-height: var(--lh-caption);
       color: var(--text-secondary);

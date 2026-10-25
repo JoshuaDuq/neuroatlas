@@ -2,11 +2,12 @@
 // hand-offs of decision record on #42, `data-instant`, language of parts and axe. The row content
 // is C5's (core/panels/provenance.test.ts).
 import { beforeEach, describe, expect, test } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { Manifest } from '../../lib/types/index.ts';
+import '../../app/layout.css';
 import Fixture from './provenance-test-support.svelte';
 
 const props = (extra = {}) => ({
@@ -69,6 +70,30 @@ describe('Colophon', () => {
   test('the Provenance button is 24 px tall with a fine pointer', async () => {
     render(Fixture, props());
     expect(opener().element().getBoundingClientRect().height).toBe(24);
+  });
+
+  test('a coarse pointer gets a 44 px bar filled by the button, and the page does not scroll', async () => {
+    const session = cdp();
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    await page.viewport(1180, 820);
+    const app = document.body.appendChild(document.createElement('div'));
+    app.id = 'app';
+    try {
+      await render(Fixture, { props: props(), target: app });
+      expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+      const bar = document.querySelector('footer')!.getBoundingClientRect();
+      const button = opener().element().getBoundingClientRect();
+      expect(bar.height).toBe(45);
+      expect(button.height).toBe(44);
+      expect(button.top).toBe(bar.top + 1);
+      const hit = document.elementFromPoint(button.left + 8, button.top + 3);
+      expect(hit).toBe(opener().element());
+      const root = document.documentElement;
+      expect(root.scrollHeight).toBeLessThanOrEqual(root.clientHeight);
+    } finally {
+      app.remove();
+      await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+    }
   });
 
   test('the button appears only when the owner supplies an opener', async () => {
@@ -232,6 +257,57 @@ describe('Provenance dialog', () => {
     await expectAxeClean();
     await screen.rerender(props({ reference }));
     await expectAxeClean();
+  });
+
+  test('an item that is only a link lists it before its note', async () => {
+    render(Fixture, props());
+    await openFromKeyboard();
+    const files = [...dialog().querySelectorAll('dt')].find(
+      (dt) => dt.textContent === 'Published files',
+    )!.nextElementSibling!;
+    const [manifestItem, indexItem] = [...files.querySelectorAll('.provenance-item')];
+    for (const [item, name] of [
+      [manifestItem, 'manifest.json'],
+      [indexItem, 'anatomies.json'],
+    ] as const) {
+      const children = [...item!.children];
+      expect(children[0]!.tagName).toBe('A');
+      expect(children[0]!.textContent).toBe(name);
+      expect(children[1]!.className).toContain('provenance-note');
+    }
+  });
+
+  test('text at 200 % and the WCAG 1.4.12 spacing keep labels and notes inside the dialog', async () => {
+    const screen = await render(Fixture, props());
+    await openFromKeyboard();
+    document.documentElement.style.fontSize = '200%';
+    const spacing = document.head.appendChild(document.createElement('style'));
+    spacing.textContent =
+      '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }';
+    try {
+      for (const lang of ['en', 'fr'] as const) {
+        await screen.rerender(props({ lang }));
+        for (const width of [1280, 320]) {
+          await page.viewport(width, 800);
+          const spilling = [...dialog().querySelectorAll<HTMLElement>('dt, dd, .provenance-note')]
+            .filter((element) => element.scrollWidth > element.clientWidth + 0.5)
+            .map((element) => element.textContent);
+          expect(spilling, `${lang} ${width}px`).toEqual([]);
+          expect(dialog().scrollWidth, `${lang} ${width}px`).toBeLessThanOrEqual(
+            dialog().clientWidth,
+          );
+        }
+      }
+    } finally {
+      spacing.remove();
+      document.documentElement.style.fontSize = '';
+    }
+  });
+
+  test('a French tract reference label is not marked as English', async () => {
+    await render(Fixture, props({ lang: 'fr', reference: { ...reference, label: 'Référence' } }));
+    await openFromKeyboard();
+    expect(dialog().querySelector('[lang]')).toBeNull();
   });
 
   test('reduced motion keeps no scale, forced colours keep an edge', async () => {

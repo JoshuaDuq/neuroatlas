@@ -85,7 +85,7 @@
     }
     .provenance-opener {
       flex: none;
-      height: 24px;
+      min-height: 24px;
       /* The words, not the ground, end on the stage gutter. */
       margin-right: calc(-1px - var(--space-2));
       padding: 0 var(--space-2);
@@ -95,10 +95,11 @@
       line-height: var(--lh-caption);
       font-weight: 500;
     }
-    /* A coarse pointer needs the project's 44px target at any width (deviations/h4-coarse-target.md). */
+    /* A coarse pointer needs the project's 44px target at any width: the bar grows and the button fills it (deviations/h4-coarse-target.md). */
     @media (pointer: coarse) {
       .provenance-opener {
-        height: 44px;
+        /* The bar is 44px here (app/layout.css), and the button fills it. */
+        align-self: stretch;
       }
     }
     @media (hover: hover) and (pointer: fine) {
