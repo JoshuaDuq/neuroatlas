@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { PREF_KEYS, defaultStorage, readPref, writePref } from './prefs.ts';
+import { PREF_KEYS, createKeyPreference, defaultStorage, readPref, writePref } from './prefs.ts';
 import { blockedStorage, fakeStorage } from './test-support.ts';
 
 const asStorage = (fake: unknown) => fake as Storage;
@@ -52,5 +52,24 @@ describe('prefs', () => {
       },
     });
     expect(defaultStorage()).toBeNull();
+  });
+
+  // Ported from viewer/ui/chrome/shortcuts.test.js:34-52.
+  test('the key preference defaults on and survives a reload', () => {
+    const storage = asStorage(fakeStorage());
+    const first = createKeyPreference(storage);
+    expect(first.enabled).toBe(true);
+    first.set(false);
+    expect(first.enabled).toBe(false);
+    expect(createKeyPreference(storage).enabled).toBe(false);
+    createKeyPreference(storage).set(true);
+    expect(createKeyPreference(storage).enabled).toBe(true);
+  });
+
+  test('blocked storage still gives a working key preference', () => {
+    const preference = createKeyPreference(asStorage(blockedStorage));
+    expect(preference.enabled).toBe(true);
+    preference.set(false);
+    expect(preference.enabled).toBe(false);
   });
 });

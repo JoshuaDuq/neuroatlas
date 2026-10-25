@@ -55,7 +55,9 @@
   });
 
   // Fires for Escape, the close button and `open = false` alike.
-  function onclose() {
+  function onclose(event: Event) {
+    // A close that arrives after the dialog was shown again is stale (the one-frame reopen race).
+    if ((event.currentTarget as HTMLDialogElement).open) return;
     open = false;
     const returned = returnToOpener?.() ?? false;
     returnToOpener = null;

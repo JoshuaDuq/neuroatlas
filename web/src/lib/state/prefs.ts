@@ -26,6 +26,20 @@ export function readPref(key: PrefKey, storage: Storage | null = defaultStorage(
   }
 }
 
+/** The reader's choice about single-key shortcuts: on unless they said otherwise (shortcuts.js:29). */
+export function createKeyPreference(storage: Storage | null = defaultStorage()) {
+  let enabled = readPref(PREF_KEYS.singleKeyShortcuts, storage) !== 'off';
+  return {
+    get enabled() {
+      return enabled;
+    },
+    set(next: boolean) {
+      enabled = next;
+      writePref(PREF_KEYS.singleKeyShortcuts, enabled ? 'on' : 'off', storage);
+    },
+  };
+}
+
 /** Remembers a value, or forgets the key for null. */
 export function writePref(
   key: PrefKey,

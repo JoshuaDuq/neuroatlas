@@ -48,6 +48,16 @@ describe('createLanguage', () => {
     expect(storage.store['planum-lang']).toBe('fr');
   });
 
+  test('following a link’s language changes <html lang> and is not remembered', () => {
+    const storage = fakeStorage({ 'planum-lang': 'en' });
+    const language = createLanguage(undefined, storageOption(storage));
+    language.follow('fr');
+    expect(language.current).toBe('fr');
+    expect(root.lang).toBe('fr');
+    expect(storage.store['planum-lang']).toBe('en');
+    expect(() => language.follow('de' as never)).toThrow(RangeError);
+  });
+
   test('an unknown language is an error', () => {
     const language = createLanguage(undefined, storageOption(fakeStorage()));
     expect(() => language.set('de' as never)).toThrow(RangeError);
