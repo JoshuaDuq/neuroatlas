@@ -98,7 +98,7 @@ test('the light rig and the environment match the legacy module under real WebGL
     const actual = reflect(renderer, texture, roughness);
     const wanted = reflect(renderer, expected, roughness);
     expect(
-      actual.some((value) => value !== 0),
+      actual.some((value, index) => index % 4 !== 3 && value > 0),
       'the environment is not black',
     ).toBe(true);
     expect(actual, `roughness ${roughness}`).toStrictEqual(wanted);
