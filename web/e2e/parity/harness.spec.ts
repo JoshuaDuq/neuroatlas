@@ -89,8 +89,6 @@ test('the live site is not marked noindex', async ({ app }, testInfo) => {
 
 test('the preview is marked noindex', async ({ app }, testInfo) => {
   test.skip(testInfo.project.name !== 'next');
-  // web/index.html (F0) has no robots meta yet; reported on #4.
-  test.fixme(true, 'the preview shell carries no robots meta yet');
   await app.gotoHash();
   await expect(app.page.locator('meta[name="robots"][content~="noindex"]')).toHaveCount(1);
 });
