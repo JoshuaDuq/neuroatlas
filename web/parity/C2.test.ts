@@ -38,6 +38,22 @@ function prng(seed: number) {
   };
 }
 
+const stripAccents = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+/** catalog.ts `tierOf`, with `startsAWord` treating Unicode letters and digits as word characters. */
+function correctedTierOf(text: string, query: string): number {
+  if (!text) return 4;
+  if (text === query) return 0;
+  if (text.startsWith(query)) return 1;
+  if (!text.includes(query)) return 4;
+  let from = text.indexOf(query);
+  while (from > 0) {
+    if (!/[\p{L}\p{N}]/u.test(text[from - 1])) return 2;
+    from = text.indexOf(query, from + 1);
+  }
+  return 3;
+}
+
 const LANGUAGES = ['en', 'fr'] as const;
 
 for (const { id } of anatomies.anatomies) {
@@ -161,22 +177,29 @@ for (const { id } of anatomies.anatomies) {
         }
         for (const query of queries) {
           const settings = { ...pick(settingsGrid), lang };
-          // Deviation c2-search-word-boundary: accented letters are word characters, so a mid-word
-          // match after one ranks as a substring. Where ranking differs, the result must still be
-          // the same total and the same rows, only reordered.
+          // Deviation c2-search-word-boundary: accented letters are word characters. The expected
+          // ranking is the legacy rows re-ranked with the corrected predicate.
           const all = 1_000_000;
           const ours = catalog.search(query, settings, all);
           const theirs = legacy.search(query, settings, all);
-          if (JSON.stringify(ours) !== JSON.stringify(theirs)) {
-            const ids = (found: typeof ours) => found.rows.map((row) => row.region.id).sort();
-            assert.equal(ours.total, theirs.total, `search total "${query}" ${lang}`);
-            assert.deepStrictEqual(ids(ours), ids(theirs), `search rows "${query}" ${lang}`);
-            continue;
-          }
-          assert.deepStrictEqual(
-            catalog.search(query, settings, 5),
-            legacy.search(query, settings, 5),
-          );
+          const q = query.trim().toLowerCase();
+          const tier = (row: (typeof theirs.rows)[number]) =>
+            Math.min(
+              ...(legacy.get(row.region.id)!.searchable as string[]).map((text) =>
+                Math.min(correctedTierOf(text, q), correctedTierOf(text, stripAccents(q))),
+              ),
+            );
+          const compare = (a: (typeof theirs.rows)[number], b: (typeof theirs.rows)[number]) =>
+            (a.region.family_order ?? 0) - (b.region.family_order ?? 0) ||
+            a.label.name.localeCompare(b.label.name, lang) ||
+            a.region.hemisphere.localeCompare(b.region.hemisphere);
+          const expected = [...theirs.rows].sort((a, b) => tier(a) - tier(b) || compare(a, b));
+          assert.equal(ours.total, theirs.total, `search total "${query}" ${lang}`);
+          assert.deepStrictEqual(ours.rows, expected, `search "${query}" ${lang}`);
+          assert.deepStrictEqual(catalog.search(query, settings, 5), {
+            rows: expected.slice(0, 5),
+            total: theirs.total,
+          });
         }
         for (const region of manifest.regions.slice(0, 200)) {
           const settings = pick(settingsGrid);
