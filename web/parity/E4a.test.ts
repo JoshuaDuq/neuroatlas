@@ -5,6 +5,12 @@ import { gunzipSync } from 'node:zlib';
 import { describe, it } from 'vitest';
 import { readRepoJson, readRepoYaml, repoRoot } from '../test/repo.ts';
 import { TissueSections as LegacyTissueSections } from '../../viewer/tissues/gpu-sections.js';
+import {
+  BANDS as LEGACY_BANDS,
+  addSolidSources as legacyAddSolidSources,
+} from '../../viewer/tissues/solid-assets.js';
+import { BANDS, addSolidSources } from '../src/lib/engine/tissues/solid-assets.ts';
+import { BoxGeometry, DoubleSide, Mesh, MeshBasicMaterial } from 'three';
 import { TissueSections } from '../src/lib/engine/tissues/gpu-sections.ts';
 import type { CutModel } from '../src/lib/engine/tissues/gpu-sections.ts';
 import { Group, Plane, Raycaster, Vector3 } from 'three';
@@ -13,6 +19,7 @@ import { renderSlice as legacyRenderSlice } from '../../viewer/slices/sampling.j
 import { Volume as LegacyVolume } from '../../viewer/slices/volume.js';
 import { centeredFrame, createFrame, rasToWorld } from '../src/lib/engine/slices/coordinates.ts';
 import { BrainSections } from '../src/lib/engine/slices/sections.ts';
+import type { Appearance } from '../src/lib/engine/render/materials.ts';
 import type { SectionsModel } from '../src/lib/engine/slices/sections.ts';
 import { renderSlice } from '../src/lib/engine/slices/sampling.ts';
 import { Volume } from '../src/lib/engine/slices/volume.ts';
@@ -274,8 +281,15 @@ describe('E4a sample() and pixels() on the published volumes', () => {
 });
 
 describe('E4a TissueSections', () => {
-  const { appearance } = readRepoYaml<{ appearance: unknown }>('config/model.yaml');
-  const region = { id: 'destrieux:left:1' };
+  const { appearance } = readRepoYaml<{ appearance: Appearance }>('config/model.yaml');
+  const regionIds = ['destrieux:left:1', 'destrieux:right:2', 'destrieux:left:3'];
+  const hemispheres = ['left', 'right', 'left'];
+  const regions = regionIds.map((id, index) => ({
+    id,
+    kind: 'cortex',
+    hemisphere: hemispheres[index],
+    networks: [{ network: ['Vis', 'Default', 'Limbic'][index], fraction: 1 }],
+  }));
   const labels = [
     {
       source_label_id: 0,
@@ -284,70 +298,120 @@ describe('E4a TissueSections', () => {
       hemisphere: 'midline',
       color: [0, 0, 0],
     },
-    {
-      source_label_id: 11101,
-      region_id: region.id,
+    ...regionIds.map((id, index) => ({
+      source_label_id: 11101 + index,
+      region_id: id,
       kind: 'cortex',
-      hemisphere: 'left',
-      color: [23, 220, 60],
-    },
+      hemisphere: hemispheres[index],
+      color: [20 + 80 * index, 220 - 60 * index, 60 + 50 * index],
+    })),
   ];
   const labelMetadata = {
-    shape: [2, 2, 2],
+    shape: [6, 6, 6],
     order: 'F',
     labels,
     voxel_to_surface_ras_mm: [
-      [-1, 0, 0, 1],
-      [0, 0, 1, -1],
-      [0, -1, 0, 1],
+      [-1, 0, 0, 3],
+      [0, 0, 1, -3],
+      [0, -1, 0, 3],
       [0, 0, 0, 1],
     ],
   };
   const mriMetadata = { ...labelMetadata, labels: undefined };
+  const networks = {
+    colors: { Vis: [120, 20, 20], Default: [20, 120, 20], Limbic: [20, 20, 120] },
+  };
+  const cabNp = {
+    id: 'cab-np',
+    atlas: 'destrieux',
+    networks: ['A', 'B'],
+    colors: { A: [200, 100, 0], B: [0, 100, 200] },
+    regions: { [regionIds[0]!]: 'A', [regionIds[1]!]: 'B' },
+  };
+  const functionalRegions = {
+    regions: { named: { [regionIds[0]!]: 'f1', [regionIds[2]!]: 'f2' } },
+    levels: {
+      named: [
+        { id: 'f1', color: [250, 250, 0] },
+        { id: 'f2', color: [0, 250, 250] },
+      ],
+    },
+  };
 
-  function build(legacy: boolean) {
+  function build(legacy: boolean, codes: Uint16Array) {
     const model = {
-      manifest: { appearance },
+      manifest: { appearance, networks },
+      cabNp,
+      functionalRegions,
+      sourceColors: new Map(),
+      layers: new Map(),
       state: {
         atlas: 'destrieux',
         hemisphere: 'both',
         cortexVisible: true,
         cortexOpacity: 1,
         surfaceColor: 'atlas',
+        functionalLevel: 'named',
         isolatedRegion: null as string | null,
         hiddenRegions: new Set<string>(),
+        paint: null as unknown,
       },
-      regions: new Map([[region.id, region]]),
+      regions: new Map(regions.map((region) => [region.id, region])),
     };
     const VolumeClass = legacy ? LegacyVolume : Volume;
     const sections = legacy
       ? new LegacyTissueSections(model, new URL('https://example.invalid/'))
       : new TissueSections(model as unknown as CutModel, new URL('https://example.invalid/'));
-    const anatomy = sections as unknown as {
+    const internals = sections as unknown as {
       anatomy: unknown;
       createAnatomy(volume: unknown): unknown;
-      createLayer(
-        metadata: unknown,
-        volume: unknown,
-      ): { uniforms: Record<string, { value: unknown }> };
+      createLayer(metadata: unknown, volume: unknown): unknown;
       layers: Map<string, unknown>;
     };
-    anatomy.anatomy = anatomy.createAnatomy(
-      new VolumeClass(mriMetadata as never, new Uint8Array(8).fill(100) as never),
+    internals.anatomy = internals.createAnatomy(
+      new VolumeClass(mriMetadata as never, new Uint8Array(216).fill(100) as never),
     );
-    const layer = anatomy.createLayer(
+    const layer = internals.createLayer(
       labelMetadata,
-      new VolumeClass(labelMetadata as never, new Uint16Array(8).fill(1) as never),
-    ) as {
-      uniforms: Record<string, { value: unknown }>;
-      palette: { image: { data: Float32Array } };
-      mesh: { visible: boolean; position: Vector3; quaternion: { toArray(): number[] } };
-    };
-    anatomy.layers.set('destrieux', layer);
+      new VolumeClass(labelMetadata as never, codes as never),
+    ) as Layer;
+    internals.layers.set('destrieux', layer);
+    // Two structure solids, so the cap and capVisibleAt paths run.
+    const boxes = regionIds.slice(0, 2).map((id, index) => {
+      const mesh = new Mesh(
+        new BoxGeometry(0.01, 0.01, 0.01),
+        new MeshBasicMaterial({ side: DoubleSide }),
+      );
+      mesh.userData = { hemisphere: hemispheres[index], region_id: id };
+      return mesh;
+    });
+    if (legacy) {
+      legacyAddSolidSources(
+        (sections as LegacyTissueSections).solids,
+        boxes,
+        (sections as LegacyTissueSections).anatomy,
+        appearance,
+        LEGACY_BANDS.structure,
+      );
+    } else {
+      addSolidSources(
+        (sections as TissueSections).solids,
+        boxes,
+        (sections as TissueSections).anatomy!,
+        appearance,
+        BANDS.structure,
+      );
+    }
     return { sections: sections as unknown as TissueSections, model, layer };
   }
 
-  function snapshot(sections: TissueSections, layer: ReturnType<typeof build>['layer']) {
+  interface Layer {
+    uniforms: Record<string, { value: unknown }>;
+    palette: { image: { data: Float32Array } };
+    mesh: { visible: boolean; position: Vector3; quaternion: { toArray(): number[] } };
+  }
+
+  function snapshot(sections: TissueSections, layer: Layer) {
     const uniforms = Object.fromEntries(
       Object.entries(layer.uniforms)
         .filter(([, uniform]) => !(uniform.value as { isTexture?: boolean }).isTexture)
@@ -363,31 +427,50 @@ describe('E4a TissueSections', () => {
       position: layer.mesh.position.toArray(),
       quaternion: layer.mesh.quaternion.toArray(),
       solids: sections.solids.group.visible,
+      solidVisibility: sections.solids.solids.map((solid) => solid.group.visible),
     };
   }
 
-  it('matches the legacy cut for seeded frames and display settings', () => {
+  function seededCodes(random: () => number) {
+    return Uint16Array.from({ length: 216 }, () => Math.floor(random() * labels.length));
+  }
+
+  const hitSummary = (hit: ReturnType<TissueSections['intersect']>) =>
+    hit && {
+      distance: hit.distance,
+      point: hit.point.toArray(),
+      region: hit.region,
+      label: hit.label,
+    };
+
+  it('matches the legacy cut, caps and picking over seeded labels, frames and display states', () => {
     const random = prng(4404);
-    const a = build(true);
-    const b = build(false);
+    const codes = seededCodes(random);
+    const a = build(true, codes);
+    const b = build(false, codes.slice());
     const modes = ['sagittal', 'coronal', 'axial', 'oblique'] as const;
-    let hits = 0;
-    const colours = ['tissue', 'atlas', 'mri'];
-    const hemispheres = ['both', 'left', 'right'];
-    for (let trial = 0; trial < 120; trial++) {
-      const pick = <T>(items: readonly T[]) => items[Math.floor(random() * items.length)]!;
+    const colours = ['tissue', 'atlas', 'network', 'cab-np', 'functional', 'mri'];
+    const hemispheresShown = ['both', 'left', 'right'];
+    const pick = <T>(items: readonly T[]) => items[Math.floor(random() * items.length)]!;
+    const seenLabels = new Set<unknown>();
+    const seenRegions = new Set<unknown>();
+    let capHits = 0;
+    for (let trial = 0; trial < 300; trial++) {
+      const paint =
+        random() < 0.25 ? { id: 'panel', colors: new Map([[regionIds[1], [240, 0, 240]]]) } : null;
       const state = {
-        surfaceColor: pick(colours),
-        hemisphere: pick(hemispheres),
-        isolatedRegion: pick([null, region.id, 'another-region']),
-        hiddenRegions: new Set(random() < 0.3 ? [region.id] : []),
+        surfaceColor: colours[trial % colours.length],
+        hemisphere: pick(hemispheresShown),
+        isolatedRegion: pick([null, null, ...regionIds]),
+        hiddenRegions: new Set(random() < 0.3 ? [pick(regionIds)] : []),
+        paint,
       };
       Object.assign(a.model.state, state);
       Object.assign(b.model.state, state);
       const crosshair: [number, number, number] = [
-        random() * 0.04 - 0.02,
-        random() * 0.04 - 0.02,
-        random() * 0.04 - 0.02,
+        random() * 4 - 2,
+        random() * 4 - 2,
+        random() * 4 - 2,
       ];
       const frame = centeredFrame(pick(modes), crosshair, {
         tilt: random() * 80,
@@ -397,36 +480,46 @@ describe('E4a TissueSections', () => {
       a.sections.update(frame, 'destrieux', reverse);
       b.sections.update(frame, 'destrieux', reverse);
       assert.deepStrictEqual(snapshot(b.sections, b.layer), snapshot(a.sections, a.layer));
-      const target = rasToWorld(crosshair);
-      const origin = new Vector3(random() - 0.5, random() - 0.5, random() - 0.5)
-        .normalize()
-        .multiplyScalar(0.1)
-        .add(target);
-      const ray = new Raycaster(origin, target.clone().sub(origin).normalize());
-      const expected = a.sections.intersect(ray);
-      const actual = b.sections.intersect(ray);
-      assert.equal(actual === null, expected === null);
-      if (expected && actual) {
-        hits++;
-        assert.equal(actual.distance, expected.distance);
-        assert.deepStrictEqual(actual.point, expected.point);
-        assert.equal(actual.region, expected.region);
-        assert.equal(actual.label, expected.label);
+      for (let ray = 0; ray < 3; ray++) {
+        const target = rasToWorld([
+          crosshair[0] + random() * 2 - 1,
+          crosshair[1] + random() * 2 - 1,
+          crosshair[2] + random() * 2 - 1,
+        ]);
+        const origin = new Vector3(random() - 0.5, random() - 0.5, random() - 0.5)
+          .normalize()
+          .multiplyScalar(0.1)
+          .add(target);
+        const raycaster = new Raycaster(origin, target.clone().sub(origin).normalize());
+        const expected = a.sections.intersect(raycaster);
+        const actual = b.sections.intersect(raycaster);
+        assert.deepStrictEqual(hitSummary(actual), hitSummary(expected));
+        if (expected && actual) {
+          assert.equal(actual.region, expected.region);
+          assert.equal(actual.label, expected.label);
+          assert.equal('source' in actual, 'source' in expected);
+          if ('source' in actual) capHits++;
+          seenLabels.add(actual.label?.source_label_id);
+          seenRegions.add(actual.region?.id);
+        }
       }
     }
-    assert.ok(hits > 5, `only ${hits} rays hit the cut`);
+    assert.ok(seenLabels.size >= 2, `hits covered ${seenLabels.size} labels`);
+    assert.ok(seenRegions.size >= 2, `hits covered ${seenRegions.size} regions`);
+    assert.ok(capHits > 5, `only ${capHits} hits landed on a cap`);
     a.sections.dispose();
     b.sections.dispose();
   });
 
   it('applies highlights to the layer like the legacy class', () => {
-    const a = build(true);
-    const b = build(false);
+    const codes = seededCodes(prng(4405));
+    const a = build(true, codes);
+    const b = build(false, codes.slice());
     for (const highlight of [
-      { hovered: region.id },
-      { selected: region.id },
+      { hovered: regionIds[0] },
+      { selected: regionIds[1] },
+      { hovered: regionIds[2], selected: regionIds[0] },
       {},
-      { hovered: 'x' },
     ]) {
       a.sections.setHighlight(highlight);
       b.sections.setHighlight(highlight);

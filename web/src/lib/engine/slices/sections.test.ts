@@ -380,3 +380,55 @@ test('hiding the internal anatomy repaints an open cut', async () => {
   assert.equal(updates, 1);
   sections.dispose();
 });
+
+test('a failed older cut atlas does not overwrite a newer choice', async () => {
+  const { tissues, sections } = fixture();
+  await sections.setMode('axial');
+  let fail: (error: Error) => void = () => {};
+  tissues.load = (atlas: string) =>
+    atlas === 'hcp-mmp'
+      ? new Promise((_, reject) => {
+          fail = reject;
+        })
+      : Promise.resolve();
+  const failure = assert.rejects(sections.setCutAtlas('hcp-mmp'), /offline/);
+  await sections.setCutAtlas('nextbrain');
+  fail(new Error('offline'));
+  await failure;
+  assert.equal(sections.state.cutAtlas, 'nextbrain');
+  assert.equal(sections.state.status, 'ready');
+  sections.dispose();
+});
+
+test('the current failed cut atlas is restored and reported', async () => {
+  const { tissues, sections } = fixture();
+  await sections.setMode('axial');
+  tissues.load = () => Promise.reject(new Error('offline'));
+  await assert.rejects(sections.setCutAtlas('hcp-mmp'), /offline/);
+  assert.equal(sections.state.cutAtlas, 'destrieux');
+  assert.equal(sections.state.status, 'error');
+  sections.dispose();
+});
+
+test('the offset can be set while the cut is off', async () => {
+  const { sections } = fixture();
+  await sections.setOffsetReady(10);
+  assert.equal(sections.state.mode, 'off');
+  assert.deepEqual(sections.state.crosshair, [0, 0, 10]);
+  sections.dispose();
+});
+
+test('one failing reload after a model change is reported once', async () => {
+  const { model, tissues, sections } = fixture();
+  await sections.setMode('axial');
+  const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+  tissues.layers.delete(sections.state.cutAtlas);
+  tissues.load = () => Promise.reject(new Error('offline'));
+  model.state.spinalCordVisible = false;
+  model.dispatchEvent(new Event('change'));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(errors.mock.calls.length, 1);
+  assert.equal(sections.state.status, 'error');
+  errors.mockRestore();
+  sections.dispose();
+});

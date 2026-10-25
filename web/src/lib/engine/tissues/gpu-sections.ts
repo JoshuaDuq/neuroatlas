@@ -16,7 +16,7 @@ import {
   Vector2,
   Vector3,
 } from 'three';
-import type { Color, Intersection, IUniform, Material, Plane, Raycaster } from 'three';
+import type { Color, Intersection, IUniform, Material, Raycaster } from 'three';
 import type { Region } from '../../types/index.ts';
 import type { Frame } from '../slices/coordinates.ts';
 import {
@@ -82,6 +82,7 @@ export interface VolumeMetadata {
 /** One atlas's published label volume and its label table (`tissue-labels.json`). */
 export interface TissueAtlasRecord extends VolumeFile {
   labels: readonly Label[];
+  voxel_spacing_mm?: readonly number[];
 }
 
 export interface TissueMetadata {
@@ -144,18 +145,11 @@ export interface CutModel extends EventTarget {
   readonly cabNp: PaletteLookup['cabNp'] | null;
   readonly functionalRegions: PaletteLookup['functional'] | null;
   readonly layers: ReadonlyMap<string, { meshes: Mesh[] }>;
-  readonly sourceColors: ReadonlyMap<Mesh, Color>;
+  readonly sourceColors: Pick<ReadonlyMap<Mesh, Color>, 'get'>;
   readonly state: PaletteState;
-  readonly clippingPlanes: readonly Plane[];
   ensureEnvelopes(): Promise<Mesh[]>;
   ensureSpinalCord(): Promise<unknown>;
   ensureRibbonWedges(atlas: string, baseUrl: string | URL): Promise<Mesh[]>;
-  loadGlassSolids(baseUrl: string | URL): Promise<unknown>;
-  setClippingPlanes(planes: Plane[]): void;
-  setCutState(state: { atlas: string; active: boolean }): void;
-  setMriAnatomy(anatomy: Anatomy | null): void;
-  setSurfaceColor(mode: string): void;
-  intersect(raycaster: Raycaster): (Intersection & { region?: Region | null }) | null;
 }
 
 /** A cut hit with the region it names and the label it landed on. */
@@ -186,7 +180,7 @@ export class TissueSections {
   anatomy: Anatomy | null = null;
   solidsReady = false;
   private readonly pending = new Map<string, Promise<void>>();
-  private metadata: TissueMetadata | null = null;
+  metadata: TissueMetadata | null = null;
   private metadataLoading: Promise<void> | null = null;
   private volumeMetadata: VolumeMetadata | null = null;
   private volumeMetadataLoading: Promise<VolumeMetadata> | null = null;
@@ -658,9 +652,8 @@ export class TissueSections {
       const id = cap!.source.userData['region_id'] ?? parcel ?? label?.region_id ?? null;
       return { ...hit, region: this.model.regions.get(id) ?? null, label };
     }
-    if (!label || !labelVisible(label, this.model.state, { regions: this.model.regions }))
-      return null;
-    return { ...hit, region: this.model.regions.get(label.region_id!) ?? null, label };
+    if (!labelVisible(label!, this.model.state, { regions: this.model.regions })) return null;
+    return { ...hit, region: this.model.regions.get(label!.region_id!) ?? null, label };
   }
 
   /** The gyral white-matter parcel a white-envelope cap draws at a hit, if it samples one. */

@@ -1,8 +1,14 @@
 import { Group, Plane, Vector3 } from 'three';
-import type { Raycaster } from 'three';
+import type { Intersection, Raycaster } from 'three';
 import type { CutMode, Region } from '../../types/index.ts';
 import { TissueSections } from '../tissues/gpu-sections.ts';
-import type { CutHit, CutModel, Highlight, VolumeMetadata } from '../tissues/gpu-sections.ts';
+import type {
+  Anatomy,
+  CutHit,
+  CutModel,
+  Highlight,
+  VolumeMetadata,
+} from '../tissues/gpu-sections.ts';
 import { centeredFrame, clippingPlane } from './coordinates.ts';
 import type { Frame, Ras } from './coordinates.ts';
 import { renderSlice } from './sampling.ts';
@@ -34,7 +40,13 @@ interface SectionsStateRecord {
 
 /** The model as the sections drive it: the cut's own model plus the display commands it issues. */
 export interface SectionsModel extends CutModel {
+  readonly clippingPlanes: readonly Plane[];
   loadGlassSolids(baseUrl: string | URL): Promise<unknown>;
+  setClippingPlanes(planes: Plane[]): void;
+  setCutState(state: { atlas: string; active: boolean }): void;
+  setMriAnatomy(anatomy: Anatomy | null): void;
+  setSurfaceColor(mode: string): void;
+  intersect(raycaster: Raycaster): (Intersection & { region?: Region | null }) | null;
 }
 
 interface LoadedVolumes {
@@ -138,7 +150,8 @@ export class BrainSections extends EventTarget {
         if (this.tissues.layers.has(this.state.cutAtlas) && detailReady) this.update();
         else {
           this.group.visible = false;
-          this.setMode(this.state.mode).catch((error: unknown) => this.report(error));
+          // `setMode` has already reported the failure before rejecting.
+          this.setMode(this.state.mode).catch(() => {});
         }
       }
     };
@@ -340,9 +353,12 @@ export class BrainSections extends EventTarget {
    */
   async setOffsetReady(offset: number): Promise<void> {
     const point = this.crosshairFor(offset);
-    await this.commitFrame(centeredFrame(this.state.mode, point, this.state), () => {
-      this.state.crosshair = point;
-    });
+    await this.commitFrame(
+      centeredFrame(this.active ? this.state.mode : 'axial', point, this.state),
+      () => {
+        this.state.crosshair = point;
+      },
+    );
   }
 
   async setAnglesReady(tilt: number, azimuth: number): Promise<void> {
@@ -410,8 +426,11 @@ export class BrainSections extends EventTarget {
     try {
       await this.prepare();
     } catch (error) {
-      this.state.cutAtlas = previous;
-      this.report(error);
+      // A newer choice owns the state and the status now; this failure is stale.
+      if (request === this.requestNumber) {
+        this.state.cutAtlas = previous;
+        this.report(error);
+      }
       throw error;
     }
     if (request !== this.requestNumber || this.disposed) return;
