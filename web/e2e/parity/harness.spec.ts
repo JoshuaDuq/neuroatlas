@@ -16,6 +16,8 @@ const prefetched = [
 /** The published files live at the site root, `/neuroatlas/`, beside the preview's own `/neuroatlas/next/`. */
 const siteRoot = (baseURL: string) => baseURL.replace(/next\/$/, '');
 
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, (char) => `\\${char}`);
+
 /** The URL a published file is requested under: its path and its own content version. */
 const versioned = (base: string, file: string) =>
   `${base}${file}?v=${publishedRecord(publicDirectory, file).version}`;
@@ -27,12 +29,14 @@ test('each prefetch URL is requested once, with its current version', async ({ a
 
   for (const file of prefetched) {
     expect(
-      app.requestsTo(new RegExp(`${file.replace('.', '\\.')}\\?`)).map(({ url }) => url),
+      app.requestsTo(new RegExp(`/${escapeRegExp(file)}(\\?|$)`)).map(({ url }) => url),
     ).toEqual([versioned(root, file)]);
   }
-  for (const { url } of app.requestsTo(/\/(models|diffusion)\/.*\?v=/)) {
+  for (const { url } of app.requestsTo(/\/(models|diffusion)\//)) {
     const [path, version] = url.slice(root.length).split('?v=');
-    expect(version, path).toBe(publishedRecord(publicDirectory, path!).version);
+    expect(version, `${path} is requested without a version`).toBe(
+      publishedRecord(publicDirectory, path!).version,
+    );
   }
 });
 

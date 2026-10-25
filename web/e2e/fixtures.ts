@@ -38,6 +38,11 @@ function createApp(page: Page, projectName: string) {
     }, changes);
   }
 
+  /** axe-core over the page frame with the WCAG 2.2 AA rule tags. */
+  async function axe() {
+    return (await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()).violations;
+  }
+
   return {
     page,
     /** Every request the page has made since the test began. */
@@ -65,13 +70,18 @@ function createApp(page: Page, projectName: string) {
     /** Selects a region by its id, such as `destrieux:left:38`. */
     selectRegion: (id: string) => setHashParams({ region: id }),
 
-    /** Waits until the link, which carries the camera, has stopped changing for a quarter second. */
+    /**
+     * Waits until the link, which carries the camera, has been still for 750 ms. The link only
+     * changes once a move has finished: a move animates for TRANSITION_MS = 240
+     * (viewer/render/scene.js:20) and the link writer then waits its 250 ms debounce
+     * (viewer/state/link-writer.js:7), so a shorter window cannot tell motion from rest.
+     */
     waitForCameraIdle: () =>
       page.waitForFunction(() => {
         const start = location.hash;
         return new Promise<boolean>((resolve) =>
           requestAnimationFrame(() =>
-            requestAnimationFrame(() => setTimeout(() => resolve(location.hash === start), 250)),
+            requestAnimationFrame(() => setTimeout(() => resolve(location.hash === start), 750)),
           ),
         );
       }),
@@ -83,10 +93,7 @@ function createApp(page: Page, projectName: string) {
     /** The link state in the address bar, without the `#`. */
     hash: () => page.evaluate(() => location.hash.replace(/^#/, '')),
 
-    /** axe-core over the page frame with the WCAG 2.2 AA rule tags. */
-    async axe() {
-      return (await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()).violations;
-    },
+    axe,
 
     /**
      * The accessibility gate for a feature. The legacy app's violations are recorded
@@ -94,7 +101,7 @@ function createApp(page: Page, projectName: string) {
      * only; the next app must have none.
      */
     async expectAccessible(feature: string) {
-      const violations = await this.axe();
+      const violations = await axe();
       if (projectName === 'legacy') {
         if (process.env.A11Y_BASELINE) {
           mkdirSync(fileURLToPath(baselines), { recursive: true });

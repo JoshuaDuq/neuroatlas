@@ -1,5 +1,10 @@
 {
-  "extends": "./tsconfig.test.json",
-  "include": ["src/**/*.ts", "test/**/*.ts", "types/*.d.ts"],
-  "exclude": ["src/service-worker.ts"]
+  "extends": "./tsconfig.app.json",
+  "include": ["src/**/*.ts", "types/*.d.ts"],
+  "exclude": [
+    "src/service-worker.ts",
+    "src/**/*.test.ts",
+    "src/**/*test-support.ts",
+    "src/**/*-suite.ts"
+  ]
 }
