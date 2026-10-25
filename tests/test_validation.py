@@ -201,7 +201,7 @@ def manifest_assets(tmp_path):
 def test_manifest_matches_sources_and_meshes(manifest_assets):
     from brain_model import validate
 
-    validate.validate_manifest(*manifest_assets)
+    validate.validate_manifest(*manifest_assets, None)
 
 
 @pytest.mark.parametrize(
@@ -226,7 +226,7 @@ def test_manifest_rejects_stale_region_metadata(manifest_assets, field, value):
     config, manifest = manifest_assets
     manifest["regions"][0][field] = value
     with pytest.raises(ValueError, match="Manifest"):
-        validate.validate_manifest(config, manifest)
+        validate.validate_manifest(config, manifest, None)
 
 
 @pytest.mark.parametrize(
@@ -245,7 +245,7 @@ def test_manifest_rejects_incomplete_region_sets_and_counts(manifest_assets, dam
     else:
         manifest["detail_levels"][0]["region_count"] += 1
     with pytest.raises(ValueError, match="Manifest"):
-        validate.validate_manifest(config, manifest)
+        validate.validate_manifest(config, manifest, None)
 
 
 def test_metadata_is_checked_against_source_when_manifest_and_glb_agree(
@@ -264,7 +264,7 @@ def test_metadata_is_checked_against_source_when_manifest_and_glb_agree(
     scene.geometry[region_id].metadata["source_name"] = "Wrong"
     write_scene(scene, path)
     with pytest.raises(ValueError, match="metadata"):
-        validate.validate_manifest(config, manifest)
+        validate.validate_manifest(config, manifest, None)
 
 
 def test_a_solid_block_surface_encloses_its_label_without_pinching():

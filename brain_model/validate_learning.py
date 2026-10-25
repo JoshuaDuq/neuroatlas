@@ -14,7 +14,12 @@ from .layers.learning import (
     source_groups,
 )
 from .sources import sha256
-from .surfaces.geometry import extract_structure, misclassified_voxels
+from .surfaces.geometry import (
+    box_affine,
+    extract_structure,
+    label_boxes,
+    misclassified_voxels,
+)
 
 
 def on_nextbrain_grid(config, path, grid):
@@ -26,9 +31,9 @@ def on_nextbrain_grid(config, path, grid):
     return coarse
 
 
-def validate_source_overlap(config):
+def validate_source_overlap(config, nextbrain_source):
     definition = read_definition(config)
-    grid, table = nextbrain.load(config)
+    grid, table = nextbrain_source
     covered = np.isin(
         on_nextbrain_grid(config, config["source_directory"] / "mri/aseg.mgz", grid),
         [label for unit in definition["aseg"] for label in unit["labels"]],
@@ -56,18 +61,25 @@ def validate_source_overlap(config):
     return reports
 
 
-def expected_metadata(config):
+def label_counts(volume, groups):
+    """Voxels of every label, including the ones a group names but the volume lacks."""
+    return np.bincount(
+        volume.ravel(), minlength=max(label for group in groups for label in group["labels"]) + 1
+    )
+
+
+def expected_metadata(config, nextbrain_source):
     records = {}
     grids = []
-    for source, grid, table, groups in source_groups(config):
+    for source, grid, table, groups in source_groups(config, nextbrain_source):
         grids.append((source, grid))
-        volume = grid.labels
+        counts = label_counts(grid.labels, groups)
         for group in groups:
-            members = [label for label in group["labels"] if np.any(volume == label)]
+            members = [label for label in group["labels"] if counts[label]]
             if not members:
                 continue
             side = group["hemisphere"]
-            count = sum(int(np.count_nonzero(volume == label)) for label in members)
+            count = int(counts[members].sum())
             region_id = f"learning:{group['id']}"
             records[region_id] = {
                 "id": region_id,
@@ -91,7 +103,7 @@ def expected_metadata(config):
     return records, source_grids(grids)
 
 
-def validate(config, manifest):
+def validate(config, manifest, nextbrain_source):
     path = config["output_directory"] / "learning.glb"
     scene = trimesh.load_scene(path, process=False)
     meshes = {mesh.metadata["region_id"]: mesh for mesh in scene.geometry.values()}
@@ -100,12 +112,20 @@ def validate(config, manifest):
     maximum = read_definition(config)["smoothing"]["maximum_displacement_mm"]
     tolerance = config["validation"]["coordinate_tolerance_mm"]
     reports = []
-    for source, grid, table, groups in source_groups(config):
+    for source, grid, table, groups in source_groups(config, nextbrain_source):
         volume, affine = grid.labels, grid.voxel_to_surface
+        boxes = label_boxes(volume)
         for group in groups:
-            mask = np.isin(volume, group["labels"])
-            if not mask.any():
+            present = [boxes[label] for label in group["labels"] if label in boxes]
+            if not present:
                 continue
+            # The union of its members' boxes holds every voxel of the group.
+            box = tuple(
+                slice(min(member[axis].start for member in present),
+                      max(member[axis].stop for member in present))
+                for axis in range(3)
+            )
+            mask, local = np.isin(volume[box], group["labels"]), box_affine(affine, box)
             region_id = f"learning:{group['id']}"
             mesh = meshes[region_id]
             record = regions[region_id]
@@ -116,7 +136,7 @@ def validate(config, manifest):
                     raise ValueError(f"Missing constituent region: {member}")
             # Invert the glTF coordinate convention, compare in physical mm.
             ras = mesh.vertices[:, [0, 2, 1]] * [1000, -1000, 1000]
-            reference = extract_structure(mask, 1, affine)
+            reference = extract_structure(mask, 1, local)
             if not np.array_equal(mesh.faces, reference.faces):
                 raise ValueError(f"Learning display changed topology: {region_id}")
             displacement = float(np.linalg.norm(ras - reference.vertices, axis=1).max())
@@ -131,7 +151,7 @@ def validate(config, manifest):
                 raise ValueError(
                     f"Learning displacement metadata mismatch: {region_id}"
                 )
-            misplaced = len(misclassified_voxels(ras, mesh.faces, mask, affine))
+            misplaced = len(misclassified_voxels(ras, mesh.faces, mask, local))
             if misplaced:
                 raise ValueError(
                     f"Learning display moved {misplaced} voxel centres across: {region_id}"
@@ -162,5 +182,5 @@ def validate(config, manifest):
         "regions": reports,
         "source_volumes_unchanged": True,
         "maximum_allowed_displacement_mm": maximum,
-        "cross_source_overlap": validate_source_overlap(config),
+        "cross_source_overlap": validate_source_overlap(config, nextbrain_source),
     }

@@ -111,6 +111,37 @@ def test_a_surface_moved_one_voxel_misplaces_the_two_slabs_it_crossed():
     assert sorted(set(misplaced[:, 0].tolist())) == [4, 8]
 
 
+@pytest.mark.parametrize("affine", [np.eye(4), TKR])
+def test_a_label_checked_inside_its_box_is_checked_as_in_the_whole_volume(affine):
+    from brain_model.surfaces.geometry import (
+        box_affine,
+        label_boxes,
+        misclassified_voxels,
+    )
+
+    volume = np.zeros((16, 16, 16), dtype=np.int32)
+    volume[sphere_mask()] = 3
+    # One label against the volume's edge, where its box cannot widen.
+    volume[0:3, 5:9, 13:16] = 7
+    boxes = label_boxes(volume)
+    assert sorted(boxes) == [3, 7]
+    for label in (3, 7):
+        whole = extract_structure(volume, label, affine)
+        crop, local = volume[boxes[label]], box_affine(affine, boxes[label])
+        boxed = extract_structure(crop, label, local)
+        np.testing.assert_array_equal(boxed.faces, whole.faces)
+        np.testing.assert_array_equal(boxed.vertices, whole.vertices)
+        # A surface moved off its voxels misplaces the same centres either way.
+        moved = whole.vertices + [0.6, -0.4, 0.3]
+        expected = misclassified_voxels(moved, whole.faces, volume == label, affine)
+        assert len(expected)
+        np.testing.assert_array_equal(
+            misclassified_voxels(moved, whole.faces, crop == label, local)
+            + [axis.start for axis in boxes[label]],
+            expected,
+        )
+
+
 # bert's warped left diagonal band: 15 voxels, one of them cut off. Taubin
 # smoothing alone carries its surface across two of these voxel centres.
 DIAGONAL_BAND = [[1, 1, 4], [3, 2, 4], [4, 2, 3], [4, 2, 4], [4, 3, 3], [5, 3, 3],

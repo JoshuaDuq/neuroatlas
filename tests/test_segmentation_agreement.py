@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from brain_model.labels import nextbrain
 from brain_model.sources import read_config
 from brain_model.validate_segmentation import (
     dice,
@@ -24,7 +25,7 @@ def test_dice_counts_overlap_against_both_sizes():
 @pytest.mark.parametrize("anatomy", ["cdmd"])
 def test_every_declared_structure_clears_the_floor_and_is_the_published_score(anatomy):
     config = read_config(anatomy)
-    report = segmentation_agreement(config)
+    report = segmentation_agreement(config, nextbrain.load(config))
     settings = config["validation"]["segmentation_agreement"]
     assert set(report["dice"]) == set(settings["aseg_labels"])
     assert all(set(sides) == {"left", "right"} for sides in report["dice"].values())
@@ -40,29 +41,29 @@ def test_a_score_below_the_floor_fails_validation():
     config = read_config()
     config["validation"]["segmentation_agreement"]["minimum_dice"] = 0.85
     with pytest.raises(ValueError, match="below Dice 0.85"):
-        segmentation_agreement(config)
+        segmentation_agreement(config, nextbrain.load(config))
 
 
 def test_an_anatomy_exception_lowers_only_its_own_floor():
     config = read_config("cdmd")
-    assert segmentation_agreement(config)["dice"]["amygdala"]["left"] < 0.8
+    assert segmentation_agreement(config, nextbrain.load(config))["dice"]["amygdala"]["left"] < 0.8
     config["anatomy"]["segmentation_agreement_exceptions"]["amygdala"]["left"]["minimum_dice"] = 0.78
     with pytest.raises(ValueError, match="amygdala left"):
-        segmentation_agreement(config)
+        segmentation_agreement(config, nextbrain.load(config))
 
 
 def test_an_exception_the_score_no_longer_needs_is_refused():
     config = read_config()
     config["anatomy"]["segmentation_agreement_exceptions"] = {"thalamus": {"left": {"minimum_dice": 0.7}}}
     with pytest.raises(ValueError, match="remove its exception"):
-        segmentation_agreement(config)
+        segmentation_agreement(config, nextbrain.load(config))
 
 
 def test_an_exception_for_no_score_is_refused():
     config = read_config()
     config["anatomy"]["segmentation_agreement_exceptions"] = {"pallidum": {"left": {"minimum_dice": 0.7}}}
     with pytest.raises(ValueError, match="names no score"):
-        segmentation_agreement(config)
+        segmentation_agreement(config, nextbrain.load(config))
 
 
 def test_a_structure_learning_does_not_define_is_refused():
@@ -70,7 +71,7 @@ def test_a_structure_learning_does_not_define_is_refused():
     labels = config["validation"]["segmentation_agreement"]["aseg_labels"]
     labels["pallidum"] = {"left": 13, "right": 52}
     with pytest.raises(ValueError, match="learning does not define"):
-        segmentation_agreement(config)
+        segmentation_agreement(config, nextbrain.load(config))
 
 
 @pytest.mark.parametrize(
