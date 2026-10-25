@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { Data3DTexture, Matrix4, MeshPhysicalMaterial, ShaderLib } from 'three';
