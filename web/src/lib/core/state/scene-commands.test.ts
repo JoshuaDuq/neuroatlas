@@ -405,3 +405,14 @@ test('a colour still downloading does not land after the reader keeps the one sh
     assert.equal(scene.session.assemble({}).status, 'ready');
   }
 });
+
+test('a detail choice retires the standing notice', async () => {
+  const scene = fixture();
+  scene.session.notify({ text: 'An earlier notice.' });
+  const choosing = scene.commands.chooseDetail('nextbrain');
+  await scene.settle();
+  assert.equal(scene.session.assemble({}).notice, null);
+  await scene.finish('nextbrain');
+  await choosing;
+  assert.equal(scene.model.detailId, 'nextbrain');
+});

@@ -300,3 +300,14 @@ test('session accepts and toggles language', () => {
   s.setLang('invalid');
   assert.equal(s.assemble(modelState).lang, 'en');
 });
+
+test('releasing notices that were never held fails and leaves the hold count intact', () => {
+  const s = session();
+  assert.throws(() => s.releaseNotices(), /No notices are held/);
+  assert.throws(() => s.releaseNotices({ text: 'lead' }), /No notices are held/);
+  s.holdNotices();
+  s.notify({ text: 'Waits.' });
+  assert.equal(s.assemble(modelState).notice, null);
+  s.releaseNotices();
+  assert.equal(s.assemble(modelState).notice!.text, 'Waits.');
+});
