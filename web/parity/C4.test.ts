@@ -48,6 +48,11 @@ import {
   towardZero as legacyTowardZero,
 } from '../../viewer/state/url-state.js';
 import { createClinicalCatalog as legacyClinical } from '../../viewer/clinical/catalog.js';
+import { t as legacyT } from '../../viewer/i18n/translations.js';
+import {
+  clinicalLayers as legacyLayers,
+  showClinicalRegions as legacyShow,
+} from '../../viewer/clinical/navigation.js';
 import * as legacyDomains from '../../viewer/catalog/neuropsych-domains.js';
 import { createClinicalCatalog } from '../src/lib/core/clinical/catalog.ts';
 import type { ClinicalData } from '../src/lib/core/clinical/types.ts';
@@ -57,7 +62,8 @@ import type {
   NeurosynthTerms,
 } from '../src/lib/core/catalog/neuropsych-domains.ts';
 import { prefetchAtlas } from '../src/lib/core/state/boot.ts';
-import { createDissection } from '../src/lib/core/state/dissection.ts';
+import { clinicalLayers, showClinicalRegions } from '../src/lib/core/state/clinical-navigation.ts';
+import { createDissection, dissectionSaid } from '../src/lib/core/state/dissection.ts';
 import {
   captureBeforeInternal,
   insideInternal,
@@ -177,7 +183,18 @@ function hashCorpus() {
   const everything = `#${Object.entries(POOL)
     .map(([param, values]) => `${param}=${values[0]}`)
     .join('&')}`;
-  const hashes = ['', '#', everything, everything.slice(1), '#unknown=1&atlas=hcp-mmp', '#%zz=1'];
+  const singles = Object.entries(POOL).flatMap(([param, values]) =>
+    values.map((value) => `#${param}=${encodeURIComponent(value).replaceAll('%3A', ':')}`),
+  );
+  const hashes = [
+    ...singles,
+    '',
+    '#',
+    everything,
+    everything.slice(1),
+    '#unknown=1&atlas=hcp-mmp',
+    '#%zz=1',
+  ];
   for (const seed of SEEDS.concat(SEEDS.map((value) => value + 100))) {
     const rand = prng(seed);
     const parts: string[] = [];
@@ -573,6 +590,78 @@ describe('dissection', () => {
 // ---------------------------------------------------------------------------------------------
 // Reader state
 // ---------------------------------------------------------------------------------------------
+
+describe('dissection announcer', () => {
+  test('dissectionSaid is the legacy panel status text for every count in both languages', () => {
+    for (const lang of ['en', 'fr'] as const) {
+      for (const count of [0, 1, 2, 5, 120]) {
+        const hiddenRegions = new Set(Array.from({ length: count }, (_, index) => `r${index}`));
+        same(
+          dissectionSaid({ lang, hiddenRegions }),
+          legacyT(lang, 'dissection').hiddenCount(count),
+          `${lang} ${count}`,
+        );
+      }
+    }
+  });
+});
+
+describe('clinical-navigation', () => {
+  const REGIONS = [
+    { id: 'c1', atlas: 'destrieux', kind: 'cortex' },
+    { id: 'c2', atlas: 'hcp-mmp', kind: 'cortex' },
+    { id: 'c3', atlas: 'hcp-mmp', kind: 'cortex' },
+    { id: 's1', atlas: 'aseg', kind: 'structure' },
+    { id: 's2', atlas: 'nextbrain', kind: 'structure' },
+    { id: 's3', atlas: 'nextbrain', kind: 'structure' },
+    { id: 'sup', atlas: 'nextbrain', kind: 'structure', supplemental: true },
+    { id: 'wall', atlas: 'destrieux', kind: 'non-region' },
+  ];
+  function model(atlas: string, detail: string, opacity: number) {
+    const calls: unknown[] = [];
+    const m: Any = {
+      regions: new Map(REGIONS.map((region) => [region.id, region])),
+      settings: { atlas, detail, cortexOpacity: opacity },
+    };
+    for (const name of [
+      'setInternalSystem',
+      'setInternalVisible',
+      'clearIsolation',
+      'setHemisphere',
+      'setCortexVisible',
+      'setCortexOpacity',
+      'showRegions',
+    ]) {
+      m[name] = (...args: unknown[]) => calls.push([name, ...args]);
+    }
+    return { m, calls };
+  }
+
+  test('clinicalLayers and showClinicalRegions agree over seeded citations and settings', () => {
+    for (const seed of SEEDS) {
+      const rand = prng(seed);
+      const ids = Array.from({ length: below(rand, 6) }, () =>
+        pick(rand, [...REGIONS.map((region) => region.id), 'unknown']),
+      );
+      const atlas = pick(rand, ['destrieux', 'hcp-mmp']);
+      const detail = pick(rand, ['aseg', 'nextbrain', 'learning']);
+      const opacity = pick(rand, [0, 1]);
+      const ours = model(atlas, detail, opacity);
+      const theirs = model(atlas, detail, opacity);
+      same(
+        outcome(() => clinicalLayers(ours.m as never, ids)),
+        outcome(() => legacyLayers(theirs.m, ids)),
+        `layers seed ${seed}`,
+      );
+      same(
+        outcome(() => showClinicalRegions(ours.m as never, ids)),
+        outcome(() => legacyShow(theirs.m, ids)),
+        `show seed ${seed}`,
+      );
+      same(ours.calls, theirs.calls, `calls seed ${seed}`);
+    }
+  });
+});
 
 describe('reader-state', () => {
   const LOADED = { atlas: 'destrieux', detail: 'aseg', cutAtlas: 'nextbrain' };
@@ -1078,7 +1167,7 @@ describe('scene-commands', () => {
     const rand = prng(seed);
     const ops: Op[] = [];
     for (let step = 0; step < 14; step += 1) {
-      const kind = below(rand, 12);
+      const kind = below(rand, 14);
       if (kind === 0) ops.push(['chooseAtlas', pick(rand, ['destrieux', 'hcp-mmp', 'nope'])]);
       else if (kind === 1) ops.push(['chooseDetail', pick(rand, ['aseg', 'nextbrain'])]);
       else if (kind === 2)
@@ -1106,6 +1195,7 @@ describe('scene-commands', () => {
         ]);
       else if (kind === 5) ops.push(['cut', pick(rand, ['off', 'axial', 'coronal'])]);
       else if (kind === 6) ops.push(['showSpinalCord', rand() < 0.7]);
+      else if (kind === 12 || kind === 13) ops.push(['notify', `Standing notice ${step}.`]);
       else if (kind === 7) ops.push(['lang', pick(rand, ['en', 'fr'])]);
       else if (kind === 8) ops.push(['tick', pick(rand, LAYERS), 1 + below(rand, 5), 8]);
       else if (kind === 9) ops.push(['fail', pick(rand, LAYERS)]);
@@ -1151,6 +1241,7 @@ describe('scene-commands', () => {
     };
     for (const [name, ...args] of script(seed)) {
       if (name === 'lang') session.setLang(args[0]);
+      else if (name === 'notify') session.notify({ text: args[0] });
       else if (name === 'tick')
         fake.pending.get(args[0] as string)?.progress?.({ loaded: args[1], total: args[2] });
       else if (name === 'fail' || name === 'finish') {
