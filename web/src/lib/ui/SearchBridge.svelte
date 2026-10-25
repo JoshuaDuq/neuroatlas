@@ -1,0 +1,64 @@
+<!--
+  A quiet link to the other evidence tab's matches for the same words (clinical.js:23-30),
+  ruled off from what precedes it.
+-->
+<script lang="ts">
+  let { text, onclick }: { text: string; onclick: () => void } = $props();
+</script>
+
+<button type="button" class="search-bridge" {onclick}>
+  <span class="label">{text}</span>
+  <span class="chevron" aria-hidden="true"></span>
+</button>
+
+<style>
+  @layer components {
+    /* clinical.css:68-90,114: a link styled as a row, so no hover ground behind its underline. */
+    .search-bridge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      width: 100%;
+      height: auto;
+      min-height: var(--row-height);
+      margin: 0;
+      padding: var(--space-1) var(--panel-inset);
+      border: 0;
+      border-top: 1px solid var(--border-subtle);
+      border-radius: 0;
+      background: none;
+      color: var(--accent);
+      text-align: left;
+      font-weight: 400;
+      line-height: var(--lh-ui);
+    }
+    .label {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .chevron {
+      flex: none;
+      width: 6px;
+      height: 6px;
+      margin: 0 3px;
+      color: inherit;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: translateX(-1.6px) rotate(-45deg);
+    }
+    .search-bridge:focus-visible {
+      outline-offset: -2px;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .search-bridge:hover:not(:disabled) {
+        background: none;
+      }
+      .search-bridge:hover .label {
+        color: var(--accent-hover);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+    }
+  }
+</style>
