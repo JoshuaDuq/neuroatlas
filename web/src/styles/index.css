@@ -1,1 +1,12 @@
-/* Styles foundation: replaced by U1. */
+/*
+ * Cascade order, lowest to highest. Svelte scopes component selectors with a class, which raises their
+ * specificity; the guarantee that a11y rules win therefore comes from layers, not from source order.
+ * Components put their rules in `components` or `features`, and forced-colour and contrast rules in `a11y`.
+ */
+@layer tokens, base, elements, components, features, a11y;
+
+@import '@fontsource-variable/source-sans-3/wght.css';
+@import './tokens.css';
+@import './base.css';
+@import './elements.css';
+@import './a11y.css';
