@@ -1,6 +1,6 @@
 /* Controls -------------------------------------------------------------- */
 /*
- * Three button ranks: one filled primary (linked MRI), tonal secondary for
+ * Three button ranks: one filled primary (MRI with tracts), tonal secondary for
  * every other command, and quiet text for recessive or destructive-to-settings
  * actions. Fields keep a 3:1 outline because their edge is the affordance.
  */
@@ -30,8 +30,8 @@ button:disabled { background: var(--surface-sunken); color: var(--text-tertiary)
   button:active:not(:focus-visible, :disabled, .row, [role="tab"], [role="treeitem"], .segmented button, .comparison-row,
     .workspace-selection, #workspace-selection-clear, .detail-back, .detail-crumb, .detail-trailing button,
     .constituents-list button, .empty button,
-    .comparison-export, .clinical-deficit, .clinical-association-region, .function-area,
-    .circuit-link, .circuit-choice, .circuit-step, .circuit-return button,
+    .comparison-export, .notice-action, .clinical-deficit, .clinical-association-region, .function-area,
+    .circuit-link, .circuit-return button,
     .menu-item, .sheet-selection, #sheet-handle, .stage-key-toggle, .stage-dock button) {
     transform: scale(var(--press-scale));
   }
@@ -88,16 +88,18 @@ select, input[type="search"], input[type="number"] {
   font-size: var(--text-ui);
 }
 select {
+  /* The caret's ink ends this far inside the control, as far as the value starts from the other edge. */
+  --caret-end: var(--space-3);
   width: 100%;
   appearance: none;
-  padding-right: var(--space-8);
+  padding-right: calc(var(--caret-end) + var(--space-5));
   /* The same stroked chevron as every disclosure, drawn from two diagonal strokes. */
   background-image:
     linear-gradient(45deg, transparent calc(50% - 0.9px), var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px), transparent calc(50% + 0.6px)),
     linear-gradient(-45deg, transparent calc(50% - 0.9px), var(--text-secondary) calc(50% - 0.9px) calc(50% + 0.6px), transparent calc(50% + 0.6px));
   background-position:
-    calc(100% - 16px) calc(50% + 1px),
-    calc(100% - 11px) calc(50% + 1px);
+    calc(100% - var(--caret-end) - 5px) calc(50% + 1px),
+    calc(100% - var(--caret-end)) calc(50% + 1px);
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -108,6 +110,10 @@ input[type="number"]:disabled, select:disabled {
   background-color: var(--surface-sunken);
 }
 input[type="search"] { width: 100%; }
+/* Arrow keys still step; the platform's spinner arrows are not part of the field's drawing. */
+input[type="number"] { appearance: textfield; font-variant-numeric: tabular-nums; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="search"]::placeholder { color: var(--text-tertiary); opacity: 1; }
 input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
 
@@ -217,7 +223,7 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
   padding: 0 var(--space-3);
   margin: 0;
   border: 0;
-  border-radius: calc(var(--radius-control) - 1px);
+  border-radius: var(--radius-small);
   background: transparent;
   color: var(--text-secondary);
   white-space: nowrap;
@@ -236,7 +242,7 @@ input[type="range"]:disabled::-moz-range-thumb { border-color: var(--border-cont
 .segmented button:disabled { background: transparent; }
 
 label { display: block; font-size: var(--text-ui); color: var(--text-secondary); }
-.control-field { display: grid; gap: 6px; }
+.control-field { display: grid; gap: var(--space-2); }
 .control-field + .control-field { margin-top: var(--space-4); }
 .control-field > label,
 .control-field > .control-label { font-weight: 500; color: var(--text-secondary); }
@@ -268,7 +274,7 @@ label { display: block; font-size: var(--text-ui); color: var(--text-secondary);
   display: grid;
   place-content: center;
   border: 1px solid var(--border-control);
-  border-radius: 3px;
+  border-radius: var(--radius-small);
   background: var(--surface-base);
   cursor: pointer;
   transition: background-color var(--ui-transition) var(--ease-ui), border-color var(--ui-transition) var(--ease-ui);
@@ -307,12 +313,12 @@ details > summary::before {
   transition: transform var(--ui-transition) var(--ease-ui);
 }
 
-/* Every <details>: a 36px summary, 14/20 500 primary, the chevron leading in its slot. */
+/* Every <details>: a control-height summary, 14/20 500 primary, the chevron leading in its slot. */
 details > summary {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 36px;
+  min-height: var(--control-height);
   list-style: none;
   cursor: pointer;
   font-size: var(--text-ui);
@@ -363,7 +369,7 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
   color: var(--text-secondary);
 }
 
-/* Datasheet: label left in secondary, value right in primary with tabular figures; 36px rows, one rule each. */
+/* Datasheet: label left in secondary, value right in primary with tabular figures; one rule per row. */
 .datasheet {
   display: grid;
   grid-template-columns: minmax(min-content, max-content) minmax(min-content, 1fr);
@@ -373,33 +379,11 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
 }
 .datasheet dt,
 .datasheet dd {
-  padding: 7px 0 8px;
+  padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 .datasheet dt { padding-right: var(--space-3); color: var(--text-secondary); }
 .datasheet dd { padding-left: var(--space-3); overflow-wrap: break-word; text-align: right; font-variant-numeric: tabular-nums; }
-/* A long value (a vector, a source id) stacks under its label instead of being squeezed beside it. */
-.datasheet-stacked { grid-template-columns: minmax(0, 1fr); }
-.datasheet-stacked dt { padding: 7px 0 0; border-bottom: 0; }
-.datasheet-stacked dd { padding: 0 0 8px; text-align: left; }
-
-/* Words never split: a long translation takes more of the row, or the row wraps. */
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-}
-/* All commands share the available line; translations wrap the group only when needed. */
-.actions button {
-  flex: 1 1 auto;
-  height: auto;
-  min-height: var(--control-height);
-  padding: var(--space-1) 6px;
-}
-.actions .button-primary { padding-inline: var(--space-3); }
-#isolate[data-active="true"] { background: var(--accent-wash); color: var(--accent); }
-
 /*
  * The five content modes, mirrored in the phone sheet. The selected label
  * and its underline identify the current mode without another filled surface.
@@ -464,16 +448,22 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
   background: var(--accent);
 }
 @media (min-width: 801px) and (max-width: 1000px), (max-width: 360px) {
-  .rail-tabs button { padding-inline: 2px; font-size: var(--text-caption); }
+  .rail-tabs button { padding-inline: var(--space-1); font-size: var(--text-caption); }
 }
 
-/* Task navigation stays with the panel it changes. */
+/*
+ * Task navigation stays with the panel it changes, its labels spread across the content column
+ * (French needs the room a fixed 16px gap would take). Each tab is its label: a 4px pad holds the
+ * inset focus ring clear of the words, cancelled by margins so the underline keeps the label's width.
+ */
 #workspace-tabs {
   align-self: stretch;
   flex: none;
+  justify-content: space-between;
+  gap: var(--space-2);
   min-width: 0;
   min-height: var(--tab-height);
-  padding: 0 var(--space-2);
+  padding: 0 var(--panel-inset);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-navigation);
   overflow-x: auto;
@@ -481,7 +471,16 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
   scrollbar-width: none;
 }
 /* Enlarged text scrolls within the tab bar; focus brings each complete label into view. */
-#workspace-tabs button { flex: 1 0 auto; padding-inline: var(--space-1); white-space: nowrap; }
+#workspace-tabs button {
+  flex: none;
+  margin-inline: calc(-1 * var(--space-1));
+  padding-inline: var(--space-1);
+  white-space: nowrap;
+}
+#workspace-tabs button[aria-selected="true"]::before { inset-inline: var(--space-1); }
+@media (hover: hover) and (pointer: fine) {
+  #workspace-tabs button:hover:not(:disabled) { background: none; }
+}
 
 /* Stage overlays and tools live in stage.css. */
 
@@ -490,16 +489,15 @@ details.detail-section[open] > summary::before { --chevron-turn: -90deg; }
 kbd {
   display: inline-block;
   min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
+  padding: 0 var(--space-1);
   font-family: var(--font-mono);
   font-size: var(--text-caption);
-  line-height: 18px;
+  line-height: var(--lh-caption);
   text-align: center;
   color: var(--text-secondary);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: 3px;
+  border-radius: var(--radius-small);
   box-shadow: inset 0 -1px 0 var(--border-subtle);
 }
 .key-range { color: var(--text-tertiary); font-size: var(--text-caption); line-height: var(--lh-caption); }
@@ -513,10 +511,9 @@ kbd {
 .tooltip {
   position: fixed;
   inset: auto;
-  z-index: 70;
   max-width: min(280px, calc(100vw - 2 * var(--space-2)));
   margin: 0;
-  padding: 3px var(--space-2);
+  padding: var(--space-1) var(--space-2);
   overflow: visible;
   border: 1px solid var(--overlay-border);
   border-radius: var(--radius-control);
@@ -543,5 +540,4 @@ kbd {
 #workspace-selection-clear:focus-visible,
 #detail-back:focus-visible,
 #detail-group:focus-visible,
-#sheet-handle:focus-visible,
-#tree-toggle-all:focus-visible { outline-offset: -2px; }
+#sheet-handle:focus-visible { outline-offset: -2px; }

@@ -1,9 +1,10 @@
 /* Shared UI palette. Imaging colours stay independent of the panel theme. */
 :root {
   color-scheme: light;
+  /* Each ink passes 4.5:1 on every panel ground, tonal hover included; the control edge passes 3:1 on every ground, tonal hover included. */
   --text-primary: #232a30;
-  --text-secondary: #59636c;
-  --text-tertiary: #68727b;
+  --text-secondary: #555f68;
+  --text-tertiary: #606a72;
   --accent: #28615d;
   --accent-hover: #1d4d49;
   --accent-wash: #edf3f1;
@@ -23,7 +24,7 @@
   --surface-tonal: #eef1f2;
   --surface-tonal-hover: #e4e9eb;
   --border-subtle: #e0e5e7;
-  --border-control: #8b959e;
+  --border-control: #77828c;
   /* Selected segment ring: 3:1 against the tonal track. */
   --thumb-ring: #78838d;
 
@@ -57,6 +58,11 @@
   --overlay-accent-wash: #1f3637;
   --overlay-primary-fill: #2a7678;
   --overlay-primary-fill-hover: #24686a;
+  /* Behind a dialog; the imaging viewers dim the page further, as a reading room does. */
+  --scrim: color-mix(in srgb, var(--overlay-halo-core) 50%, transparent);
+  --scrim-imaging: color-mix(in srgb, var(--overlay-halo-core) 72%, transparent);
+  /* Slices sit on true black, as a workstation shows them. */
+  --mpr-canvas: #000000;
 
   --font-ui: "Source Sans 3 Variable", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -81,20 +87,24 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  --space-10: 40px;
 
   /* Instrument density on a fine pointer; phone.css raises both to 44px for touch. */
-  --row-height: 40px;
-  --control-height: 36px;
+  --row-height: 32px;
+  --control-height: 32px;
   --tab-height: max(44px, 2.75rem);
   --rail-width: 360px;
-  --header-height: max(56px, 3.5rem);
+  --header-height: max(48px, 3rem);
   --footer-height: max(32px, 2rem);
   --panel-inset: var(--space-6);
+  /* Stage chrome stands this far inside the visible stage; the masthead's end and the status bar's end share it. */
+  --stage-gutter: var(--space-5);
   /* Names align after the disclosure slot, independently of panel width. */
   --indent: calc(var(--panel-inset) + 20px);
   --radius-control: 4px;
   --radius-panel: 6px;
+  /* Functional small radii: keycaps, checkboxes, thumbs (3px); swatches, bars, MRI canvases (2px). */
+  --radius-small: 3px;
+  --radius-mark: 2px;
   --camera-transition: 240ms;
   --ui-transition: 140ms;
   --ease-ui: cubic-bezier(0.16, 1, 0.3, 1);
@@ -114,7 +124,7 @@
   /* Graphite, not blue slate: the chrome meets the stage without a hue seam. */
   --text-primary: #e9ebee;
   --text-secondary: #b6bcc3;
-  --text-tertiary: #9ba2aa;
+  --text-tertiary: #9ca3ab;
   --accent: #7fd0cc;
   --accent-hover: #a3e0dc;
   --accent-wash: #1f3637;
@@ -130,7 +140,7 @@
   --surface-tonal: #272d32;
   --surface-tonal-hover: #303338;
   --border-subtle: #303338;
-  --border-control: #6d737b;
+  --border-control: #7d848c;
   --thumb-ring: #7a8189;
   --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.3);
 }

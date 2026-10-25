@@ -113,8 +113,7 @@ const UNREVEALABLE = new Set(['below-cut-resolution']);
 const SETTING_REASONS = new Set([
   'hemisphere', 'cortex-hidden', 'internal-hidden', 'spinal-cord-hidden', 'isolated', 'no-cut', 'other-system',
 ]);
-const EXPAND_ICON = 'm7 15 5 5 5-5M7 9l5-5 5 5';
-const COLLAPSE_ICON = 'm7 20 5-5 5 5M7 4l5 5 5-5';
+const SIDES = ['midline', 'left', 'right'];
 
 /** The display settings hiding rows of each section (kind → reasons, in the order met), said once on its caption. */
 export function sectionReasons(groups) {
@@ -367,13 +366,13 @@ export function createNavigator({
       // The reason is a status word. The label says the click will bring it back.
       item.title = item.getAttribute('aria-label');
     }
-    // A shown row's letter stands alone at rest; on a fine pointer its eye, which repeats it, lies over it.
+    // A shown row's eye already carries its letter, so the tail's copy stays hidden.
     if (eye && row.visible) tail.classList.add('row-side-rest');
-    // Otherwise the eye's own letter stands in the column the reason would have taken.
     if (role === 'option' || row.visible || rowStatesReason(row)) item.append(tail);
     if (role === 'treeitem' && !eye) {
       const sideMarker = document.createElement('span');
       sideMarker.className = 'row-side row-side-solo';
+      sideMarker.dataset.side = row.region.hemisphere;
       sideMarker.textContent = sideGlyphs[row.region.hemisphere] ?? '';
       item.append(sideMarker);
     }
@@ -476,6 +475,9 @@ export function createNavigator({
     roving = null;
     const groups = labelledGroups(catalog.groups(state), state.lang);
     const settings = sectionReasons(groups.map(({ group }) => group));
+    // A section with a midline part reserves the Mid slot; L and R stay anchored right down the tree.
+    const midline = new Set(groups.filter(({ group }) => group.rows.some(row => row.region.hemisphere === 'midline'))
+      .map(({ group }) => group.kind));
     let section = null;
     let sectionGroup = tree;
     for (const { group, label } of groups) {
@@ -502,6 +504,7 @@ export function createNavigator({
         sectionGroup = document.createElement('div');
         sectionGroup.setAttribute('role', 'group');
         sectionGroup.setAttribute('aria-labelledby', sectionName.id);
+        sectionGroup.dataset.midline = String(midline.has(section));
         tree.append(heading, sectionGroup);
       }
 
@@ -526,12 +529,10 @@ export function createNavigator({
       const badge = document.createElement('span');
       badge.className = 'group-count';
       badge.textContent = String(group.rows.length);
-      header.append(marker, name);
-      // On a fine pointer the eyes overlay the row end (navigator.css), so the name keeps the row;
-      // once they take their own room they stand before the count, which keeps the right-hand column.
+      header.append(marker, name, badge);
       const eyes = document.createElement('span');
       eyes.className = 'row-eyes';
-      for (const side of ['midline', 'left', 'right']) {
+      for (const side of SIDES) {
         const ids = group.rows.filter(row => row.region.hemisphere === side &&
           !UNREVEALABLE.has(row.reason)).map(row => row.region.id);
         if (!ids.length) continue;
@@ -542,7 +543,6 @@ export function createNavigator({
         }));
       }
       if (eyes.childElementCount) header.append(eyes);
-      header.append(badge);
       header.setAttribute('aria-label', `${label}, ${count(group.rows.length, 'region', state.lang)}`);
       header.addEventListener('click', () => onToggleGroup(group.key));
       groupBlock.append(header);
@@ -758,10 +758,7 @@ export function createNavigator({
       if (treeToggleAll && !searching) {
         const groups = catalog.groups(state);
         const allExpanded = groups.length > 0 && groups.every(g => state.expanded.has(g.key));
-        const label = allExpanded ? i18n.collapseAll : i18n.expandAll;
-        treeToggleAll.setAttribute('aria-label', label);
-        treeToggleAll.dataset.tooltip = label;
-        treeToggleAll.querySelector('path').setAttribute('d', allExpanded ? COLLAPSE_ICON : EXPAND_ICON);
+        treeToggleAll.textContent = allExpanded ? i18n.collapseAll : i18n.expandAll;
       }
       if (searchClear) {
         searchClear.hidden = !state.query;

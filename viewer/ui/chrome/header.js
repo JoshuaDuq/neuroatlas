@@ -187,7 +187,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
   for (const [target, type, listener] of listeners) target.addEventListener(type, listener);
   // Each exclusive choice is one Tab stop; arrows move inside it.
   const rovingGroups = [langContainer, themeContainer, singleKeysContainer].map(group => bindRoving(group));
-  moreButton.hidden = false;
+  moreButton.disabled = false;
   skipLink.hidden = false;
   fullscreenButton.hidden = !document.fullscreenEnabled;
   menuFullscreen.hidden = !document.fullscreenEnabled;
@@ -237,7 +237,7 @@ export function createSettings({ modelView, onTheme, onLang, onSingleKeys }) {
       for (const [target, type, listener] of listeners) target.removeEventListener(type, listener);
       for (const group of rovingGroups) group.dispose();
       setOpen(false);
-      moreButton.hidden = true;
+      moreButton.disabled = true;
     },
   };
 }

@@ -148,7 +148,7 @@ export function createProvenance({ manifest, manifestUrl, indexUrl, domains, fal
   function render() {
     const copy = t(lang, 'footer');
     title.textContent = copy.provenance;
-    close.textContent = copy.close;
+    close.setAttribute('aria-label', copy.close);
     use.textContent = copy.intendedUse;
     const rows = reference ? referenceRows(reference, lang) : provenanceRows(manifest, { lang, manifestUrl, indexUrl, domains });
     facts.replaceChildren(...rows.flatMap(row => {

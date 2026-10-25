@@ -135,19 +135,17 @@
         <div class="masthead-end">
           <!-- Disabled until the anatomy is on screen: there is nothing to enlarge or save before. -->
           <button id="viewport-fullscreen" class="icon-button" type="button" aria-label="Full screen" data-tooltip="Full screen" disabled>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
             </svg>
           </button>
           <button id="viewport-snapshot" class="icon-button" type="button" aria-label="Save image (PNG)" data-tooltip="Save image (PNG)" disabled>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 5l2-2h4l2 2h4v15H4V5h4Z" /><circle cx="12" cy="12" r="4" />
             </svg>
           </button>
           <button id="masthead-more" class="icon-button" type="button" aria-expanded="false"
-                  aria-controls="masthead-menu" aria-label="More settings" data-tooltip="More settings" hidden>
+                  aria-controls="masthead-menu" aria-label="More settings" data-tooltip="More settings" disabled>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
             </svg>
@@ -249,10 +247,7 @@
                   <button type="button" data-scope="whole" aria-pressed="true">Whole brain</button>
                   <button type="button" data-scope="system" aria-pressed="false">By system</button>
                 </div>
-                <button id="tree-toggle-all" class="icon-button tree-toggle-all" type="button"
-                        aria-label="Expand all" data-tooltip="Expand all">
-                  <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5" /></svg>
-                </button>
+                <button id="tree-toggle-all" class="button-quiet tree-toggle-all" type="button">Expand all</button>
               </div>
               <div id="internal-anatomy" class="internal-controls" hidden>
                 <label id="internal-system-label" for="internal-system">System</label>
@@ -359,7 +354,7 @@
                     <button id="focus" type="button" disabled>Focus</button>
                     <button id="isolate" type="button" data-active="false" disabled>Isolate</button>
                     <button id="hide-region" type="button" disabled>Hide</button>
-                    <button id="region-mpr" class="button-primary" type="button" hidden>Linked MRI</button>
+                    <button id="region-mpr" type="button" hidden>Linked MRI</button>
                   </div>
                   <dl id="selected-facts" class="datasheet" hidden>
                     <dt id="fact-metric-label">Surface area</dt><dd id="fact-metric" class="measure"></dd>
@@ -451,7 +446,6 @@
                 <span id="reset-text">Reset view</span>
               </button>
             </div>
-            <span class="stage-toolbar-sep" aria-hidden="true"></span>
             <button id="section-tool" class="stage-tool" type="button" aria-haspopup="dialog"
                     aria-expanded="false" aria-controls="section-popover" data-anatomy-display>
               <span id="section-tool-label">Section</span>
@@ -605,7 +599,9 @@
     <dialog id="mpr-dialog" aria-labelledby="mpr-title">
       <div class="dialog-header">
         <h2 id="mpr-title">Linked MRI sections</h2>
-        <button id="mpr-close" type="button">Close</button>
+        <button id="mpr-close" class="icon-button dialog-close" type="button" aria-label="Close">
+          <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+        </button>
       </div>
       <!--
         Three sections stacked at 375px would be a very long scroll with the
@@ -635,7 +631,9 @@
       <div class="dialog-header mpr-header">
         <div><h2 id="diffusion-mri-title" data-mri-copy="title"></h2>
           <p data-mri-copy="hint"></p></div>
-        <button id="diffusion-mri-close" class="button-quiet" type="button" data-mri-copy="close" autofocus></button>
+        <button id="diffusion-mri-close" class="icon-button dialog-close" type="button" autofocus>
+          <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg><span class="visually-hidden" data-mri-copy="close"></span>
+        </button>
       </div>
       <p id="diffusion-mri-status" class="diffusion-note" role="status"></p>
       <button id="diffusion-mri-retry" type="button" data-mri-copy="retry" hidden></button>
@@ -681,7 +679,9 @@
     <dialog id="shortcuts" aria-labelledby="shortcuts-title">
       <div class="dialog-header">
         <h2 id="shortcuts-title">Keyboard shortcuts</h2>
-        <button id="shortcuts-close" type="button">Close</button>
+        <button id="shortcuts-close" class="icon-button dialog-close" type="button" aria-label="Close">
+          <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+        </button>
       </div>
       <div id="shortcuts-list"></div>
     </dialog>
@@ -689,7 +689,9 @@
     <dialog id="provenance-dialog" aria-labelledby="provenance-title">
       <div class="dialog-header">
         <h2 id="provenance-title">Provenance</h2>
-        <button id="provenance-close" type="button">Close</button>
+        <button id="provenance-close" class="icon-button dialog-close" type="button" aria-label="Close">
+          <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7" /></svg>
+        </button>
       </div>
       <dl id="provenance-facts"></dl>
       <p id="provenance-use" class="provenance-note"></p>

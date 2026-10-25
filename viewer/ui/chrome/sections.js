@@ -527,7 +527,7 @@ export function createSectionControls(sections, {
 
     if (mprTitle) mprTitle.textContent = mprI18n.title;
     if (mprSubtitle) mprSubtitle.textContent = mprI18n.subtitle;
-    if (mprCloseBtn) mprCloseBtn.textContent = mprI18n.close;
+    if (mprCloseBtn) mprCloseBtn.setAttribute('aria-label', mprI18n.close);
     if (mriWidthText) mriWidthText.textContent = mprI18n.contrastWindow;
     if (mriCenterText) mriCenterText.textContent = mprI18n.windowCenter;
     if (mprOverlayText) mprOverlayText.textContent = mprI18n.segmentationOverlay;

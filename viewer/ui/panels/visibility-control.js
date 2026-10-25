@@ -23,6 +23,7 @@ export function createVisibilityControl({ key, ids, name, hiddenRegions, side, l
   button.type = 'button';
   button.className = 'visibility-control';
   button.dataset.visibilityKey = key;
+  button.dataset.side = side;
   button.tabIndex = -1;
 
   const icon = document.createElementNS(SVG_NAMESPACE, 'svg');

@@ -6,11 +6,6 @@
 /* Reduced motion ---------------------------------------------------------- */
 /* Fades and colour changes stay; nothing travels, grows, turns or loops. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-  }
   /* The sheet and the scaled popover, dialog and tooltip entries keep only their fade. */
   :is(#sheet, #masthead-menu, .masthead-data, .stage-popover, dialog, .tooltip,
     .stage-dock, .orientation, .scale-bar) { transition-property: opacity !important; }
@@ -82,10 +77,7 @@
   /* Shadows and fills are dropped here, so selected states need a system-colour edge. */
   [role="tab"][aria-selected="true"] { border-bottom: 2px solid Highlight; }
   .segmented button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
-  .row[data-selected="true"],
-  .clinical-deficit[aria-pressed="true"],
-  .circuit-choice[aria-pressed="true"],
-  .circuit-step[aria-current="step"] { outline: 1px solid Highlight; outline-offset: -1px; }
+  .row[data-selected="true"] { outline: 1px solid Highlight; outline-offset: -1px; }
 
   /* The stage stays dark in every mode, so its markings keep the overlay ink and halo. */
   #viewport :is(.orientation > span, .scale-bar, .scale-bar-rule) { forced-color-adjust: none; }
@@ -93,6 +85,7 @@
   #viewport:has(> canvas:focus-visible)::after { border-color: Highlight; }
 
   .clinical-restore { color: LinkText; text-decoration: underline; }
+  .notice-action { color: LinkText; }
 
   .circuit-step-number { forced-color-adjust: none; border-color: CanvasText; color: CanvasText; background: Canvas; }
   .circuit-step[data-progress="visited"] .circuit-step-number { background: CanvasText; color: Canvas; }

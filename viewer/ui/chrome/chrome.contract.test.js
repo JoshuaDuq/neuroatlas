@@ -369,10 +369,10 @@ test('the masthead icon buttons are named, carry the shared tooltip, and no nati
   assert.equal(/\stitle=/.test(mastheadHtml()), false);
 });
 
-test('full screen and Save image wait for the anatomy; the settings menu does not', () => {
-  for (const id of ['viewport-fullscreen', 'viewport-snapshot', 'menu-fullscreen']) assert.match(tagWithId(id), /\sdisabled\b/);
+test('the masthead actions wait for scripts, and keep their place meanwhile', () => {
+  for (const id of ['viewport-fullscreen', 'viewport-snapshot', 'menu-fullscreen', 'masthead-more']) assert.match(tagWithId(id), /\sdisabled\b/);
+  assert.equal(/\shidden\b/.test(tagWithId('masthead-more')), false, 'a hidden button would give up its place');
   assert.match(tagWithId('menu-provenance'), /\shidden\b/, 'provenance needs the manifest');
-  assert.equal(/\sdisabled\b/.test(tagWithId('masthead-more')), false);
 });
 
 test('deficit search is a flush rail field in the same slot as region search', () => {
@@ -394,7 +394,7 @@ test('an empty inspector does not chart the whole cortex', async () => {
   assert.equal(/cortexShares|cortexHeading|wholeCortex/.test(source), false);
 });
 
-test('linked MRI is the filled member of the actions row, not a second banner', () => {
+test('linked MRI is a member of the region actions row, not a second banner', () => {
   const regionActions = html.match(/<div class="actions">\s*<button id="focus"[\s\S]*?<\/div>/);
   assert.ok(regionActions, 'expected the region actions row');
   assert.match(regionActions[0], /id="region-mpr"/);

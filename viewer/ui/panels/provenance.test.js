@@ -74,6 +74,7 @@ test('provenance opens and closes immediately for keyboard activation and Escape
     node.replaceChildren = () => {};
     node.toggleAttribute = (name, force) => force ? attributes.add(name) : attributes.delete(name);
     node.hasAttribute = name => attributes.has(name);
+    node.setAttribute = name => attributes.add(name);
     return node;
   };
   const byId = id => {

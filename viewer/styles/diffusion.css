@@ -41,24 +41,25 @@
 /* A caveat on the whole collection is the list's foot line. */
 .diffusion-scope { padding: var(--space-3) var(--panel-inset) 0; color: var(--text-tertiary); }
 
-/* One full-bleed row per tract: its name, then a key per side (or per segment) ending on the right column. */
-.diffusion-bundle { padding: var(--space-3) var(--panel-inset); }
+/* One full-bleed ruled row per tract at the tree's pitch: its name, then a key per side (or per segment) ending on the right column. */
+.diffusion-bundle { padding: 0 var(--panel-inset); }
 .diffusion-bundle + .diffusion-bundle { border-top: 1px solid var(--border-subtle); }
 .diffusion-bundle-head {
   display: flex;
   align-items: center;
   gap: var(--space-1) var(--space-3);
-  min-height: 24px;
+  min-height: var(--row-height);
 }
 .diffusion-bundle-name { flex: 1; min-width: 0; font-size: var(--text-ui); line-height: var(--lh-ui); font-weight: 500; text-wrap: pretty; overflow-wrap: anywhere; }
 .diffusion-bundle-parts { display: flex; flex: none; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-1); }
 /* Numbered segments take their own line and begin on the name's column. */
 .diffusion-bundle[data-layout="segments"] .diffusion-bundle-head { flex-wrap: wrap; }
 .diffusion-bundle[data-layout="segments"] .diffusion-bundle-name { flex-basis: 100%; }
-.diffusion-bundle[data-layout="segments"] .diffusion-bundle-parts { flex-shrink: 1; justify-content: flex-start; margin-top: var(--space-1); }
+.diffusion-bundle[data-layout="segments"] .diffusion-bundle-head { padding-top: var(--space-1); }
+.diffusion-bundle[data-layout="segments"] .diffusion-bundle-parts { flex-shrink: 1; justify-content: flex-start; padding-bottom: var(--space-1); }
 
 /*
- * A part key is a checkbox drawn as a lettered tonal key. Drawn is a selection, not an action: the
+ * A part key is a checkbox drawn as a lettered tonal key, edgeless at rest. Drawn is a selection: the
  * list's teal wash with a 1px teal edge and a 600 letter, so on and off differ beyond colour.
  */
 .diffusion-part {
@@ -73,11 +74,10 @@
   width: 28px;
   height: 24px;
   margin: 0;
-  border: 1px solid var(--border-control);
-  border-radius: 3px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
   background: var(--surface-tonal);
   cursor: pointer;
-  transition: background-color var(--ui-transition) var(--ease-ui), border-color var(--ui-transition) var(--ease-ui);
 }
 .diffusion-part > span {
   place-self: center;
@@ -106,7 +106,8 @@
   line-height: var(--lh-caption);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
-  margin-top: var(--space-1);
+  margin-top: calc(-1 * var(--space-1));
+  padding-bottom: var(--space-2);
 }
 .diffusion-bundle-side { font-weight: 600; }
 .diffusion-bundle-values { display: flex; flex-wrap: wrap; column-gap: var(--space-2); overflow-x: clip; }
@@ -126,6 +127,7 @@
 /* Settings and provenance follow the tract list on the shared text column. */
 .diffusion-settings,
 .diffusion-about { margin-top: var(--space-6); margin-inline: var(--panel-inset); padding-block: var(--space-1); border-top: 1px solid var(--border-subtle); }
+details:is(.diffusion-settings, .diffusion-about) > summary { min-height: var(--row-height); font-weight: 500; }
 .diffusion-settings > summary { flex-wrap: wrap; column-gap: var(--space-2); row-gap: var(--space-1); }
 .diffusion-settings > summary > :first-child { flex: 1 1 auto; min-width: 0; }
 /* Closed, the summary still reads out what it holds; open, the controls say it themselves. */

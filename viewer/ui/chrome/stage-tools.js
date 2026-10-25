@@ -9,17 +9,18 @@ export function compactSection({ room, need }) {
 }
 
 /**
- * A popover opening upward from its button, above the whole dock, kept inside the visible stage.
- * Rectangles are in stage coordinates; `toolbar` is the popover's offset parent (the dock),
- * and the returned `left` is relative to it. A full-width phone popover stops a third of the
- * stage short of the top, so the anatomy it adjusts stays in sight; past that it scrolls.
+ * A popover opening upward above the whole dock, on the dock's start edge whichever tool opened
+ * it, kept inside the visible stage. Rectangles are in stage coordinates; `toolbar` is the
+ * popover's offset parent (the dock), and the returned `left` is relative to it. A full-width
+ * phone popover stops a third of the stage short of the top, so the anatomy it adjusts stays in
+ * sight; past that it scrolls.
  */
-export function placePopover({ anchor, toolbar, visible, width, fill = false, gap = 8, gutter = 16 }) {
+export function placePopover({ toolbar, visible, width, fill = false, gap = 8, gutter = 16 }) {
   const room = Math.max(0, visible.width - 2 * gutter);
   const span = fill ? room : Math.min(width, room);
   const min = visible.x + gutter;
   const max = Math.max(min, visible.x + visible.width - gutter - span);
-  const left = Math.min(Math.max(anchor.left, min), max);
+  const left = Math.min(Math.max(toolbar.left, min), max);
   const stage = toolbar.top - visible.y;
   const keep = fill ? Math.max(gutter, stage / 3) : gutter;
   return {
@@ -35,7 +36,7 @@ const visibleIn = node => node.checkVisibility?.() ?? true;
 /**
  * The View, Section and Display popovers: one open at a time, Escape and outside clicks close
  * them, and focus returns to the button that opened them. The first opened by a pointer grows
- * from its button; one replacing another, or opened or closed by a key, is simply there or gone.
+ * from the dock's corner; one replacing another, or opened or closed by a key, is simply there or gone.
  */
 export function createStagePopovers(host, { visibleRect, fill }) {
   const pairs = [...host.querySelectorAll('[aria-haspopup="dialog"][aria-controls]')]
@@ -52,23 +53,19 @@ export function createStagePopovers(host, { visibleRect, fill }) {
     const origin = host.getBoundingClientRect();
     const toolbar = open.popover.offsetParent?.getBoundingClientRect();
     if (!toolbar) return;
-    // A popover sits on its button's left edge; the first button's, on the plate's own edge.
-    const first = !open.button.previousElementSibling;
-    const anchor = open.button.getBoundingClientRect();
     open.popover.style.width = '';
     const spot = placePopover({
-      anchor: { left: (first ? toolbar.left : anchor.left) - origin.left },
       toolbar: { left: toolbar.left - origin.left, top: toolbar.top - origin.top },
       visible: rect,
       width: open.popover.offsetWidth,
       fill: fill(),
+      // The dock's own gutter, so a popover's edges stand on the dock's.
+      gutter: parseFloat(getComputedStyle(host).getPropertyValue('--stage-gutter')),
     });
     // `left` is measured from the dock's outer edge; CSS places it inside the dock's border.
     open.popover.style.left = `${spot.left - open.popover.offsetParent.clientLeft}px`;
     open.popover.style.width = `${spot.width}px`;
     open.popover.style.maxHeight = `${spot.maxHeight}px`;
-    const originX = anchor.left + anchor.width / 2 - toolbar.left - spot.left;
-    open.popover.style.setProperty('--popover-origin', `${Math.round(originX)}px 100%`);
   }
 
   function show(pair, { instant = false } = {}) {

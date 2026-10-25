@@ -1,44 +1,57 @@
-/* Deficits list ------------------------------------------------------------ */
-/* Full-bleed rows share the anatomy index's inset; the domain stays attached to its name. */
-.clinical-deficit {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  width: 100%;
-  height: auto;
-  min-height: var(--row-height);
-  margin: 0;
-  padding: var(--space-2) var(--panel-inset);
-  border: 0;
-  border-radius: 0;
-  background: none;
-  color: var(--text-primary);
-  text-align: left;
-  font-weight: 400;
-}
-.clinical-deficit:focus-visible { outline-offset: -2px; }
-.clinical-deficit-text { display: flex; flex: 1 1 auto; flex-direction: column; gap: 0; min-width: 0; }
-.clinical-deficit-name { font-weight: 500; line-height: var(--lh-ui); overflow-wrap: anywhere; }
-.clinical-deficit-domain { color: var(--text-tertiary); font-size: var(--text-caption); line-height: var(--lh-caption); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.clinical-deficit[aria-current="true"] { background: var(--accent-wash); color: var(--accent); }
-.clinical-deficit[aria-current="true"] .clinical-deficit-name { font-weight: 600; }
-.clinical-deficit[aria-current="true"] .clinical-deficit-domain { color: inherit; }
-@media (hover: hover) and (pointer: fine) {
-  .clinical-deficit:hover:not(:disabled, [aria-current="true"]) { background: var(--surface-hover); }
-}
-/* A row that opens a detail trails the one chevron in the right column's slot. */
+/* Mode lists ---------------------------------------------------------------- */
+/* Rows are the tree's `.row`; a deficit adds its domain under the name, a function its swatch and study count. */
+.deficit-row-text { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.deficit-row-domain { color: var(--text-secondary); font-size: var(--text-caption); font-weight: 400; line-height: var(--lh-caption); overflow-wrap: anywhere; }
+.row[data-selected="true"] :is(.deficit-row-domain, .group-count) { color: inherit; font-weight: 400; }
+/* A row that opens a detail trails the one chevron; a mouse sees it on hover, focus or selection, touch always. */
 .drill-chevron { color: var(--text-tertiary); }
 :is([aria-pressed="true"], [aria-current="true"]) > .drill-chevron { color: inherit; }
-/* The trailing chevron makes a detail row recognizable before interaction. */
-/*
- * Group captions stay in view while their deficits scroll under them. Stuck 1px above the top,
- * a caption's own rule slips under the list's edge, so it never doubles the head's rule.
- */
-.deficit-group { isolation: isolate; padding-bottom: var(--space-2); }
-.deficit-group-heading { position: sticky; top: -1px; z-index: 1; background: var(--surface-base); }
-.deficit-group:first-child > .deficit-group-heading { border-top-color: transparent; }
+@media (hover: hover) and (pointer: fine) {
+  .drill-chevron { opacity: 0; }
+  :hover > .drill-chevron { opacity: 1; transition: opacity var(--ui-transition) var(--ease-ui); }
+  :is(:focus-visible, [aria-pressed="true"], [aria-current="true"]) > .drill-chevron { opacity: 1; }
+  /*
+   * As on the tree's group rows, a figure keeps the data edge at rest and gives its place to the
+   * chevron on hover or focus; a selected row keeps its figure.
+   */
+  :has(> .drill-chevron):has(> :is(.group-count, .circuit-link-step)) { position: relative; }
+  :has(> :is(.group-count, .circuit-link-step)) > .drill-chevron { position: absolute; top: 50%; right: 0; margin-top: -3px; }
+  .row:has(> .group-count) > .drill-chevron { right: var(--panel-inset); }
+  :has(> :is(.group-count, .circuit-link-step)):not(:hover, :focus-visible) > .drill-chevron { opacity: 0; }
+  :is(:hover, :focus-visible) > :is(.group-count, .circuit-link-step):has(~ .drill-chevron) { visibility: hidden; }
+}
+/* Groups follow the tree's section rhythm: ruled captions after the first, each staying in view while its rows scroll under it. */
+.deficit-group { isolation: isolate; }
+:is(.deficit-group, .function-row) + .deficit-group { margin-top: var(--space-2); }
+/* Stuck 1px above the top, a caption's own rule slips under the list's edge. */
+.deficit-group-heading {
+  position: sticky;
+  top: -1px;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-1);
+  border-top: 1px solid var(--border-subtle);
+}
+.deficit-group:first-child > .deficit-group-heading { padding-top: var(--space-3); border-top: 0; }
+/* A column head ends where the rows' figures end. */
+.column-head {
+  flex: none;
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: var(--lh-caption);
+  white-space: nowrap;
+}
+/* Where touch keeps the chevron in the row, the head ends before its slot and gap. */
+.deficit-group-heading > .column-head { margin-right: calc(var(--indent) - var(--panel-inset)); }
+@media (hover: hover) and (pointer: fine) {
+  .deficit-group-heading > .column-head { margin-right: 0; }
+}
 /* Arrow navigation keeps the focused row below its sticky group heading. */
-:is(#function-list, #deficit-list) .clinical-deficit { scroll-margin-block-start: calc(var(--lh-caption) + var(--space-8)); }
+:is(#function-list, #deficit-list) .row { scroll-margin-block-start: calc(var(--lh-caption) + var(--space-6)); }
 
 /* A list's scope: one tertiary line at its foot, a count or a caveat. */
 .scope-note {
@@ -55,12 +68,12 @@
 .search-bridge {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   width: 100%;
   height: auto;
   min-height: var(--row-height);
   margin: 0;
-  padding: var(--space-2) var(--panel-inset);
+  padding: var(--space-1) var(--panel-inset);
   border: 0;
   border-top: 1px solid var(--border-subtle);
   border-radius: 0;
@@ -78,15 +91,47 @@
 }
 .clinical-content .search-bridge { padding-inline: 0; }
 
+/* Links in a profile or a region's detail: a primary-ink row on the text column whose name underlines on hover. */
+.clinical-deficit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: auto;
+  min-height: var(--row-height);
+  margin: 0;
+  padding: var(--space-1) 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--text-primary);
+  text-align: left;
+  font-weight: 400;
+}
+.clinical-deficit:focus-visible { outline-offset: 0; }
+/* Links styled as rows: the global button hover ground would sit behind their underline. */
+@media (hover: hover) and (pointer: fine) {
+  :is(.clinical-deficit, .function-area, .search-bridge):hover:not(:disabled) { background: none; }
+}
+.clinical-deficit-text { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+.clinical-deficit-name { font-weight: 500; line-height: var(--lh-ui); overflow-wrap: anywhere; }
+.clinical-deficit-domain { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+@media (hover: hover) and (pointer: fine) {
+  .clinical-deficit:hover:not(:disabled) .clinical-deficit-name {
+    color: var(--accent-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
 .clinical-note { color: var(--text-secondary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 
-/* Functions list ----------------------------------------------------------- */
-/* A function's row leads with the colour its areas take on the brain, on the name's first line. */
-.function-swatch { flex: none; align-self: flex-start; margin-top: 5px; }
-.function-overview-row { padding-bottom: 0; }
+/* Functions ---------------------------------------------------------------- */
+/* A colour on the brain sits in a 12px slot like the tree's chevron, centred on the first line, so names start on the indent. */
+:is(.function-swatch, .clinical-finding-swatch) { flex: none; align-self: flex-start; margin: calc((var(--lh-ui) - 10px) / 2) 1px 0; }
 
 /* Function profile --------------------------------------------------------- */
-/* Areas, strongest first: the name reads as a link, its z sits in a right-hand column. */
+/* Areas, strongest first: a primary-ink row whose name underlines on hover; z in the column its heading heads. */
 .function-areas, .function-lesions, .function-overview { margin-top: var(--space-6); }
 .function-area-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
 .function-area-list > li { border-bottom: 1px solid var(--border-subtle); }
@@ -96,16 +141,17 @@
   gap: var(--space-3);
   width: 100%;
   height: auto;
-  min-height: 32px;
+  min-height: var(--row-height);
   padding: var(--space-1) 0;
   border: 0;
   border-radius: 0;
   background: none;
-  color: var(--accent);
+  color: var(--text-primary);
   text-align: left;
   font-weight: 400;
   line-height: var(--lh-ui);
 }
+.function-areas > .detail-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
 .function-area-name { display: flex; flex: 1; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
 /* The functional division an HCP-MMP code belongs to, so the code is not the only name a reader gets. */
 .function-area-division { color: var(--text-tertiary); font-size: var(--text-caption); line-height: var(--lh-caption); }
@@ -122,21 +168,8 @@
 .function-more { margin-top: var(--space-2); }
 .function-more > .function-area-list { margin-top: var(--space-2); }
 .function-lesion-note { margin-top: var(--space-2); }
-/*
- * Rows in a profile open a function or a deficit from the other evidence tab, on the text column as a
- * region's related deficits do.
- */
-:is(#function-profile, .clinical-checked-maps) .clinical-deficit { padding: 7px 0 8px; }
-:is(#function-profile, .clinical-checked-maps) .clinical-deficit-name { color: var(--text-primary); }
-@media (hover: hover) and (pointer: fine) {
-  :is(#function-profile, .clinical-checked-maps) .clinical-deficit:hover:not(:disabled) { background: none; }
-  :is(#function-profile, .clinical-checked-maps) .clinical-deficit:hover:not(:disabled) .clinical-deficit-name {
-    color: var(--accent-hover);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-}
-#function-profile:not([hidden]) ~ .panel-body:has(.selection-head) { border-top: 1px solid var(--border-subtle); }
+/* Under an open profile, a selected region is a second subject: ruled off, with a smaller name. */
+#function-profile:not([hidden]) ~ .panel-body:has(#selected-name:not([hidden])) { border-top: 1px solid var(--border-subtle); }
 #function-profile:not([hidden]) ~ .panel-body #selected-name { font-size: var(--text-title); }
 
 /* Deficit profile ---------------------------------------------------------- */
@@ -194,7 +227,6 @@
   text-wrap: pretty;
 }
 .clinical-association-title > .clinical-finding-swatch + span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.clinical-finding-swatch { flex: none; align-self: flex-start; }
 .clinical-association-side {
   flex: none;
   color: var(--text-tertiary);
@@ -208,7 +240,7 @@
 .clinical-association-region {
   max-width: 100%;
   height: auto;
-  min-height: 32px;
+  min-height: var(--row-height);
   padding: var(--space-1) 0;
   border: 0;
   border-radius: 0;
@@ -261,24 +293,8 @@
 #region-detail:has(~ :is(#clinical-region, #circuit-notes, #circuit-region):not([hidden])) { padding-bottom: 0; }
 #clinical-region, #circuit-region { margin-top: var(--space-6); margin-bottom: var(--space-6); padding-inline: var(--panel-inset); }
 
-/* Related findings share the circuit list's text column and quiet row rhythm. */
+/* Related findings use the profile links' rows. */
 .clinical-related { margin: 0; padding: 0; list-style: none; }
-#clinical-region .clinical-deficit { padding: 7px 0 8px; }
-#clinical-region .clinical-deficit-name { color: var(--text-primary); }
-@media (hover: hover) and (pointer: fine) {
-  #clinical-region .clinical-deficit:hover:not(:disabled) { background: none; }
-  #clinical-region .clinical-deficit:hover:not(:disabled) .clinical-deficit-name {
-    color: var(--accent-hover);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-}
 
-/* Under an open deficit, a selected region is a second subject: ruled off, with a smaller name. */
-#clinical-profile:not([hidden]) ~ .panel-body:has(.selection-head) { border-top: 1px solid var(--border-subtle); }
+#clinical-profile:not([hidden]) ~ .panel-body:has(#selected-name:not([hidden])) { border-top: 1px solid var(--border-subtle); }
 #clinical-profile:not([hidden]) ~ .panel-body #selected-name { font-size: var(--text-title); }
-
-@media (pointer: coarse) {
-  .clinical-association-region, .function-area { min-height: 44px; }
-  .clinical-evidence > summary { min-height: 44px; }
-}

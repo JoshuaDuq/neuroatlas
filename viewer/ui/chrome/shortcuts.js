@@ -81,7 +81,7 @@ export function createShortcuts(initialLang = 'en') {
   function renderList() {
     const i18n = t(lang, 'shortcuts');
     if (shortcutsTitle) shortcutsTitle.textContent = i18n.title;
-    if (close) close.textContent = i18n.close;
+    close.setAttribute('aria-label', i18n.close);
     list.replaceChildren(...i18n.groups.map(([title, items]) => {
       const heading = document.createElement('h3');
       heading.className = 'shortcuts-group';

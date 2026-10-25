@@ -1,6 +1,6 @@
 import { edgeLabels, localizeEdges } from '../../render/orientation.js';
 import { scaleBar } from '../../render/scale-bar.js';
-import { PHONE_QUERY } from '../../render/device.js';
+import { PHONE_QUERY, isCoarse } from '../../render/device.js';
 import { FRAME_FILL } from '../../render/camera-views.js';
 import { clearFraming } from '../../render/effective-viewport.js';
 import { cabNpName, networkCss, networkName } from '../../catalog/networks.js';
@@ -27,13 +27,16 @@ const TOP_LETTER_ROOM_PX = 20;
 
 /**
  * A key longer than this many rows starts folded to its title where the stage is narrower than
- * KEY_FOLD_WIDTH_PX, or where its rows (KEY_ROW_PX each, under KEY_HEAD_PX of title, foot and
- * edges) would not fit above the dock. The hover chip names the colour under the pointer, so a
- * folded key hides nothing the reader cannot reach; unfolded, its rows go into a saved image.
+ * KEY_FOLD_WIDTH_PX, or where its rows (KEY_ROW_PX each, TOUCH_ROW_PX for touch toggles, under
+ * KEY_HEAD_PX of title, foot and edges) would not fit above the dock; on a phone any key starts
+ * folded where it would take more than half that room from the picture. The hover chip names the colour under
+ * the pointer, so a folded key hides nothing the reader cannot reach; unfolded, its rows go into a
+ * saved image.
  */
 const KEY_FOLD_ROWS = 8;
 const KEY_FOLD_WIDTH_PX = 1000;
-const KEY_ROW_PX = 28;
+const KEY_ROW_PX = 24;
+const TOUCH_ROW_PX = 44;
 /**
  * Narrower than this, a paint key keeps its rows and drops its note: the note would take more of a
  * phone's stage than the picture it explains, and the open profile says the same thing in the panel.
@@ -293,17 +296,25 @@ export function createViewportChrome({
     return row;
   }
 
-  /** One plate, for `map` or for nothing; `rows` replaces its list when given. */
-  function paintKey(name, map, title, count, rows = null) {
+  /**
+   * One plate, for `map` or for nothing; `rows` replaces its list when given. `toggles` says its
+   * rows are buttons, which touch makes full targets; a phone runs rows two to a line, but a
+   * deficit's findings one to a line (stage.css).
+   */
+  function paintKey(name, map, title, count, rows = null, toggles = false) {
     const { plate, toggle, list } = plates[name];
     plate.hidden = !map;
     if (!map) return;
     plate.dataset.map = map;
     plates[name].title.textContent = title;
     if (rows) list.replaceChildren(...rows);
-    const crowded = Boolean(lastRect?.width) && (lastRect.width < KEY_FOLD_WIDTH_PX
-      || KEY_HEAD_PX + count * KEY_ROW_PX > lastRect.height - 3 * gutter() - dockHeight);
-    const open = folds.get(map) ?? !(count > KEY_FOLD_ROWS && crowded);
+    const columns = phone?.matches && name !== 'direction' && map !== 'deficit' ? 2 : 1;
+    const rowPx = toggles && (phone?.matches || isCoarse()) ? TOUCH_ROW_PX : KEY_ROW_PX;
+    const need = KEY_HEAD_PX + Math.ceil(count / columns) * rowPx;
+    const room = (lastRect?.height ?? 0) - 3 * gutter() - dockHeight;
+    const crowded = Boolean(lastRect?.width) && (lastRect.width < KEY_FOLD_WIDTH_PX || need > room);
+    // On a phone even a short key folds where it would take over half the picture's room.
+    const open = folds.get(map) ?? !((count > KEY_FOLD_ROWS && crowded) || (phone?.matches && Boolean(lastRect?.height) && need > room / 2));
     toggle.setAttribute('aria-expanded', String(open));
     list.hidden = !open;
   }
@@ -358,7 +369,7 @@ export function createViewportChrome({
         button.append(...row.childNodes);
         row.append(button);
         return row;
-      }));
+      }), pickable);
     plates.paint.list.toggleAttribute('data-picked', Boolean(shownLegend?.rows.some(entry => entry.pressed)));
     paintNote.textContent = shownLegend?.note ?? '';
     paintNote.hidden = plates.paint.list.hidden || (lastRect?.width ?? Infinity) < KEY_NOTE_MIN_WIDTH_PX;
@@ -399,8 +410,8 @@ export function createViewportChrome({
 
   /*
    * A shown key takes a band off the framing rectangle, the right column it stands in or the top
-   * strip down to its foot, whichever is the smaller share of its axis; the orientation letters
-   * frame what is left. Sizes come from the observer, so a sheet drag forces no layout.
+   * strip down to its foot, whichever leaves the larger square for the anatomy; the orientation
+   * letters frame what is left. Sizes come from the observer, so a sheet drag forces no layout.
    */
   let keySize = { width: 0, height: 0 };
   let keyInset = { top: 0, right: 0 };
@@ -410,7 +421,8 @@ export function createViewportChrome({
     if (size.width && size.height && lastRect?.width && lastRect.height) {
       const top = Math.round(gutter() + size.height);
       const right = Math.round(gutter() + size.width);
-      next = top / lastRect.height <= right / lastRect.width ? { top, right: 0 } : { top: 0, right };
+      const { width, height } = lastRect;
+      next = Math.min(width, height - top) >= Math.min(width - right, height) ? { top, right: 0 } : { top: 0, right };
     }
     if (next.top === keyInset.top && next.right === keyInset.right) return false;
     keyInset = next;
@@ -529,6 +541,8 @@ export function createViewportChrome({
   }
 
   const onPhoneChange = () => {
+    // A phone's stage takes the sheet's narrower gutter.
+    stageGutter = null;
     fitDockLayout();
     if (lastState) showKeys(lastState, !plates.direction.plate.hidden, lastLegend);
   };

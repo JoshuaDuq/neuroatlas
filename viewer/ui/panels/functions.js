@@ -6,9 +6,8 @@ import {
   ALL_DOMAINS, domainAreas, domainName, domainRecord, domainStudies, groupedDomains, isTermId, matchingTerms,
   nearestName, overviewDomains,
 } from '../../catalog/neuropsych-domains.js';
-import { count, decimal } from '../format.js';
+import { count, decimal, grouped } from '../format.js';
 import { createAnnouncer } from '../announce.js';
-import { createButtonLabel } from '../chrome/button-label.js';
 import { bridgeButton, drillChevron, element, scrollToTop, showOpenedRegion, stageMessage } from './clinical.js';
 import { checkedParcels } from './provenance.js';
 
@@ -17,22 +16,42 @@ const AREAS_SHOWN = 12;
 /** Searched terms listed under the curated functions; the rest wait for a narrower query. */
 const TERMS_SHOWN = 20;
 
-/**
- * A function's row: its colour on the brain, its name, a line under it, and the chevron that opens it.
- * A searched term has no colour of its own to show, and is English whatever the reader's language.
- */
-function functionButton(id, name, detail, color, nameLang = null) {
-  const button = element('button', null, 'clinical-deficit function-row');
-  button.type = 'button';
-  button.dataset.function = id;
+/** The colour a function's areas take on the brain; a searched term has none, but keeps the slot. */
+function functionSwatch(color) {
   const swatch = element('span', null, 'network-swatch function-swatch');
   swatch.setAttribute('aria-hidden', 'true');
   if (color) swatch.style.background = networkCss(color);
-  const text = element('span', null, 'clinical-deficit-text');
-  const label = element('span', name, 'clinical-deficit-name');
+  return swatch;
+}
+
+/**
+ * A list row: swatch, name, its study count in the column the group caption heads, and the chevron.
+ * The row's full detail is read, not shown. A searched term is English whatever the reader's language.
+ */
+function functionRow(id, name, studies, detail, color, nameLang = null) {
+  const button = element('button', null, 'row function-row');
+  button.type = 'button';
+  button.dataset.function = id;
+  const label = element('span', name, 'row-name');
   if (nameLang) label.lang = nameLang;
-  text.append(label, element('span', detail, 'clinical-deficit-domain'));
-  button.append(swatch, text, drillChevron());
+  button.append(functionSwatch(color), label);
+  if (studies !== null) {
+    const shown = element('span', grouped(studies), 'group-count');
+    shown.setAttribute('aria-hidden', 'true');
+    button.append(shown);
+  }
+  button.append(element('span', `, ${detail}`, 'visually-hidden'), drillChevron());
+  return button;
+}
+
+/** A profile's link to a function: swatch, name and a line under it, on the text column. */
+function functionLink(id, name, detail, color) {
+  const button = element('button', null, 'clinical-deficit function-link');
+  button.type = 'button';
+  button.dataset.function = id;
+  const text = element('span', null, 'clinical-deficit-text');
+  text.append(element('span', name, 'clinical-deficit-name'), element('span', detail, 'clinical-deficit-domain'));
+  button.append(functionSwatch(color), text, drillChevron());
   return button;
 }
 
@@ -50,10 +69,13 @@ const areaCount = (partition, id, lang) => t(lang, 'functions')
 /** The same count as a list row says it, beside the row's other facts. */
 const areaCountShort = (partition, id, lang) => t(lang, 'functions').areasShort(...reachedCounts(partition, id));
 
-/** A list group under its heading, labelled by it for assistive technology. */
-function listGroup(id, name, rows) {
+/** A list group under its heading, labelled by it for assistive technology; the heading heads the count column. */
+function listGroup(id, name, column, rows) {
   const section = element('div', null, 'deficit-group');
-  const heading = element('h3', name, 'section-label deficit-group-heading');
+  const heading = element('h3', null, 'section-label deficit-group-heading');
+  const columnHead = element('span', column, 'column-head');
+  columnHead.setAttribute('aria-hidden', 'true');
+  heading.append(element('span', name), columnHead);
   heading.id = `function-group-${id}`;
   section.setAttribute('role', 'group');
   section.setAttribute('aria-labelledby', heading.id);
@@ -83,11 +105,9 @@ export function createFunctionExplorer({
   const coverage = document.getElementById('function-coverage');
   const profile = document.getElementById('function-profile');
   const trailing = document.getElementById('detail-trailing');
-  const restore = element('button', null, 'clinical-restore icon-button');
+  const restore = element('button', null, 'clinical-restore');
   restore.type = 'button';
   restore.id = 'function-restore';
-  const restoreLabel = createButtonLabel(restore, 'restore');
-  restoreLabel.classList.add('visually-hidden');
   trailing.append(restore);
   let listKey = null;
   let profileKey = null;
@@ -163,7 +183,7 @@ export function createFunctionExplorer({
     const name = element('span', null, 'function-area-name');
     name.append(element('span', `${entry.label.name} · ${side}`));
     if (divisionName) name.append(element('span', divisionName, 'function-area-division'));
-    button.append(name, element('span', `z ${decimal(z, 1, lang)}`, 'function-area-z'));
+    button.append(name, element('span', decimal(z, 1, lang), 'function-area-z'));
     const item = element('li');
     item.append(button);
     return item;
@@ -173,7 +193,8 @@ export function createFunctionExplorer({
     const copy = t(lang, 'functions');
     const areas = domainAreas(domains, id);
     const section = element('section', null, 'detail-section function-areas');
-    const heading = element('h3', copy.areasHeading, 'detail-section-heading');
+    const heading = element('h3', null, 'detail-section-heading');
+    heading.append(element('span', copy.areasHeading));
     heading.id = 'function-areas-heading';
     section.setAttribute('aria-labelledby', heading.id);
     section.append(heading);
@@ -181,6 +202,10 @@ export function createFunctionExplorer({
       section.append(element('p', copy.none(decimal(domains.threshold_z, 0, lang)), 'clinical-note'));
       return section;
     }
+    // The figures are z scores; each row's accessible name says so.
+    const zHead = element('span', 'z', 'column-head');
+    zHead.setAttribute('aria-hidden', 'true');
+    heading.append(zHead);
     const shown = element('ul', null, 'function-area-list');
     shown.append(...areas.slice(0, AREAS_SHOWN).map(area => areaButton(area, lang)));
     section.append(shown);
@@ -232,7 +257,7 @@ export function createFunctionExplorer({
     const rows = element('ul', null, 'clinical-related');
     for (const record of overviewDomains(domains)) {
       const item = element('li');
-      item.append(functionButton(record.id, domainName(record, lang), areaCountShort(domains, record.id, lang), record.color));
+      item.append(functionLink(record.id, domainName(record, lang), areaCountShort(domains, record.id, lang), record.color));
       rows.append(item);
     }
     section.append(heading, rows);
@@ -389,8 +414,7 @@ export function createFunctionExplorer({
       searchClear.hidden = !state.functionQuery.trim();
       searchClear.setAttribute('aria-label', t(lang, 'navigator').clearSearch);
       if (document.activeElement !== search) search.value = state.functionQuery;
-      restoreLabel.textContent = CLINICAL_TEXT[lang].restore;
-      restore.dataset.tooltip = CLINICAL_TEXT[lang].restore;
+      restore.textContent = CLINICAL_TEXT[lang].restore;
       coverage.textContent = copy.coverage(domains.domains.length, domains.search?.terms.size ?? 0);
       list.setAttribute('aria-label', copy.list);
 
@@ -401,21 +425,21 @@ export function createFunctionExplorer({
         const groups = groupedDomains(domains, query, lang);
         const terms = matchingTerms(domains, query);
         const shown = terms.slice(0, TERMS_SHOWN);
-        const termRow = record => functionButton(record.id, record.term,
-          copy.termDetail(count(record.studies, 'study', lang), areaCountShort(domains, record.id, lang)), null,
-          lang === 'en' ? null : 'en');
-        const overview = element('div', null, 'deficit-group function-overview-row');
-        overview.append(functionButton(ALL_DOMAINS, copy.all, copy.allDetail, null));
+        const detail = (id, studies) => copy.termDetail(count(studies, 'study', lang), areaCountShort(domains, id, lang));
+        const termRow = record => functionRow(record.id, record.term, record.studies, detail(record.id, record.studies),
+          null, lang === 'en' ? null : 'en');
+        const overview = functionRow(ALL_DOMAINS, copy.all, null, copy.allDetail, null);
         list.replaceChildren(...(query ? [] : [overview]), ...groups.map(({ group, name, domains: members }) =>
-          listGroup(group.id, name, members.map(record => functionButton(record.id, domainName(record, lang),
-            copy.termDetail(count(domainStudies(domains, record.id), 'study', lang), areaCountShort(domains, record.id, lang)),
-            record.color)))));
+          listGroup(group.id, name, copy.studiesColumn, members.map(record => {
+            const studies = domainStudies(domains, record.id);
+            return functionRow(record.id, domainName(record, lang), studies, detail(record.id, studies), record.color);
+          }))));
         // Searched terms follow the curated functions, clinical groups apart from the rest.
         for (const kind of ['function', 'population']) {
           const rows = shown.filter(record => record.kind === kind);
           if (rows.length) {
             list.append(listGroup(`terms-${kind}`, kind === 'function' ? copy.termsHeading : copy.populationsHeading,
-              rows.map(termRow)));
+              copy.studiesColumn, rows.map(termRow)));
           }
         }
         if (terms.length > TERMS_SHOWN) list.append(element('p', copy.termsMore(terms.length - TERMS_SHOWN), 'clinical-note'));
@@ -431,8 +455,10 @@ export function createFunctionExplorer({
         if (query) announce(copy.results(groups.reduce((sum, entry) => sum + entry.domains.length, 0), terms.length));
       }
       for (const button of list.querySelectorAll('.function-row')) {
-        if (button.dataset.function === state.selectedFunction) button.setAttribute('aria-current', 'true');
+        const selected = button.dataset.function === state.selectedFunction;
+        if (selected) button.setAttribute('aria-current', 'true');
         else button.removeAttribute('aria-current');
+        button.dataset.selected = String(selected);
       }
       const nextProfileKey = `${lang}|${state.selectedFunction}`;
       if (nextProfileKey !== profileKey) {

@@ -14,7 +14,6 @@
   --key-top: 0px;
   --key-right: 0px;
   --dock-height: 38px;
-  --stage-gutter: var(--space-5);
   /* One edge for every plate on the stage. */
   --stage-edge: color-mix(in srgb, var(--overlay-border) 75%, var(--overlay-plate));
 }
@@ -90,7 +89,7 @@
 .chip {
   position: absolute;
   z-index: 2;
-  padding: 3px var(--space-2);
+  padding: var(--space-1) var(--space-2);
   background: var(--overlay-plate);
   border: 1px solid var(--stage-edge);
   border-radius: var(--radius-control);
@@ -154,7 +153,8 @@
   position: absolute;
   z-index: 2;
   right: calc(var(--vis-right) + var(--stage-gutter));
-  bottom: calc(var(--vis-bottom) + var(--stage-gutter) + 11px);
+  /* Centred on the tools' line: the dock's border and inset, then half what a tool has over the words. */
+  bottom: calc(var(--vis-bottom) + var(--stage-gutter) + 1px + var(--space-1) + (var(--control-height) - var(--lh-caption)) / 2);
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -181,7 +181,7 @@
 /*
  * Colour keys, beside the picture they explain: top right, inside the framing's own band, so
  * neither the anatomy nor a letter is ever under one. Each key is one flat plate: a 32px title row
- * that names its map and folds the rows (Functional's level switch shares it), then 20px rows.
+ * that names its map and folds the rows (Functional's level switch shares it), then 24px rows.
  */
 .stage-keys {
   position: absolute;
@@ -196,12 +196,13 @@
   max-width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter));
   max-height: calc(100% - var(--vis-top) - var(--vis-bottom) - 3 * var(--stage-gutter) - var(--dock-height));
 }
+/* Bounded in pixels (a percentage would not bound the column's own width), so a note runs in a few full lines. */
 .stage-key {
   display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  max-width: 100%;
+  max-width: 280px;
   padding: 0 var(--space-3);
   background: var(--overlay-plate);
   border: 1px solid var(--stage-edge);
@@ -241,7 +242,6 @@
 .stage-key .functional-level button { height: 20px; padding: 0 var(--space-2); font-size: var(--text-caption); line-height: var(--lh-caption); }
 .stage-key-list {
   display: grid;
-  gap: var(--space-1);
   min-height: 0;
   margin: 0;
   padding: 0 0 var(--space-2);
@@ -249,15 +249,22 @@
   overscroll-behavior: contain;
   list-style: none;
 }
-.stage-key-list li { display: flex; align-items: center; gap: var(--space-2); }
-/* A paint row is a toggle: pressing one shows that row's regions alone, the others step back. */
+/* Every key keeps one rhythm: 24px rows, a wrapped label running on under its first line beside the swatch. */
+.stage-key-list li,
 .paint-key-list button {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-2);
-  width: 100%;
   min-height: 24px;
-  padding: 0;
+  padding-block: calc((24px - var(--lh-caption)) / 2);
+}
+.stage-key-list .network-swatch { flex: none; margin-top: calc((var(--lh-caption) - 10px) / 2); }
+/* A paint row is a toggle: pressing one shows that row's regions alone, the others step back. */
+.paint-key-list li:has(> button) { padding-block: 0; }
+.paint-key-list button {
+  width: 100%;
+  height: auto;
+  padding-inline: 0;
   border: 0;
   background: transparent;
   color: inherit;
@@ -273,7 +280,6 @@
   .paint-key-list button:hover { color: var(--overlay-ink); }
 }
 .stage-key-note {
-  max-width: 24ch;
   margin: 0;
   padding: 0 0 var(--space-2);
   color: var(--overlay-ink-muted);
@@ -336,22 +342,12 @@
 .stage-toolbar {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-1);
   padding: var(--space-1);
 }
 
 /* Every choice in a stage popover speaks the stage's 13px register. */
 .stage-segmented button { font-size: var(--text-stage); }
-
-.stage-toolbar-sep {
-  flex: none;
-  width: 1px;
-  height: 16px;
-  margin: 0 var(--space-1);
-  background: var(--overlay-border);
-}
-/* Over the tract reference Section and Display go, and the rule before them with them. */
-.stage-toolbar:not(:has(> [data-anatomy-display]:not([hidden]))) > .stage-toolbar-sep { display: none; }
 
 .stage-tool {
   display: inline-flex;
@@ -360,8 +356,9 @@
   gap: var(--space-2);
   height: var(--control-height);
   margin: 0;
-  padding: 0 10px;
+  padding: 0 var(--space-3);
   border: 0;
+  border-radius: var(--radius-small);
   background: transparent;
   color: var(--overlay-ink);
   font-size: var(--text-stage);
@@ -372,10 +369,19 @@
 }
 .stage-tool[aria-expanded="true"],
 .stage-tool[aria-expanded="true"]:hover { background: var(--overlay-track); }
-/* Reserve the widest localized preset without showing the other names. */
-.view-tool-label { display: inline-grid; grid-template-columns: minmax(0, 1fr); text-align: left; }
-.view-tool-label > span { grid-area: 1 / 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.view-tool-label > span:not([data-current]) { visibility: hidden; }
+/*
+ * The chevron follows the current name; the hidden names, padded by the chevron's room, span the
+ * row behind them, so the tool keeps the widest localized preset's width and never moves the others.
+ */
+#view-tool { display: inline-grid; grid-template-columns: minmax(0, auto) auto 1fr; column-gap: 0; }
+.view-tool-label { display: contents; }
+.view-tool-label > span { grid-area: 1 / 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.view-tool-label > span:not([data-current]) {
+  grid-column: 1 / -1;
+  padding-right: calc(var(--space-2) + 6px);
+  visibility: hidden;
+}
+#view-tool > .stage-tool-chevron { grid-area: 1 / 2; margin-left: var(--space-2); }
 /* Drawn, like every disclosure chevron. It points up while its popover is open. */
 .stage-tool-chevron {
   flex: none;
@@ -391,7 +397,7 @@
 [aria-expanded="true"] > .stage-tool-chevron { transform: translateY(4px) rotate(-135deg); }
 
 /* Popovers ---------------------------------------------------------------- */
-/* Opened above the whole dock; stage-tools.js keeps them inside the visible stage. */
+/* Opened above the whole dock from its start edge; stage-tools.js keeps them inside the visible stage. */
 .stage-popover {
   position: absolute;
   z-index: 3;
@@ -400,15 +406,16 @@
   width: 272px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  /* Its words start on the tools' words: the dock's inset and a tool's padding. */
+  padding: var(--space-3) calc(var(--space-1) + var(--space-3));
   background: var(--overlay-plate);
   border: 1px solid var(--stage-edge);
   border-radius: var(--radius-panel);
   color: var(--overlay-ink);
   font-size: var(--text-ui);
   text-align: left;
-  /* Grows from its button (stage-tools.js sets the origin); closes faster than it opens. */
-  transform-origin: var(--popover-origin, 0 100%);
+  /* Grows from the dock's corner it stands on; closes faster than it opens. */
+  transform-origin: 0 100%;
   transition: opacity var(--popover-exit) var(--ease-ui), transform var(--popover-exit) var(--ease-ui),
     display var(--popover-exit) allow-discrete;
 }
@@ -423,7 +430,7 @@
 .stage-field-label {
   display: block;
   margin: 0 0 var(--space-2);
-  font-size: var(--text-stage);
+  font-size: var(--text-caption);
   font-weight: 500;
   line-height: var(--lh-caption);
   color: var(--overlay-ink-muted);
@@ -435,7 +442,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-#views button { height: 36px; min-width: 0; }
+#views button { height: var(--control-height); min-width: 0; }
 #views button:first-child { grid-column: 1 / -1; }
 
 #cut-mode {
@@ -443,7 +450,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 #cut-mode button {
-  height: 36px;
+  height: var(--control-height);
   min-width: 0;
   justify-content: flex-start;
   padding: 0 var(--space-3);
@@ -509,8 +516,8 @@
 /* Section row ------------------------------------------------------------- */
 /* The dock's upper row while a plane is cut, ruled off from the tools under it. */
 .section-bar {
-  /* The plane's name starts on the tools' words: the toolbar's 4px inset and a tool's 10px padding. */
-  padding: var(--space-1) var(--space-1) var(--space-2) calc(var(--space-3) + 2px);
+  /* The plane's name starts on the tools' words: the toolbar's inset and a tool's padding. */
+  padding: var(--space-1) var(--space-1) var(--space-2) calc(var(--space-1) + var(--space-3));
   border-bottom: 1px solid var(--overlay-border);
   color: var(--overlay-ink);
 }
@@ -617,16 +624,22 @@
 /* The literal twin of PHONE_QUERY in render/device.js, as in phone.css. */
 @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
   .hover-label { display: none; }
+  /* The stage keeps the sheet's column. */
+  #viewport { --stage-gutter: var(--panel-inset); }
 
-  /* The three tools share the plate across the stage, each a third of it. */
-  .stage-dock { width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter)); }
-  .stage-tool { flex: 1 1 0; min-width: 0; justify-content: center; gap: var(--space-1); padding-inline: var(--space-1); }
+  /* The plate hugs its 44px tools, edge to edge inside its border; a cut plane's row takes the stage's width. */
+  .stage-dock:has(> .section-bar:not([hidden])) { width: calc(100% - var(--vis-left) - var(--vis-right) - 2 * var(--stage-gutter)); }
+  .stage-toolbar { gap: 0; padding: 0; }
+  .stage-tool { flex: 0 1 auto; min-width: 0; }
   .stage-tool > span:not(.stage-tool-chevron) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  /* The plate has no inset here, so a popover's words start a tool's padding in. */
+  .stage-popover { padding-inline: var(--space-3); }
   /* Every choice in a phone popover is a full 44px target. */
   .stage-popover .segmented button,
   #views button { height: 44px; }
 
   /* A key's title row is a full target; its rows run in two columns, so the band it takes stays short. */
+  .stage-key { max-width: 100%; }
   .stage-key-head,
   .stage-key-toggle { height: 44px; }
   :is(#network-key, #functional-key, #paint-key) .stage-key-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-3); }
@@ -639,7 +652,7 @@
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     column-gap: var(--space-3);
-    padding: var(--space-2) var(--space-4);
+    padding: var(--space-2) var(--space-3);
   }
   #display-popover > .stage-field-label { margin: 0; }
   #display-popover > .display-visibility { grid-column: 1 / -1; }
@@ -671,7 +684,7 @@
   #cut-mode .control-label { display: none; }
   #cut-mode .cut-mode-short { display: block; font-size: var(--text-caption); line-height: var(--lh-caption); }
 
-  /* The section row is always compact here (viewport-chrome.js), under the plane's short name. */
+  /* The section row is always compact here (viewport-chrome.js), under the plane's short name, on the tools' words. */
   .section-bar { padding: 0 0 0 var(--space-3); }
   .section-bar-full { display: none; }
   .section-bar-short { display: inline; }
@@ -690,15 +703,19 @@
   }
   .section-bar[data-expanded="true"] #cut-status { padding-bottom: var(--space-2); }
 
-  /* The dock takes the whole bottom line, so the scale bar moves to the top left, under any key, S below it. */
+  /* The dock owns the bottom line, so the scale bar moves to the top left, under any key, S below it. */
   .scale-bar,
   #viewport[data-chrome] .scale-bar {
-    top: calc(var(--vis-top) + var(--key-top) + var(--space-3));
+    top: calc(var(--vis-top) + var(--key-top) + var(--stage-gutter));
     bottom: auto;
-    left: calc(var(--vis-left) + var(--space-3));
+    left: calc(var(--vis-left) + var(--stage-gutter));
     right: auto;
   }
-  .orientation [data-edge="top"] { top: calc(var(--space-3) + 24px); }
+  .orientation > span,
+  .scale-bar { font-size: var(--text-caption); }
+  .orientation [data-edge="top"] { top: calc(var(--stage-gutter) + var(--lh-caption) + var(--space-1)); }
+  .orientation [data-edge="left"] { left: var(--stage-gutter); }
+  .orientation [data-edge="right"] { right: var(--stage-gutter); }
 
   /* A raised sheet leaves the picture a strip: the tools and markings would collide in it. */
   #app:has(#sheet[data-detent="full"]) :is(.stage-dock, .scale-bar, .orientation) { visibility: hidden; }
@@ -711,7 +728,7 @@
   .stage-key-head:has(.functional-level) { height: auto; min-height: 48px; }
   .stage-key .functional-level button,
   .paint-key-list button { height: auto; min-height: 44px; }
-  .paint-key-list button { padding-block: var(--space-2); }
+  .paint-key-list button { padding-block: calc((44px - var(--lh-caption)) / 2); }
 }
 
 /* A finger is not a cursor: stage targets follow --control-height, which phone.css raises for coarse pointers. */

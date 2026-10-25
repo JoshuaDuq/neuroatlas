@@ -96,7 +96,7 @@
 .detail-trailing { display: flex; flex: none; align-self: stretch; }
 .detail-trailing > button {
   height: 100%;
-  padding: 0 var(--space-4) 0 var(--space-2);
+  padding: 0 var(--panel-inset) 0 var(--space-2);
   border: 0;
   border-radius: 0;
   background: none;
@@ -115,25 +115,21 @@
   }
 }
 .detail-trailing > button:focus-visible { outline-offset: -2px; }
-.detail-trailing > .icon-button { width: var(--tab-height); padding: 0; color: var(--text-secondary); }
-@media (hover: hover) and (pointer: fine) {
-  .detail-trailing > .icon-button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text-primary); }
-}
 
-/* Search is the task's starting point; compact scope controls sit below it. */
+/* Search is the task's starting point; its controls share one 32px rhythm, 12px from the rules around them. */
 .rail-head {
   display: flex;
   flex: none;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-4) var(--panel-inset) var(--space-3);
+  padding: var(--space-3) var(--panel-inset);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
 /* The keycap sits as far inside the field's end as it does inside its top and bottom. */
 .rail-head .search-shortcut { right: 6px; padding: 0 6px; }
 /* At a large reader text size the field grows around its words rather than spilling over the list. */
-.rail-head input[type="search"] { height: auto; min-height: max(40px, var(--control-height)); }
+.rail-head input[type="search"] { height: auto; min-height: var(--control-height); }
 .panel-heading {
   padding: var(--space-4) var(--panel-inset) 0;
   font-size: var(--text-title);
@@ -148,13 +144,8 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--text-tertiary) 28%, transparent) transparent;
   /* A classic scrollbar arriving with a little overflow would narrow every row; the gutter is held instead. */
   scrollbar-gutter: stable;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rail-body:hover { scrollbar-color: color-mix(in srgb, var(--text-tertiary) 55%, transparent) transparent; }
 }
 .panel-body { padding: var(--panel-inset); }
 #anatomy-browser { padding-bottom: var(--space-3); }
@@ -170,40 +161,48 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   column-gap: var(--space-2);
-  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--panel-inset);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-tonal);
   color: var(--text-primary);
 }
 .notice[hidden] { display: none; }
 .notice-text {
-  flex: 1;
+  grid-column: 1;
+  grid-row: 1;
   min-width: 0;
   margin: 0;
-  padding: 6px 0;
+  padding: var(--space-2) 0;
   font-size: var(--text-ui);
   line-height: var(--lh-ui);
 }
-.notice-text { grid-column: 1; grid-row: 1; }
-/* A tonal command on the tonal notice would have no ground, so its one action takes the raised surface. */
+/* Its one action is a text link, as Restore previous view is. */
 .notice-action {
   grid-column: 1;
   grid-row: 2;
   justify-self: start;
-  margin-bottom: var(--space-2);
-  background: var(--surface-raised);
+  height: auto;
+  margin: calc(-1 * var(--space-1)) 0 var(--space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  text-align: left;
 }
 @media (hover: hover) and (pointer: fine) {
-  .notice-action:hover { background: var(--surface-tonal-hover); }
+  .notice-action:hover:not(:disabled) { background: none; color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 }
 .notice-dismiss { grid-column: 2; grid-row: 1; }
+@media (pointer: coarse) {
+  .notice-action { min-height: 44px; margin: calc(-1 * var(--space-2)) 0 calc(-1 * var(--space-1)); }
+}
 
 
 /* Stage ------------------------------------------------------------------- */
 #viewport { position: relative; min-width: 0; overflow: hidden; background: var(--scene-background); }
 #viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 
-/* Status bar: stage.css. */
+/* Status bar: masthead.css. */
 
 /*
  * Until the anatomy arrives there is nothing to inspect, cut or set. The panel

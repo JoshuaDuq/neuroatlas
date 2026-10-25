@@ -5,7 +5,6 @@ const ICON_PATHS = {
   coronal: 'M6.5 6.5h11v11h-11Z',
   axial: 'M4 14.5 9 9.5h11l-5 5Z',
   oblique: 'M4 18 9 6h11l-5 12Z',
-  restore: 'M4 10h9a7 7 0 0 1 7 7v2M4 10l5-5M4 10l5 5',
 };
 
 /** Keep decorative icons separate from the translated, accessible label. */

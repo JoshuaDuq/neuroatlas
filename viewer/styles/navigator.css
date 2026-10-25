@@ -1,8 +1,5 @@
 /* Navigator --------------------------------------------------------------- */
-/*
- * An index, not a menu: rows run edge to edge, with aligned name, count and
- * hemisphere-control columns inside the panel's shared inset.
- */
+/* An index, not a menu: rows run edge to edge, names on the panel inset, data columns on its far edge. */
 .row {
   display: flex;
   align-items: center;
@@ -11,7 +8,7 @@
   min-height: var(--row-height);
   height: auto;
   margin: 0;
-  padding: 7px var(--panel-inset);
+  padding: max(0px, (var(--row-height) - var(--lh-ui)) / 2) var(--panel-inset);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -24,15 +21,13 @@
   transition: none;
 }
 .row:focus-visible { outline-offset: -2px; }
+/* Lists disable their rows while a choice loads; an index row never takes the sunken button ground. */
+.row:disabled { background: transparent; }
 @media (hover: hover) and (pointer: fine) {
   .row:hover:not([aria-disabled="true"], [data-selected="true"]) { background: var(--surface-hover); }
 }
-/* Distinguish the keyboard target from the selected anatomical region. */
-.row[data-active="true"] {
-  background: var(--surface-hover);
-  outline: 1px solid var(--border-control);
-  outline-offset: -1px;
-}
+/* The armed search result takes the tree's keyboard ring, apart from the selected region's wash. */
+.row[data-active="true"] { outline: 2px solid var(--accent); outline-offset: -2px; }
 .row[data-selected="true"] { background: var(--accent-wash); color: var(--accent); font-weight: 600; }
 .row[data-hidden="true"] { color: var(--text-tertiary); }
 .row[aria-disabled="true"] { cursor: default; }
@@ -42,8 +37,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
   align-items: baseline;
-  gap: var(--space-1) var(--space-3);
-  padding-block: var(--space-3);
+  gap: 0 var(--space-3);
+  padding-block: var(--space-2);
 }
 #results .row-title { grid-column: 1; grid-row: 1; min-width: 0; line-height: var(--lh-ui); }
 #results .row-name { display: inline; white-space: normal; }
@@ -92,103 +87,107 @@
 .row-indent { padding-left: var(--indent); }
 /* A reason of the row's own (outside the MRI, too small for the cut); a setting's reason is on the caption. */
 .row-indent .row-reason { max-width: 96px; white-space: normal; }
-/* Without an eye the letter still holds the eye's column, so names wrap alike. */
-.row-side-solo { min-width: 32px; }
 .row-side-rest { display: none; }
+
+/*
+ * Tree rows end in fixed Mid, L and R slots anchored to the panel's far edge, so each side's
+ * letter and eye line up down the tree. Only a section with midline parts reserves Mid.
+ */
+#tree > [role="group"] {
+  --eye-slot: var(--control-height);
+  --eye-slot-mid: 0px;
+  --eye-area: calc(var(--eye-slot-mid) + 2 * var(--eye-slot));
+}
+#tree > [data-midline="true"] { --eye-slot-mid: calc(var(--eye-slot) + var(--space-4)); }
+/* Touch gives the count its own column before the eyes, so every section reserves Mid to keep counts on one edge. */
+@media not ((hover: hover) and (pointer: fine)) {
+  #tree:has(> [data-midline="true"]) > [role="group"] { --eye-slot-mid: calc(var(--eye-slot) + var(--space-4)); }
+}
+/* The trailing ink (letters, counts) ends on the inset; the eye's own pad takes the difference. */
+#tree .row { padding-right: calc(var(--panel-inset) - var(--space-1)); }
 .tree-group { isolation: isolate; }
 .tree-group > .group-row {
   display: grid;
-  grid-template-columns: 12px minmax(0, 1fr) 3ch max-content;
-  gap: var(--space-2);
+  grid-template-columns: 12px minmax(0, 1fr) auto var(--eye-area);
+  column-gap: var(--space-2);
   background: var(--surface-base);
   font-weight: 500;
 }
 @media (hover: hover) and (pointer: fine) {
   .tree-group > .group-row:hover { background: var(--surface-hover); }
 }
-/*
- * An open group's name stays in view on the index's own ground. Indentation and type
- * distinguish its regions without turning every open group into another filled band.
- */
+/* An open group's name stays in view on the index's own ground; indentation and weight set off its regions. */
 .tree-group > .group-row[aria-expanded="true"] {
   position: sticky;
   top: -1px;
   z-index: 1;
   background: var(--surface-base);
   font-weight: 600;
-  box-shadow: none;
 }
 @media (hover: hover) and (pointer: fine) {
   .tree-group > .group-row[aria-expanded="true"]:hover { background: var(--surface-hover); }
 }
 .tree-group .row-indent {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto var(--eye-area);
+  column-gap: var(--space-2);
   padding-left: calc(var(--indent) + var(--space-2));
   scroll-margin-block: calc(var(--row-height) + var(--space-5));
 }
+.row-indent > * { grid-row: 1; }
+.row-indent > .row-reason { grid-column: 2; margin-left: 0; }
+/* A region's one control, or its letter alone, stands in its own side's slot. */
+.row-indent > :is(.visibility-control, .row-side-solo) { grid-column: 3; justify-self: end; margin-left: 0; }
+.row-indent > [data-side="left"] { margin-right: var(--eye-slot); }
+.row-indent > [data-side="midline"] { margin-right: calc(2 * var(--eye-slot)); }
 .group-row > .chevron { color: var(--text-tertiary); }
 .group-row[aria-expanded="true"] > .chevron { --chevron-turn: 90deg; color: var(--text-secondary); }
-/* Each group takes only the room its hemisphere controls need. */
 .group-row > :is(.chevron, .row-name, .group-count, .row-eyes) { grid-row: 1; }
 .group-row > .chevron { grid-column: 1; }
 .group-row > .row-name { grid-column: 2; }
-.group-row > .group-count { grid-column: 3; min-width: 0; margin-left: 0; font-weight: 400; }
-.group-row > .row-eyes { grid-column: 4; justify-self: end; margin-left: 0; }
-/* Category headings divide the index without introducing another panel surface. */
+.group-row > .group-count { grid-column: 3; min-width: 0; margin-left: 0; padding-right: var(--space-1); font-weight: 400; }
+.group-row > .row-eyes { grid-column: 4; }
+/* Category captions divide the index without another panel surface: generous above, tight to their rows. */
 #tree > .section-label {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-  padding: var(--space-3) var(--panel-inset) var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-4) var(--panel-inset) var(--space-1);
   border-top: 1px solid var(--border-subtle);
-  background: none;
-  color: var(--text-secondary);
-}
-#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-2); border-top: 0; }
-#tree > .section-label > :first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.section-state {
-  flex: 0 1 48%;
-  min-width: 0;
-  margin-left: auto;
-  text-align: right;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--text-tertiary);
   overflow-wrap: anywhere;
 }
+#tree > .section-label:first-child { margin-top: 0; padding-top: var(--space-3); border-top: 0; }
+/* What a display setting hides in this section: a readout on its own line, not a switch. */
+.section-state { display: block; font-weight: 400; color: var(--text-tertiary); }
 
-/* Hemisphere labels and visibility stay readable, with stronger edges on interaction. */
+/* Each side's control has its own slot; a group without one leaves that slot empty. */
 .row-eyes {
-  display: flex;
-  flex: none;
+  display: grid;
+  grid-template-columns: [side-mid] var(--eye-slot-mid) [side-left] var(--eye-slot) [side-right] var(--eye-slot);
   align-items: center;
-  gap: 0;
-  margin-block: -4px;
-  border-radius: var(--radius-control);
-  outline: 1px solid transparent;
-  outline-offset: -1px;
 }
-.visibility-control {
+.row-eyes > [data-side="midline"] { grid-column: side-mid; }
+.row-eyes > [data-side="left"] { grid-column: side-left; }
+.row-eyes > [data-side="right"] { grid-column: side-right; }
+/* Icon then letter, flush to the slot's end so letters and counts share one right edge. */
+.visibility-control,
+.row-indent > .row-side-solo {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   flex: none;
-  gap: 3px;
-  width: 32px;
-  height: 32px;
-  margin: -4px 0;
-  padding: 0 var(--space-1);
+  gap: var(--space-1);
+  width: var(--eye-slot);
+  min-width: 0;
+  padding: 0 var(--space-1) 0 0;
+}
+.visibility-control {
+  height: calc(var(--row-height) - var(--space-1));
+  margin-block: calc((var(--lh-ui) + var(--space-1) - var(--row-height)) / 2);
   border: 0;
   border-radius: var(--radius-control);
   color: var(--text-tertiary);
   background: transparent;
 }
-.row-eyes > .visibility-control { margin-block: 0; border-radius: 0; }
-.row-eyes > .visibility-control:first-child { border-radius: var(--radius-control) 0 0 var(--radius-control); }
-.row-eyes > .visibility-control:last-child { border-radius: 0 var(--radius-control) var(--radius-control) 0; }
-.row-eyes > .visibility-control + .visibility-control { border-left: 1px solid transparent; }
-.row-indent > .visibility-control { border: 1px solid transparent; }
-.visibility-control[data-visibility-key$=":midline"] { width: 40px; min-width: 40px; padding-inline: 2px; }
+:is(.row-indent, .row-eyes) > [data-side="midline"]:is(.visibility-control, .row-side-solo) { width: var(--eye-slot-mid); }
 .visibility-control svg { width: 14px; height: 14px; flex: none; }
 .visibility-side { font-size: var(--text-caption); line-height: var(--lh-caption); font-weight: 600; color: var(--text-secondary); }
 @media (hover: hover) and (pointer: fine) {
@@ -203,38 +202,42 @@
 .visibility-control[data-state="hidden"] .visibility-side { text-decoration: line-through; }
 .visibility-control[data-partial="true"] { background: var(--surface-tonal); }
 .visibility-control:focus-visible { outline-offset: 0; }
-/* The row in use strengthens the eye and exposes its shared control boundary. */
+/*
+ * Quiet at rest with a mouse. A group shows its count where its eyes will be and trades it for
+ * them on hover, keyboard focus, or a hidden part; a region keeps its letter and gains its eye.
+ * Nothing moves, so names never reflow. Touch keeps every eye and gives the count its own column.
+ */
 @media (hover: hover) and (pointer: fine) {
-  .row:is(:hover, :focus-within) > .row-eyes { outline-color: var(--border-subtle); }
-  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control + .visibility-control,
-  .row:is(:hover, :focus-within) > .visibility-control { border-color: var(--border-subtle); }
-  .row:is(:hover, :focus-within) > .row-eyes > .visibility-control svg,
-  .row:is(:hover, :focus-within) > .visibility-control svg { color: var(--text-primary); }
+  .tree-group > .group-row { grid-template-columns: 12px minmax(0, 1fr) var(--eye-area); }
+  .group-row > :is(.group-count, .row-eyes) { grid-column: 3; }
+  .group-row > .group-count { justify-self: end; margin-right: var(--space-1); }
+  .group-row > .row-eyes > .visibility-control,
+  .row-indent > .visibility-control svg { opacity: 0; }
+  .group-row:is(:hover, :focus-visible, :has(:focus-visible), :has(.visibility-control:is([data-state="hidden"], [data-partial="true"]))) > .group-count { visibility: hidden; }
+  .group-row:is(:hover, :focus-visible, :has(:focus-visible), :has(.visibility-control:is([data-state="hidden"], [data-partial="true"]))) > .row-eyes > .visibility-control { opacity: 1; }
+  .row-indent:is(:hover, :focus-visible, :has(:focus-visible), [data-selected="true"]) > .visibility-control svg,
+  .row-indent > .visibility-control[data-state="hidden"] svg { opacity: 1; }
 }
-/* Scope is a compact neutral choice, distinct from the mode tabs above. */
-.tree-header { display: flex; align-items: center; gap: var(--space-3); }
-.tree-scope { flex: 0 1 auto; min-width: 0; gap: var(--space-1); padding: 0; background: transparent; }
-.tree-scope button {
-  flex: 1 1 auto;
-  min-width: 0;
+
+/*
+ * Browse scope is the one segmented control, in 13px at its words' widths so Expand all fits
+ * beside it, its ink ending on the inset; a narrow French panel wraps the command under them.
+ */
+.tree-header { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.tree-scope { flex: none; }
+.tree-scope button { height: auto; min-height: calc(var(--control-height) - 4px); padding-inline: var(--space-2); font-size: var(--text-caption); }
+.tree-toggle-all {
+  flex: none;
   height: auto;
-  min-height: 32px;
-  padding: var(--space-1) var(--space-2);
-  white-space: normal;
-  border-radius: calc(var(--radius-control) - 1px);
+  min-height: var(--control-height);
+  margin-left: auto;
+  margin-right: calc(-1 * var(--space-2));
+  padding: 0 var(--space-2);
   font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: var(--lh-caption);
+  white-space: nowrap;
 }
-.tree-scope button[aria-pressed="true"],
-.tree-scope button[aria-pressed="true"]:hover {
-  background: var(--surface-tonal);
-  color: var(--text-primary);
-  box-shadow: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .tree-scope button:hover:not(:disabled, [aria-pressed="true"]) { background: var(--surface-hover); color: var(--text-primary); }
-}
-/* The icon's ink ends on the data column. */
-.tree-toggle-all { flex: none; margin-left: auto; margin-right: calc(-1 * var(--space-2)); }
 /* By system: the system picker sits under the scope that opened it, label beside field. */
 .internal-controls {
   display: grid;
@@ -243,11 +246,6 @@
   gap: var(--space-3);
 }
 .internal-controls label { font-size: var(--text-ui); font-weight: 500; }
-.internal-note { font-size: var(--text-caption); line-height: var(--lh-caption); color: var(--text-secondary); margin: 0; }
-
-@media (pointer: coarse) {
-  .row-eyes, .visibility-control { margin-block: 0; }
-}
 
 .query-match { background: transparent; color: var(--accent); font-weight: 600; }
 .row-alias {

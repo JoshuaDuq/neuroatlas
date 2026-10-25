@@ -2,7 +2,6 @@ import { t, atlasSwitchLabel } from '../../i18n/translations.js';
 import { CLINICAL_TEXT } from '../../clinical/translations.js';
 import { visibilityOf } from '../../catalog/visibility.js';
 import { failureNotice } from '../../i18n/errors.js';
-import { createButtonLabel } from '../chrome/button-label.js';
 import { networkCss } from '../../catalog/networks.js';
 import { createAnnouncer } from '../announce.js';
 
@@ -38,6 +37,18 @@ export function bridgeButton(text, dataset) {
   return button;
 }
 
+/** A list row: the deficit's name and, under it, the domain it belongs to. */
+function deficitRow(deficit, lang) {
+  const button = element('button', null, 'row deficit-row');
+  button.type = 'button';
+  button.dataset.deficit = deficit.id;
+  const text = element('span', null, 'deficit-row-text');
+  text.append(element('span', deficit.name[lang], 'row-name'), element('span', deficit.domain[lang], 'deficit-row-domain'));
+  button.append(text, drillChevron());
+  return button;
+}
+
+/** A region's link to a deficit, on the text column. */
 function deficitButton(deficit, lang) {
   const button = element('button', null, 'clinical-deficit');
   button.type = 'button';
@@ -55,7 +66,7 @@ function deficitGroup({ group, deficits }, lang) {
   heading.id = `deficit-group-${group.id}`;
   section.setAttribute('role', 'group');
   section.setAttribute('aria-labelledby', heading.id);
-  section.append(heading, ...deficits.map(deficit => deficitButton(deficit, lang)));
+  section.append(heading, ...deficits.map(deficit => deficitRow(deficit, lang)));
   return section;
 }
 
@@ -199,7 +210,7 @@ export function relatedRegionVisible(selectedRegion, deficitCount) {
 
 /** An activation map a deficit's lesion evidence checks: its colour on the brain, its name, and the way to it. */
 function checkedMapButton({ id, name, color }) {
-  const button = element('button', null, 'clinical-deficit function-row');
+  const button = element('button', null, 'clinical-deficit function-link');
   button.type = 'button';
   button.dataset.checkedFunction = id;
   const swatch = element('span', null, 'network-swatch function-swatch');
@@ -239,11 +250,9 @@ export function createClinicalExplorer({
   const related = document.getElementById('clinical-region');
   // The way back is the location bar's one trailing action.
   const trailing = document.getElementById('detail-trailing');
-  const restore = element('button', null, 'clinical-restore icon-button');
+  const restore = element('button', null, 'clinical-restore');
   restore.type = 'button';
   restore.id = 'clinical-restore';
-  const restoreLabel = createButtonLabel(restore, 'restore');
-  restoreLabel.classList.add('visually-hidden');
   trailing.append(restore);
   let listKey = null;
   let profileKey = null;
@@ -403,7 +412,7 @@ export function createClinicalExplorer({
       onQuery('');
     }
     if (event.key === 'ArrowDown' || event.key === 'Enter') {
-      const first = list.querySelector('.clinical-deficit, .search-bridge');
+      const first = list.querySelector('.deficit-row, .search-bridge');
       if (first) { event.preventDefault(); first.focus(); }
     }
   };
@@ -423,7 +432,7 @@ export function createClinicalExplorer({
   // Every row a search shows, suggestions and links to the other tab included; up from the first is the field.
   const onListKey = event => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-    const buttons = [...list.querySelectorAll('.clinical-deficit, .search-bridge')];
+    const buttons = [...list.querySelectorAll('.deficit-row, .search-bridge')];
     const index = buttons.indexOf(document.activeElement);
     event.preventDefault();
     if (event.key === 'ArrowUp' && index === 0) search.focus();
@@ -481,8 +490,7 @@ export function createClinicalExplorer({
         deficitSearchClear.setAttribute('aria-label', t(language, 'navigator').clearSearch);
       }
       if (document.activeElement !== search) search.value = state.clinicalQuery;
-      restoreLabel.textContent = text.restore;
-      restore.dataset.tooltip = text.restore;
+      restore.textContent = text.restore;
       coverage.textContent = text.coverage.replace('{count}', String(clinical.search('', language).length));
       list.setAttribute('aria-label', text.deficits);
 
@@ -504,9 +512,11 @@ export function createClinicalExplorer({
         if (functions) list.append(bridgeButton(text.functionBridge(functions, query), { searchFunctions: query }));
         if (query) announce(text.results(groups.reduce((sum, entry) => sum + entry.deficits.length, 0)));
       }
-      for (const button of list.querySelectorAll('.clinical-deficit')) {
-        if (button.dataset.deficit === state.selectedDeficit) button.setAttribute('aria-current', 'true');
+      for (const button of list.querySelectorAll('.deficit-row')) {
+        const selected = button.dataset.deficit === state.selectedDeficit;
+        if (selected) button.setAttribute('aria-current', 'true');
         else button.removeAttribute('aria-current');
+        button.dataset.selected = String(selected);
       }
       const nextProfileKey = `${language}|${state.selectedDeficit}`;
       if (nextProfileKey !== profileKey) {

@@ -395,6 +395,7 @@ export async function startApp() {
    * without changing which view is chosen.
    */
   function frameCurrent({ immediate = false } = {}) {
+    fitPending = null;
     const fit = framingFit({ immediate: immediate || !framed });
     const { view } = session.assemble(model.state);
     scene.camera.up.copy(upFor(view));
@@ -937,10 +938,12 @@ export async function startApp() {
    */
   function deficitDeepHint(id) {
     if (!model.settings.cortexVisible) return null;
-    const names = [...new Set(clinicalCatalog.mappedRegions(id)
-      .filter(region => beneathCortex(model.regions.get(region))).map(region => catalog.get(region).label.name))];
-    if (!names.length) return null;
     const { lang } = session.assemble({});
+    const names = [...new Set(clinicalCatalog.mappedRegions(id)
+      .filter(region => beneathCortex(model.regions.get(region))).map(region => catalog.get(region).label.name))]
+      // Source labels differ in case (NextBrain's are lower case); listed together, each starts with a capital.
+      .map(name => `${name.charAt(0).toLocaleUpperCase(lang)}${name.slice(1)}`);
+    if (!names.length) return null;
     const text = CLINICAL_TEXT[lang];
     const shown = names.length > 3 ? names.slice(0, 2) : names;
     const items = shown.length < names.length ? [...shown, text.otherMapped(names.length - shown.length)] : shown;
@@ -1352,6 +1355,7 @@ export async function startApp() {
   const circuitExplorer = createCircuitExplorer({
     catalog: circuitCatalog,
     involved,
+    labelOf: (id, settings) => catalog.label(id, settings),
     onCircuit: async id => {
       const current = commands.begin();
       const circuit = circuitCatalog.get(id);
@@ -1493,6 +1497,7 @@ export async function startApp() {
   // The camera's heading where it is going, so a move in flight is read where it lands.
   const heading = () => scene.destination.position.clone().sub(scene.destination.target).normalize();
   let fitBefore = null;
+  let fitPending = null;
   /*
    * The phone shell. It reports how much of the canvas it covers rather than
    * resizing it, and everything that must agree about where the viewport is —
@@ -1510,12 +1515,14 @@ export async function startApp() {
     onInsets: (insets, motion) => {
       // A reader's own framing (an orbit, Focus, a landmark) keeps its heading and its size in the
       // room: its fit is read before the sheet first moves, and again where the sheet settles.
-      const own = framed && !orbiting && !chrome?.viewHeld;
+      const own = framed && !chrome?.viewHeld;
       if (own && !fitBefore) fitBefore = fittedDistance(heading());
       scene.setChromeInsets(insets, motion);
       chrome?.setViewport(scene.visibleRect, scene.hostSize);
       if (!motion.settle) return;
-      if (own) keepFraming(fitBefore);
+      // A tap that selects raises the sheet before its gesture has ended; the refit waits for the lift.
+      if (own && orbiting) fitPending = fitBefore;
+      else if (own) keepFraming(fitBefore);
       fitBefore = null;
     },
     // Reframing during a drag would fight the finger; on arrival a held view
@@ -1578,25 +1585,10 @@ export async function startApp() {
     return {};
   }
 
-  /** The location bar's place within a mode: a lesson's circuit, a function's group or itself, an open deficit's group. */
+  /** The location bar's place within a mode: a lesson's circuit. A profile's headline already says where it is. */
   function detailPlace(state) {
-    if (state.explorer === 'functions' && state.selectedFunction) {
-      if (state.selectedFunction === ALL_DOMAINS) return functionLabel(ALL_DOMAINS, state.lang);
-      if (isTermId(state.selectedFunction)) {
-        const copy = t(state.lang, 'functions');
-        return domainRecord(model.domains, state.selectedFunction).kind === 'population'
-          ? copy.populationsHeading : copy.termsHeading;
-      }
-      const { group } = domainRecord(model.domains, state.selectedFunction);
-      const record = model.domains.groups.find(entry => entry.id === group);
-      return state.lang === 'fr' ? record.name_fr : record.name;
-    }
     if (state.explorer === 'circuits' && state.lesson.circuit) {
       return circuitCatalog.get(state.lesson.circuit).name[state.lang];
-    }
-    if (state.explorer === 'deficits' && state.selectedDeficit) {
-      const { group } = clinicalCatalog.get(state.selectedDeficit);
-      return clinicalCatalog.groups.find(entry => entry.id === group).name[state.lang];
     }
     return null;
   }
@@ -1830,6 +1822,14 @@ export async function startApp() {
   scene.controls.addEventListener('end', () => {
     scheduleUrl();
     orbiting = false;
+    if (fitPending) {
+      const before = fitPending;
+      fitPending = null;
+      keepFraming(before);
+      // rememberZoom read the camera before this refit; the zoom belongs to where the refit lands.
+      const fitted = fittedDistance(heading());
+      if (fitted > 0) zoom = scene.destination.position.distanceTo(scene.destination.target) / fitted;
+    }
     if (dockPending) { dockPending = false; refitDock(); }
   });
 
