@@ -2,16 +2,23 @@
 // web/docs/decisions/0001-ui-kit.md (method: build an entry that mounts the wrappers,
 // then `gzip -9`). Run from the repository root after `npm ci --prefix web`.
 //
-// The entry is the U0 spike fixture, which mounts every Bits UI part. Once U3-U7 land,
-// switch it to the wrappers in web/src/lib/ui. UI_BUDGET_ENTRY overrides it for probes.
+// The entry imports every Bits UI wrapper in web/src/lib/ui (the .svelte files that import
+// bits-ui) and keeps them reachable, so the measure is what the app ships. New wrappers
+// are picked up automatically.
 import { createRequire } from 'node:module';
+import { readdirSync, readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const BUDGET_BYTES = 85_000;
 const web = resolve('web');
-const entry = resolve(web, process.env.UI_BUDGET_ENTRY ?? 'docs/decisions/kit-spike/Spike.svelte');
+const uiDir = resolve(web, 'src/lib/ui');
+const wrappers = readdirSync(uiDir)
+  .filter((name) => name.endsWith('.svelte') && /from ['"]bits-ui['"]/.test(readFileSync(resolve(uiDir, name), 'utf8')))
+  .sort()
+  .map((name) => resolve(uiDir, name));
+if (wrappers.length === 0) throw new Error(`No bits-ui wrappers found in ${uiDir}`);
 
 const require = createRequire(`${web}/package.json`);
 const { build } = await import(pathToFileURL(require.resolve('vite')));
@@ -29,7 +36,8 @@ const result = await build({
       resolveId: (id) => (id === virtualEntry ? id : null),
       load: (id) =>
         id === virtualEntry
-          ? `import { mount } from 'svelte'; import Entry from ${JSON.stringify(entry)}; mount(Entry, { target: document.body });`
+          ? `${wrappers.map((file, i) => `import W${i} from ${JSON.stringify(file)};`).join('')}
+             globalThis.__uiWrappers = [${wrappers.map((_, i) => `W${i}`).join(',')}];`
           : null,
     },
   ],
