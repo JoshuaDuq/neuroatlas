@@ -15,6 +15,8 @@ export default defineConfig(({ mode }) => ({
   server: { fs: { allow: [repositoryRoot] } },
   build: {
     target: 'es2022',
+    // The preview is served beside the live site, which already publishes these files.
+    copyPublicDir: mode !== 'preview',
     rolldownOptions: {
       output: {
         // Three.js and the BVH index change far less often than the viewer.

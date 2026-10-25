@@ -1,11 +1,10 @@
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { build, type Plugin } from 'vite';
+import { build, resolveConfig, type Plugin } from 'vite';
 import legacyConfig from '../../vite.config.js';
 import {
   prefetchScript,
@@ -18,7 +17,8 @@ import { ASSET_BASE } from '../build/site.ts';
 const webRoot = fileURLToPath(new URL('../', import.meta.url));
 const publicDirectory = resolve(webRoot, '../public');
 const publishedModule = resolve(webRoot, 'src/lib/core/assets/published-files.ts');
-const scratch = mkdtempSync(resolve(tmpdir(), 'f3-'));
+mkdirSync(resolve(webRoot, 'dist'), { recursive: true });
+const scratch = mkdtempSync(resolve(webRoot, 'dist', 'f3-'));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
 /** A plugin hook, whether written as a function or as `{ handler }`. */
@@ -60,7 +60,7 @@ describe('worker and head version maps match the legacy build', () => {
       children: string;
       injectTo: string;
     }[];
-    expect(tag.injectTo).toBe('head-prepend');
+    expect(tag.injectTo).toBe('head');
     currentHead = tag.children.match(/var versions = (.*);$/m)![1];
   }, 60_000);
 
@@ -161,6 +161,29 @@ describe('the build', () => {
   }, 120_000);
 });
 
+describe('the built page', () => {
+  it('declares its charset within the first 1024 bytes, ahead of the prefetch script and the stylesheet', async () => {
+    const outDir = resolve(scratch, 'page');
+    await build({
+      root: webRoot,
+      logLevel: 'silent',
+      build: { outDir, emptyOutDir: true, copyPublicDir: false },
+    });
+    const html = readFileSync(resolve(outDir, 'index.html'));
+    const text = html.toString('utf8');
+    expect(html.subarray(0, 1024).toString('utf8')).toContain('<meta charset="UTF-8"');
+    expect(text.indexOf('window.__planumAssets')).toBeGreaterThan(-1);
+    expect(text.indexOf('window.__planumAssets')).toBeLessThan(text.indexOf('rel="stylesheet"'));
+  }, 120_000);
+
+  it('keeps the published assets out of the preview build only', async () => {
+    const copies = async (mode: string) =>
+      (await resolveConfig({ root: webRoot, mode }, 'build')).build.copyPublicDir;
+    expect(await copies('preview')).toBe(false);
+    expect(await copies('production')).toBe(true);
+  });
+});
+
 describe('the head prefetch script', () => {
   const versions = {
     'models/anatomies.json': 'index0000000000a',
@@ -257,14 +280,14 @@ describe('the head prefetch script', () => {
     );
   });
 
-  it('is injected inline at head-prepend by the build plugin', () => {
+  it('is injected inline into head by the build plugin', () => {
     const [tag] = hook(publishedAssets(), 'transformIndexHtml')('') as {
       tag: string;
       injectTo: string;
       children: string;
     }[];
     expect(tag.tag).toBe('script');
-    expect(tag.injectTo).toBe('head-prepend');
+    expect(tag.injectTo).toBe('head');
     expect(tag.children).not.toMatch(/__PUBLISHED_VERSIONS__|__ASSET_BASE__/);
   });
 });

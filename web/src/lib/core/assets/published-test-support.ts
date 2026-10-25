@@ -7,6 +7,7 @@ import PUBLISHED, { type PublishedRecord } from './published-files.ts';
 afterEach(() => {
   Object.assign(PUBLISHED, { base: '/', files: null });
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   delete globalThis.__planumAssets;
 });
 

@@ -80,13 +80,18 @@ export function publishedAssets(): Plugin {
       if (id.split('?')[0] !== publishedModule) return null;
       return `export default ${JSON.stringify({ base: ASSET_BASE, files: published })};`;
     },
-    transformIndexHtml: () => [
-      {
-        tag: 'script',
-        children: prefetchScript(headVersions(published)),
-        injectTo: 'head-prepend',
-      },
-    ],
+    // Appended to <head> before Vite adds the stylesheet link, so the script still starts
+    // ahead of the CSS while <meta charset> stays within the first 1024 bytes (HTML Standard 4.2.5.4).
+    transformIndexHtml: {
+      order: 'pre',
+      handler: () => [
+        {
+          tag: 'script',
+          children: prefetchScript(headVersions(published)),
+          injectTo: 'head',
+        },
+      ],
+    },
     // In development a rebuilt asset gets its new version on the next reload.
     configureServer(server) {
       server.watcher.add(PUBLISHED_TREES.map((tree) => resolve(publicDirectory, tree)));

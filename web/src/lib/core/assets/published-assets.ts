@@ -59,12 +59,15 @@ export const fetchPublished = (url: string | URL, options?: RequestInit): Promis
  * cannot diagnose, and a bad stored copy would otherwise fail the same way.
  */
 export async function reloadWithoutStoredModels(): Promise<void> {
-  try {
-    for (const name of await caches.keys()) {
-      if (name.startsWith('planum-models')) await caches.delete(name);
+  if ('caches' in globalThis) {
+    try {
+      for (const name of await caches.keys()) {
+        if (name.startsWith('planum-models')) await caches.delete(name);
+      }
+    } catch (error) {
+      // Cache Storage blocked by the browser's storage settings: a plain reload is all there is.
+      if (!(error instanceof DOMException && error.name === 'SecurityError')) throw error;
     }
-  } catch {
-    // No Cache Storage (or blocked): a plain reload is all there is.
   }
   globalThis.location.reload();
 }
