@@ -9,7 +9,7 @@ The anatomy tree is a tree widget (`#tree`, rows with `aria-selected`) with the 
 
 ## New behaviour
 
-APG Treegrid with the eye buttons in their own cells; Right/Left expand, collapse and move; Escape from a cell to its row; V kept. See 0002.
+APG Treegrid with the eye buttons in their own cells (see 0002). On a row, Right expands a collapsed row, otherwise moves to the first cell (a leaf's first cell is its eye, as legacy navigator.js:18); Left collapses an expanded row, otherwise moves to the parent. In a cell, Right and Left move between cells, and Left from the first cell returns to the row. Escape returns to the row; V toggles visibility (legacy, kept).
 
 ## Standard cited
 

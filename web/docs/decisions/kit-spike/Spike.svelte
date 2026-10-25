@@ -8,6 +8,8 @@
   let language = $state('en');
   let view = $state('front');
   let tab = $state('anatomy');
+  let settingsOpen = $state(false);
+  let leftByFocus = false;
   let query = $state('');
   let picked = $state('');
   const regions = ['Amygdala', 'Hippocampus', 'Thalamus'];
@@ -39,14 +41,36 @@
   <Tabs.Content value="deficits">Deficits panel</Tabs.Content>
 </Tabs.Root>
 
-<Popover.Root>
+<!--
+  Settings disclosure as decided in 0005: Bits Popover, no focus trap, content kept right
+  after the trigger (no Portal) so Tab continues in document order, and closed on focus-out.
+-->
+<Popover.Root bind:open={settingsOpen}>
   <Popover.Trigger>Settings</Popover.Trigger>
-  <Popover.Portal>
-    <Popover.Content aria-label="Settings">
-      <button type="button">Provenance</button>
-    </Popover.Content>
-  </Popover.Portal>
+  <Popover.Content
+    aria-label="Settings"
+    trapFocus={false}
+    onfocusout={(event: FocusEvent) => {
+      const next = event.relatedTarget as Node | null;
+      if (
+        !(event.currentTarget as HTMLElement).contains(next) &&
+        !(next as Element | null)?.closest('[data-popover-trigger]')
+      ) {
+        leftByFocus = true;
+        settingsOpen = false;
+      }
+    }}
+    onCloseAutoFocus={(event: Event) => {
+      // Closed by Tab-out: focus stays where the user moved it. Escape still returns to the trigger.
+      if (leftByFocus) event.preventDefault();
+      leftByFocus = false;
+    }}
+  >
+    <button type="button">Provenance</button>
+    <button type="button">Shortcuts</button>
+  </Popover.Content>
 </Popover.Root>
+<button type="button">After settings</button>
 
 <Tooltip.Provider delayDuration={500} skipDelayDuration={300}>
   <Tooltip.Root>
@@ -56,6 +80,12 @@
       <Tooltip.Content role="tooltip">Save a PNG</Tooltip.Content>
     </Tooltip.Portal>
   </Tooltip.Root>
+  <Tooltip.Root>
+    <Tooltip.Trigger>Fullscreen</Tooltip.Trigger>
+    <Tooltip.Portal>
+      <Tooltip.Content role="tooltip">Enter full screen</Tooltip.Content>
+    </Tooltip.Portal>
+  </Tooltip.Root>
 </Tooltip.Provider>
 
 <Combobox.Root
@@ -63,12 +93,14 @@
   bind:value={picked}
   items={regions.map((r) => ({ value: r, label: r }))}
 >
+  <!-- Bits 2.20.2 sets neither aria-controls on the input nor a name on the listbox; the U6 wrapper must. -->
   <Combobox.Input
     aria-label="Search regions"
+    aria-controls="regions-list"
     oninput={(event) => (query = event.currentTarget.value)}
   />
   <Combobox.Portal>
-    <Combobox.Content>
+    <Combobox.Content id="regions-list" aria-label="Regions">
       {#each shown as region (region)}
         <Combobox.Item value={region} label={region}>{region}</Combobox.Item>
       {/each}

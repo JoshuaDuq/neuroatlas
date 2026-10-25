@@ -1,7 +1,7 @@
 // U0 spike: Bits UI 2.20.2 checked against the WAI-ARIA APG patterns the decision
 // records (web/docs/decisions) rely on. Fixture: docs/decisions/kit-spike/Spike.svelte.
 import axe from 'axe-core';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Spike from '../../../docs/decisions/kit-spike/Spike.svelte';
@@ -82,6 +82,21 @@ describe('Bits UI against the APG', () => {
     expect(document.activeElement).toBe(trigger.element());
   });
 
+  test('Popover: Tab out of the last control reaches the next element and closes it', async () => {
+    render(Spike);
+    const trigger = page.getByRole('button', { name: 'Settings' });
+    await trigger.click();
+    expect(attr(trigger, 'aria-expanded')).toBe('true');
+    const last = page.getByRole('button', { name: 'Shortcuts' });
+    (last.element() as HTMLElement).focus();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(
+      page.getByRole('button', { name: 'After settings' }).element(),
+    );
+    await vi.waitFor(() => expect(attr(trigger, 'aria-expanded')).toBe('false'));
+    await expect.element(last).not.toBeInTheDocument();
+  });
+
   test('Tooltip: keyboard focus shows it, Escape hides it', async () => {
     render(Spike);
     const trigger = page.getByRole('button', { name: 'Snapshot' });
@@ -95,10 +110,30 @@ describe('Bits UI against the APG', () => {
     await expect.element(page.getByRole('tooltip')).not.toBeInTheDocument();
   });
 
-  test('Tooltip.Provider delays match the legacy timing', async () => {
+  test('Tooltip.Provider: 500 ms show delay, 300 ms skip window', async () => {
     render(Spike);
-    const trigger = page.getByRole('button', { name: 'Snapshot' }).element();
-    expect(trigger.getAttribute('data-delay-duration')).toBe('500');
+    const first = page.getByRole('button', { name: 'Snapshot' });
+    const second = page.getByRole('button', { name: 'Fullscreen' });
+    const shown = () => document.querySelector('[role="tooltip"]') !== null;
+
+    await first.hover();
+    const hovered = performance.now();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(shown()).toBe(false);
+    await vi.waitFor(() => expect(shown()).toBe(true), { timeout: 1500, interval: 10 });
+    const delay = performance.now() - hovered;
+    expect(delay).toBeGreaterThanOrEqual(480);
+    expect(delay).toBeLessThan(750);
+
+    // Leaving closes it; a second trigger entered within 300 ms opens at once.
+    await userEvent.unhover(first);
+    await vi.waitFor(() => expect(shown()).toBe(false), { timeout: 1000, interval: 10 });
+    const closed = performance.now();
+    await second.hover();
+    await vi.waitFor(() => expect(shown()).toBe(true), { timeout: 1000, interval: 5 });
+    const skipped = performance.now() - closed;
+    expect(skipped).toBeLessThan(300);
+    expect(document.querySelector('[role="tooltip"]')?.textContent).toBe('Enter full screen');
   });
 
   test('Combobox: focus stays on the input and aria-activedescendant names the option', async () => {
@@ -120,9 +155,16 @@ describe('Bits UI against the APG', () => {
     expect(document.getElementById('picked')!.textContent).toBe(label);
   });
 
-  test('axe finds no violations in any of the parts', async () => {
+  test('axe finds no violations with the popover, combobox and tooltip open', async () => {
     render(Spike);
     await page.getByRole('button', { name: 'Settings' }).click();
+    const input = page.getByRole('combobox', { name: 'Search regions' });
+    (input.element() as HTMLElement).focus();
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+    await expect.element(page.getByRole('listbox', { name: 'Regions' })).toBeInTheDocument();
+    expect(attr(input, 'aria-controls')).toBe(page.getByRole('listbox').element().id);
+    (page.getByRole('button', { name: 'Snapshot' }).element() as HTMLElement).focus();
+    await expect.element(page.getByRole('tooltip')).toBeInTheDocument();
     const results = await axe.run(document.body, { rules: { region: { enabled: false } } });
     expect(
       results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' ')}`),
