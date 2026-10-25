@@ -337,3 +337,31 @@ test('spinal cord structures answer to the clinical aliases of each language', (
     tract.id,
   );
 });
+
+test('an accented letter is not a word start: French "ra" ranks a word start above a mid-word match', () => {
+  const rows = (name: string, id: string) =>
+    asRegion({
+      id,
+      atlas: 'a',
+      hemisphere: 'left',
+      kind: 'structure',
+      supplemental: true,
+      source_name: name,
+      display_names: { en: name, fr: name },
+      system_names: { en: 'S', fr: 'S' },
+      family_order: 0,
+    });
+  const catalog = createCatalog(
+    {
+      regions: [
+        rows('Aire hypothalamique latérale (partie postérieure)', 'a:left:1'),
+        rows('Noyau dorsal du raphé', 'a:left:2'),
+      ],
+    },
+    'fr',
+  );
+  assert.deepEqual(names(catalog.search('ra', settings({ lang: 'fr' }))), [
+    'Noyau dorsal du raphé',
+    'Aire hypothalamique latérale (partie postérieure)',
+  ]);
+});

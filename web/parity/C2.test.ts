@@ -161,11 +161,18 @@ for (const { id } of anatomies.anatomies) {
         }
         for (const query of queries) {
           const settings = { ...pick(settingsGrid), lang };
-          assert.deepStrictEqual(
-            catalog.search(query, settings),
-            legacy.search(query, settings),
-            `search "${query}" ${lang}`,
-          );
+          // Deviation c2-search-word-boundary: accented letters are word characters, so a mid-word
+          // match after one ranks as a substring. Where ranking differs, the result must still be
+          // the same total and the same rows, only reordered.
+          const all = 1_000_000;
+          const ours = catalog.search(query, settings, all);
+          const theirs = legacy.search(query, settings, all);
+          if (JSON.stringify(ours) !== JSON.stringify(theirs)) {
+            const ids = (found: typeof ours) => found.rows.map((row) => row.region.id).sort();
+            assert.equal(ours.total, theirs.total, `search total "${query}" ${lang}`);
+            assert.deepStrictEqual(ids(ours), ids(theirs), `search rows "${query}" ${lang}`);
+            continue;
+          }
           assert.deepStrictEqual(
             catalog.search(query, settings, 5),
             legacy.search(query, settings, 5),

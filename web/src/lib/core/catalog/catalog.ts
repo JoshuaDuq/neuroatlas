@@ -1,7 +1,7 @@
 import type { DisplaySettings, Language, Manifest, Region } from '../../types/index.ts';
 import { labelOf, type RegionLabel } from './labels.ts';
 import { cabNpName, type CabNpPartition } from './networks.ts';
-import { belongsToDetail, cutAtlasesOf, visibilityOf } from './visibility.ts';
+import { belongsToDetail, cutAtlasesOf, visibilityOf, type Visibility } from './visibility.ts';
 
 const EXACT = 0,
   PREFIX = 1,
@@ -16,7 +16,7 @@ const stripDiacritics = (text: string) => text.normalize('NFD').replace(/[\u0300
 function startsAWord(text: string, query: string): boolean {
   let from = text.indexOf(query);
   while (from > 0) {
-    if (!/[a-z0-9]/.test(text[from - 1])) return true;
+    if (!/[\p{L}\p{N}]/u.test(text[from - 1])) return true;
     from = text.indexOf(query, from + 1);
   }
   return from === 0;
@@ -40,12 +40,7 @@ interface Entry {
   searchable: string[];
 }
 
-export interface CatalogRow {
-  region: Region;
-  label: RegionLabel;
-  visible: boolean;
-  reason: string | null;
-}
+export type CatalogRow = { region: Region; label: RegionLabel } & Visibility;
 
 export interface CatalogGroup {
   name: string;
