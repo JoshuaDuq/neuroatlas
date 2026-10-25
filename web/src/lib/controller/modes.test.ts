@@ -115,6 +115,7 @@ describe('choosing a tab', () => {
     );
     assert.notEqual(engine.model.settings.atlas, scene.domains.atlas);
     await excursions.chooseMode('functions');
+    await scene.settled();
     assert.equal(session.state.explorer, 'functions');
     assert.equal(engine.model.settings.atlas, scene.domains.atlas);
     assert.equal(session.state.selectedFunction, 'language');
@@ -144,12 +145,14 @@ describe('choosing a tab', () => {
     await scene.commands.loadAtlas(other.id, scene.commands.begin());
     const mark = engine.calls.length;
     await excursions.chooseMode('deficits');
+    await scene.settled();
     assert.equal(engine.model.settings.atlas, engine.model.regions.get(cortical)!.atlas);
     assert.ok(engine.calls.slice(mark).some((call) => call.method === 'frameRegions'));
   });
 
-  test('a failure re-opening the item reaches the caller', async () => {
+  test('re-opens through the panel’s entry point and does not wait for it', async () => {
     const scene = createScene();
+    const openFunction = vi.fn(() => new Promise<never>(() => undefined));
     const { chooseMode } = createModes({
       engine: scene.engine,
       session: { state: { ...scene.session.state, selectedFunction: 'language' } },
@@ -157,11 +160,10 @@ describe('choosing a tab', () => {
       domainsAtlas: 'not-the-atlas',
       chooseExplorer: vi.fn(),
       leaveLesson: async () => undefined,
-      openFunction: async () => {
-        throw new Error('download failed');
-      },
-      openDeficit: async () => true,
+      openFunction,
+      openDeficit: vi.fn(),
     });
-    await expect(chooseMode('functions')).rejects.toThrow('download failed');
+    await chooseMode('functions');
+    expect(openFunction).toHaveBeenCalledWith('language');
   });
 });

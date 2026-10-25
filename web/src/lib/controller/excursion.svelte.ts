@@ -49,6 +49,17 @@ export interface ExcursionDeps {
   reader: SceneReader;
   shell: Shell;
   mri: MriDialog;
+  /**
+   * The panels' entry points, which run a command under their latest-wins or busy runner, scroll and
+   * focus the profile, and word a failure (functions.js:157, clinical.js:276, circuits.js:260). Each
+   * calls back into this controller. Fired and not awaited, as legacy did.
+   */
+  panels: {
+    openFunction: (id: string) => unknown;
+    openDeficit: (id: string) => unknown;
+    /** The lesson's Linked MRI: runs `openMri`. */
+    openMri: () => unknown;
+  };
   /** Apply pending state to the page: the legacy `render()`. Framing reads the page it has drawn. */
   render: () => void;
 }
@@ -59,7 +70,18 @@ export interface ExcursionDeps {
  */
 export function createExcursions(
   ctx: Pick<AppContext, 'engine' | 'session' | 'lesson' | 'view'>,
-  { anatomy, domains, clinical, circuits, commands, reader, shell, mri, render }: ExcursionDeps,
+  {
+    anatomy,
+    domains,
+    clinical,
+    circuits,
+    commands,
+    reader,
+    shell,
+    mri,
+    panels,
+    render,
+  }: ExcursionDeps,
 ) {
   const { engine, session, lesson, view } = ctx;
   const { model, sections, camera } = engine;
@@ -91,6 +113,7 @@ export function createExcursions(
     shell,
     mri,
     chooseExplorer,
+    openMriPanel: panels.openMri,
     render,
   });
   const modes = createModes({
@@ -100,8 +123,8 @@ export function createExcursions(
     domainsAtlas: domains.atlas,
     chooseExplorer,
     leaveLesson: lessons.leave,
-    openFunction: (id) => openFunction(id),
-    openDeficit: (id) => openDeficit(id),
+    openFunction: panels.openFunction,
+    openDeficit: panels.openDeficit,
   });
 
   const seeThroughOpacity = () => {
@@ -178,8 +201,7 @@ export function createExcursions(
   function cutLabelsFollowAtlas() {
     const { atlas } = model.settings;
     if (!model.manifest.cut_atlases?.some((entry) => entry.id === atlas)) return;
-    // The sections report a failed cut atlas in their own state, which the cuts panel shows.
-    sections.setCutAtlas(atlas).catch(() => undefined);
+    void sections.setCutAtlas(atlas);
   }
 
   /** What a reveal changed, and after it any hint about seeing what it revealed, as one notice. */
@@ -337,9 +359,9 @@ export function createExcursions(
   }
 
   /** A stage key row: one function, or one finding, alone; null returns to all of them. */
-  async function pickPaint(id: string | null): Promise<void> {
+  function pickPaint(id: string | null) {
     if (session.state.explorer === 'functions') {
-      await openFunction(id ?? ALL_DOMAINS);
+      panels.openFunction(id ?? ALL_DOMAINS);
       return;
     }
     session.setFinding(id);
@@ -393,6 +415,12 @@ export function createExcursions(
       render();
       return commands.chooseAtlas(id);
     },
+    /**
+     * The cut's label volume (app.js:564), from the navigator's "switch cut atlas". The cortical surface
+     * is untouched. A download can be overtaken by closing the cut, so the rejection reaches the caller,
+     * which reports it.
+     */
+    setCutAtlas: (id: string) => sections.setCutAtlas(id),
     chooseSurfaceColor(value: Parameters<typeof commands.chooseSurfaceColor>[0]) {
       session.liftPaint();
       return commands.chooseSurfaceColor(value);
@@ -423,6 +451,8 @@ export function createExcursions(
     openLessonLandmark: lessons.openLandmarkOf,
     openLessonStep: lessons.openStep,
     openLinkedMri: lessons.openLinkedMri,
+    openLessonMri: lessons.openMri,
+    focusLandmark: lessons.focusLandmark,
     leaveLesson: lessons.leave,
     openLandmark: lessons.openLandmark,
     holdBeforeLesson: lessons.holdBeforeLesson,

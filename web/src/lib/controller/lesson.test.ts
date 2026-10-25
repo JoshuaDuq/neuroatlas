@@ -19,7 +19,7 @@ describe('opening a lesson', () => {
     const timeline = scene.calls(mark);
     assert.equal(timeline[0], 'shell.showDetail');
     const framed = scene.engine.calls.findLast((call) => call.method === 'frameLandmark')!;
-    assert.deepEqual(framed.args, [first!.region, first!.view, scene.circuits.contextMarginMm]);
+    assert.deepEqual(framed.args, [first!.region, first!.view, scene.circuits.contextMarginMm, {}]);
     assert.equal(scene.session.state.view, first!.view);
     assert.equal(timeline.at(-1), 'app.render');
   });
@@ -199,7 +199,9 @@ describe('the Linked MRI', () => {
     scene.session.setExplorer('circuits');
     const mark = scene.engine.calls.length;
     await scene.excursions.openLinkedMri({ atRegion: true, instant: true });
+    await scene.settled();
 
+    assert.equal(scene.panels.openMri.mock.calls.length, 1);
     assert.equal(scene.mri.show.mock.calls.length, 0);
     assert.deepEqual(scene.mri.openPreparedPlane.mock.calls[0]!.slice(0, 1), [step!.plane]);
     const timeline = scene.calls(mark);
@@ -214,6 +216,8 @@ describe('the Linked MRI', () => {
         'mri.openPreparedPlane',
       ],
     );
+    // faceCut ends with a render, as legacy's does, before the plane opens.
+    assert.equal(timeline[timeline.indexOf('camera.faceCut') + 1], 'app.render');
     assert.deepEqual(
       scene.engine.sections.state.crosshair,
       scene.engine.model.centroidOf(step!.region),
@@ -233,6 +237,7 @@ describe('the Linked MRI', () => {
       assert.equal(canOpen(), false);
     });
     await scene.excursions.openLinkedMri({ atRegion: true });
+    await scene.settled();
     assert.equal(scene.lesson.state.step, 1);
   });
 
@@ -240,9 +245,40 @@ describe('the Linked MRI', () => {
     const scene = createScene();
     await scene.excursions.openCircuit(firstCircuit(scene).id);
     scene.session.setExplorer('circuits');
-    const opening = scene.excursions.openLinkedMri({ atRegion: true });
+    await scene.excursions.openLinkedMri({ atRegion: true });
     scene.session.setExplorer('anatomy');
-    await opening;
+    await scene.settled();
     assert.equal(scene.mri.openPreparedPlane.mock.calls.length, 0);
+  });
+});
+
+describe('focusing the open landmark', () => {
+  test('frames it as the lesson authored it, with the move options, and renders', async () => {
+    const scene = createScene();
+    const circuit = firstCircuit(scene);
+    await scene.excursions.openCircuit(circuit.id);
+    scene.session.setExplorer('circuits');
+    const mark = scene.engine.calls.length;
+    assert.equal(scene.excursions.focusLandmark({ immediate: true }), true);
+    const framed = scene.engine.calls.slice(mark).find((call) => call.method === 'frameLandmark')!;
+    const [step] = circuit.steps;
+    assert.deepEqual(framed.args, [
+      step!.region,
+      step!.view,
+      scene.circuits.contextMarginMm,
+      { immediate: true },
+    ]);
+    assert.equal(scene.calls(mark).at(-1), 'app.render');
+  });
+
+  test('is false, and frames nothing, with no lesson landmark selected', async () => {
+    const scene = createScene();
+    assert.equal(scene.excursions.focusLandmark(), false);
+    await scene.commands.openRegion('destrieux:left:25', scene.commands.begin());
+    assert.equal(scene.excursions.focusLandmark(), false);
+    assert.equal(
+      scene.engine.calls.some((call) => call.method === 'frameLandmark'),
+      false,
+    );
   });
 });

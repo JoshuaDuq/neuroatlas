@@ -84,10 +84,16 @@ export function createScene() {
     }),
   };
   const render = vi.fn(() => note('app', 'render'));
+  // The panels' entry points, which call back into the controller as the real panels do.
+  const panels = {
+    openFunction: vi.fn((id: string): unknown => excursions.openFunction(id)),
+    openDeficit: vi.fn((id: string): unknown => excursions.openDeficit(id)),
+    openMri: vi.fn((): unknown => excursions.openLessonMri()),
+  };
 
   const excursions = createExcursions(
     { engine, session, lesson, view },
-    { anatomy, domains, clinical, circuits, commands, reader, shell, mri, render },
+    { anatomy, domains, clinical, circuits, commands, reader, shell, mri, panels, render },
   );
   return {
     engine,
@@ -102,6 +108,14 @@ export function createScene() {
     shell,
     mri,
     render,
+    panels,
+    /** Wait for what the panels' entry points started: the controller does not await them. */
+    settled: () =>
+      Promise.all(
+        Object.values(panels).flatMap((entry) =>
+          (entry.mock.results as { value: unknown }[]).map((result) => result.value),
+        ),
+      ),
     excursions,
     /** The timeline since `from`, as `domain.method`: the engine's calls, `render` and the shell. */
     calls: (from = 0) =>

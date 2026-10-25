@@ -264,18 +264,20 @@ describe('the stage key', () => {
   test('on Functions a row opens that function, and none returns to all of them', async () => {
     const scene = createScene();
     await scene.excursions.openFunction('language');
-    await scene.excursions.pickPaint(null);
+    scene.excursions.pickPaint(null);
+    await scene.settled();
     assert.equal(scene.session.state.selectedFunction, ALL_DOMAINS);
-    await scene.excursions.pickPaint('working-memory');
+    scene.excursions.pickPaint('working-memory');
+    await scene.settled();
     assert.equal(scene.session.state.selectedFunction, 'working-memory');
   });
 
   test('on Deficits a row shows one finding alone', async () => {
     const scene = createScene();
     await scene.excursions.openDeficit(DEFICIT);
-    await scene.excursions.pickPaint('finding');
+    scene.excursions.pickPaint('finding');
     assert.equal(scene.session.state.selectedFinding, 'finding');
-    await scene.excursions.pickPaint(null);
+    scene.excursions.pickPaint(null);
     assert.equal(scene.session.state.selectedFinding, null);
   });
 
@@ -313,4 +315,14 @@ test('a link’s scene is the new baseline: nothing is left to restore', async (
   await scene.excursions.openDeficit(DEFICIT);
   scene.excursions.forget();
   assert.equal(scene.excursions.restorable, false);
+});
+
+describe('the cut atlas', () => {
+  test('is the sections’ own, and a rejection reaches the caller', async () => {
+    const scene = createScene();
+    await scene.excursions.setCutAtlas('destrieux');
+    assert.equal(scene.engine.sections.state.cutAtlas, 'destrieux');
+    vi.spyOn(scene.engine.sections, 'setCutAtlas').mockRejectedValueOnce(new Error('overtaken'));
+    await expect(scene.excursions.setCutAtlas('aseg')).rejects.toThrow('overtaken');
+  });
 });

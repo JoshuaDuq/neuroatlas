@@ -73,8 +73,9 @@ export function createModes({
   domainsAtlas: string;
   chooseExplorer: (value: Explorer) => void;
   leaveLesson: () => Promise<void>;
-  openFunction: (id: string) => Promise<boolean>;
-  openDeficit: (id: string) => Promise<boolean>;
+  /** The panels' entry points (busy state, failure wording), fired and not awaited, as legacy did. */
+  openFunction: (id: string) => unknown;
+  openDeficit: (id: string) => unknown;
 }) {
   let wanted: Explorer | null = null;
   return {
@@ -87,7 +88,7 @@ export function createModes({
       const { regions, settings } = engine.model;
       const shownAtlas = settings.atlas;
       if (value === 'functions' && selectedFunction && shownAtlas !== domainsAtlas) {
-        await openFunction(selectedFunction);
+        openFunction(selectedFunction);
       }
       if (
         value === 'deficits' &&
@@ -97,7 +98,7 @@ export function createModes({
           return region.kind === 'cortex' && region.atlas !== shownAtlas;
         })
       ) {
-        await openDeficit(selectedDeficit);
+        openDeficit(selectedDeficit);
       }
     },
   };

@@ -1,7 +1,7 @@
 import type { CircuitCatalog, Landmark } from '../core/learning/catalog.ts';
 import type { ReaderFailure, ReaderState } from '../core/state/reader-state.ts';
 import type { SceneCommands } from '../core/state/scene-commands.ts';
-import type { Engine, MprPlane } from '../engine/api.ts';
+import type { Engine, MoveOptions, MprPlane } from '../engine/api.ts';
 import type { LessonStore, SessionStore } from '../state/session.svelte.ts';
 import type { Explorer } from '../types/index.ts';
 import { prepareCircuitMri, showCircuitLandmark } from './navigation/learning.ts';
@@ -42,6 +42,7 @@ export function createLessons({
   shell,
   mri,
   chooseExplorer,
+  openMriPanel,
   render,
 }: {
   engine: Pick<Engine, 'model' | 'sections' | 'camera'>;
@@ -53,6 +54,8 @@ export function createLessons({
   shell: Shell;
   mri: MriDialog;
   chooseExplorer: (value: Explorer) => void;
+  /** The Circuits panel's entry to the lesson's MRI: its busy runner, which calls `openMri` (circuits.js:344). */
+  openMriPanel: () => unknown;
   render: () => void;
 }) {
   const { model, sections, camera } = engine;
@@ -69,8 +72,10 @@ export function createLessons({
   }
 
   /** A landmark is framed as its lesson authored it: that view, with anatomical context around it. */
-  function frameLandmark(step: Landmark): boolean {
-    if (!camera.frameLandmark(step.region, step.view, circuits.contextMarginMm)) return false;
+  function frameLandmark(step: Landmark, options: MoveOptions = {}): boolean {
+    if (!camera.frameLandmark(step.region, step.view, circuits.contextMarginMm, options)) {
+      return false;
+    }
     session.setView(step.view);
     return true;
   }
@@ -136,7 +141,10 @@ export function createLessons({
     await prepareCircuitMri(model, sections, step);
     if (!canOpen()) return;
     const faced = camera.faceCut();
-    if (faced) session.setView(faced);
+    if (faced) {
+      session.setView(faced);
+      render();
+    }
     await mri.openPreparedPlane(step.plane, canOpen);
     render();
   }
@@ -145,6 +153,19 @@ export function createLessons({
     lessonLandmark,
     openLandmark,
     leave,
+    openMri: openLessonMri,
+
+    /**
+     * Focus the selection as the open lesson authored it (app.js:510-512): its view, with anatomical
+     * context. False when no lesson landmark is selected or it has no drawn mesh, so the caller frames
+     * the region as it would any other.
+     */
+    focusLandmark(options: MoveOptions = {}): boolean {
+      const step = lessonLandmark();
+      if (!step || !frameLandmark(step, options)) return false;
+      render();
+      return true;
+    },
 
     /** The scene a lesson holds for its landmark, taken: an excursion that ends the lesson keeps it. */
     takeBeforeLesson(): ReaderState | null {
@@ -204,7 +225,7 @@ export function createLessons({
      */
     async openLinkedMri({ atRegion = false, instant = false } = {}) {
       if (atRegion && lessonLandmark()) {
-        await openLessonMri();
+        openMriPanel();
         return;
       }
       const region = model.state.selectedRegion;
