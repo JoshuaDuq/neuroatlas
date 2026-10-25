@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it, onTestFinished, vi } from 'vitest';
-import { dispatchKey, installKeymap } from './keymap.ts';
+import { ARIA_KEYSHORTCUTS, SHORTCUT_KEYS, dispatchKey, installKeymap } from './keymap.ts';
 import type { KeymapCommands, KeymapHost, KeymapState } from './keymap.ts';
 
 const STATE: KeymapState = {
@@ -235,6 +235,99 @@ describe('keymap', () => {
       assert.deepEqual(mri({}, 'M', { tagName: 'BUTTON' }), { closed: true, prevented: true });
       assert.deepEqual(mri({ singleKeys: false }, 'Escape', { tagName: 'BUTTON' }), NOTHING);
     });
+  });
+
+  it('closes a function only from the Functions explorer', () => {
+    const anatomy = host({ explorer: 'anatomy', selectedFunction: 'f' });
+    dispatchKey(press('Escape'), anatomy.keymap);
+    assert.equal(calls(anatomy.commands.closeFunction), 0);
+    const functions = host({ explorer: 'functions', selectedFunction: 'f' });
+    dispatchKey(press('Escape'), functions.keymap);
+    assert.equal(calls(functions.commands.closeFunction), 1);
+  });
+
+  it('goes Back from the detail without rescuing focus, and does nothing with nothing open', () => {
+    const detail = host({ focusInDetail: true });
+    dispatchKey(press('Escape'), detail.keymap);
+    assert.equal(calls(detail.commands.back), 1);
+    assert.equal(calls(detail.commands.rescueFocus), 0);
+    const idle = host();
+    dispatchKey(press('Escape'), idle.keymap);
+    assert.ok(Object.values(idle.commands).every((command) => calls(command) === 0));
+  });
+
+  it('walks the tree with the arrows only in the Anatomy explorer', () => {
+    for (const explorer of ['functions', 'deficits', 'circuits', 'diffusion'] as const) {
+      const { keymap, commands } = host({ explorer });
+      const down = press('ArrowDown');
+      dispatchKey(down, keymap);
+      dispatchKey(press('ArrowUp'), keymap);
+      assert.equal(calls(commands.walkTree), 0, explorer);
+      assert.equal(calls(down.preventDefault), 0, explorer);
+    }
+    const { keymap, commands } = host();
+    dispatchKey(press('ArrowDown'), keymap);
+    dispatchKey(press('ArrowUp'), keymap);
+    assert.deepEqual(commands.walkTree.mock.calls, [[1], [-1]]);
+  });
+
+  it('opens the diffusion MRI with m in the Diffusion explorer, even under the tract reference', () => {
+    const { keymap, commands } = host({ explorer: 'diffusion', tractReferenceActive: true });
+    const event = press('m');
+    dispatchKey(event, keymap);
+    assert.equal(calls(commands.openDiffusionMri), 1);
+    assert.equal(calls(commands.openMpr), 0);
+    assert.equal(calls(event.preventDefault), 1);
+    const reference = host({ explorer: 'anatomy', tractReferenceActive: true });
+    dispatchKey(press('m'), reference.keymap);
+    assert.equal(calls(reference.commands.openMpr), 0);
+  });
+
+  it('takes the letters in either case and toggles the display without cancelling the key', () => {
+    const { keymap, commands } = host({ selectedRegion: REGION, hemisphere: 'right' });
+    for (const key of ['C', 'U', 'S', 'H']) {
+      const event = press(key);
+      dispatchKey(event, keymap);
+      assert.equal(calls(event.preventDefault), 0, key);
+    }
+    assert.deepEqual(commands.setCortexVisible.mock.calls, [[false]]);
+    assert.deepEqual(commands.setInternalVisible.mock.calls, [[true]]);
+    assert.deepEqual(commands.setSpinalCordVisible.mock.calls, [[true]]);
+    assert.deepEqual(commands.setHemisphere.mock.calls, [['both']]);
+    dispatchKey(press('F'), keymap);
+    dispatchKey(press('I'), keymap);
+    dispatchKey(press('M'), keymap);
+    assert.equal(calls(commands.focusSelection), 1);
+    assert.equal(calls(commands.isolateSelection), 1);
+    assert.equal(calls(commands.openMpr), 1);
+  });
+
+  it('cycles the hemisphere both, left, right', () => {
+    for (const [from, to] of [
+      ['both', 'left'],
+      ['left', 'right'],
+      ['right', 'both'],
+    ] as const) {
+      const { keymap, commands } = host({ hemisphere: from });
+      dispatchKey(press('h'), keymap);
+      assert.deepEqual(commands.setHemisphere.mock.calls, [[to]]);
+    }
+  });
+
+  it('chooses the view each digit names, and ignores the others', () => {
+    const { keymap, commands } = host();
+    for (const key of ['0', '1', '2', '3', '4', '5', '6', '7', '9'])
+      dispatchKey(press(key), keymap);
+    assert.deepEqual(
+      commands.chooseView.mock.calls.map(([view]) => view),
+      ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'],
+    );
+  });
+
+  it('writes ? as Shift+/ for aria-keyshortcuts and keeps the other keys as matched', () => {
+    assert.equal(ARIA_KEYSHORTCUTS.shortcuts, 'Shift+/');
+    assert.equal(SHORTCUT_KEYS.shortcuts, '?');
+    assert.equal(ARIA_KEYSHORTCUTS.cortex, SHORTCUT_KEYS.cortex);
   });
 
   it('adds one bubble-phase keydown listener on the window and removes it', () => {

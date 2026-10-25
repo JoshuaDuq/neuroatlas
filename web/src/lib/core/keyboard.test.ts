@@ -3,8 +3,8 @@ import { describe, it } from 'vitest';
 import { characterShortcutAllowed, isCharacterKey } from './keyboard.ts';
 
 /** Just enough of an element for `matches` and `closest` against fixed answers. */
-const element = ({ matches = false, inside = false } = {}) => ({
-  matches: () => matches,
+const element = ({ matches = false, inside = false, kind = 'button' } = {}) => ({
+  matches: (selector: string) => matches && selector.split(', ').includes(kind),
   closest: () => (inside ? {} : null),
 });
 
@@ -32,5 +32,15 @@ describe('keyboard', () => {
     // A view preset over the canvas is outside the marked regions.
     assert.equal(characterShortcutAllowed(element({ matches: true, inside: false }), true), true);
     assert.equal(characterShortcutAllowed(null, true), true);
+  });
+
+  it('a summary and a tab in a marked region keep their keys, as a button does', () => {
+    for (const kind of ['button', 'summary', '[role="tab"]']) {
+      assert.equal(
+        characterShortcutAllowed(element({ matches: true, inside: true, kind }), true),
+        false,
+        kind,
+      );
+    }
   });
 });

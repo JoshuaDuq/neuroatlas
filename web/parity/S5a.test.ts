@@ -78,33 +78,49 @@ interface Focus {
   /** The new target: `matches` is the control test, `closest` finds a `data-own-keys` region. */
   next: Record<string, unknown>;
   canvas?: true;
+  /** A tab keeps ArrowUp and ArrowDown: the deviation, tested in keymap.test.ts. */
+  tab?: boolean;
 }
-/** `control` is a button, summary or tab; `region` is inside a region that marks its keys as its own. */
-const own = (tagName: string, control: boolean, region: boolean, extra = {}): Focus => ({
-  name: `${tagName}${control ? ' control' : ''}${region ? ' in a marked region' : ''}`,
-  legacy: { tagName, matches: () => control, closest: () => region, ...extra },
-  next: {
-    tagName,
-    matches: () => control,
-    closest: (selector: string) => selector.includes('own-keys') && region,
-    ...extra,
-  },
-});
+/**
+ * `kind` is the selector of the control the element is (button, summary or tab), or null for none;
+ * `region` is whether it is inside a region that marks its keys as its own. `matches` answers from
+ * the kind, so a changed control selector shows.
+ */
+const own = (tagName: string, kind: string | null, region: boolean, extra = {}): Focus => {
+  const matches = (selector: string) => kind !== null && selector.split(', ').includes(kind);
+  return {
+    name: `${tagName}${kind ? ` ${kind}` : ''}${region ? ' in a marked region' : ''}`,
+    legacy: { tagName, matches, closest: () => region, ...extra },
+    next: {
+      tagName,
+      matches,
+      closest: (selector: string) =>
+        selector === '[role="tab"]' ? kind === selector : selector.includes('own-keys') && region,
+      ...extra,
+    },
+    tab: kind === '[role="tab"]',
+  };
+};
 const FOCI: Focus[] = [
   { name: 'nothing', legacy: null as never, next: null as never },
-  own('BODY', false, false),
-  own('BUTTON', true, false),
-  own('BUTTON', true, true),
-  own('DIV', false, true),
-  own('INPUT', false, true, { type: 'text' }),
-  own('INPUT', false, false, { type: 'checkbox' }),
-  own('INPUT', false, true, { type: 'checkbox' }),
-  own('INPUT', false, true, { type: 'range' }),
-  own('INPUT', false, false, { type: 'range' }),
-  own('TEXTAREA', false, false),
-  own('SELECT', false, false),
-  own('DIV', false, false, { isContentEditable: true }),
-  { ...own('CANVAS', false, false), canvas: true },
+  own('BODY', null, false),
+  own('BUTTON', 'button', false),
+  own('BUTTON', 'button', true),
+  own('SUMMARY', 'summary', true),
+  own('SUMMARY', 'summary', false),
+  own('BUTTON', '[role="tab"]', true),
+  own('DIV', '[role="tab"]', true),
+  own('DIV', '[role="tab"]', false),
+  own('DIV', null, true),
+  own('INPUT', null, true, { type: 'text' }),
+  own('INPUT', null, false, { type: 'checkbox' }),
+  own('INPUT', null, true, { type: 'checkbox' }),
+  own('INPUT', null, true, { type: 'range' }),
+  own('INPUT', null, false, { type: 'range' }),
+  own('TEXTAREA', null, false),
+  own('SELECT', null, false),
+  own('DIV', null, false, { isContentEditable: true }),
+  { ...own('CANVAS', null, false), canvas: true },
 ];
 
 const KEYS = [
@@ -341,6 +357,8 @@ describe('keymap', () => {
     for (const scenario of SCENARIOS) {
       for (const focus of FOCI) {
         for (const key of KEYS) {
+          if (focus.tab && key.startsWith('Arrow') && ['ArrowUp', 'ArrowDown'].includes(key))
+            continue;
           for (const modifiers of MODIFIERS) {
             for (const flags of FLAGS) {
               if (Object.keys(modifiers).length && Object.keys(flags).length) continue;
@@ -368,9 +386,12 @@ describe('keymap', () => {
       assert.equal(isCharacterKey(key), legacyIsCharacterKey(key), String(key));
     }
     for (const enabled of [true, false]) {
-      for (const control of [true, false]) {
+      for (const kind of ['button', 'summary', '[role="tab"]', 'div', null]) {
         for (const region of [true, false]) {
-          const target = { matches: () => control, closest: () => region };
+          const target = {
+            matches: (selector: string) => kind !== null && selector.split(', ').includes(kind),
+            closest: () => region,
+          };
           assert.equal(
             characterShortcutAllowed(target, enabled),
             legacyCharacterShortcutAllowed(target, enabled),

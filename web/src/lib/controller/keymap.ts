@@ -7,11 +7,7 @@ import { DOLLY_KEYS, ORBIT_KEYS } from '../engine/render/keyboard-orbit.ts';
 import type { Hemisphere, ViewName } from '../types/index.ts';
 import type { View } from '../state/view.svelte.ts';
 
-/** `1`–`6` choose these views (app.js:66); `0` chooses the oblique one. */
-/**
- * The keys, as `aria-keyshortcuts` values for the controls that do the same (WCAG 4.1.2 names a
- * control's shortcut), and the one source the table below matches against.
- */
+/** The keys the table below matches against: one source for the dispatcher and the controls. */
 export const SHORTCUT_KEYS = {
   shortcuts: '?',
   search: '/',
@@ -35,6 +31,13 @@ export const SHORTCUT_KEYS = {
   linkedMri: 'M',
 } as const;
 
+/**
+ * The same keys as `aria-keyshortcuts` values for the controls that do the same (ARIA 1.2: a
+ * character made with a modifier is written with it, so `?` is "Shift+/").
+ */
+export const ARIA_KEYSHORTCUTS = { ...SHORTCUT_KEYS, shortcuts: 'Shift+/' } as const;
+
+/** `1`–`6` choose these views (app.js:66); `0` chooses the oblique one. */
 const DIGIT_VIEWS: ReadonlyMap<string, ViewName> = new Map(
   Object.entries(SHORTCUT_KEYS.views).map(([view, key]) => [key, view as ViewName]),
 );
@@ -248,7 +251,7 @@ export function dispatchKey(event: KeyboardEvent, host: KeymapHost): void {
   const { key } = press;
   if (state.mprOpen) {
     if (
-      key.toLowerCase() === 'm' &&
+      letters(SHORTCUT_KEYS.linkedMri)(key) &&
       !hasModifier(press) &&
       shortcutsAllowed(press.target, key) &&
       characterShortcutAllowed(press.target, state.singleKeys)
