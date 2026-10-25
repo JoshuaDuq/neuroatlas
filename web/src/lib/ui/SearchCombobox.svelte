@@ -98,12 +98,14 @@
   });
 
   function move(delta: number) {
+    const current = flat.findIndex((o) => o.value === armed);
     const index = nextEnabledIndex(
       flat.map((o) => o.disabled === true),
-      flat.findIndex((o) => o.value === armed),
+      current,
       delta,
     );
-    if (flat[index]?.value !== armed) void arm(flat[index].value, 'nearest');
+    // With every option disabled nothing is armed and nothing can be (navigator.js:642).
+    if (index !== current) void arm(flat[index].value, 'nearest');
   }
 
   function onkeydown(event: KeyboardEvent) {

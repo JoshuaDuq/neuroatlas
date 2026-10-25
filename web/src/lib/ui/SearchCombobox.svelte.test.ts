@@ -47,6 +47,19 @@ describe('SearchCombobox', () => {
     expect(document.activeElement).toBe(input());
   });
 
+  test('with only disabled options the arrows arm nothing and throw nothing', async () => {
+    render(Fixture, { picks: [] });
+    const errors: unknown[] = [];
+    const record = (event: ErrorEvent) => errors.push(event.error);
+    window.addEventListener('error', record);
+    await type('hippo');
+    await expect.element(page.getByRole('option', { name: 'Hippocampus' })).toBeInTheDocument();
+    await userEvent.keyboard('{ArrowDown}{ArrowUp}{Enter}');
+    window.removeEventListener('error', record);
+    expect(errors).toEqual([]);
+    expect(input().hasAttribute('aria-activedescendant')).toBe(false);
+  });
+
   test('Enter chooses the armed option and leaves the search as typed', async () => {
     const picks: string[] = [];
     render(Fixture, { picks });
