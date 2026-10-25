@@ -9,6 +9,7 @@ import { createCatalogStore } from '../state/catalog.svelte.ts';
 import { createEngineSync } from '../state/engine-sync.svelte.ts';
 import { createLessonStore, createSessionStore } from '../state/session.svelte.ts';
 import { createView } from '../state/view.svelte.ts';
+import type { MoveOptions } from '../engine/api.ts';
 import type { Explorer, Manifest } from '../types/index.ts';
 import { FOCUS_TARGETS, registerFocusTarget } from '../ui/focus.ts';
 import { createAnatomyCommands } from './anatomy.ts';
@@ -31,6 +32,7 @@ function build() {
     ui: Record<'showDetail' | 'revealOnSelect' | 'dismissHelp' | 'showList', () => void>;
     chooseExplorer: ReturnType<typeof vi.fn<(explorer: Explorer) => void>>;
     scene: ReturnType<typeof createSceneCommands>;
+    frameLandmark: ReturnType<typeof vi.fn<(options: MoveOptions) => boolean>>;
   };
   cleanup = $effect.root(() => {
     const engineState = createEngineSync(engine);
@@ -54,6 +56,7 @@ function build() {
     parts.chooseExplorer = vi.fn<(explorer: Explorer) => void>((explorer) => {
       session.setExplorer(explorer);
     });
+    parts.frameLandmark = vi.fn<(options: MoveOptions) => boolean>(() => false);
     parts.scene = createSceneCommands({
       model: engine.model,
       sections: engine.sections,
@@ -62,7 +65,12 @@ function build() {
     });
     parts.anatomy = createAnatomyCommands(
       { engine, engineState, session, lesson, view, catalog, link: undefined as never },
-      { commands: parts.scene, ui: parts.ui, chooseExplorer: parts.chooseExplorer },
+      {
+        commands: parts.scene,
+        ui: parts.ui,
+        chooseExplorer: parts.chooseExplorer,
+        frameLandmark: parts.frameLandmark,
+      },
     );
   });
   flushSync();
@@ -237,6 +245,23 @@ describe('the dissection', () => {
     anatomy.isolateSelection();
     expect(engine.model.settings.isolatedRegion).toBeNull();
     expect(cameraMethods()).toEqual(['frameRegion', 'frameWhole']);
+  });
+
+  test('isolating a lesson landmark frames the landmark as its lesson authored it', () => {
+    const { anatomy, frameLandmark } = build();
+    frameLandmark.mockReturnValue(true);
+    anatomy.selectRegion(SULCUS);
+    anatomy.isolateSelection();
+    expect(frameLandmark).toHaveBeenCalledWith({ immediate: false });
+    expect(cameraMethods()).toEqual([]);
+  });
+
+  test('focusing passes `immediate` to the region and to the landmark', () => {
+    const { anatomy, frameLandmark } = build();
+    anatomy.selectRegion(SULCUS);
+    anatomy.focusSelection({ immediate: true });
+    expect(frameLandmark).toHaveBeenCalledWith({ immediate: true });
+    expect(cameraCalls()[0]!.args).toEqual([SULCUS, { immediate: true }]);
   });
 
   test('isolating with nothing selected fails', () => {

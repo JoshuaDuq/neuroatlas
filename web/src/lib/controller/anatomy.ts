@@ -10,7 +10,7 @@ import {
 import type { InternalEntry } from '../core/state/internal-mode.ts';
 import { publishesSpinalCord } from '../core/state/scene-commands.ts';
 import type { SceneCommands } from '../core/state/scene-commands.ts';
-import { offsetThrough } from '../engine/slices/coordinates.ts';
+import type { MoveOptions, Vec3 } from '../engine/api.ts';
 import type { Explorer } from '../types/index.ts';
 import { FOCUS_TARGETS, requestFocus, rescueFocus } from '../ui/focus.ts';
 import type { AppContext } from './context.ts';
@@ -36,10 +36,13 @@ export function createAnatomyCommands(
     commands,
     ui,
     chooseExplorer,
+    frameLandmark,
   }: {
     commands: SceneCommands;
     ui: SelectionInterface;
     chooseExplorer: (explorer: Explorer) => void;
+    /** Frame the open lesson's landmark as its lesson authored it; false when none is open or it has no drawn mesh. */
+    frameLandmark: (options: MoveOptions) => boolean;
   },
 ) {
   const { model, sections, camera } = engine;
@@ -54,9 +57,10 @@ export function createAnatomyCommands(
   }
 
   /** Frame the selected region from where the camera already is (app.js:516-524). */
-  function focusSelection() {
+  function focusSelection({ immediate = false }: MoveOptions = {}) {
+    if (frameLandmark({ immediate })) return;
     const id = engineState.model.selectedRegion?.id;
-    if (id) camera.frameRegion(id);
+    if (id) camera.frameRegion(id, { immediate });
   }
 
   /**
@@ -128,6 +132,15 @@ export function createAnatomyCommands(
     return requestFocus(FOCUS_TARGETS.dissectionUndo, { fallback: FOCUS_TARGETS.treeStop });
   }
 
+  /** Where a plane with this normal must sit to pass through a point, clamped to the cut's range. */
+  function offsetThrough(point: Vec3, normal: Vec3, [minimum, maximum]: readonly [number, number]) {
+    const offset = point[0] * normal[0] + point[1] * normal[1] + point[2] * normal[2];
+    if (![offset, minimum, maximum].every(Number.isFinite)) {
+      throw new Error('A cut through a point needs finite coordinates and a finite range.');
+    }
+    return Math.min(maximum, Math.max(minimum, offset));
+  }
+
   /** Undo whatever is hiding a region, then select it; false once a later command took over. */
   async function reveal(
     reason: HiddenReason,
@@ -150,8 +163,7 @@ export function createAnatomyCommands(
       await commands.cut('coronal', current);
       const coordinates = model.centroidOf(id);
       if (current() && coordinates && sections.active) {
-        const [x, y, z] = sections.frame.normal;
-        sections.setOffset(offsetThrough(coordinates, { x, y, z }, sections.offsetRange));
+        sections.setOffset(offsetThrough(coordinates, sections.frame.normal, sections.offsetRange));
       }
     }
     if (reason === 'other-detail')
@@ -198,14 +210,13 @@ export function createAnatomyCommands(
       if (!current()) return;
       await commands.loadDetail(model.defaultDetail, current);
       if (!current()) return;
-      model.setInternalSystem(null);
-      model.setCortexVisible(false);
-      await commands.applySurfaceColor('atlas', current);
-      if (!current()) return;
     } catch (error) {
       commands.failIfCurrent(current, 'internal', error);
       return;
     }
+    model.setInternalSystem(null);
+    model.setCortexVisible(false);
+    model.setSurfaceColor('atlas');
     camera.frameInternal();
   }
 
@@ -248,8 +259,7 @@ export function createAnatomyCommands(
       // The other door in must clear the cortex's network legend as well.
       if (!insideInternal(model.settings)) {
         beforeInternal = captureBeforeInternal(model.settings, model.settings.detail);
-        await commands.applySurfaceColor('atlas', current);
-        if (!current()) return;
+        model.setSurfaceColor('atlas');
         model.setCortexVisible(false);
       }
       model.setInternalSystem(system);
