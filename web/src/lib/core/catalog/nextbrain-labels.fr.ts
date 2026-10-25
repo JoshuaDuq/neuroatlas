@@ -1,0 +1,381 @@
+/**
+ * NextBrain structures in French anatomical nomenclature.
+ *
+ * Keyed by `source_name`: the published name with its laterality prefix and its
+ * vestigial `ctx-rh-` fragment removed, so one entry serves both hemispheres.
+ *
+ * Entries are added as they are verified. Anything absent falls back to the
+ * published English name rather than an invented translation, so this table can
+ * be incomplete without being wrong — the same reason HCP-MMP areas keep their
+ * published codes. The group comes from `nextbrain-systems.js`, not from here.
+ */
+export const NEXTBRAIN_LABELS_FR: Record<string, { name: string; aliases?: string[] }> = {
+  // --- Cortex (Desikan-Killiany parcellation) ---
+  bankssts: { name: 'Berges du sillon temporal supérieur' },
+  caudalanteriorcingulate: { name: 'Gyrus cingulaire antérieur caudal' },
+  caudalmiddlefrontal: { name: 'Gyrus frontal moyen caudal' },
+  cuneus: { name: 'Cunéus' },
+  entorhinal: { name: 'Cortex entorhinal' },
+  frontalpole: { name: 'Pôle frontal' },
+  fusiform: { name: 'Gyrus fusiforme', aliases: ['fusiforme'] },
+  inferiorparietal: { name: 'Cortex pariétal inférieur' },
+  inferiortemporal: { name: 'Gyrus temporal inférieur' },
+  insula: { name: 'Insula' },
+  isthmuscingulate: { name: 'Isthme du gyrus cingulaire' },
+  lateraloccipital: { name: 'Cortex occipital latéral' },
+  lateralorbitofrontal: { name: 'Cortex orbito-frontal latéral' },
+  lingual: { name: 'Gyrus lingual' },
+  medialorbitofrontal: { name: 'Cortex orbito-frontal médial' },
+  middletemporal: { name: 'Gyrus temporal moyen' },
+  paracentral: { name: 'Lobule paracentral' },
+  parahippocampal: { name: 'Gyrus parahippocampique' },
+  parsopercularis: {
+    name: 'Partie operculaire du gyrus frontal inférieur',
+    aliases: ['GFI', 'pars opercularis'],
+  },
+  parsorbitalis: {
+    name: 'Partie orbitaire du gyrus frontal inférieur',
+    aliases: ['GFI', 'pars orbitalis'],
+  },
+  parstriangularis: {
+    name: 'Partie triangulaire du gyrus frontal inférieur',
+    aliases: ['GFI', 'pars triangularis'],
+  },
+  pericalcarine: { name: 'Cortex péricalcarin' },
+  postcentral: { name: 'Gyrus postcentral', aliases: ['S1'] },
+  posteriorcingulate: { name: 'Gyrus cingulaire postérieur' },
+  precentral: { name: 'Gyrus précentral', aliases: ['M1'] },
+  precuneus: { name: 'Précunéus' },
+  rostralanteriorcingulate: { name: 'Gyrus cingulaire antérieur rostral' },
+  rostralmiddlefrontal: { name: 'Gyrus frontal moyen rostral' },
+  superiorfrontal: { name: 'Gyrus frontal supérieur' },
+  superiorparietal: { name: 'Lobule pariétal supérieur' },
+  superiortemporal: { name: 'Gyrus temporal supérieur' },
+  supramarginal: { name: 'Gyrus supramarginal' },
+  temporalpole: { name: 'Pôle temporal' },
+  transversetemporal: { name: 'Gyrus temporal transverse', aliases: ['Heschl'] },
+
+  // --- Grandes divisions encéphaliques & voies blanches ---
+  'midbrain_(mesencephalon)': { name: 'Mésencéphale' },
+  pons: { name: 'Pont' },
+  'myelencephalon_(medulla_oblongata)': { name: 'Moelle allongée' },
+  anterior_commissure: { name: 'Commissure antérieure' },
+  optic_chiasm: { name: 'Chiasma optique' },
+  optic_tract: { name: 'Tractus optique' },
+  fornix: { name: 'Fornix' },
+  fimbria: { name: 'Fimbria de l’hippocampe' },
+  septum_pellucidum: { name: 'Septum pellucidum' },
+  pineal_body: { name: 'Corps pinéal' },
+  stria_terminalis: { name: 'Strie terminale' },
+  stria_medullaris_of_thalamus: { name: 'Strie médullaire du thalamus' },
+  mammillothalamic_tract: { name: 'Faisceau mammillo-thalamique' },
+  white_matter_of_forebrain: { name: 'Substance blanche du prosencéphale' },
+  white_matter_of_hindbrain: { name: 'Substance blanche du rhombencéphale' },
+  white_matter_of_the_cerebellum: { name: 'Substance blanche cérébelleuse' },
+  inferior_cerebellar_peduncle: { name: 'Pédoncule cérébelleux inférieur' },
+  'superior_cerebellar_peduncle_(brachium_conjunctivum)': {
+    name: 'Pédoncule cérébelleux supérieur',
+  },
+  lenticular_fasciculus: { name: 'Fascicule lenticulaire' },
+  thalamic_fasciculus: { name: 'Fascicule thalamique' },
+  'fasciculus_retroflexus_(habenuno-interpeduncular_tract)': { name: 'Fascicule rétroflexe' },
+  inferior_thalamic_peduncle: { name: 'Pédoncule thalamique inférieur' },
+  mammillary_peduncle: { name: 'Pédoncule mammillaire' },
+  medial_corticohypothalamic_tract: { name: 'Tractus cortico-hypothalamique médial' },
+
+  // --- Ganglions de la base & tronc cérébral ---
+  putamen: { name: 'Putamen' },
+  posteroventral_putamen: { name: 'Putamen postéro-ventral' },
+  head_of_caudate: { name: 'Tête du noyau caudé' },
+  body_of_caudate: { name: 'Corps du noyau caudé' },
+  tail_of_caudate: { name: 'Queue du noyau caudé' },
+  external_segment_of_globus_pallidus: { name: 'Segment externe du globus pallidus' },
+  internal_segment_of_globus_pallidus: { name: 'Segment interne du globus pallidus' },
+  ventral_pallidus: { name: 'Pallidum ventral' },
+  core_of_nucleus_accumbens: { name: 'Cœur du noyau accumbens' },
+  claustrum: { name: 'Claustrum' },
+  temporal_claustrum: { name: 'Claustrum temporal' },
+  substantia_nigra__compact_part: { name: 'Substance noire, partie compacte' },
+  substantia_nigra__reticular_part: { name: 'Substance noire, partie réticulée' },
+  substantia_innominata: { name: 'Substance innominée' },
+  basal_nucleus_of_meynert: { name: 'Noyau basal de Meynert' },
+  medial_septal_nucleus: { name: 'Noyau septal médial' },
+  red_nucleus: { name: 'Noyau rouge' },
+  ventral_tegmental_area: { name: 'Aire tegmentale ventrale' },
+  periaqueductal_gray_substance: { name: 'Substance grise périaqueducale' },
+  peripeduncular_nucleus: { name: 'Noyau péripédonculaire' },
+  pretectal_region: { name: 'Région prétectale' },
+  zona_incerta: { name: 'Zone incertaine' },
+
+  // --- Cervelet ---
+  'dentate_(lateral)_nucleus': { name: 'Noyau denté' },
+  'fastigial_(medial)_nucleus': { name: 'Noyau fastigial' },
+  'lateral_interpositus_(emboliform)_nucleus': { name: 'Noyau emboliforme' },
+  'medial_interpositus_(globose)_nucleus': { name: 'Noyau globuleux' },
+  inferior_olive__principal_nucleus: { name: 'Olive inférieure, noyau principal' },
+  pontine_nucleus: { name: 'Noyau du pont' },
+  dorsal_raphe_nucleus: { name: 'Noyau dorsal du raphé' },
+  central_nucleus_of_inferior_colliculus: { name: 'Noyau central du colliculus inférieur' },
+  central_gray_of_medulla_oblongata: { name: 'Substance grise centrale de la moelle allongée' },
+
+  // --- Thalamus & Métathalamus ---
+  thalamus: { name: 'Thalamus' },
+  anterodorsal_nucleus_of_thalamus: { name: 'Noyau antéro-dorsal du thalamus' },
+  anteromedial_nucleus_of_thalamus: { name: 'Noyau antéro-médial du thalamus' },
+  anteroventral_nucleus_of_thalamus: { name: 'Noyau antéro-ventral du thalamus' },
+  central_dorsal_nucleus_of_thalamus: { name: 'Noyau centro-dorsal du thalamus' },
+  central_medial_nucleus_of_thalamus: { name: 'Noyau centro-médial du thalamus' },
+  centromedian_nucleus_of_thalamus: { name: 'Noyau centro-médian du thalamus' },
+  lateral_dorsal_nucleus_of_thalamus: { name: 'Noyau latéro-dorsal du thalamus' },
+  lateral_posterior_nucleus_of_thalamus: { name: 'Noyau latéro-postérieur du thalamus' },
+  posterior_nucleus_of_thalamus: { name: 'Noyau postérieur du thalamus' },
+  reticular_nucleus_of_thalamus: { name: 'Noyau réticulaire du thalamus' },
+  parafascicular_nucleus_of_thalamus: { name: 'Noyau parafasciculaire du thalamus' },
+  paraventricular_nucleus: { name: 'Noyau paraventriculaire du thalamus' },
+  parataenial_nucleus_of_thalamus: { name: 'Noyau parataénial du thalamus' },
+  paracentral_nucleus_of_thalamus: { name: 'Noyau paracentral du thalamus' },
+  'rhomboid_(central)_nucleus_of_thalamus': { name: 'Noyau rhomboïde du thalamus' },
+  'reuniens_nucleus_(medioventral_nucleus)_of_thalamus': { name: 'Noyau reuniens du thalamus' },
+  lateral_habenular_nucleus: { name: 'Noyau habénulaire latéral' },
+  dorsal_lateral_geniculate_nucleus: { name: 'Noyau dorsal du corps géniculé latéral' },
+  dorsal_medial_geniculate_nucleus: { name: 'Noyau dorsal du corps géniculé médial' },
+  pulvinar_of_thalamus: { name: 'Pulvinar du thalamus' },
+  anterior_nucleus_of_pulvinar: { name: 'Noyau antérieur du pulvinar' },
+  inferior_nucleus_of_pulvinar: { name: 'Noyau inférieur du pulvinar' },
+  lateral_nucleus_of_pulvinar: { name: 'Noyau latéral du pulvinar' },
+  medial_nucleus_of_pulvinar: { name: 'Noyau médial du pulvinar' },
+  superficial_pulvinar_nucleus: { name: 'Noyau superficiel du pulvinar' },
+  ventral_posterior_medial_nucleus: {
+    name: 'Noyau ventro-postéro-médial du thalamus',
+    aliases: ['VPM'],
+  },
+  ventral_posterior_inferior_nucleus: {
+    name: 'Noyau ventro-postéro-inférieur du thalamus',
+    aliases: ['VPI'],
+  },
+  ventral_medial_nucleus_of_thalamus: { name: 'Noyau ventro-médial du thalamus' },
+  subparafascicular_nucleus_of_thalamus: { name: 'Noyau subparafasciculaire du thalamus' },
+  periventricular_area_of_thalamus: { name: 'Aire périventriculaire du thalamus' },
+  fasciculosus_nucleus_of_thalamus: { name: 'Noyau fasciculaire du thalamus' },
+  intermediodorsal__nucleus_of_thalamus: { name: 'Noyau intermédio-dorsal du thalamus' },
+  diffuse_pulvinar_nucleus: { name: 'Noyau diffus du pulvinar' },
+  limitans_nucleus: { name: 'Noyau limitant' },
+
+  // Subdivisions thalamiques & sous-thalamus
+  caudal_division_of_ventral_posterior_lateral_nucleus: {
+    name: 'Division caudale du noyau ventro-postéro-latéral',
+  },
+  rostral_division_of_ventral_posterior_lateral_nucleus: {
+    name: 'Division rostrale du noyau ventro-postéro-latéral',
+  },
+  central_part_of_medial_division_of_md: {
+    name: 'Partie centrale de la division médiale du noyau médiodorsal',
+  },
+  'densocelllular_(paralamellar)_division_of_md': {
+    name: 'Division densocellulaire (paralamellaire) du noyau médiodorsal',
+  },
+  'magnocellular_(medial)_division_of_md': {
+    name: 'Division magnocellulaire (médiale) du noyau médiodorsal',
+  },
+  'multiform_(lateral)_division_of_md': {
+    name: 'Division multiforme (latérale) du noyau médiodorsal',
+  },
+  'parvocellular_(central)_division_of_md': {
+    name: 'Division parvocellulaire (centrale) du noyau médiodorsal',
+  },
+  dorsal_division_of_central_lateral_nucleus: { name: 'Division dorsale du noyau centro-latéral' },
+  lateral_division_of_central_lateral_nucleus: {
+    name: 'Division latérale du noyau centro-latéral',
+  },
+  lateral_division_of_centromedian_nucleus_of_thalamus: {
+    name: 'Division latérale du noyau centro-médian',
+  },
+  medial_division_of_centromedian_nucleus_of_thalamus: {
+    name: 'Division médiale du noyau centro-médian',
+  },
+  dorsal_subdivision_of_vlc: { name: 'Subdivision dorsale du noyau ventro-latéral caudal (VLc)' },
+  'medial_subdivision_of_vlc_(area_x)': {
+    name: 'Subdivision médiale du noyau ventro-latéral caudal (aire X)',
+  },
+  ventral_subdivision_of_vlc: { name: 'Subdivision ventrale du noyau ventro-latéral caudal (VLc)' },
+  rostral_division_of_vl: { name: 'Division rostrale du noyau ventro-latéral (VLo)' },
+  magnocellular_division_of_va: {
+    name: 'Division magnocellulaire du noyau ventro-antérieur (VAmc)',
+  },
+  parvocellular_division_of_va: {
+    name: 'Division parvocellulaire du noyau ventro-antérieur (VApc)',
+  },
+  parvocellular_division_of_vpm: {
+    name: 'Division parvocellulaire du noyau ventro-postéro-médial (VPMpc)',
+  },
+  magnocellular_division_of_reticular_nucleus: {
+    name: 'Division magnocellulaire du noyau réticulaire',
+  },
+  'parvocellular_division_of_reticular_nucleus_(perireticular_nucleus)': {
+    name: 'Division parvocellulaire du noyau réticulaire (noyau périréticulaire)',
+  },
+  nucleus_of_the_field_of_forel: { name: 'Noyau du champ de Forel' },
+  laterodorsal_portion_of_sth: { name: 'Portion latéro-dorsale du noyau subthalamique' },
+  lateroventral_portion_of_sth: { name: 'Portion latéro-ventrale du noyau subthalamique' },
+  medial_portion_of_sth: { name: 'Portion médiale du noyau subthalamique' },
+
+  // --- Hypothalamus ---
+  anterior_hypothalamic_nucleus: { name: 'Noyau hypothalamique antérieur' },
+  dorsomedial_hypothalamic_nucleus: { name: 'Noyau hypothalamique dorso-médial' },
+  posterior_hypothalamic_nucleus: { name: 'Noyau hypothalamique postérieur' },
+  arcuate_nucleus_of_hypothalamus: { name: 'Noyau arqué de l’hypothalamus' },
+  paraventricular_nucleus_of_hypothalamus: { name: 'Noyau paraventriculaire de l’hypothalamus' },
+  supraoptic_nucleus: { name: 'Noyau supra-optique' },
+  supramammillary_nucleus: { name: 'Noyau supra-mammillaire' },
+  tuberomammillary_nucleus: { name: 'Noyau tubéro-mammillaire' },
+  lateral_mammillary_nucleus: { name: 'Noyau mammillaire latéral' },
+  medial_preoptic_nucleus: { name: 'Noyau préoptique médial' },
+  median_preoptic_nucleus: { name: 'Noyau préoptique médian' },
+  lateral_preoptic_area: { name: 'Aire préoptique latérale' },
+  preoptic_region_of_hth: { name: 'Région préoptique de l’hypothalamus' },
+  supraoptic_region_of_hth: { name: 'Région supra-optique de l’hypothalamus' },
+  lateral_tuberal_nuclei: { name: 'Noyaux tubéraux latéraux' },
+  infundibular_stalk: { name: 'Tige infundibulaire' },
+  pallidohypothalamic_area: { name: 'Aire pallido-hypothalamique' },
+  periventricular_nucleus__supraoptic_portion: {
+    name: 'Noyau périventriculaire (portion supra-optique)',
+  },
+  periventricular_nucleus__tuberal_portion: { name: 'Noyau périventriculaire (portion tubérale)' },
+  central_part_of_ventromedial_hypothalamic_nucleus: {
+    name: 'Partie centrale du noyau hypothalamique ventro-médial',
+  },
+  dorsal_part_of_ventromedial_hypothalamic_nucleus: {
+    name: 'Partie dorsale du noyau hypothalamique ventro-médial',
+  },
+  ventral_part_of_ventromedial_hypothalamic_nucleus: {
+    name: 'Partie ventrale du noyau hypothalamique ventro-médial',
+  },
+  juxtaparaventricular_lateral_hypothalamic_area: {
+    name: 'Aire hypothalamique latérale juxtaparaventriculaire',
+  },
+  lateral__hypothalamic_area__posterior_part: {
+    name: 'Aire hypothalamique latérale (partie postérieure)',
+  },
+  lateral_hypothalamic_area__tuberal_part: {
+    name: 'Aire hypothalamique latérale (partie tubérale)',
+  },
+  basal_division_of_medial_mammillary_nucleus: {
+    name: 'Division basale du noyau mammillaire médial',
+  },
+  lateral_part_of_medial_mammillary_nucleus: {
+    name: 'Partie latérale du noyau mammillaire médial',
+  },
+  medial_part_of_medial_mammillary_nucleus: { name: 'Partie médiale du noyau mammillaire médial' },
+  supraoptic_dicussation: { name: 'Décussation supra-optique' },
+
+  // --- Amygdale & Région olfactive ---
+  amygdaloid_complex: { name: 'Complexe amygdalien' },
+  anterior_amygdaloid_area: { name: 'Aire amygdalienne antérieure' },
+  lateral_nucleus: { name: 'Noyau latéral de l’amygdale' },
+  'basolateral_nucleus_(basal_nucleus)': { name: 'Noyau baso-latéral de l’amygdale' },
+  'amygdalocortical_(corticoamygdaloid)_transition_area': {
+    name: 'Aire de transition amygdalo-corticale',
+  },
+  amygdalohippocampal_area: { name: 'Aire amygdalo-hippocampique' },
+  amygdalohippocampal_transition_area: { name: 'Aire de transition amygdalo-hippocampique' },
+  amygdalostriatal_transition_area: { name: 'Aire de transition amygdalo-striée' },
+  paralaminar_nucleus: { name: 'Noyau paralaminaire de l’amygdale' },
+  ventral_division_of_basomedial_nucleus: {
+    name: 'Division ventrale du noyau baso-médial de l’amygdale',
+  },
+  ventral_subdivision_of_coa: { name: 'Subdivision ventrale du cortex amygdalien antérieur' },
+  lateral_subdivision_of_central_nucleus: {
+    name: 'Subdivision latérale du noyau central de l’amygdale',
+  },
+  medial_subdivision_of_central_nucleus: {
+    name: 'Subdivision médiale du noyau central de l’amygdale',
+  },
+  rostral_subdivision_of_medial_nucleus: {
+    name: 'Subdivision rostrale du noyau médial de l’amygdale',
+  },
+  anterior_olfactory_nucleus: { name: 'Noyau olfactif antérieur' },
+  lateral_olfactory_stria: { name: 'Strie olfactive latérale' },
+  lateral_olfactory_area: { name: 'Aire olfactive latérale' },
+  layer_iii_of_piriform_cortex: { name: 'Couche III du cortex piriforme' },
+  diagonal_band: { name: 'Bandelette diagonale de Broca' },
+  bed_nucleus_of_stria_terminalis: {
+    name: 'Noyau du lit de la strie terminale',
+    aliases: ['BNST'],
+  },
+
+  // --- Hippocampe & Subiculum ---
+  alveus: { name: 'Alvéus de l’hippocampe' },
+  rostral_subiculum: { name: 'Subiculum rostral' },
+  caudal_subiculum: { name: 'Subiculum caudal' },
+  uncal_subiculum: { name: 'Subiculum uncal' },
+
+  // Gyrus denté
+  granular_layer_of_caudal_dentate_gyrus: { name: 'Couche granulaire du gyrus denté caudal' },
+  granular_layer_of_rostral_dentate_gyrus: { name: 'Couche granulaire du gyrus denté rostral' },
+  molecular_layer_of_caudal_dentate_gyrus: { name: 'Couche moléculaire du gyrus denté caudal' },
+  molecular_layer_of_rostral_dentate_gyrus: { name: 'Couche moléculaire du gyrus denté rostral' },
+  molecular_layer_of_uncal_dentate_gyrus: { name: 'Couche moléculaire du gyrus denté uncal' },
+  polyform_layer_of_caudal_dentate_gyrus: { name: 'Couche polymorphe du gyrus denté caudal' },
+  polyform_layer_of_rostral_dentate_gyrus: { name: 'Couche polymorphe du gyrus denté rostral' },
+  polyform_layer_of_uncal_dentate_gyrus: { name: 'Couche polymorphe du gyrus denté uncal' },
+
+  // Secteur CA4
+  pyramidal_cells_of_caudal_ca4: { name: 'Cellules pyramidales de CA4 caudal' },
+  pyramidal_cells_of_rostral_ca4: { name: 'Cellules pyramidales de CA4 rostral' },
+  pyramidal_cells_of_uncal_ca4: { name: 'Cellules pyramidales de CA4 uncal' },
+
+  // Strates de la corne d’Ammon (CA1, CA2, CA3)
+  'stratum_lacunosum-moleculare_of_caudal_ca1': {
+    name: 'Stratum lacunosum-moleculare de CA1 caudal',
+  },
+  'stratum_lacunosum-moleculare_of_caudal_ca2': {
+    name: 'Stratum lacunosum-moleculare de CA2 caudal',
+  },
+  'stratum_lacunosum-moleculare_of_caudal_ca3': {
+    name: 'Stratum lacunosum-moleculare de CA3 caudal',
+  },
+  'stratum_lacunosum-moleculare_of_rostral_ca1': {
+    name: 'Stratum lacunosum-moleculare de CA1 rostral',
+  },
+  'stratum_lacunosum-moleculare_of_rostral_ca2': {
+    name: 'Stratum lacunosum-moleculare de CA2 rostral',
+  },
+  'stratum_lacunosum-moleculare_of_rostral_ca3': {
+    name: 'Stratum lacunosum-moleculare de CA3 rostral',
+  },
+  'stratum_lacunosum-moleculare_of_uncal_ca1': {
+    name: 'Stratum lacunosum-moleculare de CA1 uncal',
+  },
+  'stratum_lacunosum-moleculare_of_uncal_ca2': {
+    name: 'Stratum lacunosum-moleculare de CA2 uncal',
+  },
+  'stratum_lacunosum-moleculare_of_uncal_ca3': {
+    name: 'Stratum lacunosum-moleculare de CA3 uncal',
+  },
+  stratum_lucidum__of_caudal_ca3: { name: 'Stratum lucidum de CA3 caudal' },
+  stratum_lucidum__of_rostral_ca3: { name: 'Stratum lucidum de CA3 rostral' },
+  stratum_lucidum__of_uncal_ca3: { name: 'Stratum lucidum de CA3 uncal' },
+  stratum_oriens_of_caudal_ca1: { name: 'Stratum oriens de CA1 caudal' },
+  stratum_oriens_of_caudal_ca3: { name: 'Stratum oriens de CA3 caudal' },
+  stratum_oriens_of_rostral_ca1: { name: 'Stratum oriens de CA1 rostral' },
+  stratum_oriens_of_rostral_ca2: { name: 'Stratum oriens de CA2 rostral' },
+  stratum_oriens_of_rostral_ca3: { name: 'Stratum oriens de CA3 rostral' },
+  stratum_oriens_of_uncal_ca1: { name: 'Stratum oriens de CA1 uncal' },
+  stratum_oriens_of_uncal_ca2: { name: 'Stratum oriens de CA2 uncal' },
+  stratum_oriens_of_uncal_ca3: { name: 'Stratum oriens de CA3 uncal' },
+  stratum_pyramidale_of_caudal_ca1: { name: 'Stratum pyramidale de CA1 caudal' },
+  stratum_pyramidale_of_caudal_ca2: { name: 'Stratum pyramidale de CA2 caudal' },
+  stratum_pyramidale_of_caudal_ca3: { name: 'Stratum pyramidale de CA3 caudal' },
+  stratum_pyramidale_of_rostral_ca1: { name: 'Stratum pyramidale de CA1 rostral' },
+  stratum_pyramidale_of_rostral_ca2: { name: 'Stratum pyramidale de CA2 rostral' },
+  stratum_pyramidale_of_rostral_ca3: { name: 'Stratum pyramidale de CA3 rostral' },
+  stratum_pyramidale_of_uncal_ca1: { name: 'Stratum pyramidale de CA1 uncal' },
+  stratum_pyramidale_of_uncal_ca2: { name: 'Stratum pyramidale de CA2 uncal' },
+  stratum_pyramidale_of_uncal_ca3: { name: 'Stratum pyramidale de CA3 uncal' },
+  stratum_radiatum_of_caudal_ca1: { name: 'Stratum radiatum de CA1 caudal' },
+  stratum_radiatum_of_caudal_ca2: { name: 'Stratum radiatum de CA2 caudal' },
+  stratum_radiatum_of_rostral_ca1: { name: 'Stratum radiatum de CA1 rostral' },
+  stratum_radiatum_of_rostral_ca2: { name: 'Stratum radiatum de CA2 rostral' },
+  stratum_radiatum_of_uncal_ca1: { name: 'Stratum radiatum de CA1 uncal' },
+  stratum_radiatum_of_uncal_ca2: { name: 'Stratum radiatum de CA2 uncal' },
+};
