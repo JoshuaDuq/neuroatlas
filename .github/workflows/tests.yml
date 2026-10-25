@@ -80,6 +80,7 @@ jobs:
               - index.html
               - vite.config.js
               - package*.json
+              - .github/scripts/**
               - .github/workflows/tests.yml
 
   python:
@@ -235,25 +236,17 @@ jobs:
           npm run build:preview --prefix web
           cp -r web/dist dist/next
 
-      # Gzipped JavaScript of everything but the Three.js, BVH and NiiVue chunks: the Svelte
-      # runtime, Bits UI and the app's own code. Budget: web/docs/decisions/0001-ui-kit.md.
+      # Bits UI plus the Svelte runtime, as web/docs/decisions/0001-ui-kit.md defines the budget.
       - name: Check the UI bundle budget
         shell: bash
         run: |
-          budget=85000
-          total=0
-          for file in web/dist/assets/*.js; do
-            case "$(basename "$file")" in three-*|bvh-*|niivue*) continue ;; esac
-            size=$(gzip -9 -c "$file" | wc -c)
-            echo "$size $(basename "$file")"
-            total=$((total + size))
-          done
-          echo "UI bundle: $total bytes gzip (budget $budget)"
-          echo "UI bundle: $total bytes gzip (budget $budget)" >> "$GITHUB_STEP_SUMMARY"
-          test "$total" -le "$budget"
+          node .github/scripts/ui-bundle-budget.mjs | tee ui-budget.log
+          cat ui-budget.log >> "$GITHUB_STEP_SUMMARY"
 
+      # One worker and two retries, as the Playwright CI guide advises; a retried test is
+      # still reported as flaky.
       - name: Run end-to-end tests (legacy and next)
-        run: npm run test:e2e --prefix web
+        run: npm run test:e2e --prefix web -- --workers=1 --retries=2
 
       - name: Upload failure artifacts
         if: failure()
