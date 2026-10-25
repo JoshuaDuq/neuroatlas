@@ -10,34 +10,101 @@ permissions:
   contents: read
 
 jobs:
-  python:
+  # The Python suite and the anatomy validation take minutes, so they run only
+  # when something they read has changed. A job skipped by its `if` reports success.
+  changes:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    outputs:
+      python: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.python == 'true' }}
+      validate: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.validate == 'true' }}
+    steps:
+      # Commits and trees only: enough to list changed paths without the 400 MB of assets.
+      - name: Checkout repository history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          sparse-checkout: .github
+
+      # On main, compare against the last commit that deployed, so a push after a
+      # failed run is still checked for everything that has not passed since.
+      # A manual run, or one with no deployed commit to compare against, runs everything.
+      - name: Find the last deployed commit
+        id: base
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy.yml --branch main \
+            --status success --limit 1 --json headSha --jq '.[0].headSha // empty')
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch || -z "$sha" ]]; then
+            echo "full=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pull requests are compared with their base branch through the API.
+      - name: Detect changed paths
+        id: filter
+        if: steps.base.outputs.full != 'true'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          base: ${{ steps.base.outputs.sha }}
+          filters: |
+            validate: &validate
+              - brain_model/**
+              - config/**
+              - data/**
+              - public/**
+              - pyproject.toml
+              - uv.lock
+              - .github/workflows/tests.yml
+            python:
+              - *validate
+              - tests/**
+              - scripts/**/*.py
+
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           python-version: "3.12"
 
       - name: Install dependencies
         run: uv sync --locked
 
+      # One worker per runner core; every test writes only under its own tmp_path.
+      # Work stealing keeps the few 10-25 s NextBrain tests from piling onto one worker.
       - name: Run Python tests
-        run: uv run pytest
+        run: uv run pytest -n auto --dist worksteal
 
   validate:
+    needs: changes
+    if: needs.changes.outputs.validate == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
         anatomy: [cdmd]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           python-version: "3.12"
 
@@ -50,12 +117,13 @@ jobs:
 
   node:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
