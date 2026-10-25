@@ -12,6 +12,7 @@ from brain_model.labels.volumes import (
     load_on_grid,
     validate_same_grid,
 )
+from brain_model.sources import read_config
 from tests.support import read_published
 
 
@@ -119,25 +120,38 @@ def test_segmentation_cannot_be_silently_truncated(tmp_path):
         encode_volume(image, tmp_path / "labels.bin.gz", np.dtype("<u2"))
 
 
-def test_actual_source_round_trip(tmp_path):
-    from brain_model.sources import read_config
+@pytest.fixture(scope="module")
+def published(tmp_path_factory):
+    """Exports an anatomy's volumes once for the tests that only read them."""
+    exported = {}
 
-    config = read_config()
-    config["output_directory"] = tmp_path
-    records = export_volumes(config)
+    def export(anatomy=None):
+        config = read_config(anatomy)
+        key = config["anatomy"]["id"]
+        if key not in exported:
+            config["output_directory"] = tmp_path_factory.mktemp(key)
+            exported[key] = config, export_volumes(config)
+        return exported[key]
+
+    return export
+
+
+def test_actual_source_round_trip(published):
+    config, records = published()
     for name, source in [("mri", "orig"), ("segmentation", "aseg")]:
         record = records[name]
         image = nib.load(config["source_directory"] / "mri" / f"{source}.mgz")
         # A label grid is published cropped to what it labels, so reading it
         # back means placing it where its affine says it came from.
-        restored = read_published(record, tmp_path / record["file"], image.shape)
+        restored = read_published(
+            record, config["output_directory"] / record["file"], image.shape
+        )
         np.testing.assert_array_equal(restored, np.asarray(image.dataobj))
 
 
 def test_validation_rejects_an_affine_shift_even_when_payload_is_intact(tmp_path):
     import json
 
-    from brain_model.sources import read_config
     from brain_model.validate_volumes import validate_volumes
 
     config = read_config()
@@ -158,32 +172,25 @@ def displayed_signal(config):
     return mri[labels != 0]
 
 
-def published_window(anatomy, output):
-    from brain_model.sources import read_config
-
-    config = read_config(anatomy)
-    config["output_directory"] = output
-    return config, export_volumes(config)["display"]
-
-
 @pytest.mark.parametrize("anatomy", ["cdmd"])
-def test_published_window_does_not_clip_the_measured_signal(anatomy, tmp_path):
-    config, display = published_window(anatomy, tmp_path)
+def test_published_window_does_not_clip_the_measured_signal(anatomy, published):
+    config, records = published(anatomy)
+    display = records["display"]
     high = display["window_center"] + display["window_width"] / 2
     assert (displayed_signal(config) >= high).mean() < 0.005
 
 
 @pytest.mark.parametrize("anatomy", ["cdmd"])
-def test_published_window_maps_signal_to_grey_proportionally(anatomy, tmp_path):
+def test_published_window_maps_signal_to_grey_proportionally(anatomy, published):
     # Floor at zero, so a tissue twice as bright on T1 is twice as bright on
     # screen. A raised floor would add an offset and break that on every
     # surface and cut face at once.
-    _, display = published_window(anatomy, tmp_path)
+    display = published(anatomy)[1]["display"]
     assert display["window_center"] - display["window_width"] / 2 == 0
 
 
-def test_window_follows_the_subject_rather_than_the_configuration(tmp_path):
+def test_window_follows_the_subject_rather_than_the_configuration(published):
     # orig.mgz is not intensity normalised, so one constant cannot serve two scans.
-    _, template = published_window("fsaverage", tmp_path / "fsaverage")
-    _, cdmd = published_window("cdmd", tmp_path / "cdmd")
+    template = published("fsaverage")[1]["display"]
+    cdmd = published("cdmd")[1]["display"]
     assert template["window_width"] != cdmd["window_width"]

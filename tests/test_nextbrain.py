@@ -1,5 +1,6 @@
 import gzip
 import hashlib
+import shutil
 
 import nibabel as nib
 import numpy as np
@@ -16,6 +17,22 @@ def config(tmp_path):
     config = read_config()
     config["output_directory"] = tmp_path
     return config
+
+
+@pytest.fixture(scope="module")
+def published(tmp_path_factory):
+    """This brain's grid, regions and cut volume, built once for the tests that read them.
+
+    The grid's labels are frozen, so a test that changed them would fail rather
+    than skew the tests after it.
+    """
+    config = read_config()
+    config["output_directory"] = tmp_path_factory.mktemp("models")
+    grid, _ = nextbrain.load(config)
+    grid.labels.flags.writeable = False
+    regions = nextbrain.build_regions(config)
+    record = nextbrain.export_atlas(config, regions)
+    return config, grid, regions, record
 
 
 def on_grid(config, labels):
@@ -135,10 +152,8 @@ def test_the_block_is_whole_source_voxels_nearest_the_cut_spacing():
     assert nextbrain.cut_block(grid(1.0), 0.8) == 1
 
 
-def test_published_cut_labels_are_the_source_block_majorities(config):
-    grid, _ = nextbrain.load(config)
-    regions = nextbrain.build_regions(config)
-    record = nextbrain.export_atlas(config, regions)
+def test_published_cut_labels_are_the_source_block_majorities(published):
+    config, grid, _, record = published
     coarse, block = nextbrain.cut_grid(grid, config["nextbrain"]["cut_label_spacing_mm"])
 
     codes = read_published(
@@ -157,9 +172,12 @@ def test_published_cut_labels_are_the_source_block_majorities(config):
     assert nextbrain.validate_volume(config, record, grid)["every_block_is_its_majority"]
 
 
-def test_validation_refuses_a_cut_block_that_lost_its_majority(config):
-    record = nextbrain.export_atlas(config, nextbrain.build_regions(config))
-    path = config["output_directory"] / record["file"]
+def test_validation_refuses_a_cut_block_that_lost_its_majority(published, tmp_path):
+    config, _, _, record = published
+    # Damaged in a copy, so the shared cut volume stays as it was published.
+    path = tmp_path / record["file"]
+    shutil.copyfile(config["output_directory"] / record["file"], path)
+    config, record = {**config, "output_directory": tmp_path}, dict(record)
     codes = np.frombuffer(gzip.decompress(path.read_bytes()), record["dtype"]).copy()
     # A block inside one structure, so clearing it cannot leave background tied.
     grid = codes.reshape(record["shape"], order="F")
@@ -176,25 +194,25 @@ def test_validation_refuses_a_cut_block_that_lost_its_majority(config):
         nextbrain.validate_volume(config, record, nextbrain.load(config)[0])
 
 
-def test_every_cut_label_resolves_to_a_published_region(config):
-    regions = nextbrain.build_regions(config)
-    record = nextbrain.export_atlas(config, regions)
-    published = {region["id"] for region in regions}
+def test_every_cut_label_resolves_to_a_published_region(published):
+    _, _, regions, record = published
+    region_ids = {region["id"] for region in regions}
     for label in record["labels"]:
         if label["source_label_id"] == nextbrain.BACKGROUND:
             assert label["region_id"] is None
         else:
-            assert label["region_id"] in published
+            assert label["region_id"] in region_ids
 
 
-def test_regions_cover_only_delineated_rois_and_measure_what_they_contain(config):
-    grid, _ = nextbrain.load(config)
-    regions = nextbrain.build_regions(config)
+def test_regions_cover_only_delineated_rois_and_measure_what_they_contain(published):
+    _, grid, regions, _ = published
     present = set(np.unique(grid.labels).tolist()) - {nextbrain.BACKGROUND}
+    # Counted by bincount, not the np.unique the regions were measured with.
+    counts = np.bincount(grid.labels.ravel())
 
     assert {region["source_label_id"] for region in regions} == present
     for region in regions:
-        count = int(np.count_nonzero(grid.labels == region["source_label_id"]))
+        count = int(counts[region["source_label_id"]])
         assert region["voxel_count"] == count
         assert region["segmentation_volume_mm3"] == pytest.approx(
             count * grid.voxel_volume_mm3
@@ -204,7 +222,7 @@ def test_regions_cover_only_delineated_rois_and_measure_what_they_contain(config
         assert "vertex_count" not in region
 
 
-def test_cortical_cut_parcels_carry_network_composition(config):
+def test_cortical_cut_parcels_carry_network_composition(published):
     """Yeo membership is measured on the surface; NextBrain cortex is a volume.
 
     The cut can only paint one colour per parcel, so each cortical ROI reports
@@ -214,8 +232,9 @@ def test_cortical_cut_parcels_carry_network_composition(config):
     """
     from brain_model.layers import networks as yeo
 
+    config, _, regions, _ = published
     assert yeo.is_declared(config)
-    regions = {region["id"]: region for region in nextbrain.build_regions(config)}
+    regions = {region["id"]: region for region in regions}
     cortex = [
         region for region in regions.values()
         if "ctx-" in region["source_published_name"]
@@ -227,14 +246,14 @@ def test_cortical_cut_parcels_carry_network_composition(config):
     assert "networks" not in regions["nextbrain:left:48"]
 
 
-def test_pericalcarine_cortex_is_visual(config):
-    regions = {region["id"]: region for region in nextbrain.build_regions(config)}
+def test_pericalcarine_cortex_is_visual(published):
+    regions = {region["id"]: region for region in published[2]}
     assert regions["nextbrain:left:2021"]["networks"][0]["network"] == "Vis"
 
 
-def test_hemisphere_comes_from_the_index_not_the_published_name(config):
+def test_hemisphere_comes_from_the_index_not_the_published_name(published):
     """NextBrain names every cortical parcel `ctx-rh-` on both sides."""
-    regions = {region["id"]: region for region in nextbrain.build_regions(config)}
+    regions = {region["id"]: region for region in published[2]}
     left = regions["nextbrain:left:2035"]
     right = regions["nextbrain:right:12035"]
 
@@ -247,8 +266,9 @@ def test_hemisphere_comes_from_the_index_not_the_published_name(config):
     assert right["hemisphere"] == "right"
 
 
-def test_a_cut_label_without_a_published_region_is_a_build_error(config):
-    regions = nextbrain.build_regions(config)
+def test_a_cut_label_without_a_published_region_is_a_build_error(published):
+    # Refused before anything is written, so the shared cut volume is untouched.
+    config, _, regions, _ = published
     with pytest.raises(ValueError, match="Cut label has no published region"):
         nextbrain.export_atlas(config, regions[1:])
 

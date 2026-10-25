@@ -108,16 +108,23 @@ def test_hcp_projection_checks_the_actual_segmentation_grid(small_ribbon_subject
         export_tissue_labels(config, manifest)
 
 
-def test_published_anatomical_labels_survive_transport_and_match_region_names(tmp_path):
+@pytest.fixture(scope="module")
+def exported(tmp_path_factory):
+    """This brain's cut volumes, exported once for the tests that read them."""
     config = read_config()
     manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
-    config["output_directory"] = tmp_path
-    meta = export_tissue_labels(config, manifest)
+    config["output_directory"] = tmp_path_factory.mktemp("models")
+    return config, manifest, export_tissue_labels(config, manifest)
+
+
+def test_published_anatomical_labels_survive_transport_and_match_region_names(exported):
+    config, manifest, meta = exported
+    output = config["output_directory"]
     source = np.asarray(
         nib.load(config["source_directory"] / "mri/aparc.a2009s+aseg.mgz").dataobj
     )
     record = meta["atlases"]["destrieux"]
-    codes = read_published(record, tmp_path / record["file"], source.shape)
+    codes = read_published(record, output / record["file"], source.shape)
     lut = np.array([label["source_label_id"] for label in record["labels"]])
     np.testing.assert_array_equal(lut[codes], source)
     image = nib.load(config["source_directory"] / "mri/aparc.a2009s+aseg.mgz")
@@ -127,10 +134,10 @@ def test_published_anatomical_labels_survive_transport_and_match_region_names(tm
         record["voxel_to_surface_ras_mm"],
         image.header.get_vox2ras_tkr() @ offset_by(record["crop_corner_voxel"]),
     )
-    payload = gzip.decompress((tmp_path / record["file"]).read_bytes())
+    payload = gzip.decompress((output / record["file"]).read_bytes())
     assert hashlib.sha256(payload).hexdigest() == record["decoded_sha256"]
     assert (
-        hashlib.sha256((tmp_path / record["file"]).read_bytes()).hexdigest()
+        hashlib.sha256((output / record["file"]).read_bytes()).hexdigest()
         == record["sha256"]
     )
     regions = {region["id"]: region for region in manifest["regions"]}
@@ -144,16 +151,14 @@ def test_published_anatomical_labels_survive_transport_and_match_region_names(tm
             )
 
 
-def test_hcp_projection_never_relabels_white_matter_or_deep_structures(tmp_path):
-    config = read_config()
-    manifest = json.loads((config["output_directory"] / "manifest.json").read_text())
-    config["output_directory"] = tmp_path
-    meta = export_tissue_labels(config, manifest)
+def test_hcp_projection_never_relabels_white_matter_or_deep_structures(exported):
+    config, _, meta = exported
+    output = config["output_directory"]
     source = np.asarray(
         nib.load(config["source_directory"] / "mri/aparc.a2009s+aseg.mgz").dataobj
     )
     record = meta["atlases"]["hcp-mmp"]
-    data = read_published(record, tmp_path / record["file"], source.shape)
+    data = read_published(record, output / record["file"], source.shape)
     cortex = source >= 11100
     assert all(
         record["labels"][code]["kind"] != "cortex" for code in np.unique(data[~cortex])
