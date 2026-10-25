@@ -1,0 +1,44 @@
+/*
+ * Reduced motion, increased contrast and forced colours that apply to every surface. The layer is last,
+ * so no component rule can undo a rule these readers depend on. Component-specific rules live in the
+ * component's own <style>, in `@layer a11y`.
+ */
+@layer a11y {
+  /* Reduced motion: fades and colour changes stay; nothing travels, grows, turns or loops. */
+  @media (prefers-reduced-motion: reduce) {
+    /* A disclosure chevron points the new way at once. */
+    details > summary::before {
+      transition: none;
+    }
+  }
+
+  /* Increased contrast */
+  @media (prefers-contrast: more) {
+    :root,
+    :root[data-theme='dark'] {
+      --text-tertiary: var(--text-secondary);
+      --border-control: var(--text-primary);
+      --border-subtle: var(--border-control);
+      --thumb-ring: var(--text-primary);
+      --overlay-ink-muted: var(--overlay-ink);
+      --overlay-halo: rgb(6 9 13 / 0.95);
+      --overlay-plate: #0c0d0f;
+      --overlay-plate-hover: #1e2024;
+      --overlay-border: var(--overlay-ink);
+      --overlay-ink-faint: var(--overlay-ink);
+      --overlay-control-border: var(--overlay-ink);
+    }
+  }
+
+  /* Forced colours */
+  @media (forced-colors: active) {
+    button,
+    input,
+    select {
+      border-color: CanvasText;
+    }
+    :focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
