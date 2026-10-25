@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import type { Manifest } from '../../types/index.ts';

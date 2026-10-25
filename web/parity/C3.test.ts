@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { describe, test } from 'vitest';
+import { isDeepStrictEqual, inspect } from 'node:util';
+import { describe as vitestDescribe, test as vitestTest } from 'vitest';
 import {
   FINDING_COLORS as legacyFindingColors,
   createClinicalCatalog as legacyClinical,
@@ -36,26 +37,86 @@ import type { CircuitData } from '../src/lib/core/learning/catalog.ts';
 import { createCircuitSession } from '../src/lib/core/learning/session.ts';
 import type { Manifest } from '../src/lib/types/index.ts';
 
+/**
+ * Every parity case is registered by its full name and runs once, whichever test asks first: the
+ * branch suite at the end runs them all itself, so `-t` on any single test still works.
+ */
+const cases = new Map<string, () => void>();
+const outcomes = new Map<string, unknown>();
+let prefix = '';
+let caseName = '';
+function describe(name: string, define: () => void) {
+  // Vitest runs the callback later, while collecting, so the prefix is set around the call itself.
+  vitestDescribe(name, () => {
+    const outer = prefix;
+    prefix = `${outer}${name} > `;
+    define();
+    prefix = outer;
+  });
+}
+function runCase(key: string) {
+  if (!outcomes.has(key)) {
+    caseName = key;
+    try {
+      cases.get(key)!();
+      outcomes.set(key, null);
+    } catch (error) {
+      outcomes.set(key, error);
+    }
+  }
+  if (outcomes.get(key)) throw outcomes.get(key);
+}
+function test(name: string, run: () => void) {
+  const key = `${prefix}${name}`;
+  cases.set(key, run);
+  vitestTest(name, () => runCase(key));
+}
+
 /** mulberry32: a seeded PRNG, so every run draws the same corpus. */
 function prng(seed: number) {
   let state = seed >>> 0;
-  return () => {
+  const rand = () => {
     state = (state + 0x6d2b79f5) >>> 0;
     let t = state;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+  return Object.assign(rand, { seed });
 }
-type Rand = () => number;
+type Rand = (() => number) & { seed?: number };
 const below = (rand: Rand, n: number) => Math.floor(rand() * n);
 const pick = <T>(rand: Rand, items: readonly T[]): T => items[below(rand, items.length)];
-/** The next item in turn: consecutive calls (one per seed) walk the whole list, so no variant is left to chance. */
-let turn = 0;
-const cycle = <T>(items: readonly T[]): T => items[turn++ % items.length];
+/** The item for this seed: seeds 1..n walk a list of n variants, so no variant is left to chance. */
+const cycle = <T>(rand: Rand, items: readonly T[]): T => items[(rand.seed! - 1) % items.length];
 
 /** What a call returned, or the error it threw, so both implementations are compared on either. */
 const reached = new Set<string>();
+
+/**
+ * deepStrictEqual that names the first item that differs and prints only a short excerpt of each
+ * side: node:assert builds a full diff of its operands, which for a whole catalog observation
+ * exhausts memory. Outcome kind (value or error) and message come before the contents.
+ */
+function expectSame(actual: unknown, expected: unknown, label = 'result', depth = 0): void {
+  if (isDeepStrictEqual(actual, expected)) return;
+  const container = (value: unknown): value is Any =>
+    value !== null && typeof value === 'object' && !(value instanceof Map);
+  if (
+    depth < 4 &&
+    container(actual) &&
+    container(expected) &&
+    Array.isArray(actual) === Array.isArray(expected)
+  ) {
+    const keys = [...new Set([...Object.keys(actual), ...Object.keys(expected)])].sort(
+      (a, b) => Number(b === 'error') - Number(a === 'error'),
+    );
+    for (const key of keys) expectSame(actual[key], expected[key], `${label}.${key}`, depth + 1);
+  }
+  const brief = (value: unknown) =>
+    inspect(value, { depth: 2, maxArrayLength: 4, maxStringLength: 120, breakLength: Infinity });
+  assert.fail(`${label} differs: new ${brief(actual)}; legacy ${brief(expected)}`);
+}
 function outcome<T>(run: () => T): { value: T } | { error: [string, string] } {
   try {
     return { value: run() };
@@ -92,7 +153,7 @@ function bothAgree<D, M, T>(
   const current = outcome(() =>
     run('new', structuredClone(mutatedData), structuredClone(mutatedManifest)),
   );
-  assert.deepStrictEqual(current, legacy);
+  expectSame(current, legacy, `${caseName} seed ${seed}`);
   return current;
 }
 
@@ -153,7 +214,7 @@ const clinicalMutations: Record<string, (d: Any, m: Any, rand: Rand) => void> = 
   },
   'deficit text': (d, _m, r) => {
     const deficit = pick<Any>(r, d.deficits);
-    const field = cycle(['name', 'domain', 'summary']);
+    const field = cycle(r, ['name', 'domain', 'summary']);
     if (r() < 0.5) delete deficit[field][pick(r, ['en', 'fr'])];
     else delete deficit[field];
   },
@@ -171,7 +232,7 @@ const clinicalMutations: Record<string, (d: Any, m: Any, rand: Rand) => void> = 
     d.groups.push({ id: 'orphan', name: { en: 'Orphan', fr: 'Orpheline' } });
   },
   'reference text': (d, _m, r) => {
-    pick<Any>(r, d.references)[cycle(['title', 'authors', 'journal'])] = pick(r, [
+    pick<Any>(r, d.references)[cycle(r, ['title', 'authors', 'journal'])] = pick(r, [
       '',
       undefined,
       4,
@@ -316,7 +377,7 @@ describe('clinical catalog against the legacy catalog', () => {
   }
 
   test('FINDING_COLORS', () => {
-    assert.deepStrictEqual(FINDING_COLORS, legacyFindingColors);
+    expectSame(FINDING_COLORS, legacyFindingColors);
   });
 });
 
@@ -330,7 +391,15 @@ function observeClinical(catalog: Any, data: ClinicalData, seed: number) {
       ...(deficit.aliases[lang] ?? []),
     ]),
   );
-  const queries: [string, string][] = [];
+  // Every deficit by its full name and by one alias, in both languages: an exact name ranks first.
+  const queries: [string, string][] = data.deficits.flatMap((deficit) =>
+    (['en', 'fr'] as const).flatMap((lang): [string, string][] => [
+      [deficit.name[lang], lang],
+      ...(deficit.aliases[lang].length
+        ? ([[deficit.aliases[lang][0], lang]] as [string, string][])
+        : []),
+    ]),
+  );
   for (let i = 0; i < 60; i++) {
     const word = pick(rand, words);
     const start = below(rand, word.length);
@@ -358,7 +427,12 @@ function observeClinical(catalog: Any, data: ClinicalData, seed: number) {
           .map((e: Any) => [e.group.id, e.deficits.map((d: Any) => d.id)]),
       ),
     ),
-    nearest: queries.map(([query, lang]) => outcome(() => catalog.nearest(query, lang))),
+    nearest: [
+      ...queries.slice(-64),
+      ...data.deficits
+        .slice(0, 24)
+        .map((deficit): [string, string] => [deficit.name.en.slice(1), 'en']),
+    ].map(([query, lang]) => outcome(() => catalog.nearest(query, lang))),
     deficits: data.deficits.map((deficit) => ({
       get: catalog.get(deficit.id),
       forDeficit: catalog.forDeficit(deficit.id),
@@ -391,7 +465,7 @@ describe('clinical catalog: published content', () => {
         clinicalData,
         seed,
       );
-      assert.deepStrictEqual(current, legacy);
+      expectSame(current, legacy);
       assert.ok(
         legacy.search.some((s: Any) => s.value?.length),
         'queries reach matches',
@@ -409,7 +483,7 @@ describe('clinical catalog: published content', () => {
       return outcome(() => impl(data as ClinicalData, manifest).paint(data.deficits[0].id));
     };
     const current = catalog(createClinicalCatalog);
-    assert.deepStrictEqual(current, catalog(legacyClinical as never));
+    expectSame(current, catalog(legacyClinical as never));
     assert.ok('error' in current && /more findings than finding colours/.test(current.error[1]));
   });
 });
@@ -640,7 +714,7 @@ describe('circuit session against the legacy session', () => {
             return session.snapshot();
           });
         const expected = run(legacy);
-        assert.deepStrictEqual(run(current), expected);
+        expectSame(run(current), expected);
         seen.add(`${action}:${'error' in expected ? 'error' : 'ok'}`);
       }
     }
@@ -734,6 +808,26 @@ const comparisonMutations: Record<string, (d: Any, m: Any, rand: Rand) => void> 
   'pair area': (d, _m, r) => {
     pick<Any>(r, d.pairs).area_mm2 = pick<unknown>(r, [0, -1, NaN, '6', null, Infinity]);
   },
+  'pair equal areas': (d, _m, r) => {
+    // Two pairs of one region with the same area, the larger target id first in the file, so only
+    // the tie-break orders them; every total follows the pairs.
+    const bySource = new Map<string, Any[]>();
+    for (const pair of d.pairs)
+      bySource.set(pair.region_ids[0], [...(bySource.get(pair.region_ids[0]) ?? []), pair]);
+    const [first, second] = pick<Any[]>(
+      r,
+      [...bySource.values()].filter((pairs) => pairs.length > 1),
+    );
+    second.area_mm2 = first.area_mm2;
+    const [a, b] = [first, second].sort((x, y) =>
+      y.region_ids[1].localeCompare(x.region_ids[1], 'en'),
+    );
+    const [ia, ib] = [d.pairs.indexOf(a), d.pairs.indexOf(b)];
+    d.pairs[Math.min(ia, ib)] = a;
+    d.pairs[Math.max(ia, ib)] = b;
+    for (const id of Object.keys(d.totals)) d.totals[id] = 0;
+    for (const pair of d.pairs) for (const id of pair.region_ids) d.totals[id] += pair.area_mm2;
+  },
   'pair removed': (d, _m, r) => {
     d.pairs.splice(below(r, d.pairs.length), 1);
   },
@@ -755,7 +849,7 @@ const comparisonMutations: Record<string, (d: Any, m: Any, rand: Rand) => void> 
     d.sources[0].hemisphere = pick(r, ['both', undefined]);
   },
   'source pial': (d, _m, r) => {
-    d.sources[below(r, 2)].pial = cycle<unknown>([
+    d.sources[below(r, 2)].pial = cycle<unknown>(r, [
       undefined,
       { file: 'a', sha256: 'z'.repeat(64) },
     ]);
@@ -790,8 +884,8 @@ const comparisonMutations: Record<string, (d: Any, m: Any, rand: Rand) => void> 
   'manifest identity': (_d, m, r) => {
     m.anatomy = pick<unknown>(r, [undefined, {}, { id: 'cdmd' }, [], { id: '', subject: 'x' }]);
   },
-  'manifest comparison': (_d, m) => {
-    m.atlas_comparison = cycle<unknown>([
+  'manifest comparison': (_d, m, r) => {
+    m.atlas_comparison = cycle<unknown>(r, [
       undefined,
       {},
       { file: 'x', sha256: 'wrong' },
@@ -832,7 +926,7 @@ const comparisonMutations: Record<string, (d: Any, m: Any, rand: Rand) => void> 
 describe('comparison catalog against the legacy catalog', () => {
   for (const [name, mutate] of Object.entries(comparisonMutations)) {
     test(`validation: ${name}`, () => {
-      for (const seed of [1, 2, 3, 4]) {
+      for (const seed of [1, 2, 3, 4, 5, 6]) {
         bothAgree(comparisonData, manifest, mutate, seed, (impl, data, man) => {
           if (name === 'data not a record')
             data = pick(prng(seed), [null, [], 3] as never[]) as never;
@@ -878,7 +972,7 @@ describe('comparison catalog: published content', () => {
       structuredClone(manifest),
     );
     const expected = observeComparison(legacy, manifest);
-    assert.deepStrictEqual(observeComparison(current, manifest), expected);
+    expectSame(observeComparison(current, manifest), expected);
     assert.ok(
       expected.regions.some((r: Any) => r.comparison?.rows.length > 1),
       'compared regions have overlaps',
@@ -897,7 +991,7 @@ describe('comparison catalog: published content', () => {
     const id = manifest.regions.find((r) => r.kind === 'cortex' && r.atlas === 'destrieux')!.id;
     const before = structuredClone(current.comparisonFor(id));
     current.comparisonFor(id)!.rows[0].areaMm2 = 0;
-    assert.deepStrictEqual(current.comparisonFor(id), before);
+    expectSame(current.comparisonFor(id), before);
   });
 });
 
@@ -1002,7 +1096,7 @@ describe('diffusion against the legacy modules', () => {
       const volume = volumeFromSeed(rand);
       const expected = outcome(() => legacyValidateVolume(structuredClone(volume)));
       const current = outcome(() => validateVolume(structuredClone(volume)));
-      assert.deepStrictEqual(current, expected);
+      expectSame(current, expected);
       if ('error' in expected) {
         messages.add(expected.error[1]);
         const thrown = (() => {
@@ -1040,7 +1134,7 @@ describe('diffusion against the legacy modules', () => {
   test('DiffusionInputError carries its name and code', () => {
     const legacy = new LegacyInputError('units', 'm');
     const current = new DiffusionInputError('units', 'm');
-    assert.deepStrictEqual(
+    expectSame(
       [current.name, current.code, current.message],
       [legacy.name, legacy.code, legacy.message],
     );
@@ -1088,12 +1182,7 @@ describe('diffusion against the legacy modules', () => {
       assert.equal(diffusionErrorCode(current), expected);
       codes.add(expected);
     }
-    assert.deepStrictEqual([...codes].sort(), [
-      'asset-fetch',
-      'asset-updated',
-      'failed',
-      'invalid-data',
-    ]);
+    expectSame([...codes].sort(), ['asset-fetch', 'asset-updated', 'failed', 'invalid-data']);
   });
 
   test('isIndependentTractReference over every state', () => {
@@ -1105,7 +1194,7 @@ describe('diffusion against the legacy modules', () => {
           anatomy: pick<unknown>(rand, ['cdmd', 'aomic', '', null, undefined]),
           referenceAnatomy: pick<unknown>(rand, ['cdmd', 'aomic', '', null, undefined]),
         };
-        assert.deepStrictEqual(
+        expectSame(
           outcome(() => isIndependentTractReference(state as never)),
           outcome(() => legacyIndependent(state)),
         );
@@ -1114,9 +1203,9 @@ describe('diffusion against the legacy modules', () => {
   });
 
   test('the tract catalogs and the lookup by anatomy', () => {
-    assert.deepStrictEqual(TRACT_CATALOGS, legacyTractCatalogs);
+    expectSame(TRACT_CATALOGS, legacyTractCatalogs);
     for (const anatomy of ['cdmd', 'aomic', '', 'toString']) {
-      assert.deepStrictEqual(tractCatalog(anatomy), legacyTractCatalog(anatomy));
+      expectSame(tractCatalog(anatomy), legacyTractCatalog(anatomy));
     }
   });
 });
@@ -1126,7 +1215,7 @@ describe('diffusion against the legacy modules', () => {
 // The messages below are one per `throw` and `requireValue` in the legacy sources. The seeded
 // mutations above must have produced each of them (the legacy `missing total for` throw is
 // unreachable: totals and regions are already equal in number and every total names a region), so no branch is left to the fixtures' luck.
-describe('the seeded inputs reach every validation branch', () => {
+vitestDescribe('the seeded inputs reach every validation branch', () => {
   const branches: RegExp[] = [
     // clinical/validate.js and clinical/catalog.js
     /revision date is required/,
@@ -1251,11 +1340,22 @@ describe('the seeded inputs reach every validation branch', () => {
     /Tract exploration must identify the anatomy and reference subject/,
   ];
   for (const branch of branches) {
-    test(String(branch), () => {
-      assert.ok(
-        [...reached].some((message) => branch.test(message)),
-        'no seeded input produced it',
-      );
-    });
+    vitestTest(
+      String(branch),
+      () => {
+        for (const key of cases.keys()) {
+          try {
+            runCase(key);
+          } catch {
+            // A failing case reports itself; this suite only needs the messages it produced.
+          }
+        }
+        assert.ok(
+          [...reached].some((message) => branch.test(message)),
+          'no seeded input produced it',
+        );
+      },
+      120_000,
+    );
   }
 });

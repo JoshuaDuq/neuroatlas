@@ -1,5 +1,5 @@
 import { VIEW_NAMES } from '../../types/index.ts';
-import type { Manifest, Region } from '../../types/index.ts';
+import type { Manifest, Region, ViewName } from '../../types/index.ts';
 import type { Translated } from '../clinical/types.ts';
 
 /** One authored landmark of a circuit, in `data/circuits.yaml`. */
@@ -12,8 +12,8 @@ export interface AuthoredStep {
   role: Translated;
   explanation: Translated;
   mapping: Translated;
-  view: string;
-  plane: string;
+  view: ViewName;
+  plane: 'axial' | 'coronal' | 'sagittal';
   /** Forms of this landmark for anatomies divided differently; each overrides the base fields. */
   alternatives?: readonly Partial<AuthoredStep>[];
 }

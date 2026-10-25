@@ -10,6 +10,7 @@ interface Work {
   authors: string[];
   editors?: string[];
   year: number;
+  pmid?: string;
   pubdate: string;
   book?: string;
   nbk?: string;
@@ -38,7 +39,7 @@ const bibliography = readRepository('docs/reference/references.md');
 const plain = (value: string) =>
   value
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
@@ -61,7 +62,7 @@ function issueYear(work: Work) {
   assert.equal(
     work.year,
     Number(work.pubdate.slice(0, 4)),
-    `${work.year}: year is not the PubDate year`,
+    `${work.pmid}: year is not the PubDate year`,
   );
   return work.year;
 }

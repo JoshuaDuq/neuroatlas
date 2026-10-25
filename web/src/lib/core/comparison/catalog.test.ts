@@ -1,9 +1,8 @@
-/// <reference types="node" />
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { test } from 'vitest';
 import type { Manifest } from '../../types/index.ts';
 import { labelOf } from '../catalog/labels.ts';
+import { readModel } from '../catalog/test-support.ts';
 import { createComparisonCatalog } from './catalog.ts';
 import type { ComparisonData } from './catalog.ts';
 
@@ -547,13 +546,8 @@ test('CSV retains every target label, full numeric precision and reproducible pr
 });
 
 test('published CDMD data conserves every cortical source in both directions', () => {
-  const directory = new URL('../../../../../public/models/cdmd/', import.meta.url);
-  const manifest = JSON.parse(
-    readFileSync(new URL('manifest.json', directory), 'utf8'),
-  ) as Manifest;
-  const data = JSON.parse(
-    readFileSync(new URL(manifest.atlas_comparison!.file, directory), 'utf8'),
-  ) as ComparisonData;
+  const manifest = readModel<Manifest>('cdmd/manifest.json');
+  const data = readModel<ComparisonData>(`cdmd/${manifest.atlas_comparison!.file}`);
   const catalog = createComparisonCatalog(data, manifest);
   const cortical = manifest.regions.filter(
     (region) => region.kind === 'cortex' && data.atlases.includes(region.atlas!),

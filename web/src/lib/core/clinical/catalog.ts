@@ -4,7 +4,11 @@ import type { ClinicalAssociation, ClinicalData, ClinicalDeficit, ClinicalGroup 
 import { validateClinicalData } from './validate.ts';
 
 const normalize = (value: string) =>
-  value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  value
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
 function required<T>(index: ReadonlyMap<string, T>, id: string, kind: string): T {
   const record = index.get(id);
