@@ -2,7 +2,7 @@ name: Tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, svelte-rebuild]
   # Called by the deploy workflow, which publishes nothing unless this passes.
   workflow_call:
 
@@ -22,6 +22,7 @@ jobs:
     outputs:
       python: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.python == 'true' }}
       validate: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.validate == 'true' }}
+      web: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.web == 'true' }}
     steps:
       # Commits and trees only: enough to list changed paths without the 400 MB of assets.
       - name: Checkout repository history
@@ -68,6 +69,19 @@ jobs:
               - *validate
               - tests/**
               - scripts/**/*.py
+            # The Svelte app, what it reads, and the legacy app it is compared with.
+            web:
+              - web/**
+              - config/**
+              - data/**
+              - public/**
+              - scripts/published-version.mjs
+              - viewer/**
+              - index.html
+              - vite.config.js
+              - package*.json
+              - .github/scripts/**
+              - .github/workflows/tests.yml
 
   python:
     needs: changes
@@ -133,3 +147,114 @@ jobs:
 
       - name: Run viewer tests
         run: npm test
+
+  # The parity tests import the legacy modules, so the root dependencies are installed too.
+  web-check:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix web
+
+      - name: Lint
+        run: npm run lint --prefix web
+
+      - name: Check formatting
+        run: npm run format --prefix web -- --check
+
+      - name: Type-check (TypeScript 6 and svelte-check)
+        run: npm run check --prefix web
+
+      - name: Type-check (TypeScript 7)
+        run: npm run check:ts7 --prefix web
+
+      - name: Run unit and parity tests
+        run: npm test --prefix web
+
+  web-browser:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix web
+
+      # No browser cache: the download is small next to the cache's restore time.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+
+      # Includes the WebGL probe (src/boot/webgl-probe.svelte.test.ts); its renderer
+      # line goes to the job summary. If it fails on the runner, apply the fallback in that file.
+      - name: Run browser tests
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:browser --prefix web 2>&1 | tee browser-tests.log
+          {
+            echo '### WebGL probe'
+            grep -h 'WebGL renderer' browser-tests.log || echo 'No renderer line in the log.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # The legacy build empties dist/, so it comes first; the preview goes beside it.
+      - name: Build the legacy app
+        run: npm run build
+
+      - name: Build the preview
+        run: |
+          npm run build:preview --prefix web
+          cp -r web/dist dist/next
+
+      # Bits UI plus the Svelte runtime, as web/docs/decisions/0001-ui-kit.md defines the budget.
+      - name: Check the UI bundle budget
+        shell: bash
+        run: |
+          node .github/scripts/ui-bundle-budget.mjs | tee ui-budget.log
+          cat ui-budget.log >> "$GITHUB_STEP_SUMMARY"
+
+      # One worker and two retries, as the Playwright CI guide advises; a retried test is
+      # still reported as flaky.
+      - name: Run end-to-end tests (legacy and next)
+        run: npm run test:e2e --prefix web -- --workers=1 --retries=2
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: web-browser-failures
+          path: |
+            web/test-results/
+            web/playwright-report/
+            web/src/**/__screenshots__/
+          if-no-files-found: ignore

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { gzipSync } from 'node:zlib';
 import { describe, expect, it, vi } from 'vitest';
 import { fetchAsset, type AssetProgress } from './asset-cache.ts';

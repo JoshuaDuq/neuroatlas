@@ -1,4 +1,3 @@
-/// <reference types="node" />
 // Source text for the style tests. Read from disk because Vitest blanks `?raw` imports of .css files.
 import { readdirSync, readFileSync } from 'node:fs';
 

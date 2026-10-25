@@ -21,7 +21,14 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['src/**/*.test.ts', 'build/**/*.test.ts', 'parity/**/*.test.ts'],
+          // The parity tests build and read the whole site; shared runners are slow.
+          testTimeout: 30_000,
+          include: [
+            'src/**/*.test.ts',
+            'build/**/*.test.ts',
+            'parity/**/*.test.ts',
+            'test/**/*.test.ts',
+          ],
           exclude: ['src/**/*.svelte.test.ts'],
         },
       },
