@@ -3,11 +3,21 @@
   with the one chevron trailing. A real button, so Enter and Space open it.
 -->
 <script lang="ts">
-  let { name, secondary, onclick }: { name: string; secondary?: string; onclick: () => void } =
-    $props();
+  let {
+    name,
+    secondary,
+    current = false,
+    onclick,
+  }: { name: string; secondary?: string; current?: boolean; onclick: () => void } = $props();
 </script>
 
-<button type="button" class="row" {onclick}>
+<button
+  type="button"
+  class="row"
+  aria-current={current ? 'true' : undefined}
+  data-selected={current ? 'true' : undefined}
+  {onclick}
+>
   <span class="text">
     <span class="row-name">{name}</span>
     {#if secondary}<span class="secondary">{secondary}</span>{/if}
@@ -54,10 +64,25 @@
       border-bottom: 1.5px solid currentColor;
       transform: translateX(-1.6px) rotate(-45deg);
     }
+    .row[aria-current='true'] .chevron {
+      color: inherit;
+    }
     .row:focus-visible {
       outline-offset: -2px;
     }
+    /* A mouse sees the chevron on hover, focus or selection (clinical.css:7-12); touch always. */
     @media (hover: hover) and (pointer: fine) {
+      .chevron {
+        opacity: 0;
+      }
+      .row:hover .chevron {
+        opacity: 1;
+        transition: opacity var(--ui-transition) var(--ease-ui);
+      }
+      .row:focus-visible .chevron,
+      .row[aria-current='true'] .chevron {
+        opacity: 1;
+      }
       .row:hover:not(:disabled) {
         background: var(--surface-hover);
       }

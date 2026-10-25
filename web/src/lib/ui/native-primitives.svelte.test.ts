@@ -2,7 +2,7 @@
 import axe from 'axe-core';
 import { createRawSnippet, tick } from 'svelte';
 import { describe, expect, test, vi } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { decimal, millimetres, percent } from '../core/format.ts';
 import '../../styles/index.css';
@@ -29,6 +29,10 @@ async function expectAxeClean() {
     [],
   );
 }
+
+// The provider's CDPSession type is not loaded here; Chromium's Emulation.setEmulatedMedia is the call.
+const emulate = (method: string, params: object) =>
+  (cdp() as unknown as { send(m: string, p: object): Promise<unknown> }).send(method, params);
 
 const focus = (locator: { element(): Element }) => (locator.element() as HTMLElement).focus();
 
@@ -297,6 +301,120 @@ describe('themes and phone width', () => {
       delete document.documentElement.dataset.theme;
     },
   );
+});
+
+describe('range error, Select wiring, DrillRow current', () => {
+  const rangeProps = {
+    label: 'Position',
+    value: 0,
+    min: -128,
+    max: 128,
+    step: 0.5,
+    format: (v: number) => millimetres(v, 'en'),
+    numberLabel: 'Exact position',
+    rangeMessage: 'Enter a value from −128 to 128 mm.',
+  };
+
+  test('an out-of-range entry survives Tab; a valid entry or a slider move clears the error', async () => {
+    render(RangeField, rangeProps);
+    const number = page.getByRole('spinbutton', { name: 'Exact position' });
+    const field = number.element() as HTMLInputElement;
+    await number.fill('900');
+    await userEvent.tab();
+    expect(field.getAttribute('aria-invalid')).toBe('true');
+    expect(field.value).toBe('900');
+    await expect.element(page.getByText('Enter a value from −128 to 128 mm.')).toBeInTheDocument();
+
+    await number.fill('20');
+    await userEvent.keyboard('{Enter}');
+    expect(field.getAttribute('aria-invalid')).toBe('false');
+
+    await number.fill('900');
+    await userEvent.tab();
+    expect(field.getAttribute('aria-invalid')).toBe('true');
+    focus(page.getByRole('slider', { name: 'Position' }));
+    await userEvent.keyboard('{ArrowRight}');
+    expect(field.getAttribute('aria-invalid')).toBe('false');
+    expect(document.querySelector('.error')).toBeNull();
+  });
+
+  test('Select takes the id of a visible label and a description', async () => {
+    render(Select, {
+      id: 'atlas',
+      describedby: 'atlas-note',
+      options: [{ value: 'a', label: 'Alpha' }],
+      value: 'a',
+    });
+    const label = document.createElement('label');
+    label.htmlFor = 'atlas';
+    label.textContent = 'Atlas';
+    document.body.prepend(label);
+    const select = page.getByRole('combobox', { name: 'Atlas' }).element();
+    expect(select.getAttribute('aria-label')).toBeNull();
+    expect(select.getAttribute('aria-describedby')).toBe('atlas-note');
+    label.click();
+    expect(document.activeElement).toBe(select);
+  });
+
+  test('DrillRow marks the open item', async () => {
+    render(DrillRow, { name: 'Aphasia', current: true, onclick: () => {} });
+    const row = page.getByRole('button', { name: 'Aphasia' }).element();
+    expect(row.getAttribute('aria-current')).toBe('true');
+    expect(row.getAttribute('data-selected')).toBe('true');
+  });
+});
+
+describe('forced colours', () => {
+  test('progress fill, range thumb and checkbox take system colours', async () => {
+    await emulate('Emulation.setEmulatedMedia', {
+      features: [{ name: 'forced-colors', value: 'active' }],
+    });
+    try {
+      render(Progress, { label: 'Download', value: 0.5 });
+      render(RangeField, {
+        label: 'Opacity',
+        value: 0.5,
+        min: 0,
+        max: 1,
+        step: 0.05,
+        format: (v: number) => percent(v, 'en'),
+      });
+      render(CheckboxGroup, { legend: 'Layers', items: [{ value: 'a', label: 'A' }] });
+      const resolve = (colour: string) => {
+        const probe = document.createElement('div');
+        probe.style.color = colour;
+        document.body.append(probe);
+        const resolved = getComputedStyle(probe).color;
+        probe.remove();
+        return resolved;
+      };
+      // Chromium reports no computed style for UA progress pseudo-elements, so read the rules the
+      // engine kept: a selector list holding the other engine's pseudo-element is dropped whole.
+      const kept = (selector: string) =>
+        [...document.styleSheets]
+          .flatMap((sheet) => [...sheet.cssRules])
+          .flatMap(function flatten(rule: CSSRule): CSSStyleRule[] {
+            return !(rule instanceof CSSStyleRule) && 'cssRules' in rule
+              ? [...(rule as CSSGroupingRule).cssRules].flatMap(flatten)
+              : [rule as CSSStyleRule];
+          })
+          .filter((rule) => rule.selectorText?.includes(selector));
+      for (const pseudo of ['::-webkit-progress-value']) {
+        expect(
+          kept(pseudo).some((rule) => rule.style.backgroundColor.toLowerCase() === 'highlight'),
+          pseudo,
+        ).toBe(true);
+      }
+      const range = document.querySelector('input[type="range"]') as HTMLElement;
+      expect(getComputedStyle(range, '::-webkit-slider-thumb').borderTopColor).toBe(
+        resolve('CanvasText'),
+      );
+      const box = document.querySelector('input[type="checkbox"]') as HTMLElement;
+      expect(getComputedStyle(box).appearance).toBe('auto');
+    } finally {
+      await emulate('Emulation.setEmulatedMedia', { features: [] });
+    }
+  });
 });
 
 describe('scroll helpers', () => {

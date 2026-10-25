@@ -14,14 +14,20 @@
 
 <script lang="ts">
   let {
+    id,
     label,
+    describedby,
     options,
     value = $bindable(),
     disabled = false,
     onchange,
   }: {
-    /** The accessible name; a visible <label for> may name it instead through `id`. */
-    label: string;
+    /** Lets a visible `<label for={id}>` name the select and focus it on click. */
+    id?: string;
+    /** The accessible name; leave it out when a visible `<label for>` names the select. */
+    label?: string;
+    /** The id of the note that describes the select. */
+    describedby?: string;
     options: readonly SelectOption[];
     value: string;
     disabled?: boolean;
@@ -29,7 +35,14 @@
   } = $props();
 </script>
 
-<select aria-label={label} {disabled} bind:value onchange={() => onchange?.(value)}>
+<select
+  {id}
+  aria-label={label}
+  aria-describedby={describedby}
+  {disabled}
+  bind:value
+  onchange={() => onchange?.(value)}
+>
   {#each options as option (option.value)}
     <option value={option.value} title={option.title}>{option.label}</option>
   {/each}
@@ -111,7 +124,6 @@
         padding: 0 var(--space-3);
         font-size: var(--text-ui);
       }
-      option:hover,
       option:checked {
         background: var(--surface-tonal);
       }
@@ -119,6 +131,9 @@
     @media (hover: hover) and (pointer: fine) {
       select:hover:not(:disabled) {
         border-color: var(--text-secondary);
+      }
+      option:hover {
+        background: var(--surface-tonal);
       }
     }
   }

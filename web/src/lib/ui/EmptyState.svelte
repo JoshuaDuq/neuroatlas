@@ -20,7 +20,7 @@
 <style>
   @layer components {
     .empty {
-      padding: var(--space-4) var(--panel-inset);
+      padding: var(--panel-inset);
       color: var(--text-secondary);
       font-size: var(--text-ui);
       line-height: var(--lh-ui);

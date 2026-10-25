@@ -14,6 +14,8 @@
     (WCAG 3.3.1 Error Identification).
 -->
 <script lang="ts">
+  import { untrack } from 'svelte';
+
   let {
     label,
     value,
@@ -54,8 +56,8 @@
 
   $effect.pre(() => {
     const next = value;
-    if (!rangeFocused) draft = next;
-    if (!numberFocused) {
+    if (!untrack(() => rangeFocused)) draft = next;
+    if (!untrack(() => numberFocused)) {
       numberText = next.toFixed(digits);
       invalid = false;
     }

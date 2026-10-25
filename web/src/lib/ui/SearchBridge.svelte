@@ -13,6 +13,7 @@
 
 <style>
   @layer components {
+    /* clinical.css:68-90,114: a link styled as a row, so no hover ground behind its underline. */
     .search-bridge {
       display: flex;
       align-items: center;
@@ -26,21 +27,22 @@
       border-top: 1px solid var(--border-subtle);
       border-radius: 0;
       background: none;
-      color: var(--text-secondary);
+      color: var(--accent);
       text-align: left;
-      font-size: var(--text-ui);
+      font-weight: 400;
       line-height: var(--lh-ui);
     }
     .label {
       flex: 1;
       min-width: 0;
+      overflow-wrap: anywhere;
     }
     .chevron {
       flex: none;
       width: 6px;
       height: 6px;
       margin: 0 3px;
-      color: var(--text-tertiary);
+      color: inherit;
       border-right: 1.5px solid currentColor;
       border-bottom: 1.5px solid currentColor;
       transform: translateX(-1.6px) rotate(-45deg);
@@ -50,8 +52,12 @@
     }
     @media (hover: hover) and (pointer: fine) {
       .search-bridge:hover:not(:disabled) {
-        background: var(--surface-hover);
-        color: var(--text-primary);
+        background: none;
+      }
+      .search-bridge:hover .label {
+        color: var(--accent-hover);
+        text-decoration: underline;
+        text-underline-offset: 3px;
       }
     }
   }

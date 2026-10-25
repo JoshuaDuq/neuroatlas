@@ -10,26 +10,28 @@
 
 <style>
   @layer components {
+    /* The stage's loading bar (stage.css:313-314): 2 px on the overlay ink, the fill growing linearly. */
     progress {
       appearance: none;
       display: block;
       width: 200px;
       max-width: 100%;
-      height: 4px;
+      height: 2px;
       border: 0;
-      border-radius: 2px;
+      border-radius: 1px;
       overflow: hidden;
-      background: var(--border-subtle);
-      color: var(--accent);
+      background: var(--overlay-border);
+      color: var(--overlay-accent);
     }
     progress::-webkit-progress-bar {
-      background: var(--border-subtle);
+      background: var(--overlay-border);
     }
     progress::-webkit-progress-value {
-      background: var(--accent);
+      background: var(--overlay-accent);
+      transition: width var(--ui-transition) linear;
     }
     progress::-moz-progress-bar {
-      background: var(--accent);
+      background: var(--overlay-accent);
     }
   }
   @layer a11y {
@@ -43,8 +45,13 @@
       progress::-webkit-progress-bar {
         background: Canvas;
       }
-      progress::-webkit-progress-value,
+      /* Two rules: an engine drops a whole list if one selector is a pseudo-element it does not know. */
+      progress::-webkit-progress-value {
+        forced-color-adjust: none;
+        background: Highlight;
+      }
       progress::-moz-progress-bar {
+        forced-color-adjust: none;
         background: Highlight;
       }
     }
