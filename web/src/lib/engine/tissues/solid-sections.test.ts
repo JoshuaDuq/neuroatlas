@@ -1,0 +1,411 @@
+import assert from 'node:assert/strict';
+import { onTestFinished, test, vi } from 'vitest';
+import { BoxGeometry, DoubleSide, Mesh, MeshBasicMaterial, Plane, Raycaster, Vector3 } from 'three';
+import { readModel } from '../../core/catalog/test-support.ts';
+import type { Appearance } from '../render/materials.ts';
+import { HIGHLIGHT_LIFT } from './highlight.ts';
+import { sectionTriangles } from './plane-section.ts';
+import { createSolidMaterial } from './solid-material.ts';
+import { SolidSections } from './solid-sections.ts';
+import type { Solid, SolidSource } from './solid-sections.ts';
+import type { CutReply, WorkerMessage } from './section-worker.ts';
+
+function fixture() {
+  const source = new Mesh(
+    new BoxGeometry(0.1, 0.1, 0.1),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  source.userData = { hemisphere: 'left', boundary: 'pial' };
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 0);
+  return { sections, source };
+}
+
+const plane = new Plane(new Vector3(0, 0, -1), 0);
+
+test('discarded cap fragments do not block picking another visible cap', () => {
+  const { sections, source } = fixture();
+  const later = source.clone();
+  later.geometry = source.geometry.clone();
+  later.material = source.material.clone();
+  sections.add(later, new MeshBasicMaterial(), 2);
+  sections.update(plane);
+  const ray = new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1));
+  assert.equal(sections.intersect(ray)?.source, later);
+  assert.equal(sections.intersect(ray, (hit) => hit.source !== later)?.source, source);
+  sections.dispose();
+});
+
+test('caps reach the lower spinal cord in every orientation and retained side', () => {
+  const source = new Mesh(
+    new BoxGeometry(0.012, 0.48, 0.01),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  source.position.set(0.002, -0.3, 0.038);
+  source.userData.region_id = 'zanatomy:midline:cord';
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 2);
+  const point = new Vector3(0.002, -0.5, 0.038);
+  for (const normal of [
+    new Vector3(1, 0, 0),
+    new Vector3(0, 1, 0),
+    new Vector3(0, 0, 1),
+    new Vector3(1, 1, 1).normalize(),
+  ]) {
+    for (const side of [-1, 1]) {
+      const direction = normal.clone().multiplyScalar(side);
+      sections.update(new Plane().setFromNormalAndCoplanarPoint(direction, point));
+      const ray = new Raycaster(point.clone().addScaledVector(direction, 0.1), direction.negate());
+      assert.equal(sections.intersect(ray)?.region, 'zanatomy:midline:cord');
+    }
+  }
+  sections.dispose();
+});
+
+function drawnTriangles(mesh: Mesh): number {
+  if (!mesh.visible) return 0;
+  const geometry = mesh.geometry;
+  const position = geometry.getAttribute('position');
+  const index = geometry.getIndex();
+  const range = geometry.drawRange;
+  const available = index ? index.count : position.count;
+  const count =
+    range.count === Infinity ? available : Math.min(available - range.start, range.count);
+  return count / 3;
+}
+
+test(
+  'a background build draws the same cap as the synchronous one',
+  { timeout: 20000 },
+  async () => {
+    const { sections } = fixture();
+    sections.update(plane);
+    const ray = new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1));
+    assert.ok(sections.intersect(ray));
+    const generation = sections.generation;
+    const built = await sections.build(plane);
+    if (built) {
+      assert.equal(sections.applyBuild(plane, built, generation), true);
+      assert.ok(sections.intersect(ray));
+      assert.equal(
+        sections.intersect(new Raycaster(new Vector3(0.08, 0, 0.2), new Vector3(0, 0, -1))),
+        null,
+      );
+    }
+    sections.dispose();
+  },
+);
+
+test('a cut draws the plane section instead of stencilling the whole solid', () => {
+  const source: SolidSource = new Mesh(
+    new BoxGeometry(0.1, 0.1, 0.1, 18, 18, 18),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  source.userData = { hemisphere: 'left', boundary: 'pial' };
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 0);
+  sections.update(plane);
+  const [solid] = sections.solids;
+  const sourceTriangles = source.geometry.index!.count / 3;
+  const drawn =
+    drawnTriangles(solid.back) + drawnTriangles(solid.front) + drawnTriangles(solid.cap);
+  assert.equal(solid.back.visible, false);
+  assert.equal(solid.front.visible, false);
+  assert.equal(solid.cap.material.stencilWrite, false);
+  assert.ok(
+    drawn > 0 && drawn < sourceTriangles / 5,
+    `drew ${drawn} triangles from a ${sourceTriangles}-triangle solid`,
+  );
+  assert.ok(sections.intersect(new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1))));
+  assert.equal(
+    sections.intersect(new Raycaster(new Vector3(0.08, 0, 0.2), new Vector3(0, 0, -1))),
+    null,
+  );
+  sections.dispose();
+});
+
+test('cut hits are inside closed anatomy, from either retained side', () => {
+  const { sections } = fixture();
+  sections.update(plane);
+  for (const direction of [-1, 1]) {
+    const ray = new Raycaster(
+      new Vector3(0.012, 0.009, -direction * 0.2),
+      new Vector3(0, 0, direction),
+    );
+    assert.ok(sections.intersect(ray));
+    ray.ray.origin.x = 0.08;
+    assert.equal(sections.intersect(ray), null);
+  }
+  sections.update(new Plane(new Vector3(0, 0, 1), -0.06));
+  assert.equal(
+    sections.intersect(new Raycaster(new Vector3(0, 0, 0.2), new Vector3(0, 0, -1))),
+    null,
+  );
+  sections.dispose();
+});
+
+test('a stencil-capped solid with front faces only is still picked inside and only inside', () => {
+  // A ribbon wedge is built as a bare Mesh, whose default material draws and casts front faces only.
+  const source = new Mesh(new BoxGeometry(0.1, 0.1, 0.1));
+  source.userData = { hemisphere: 'left', kind: 'ribbon', region_id: 'destrieux:left:2' };
+  const sections = new SolidSections();
+  sections.add(source, new MeshBasicMaterial(), 1);
+  sections.update(plane);
+  const [solid] = sections.solids;
+  // What a non-manifold section does: the whole-plane stencil quad stands in for the face.
+  sections.place(solid, { fallback: true });
+  assert.equal(solid.sectioned, false);
+  assert.equal(solid.cap.scale.x > 0.1, true, 'the quad covers more than the solid');
+  const inside = sections.intersect(
+    new Raycaster(new Vector3(0.012, 0.009, 0.2), new Vector3(0, 0, -1)),
+  );
+  assert.equal(inside?.region, 'destrieux:left:2');
+  assert.equal(
+    sections.intersect(new Raycaster(new Vector3(0.08, 0, 0.2), new Vector3(0, 0, -1))),
+    null,
+  );
+  sections.dispose();
+});
+
+test('a solid shares its source geometry and BVH and leaves both to their owner', () => {
+  const { sections, source } = fixture();
+  const [solid] = sections.solids;
+  const tree = source.geometry.boundsTree;
+  assert.equal(solid.probe.geometry, source.geometry);
+  const again = new SolidSections();
+  again.add(source, new MeshBasicMaterial(), 0);
+  assert.equal(source.geometry.boundsTree, tree, 'a second cut reuses the BVH');
+  let disposed = 0;
+  source.geometry.addEventListener('dispose', () => {
+    disposed += 1;
+  });
+  sections.dispose();
+  again.dispose();
+  assert.equal(disposed, 0);
+});
+
+test('a solid the plane misses is not drawn', () => {
+  const { sections } = fixture();
+  sections.update(new Plane(new Vector3(0, 0, -1), 0.4));
+  assert.equal(sections.solids[0].group.visible, false);
+  sections.update(plane);
+  assert.equal(sections.solids[0].group.visible, true);
+  sections.dispose();
+});
+
+test('a solid shown again on an unmoved plane is cut and drawn', () => {
+  const { sections } = fixture();
+  sections.solids[0].visible = false;
+  sections.update(plane);
+  assert.equal(sections.solids[0].group.visible, false);
+  sections.solids[0].visible = true;
+  sections.update(plane);
+  assert.equal(sections.solids[0].group.visible, true);
+  assert.ok(drawnTriangles(sections.solids[0].cap) > 0);
+  sections.dispose();
+});
+
+test('a cut hit names the solid it landed in', () => {
+  const { sections, source } = fixture();
+  sections.update(plane);
+  const hit = sections.intersect(
+    new Raycaster(new Vector3(0.012, 0.009, 0.2), new Vector3(0, 0, -1)),
+  );
+  assert.equal(hit?.source, source);
+});
+
+const { appearance } = readModel<{ appearance: Appearance }>('cdmd/manifest.json');
+
+function parcels(...regions: string[]) {
+  const sections = new SolidSections();
+  for (const region of regions) {
+    const source = new Mesh(
+      new BoxGeometry(0.1, 0.1, 0.1),
+      new MeshBasicMaterial({ side: DoubleSide }),
+    );
+    source.userData = { hemisphere: 'left', kind: 'ribbon', region_id: region };
+    sections.add(source, createSolidMaterial({} as never, appearance), 1);
+  }
+  return sections;
+}
+
+test('only the highlighted region lifts, and the solid keeps its painted colour', () => {
+  const sections = parcels('destrieux:left:2', 'destrieux:left:9');
+  const [quiet, lit] = sections.solids;
+  lit.cap.material.color.set('#123456');
+  sections.highlight({ hovered: 'destrieux:left:9' });
+  assert.equal(quiet.cap.material.userData.highlightLift.value, 0);
+  assert.equal(lit.cap.material.userData.highlightLift.value, HIGHLIGHT_LIFT.hovered);
+  assert.equal(lit.cap.material.color.getHexString(), '123456');
+  sections.dispose();
+});
+
+test('moving off a region puts its cut face back', () => {
+  const sections = parcels('destrieux:left:2');
+  const [solid] = sections.solids;
+  sections.highlight({ hovered: 'destrieux:left:2' });
+  sections.highlight({});
+  assert.equal(solid.cap.material.userData.highlightLift.value, 0);
+  sections.dispose();
+});
+
+test('a cut hit names the region its cap was painted as', () => {
+  const sections = parcels('destrieux:left:2');
+  const [solid] = sections.solids;
+  solid.region = 'nextbrain:right:10119';
+  sections.update(plane);
+  const hit = sections.intersect(
+    new Raycaster(new Vector3(0.012, 0.009, 0.2), new Vector3(0, 0, -1)),
+  );
+  assert.equal(hit?.region, 'nextbrain:right:10119');
+  sections.dispose();
+});
+
+test('nested solids order enclosing first with tiered polygon offsets and bit-identical cap planes', () => {
+  const outer = new Mesh(
+    new BoxGeometry(0.2, 0.2, 0.2),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  outer.userData = { segmentation_volume_mm3: 8000, region_id: 'cord' };
+  const inner = new Mesh(
+    new BoxGeometry(0.05, 0.05, 0.05),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  inner.userData = { segmentation_volume_mm3: 125, region_id: 'tract' };
+
+  const sections = new SolidSections();
+  sections.add(inner, new MeshBasicMaterial(), 2);
+  sections.add(outer, new MeshBasicMaterial(), 2);
+
+  assert.equal(sections.solids[0].region, 'cord');
+  assert.equal(sections.solids[1].region, 'tract');
+
+  assert.equal(sections.solids[0].group.renderOrder, 1);
+  assert.equal(sections.solids[1].group.renderOrder, 2);
+  assert.equal(sections.solids[0].cap.material.polygonOffsetUnits, -1);
+  assert.equal(sections.solids[1].cap.material.polygonOffsetUnits, -2);
+  assert.ok(
+    sections.solids[1].cap.material.polygonOffsetUnits <
+      sections.solids[0].cap.material.polygonOffsetUnits,
+  );
+
+  sections.update(plane);
+  const [solidOuter, solidInner] = sections.solids;
+  assert.ok(solidOuter.cap.position.equals(solidInner.cap.position));
+  assert.ok(solidOuter.cap.quaternion.equals(solidInner.cap.quaternion));
+  assert.ok(solidOuter.cap.scale.equals(solidInner.cap.scale));
+
+  sections.dispose();
+});
+
+test('a warm-up that runs after dispose starts no worker', async () => {
+  const started: object[] = [];
+  vi.stubGlobal(
+    'Worker',
+    class {
+      constructor() {
+        started.push(this);
+      }
+      postMessage() {}
+      terminate() {}
+    },
+  );
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+  });
+  const { sections } = fixture();
+  sections.warm();
+  sections.dispose();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(started.length, 0);
+});
+
+/** A `Worker` whose far end is `section-worker.ts`'s own `onmessage`, run in this thread. */
+async function installWorkerShim(failOnCut = false) {
+  const scope = globalThis as unknown as {
+    onmessage: ((event: { data: WorkerMessage }) => void) | null;
+  };
+  await import('./section-worker.ts');
+  const handler = scope.onmessage!;
+  const workers: ShimWorker[] = [];
+  class ShimWorker {
+    onmessage: ((event: { data: CutReply }) => void) | null = null;
+    onerror: ((event: { message: string }) => void) | null = null;
+    terminated = false;
+    constructor() {
+      workers.push(this);
+    }
+    postMessage(message: WorkerMessage) {
+      if (failOnCut && message.type === 'cut') this.onerror!({ message: 'cut failed' });
+      else handler({ data: structuredClone(message) });
+    }
+    terminate() {
+      this.terminated = true;
+    }
+  }
+  vi.stubGlobal('Worker', ShimWorker);
+  vi.stubGlobal('postMessage', (reply: CutReply) => workers.at(-1)!.onmessage!({ data: reply }));
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+  });
+  return workers;
+}
+
+function denseBox(): Mesh {
+  const source = new Mesh(
+    new BoxGeometry(0.1, 0.1, 0.1, 18, 18, 18),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  source.userData = { hemisphere: 'left', boundary: 'pial' };
+  source.rotation.set(0.3, 0.2, 0.1);
+  source.position.set(0.01, -0.02, 0.03);
+  return source;
+}
+
+test('the worker returns the same cap buffers as the main-thread cut', async () => {
+  await installWorkerShim();
+  const sections = new SolidSections();
+  const source = denseBox() as SolidSource;
+  sections.add(source, new MeshBasicMaterial(), 0);
+  for (const plane of [
+    new Plane(new Vector3(0, 0, -1), 0),
+    new Plane(new Vector3(1, 0, 0), -0.01),
+    new Plane(new Vector3(1, 1, 1).normalize(), -0.02),
+  ]) {
+    const generation = sections.generation;
+    const built = await sections.build(plane);
+    assert.ok(built, 'the worker path is taken when Worker exists');
+    const direct = sectionTriangles(source.geometry, source.matrixWorld, plane);
+    assert.ok(direct.positions);
+    assert.deepStrictEqual(
+      built.find(({ id }) => id === sections.solids[0]!.id)?.positions,
+      direct.positions,
+    );
+
+    assert.equal(sections.applyBuild(plane, built, generation), true);
+    const worked = capVertices(sections.solids[0]!);
+    sections.update(plane);
+    assert.deepStrictEqual(capVertices(sections.solids[0]!), worked);
+  }
+  sections.dispose();
+});
+
+function capVertices(solid: Solid): number[] {
+  const { array } = solid.cap.geometry.getAttribute('position');
+  return Array.from(array.slice(0, solid.cap.geometry.drawRange.count * 3));
+}
+
+test('a worker failure rejects the build and every later one instead of cutting silently', async () => {
+  const workers = await installWorkerShim(true);
+  const { sections } = fixture();
+  await assert.rejects(sections.build(plane), /cut failed/);
+  assert.equal(workers[0]!.terminated, true);
+  await assert.rejects(async () => sections.build(plane), /cut failed/);
+  sections.dispose();
+});
+
+test('without a Worker the build declines and the caller cuts on its own thread', async () => {
+  const { sections } = fixture();
+  assert.equal(await sections.build(plane), null);
+  sections.dispose();
+});
