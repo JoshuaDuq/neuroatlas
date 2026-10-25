@@ -8,10 +8,7 @@ import { isDeepStrictEqual, inspect } from 'node:util';
 import { describe, onTestFinished, test, vi } from 'vitest';
 import { readModel } from '../src/lib/core/catalog/test-support.ts';
 import { readRepoYaml } from '../test/repo.ts';
-import {
-  prefetchAtlas as legacyPrefetch,
-  startLanguage as legacyStartLanguage,
-} from '../../viewer/state/boot.js';
+import { prefetchAtlas as legacyPrefetch } from '../../viewer/state/boot.js';
 import { createDissection as legacyDissection } from '../../viewer/state/dissection.js';
 import {
   captureBeforeInternal as legacyCapture,
@@ -59,7 +56,7 @@ import type {
   NeuropsychDomains,
   NeurosynthTerms,
 } from '../src/lib/core/catalog/neuropsych-domains.ts';
-import { prefetchAtlas, startLanguage } from '../src/lib/core/state/boot.ts';
+import { prefetchAtlas } from '../src/lib/core/state/boot.ts';
 import { createDissection } from '../src/lib/core/state/dissection.ts';
 import {
   captureBeforeInternal,
@@ -509,14 +506,6 @@ describe('internal-mode', () => {
 });
 
 describe('boot', () => {
-  test('startLanguage prefers the link, then the saved choice, then English', () => {
-    for (const hash of ['', '#lang=fr', '#lang=en', '#lang=de', '#lang=en&lang=fr', '#atlas=x']) {
-      for (const saved of ['fr', 'en', 'de', null]) {
-        same(startLanguage(hash, saved), legacyStartLanguage(hash, saved), `${hash} ${saved}`);
-      }
-    }
-  });
-
   test('prefetchAtlas agrees across GPU, data-saver and connection types', () => {
     const atlases = [{ id: 'destrieux' }, { id: 'hcp-mmp' }, { id: 'extra' }];
     const connections = [

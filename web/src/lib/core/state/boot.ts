@@ -1,12 +1,3 @@
-import type { Language } from '../../types/index.ts';
-import { decodeState } from './url-state.ts';
-
-/** The language to start in: the link's, else the reader's saved choice, else English. */
-export function startLanguage(hash: string, saved: string | null): Language {
-  const { lang } = decodeState(hash).state;
-  return lang ?? (saved === 'fr' ? 'fr' : 'en');
-}
-
 /** Connections too slow, or asked to save data, for a download nobody requested. */
 const SLOW_CONNECTIONS = new Set(['slow-2g', '2g', '3g']);
 

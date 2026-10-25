@@ -1,15 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { prefetchAtlas, startLanguage } from './boot.ts';
-
-test('the start language is the link’s, else the saved one, else English', () => {
-  assert.equal(startLanguage('#lang=fr', 'en'), 'fr');
-  assert.equal(startLanguage('#atlas=destrieux', 'fr'), 'fr');
-  assert.equal(startLanguage('', null), 'en');
-  // A language the link gets wrong is reported later; it does not decide this.
-  assert.equal(startLanguage('#lang=de', 'fr'), 'fr');
-  assert.equal(startLanguage('#lang=en&lang=fr', 'fr'), 'fr');
-});
+import { prefetchAtlas } from './boot.ts';
 
 const atlases = [
   { id: 'destrieux', file: 'cortex-destrieux.glb' },
