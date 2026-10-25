@@ -93,6 +93,8 @@ export class BrainSections extends EventTarget {
   private pending: Promise<void> | null = null;
   private disposed = false;
   private requestNumber = 0;
+  /** The cut atlas whose volume last finished loading: what a failed choice returns to. */
+  private loadedCutAtlas: string | null = null;
   private appearanceRequest = 0;
   private readonly clipPlane = new Plane();
   private visibilityKey = '';
@@ -272,6 +274,7 @@ export class BrainSections extends EventTarget {
       loaded = this.state.cutAtlas;
       await this.tissues.load(loaded);
     }
+    this.loadedCutAtlas = loaded;
     if (this.display) this.tissues.setWindow(this.display.windowCenter, this.display.windowWidth);
   }
 
@@ -426,11 +429,10 @@ export class BrainSections extends EventTarget {
     try {
       await this.prepare();
     } catch (error) {
-      // A newer choice owns the state and the status now; this failure is stale.
-      if (request === this.requestNumber) {
-        this.state.cutAtlas = previous;
-        this.report(error);
-      }
+      // Only a failure of the atlas the state still names rolls it back, and it
+      // returns to an atlas that loaded, not to a choice that never did.
+      if (this.state.cutAtlas === atlas) this.state.cutAtlas = this.loadedCutAtlas ?? previous;
+      if (request === this.requestNumber) this.report(error);
       throw error;
     }
     if (request !== this.requestNumber || this.disposed) return;

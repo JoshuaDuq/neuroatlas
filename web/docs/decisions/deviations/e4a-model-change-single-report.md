@@ -8,5 +8,5 @@ after a model change is reported once").
   and two `change` events.
 - **New**: `onModelChange` only handles the rejection (`.catch(() => {})`, with a comment that
   `setMode` has reported it), so the failure is logged and emitted once.
-- **Standard**: project rule "fail fast, no redundant handling" (CLAUDE.md): an error is reported
-  where it is raised, once.
+- **Standard**: CLAUDE.md "Avoid redundancy" and "Fail fast": the failure surfaces where it is
+  raised, once, and is not handled a second time.

@@ -432,3 +432,39 @@ test('one failing reload after a model change is reported once', async () => {
   errors.mockRestore();
   sections.dispose();
 });
+
+test('a failed cut atlas is rolled back when a later mode change overtook it', async () => {
+  const { tissues, sections } = fixture();
+  await sections.setMode('axial');
+  let fail: (error: Error) => void = () => {};
+  const failing = new Promise<never>((_, reject) => {
+    fail = reject;
+  });
+  tissues.load = (atlas: string) => (atlas === 'hcp-mmp' ? failing : Promise.resolve());
+  const failure = assert.rejects(sections.setCutAtlas('hcp-mmp'), /offline/);
+  const mode = sections.setMode('coronal').catch(() => {});
+  fail(new Error('offline'));
+  await failure;
+  await mode;
+  assert.equal(sections.state.cutAtlas, 'destrieux');
+  sections.dispose();
+});
+
+test('two failing cut atlas choices end on the last atlas that loaded', async () => {
+  const { tissues, sections } = fixture();
+  await sections.setMode('axial');
+  const fails = new Map<string, (error: Error) => void>();
+  tissues.load = (atlas: string) =>
+    new Promise((_, reject) => {
+      fails.set(atlas, reject);
+    });
+  const older = assert.rejects(sections.setCutAtlas('hcp-mmp'), /first/);
+  const newer = assert.rejects(sections.setCutAtlas('nextbrain'), /second/);
+  fails.get('hcp-mmp')!(new Error('first'));
+  await older;
+  assert.equal(sections.state.cutAtlas, 'nextbrain');
+  fails.get('nextbrain')!(new Error('second'));
+  await newer;
+  assert.equal(sections.state.cutAtlas, 'destrieux');
+  sections.dispose();
+});

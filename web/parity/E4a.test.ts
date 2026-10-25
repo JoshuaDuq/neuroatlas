@@ -499,8 +499,8 @@ describe('E4a TissueSections', () => {
           assert.equal(actual.label, expected.label);
           assert.equal('source' in actual, 'source' in expected);
           if ('source' in actual) capHits++;
-          seenLabels.add(actual.label?.source_label_id);
-          seenRegions.add(actual.region?.id);
+          if (actual.label) seenLabels.add(actual.label.source_label_id);
+          if (actual.region) seenRegions.add(actual.region.id);
         }
       }
     }
