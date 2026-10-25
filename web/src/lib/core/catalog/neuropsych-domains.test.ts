@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import type { Region } from '../../types/index.ts';

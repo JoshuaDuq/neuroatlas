@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import assert from 'node:assert/strict';
 import { describe, it, vi } from 'vitest';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
