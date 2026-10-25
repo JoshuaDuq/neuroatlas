@@ -124,6 +124,17 @@ describe('createTheme', () => {
     expect('themeSwitching' in page.root.dataset).toBe(false);
   });
 
+  test('dispose inside the two frames releases the transition hold for good', () => {
+    const theme = createTheme(() => {}, options(fakeStorage(), fakeSystem(false)));
+    theme.choose('dark');
+    expect(page.root.dataset.themeSwitching).toBe('');
+    theme.dispose();
+    expect('themeSwitching' in page.root.dataset).toBe(false);
+    page.nextFrame();
+    page.nextFrame();
+    expect('themeSwitching' in page.root.dataset).toBe(false);
+  });
+
   test('an unknown choice is an error, not a silent fallback', () => {
     const theme = createTheme(() => {}, options(fakeStorage(), fakeSystem(false)));
     expect(() => theme.choose('sepia' as never)).toThrow(RangeError);

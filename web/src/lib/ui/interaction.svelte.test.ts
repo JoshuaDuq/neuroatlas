@@ -107,8 +107,10 @@ describe('focus registry', () => {
   afterEach(() => {
     while (unregister.length) unregister.pop()!();
   });
-  const register = (name: string, resolve: () => HTMLElement | null) =>
-    unregister.push(registerFocusTarget(name, resolve));
+  const register = (
+    name: Parameters<typeof registerFocusTarget>[0],
+    resolve: () => HTMLElement | null,
+  ) => unregister.push(registerFocusTarget(name, resolve));
 
   test('resolves lazily, so an element rendered later is found', () => {
     register(FOCUS_TARGETS.regionTitle, () => document.getElementById('title'));
@@ -120,14 +122,18 @@ describe('focus registry', () => {
 
   test('a hidden, disabled or inert target is skipped for the fallback', () => {
     html(`<button id="undo" disabled>Undo</button>
-      <div hidden><button id="restore">Restore</button></div>
-      <div inert><button id="inert">Inert</button></div>
+      <div hidden><button id="title">Title</button></div>
+      <div inert><button id="tab">Tab</button></div>
       <button id="tree" tabindex="0">Tree</button>`);
     register(FOCUS_TARGETS.dissectionUndo, () => document.getElementById('undo'));
-    register('restore', () => document.getElementById('restore'));
-    register('inert', () => document.getElementById('inert'));
+    register(FOCUS_TARGETS.regionTitle, () => document.getElementById('title'));
+    register(FOCUS_TARGETS.activeTab, () => document.getElementById('tab'));
     register(FOCUS_TARGETS.treeStop, () => document.getElementById('tree'));
-    for (const name of [FOCUS_TARGETS.dissectionUndo, 'restore', 'inert']) {
+    for (const name of [
+      FOCUS_TARGETS.dissectionUndo,
+      FOCUS_TARGETS.regionTitle,
+      FOCUS_TARGETS.activeTab,
+    ]) {
       expect(requestFocus(name), name).toBe(false);
       expect(requestFocus(name, { fallback: FOCUS_TARGETS.treeStop }), name).toBe(true);
       expect(document.activeElement?.id).toBe('tree');
@@ -137,20 +143,30 @@ describe('focus registry', () => {
 
   test('reports false when a target is visible but cannot take focus', () => {
     html('<div id="plain">Not focusable</div>');
-    register('plain', () => document.getElementById('plain'));
-    expect(requestFocus('plain')).toBe(false);
+    register(FOCUS_TARGETS.regionTitle, () => document.getElementById('plain'));
+    expect(requestFocus(FOCUS_TARGETS.regionTitle)).toBe(false);
   });
 
-  test('an unknown name or a duplicate registration is an error', () => {
-    expect(() => requestFocus('nobody')).toThrow('No focus target registered: nobody');
-    register('twice', () => null);
-    expect(() => registerFocusTarget('twice', () => null)).toThrow('already registered');
+  test('an unregistered target is skipped for the fallback, and false when nothing takes focus', () => {
+    html('<button id="tree" tabindex="0">Tree</button>');
+    expect(requestFocus(FOCUS_TARGETS.dissectionUndo)).toBe(false);
+    expect(requestFocus(FOCUS_TARGETS.dissectionUndo, { fallback: FOCUS_TARGETS.treeStop })).toBe(
+      false,
+    );
+    register(FOCUS_TARGETS.treeStop, () => document.getElementById('tree'));
+    expect(requestFocus(FOCUS_TARGETS.dissectionUndo, { fallback: FOCUS_TARGETS.treeStop })).toBe(
+      true,
+    );
+    expect(document.activeElement?.id).toBe('tree');
   });
 
-  test('unregistering frees the name', () => {
-    const off = registerFocusTarget('temporary', () => null);
+  test('a duplicate registration is an error, and unregistering frees the name', () => {
+    const off = registerFocusTarget(FOCUS_TARGETS.treeStop, () => null);
+    expect(() => registerFocusTarget(FOCUS_TARGETS.treeStop, () => null)).toThrow(
+      'already registered',
+    );
     off();
-    expect(() => requestFocus('temporary')).toThrow('No focus target registered');
+    unregister.push(registerFocusTarget(FOCUS_TARGETS.treeStop, () => null));
   });
 
   test('rescueFocus acts only when focus is stranded', () => {
@@ -178,6 +194,15 @@ describe('focus registry', () => {
     expect(document.activeElement).toBe(opener);
     opener.remove();
     expect(back()).toBe(false);
+  });
+
+  test('captureInvoker has nothing to return to when no element had focus', () => {
+    html('<button id="other">Other</button>');
+    (document.activeElement as HTMLElement).blur();
+    const back = captureInvoker();
+    document.getElementById('other')!.focus();
+    expect(back()).toBe(false);
+    expect(document.activeElement?.id).toBe('other');
   });
 });
 

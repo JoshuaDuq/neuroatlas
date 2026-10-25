@@ -234,10 +234,10 @@ describe('announcer timing', () => {
     ];
     const run = (create: 'legacy' | 'new') => {
       const writes: Array<[number, string]> = [];
-      let clock = 0;
+      const start = Date.now();
       const element = {
         set textContent(value: string) {
-          writes.push([clock, value]);
+          writes.push([Date.now() - start, value]);
         },
       } as unknown as HTMLElement;
       const release = create === 'new' ? attachAnnouncer(element) : () => {};
@@ -247,12 +247,11 @@ describe('announcer timing', () => {
           : createDebouncedAnnouncer().say.bind(null);
       for (const [wait, text] of script) {
         vi.advanceTimersByTime(wait);
-        clock += wait;
         say(text);
       }
       vi.advanceTimersByTime(2000);
       release();
-      return writes.map(([at, text]) => [Math.min(at, 99999), text]);
+      return writes;
     };
     // The new announcer reports repeats as clear-then-set; the script never repeats a sentence
     // already in the region, so the two paths write identically.

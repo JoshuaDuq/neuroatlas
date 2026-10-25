@@ -89,7 +89,9 @@ export function createTheme(
     },
     dispose() {
       follow(false);
+      // A switch still inside its two frames would otherwise hold transitions off for good.
       cancelAnimationFrame(frame);
+      delete document.documentElement.dataset.themeSwitching;
     },
   };
 }

@@ -13,4 +13,4 @@ ui/roving.js:48-56 moves focus and calls `preventDefault()` on any ArrowLeft/Rig
 
 ## Standard cited
 
-WAI-ARIA Authoring Practices 1.2, Toolbar pattern keyboard interaction (the navigation keys are the unmodified arrows, Home and End); WCAG 2.2 SC 2.1.4 spirit and platform practice: browser and OS shortcuts are not overridden by page widgets.
+WAI-ARIA Authoring Practices, "Developing a Keyboard Interface" > Keyboard Shortcuts, https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#keyboardshortcuts: "Browser Key Conflicts" (history functions such as Alt+Left and Alt+Right) and "Operating System Key Conflicts" (Meta key plus any other single key).

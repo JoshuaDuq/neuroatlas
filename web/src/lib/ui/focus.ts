@@ -10,15 +10,17 @@ export const FOCUS_TARGETS = {
   activeTab: 'active-tab',
 } as const;
 
+type FocusTargetName = (typeof FOCUS_TARGETS)[keyof typeof FOCUS_TARGETS];
+
 type Resolver = () => HTMLElement | null;
 
-const targets = new Map<string, Resolver>();
+const targets = new Map<FocusTargetName, Resolver>();
 
 /**
  * Registers `resolve` for `name`. It runs at request time, so a target that is rendered later,
  * or replaced, is still found. Returns the function that unregisters it.
  */
-export function registerFocusTarget(name: string, resolve: Resolver): () => void {
+export function registerFocusTarget(name: FocusTargetName, resolve: Resolver): () => void {
   if (targets.has(name)) throw new Error(`Focus target already registered: ${name}`);
   targets.set(name, resolve);
   return () => {
@@ -42,13 +44,12 @@ function focusable(element: HTMLElement | null): element is HTMLElement {
  * was placed, so the caller can tell a hand-off that landed from one that did not.
  */
 export function requestFocus(
-  name: string,
-  { fallback, ...options }: FocusOptions & { fallback?: string } = {},
+  name: FocusTargetName,
+  { fallback, ...options }: FocusOptions & { fallback?: FocusTargetName } = {},
 ): boolean {
   for (const candidate of fallback === undefined ? [name] : [name, fallback]) {
-    const resolve = targets.get(candidate);
-    if (!resolve) throw new Error(`No focus target registered: ${candidate}`);
-    const element = resolve();
+    // An owner that is not mounted has no target: skip it, as for a resolver that finds nothing.
+    const element = targets.get(candidate)?.() ?? null;
     if (!focusable(element)) continue;
     element.focus(options);
     if (element.ownerDocument.activeElement === element) return true;
@@ -60,7 +61,10 @@ export function requestFocus(
  * A control that hid or disabled itself leaves focus on the page. If focus is stranded like
  * that, `name` takes it (app.js:548-554: the tab in front, which is on screen in both shells).
  */
-export function rescueFocus(name: string, options?: FocusOptions & { fallback?: string }): boolean {
+export function rescueFocus(
+  name: FocusTargetName,
+  options?: FocusOptions & { fallback?: FocusTargetName },
+): boolean {
   const current = document.activeElement;
   if (current && current !== document.body && focusable(current as HTMLElement)) return false;
   return requestFocus(name, options);
@@ -72,6 +76,8 @@ export function rescueFocus(name: string, options?: FocusOptions & { fallback?: 
  */
 export function captureInvoker(): () => boolean {
   const invoker = document.activeElement as HTMLElement | null;
+  // Nothing had focus, so there is no opener to return to.
+  if (!invoker || invoker === document.body) return () => false;
   return () => {
     if (!focusable(invoker)) return false;
     invoker.focus();
