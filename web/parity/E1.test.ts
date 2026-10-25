@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it, onTestFinished, vi } from 'vitest';
