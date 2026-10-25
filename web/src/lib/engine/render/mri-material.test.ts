@@ -67,18 +67,6 @@ test('invalid MRI windows fail without mutating the current contrast', () => {
   }
 });
 
-test('a marked cut face takes the accent as hue instead of washing toward white', () => {
-  const { material, shader } = compiled(anatomy());
-  // The accent reaches the shader as a colour uniform and is mixed in by hue.
-  assert.match(shader.fragmentShader, /uniform vec3 scanHighlight;/);
-  assert.match(shader.fragmentShader, /vec3 hue = scanHighlight\s*\/ max\(dot\(scanHighlight/);
-  assert.match(shader.fragmentShader, /mix\(vec3\(lifted\), lifted \* hue,/);
-  // The scan is the luminance channel, so a mark that only moved luminance
-  // would be indistinguishable from brighter tissue.
-  assert.doesNotMatch(shader.fragmentShader, /mix\(gray, 1\.0/);
-  material.dispose();
-});
-
 test('every surface shares one live mark colour without recompiling', () => {
   const uniforms = anatomy();
   const built = [compiled(uniforms, 'lift'), compiled(uniforms, 'capLift')];

@@ -255,20 +255,24 @@ describe('the onBeforeCompile patches and their compositions compile to the same
     ['from config/model.yaml', configAppearance],
   ] as const) {
     for (const withNetworks of [false, true]) {
-      for (const kind of ['cortex', 'non-region']) {
+      for (const kind of ['cortex', 'non-region', 'structure', 'tissue-region']) {
+        // Only cortical meshes are feathered (brain-atlas.js:416); the others take the MRI alone.
+        const cortical = kind === 'cortex' || kind === 'non-region';
         const label = `${appearance[0]}, ${withNetworks ? 'networked' : 'plain'} ${kind}`;
         compositions.push({
           name: `anatomical surface, ${label}`,
           run: (impl) => [surface(impl, appearance[1], withNetworks, { id: 'r', kind })],
         });
-        compositions.push({
-          name: `anatomical surface + feather, ${label}`,
-          run: (impl) => {
-            const material = surface(impl, appearance[1], withNetworks, { id: 'r', kind });
-            modules(impl).addFeather(material, new DataTexture(new Float32Array(8), 2, 1));
-            return [material];
-          },
-        });
+        if (cortical) {
+          compositions.push({
+            name: `anatomical surface + feather, ${label}`,
+            run: (impl) => {
+              const material = surface(impl, appearance[1], withNetworks, { id: 'r', kind });
+              modules(impl).addFeather(material, new DataTexture(new Float32Array(8), 2, 1));
+              return [material];
+            },
+          });
+        }
         for (const mark of HIGHLIGHTS) {
           compositions.push({
             name: `anatomical surface + MRI ${mark}, ${label}`,
@@ -281,26 +285,30 @@ describe('the onBeforeCompile patches and their compositions compile to the same
           });
           // brain-atlas.js adds the MRI before the feather when the scan is already attached,
           // and the feather before it when the scan is attached afterwards.
-          compositions.push({
-            name: `anatomical surface + MRI ${mark} + feather, ${label}`,
-            run: (impl, anatomy) => {
-              const { addMri, mriUniforms, addFeather } = modules(impl);
-              const material = surface(impl, appearance[1], withNetworks, { id: 'r', kind });
-              addMri(material, mriUniforms(anatomy), mark);
-              addFeather(material, new DataTexture(new Float32Array(8), 2, 1));
-              return [material];
-            },
-          });
-          compositions.push({
-            name: `anatomical surface + feather + MRI ${mark}, ${label}`,
-            run: (impl, anatomy) => {
-              const { addMri, mriUniforms, addFeather } = modules(impl);
-              const material = surface(impl, appearance[1], withNetworks, { id: 'r', kind });
-              addFeather(material, new DataTexture(new Float32Array(8), 2, 1));
-              addMri(material, mriUniforms(anatomy), mark);
-              return [material];
-            },
-          });
+          if (cortical) {
+            compositions.push({
+              name: `anatomical surface + MRI ${mark} + feather, ${label}`,
+              run: (impl, anatomy) => {
+                const { addMri, mriUniforms, addFeather } = modules(impl);
+                const material = surface(impl, appearance[1], withNetworks, { id: 'r', kind });
+                addMri(material, mriUniforms(anatomy), mark);
+                addFeather(material, new DataTexture(new Float32Array(8), 2, 1));
+                return [material];
+              },
+            });
+          }
+          if (cortical) {
+            compositions.push({
+              name: `anatomical surface + feather + MRI ${mark}, ${label}`,
+              run: (impl, anatomy) => {
+                const { addMri, mriUniforms, addFeather } = modules(impl);
+                const material = surface(impl, appearance[1], withNetworks, { id: 'r', kind });
+                addFeather(material, new DataTexture(new Float32Array(8), 2, 1));
+                addMri(material, mriUniforms(anatomy), mark);
+                return [material];
+              },
+            });
+          }
         }
       }
     }
