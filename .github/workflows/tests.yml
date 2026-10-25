@@ -257,4 +257,5 @@ jobs:
             web/test-results/
             web/playwright-report/
             web/src/**/__screenshots__/
+            web/.vitest/attachments/
           if-no-files-found: ignore
