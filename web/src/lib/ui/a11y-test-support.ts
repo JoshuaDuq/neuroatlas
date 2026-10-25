@@ -20,11 +20,12 @@ async function violations(): Promise<string[]> {
 /** axe (wcag2a/aa, 21aa, 22aa) on what is rendered now: light and dark, desktop and 390 px. */
 export async function expectAxeClean(): Promise<void> {
   const root = document.documentElement;
+  // Colour transitions would let axe read a half-way colour on a slow runner.
+  const still = document.head.appendChild(document.createElement('style'));
+  still.textContent = '*, *::before, *::after { transition: none !important; }';
   try {
     for (const theme of ['light', 'dark']) {
       root.dataset.theme = theme;
-      // Let the colour transitions finish: axe would read a half-way colour.
-      await new Promise((resolve) => setTimeout(resolve, 300));
       for (const [width, height] of [
         [1280, 800],
         [390, 844],
@@ -34,6 +35,7 @@ export async function expectAxeClean(): Promise<void> {
       }
     }
   } finally {
+    still.remove();
     delete root.dataset.theme;
     await page.viewport(1280, 800);
   }
