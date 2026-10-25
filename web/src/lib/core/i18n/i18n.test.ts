@@ -189,3 +189,15 @@ test('the MRI area names every tissue label in both languages, and its dialog is
     '2 × 3 source voxels · 1 mm spacing',
   );
 });
+
+test('both languages explain the actual denominator and the display threshold', () => {
+  const english = t('en', 'networks');
+  const french = t('fr', 'networks');
+  assert.match(english.notes.vertices, /vertices/);
+  assert.match(english.notes.voxels, /voxels/);
+  assert.match(french.notes.vertices, /sommets/);
+  assert.match(french.notes.voxels, /voxels/);
+  for (const notes of [english.notes, french.notes]) {
+    for (const note of Object.values(notes)) assert.match(note, /5\s?%/);
+  }
+});
