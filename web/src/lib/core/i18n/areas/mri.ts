@@ -43,13 +43,13 @@ export const en = {
 export const fr: typeof en = {
   dialog: {
     close: 'Fermer',
-    hint: 'Cliquer une coupe pour placer le réticule. Défiler pour parcourir les coupes ; les flèches déplacent d’un voxel.',
+    hint: 'Cliquer sur une coupe pour placer le réticule. Faire défiler pour parcourir les coupes ; les touches fléchées déplacent le réticule d’un voxel.',
     plane: 'Vue',
     all: 'Coupes liées + 3D',
     axial: 'Axiale',
     coronal: 'Coronale',
     sagittal: 'Sagittale',
-    voxel: 'Voxel source (indice 0)',
+    voxel: 'Voxel source (indices à partir de 0)',
     go: 'Aller au voxel',
     window: 'Fenêtre',
     center: 'Niveau',

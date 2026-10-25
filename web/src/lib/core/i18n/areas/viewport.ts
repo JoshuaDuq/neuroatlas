@@ -1,4 +1,7 @@
-const megabytes = (bytes: number) => (bytes / 1_048_576).toFixed(1);
+import { decimal, withUnit } from '../../format.ts';
+
+const megabytes = (bytes: number, unit: 'MB' | 'Mo', lang: 'en' | 'fr') =>
+  withUnit(decimal(bytes / 1_048_576, 1, lang), unit, lang);
 
 export const en = {
   navigationHint: 'Drag to rotate · Scroll to zoom · Click to inspect',
@@ -24,7 +27,7 @@ export const en = {
   fullscreen: 'Full screen',
   loadingAnatomy: 'Loading anatomy…',
   loadingWithTotal: (l: number, t: number) =>
-    `Loading anatomy · ${megabytes(l)} / ${megabytes(t)} MB`,
+    `Loading anatomy · ${megabytes(l, 'MB', 'en')} / ${megabytes(t, 'MB', 'en')}`,
   progressAria: 'Anatomy download',
   loaded: 'Anatomy loaded.',
   canvasRole: '3D anatomy viewer',
@@ -55,7 +58,7 @@ export const fr: typeof en = {
   fullscreen: 'Plein écran',
   loadingAnatomy: 'Chargement de l’anatomie…',
   loadingWithTotal: (l: number, t: number) =>
-    `Chargement de l’anatomie · ${megabytes(l)} / ${megabytes(t)} Mo`,
+    `Chargement de l’anatomie · ${megabytes(l, 'Mo', 'fr')} / ${megabytes(t, 'Mo', 'fr')}`,
   progressAria: 'Téléchargement de l’anatomie',
   loaded: 'Anatomie chargée.',
   canvasRole: 'visionneuse anatomique 3D',

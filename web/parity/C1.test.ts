@@ -81,7 +81,7 @@ const KINDS: Record<string, string> = {
   'mpr.readout': 'ssn',
   'navigator.showingCapped': 'ns',
   'shortcuts.singleKeysNote': 'b',
-  'viewport.loadingWithTotal': 'nn',
+
   'clinical.evidenceKind': 'n',
   'clinical.deepMapped': 'sn',
   'clinical.otherMapped': 'n',
@@ -93,6 +93,7 @@ const KINDS: Record<string, string> = {
   'circuits.step': 'nn',
   'circuits.stepShort': 'nn',
   'diffusion.streamlines': 'nn',
+  'diffusion.bundleCollection': 'n',
   'mri.grid': 'ds',
 };
 
@@ -133,6 +134,9 @@ function resolve(node: unknown, area: string, leaf = ''): unknown {
   return node;
 }
 
+const without = (node: unknown, ...keys: string[]) =>
+  Object.fromEntries(Object.entries(node as object).filter(([key]) => !keys.includes(key)));
+
 /** The composed table of one language, with the areas this chunk adds left out. */
 const withoutAdditions = (table: Record<string, unknown>) => {
   const { mri: _mri, clinical: _clinical, circuits: _circuits, diffusion, ...rest } = table;
@@ -147,9 +151,11 @@ describe('C1 i18n against the legacy modules', () => {
       const legacy = { ...LEGACY_TRANSLATIONS[lang] };
       assert.deepStrictEqual(Object.keys(rest).sort(), Object.keys(legacy).sort());
       for (const area of Object.keys(legacy)) {
+        // The loading line's megabytes are a deviation, asserted below.
+        const leaf = area === 'viewport' ? ['loadingWithTotal'] : [];
         assert.deepStrictEqual(
-          resolve(rest[area], area),
-          resolve(legacy[area as keyof typeof legacy], area),
+          resolve(without(rest[area], ...leaf), area),
+          resolve(without(legacy[area as keyof typeof legacy], ...leaf), area),
           `${lang}.${area}`,
         );
       }
@@ -172,12 +178,32 @@ describe('C1 i18n against the legacy modules', () => {
     });
   }
 
+  it("the loading line sets megabytes in the reader's notation (c1-loading-megabytes)", () => {
+    assert.equal(
+      TRANSLATIONS.en.viewport.loadingWithTotal(12.3 * 1_048_576, 46.1 * 1_048_576),
+      'Loading anatomy · 12.3\u202fMB / 46.1\u202fMB',
+    );
+    assert.equal(
+      TRANSLATIONS.fr.viewport.loadingWithTotal(12.3 * 1_048_576, 46.1 * 1_048_576),
+      'Chargement de l’anatomie · 12,3\u202fMo / 46,1\u202fMo',
+    );
+  });
+
   it('t falls back to English exactly as the legacy lookup does', () => {
     for (const lang of ['en', 'fr', 'de', 'unknown', '']) {
       for (const area of Object.keys(LEGACY_TRANSLATIONS.en)) {
         assert.deepStrictEqual(
-          resolve(t(lang, area as 'header'), area),
-          resolve(legacyT(lang, area), area),
+          resolve(
+            without(
+              t(lang, area as 'header'),
+              ...(area === 'viewport' ? ['loadingWithTotal'] : []),
+            ),
+            area,
+          ),
+          resolve(
+            without(legacyT(lang, area), ...(area === 'viewport' ? ['loadingWithTotal'] : [])),
+            area,
+          ),
         );
       }
     }
@@ -353,11 +379,18 @@ describe('strings moved into the mri area', () => {
   it('the diffusion MRI dialog strings are the legacy TEXT table', () => {
     const legacy = literal('diffusion/navigation-ui.js', 'TEXT');
     for (const lang of ['en', 'fr'] as const) {
+      // Four French wordings are grammar fixes (c1-mri-dialog-french), asserted below.
+      const changed = lang === 'fr' ? ['hint', 'voxel'] : [];
       assert.deepStrictEqual(
-        resolve(TRANSLATIONS[lang].mri.dialog, 'mri'),
-        resolve(legacy[lang], 'mri'),
+        resolve(without(TRANSLATIONS[lang].mri.dialog, ...changed), 'mri'),
+        resolve(without(legacy[lang], ...changed), 'mri'),
       );
     }
+    assert.equal(
+      TRANSLATIONS.fr.mri.dialog.hint,
+      'Cliquer sur une coupe pour placer le réticule. Faire défiler pour parcourir les coupes ; les touches fléchées déplacent le réticule d’un voxel.',
+    );
+    assert.equal(TRANSLATIONS.fr.mri.dialog.voxel, 'Voxel source (indices à partir de 0)');
     assert.equal(
       TRANSLATIONS.fr.mri.dialog.grid([1, 2, 3], '1 mm'),
       legacy.fr.grid([1, 2, 3], '1 mm'),

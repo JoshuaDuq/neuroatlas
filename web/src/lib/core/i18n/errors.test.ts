@@ -18,6 +18,13 @@ test('a newer deploy asks for a reload, in either language', () => {
   }
 });
 
+test('a failed layer switch is said in French when the reader reads French', () => {
+  assert.match(
+    failureNotice(new Error('boom'), 'fr', 'layer', 'Destrieux').text,
+    /^Impossible de charger Destrieux\./,
+  );
+});
+
 test('a failed download says what could not be done and what to check, never the HTTP detail', () => {
   const { text, action } = failureNotice(
     assetError('asset-fetch', 'Asset request failed: HTTP 503'),
