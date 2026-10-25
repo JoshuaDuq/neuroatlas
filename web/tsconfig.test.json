@@ -8,7 +8,8 @@
     "src/**/*test-support.ts",
     "src/**/*-suite.ts",
     "test/**/*.ts",
-    "types/*.d.ts"
+    "types/*.d.ts",
+    "src/styles/sources.ts"
   ],
   "exclude": ["src/service-worker.ts"]
 }
