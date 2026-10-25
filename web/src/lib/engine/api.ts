@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 /**
  * The engine contract: every call the application makes into the imperative
  * Three.js / NiiVue side, and every event it hears back, in plain data.

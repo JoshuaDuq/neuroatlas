@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 // U2 parity: the legacy modules and the ports run the same scripted inputs and must leave
 // identical traces. Deviations (docs/decisions/deviations/u2-*.md) are kept out of these scripts
 // and tested where they differ.
