@@ -1,7 +1,9 @@
 <!--
   A non-modal disclosure (APG Disclosure; decisions 0005 and #4 decision 14): the trigger carries
   aria-expanded and aria-controls, the content is ordinary controls in the tab order.
-  - one popover is open at a time: opening another moves focus into it, which closes this one;
+  - one popover is open at a time: opening another closes it;
+  - the menu variant leaves focus on the trigger (APG Disclosure; Tab enters the content); the
+    stage variant moves it to the pressed control (stage-tools.js:66-69);
   - Escape closes it, is marked handled so the page's Escape does not also clear the selection,
     and returns focus to the trigger; so does a command (`close` in the content snippet);
   - Tab or a press elsewhere closes it and focus stays where the user moved it;
@@ -10,6 +12,10 @@
   order (WCAG 2.4.3), and it is drawn inside a fullscreen #viewport.
 -->
 <script lang="ts" module>
+  // The open popover: a second one opening closes it, and a stage popover opening over a stage
+  // popover appears without its entry (stage-tools.js:71-74).
+  let current: { variant: string; dismiss: () => void } | null = null;
+
   const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 </script>
 
@@ -20,8 +26,6 @@
 
   interface Props {
     open?: boolean;
-    /** The content's accessible name. */
-    label: string;
     /** `menu` floats under its trigger; `stage` is placed by its owner through `class` and `style`. */
     variant?: 'menu' | 'stage';
     align?: 'start' | 'center' | 'end';
@@ -35,7 +39,6 @@
 
   let {
     open = $bindable(false),
-    label,
     variant = 'menu',
     align = 'end',
     class: className,
@@ -59,6 +62,19 @@
     document.getElementById(triggerId)!.focus({ preventScroll: true });
   }
 
+  $effect(() => {
+    if (!open) return;
+    const entry = { variant, dismiss: () => close({ instantly: true }) };
+    if (current !== null) {
+      if (variant === 'stage' && current.variant === 'stage') instant = true;
+      current.dismiss();
+    }
+    current = entry;
+    return () => {
+      if (current === entry) current = null;
+    };
+  });
+
   const own = (node: EventTarget | null) =>
     node instanceof Element && node.closest(`[id="${triggerId}"]`) !== null;
 
@@ -81,6 +97,16 @@
   const onCloseAutoFocus = (event: Event) => event.preventDefault();
 
   function onkeydown(event: KeyboardEvent) {
+    // The page uses ↑ ↓ to walk the anatomy tree; inside a popover they stay put (header.js:147-151).
+    if (
+      !event.defaultPrevented &&
+      (event.key === 'ArrowUp' || event.key === 'ArrowDown') &&
+      content?.contains(event.target as Node) &&
+      (event.target as Element).matches('button, [type="checkbox"]')
+    ) {
+      event.preventDefault();
+      return;
+    }
     if (event.key !== 'Escape' || !open) return;
     event.preventDefault();
     close({ restoreFocus: true, instantly: true });
@@ -115,7 +141,6 @@
     {#if variant === 'stage'}
       <Popover.ContentStatic
         bind:ref={content}
-        aria-label={label}
         class={['popover', className]}
         data-variant="stage"
         data-instant={instant ? '' : undefined}
@@ -129,7 +154,6 @@
     {:else}
       <Popover.Content
         bind:ref={content}
-        aria-label={label}
         class={['popover', className]}
         data-variant="menu"
         data-instant={instant ? '' : undefined}
@@ -139,7 +163,7 @@
         sideOffset={4}
         collisionPadding={8}
         trapFocus={false}
-        onOpenAutoFocus={focusStart}
+        onOpenAutoFocus={(event) => event.preventDefault()}
         {onCloseAutoFocus}
       >
         {@render children({ close: () => close({ restoreFocus: true, instantly: instant }) })}
@@ -182,6 +206,12 @@
       font-size: var(--text-ui);
       text-align: left;
       transform-origin: 0 100%;
+    }
+    /* Outside presses and pointer commands fade out over --popover-exit (stage.css:419-423). */
+    :global(.popover[data-variant='stage'][data-ending-style]) {
+      opacity: 0;
+      transform: scale(0.97);
+      transition-duration: var(--popover-exit);
     }
     :global(.popover[data-instant]) {
       transition: none;

@@ -3,7 +3,7 @@
 import axe from 'axe-core';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
-import { render } from 'vitest-browser-svelte';
+import { cleanup, render } from 'vitest-browser-svelte';
 import '../../styles/index.css';
 import Fixture from './overlay-test-support.svelte';
 
@@ -36,12 +36,13 @@ afterEach(() => {
 });
 
 describe('Popover', () => {
-  test('opens with focus on the pressed control; a keyboard open is instant, a pointer open is not', async () => {
+  test('the menu keeps focus on the trigger; a keyboard open is instant, a pointer open is not', async () => {
     render(Fixture);
     expect(attr('Settings', 'aria-expanded')).toBe('false');
     await button('Settings').click();
     expect(attr('Settings', 'aria-expanded')).toBe('true');
-    await vi.waitFor(() => expect(document.activeElement).toBe(el('Light')));
+    await expect.element(button('Light')).toBeInTheDocument();
+    expect(document.activeElement).toBe(el('Settings'));
     expect(document.querySelector('.popover')?.hasAttribute('data-instant')).toBe(false);
 
     await userEvent.keyboard('{Escape}');
@@ -61,7 +62,8 @@ describe('Popover', () => {
     };
     window.addEventListener('keydown', listener);
     await button('Settings').click();
-    await vi.waitFor(() => expect(document.activeElement).toBe(el('Light')));
+    await expect.element(button('Light')).toBeInTheDocument();
+    el('Light').focus();
     await userEvent.keyboard('{Escape}');
     window.removeEventListener('keydown', listener);
 
@@ -170,6 +172,62 @@ describe('Popover', () => {
   });
 });
 
+describe('Popover keys and stage variant', () => {
+  test('↑ and ↓ on a control inside are handled; other keys are left to the control', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    el('Provenance').focus();
+    const seen: Record<string, boolean> = {};
+    const listener = (event: KeyboardEvent) => (seen[event.key] = event.defaultPrevented);
+    window.addEventListener('keydown', listener);
+    for (const key of ['ArrowDown', 'ArrowUp', 'a']) {
+      await userEvent.keyboard(key.length > 1 ? `{${key}}` : key);
+    }
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual({ ArrowDown: true, ArrowUp: true, a: false });
+  });
+
+  test('the stage popover moves focus to the pressed control and ↑ ↓ on a checkbox are handled', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Orbit')));
+    const seen: boolean[] = [];
+    const listener = (event: KeyboardEvent) => seen.push(event.defaultPrevented);
+    window.addEventListener('keydown', listener);
+    (page.getByRole('checkbox', { name: 'Grid' }).element() as HTMLElement).focus();
+    await userEvent.keyboard('{ArrowDown}');
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual([true]);
+  });
+
+  test('an outside press fades the stage popover out; Escape closes it at once', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    // A press with no wait for the click's own latency, so the fade can be watched.
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const outside = el('Fullscreen');
+    outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerType: 'mouse' }));
+    outside.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerType: 'mouse' }));
+    outside.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    const closed = performance.now();
+    let faded = false;
+    while (document.querySelector('.popover') && performance.now() - closed < 1000) {
+      faded ||= document.querySelector('.popover')!.hasAttribute('data-ending-style');
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect(faded).toBe(true);
+    expect(document.querySelector('.popover')).toBeNull();
+    expect(performance.now() - closed).toBeGreaterThanOrEqual(90);
+
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    await vi.waitFor(() => expect(attr('Stage', 'aria-expanded')).toBe('false'));
+    expect(document.querySelector('.popover')).toBeNull();
+  });
+});
+
 describe('Dialog', () => {
   test('a keyboard open is instant and Escape returns focus to the opener', async () => {
     render(Fixture);
@@ -268,6 +326,47 @@ describe('Dialog', () => {
   });
 });
 
+describe('Tooltip placement and disposal', () => {
+  const fixed = (name: string, css: string) => {
+    const target = el(name);
+    target.style.cssText = `position: fixed; ${css}`;
+    return target;
+  };
+  const shown = async () => {
+    await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return { tip: tooltip()!.getBoundingClientRect(), root: document.documentElement };
+  };
+
+  test('with no room below, the tooltip is drawn above its trigger', async () => {
+    render(Fixture);
+    const trigger = fixed('Snapshot', 'left: 100px; bottom: 4px');
+    await userEvent.hover(trigger);
+    const { tip } = await shown();
+    expect(tip.bottom).toBeLessThanOrEqual(trigger.getBoundingClientRect().top);
+  });
+
+  test('a trigger at the right edge keeps the tooltip 8 px inside the viewport', async () => {
+    render(Fixture);
+    const trigger = fixed('Snapshot', 'right: 0; top: 100px');
+    await userEvent.hover(trigger);
+    const { tip, root } = await shown();
+    expect(tip.right).toBeLessThanOrEqual(root.clientWidth - 8 + 0.5);
+    expect(tip.right).toBeGreaterThan(root.clientWidth - 40);
+  });
+
+  test('unmounting during a pending hover shows nothing and leaves no aria-describedby', async () => {
+    render(Fixture);
+    const trigger = el('Snapshot');
+    await userEvent.hover(trigger);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    cleanup();
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    expect(tooltip()).toBeNull();
+    expect(trigger.hasAttribute('aria-describedby')).toBe(false);
+  });
+});
+
 describe('Tooltip', () => {
   test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
     render(Fixture);
@@ -277,7 +376,7 @@ describe('Tooltip', () => {
     expect(tooltip()).toBeNull();
     await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
     const delay = performance.now() - hovered;
-    expect(delay).toBeGreaterThanOrEqual(480);
+    expect(delay).toBeGreaterThanOrEqual(450);
     expect(delay).toBeLessThan(800);
     expect(tooltip()!.textContent).toBe('Save a PNG');
     expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);

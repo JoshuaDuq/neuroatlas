@@ -11,6 +11,7 @@
   let dialogInstant = $state(false);
   let settingsOpen = $state(false);
   let dataOpen = $state(false);
+  let stageOpen = $state(false);
   let picked = $state('');
   let fallback: HTMLButtonElement;
 </script>
@@ -20,7 +21,7 @@
 <button type="button" data-tooltip="Save a PNG">Snapshot</button>
 <button type="button" data-tooltip="Enter full screen">Fullscreen</button>
 
-<Popover bind:open={settingsOpen} label="Settings">
+<Popover bind:open={settingsOpen}>
   {#snippet trigger({ props })}
     <button {...props} type="button">Settings</button>
   {/snippet}
@@ -31,12 +32,22 @@
   {/snippet}
 </Popover>
 
-<Popover bind:open={dataOpen} label="Data summary">
+<Popover bind:open={dataOpen}>
   {#snippet trigger({ props })}
     <button {...props} type="button">Data</button>
   {/snippet}
   {#snippet children()}
     <button type="button">Subject</button>
+  {/snippet}
+</Popover>
+
+<Popover variant="stage" bind:open={stageOpen}>
+  {#snippet trigger({ props })}
+    <button {...props} type="button">Stage</button>
+  {/snippet}
+  {#snippet children()}
+    <button type="button" aria-pressed="true">Orbit</button>
+    <input type="checkbox" aria-label="Grid" />
   {/snippet}
 </Popover>
 
