@@ -15,5 +15,10 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "types/*.d.ts"],
-  "exclude": ["src/service-worker.ts", "src/**/*.test.ts", "src/**/*test-support.ts"]
+  "exclude": [
+    "src/service-worker.ts",
+    "src/**/*.test.ts",
+    "src/**/*test-support.ts",
+    "src/**/*-suite.ts"
+  ]
 }

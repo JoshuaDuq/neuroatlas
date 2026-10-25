@@ -3,6 +3,12 @@
   "compilerOptions": {
     "types": ["svelte", "vite/client", "node"]
   },
-  "include": ["src/**/*.test.ts", "src/**/*test-support.ts", "test/**/*.ts", "types/*.d.ts"],
+  "include": [
+    "src/**/*.test.ts",
+    "src/**/*test-support.ts",
+    "src/**/*-suite.ts",
+    "test/**/*.ts",
+    "types/*.d.ts"
+  ],
   "exclude": ["src/service-worker.ts"]
 }
