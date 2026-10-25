@@ -31,8 +31,6 @@ afterEach(() => {
   history.replaceState(null, '', location.pathname);
 });
 
-const skipLink = (name = 'Skip to model') => page.getByRole('link', { name, exact: true });
-
 describe('landmarks', () => {
   test('one banner, complementary, main and contentinfo, in that order', async () => {
     mountShell();
@@ -65,49 +63,24 @@ describe('landmarks', () => {
   });
 });
 
-describe('skip link', () => {
-  test('is the first Tab stop, clipped until focused, in the reader’s language', async () => {
-    mountShell({ lang: 'fr' });
-    const link = skipLink('Aller au modèle').element() as HTMLElement;
-    expect(link.getBoundingClientRect().width).toBeLessThanOrEqual(1);
-    await userEvent.tab();
-    expect(document.activeElement).toBe(link);
-    const box = link.getBoundingClientRect();
-    expect(box.width).toBeGreaterThan(24);
-    expect(box.height).toBeGreaterThanOrEqual(24);
-  });
-
-  test('Enter focuses the canvas and leaves the link state alone', async () => {
+describe('tab order', () => {
+  test('the masthead comes first, then the panel, then the stage; main is a focus target only', async () => {
     mountShell();
-    const canvas = target.querySelector('main')!.appendChild(document.createElement('canvas'));
-    canvas.tabIndex = 0;
-    location.hash = '#tab=functions';
-    await userEvent.tab();
-    await userEvent.keyboard('{Enter}');
-    expect(document.activeElement).toBe(canvas);
-    expect(location.hash).toBe('#tab=functions');
+    const stops = ['header', 'aside', 'main'].map((selector) =>
+      target.querySelector(selector)!.appendChild(document.createElement('button')),
+    );
+    for (const stop of stops) {
+      await userEvent.tab();
+      expect(document.activeElement).toBe(stop);
+    }
+    const main = target.querySelector('main')!;
+    expect(main.tabIndex).toBe(-1);
+    main.focus();
+    expect(document.activeElement).toBe(main);
   });
 
-  test('Enter focuses the main landmark while no canvas can take focus', async () => {
+  test('passes axe in both themes and at phone width', async () => {
     mountShell();
-    await userEvent.tab();
-    await userEvent.keyboard('{Enter}');
-    expect(document.activeElement).toBe(target.querySelector('main'));
-    // A canvas that is not focusable leaves focus on main as well.
-    target.querySelector('main')!.appendChild(document.createElement('canvas'));
-    await userEvent.tab({ shift: true });
-    await userEvent.keyboard('{Enter}');
-    expect(document.activeElement).toBe(target.querySelector('main'));
-  });
-
-  test('is present on the error screen', async () => {
-    mountShell({ status: 'error' });
-    await expect.element(skipLink()).toBeInTheDocument();
-  });
-
-  test('passes axe focused, in both themes and at phone width', async () => {
-    mountShell();
-    await userEvent.tab();
     await expectAxeClean();
   });
 });

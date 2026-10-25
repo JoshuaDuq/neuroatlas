@@ -1,7 +1,6 @@
 <script lang="ts">
   import './layout.css';
   import { decodeState } from '../lib/core/state/url-state.ts';
-  import { t } from '../lib/core/i18n/index.ts';
   import { startLanguage } from '../lib/state/language.svelte.ts';
   import { PREF_KEYS, readPref } from '../lib/state/prefs.ts';
   import type { Language, SessionState } from '../lib/types/index.ts';
@@ -17,57 +16,13 @@
     lang = startLanguage(decodeState(location.hash).state.lang, readPref(PREF_KEYS.language)),
   }: { status?: SessionState['status']; lang?: Language } = $props();
 
-  let stage = $state<HTMLElement>();
-
   // `#app` is the mount point and the grid, so the legacy `#app[data-status]` selectors keep working.
   $effect(() => {
     document.getElementById('app')!.dataset.status = status;
   });
-
-  /** The 3D view (legacy header.js:178-181), else the main landmark itself. */
-  function skipToModel(event: MouseEvent) {
-    event.preventDefault();
-    const canvas = stage!.querySelector('canvas');
-    canvas?.focus({ focusVisible: true });
-    if (document.activeElement !== canvas) stage!.focus();
-  }
 </script>
 
-<a class="skip-link" href="#viewport" onclick={skipToModel}>{t(lang, 'header').skipToModel}</a>
 <MastheadRegion />
 <PanelsRegion {lang} />
-<StageRegion bind:element={stage} />
+<StageRegion />
 <StatusRegion />
-
-<style>
-  @layer features {
-    /* Clipped until a keyboard reaches it: the first stop on the page. */
-    .skip-link {
-      position: absolute;
-      top: var(--space-2);
-      left: var(--space-2);
-      z-index: 60;
-      display: inline-flex;
-      align-items: center;
-      height: var(--control-height);
-      padding: 0 var(--space-3);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-control);
-      background: var(--surface-base);
-      box-shadow: var(--shadow-popover);
-      color: var(--accent);
-      font-size: var(--text-ui);
-      font-weight: 600;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .skip-link:not(:focus) {
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      border: 0;
-      overflow: hidden;
-      clip-path: inset(50%);
-    }
-  }
-</style>

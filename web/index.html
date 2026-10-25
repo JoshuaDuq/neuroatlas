@@ -54,25 +54,14 @@
         if (theme !== 'light' && theme !== 'dark') {
           theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        var linked = new URLSearchParams(location.hash.replace(/^#/, '')).get('lang');
+        // A repeated `lang` is rejected by decodeState, so it decides nothing here either.
+        var values = new URLSearchParams(location.hash.replace(/^#/, '')).getAll('lang');
+        var linked = values.length === 1 ? values[0] : null;
         root.dataset.theme = theme;
         root.lang = linked === 'en' || linked === 'fr' ? linked : saved === 'fr' ? 'fr' : 'en';
         document
           .querySelector('meta[name="theme-color"]')
           .setAttribute('content', theme === 'dark' ? '#1b1e21' : '#ffffff');
-      })();
-    </script>
-    <!--
-      The preview is published beside the live site and must stay out of search results.
-      Vite writes the build mode in; the live build carries no robots meta.
-    -->
-    <script>
-      (function () {
-        if ('%MODE%' !== 'preview') return;
-        var robots = document.createElement('meta');
-        robots.name = 'robots';
-        robots.content = 'noindex';
-        document.head.append(robots);
       })();
     </script>
   </head>

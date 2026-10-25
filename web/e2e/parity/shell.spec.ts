@@ -1,10 +1,10 @@
-// H1a: the app shell. Landmarks, the skip link, the pre-paint head script and #app[data-status].
+// H1a: the app shell. Landmarks, layout, the focus target of the skip link, the pre-paint head script and #app[data-status].
 // Role and name locators run on `legacy` and `next`; each difference cites its deviation record
 // in web/docs/decisions/deviations/ or decision 13 on #4.
 import { expect, test } from '../fixtures.ts';
 import enabled from './enabled/shell.ts';
 
-test.beforeEach((_fixtures, testInfo) => {
+test.beforeEach(({ page: _page }, testInfo) => {
   test.skip(testInfo.project.name === 'next' && !enabled, 'the next shell region is not enabled');
 });
 
@@ -62,45 +62,60 @@ test.describe('landmarks', () => {
   });
 });
 
-test.describe('skip link', () => {
-  for (const [lang, name] of [
-    ['en', 'Skip to model'],
-    ['fr', 'Aller au modèle'],
-  ]) {
-    test(`is the first Tab stop and moves focus into the stage (${lang})`, async ({ app }) => {
-      const { page } = app;
-      await app.gotoHash({ lang });
-      const link = page.getByRole('link', { name, exact: true });
-      await expect(link).toHaveCount(1);
-
-      await page.keyboard.press('Tab');
-      await expect(link).toBeFocused();
-      // WCAG 2.5.8: a target of at least 24 px once it shows.
-      const box = (await link.boundingBox())!;
-      expect(box.width).toBeGreaterThanOrEqual(24);
-      expect(box.height).toBeGreaterThanOrEqual(24);
-
-      await page.keyboard.press('Enter');
-      // The canvas once the engine is mounted, the main landmark until then.
-      const inStage = await page.evaluate(() =>
-        document.querySelector('main')!.contains(document.activeElement),
+// The masthead owns the skip link (H2); the shell owns the order it sits in and its target.
+test.describe('skip link target', () => {
+  test('the masthead is first in the document and main can take focus (deviation h1a-skip-link)', async ({
+    app,
+  }, testInfo) => {
+    const { page } = app;
+    await app.gotoHash();
+    const order = await page.evaluate(() => {
+      const [header, main] = ['header', 'main'].map((selector) =>
+        document.querySelector(selector)!,
       );
-      expect(inStage).toBe(true);
-      // The link keeps the view: the anchor's own jump to #viewport is cancelled.
-      expect(await app.hash()).not.toContain('viewport');
+      return {
+        headerFirst: Boolean(
+          header!.compareDocumentPosition(main!) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ),
+        tabindex: main!.getAttribute('tabindex'),
+      };
+    });
+    // Legacy's main has no tabindex, so it cannot take focus.
+    const legacy = testInfo.project.name === 'legacy';
+    expect(order).toEqual({ headerFirst: true, tabindex: legacy ? null : '-1' });
+    if (legacy) return;
+    await page.getByRole('main').focus();
+    await expect(page.getByRole('main')).toBeFocused();
+  });
+});
+
+// WCAG 1.3.4 (both orientations) and 1.4.10 (320 CSS px wide, 256 high): the frame fits, nothing scrolls the page.
+test.describe('layout', () => {
+  for (const [name, width, height] of [
+    ['landscape phone', 812, 375],
+    ['portrait phone', 375, 812],
+    ['320 px reflow', 320, 256],
+  ] as const) {
+    test(`${name} (${width}x${height}) fits the frame`, async ({ app }) => {
+      const { page } = app;
+      await page.setViewportSize({ width, height });
+      await app.gotoHash();
+      const frame = await page.evaluate(() => {
+        const root = document.documentElement;
+        const main = document.querySelector('main')!.getBoundingClientRect();
+        return {
+          overflowX: root.scrollWidth - root.clientWidth,
+          overflowY: root.scrollHeight - root.clientHeight,
+          mainFits:
+            main.left >= 0 && main.right <= root.clientWidth && main.bottom <= root.clientHeight,
+          mainHeight: main.height,
+        };
+      });
+      expect(frame).toMatchObject({ overflowX: 0, overflowY: 0, mainFits: true });
+      expect(frame.mainHeight).toBeGreaterThan(0);
+      await expect(page.getByRole('contentinfo')).toHaveCount(0);
     });
   }
-
-  test('keeps a border under forced colours', async ({ app }) => {
-    const { page } = app;
-    await page.emulateMedia({ forcedColors: 'active' });
-    await app.gotoHash();
-    const link = page.getByRole('link', { name: 'Skip to model', exact: true });
-    await expect(link).toHaveCount(1);
-    await page.keyboard.press('Tab');
-    await expect(link).toBeFocused();
-    await expect(link).toHaveCSS('border-top-width', '1px');
-  });
 });
 
 // Without the app's script, only the document's own head script has run.
@@ -157,7 +172,7 @@ test.describe('accessibility', () => {
       [390, 844],
     ]) {
       for (const lang of ['en', 'fr']) {
-        test(`the shell passes axe with the skip link shown: ${colorScheme}, ${width}px, ${lang}`, async ({
+        test(`the shell passes axe: ${colorScheme}, ${width}px, ${lang}`, async ({
           app,
         }, testInfo) => {
           // The legacy theme follows its own script and its violations are only recorded above.
@@ -166,7 +181,6 @@ test.describe('accessibility', () => {
           await page.emulateMedia({ colorScheme });
           await page.setViewportSize({ width, height });
           await app.gotoHash({ lang });
-          await page.keyboard.press('Tab');
           expect(await app.axe()).toEqual([]);
         });
       }

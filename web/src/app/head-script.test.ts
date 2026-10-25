@@ -1,4 +1,4 @@
-// The inline scripts of index.html run before the app, so they restate rules the app owns.
+// The inline script of index.html runs before the app, so they restates rules the app owns.
 // These tests hold each restatement equal to its source.
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
@@ -10,14 +10,13 @@ import { resolveTheme } from '../lib/state/theme.svelte.ts';
 
 const index = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
 const scripts = [...index.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(([, source]) => source!);
-const [paint, robots] = scripts;
+const [paint] = scripts;
 const tokens = readFileSync(new URL('../styles/tokens.css', import.meta.url), 'utf8');
 
 interface Page {
   theme?: string;
   lang: string;
   themeColor?: string;
-  robots: string[];
 }
 
 /** Runs a head script against a page with the given storage, system theme and link. */
@@ -28,16 +27,14 @@ function run(
     systemDark = false,
     hash = '',
     blocked = false,
-    mode = 'production',
   }: {
     stored?: Record<string, string>;
     systemDark?: boolean;
     hash?: string;
     blocked?: boolean;
-    mode?: string;
   } = {},
 ): Page {
-  const page: Page = { lang: 'en', robots: [], theme: undefined };
+  const page: Page = { lang: 'en', theme: undefined };
   const root = {
     dataset: {
       set theme(value: string) {
@@ -49,15 +46,13 @@ function run(
     },
   };
   const meta = { setAttribute: (_name: string, value: string) => (page.themeColor = value) };
-  runInNewContext(source.replace('%MODE%', mode), {
+  runInNewContext(source, {
     document: {
       documentElement: root,
       querySelector: (selector: string) => {
         expect(selector).toBe('meta[name="theme-color"]');
         return meta;
       },
-      createElement: () => ({}) as Record<string, string>,
-      head: { append: (element: { content: string }) => page.robots.push(element.content) },
     },
     get localStorage() {
       if (blocked) throw new DOMException('blocked', 'SecurityError');
@@ -122,14 +117,5 @@ describe('the pre-paint script', () => {
   test('still paints when site data is blocked', () => {
     const page = run(paint!, { blocked: true, systemDark: true, hash: '#lang=fr' });
     expect(page).toMatchObject({ theme: 'dark', lang: 'fr' });
-  });
-});
-
-describe('the robots script', () => {
-  test('marks the preview build noindex and no other', () => {
-    expect(run(robots!, { mode: 'preview' }).robots).toEqual(['noindex']);
-    for (const mode of ['production', 'development']) {
-      expect(run(robots!, { mode }).robots).toEqual([]);
-    }
   });
 });

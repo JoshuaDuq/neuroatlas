@@ -89,8 +89,9 @@ test('the live site is not marked noindex', async ({ app }, testInfo) => {
 
 test('the preview is marked noindex', async ({ app }, testInfo) => {
   test.skip(testInfo.project.name !== 'next');
-  await app.gotoHash();
-  await expect(app.page.locator('meta[name="robots"][content~="noindex"]')).toHaveCount(1);
+  // The raw response, which is what a crawler that runs no script receives.
+  const html = await (await app.page.request.get('./')).text();
+  expect(html).toMatch(/<meta name="robots" content="noindex"\s*\/?>/);
 });
 
 test('the page frame passes axe', async ({ app }) => {
