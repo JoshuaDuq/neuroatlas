@@ -1,0 +1,46 @@
+{
+  "name": "planum-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "build:preview": "vite build --mode preview",
+    "preview": "vite preview --host 127.0.0.1",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json",
+    "check:ts7": "node node_modules/@typescript/native/bin/tsc -p tsconfig.ts7.json",
+    "lint": "oxlint",
+    "format": "prettier .",
+    "test": "vitest run --project unit",
+    "test:browser": "vitest run --project browser",
+    "test:e2e": "playwright test",
+    "test:parity": "vitest run --project unit parity"
+  },
+  "dependencies": {
+    "@fontsource-variable/source-sans-3": "5.3.0",
+    "@niivue/niivue": "0.69.0",
+    "three": "0.186.0",
+    "three-mesh-bvh": "0.9.15",
+    "yaml": "2.8.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@tsconfig/svelte": "5.0.8",
+    "@types/node": "24.19.2",
+    "@types/three": "0.186.0",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "@vitest/browser-playwright": "5.0.5",
+    "oxlint": "1.89.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-svelte": "4.1.1",
+    "svelte": "5.57.2",
+    "svelte-check": "4.7.7",
+    "typescript": "6.0.3",
+    "vite": "8.3.5",
+    "vitest": "5.0.5",
+    "vitest-browser-svelte": "3.1.0"
+  }
+}
