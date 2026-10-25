@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import assert from 'node:assert/strict';
 import { onTestFinished, test, vi } from 'vitest';
 import { PHONE_QUERY } from '../../types/constants.ts';

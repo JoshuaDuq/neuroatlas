@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it, vi } from 'vitest';
 import { readComparison, readComparisonGeometry } from './comparison-assets.ts';
