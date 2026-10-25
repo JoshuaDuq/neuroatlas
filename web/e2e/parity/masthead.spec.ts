@@ -4,9 +4,9 @@ import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
 import shellEnabled from './enabled/shell.ts';
 
-test.beforeEach((_fixtures, testInfo) => {
+test.beforeEach(() => {
   test.skip(
-    testInfo.project.name === 'next' && !shellEnabled,
+    test.info().project.name === 'next' && !shellEnabled,
     'the shell region is not integrated',
   );
 });

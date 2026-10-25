@@ -79,6 +79,31 @@ describe('Masthead', () => {
     }
   });
 
+  test('text at 200 % stays inside the skip link and the radios (WCAG 1.4.4, 1.4.12)', async () => {
+    await render(Fixture);
+    await open();
+    document.documentElement.style.fontSize = '200%';
+    const spacing = document.head.appendChild(document.createElement('style'));
+    spacing.textContent =
+      '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }';
+    try {
+      el(page.getByRole('link', { name: 'Skip to model' })).focus();
+      const spilling = [
+        ...document.querySelectorAll<HTMLElement>('.skip-link, .settings-menu [role=radio]'),
+      ].filter((control) => {
+        const text = document.createRange();
+        text.selectNodeContents(control);
+        const box = control.getBoundingClientRect();
+        const inner = text.getBoundingClientRect();
+        return inner.height > box.height + 0.5;
+      });
+      expect(spilling.map((control) => control.outerHTML)).toEqual([]);
+    } finally {
+      spacing.remove();
+      document.documentElement.style.fontSize = '';
+    }
+  });
+
   test('Full screen and Save image only emit', async () => {
     const calls: string[] = [];
     await render(Fixture, { calls });

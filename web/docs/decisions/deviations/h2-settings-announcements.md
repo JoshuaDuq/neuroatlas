@@ -1,7 +1,7 @@
 # Setting changes are announced
 
 Chunk: H2
-Status: fix (standard cited)
+Status: approved (decision 15 on #4)
 
 ## Legacy behaviour
 

@@ -98,10 +98,11 @@
     onSingleKeys(next === 'on');
   }
 
-  // The visible text is also each radio's name, set explicitly: the bold-width copy below is
-  // generated content, which a name computed from content would include. ChoiceGroup draws a radio
-  // from `label` and `name` only; the rest of what these radios need is set on them here: the language of each name (WCAG 3.1.2), the System note (WCAG 1.3.1, 1.4.13)
-  // and the drawn text as data-label, which holds the width of the bold checked item.
+  // ChoiceGroup draws a radio from `label` and `name` only. The rest of what these radios need is
+  // set on them here: the language of each name (WCAG 3.1.2), the System note (WCAG 1.3.1, 1.4.13)
+  // and the drawn text as data-label, which holds the width of the bold checked item. The radios
+  // carry their visible text as an explicit name, so role locators that count generated content
+  // (the hidden bold copy) still find them by it.
   interface Decoration {
     label: string;
     lang?: string;
@@ -137,6 +138,7 @@
 
 <Popover bind:open class="settings-menu">
   {#snippet trigger({ props })}
+    <!-- Bits adds aria-haspopup="dialog"; this panel is a disclosure of plain controls, not a dialog. -->
     <IconButton
       {...props}
       aria-haspopup={undefined}
@@ -267,12 +269,15 @@
     }
     .menu-row :global(.choice-group [role='radio']) {
       flex: 1;
+      /* The text may outgrow U3's fixed height at 200 % text or with WCAG 1.4.12 spacing. */
+      height: auto;
+      min-height: calc(var(--control-height) - 4px);
     }
     /* Three words of unequal length: each keeps its own width and the spare room is shared. */
     .menu-row:nth-child(2) :global(.choice-group [role='radio']) {
       flex: 1 1 auto;
     }
-    /* The bold label's width is held, so a choice never moves its neighbours. Each radio carries its name as aria-label (decorated), which the generated copy would otherwise double. */
+    /* The bold label's width is held, so a choice never moves its neighbours. */
     .menu-row :global(.choice-group [role='radio']::after) {
       content: attr(data-label);
       display: block;
@@ -343,7 +348,6 @@
         min-width: 0;
       }
       .menu-row :global(.choice-group [role='radio']) {
-        height: auto;
         padding: var(--space-1) var(--space-2);
         white-space: normal;
         overflow-wrap: anywhere;

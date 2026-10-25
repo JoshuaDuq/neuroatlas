@@ -26,8 +26,6 @@
     provenanceReady: boolean;
     /** The settings panel; H3's data popover closes it by setting this false. */
     settingsOpen?: boolean;
-    /** H3's fit code: the data bar has collapsed into its summary. */
-    collapsed?: boolean;
     /** The data group (H3), composed in by I3b. */
     data?: Snippet;
     onSkipToModel: () => void;
@@ -49,7 +47,6 @@
     exitFullscreenLabel,
     provenanceReady,
     settingsOpen = $bindable(false),
-    collapsed = $bindable(true),
     data,
     onSkipToModel,
     onLanguage,
@@ -78,7 +75,7 @@
   }
 </script>
 
-<header id="masthead" data-collapsed={collapsed ? '' : undefined}>
+<header id="masthead">
   <a class="skip-link" href="#viewport" onclick={skip}>{t(lang, 'header').skipToModel}</a>
   <div class="identity">
     <span class="brand-mark" aria-hidden="true">{@render iconGraphic('brand')}</span>
@@ -197,8 +194,8 @@
       z-index: 60;
       display: inline-flex;
       align-items: center;
-      height: var(--control-height);
-      padding: 0 var(--space-3);
+      min-height: var(--control-height);
+      padding: var(--space-1) var(--space-3);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-control);
       background: var(--surface-base);
@@ -212,6 +209,7 @@
     .skip-link:not(:focus) {
       width: 1px;
       height: 1px;
+      min-height: 0;
       padding: 0;
       border: 0;
       overflow: hidden;
