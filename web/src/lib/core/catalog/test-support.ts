@@ -1,13 +1,9 @@
-/// <reference types="node" />
-import { readFileSync } from 'node:fs';
+import { readRepoJson } from '../../../../test/repo.ts';
 import type { DisplaySettings, Region } from '../../types/index.ts';
 import type { CatalogSettings } from './catalog.ts';
 
-const models = new URL('../../../../../public/models/', import.meta.url);
-
 /** A published file under `public/models/`, parsed. */
-export const readModel = <T>(path: string): T =>
-  JSON.parse(readFileSync(new URL(path, models), 'utf8')) as T;
+export const readModel = <T>(path: string): T => readRepoJson<T>(`public/models/${path}`);
 
 /** The default anatomy's id and the id of every published anatomy. */
 export const anatomies = readModel<{ default: string; anatomies: { id: string }[] }>(

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { clearFraming, fitScale, viewOffset, visibleRect } from './effective-viewport.ts';

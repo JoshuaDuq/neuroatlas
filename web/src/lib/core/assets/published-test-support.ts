@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { createHash } from 'node:crypto';
 import { afterEach, vi } from 'vitest';
 import PUBLISHED, { type PublishedRecord } from './published-files.ts';

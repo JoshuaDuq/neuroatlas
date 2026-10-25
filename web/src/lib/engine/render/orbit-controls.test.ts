@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { PerspectiveCamera, Plane, type Raycaster, Sphere, Vector2, Vector3 } from 'three';
