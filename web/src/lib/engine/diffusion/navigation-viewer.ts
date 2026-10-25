@@ -92,6 +92,49 @@ export async function createMriNavigationViewer(
     });
   }
 
+  /** Calls run one after another, so overlapping ones never add a tract twice and the last one wins. */
+  let queue: Promise<void> = Promise.resolve();
+  async function sync(enabled: readonly string[], minimum: number): Promise<void> {
+    // Before any mesh is added, so a rejected minimum leaves nothing half-configured.
+    if (!Number.isFinite(minimum) || minimum < 1) {
+      throw new RangeError('Minimum tract length must be at least 1 mm.');
+    }
+    const visible = new Set(enabled);
+    for (const [id, mesh] of meshes) mesh.visible = visible.has(id);
+    for (const id of enabled) {
+      let mesh = meshes.get(id);
+      if (!mesh) {
+        const bundle = catalog.bundles.find((bundle) => bundle.id === id);
+        if (!bundle) throw new RangeError(`Unknown MRI tract bundle: ${id}`);
+        const tract = await loadTract(bundle);
+        if (disposed) return;
+        // As NiiVue's own TRK reader builds it: fibers carry a transparent base colour.
+        mesh = new NVMesh(
+          tract.pts,
+          tract.offsetPt0,
+          bundle.file.split('/').at(-1)!,
+          new Uint8Array([255, 255, 255, 0]),
+          1,
+          true,
+          viewer.gl,
+          'inferno',
+          null,
+          tract.dps || null,
+          tract.dpv || null,
+        );
+        viewer.addMesh(mesh);
+        configureNavigationTract(mesh, minimum, tract.lengths);
+        mesh.updateMesh(viewer.gl);
+        meshes.set(id, mesh);
+      } else if (mesh.fiberLength !== minimum) {
+        mesh.fiberLength = minimum;
+        mesh.updateMesh(viewer.gl);
+      }
+      mesh.visible = true;
+    }
+    viewer.drawScene();
+  }
+
   return {
     get header() {
       return header();
@@ -120,45 +163,10 @@ export async function createMriNavigationViewer(
     setFaOpacity(value) {
       viewer.setOpacity(1, value);
     },
-    async syncTracts(enabled, minimum) {
-      // Before any mesh is added, so a rejected minimum leaves nothing half-configured.
-      if (!Number.isFinite(minimum) || minimum < 1) {
-        throw new RangeError('Minimum tract length must be at least 1 mm.');
-      }
-      const visible = new Set(enabled);
-      for (const [id, mesh] of meshes) mesh.visible = visible.has(id);
-      for (const id of enabled) {
-        let mesh = meshes.get(id);
-        if (!mesh) {
-          const bundle = catalog.bundles.find((bundle) => bundle.id === id);
-          if (!bundle) throw new RangeError(`Unknown MRI tract bundle: ${id}`);
-          const tract = await loadTract(bundle);
-          if (disposed) return;
-          // As NiiVue's own TRK reader builds it: fibers carry a transparent base colour.
-          mesh = new NVMesh(
-            tract.pts,
-            tract.offsetPt0,
-            bundle.file.split('/').at(-1)!,
-            new Uint8Array([255, 255, 255, 0]),
-            1,
-            true,
-            viewer.gl,
-            'inferno',
-            null,
-            tract.dps || null,
-            tract.dpv || null,
-          );
-          viewer.addMesh(mesh);
-          configureNavigationTract(mesh, minimum, tract.lengths);
-          mesh.updateMesh(viewer.gl);
-          meshes.set(id, mesh);
-        } else if (mesh.fiberLength !== minimum) {
-          mesh.fiberLength = minimum;
-          mesh.updateMesh(viewer.gl);
-        }
-        mesh.visible = true;
-      }
-      viewer.drawScene();
+    syncTracts(enabled, minimum) {
+      const run = queue.then(() => sync(enabled, minimum));
+      queue = run.catch(() => undefined);
+      return run;
     },
     resize() {
       viewer.resizeListener();
