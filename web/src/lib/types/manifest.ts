@@ -13,10 +13,16 @@ export interface ManifestAtlas {
   label: string;
   annotation: string;
   citation: string;
+  license_file?: string;
   file: string;
   region_count: number;
   surface_shading?: Record<string, unknown>;
   ribbon_labels?: Record<string, unknown>;
+}
+
+export interface ManifestSourceGrid {
+  voxel_to_surface_ras_mm: Matrix4;
+  voxel_size_mm: readonly number[];
 }
 
 export interface ManifestDetailLevel {
@@ -24,8 +30,11 @@ export interface ManifestDetailLevel {
   label: string;
   file: string;
   region_count: number;
-  voxel_to_surface_ras_mm: Matrix4;
-  voxel_size_mm: readonly number[];
+  /** Absent on a level built from several source grids (`learning`). */
+  voxel_to_surface_ras_mm?: Matrix4;
+  voxel_size_mm?: readonly number[];
+  source_grids?: Record<string, ManifestSourceGrid>;
+  palette_method?: string;
   display_geometry: Record<string, unknown>;
 }
 
@@ -33,6 +42,7 @@ export interface ManifestCutAtlas {
   id: string;
   label: string;
   citation: string;
+  procedure?: string;
   surface: boolean;
 }
 
@@ -45,7 +55,8 @@ export interface ManifestSupplementalLayer {
   citation: string;
   license: string;
   attribution: string;
-  bounds_ras_mm: readonly number[];
+  /** Two opposite corners, `[min, max]` (slices/sections.js:117). */
+  bounds_ras_mm: readonly [readonly number[], readonly number[]];
   template_to_surface_ras_mm: Matrix4;
 }
 

@@ -1,4 +1,5 @@
 import type { CutMode, FunctionalLevel, Hemisphere, SurfaceColor } from './display.ts';
+import type { Region } from './region.ts';
 import type { Explorer, Language } from './session.ts';
 
 /** Camera position, target and optional up vector, in millimetres (state/url-state.js:96). */
@@ -15,9 +16,9 @@ export interface MriWindow {
 }
 
 /**
- * The shareable state `decodeState` reads from a link and `encodeState` writes.
- * Decoding yields a `Partial` of this: a field a link omits is absent.
- * `DEFAULTS` (state/url-state.js:8) lists the values encoding leaves out.
+ * The shareable state `decodeState` returns (state/url-state.js:220), as a `Partial`:
+ * a field a link omits is absent. `DEFAULTS` (state/url-state.js:8) lists the values
+ * encoding leaves out.
  */
 export interface LinkState {
   hemisphere: Hemisphere;
@@ -49,4 +50,14 @@ export interface LinkState {
   mriWindow: MriWindow | null;
   lang: Language;
   hiddenRegions: string[];
+}
+
+/**
+ * What `encodeState` takes (state/url-state.js:201; app.js:1773 spreads `model.state`):
+ * the selected region may be the model's record, and the hidden regions are a set,
+ * since `encodeState` reads `.size`.
+ */
+export interface LinkInput extends Omit<LinkState, 'selectedRegion' | 'hiddenRegions'> {
+  selectedRegion: Region | string | null;
+  hiddenRegions: ReadonlySet<string>;
 }

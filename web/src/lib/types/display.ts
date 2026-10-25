@@ -6,6 +6,7 @@ import type {
   VIEW_NAMES,
 } from './constants.ts';
 import type { Paint } from './paint.ts';
+import type { Region } from './region.ts';
 
 export type ViewName = (typeof VIEW_NAMES)[number];
 export type CutMode = (typeof CUTS)[number];
@@ -18,8 +19,9 @@ export interface DisplaySettings {
   atlas: string;
   detail: string;
   internalSystem: string | null;
-  internalConstituents: boolean;
-  cutAtlas: string;
+  internalConstituents: ReadonlySet<string>;
+  /** Null until the sections module sets it (brain-atlas.js:184). */
+  cutAtlas: string | null;
   cutActive: boolean;
   hemisphere: Hemisphere;
   cortexVisible: boolean;
@@ -32,4 +34,10 @@ export interface DisplaySettings {
   isolatedRegion: string | null;
   hiddenRegions: ReadonlySet<string>;
   dissectionCanUndo: boolean;
+}
+
+/** The model's state (`BrainAtlas.state`, model/brain-atlas.js:501): its settings and what is on screen. */
+export interface ModelState extends DisplaySettings {
+  selectedRegion: Region | null;
+  visibleMeshCount: number;
 }
