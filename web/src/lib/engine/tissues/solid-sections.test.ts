@@ -401,7 +401,7 @@ test('a worker failure rejects the build and every later one instead of cutting 
   const { sections } = fixture();
   await assert.rejects(sections.build(plane), /cut failed/);
   assert.equal(workers[0]!.terminated, true);
-  await assert.rejects(async () => sections.build(plane), /cut failed/);
+  await assert.rejects(sections.build(plane), /cut failed/);
   sections.dispose();
 });
 
@@ -411,13 +411,13 @@ test('without a Worker the build declines and the caller cuts on its own thread'
   sections.dispose();
 });
 
-test('growing a cap releases the replaced attribute buffers', () => {
+test('growing a cap disposes the geometry that held the replaced attribute buffers', () => {
   const { sections } = fixture();
   sections.update(plane);
   const [solid] = sections.solids as [Solid];
   const old = solid.section!.getAttribute('position') as BufferAttribute;
   let disposed = 0;
-  old.addEventListener('dispose', () => {
+  solid.section!.addEventListener('dispose', () => {
     disposed += 1;
   });
   sections.place(solid, { positions: new Float32Array(old.array.length + 9) });

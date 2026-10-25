@@ -65,7 +65,11 @@ function solid(userData: Record<string, unknown>): PaintableSolid {
   const material = new MeshBasicMaterial();
   material.userData['tissueVariation'] = { value: 0 };
   material.userData['sampledLabels'] = { value: false };
-  return { source: { userData }, cap: { material }, visible: true };
+  return {
+    source: { userData },
+    cap: { material: material as unknown as PaintableSolid['cap']['material'] },
+    visible: true,
+  };
 }
 
 function paint(

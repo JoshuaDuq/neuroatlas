@@ -304,6 +304,7 @@ export class SolidSections {
    * finished, instead of freezing the page inside the build.
    */
   build(plane: Plane): Promise<BuiltSection[] | null> {
+    if (this.workerError) return Promise.reject(this.workerError);
     const worker = this.ensureWorker();
     if (!worker) return Promise.resolve(null);
     const jobs: { id: number; matrix: number[] }[] = [];
@@ -448,9 +449,9 @@ export class SolidSections {
     let position = geometry.getAttribute('position') as BufferAttribute | undefined;
     let normal = geometry.getAttribute('normal') as BufferAttribute | undefined;
     if (!position || position.array.length < positions.length) {
-      // setAttribute drops the old buffers without releasing their GPU copies.
-      position?.dispose();
-      normal?.dispose();
+      // WebGLRenderer frees attribute buffers when their geometry is disposed; setAttribute
+      // alone would leave the replaced ones on the GPU.
+      if (position) geometry.dispose();
       const capacity = Math.max(positions.length, (position?.array.length ?? 0) * 2, 96);
       position = new BufferAttribute(new Float32Array(capacity), 3);
       normal = new BufferAttribute(new Float32Array(capacity), 3);

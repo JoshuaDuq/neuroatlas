@@ -37,6 +37,7 @@ import * as surfaces_ from '../src/lib/engine/tissues/white-matter-surfaces.ts';
 import type { CutReply, WorkerMessage } from '../src/lib/engine/tissues/section-worker.ts';
 import type { Appearance } from '../src/lib/engine/render/materials.ts';
 import type { Label, PaletteLookup } from '../src/lib/engine/tissues/palette.ts';
+import type { PaintableSolid } from '../src/lib/engine/tissues/solid-assets.ts';
 import type { Manifest } from '../src/lib/types/index.ts';
 
 // Both asset caches read the published files from disk, so legacy and new see the same bytes.
@@ -449,8 +450,11 @@ describe('solid-assets', () => {
       material.userData['tissueVariation'] = { value: 0 };
       material.userData['sampledLabels'] = { value: false };
       return {
-        source: { userData, material: { color: new Color('#3c8a5a') } },
-        cap: { material },
+        source: {
+          userData: userData as PaintableSolid['source']['userData'],
+          material: { color: new Color('#3c8a5a') },
+        },
+        cap: { material: material as unknown as PaintableSolid['cap']['material'] },
         visible: true,
         region: undefined as string | null | undefined,
       };

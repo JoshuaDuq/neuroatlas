@@ -21,7 +21,7 @@ import {
 import type { Label, PaletteLookup } from './palette.ts';
 import { buildRibbonWedges } from './ribbon-wedges.ts';
 import { createSolidMaterial } from './solid-material.ts';
-import type { SolidAnatomy } from './solid-material.ts';
+import type { SolidAnatomy, SolidUserData } from './solid-material.ts';
 import type { Band, SolidSource, SolidSections } from './solid-sections.ts';
 import type { WhiteMatter } from './white-matter.ts';
 
@@ -30,7 +30,7 @@ type Side = 'left' | 'right';
 /** What a cut source's `userData` says about the anatomy it stands for. */
 interface CutSourceData {
   region_id?: string;
-  hemisphere: Region['hemisphere'];
+  hemisphere?: Region['hemisphere'];
   boundary?: 'pial' | 'white';
   kind?: string;
   atlas?: string;
@@ -38,6 +38,10 @@ interface CutSourceData {
   mri_registered?: boolean;
   [key: string]: unknown;
 }
+
+/** What a cap material carries on `userData`: `createSolidMaterial`'s uniforms and the label-sampling flag. */
+export type CapUserData = Pick<SolidUserData, 'tissueVariation'> &
+  Partial<SolidUserData> & { sampledLabels: { value: boolean } };
 
 /** The registered MRI and cut labels the solids' materials read. */
 export interface SolidSourceAnatomy extends SolidAnatomy {
@@ -64,10 +68,10 @@ export type SolidPaintState = DisplaySettings;
 /** The part of a solid `paintSolids` reads and writes. */
 export interface PaintableSolid {
   source: {
-    userData: Record<string, any>;
+    userData: CutSourceData;
     material?: unknown;
   };
-  cap: { material: { color: Color; userData: Record<string, any> } };
+  cap: { material: { color: Color; userData: CapUserData } };
   visible: boolean;
   region?: string | null;
 }
@@ -101,7 +105,7 @@ export function solidSource(
   return source;
 }
 
-export function enclosingFirst<T extends { userData?: Record<string, any> }>(
+export function enclosingFirst<T extends { userData?: { segmentation_volume_mm3?: number } }>(
   sources: readonly T[],
 ): T[] {
   return [...sources].sort(
@@ -225,7 +229,8 @@ function solidLabel(
   source: PaintableSolid['source'],
   { byRegion, byCode }: LabelIndex,
 ): Label | null {
-  const { kind, region_id: region, hemisphere, boundary } = source.userData as CutSourceData;
+  const { kind, region_id: region, boundary } = source.userData;
+  const hemisphere = source.userData.hemisphere as Label['hemisphere'];
   if (region) {
     return (
       byRegion.get(region) ??
@@ -249,7 +254,7 @@ function partOfCut(
   source: PaintableSolid['source'],
   { atlas, detail, wedged }: { atlas: string; detail: string; wedged: boolean },
 ): boolean {
-  const { kind, boundary, atlas: owner, detail: level } = source.userData as CutSourceData;
+  const { kind, boundary, atlas: owner, detail: level } = source.userData;
   if (kind === 'ribbon') return owner === atlas;
   // Both detail levels segment the same anatomy, so the cut shows the one the
   // rest of the viewer is showing; two thalami in one place is the alternative.
@@ -267,7 +272,7 @@ function holdsIsolatedWhiteMatter(
   lookup: PaletteLookup | undefined,
   whiteMatter: WhiteMatter | null | undefined,
 ): boolean {
-  const { boundary, hemisphere } = source.userData as CutSourceData;
+  const { boundary, hemisphere } = source.userData;
   return (
     boundary === 'white' &&
     Boolean(whiteMatter?.holds(state.isolatedRegion!)) &&
@@ -276,7 +281,7 @@ function holdsIsolatedWhiteMatter(
 }
 
 function tissueVisible(source: PaintableSolid['source'], state: SolidPaintState): boolean {
-  const { hemisphere, boundary, kind, detail } = source.userData as CutSourceData;
+  const { hemisphere, boundary, kind, detail } = source.userData;
   if (state.isolatedRegion) return false;
   if (state.hemisphere !== 'both' && hemisphere !== 'midline' && hemisphere !== state.hemisphere)
     return false;
@@ -351,15 +356,13 @@ export function paintSolids(
     if (sampled) solid.region = null;
     const isolatedWhiteMatter = holdsIsolatedWhiteMatter(source, state, lookup, whiteMatter);
     if (!label) {
-      const { boundary } = source.userData as CutSourceData;
-      const record = lookup?.regions?.get(source.userData['region_id']);
+      const { boundary } = source.userData;
+      const record = lookup?.regions?.get(source.userData.region_id!);
       solid.visible =
         (record?.kind === 'structure'
           ? visibilityOf(record, { ...capState, detail }).visible
           : tissueVisible(source, capState)) || isolatedWhiteMatter;
-      const painted = usesPaint(state)
-        ? state.paint!.colors.get(source.userData['region_id'])
-        : null;
+      const painted = usesPaint(state) ? state.paint!.colors.get(source.userData.region_id!) : null;
       if (boundary) {
         cap.material.color.set(appearance.tissue[boundary === 'pial' ? 'cortex' : 'white']);
       } else if (painted) {
@@ -377,7 +380,7 @@ export function paintSolids(
       continue;
     }
     const { color, visible } = labelAppearance(label, capState, appearance.tissue, lookup);
-    const record = lookup?.regions?.get(source.userData['region_id']);
+    const record = lookup?.regions?.get(source.userData.region_id!);
     solid.visible =
       (visible &&
         (record?.kind !== 'structure' || visibilityOf(record, { ...capState, detail }).visible)) ||
