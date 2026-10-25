@@ -448,6 +448,9 @@ export class SolidSections {
     let position = geometry.getAttribute('position') as BufferAttribute | undefined;
     let normal = geometry.getAttribute('normal') as BufferAttribute | undefined;
     if (!position || position.array.length < positions.length) {
+      // setAttribute drops the old buffers without releasing their GPU copies.
+      position?.dispose();
+      normal?.dispose();
       const capacity = Math.max(positions.length, (position?.array.length ?? 0) * 2, 96);
       position = new BufferAttribute(new Float32Array(capacity), 3);
       normal = new BufferAttribute(new Float32Array(capacity), 3);

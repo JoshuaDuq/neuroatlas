@@ -142,7 +142,15 @@ export async function loadRibbonSources(
   const record = manifest.atlases.find((entry) => entry.id === atlas)?.ribbon_labels as
     RibbonLabelsRecord | undefined;
   if (!record) return [];
-  const published = new Uint16Array(await fetchAsset(new URL(record.file, baseUrl)));
+  const bytes = await fetchAsset(new URL(record.file, baseUrl));
+  const expected =
+    (record.vertex_counts.left + record.vertex_counts.right) * Uint16Array.BYTES_PER_ELEMENT;
+  if (bytes.byteLength !== expected) {
+    throw new Error(
+      `Ribbon labels for ${atlas} hold ${bytes.byteLength} bytes; the manifest publishes ${expected}.`,
+    );
+  }
+  const published = new Uint16Array(bytes);
   const sources: Mesh<BufferGeometry>[] = [];
   let at = 0;
   for (const hemisphere of HEMISPHERES) {

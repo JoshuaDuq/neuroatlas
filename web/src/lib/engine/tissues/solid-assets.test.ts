@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
+import { test, vi } from 'vitest';
+import * as assetCache from '../../core/assets/asset-cache.ts';
 import { BoxGeometry, Color, Matrix4, Mesh, MeshBasicMaterial, SRGBColorSpace } from 'three';
 import { asDisplaySettings, readModel } from '../../core/catalog/test-support.ts';
 import type { Appearance } from '../render/materials.ts';
@@ -434,5 +435,42 @@ test('nested reference solids reach the cut after the solids that enclose them',
   assert.deepEqual(
     enclosingFirst(sources).map((entry) => entry.userData.region_id),
     ['cord', 'posterior horn', 'nucleus proprius'],
+  );
+});
+
+test('a hidden id missing from the region index is a named error', async () => {
+  const state = asDisplaySettings({
+    cortexVisible: true,
+    cortexOpacity: 1,
+    isolatedRegion: null,
+    hiddenRegions: new Set(['nope']),
+    atlas: 'destrieux',
+    hemisphere: 'both',
+  });
+  const { exposedWhiteMatter } = await import('./white-matter-surfaces.ts');
+  assert.throws(
+    () => exposedWhiteMatter(state, new Map()),
+    /Hidden region nope is not in the region index/,
+  );
+});
+
+test('a ribbon label file of the wrong length is refused', async () => {
+  const { loadRibbonSources } = await import('./solid-assets.ts');
+  const manifest = {
+    atlases: [
+      {
+        id: 'a',
+        ribbon_labels: {
+          file: 'x.labels',
+          vertex_counts: { left: 2, right: 2 },
+          region_ids: [],
+        },
+      },
+    ],
+  } as never;
+  vi.spyOn(assetCache, 'fetchAsset').mockResolvedValue(new ArrayBuffer(6));
+  await assert.rejects(
+    loadRibbonSources(manifest, 'http://x/', 'a', []),
+    /hold 6 bytes; the manifest publishes 8/,
   );
 });

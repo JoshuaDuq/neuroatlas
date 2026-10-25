@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { onTestFinished, test, vi } from 'vitest';
+import type { BufferAttribute } from 'three';
 import { BoxGeometry, DoubleSide, Mesh, MeshBasicMaterial, Plane, Raycaster, Vector3 } from 'three';
 import { readModel } from '../../core/catalog/test-support.ts';
 import type { Appearance } from '../render/materials.ts';
@@ -407,5 +408,20 @@ test('a worker failure rejects the build and every later one instead of cutting 
 test('without a Worker the build declines and the caller cuts on its own thread', async () => {
   const { sections } = fixture();
   assert.equal(await sections.build(plane), null);
+  sections.dispose();
+});
+
+test('growing a cap releases the replaced attribute buffers', () => {
+  const { sections } = fixture();
+  sections.update(plane);
+  const [solid] = sections.solids as [Solid];
+  const old = solid.section!.getAttribute('position') as BufferAttribute;
+  let disposed = 0;
+  old.addEventListener('dispose', () => {
+    disposed += 1;
+  });
+  sections.place(solid, { positions: new Float32Array(old.array.length + 9) });
+  assert.equal(disposed, 1);
+  assert.notEqual(solid.section!.getAttribute('position'), old);
   sections.dispose();
 });

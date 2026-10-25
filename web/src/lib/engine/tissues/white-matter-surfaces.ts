@@ -29,7 +29,8 @@ export function exposedWhiteMatter(
   const exposed = new Set<string>();
   if (!state.cortexVisible || !(state.cortexOpacity > 0) || state.isolatedRegion) return exposed;
   for (const id of state.hiddenRegions) {
-    const region = regions.get(id)!;
+    const region = regions.get(id);
+    if (!region) throw new Error(`Hidden region ${id} is not in the region index.`);
     if (
       region.kind === 'cortex' &&
       region.atlas === state.atlas &&

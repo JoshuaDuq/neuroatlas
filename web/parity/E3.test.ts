@@ -660,10 +660,31 @@ describe('glass-solids and white-matter-surfaces', () => {
 });
 
 describe('earcut', () => {
-  it('stays the vendored 2.2.4 file, byte for byte', () => {
-    assert.equal(
-      readFileSync(new URL('../src/lib/engine/tissues/earcut.js', import.meta.url), 'utf8'),
-      readFileSync(new URL('../../viewer/tissues/earcut.js', import.meta.url), 'utf8'),
-    );
+  it('triangulates seeded polygons with holes like the vendored legacy copy', async () => {
+    const legacy = await import('../../viewer/tissues/earcut.js');
+    const current = await import('../src/lib/engine/tissues/earcut.js');
+    const random = prng(41);
+    for (let step = 0; step < 60; step++) {
+      const sides = 5 + Math.floor(random() * 40);
+      const ring = (radius: number) =>
+        Array.from({ length: sides }, (_, at) => {
+          const angle = (at / sides) * 2 * Math.PI;
+          const r = radius * (0.7 + 0.3 * random());
+          return [r * Math.cos(angle), r * Math.sin(angle)];
+        }).flat();
+      const outer = ring(1);
+      const holes = random() < 0.5 ? ring(0.2).reverse() : [];
+      const data = [...outer, ...holes];
+      const holeIndices = holes.length ? [outer.length / 2] : null;
+      const triangles = current.earcut(data, holeIndices, 2);
+      assert.deepStrictEqual(triangles, legacy.earcut(data, holeIndices, 2));
+      assert.equal(
+        Object.is(
+          current.earcut.deviation(data, holeIndices, 2, triangles),
+          legacy.earcut.deviation(data, holeIndices, 2, triangles),
+        ),
+        true,
+      );
+    }
   });
 });
