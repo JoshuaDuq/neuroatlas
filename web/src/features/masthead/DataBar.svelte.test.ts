@@ -1,7 +1,7 @@
 // The data bar against the APG Disclosure table and the legacy header.js cases
 // (chrome.contract.test.js:167-200, 249-273, header.test.js), as behaviour in a real browser.
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import type { ManifestAnatomy } from '../../lib/types/index.ts';
 import axe from 'axe-core';
@@ -58,7 +58,20 @@ const announced = () => document.getElementById('announcer')!.textContent;
 const texts = (select: HTMLElement) =>
   [...(select as HTMLSelectElement).options].map((option) => option.textContent);
 // axe in both themes at desktop and phone width, once the measured collapse has caught up with each size.
-async function expectAxeClean(sizes: (readonly [number, number])[] = [WIDE, PHONE]) {
+async function withTouch(check: () => Promise<void>) {
+  const session = cdp();
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  try {
+    await check();
+  } finally {
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+  }
+}
+
+async function expectAxeClean(
+  sizes: (readonly [number, number])[] = [WIDE, PHONE],
+  collapsedAt: (width: number) => boolean = (width) => width === PHONE[0],
+) {
   const still = document.head.appendChild(document.createElement('style'));
   still.textContent = '*, *::before, *::after { transition: none !important; }';
   try {
@@ -66,7 +79,7 @@ async function expectAxeClean(sizes: (readonly [number, number])[] = [WIDE, PHON
       document.documentElement.dataset.theme = theme;
       for (const [width, height] of sizes) {
         await page.viewport(width, height);
-        await expect.poll(() => bar().hasAttribute('data-collapsed')).toBe(width === PHONE[0]);
+        await expect.poll(() => bar().hasAttribute('data-collapsed')).toBe(collapsedAt(width));
         const results = await axe.run(document.body, {
           runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
           rules: { region: { enabled: false } },
@@ -406,6 +419,92 @@ describe('DataBar collapsed behind its summary', () => {
   });
 });
 
+describe('DataBar touch and refit', () => {
+  const box = (element: Element) => element.getBoundingClientRect();
+
+  test('on a phone every field and the summary are 44 px targets (WCAG 2.5.8)', async () => {
+    await phone();
+    await summary().click();
+    await settle();
+    expect(box(el(summary())).height).toBeGreaterThan(43.9);
+    for (const select of bar().querySelectorAll('select')) {
+      expect(box(select).height).toBeGreaterThan(43.9);
+    }
+  });
+
+  test('touch controls stay in the disclosure on a wide screen, 44 px, anchored under the summary', async () => {
+    await withTouch(async () => {
+      await wide();
+      expect(bar().hasAttribute('data-collapsed')).toBe(true);
+      expect(box(el(summary())).height).toBeGreaterThan(43.9);
+      // As wide as its words, not the whole column.
+      expect(box(el(summary())).width).toBeLessThan(500);
+      await summary().click();
+      await settle();
+      for (const select of bar().querySelectorAll('select')) {
+        expect(box(select).height).toBeGreaterThan(43.9);
+      }
+      const popover = bar().querySelector('.masthead-data')!;
+      expect(Math.abs(box(popover).left - box(el(summary())).left)).toBeLessThan(3);
+      expect(parseFloat(getComputedStyle(bar()).paddingLeft)).toBeGreaterThan(0);
+      await expectAxeClean([WIDE], () => true);
+    });
+  });
+
+  test('the desktop bar passes axe in French', async () => {
+    await wide(barProps({ lang: 'fr' }));
+    await expectAxeClean([WIDE], () => false);
+  });
+
+  test('Space opens the summary', async () => {
+    await phone();
+    el(summary()).focus();
+    await userEvent.keyboard(' ');
+    expect(el(summary()).getAttribute('aria-expanded')).toBe('true');
+  });
+
+  test('Escape closes the popover with focus on the page, and is marked handled', async () => {
+    await phone();
+    await summary().click();
+    bar().querySelector<HTMLElement>('.data-note')!.click();
+    (document.activeElement as HTMLElement).blur();
+    expect(document.activeElement).toBe(document.body);
+    let prevented = false;
+    window.addEventListener('keydown', (event) => (prevented = event.defaultPrevented), {
+      once: true,
+    });
+    await userEvent.keyboard('{Escape}');
+    expect(prevented).toBe(true);
+    expect(el(summary()).getAttribute('aria-expanded')).toBe('false');
+  });
+
+  test('a change of the available width alone refits the bar', async () => {
+    await wide();
+    expect(bar().hasAttribute('data-collapsed')).toBe(false);
+    bar().style.width = '300px';
+    await expect.poll(() => bar().hasAttribute('data-collapsed')).toBe(true);
+    bar().style.width = '';
+    await expect.poll(() => bar().hasAttribute('data-collapsed')).toBe(false);
+  });
+
+  test('a collapse leaves the popover closed when focus is elsewhere', async () => {
+    await wide();
+    el(more()).focus();
+    bar().style.width = '300px';
+    await expect.poll(() => bar().hasAttribute('data-collapsed')).toBe(true);
+    expect(el(summary()).getAttribute('aria-expanded')).toBe('false');
+  });
+
+  test('without internal anatomy the summary drops colour before the atlas', async () => {
+    await page.viewport(250, 800);
+    await render(Fixture, { bar: barProps({ detailLevels: ['learning'] }) });
+    await settle();
+    const node = bar().querySelector<HTMLElement>('.data-summary')!;
+    expect(node.dataset.short).toBe('colour');
+    expect(getComputedStyle(node.querySelector('[data-part=atlas]')!).display).not.toBe('none');
+  });
+});
+
 describe('DataBar tract reference', () => {
   const reference = { label: 'Tract reference', description: 'Bundles drawn on the HCP template' };
 
@@ -432,6 +531,21 @@ describe('DataBar tract reference', () => {
     expect(bar().querySelector<HTMLElement>('.data-toggle')!.checkVisibility()).toBe(false);
     expect(page.getByRole('combobox').elements()).toHaveLength(0);
     expect(bar().querySelector('.study-name')!.checkVisibility()).toBe(true);
+  });
+
+  test('focus stays on the name when the reference is passed again or the language changes', async () => {
+    const props = $state(barProps({ reference }));
+    await wide(props);
+    el(page.getByRole('link', { name: 'Skip to model' })).focus();
+    await userEvent.keyboard('{Tab}');
+    const name = bar().querySelector<HTMLElement>('.study-name')!;
+    expect(document.activeElement).toBe(name);
+    props.reference = { ...reference };
+    await settle();
+    expect(document.activeElement).toBe(name);
+    props.lang = 'fr';
+    await settle();
+    expect(document.activeElement).toBe(name);
   });
 
   test('focus inside the data bar when the reference starts moves on, not to the page', async () => {

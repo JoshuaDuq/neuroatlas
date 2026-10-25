@@ -293,7 +293,9 @@
     }
   }
 
+  // Deferred callbacks (a frame, the fonts) may outlive the component.
   const fit = () => {
+    if (!root?.isConnected) return;
     fitBar();
     fitSummary();
   };
@@ -304,7 +306,8 @@
     untrack(fit);
   });
   $effect(() => {
-    const observer = new ResizeObserver(fit);
+    // Fitting changes the layout it observes; a frame later keeps that out of the observer's own delivery.
+    const observer = new ResizeObserver(() => requestAnimationFrame(fit));
     observer.observe(root);
     window.addEventListener('resize', fit);
     void document.fonts.ready.then(fit);
@@ -315,8 +318,9 @@
   });
 
   // A reference hides every control, so focus moves on before they go (deviation h3-focus-never-lost).
+  const isReference = $derived(reference !== null);
   $effect.pre(() => {
-    if (reference && root?.contains(document.activeElement)) untrack(nextControl)?.focus();
+    if (isReference && root?.contains(document.activeElement)) untrack(nextControl)?.focus();
   });
   // A select that becomes disabled drops focus to the page; the subject waits for a download.
   $effect.pre(() => {
@@ -333,22 +337,27 @@
     const outside = (event: PointerEvent) => {
       if (!root.contains(event.target as Node)) open = false;
     };
+    // Marked handled: the page's own Escape would otherwise go on to clear the selection. On the
+    // document, as legacy, so it works when a click on a note left focus on the page.
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !collapsed) return;
+      event.preventDefault();
+      instant = true;
+      open = false;
+      toggle.focus();
+    };
     document.addEventListener('pointerdown', outside);
-    return () => document.removeEventListener('pointerdown', outside);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+      document.removeEventListener('keydown', escape);
+    };
   });
 
   function onToggle(event: MouseEvent) {
     instant = isKeyboardActivation(event);
     open = !open;
     if (open) settingsOpen = false;
-  }
-  // Marked handled: the page's own Escape would otherwise go on to clear the selection.
-  function onkeydown(event: KeyboardEvent) {
-    if (event.key !== 'Escape' || !open || !collapsed) return;
-    event.preventDefault();
-    instant = true;
-    open = false;
-    toggle.focus();
   }
   // Tabbing past the last control leaves the popover. No related target means the window lost focus.
   function onfocusout(event: FocusEvent) {
@@ -386,7 +395,6 @@
   class="data-bar"
   data-reference={reference ? '' : undefined}
   role="presentation"
-  {onkeydown}
   {onfocusout}
 >
   <button
@@ -841,6 +849,23 @@
       display: none;
     }
 
+    /* The first caption stands on the stage gutter; the summary is as wide as its words, and its popover drops from its edge. */
+    @media (min-width: 801px) and (min-height: 481px),
+      (min-width: 801px) and (orientation: portrait) {
+      .data-bar {
+        padding-left: var(--stage-gutter);
+      }
+      .data-bar:global([data-collapsed]) .data-toggle {
+        flex: 0 1 auto;
+        margin-left: calc(-1px - var(--space-2));
+      }
+      .data-bar:global([data-collapsed]) .masthead-data {
+        left: calc(var(--stage-gutter) - 1px - var(--space-2));
+        right: auto;
+        transform-origin: top left;
+      }
+    }
+
     /* Phones: the popover is inset from both screen edges like the settings panel, so the two drop as one width. */
     @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
       .data-bar {
@@ -867,6 +892,10 @@
     /* Fields and the summary follow --control-height, which is already 44px here. */
     @media (pointer: coarse), (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
       /* 16px, so focusing a field does not zoom the page on iOS. */
+      select,
+      .data-bar:global([data-collapsed]) .data-toggle {
+        min-height: 44px;
+      }
       select {
         font-size: var(--text-title);
       }
