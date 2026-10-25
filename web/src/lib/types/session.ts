@@ -31,7 +31,6 @@ export interface SessionState {
   lang: Language;
   status: LoadStatus;
   progress: LoadProgress | null;
-  /** An error code, as the failure notice names it (ui/chrome/sections.js:516). */
-  error: string | null;
+  error: Error | null;
   notice: Notice | null;
 }
