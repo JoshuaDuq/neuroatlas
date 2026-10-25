@@ -5,7 +5,13 @@
  * checks what is checkable without that knowledge and passes the rest through
  * as opaque strings; `link-check.ts` judges those against the loaded anatomy.
  */
-import { CUTS, EXPLORERS, FUNCTIONAL_LEVELS, HEMISPHERES, SURFACE_COLORS } from '../../types/constants.ts';
+import {
+  CUTS,
+  EXPLORERS,
+  FUNCTIONAL_LEVELS,
+  HEMISPHERES,
+  SURFACE_COLORS,
+} from '../../types/constants.ts';
 import type { LinkInput, LinkState, Orbit } from '../../types/index.ts';
 
 type Defaults = Pick<

@@ -4,9 +4,13 @@ import { createLinkWriter, sameSubject } from './link-writer.ts';
 
 test('the link is written once the scene settles, not at every change', () => {
   vi.useFakeTimers();
-  onTestFinished(() => { vi.useRealTimers(); });
+  onTestFinished(() => {
+    vi.useRealTimers();
+  });
   let writes = 0;
-  const writer = createLinkWriter(() => { writes += 1; });
+  const writer = createLinkWriter(() => {
+    writes += 1;
+  });
   writer.schedule();
   vi.advanceTimersByTime(200);
   writer.schedule();
@@ -18,9 +22,13 @@ test('the link is written once the scene settles, not at every change', () => {
 
 test('while a link is applied the address bar keeps it, until that restore ends or is overtaken', () => {
   vi.useFakeTimers();
-  onTestFinished(() => { vi.useRealTimers(); });
+  onTestFinished(() => {
+    vi.useRealTimers();
+  });
   let writes = 0;
-  const writer = createLinkWriter(() => { writes += 1; });
+  const writer = createLinkWriter(() => {
+    writes += 1;
+  });
   let live = true;
   const restoring = () => live;
   writer.hold(restoring);
@@ -45,9 +53,13 @@ test('while a link is applied the address bar keeps it, until that restore ends 
 
 test('a cancelled write never lands, as when another subject is about to load', () => {
   vi.useFakeTimers();
-  onTestFinished(() => { vi.useRealTimers(); });
+  onTestFinished(() => {
+    vi.useRealTimers();
+  });
   let writes = 0;
-  const writer = createLinkWriter(() => { writes += 1; });
+  const writer = createLinkWriter(() => {
+    writes += 1;
+  });
   writer.schedule();
   writer.cancel();
   vi.advanceTimersByTime(1000);

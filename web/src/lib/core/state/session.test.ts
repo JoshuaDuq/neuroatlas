@@ -1,11 +1,17 @@
 import assert from 'node:assert/strict';
-import { onTestFinished, test, vi } from 'vitest';
+import { test } from 'vitest';
+import type { Explorer, Notice } from '../../types/index.ts';
 import { createSession, shortcutsAllowed } from './session.ts';
 
 const VIEWS = ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'];
 const modelState = {
-  atlas: 'destrieux', hemisphere: 'both', cortexVisible: true, cortexOpacity: 1,
-  surfaceColor: 'tissue', selectedRegion: null, isolatedRegion: null,
+  atlas: 'destrieux',
+  hemisphere: 'both',
+  cortexVisible: true,
+  cortexOpacity: 1,
+  surfaceColor: 'tissue',
+  selectedRegion: null,
+  isolatedRegion: null,
 };
 
 const session = () => createSession({ views: VIEWS });
@@ -24,7 +30,7 @@ test('clinical navigation preserves anatomical search and selection independentl
   assert.equal(snapshot.selectedRegion, null);
   s.setExplorer('anatomy');
   assert.equal(s.assemble(modelState).selectedDeficit, 'amnesia');
-  assert.throws(() => s.setExplorer('unknown'), /Unknown explorer/);
+  assert.throws(() => s.setExplorer('unknown' as Explorer), /Unknown explorer/);
 });
 
 test('a masthead choice lifts the open paint until a function, a deficit or a tab is chosen again', () => {
@@ -33,7 +39,11 @@ test('a masthead choice lifts the open paint until a function, a deficit or a ta
   s.setFunctionQuery('memory');
   s.setFunction('language');
   assert.equal(s.assemble(modelState).paintLifted, false);
-  for (const choose of [() => s.setFunction('all'), () => s.setDeficit('aphasia'), () => s.setExplorer('functions')]) {
+  for (const choose of [
+    () => s.setFunction('all'),
+    () => s.setDeficit('aphasia'),
+    () => s.setExplorer('functions'),
+  ]) {
     s.liftPaint();
     assert.equal(s.assemble(modelState).paintLifted, true);
     choose();
@@ -91,7 +101,11 @@ test('groups expand and collapse independently', () => {
 test('groups can be expanded or collapsed in bulk', () => {
   const s = session();
   s.setExpanded(['Frontal', 'Temporal', 'Parietal']);
-  assert.deepEqual([...s.assemble(modelState).expanded].sort(), ['Frontal', 'Parietal', 'Temporal']);
+  assert.deepEqual([...s.assemble(modelState).expanded].sort(), [
+    'Frontal',
+    'Parietal',
+    'Temporal',
+  ]);
   s.setExpanded([]);
   assert.deepEqual([...s.assemble(modelState).expanded], []);
 });
@@ -99,11 +113,14 @@ test('groups can be expanded or collapsed in bulk', () => {
 test('a notice survives until the next action, and is never timed out', () => {
   const s = session();
   s.notify({ text: 'Selection cleared — cortex hidden.' });
-  assert.deepEqual(s.assemble(modelState).notice, { text: 'Selection cleared — cortex hidden.', action: null });
-  assert.equal(s.assemble(modelState).notice.text, 'Selection cleared — cortex hidden.');
+  assert.deepEqual(s.assemble(modelState).notice, {
+    text: 'Selection cleared — cortex hidden.',
+    action: null,
+  });
+  assert.equal(s.assemble(modelState).notice!.text, 'Selection cleared — cortex hidden.');
   s.setQuery('a');
   assert.equal(s.assemble(modelState).notice, null);
-  assert.throws(() => s.notify('bare text'), /needs text/);
+  assert.throws(() => s.notify('bare text' as unknown as Notice), /needs text/);
 });
 
 test('download progress is not an action: a standing notice outlives it', () => {
@@ -112,7 +129,7 @@ test('download progress is not an action: a standing notice outlives it', () => 
   s.notify({ text: 'Planum was updated. Reload to continue.', action: 'reload' });
   s.setSwitching({ loaded: 1, total: 4 });
   s.endSwitching();
-  assert.equal(s.assemble(modelState).notice.action, 'reload');
+  assert.equal(s.assemble(modelState).notice!.action, 'reload');
   assert.equal(s.assemble(modelState).status, 'ready');
 });
 
@@ -127,8 +144,7 @@ test('a download during the first load leaves the first load’s status alone', 
 test('loading progress is carried through to the snapshot', () => {
   const s = session();
   s.setProgress({ loaded: 12_400_000, total: 27_900_000 });
-  assert.deepEqual(s.assemble(modelState).progress,
-    { loaded: 12_400_000, total: 27_900_000 });
+  assert.deepEqual(s.assemble(modelState).progress, { loaded: 12_400_000, total: 27_900_000 });
   s.setStatus('ready');
   assert.equal(s.assemble(modelState).status, 'ready');
   assert.equal(s.assemble(modelState).progress, null);
@@ -139,7 +155,7 @@ test('an error is carried without pretending the viewer is ready', () => {
   s.setError(new Error('Manifest request failed: HTTP 404'));
   const snapshot = s.assemble(modelState);
   assert.equal(snapshot.status, 'error');
-  assert.equal(snapshot.error.message, 'Manifest request failed: HTTP 404');
+  assert.equal(snapshot.error!.message, 'Manifest request failed: HTTP 404');
 });
 
 test('global shortcuts are suppressed while text is being typed', () => {
@@ -159,7 +175,16 @@ test('shortcuts still work from the canvas, buttons and the page body', () => {
 
 test('a slider keeps the keys that move it', () => {
   const slider = { tagName: 'INPUT', type: 'range' };
-  for (const key of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown']) {
+  for (const key of [
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'Home',
+    'End',
+    'PageUp',
+    'PageDown',
+  ]) {
     assert.equal(shortcutsAllowed(slider, key), false, key);
   }
   // Without the key there is no telling, so the slider keeps them all.
@@ -232,13 +257,22 @@ test('overlapping links hold notices until the last settles; with nothing to say
   s.releaseNotices();
   assert.equal(s.assemble(modelState).notice, null);
   s.releaseNotices({ text: 'Not applied from this link: view.' });
-  assert.equal(s.assemble(modelState).notice.text, 'Not applied from this link: view. A download failed.');
+  assert.equal(
+    s.assemble(modelState).notice!.text,
+    'Not applied from this link: view. A download failed.',
+  );
   s.holdNotices();
   s.releaseNotices(null);
-  assert.equal(s.assemble(modelState).notice.text, 'Not applied from this link: view. A download failed.');
+  assert.equal(
+    s.assemble(modelState).notice!.text,
+    'Not applied from this link: view. A download failed.',
+  );
   s.notify({ text: 'Later.' });
-  assert.equal(s.assemble(modelState).notice.text, 'Not applied from this link: view. A download failed. Later.',
-    'released, notices show at once again');
+  assert.equal(
+    s.assemble(modelState).notice!.text,
+    'Not applied from this link: view. A download failed. Later.',
+    'released, notices show at once again',
+  );
 });
 
 test('a notice arriving while another stands joins it, once, until the next action clears both', () => {
@@ -247,7 +281,8 @@ test('a notice arriving while another stands joins it, once, until the next acti
   s.notify({ text: 'Could not show the white matter.', action: 'reload' });
   s.notify({ text: 'Could not show the white matter.' });
   assert.deepEqual(s.assemble(modelState).notice, {
-    text: 'Not applied from this link: view. Could not show the white matter.', action: 'reload',
+    text: 'Not applied from this link: view. Could not show the white matter.',
+    action: 'reload',
   });
   s.setQuery('');
   assert.equal(s.assemble(modelState).notice, null);

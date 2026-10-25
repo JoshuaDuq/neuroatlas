@@ -15,11 +15,7 @@ export const requiredAtlas = (
   { cabNp, functionalRegions }: Pick<ModelPort, 'cabNp' | 'functionalRegions'>,
   colour: SurfaceColor,
 ): string | null | undefined =>
-  colour === 'cab-np'
-    ? cabNp?.atlas
-    : colour === 'functional'
-      ? functionalRegions?.atlas
-      : null;
+  colour === 'cab-np' ? cabNp?.atlas : colour === 'functional' ? functionalRegions?.atlas : null;
 
 /**
  * The scene changes that wait on downloads: layer switches, surface colours and
@@ -138,7 +134,9 @@ export function createSceneCommands({
   const envelopes = () =>
     model.envelopesLoaded ? null : download((progress) => model.ensureEnvelopes(progress));
   const spinalCord = () =>
-    model.spinalCordLoad === 'ready' ? null : download((progress) => model.ensureSpinalCord(progress));
+    model.spinalCordLoad === 'ready'
+      ? null
+      : download((progress) => model.ensureSpinalCord(progress));
 
   /** Colour the surface, first showing the atlas a network colouring is defined on. */
   async function applySurfaceColor(value: SurfaceColor, current: () => boolean) {
@@ -157,7 +155,8 @@ export function createSceneCommands({
 
   /** Show or hide the spinal cord; its first showing downloads it. */
   async function showSpinalCord(visible: boolean, current: () => boolean) {
-    if (visible && !hasSpinalCord()) throw new Error('This anatomy does not publish a spinal cord.');
+    if (visible && !hasSpinalCord())
+      throw new Error('This anatomy does not publish a spinal cord.');
     await (visible && model.spinalCordLoad !== 'ready'
       ? download((progress) => model.setSpinalCordVisible(true, progress))
       : model.setSpinalCordVisible(visible));
@@ -166,7 +165,8 @@ export function createSceneCommands({
 
   /** The first cut downloads the tissue envelopes it caps, and the cord where one is published. */
   async function prepareCut(current: () => boolean) {
-    if (!sections.solidsReady) await Promise.all([envelopes(), hasSpinalCord() ? spinalCord() : null]);
+    if (!sections.solidsReady)
+      await Promise.all([envelopes(), hasSpinalCord() ? spinalCord() : null]);
     return current();
   }
 

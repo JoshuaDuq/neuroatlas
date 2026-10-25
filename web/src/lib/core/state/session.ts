@@ -130,8 +130,7 @@ export function createSession({ views, theme = 'dark', lang = 'en' }: SessionOpt
     },
 
     setFunctionQuery: (functionQuery: string) => act({ functionQuery }),
-    setFunction: (selectedFunction: string | null) =>
-      act({ selectedFunction, paintLifted: false }),
+    setFunction: (selectedFunction: string | null) => act({ selectedFunction, paintLifted: false }),
     setClinicalQuery: (clinicalQuery: string) => act({ clinicalQuery }),
     setDeficit: (selectedDeficit: string | null) =>
       act({ selectedDeficit, selectedFinding: null, paintLifted: false }),

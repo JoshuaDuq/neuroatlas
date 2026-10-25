@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
-import { onTestFinished, test, vi } from 'vitest';
+import { test, vi } from 'vitest';
+import type { OnProgress, SpinalCordLoad } from '../../engine/api.ts';
+import type { SurfaceColor } from '../../types/index.ts';
+import type { ModelPort, SectionsPort } from './ports.ts';
 import { createSceneCommands } from './scene-commands.ts';
+import type { SceneCommands } from './scene-commands.ts';
 import { createSession } from './session.ts';
 
 const REGIONS = [
@@ -10,47 +14,72 @@ const REGIONS = [
   { id: 'nextbrain:left:458', atlas: 'nextbrain', kind: 'structure', hemisphere: 'left' },
 ];
 
+interface Download {
+  progress: OnProgress | undefined;
+  promise: Promise<void>;
+  resolve: () => void;
+  reject: (error: unknown) => void;
+}
+
 /**
  * A model with BrainAtlas's own request rule: a layer switch that a later one
  * overtook does not apply when its download lands. Downloads finish on demand.
  */
 function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
-  const downloads = new Map();
-  const shown = [];
+  const downloads = new Map<string, Download>();
+  const shown: (readonly string[])[] = [];
   const model = {
     disposed: false,
     manifest: { supplemental_layers: cord ? [{ id: 'zanatomy', file: 'spinal-cord.glb' }] : [] },
-    envelopes: null,
-    spinalCordLoadState: 'unloaded',
+    envelopes: null as unknown[] | null,
+    spinalCordLoadState: 'unloaded' as SpinalCordLoad,
     spinalCordVisible: false,
-    layers: new Map([[atlas, {}], [detail, {}]]),
-    regions: new Map(REGIONS.map(region => [region.id, region])),
+    layers: new Map([
+      [atlas, {}],
+      [detail, {}],
+    ]),
+    regions: new Map(REGIONS.map((region) => [region.id, region])),
     cabNp: { atlas: 'hcp-mmp' },
     functionalRegions: { atlas: 'hcp-mmp' },
     atlasId: atlas,
     detailId: detail,
-    surfaceColor: 'atlas',
+    surfaceColor: 'atlas' as SurfaceColor,
     internalVisible: true,
-    selectedId: 'aseg:left:11',
+    selectedId: 'aseg:left:11' as string | null,
     atlasRequest: 0,
     detailRequest: 0,
     get settings() {
-      return { atlas: this.atlasId, detail: this.detailId, surfaceColor: this.surfaceColor,
-        cortexOpacity: 1, internalVisible: this.internalVisible };
+      return {
+        atlas: this.atlasId,
+        detail: this.detailId,
+        surfaceColor: this.surfaceColor,
+        cortexOpacity: 1,
+        internalVisible: this.internalVisible,
+      };
     },
-    hasLayer(id) { return this.layers.has(id); },
-    get envelopesLoaded() { return Boolean(this.envelopes); },
-    get spinalCordLoad() { return this.spinalCordLoadState; },
-    loadLayer(id, progress) {
+    hasLayer(id: string) {
+      return this.layers.has(id);
+    },
+    get envelopesLoaded() {
+      return Boolean(this.envelopes);
+    },
+    get spinalCordLoad() {
+      return this.spinalCordLoadState;
+    },
+    loadLayer(id: string, progress?: OnProgress): Promise<void> {
       if (this.layers.has(id)) return Promise.resolve();
       if (!downloads.has(id)) {
-        const entry = { progress };
-        entry.promise = new Promise((resolve, reject) => Object.assign(entry, { resolve, reject }));
-        downloads.set(id, entry);
+        let resolve!: () => void;
+        let reject!: (error: unknown) => void;
+        const promise = new Promise<void>((resolveLayer, rejectLayer) => {
+          resolve = resolveLayer;
+          reject = rejectLayer;
+        });
+        downloads.set(id, { progress, promise, resolve, reject });
       }
-      return downloads.get(id).promise;
+      return downloads.get(id)!.promise;
     },
-    async setAtlas(id, progress) {
+    async setAtlas(id: string, progress?: OnProgress) {
       const request = ++this.atlasRequest;
       await this.loadLayer(id, progress);
       if (request !== this.atlasRequest) return;
@@ -58,24 +87,24 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
       if (this.surfaceColor === 'cab-np' && id !== this.cabNp.atlas) this.surfaceColor = 'atlas';
       this.selectedId = null;
     },
-    async setDetail(id, progress) {
+    async setDetail(id: string, progress?: OnProgress) {
       const request = ++this.detailRequest;
       await this.loadLayer(id, progress);
       if (request !== this.detailRequest) return;
       this.detailId = id;
     },
-    async ensureEnvelopes(progress) {
-      if (this.envelopes) return this.envelopes;
-      await this.loadLayer('envelopes', progress);
-      this.envelopes ??= [];
-      return this.envelopes;
+    async ensureEnvelopes(progress?: OnProgress) {
+      if (!this.envelopes) {
+        await this.loadLayer('envelopes', progress);
+        this.envelopes ??= [];
+      }
     },
-    async ensureSpinalCord(progress) {
+    async ensureSpinalCord(progress?: OnProgress) {
       if (!cord) throw new Error('This anatomy does not publish a spinal cord.');
       await this.loadLayer('zanatomy', progress);
       this.spinalCordLoadState = 'ready';
     },
-    async setSpinalCordVisible(visible, progress) {
+    async setSpinalCordVisible(visible: boolean, progress?: OnProgress) {
       if (visible) await this.ensureSpinalCord(progress);
       this.spinalCordVisible = visible;
     },
@@ -84,22 +113,31 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
     setHemisphere() {},
     setCortexVisible() {},
     setCortexOpacity() {},
-    setInternalVisible(value) { this.internalVisible = value; },
-    showRegions(ids) { shown.push(ids); },
-    select(id) { this.selectedId = id; },
+    setInternalVisible(value: boolean) {
+      this.internalVisible = value;
+    },
+    showRegions(ids: readonly string[]) {
+      shown.push(ids);
+    },
+    select(id: string | null) {
+      this.selectedId = id;
+    },
   };
   // BrainSections' own rule: a later colour, or the command's own intent check, overtakes one still loading.
   const sections = {
-    mode: 'off',
+    mode: 'off' as Parameters<SectionsPort['setMode']>[0],
     appearanceRequest: 0,
-    get solidsReady() { return Boolean(model.envelopes); },
-    async setMode(mode) {
+    get solidsReady() {
+      return Boolean(model.envelopes);
+    },
+    async setMode(mode: Parameters<SectionsPort['setMode']>[0]) {
       if (mode !== 'off') await model.ensureEnvelopes();
       this.mode = mode;
     },
-    async setSurfaceColor(value, current = () => true) {
+    async setSurfaceColor(value: SurfaceColor, current: () => boolean = () => true) {
       const request = ++this.appearanceRequest;
-      if (value === 'cab-np' && model.atlasId !== model.cabNp.atlas) throw new Error('CAB-NP needs HCP-MMP first');
+      if (value === 'cab-np' && model.atlasId !== model.cabNp.atlas)
+        throw new Error('CAB-NP needs HCP-MMP first');
       if (value === 'functional') await model.ensureEnvelopes();
       if (value === 'mri') await model.loadLayer('mri');
       if (request !== this.appearanceRequest || !current()) return;
@@ -109,29 +147,47 @@ function fixture({ atlas = 'hcp-mmp', detail = 'aseg', cord = true } = {}) {
   const session = createSession({ views: ['oblique'] });
   session.setStatus('ready');
   let renders = 0;
-  const commands = createSceneCommands({ model, sections, session, render: () => { renders += 1; } });
-  const settle = () => new Promise(resolve => setImmediate(resolve));
+  const commands = createSceneCommands({
+    model: model as unknown as ModelPort,
+    sections: sections as unknown as SectionsPort,
+    session,
+    render: () => {
+      renders += 1;
+    },
+  });
+  const settle = () => new Promise((resolve) => setImmediate(resolve));
   return {
-    model, sections, session, commands, shown, settle,
-    get renders() { return renders; },
-    tick(id, loaded, total) { downloads.get(id).progress?.({ loaded, total }); },
-    async finish(id) {
-      const entry = downloads.get(id);
+    model,
+    sections,
+    session,
+    commands,
+    shown,
+    settle,
+    get renders() {
+      return renders;
+    },
+    tick(id: string, loaded: number, total: number) {
+      downloads.get(id)!.progress?.({ loaded, total });
+    },
+    async finish(id: string) {
+      const entry = downloads.get(id)!;
       downloads.delete(id);
       model.layers.set(id, {});
       entry.resolve();
       await settle();
     },
-    async fail(id, error) {
-      downloads.get(id).reject(error);
+    async fail(id: string, error: unknown) {
+      downloads.get(id)!.reject(error);
       downloads.delete(id);
       await settle();
     },
   };
 }
 
+type Scene = ReturnType<typeof fixture>;
+
 /** What `openDeficit` does with the scene: begin, then reveal the mapped regions. */
-const openDeficit = (commands, ids) => {
+const openDeficit = (commands: SceneCommands, ids: string[]) => {
   const current = commands.begin();
   return commands.revealRegions(ids, current);
 };
@@ -217,7 +273,7 @@ test('entering the glass brain hides the internal anatomy and says how to show i
   scene.model.envelopes = [];
   await scene.commands.chooseSurfaceColor('functional');
   assert.equal(scene.model.internalVisible, false);
-  assert.match(scene.session.assemble({}).notice.text, /^Internal anatomy is hidden/);
+  assert.match(scene.session.assemble({}).notice!.text, /^Internal anatomy is hidden/);
   const linked = fixture();
   linked.model.envelopes = [];
   await linked.commands.applySurfaceColor('functional', linked.commands.begin());
@@ -246,7 +302,10 @@ test('the first showing of the cord is a download with progress; an anatomy with
   assert.equal(await showing, true);
   assert.equal(scene.model.spinalCordVisible, true);
   const without = fixture({ cord: false });
-  await assert.rejects(without.commands.showSpinalCord(true, without.commands.begin()), /does not publish a spinal cord/);
+  await assert.rejects(
+    without.commands.showSpinalCord(true, without.commands.begin()),
+    /does not publish a spinal cord/,
+  );
   assert.equal(await without.commands.showSpinalCord(false, without.commands.begin()), true);
 });
 
@@ -276,7 +335,10 @@ test('a failed atlas switch leaves one translated notice; an overtaken one says 
   await switching;
   const { notice, status } = scene.session.assemble({});
   assert.equal(status, 'ready');
-  assert.match(notice.text, /^Impossible de charger Destrieux\. Un fichier n’a pas pu être téléchargé/);
+  assert.match(
+    notice!.text,
+    /^Impossible de charger Destrieux\. Un fichier n’a pas pu être téléchargé/,
+  );
   const quiet = fixture();
   const overtaken = quiet.commands.chooseAtlas('destrieux');
   await quiet.settle();
@@ -300,7 +362,9 @@ test('switching away from HCP-MMP drops CAB-NP, which its option named, and reti
 
 test('a colour that switches the atlas retires a notice the screen no longer bears out', async () => {
   const scene = fixture({ atlas: 'destrieux' });
-  scene.session.notify({ text: 'CAB-NP colours HCP-MMP areas only, so Destrieux shows its own region colours.' });
+  scene.session.notify({
+    text: 'CAB-NP colours HCP-MMP areas only, so Destrieux shows its own region colours.',
+  });
   const choosing = scene.commands.chooseSurfaceColor('cab-np');
   await scene.settle();
   await scene.finish('hcp-mmp');
@@ -324,9 +388,12 @@ test('asking for the atlas on screen is free, unless another is still on its way
 
 test('a colour still downloading does not land after the reader keeps the one shown, resets or opens a link', async () => {
   for (const overtake of [
-    scene => scene.commands.chooseSurfaceColor('atlas'),
-    scene => { scene.commands.begin(); scene.model.surfaceColor = 'atlas'; },
-    scene => scene.commands.applySurfaceColor('atlas', scene.commands.begin()),
+    (scene: Scene) => scene.commands.chooseSurfaceColor('atlas'),
+    (scene: Scene) => {
+      scene.commands.begin();
+      scene.model.surfaceColor = 'atlas';
+    },
+    (scene: Scene) => scene.commands.applySurfaceColor('atlas', scene.commands.begin()),
   ]) {
     const scene = fixture();
     const choosing = scene.commands.chooseSurfaceColor('mri');

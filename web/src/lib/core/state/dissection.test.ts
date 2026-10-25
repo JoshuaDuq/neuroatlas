@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
-import { onTestFinished, test, vi } from 'vitest';
+import { test } from 'vitest';
 import { createDissection } from './dissection.ts';
 
-const regions = new Map([['left', {}], ['right', {}]]);
+const regions = new Map([
+  ['left', {}],
+  ['right', {}],
+]);
 
 test('published dissection snapshots cannot mutate the live mask or history', () => {
   const dissection = createDissection(regions);
@@ -20,5 +23,5 @@ test('loading a shared mask validates all identifiers and begins with no undo hi
   assert.equal(dissection.state.dissectionCanUndo, false);
   assert.throws(() => dissection.load(['left', 'unknown']), /Unknown region/);
   assert.deepEqual([...dissection.state.hiddenRegions], ['right']);
-  assert.throws(() => dissection.hide('left'), /array/);
+  assert.throws(() => dissection.hide('left' as unknown as string[], {}), /array/);
 });

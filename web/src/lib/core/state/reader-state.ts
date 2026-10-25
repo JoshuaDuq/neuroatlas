@@ -30,7 +30,10 @@ const SCENE_FIELDS = [
 export type ReaderCamera = 'view' | 'cut' | CameraSnapshot;
 
 /** Everything the scene shows, with nothing left implicit. */
-export type ReaderState = Pick<LinkState, (typeof SCENE_FIELDS)[number] | 'atlas' | 'detail' | 'cutAtlas'> & {
+export type ReaderState = Pick<
+  LinkState,
+  (typeof SCENE_FIELDS)[number] | 'atlas' | 'detail' | 'cutAtlas'
+> & {
   hiddenRegions: ReadonlySet<string>;
   camera: ReaderCamera;
 };
@@ -61,7 +64,9 @@ export function readerState(
   const state: Record<string, unknown> = {};
   for (const key of SCENE_FIELDS) {
     const value =
-      key === 'selectedRegion' || key === 'isolatedRegion' ? identifier(partial[key]) : partial[key];
+      key === 'selectedRegion' || key === 'isolatedRegion'
+        ? identifier(partial[key])
+        : partial[key];
     state[key] = value ?? DEFAULTS[key as keyof typeof DEFAULTS];
   }
   for (const key of ['atlas', 'detail', 'cutAtlas'] as const) {
