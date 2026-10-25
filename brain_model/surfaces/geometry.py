@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import nibabel as nib
 import numpy as np
 import trimesh
+from scipy.ndimage import find_objects
 from scipy.spatial import cKDTree
 from skimage.measure import marching_cubes
 from trimesh.smoothing import filter_taubin
@@ -176,6 +177,28 @@ def misclassified_voxels(vertices, faces, mask, voxel_to_surface):
         mask[tuple(slice(a, b) for a, b in zip(source_lower, source_upper))]
     )
     return np.argwhere(inside != local) + lower
+
+
+def label_boxes(volume):
+    """Each label's bounding box, one voxel wider on every side the volume allows.
+
+    Found in one pass. Inside a label's box, with box_affine, extract_structure
+    and misclassified_voxels give what they give across the whole volume, at the
+    cost of the box rather than of the volume.
+    """
+    return {
+        label: tuple(
+            slice(max(axis.start - 1, 0), min(axis.stop + 1, size))
+            for axis, size in zip(box, volume.shape)
+        )
+        for label, box in enumerate(find_objects(volume), 1)
+        if box is not None
+    }
+
+
+def box_affine(voxel_to_surface, box):
+    """The affine of a crop whose first voxel is the box's corner."""
+    return voxel_to_surface @ nib.affines.from_matvec(np.eye(3), [axis.start for axis in box])
 
 
 def extract_structure(volume, label, voxel_to_surface):

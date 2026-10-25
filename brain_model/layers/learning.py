@@ -83,10 +83,10 @@ def expand_nextbrain(groups, table):
     return expanded
 
 
-def source_groups(config):
+def source_groups(config, nextbrain_source):
     """Each source's label grid and display units; the two grids need not match."""
     definition = read_definition(config)
-    grid, table = nextbrain.load(config)
+    grid, table = nextbrain_source
     yield "nextbrain", grid, table, expand_nextbrain(definition["nextbrain"], table)
     grid = conformed_grid(load_on_grid(config, config["source_directory"] / "mri/aseg.mgz"))
     table = read_color_table()
@@ -163,7 +163,7 @@ def build(config):
     scene = trimesh.Scene()
     regions = []
     grids = []
-    for source, grid, table, groups in source_groups(config):
+    for source, grid, table, groups in source_groups(config, nextbrain.load(config)):
         grids.append((source, grid))
         volume, affine = grid.labels, grid.voxel_to_surface
         combined = combine_labels(volume, groups)

@@ -164,7 +164,7 @@ def test_validation_decodes_the_voxels_rather_than_trusting_the_checksums(tmp_pa
 def test_cut_only_regions_from_an_unknown_source_are_rejected(tmp_path):
     config = subject(tmp_path, small_recon())
     regions = {region["id"]: region for region in white_matter.build_regions(config)}
-    validate_cut_only_regions(config, regions)
+    validate_cut_only_regions(config, regions, None)
 
     regions["mystery:left:1"] = {
         "id": "mystery:left:1",
@@ -172,7 +172,7 @@ def test_cut_only_regions_from_an_unknown_source_are_rejected(tmp_path):
         "kind": "tissue-region",
     }
     with pytest.raises(ValueError, match="mystery"):
-        validate_cut_only_regions(config, regions)
+        validate_cut_only_regions(config, regions, None)
 
 
 def test_cdmd_white_matter_round_trips_through_its_published_box(tmp_path):

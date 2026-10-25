@@ -169,7 +169,7 @@ def test_published_cut_labels_are_the_source_block_majorities(published):
         coarse.voxel_to_surface @ offset_by(record["crop_corner_voxel"]),
     )
     assert record["voxel_spacing_mm"] == [size * block for size in grid.spacing_mm]
-    assert nextbrain.validate_volume(config, record)["every_block_is_its_majority"]
+    assert nextbrain.validate_volume(config, record, grid)["every_block_is_its_majority"]
 
 
 def test_validation_refuses_a_cut_block_that_lost_its_majority(published, tmp_path):
@@ -191,7 +191,7 @@ def test_validation_refuses_a_cut_block_that_lost_its_majority(published, tmp_pa
     record.update(sha256=sha256(path), decoded_sha256=hashlib.sha256(payload).hexdigest())
 
     with pytest.raises(ValueError, match="most frequent label"):
-        nextbrain.validate_volume(config, record)
+        nextbrain.validate_volume(config, record, published[1])
 
 
 def test_every_cut_label_resolves_to_a_published_region(published):

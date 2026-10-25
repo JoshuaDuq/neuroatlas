@@ -174,7 +174,7 @@ def meshed_indices(grid, table, minimum_mm3):
     ]
 
 
-def cortical_network_compositions(config):
+def cortical_network_compositions(config, grid, table):
     from nibabel.freesurfer.io import read_annot, read_geometry
     from scipy.spatial import cKDTree
 
@@ -182,7 +182,6 @@ def cortical_network_compositions(config):
 
     if not yeo.is_declared(config):
         return {}
-    grid, table = load(config)
     labels = grid.labels
     source = config["source_directory"]
     compositions = {}
@@ -219,7 +218,7 @@ def cortical_network_compositions(config):
 def build_regions(config, skip=()):
     grid, table = load(config)
     indices, counts = np.unique(grid.labels, return_counts=True)
-    shares = cortical_network_compositions(config)
+    shares = cortical_network_compositions(config, grid, table)
     regions = []
     skipped = set(skip)
     for index, count in zip(indices.tolist(), counts.tolist()):
@@ -382,7 +381,7 @@ def mark_uncut(regions, record):
             region["cut_atlases"] = []
 
 
-def validate_volume(config, record):
+def validate_volume(config, record, grid):
     """The published cut labels, checked as block majorities of the source grid.
 
     Counted label by label rather than by the sorted runs block_majority uses,
@@ -394,7 +393,6 @@ def validate_volume(config, record):
     payload = gzip.decompress(path.read_bytes())
     if hashlib.sha256(payload).hexdigest() != record["decoded_sha256"]:
         raise ValueError("Decoded NextBrain cut volume checksum mismatch")
-    grid, _ = load(config)
     block = cut_block(grid, config[ATLAS_ID]["cut_label_spacing_mm"])
     if record["block"] != block:
         raise ValueError("NextBrain cut volume has the wrong block size")

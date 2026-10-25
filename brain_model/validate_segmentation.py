@@ -5,7 +5,7 @@ import re
 import nibabel as nib
 import numpy as np
 
-from .labels import cerebellum, nextbrain
+from .labels import cerebellum
 from .labels.volumes import load_on_grid, resample_nearest
 from .layers.learning import combine_labels, expand_nextbrain, read_definition
 from .sources import HEMISPHERES, ROOT, sha256
@@ -31,7 +31,7 @@ def surface_holes(config):
     }
 
 
-def segmentation_agreement(config):
+def segmentation_agreement(config, nextbrain_source):
     """Dice of each declared learning unit with its aseg label, on each side.
 
     aseg is carried onto the 0.4 mm NextBrain grid by nearest neighbour, so a
@@ -40,7 +40,7 @@ def segmentation_agreement(config):
     without the other noticing.
     """
     settings = config["validation"]["segmentation_agreement"]
-    grid, table = nextbrain.load(config)
+    grid, table = nextbrain_source
     groups = [
         group
         for group in expand_nextbrain(read_definition(config)["nextbrain"], table)
