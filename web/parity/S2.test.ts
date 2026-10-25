@@ -63,8 +63,14 @@ const REASONS = [
   'other-system',
   'other-atlas',
 ];
-const CAB_NP = { atlas: 'hcp-mmp', regions: {} };
-const FUNCTIONAL = { atlas: 'hcp-mmp' };
+const CAB_NP = { id: 'cab-np', atlas: 'hcp-mmp', networks: [], colors: {}, regions: {} };
+const FUNCTIONAL = {
+  id: 'functional',
+  atlas: 'hcp-mmp',
+  sources: {},
+  levels: { sections: [], named: [] },
+  regions: { sections: {}, named: {} },
+};
 const MRI = { fieldOfView: 256, size: 4, windowCenter: 100, windowWidth: 200 };
 
 /** mulberry32: a 32-bit seeded generator, so a failure replays. */

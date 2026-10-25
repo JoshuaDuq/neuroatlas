@@ -51,6 +51,17 @@ interface Dissected {
 }
 
 /**
+ * A centroid coordinate off the midline axes, in tenths of a millimetre like the real model's, and the
+ * same for the same key. A section through a region then has a non-zero offset on every plane, which
+ * the panel's clamp (`offsetThrough`) needs to be tested against.
+ */
+function spread(key: string, span: number): number {
+  let hash = 0;
+  for (const character of key) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  return Math.round(((hash % 1201) / 600 - 1) * span * 10) / 10;
+}
+
+/**
  * In-memory stand-in for `BrainAtlas`. Visibility is C2's `visibilityOf` itself, so a selection is accepted or
  * refused for the reasons the real model gives. A region's geometry counts as downloaded when its atlas layer
  * is. Every download resolves at once.
@@ -184,7 +195,7 @@ export function createFakeModel({
       const region = id ? regions.get(id) : undefined;
       if (!region || !layerLoaded(region)) return null;
       const side = region.hemisphere === 'left' ? -1 : region.hemisphere === 'right' ? 1 : 0;
-      return [side * 30, 0, 0] satisfies Vec3;
+      return [side * 30, spread(region.id, 60), spread(`${region.id}:z`, 40)] satisfies Vec3;
     },
     canSelect,
 

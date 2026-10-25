@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import { assert } from './assert.ts';
 import { describe, it, onTestFinished } from 'vitest';
 import type { Region } from '../../types/index.ts';
 import { HIGH_FREQUENCY_EVENTS } from '../api.ts';
@@ -249,6 +249,23 @@ export function defineEngineContract(
         assert.equal(model.settings.internalSystem, null);
       });
 
+      it('colours the surface at once, leaving the cut alone', async () => {
+        const { engine, atlas } = await boot();
+        const { model, sections } = engine;
+        const changes = collect(engine, 'change');
+        const cut = sections.state;
+        model.setSurfaceColor('tissue');
+        assert.equal(model.settings.surfaceColor, 'tissue');
+        assert.equal(changes.at(-1)?.model.surfaceColor, 'tissue');
+        assert.deepEqual(sections.state, cut);
+        model.setSurfaceColor('atlas');
+        assert.equal(model.settings.surfaceColor, 'atlas');
+        assert.throws(() => model.setSurfaceColor('plaid' as never), TypeError);
+        assert.throws(() => model.setSurfaceColor('mri'), /MRI must load/);
+        assert.equal(model.settings.atlas, atlas);
+        assert.equal(model.settings.surfaceColor, 'atlas', 'a refused colour is not applied');
+      });
+
       it('downloads the spinal cord on first showing', async () => {
         const { engine } = await boot();
         const { model } = engine;
@@ -279,6 +296,10 @@ export function defineEngineContract(
         assert.equal(engine.model.centroidOf(null), null);
         const centre = engine.model.centroidOf(left.id);
         assert.ok(centre && centre.length === 3 && centre.every(Number.isFinite));
+        assert.ok(
+          centre.every((value) => value !== 0),
+          'a centroid lies off every plane through the origin',
+        );
         assert.equal(engine.model.centroidOf(cortex('left', otherAtlas).id), null);
         assert.equal(engine.model.isRegionDrawn(left.id), true);
         assert.equal(engine.model.isRegionDrawn(cortex('left', otherAtlas).id), false);
@@ -307,7 +328,11 @@ export function defineEngineContract(
         const changes = collect(engine, 'change');
         engine.sections.setDisplay({ reverse: true });
         engine.sections.setDisplay({ reverse: false });
-        const [first, second] = changes.slice(-2).map((change) => change.sections);
+        // A command may report more than once (the cut and the model each emit); the last report of each
+        // is what a listener ends up holding.
+        const snapshots = changes.map((change) => change.sections);
+        const first = snapshots.findLast((snapshot) => snapshot.reverse);
+        const second = snapshots.at(-1);
         assert.notEqual(first, second);
         assert.equal(first!.reverse, true);
         assert.equal(second!.reverse, false);
@@ -439,8 +464,10 @@ export function defineEngineContract(
       it('holds a named view, and tells when it is let go', async () => {
         const { engine } = await boot();
         const { camera } = engine;
-        const held = collect(engine, 'viewHeld');
+        // The real engine opens on the held oblique view; start from a released camera in both.
+        camera.orbitBy({ azimuth: 0.1 });
         assert.equal(camera.viewHeld, false);
+        const held = collect(engine, 'viewHeld');
         camera.applyView('left', { immediate: true });
         assert.equal(camera.viewHeld, true);
         camera.frameCurrent('right');
@@ -458,7 +485,7 @@ export function defineEngineContract(
         const moves = collect(engine, 'camera');
         const settled = collect(engine, 'cameraSettled');
         const changes = collect(engine, 'change');
-        engine.camera.applyView('superior');
+        engine.camera.applyView('superior', { immediate: true });
         assert.ok(moves.length > 0 && settled.length > 0);
         assert.equal(changes.length, 0);
         const [view] = moves.slice(-1);

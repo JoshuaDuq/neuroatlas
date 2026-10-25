@@ -7,8 +7,14 @@ import { defineEngineContract } from './fake/contract-suite.ts';
 import { createFakeEngine } from './fake.ts';
 
 const published = manifest as unknown as Manifest;
-const cabNp: CabNpData = { atlas: 'hcp-mmp', regions: {} };
-const functionalRegions: FunctionalRegionsData = { atlas: 'hcp-mmp' };
+const cabNp: CabNpData = { id: 'cab-np', atlas: 'hcp-mmp', networks: [], colors: {}, regions: {} };
+const functionalRegions: FunctionalRegionsData = {
+  id: 'functional',
+  atlas: 'hcp-mmp',
+  sources: {},
+  levels: { sections: [], named: [] },
+  regions: { sections: {}, named: {} },
+};
 
 const create = () => createFakeEngine({ manifest: published, cabNp, functionalRegions });
 
