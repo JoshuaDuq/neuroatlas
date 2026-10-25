@@ -86,9 +86,10 @@ describe('ChoiceGroup', () => {
     expect(checked()).toEqual(['Sagittal']);
     await radio('Axial').click();
     expect(checked()).toEqual(['Axial']);
-    el('Axial').focus();
-    await userEvent.keyboard(' ');
+    el('Sagittal').focus();
     expect(checked()).toEqual(['Axial']);
+    await userEvent.keyboard(' ');
+    expect(checked()).toEqual(['Sagittal']);
   });
 
   test('an abbreviated label keeps its full accessible name, which contains the text', async () => {
@@ -125,6 +126,15 @@ describe('ChoiceGroup', () => {
       expect(style.outlineStyle).toBe('solid');
       expect(style.outlineWidth).toBe('2px');
       expect(getComputedStyle(el('Both')).outlineStyle).not.toBe('solid');
+    });
+  });
+
+  test('increased contrast insets a border in the track (a11y.css:43)', async () => {
+    render(ChoiceGroup, { options: hemispheres, value: 'left', label: 'Hemisphere' });
+    const track = document.querySelector('[role=radiogroup]')!;
+    expect(getComputedStyle(track).boxShadow).toBe('none');
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], () => {
+      expect(getComputedStyle(track).boxShadow).toContain('inset');
     });
   });
 

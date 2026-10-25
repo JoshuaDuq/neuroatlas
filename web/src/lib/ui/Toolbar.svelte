@@ -1,6 +1,9 @@
 <!--
   APG Toolbar: one Tab stop, arrows/Home/End move focus (wrapping), Enter and Space are the
-  buttons' own. Bits Toolbar behind the Planum seam (decision 0001). Its buttons come from
+  buttons' own. Hand-rolled on U2's roving.ts, not Bits' RovingFocusGroup, to keep the legacy
+  roving (viewer/ui/roving.js): the Tab stop is the focused item, else the pressed one, else the
+  first enabled one, and it follows pointer focus and disabling; the vertical arrows move like the
+  horizontal ones, so the page's tree does not walk. Its buttons come from
   `toolbarButton`, which only works inside a Toolbar:
 
     <Toolbar label="Tools">
@@ -8,8 +11,24 @@
     </Toolbar>
 -->
 <script module lang="ts">
-  import { Toolbar as Kit } from 'bits-ui';
   import type { Snippet } from 'svelte';
+  import { bindRoving } from './roving.ts';
+
+  /** Attachment: roving tabindex over the group's buttons, re-synced when they or their state change. */
+  export function roving(group: HTMLElement) {
+    const binding = bindRoving(group);
+    const observer = new MutationObserver(() => binding.sync());
+    observer.observe(group, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['disabled', 'hidden', 'aria-pressed'],
+    });
+    return () => {
+      observer.disconnect();
+      binding.dispose();
+    };
+  }
 
   export interface ToolbarButtonProps {
     children: Snippet;
@@ -37,7 +56,8 @@
 </script>
 
 {#snippet toolbarButton(props: ToolbarButtonProps)}
-  <Kit.Button
+  <button
+    type="button"
     class={['toolbar-button', props.class]}
     disabled={props.disabled}
     aria-label={props.label}
@@ -45,12 +65,12 @@
     onclick={props.onclick}
   >
     {@render props.children()}
-  </Kit.Button>
+  </button>
 {/snippet}
 
-<Kit.Root aria-label={label} class={className}>
+<div role="toolbar" aria-label={label} class={className} {@attach roving}>
   {@render children()}
-</Kit.Root>
+</div>
 
 <style>
   @layer components {

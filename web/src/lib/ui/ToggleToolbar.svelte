@@ -2,14 +2,15 @@
   An action, or a choice too expensive to apply by arrowing past it: view presets, cut mode,
   paint picks. APG Toolbar of `aria-pressed` toggle buttons (decision 0003, deviation
   u3-segmented-controls): one Tab stop, arrows/Home/End move focus only, Enter and Space press.
-  The parent owns what is pressed; this holds no state. Bits Toolbar.Root + Toolbar.Button with
-  an explicit `aria-pressed`, never Toolbar.GroupItem (which emits role=radio).
+  The parent owns what is pressed; this holds no state. Roving is Toolbar.svelte's (roving.ts):
+  the Tab stop is the focused button, else the pressed one, else the first enabled one; the
+  vertical arrows move like the horizontal ones. Plain buttons with an explicit `aria-pressed`.
 -->
 <script lang="ts" generics="Value extends string">
-  import { Toolbar } from 'bits-ui';
   import { iconGraphic } from './IconButton.svelte';
   import type { IconName } from './icons.ts';
   import { OWN_KEYS_ATTRIBUTE } from './keys.ts';
+  import { roving } from './Toolbar.svelte';
 
   interface Item {
     value: Value;
@@ -33,13 +34,16 @@
   let { items, pressed, onpress, label, labelledby, class: className }: Props = $props();
 </script>
 
-<Toolbar.Root
+<div
+  role="toolbar"
+  {@attach roving}
   aria-label={label}
   aria-labelledby={labelledby}
   class={['segmented', 'toggle-toolbar', className]}
 >
   {#each items as item (item.value)}
-    <Toolbar.Button
+    <button
+      type="button"
       aria-pressed={pressed === item.value}
       aria-label={item.name}
       disabled={item.disabled}
@@ -48,9 +52,9 @@
     >
       {#if item.icon}{@render iconGraphic(item.icon)}{/if}
       <span class="control-label">{item.label}</span>
-    </Toolbar.Button>
+    </button>
   {/each}
-</Toolbar.Root>
+</div>
 
 <style>
   @layer components {

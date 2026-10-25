@@ -37,7 +37,7 @@
     {#each tabs as tab (tab.value)}
       <Tabs.Trigger value={tab.value}>
         {tab.label}
-        <!-- A hidden bold copy holds the width; unlike legacy's ::after content it adds nothing to the name. -->
+        <!-- A hidden bold copy holds the width, as legacy's ::after content did; an equivalent implementation. -->
         <span class="tab-width" aria-hidden="true">{tab.label}</span>
       </Tabs.Trigger>
     {/each}
@@ -125,9 +125,6 @@
     @media (forced-colors: active) {
       :global(.rail-tabs [role='tab'][aria-selected='true']) {
         border-bottom: 2px solid Highlight;
-      }
-      :global(.rail-tabs [role='tab'][aria-selected='true']::before) {
-        background: Highlight;
       }
     }
   }

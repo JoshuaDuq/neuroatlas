@@ -118,6 +118,54 @@ describe('ToggleToolbar', () => {
     });
   });
 
+  test('increased contrast insets a border in the track (a11y.css:43)', async () => {
+    render(ToggleToolbar, props());
+    const track = document.querySelector('[role=toolbar]')!;
+    expect(getComputedStyle(track).boxShadow).toBe('none');
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], () => {
+      expect(getComputedStyle(track).boxShadow).toContain('inset');
+    });
+  });
+
+  const stops = () => [...document.querySelectorAll<HTMLElement>('button')].map((b) => b.tabIndex);
+
+  test('the Tab stop is the pressed button until focus moves it', async () => {
+    render(ToggleToolbar, props({ pressed: 'back' }));
+    expect(stops()).toEqual([-1, -1, -1, 0]);
+  });
+
+  test('the Tab stop follows a pointer click', async () => {
+    render(ToggleToolbar, props());
+    await button('Left').click();
+    expect(stops()).toEqual([-1, 0, -1, -1]);
+  });
+
+  test('a disabled Tab stop moves to an enabled button', async () => {
+    let disabled = $state(false);
+    render(ToggleToolbar, {
+      ...props({ pressed: 'left' }),
+      get items() {
+        return presets.map((p) => (p.value === 'left' ? { ...p, disabled } : p));
+      },
+    });
+    expect(stops()).toEqual([-1, 0, -1, -1]);
+    disabled = true;
+    await vi.waitFor(() => expect(stops()).toEqual([0, -1, -1, -1]));
+  });
+
+  test('ArrowUp and ArrowDown move like Left and Right and are handled', async () => {
+    render(ToggleToolbar, props());
+    const handled = vi.fn((event: KeyboardEvent) => event.defaultPrevented);
+    document.addEventListener('keydown', handled);
+    el('Front').focus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(document.activeElement).toBe(el('Left'));
+    await userEvent.keyboard('{ArrowUp}');
+    expect(document.activeElement).toBe(el('Front'));
+    document.removeEventListener('keydown', handled);
+    expect(handled.mock.results.map((r) => r.value)).toEqual([true, true]);
+  });
+
   test('axe: light and dark, desktop and 390 px', async () => {
     render(ToggleToolbar, props());
     await expectAxeClean();
