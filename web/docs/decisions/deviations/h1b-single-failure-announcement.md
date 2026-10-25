@@ -5,11 +5,11 @@ Status: fix under the parity policy
 
 ## Legacy behaviour
 
-A failed start writes the polite live region twice, with texts that can differ: `app.js:185` writes the failure in the initial language, then `main.js:47` (`fail`) writes the final text. For a link failure or a capability error the second text differs, so a screen reader speaks two different sentences.
+When the model download fails, the live region is written twice: `app.js:185` writes the failure in the initial language, then `main.js:47` (`fail`) writes the final text (app.js:173-190). The two texts differ for an error that is not a download failure on a page opened from a link, so a screen reader speaks two different sentences. Capability errors reach only `main.js:47` and are announced once.
 
 ## New behaviour
 
-`StageStatus` announces each transition once, from the text it shows: the start ("Loading anatomy…"), the end ("Anatomy loaded."), the failure, and the lost context. Download progress is never announced. The composition root does not announce these again.
+`StageStatus` announces the start ("Loading anatomy…"), the end ("Anatomy loaded.") and a failure, once each, from the text it shows. Download progress is never announced. A lost context and its restore are announced by S1 (`speech.ts:49-53`), not here. The composition root does not announce these again.
 
 ## Standard cited
 

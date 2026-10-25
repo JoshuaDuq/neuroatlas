@@ -9,7 +9,7 @@ The bar's track (`.progress`, stage.css:313) is `--overlay-border` (#3d4046) on 
 
 ## New behaviour
 
-On the themed stage the track is `--border-control` and the fill `--accent`, both at least 3:1 against `--surface-base` in light and dark. `StageStatus` re-points the primitive's two overlay custom properties on its own wrapper; U4's `Progress` is unchanged.
+On the themed loading stage the track is `--border-control` (at least 3:1 against `--surface-base`) and the fill is `--text-primary`, which is at least 3:1 against both the track and the surface in light and dark, so the boundary that shows the value is visible too. `StageStatus` re-points the primitive's two overlay custom properties on its own wrapper; U4's `Progress` is unchanged. A browser test computes the three ratios.
 
 ## Standard cited
 

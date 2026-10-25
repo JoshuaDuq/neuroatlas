@@ -10,6 +10,7 @@
   import { tick, untrack } from 'svelte';
   import { t } from '../../lib/core/i18n/index.ts';
   import { reloadWithoutStoredModels } from '../../lib/core/assets/published-assets.ts';
+  import { captureInvoker } from '../../lib/ui/focus.ts';
   import { announce } from '../../lib/ui/announcer.svelte.ts';
   import Progress from '../../lib/ui/Progress.svelte';
   import type { Language, LoadStatus } from '../../lib/types/index.ts';
@@ -58,25 +59,26 @@
     value === 'error' || value === 'context-lost';
 
   // Where focus was when the status hid it, so it can go back (WCAG 2.4.3).
-  let remembered: HTMLElement | null = null;
+  let returnFocus: (() => boolean) | null = null;
   let previous: LoadStatus | undefined;
 
   /** The control that held focus was hidden by the new status: focus lands on the status instead. */
-  async function handOff(active: HTMLElement): Promise<void> {
+  async function handOff(active: HTMLElement, back: () => boolean): Promise<void> {
     await tick();
     if (active.checkVisibility({ visibilityProperty: true })) return;
-    remembered = active;
+    returnFocus = back;
     (retryButton ?? messageElement)?.focus();
   }
 
   async function restore(): Promise<void> {
     await tick();
     const lost = document.activeElement === null || document.activeElement === document.body;
-    if (lost && remembered?.isConnected) remembered.focus();
-    remembered = null;
+    if (lost) returnFocus?.();
+    returnFocus = null;
   }
 
-  // One statement per transition, of the text the reader sees (WCAG 4.1.3).
+  // One statement per transition of the text the reader sees (WCAG 4.1.3). The lost context and
+  // its restore are S1's (speech.ts:49-53), so they are not said twice.
   $effect.pre(() => {
     const now = status;
     const text = message;
@@ -84,17 +86,17 @@
       const before = previous;
       previous = now;
       if (now === 'loading') {
-        if (before === undefined) announce(text);
+        if (before === undefined) announce(viewport.loadingAnatomy);
       } else if (interrupted(now)) {
-        if (before !== now) announce(text);
+        if (now === 'error' && before !== now) announce(text);
         const active = document.activeElement;
         if (!interrupted(before) && before !== undefined && active instanceof HTMLElement) {
-          if (active !== document.body) void handOff(active);
+          if (active !== document.body) void handOff(active, captureInvoker());
         }
       } else {
-        if (before === 'loading' || before === 'context-lost') announce(viewport.loaded);
+        if (before === 'loading') announce(viewport.loaded);
         if (interrupted(before)) void restore();
-        else remembered = null;
+        else returnFocus = null;
       }
     });
   });
@@ -120,7 +122,7 @@
     .stage-status {
       /* The bar's primitive paints from the overlay tokens, which are fixed dark-scene colours. */
       --overlay-border: var(--border-control);
-      --overlay-accent: var(--accent);
+      --overlay-accent: var(--text-primary);
       position: absolute;
       inset: 0;
       z-index: 3;
@@ -135,6 +137,11 @@
       font-size: var(--text-stage);
       line-height: var(--lh-ui);
     }
+    /* A running app whose view was interrupted keeps the dark scene, as legacy does (stage.css:292-310). */
+    .stage-status[data-status='context-lost'] {
+      background: var(--scene-background);
+      color: var(--overlay-ink-muted);
+    }
     #stage-message {
       max-width: 44ch;
       font-variant-numeric: tabular-nums;
@@ -144,7 +151,7 @@
       color: var(--danger);
     }
     button {
-      height: var(--control-height);
+      min-height: var(--control-height);
       padding: 0 var(--space-3);
       border: 0;
       border-radius: var(--radius-control);

@@ -43,7 +43,7 @@
   @layer features {
     main {
       position: relative;
-      height: 400px;
+      height: 100dvh;
       background: var(--scene-background);
     }
     main:has(:global(.stage-status[data-status='error'], .stage-status[data-status='context-lost']))

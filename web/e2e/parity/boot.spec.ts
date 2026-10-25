@@ -2,9 +2,6 @@
 // (loading, error, context lost), in the legacy viewer (main.js:26-60, viewport-chrome.js:63-83,
 // 749-781) and in the Svelte app. Role and name locators run on `legacy` and `next`; each
 // difference cites its deviation record in web/docs/decisions/deviations/.
-//
-// Not covered here: the determinate download bar and its rounding, which need a streamed response
-// that Playwright cannot fake; they are Vitest browser tests (StageStatus.svelte.test.ts).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
 import enabled from './enabled/stage.ts';
@@ -120,9 +117,7 @@ for (const lang of ['en', 'fr'] as const) {
 }
 
 test.describe('loading', () => {
-  test('while the anatomy has not arrived: the message, no Retry, the panel inspector hidden', async ({
-    app,
-  }) => {
+  test('a pending request shows the message and no Retry', async ({ app }) => {
     const { page } = app;
     // Held, never answered: the page stays in `loading`.
     await page.route('**/models/**', () => {});
@@ -130,12 +125,34 @@ test.describe('loading', () => {
     await expect(main(page).getByText(TEXT.en.loading)).toBeVisible();
     await expect(retryButton(page, 'Retry')).toHaveCount(0);
     await expect(page.locator('#app')).toHaveAttribute('data-status', 'loading');
+    await expect(page.locator('#announcer')).toHaveText(TEXT.en.loading);
   });
 
-  test('is announced when it starts, not once per progress event', async ({ app }) => {
+  // The new app writes the megabytes in the reader's notation: c1-loading-megabytes.md.
+  test('a slow download shows a determinate bar and its megabytes, and speaks only at the start', async ({
+    app,
+  }) => {
     const { page } = app;
-    await page.route('**/models/**', () => {});
+    const session = await page.context().newCDPSession(page);
+    await session.send('Network.enable');
+    await session.send('Network.emulateNetworkConditions', {
+      offline: false,
+      latency: 0,
+      downloadThroughput: 1_048_576,
+      uploadThroughput: -1,
+    });
     await app.gotoHash();
+    const bar = page.getByRole('progressbar', { name: /^(Anatomy download|Téléchargement)/ });
+    await expect(bar).toBeVisible();
+    await expect(main(page).getByText(/^Loading anatomy · /)).toBeVisible();
+    const value = async () =>
+      Number(
+        await bar.evaluate(
+          (el: HTMLProgressElement) => el.value ?? el.getAttribute('aria-valuenow'),
+        ),
+      );
+    const first = await value();
+    await expect.poll(value).toBeGreaterThan(first);
     await expect(page.locator('#announcer')).toHaveText(TEXT.en.loading);
   });
 });

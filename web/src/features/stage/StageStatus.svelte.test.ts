@@ -2,7 +2,7 @@
 // (viewport-chrome.js:63-83, 763-781), the failure screen of main.js:43-60, and the focus and
 // announcement rules of the H1b decision record (#39).
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { reloadWithoutStoredModels } from '../../lib/core/assets/published-assets.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
@@ -99,6 +99,46 @@ describe('loading', () => {
     expect(message()).toBeNull();
   });
 
+  test('starts with "Loading anatomy…" even when a total is already known', async () => {
+    await render(Fixture, { status: 'loading', progress: { loaded: 1_048_576, total: 4_194_304 } });
+    expect(announced()).toBe('Loading anatomy…');
+  });
+
+  test('the bar, its track and its fill meet 3:1 in both themes (WCAG 1.4.11)', async () => {
+    await render(Fixture, { status: 'loading', progress: { loaded: 1, total: 4 } });
+    const stage = document.querySelector('.stage-status') as HTMLElement;
+    const rgb = (value: string) => value.match(/\d+/g)!.slice(0, 3).map(Number);
+    const luminance = (value: string) => {
+      const [r, g, b] = rgb(value).map((c) => {
+        const x = c / 255;
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a: string, b: string) => {
+      const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+      return (x + 0.05) / (y + 0.05);
+    };
+    // A probe resolves each token to the colour the browser paints.
+    const colour = (token: string) => {
+      const probe = stage.appendChild(document.createElement('i'));
+      probe.style.color = `var(${token})`;
+      const value = getComputedStyle(probe).color;
+      probe.remove();
+      return value;
+    };
+    for (const theme of ['light', 'dark']) {
+      document.documentElement.dataset.theme = theme;
+      const surface = getComputedStyle(stage).backgroundColor;
+      const track = colour('--overlay-border');
+      const fill = colour('--overlay-accent');
+      expect(ratio(track, surface), `${theme} track on surface`).toBeGreaterThanOrEqual(3);
+      expect(ratio(fill, surface), `${theme} fill on surface`).toBeGreaterThanOrEqual(3);
+      expect(ratio(fill, track), `${theme} fill on track`).toBeGreaterThanOrEqual(3);
+    }
+    delete document.documentElement.dataset.theme;
+  });
+
   test('is in French under French', async () => {
     await render(Fixture, {
       status: 'loading',
@@ -182,21 +222,32 @@ describe('error', () => {
 });
 
 describe('context lost', () => {
-  test('says the view was interrupted, with no Retry and no bar, announced once', async () => {
+  test('says the view was interrupted, with no Retry and no bar, and leaves the announcing to S1', async () => {
     await render(Fixture, { status: 'context-lost' });
     expect(message()!.textContent?.trim()).toBe(
       'The 3D view was interrupted by the graphics driver. Restoring…',
     );
-    expect(announced()).toBe(message()!.textContent?.trim());
+    expect(announced()).toBe('');
     expect(document.querySelectorAll('.stage-status button')).toHaveLength(0);
     expect(progressbar()).toBeNull();
   });
 
-  test('restoring says the anatomy is loaded and hides the stage', async () => {
+  test('restoring hides the stage and says nothing of its own', async () => {
     const view = await render(Fixture, { status: 'context-lost' });
     await view.rerender({ status: 'ready' });
-    expect(announced()).toBe('Anatomy loaded.');
+    expect(announced()).toBe('');
     expect(message()).toBeNull();
+  });
+
+  test('keeps the dark scene in the light theme, as legacy does', async () => {
+    document.documentElement.dataset.theme = 'light';
+    try {
+      await render(Fixture, { status: 'context-lost' });
+      const stage = getComputedStyle(document.querySelector('.stage-status')!);
+      expect(stage.backgroundColor).toBe('rgb(14, 17, 22)');
+    } finally {
+      delete document.documentElement.dataset.theme;
+    }
   });
 });
 
@@ -289,10 +340,67 @@ describe('accessibility', () => {
     expect(box.right).toBeLessThanOrEqual(320);
   });
 
-  test('on a phone the message sits in the upper part of the stage', async () => {
+  test('on a phone the message sits in the upper part of the stage (the phone rule)', async () => {
     await page.viewport(390, 844);
     await render(Fixture, { status: 'error', failure: { text: 'Failed.', button: 'Retry' } });
     const box = (retry().element() as HTMLElement).getBoundingClientRect();
-    expect(box.bottom).toBeLessThan(844 / 2);
+    // Centred it would end near 440 px; the rule puts it above the sheet's peek and half detents.
+    expect(box.bottom).toBeLessThan(844 * 0.4);
+  });
+
+  test('a short landscape phone keeps Retry on screen', async () => {
+    await page.viewport(800, 400);
+    await render(Fixture, { status: 'error', failure: { text: 'Failed.', button: 'Retry' } });
+    const box = (retry().element() as HTMLElement).getBoundingClientRect();
+    expect(box.top).toBeGreaterThanOrEqual(0);
+    expect(box.bottom).toBeLessThanOrEqual(400);
+  });
+
+  test('a coarse pointer gets a 44 px Retry', async () => {
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    try {
+      await render(Fixture, { status: 'error', failure: { text: 'Failed.', button: 'Retry' } });
+      expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+      const box = (retry().element() as HTMLElement).getBoundingClientRect();
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.width).toBeGreaterThanOrEqual(44);
+    } finally {
+      await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false });
+    }
+  });
+
+  test('200 % text and the WCAG 1.4.12 spacing keep the label inside Retry', async () => {
+    const spacing = document.head.appendChild(document.createElement('style'));
+    spacing.textContent =
+      '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }';
+    document.documentElement.style.fontSize = '200%';
+    try {
+      await render(Fixture, {
+        status: 'error',
+        failure: { text: 'Failed to load.', button: 'Retry' },
+      });
+      const button = retry().element() as HTMLElement;
+      expect(button.scrollHeight).toBeLessThanOrEqual(button.clientHeight);
+      expect(button.scrollWidth).toBeLessThanOrEqual(button.clientWidth);
+      const range = document.createRange();
+      range.selectNodeContents(button);
+      const text = range.getBoundingClientRect();
+      const box = button.getBoundingClientRect();
+      expect(text.top).toBeGreaterThanOrEqual(box.top);
+      expect(text.bottom).toBeLessThanOrEqual(box.bottom);
+    } finally {
+      spacing.remove();
+      document.documentElement.style.fontSize = '';
+    }
+  });
+
+  test('increased contrast keeps the message distinct from the stage', async () => {
+    await render(Fixture, { status: 'error', failure: { text: 'Failed.', button: 'Retry' } });
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
+      await expect.element(retry()).toBeVisible();
+      expect(getComputedStyle(message()!).color).not.toBe(
+        getComputedStyle(document.querySelector('.stage-status')!).backgroundColor,
+      );
+    });
   });
 });

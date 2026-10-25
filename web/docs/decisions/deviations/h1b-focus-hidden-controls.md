@@ -5,7 +5,7 @@ Status: fix under the parity policy
 
 ## Legacy behaviour
 
-The `error` and `context-lost` statuses hide the stage dock (`stage.css:315`) and the masthead data bar (`masthead.css:85`) with `visibility: hidden`. A reader whose focus was in one of them silently loses it to `body`, and nothing returns it when the anatomy comes back.
+The `loading`, `error` and `context-lost` statuses hide the stage dock (`stage.css:315`), and `loading` and `error` hide the masthead data bar (`masthead.css:85`) with `visibility: hidden` and the inspector (`layout.css:212`) with `display: none`. A reader whose focus was in one of them silently loses it to `body`, and nothing returns it when the anatomy comes back.
 
 ## New behaviour
 
@@ -13,4 +13,4 @@ When the status becomes `error` or `context-lost` and the control that held focu
 
 ## Standard cited
 
-WCAG 2.2 SC 2.4.3 Focus Order; WAI-ARIA Authoring Practices, "Managing focus": when the focused element is hidden or removed, move focus to a logical element.
+WCAG 2.2 SC 2.4.3 Focus Order; WAI-ARIA Authoring Practices, "Developing a Keyboard Interface", "Discernible and Predictable Keyboard Focus": focus persists, and when the focused element goes away it moves to a logical element.
