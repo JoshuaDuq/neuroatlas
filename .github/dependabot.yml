@@ -8,3 +8,8 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+  # The Svelte app in web/.
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
