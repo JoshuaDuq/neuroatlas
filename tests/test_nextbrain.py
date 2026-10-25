@@ -191,7 +191,7 @@ def test_validation_refuses_a_cut_block_that_lost_its_majority(published, tmp_pa
     record.update(sha256=sha256(path), decoded_sha256=hashlib.sha256(payload).hexdigest())
 
     with pytest.raises(ValueError, match="most frequent label"):
-        nextbrain.validate_volume(config, record, nextbrain.load(config)[0])
+        nextbrain.validate_volume(config, record, published[1])
 
 
 def test_every_cut_label_resolves_to_a_published_region(published):
