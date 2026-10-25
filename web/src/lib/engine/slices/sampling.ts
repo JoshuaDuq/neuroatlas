@@ -1,7 +1,7 @@
 import type { Frame } from './coordinates.ts';
 import type { Volume } from './volume.ts';
 
-type Rgb = readonly [number, number, number];
+type Rgb = ArrayLike<number>;
 
 /** The MRI and segmentation volumes with the segmentation's label records. */
 export interface SliceVolumes {
