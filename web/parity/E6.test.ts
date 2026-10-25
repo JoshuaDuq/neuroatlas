@@ -537,4 +537,43 @@ describe('E6 native viewer load()', () => {
     next.dispose();
     old.dispose();
   }, 60_000);
+
+  it('keeps the outline hidden and at the catalog opacity when set before load(), and rejects a foreign reference space alike', async () => {
+    const make = (source: typeof catalog) => ({
+      next: viewer.createNativeTractViewer(source, () => {}, tractFile.createTractLoader()),
+      old: legacyViewer.createNativeTractViewer(source, () => {}, legacyLoader.createTractLoader()),
+    });
+    const { next, old } = make(catalog);
+    next.setOutlineVisible(false);
+    old.setOutlineVisible(false);
+    await Promise.all([next.load(), old.load()]);
+    const scene = (group: typeof next.group) => group.children[0]!;
+    const opacity = (group: typeof next.group) => {
+      let found = NaN;
+      scene(group).traverse((object) => {
+        if ((object as Mesh).isMesh)
+          found = ((object as Mesh).material as MeshStandardMaterial).opacity;
+      });
+      return found;
+    };
+    same(opacity(next.group), opacity(old.group));
+    same(opacity(next.group), catalog.brain_outline.opacity);
+    same(scene(next.group).visible, scene(old.group).visible);
+    assert.equal(scene(next.group).visible, false);
+    next.dispose();
+    old.dispose();
+
+    const foreign = make({ ...catalog, anatomy: 'another-anatomy' });
+    const failures = await Promise.all([
+      foreign.next.load().then(
+        () => assert.fail('the new viewer accepted a foreign reference space'),
+        (error: Error) => error.message,
+      ),
+      foreign.old.load().then(
+        () => assert.fail('the legacy viewer accepted a foreign reference space'),
+        (error: Error) => error.message,
+      ),
+    ]);
+    same(failures[0], failures[1]);
+  }, 60_000);
 });
