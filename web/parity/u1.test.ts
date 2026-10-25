@@ -52,4 +52,17 @@ describe('U1 styles parity', () => {
       assert.deepEqual(current[selector], legacy[selector], selector);
     }
   });
+
+  it('elements.css keeps the legacy key caps and the utility classes', () => {
+    const legacyBase = declarationsBySelector(read('../../viewer/styles/base.css'));
+    const legacyComponents = declarationsBySelector(read('../../viewer/styles/components.css'));
+    const current = declarationsBySelector(read('../src/styles/elements.css'));
+    for (const selector of ['.measure', '.code']) {
+      assert.deepEqual(current[selector], legacyBase[selector], selector);
+    }
+    for (const selector of ['kbd', '.key-range']) {
+      assert.ok(legacyComponents[selector], selector);
+      assert.deepEqual(current[selector], legacyComponents[selector], selector);
+    }
+  });
 });

@@ -79,3 +79,37 @@ export function declarationsBySelector(css: string): Record<string, Record<strin
   }
   return result;
 }
+
+/** The one hover query: a pointer that hovers and is fine, optionally negated as a whole. */
+export const HOVER_QUERY =
+  /^@media (?:\(hover: hover\) and \(pointer: fine\)|not \(\(hover: hover\) and \(pointer: fine\)\))$/;
+
+/** Breaches of the cascade-layer and media-query rules, as messages; empty when the CSS is clean. */
+export function styleViolations(nodes: CssNode[]): string[] {
+  const violations: string[] = [];
+  for (const { node, ancestors } of walk(nodes)) {
+    const { prelude } = node;
+    // A nested @layer makes a sublayer (components.a11y) that ranks below the top-level layers.
+    if (prelude.startsWith('@layer') && ancestors.length > 0) {
+      violations.push(`nested layer: ${prelude}`);
+    }
+    if (
+      /^@media.*(forced-colors|prefers-contrast)/.test(prelude) &&
+      ancestors[0] !== '@layer a11y'
+    ) {
+      violations.push(`outside @layer a11y: ${prelude}`);
+    }
+    if (prelude.startsWith('@media') && /\bhover\b/.test(prelude) && !HOVER_QUERY.test(prelude)) {
+      violations.push(`hover query: ${prelude}`);
+    }
+    if (
+      node.hasBlock &&
+      !prelude.startsWith('@') &&
+      prelude.includes(':hover') &&
+      !ancestors.some((ancestor) => HOVER_QUERY.test(ancestor))
+    ) {
+      violations.push(`:hover outside the hover query: ${prelude}`);
+    }
+  }
+  return violations;
+}

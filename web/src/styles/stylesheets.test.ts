@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type CssNode, parseCss, styleBlocks, walk } from './css-scan.ts';
+import { parseCss, styleBlocks, styleViolations, walk } from './css-scan.ts';
 import { components, fontsource, main, sheets } from './sources.ts';
 
 const LAYERS = ['tokens', 'base', 'elements', 'components', 'features', 'a11y'];
@@ -7,7 +7,6 @@ const LAYER_STATEMENT = `@layer ${LAYERS.join(', ')}`;
 const COMPONENT_LAYERS = ['@layer components', '@layer features', '@layer a11y'];
 // At-rules that are not styled rules and so need no layer.
 const UNLAYERED_AT_RULES = /^@(keyframes|property|font-face)\b/;
-const HOVER_QUERY = /^@media (not )?\(hover: hover\) and \(pointer: fine\)$/;
 
 const entries = (modules: Record<string, string>) =>
   Object.entries(modules).map(([path, source]) => ({ path, source }));
@@ -22,10 +21,6 @@ const styles = [
     styleBlocks(source).map((css) => ({ path, css, kind: 'component' as const })),
   ),
 ].map((style) => ({ ...style, nodes: parseCss(style.css) }));
-
-const isA11yLayer = (node: CssNode, ancestors: string[]) =>
-  ancestors.includes('@layer a11y') ||
-  (node.children.length > 0 && node.children.every((child) => child.prelude === '@layer a11y'));
 
 describe('cascade layers', () => {
   const index = sheetFiles.find(({ path }) => path === 'index.css')!;
@@ -43,7 +38,13 @@ describe('cascade layers', () => {
     const others = sheetFiles.map(({ path }) => path).filter((path) => path !== 'index.css');
     expect(imported[0]).toBe('@fontsource-variable/source-sans-3/wght.css');
     expect(imported.slice(1).sort()).toEqual(others.sort());
-    expect(main).toMatch(/import '\.\/styles\/index\.css';/);
+  });
+
+  it('main.ts imports index.css before any component, so the layer statement leads the bundle', () => {
+    const imports = [...main.matchAll(/^import .*?['"]([^'"]+)['"];/gm)].map(([, path]) => path);
+    expect(imports.indexOf('./styles/index.css')).toBeGreaterThanOrEqual(0);
+    const firstComponent = imports.findIndex((path) => path.endsWith('.svelte'));
+    expect(imports.indexOf('./styles/index.css')).toBeLessThan(firstComponent);
   });
 
   it('each stylesheet is one layer named after it', () => {
@@ -76,26 +77,9 @@ describe('cascade layers', () => {
 });
 
 describe('invariants over src/styles and every component <style>', () => {
-  it('forced-colour and increased-contrast rules live only in @layer a11y', () => {
+  it('forced-colour and contrast rules sit directly in the top-level @layer a11y, hover styles answer one query, and no layer is nested', () => {
     for (const { path, nodes } of styles) {
-      for (const { node, ancestors } of walk(nodes)) {
-        if (!/^@media.*(forced-colors|prefers-contrast)/.test(node.prelude)) continue;
-        expect(isA11yLayer(node, ancestors), `${path}: ${node.prelude}`).toBe(true);
-      }
-    }
-  });
-
-  it('hover styles answer one query: a pointer that hovers and is fine', () => {
-    for (const { path, nodes } of styles) {
-      for (const { node, ancestors } of walk(nodes)) {
-        if (node.prelude.startsWith('@media') && /\bhover\b/.test(node.prelude)) {
-          expect(node.prelude, path).toMatch(HOVER_QUERY);
-        }
-        if (node.hasBlock && !node.prelude.startsWith('@') && node.prelude.includes(':hover')) {
-          const inHoverQuery = ancestors.some((prelude) => HOVER_QUERY.test(prelude));
-          expect(inHoverQuery, `${path}: ${node.prelude}`).toBe(true);
-        }
-      }
+      expect(styleViolations(nodes), path).toEqual([]);
     }
   });
 
@@ -141,5 +125,51 @@ describe('the scanner', () => {
     const rule = [...walk(nodes)].find(({ node }) => node.prelude === 'p')!;
     expect(rule.ancestors).toEqual(['@layer a', '@media (x)']);
     expect(rule.node.declarations).toEqual(['color: red', 'margin: 0']);
+  });
+
+  const violations = (css: string) => styleViolations(parseCss(css));
+
+  it('accepts a11y rules written directly in the top-level a11y layer, in either media order', () => {
+    expect(
+      violations('@layer a11y { @media (forced-colors: active) { b { color: red } } }'),
+    ).toEqual([]);
+    expect(
+      violations('@layer a11y { @media (prefers-contrast: more) { b { color: red } } }'),
+    ).toEqual([]);
+  });
+
+  it('rejects a11y sublayers nested in a component layer and media blocks outside a11y', () => {
+    expect(
+      violations(
+        '@layer components { @media (forced-colors: active) { @layer a11y { button { color: red } } } }',
+      ),
+    ).toEqual(['outside @layer a11y: @media (forced-colors: active)', 'nested layer: @layer a11y']);
+    expect(
+      violations(
+        '@layer components { @layer a11y { @media (prefers-contrast: more) { b { x: y } } } }',
+      ),
+    ).toEqual([
+      'nested layer: @layer a11y',
+      'outside @layer a11y: @media (prefers-contrast: more)',
+    ]);
+    expect(violations('@media (forced-colors: active) { b { color: red } }')).toEqual([
+      'outside @layer a11y: @media (forced-colors: active)',
+    ]);
+    expect(violations('@layer a11y { @media (forced-colors: active) { b { x: y } } }')).toEqual([]);
+  });
+
+  it('accepts the hover query and its negated form and rejects the invalid grammar', () => {
+    const hover = '(hover: hover) and (pointer: fine)';
+    expect(violations(`@layer components { @media ${hover} { a:hover { x: y } } }`)).toEqual([]);
+    expect(violations(`@layer components { @media not (${hover}) { a { x: y } } }`)).toEqual([]);
+    expect(violations(`@layer components { @media not ${hover} { a { x: y } } }`)).toEqual([
+      `hover query: @media not ${hover}`,
+    ]);
+    expect(violations('@layer components { @media (hover: hover) { a { x: y } } }')).toEqual([
+      'hover query: @media (hover: hover)',
+    ]);
+    expect(violations('@layer components { a:hover { x: y } }')).toEqual([
+      ':hover outside the hover query: a:hover',
+    ]);
   });
 });

@@ -25,4 +25,9 @@
     border-radius: var(--radius-small);
     box-shadow: inset 0 -1px 0 var(--border-subtle);
   }
+  .key-range {
+    color: var(--text-tertiary);
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+  }
 }
