@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test"
+    "test": "node --test \"viewer/**/*.test.js\" \"scripts/**/*.test.mjs\""
   },
   "dependencies": {
     "@fontsource-variable/source-sans-3": "5.3.0",
