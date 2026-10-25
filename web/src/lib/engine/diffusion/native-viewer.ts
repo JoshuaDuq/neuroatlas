@@ -54,6 +54,7 @@ export function createNativeTractViewer(
   let minimum = 1;
   let disposed = false;
   let outlineVisible = true;
+  let outlineOpacity = catalog.brain_outline.opacity;
   let clippingPlanes: Plane[] = [];
 
   async function loadOutline(): Promise<void> {
@@ -79,7 +80,7 @@ export function createNativeTractViewer(
         color: 0xb3babf,
         roughness: 0.8,
         transparent: true,
-        opacity: catalog.brain_outline.opacity,
+        opacity: outlineOpacity,
         depthWrite: false,
       });
     });
@@ -175,7 +176,8 @@ export function createNativeTractViewer(
       if (!Number.isFinite(value) || value < 0 || value > 1) {
         throw new RangeError('Brain opacity must be between 0 and 1.');
       }
-      outline!.traverse((mesh) => {
+      outlineOpacity = value;
+      outline?.traverse((mesh) => {
         if (mesh instanceof Mesh) (mesh.material as MeshStandardMaterial).opacity = value;
       });
       invalidate();

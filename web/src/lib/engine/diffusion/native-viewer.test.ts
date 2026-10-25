@@ -62,6 +62,16 @@ test('a bundle requested twice while it downloads is added once', async () => {
   viewer.dispose();
 });
 
+test('the brain opacity can be set before the outline loads', () => {
+  const viewer = createNativeTractViewer(
+    catalog,
+    () => {},
+    async () => decoded(),
+  );
+  viewer.setOpacity(0.4);
+  assert.throws(() => viewer.setOpacity(2), RangeError);
+});
+
 test('scanner and surface coordinates are inverse of each other', () => {
   const viewer = createNativeTractViewer(
     catalog,
