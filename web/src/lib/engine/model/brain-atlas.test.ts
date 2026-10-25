@@ -1379,3 +1379,54 @@ test('the cut can hand the model an anatomy only once the MRI has loaded', async
   assert.throws(() => atlas.setMriAnatomy(null), /MRI anatomy has not loaded/);
   atlas.dispose();
 });
+
+test('a download joined while it is under way reports its progress to every caller', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const load = atlas.loader.loadAsync;
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  atlas.loader.loadAsync = async (file, onProgress) => {
+    if (file === 'b.glb') {
+      onProgress?.({ loaded: 5, total: 20 });
+      await gate;
+    }
+    return load(file, onProgress);
+  };
+  // The boot prefetch asks for no progress; the reader's switch joins it.
+  const prefetch = atlas.loadLayer('b', 'b.glb');
+  const heard: number[] = [];
+  const switching = atlas.setAtlas('b', (event) => heard.push(event.loaded));
+  release();
+  await Promise.all([prefetch, switching]);
+  assert.deepEqual(heard, [10, 20]);
+  assert.equal(atlas.settings.atlas, 'b');
+  atlas.dispose();
+});
+
+test('the envelope download fans progress out to a joining caller', async () => {
+  const { atlas } = fixture();
+  await atlas.initialize('a');
+  const load = atlas.loader.loadAsync;
+  atlas.loader.loadAsync = async (file, onProgress) => {
+    await Promise.resolve();
+    return load(file, onProgress);
+  };
+  const first: number[] = [];
+  const second: number[] = [];
+  const envelopes = atlas.ensureEnvelopes((event) => first.push(event.loaded));
+  const joined = atlas.ensureEnvelopes((event) => second.push(event.loaded));
+  await Promise.all([envelopes, joined]);
+  assert.deepEqual(second, first);
+  assert.ok(first.length > 0);
+  atlas.dispose();
+});
+
+test('disposed is readable', async () => {
+  const { atlas } = fixture();
+  assert.equal(atlas.disposed, false);
+  atlas.dispose();
+  assert.equal(atlas.disposed, true);
+});

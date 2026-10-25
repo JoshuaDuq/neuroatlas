@@ -276,6 +276,8 @@ export class BrainAtlas extends EventTarget {
   spinalCordLoadError: unknown = null;
   private readonly dissection;
   private readonly pending = new Map<string, Promise<unknown>>();
+  /** Who hears each pending download, keyed as `pending` is. */
+  private readonly listeners = new Map<string, ProgressCallback[]>();
   private atlasId: string;
   private detailId: string;
   // Pushed in by the sections, which own the plane. Keeping it here is what
@@ -297,7 +299,7 @@ export class BrainAtlas extends EventTarget {
   // Separate, so a detail change does not cancel an atlas change still loading, or the reverse.
   private atlasRequest = 0;
   private detailRequest = 0;
-  private disposed = false;
+  private isDisposed = false;
   private readonly centroids = new Map<string, Triple>();
 
   constructor(
@@ -360,6 +362,11 @@ export class BrainAtlas extends EventTarget {
     super.removeEventListener(type, listener, options);
   }
 
+  /** Whether `dispose` has run; the commands and the app's own checks read it. */
+  get disposed(): boolean {
+    return this.isDisposed;
+  }
+
   /** The grouped learning overview when published, otherwise the native segmentation. */
   get defaultDetail(): string {
     const levels = this.manifest.detail_levels;
@@ -395,20 +402,23 @@ export class BrainAtlas extends EventTarget {
    * The native pial and white envelopes, downloaded the first time exposed
    * white matter, the glass brain or a cut needs them. Resolves to every
    * envelope mesh; a failed download is retried by the next call. `onProgress`
-   * hears the download this call starts.
+   * hears the download, whether this call starts it or joins one under way.
    */
   async ensureEnvelopes(onProgress?: ProgressCallback): Promise<Mesh[]> {
-    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     if (this.envelopes) return this.envelopes;
-    if (this.pending.has(ENVELOPES)) return this.pending.get(ENVELOPES) as Promise<Mesh[]>;
+    if (this.pending.has(ENVELOPES)) {
+      this.join(ENVELOPES, onProgress);
+      return this.pending.get(ENVELOPES) as Promise<Mesh[]>;
+    }
     const loading = Promise.all([
-      this.loader.loadAsync(this.manifest.solid_envelopes.file, onProgress),
+      this.loader.loadAsync(this.manifest.solid_envelopes.file, this.share(ENVELOPES, onProgress)),
       import('three-mesh-bvh'),
     ])
       .then(([{ scene }, { MeshBVH, acceleratedRaycast }]) => {
         let envelopes: Mesh[];
         try {
-          if (this.disposed) throw new Error('BrainAtlas disposed during tissue loading.');
+          if (this.isDisposed) throw new Error('BrainAtlas disposed during tissue loading.');
           envelopes = [];
           scene.traverse((object) => {
             if ((object as Mesh).isMesh) envelopes.push(object as Mesh);
@@ -429,7 +439,7 @@ export class BrainAtlas extends EventTarget {
         this.update();
         return envelopes;
       })
-      .finally(() => this.pending.delete(ENVELOPES));
+      .finally(() => this.settled(ENVELOPES));
     this.pending.set(ENVELOPES, loading);
     return loading;
   }
@@ -437,7 +447,7 @@ export class BrainAtlas extends EventTarget {
   /** Hidden cortex exposes white matter the moment it is hidden; the envelopes follow and repaint. */
   loadEnvelopesBehind(): void {
     this.ensureEnvelopes().catch((error: Error) => {
-      if (this.disposed) return;
+      if (this.isDisposed) return;
       console.error(error);
       this.dispatchEvent(new CustomEvent('loaderror', { detail: error }));
     });
@@ -446,20 +456,23 @@ export class BrainAtlas extends EventTarget {
   /**
    * Every supplemental layer (the cord assembly), downloaded the first time
    * the cord is shown. A failure clears the request so the next one retries.
-   * `onProgress` hears the download this call starts.
+   * `onProgress` hears the download, whether this call starts it or joins one under way.
    */
   async ensureSpinalCord(onProgress?: ProgressCallback): Promise<void> {
-    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     const layers = this.manifest.supplemental_layers ?? [];
     if (!layers.some((layer) => layer.id === 'zanatomy')) {
       throw new Error('This anatomy does not publish a spinal cord.');
     }
-    if (this.pending.has(SPINAL_CORD)) return this.pending.get(SPINAL_CORD) as Promise<void>;
+    if (this.pending.has(SPINAL_CORD)) {
+      this.join(SPINAL_CORD, onProgress);
+      return this.pending.get(SPINAL_CORD) as Promise<void>;
+    }
     if (layers.every((layer) => this.layers.has(layer.id))) return;
     this.spinalCordLoadState = 'loading';
     const progress = combineProgress(
       layers.map((layer) => layer.id),
-      onProgress,
+      this.share(SPINAL_CORD, onProgress),
     );
     const loading = Promise.all(
       layers.map((layer) => this.loadLayer(layer.id, layer.file, progress.track(layer.id))),
@@ -468,7 +481,7 @@ export class BrainAtlas extends EventTarget {
         () => {
           this.spinalCordLoadState = 'ready';
           this.spinalCordLoadError = null;
-          if (!this.disposed) this.update();
+          if (!this.isDisposed) this.update();
         },
         (error: unknown) => {
           this.spinalCordLoadState = 'error';
@@ -476,7 +489,7 @@ export class BrainAtlas extends EventTarget {
           throw error;
         },
       )
-      .finally(() => this.pending.delete(SPINAL_CORD));
+      .finally(() => this.settled(SPINAL_CORD));
     this.pending.set(SPINAL_CORD, loading);
     return loading;
   }
@@ -486,7 +499,7 @@ export class BrainAtlas extends EventTarget {
    * kept: the glass brain and the cut share them, geometry and BVH alike.
    */
   async ensureRibbonWedges(atlas: string, baseUrl: string | URL): Promise<Mesh[]> {
-    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     const cached = this.ribbonWedges.get(atlas);
     if (cached) return cached;
     const key = `ribbon:${atlas}`;
@@ -497,7 +510,7 @@ export class BrainAtlas extends EventTarget {
         loadRibbonSources(this.manifest, baseUrl, atlas, envelopes),
         import('three-mesh-bvh'),
       ]);
-      if (this.disposed) {
+      if (this.isDisposed) {
         for (const wedge of wedges) wedge.geometry.dispose();
         throw new Error('BrainAtlas was disposed during loading.');
       }
@@ -513,7 +526,7 @@ export class BrainAtlas extends EventTarget {
 
   /** Close each named functional region into a ribbon solid for the glass brain. */
   async loadGlassSolids(baseUrl: string | URL): Promise<void> {
-    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     if (this.glassSolids) return;
     if (!this.functionalRegions) throw new Error('This model carries no functional divisions.');
     const key = 'glass-solids';
@@ -524,7 +537,7 @@ export class BrainAtlas extends EventTarget {
         this.ensureRibbonWedges(atlas, baseUrl),
         import('three-mesh-bvh'),
       ]);
-      if (this.disposed) throw new Error('BrainAtlas was disposed during loading.');
+      if (this.isDisposed) throw new Error('BrainAtlas was disposed during loading.');
       this.glassSolids = createGlassSolids(
         wedges.filter((wedge) => regions.named[wedge.userData['region_id'] as string]),
         this.manifest.appearance,
@@ -539,13 +552,19 @@ export class BrainAtlas extends EventTarget {
   }
 
   async loadLayer(id: string, file: string, onProgress?: ProgressCallback): Promise<Layer> {
-    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     const loaded = this.layers.get(id);
     if (loaded) return loaded;
-    if (this.pending.has(id)) return this.pending.get(id) as Promise<Layer>;
-    const loading = Promise.all([this.loader.loadAsync(file, onProgress), import('three-mesh-bvh')])
+    if (this.pending.has(id)) {
+      this.join(id, onProgress);
+      return this.pending.get(id) as Promise<Layer>;
+    }
+    const loading = Promise.all([
+      this.loader.loadAsync(file, this.share(id, onProgress)),
+      import('three-mesh-bvh'),
+    ])
       .then(([{ scene }, { MeshBVH, acceleratedRaycast }]) => {
-        if (this.disposed) {
+        if (this.isDisposed) {
           disposeScene(scene);
           throw new Error('BrainAtlas was disposed during loading.');
         }
@@ -608,7 +627,7 @@ export class BrainAtlas extends EventTarget {
         this.layers.set(id, layer);
         return layer;
       })
-      .finally(() => this.pending.delete(id));
+      .finally(() => this.settled(id));
     this.pending.set(id, loading);
     return loading;
   }
@@ -1013,7 +1032,7 @@ export class BrainAtlas extends EventTarget {
     if (typeof visible !== 'boolean') {
       throw new TypeError('Spinal cord visibility must be boolean.');
     }
-    if (this.disposed) throw new Error('BrainAtlas has been disposed.');
+    if (this.isDisposed) throw new Error('BrainAtlas has been disposed.');
     const request = ++this.spinalCordRequest;
     if (visible) {
       await this.ensureSpinalCord(onProgress);
@@ -1159,7 +1178,7 @@ export class BrainAtlas extends EventTarget {
   }
 
   dispose(): void {
-    this.disposed = true;
+    this.isDisposed = true;
     this.spinalCordRequest += 1;
     this.atlasRequest += 1;
     this.detailRequest += 1;
@@ -1181,6 +1200,24 @@ export class BrainAtlas extends EventTarget {
     this.layers.clear();
     this.centroids.clear();
     this.group.removeFromParent();
+  }
+
+  /** The callback a new download reports to; callers that join it later are added to the same list. */
+  private share(key: string, onProgress?: ProgressCallback): ProgressCallback {
+    const heard = onProgress ? [onProgress] : [];
+    this.listeners.set(key, heard);
+    return (event) => {
+      for (const listener of heard) listener(event);
+    };
+  }
+
+  private join(key: string, onProgress?: ProgressCallback): void {
+    if (onProgress) this.listeners.get(key)!.push(onProgress);
+  }
+
+  private settled(key: string): void {
+    this.pending.delete(key);
+    this.listeners.delete(key);
   }
 
   /** A region that has just been hidden cannot stay isolated: nothing would be left to see. */

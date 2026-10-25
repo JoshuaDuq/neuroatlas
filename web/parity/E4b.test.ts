@@ -1102,6 +1102,31 @@ describe('E4b documented deviations', () => {
   });
 });
 
+describe('E4b-joined-download-progress', () => {
+  it('a caller joining a pending layer download hears it in the new model only', async () => {
+    const universe = await syntheticUniverse();
+    const heard: number[][] = [];
+    for (const { model } of [universe.legacy, universe.current]) {
+      const load = model.loader.loadAsync;
+      let release!: () => void;
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      model.loader.loadAsync = async (file: string, onProgress?: (event: Stub) => void) => {
+        await gate;
+        return load(file, onProgress);
+      };
+      const prefetch = model.loadLayer('b', 'b.glb');
+      const events: number[] = [];
+      const switching = model.setAtlas('b', (event: Stub) => events.push(event.loaded));
+      release();
+      await Promise.all([prefetch, switching]);
+      heard.push(events);
+    }
+    assert.deepEqual(heard, [[], [10, 20]]);
+  });
+});
+
 describe('E4b comparison has teeth', () => {
   it('reports a model whose material differs by one channel, one flag or one pick', async () => {
     const universe = await syntheticUniverse();
