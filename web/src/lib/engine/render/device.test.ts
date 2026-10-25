@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { onTestFinished, test, vi } from 'vitest';
 import { PHONE_QUERY } from '../../types/constants.ts';
-import { isIntegratedGpu, isPhone, pixelRatioCap } from './device.ts';
+import { detectIntegratedGpu, isIntegratedGpu, isPhone, pixelRatioCap } from './device.ts';
 
 for (const { width, height, compact, phone } of [
   { width: 390, height: 844, compact: true, phone: true },
@@ -63,4 +63,29 @@ test('Apple silicon is recognised from what WebGL reports', async () => {
   assert.equal(isAppleSilicon('Intel(R) UHD Graphics 770'), false);
   assert.equal(isAppleSilicon('AMD Radeon Graphics'), false);
   assert.equal(isAppleSilicon(''), false);
+});
+
+test('the GPU probe releases its context and lets errors surface', () => {
+  const lose = vi.fn();
+  const info = { UNMASKED_RENDERER_WEBGL: 37446 };
+  const gl = {
+    getExtension: (name: string) =>
+      name === 'WEBGL_debug_renderer_info' ? info : { loseContext: lose },
+    getParameter: () => 'NVIDIA GeForce RTX 4090',
+  };
+  vi.stubGlobal('document', { createElement: () => ({ getContext: () => gl }) });
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+  });
+  assert.equal(detectIntegratedGpu(), false);
+  assert.equal(lose.mock.calls.length, 1);
+
+  vi.stubGlobal('document', {
+    createElement: () => ({
+      getContext: () => {
+        throw new Error('no context');
+      },
+    }),
+  });
+  assert.throws(() => detectIntegratedGpu(), /no context/);
 });

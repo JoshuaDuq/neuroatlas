@@ -21,6 +21,7 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import * as legacyCameraModule from '../../viewer/render/camera-views.js';
 import * as legacyPath from '../../viewer/render/camera-path.js';
 import * as legacyViewport from '../../viewer/render/effective-viewport.js';
+import * as legacyOrbitModule from '../../viewer/render/orbit-controls.js';
 import * as legacyKeyboard from '../../viewer/render/keyboard-orbit.js';
 import * as legacyOrientationModule from '../../viewer/render/orientation.js';
 import * as legacyScale from '../../viewer/render/scale-bar.js';
@@ -33,6 +34,7 @@ import volumes from '../../public/models/cdmd/volumes.json' with { type: 'json' 
 import * as camera from '../src/lib/engine/render/camera-views.ts';
 import * as path from '../src/lib/engine/render/camera-path.ts';
 import * as viewport from '../src/lib/engine/render/effective-viewport.ts';
+import * as orbitControls from '../src/lib/engine/render/orbit-controls.ts';
 import * as keyboard from '../src/lib/engine/render/keyboard-orbit.ts';
 import * as orientation from '../src/lib/engine/render/orientation.ts';
 import * as scale from '../src/lib/engine/render/scale-bar.ts';
@@ -405,6 +407,87 @@ describe('E1 effective-viewport', () => {
         viewport.clearFraming(size, dock, clear, 0.8),
         legacyViewport.clearFraming(size, dock, clear, 0.8),
       );
+    }
+  });
+});
+
+describe('E1 orbit-controls', () => {
+  type Adapters = typeof orbitControls;
+  const legacyOrbit = legacyOrbitModule as unknown as Adapters;
+  type Driven = OrbitControls & {
+    _mouse: Vector2;
+    _performCursorZoom: boolean;
+    _panOffset: Vector3;
+  };
+
+  // A single-sided plane between the camera and the target, as the anatomy's surfaces are.
+  const surface = new Plane(new Vector3(-1, 0, 0), -0.06);
+  const hit: orbitControls.Intersect = (raycaster) => {
+    const { ray } = raycaster;
+    if (ray.direction.dot(surface.normal) >= 0) return null;
+    const point = ray.intersectPlane(surface, new Vector3());
+    return point && point.distanceTo(ray.origin) <= raycaster.far ? { point } : null;
+  };
+
+  it('matches zoomAbout over seeded inputs', () => {
+    for (let i = 0; i < 100; i++) {
+      const position = new Vector3(between(-1, 1), between(-1, 1), between(-1, 1));
+      const target = new Vector3(between(-1, 1), between(-1, 1), between(-1, 1));
+      const point = new Vector3(between(-1, 1), between(-1, 1), between(-1, 1));
+      const limits = { min: between(0.01, 0.2), max: between(1, 4) };
+      const scale = between(0.001, 1000);
+      const here = orbitControls.zoomAbout(position, target, point, scale, limits);
+      const there = legacyOrbit.zoomAbout(position, target, point, scale, limits);
+      same(
+        [here.position.toArray(), here.target.toArray()],
+        [there.position.toArray(), there.target.toArray()],
+      );
+    }
+  });
+
+  it('matches a seeded rotate/zoom/pan/up-change sequence through the adapters', () => {
+    for (const adapters of [['follow'], ['follow', 'zoom'], ['follow', 'zoom', 'stay']]) {
+      const steps = mulberry32(0xe1c + adapters.length);
+      const build = (api: Adapters) => {
+        const made = cameraAt(35, 1.4, new Vector3(0, 1, 0));
+        const controls = new OrbitControls(made);
+        controls.minDistance = 0.025;
+        controls.maxDistance = 2.5;
+        if (adapters.includes('follow')) api.followCameraUp(controls);
+        if (adapters.includes('zoom')) api.zoomAboutSurface(controls, hit);
+        if (adapters.includes('stay')) api.stayOutside(controls, hit);
+        made.position.set(-0.1, 0.02, 0.05);
+        controls.target.set(0.002, -0.011, 0.004);
+        controls.update();
+        return { made, controls };
+      };
+      const here = build(orbitControls);
+      const there = build(legacyOrbit);
+      const ups = [new Vector3(0, 1, 0), new Vector3(0, 0, -1), new Vector3(0, 0, 1)];
+      for (let i = 0; i < 150; i++) {
+        const kind = Math.floor(steps() * 6);
+        const amount = (steps() - 0.5) * 1.5;
+        const ndc = new Vector2(steps() * 2 - 1, steps() * 2 - 1);
+        const pan = new Vector3(steps() - 0.5, steps() - 0.5, steps() - 0.5).multiplyScalar(0.05);
+        const up = ups[Math.floor(steps() * ups.length)]!;
+        for (const { made, controls } of [here, there]) {
+          const driven = controls as unknown as Driven;
+          if (kind === 0) controls.rotateLeft(amount);
+          else if (kind === 1) controls.rotateUp(amount);
+          else if (kind === 2) controls.dollyIn(1 + Math.abs(amount));
+          else if (kind === 3) {
+            driven._mouse.copy(ndc);
+            driven._performCursorZoom = true;
+            controls.dollyOut(1 + Math.abs(amount));
+          } else if (kind === 4) driven._panOffset.add(pan);
+          else made.up.copy(up);
+          controls.update();
+        }
+        const context = `${adapters.join('+')} step ${i} kind ${kind}`;
+        same(here.made.position.toArray(), there.made.position.toArray(), context);
+        same(here.controls.target.toArray(), there.controls.target.toArray(), context);
+        same(here.made.quaternion.toArray(), there.made.quaternion.toArray(), context);
+      }
     }
   });
 });

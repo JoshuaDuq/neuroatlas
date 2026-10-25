@@ -1,8 +1,8 @@
 import { Matrix4, type Object3D, type Vector3 } from 'three';
 import type { Language } from '../../types/index.ts';
 
-type Edge = 'right' | 'left' | 'top' | 'bottom';
-type Letter = 'R' | 'L' | 'S' | 'I' | 'P' | 'A';
+export type Edge = 'right' | 'left' | 'top' | 'bottom';
+export type Letter = 'R' | 'L' | 'S' | 'I' | 'P' | 'A';
 type Direction = readonly [number, number, number];
 
 /**
@@ -84,12 +84,12 @@ const FR_LETTERS: Readonly<Record<Letter, string>> = {
 
 /** English edge letters in the reader's language. */
 export function localizeEdges(
-  raw: Record<Edge, string>,
+  raw: Record<Edge, Letter>,
   lang: Language = 'en',
 ): Record<Edge, string> {
   if (lang !== 'fr') return raw;
   return Object.fromEntries(
-    Object.entries(raw).map(([edge, letter]) => [edge, FR_LETTERS[letter as Letter]]),
+    (Object.entries(raw) as [Edge, Letter][]).map(([edge, letter]) => [edge, FR_LETTERS[letter]]),
   ) as Record<Edge, string>;
 }
 

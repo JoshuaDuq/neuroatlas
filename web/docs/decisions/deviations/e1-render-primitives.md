@@ -1,8 +1,8 @@
 # E1 deviations from the legacy render primitives
 
 Chunk E1 (#24). Each entry is a fix under the parity policy on #4 ("do not port bugs"). The
-parity test (`web/parity/E1.test.ts`) excludes these inputs; `render/fail-fast.test.ts` pins the
-new behaviour.
+parity test (`web/parity/E1.test.ts`) excludes these inputs; fixes 1-4 are pinned by tests in
+`camera-views.test.ts`, `coordinates.test.ts`, `outline-edges.test.ts` and `device.test.ts`.
 
 ## 1. `detectIntegratedGpu` no longer swallows errors and releases its probe context
 
@@ -23,9 +23,9 @@ new behaviour.
   between left it off for the rest of the frame, while colour and `autoClear` were restored.
 - **New** (`engine/render/outline-edges.ts`): the `finally` block turns it back on if it is still
   off. The call sequence on the success path is unchanged.
-- **Standard**: restore-in-`finally` for renderer state mutated around a fallible block, as
-  `WebGLRenderer` state handling in three.js's own `OutlinePass.render` does for the clear colour
-  and `autoClear`.
+- **Standard**: exception safety, i.e. the ECMAScript `try...finally` cleanup idiom. Legacy's own
+  `finally` already restores the clear colour and `autoClear`; the stencil test was the one piece
+  of renderer state it left out.
 
 ## 3. `fitDistance` refuses an empty point list
 
@@ -39,12 +39,21 @@ new behaviour.
 ## 4. `createFrame` accepts only its own section planes
 
 - **Legacy** (`viewer/slices/coordinates.js`): `BASES[mode]` looked the mode up on a plain object,
-  so `'constructor'`, `'toString'` and similar passed the unknown-plane check and returned a
-  garbage frame.
+  so `'constructor'`, `'toString'` and similar passed the unknown-plane check and then threw
+  `TypeError: basis.normal is not iterable`.
 - **New** (`engine/slices/coordinates.ts`): `Object.hasOwn(BASES, mode)` guards the lookup, so
-  they throw `Unknown section plane` like any other unknown name.
+  they throw `Error('Unknown section plane: …')` like any other unknown name, instead of that
+  `TypeError`.
 - **Standard**: ECMAScript own-property lookup (`Object.hasOwn`, ES2022) for dictionary access
   with untrusted keys; restored links reach this boundary.
+
+## 5. `zoomAboutSurface` names the failure when the zoom ray misses the level plane
+
+- **Legacy** (`viewer/render/orbit-controls.js`): `ray.intersectPlane` returned `null`, which was
+  passed on and threw `TypeError` at `point.clone()` inside `zoomAbout`.
+- **New** (`engine/render/orbit-controls.ts`): an explicit
+  `Error('The zoom ray never meets the level plane.')` at the point of failure.
+- **Standard**: "fail fast" (CLAUDE.md): validate at the boundary and report the cause.
 
 ## Kept as in legacy, for the record
 

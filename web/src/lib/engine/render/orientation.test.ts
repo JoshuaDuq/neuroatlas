@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { edgeLabels, localizeEdges } from './orientation.ts';
+import type { Edge, Letter } from './orientation.ts';
 
 // manifest coordinate_system: x = right, y = superior, z = posterior.
 const VIEWS = {
@@ -105,7 +106,7 @@ test('letters follow the camera inside its own change event, before anything red
 });
 
 test('stored letters are translated without asking the camera again', () => {
-  const raw = edgeLabels(cameraFor('anterior'));
+  const raw = edgeLabels(cameraFor('anterior')) as Record<Edge, Letter>;
   assert.deepEqual(localizeEdges(raw, 'fr'), { right: 'G', left: 'D', top: 'S', bottom: 'I' });
   assert.deepEqual(localizeEdges(raw, 'en'), raw);
 });

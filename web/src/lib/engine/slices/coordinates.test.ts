@@ -55,3 +55,9 @@ test('oblique frame is orthonormal and remains anchored to the crosshair', () =>
   assert.throws(() => createFrame('banana' as CutMode, [0, 0, 0]), /plane/i);
   assert.throws(() => createFrame('axial', [NaN, 0, 0]), /coordinate/i);
 });
+
+test('names inherited from Object are not section planes', () => {
+  for (const name of ['constructor', 'toString', '__proto__']) {
+    assert.throws(() => createFrame(name as CutMode, [0, 0, 0]), /plane/i, name);
+  }
+});

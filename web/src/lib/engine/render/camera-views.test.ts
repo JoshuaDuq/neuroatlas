@@ -256,3 +256,12 @@ test('a small landmark is framed with a neighbourhood around it', () => {
     'larger bounds are left alone',
   );
 });
+
+test('fitting to an empty point list is refused rather than reporting a zero distance', () => {
+  const camera = new PerspectiveCamera(35, 1.6, 0.001, 10);
+  const bounds = new Box3(new Vector3(-0.08, -0.07, -0.1), new Vector3(0.08, 0.11, 0.1));
+  assert.throws(
+    () => fitDistance(camera, bounds, VIEW_DIRECTIONS.left, {}, new Float32Array()),
+    RangeError,
+  );
+});
