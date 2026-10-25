@@ -16,6 +16,7 @@ import {
   loadingText as legacyLoadingText,
   subjectName as legacySubjectName,
 } from '../../viewer/ui/chrome/header.js';
+import { t as legacyT } from '../../viewer/i18n/translations.js';
 import { CLINICAL_TEXT as LEGACY_CLINICAL_TEXT } from '../../viewer/clinical/translations.js';
 import { cutAtlasesOf } from '../../viewer/catalog/visibility.js';
 import * as legacyCircuits from '../../viewer/ui/panels/circuits.js';
@@ -218,7 +219,11 @@ describe('navigator view-model', () => {
     }
   });
 
-  /** navigator.js:155-179 (`highlightMatch`) and :287-306, which are not exported, as plain data. */
+  /**
+   * navigator.js:155-179 (`highlightMatch`) and :287-306, which are not exported, as plain data.
+   * It agrees with `matchSegments` on NFC input only: its offsets break on NFD (see
+   * docs/decisions/deviations/c5-match-highlight-offsets.md).
+   */
   function legacyMatch(name: string, code: string | null, aliases: string[], query: string) {
     const fold = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
     const segments = (text: string) => {
@@ -337,13 +342,58 @@ describe('clinical view-model', () => {
           for (const error of [null, new Error('x'), offline, updated]) {
             for (const failure of [null, 'restoreFailed'] as const) {
               for (const operation of ['deficit', 'region']) {
-                const state = { opening, busy, error, failure, operation, lang, status: 'shown' };
+                const state = {
+                  opening,
+                  busy,
+                  error,
+                  failure,
+                  operation,
+                  lang,
+                  status: 'shown',
+                } as const;
                 assert.equal(
-                  clinical.stageMessage(TRANSLATIONS[lang].clinical, state as never),
+                  clinical.stageMessage(TRANSLATIONS[lang].clinical, state),
                   legacyClinical.stageMessage(LEGACY_CLINICAL_TEXT[lang], state),
                 );
               }
             }
+          }
+        }
+      }
+    }
+  });
+
+  test('stageMessage with the Functions tab text, whose failure defaults to `failed`', () => {
+    const error = new Error('x');
+    for (const lang of LANGS) {
+      const copy = TRANSLATIONS[lang].functions;
+      const legacyCopy = legacyT(lang, 'functions');
+      for (const opening of [false, true]) {
+        for (const busy of ['loading', 'restoring'] as const) {
+          for (const failure of ['failed', 'restoreFailed'] as const) {
+            const state = {
+              opening,
+              busy,
+              error,
+              failure,
+              operation: 'colour',
+              lang,
+              status: 's',
+            } as const;
+            assert.equal(
+              clinical.stageMessage(
+                { ...TRANSLATIONS[lang].clinical, loading: copy.loading, failed: copy.failed },
+                state,
+              ),
+              legacyClinical.stageMessage(
+                {
+                  ...LEGACY_CLINICAL_TEXT[lang],
+                  loading: legacyCopy.loading,
+                  failed: legacyCopy.failed,
+                },
+                state,
+              ),
+            );
           }
         }
       }
@@ -605,7 +655,7 @@ describe('masthead view-model', () => {
 
 /**
  * The legacy runners, transcribed with their panel state as a log: functions.js:124-146 (the
- * clinical tab's, clinical.js:288, is the same), atlas-comparison.js:65-87, circuits.js:246-265.
+ * clinical tab's, clinical.js:288, is the same), atlas-comparison.js:65-87, circuits.js:260-278.
  */
 function legacyLatest(log: string[]) {
   let latest = 0;
@@ -747,13 +797,14 @@ describe('async runners', () => {
           const gates = Array.from({ length: count }, () => gate());
           const runs: Promise<unknown>[] = [];
           gates.forEach((gate, index) => {
-            if (index === clearAt) panel.clear();
             runs.push(
               panel.activate(async () => {
                 await gate.promise;
                 return settle(outcomes[index], index);
               }, `run${index}`),
             );
+            // After the run starts, so the cancel overtakes it rather than preceding it.
+            if (index === clearAt) panel.clear();
           });
           if (clearAt === count) panel.clear();
           for (const index of order) {
@@ -812,6 +863,7 @@ describe('async runners', () => {
           for (const index of order) {
             gates[index].resolve();
             results[index] = await pending[index];
+            results.push(await start(() => Promise.resolve('between'), `between${index}`));
           }
           const after = await start(() => Promise.resolve('later'), 'after');
           return { events, results, after };

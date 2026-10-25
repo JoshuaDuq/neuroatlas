@@ -202,3 +202,23 @@ test('a row explains a match its name does not hold with its code, then its firs
     'Île de Reil',
   );
 });
+
+test('a decomposed query or name marks the same span as a composed one', () => {
+  const composed = [
+    { text: 'Cortex ', match: false },
+    { text: 'cérébel', match: true },
+    { text: 'leux', match: false },
+  ];
+  const nfd = (text: string) => text.normalize('NFD');
+  assert.deepEqual(matchSegments('Cortex cérébelleux', nfd('cérébel')), composed);
+  assert.deepEqual(matchSegments(nfd('Cortex cérébelleux'), 'cerebel'), [
+    { text: 'Cortex ', match: false },
+    { text: nfd('cérébel'), match: true },
+    { text: 'leux', match: false },
+  ]);
+  assert.deepEqual(matchSegments(nfd('Cortex cérébelleux'), nfd('cérébel')), [
+    composed[0],
+    { text: nfd('cérébel'), match: true },
+    composed[2],
+  ]);
+});

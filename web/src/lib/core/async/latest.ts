@@ -35,18 +35,21 @@ export function createLatestRunner() {
         console.error(error);
         outcome = { ok: false, error };
       }
-      if (mine === latest) {
-        if (outcome.ok) handlers.onResult?.(outcome.value);
-        else handlers.onError?.(outcome.error);
+      try {
+        if (mine === latest) {
+          if (outcome.ok) handlers.onResult?.(outcome.value);
+          else handlers.onError?.(outcome.error);
+        }
+      } finally {
+        if (mine === latest) handlers.onSettled?.();
       }
-      if (mine === latest) handlers.onSettled?.();
       return outcome;
     },
   };
 }
 
 /**
- * The Circuits tab's refuse-while-busy runner (circuits.js:246-265): a run asked for while
+ * The Circuits tab's refuse-while-busy runner (circuits.js:260-278): a run asked for while
  * another is in flight is turned away, not queued and not overtaking. Every run that starts
  * settles: the failure is logged and reported, then `onSettled` fires with `busy` already false.
  * Resolves true when the action completed, false when it failed or was refused.

@@ -168,3 +168,20 @@ test('a failed busy run is logged, reported, settled, and leaves the runner free
   assert.equal(await runner.run(() => {}), true);
   log.mockRestore();
 });
+
+test('the latest run settles even when its handler throws', async () => {
+  const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const runner = createLatestRunner();
+  const onSettled = vi.fn();
+  const failure = new Error('handler');
+  await expect(
+    runner.run(() => Promise.reject(new Error('action')), {
+      onError: () => {
+        throw failure;
+      },
+      onSettled,
+    }),
+  ).rejects.toBe(failure);
+  expect(onSettled).toHaveBeenCalledOnce();
+  log.mockRestore();
+});

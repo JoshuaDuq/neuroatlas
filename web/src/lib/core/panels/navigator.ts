@@ -166,7 +166,11 @@ export function visibilityStateOf(
 }
 
 /** Accent-, case- and diacritic-blind form of a name, as search compares it. */
-const fold = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const fold = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 
 /** A run of a name, and whether the search query matched it. */
 export interface MatchSegment {
@@ -174,15 +178,35 @@ export interface MatchSegment {
   match: boolean;
 }
 
-/** A name split around the first accent- and case-insensitive occurrence of the query. */
+/**
+ * A name split around the first accent- and case-insensitive occurrence of the query. The
+ * match is found in the folded text and mapped back to the original by code point, so a
+ * composed or decomposed name or query marks the same span.
+ */
 export function matchSegments(text: string, query: string): MatchSegment[] {
   if (!query) return [{ text, match: false }];
-  const index = fold(text).indexOf(fold(query));
-  if (index === -1) return [{ text, match: false }];
+  // offsets[i] is where the code point that produced folded code unit i starts in `text`.
+  let folded = '';
+  const offsets: number[] = [];
+  let at = 0;
+  for (const point of text) {
+    const part = fold(point);
+    folded += part;
+    for (let unit = 0; unit < part.length; unit += 1) offsets.push(at);
+    at += point.length;
+  }
+  offsets.push(text.length);
+  const needle = fold(query);
+  const index = folded.indexOf(needle);
+  if (index === -1 || !needle) return [{ text, match: false }];
+  const start = offsets[index];
+  let end = index + needle.length;
+  // A match that ends inside one code point's folded form takes the whole code point.
+  while (end < folded.length && offsets[end] === offsets[end - 1]) end += 1;
   return [
-    { text: text.slice(0, index), match: false },
-    { text: text.slice(index, index + query.length), match: true },
-    { text: text.slice(index + query.length), match: false },
+    { text: text.slice(0, start), match: false },
+    { text: text.slice(start, offsets[end]), match: true },
+    { text: text.slice(offsets[end]), match: false },
   ].filter((segment) => segment.text);
 }
 

@@ -1,10 +1,7 @@
 import type { Hemisphere, Language, Region, SurfaceColor } from '../../types/index.ts';
 import type { Translated } from '../clinical/types.ts';
 import { failureNotice } from '../i18n/errors.ts';
-import { atlasSwitchLabel, t, TRANSLATIONS } from '../i18n/index.ts';
-
-type ClinicalText = (typeof TRANSLATIONS)['en']['clinical'];
-type StringKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
+import { atlasSwitchLabel, t } from '../i18n/index.ts';
 
 /** The display settings a deficit's reveal may change, as the notice compares them. */
 export interface RevealSettings {
@@ -85,8 +82,8 @@ export function revealNotice(
  * The profile's meta line: work in progress, a failure, or what the stage shows.
  * A failure is worded for the reader: its own `failure` text, else what `operation` could not do.
  */
-export function stageMessage(
-  text: ClinicalText,
+export function stageMessage<K extends string>(
+  text: Readonly<Record<NoInfer<K>, string>>,
   {
     opening,
     busy,
@@ -97,9 +94,9 @@ export function stageMessage(
     status,
   }: {
     opening: boolean;
-    busy: StringKeys<ClinicalText>;
+    busy: K;
     error: unknown;
-    failure: StringKeys<ClinicalText> | null;
+    failure: K | null;
     operation: string;
     lang: Language;
     status: string;
