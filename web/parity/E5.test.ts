@@ -221,7 +221,9 @@ describe('E5 parity: transition easing', () => {
     );
     vi.stubGlobal('matchMedia', () => ({ matches: reduced }));
     vi.stubGlobal('document', { documentElement: {} });
-    vi.stubGlobal('getComputedStyle', () => ({ getPropertyValue: () => ' #808080 ' }));
+    vi.stubGlobal('getComputedStyle', () => ({
+      getPropertyValue: (name: string) => (name === '--scene-exposure' ? '1' : ' #808080 '),
+    }));
   });
 
   afterEach(() => {

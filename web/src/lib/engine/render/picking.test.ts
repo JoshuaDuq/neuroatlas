@@ -223,39 +223,23 @@ describe('picker', () => {
     assert.equal(domElement.style.cursor, 'grabbing');
   });
 
-  it('keeps the first finger as the tap when a second finger lands and lifts', () => {
+  it('cancels the tap when a second finger lands, even if it lifts first', () => {
     const { domElement, chosen } = selecting(() => ({ id: 'a' }));
-    domElement.emit('pointerdown', { button: 0, pointerType: 'touch', pointerId: 1, clientX: 20 });
-    domElement.emit('pointerdown', {
-      button: 0,
-      pointerType: 'touch',
-      pointerId: 2,
-      isPrimary: false,
-      clientX: 180,
-    });
-    domElement.emit('pointerup', {
-      button: 0,
-      pointerType: 'touch',
-      pointerId: 2,
-      isPrimary: false,
-      clientX: 180,
-    });
+    const touch = { button: 0, pointerType: 'touch' };
+    domElement.emit('pointerdown', { ...touch, pointerId: 1, clientX: 20 });
+    domElement.emit('pointerdown', { ...touch, pointerId: 2, isPrimary: false, clientX: 180 });
+    domElement.emit('pointerup', { ...touch, pointerId: 2, isPrimary: false, clientX: 180 });
+    domElement.emit('pointerup', { ...touch, pointerId: 1, clientX: 20 });
     assert.deepEqual(chosen, []);
-    domElement.emit('pointerup', { button: 0, pointerType: 'touch', pointerId: 1, clientX: 20 });
-    assert.deepEqual(chosen, ['a']);
   });
 
-  it('does not read the first finger lifting beside the second one as a tap', () => {
+  it('does not read a pinch whose first finger lifts first as a tap', () => {
     const { domElement, chosen } = selecting(() => ({ id: 'a' }));
-    domElement.emit('pointerdown', { button: 0, pointerType: 'touch', pointerId: 1, clientX: 20 });
-    domElement.emit('pointerdown', {
-      button: 0,
-      pointerType: 'touch',
-      pointerId: 2,
-      isPrimary: false,
-      clientX: 180,
-    });
-    domElement.emit('pointerup', { button: 0, pointerType: 'touch', pointerId: 1, clientX: 175 });
+    const touch = { button: 0, pointerType: 'touch' };
+    domElement.emit('pointerdown', { ...touch, pointerId: 1, clientX: 20 });
+    domElement.emit('pointerdown', { ...touch, pointerId: 2, isPrimary: false, clientX: 120 });
+    domElement.emit('pointermove', { ...touch, pointerId: 2, isPrimary: false, clientX: 190 });
+    domElement.emit('pointerup', { ...touch, pointerId: 1, clientX: 24 });
     assert.deepEqual(chosen, []);
   });
 });

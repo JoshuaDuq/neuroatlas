@@ -97,7 +97,11 @@ export function createPicker<Region extends { id: string }>({
 
   const onPointerDown = (event: PointerEvent) => {
     // One pointer makes a tap: a second finger landing must not replace the first one's press.
-    if (!event.isPrimary) return;
+    // A second pointer makes the gesture a pinch or a two-finger drag, not a tap.
+    if (!event.isPrimary) {
+      pressed = null;
+      return;
+    }
     pressed = {
       x: event.clientX,
       y: event.clientY,
