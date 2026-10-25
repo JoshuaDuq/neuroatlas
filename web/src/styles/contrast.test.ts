@@ -88,8 +88,7 @@ describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
         expect(contrast(theme, ink, ground), `${ink} on ${ground}`).toBeGreaterThanOrEqual(4.5);
       }
     }
-    // Measured 2.85:1 on --overlay-track-hover (the legacy value), so that ground is left out; see the U1 PR.
-    for (const ground of OVERLAY_GROUNDS.slice(0, 3)) {
+    for (const ground of OVERLAY_GROUNDS) {
       expect(contrast(theme, '--overlay-control-border', ground), ground).toBeGreaterThanOrEqual(3);
     }
   });

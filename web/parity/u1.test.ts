@@ -21,6 +21,10 @@ describe('U1 styles parity', () => {
     const legacy = normalise(declarationsBySelector(read('../../viewer/styles/tokens.css')));
     const current = normalise(declarationsBySelector(read('../src/styles/tokens.css')));
     assert.deepEqual(Object.keys(current), [':root', ":root[data-theme='dark']"]);
+    // The one documented difference: deviations/u1-overlay-control-contrast.md (WCAG 1.4.11).
+    assert.equal(legacy[':root']['--overlay-control-border'], '#6d737b');
+    assert.equal(current[':root']['--overlay-control-border'], '#70777f');
+    legacy[':root']['--overlay-control-border'] = '#70777f';
     assert.deepEqual(current, legacy);
   });
 
