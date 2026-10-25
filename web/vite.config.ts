@@ -30,5 +30,24 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-  plugins: [svelte(), yamlRecords(), publishedAssets()],
+  plugins: [
+    svelte(),
+    yamlRecords(),
+    publishedAssets(),
+    {
+      // The preview is published beside the live site and must stay out of search results. The tag
+      // is in the HTML itself, so crawlers that do not run scripts see it; the live build has none.
+      name: 'preview-noindex',
+      transformIndexHtml: () =>
+        mode === 'preview'
+          ? [
+              {
+                tag: 'meta',
+                attrs: { name: 'robots', content: 'noindex' },
+                injectTo: 'head-prepend',
+              },
+            ]
+          : [],
+    },
+  ],
 }));
