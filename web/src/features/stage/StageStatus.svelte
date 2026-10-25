@@ -120,9 +120,6 @@
   @layer features {
     /* The page's own surface and ink, so the screen follows the reader's theme (decisions 3 and 18). */
     .stage-status {
-      /* The bar's primitive paints from the overlay tokens, which are fixed dark-scene colours. */
-      --overlay-border: var(--border-control);
-      --overlay-accent: var(--text-primary);
       position: absolute;
       inset: 0;
       z-index: 3;
@@ -137,10 +134,22 @@
       font-size: var(--text-stage);
       line-height: var(--lh-ui);
     }
+    /* The bar's primitive paints from the overlay tokens, which are fixed dark-scene colours. */
+    .stage-status[data-status='loading'] {
+      --overlay-border: var(--border-control);
+      --overlay-accent: var(--text-primary);
+    }
     /* A running app whose view was interrupted keeps the dark scene, as legacy does (stage.css:292-310). */
     .stage-status[data-status='context-lost'] {
       background: var(--scene-background);
       color: var(--overlay-ink-muted);
+    }
+    /* The ring is this screen's own: the stage's overlay ring (#viewport :focus-visible) is for the dark scene. */
+    :global(#viewport) .stage-status :focus-visible {
+      outline-color: var(--accent);
+    }
+    :global(#viewport) .stage-status[data-status='context-lost'] :focus-visible {
+      outline-color: var(--overlay-accent);
     }
     #stage-message {
       max-width: 44ch;

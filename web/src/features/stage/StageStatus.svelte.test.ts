@@ -139,6 +139,53 @@ describe('loading', () => {
     delete document.documentElement.dataset.theme;
   });
 
+  test('the focus ring is 3:1 against its screen in both themes, with the stage ring rule present', async () => {
+    // The stage's own rule (G1, #107): a teal overlay ring for everything inside the viewport.
+    const stageRing = document.head.appendChild(document.createElement('style'));
+    stageRing.textContent =
+      '@layer features { #viewport :focus-visible { outline-color: var(--overlay-accent); } }';
+    const luminance = (value: string) => {
+      const [r, g, b] = value
+        .match(/[\d.]+/g)!
+        .slice(0, 3)
+        .map((c) => {
+          const x = Number(c) / 255;
+          return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+        });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a: string, b: string) => {
+      const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+      return (x + 0.05) / (y + 0.05);
+    };
+    try {
+      for (const theme of ['light', 'dark']) {
+        document.documentElement.dataset.theme = theme;
+        const screens = [
+          { status: 'loading' },
+          { status: 'error', failure: { text: 'Failed.', button: 'Retry' } },
+          { status: 'context-lost' },
+        ] as const;
+        for (const screen of screens) {
+          const view = await render(Fixture, screen);
+          const stage = document.querySelector('.stage-status') as HTMLElement;
+          const ringed = (screen.status === 'error' ? retry().element() : message()) as HTMLElement;
+          ringed.focus();
+          await userEvent.keyboard('{Shift>}{Shift}');
+          const style = getComputedStyle(ringed);
+          expect(
+            ratio(style.outlineColor, getComputedStyle(stage).backgroundColor),
+            `${theme} ${screen.status} ring`,
+          ).toBeGreaterThanOrEqual(3);
+          view.unmount();
+        }
+      }
+    } finally {
+      delete document.documentElement.dataset.theme;
+      stageRing.remove();
+    }
+  });
+
   test('is in French under French', async () => {
     await render(Fixture, {
       status: 'loading',
