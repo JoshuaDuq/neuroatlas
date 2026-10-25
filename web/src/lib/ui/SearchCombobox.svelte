@@ -70,15 +70,23 @@
     else announcer.say(status);
   });
 
-  /** The armed option, brought into view: at the top when results change, else the nearest edge. */
-  async function reveal(block: ScrollLogicalPosition) {
-    await tick();
-    list?.querySelector('[data-highlighted]')?.scrollIntoView({ block });
-  }
+  // Why the next armed option scrolls: new results put it at the top (navigator.js:452-461),
+  // an arrow key brings it to the nearest edge. Pointer hover scrolls nothing.
+  let reveal: ScrollLogicalPosition | null = null;
   $effect(() => {
     void groups;
-    void reveal('start');
+    reveal = 'start';
   });
+
+  /** Bits arms an option after the DOM update; this runs when it does. */
+  async function onHighlight() {
+    if (!reveal) return;
+    const block = reveal;
+    reveal = null;
+    await tick();
+    const armed = list?.querySelector('[data-highlighted]');
+    armed?.scrollIntoView({ block });
+  }
 
   function onkeydown(event: KeyboardEvent) {
     // Marked handled: the page's own Escape would otherwise go on to clear the selection.
@@ -86,7 +94,7 @@
       event.preventDefault();
       query = '';
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      void reveal('nearest');
+      reveal = 'nearest';
     }
   }
 
@@ -172,6 +180,7 @@
                 label={item.label}
                 disabled={item.disabled}
                 class="search-option"
+                {onHighlight}
               >
                 {@render option(item)}
               </Combobox.Item>
@@ -184,6 +193,7 @@
               label={item.label}
               disabled={item.disabled}
               class="search-option"
+              {onHighlight}
             >
               {@render option(item)}
             </Combobox.Item>

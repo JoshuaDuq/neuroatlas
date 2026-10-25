@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { attachAnnouncer } from './announcer.svelte.ts';
+import '../../styles/index.css';
 import Fixture from './search-combobox-test-support.svelte';
 
 let region: HTMLElement;
@@ -164,5 +165,51 @@ describe('SearchCombobox', () => {
       runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
     });
     expect(violations).toEqual([]);
+  });
+
+  test('scrolls the armed option to the top on new results, and to the nearest edge on arrows', async () => {
+    render(Fixture, { picks: [], tall: true });
+    const scroller = document.querySelector('[data-scroller]')!;
+    const gap = () => ({
+      top: armed()!.getBoundingClientRect().top - scroller.getBoundingClientRect().top,
+      bottom: scroller.getBoundingClientRect().bottom - armed()!.getBoundingClientRect().bottom,
+    });
+    await type('h');
+    await expect.poll(() => armed()?.textContent).toBe('Hypothalamus');
+    await expect.poll(() => Math.round(gap().top)).toBe(0);
+    // "nearest" brings the option in by the edge it came from; "start" would put its top at 0.
+    await userEvent.keyboard('{ArrowDown}');
+    expect(armed()?.textContent).toBe('Thalamus');
+    await expect.poll(() => Math.round(gap().bottom)).toBe(0);
+    await userEvent.keyboard('{ArrowUp}');
+    expect(armed()?.textContent).toBe('Hypothalamus');
+    await expect.poll(() => Math.round(gap().top)).toBe(0);
+  });
+
+  describe('axe with the U1 stylesheets, listbox expanded', () => {
+    afterEach(() => {
+      delete document.documentElement.dataset.theme;
+    });
+    const cases = [
+      ['light', 'light', 1000],
+      ['dark', 'dark', 1000],
+      ['light at 390 px', 'light', 390],
+      ['dark at 390 px', 'dark', 390],
+    ] as const;
+    for (const [name, theme, width] of cases) {
+      test(name, async () => {
+        document.documentElement.dataset.theme = theme;
+        await page.viewport(width, 800);
+        render(Fixture, { picks: [] });
+        await type('h');
+        await expect.poll(() => armed()).not.toBeNull();
+        const { violations } = await axe.run(document.body, {
+          runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
+        });
+        expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' ')}`)).toEqual(
+          [],
+        );
+      });
+    }
   });
 });

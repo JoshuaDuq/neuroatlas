@@ -2,7 +2,11 @@
 <script lang="ts">
   import SearchCombobox, { type SearchGroup } from './SearchCombobox.svelte';
 
-  let { picks, showShortcut = true }: { picks: string[]; showShortcut?: boolean } = $props();
+  let {
+    picks,
+    showShortcut = true,
+    tall = false,
+  }: { picks: string[]; showShortcut?: boolean; tall?: boolean } = $props();
 
   const all = [
     { group: 'Limbic', value: 'amygdala', label: 'Amygdala' },
@@ -25,22 +29,37 @@
   );
 </script>
 
-<SearchCombobox
-  bind:query
-  {groups}
-  {showShortcut}
-  label="Search regions"
-  placeholder="Search"
-  listLabel="Matching regions"
-  clearLabel="Clear search"
-  status={`${found.length} matches.`}
-  onselect={(value) => picks.push(value)}
->
-  {#snippet option(item)}<span>{item.label}</span>{/snippet}
-  {#snippet notes()}
-    {#if query.trim() !== '' && found.length === 0}
-      <p>No match for {query}.</p>
-    {/if}
-    <button type="button">Switch atlas</button>
-  {/snippet}
-</SearchCombobox>
+<div data-scroller style:overflow="auto" style:height={tall ? '300px' : undefined}>
+  <SearchCombobox
+    bind:query
+    {groups}
+    {showShortcut}
+    label="Search regions"
+    placeholder="Search"
+    listLabel="Matching regions"
+    clearLabel="Clear search"
+    status={`${found.length} matches.`}
+    onselect={(value) => picks.push(value)}
+  >
+    {#snippet option(item)}<span style:display="block" style:min-height={tall ? '200px' : undefined}
+        >{item.label}</span
+      >{/snippet}
+    {#snippet notes()}
+      {#if query.trim() !== '' && found.length === 0}
+        <p>No match for {query}.</p>
+      {/if}
+      <button type="button" style:color="inherit" style:background="transparent"
+        >Switch atlas</button
+      >
+    {/snippet}
+  </SearchCombobox>
+</div>
+
+<style>
+  /* In the app the field sits outside the scrolling list; keep it in view so typing never scrolls it back. */
+  div :global(.search-box) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+</style>
