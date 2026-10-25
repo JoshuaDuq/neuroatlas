@@ -8,9 +8,14 @@
     height: 100dvh;
     min-height: 0;
   }
-  #app > header,
+  /* Pinned to their rows, so an empty slot cannot shift the grid. */
+  #app > header {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
   #app > footer {
     grid-column: 1 / -1;
+    grid-row: 3;
   }
   #workspace-panel {
     grid-column: 1;

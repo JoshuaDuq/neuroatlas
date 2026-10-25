@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import './layout.css';
   import { decodeState } from '../lib/core/state/url-state.ts';
   import { startLanguage } from '../lib/state/language.svelte.ts';
@@ -14,7 +15,14 @@
   let {
     status = 'loading',
     lang = startLanguage(decodeState(location.hash).state.lang, readPref(PREF_KEYS.language)),
-  }: { status?: SessionState['status']; lang?: Language } = $props();
+    masthead,
+    statusBar,
+  }: {
+    status?: SessionState['status'];
+    lang?: Language;
+    masthead?: Snippet;
+    statusBar?: Snippet;
+  } = $props();
 
   // `#app` is the mount point and the grid, so the legacy `#app[data-status]` selectors keep working.
   $effect(() => {
@@ -22,7 +30,7 @@
   });
 </script>
 
-<MastheadRegion />
+<MastheadRegion children={masthead} />
 <PanelsRegion {lang} />
 <StageRegion />
-<StatusRegion />
+<StatusRegion children={statusBar} />

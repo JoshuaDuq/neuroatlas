@@ -1,4 +1,4 @@
-// The inline script of index.html runs before the app, so they restates rules the app owns.
+// The inline script of index.html runs before the app, so it restates rules the app owns.
 // These tests hold each restatement equal to its source.
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
@@ -90,6 +90,9 @@ describe('the pre-paint script', () => {
       '#lang=',
       '#tab=functions&lang=fr',
       'lang=fr',
+      '#lang=fr&lang=en',
+      '#lang=en&lang=en',
+      '#lang=de&lang=fr',
     ];
     for (const hash of hashes) {
       for (const saved of [null, 'fr', 'en', 'de']) {

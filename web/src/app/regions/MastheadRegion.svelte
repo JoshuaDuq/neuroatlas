@@ -1,4 +1,8 @@
-<script lang="ts"></script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
 
-<!-- The banner landmark (index.html:96). I3b fills it with the masthead. -->
-<header id="masthead"></header>
+  let { children }: { children?: Snippet } = $props();
+</script>
+
+<!-- A slot with no element of its own: H2's masthead renders the banner landmark, `<header id="masthead">`. -->
+{@render children?.()}

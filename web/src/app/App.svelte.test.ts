@@ -1,5 +1,5 @@
 // The app shell: landmarks and their order, the skip link, and the data-status cascade.
-import { flushSync, mount, unmount } from 'svelte';
+import { createRawSnippet, flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { expectAxeClean } from '../lib/ui/a11y-test-support.ts';
@@ -10,10 +10,14 @@ let target: HTMLElement;
 let app: Record<string, unknown>;
 let props = $state<{ status?: SessionState['status']; lang?: Language }>({});
 
+// What H2 and H4 render into the two slots: the banner and contentinfo landmarks.
+const masthead = createRawSnippet(() => ({ render: () => '<header id="masthead"></header>' }));
+const statusBar = createRawSnippet(() => ({ render: () => '<footer id="colophon"></footer>' }));
+
 /** `#app` is the mount point of index.html; the shell sets its data-status and lays it out. */
 function mountShell(shellProps: typeof props = {}) {
   Object.assign(props, shellProps);
-  app = mount(App, { target, props });
+  app = mount(App, { target, props: Object.assign(props, { masthead, statusBar }) });
   flushSync();
 }
 

@@ -1,4 +1,8 @@
-<script lang="ts"></script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
 
-<!-- The contentinfo landmark; the phone layout hides it (layout.css). I3b fills it with the status bar. -->
-<footer id="colophon"></footer>
+  let { children }: { children?: Snippet } = $props();
+</script>
+
+<!-- A slot with no element of its own: H4's colophon renders the contentinfo landmark, `<footer id="colophon">`. -->
+{@render children?.()}
