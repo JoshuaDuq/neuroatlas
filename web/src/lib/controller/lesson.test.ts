@@ -282,3 +282,23 @@ describe('focusing the open landmark', () => {
     );
   });
 });
+
+describe('the lesson’s MRI, overtaken while the cut is prepared', () => {
+  test('opens no plane once a newer command took over', async () => {
+    const scene = createScene();
+    await scene.excursions.openCircuit(firstCircuit(scene).id);
+    scene.session.setExplorer('circuits');
+    const prepare = scene.commands.prepareCut;
+    vi.spyOn(scene.commands, 'prepareCut').mockImplementationOnce(async (current) => {
+      scene.commands.begin();
+      return prepare(current);
+    });
+    const mark = scene.engine.calls.length;
+    await scene.excursions.openLessonMri();
+    assert.equal(scene.mri.openPreparedPlane.mock.calls.length, 0);
+    // The landmark's centre and the plane are not set for a lesson the reader has left behind.
+    const after = scene.calls(mark);
+    assert.equal(after.includes('sections.setCrosshair'), false);
+    assert.equal(after.includes('camera.faceCut'), false);
+  });
+});

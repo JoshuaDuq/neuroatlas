@@ -352,8 +352,14 @@ function legacySide() {
     },
     manifest.anatomy.id,
     (id: string) => sections.setCutAtlas(id).catch(() => {}),
-    (opts: any) => ({ ...opts, openDeficit: (id: string) => opts.onDeficit(id) }),
-    (opts: any) => ({ ...opts, openFunction: (id: string) => opts.onFunction(id) }),
+    (opts: any) => ({
+      ...opts,
+      openDeficit: (id: string) => (note('panel', 'openDeficit', id), opts.onDeficit(id)),
+    }),
+    (opts: any) => ({
+      ...opts,
+      openFunction: (id: string) => (note('panel', 'openFunction', id), opts.onFunction(id)),
+    }),
     (opts: any) => opts,
     legacyShow,
     legacyPrepare,
@@ -459,14 +465,23 @@ async function compare(
       diffs.push(`${label}: restore targets differ`);
     // Results are not compared: `openDeficit` now answers true or false where legacy's answered
     // undefined, and nothing read it.
-    void oldOut;
-    void newOut;
+    const norm = (v: unknown) =>
+      /openDeficit/.test(label) && typeof v === 'boolean' ? undefined : v;
+    if (JSON.stringify(norm(newOut)) !== JSON.stringify(oldOut))
+      diffs.push(`${label}: outcome old=${JSON.stringify(oldOut)} new=${JSON.stringify(newOut)}`);
     old.engine.calls.length = 0;
     next.engine.calls.length = 0;
   }
   return diffs;
 }
 
+const deepOf = (model: any) =>
+  model.domains.domains.find((domain: any) =>
+    legacyDomains
+      .domainAreas(model.domains, domain.id)
+      .slice(0, 5)
+      .some(({ region }: any) => legacyBeneath(model.regions.get(region)!)),
+  )!.id;
 describe('S3 parity: the legacy excursion and lesson closures', () => {
   it('excursions: deficits, functions, restore, tabs and Tracts', async () => {
     const both =
@@ -580,6 +595,32 @@ describe('S3 parity: the legacy excursion and lesson closures', () => {
         both(
           (o) => o.legacy.chooseMode('anatomy'),
           (n) => n.excursions.chooseMode('anatomy'),
+        ),
+      ],
+      [
+        'cortex see-through by hand, deep function',
+        both(
+          (o) => {
+            o.engine.model.setCortexOpacity(0.4);
+            return o.legacy.openFunction(deepOf(o.engine.model));
+          },
+          (n) => {
+            n.engine.model.setCortexOpacity(0.4);
+            return n.excursions.openFunction(deepOf(n.engine.model));
+          },
+        ),
+      ],
+      [
+        'openDeficit amnesia',
+        both(
+          (o) => {
+            o.engine.model.setCortexOpacity(1);
+            return o.legacy.openDeficit('amnesia');
+          },
+          (n) => {
+            n.engine.model.setCortexOpacity(1);
+            return n.excursions.openDeficit('amnesia');
+          },
         ),
       ],
       [

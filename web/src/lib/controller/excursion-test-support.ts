@@ -86,8 +86,14 @@ export function createScene() {
   const render = vi.fn(() => note('app', 'render'));
   // The panels' entry points, which call back into the controller as the real panels do.
   const panels = {
-    openFunction: vi.fn((id: string): unknown => excursions.openFunction(id)),
-    openDeficit: vi.fn((id: string): unknown => excursions.openDeficit(id)),
+    openFunction: vi.fn((id: string): unknown => {
+      note('panel', 'openFunction', id);
+      return excursions.openFunction(id);
+    }),
+    openDeficit: vi.fn((id: string): unknown => {
+      note('panel', 'openDeficit', id);
+      return excursions.openDeficit(id);
+    }),
     openMri: vi.fn((): unknown => excursions.openLessonMri()),
   };
 
@@ -102,6 +108,7 @@ export function createScene() {
     view,
     domains,
     clinical,
+    anatomy,
     circuits,
     commands,
     reader,

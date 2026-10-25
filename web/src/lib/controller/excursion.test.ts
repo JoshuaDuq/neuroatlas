@@ -215,6 +215,25 @@ describe('the offer to see through the cortex', () => {
     assert.match(notice.text, /lies beneath the cortex|lie beneath the cortex/);
   });
 
+  test('a deficit with more than three deep structures names two and counts the rest', async () => {
+    const scene = createScene();
+    const { regions } = scene.engine.model;
+    const names = new Map<string, string>();
+    for (const region of regions.values()) {
+      const name = scene.anatomy.get(region.id)?.label.name;
+      if (name && beneathCortex(region) && ![...names.values()].includes(name)) {
+        names.set(region.id, name);
+      }
+      if (names.size === 5) break;
+    }
+    vi.spyOn(scene.clinical, 'mappedRegions').mockReturnValue([
+      'destrieux:left:25',
+      ...names.keys(),
+    ]);
+    await scene.excursions.openDeficit('acalculia');
+    assert.match(scene.session.state.notice!.text, /\b3 other mapped/);
+  });
+
   test('a deficit mapped on structures alone hides the cortex and offers nothing', async () => {
     const scene = createScene();
     await scene.excursions.openDeficit('abulia');
