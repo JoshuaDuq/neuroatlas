@@ -122,6 +122,13 @@ describe('keymap', () => {
     }
   });
 
+  it('leaves Escape with a modifier, or during a composition, alone', () => {
+    const { keymap, commands } = host({ selectedRegion: REGION });
+    dispatchKey(press('Escape', null, { ctrlKey: true }), keymap);
+    dispatchKey(press('Escape', null, { isComposing: true }), keymap);
+    assert.equal(calls(commands.clearSelection), 0);
+  });
+
   it('is inert while the diffusion MRI is open, whatever the key', () => {
     const { keymap, commands } = host({ diffusionMriOpen: true });
     for (const key of ['m', '?', 'Escape', '1']) dispatchKey(press(key), keymap);
@@ -139,16 +146,46 @@ describe('keymap', () => {
     assert.deepEqual(commands.walkTree.mock.calls, [[1]]);
   });
 
-  it('keeps the single-key shortcuts from a control with own keys, and from all when turned off', () => {
+  it('keeps the single-key shortcuts from a control in a marked region, and from all when turned off', () => {
     const { keymap, commands } = host();
-    const owned = { closest: (selector: string) => (selector === '[data-own-keys]' ? {} : null) };
-    dispatchKey(press('h', owned), keymap);
+    const marked = (control: boolean) => ({
+      matches: () => control,
+      closest: (selector: string) => (selector === '[data-own-keys]' ? {} : null),
+    });
+    dispatchKey(press('h', marked(true)), keymap);
     assert.equal(calls(commands.setHemisphere), 0);
-    dispatchKey(press('h'), keymap);
+    // A tree row in a marked region is not a control with keys of its own.
+    dispatchKey(press('h', marked(false)), keymap);
     assert.deepEqual(commands.setHemisphere.mock.calls, [['left']]);
     const off = host({ singleKeys: false });
     dispatchKey(press('h'), off.keymap);
     assert.equal(calls(off.commands.setHemisphere), 0);
+  });
+
+  it('gives the commands the options a key press carries', () => {
+    const { keymap, commands } = host({ selectedRegion: REGION });
+    dispatchKey(press('?'), keymap);
+    dispatchKey(press('f'), keymap);
+    dispatchKey(press('3'), keymap);
+    dispatchKey(press('m'), keymap);
+    assert.deepEqual(commands.toggleShortcuts.mock.calls, [[{ instant: true }]]);
+    assert.deepEqual(commands.focusSelection.mock.calls, [[{ immediate: true }]]);
+    assert.deepEqual(commands.chooseView.mock.calls, [['anterior', { immediate: true }]]);
+    assert.deepEqual(commands.openMpr.mock.calls, [[{ instant: true }]]);
+  });
+
+  it('keeps f from the tract reference and with nothing selected, and every shortcut but ? from the open sheet', () => {
+    const reference = host({ tractReferenceActive: true, selectedRegion: REGION });
+    dispatchKey(press('f'), reference.keymap);
+    assert.equal(calls(reference.commands.focusSelection), 0);
+    const none = host();
+    dispatchKey(press('f'), none.keymap);
+    assert.equal(calls(none.commands.focusSelection), 0);
+    const sheet = host({ shortcutsOpen: true });
+    for (const key of ['c', '/', '1', 'm']) dispatchKey(press(key), sheet.keymap);
+    assert.ok(Object.values(sheet.commands).every((command) => calls(command) === 0));
+    dispatchKey(press('?'), sheet.keymap);
+    assert.equal(calls(sheet.commands.toggleShortcuts), 1);
   });
 
   it('zooms and turns on the canvas even when single-key shortcuts are off', () => {
@@ -161,20 +198,64 @@ describe('keymap', () => {
     assert.equal(calls(commands.orbitBy), 1);
   });
 
-  it('adds one window listener and removes it', () => {
+  describe('with the linked MRI open (app.test.js:29-46)', () => {
+    const mri = (state: Partial<KeymapState>, key: string, target: object | null, extra = {}) => {
+      const { keymap, commands } = host({ mprOpen: true, ...state });
+      const event = press(key, target, extra);
+      dispatchKey(event, keymap);
+      return {
+        closed: calls(commands.closeMpr) === 1,
+        prevented: calls(event.preventDefault) === 1,
+      };
+    };
+    const NOTHING = { closed: false, prevented: false };
+
+    it('respects the disabled single-key preference', () => {
+      assert.deepEqual(mri({ singleKeys: false }, 'm', { tagName: 'BUTTON' }), NOTHING);
+    });
+
+    it('leaves editable inputs and modified keys alone', () => {
+      for (const target of [
+        { tagName: 'INPUT', type: 'text' },
+        { tagName: 'TEXTAREA' },
+        { isContentEditable: true },
+      ]) {
+        assert.deepEqual(mri({}, 'm', target), NOTHING);
+      }
+      for (const modifier of ['ctrlKey', 'metaKey', 'altKey']) {
+        assert.deepEqual(mri({}, 'm', { tagName: 'BUTTON' }, { [modifier]: true }), NOTHING);
+      }
+    });
+
+    it('ignores a key used by an input composition', () => {
+      assert.deepEqual(mri({}, 'm', { tagName: 'BUTTON' }, { isComposing: true }), NOTHING);
+    });
+
+    it('closes on M and leaves Escape to the dialog', () => {
+      assert.deepEqual(mri({}, 'M', { tagName: 'BUTTON' }), { closed: true, prevented: true });
+      assert.deepEqual(mri({ singleKeys: false }, 'Escape', { tagName: 'BUTTON' }), NOTHING);
+    });
+  });
+
+  it('adds one bubble-phase keydown listener on the window and removes it', () => {
     type Listener = (event: KeyboardEvent) => void;
-    const listeners = new Set<Listener>();
-    vi.stubGlobal('addEventListener', (_type: string, listener: Listener) =>
-      listeners.add(listener),
+    const listeners = new Map<Listener, [string, unknown]>();
+    vi.stubGlobal('addEventListener', (type: string, listener: Listener, options?: unknown) =>
+      listeners.set(listener, [type, options]),
     );
-    vi.stubGlobal('removeEventListener', (_type: string, listener: Listener) =>
-      listeners.delete(listener),
-    );
+    vi.stubGlobal('removeEventListener', (type: string, listener: Listener, options?: unknown) => {
+      assert.deepEqual(listeners.get(listener), [type, options]);
+      listeners.delete(listener);
+    });
     onTestFinished(() => void vi.unstubAllGlobals());
     const { keymap, commands } = host();
     const remove = installKeymap(keymap);
     assert.equal(listeners.size, 1);
-    [...listeners][0](press('?'));
+    const [[listener, [type, options]]] = [...listeners];
+    assert.equal(type, 'keydown');
+    // Bubble phase: neither `capture` nor a bare `true`.
+    assert.ok(options === undefined || options === false);
+    listener(press('?'));
     assert.equal(calls(commands.toggleShortcuts), 1);
     remove();
     assert.equal(listeners.size, 0);

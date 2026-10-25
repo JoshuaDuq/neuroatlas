@@ -1,7 +1,11 @@
 import { OWN_KEYS_SELECTOR } from '../ui/keys.ts';
 
-/** The part of a focused element that says whether it has keys of its own. */
+/** Pressable controls: the only targets that keep their keys (shortcuts.js:9). */
+const OWN_KEYS = 'button, summary, [role="tab"]';
+
+/** The parts of a focused element that say whether it has keys of its own. */
 export interface OwnKeysTarget {
+  matches?(selector: string): boolean;
   closest?(selector: string): unknown;
 }
 
@@ -11,13 +15,14 @@ export const isCharacterKey = (key: unknown): key is string =>
 
 /**
  * Whether a one-character shortcut may act. Off entirely if the reader turned them off, and never
- * from a control that marks its keys as its own (`data-own-keys`): an `h` pressed on a hemisphere
- * button would otherwise change the hemisphere.
+ * from a pressable control inside a region that marks its keys as its own (`data-own-keys`: the
+ * masthead, the panels, the stage dock): an `h` pressed on a hemisphere button would otherwise
+ * change the hemisphere. A tree row, or a view preset over the canvas, keeps the shortcuts.
  */
 export function characterShortcutAllowed(
   target: OwnKeysTarget | null | undefined,
   enabled: boolean,
 ): boolean {
   if (!enabled) return false;
-  return !target?.closest?.(OWN_KEYS_SELECTOR);
+  return !(target?.matches?.(OWN_KEYS) && target.closest?.(OWN_KEYS_SELECTOR));
 }

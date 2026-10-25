@@ -29,6 +29,7 @@ const onKeyDownSource = between(
   "  globalThis.addEventListener('keydown', onKeyDown);",
 );
 const orbitSource = between('  function orbitFromKeyboard(event) {', '  // From the keys 0–6');
+const chooseViewSource = between('  function chooseView(view) {', '  const onKeyDown = event => {');
 
 const PARAMETERS = [
   'ctx',
@@ -51,7 +52,8 @@ const PARAMETERS = [
   'clinicalExplorer',
   'circuitExplorer',
   'navigator',
-  'chooseView',
+  'chrome',
+  'applyView',
   'display',
   'focusSelection',
   'isolateSelection',
@@ -66,38 +68,43 @@ const PARAMETERS = [
 // `tractReferenceActive` is a `let` of the closure: read here through the context.
 const makeLegacy = new Function(
   ...PARAMETERS,
-  `${orbitSource}\n${onKeyDownSource.replaceAll('tractReferenceActive', 'ctx.tractReferenceActive')}\nreturn onKeyDown;`,
+  `${orbitSource}\n${chooseViewSource}\n${onKeyDownSource.replaceAll('tractReferenceActive', 'ctx.tractReferenceActive')}\nreturn onKeyDown;`,
 ) as (...args: unknown[]) => (event: unknown) => void;
 
 interface Focus {
   name: string;
-  /** The legacy target: `matches` and `closest` stand for the PANELS-scoped own-keys test. */
+  /** The legacy target: `matches` is the control test, `closest` the PANELS test. */
   legacy: Record<string, unknown>;
-  /** The new target: `closest` finds a `data-own-keys` ancestor. */
+  /** The new target: `matches` is the control test, `closest` finds a `data-own-keys` region. */
   next: Record<string, unknown>;
   canvas?: true;
 }
-const own = (tagName: string, ownKeys: boolean, extra = {}): Focus => ({
-  name: `${tagName}${ownKeys ? ' with own keys' : ''}`,
-  legacy: { tagName, matches: () => ownKeys, closest: () => ownKeys, ...extra },
+/** `control` is a button, summary or tab; `region` is inside a region that marks its keys as its own. */
+const own = (tagName: string, control: boolean, region: boolean, extra = {}): Focus => ({
+  name: `${tagName}${control ? ' control' : ''}${region ? ' in a marked region' : ''}`,
+  legacy: { tagName, matches: () => control, closest: () => region, ...extra },
   next: {
     tagName,
-    closest: (selector: string) => selector.includes('own-keys') && ownKeys,
+    matches: () => control,
+    closest: (selector: string) => selector.includes('own-keys') && region,
     ...extra,
   },
 });
 const FOCI: Focus[] = [
   { name: 'nothing', legacy: null as never, next: null as never },
-  own('BODY', false),
-  own('BUTTON', false),
-  own('BUTTON', true),
-  own('INPUT', false, { type: 'text' }),
-  own('INPUT', false, { type: 'checkbox' }),
-  own('INPUT', false, { type: 'range' }),
-  own('TEXTAREA', false),
-  own('SELECT', false),
-  own('DIV', false, { isContentEditable: true }),
-  { ...own('CANVAS', false), canvas: true },
+  own('BODY', false, false),
+  own('BUTTON', true, false),
+  own('BUTTON', true, true),
+  own('DIV', false, true),
+  own('INPUT', false, true, { type: 'text' }),
+  own('INPUT', false, false, { type: 'checkbox' }),
+  own('INPUT', false, true, { type: 'checkbox' }),
+  own('INPUT', false, true, { type: 'range' }),
+  own('INPUT', false, false, { type: 'range' }),
+  own('TEXTAREA', false, false),
+  own('SELECT', false, false),
+  own('DIV', false, false, { isContentEditable: true }),
+  { ...own('CANVAS', false, false), canvas: true },
 ];
 
 const KEYS = [
@@ -232,7 +239,10 @@ function run(scenario: Scenario, focus: Focus, press: Press, version: 'legacy' |
   };
   if (version === 'legacy') {
     const dialog = { open: scenario.mprOpen, close: () => log.push('mpr.close') };
-    const tell = (line: string) => () => log.push(line);
+    const tell =
+      (line: string) =>
+      (...args: unknown[]) =>
+        log.push(args.length ? `${line}(${JSON.stringify(args)})` : line);
     const ctx = { tractReferenceActive: scenario.tractReferenceActive };
     const model = {
       state: scenario,
@@ -271,7 +281,8 @@ function run(scenario: Scenario, focus: Focus, press: Press, version: 'legacy' |
         focusSearch: tell('navigator.focusSearch'),
         moveFocus: (step: number) => log.push(`walkTree(${step})`),
       },
-      (view: string) => log.push(`chooseView(${view})`),
+      { dismissHelp: tell('dismissHelp') },
+      tell('applyView'),
       (change: () => void) => change(),
       tell('focusSelection'),
       tell('isolateSelection'),
@@ -285,7 +296,10 @@ function run(scenario: Scenario, focus: Focus, press: Press, version: 'legacy' |
     );
     handler(event);
   } else {
-    const tell = (line: string) => () => log.push(line);
+    const tell =
+      (line: string) =>
+      (...args: unknown[]) =>
+        log.push(args.length ? `${line}(${JSON.stringify(args)})` : line);
     const host: KeymapHost = {
       canvas: canvas as unknown as EventTarget,
       state: () => scenario,
@@ -299,9 +313,11 @@ function run(scenario: Scenario, focus: Focus, press: Press, version: 'legacy' |
         showList: tell('showList'),
         focusSearch: (explorer) => log.push(explorerCalls[explorer]),
         walkTree: (step) => log.push(`walkTree(${step})`),
-        chooseView: (view) => log.push(`chooseView(${view})`),
+        chooseView: (view, options) => {
+          log.push('dismissHelp', `applyView(${JSON.stringify([view, options])})`);
+        },
         openDiffusionMri: tell('openDiffusionMri'),
-        openMpr: tell('mpr.open'),
+        openMpr: () => log.push('mpr.open'),
         closeMpr: tell('mpr.close'),
         focusSelection: tell('focusSelection'),
         isolateSelection: tell('isolateSelection'),
@@ -352,12 +368,14 @@ describe('keymap', () => {
       assert.equal(isCharacterKey(key), legacyIsCharacterKey(key), String(key));
     }
     for (const enabled of [true, false]) {
-      for (const ownKeys of [true, false]) {
-        const target = { matches: () => true, closest: () => ownKeys };
-        assert.equal(
-          characterShortcutAllowed(target, enabled),
-          legacyCharacterShortcutAllowed(target, enabled),
-        );
+      for (const control of [true, false]) {
+        for (const region of [true, false]) {
+          const target = { matches: () => control, closest: () => region };
+          assert.equal(
+            characterShortcutAllowed(target, enabled),
+            legacyCharacterShortcutAllowed(target, enabled),
+          );
+        }
       }
       assert.equal(
         characterShortcutAllowed(null, enabled),

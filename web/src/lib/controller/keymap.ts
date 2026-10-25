@@ -8,15 +8,36 @@ import type { Hemisphere, ViewName } from '../types/index.ts';
 import type { View } from '../state/view.svelte.ts';
 
 /** `1`–`6` choose these views (app.js:66); `0` chooses the oblique one. */
-const DIGIT_VIEWS: ReadonlyMap<string, ViewName> = new Map([
-  ['0', 'oblique'],
-  ['1', 'left'],
-  ['2', 'right'],
-  ['3', 'anterior'],
-  ['4', 'posterior'],
-  ['5', 'superior'],
-  ['6', 'inferior'],
-]);
+/**
+ * The keys, as `aria-keyshortcuts` values for the controls that do the same (WCAG 4.1.2 names a
+ * control's shortcut), and the one source the table below matches against.
+ */
+export const SHORTCUT_KEYS = {
+  shortcuts: '?',
+  search: '/',
+  treeNext: 'ArrowDown',
+  treePrevious: 'ArrowUp',
+  views: {
+    oblique: '0',
+    left: '1',
+    right: '2',
+    anterior: '3',
+    posterior: '4',
+    superior: '5',
+    inferior: '6',
+  },
+  focusSelection: 'F',
+  isolate: 'I',
+  cortex: 'C',
+  internal: 'U',
+  spinalCord: 'S',
+  hemisphere: 'H',
+  linkedMri: 'M',
+} as const;
+
+const DIGIT_VIEWS: ReadonlyMap<string, ViewName> = new Map(
+  Object.entries(SHORTCUT_KEYS.views).map(([view, key]) => [key, view as ViewName]),
+);
 
 const HEMISPHERE_ORDER: readonly Hemisphere[] = ['both', 'left', 'right'];
 
@@ -45,7 +66,10 @@ export type KeymapState = Pick<
   tractReferenceActive: boolean;
 };
 
-/** What the keys do: the same commands the controls call. */
+/**
+ * What the keys do. Each takes the options a key press carries, which a pointer's click does not:
+ * a sheet, a view or a focus put away by a key is simply there (no fade, no eased move).
+ */
 export interface KeymapCommands {
   back(): void;
   clearSelection(): void;
@@ -53,17 +77,19 @@ export interface KeymapCommands {
   closeDeficit(): void;
   /** Gives the tab in front the focus that a control hiding or disabling itself dropped. */
   rescueFocus(): void;
-  toggleShortcuts(): void;
+  toggleShortcuts(options: { instant: true }): void;
   showList(): void;
   /** Focuses the search field of the explorer in front, or its list where it has none. */
   focusSearch(explorer: KeymapState['explorer']): void;
   /** Moves focus to the next (1) or previous (-1) row of the region tree. */
   walkTree(step: 1 | -1): void;
-  chooseView(view: ViewName): void;
+  /** Dismisses the stage hint, then frames the view (app.js:1878-1881). */
+  chooseView(view: ViewName, options: { immediate: true }): void;
   openDiffusionMri(): void;
-  openMpr(): void;
+  /** Presses the linked MRI opener; a no-op while it is disabled (sections.js:236). */
+  openMpr(options: { instant: true }): void;
   closeMpr(): void;
-  focusSelection(): void;
+  focusSelection(options: { immediate: true }): void;
   isolateSelection(): void;
   setCortexVisible(visible: boolean): void;
   setInternalVisible(visible: boolean): void;
@@ -92,21 +118,18 @@ interface Command {
   run(press: Press, commands: KeymapCommands, state: KeymapState): void;
 }
 
-const letters =
-  (...names: string[]) =>
-  (key: string) =>
-    names.includes(key.toLowerCase());
+const letters = (name: string) => (key: string) => key.toLowerCase() === name.toLowerCase();
 
 const COMMANDS: readonly Command[] = [
   {
-    keys: (key) => key === '?',
+    keys: (key) => key === SHORTCUT_KEYS.shortcuts,
     run: (press, commands) => {
       press.preventDefault();
-      commands.toggleShortcuts();
+      commands.toggleShortcuts({ instant: true });
     },
   },
   {
-    keys: (key) => key === '/',
+    keys: (key) => key === SHORTCUT_KEYS.search,
     run: (press, commands, state) => {
       press.preventDefault();
       commands.showList();
@@ -115,39 +138,39 @@ const COMMANDS: readonly Command[] = [
   },
   {
     // The tree is walked from the anatomy only, and not from a tab, which has the arrows for itself.
-    keys: (key) => key === 'ArrowDown' || key === 'ArrowUp',
+    keys: (key) => key === SHORTCUT_KEYS.treeNext || key === SHORTCUT_KEYS.treePrevious,
     run: (press, commands, state) => {
       if (state.explorer !== 'anatomy' || press.target?.closest?.('[role="tab"]')) return;
       press.preventDefault();
-      commands.walkTree(press.key === 'ArrowDown' ? 1 : -1);
+      commands.walkTree(press.key === SHORTCUT_KEYS.treeNext ? 1 : -1);
     },
   },
   {
     keys: (key) => DIGIT_VIEWS.has(key),
-    run: (press, commands) => commands.chooseView(DIGIT_VIEWS.get(press.key)!),
+    run: (press, commands) => commands.chooseView(DIGIT_VIEWS.get(press.key)!, { immediate: true }),
   },
   {
-    keys: letters('m'),
+    keys: letters(SHORTCUT_KEYS.linkedMri),
     run: (press, commands, state) => {
       if (state.explorer === 'diffusion') {
         press.preventDefault();
         commands.openDiffusionMri();
       } else if (!state.tractReferenceActive) {
         press.preventDefault();
-        commands.openMpr();
+        commands.openMpr({ instant: true });
       }
     },
   },
   {
-    keys: letters('f'),
+    keys: letters(SHORTCUT_KEYS.focusSelection),
     run: (press, commands, state) => {
       if (state.tractReferenceActive || !state.selectedRegion) return;
       press.preventDefault();
-      commands.focusSelection();
+      commands.focusSelection({ immediate: true });
     },
   },
   {
-    keys: letters('i'),
+    keys: letters(SHORTCUT_KEYS.isolate),
     run: (press, commands, state) => {
       if (state.tractReferenceActive || !state.selectedRegion) return;
       press.preventDefault();
@@ -155,25 +178,25 @@ const COMMANDS: readonly Command[] = [
     },
   },
   {
-    keys: letters('c'),
+    keys: letters(SHORTCUT_KEYS.cortex),
     run: (_press, commands, state) => {
       if (!state.tractReferenceActive) commands.setCortexVisible(!state.cortexVisible);
     },
   },
   {
-    keys: letters('u'),
+    keys: letters(SHORTCUT_KEYS.internal),
     run: (_press, commands, state) => {
       if (!state.tractReferenceActive) commands.setInternalVisible(!state.internalVisible);
     },
   },
   {
-    keys: letters('s'),
+    keys: letters(SHORTCUT_KEYS.spinalCord),
     run: (_press, commands, state) => {
       if (!state.tractReferenceActive) commands.setSpinalCordVisible(!state.spinalCordVisible);
     },
   },
   {
-    keys: letters('h'),
+    keys: letters(SHORTCUT_KEYS.hemisphere),
     run: (_press, commands, state) => {
       if (state.tractReferenceActive) return;
       const next = (HEMISPHERE_ORDER.indexOf(state.hemisphere) + 1) % HEMISPHERE_ORDER.length;
@@ -215,7 +238,7 @@ function orbitFromKeyboard(press: Press, { canvas, commands }: KeymapHost): bool
   return true;
 }
 
-/** Decides what a `keydown` does (app.js:1882-1979). */
+/** Decides what a `keydown` does (app.js:1883-1987). */
 export function dispatchKey(event: KeyboardEvent, host: KeymapHost): void {
   // A control that handled the key itself, and a composition in progress, are not for the page.
   if (event.defaultPrevented || event.isComposing) return;
@@ -246,7 +269,7 @@ export function dispatchKey(event: KeyboardEvent, host: KeymapHost): void {
   // keys of its own.
   if (isCharacterKey(key) && !characterShortcutAllowed(press.target, state.singleKeys)) return;
   // With the shortcut sheet open only `?` acts: it shuts the sheet.
-  if (state.shortcutsOpen && key !== '?') return;
+  if (state.shortcutsOpen && key !== SHORTCUT_KEYS.shortcuts) return;
   COMMANDS.find((command) => command.keys(key))?.run(press, host.commands, state);
 }
 
