@@ -1,0 +1,370 @@
+/*
+ * The anatomy tree (viewer/styles/navigator.css:1-40, 66-251, 302-322; phone.css:15-25).
+ * An index, not a menu: rows run edge to edge, names on the panel inset, and each row ends in
+ * Mid, L and R eye slots anchored to the panel's far edge, so each side's letter and eye line up
+ * down the tree. Only a section with midline parts reserves Mid on a fine pointer.
+ * The rows, cells and Tab stop are U7's Treegrid; this sheet dresses them.
+ */
+@layer features {
+  .anatomy-tree {
+    --eye-slot: var(--control-height);
+    --eye-slot-mid: calc(var(--eye-slot) + var(--space-4));
+  }
+
+  /* While the catalog loads: ten quiet bars, so nothing jumps when the rows arrive (layout.css:213). */
+  .tree-skeleton {
+    height: calc(10 * var(--row-height));
+    margin: var(--space-3) var(--panel-inset) 0 var(--indent);
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--surface-tonal) 0 10px,
+        transparent 10px var(--row-height)
+      )
+      0 11px / 55% 100% no-repeat;
+  }
+
+  .anatomy-tree .treegrid {
+    font-size: var(--text-ui);
+  }
+
+  .anatomy-tree .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto var(--eye-slot) var(--eye-slot);
+    align-items: center;
+    padding-block: 0;
+    padding-inline: var(--panel-inset) calc(var(--panel-inset) - var(--space-1));
+    color: var(--text-primary);
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+  }
+  .anatomy-tree .row[aria-level='2'] {
+    padding-inline-start: calc(var(--indent) + var(--space-2));
+  }
+  .anatomy-tree .row:focus-visible {
+    outline-offset: -2px;
+  }
+  .anatomy-tree .row[data-selected='true'] {
+    font-weight: 600;
+  }
+  .anatomy-tree .cell.primary {
+    padding-inline-end: var(--space-2);
+  }
+  .anatomy-tree .cell.action {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* A name, its own reason, and nothing else: the eyes and letters are the cells beside it. */
+  .row-main {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--row-height);
+    padding-block: max(0px, (var(--row-height) - var(--lh-ui)) / 2);
+  }
+  .row-name {
+    flex: 1;
+    min-width: 0;
+    line-height: var(--lh-ui);
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+  .row-reason {
+    flex: none;
+    max-width: 96px;
+    color: var(--text-tertiary);
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    font-variant-numeric: tabular-nums;
+  }
+  .row-main[data-hidden] {
+    color: var(--text-tertiary);
+  }
+  .row-main[data-unavailable] {
+    cursor: default;
+  }
+  .anatomy-tree .row[data-selected='true'] .row-main {
+    color: inherit;
+  }
+
+  /* A group row: open groups read heavier; the chevron is the one disclosure mark. */
+  .anatomy-tree .row[aria-expanded] {
+    background: var(--surface-base);
+    font-weight: 500;
+  }
+  .anatomy-tree .row[aria-expanded='true'] {
+    font-weight: 600;
+  }
+  .chevron {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin: 0 3px;
+    color: var(--text-tertiary);
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(var(--chevron-turn, 0deg)) translateX(-1.6px) rotate(-45deg);
+    transition: transform var(--ui-transition) var(--ease-ui);
+  }
+  .chevron[data-expanded='true'] {
+    --chevron-turn: 90deg;
+    color: var(--text-secondary);
+  }
+  .group-count {
+    flex: none;
+    padding-inline-end: var(--space-1);
+    color: var(--text-tertiary);
+    font-size: var(--text-caption);
+    font-weight: 400;
+    line-height: var(--lh-caption);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A section's caption stands in the list as a row of its own; it is not a control. */
+  .anatomy-tree .row:has(.section-label) {
+    margin-top: var(--space-2);
+    border-top: 1px solid var(--border-subtle);
+    cursor: default;
+  }
+  .anatomy-tree .row:first-child:has(.section-label) {
+    margin-top: 0;
+    border-top: 0;
+  }
+  .section-label {
+    padding-block: var(--space-3) var(--space-1);
+    overflow-wrap: anywhere;
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  /* What a display setting hides in this section: a readout on its own line, not a switch. */
+  .section-state {
+    display: block;
+    font-weight: 400;
+    color: var(--text-tertiary);
+  }
+
+  /* The Mid slot: held open where the section has a midline part, so L and R stay anchored right. */
+  .slot-mid {
+    display: none;
+    width: var(--eye-slot-mid);
+  }
+  .slot-mid[data-section-midline='true'] {
+    display: block;
+  }
+  .row-side-solo {
+    display: inline-flex;
+    justify-content: flex-end;
+    width: var(--eye-slot);
+    padding-inline-end: var(--space-1);
+    color: var(--text-secondary);
+    font-size: var(--text-caption);
+    font-weight: 600;
+    line-height: var(--lh-caption);
+  }
+  .row-side-solo[data-side='midline'] {
+    width: var(--eye-slot-mid);
+  }
+
+  /* Icon then letter, flush to the slot's end so letters and counts share one right edge. */
+  .visibility-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: none;
+    gap: var(--space-1);
+    width: var(--eye-slot);
+    min-width: 0;
+    height: calc(var(--row-height) - var(--space-1));
+    padding: 0 var(--space-1) 0 0;
+    border: 0;
+    border-radius: var(--radius-control);
+    color: var(--text-tertiary);
+    background: transparent;
+  }
+  .visibility-control[data-side='midline'] {
+    width: var(--eye-slot-mid);
+  }
+  .visibility-control svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+  }
+  .visibility-side {
+    color: var(--text-secondary);
+    font-size: var(--text-caption);
+    font-weight: 600;
+    line-height: var(--lh-caption);
+  }
+  .visibility-control:focus-visible {
+    outline-offset: 0;
+  }
+  .anatomy-tree .row[data-selected='true'] .visibility-control,
+  .anatomy-tree .row[data-selected='true'] .visibility-side {
+    color: var(--accent);
+  }
+  .visibility-control[data-state='hidden'],
+  .visibility-control[data-state='hidden'] .visibility-side {
+    color: var(--text-tertiary);
+  }
+  .visibility-control[data-state='hidden'] {
+    background: var(--surface-sunken);
+  }
+  .visibility-control[data-state='hidden'] .visibility-side {
+    text-decoration: line-through;
+  }
+  .visibility-control[data-partial='true'] {
+    background: var(--surface-tonal);
+  }
+
+  /*
+   * Quiet at rest with a mouse. A group shows its count where its eyes will be and trades it for them
+   * on hover, focus inside the row, or a hidden part; a region keeps its letter and gains its eye.
+   * Nothing moves, so names never reflow.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .anatomy-tree .row[aria-expanded]:hover {
+      background: var(--surface-hover);
+    }
+    .visibility-control:hover:not(:disabled) {
+      background: var(--surface-tonal);
+      color: var(--text-primary);
+    }
+    .tree-toggle-all:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .anatomy-tree .row[aria-expanded] .group-count {
+      position: absolute;
+      inset-inline-end: var(--panel-inset);
+      top: 50%;
+      padding: 0;
+      transform: translateY(-50%);
+    }
+    .anatomy-tree .row[aria-expanded] .visibility-control {
+      opacity: 0;
+    }
+    .anatomy-tree .row[aria-level='2'] .visibility-control svg {
+      opacity: 0;
+    }
+    .anatomy-tree
+      .row:is(
+        :hover,
+        :focus-within,
+        :has(.visibility-control:is([data-state='hidden'], [data-partial='true']))
+      )[aria-expanded]
+      .group-count {
+      visibility: hidden;
+    }
+    .anatomy-tree
+      .row:is(
+        :hover,
+        :focus-within,
+        :has(.visibility-control:is([data-state='hidden'], [data-partial='true']))
+      )[aria-expanded]
+      .visibility-control {
+      opacity: 1;
+    }
+    .anatomy-tree
+      .row[aria-level='2']:is(:hover, :focus-within, [data-selected='true'])
+      .visibility-control
+      svg,
+    .anatomy-tree .row[aria-level='2'] .visibility-control[data-state='hidden'] svg {
+      opacity: 1;
+    }
+  }
+  /* Touch keeps every eye, and gives the count its own column, so every section reserves Mid. */
+  @media not ((hover: hover) and (pointer: fine)) {
+    .anatomy-tree[data-midline] .slot-mid {
+      display: block;
+    }
+  }
+
+  /* Phone: a tighter caption, so the half detent shows rows rather than chrome (phone.css:23-25). */
+  @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+    .section-label {
+      padding-block: 1px 0;
+    }
+    .anatomy-tree .row:has(.section-label) {
+      margin-top: 0;
+    }
+  }
+
+  /* The header: the scope beside the one command, wrapping under it when the panel is narrow. */
+  .tree-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .tree-toggle-all {
+    flex: none;
+    height: auto;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    min-height: var(--control-height);
+    margin-inline: auto calc(-1 * var(--space-2));
+    padding: 0 var(--space-2);
+    font-size: var(--text-caption);
+    font-weight: 400;
+    line-height: var(--lh-caption);
+    white-space: nowrap;
+  }
+}
+
+@layer a11y {
+  /* Reduced motion: the chevron points the new way at once (a11y.css:13-15). */
+  @media (prefers-reduced-motion: reduce) {
+    .chevron {
+      transition: none;
+    }
+  }
+
+  /* Increased contrast: a hidden row's tertiary ink is already raised by the tokens; the state keeps its strike. */
+  @media (prefers-contrast: more) {
+    .anatomy-tree .row[aria-expanded] .visibility-control,
+    .anatomy-tree .row[aria-level='2'] .visibility-control svg {
+      opacity: 1;
+    }
+    .anatomy-tree .row[aria-expanded] .group-count {
+      position: static;
+      transform: none;
+      visibility: visible;
+    }
+  }
+
+  @media (forced-colors: active) {
+    /* The wash is dropped, so the selected row takes a system-colour edge (a11y.css:80). */
+    .anatomy-tree .row[data-selected='true'] {
+      outline: 1px solid Highlight;
+      outline-offset: -1px;
+    }
+    /* Opacity-hidden controls would stay invisible: show them, and give the state an edge. */
+    .anatomy-tree .row[aria-expanded] .visibility-control,
+    .anatomy-tree .row[aria-level='2'] .visibility-control svg {
+      opacity: 1;
+    }
+    .anatomy-tree .row[aria-expanded] .group-count {
+      position: static;
+      transform: none;
+      visibility: visible;
+    }
+    .visibility-control {
+      border: 1px solid transparent;
+      forced-color-adjust: auto;
+    }
+    .visibility-control[data-state='hidden'] {
+      border-color: GrayText;
+      color: GrayText;
+    }
+    .visibility-control[data-partial='true'] {
+      border-color: CanvasText;
+    }
+  }
+}
