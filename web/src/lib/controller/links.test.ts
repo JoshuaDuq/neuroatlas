@@ -232,10 +232,20 @@ describe('the scene as a link carries it', () => {
     });
   });
 
-  it('keeps the cut atlas of the sections when no cut is drawn', async () => {
+  it('keeps the sections’ cut atlas when the model has none yet', async () => {
     const { engine, links } = setup();
-    await engine.sections.setCutAtlas('hcp-mmp');
-    expect(links.captureReaderState().cutAtlas).toBe('hcp-mmp');
+    await engine.model.setAtlas('hcp-mmp');
+    expect(engine.model.state.cutAtlas).toBeNull();
+    expect(links.captureReaderState().cutAtlas).toBe(engine.sections.state.cutAtlas);
+  });
+
+  it('puts back the session view of the captured scene with its exact camera pose', async () => {
+    const { links, session, commands } = setup();
+    session.setView('left');
+    const scene = links.captureReaderState();
+    session.setView('right');
+    await links.applyReaderState(scene, commands.begin());
+    expect(session.state.view).toBe('left');
   });
 
   it('puts back a captured scene: layers, display, cut, window and the exact camera pose', async () => {
