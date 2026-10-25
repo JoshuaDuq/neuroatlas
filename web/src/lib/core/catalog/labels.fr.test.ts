@@ -1,0 +1,276 @@
+/// <reference types="node" />
+import assert from 'node:assert/strict';
+import { test } from 'vitest';
+import type { Language, Manifest } from '../../types/index.ts';
+import { labelOf as labelOfRegion } from './labels.ts';
+import { createCatalog } from './catalog.ts';
+import { DESTRIEUX_LABELS } from './destrieux-labels.ts';
+import { DESTRIEUX_LABELS_FR } from './destrieux-labels.fr.ts';
+import { STRUCTURE_LABELS } from './structure-groups.ts';
+import { STRUCTURE_LABELS_FR } from './structure-groups.fr.ts';
+import { anatomies, asRegion, asSettings, readModel } from './test-support.ts';
+
+const published = anatomies.default;
+
+const labelOf = (fields: object, lang?: Language) => labelOfRegion(asRegion(fields), lang)!;
+
+const region = (over: object) => ({ kind: 'cortex', hemisphere: 'left', ...over });
+
+test('Destrieux source names expand to their French anatomical names', () => {
+  const cases = {
+    'G_front_inf-Opercular': 'Partie operculaire du gyrus frontal inférieur',
+    S_calcarine: 'Sillon calcarin',
+    Pole_temporal: 'Pôle temporal',
+    'G_temp_sup-G_T_transv': 'Gyrus temporal transverse (Heschl)',
+    'G_oc-temp_lat-fusifor': 'Gyrus occipito-temporal latéral (fusiforme)',
+    G_cuneus: 'Cunéus',
+    'G_cingul-Post-dorsal': 'Gyrus cingulaire postéro-dorsal',
+    G_precentral: 'Gyrus précentral',
+    G_postcentral: 'Gyrus postcentral',
+  };
+  for (const [source_name, name] of Object.entries(cases)) {
+    assert.equal(labelOf(region({ atlas: 'destrieux', source_name }), 'fr').name, name);
+  }
+});
+
+test('Destrieux regions carry a French lobe as their navigation group', () => {
+  const lobe = (source_name: string) =>
+    labelOf(region({ atlas: 'destrieux', source_name }), 'fr').group;
+  assert.equal(lobe('G_front_sup'), 'Frontal');
+  assert.equal(lobe('G_precuneus'), 'Pariétal');
+  assert.equal(lobe('S_calcarine'), 'Occipital');
+  assert.equal(lobe('G_insular_short'), 'Insula');
+  assert.equal(lobe('G_and_S_cingul-Ant'), 'Cingulaire');
+  assert.equal(lobe('Lat_Fis-post'), 'Scissure latérale');
+});
+
+test('French aliases and common abbreviations are searchable', () => {
+  const gfi = labelOf(region({ atlas: 'destrieux', source_name: 'G_front_inf-Opercular' }), 'fr');
+  assert.ok(gfi.aliases.includes('GFI'));
+  assert.ok(gfi.aliases.includes('Broca'));
+
+  const fusiforme = labelOf(
+    region({ atlas: 'destrieux', source_name: 'G_oc-temp_lat-fusifor' }),
+    'fr',
+  );
+  assert.ok(fusiforme.aliases.includes('fusiforme'));
+
+  const sylvius = labelOf(region({ atlas: 'destrieux', source_name: 'Lat_Fis-post' }), 'fr');
+  assert.ok(sylvius.aliases.includes('Sylvius'));
+});
+
+test('subcortical structures get French names and anatomical systems', () => {
+  const put = labelOf(
+    region({ atlas: 'aseg', kind: 'structure', source_name: 'Left-Putamen' }),
+    'fr',
+  );
+  assert.equal(put.name, 'Putamen');
+  assert.equal(put.group, 'Ganglions de la base');
+
+  const caudate = labelOf(
+    region({ atlas: 'aseg', kind: 'structure', source_name: 'Left-Caudate' }),
+    'fr',
+  );
+  assert.equal(caudate.name, 'Noyau caudé');
+  assert.equal(caudate.group, 'Ganglions de la base');
+
+  const vent = labelOf(
+    region({ atlas: 'aseg', kind: 'structure', source_name: 'Left-Lateral-Ventricle' }),
+    'fr',
+  );
+  assert.equal(vent.name, 'Ventricule latéral');
+  assert.equal(vent.group, 'Ventricules et LCS');
+
+  const horn = labelOf(
+    region({ atlas: 'aseg', kind: 'structure', source_name: 'Left-Inf-Lat-Vent' }),
+    'fr',
+  );
+  assert.equal(horn.name, 'Corne temporale du ventricule latéral');
+  assert.equal(horn.group, 'Ventricules et LCS');
+
+  const cc = labelOf(
+    region({ atlas: 'aseg', kind: 'structure', hemisphere: 'midline', source_name: 'CC_Anterior' }),
+    'fr',
+  );
+  assert.equal(cc.name, 'Corps calleux, antérieur');
+  assert.equal(cc.group, 'Corps calleux');
+
+  const stem = labelOf(
+    region({ atlas: 'aseg', kind: 'structure', hemisphere: 'midline', source_name: 'Brain-Stem' }),
+    'fr',
+  );
+  assert.equal(stem.name, 'Tronc cérébral');
+  assert.equal(stem.group, 'Tronc cérébral');
+});
+
+test('unlabelled cortex is named in French plainly rather than left blank', () => {
+  const wall = labelOf(
+    region({ atlas: 'destrieux', kind: 'non-region', source_name: 'Unknown' }),
+    'fr',
+  );
+  assert.equal(wall.name, 'Non étiqueté');
+  assert.equal(wall.group, 'Non étiqueté');
+});
+
+test('every region in the published manifest resolves to a French name and group', () => {
+  const manifest = readModel<Manifest>(`${published}/manifest.json`);
+  const unresolved: (string | undefined)[] = [];
+  for (const r of manifest.regions) {
+    const label = labelOfRegion(r, 'fr');
+    if (!label?.name?.trim() || !label?.group?.trim()) unresolved.push(r.source_name);
+  }
+  assert.deepEqual(unresolved, [], `${unresolved.length} region(s) without a French label`);
+  // Not a fixed total: the published catalogue changes with the subject and with
+  // whether the optional warp ran, so a pinned number would only ever report
+  // that. What must hold is that nothing was truncated — every count the
+  // manifest publishes is met by the regions that actually arrived.
+  for (const atlas of manifest.atlases) {
+    const published = manifest.regions.filter((r) => r.atlas === atlas.id && r.kind === 'cortex');
+    assert.equal(published.length, atlas.region_count, atlas.id);
+  }
+  for (const level of manifest.detail_levels) {
+    const published = manifest.regions.filter(
+      (r) => r.atlas === level.id && r.kind === 'structure',
+    );
+    assert.equal(published.length, level.region_count, level.id);
+  }
+});
+
+test('catalog searches with and without accents in French', () => {
+  const manifest = readModel<Manifest>(`${published}/manifest.json`);
+  const catalog = createCatalog(manifest, 'fr');
+  const settings = asSettings({
+    atlas: 'destrieux',
+    cutAtlas: 'destrieux',
+    cutActive: false,
+    detail: 'aseg',
+    hemisphere: 'both',
+    cortexVisible: true,
+    cortexOpacity: 1,
+    isolatedRegion: null,
+    lang: 'fr',
+  });
+
+  // NextBrain publishes a cuneus parcel of its own, so this asserts that both
+  // spellings reach the Destrieux region rather than which one ranks first.
+  const destrieuxCuneus = (rows: { label: { name: string } }[]) =>
+    rows.find((row) => row.label.name === 'Cunéus');
+
+  // User typing with accents
+  const withAccents = catalog.search('cunéus', settings);
+  assert.ok(destrieuxCuneus(withAccents.rows), 'accented query finds Cunéus');
+
+  // User typing without accents
+  const withoutAccents = catalog.search('cuneus', settings);
+  assert.ok(destrieuxCuneus(withoutAccents.rows), 'unaccented query finds Cunéus');
+
+  // User searching by alias
+  const byAlias = catalog.search('Broca', settings);
+  assert.ok(byAlias.rows.length >= 2);
+  assert.ok(byAlias.rows.some((r) => r.label.name.includes('operculaire')));
+});
+
+test('exact 1:1 key parity between English and French Destrieux tables', () => {
+  const enKeys = Object.keys(DESTRIEUX_LABELS).sort();
+  const frKeys = Object.keys(DESTRIEUX_LABELS_FR).sort();
+  assert.equal(enKeys.length, 74);
+  assert.deepEqual(enKeys, frKeys);
+  for (const key of enKeys) {
+    const fr = DESTRIEUX_LABELS_FR[key];
+    assert.ok(fr.name && fr.name.length > 0, `Missing French name for ${key}`);
+    assert.ok(fr.lobe && fr.lobe.length > 0, `Missing French lobe for ${key}`);
+  }
+});
+
+test('exact 1:1 key parity between English and French subcortical structure tables', () => {
+  const enKeys = Object.keys(STRUCTURE_LABELS).sort();
+  const frKeys = Object.keys(STRUCTURE_LABELS_FR).sort();
+  assert.equal(enKeys.length, 35);
+  assert.deepEqual(enKeys, frKeys);
+  for (const key of enKeys) {
+    const fr = STRUCTURE_LABELS_FR[key];
+    assert.ok(fr.name && fr.name.length > 0, `Missing French name for ${key}`);
+    assert.ok(fr.system && fr.system.length > 0, `Missing French system for ${key}`);
+  }
+});
+
+test('NextBrain source names with French entries expand to their verified French names', () => {
+  const cases = {
+    head_of_caudate: { name: 'Tête du noyau caudé', group: 'Ganglions de la base' },
+    core_of_nucleus_accumbens: { name: 'Cœur du noyau accumbens', group: 'Ganglions de la base' },
+    optic_chiasm: { name: 'Chiasma optique', group: 'Voies visuelles' },
+    pineal_body: { name: 'Corps pinéal', group: 'Diencéphale' },
+    substantia_nigra__compact_part: {
+      name: 'Substance noire, partie compacte',
+      group: 'Tronc cérébral',
+    },
+    periaqueductal_gray_substance: {
+      name: 'Substance grise périaqueducale',
+      group: 'Tronc cérébral',
+    },
+    stratum_oriens_of_caudal_ca1: { name: 'Stratum oriens de CA1 caudal', group: 'Hippocampe' },
+    granular_layer_of_caudal_dentate_gyrus: {
+      name: 'Couche granulaire du gyrus denté caudal',
+      group: 'Hippocampe',
+    },
+    rostral_subiculum: { name: 'Subiculum rostral', group: 'Hippocampe' },
+    cuneus: { name: 'Cunéus', group: 'Occipital' },
+  };
+  for (const [source_name, expected] of Object.entries(cases)) {
+    const ids: Record<string, number> = {
+      head_of_caudate: 48,
+      core_of_nucleus_accumbens: 101,
+      optic_chiasm: 161,
+      pineal_body: 506,
+      substantia_nigra__compact_part: 352,
+      periaqueductal_gray_substance: 465,
+      stratum_oriens_of_caudal_ca1: 565,
+      granular_layer_of_caudal_dentate_gyrus: 559,
+      rostral_subiculum: 347,
+      cuneus: 2005,
+    };
+    const r = {
+      kind: 'tissue-region',
+      atlas: 'nextbrain',
+      hemisphere: 'left',
+      source_name,
+      source_label_id: ids[source_name],
+    };
+    const label = labelOf(r, 'fr');
+    assert.equal(label.name, expected.name);
+    assert.equal(label.group, expected.group);
+  }
+});
+
+test('NextBrain regions without a French entry fall back to published English', () => {
+  const r = {
+    kind: 'tissue-region',
+    atlas: 'nextbrain',
+    hemisphere: 'right',
+    source_name: 'medial_habenular_nucleus',
+    source_label_id: 10444,
+  };
+  const label = labelOf(r, 'fr');
+  assert.equal(label.name, 'medial habenular nucleus');
+  assert.equal(label.group, 'Épithalamus');
+});
+
+test('NextBrain cerebellar cortical layers are not named as a periventricular area', () => {
+  for (const [source_name, source_label_id] of [
+    ['granular_cell_layer_of_pva', 597],
+    ['molecular_layer_of_pva', 595],
+  ] as [string, number][]) {
+    const label = labelOf(
+      {
+        kind: 'tissue-region',
+        atlas: 'nextbrain',
+        hemisphere: 'left',
+        source_name,
+        source_label_id,
+      },
+      'fr',
+    );
+    assert.equal(label.name, source_name.replaceAll('_', ' '));
+    assert.equal(label.group, 'Cervelet');
+  }
+});
