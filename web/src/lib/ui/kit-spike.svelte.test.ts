@@ -111,29 +111,33 @@ describe('Bits UI against the APG', () => {
   });
 
   test('Tooltip.Provider: 500 ms show delay, 300 ms skip window', async () => {
-    render(Spike);
-    const first = page.getByRole('button', { name: 'Snapshot' });
-    const second = page.getByRole('button', { name: 'Fullscreen' });
-    const shown = () => document.querySelector('[role="tooltip"]') !== null;
+    // Only the page's timers are faked, so the assertions hold however loaded the machine is.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      render(Spike);
+      const first = page.getByRole('button', { name: 'Snapshot' });
+      const second = page.getByRole('button', { name: 'Fullscreen' });
+      const shown = () => document.querySelector('[role="tooltip"]')?.textContent ?? null;
 
-    await first.hover();
-    const hovered = performance.now();
-    await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(shown()).toBe(false);
-    await vi.waitFor(() => expect(shown()).toBe(true), { timeout: 1500, interval: 10 });
-    const delay = performance.now() - hovered;
-    expect(delay).toBeGreaterThanOrEqual(480);
-    expect(delay).toBeLessThan(750);
+      await first.hover();
+      await vi.advanceTimersByTimeAsync(499);
+      expect(shown()).toBeNull();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(shown()).toBe('Save a PNG');
 
-    // Leaving closes it; a second trigger entered within 300 ms opens at once.
-    await userEvent.unhover(first);
-    await vi.waitFor(() => expect(shown()).toBe(false), { timeout: 1000, interval: 10 });
-    const closed = performance.now();
-    await second.hover();
-    await vi.waitFor(() => expect(shown()).toBe(true), { timeout: 1000, interval: 5 });
-    const skipped = performance.now() - closed;
-    expect(skipped).toBeLessThan(300);
-    expect(document.querySelector('[role="tooltip"]')?.textContent).toBe('Enter full screen');
+      // Leaving closes it; a second trigger entered within 300 ms opens at once.
+      await userEvent.unhover(first);
+      // Bits closes after pointer leave through its grace logic; step until it has.
+      for (let step = 0; step < 100 && shown() !== null; step++)
+        await vi.advanceTimersByTimeAsync(10);
+      expect(shown()).toBeNull();
+      await vi.advanceTimersByTimeAsync(250);
+      await second.hover();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(shown()).toBe('Enter full screen');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   test('Combobox: focus stays on the input and aria-activedescendant names the option', async () => {
