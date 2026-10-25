@@ -89,11 +89,21 @@ export function localizeEdges(
 ): Record<Edge, string> {
   if (lang !== 'fr') return raw;
   return Object.fromEntries(
-    (Object.entries(raw) as [Edge, Letter][]).map(([edge, letter]) => [edge, FR_LETTERS[letter]]),
+    Object.entries(raw).map(([edge, letter]) => [edge, FR_LETTERS[letter]]),
   ) as Record<Edge, string>;
 }
 
 /** Edge letters for a camera; pass the orbit target for the letters of the frame about to be drawn. */
+export function edgeLabels(
+  camera: Object3D,
+  lang?: 'en',
+  target?: Vector3 | null,
+): Record<Edge, Letter>;
+export function edgeLabels(
+  camera: Object3D,
+  lang: Language,
+  target?: Vector3 | null,
+): Record<Edge, string>;
 export function edgeLabels(
   camera: Object3D,
   lang: Language = 'en',
