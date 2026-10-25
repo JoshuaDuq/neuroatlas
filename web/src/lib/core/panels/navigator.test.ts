@@ -222,3 +222,7 @@ test('a decomposed query or name marks the same span as a composed one', () => {
     composed[2],
   ]);
 });
+
+test('a query that folds to nothing marks nothing', () => {
+  assert.deepEqual(matchSegments('Insula', '\u0301'), [{ text: 'Insula', match: false }]);
+});

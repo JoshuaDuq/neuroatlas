@@ -851,6 +851,7 @@ describe('async runners', () => {
           const gates = Array.from({ length: count }, () => gate());
           // The first run holds the panel; the others ask while it does, or after it settles.
           const results: boolean[] = [];
+          const between: boolean[] = [];
           const pending: Promise<boolean>[] = [];
           for (let index = 0; index < count; index += 1) {
             pending.push(
@@ -863,10 +864,10 @@ describe('async runners', () => {
           for (const index of order) {
             gates[index].resolve();
             results[index] = await pending[index];
-            results.push(await start(() => Promise.resolve('between'), `between${index}`));
+            between.push(await start(() => Promise.resolve('between'), `between${index}`));
           }
           const after = await start(() => Promise.resolve('later'), 'after');
-          return { events, results, after };
+          return { events, results, between, after };
         };
         const fresh = (events: string[]) => {
           const runner = createBusyRunner();
