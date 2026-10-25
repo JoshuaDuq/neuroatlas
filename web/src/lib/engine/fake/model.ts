@@ -243,6 +243,9 @@ export function createFakeModel({
       values.isolatedRegion = null;
       update();
     },
+    setSurfaceColor(mode) {
+      model.applySurfaceColor(mode);
+    },
     setFunctionalLevel(level) {
       if (!FUNCTIONAL_LEVELS.includes(level))
         throw new TypeError(`Unknown functional level: ${level}`);
