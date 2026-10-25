@@ -239,7 +239,7 @@ describe('picker', () => {
     domElement.emit('pointerdown', { ...touch, pointerId: 1, clientX: 20 });
     domElement.emit('pointerdown', { ...touch, pointerId: 2, isPrimary: false, clientX: 120 });
     domElement.emit('pointermove', { ...touch, pointerId: 2, isPrimary: false, clientX: 190 });
-    domElement.emit('pointerup', { ...touch, pointerId: 1, clientX: 24 });
+    domElement.emit('pointerup', { ...touch, pointerId: 1, clientX: 118 });
     assert.deepEqual(chosen, []);
   });
 });

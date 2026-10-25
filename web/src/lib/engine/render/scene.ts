@@ -400,8 +400,10 @@ export function createScene(
 
   function applyTheme() {
     scene.background = new Color(token('--scene-background'));
-    const exposure = Number.parseFloat(token('--scene-exposure'));
-    if (!Number.isFinite(exposure)) throw new Error('The --scene-exposure token is not a number.');
+    const raw = token('--scene-exposure');
+    const exposure = Number(raw);
+    if (raw === '' || !Number.isFinite(exposure))
+      throw new Error('The --scene-exposure token is not a number.');
     renderer.toneMappingExposure = exposure;
     for (const pipeline of pipelines) {
       pipeline.halo.visibleEdgeColor.set(token('--scene-outline-halo'));
