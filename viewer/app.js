@@ -1,4 +1,4 @@
-import { Box3, Vector3 } from 'three';
+import { Box3, Sphere, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createCatalog } from './catalog/catalog.js';
 import { readComparisonGeometry } from './comparison/assets.js';
@@ -21,7 +21,8 @@ import { reloadWithoutStoredModels } from './model/published-assets.js';
 import {
   VIEW_DIRECTIONS, cutFacingView, fitDistance, frameTo, upFor, viewForRestoredCut, withContext,
 } from './render/camera-views.js';
-import { DOLLY_KEYS, ORBIT_KEYS, dolliedPosition, orbitedPosition } from './render/keyboard-orbit.js';
+import { DOLLY_KEYS, ORBIT_KEYS, turnFromKeyboard } from './render/keyboard-orbit.js';
+import { stayOutside, zoomAboutSurface } from './render/orbit-controls.js';
 import { createPicker } from './render/picking.js';
 import { createScene, planFraming } from './render/scene.js';
 import { createSession, shortcutsAllowed } from './state/session.js';
@@ -206,6 +207,12 @@ export async function startApp() {
 
   const sections = new BrainSections(model, new URL('volumes.json', new URL(manifestUrl, location.href)));
   scene.scene.add(sections.group);
+  // Zoom stops short of what the reader is pointing at, and turning never goes beneath a surface;
+  // the tract reference has no surface to meet.
+  // The zoom wraps the check, so it judges only the turn or pan that follows: a zoom cannot cross.
+  const surfaceHit = raycaster => (tractReferenceActive ? null : sections.intersect(raycaster));
+  stayOutside(scene.controls, surfaceHit);
+  zoomAboutSurface(scene.controls, surfaceHit);
   const commands = createSceneCommands({ model, sections, session, render });
 
   // ---- commands ---------------------------------------------------------
@@ -239,8 +246,10 @@ export async function startApp() {
   });
   const scheduleUrl = linkWriter.schedule;
 
-  // Every camera move is a change the link has to follow.
+  // Every camera move is a change the link has to follow. A framing chooses its own target, so the
+  // pan limit set for the last gesture no longer applies.
   function moveCamera(plan, options) {
+    scene.controls.maxTargetRadius = Infinity;
     scene.moveTo(plan, options);
     scheduleUrl();
   }
@@ -1812,6 +1821,8 @@ export async function startApp() {
     chrome.updateCamera(scene.camera, scene.distanceToTarget, scene.viewportHeight);
   }
   scene.controls.addEventListener('change', onCameraChange);
+  // The camera coasts on after the pointer lifts; the link is written once it comes to rest.
+  scene.controls.addEventListener('change', scheduleUrl);
   function rememberZoom() {
     const fitted = fittedDistance(viewDirection());
     if (fitted > 0) zoom = scene.distanceToTarget / fitted;
@@ -1819,8 +1830,14 @@ export async function startApp() {
   scene.controls.addEventListener('end', rememberZoom);
   // A dock change during a drag waits for the pointer to lift.
   scene.controls.addEventListener('start', () => { orbiting = true; });
+  // A pan stops where its target would leave what is drawn, so the anatomy cannot be lost off the
+  // stage; a target already further out is held there rather than pulled in.
+  scene.controls.addEventListener('start', () => {
+    const drawn = framingBounds().getBoundingSphere(new Sphere());
+    scene.controls.cursor.copy(drawn.center);
+    scene.controls.maxTargetRadius = Math.max(drawn.radius, scene.controls.target.distanceTo(drawn.center));
+  });
   scene.controls.addEventListener('end', () => {
-    scheduleUrl();
     orbiting = false;
     if (fitPending) {
       const before = fitPending;
@@ -1845,17 +1862,15 @@ export async function startApp() {
     const dolly = DOLLY_KEYS[event.key];
     if (!turn && !dolly) return false;
     event.preventDefault();
-    scene.camera.position.copy(turn
-      ? orbitedPosition(
-        scene.camera.position, scene.controls.target, scene.camera.up, turn)
-      : dolliedPosition(
-        scene.camera.position, scene.controls.target, dolly,
-        { min: scene.controls.minDistance, max: scene.controls.maxDistance }));
-    scene.controls.update();
+    if (turn) {
+      turnFromKeyboard(scene.controls, turn);
+    } else {
+      // The same zoom as the wheel's, about the surface in the middle of the view.
+      scene.controls.dollyIn(dolly);
+    }
     // A drag reports its zoom when the pointer lifts; a key press has no
     // equivalent moment, so it reports its own.
     rememberZoom();
-    scheduleUrl();
     return true;
   }
 
@@ -2121,6 +2136,7 @@ export async function startApp() {
     globalThis.removeEventListener('hashchange', onHashChange);
     notice.dispose();
     scene.controls.removeEventListener('change', onCameraChange);
+    scene.controls.removeEventListener('change', scheduleUrl);
     linkWriter.cancel();
     sheet.dispose();
     workspace.dispose();

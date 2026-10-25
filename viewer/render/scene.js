@@ -11,6 +11,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { createAnatomicalLighting } from './lighting.js';
 import { fitScale, viewOffset, visibleRect } from './effective-viewport.js';
 import { orbitPath } from './camera-path.js';
+import { followCameraUp } from './orbit-controls.js';
 import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.js';
 import { motionRatio, qualityProfile } from './quality.js';
 import { paintOutlineEdges, sameMeshSet } from './outline-edges.js';
@@ -93,6 +94,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
   controls.zoomToCursor = true;
+  followCameraUp(controls);
 
   /*
    * How much of the canvas the interface is covering. On a phone the sheet
