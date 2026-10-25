@@ -21,7 +21,12 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['src/**/*.test.ts', 'build/**/*.test.ts', 'parity/**/*.test.ts'],
+          include: [
+            'src/**/*.test.ts',
+            'build/**/*.test.ts',
+            'parity/**/*.test.ts',
+            'test/**/*.test.ts',
+          ],
           exclude: ['src/**/*.svelte.test.ts'],
         },
       },

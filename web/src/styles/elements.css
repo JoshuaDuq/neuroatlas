@@ -1,0 +1,33 @@
+/* Element-level rules that belong to no one component. */
+@layer elements {
+  /* Quantities keep the row's own face and size; tabular figures align them down a column. */
+  .measure {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Monospace only for what is copied rather than read: source ids, file names, voxel indices. */
+  .code {
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+  }
+
+  /* A key is a thing you press, so it is drawn as one rather than quoted: a 20px cap. */
+  kbd {
+    display: inline-block;
+    min-width: 20px;
+    padding: 0 var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-small);
+    box-shadow: inset 0 -1px 0 var(--border-subtle);
+  }
+  .key-range {
+    color: var(--text-tertiary);
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+  }
+}
