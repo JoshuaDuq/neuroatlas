@@ -26,11 +26,11 @@ Legacy line numbers are those of `viewer/styles/`. Each rule goes into the named
 
 ### Focus-ring offsets (`outline-offset: -2px`, so a ring is not clipped by a flush edge; WCAG 2.4.7)
 
-| Legacy                                                                                                    | Selectors                                      | Chunk | Layer        |
-| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----- | ------------ |
-| `components.css:537-543` (`#selection-clear`, `#workspace-selection`, `#workspace-selection-clear`)       | the selection strip's clear and name controls  | H5    | `components` |
-| `components.css:537-543` (`#detail-back`, `#detail-group`)                                                | the region inspector's back and group controls | R1    | `features`   |
-| `components.css:543` (`#sheet-handle`) and `phone.css:161` (`.sheet-selection`, `#sheet-selection-clear`) | the sheet grip and the phone selection strip   | H6    | `features`   |
+| Legacy                                                                                                           | Selectors                                        | Chunk | Layer        |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----- | ------------ |
+| `components.css:537-543` (`#workspace-selection`, `#workspace-selection-clear`, `#detail-back`, `#detail-group`) | the workspace selection strip and the breadcrumb | H5    | `components` |
+| `components.css:537-543` (`#selection-clear`)                                                                    | the region inspector's clear control             | R1    | `features`   |
+| `components.css:543` (`#sheet-handle`) and `phone.css:161` (`.sheet-selection`, `#sheet-selection-clear`)        | the sheet grip and the phone selection strip     | H6    | `features`   |
 
 ### `a11y.css`
 
@@ -46,7 +46,7 @@ Legacy line numbers are those of `viewer/styles/`. Each rule goes into the named
 | 44           | `#masthead-data select` border                                                                                                                                                                                                                                                                             | H3                                        | a11y  |
 | 45           | `.diffusion-part input` border                                                                                                                                                                                                                                                                             | T1                                        | a11y  |
 | 50           | forced borders for `.chip` (`stage.css:89`, G1) and `.tooltip` (U5); `.panel` has no legacy rule (dropped)                                                                                                                                                                                                 | G1, U5                                    | a11y  |
-| 52-53, 61    | forced focus outline for `input[type="search"]` and `select` (U6), `.check input` (U4)                                                                                                                                                                                                                     | U6, U4                                    | a11y  |
+| 52-53, 61    | forced focus outline for `input[type="search"]` (U6), `select` and `.check input` (U4)                                                                                                                                                                                                                     | U6, U4                                    | a11y  |
 | 54           | `.cut-position-row input[type="number"]`                                                                                                                                                                                                                                                                   | G4                                        | a11y  |
 | 55-56        | `.clinical-profile-name`, `#clinical-title`                                                                                                                                                                                                                                                                | X2                                        | a11y  |
 | 57, 60       | `#mpr-close`, `#mpr-grid .button-quiet`                                                                                                                                                                                                                                                                    | G5                                        | a11y  |
