@@ -236,16 +236,35 @@ describe('Stage popover swap', () => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     const popovers = () => [...document.querySelectorAll('.popover')];
     const first = popovers()[0];
-    let faded = false;
-    const watch = setInterval(() => (faded ||= first.hasAttribute('data-ending-style')), 1);
+    // Bits marks the ending state; with data-instant it has no transition, so no fade is seen.
+    let fadedVisibly = false;
+    const watch = setInterval(
+      () =>
+        (fadedVisibly ||=
+          first.hasAttribute('data-ending-style') && !first.hasAttribute('data-instant')),
+      1,
+    );
     await button('Other stage').click();
     await expect.element(button('Zoom')).toBeInTheDocument();
     await vi.waitFor(() => expect(first.isConnected).toBe(false), { timeout: 100, interval: 5 });
     clearInterval(watch);
-    expect(faded).toBe(false);
+    expect(fadedVisibly).toBe(false);
     expect(attr('Stage', 'aria-expanded')).toBe('false');
     expect(popovers()).toHaveLength(1);
     expect(popovers()[0].hasAttribute('data-instant')).toBe(true);
+  });
+});
+
+describe('Stage popover Tab', () => {
+  test('Tab from the last control onto the next stage trigger closes it and focus stays there', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    (page.getByRole('checkbox', { name: 'Grid' }).element() as HTMLElement).focus();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(el('Other stage'));
+    await vi.waitFor(() => expect(attr('Stage', 'aria-expanded')).toBe('false'));
+    expect(document.activeElement).toBe(el('Other stage'));
   });
 });
 

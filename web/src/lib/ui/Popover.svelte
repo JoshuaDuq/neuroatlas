@@ -17,6 +17,8 @@
   // Stage triggers: a press on another one is not an outside press, its click swaps them
   // (stage-tools.js:105-110).
   const stageTriggers = new Set<HTMLElement>();
+  // The stage trigger a pointer is pressing, until its click (stage-tools.js:104,116,134).
+  let pressed: HTMLElement | null = null;
   let current: { variant: string; dismiss: () => void } | null = null;
 
   const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -82,7 +84,15 @@
     if (variant !== 'stage') return;
     const element = document.getElementById(triggerId)!;
     stageTriggers.add(element);
-    return () => stageTriggers.delete(element);
+    const press = (event: PointerEvent) => {
+      pressed =
+        [...stageTriggers].find((trigger) => trigger.contains(event.target as Node)) ?? null;
+    };
+    document.addEventListener('pointerdown', press, { capture: true });
+    return () => {
+      stageTriggers.delete(element);
+      document.removeEventListener('pointerdown', press, { capture: true });
+    };
   });
 
   function onInteractOutside(event: Event) {
@@ -130,13 +140,14 @@
   function onfocusout(event: FocusEvent) {
     const next = event.relatedTarget as Node | null;
     // No related target: the window lost focus (a switch to another window); the popover stays.
-    // Another stage trigger takes over by its click, which swaps them (stage-tools.js:133-136).
-    const swapping = [...stageTriggers].some((trigger) => trigger.contains(next));
+    // A pressed stage trigger takes over by its click, which swaps them (stage-tools.js:133-136).
+    const swapping = pressed?.contains(next) ?? false;
     if (open && next !== null && !wrapper.contains(next) && !swapping) close({ instantly: true });
   }
 
   // A click with no pointer behind it came from Enter or Space.
   function onclickcapture(event: MouseEvent) {
+    pressed = null;
     if (own(event.target)) instant = isKeyboardActivation(event);
   }
 </script>
