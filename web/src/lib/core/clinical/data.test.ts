@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'vitest';
+import { readRepoYaml } from '../../../../test/repo.ts';
 import { createClinicalCatalog, findingPaint } from './catalog.ts';
 import type { ClinicalCatalog } from './catalog.ts';
-import { manifests, readYaml } from './test-support.ts';
+import { manifests } from './test-support.ts';
 import type { ClinicalData } from './types.ts';
 
-const data = readYaml<ClinicalData>('data/neuropsychology.yaml');
+const data = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
 
 test('every published deficit has a colour for each of its findings', () => {
   for (const deficit of data.deficits) {

@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { readYaml } from '../clinical/test-support.ts';
+import { readRepoYaml } from '../../../../test/repo.ts';
 import { anatomies } from '../catalog/test-support.ts';
 import { TRACT_CATALOGS, tractCatalog } from './catalogs.ts';
 import type { TractCatalog } from './catalogs.ts';
 
-const { tract_catalogs: paths } = readYaml<{ tract_catalogs: string[] }>('config/model.yaml');
-const catalogs = paths.map((path) => readYaml<TractCatalog>(path));
+const { tract_catalogs: paths } = readRepoYaml<{ tract_catalogs: string[] }>('config/model.yaml');
+const catalogs = paths.map((path) => readRepoYaml<TractCatalog>(path));
 
 // The legacy test read catalogs.js as text to compare its imports with config/model.yaml;
 // the behavioural equivalent is that the catalogs it serves are exactly the files named there.

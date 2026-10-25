@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { readRepository, readYaml } from '../clinical/test-support.ts';
+import { readRepoJson, readRepoYaml, repoRoot } from '../../../../test/repo.ts';
 import type { ClinicalData } from '../clinical/types.ts';
 import type { CircuitData } from './catalog.ts';
 
@@ -26,14 +28,14 @@ interface Source {
 // Every citation is checked against data/reference-records.json, which
 // scripts/fetch_references.py writes from PubMed, Bookshelf and Crossref. A
 // citation must name the work its identifier points to: a real but wrong PMID fails.
-const { records } = JSON.parse(readRepository('data/reference-records.json')) as {
-  records: Record<string, Work>;
-};
-const clinical = readYaml<ClinicalData>('data/neuropsychology.yaml');
-const circuits = readYaml<CircuitData>('data/circuits.yaml');
-const functional = readYaml<{ sources: Record<string, Source> }>('config/functional-regions.yaml');
-const domains = readYaml<{ sources: Record<string, Source> }>('config/neuropsych-domains.yaml');
-const bibliography = readRepository('docs/reference/references.md');
+const { records } = readRepoJson<{ records: Record<string, Work> }>('data/reference-records.json');
+const clinical = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
+const circuits = readRepoYaml<CircuitData>('data/circuits.yaml');
+const functional = readRepoYaml<{ sources: Record<string, Source> }>(
+  'config/functional-regions.yaml',
+);
+const domains = readRepoYaml<{ sources: Record<string, Source> }>('config/neuropsych-domains.yaml');
+const bibliography = readFileSync(resolve(repoRoot, 'docs/reference/references.md'), 'utf8');
 
 /** Case, accents and punctuation are ignored; any other difference is a different work. */
 const plain = (value: string) =>

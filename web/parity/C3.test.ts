@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { isDeepStrictEqual, inspect } from 'node:util';
 import { describe as vitestDescribe, test as vitestTest } from 'vitest';
+import { readRepoYaml } from '../test/repo.ts';
 import {
   FINDING_COLORS as legacyFindingColors,
   createClinicalCatalog as legacyClinical,
@@ -21,7 +22,6 @@ import {
 import { AssetError as LegacyAssetError } from '../../viewer/model/published-assets.js';
 import { readModel } from '../src/lib/core/catalog/test-support.ts';
 import { createClinicalCatalog, FINDING_COLORS } from '../src/lib/core/clinical/catalog.ts';
-import { readYaml } from '../src/lib/core/clinical/test-support.ts';
 import type { ClinicalData } from '../src/lib/core/clinical/types.ts';
 import { createComparisonCatalog } from '../src/lib/core/comparison/catalog.ts';
 import type { ComparisonData } from '../src/lib/core/comparison/catalog.ts';
@@ -128,8 +128,8 @@ function outcome<T>(run: () => T): { value: T } | { error: [string, string] } {
 
 type Any = Record<string, any>;
 const manifest = readModel<Manifest>('cdmd/manifest.json');
-const clinicalData = readYaml<ClinicalData>('data/neuropsychology.yaml');
-const circuitData = readYaml<CircuitData>('data/circuits.yaml');
+const clinicalData = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
+const circuitData = readRepoYaml<CircuitData>('data/circuits.yaml');
 const deficitIds = clinicalData.deficits.map((deficit) => deficit.id);
 const regionsOf = (m: Any, predicate: (r: Any) => boolean) => m.regions.filter(predicate);
 

@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'vitest';
-import { manifests, readYaml } from '../clinical/test-support.ts';
+import { readRepoYaml } from '../../../../test/repo.ts';
+import { manifests } from '../clinical/test-support.ts';
 import type { ClinicalData } from '../clinical/types.ts';
 import { createCircuitCatalog } from './catalog.ts';
 import type { AuthoredCircuit, CircuitData } from './catalog.ts';
 
-const data = readYaml<CircuitData>('data/circuits.yaml');
-const deficitIds = readYaml<ClinicalData>('data/neuropsychology.yaml').deficits.map(
+const data = readRepoYaml<CircuitData>('data/circuits.yaml');
+const deficitIds = readRepoYaml<ClinicalData>('data/neuropsychology.yaml').deficits.map(
   (deficit) => deficit.id,
 );
 const published = manifests.map(([, manifest]) => manifest);
