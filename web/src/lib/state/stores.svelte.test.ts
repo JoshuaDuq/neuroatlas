@@ -11,7 +11,7 @@ import type { FakeEngine } from '../engine/fake.ts';
 import type { Manifest } from '../types/index.ts';
 import { attachAnnouncer } from '../ui/announcer.svelte.ts';
 import { createCatalogStore } from './catalog.svelte.ts';
-import { createEngineSync, syncPaint } from './engine-sync.svelte.ts';
+import { createEngineSync, syncPaint, syncPresentation } from './engine-sync.svelte.ts';
 import { createLink } from './link.svelte.ts';
 import { createLessonStore, createSessionStore } from './session.svelte.ts';
 import { announceView, createView } from './view.svelte.ts';
@@ -57,6 +57,7 @@ function build() {
       referenceAnatomy: engine.tracts.anatomy,
     });
     syncPaint(engine.model, parts.view, sources);
+    syncPresentation(engine, parts.view, parts.engineState);
     parts.catalogStore = createCatalogStore(catalog, parts.view);
     announceView(parts.view, (selected, view) => catalog.label(selected.id, view).name);
     parts.link = createLink({
@@ -177,6 +178,40 @@ describe('paint', () => {
   });
 });
 
+describe('the presentation', () => {
+  test('the stage is told the language and whether the tract reference stands alone', () => {
+    const { session } = build();
+    expect(engine.presented).toEqual({ lang: 'en', referenceOnly: false });
+    session.setLang('fr');
+    flushSync();
+    expect(engine.presented).toEqual({ lang: 'fr', referenceOnly: false });
+  });
+
+  test('the tract reference is alone when the diffusion tab is open on another anatomy', () => {
+    const other = createFakeEngine({ manifest: published, tractAnatomy: 'other' });
+    const previous = engine;
+    engine = other;
+    const { session } = build();
+    session.setExplorer('diffusion');
+    flushSync();
+    expect(engine.presented).toEqual({ lang: 'en', referenceOnly: true });
+    engine = previous;
+  });
+
+  test('the comparison outline is hidden while a cut is drawn', async () => {
+    build();
+    const geometry = { file: 'overlap.json', sha256: '' };
+    await engine.comparison.highlight('pair', geometry);
+    expect(engine.highlighted).toBe('pair');
+    await engine.sections.setMode('axial');
+    flushSync();
+    expect(engine.highlighted).toBeNull();
+    await engine.sections.setMode('off');
+    flushSync();
+    expect(engine.highlighted).toBe('pair');
+  });
+});
+
 describe('the catalog store', () => {
   test('groups and the visible count follow the view, in its language', () => {
     const { catalogStore, session } = build();
@@ -217,6 +252,22 @@ describe('the announcer', () => {
     engine.model.hideRegions([selectable.id]);
     flushSync();
     expect(region.textContent).toBe('1 part hidden');
+  });
+
+  test('Undo says the restored selection and the count as one sentence', () => {
+    const { session } = build();
+    const selectable = published.regions.find(
+      (candidate) => candidate.kind !== 'non-region' && engine.model.canSelect(candidate),
+    )!;
+    const name = catalog.label(selectable.id).name;
+    engine.model.select(selectable.id);
+    flushSync();
+    engine.model.hideRegions([selectable.id]);
+    flushSync();
+    session.notify(null);
+    engine.model.undoDissection();
+    flushSync();
+    expect(region.textContent).toMatch(new RegExp(`^Selected: ${name}, \\w+\\. All parts shown$`));
   });
 
   test('says the lost context and its restoration', () => {
