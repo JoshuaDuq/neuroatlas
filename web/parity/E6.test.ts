@@ -1,9 +1,29 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, it } from 'vitest';
+import { describe, it, vi } from 'vitest';
+
+/** Both asset readers serve `public/diffusion/` from disk, so `load()` runs in Node. */
+async function readPublished(file: string) {
+  const { readFile } = await import('node:fs/promises');
+  const { fileURLToPath } = await import('node:url');
+  const bytes = await readFile(
+    fileURLToPath(new URL(`../../public/diffusion/${file}`, import.meta.url)),
+  );
+  return {
+    url: file,
+    buffer: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+  };
+}
+vi.mock('../../viewer/diffusion/assets.js', () => ({
+  readDiffusionAsset: readPublished,
+}));
+vi.mock('../src/lib/core/assets/diffusion-assets.ts', () => ({
+  readDiffusionAsset: readPublished,
+}));
 import { NVMeshLoaders } from '@niivue/niivue';
 import { Quaternion, Matrix4, Vector3 } from 'three';
+import type { Mesh, MeshStandardMaterial } from 'three';
 import * as legacyStreamlines from '../../viewer/diffusion/streamlines.js';
 import * as legacyGeometry from '../../viewer/diffusion/native-geometry.js';
 import * as legacyReference from '../../viewer/diffusion/reference-space.js';
@@ -452,4 +472,69 @@ describe('E6 native viewer', () => {
     await Promise.all([next.loadBundle(bundles[0]!), next.loadBundle(bundles[0]!)]);
     assert.equal(next.group.children.length, 1);
   });
+});
+
+describe('E6 native viewer load()', () => {
+  const catalog = tractCatalog('cdmd');
+
+  it('installs the same reference transform, bounds, outline and initial bundles', async () => {
+    const next = viewer.createNativeTractViewer(catalog, () => {}, tractFile.createTractLoader());
+    const old = legacyViewer.createNativeTractViewer(
+      catalog,
+      () => {},
+      legacyLoader.createTractLoader(),
+    );
+    assert.equal(next.ready, false);
+    // Set before load(): a deviation (e6-opacity-before-load.md), applied when the outline loads.
+    next.setOpacity(0.5);
+    await Promise.all([next.load(), old.load()]);
+    same(next.ready, old.ready);
+    same(next.group.matrix.elements, old.group.matrix.elements);
+    same(next.group.matrixAutoUpdate, old.group.matrixAutoUpdate);
+    same(next.bounds, old.bounds);
+    same(next.snapshot(), old.snapshot());
+    same(next.anyVisible, old.anyVisible);
+    const outline = (group: typeof next.group) => {
+      const found: Mesh[] = [];
+      group.children[0]!.traverse((object) => {
+        if ((object as Mesh).isMesh) found.push(object as Mesh);
+      });
+      assert.equal(found.length, 1);
+      return found[0]!;
+    };
+    const material = (mesh: Mesh) => {
+      const { color, roughness, transparent, opacity, depthWrite } =
+        mesh.material as MeshStandardMaterial;
+      return { color: color.getHex(), roughness, transparent, opacity, depthWrite };
+    };
+    old.setOpacity(0.5);
+    same(material(outline(next.group)), material(outline(old.group)));
+    for (const value of [0, 0.16, 1]) {
+      next.setOpacity(value);
+      old.setOpacity(value);
+      same(material(outline(next.group)), material(outline(old.group)));
+    }
+    for (const value of [false, true]) {
+      next.setOutlineVisible(value);
+      old.setOutlineVisible(value);
+      same(next.group.children[0]!.visible, old.group.children[0]!.visible);
+      same(next.group.children[0]!.visible, value);
+    }
+    for (const value of [-0.1, 1.1, NaN]) {
+      same(
+        outcome(() => next.setOpacity(value)),
+        outcome(() => old.setOpacity(value)),
+      );
+    }
+    for (const point of [
+      [10, -20, 30],
+      [-60, 12, 5],
+      [0, 0, 0],
+    ] as const) {
+      same(next.scannerToSurface(point), old.scannerToSurface(point));
+      same(next.surfaceToScanner(point), old.surfaceToScanner(point));
+    }
+    next.dispose();
+    old.dispose();
+  }, 60_000);
 });

@@ -3,6 +3,48 @@ import { Group } from 'three';
 import { test, vi } from 'vitest';
 import { createTracts } from './tracts.ts';
 
+/** The asset reader serves `public/diffusion/` from disk, so the outline and the bundles load in Node. */
+vi.mock('../../core/assets/diffusion-assets.ts', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { resolve } = await import('node:path');
+  const { repoRoot } = await import('../../../../test/repo.ts');
+  return {
+    async readDiffusionAsset(file: string) {
+      const bytes = await readFile(resolve(repoRoot, 'public/diffusion', file));
+      return {
+        url: file,
+        buffer: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+      };
+    },
+  };
+});
+
+test('setActive loads once, announces readiness once and the reference on another anatomy', async () => {
+  const other = setup('another-anatomy');
+  const events = () => other.emit.mock.calls.map(([type, event]) => [type, event]);
+  const first = other.tracts.setActive(true);
+  const second = other.tracts.setActive(true);
+  await Promise.all([first, second]);
+  assert.deepEqual(events(), [
+    ['tractsActive', { active: true }],
+    ['tractsReady', undefined],
+  ]);
+  assert.equal(other.tracts.ready, true);
+  assert.equal(other.tracts.streamlinesVisible, true);
+  assert.ok(other.tracts.snapshot().length > 0);
+  await other.tracts.setActive(false);
+  assert.equal(other.tracts.streamlinesVisible, false);
+  assert.deepEqual(events().at(-1), ['tractsActive', { active: false }]);
+
+  const own = setup('cdmd');
+  await own.tracts.setActive(true);
+  assert.deepEqual(
+    own.emit.mock.calls.map(([type]) => type),
+    ['tractsReady'],
+  );
+  assert.equal(own.tracts.streamlinesVisible, false, 'hidden until the overlay is on');
+}, 60_000);
+
 const setup = (anatomy: string) => {
   const scene = new Group();
   const invalidate = vi.fn();
