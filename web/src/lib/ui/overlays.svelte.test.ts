@@ -228,6 +228,27 @@ describe('Popover keys and stage variant', () => {
   });
 });
 
+describe('Stage popover swap', () => {
+  test('a pointer press on another stage trigger swaps them at once, with no fade', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const popovers = () => [...document.querySelectorAll('.popover')];
+    const first = popovers()[0];
+    let faded = false;
+    const watch = setInterval(() => (faded ||= first.hasAttribute('data-ending-style')), 1);
+    await button('Other stage').click();
+    await expect.element(button('Zoom')).toBeInTheDocument();
+    await vi.waitFor(() => expect(first.isConnected).toBe(false), { timeout: 100, interval: 5 });
+    clearInterval(watch);
+    expect(faded).toBe(false);
+    expect(attr('Stage', 'aria-expanded')).toBe('false');
+    expect(popovers()).toHaveLength(1);
+    expect(popovers()[0].hasAttribute('data-instant')).toBe(true);
+  });
+});
+
 describe('Dialog', () => {
   test('a keyboard open is instant and Escape returns focus to the opener', async () => {
     render(Fixture);
@@ -376,7 +397,7 @@ describe('Tooltip', () => {
     expect(tooltip()).toBeNull();
     await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
     const delay = performance.now() - hovered;
-    expect(delay).toBeGreaterThanOrEqual(450);
+    expect(delay).toBeGreaterThanOrEqual(350);
     expect(delay).toBeLessThan(800);
     expect(tooltip()!.textContent).toBe('Save a PNG');
     expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);

@@ -14,6 +14,9 @@
 <script lang="ts" module>
   // The open popover: a second one opening closes it, and a stage popover opening over a stage
   // popover appears without its entry (stage-tools.js:71-74).
+  // Stage triggers: a press on another one is not an outside press, its click swaps them
+  // (stage-tools.js:105-110).
+  const stageTriggers = new Set<HTMLElement>();
   let current: { variant: string; dismiss: () => void } | null = null;
 
   const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -75,6 +78,18 @@
     };
   });
 
+  $effect(() => {
+    if (variant !== 'stage') return;
+    const element = document.getElementById(triggerId)!;
+    stageTriggers.add(element);
+    return () => stageTriggers.delete(element);
+  });
+
+  function onInteractOutside(event: Event) {
+    const target = event.target as Element;
+    if ([...stageTriggers].some((trigger) => trigger.contains(target))) event.preventDefault();
+  }
+
   const own = (node: EventTarget | null) =>
     node instanceof Element && node.closest(`[id="${triggerId}"]`) !== null;
 
@@ -115,7 +130,9 @@
   function onfocusout(event: FocusEvent) {
     const next = event.relatedTarget as Node | null;
     // No related target: the window lost focus (a switch to another window); the popover stays.
-    if (open && next !== null && !wrapper.contains(next)) close({ instantly: true });
+    // Another stage trigger takes over by its click, which swaps them (stage-tools.js:133-136).
+    const swapping = [...stageTriggers].some((trigger) => trigger.contains(next));
+    if (open && next !== null && !wrapper.contains(next) && !swapping) close({ instantly: true });
   }
 
   // A click with no pointer behind it came from Enter or Space.
@@ -147,6 +164,7 @@
         {style}
         trapFocus={false}
         onOpenAutoFocus={focusStart}
+        {onInteractOutside}
         {onCloseAutoFocus}
       >
         {@render children({ close: () => close({ restoreFocus: true, instantly: instant }) })}

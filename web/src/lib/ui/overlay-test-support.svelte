@@ -12,6 +12,7 @@
   let settingsOpen = $state(false);
   let dataOpen = $state(false);
   let stageOpen = $state(false);
+  let otherStageOpen = $state(false);
   let picked = $state('');
   let fallback: HTMLButtonElement;
 </script>
@@ -48,6 +49,15 @@
   {#snippet children()}
     <button type="button" aria-pressed="true">Orbit</button>
     <input type="checkbox" aria-label="Grid" />
+  {/snippet}
+</Popover>
+
+<Popover variant="stage" bind:open={otherStageOpen}>
+  {#snippet trigger({ props })}
+    <button {...props} type="button">Other stage</button>
+  {/snippet}
+  {#snippet children()}
+    <button type="button">Zoom</button>
   {/snippet}
 </Popover>
 
