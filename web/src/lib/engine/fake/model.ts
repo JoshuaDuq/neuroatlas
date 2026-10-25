@@ -18,6 +18,8 @@ import type {
   SpinalCordLoad,
   Vec3,
 } from '../api.ts';
+import { belongsToDetail, visibilityOf } from '../../core/catalog/visibility.ts';
+import { labelOf } from '../../core/catalog/labels.ts';
 import { coded, sameSet } from './support.ts';
 
 export interface FakeModelOptions {
@@ -49,10 +51,9 @@ interface Dissected {
 }
 
 /**
- * In-memory stand-in for `BrainAtlas`. Its visibility rule is a compact copy of catalog/visibility.js
- * (layer, internal system, hemisphere, cortex, internal anatomy, cord, hidden, isolated), without the cut-label
- * cases and with the learning level's `system_names` as the only system grouping: enough for state and controller code to see a selection accepted or refused for the
- * reasons the real model gives. Every download resolves at once.
+ * In-memory stand-in for `BrainAtlas`. Visibility is C2's `visibilityOf` itself, so a selection is accepted or
+ * refused for the reasons the real model gives. A region's geometry counts as downloaded when its atlas layer
+ * is. Every download resolves at once.
  */
 export function createFakeModel({
   manifest,
@@ -101,37 +102,7 @@ export function createFakeModel({
     dissectionCanUndo: dissection.history.length > 0,
   });
 
-  /** visibility.js:33: with a system chosen, only its structures show; the group is the learning level's `system_names`. */
-  function internalSystemAllows(region: Region, surface: boolean): boolean {
-    if (!values.internalSystem || surface) return true;
-    if (values.detail === 'learning' && region.atlas !== 'learning' && !region.supplemental) {
-      return values.internalConstituents.has(region.id);
-    }
-    return region.system_names?.en === values.internalSystem;
-  }
-
-  function hidden(region: Region): boolean {
-    const s = values;
-    const surface = region.kind === 'cortex' || region.kind === 'non-region';
-    if (region.kind === 'tissue-region') return !s.cutActive;
-    if (region.kind === 'structure') {
-      if (!(region.supplemental === true || region.atlas === s.detail)) return true;
-    } else if (surface && region.atlas !== s.atlas) return true;
-    if (!internalSystemAllows(region, surface)) return true;
-    if (
-      s.hemisphere !== 'both' &&
-      region.hemisphere !== 'midline' &&
-      region.hemisphere !== s.hemisphere
-    ) {
-      return true;
-    }
-    if ((surface || region.atlas === 'wmparc') && !(s.cortexVisible && s.cortexOpacity > 0))
-      return true;
-    if (region.kind === 'structure' && !s.internalVisible) return true;
-    if (region.atlas === 'zanatomy' && !s.spinalCordVisible) return true;
-    if (dissection.hidden.has(region.id)) return true;
-    return Boolean(s.isolatedRegion && region.id !== s.isolatedRegion);
-  }
+  const hidden = (region: Region) => !visibilityOf(region, settings()).visible;
 
   const canSelect = (region: Region) =>
     !(region.supplemental && !layers.has(region.atlas ?? '')) && !hidden(region);
@@ -221,7 +192,12 @@ export function createFakeModel({
     setInternalSystem(system) {
       if (
         system !== null &&
-        !manifest.regions.some((r) => r.kind === 'structure' && r.system_names?.en === system)
+        !manifest.regions.some(
+          (r) =>
+            r.kind === 'structure' &&
+            belongsToDetail(r, values.detail) &&
+            labelOf(r, 'en')?.group === system,
+        )
       ) {
         throw new Error(`Unknown internal anatomy system: ${system}`);
       }

@@ -94,7 +94,7 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
     ...manifest.atlases.map((atlas) => atlas.id),
     ...(manifest.cut_atlases ?? []).map((atlas) => atlas.id),
   ]);
-  const state: SectionsState = {
+  const state: { -readonly [K in keyof SectionsState]: SectionsState[K] } = {
     mode: 'off',
     cutAtlas: model.state.atlas,
     crosshair: [0, 0, 0],
@@ -148,6 +148,9 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
     return [bounds[0][axis]!, bounds[1][axis]!];
   }
 
+  /** A copy, so a listener comparing the last and next state sees a difference (sections.js:55 is live). */
+  const snapshot = (): SectionsState => ({ ...state, crosshair: [...state.crosshair] });
+
   function emit() {
     model.setCutState({ atlas: state.cutAtlas, active: active() });
     changed();
@@ -191,7 +194,9 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
   }
 
   return {
-    state,
+    get state() {
+      return snapshot();
+    },
     get active() {
       return active();
     },

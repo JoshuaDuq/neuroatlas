@@ -51,6 +51,14 @@ describe('the fake engine', () => {
     assert.deepEqual(active, [true, false]);
   });
 
+  it('links no orbit while the tract reference is shown', async () => {
+    const engine = createFakeEngine({ manifest: published, tractAnatomy: 'another' });
+    engine.camera.orbitBy({ azimuth: 0.1 });
+    assert.ok(engine.camera.orbitLink());
+    await engine.tracts.setActive(true);
+    assert.equal(engine.camera.orbitLink(), null);
+  });
+
   it('highlights an overlap until it is cleared or hidden', async () => {
     const engine = create();
     const geometry = { file: 'atlas-overlaps.glb', sha256: '0'.repeat(64) };

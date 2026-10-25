@@ -21,6 +21,8 @@ export interface FakeTractsOptions {
 }
 
 export interface FakeTracts extends EngineTracts {
+  /** The tract reference of another anatomy is shown (the `tractsActive` state). */
+  readonly referenceActive: boolean;
   /** The navigators opened so far, newest last. */
   readonly navigators: readonly FakeMriNavigator[];
 }
@@ -82,6 +84,9 @@ export function createFakeTracts({
 
   return {
     anatomy: tractAnatomy,
+    get referenceActive() {
+      return referenceActive;
+    },
     get ready() {
       return ready;
     },

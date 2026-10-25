@@ -17,6 +17,8 @@ export interface FakeCameraOptions {
   sections: EngineSections;
   emit: Emit;
   hostSize: Size;
+  /** The tract reference is shown: no orbit is linked (app.js:815). */
+  referenceActive: () => boolean;
 }
 
 type Vector = [number, number, number];
@@ -88,6 +90,7 @@ export function createFakeCamera({
   sections,
   emit,
   hostSize,
+  referenceActive,
 }: FakeCameraOptions): EngineCamera {
   let position: Vector = [...DIRECTIONS.oblique].map((v) => v * DISTANCE_MM) as Vector;
   let target: Vector = [0, 0, 0];
@@ -183,7 +186,10 @@ export function createFakeCamera({
 
     frameCurrent: (name) => frameView(name),
     applyView: (name) => frameView(name),
-    frameRegions: () => reframe(),
+    frameRegions(ids) {
+      if (!ids.some((id) => model.isRegionDrawn(id))) return;
+      reframe();
+    },
     frameRegion(id) {
       if (!model.isRegionDrawn(id)) return false;
       reframe();
@@ -262,7 +268,7 @@ export function createFakeCamera({
       reframe();
     },
     orbitLink() {
-      if (held) return null;
+      if (held || referenceActive()) return null;
       const named = upFor((view || 'oblique') as ViewName);
       const differs = distanceBetween(up, named) > 1e-3;
       return { position: [...position], target: [...target], ...(differs ? { up: [...up] } : {}) };

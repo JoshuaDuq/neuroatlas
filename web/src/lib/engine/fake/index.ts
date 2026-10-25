@@ -85,12 +85,19 @@ export function createFakeEngine(options: FakeEngineOptions): FakeEngine {
     changed: () => events.emit('change', { model: model.state, sections: sections.state }),
   });
   sectionsRef.current = sections;
-  const camera = createFakeCamera({ model, sections, emit: events.emit, hostSize });
   const tracts = createFakeTracts({
     anatomy: options.manifest.anatomy.id,
     tractAnatomy: options.tractAnatomy,
     bundles: options.tractBundles,
     emit: events.emit,
+  });
+
+  const camera = createFakeCamera({
+    model,
+    sections,
+    emit: events.emit,
+    hostSize,
+    referenceActive: () => tracts.referenceActive,
   });
 
   const comparison: EngineComparison = {

@@ -303,6 +303,18 @@ export function defineEngineContract(
         assert.equal(model.settings.cutActive, false);
       });
 
+      it('hands out snapshots, not its live state', async () => {
+        const { engine } = await boot();
+        const changes = collect(engine, 'change');
+        engine.sections.setDisplay({ reverse: true });
+        engine.sections.setDisplay({ reverse: false });
+        const [first, second] = changes.slice(-2).map((change) => change.sections);
+        assert.notEqual(first, second);
+        assert.equal(first!.reverse, true);
+        assert.equal(second!.reverse, false);
+        assert.notEqual(engine.sections.state, engine.sections.state);
+      });
+
       it('keeps the crosshair and the offset inside the volume', async () => {
         const { engine } = await boot();
         const { sections } = engine;
@@ -473,6 +485,16 @@ export function defineEngineContract(
         camera.applyView('left');
         camera.focusPoint([10, 0, 0]);
         assert.equal(camera.viewHeld, false);
+      });
+
+      it('does nothing, and keeps the held view, when none of the regions is drawn', async () => {
+        const { engine } = await boot();
+        const moves = collect(engine, 'camera');
+        engine.camera.applyView('left');
+        const count = moves.length;
+        engine.camera.frameRegions(['no-such-region']);
+        assert.equal(engine.camera.viewHeld, true);
+        assert.equal(moves.length, count);
       });
 
       it('leaves the held view alone when it frames the whole or the internal anatomy', async () => {

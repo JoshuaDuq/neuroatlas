@@ -221,18 +221,18 @@ export type SectionsStatus = 'idle' | 'loading' | 'ready' | 'error';
 /** The code the sections report for a failed cut (sections.js:461). */
 export type SectionsErrorCode = 'asset-fetch' | 'asset-updated' | 'cut-failed';
 
-/** `BrainSections.state` (sections.js:55). */
+/** `BrainSections.state` (sections.js:55) as a snapshot: each read or `change` gives a fresh, read-only copy. */
 export interface SectionsState {
-  mode: CutMode;
-  cutAtlas: string;
+  readonly mode: CutMode;
+  readonly cutAtlas: string;
   /** RAS millimetres. */
-  crosshair: Vec3;
-  reverse: boolean;
-  overlay: boolean;
-  tilt: number;
-  azimuth: number;
-  status: SectionsStatus;
-  error: SectionsErrorCode | null;
+  readonly crosshair: Vec3;
+  readonly reverse: boolean;
+  readonly overlay: boolean;
+  readonly tilt: number;
+  readonly azimuth: number;
+  readonly status: SectionsStatus;
+  readonly error: SectionsErrorCode | null;
 }
 
 /** A plane through the volume, in RAS millimetres (coordinates.js:36). */
@@ -383,7 +383,10 @@ export interface EngineCamera {
   frameCurrent(view: ViewName, options?: MoveOptions): void;
   /** Frame a named view, as the view keys and presets do (app.js:443). Holds the view. */
   applyView(view: ViewName, options?: MoveOptions): void;
-  /** Frame a deficit's regions together, from the side they lie on (app.js:474). Releases the view. */
+  /**
+   * Frame a deficit's regions together, from the side they lie on (app.js:474). Releases the view. A no-op,
+   * leaving the held view alone, when none of the ids is drawn (app.js:476-477).
+   */
   frameRegions(ids: readonly string[]): void;
   /** Frame one drawn region from the current heading (app.js:510-524). Releases the view; false when it has no drawn mesh. */
   frameRegion(id: string, options?: MoveOptions): boolean;

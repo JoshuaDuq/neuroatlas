@@ -5,6 +5,7 @@ import manifest from '../../public/models/cdmd/manifest.json' with { type: 'json
 import { BrainAtlas } from '../../viewer/model/brain-atlas.js';
 import { BrainSections } from '../../viewer/slices/sections.js';
 import type { Manifest } from '../src/lib/types/index.ts';
+import { labelOf } from '../src/lib/core/catalog/labels.ts';
 import { createFakeEngine } from '../src/lib/engine/fake.ts';
 
 /**
@@ -31,14 +32,20 @@ function seeded(seed: number) {
 const pick = <T>(random: () => number, items: readonly T[]) =>
   items[Math.floor(random() * items.length)]!;
 
+const layerIds = () => [
+  ...published.atlases.map((atlas) => atlas.id),
+  ...published.detail_levels.map((level) => level.id),
+  ...(published.supplemental_layers ?? []).map((layer) => layer.id),
+];
+
 /** A legacy model with its first atlas and default detail "loaded" but no meshes. */
 function legacyModel() {
+  // Every layer is already "downloaded", as an empty scene: the legacy loader would reject one with no meshes.
   const loader = { loadAsync: () => new Promise(() => {}) };
   const model = new BrainAtlas(published, loader);
   model.atlasId = published.atlases[0]!.id;
   model.detailId = model.defaultDetail;
-  model.layers.set(model.atlasId, { scene: new Group(), meshes: [] });
-  model.layers.set(model.detailId, { scene: new Group(), meshes: [] });
+  for (const id of layerIds()) model.layers.set(id, { scene: new Group(), meshes: [] });
   return model;
 }
 
@@ -54,9 +61,9 @@ const plain = (settings: Record<string, unknown>) =>
   ) as unknown;
 
 /** Run an operation, reporting a throw as its class and message. */
-function outcome(run: () => unknown) {
+async function outcome(run: () => unknown) {
   try {
-    run();
+    await run();
     return null;
   } catch (error) {
     return `${(error as Error).constructor.name}: ${(error as Error).message}`;
@@ -67,26 +74,56 @@ const hemisphereChoices: string[] = ['both', 'left', 'right', 'up', ''];
 const levelChoices = ['named', 'sections', 'deep'];
 
 describe('F2 parity: the fake model against BrainAtlas', () => {
-  it('agrees with BrainAtlas over a seeded sequence of display operations', () => {
+  it('agrees with BrainAtlas over a seeded sequence of display, layer and cut operations', async () => {
     const random = seeded(20261025);
     const legacy = legacyModel();
     const fake = fakeEngine().model;
+    for (const id of layerIds()) fake.loadLayer(id);
     const systems = [
       ...new Set(
         published.regions
-          .filter((region) => region.kind === 'structure' && region.system_names)
-          .map((region) => region.system_names!.en!),
+          .filter((region) => region.kind === 'structure')
+          .map((region) => labelOf(region, 'en')?.group),
       ),
       'No such system',
       null,
     ];
-    const operations: ((model: typeof fake | typeof legacy) => void)[] = [];
-    const add = (op: (model: typeof fake | typeof legacy) => void) => operations.push(op);
-    for (let step = 0; step < 600; step++) {
+    const details = [...published.detail_levels.map((level) => level.id), 'no-such-level'];
+    const atlases = [...published.atlases.map((atlas) => atlas.id), 'no-such-atlas'];
+    const cutAtlases = ['destrieux', 'hcp-mmp', 'nextbrain', 'wmparc', 'bogus'];
+    const colours = ['tissue', 'atlas', 'mri', 'bogus'];
+    const operations: ((model: typeof fake | typeof legacy) => unknown)[] = [];
+    const add = (op: (model: typeof fake | typeof legacy) => unknown) => operations.push(op);
+    for (let step = 0; step < 900; step++) {
       const id = pick(random, regionIds);
       const ids = [pick(random, regionIds), pick(random, regionIds)];
       const choice = random();
-      if (choice < 0.2) add((model) => model.select(id));
+      const layer = random();
+      if (layer < 0.06) {
+        const detail = pick(random, details);
+        add((model) => model.setDetail(detail));
+      } else if (layer < 0.09) {
+        const atlas = pick(random, atlases);
+        add((model) => model.setAtlas(atlas));
+      } else if (layer < 0.14) {
+        const visible = pick(random, [true, false]);
+        add((model) => model.setSpinalCordVisible(visible));
+      } else if (layer < 0.2) {
+        const state = { atlas: pick(random, cutAtlases), active: pick(random, [true, false]) };
+        add((model) => model.setCutState(state));
+      } else if (layer < 0.25) {
+        const colour = pick(random, colours);
+        add((model) => {
+          // The scan is attached by sections.setSurfaceColor before the model's colour is set.
+          if ('attachMri' in model) {
+            model.attachMri();
+            model.applySurfaceColor(colour as 'mri');
+          } else {
+            model.mriUniforms ??= { scanEnabled: { value: false } };
+            model.setSurfaceColor(colour);
+          }
+        });
+      } else if (choice < 0.2) add((model) => model.select(id));
       else if (choice < 0.25) add((model) => model.select(null));
       else if (choice < 0.32) {
         const hemisphere = pick(random, hemisphereChoices);
@@ -123,14 +160,12 @@ describe('F2 parity: the fake model against BrainAtlas', () => {
       } else add((model) => model.reset());
     }
     let threw = 0;
+    let selectable = 0;
     let selecting = 0;
+    const allIds = [...published.regions.keys()];
     for (const [index, operation] of operations.entries()) {
-      const failure = outcome(() => operation(legacy));
-      assert.equal(
-        outcome(() => operation(fake)),
-        failure,
-        `step ${index}: outcome`,
-      );
+      const failure = await outcome(() => operation(legacy));
+      assert.equal(await outcome(() => operation(fake)), failure, `step ${index}: outcome`);
       if (failure) threw++;
       if (legacy.state.selectedRegion) selecting++;
       const expected = plain({
@@ -139,11 +174,20 @@ describe('F2 parity: the fake model against BrainAtlas', () => {
       });
       const actual = plain({ ...fake.settings, selected: fake.state.selectedRegion?.id ?? null });
       assert.deepStrictEqual(actual, expected, `step ${index}: state`);
+      // Which regions each model would accept, over every region, whatever the step did.
+      for (const position of allIds) {
+        const { id: regionId } = published.regions[position]!;
+        const want = legacy.canSelect(legacy.regions.get(regionId));
+        if (fake.canSelect(fake.regions.get(regionId)!) !== want) {
+          assert.fail(`step ${index}: canSelect(${regionId}) should be ${want}`);
+        }
+        if (want) selectable++;
+      }
     }
     // The sequence must reach both the refusals and the selections it compares.
     assert.ok(
-      threw > 50 && selecting > 20,
-      `${threw} refusals, ${selecting} steps with a selection`,
+      threw > 50 && selecting > 20 && selectable > 1000,
+      `${threw} refusals, ${selecting} steps with a selection, ${selectable} selectable regions`,
     );
     legacy.dispose();
   });
