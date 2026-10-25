@@ -148,7 +148,7 @@ describe('E4a BrainSections geometry', () => {
     for (const cordShown of [false, true]) {
       const a = stubs(cordShown);
       const b = stubs(cordShown);
-      const legacy = new LegacySections(a.model, 'https://example.invalid/', a.tissues);
+      const legacy = new LegacySections(a.model, 'https://example.invalid/', a.tissues as never);
       const current = new BrainSections(
         b.model as unknown as SectionsModel,
         'https://example.invalid/',

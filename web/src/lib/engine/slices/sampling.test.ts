@@ -25,8 +25,8 @@ const display = { fieldOfView: 4, size: 4, windowCenter: 127.5, windowWidth: 255
 test('pixel centers, canvas top, and patient left/right agree in axial slices', () => {
   const frame = createFrame('axial', [1.5, 1.5, 1]);
   const pixels = renderSlice(volumes, frame, display);
-  assert.deepEqual([...pixels.slice(0, 4)], [70, 70, 70, 255]);
-  assert.deepEqual([...pixels.slice(-4)], [43, 43, 43, 255]);
+  assert.deepEqual(Array.from(pixels.slice(0, 4)), [70, 70, 70, 255]);
+  assert.deepEqual(Array.from(pixels.slice(-4)), [43, 43, 43, 255]);
   assert.deepEqual(pointOnFrame(frame, 0.125, 0.125, 4), [0, 3, 1]);
 });
 
