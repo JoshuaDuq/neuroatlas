@@ -7,6 +7,8 @@ export interface TreegridNode<T> {
   /** The text type-ahead matches. */
   label: string;
   data: T;
+  /** Whether the row can be chosen and so carries `aria-selected`; false for a group row. Default true. */
+  selectable?: boolean;
   children?: readonly TreegridNode<T>[];
 }
 

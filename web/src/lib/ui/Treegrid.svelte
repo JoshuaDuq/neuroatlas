@@ -2,8 +2,10 @@
   // Hand-rolled WAI-ARIA APG treegrid (Bits UI has none; decision 0002). One Tab stop: the focused
   // row or cell. A row is a cell for the primary control (name/select) followed by one cell per
   // action, so each button sits in its own cell and none is nested inside another control.
-  // Only the first control of a cell is in the arrow-key order; the rest are pointer-only.
-  import { onMount, type Snippet } from 'svelte';
+  // Contract: an action cell holds exactly one control. The primary cell's first control is its
+  // keyboard stop; any further control in it (a chevron) is pointer-only and must duplicate a key
+  // (Right/Left expand and collapse, `rowKeys`). Cells with no control, or a disabled one, are skipped.
+  import { onMount, untrack, type Snippet } from 'svelte';
   import {
     cellKeyAction,
     isTypeAheadKey,
@@ -21,8 +23,13 @@
     nodes: readonly TreegridNode<T>[];
     /** Ids of the expanded parents. Replaced, never mutated. */
     expanded?: Set<string>;
-    /** The chosen row (`aria-selected`); leave undefined for a grid whose rows are not selectable. */
+    /**
+     * The chosen row (`aria-selected` on rows whose node is `selectable`); leave undefined for a grid
+     * whose rows are not selectable. The Tab stop is the focused row, else this one, else the first.
+     */
     selectedId?: string | null;
+    /** The accessible name of a row, instead of the text of its cells. */
+    rowLabel?: (node: TreegridNode<T>) => string;
     /** Ids of the trailing action cells, in order. */
     actions?: readonly string[];
     /** The first cell. `toggle` expands or collapses the row, for a pointer control. */
@@ -42,6 +49,7 @@
     nodes,
     expanded = $bindable(new Set<string>()),
     selectedId,
+    rowLabel,
     actions = [],
     primary,
     action,
@@ -64,12 +72,20 @@
 
   const rowElement = (id: string) =>
     [...grid.querySelectorAll<HTMLElement>('[role="row"]')].find((row) => row.dataset.id === id);
-  const cellTarget = (cell: HTMLElement) => cell.querySelector<HTMLElement>(CONTROL) ?? cell;
-  /** The cells of a row that can take focus, in DOM order. */
-  const cellsOf = (row: HTMLElement) =>
-    [...row.querySelectorAll<HTMLElement>(':scope > [role="gridcell"]')].filter(
-      (cell) => !cellTarget(cell).matches(':disabled'),
-    );
+  const selectable = (node: TreegridNode<T>) =>
+    selectedId !== undefined && node.selectable !== false;
+  const controlOf = (cell: HTMLElement) => cell.querySelector<HTMLElement>(CONTROL);
+  const usable = (cell: HTMLElement) => {
+    const control = controlOf(cell);
+    return control !== null && !control.matches(':disabled');
+  };
+  /** Every cell of a row, in DOM order: a cell's index is its column. */
+  const cellsOf = (row: HTMLElement) => [
+    ...row.querySelectorAll<HTMLElement>(':scope > [role="gridcell"]'),
+  ];
+  /** The columns of a row that can take focus. */
+  const usableColumns = (row: HTMLElement) =>
+    cellsOf(row).flatMap((cell, column) => (usable(cell) ? [column] : []));
 
   function rememberParents(list: readonly TreegridNode<T>[], parent: string | null) {
     for (const node of list) {
@@ -86,14 +102,12 @@
     for (const element of grid.querySelectorAll<HTMLElement>(`[role="row"], ${CONTROL}`)) {
       element.tabIndex = -1;
     }
-    for (const cell of grid.querySelectorAll<HTMLElement>('[role="gridcell"]')) {
-      if (cellTarget(cell) === cell) cell.tabIndex = -1;
-    }
     if (id === null) return;
     const row = rowElement(id)!;
     const cell = stop.cell === null ? undefined : cellsOf(row)[stop.cell];
-    if (stop.cell !== null && !cell) stop = { id, cell: null };
-    (cell ? cellTarget(cell) : row).tabIndex = 0;
+    const control = cell && usable(cell) ? controlOf(cell) : null;
+    if (stop.cell !== null && !control) stop = { id, cell: null };
+    (control ?? row).tabIndex = 0;
   }
 
   function focusRow(id: string) {
@@ -105,7 +119,7 @@
   function focusCell(id: string, cell: number) {
     stop = { id, cell };
     sync();
-    cellTarget(cellsOf(rowElement(id)!)[cell]).focus();
+    controlOf(cellsOf(rowElement(id)!)[cell])!.focus();
   }
 
   function onfocusin(event: FocusEvent) {
@@ -115,15 +129,22 @@
     const row = target.closest<HTMLElement>('[role="row"]');
     if (!row) return;
     const cell = target === row ? null : target.closest<HTMLElement>('[role="gridcell"]');
-    stop = { id: row.dataset.id!, cell: cell ? cellsOf(row).indexOf(cell) : null };
-    if (stop.cell === -1) stop.cell = null;
+    const column = cell ? cellsOf(row).indexOf(cell) : -1;
+    stop = { id: row.dataset.id!, cell: column === -1 ? null : column };
     sync();
   }
 
   function onfocusout(event: FocusEvent) {
+    const next = event.relatedTarget as Node | null;
+    // Focus went to another control: the grid has been left, and no rebuild may pull it back.
+    if (next && !grid.contains(next)) {
+      clearTimeout(leaveTimer);
+      focusWithin = false;
+      return;
+    }
     // A control that is removed or replaced loses focus without a destination, and the rebuild that
     // did it is observed in a microtask: leaving the grid is only counted once that has run.
-    if (!event.relatedTarget) leaveTimer = setTimeout(() => (focusWithin = false));
+    if (!next) leaveTimer = setTimeout(() => (focusWithin = false));
   }
 
   function typeAhead(key: string) {
@@ -197,7 +218,10 @@
           onactivate?.(row.node);
           break;
         case 'firstCell':
-          if (cellsOf(rowElementUnderFocus).length) focusCell(row.node.id, 0);
+          {
+            const [first] = usableColumns(rowElementUnderFocus);
+            if (first !== undefined) focusCell(row.node.id, first);
+          }
           break;
         case 'expand':
           setExpanded([row.node.id], true);
@@ -222,40 +246,62 @@
       return;
     }
 
-    const cells = cellsOf(rowElementUnderFocus);
-    const cell = cells.indexOf(target.closest<HTMLElement>('[role="gridcell"]')!);
+    const column = cellsOf(rowElementUnderFocus).indexOf(
+      target.closest<HTMLElement>('[role="gridcell"]')!,
+    );
+    const columns = usableColumns(rowElementUnderFocus);
     const act = cellKeyAction(
       key,
-      { first: cell <= 0, last: cell === cells.length - 1 },
+      { first: !columns.some((c) => c < column), last: !columns.some((c) => c > column) },
       event.ctrlKey,
     );
     if (!act) return;
     handled();
     switch (act) {
       case 'nextCell':
-        focusCell(row.node.id, cell + 1);
+        focusCell(
+          row.node.id,
+          columns.find((c) => c > column)!,
+        );
         break;
       case 'previousCell':
-        focusCell(row.node.id, cell - 1);
+        focusCell(row.node.id, columns.filter((c) => c < column).at(-1)!);
         break;
       case 'firstCell':
-        focusCell(row.node.id, 0);
+        focusCell(row.node.id, columns[0]);
         break;
       case 'lastCell':
-        focusCell(row.node.id, cells.length - 1);
+        focusCell(row.node.id, columns.at(-1)!);
         break;
       case 'row':
         focusRow(row.node.id);
         break;
       default: {
-        // The same cell in the adjacent row, or the last one it has.
+        // The same column in the adjacent row, else its nearest cell that can take focus; a row
+        // with none leaves focus where it is.
         const destination = rows[movedIndex(act, index, rows.length)].node.id;
-        const count = cellsOf(rowElement(destination)!).length;
-        if (count) focusCell(destination, Math.min(cell, count - 1));
-        else focusRow(destination);
+        const nearest = usableColumns(rowElement(destination)!).reduce<number | undefined>(
+          (best, c) =>
+            best === undefined || Math.abs(c - column) < Math.abs(best - column) ? c : best,
+          undefined,
+        );
+        if (nearest !== undefined) focusCell(destination, nearest);
       }
     }
   }
+
+  // The Tab stop moves to the chosen row at once, unless the reader is moving through the grid
+  // (navigator.js `markSelection`; APG Tree View: focus enters a single-select tree on its selection).
+  $effect(() => {
+    const id = selectedId;
+    untrack(() => {
+      if (grid.contains(document.activeElement)) return;
+      if (id != null && rows.some((row) => row.node.id === id)) {
+        stop = { id, cell: null };
+        sync();
+      }
+    });
+  });
 
   // onMount, not $effect: the observer must outlive every change of rows it is there to catch.
   onMount(() => {
@@ -294,12 +340,13 @@
       role="row"
       class="row"
       data-id={row.node.id}
-      data-selected={selectedId === undefined ? undefined : selectedId === row.node.id}
+      data-selected={selectable(row.node) ? selectedId === row.node.id : undefined}
+      aria-label={rowLabel?.(row.node)}
       aria-level={row.level}
       aria-posinset={row.posinset}
       aria-setsize={row.setsize}
       aria-expanded={row.expandable ? row.expanded : undefined}
-      aria-selected={selectedId === undefined ? undefined : selectedId === row.node.id}
+      aria-selected={selectable(row.node) ? selectedId === row.node.id : undefined}
       style:--level={row.level}
     >
       <div role="gridcell" class="cell primary">

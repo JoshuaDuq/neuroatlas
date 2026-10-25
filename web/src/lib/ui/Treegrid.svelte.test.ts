@@ -5,9 +5,9 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Fixture from './treegrid-fixture.svelte';
 
-const mount = () => {
+const mount = (props: { initialSelected?: string | null; wide?: boolean } = {}) => {
   const log: string[] = [];
-  const screen = render(Fixture, { log });
+  const screen = render(Fixture, { log, ...props });
   return { log, screen };
 };
 const grid = () => document.querySelector<HTMLElement>('[role="treegrid"]')!;
@@ -137,7 +137,7 @@ describe('APG keys with focus on a row', () => {
     await press(' ');
     expect(log).toEqual(['activate insula', 'activate insula']);
     expect(row('insula').getAttribute('aria-selected')).toBe('true');
-    expect(row('frontal').getAttribute('aria-selected')).toBe('false');
+    expect(row('frontal').hasAttribute('aria-selected')).toBe(false);
   });
 
   test('* expands every sibling parent', async () => {
@@ -286,6 +286,113 @@ describe('focus restoration', () => {
     cellButtons('insula')[1].click();
     expect(active()).toBe(row('limbic'));
     expect(tabStops()).toEqual([row('limbic')]);
+  });
+});
+
+describe('leaving the grid', () => {
+  test('Tab out to a control that rebuilds the grid leaves focus on that control', async () => {
+    mount();
+    focus('frontal');
+    await press('{ArrowRight}{ArrowDown}');
+    expect(active()).toBe(row('precentral'));
+    await press('{Tab}');
+    expect(active()).toBe(document.getElementById('after'));
+    // Collapse all rebuilds the grid; the reader is outside it.
+    (document.getElementById('collapse-all') as HTMLElement).focus();
+    (document.getElementById('collapse-all') as HTMLElement).click();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(active()).toBe(document.getElementById('collapse-all'));
+  });
+});
+
+describe('selection and the Tab stop', () => {
+  test('Tab enters on the selected row', async () => {
+    mount({ initialSelected: 'insula' });
+    expect(tabStops()).toEqual([row('insula')]);
+    (document.getElementById('before') as HTMLElement).focus();
+    await press('{Tab}');
+    expect(active()).toBe(row('insula'));
+  });
+
+  test('a selection made outside the grid moves the stop; one made inside does not steal it', async () => {
+    mount();
+    expect(tabStops()).toEqual([row('frontal')]);
+    (document.getElementById('select-insula') as HTMLElement).click();
+    await expect.poll(tabStops).toEqual([row('insula')]);
+    focus('limbic');
+    expect(tabStops()).toEqual([row('limbic')]);
+  });
+
+  test('aria-selected is on selectable rows only', async () => {
+    mount({ initialSelected: 'insula' });
+    expect(rows().map((r) => r.getAttribute('aria-selected'))).toEqual([null, 'true', null]);
+    focus('frontal');
+    await press('*');
+    expect(rows().map((r) => r.getAttribute('aria-selected'))).toEqual([
+      null,
+      'false',
+      'false',
+      'true',
+      null,
+      'false',
+    ]);
+  });
+});
+
+describe('row names', () => {
+  test('rowLabel names the row, not its cells', async () => {
+    mount();
+    expect(row('frontal').getAttribute('aria-label')).toBe('Frontal, 2 regions');
+    expect(row('insula').getAttribute('aria-label')).toBe('Insula');
+  });
+});
+
+describe('cells without a control, and disabled cells', () => {
+  const open = async () => {
+    mount({ wide: true });
+    focus('frontal');
+    await press('*');
+    focus('limbic');
+    await press('*');
+  };
+
+  test('Right and Left skip empty cells, and Right at the last control stays', async () => {
+    await open();
+    focus('insula');
+    await press('{ArrowRight}{ArrowRight}');
+    expect(active()).toBe(cellButtons('insula')[1]);
+    await press('{ArrowRight}');
+    expect(active()).toBe(cellButtons('insula')[1]);
+    focus('cingulate');
+    await press('{ArrowRight}{ArrowRight}{ArrowRight}');
+    expect(active()).toBe(cellButtons('cingulate')[2]);
+    await press('{ArrowLeft}');
+    expect(active()).toBe(cellButtons('cingulate')[1]);
+  });
+
+  test('a disabled cell is skipped, and Up and Down land on the nearest cell in the column', async () => {
+    await open();
+    focus('precentral');
+    await press('{ArrowRight}{ArrowRight}');
+    // The eye is disabled, the side cell empty: the first cell is the only stop.
+    expect(active()).toBe(cellButtons('precentral')[0]);
+    focus('frontal');
+    await press('{ArrowRight}{ArrowRight}{ArrowRight}');
+    expect(active()).toBe(cellButtons('frontal')[1]);
+    await press('{ArrowDown}');
+    expect(active()).toBe(cellButtons('precentral')[0]);
+    await press('{ArrowDown}');
+    expect(active()).toBe(cellButtons('postcentral')[0]);
+  });
+
+  test('Up and Down keep the column across empty cells', async () => {
+    await open();
+    focus('cingulate');
+    await press('{ArrowRight}{ArrowRight}{ArrowRight}');
+    expect(active()).toBe(cellButtons('cingulate')[2]);
+    await press('{ArrowUp}');
+    // The row above has no cell in column 2: the nearest is its eye (column 1).
+    expect(active()).toBe(cellButtons('limbic')[1]);
   });
 });
 
