@@ -78,6 +78,8 @@ The viewer publishes one individual reconstruction: a single person's brain, wit
 
 ## Quickstart
 
+The repository is heavy: a clone downloads about 410 MB and takes about 900 MB on disk once checked out. Most of that is the compiled models and tractograms in `public/`, which the viewer loads directly.
+
 ### Viewer
 
 ```bash
