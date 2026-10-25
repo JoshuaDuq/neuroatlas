@@ -244,9 +244,13 @@ test.describe('anatomy tree', () => {
       // a1-section-reason-name: the caption is in the section row's name.
       await expect(rowNamed(page, /^Cortex \(Hemisphere hidden/)).toBeVisible();
     }
-    await expect(
-      rowNamed(page, 'Middle frontal gyrus, right: Hemisphere hidden. Activate to reveal.'),
-    ).not.toHaveAttribute('title', /.+/);
+    const hidden = rowNamed(
+      page,
+      'Middle frontal gyrus, right: Hemisphere hidden. Activate to reveal.',
+    );
+    // a1-drop-title: legacy duplicates the name in a native title.
+    if (isNext()) await expect(hidden).not.toHaveAttribute('title', /.+/);
+    else await expect(hidden).toHaveAttribute('title', /.+/);
   });
 
   test('French: the names, the counts and the eyes', async ({ app }) => {
