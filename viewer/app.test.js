@@ -255,28 +255,38 @@ test('another subject keeps the cut, view and panel, replaces the link in place 
 const restoreCommand = source.slice(source.indexOf('  async function restoreBeforeExcursion() {'),
   source.indexOf('  /** Closing a deficit ends its excursion'));
 const bindRestore = new Function('dependencies', `
-  let { commands, applyReaderState, render, session, beforeExcursion } = dependencies;
+  let { commands, applyReaderState, render, session, beforeExcursion, CLINICAL_TEXT } = dependencies;
   ${restoreCommand}
   return { restore: restoreBeforeExcursion, get before() { return beforeExcursion; } };
 `);
 
-test('a restore that a later command overtakes says so, and keeps the scene to restore; one that lands lifts the paint', async () => {
+test('a restore that a later command overtakes says so, and keeps the scene to restore; one that lands closes the item and says so', async () => {
   let live = true;
   const scene = { view: 'left' };
+  const said = [];
+  const closed = [];
+  const session = explorer => ({
+    assemble: () => ({ explorer, lang: 'en' }), notify: notice => said.push(notice.text),
+    setFunction: id => closed.push(['function', id]), setDeficit: id => closed.push(['deficit', id]),
+  });
+  const CLINICAL_TEXT = { en: { stageRestored: 'Previous view restored.' } };
   const restoring = bindRestore({
-    commands: { begin: () => () => live }, render() {}, session: { liftPaint() {} }, beforeExcursion: scene,
+    commands: { begin: () => () => live }, render() {}, session: session('functions'), beforeExcursion: scene, CLINICAL_TEXT,
     async applyReaderState() { live = false; return []; },
   });
   assert.equal(await restoring.restore(), false);
   assert.equal(restoring.before, scene);
-  const finished = bindRestore({
-    commands: { begin: () => () => true }, render() {}, session: { liftPaint() { lifted = true; } },
-    beforeExcursion: scene, async applyReaderState() { return []; },
-  });
-  let lifted = false;
-  assert.equal(await finished.restore(), true);
-  assert.equal(finished.before, null);
-  assert.equal(lifted, true, 'the previous view had no paint');
+  assert.deepEqual(closed, []);
+  for (const explorer of ['functions', 'deficits']) {
+    const finished = bindRestore({
+      commands: { begin: () => () => true }, render() {}, session: session(explorer), beforeExcursion: scene, CLINICAL_TEXT,
+      async applyReaderState() { return []; },
+    });
+    assert.equal(await finished.restore(), true);
+    assert.equal(finished.before, null);
+  }
+  assert.deepEqual(closed, [['function', null], ['deficit', null]], 'the previous view had no item open');
+  assert.deepEqual(said, ['Previous view restored.', 'Previous view restored.']);
 });
 
 const leaveCommand = source.slice(source.indexOf('  async function leaveLesson() {'),

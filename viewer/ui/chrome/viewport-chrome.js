@@ -33,7 +33,12 @@ const TOP_LETTER_ROOM_PX = 20;
  */
 const KEY_FOLD_ROWS = 8;
 const KEY_FOLD_WIDTH_PX = 1000;
-const KEY_ROW_PX = 20;
+const KEY_ROW_PX = 28;
+/**
+ * Narrower than this, a paint key keeps its rows and drops its note: the note would take more of a
+ * phone's stage than the picture it explains, and the open profile says the same thing in the panel.
+ */
+const KEY_NOTE_MIN_WIDTH_PX = 600;
 const KEY_HEAD_PX = 42;
 
 /** Keys that move the camera while the canvas has focus. */
@@ -304,8 +309,8 @@ export function createViewportChrome({
   }
 
   /**
-   * `legend` keys the paint a tab draws: `{ map, title, note, rows: [{ id, color, label, pressed }] }`,
-   * or null. With more than one row each is a toggle that shows that row alone.
+   * `legend` keys the paint a tab draws: `{ map, title, note, pickable, rows: [{ id, color, label, pressed }] }`,
+   * or null. Unless `pickable` is false, more than one row makes each a toggle that shows that row alone.
    */
   function showKeys(state, directionShown, legend) {
     const ready = state.status === 'ready' || state.status === 'switching';
@@ -336,10 +341,15 @@ export function createViewportChrome({
     const focusedPick = plates.paint.list.contains(document.activeElement)
       ? document.activeElement.dataset.pick : null;
     const shownLegend = ready ? legend : null;
-    const pickable = shownLegend?.rows.length > 1;
+    const pickable = shownLegend?.pickable !== false && shownLegend?.rows.length > 1;
     paintKey('paint', shownLegend?.map ?? null, shownLegend?.title, shownLegend?.rows.length,
       shownLegend?.rows.map(entry => {
         const row = keyRow(entry.color, entry.label);
+        // A colour the stage does not show is outlined in the row's ink instead of filled.
+        if (entry.absent) {
+          row.dataset.absent = '';
+          row.querySelector('.network-swatch').style.background = '';
+        }
         if (!pickable) return row;
         const button = document.createElement('button');
         button.type = 'button';
@@ -351,7 +361,7 @@ export function createViewportChrome({
       }));
     plates.paint.list.toggleAttribute('data-picked', Boolean(shownLegend?.rows.some(entry => entry.pressed)));
     paintNote.textContent = shownLegend?.note ?? '';
-    paintNote.hidden = plates.paint.list.hidden;
+    paintNote.hidden = plates.paint.list.hidden || (lastRect?.width ?? Infinity) < KEY_NOTE_MIN_WIDTH_PX;
     // Where the stage leaves the key too little height, its rows keep the room and the note gives way.
     const { list } = plates.paint;
     if (!paintNote.hidden && list.scrollHeight > list.clientHeight) paintNote.hidden = true;

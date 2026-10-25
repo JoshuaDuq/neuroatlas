@@ -3,20 +3,16 @@ import test from 'node:test';
 import { publishedCorrections, revealNotice, sharedSide, sideStated, stageMessage } from './clinical.js';
 import { CLINICAL_TEXT } from '../../clinical/translations.js';
 
-const idle = { opening: false, busy: 'loading', error: null, failure: null, restored: false, status: 'shown' };
+const idle = { opening: false, busy: 'loading', error: null, failure: null, status: 'shown' };
 
-test('an opened deficit says what the stage shows until the view is restored', () => {
-  for (const lang of ['en', 'fr']) {
-    const text = CLINICAL_TEXT[lang];
-    assert.equal(stageMessage(text, idle), 'shown');
-    assert.equal(stageMessage(text, { ...idle, restored: true }), text.stageRestored);
-  }
+test('an opened deficit says what the stage shows', () => {
+  for (const lang of ['en', 'fr']) assert.equal(stageMessage(CLINICAL_TEXT[lang], idle), 'shown');
 });
 
 test('work in progress names itself: opening anatomy, or restoring the view', () => {
   const text = CLINICAL_TEXT.en;
   assert.equal(stageMessage(text, { ...idle, opening: true }), text.loading);
-  assert.equal(stageMessage(text, { ...idle, opening: true, busy: 'restoring', restored: true }), text.restoring);
+  assert.equal(stageMessage(text, { ...idle, opening: true, busy: 'restoring' }), text.restoring);
 });
 
 test('failures are said in the reader’s language, never as the developer’s message', () => {

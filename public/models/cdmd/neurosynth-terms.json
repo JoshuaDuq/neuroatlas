@@ -3,11 +3,6 @@
   "atlas": "hcp-mmp",
   "structure_atlas": "aseg",
   "threshold_z": 3,
-  "color": [
-    0,
-    114,
-    178
-  ],
   "derivation": {
     "database": "Neurosynth version 7, abstract terms",
     "files": {

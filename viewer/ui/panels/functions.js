@@ -9,7 +9,7 @@ import {
 import { count, decimal } from '../format.js';
 import { createAnnouncer } from '../announce.js';
 import { createButtonLabel } from '../chrome/button-label.js';
-import { bridgeButton, drillChevron, element, scrollToTop, stageMessage } from './clinical.js';
+import { bridgeButton, drillChevron, element, scrollToTop, showOpenedRegion, stageMessage } from './clinical.js';
 import { checkedParcels } from './provenance.js';
 
 /** Areas listed before the rest fold under a disclosure. */
@@ -99,7 +99,6 @@ export function createFunctionExplorer({
   let busy = 'loading';
   let operation = 'colour';
   let restorable = false;
-  let restored = false;
 
   // A later choice overtakes an earlier one's download; only the latest speaks.
   async function run(action, { busyText = 'loading', failureText = 'failed', failed = 'colour' } = {}) {
@@ -109,7 +108,6 @@ export function createFunctionExplorer({
     failure = failureText;
     operation = failed;
     actionError = null;
-    restored = false;
     updateAction();
     try {
       return (await action()) !== false;
@@ -128,7 +126,7 @@ export function createFunctionExplorer({
     }
   }
 
-  /** The profile's name takes focus once it opens or its view is restored. */
+  /** The profile's name takes focus once it opens. */
   function focusTitle(options) {
     const title = document.getElementById('function-title');
     if (!title) return;
@@ -143,11 +141,11 @@ export function createFunctionExplorer({
     await run(() => preparing);
   }
 
+  /** The profile closes with the excursion it opened, so focus returns to its row in the list. */
   async function restorePrevious() {
+    const id = current.selectedFunction;
     if (!(await run(onRestore, { busyText: 'restoring', failureText: 'restoreFailed' }))) return;
-    restored = true;
-    updateAction();
-    focusTitle();
+    (list.querySelector(`[data-function="${CSS.escape(id)}"]`) ?? search).focus();
   }
 
   /** An area's row names its HCP-MMP code and side, and under it the functional division the code belongs to. */
@@ -241,13 +239,23 @@ export function createFunctionExplorer({
     return section;
   }
 
-  /** A clinical group's lesion profiles, where the Deficits tab has some for the same words. */
+  /** Which evidence a function rests on, its Neurosynth term marked as the English it is. */
+  function kindLine(record, lang) {
+    const line = element('p', null, 'clinical-kind');
+    const [before, after] = t(lang, 'functions').term('\u0000', count(domainStudies(domains, record.id), 'study', lang)).split('\u0000');
+    const term = element('span', record.term);
+    term.lang = 'en';
+    line.append(before, term, after);
+    return line;
+  }
+
+    /** A clinical group's lesion profiles, where the Deficits tab has some for the same words. */
   function lesionBridge(record, lang) {
     const copy = t(lang, 'functions');
     const found = deficitsMatching(record.term, lang);
     if (!found) return [];
     const section = element('section', null, 'detail-section function-lesions');
-    const heading = element('h3', copy.lesionHeading, 'detail-section-heading');
+    const heading = element('h3', copy.lesionBridgeHeading, 'detail-section-heading');
     heading.id = 'function-lesions-heading';
     section.setAttribute('aria-labelledby', heading.id);
     section.append(heading, bridgeButton(copy.deficitBridge(found, record.term), { searchDeficits: record.term }));
@@ -272,18 +280,15 @@ export function createFunctionExplorer({
     meta.setAttribute('role', 'status');
     const body = element('div', null, 'panel-body clinical-content');
     body.append(name, meta,
-      all ? element('p', domainCopy.keyAll, 'clinical-summary')
-        : element('p', copy.term(record.term, count(domainStudies(domains, id), 'study', lang)), 'clinical-kind'));
-    // What kind of word a searched term is comes before what every map's numbers mean.
-    if (searched) {
-      body.append(element('p', record.kind === 'population' ? copy.populationCaveat : copy.termCaveat,
-        'clinical-note clinical-caveat'));
-    }
-    body.append(element('p', domainCopy.note(domains.sources[domains.scores_source].short), 'clinical-note clinical-caveat'));
+      all ? element('p', domainCopy.keyAll, 'clinical-summary') : kindLine(record, lang));
+    // One line on what the map is not leads into the data; how its numbers are made follows the data.
+    body.append(element('p', !searched ? copy.caveat
+      : record.kind === 'population' ? copy.populationCaveat : copy.termCaveat, 'clinical-note clinical-caveat'));
     if (all) body.append(overviewSection(lang));
     else if (searched) body.append(...(record.kind === 'population' ? lesionBridge(record, lang) : []), areasSection(id, lang));
     else body.append(areasSection(id, lang), lesionSection(id, lang));
-    body.append(element('p', domains.sources[domains.scores_source].citation, 'clinical-note clinical-sources'));
+    body.append(element('p', domainCopy.note(domains.sources[domains.scores_source].short), 'clinical-note clinical-method'),
+      element('p', domains.sources[domains.scores_source].citation, 'clinical-note clinical-sources'));
     profile.append(body);
   }
 
@@ -299,7 +304,7 @@ export function createFunctionExplorer({
     const status = current.selectedFunction === ALL_DOMAINS ? copy.shown
       : areaCount(domains, current.selectedFunction, current.lang);
     const said = stageMessage(text, { opening, busy, error: actionError, failure, operation,
-      lang: current.lang, restored, status });
+      lang: current.lang, status });
     if (metaLine.textContent !== said) metaLine.textContent = said;
     metaLine.dataset.error = String(Boolean(actionError));
   }
@@ -313,7 +318,7 @@ export function createFunctionExplorer({
       onQuery('');
     }
     if (event.key === 'ArrowDown' || event.key === 'Enter') {
-      const first = list.querySelector('.function-row');
+      const first = list.querySelector('.function-row, .search-bridge');
       if (first) { event.preventDefault(); first.focus(); }
     }
   };
@@ -336,12 +341,14 @@ export function createFunctionExplorer({
     const button = event.target.closest('[data-function]');
     if (button) selectFunction(button.dataset.function);
   };
+  // Every row a search shows, suggestions and links to the other tab included; up from the first is the field.
   const onListKey = event => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-    const buttons = [...list.querySelectorAll('.function-row')];
-    const next = buttons[buttons.indexOf(document.activeElement) + (event.key === 'ArrowDown' ? 1 : -1)];
+    const buttons = [...list.querySelectorAll('.function-row, .search-bridge')];
+    const index = buttons.indexOf(document.activeElement);
     event.preventDefault();
-    if (next) next.focus();
+    if (event.key === 'ArrowUp' && index === 0) search.focus();
+    else buttons[index + (event.key === 'ArrowDown' ? 1 : -1)]?.focus();
   };
   const onProfileClick = event => {
     const bridge = event.target.closest('[data-search-deficits]');
@@ -351,7 +358,10 @@ export function createFunctionExplorer({
     const deficit = event.target.closest('[data-deficit]');
     if (deficit) return onDeficit(deficit.dataset.deficit);
     const area = event.target.closest('[data-function-region]');
-    if (area && !opening) run(() => onRegion(area.dataset.functionRegion), { failureText: null, failed: 'region' });
+    if (area && !opening) {
+      run(() => onRegion(area.dataset.functionRegion), { failureText: null, failed: 'region' })
+        .then(done => done && showOpenedRegion());
+    }
   };
   const onRestoreClick = () => { if (!opening) restorePrevious(); };
 
@@ -397,8 +407,9 @@ export function createFunctionExplorer({
         const overview = element('div', null, 'deficit-group function-overview-row');
         overview.append(functionButton(ALL_DOMAINS, copy.all, copy.allDetail, null));
         list.replaceChildren(...(query ? [] : [overview]), ...groups.map(({ group, name, domains: members }) =>
-          listGroup(group.id, name, members.map(record =>
-            functionButton(record.id, domainName(record, lang), areaCountShort(domains, record.id, lang), record.color)))));
+          listGroup(group.id, name, members.map(record => functionButton(record.id, domainName(record, lang),
+            copy.termDetail(count(domainStudies(domains, record.id), 'study', lang), areaCountShort(domains, record.id, lang)),
+            record.color)))));
         // Searched terms follow the curated functions, clinical groups apart from the rest.
         for (const kind of ['function', 'population']) {
           const rows = shown.filter(record => record.kind === kind);
@@ -425,7 +436,6 @@ export function createFunctionExplorer({
       }
       const nextProfileKey = `${lang}|${state.selectedFunction}`;
       if (nextProfileKey !== profileKey) {
-        if (!profileKey?.endsWith(`|${state.selectedFunction}`)) restored = false;
         profileKey = nextProfileKey;
         actionError = null;
         renderProfile(state);

@@ -20,6 +20,15 @@ export function drillChevron() {
   return chevron;
 }
 
+/** A region opened from a profile is detailed below the profile: brought into view, its name takes focus. */
+export function showOpenedRegion() {
+  const regionName = document.getElementById('selected-name');
+  if (!regionName || regionName.hidden) return;
+  regionName.tabIndex = -1;
+  regionName.scrollIntoView({ block: 'start' });
+  regionName.focus({ preventScroll: true });
+}
+
 /** A quiet link to the other evidence tab's matches for the same words. */
 export function bridgeButton(text, dataset) {
   const button = element('button', null, 'search-bridge');
@@ -174,13 +183,13 @@ export function revealNotice(lang, before, after) {
 }
 
 /**
- * The profile's meta line: work in progress, a failure, a restored view, or what the stage shows.
+ * The profile's meta line: work in progress, a failure, or what the stage shows.
  * A failure is worded for the reader: its own `failure` text, else what `operation` could not do.
  */
-export function stageMessage(text, { opening, busy, error, failure, operation, lang, restored, status }) {
+export function stageMessage(text, { opening, busy, error, failure, operation, lang, status }) {
   if (opening) return text[busy];
   if (error) return failure ? text[failure] : failureNotice(error, lang, operation).text;
-  return restored ? text.stageRestored : status;
+  return status;
 }
 
 /** A region inspector does not title a Neuropsychology section that has nothing to report. */
@@ -248,7 +257,6 @@ export function createClinicalExplorer({
   let operation = 'deficit';
   // Whether the scene from before the first deficit is held, and whether it was just put back.
   let restorable = false;
-  let restored = false;
   let current = null;
   // The side all the profile's findings share, said first on its meta line.
   let profileSide = null;
@@ -275,7 +283,6 @@ export function createClinicalExplorer({
     failure = failureText;
     operation = failed;
     actionError = null;
-    restored = false;
     updateAction();
     try {
       // An action that reports false was overtaken: it did not do what it says.
@@ -295,14 +302,11 @@ export function createClinicalExplorer({
     }
   }
 
-  /** The button leaves with the snapshot, so focus moves to the profile's title. */
+  /** The profile closes with the excursion it opened, so focus returns to its row in the list. */
   async function restorePrevious() {
+    const id = current.selectedDeficit;
     if (!(await run(onRestore, { busyText: 'restoring', failureText: 'restoreFailed' }))) return;
-    restored = true;
-    updateAction();
-    const headline = document.getElementById('clinical-title');
-    headline.tabIndex = -1;
-    headline.focus();
+    (list.querySelector(`[data-deficit="${CSS.escape(id)}"]`) ?? search).focus();
   }
 
   function renderProfile(state) {
@@ -383,7 +387,7 @@ export function createClinicalExplorer({
     const view = stageView(current);
     const shown = text.regionsMarked(view.shown, view.total, view.coloured);
     const said = stageMessage(text, { opening, busy, error: actionError, failure, operation, lang: language,
-      restored, status: profileSide ? `${text.laterality[profileSide]} · ${shown}` : shown });
+      status: profileSide ? `${text.laterality[profileSide]} · ${shown}` : shown });
     // Rewriting the same words would have the live region say them again on every render.
     if (metaLine.textContent !== said) metaLine.textContent = said;
     metaLine.dataset.error = String(Boolean(actionError));
@@ -399,29 +403,39 @@ export function createClinicalExplorer({
       onQuery('');
     }
     if (event.key === 'ArrowDown' || event.key === 'Enter') {
-      const first = list.querySelector('.clinical-deficit');
+      const first = list.querySelector('.clinical-deficit, .search-bridge');
       if (first) { event.preventDefault(); first.focus(); }
     }
   };
   const onDeficitClick = event => {
+    const suggestion = event.target.closest('[data-suggest]');
+    if (suggestion) {
+      search.value = suggestion.dataset.suggest;
+      onQuery(suggestion.dataset.suggest);
+      search.focus();
+      return;
+    }
     const bridge = event.target.closest('[data-search-functions]');
     if (bridge) return onSearchFunctions(bridge.dataset.searchFunctions);
     const button = event.target.closest('[data-deficit]');
     if (button) selectDeficit(button.dataset.deficit);
   };
+  // Every row a search shows, suggestions and links to the other tab included; up from the first is the field.
   const onListKey = event => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-    const buttons = [...list.querySelectorAll('.clinical-deficit')];
+    const buttons = [...list.querySelectorAll('.clinical-deficit, .search-bridge')];
     const index = buttons.indexOf(document.activeElement);
-    const next = buttons[index + (event.key === 'ArrowDown' ? 1 : -1)];
     event.preventDefault();
-    if (next) next.focus();
+    if (event.key === 'ArrowUp' && index === 0) search.focus();
+    else buttons[index + (event.key === 'ArrowDown' ? 1 : -1)]?.focus();
   };
   const onProfileClick = event => {
     const map = event.target.closest('[data-checked-function]');
     if (map) return onFunction(map.dataset.checkedFunction);
     const button = event.target.closest('[data-clinical-region]');
-    if (button && !opening) run(() => onRegion(button.dataset.clinicalRegion), { failed: 'region' });
+    if (button && !opening) {
+      run(() => onRegion(button.dataset.clinicalRegion), { failed: 'region' }).then(done => done && showOpenedRegion());
+    }
   };
   // `toggle` does not bubble, so the profile hears its disclosures while capturing.
   const onEvidenceToggle = event => {
@@ -478,11 +492,13 @@ export function createClinicalExplorer({
         const query = state.clinicalQuery.trim();
         const groups = clinical.grouped(query, language);
         list.replaceChildren(...groups.map(entry => deficitGroup(entry, language)));
-        // No match reads as the Anatomy search does; the collection's scope returns with the list.
-        coverage.hidden = !groups.length;
+        // No match reads as the Anatomy search does; the collection's scope stands under the whole list.
+        coverage.hidden = Boolean(query);
         if (!groups.length) {
           list.append(element('p', t(language, 'navigator').noMatch(query), 'empty-title'),
             element('p', text.noResults, 'empty'));
+          const near = clinical.nearest(query, language);
+          if (near) list.append(bridgeButton(t(language, 'functions').suggest(near), { suggest: near }));
         }
         const functions = query ? functionsMatching(query, language) : 0;
         if (functions) list.append(bridgeButton(text.functionBridge(functions, query), { searchFunctions: query }));
@@ -494,10 +510,7 @@ export function createClinicalExplorer({
       }
       const nextProfileKey = `${language}|${state.selectedDeficit}`;
       if (nextProfileKey !== profileKey) {
-        if (!profileKey?.endsWith(`|${state.selectedDeficit}`)) {
-          expanded = new Set();
-          restored = false;
-        }
+        if (!profileKey?.endsWith(`|${state.selectedDeficit}`)) expanded = new Set();
         profileKey = nextProfileKey;
         actionError = null;
         renderProfile(state);

@@ -418,7 +418,19 @@ line in a horizontally scrollable bar when enlarged text needs more room;
 keyboard focus brings each label into view. Phone labels can wrap within their cell as reader text grows. Labels
 use 14px medium type, reduced to 13px at 801–1000px and on the narrowest phones.
 Functions and Deficits paint the brain while in front: named
-regions in their colours, every other region in tissue colour, keyed on the stage. The selected tab uses semibold teal ink
+regions in their colours, every other region in tissue colour, keyed on the stage.
+The functions overview and a deficit's findings are categorical; one function
+or searched term alone is drawn on a three-band blue z scale (z 3–5, 5–10,
+≥ 10), darker for more consistent, keyed by band, so the stage keeps the order
+of strength the profile lists. Painted areas stay opaque when the cortex is
+see-through. A key row whose colour no drawn region carries is outlined, not
+filled, and its note says so. A function profile leads with its data: headline, stage
+line, evidence line and a one-line caveat, then the areas; how the numbers are
+made follows them, above the source. A function frames the whole brain, a
+deficit its regions, each after the key it brings is laid out, so the picture
+clears the key. A region opened from a profile is framed with its neighbours,
+and its detail is scrolled into view with focus on its name. On stages
+narrower than 600px a paint key keeps its rows and drops its note. The selected tab uses semibold teal ink
 and a 2px teal bottom rule on a transparent ground. A 40px search field
 starts each searchable task, with compact scope controls below it. Browse scope
 uses neutral text and a grey selected button in a transparent group. They share
@@ -602,7 +614,8 @@ spans and hidden from assistive technology.
   findings and circuits use primary-ink rows separated by space, with
   hover underlines indicating the linked names.
 - **Deficit profile:** a ruled status strip first, saying what the stage now
-  shows, with a quiet “Restore previous view” when there is one; then
+  shows, with a quiet “Restore previous view” when there is one, which puts
+  back the view from before the excursion and closes the profile it opened; then
   headline, definition, caveat, and collapsible association rows whose
   mapped regions stay in reach while closed.
 - **Circuit lesson:** headline, role, description, the landmark's actions and

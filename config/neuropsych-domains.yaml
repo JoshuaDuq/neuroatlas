@@ -22,6 +22,17 @@ method: >-
   whose z is the largest share of that domain's cortical maximum. Carried per area,
   never per vertex
 threshold_z: 3
+# One function or searched term shown alone is drawn on this z scale rather than in its own
+# colour, so that its areas keep the order of strength the profile lists and two maps can be
+# compared. Each band holds the areas from its `from` up to the next band's. One blue ramp: blue
+# sits across the blue–yellow axis from the cortex's tan tissue, the axis protanopia and
+# deuteranopia keep. In OKLab the bands differ from each other by a ΔE of at least 20 and from
+# the tissue colour by at least 11.8, under normal vision and simulated protanopia and
+# deuteranopia (Machado 2009, severity 1). The overview keeps the domains' own colours.
+z_scale:
+  - {from: 3, color: [150, 200, 240]}
+  - {from: 5, color: [43, 131, 199]}
+  - {from: 10, color: [10, 62, 125]}
 scores_source: neurosynth
 sources:
   neurosynth:

@@ -11,6 +11,7 @@ const regions = new Map([['hcp-mmp:left:1', { atlas: 'hcp-mmp', kind: 'cortex' }
   ['aseg:left:4', { atlas: 'aseg', kind: 'structure', source_name: 'Left-Lateral-Ventricle' }]]);
 const partition = () => ({
   id: 'neuropsych-domains', atlas: 'hcp-mmp', structure_atlas: 'aseg', structures: ['Left-Amygdala'], threshold_z: 3,
+  z_scale: [{ from: 3, color: [30, 30, 30] }, { from: 5, color: [50, 50, 50] }, { from: 10, color: [90, 90, 90] }],
   groups: [
     { id: 'cognition', name: 'Cognition', name_fr: 'Cognition' },
     { id: 'perception', name: 'Perception', name_fr: 'Perception' },
@@ -48,6 +49,8 @@ test('a domain assigned below the threshold, off its atlas or unknown is rejecte
     [p => { p.domains[2].group = 'action'; }, /domain: visual/],
     [p => { p.regions['aseg:left:4'] = [{ domain: 'memory', z: 4 }]; }, /assignment: aseg:left:4/],
     [p => { p.domains[2].id = ALL_DOMAINS; }, /domain: all/],
+    [p => { p.z_scale[0].from = 2; }, /z scale/],
+    [p => { p.z_scale[2].from = 5; }, /z scale/],
     [p => { p.groups.push({ id: 'cognition', name: 'Again', name_fr: 'Encore' }); }, /group: cognition/],
     [p => { delete p.domains[2].overview; }, /domain: visual/],
     [p => { delete p.derivation.studies.visual; }, /domain: visual/],
@@ -75,14 +78,15 @@ test('a domain lists its every area strongest first, overlaps included', () => {
   assert.deepEqual(domainAreas(published, 'visual'), []);
 });
 
-test('the overview paints each area its strongest domain, and one domain paints its every area', () => {
+test('the overview paints each area its strongest domain, and one domain paints its every area by z band', () => {
   const published = validateNeuropsychDomains(partition(), regions);
   const all = domainPaint(published, ALL_DOMAINS);
   assert.equal(all.id, 'function:all');
   assert.deepEqual([...all.colors],
     [['hcp-mmp:left:1', [4, 5, 6]], ['hcp-mmp:right:1', [1, 2, 3]], ['aseg:left:18', [4, 5, 6]]]);
   assert.deepEqual([...domainPaint(published, 'language').colors],
-    [['hcp-mmp:left:1', [1, 2, 3]], ['hcp-mmp:right:1', [1, 2, 3]]]);
+    [['hcp-mmp:right:1', [30, 30, 30]], ['hcp-mmp:left:1', [30, 30, 30]]]);
+  assert.deepEqual([...domainPaint(published, 'memory').colors], [['hcp-mmp:left:1', [50, 50, 50]], ['aseg:left:18', [30, 30, 30]]]);
   assert.equal(domainPaint(published, 'visual').colors.size, 0);
   assert.throws(() => domainPaint(published, 'praxis'), /Unknown neuropsychological domain: praxis/);
 });
@@ -105,11 +109,11 @@ test('a sampled structure is scored like an area; another structure, or another 
   assert.equal(scoredRegion(published, regions.get('hcp-mmp:left:1')), true);
   assert.equal(scoredRegion(published, regions.get('destrieux:left:1')), false);
   assert.deepEqual(domainAreas(published, 'memory'), [{ region: 'hcp-mmp:left:1', z: 7.5 }, { region: 'aseg:left:18', z: 3.5 }]);
-  assert.deepEqual(domainPaint(published, 'memory').colors.get('aseg:left:18'), [4, 5, 6]);
+  assert.deepEqual(domainPaint(published, 'memory').colors.get('aseg:left:18'), [30, 30, 30]);
 });
 
 const terms = () => ({
-  id: 'neurosynth-terms', atlas: 'hcp-mmp', structure_atlas: 'aseg', threshold_z: 3, color: [0, 114, 178],
+  id: 'neurosynth-terms', atlas: 'hcp-mmp', structure_atlas: 'aseg', threshold_z: 3,
   derivation: {}, regions: ['aseg:left:18', 'hcp-mmp:left:1', 'hcp-mmp:right:1'],
   terms: [
     ['fear', 363, 'function', [[0, 9.1], [1, 3.4]]],
@@ -120,14 +124,14 @@ const terms = () => ({
   ],
 });
 
-test('searched terms paint the regions they reach in one colour and keep their kind', () => {
+test('searched terms paint the regions they reach by z band and keep their kind', () => {
   const published = validateNeuropsychDomains(partition(), regions, terms());
   assert.equal(domainRecord(published, 'term:language'), null);
   assert.equal(domainRecord(published, 'term:aphasia').kind, 'population');
   assert.equal(domainStudies(published, 'term:fear'), 363);
   assert.equal(domainStudies(published, 'language'), 1101);
   assert.deepEqual(domainAreas(published, 'term:fear'), [{ region: 'aseg:left:18', z: 9.1 }, { region: 'hcp-mmp:left:1', z: 3.4 }]);
-  assert.deepEqual([...domainPaint(published, 'term:fear').colors], [['aseg:left:18', [0, 114, 178]], ['hcp-mmp:left:1', [0, 114, 178]]]);
+  assert.deepEqual([...domainPaint(published, 'term:fear').colors], [['aseg:left:18', [50, 50, 50]], ['hcp-mmp:left:1', [30, 30, 30]]]);
   assert.equal(domainPaint(published, 'term:fear').id, 'function:term:fear');
   assert.throws(() => domainPaint(published, 'term:praxis'), /Unknown neuropsychological domain: term:praxis/);
 });

@@ -70,9 +70,9 @@ def test_a_chosen_term_without_derived_scores_is_rejected(monkeypatch):
     lambda definition: definition["functions"].append("acoustic"),
     lambda definition: definition["functions"].insert(0, "zebra"),
     lambda definition: definition["populations"].append("zz placebo") or definition["functions"].append("zz placebo"),
-    lambda definition: definition.pop("color"),
+    lambda definition: definition.pop("method"),
 ])
-def test_a_term_list_out_of_order_repeated_shared_or_without_colour_is_rejected(tmp_path, change):
+def test_a_term_list_out_of_order_repeated_shared_or_without_method_is_rejected(tmp_path, change):
     definition = yaml.safe_load(neurosynth_terms.DEFINITION.read_text())
     change(definition)
     path = tmp_path / "neurosynth-terms.yaml"

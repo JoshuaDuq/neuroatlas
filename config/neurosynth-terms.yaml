@@ -6,9 +6,8 @@
 # using the word report activation and name no function. Offered are the terms that name a mental
 # function, task, stimulus, state or behaviour, and, under `populations`, the clinical groups
 # whose studies the term gathers. A term whose map reaches no area or structure at z 3 is not
-# offered. Terms the curated functions already use stay under their curated name.
-# A term is shown alone, in one colour: Okabe–Ito blue, an OKLab ΔE of 28 from the cortex's
-# tissue colour, 22 under simulated protanopia and 29 under deuteranopia.
+# offered. Terms the curated functions already use stay under their curated name. A term is
+# drawn alone on the domains' z scale (config/neuropsych-domains.yaml).
 label: Neurosynth term search (consistency maps of chosen version 7 abstract terms on HCP-MMP areas and aseg structures)
 method: >-
   Neurosynth version 7 abstract terms naming a function, task, stimulus, state, behaviour or
@@ -17,7 +16,6 @@ method: >-
   kernel, averaged per HCP-MMP area between fsaverage's white and pial surfaces and per aseg
   grey-matter structure. An area or structure is drawn where its mean z reaches 3. Carried per
   area, never per vertex
-color: [0, 114, 178]
 limitations:
   - Searched terms are words chosen from Neurosynth's vocabulary for naming a function, task, stimulus, state or behaviour; unlike the curated functions, no map was checked against what it names or against lesion studies. A term's map shows where studies whose abstract uses it report activation, whatever their task.
   - A population term (schizophrenia, aphasia, smokers) gathers studies of that group, most comparing it with healthy people. Its map shows where those studies report activation, not where damage causes the condition.

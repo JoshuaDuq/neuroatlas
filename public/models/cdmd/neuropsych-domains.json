@@ -24,6 +24,32 @@
     "Right-VentralDC"
   ],
   "threshold_z": 3,
+  "z_scale": [
+    {
+      "from": 3,
+      "color": [
+        150,
+        200,
+        240
+      ]
+    },
+    {
+      "from": 5,
+      "color": [
+        43,
+        131,
+        199
+      ]
+    },
+    {
+      "from": 10,
+      "color": [
+        10,
+        62,
+        125
+      ]
+    }
+  ],
   "sources": {
     "neurosynth": {
       "short": "Neurosynth (Yarkoni et al. 2011)",

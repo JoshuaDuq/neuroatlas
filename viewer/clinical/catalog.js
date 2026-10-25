@@ -1,4 +1,5 @@
 import { validateClinicalData } from './validate.js';
+import { nearest } from '../catalog/nearest.js';
 
 const normalize = value => value.trim().toLowerCase().normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '');
@@ -92,5 +93,7 @@ export function createClinicalCatalog(data, manifest) {
     paint: (id, finding = null) => findingPaint(id, required(byDeficit, id, 'deficit'), finding),
     search,
     grouped: (query, lang) => groupDeficits([...groups.values()], search(query, lang)),
+    /** The deficit name or alias a query that matched nothing most likely misspells. */
+    nearest: (query, lang) => nearest(query, [...deficits.values()].flatMap(deficit => [deficit.name[lang], ...deficit.aliases[lang]])),
   };
 }

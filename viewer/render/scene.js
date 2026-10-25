@@ -14,6 +14,7 @@ import { orbitPath } from './camera-path.js';
 import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.js';
 import { motionRatio, qualityProfile } from './quality.js';
 import { paintOutlineEdges, sameMeshSet } from './outline-edges.js';
+import { withOutlineOccluders } from './outline-occluders.js';
 
 const TRANSITION_MS = 240;
 // How long the camera must rest before the full-resolution frame is drawn.
@@ -122,6 +123,10 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       type: HalfFloatType,
       stencilBuffer: true,
       samples: quality.msaaSamples,
+      // Caps need these attachments during the scene draw; postprocessing
+      // samples only colour, so copying depth and stencil serves no reader.
+      resolveDepthBuffer: false,
+      resolveStencilBuffer: false,
     }));
     composer.addPass(new RenderPass(scene, camera));
 
@@ -150,6 +155,10 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     }
     composer.addPass(halo);
     composer.addPass(core);
+    for (const pass of [halo, core]) {
+      const render = pass.render.bind(pass);
+      pass.render = (...args) => withOutlineOccluders(pass, () => render(...args));
+    }
     const renderHalo = halo.render.bind(halo);
     const renderCore = core.render.bind(core);
     // Selection draws both tones of one silhouette. The second pass would
@@ -161,7 +170,11 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       }
       renderCore(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
     };
-    composer.addPass(new OutputPass());
+    const output = new OutputPass();
+    // Every pass draws into readBuffer or the canvas. Swapping after output
+    // would allocate a second full-size MSAA/depth/stencil target next frame.
+    output.needsSwap = false;
+    composer.addPass(output);
     return { composer, halo, core, renderHalo, renderCore };
   }
 
@@ -260,8 +273,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
     renderer.setSize(width, height);
     for (const pipeline of pipelines) pipeline.composer.setSize(width, height);
     // Allocated now rather than inside the first frame of a drag.
-    renderer.initRenderTarget(moving.composer.renderTarget1);
-    renderer.initRenderTarget(moving.composer.renderTarget2);
+    renderer.initRenderTarget(moving.composer.readBuffer);
     camera.aspect = width / height;
     applyViewOffset();
     camera.updateProjectionMatrix();
@@ -448,7 +460,7 @@ export function createScene(host, { onContextLost, onContextRestored, onResize }
       core.selectedObjects = [sample];
       halo.enabled = true;
       core.enabled = true;
-      const target = settled.composer.renderTarget1;
+      const target = settled.composer.readBuffer;
       try {
         renderHalo(renderer, target, target, 0, false);
         renderCore(renderer, target, target, 0, false);

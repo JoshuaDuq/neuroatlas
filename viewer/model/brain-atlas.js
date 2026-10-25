@@ -13,6 +13,9 @@ import { combineProgress } from './progress.js';
 import { REVALIDATE_HEADER } from './published-assets.js';
 import { createAnatomicalMaterial, tissueColor } from '../render/materials.js';
 import { attachNetworkColors } from '../render/network-colors.js';
+import {
+  addBorderFeather, createFeatherPalette, featherBorders, writeFeatherPalette,
+} from '../render/border-feather.js';
 import { addMriAppearance } from '../render/mri-material.js';
 import { createDissection } from '../state/dissection.js';
 import { createGlassSolids } from '../tissues/glass-solids.js';
@@ -408,7 +411,14 @@ export class BrainAtlas extends EventTarget {
       } finally {
         for (const material of originalMaterials) material.dispose();
       }
-      const layer = { scene, meshes };
+      // A cortical atlas tiles one surface, so its parcels meet at shared borders.
+      let featherPalette = null;
+      if (meshes.every(mesh => ['cortex', 'non-region'].includes(mesh.userData.kind))) {
+        featherBorders(meshes);
+        featherPalette = createFeatherPalette(meshes.length);
+        for (const mesh of meshes) addBorderFeather(mesh.material, featherPalette);
+      }
+      const layer = { scene, meshes, featherPalette };
       scene.visible = false;
       this.group.add(scene);
       this.layers.set(id, layer);
@@ -563,7 +573,9 @@ export class BrainAtlas extends EventTarget {
         }
         // Selection is drawn by the outline pass. Tinting the material would
         // alter a region's atlas colour, which is the datum being displayed.
-        material.opacity = cortex
+        // A painted area is what the paint is about, so a see-through cortex leaves it opaque, and
+        // the unpainted cortex around it gives the context.
+        material.opacity = cortex && !painted
           ? this.cortexOpacity * (glass ? this.manifest.appearance.glass_opacity : 1) : 1;
         material.userData.glass = glass;
         const transparent = material.opacity < 1;
@@ -573,6 +585,7 @@ export class BrainAtlas extends EventTarget {
         }
         material.depthWrite = !transparent;
       }
+      if (layer.featherPalette) writeFeatherPalette(layer.featherPalette, layer.meshes);
     }
     // Translucent divisions show what is behind them, so only opaque ones need closing.
     const solid = functional && this.functionalLevel === 'named' && this.cortexOpacity === 1;
@@ -896,7 +909,10 @@ export class BrainAtlas extends EventTarget {
     this.spinalCordRequest += 1;
     this.atlasRequest += 1;
     this.detailRequest += 1;
-    for (const layer of this.layers.values()) disposeScene(layer.scene);
+    for (const layer of this.layers.values()) {
+      disposeScene(layer.scene);
+      layer.featherPalette?.dispose();
+    }
     if (this.whiteMatterSurfaces) disposeScene(this.whiteMatterSurfaces.group);
     // The glass solids draw the cached wedges' geometry, which goes with the wedges.
     for (const mesh of this.glassSolids?.meshes ?? []) mesh.material.dispose();

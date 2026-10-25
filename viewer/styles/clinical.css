@@ -170,6 +170,8 @@
 }
 .clinical-kind + .clinical-summary { margin-top: var(--space-2); }
 .clinical-content > .clinical-caveat { margin-top: var(--space-2); }
+.clinical-content > .clinical-method { margin-top: var(--space-6); }
+.clinical-content > .clinical-method + .clinical-sources { margin-top: var(--space-2); }
 .clinical-content > .clinical-sources { margin-top: var(--space-5); color: var(--text-tertiary); font-size: var(--text-caption); line-height: var(--lh-caption); }
 .clinical-content a { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
 .clinical-associations, .clinical-checked-maps { margin-top: var(--space-6); }

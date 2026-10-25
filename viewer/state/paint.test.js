@@ -11,6 +11,7 @@ const domains = {
     { id: 'reading', name: 'Reading', name_fr: 'Lecture', overview: false, color: [7, 8, 9] },
   ],
   regions: { 'hcp-mmp:left:1': [{ domain: 'memory', z: 7 }, { domain: 'language', z: 4 }] },
+  z_scale: [{ from: 3, color: [30, 30, 30] }, { from: 5, color: [50, 50, 50] }, { from: 10, color: [90, 90, 90] }],
 };
 const associations = [
   { id: 'naming', title: { en: 'Naming', fr: 'Dénomination' }, mappings: [{ region: 'destrieux:left:1' }] },
@@ -20,7 +21,8 @@ const clinical = {
   paint: (id, finding) => findingPaint(id, associations, finding),
   get: () => ({ name: { en: 'Aphasia', fr: 'Aphasie' } }),
 };
-const sources = { domains, clinical };
+const drawn = new Set(['destrieux:left:1', 'destrieux:left:2']);
+const sources = { domains, clinical, drawn: id => drawn.has(id) };
 const base = { explorer: 'functions', atlas: 'hcp-mmp', selectedFunction: 'all', selectedDeficit: 'aphasia',
   selectedFinding: null, paintLifted: false, lang: 'en' };
 
@@ -36,16 +38,18 @@ test('a tab paints only while it is in front, on the atlas its map is defined on
   assert.equal(paintFor({ ...base, explorer: 'deficits', selectedDeficit: null }, sources), null);
 });
 
-test('the key lists the overview, or only the function chosen, or each finding of the open deficit', () => {
+test('the key lists the overview, or the z scale of the function chosen, or each finding of the open deficit', () => {
   const paint = { id: 'function:memory' };
   const functions = legendFor({ ...base, selectedFunction: 'memory', paint, lang: 'fr' }, sources);
   assert.equal(functions.map, 'function');
-  assert.deepEqual(functions.rows.map(row => [row.label, row.pressed]), [['Mémoire', true]]);
+  assert.equal(functions.title, 'Mémoire');
+  assert.equal(functions.pickable, false);
+  assert.deepEqual(functions.rows.map(row => [row.label, row.color]),
+    [['z\u00a0≥\u00a010', [90, 90, 90]], ['z\u00a05\u00a0à\u00a010', [50, 50, 50]], ['z\u00a03\u00a0à\u00a05', [30, 30, 30]]]);
   const overview = legendFor({ ...base, paint: { id: 'function:all' } }, sources);
   assert.deepEqual(overview.rows.map(row => [row.id, row.pressed]), [['language', false], ['memory', false]]);
-  const alone = legendFor({ ...base, selectedFunction: 'reading', paint: { id: 'function:reading' } }, sources);
-  assert.deepEqual(alone.rows.map(row => [row.id, row.pressed]), [['reading', true]]);
-  const deficit = legendFor({ ...base, explorer: 'deficits', paint: { id: 'deficit:aphasia' } }, sources);
+  assert.notEqual(overview.pickable, false);
+  const deficit = legendFor({ ...base, explorer: 'deficits', paint: clinical.paint('aphasia').paint }, sources);
   assert.equal(deficit.title, 'Aphasia');
   assert.deepEqual(deficit.rows.map(row => [row.id, row.label, row.pressed]),
     [['naming', 'Naming', false], ['repetition', 'Repetition', false]]);
@@ -56,4 +60,16 @@ test('a paint names its tab by its id', () => {
   assert.equal(paintKind({ id: 'function:language' }), 'function');
   assert.equal(paintKind({ id: 'deficit:aphasia:naming' }), 'deficit');
   assert.equal(paintKind(null), null);
+});
+
+test('a finding none of whose regions is drawn coloured is keyed as absent, and the note says why', () => {
+  const state = { ...base, explorer: 'deficits', paint: clinical.paint('aphasia').paint };
+  assert.deepEqual(legendFor(state, sources).rows.map(row => row.absent), [false, false]);
+  drawn.delete('destrieux:left:2');
+  const hidden = legendFor(state, sources);
+  assert.deepEqual(hidden.rows.map(row => row.absent), [false, true]);
+  assert.match(hidden.note, /outlined finding has no region coloured/);
+  const picked = legendFor({ ...state, selectedFinding: 'naming', paint: clinical.paint('aphasia', 'naming').paint }, sources);
+  assert.deepEqual(picked.rows.map(row => row.absent), [false, false], 'a finding not picked is muted, not absent');
+  drawn.add('destrieux:left:2');
 });

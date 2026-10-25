@@ -842,7 +842,12 @@ export async function startApp() {
       throw new AggregateError(failures.map(({ error }) => error), 'The previous view was not fully restored.');
     }
     beforeExcursion = null;
-    session.liftPaint();
+    seenThroughByNotice = false;
+    // The function or deficit in front opened the excursion, so the view from before it has it closed.
+    const { explorer, lang } = session.assemble({});
+    if (explorer === 'functions') session.setFunction(null);
+    else session.setDeficit(null);
+    session.notify({ text: CLINICAL_TEXT[lang].stageRestored });
     render();
     return true;
   }
@@ -883,21 +888,47 @@ export async function startApp() {
     if (said || hint) session.notify({ text: [said, hint?.text].filter(Boolean).join(' '), action: hint?.action ?? null });
   }
 
-  const cortexOpaque = () => model.settings.cortexVisible && model.settings.cortexOpacity >= 1;
+  // Whether the cortex is see-through because the reader took the notice's offer, so the next map
+  // that needs no such view can put the cortex back.
+  let seenThroughByNotice = false;
+
+  /** A strongest region within this many, when the cortex hides it, is worth seeing through to. */
+  const DEEP_RANKS = 5;
 
   /**
-   * A function whose strongest region is a structure the opaque cortex hides says so, and offers to see
-   * through the cortex; null for the overview, a peak the cortex does not hide, or a cortex already
-   * see-through or hidden.
+   * A function one of whose strongest regions is a structure the cortex hides says so, naming itself,
+   * and offers to see through the cortex; null for the overview, or a hidden cortex.
    */
   function deepHint(id) {
-    if (id === ALL_DOMAINS || !cortexOpaque()) return null;
-    const { region } = domainAreas(model.domains, id)[0];
-    if (!beneathCortex(model.regions.get(region))) return null;
+    if (id === ALL_DOMAINS || !model.settings.cortexVisible) return null;
+    const strongest = domainAreas(model.domains, id).slice(0, DEEP_RANKS);
+    const rank = strongest.findIndex(({ region }) => beneathCortex(model.regions.get(region)));
+    if (rank < 0) return null;
+    const { region } = strongest[rank];
     const { lang } = session.assemble({});
+    const copy = t(lang, 'functions');
     // Mid-sentence, the side is a common word.
     const side = t(lang, 'sides').capitalized[model.regions.get(region).hemisphere].toLocaleLowerCase(lang);
-    return { text: t(lang, 'functions').deepStrongest(catalog.get(region).label.name, side), action: 'see-through' };
+    const map = domainName(domainRecord(model.domains, id), lang);
+    return { text: (rank ? copy.deepAmong : copy.deepStrongest)(catalog.get(region).label.name, side, map, DEEP_RANKS),
+      action: 'see-through' };
+  }
+
+  /**
+   * The opened map's deep-structure offer as the cortex now stands: none when the cortex is already
+   * see-through for it; and a see-through cortex the notice set, which this map does not need, made
+   * opaque again and said so.
+   */
+  function seeThroughFor(hint) {
+    const seeThrough = seenThroughByNotice
+      && model.settings.cortexOpacity === model.manifest.appearance.see_through_opacity;
+    if (seeThrough && hint) return null;
+    if (seeThrough) {
+      model.setCortexOpacity(1);
+      seenThroughByNotice = false;
+      return model.settings.cortexVisible ? { text: t(session.assemble({}).lang, 'display').opaqueAgain } : null;
+    }
+    return model.settings.cortexOpacity >= 1 ? hint : null;
   }
 
   /**
@@ -905,7 +936,7 @@ export async function startApp() {
    * associations' first, two of them when there are more than three, and offers to see through the cortex.
    */
   function deficitDeepHint(id) {
-    if (!cortexOpaque()) return null;
+    if (!model.settings.cortexVisible) return null;
     const names = [...new Set(clinicalCatalog.mappedRegions(id)
       .filter(region => beneathCortex(model.regions.get(region))).map(region => catalog.get(region).label.name))];
     if (!names.length) return null;
@@ -920,6 +951,7 @@ export async function startApp() {
   /** The notice's offer to see an opened map's deep structures: the cortex turns see-through, and stays undoable. */
   function seeThroughCortex() {
     model.setCortexOpacity(model.manifest.appearance.see_through_opacity);
+    seenThroughByNotice = true;
     // The hint is answered, so the confirmation replaces it rather than joining it.
     session.notify(null);
     session.notify({ text: t(session.assemble({}).lang, 'display').seenThrough });
@@ -942,7 +974,9 @@ export async function startApp() {
     const before = revealSettings();
     if (!(await commands.revealRegions(regions, current))) return;
     cutLabelsFollowAtlas();
-    sayRevealed(before, deficitDeepHint(id));
+    sayRevealed(before, seeThroughFor(deficitDeepHint(id)));
+    // Drawn first, so the framing measures the key this paint brings.
+    render();
     frameRegions(regions);
     render();
   }
@@ -961,9 +995,10 @@ export async function startApp() {
     const regions = [...domainPaint(model.domains, id).colors.keys()];
     if (!(await commands.revealRegions(regions, current))) return false;
     cutLabelsFollowAtlas();
-    sayRevealed(before, deepHint(id));
-    // Framed as a deficit's regions are, so the map fills the stage left beside or above the panel.
-    frameRegions(regions);
+    sayRevealed(before, seeThroughFor(deepHint(id)));
+    // A function's map spans the cortex, so the whole brain is framed, clear of the key it brings.
+    render();
+    frameWhole();
     render();
     return true;
   }
@@ -975,12 +1010,15 @@ export async function startApp() {
     const before = revealSettings();
     if (!(await commands.openRegion(id, current))) return false;
     sayRevealed(before);
-    focusSelection();
+    // With the context around it a deficit's regions get, not filling the stage on its own.
+    render();
+    frameRegions([id]);
     render();
     return true;
   }
 
-  const paintSources = { domains: model.domains, clinical: clinicalCatalog };
+  const paintSources = { domains: model.domains, clinical: clinicalCatalog,
+    drawn: (id, state) => visibilityOf(catalog.get(id).region, state).visible };
 
   /** A stage key row: one function, or one finding, alone; null returns to all of them. */
   function pickPaint(id) {
@@ -1760,6 +1798,7 @@ export async function startApp() {
   picker = createPicker({
     domElement: scene.domElement,
     camera: scene.camera,
+    controls: scene.controls,
     model: () => tractReferenceActive ? { pick: () => null } : sections,
     onHover: (region, position) => {
       const regionChanged = region?.id !== hovered?.region?.id;
@@ -2012,6 +2051,10 @@ export async function startApp() {
         || (explorer === 'circuits' && valid.circuit)) {
         workspace.showDetail();
       }
+      // A link naming a function or deficit but no atlas was not written from a view of it, so the
+      // item is opened as choosing it opens it: its regions drawn, painted and framed.
+      if (!valid.atlas && explorer === 'functions' && selectedFunction) functionExplorer.openFunction(selectedFunction);
+      if (!valid.atlas && explorer === 'deficits' && selectedDeficit) clinicalExplorer.openDeficit(selectedDeficit);
       render();
       return notApplied;
     } finally {

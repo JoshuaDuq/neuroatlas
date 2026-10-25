@@ -23,12 +23,25 @@ const slopFor = pointerType => CLICK_SLOP_PX[pointerType === 'touch' ? 'touch' :
  * worth removing once was the raycast it cost on every frame of an orbit, so
  * hover answers at most once a frame and never while a button is down.
  */
-export function createPicker({ domElement, camera, model, onHover, onSelect, onFocusPoint }) {
+export function createPicker({ domElement, camera, controls, model, onHover, onSelect, onFocusPoint }) {
   const raycaster = new Raycaster();
   raycaster.firstHitOnly = true;
   const pointer = new Vector2();
   let pressed = null;
   let frame = null;
+  let pendingPoint = null;
+  let hovering = false;
+
+  // A camera move makes the old hit invalid. Keeping its outline would also
+  // cost a depth render of the whole brain on every frame of the orbit.
+  const clearHover = () => {
+    if (frame !== null) cancelAnimationFrame(frame);
+    frame = null;
+    pendingPoint = null;
+    if (hovering) onHover?.(null, null);
+    hovering = false;
+    if (domElement.style.cursor === 'pointer') domElement.style.cursor = 'grab';
+  };
 
   /** Cast through a point given relative to the canvas, in CSS pixels. */
   function regionAtPoint(x, y) {
@@ -77,12 +90,16 @@ export function createPicker({ domElement, camera, model, onHover, onSelect, onF
     // A finger has no hover: it is either pressing or absent, and a stale
     // label left behind by the last tap would name a region the reader is no
     // longer pointing at. Held buttons are an orbit, which hover must not cost.
-    if (event.pointerType === 'touch' || event.buttons || frame !== null) return;
-    const { clientX, clientY } = event;
+    if (event.pointerType === 'touch' || event.buttons) return;
+    pendingPoint = { clientX: event.clientX, clientY: event.clientY };
+    if (frame !== null) return;
     frame = requestAnimationFrame(() => {
       frame = null;
+      const { clientX, clientY } = pendingPoint;
+      pendingPoint = null;
       const region = regionAt({ clientX, clientY });
       const rect = domElement.getBoundingClientRect();
+      hovering = Boolean(region);
       onHover?.(region, { x: clientX - rect.left, y: clientY - rect.top });
       // OrbitControls writes this inline too, so a stylesheet cannot reach it;
       // `grab` is the resting cursor it is configured with in scene.js.
@@ -91,10 +108,8 @@ export function createPicker({ domElement, camera, model, onHover, onSelect, onF
   };
 
   const clearPress = () => {
-    if (frame !== null) cancelAnimationFrame(frame);
-    frame = null;
+    clearHover();
     pressed = null;
-    onHover?.(null, null);
   };
 
   const onDblClick = event => {
@@ -110,10 +125,12 @@ export function createPicker({ domElement, camera, model, onHover, onSelect, onF
   domElement.addEventListener('pointerleave', clearPress);
   domElement.addEventListener('pointermove', onPointerMove);
   domElement.addEventListener('dblclick', onDblClick);
+  controls?.addEventListener('change', clearHover);
 
   return {
     dispose() {
       if (frame !== null) cancelAnimationFrame(frame);
+      controls?.removeEventListener('change', clearHover);
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointerup', onPointerUp);
       domElement.removeEventListener('pointercancel', clearPress);

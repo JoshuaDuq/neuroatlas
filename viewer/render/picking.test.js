@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { PerspectiveCamera } from 'three';
+import { EventDispatcher, PerspectiveCamera } from 'three';
 import { createPicker } from './picking.js';
 
 /*
@@ -33,14 +33,15 @@ function picker() {
   const asked = [];
   const hovered = [];
   const domElement = canvas();
-  createPicker({
-    domElement,
+  const controls = new EventDispatcher();
+  const instance = createPicker({
+    domElement, controls,
     camera: new PerspectiveCamera(),
     model: () => ({ pick: raycaster => { asked.push(raycaster); return region; } }),
     onHover: (...args) => hovered.push(args),
     onSelect: () => {},
   });
-  return { domElement, asked, hovered, region };
+  return { domElement, controls, instance, asked, hovered, region };
 }
 
 test('the pointer names what it is over without being clicked', () => {
@@ -129,4 +130,57 @@ test('double clicking a point triggers focus on that 3D coordinate', () => {
   });
   domElement.emit('dblclick', { clientX: 100, clientY: 50 });
   assert.deepEqual(focused, targetPoint);
+});
+
+
+test('moving the camera clears a stale hover once, without selecting anything', () => {
+  const clock = frames();
+  const { domElement, controls, hovered } = picker();
+  domElement.emit('pointermove', {});
+  clock.run();
+  controls.dispatchEvent({ type: 'change' });
+  controls.dispatchEvent({ type: 'change' });
+  assert.deepEqual(hovered.at(-1), [null, null]);
+  assert.equal(hovered.length, 2);
+});
+
+test('a camera move cancels a hover queued before the orbit', () => {
+  const clock = frames();
+  const { domElement, controls, asked } = picker();
+  domElement.emit('pointermove', {});
+  controls.dispatchEvent({ type: 'change' });
+  clock.run();
+  assert.equal(asked.length, 0);
+});
+
+test('coalesced hover picks the latest pointer position', () => {
+  const clock = frames();
+  const { domElement, hovered } = picker();
+  domElement.emit('pointermove', { clientX: 20 });
+  domElement.emit('pointermove', { clientX: 120 });
+  clock.run();
+  assert.equal(hovered[0][1].x, 120);
+});
+
+test('disposing the picker removes its camera listener', () => {
+  const clock = frames();
+  const { domElement, controls, instance, hovered } = picker();
+  domElement.emit('pointermove', {});
+  clock.run();
+  instance.dispose();
+  controls.dispatchEvent({ type: 'change' });
+  assert.equal(hovered.length, 1);
+});
+
+test('camera motion clears the hover cursor without overriding an active grab', () => {
+  const clock = frames();
+  const { domElement, controls } = picker();
+  domElement.emit('pointermove', {});
+  clock.run();
+  assert.equal(domElement.style.cursor, 'pointer');
+  controls.dispatchEvent({ type: 'change' });
+  assert.equal(domElement.style.cursor, 'grab');
+  domElement.style.cursor = 'grabbing';
+  controls.dispatchEvent({ type: 'change' });
+  assert.equal(domElement.style.cursor, 'grabbing');
 });

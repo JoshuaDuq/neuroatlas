@@ -10,7 +10,9 @@ Both tabs paint the brain while they are in front: the regions in question in th
 - those areas and structures, strongest first, each opening its region;
 - **Deficits that check this map**: the share of each lesion-mapped parcel the map colours.
 
-When a function's strongest region is a deep forebrain structure the cortex hides (the amygdala for Fear, the accumbens for Reward), the notice says so and offers **See through the cortex**, which lowers the cortex's opacity; **Restore previous view** puts it back.
+One function alone is drawn on a blue z scale: z 3–5, 5–10 and 10 or more, darker for more consistent, so the brain shows the same order of strength as the list of areas. The overview keeps one colour per function.
+
+When one of a function's five strongest regions is a deep forebrain structure the cortex hides (the amygdala for Fear, the accumbens for Reward), the notice says so and offers **See through the cortex**, which lowers the cortex's opacity while the painted areas stay opaque. The next map that has no such region makes the cortex opaque again. **Restore previous view** puts back the view from before the first function or deficit you opened, and closes the profile.
 
 A map shows where studies using the term reliably report activation in healthy groups. It is not what this brain does, nor what damage would impair. The method is in [Atlases](../concepts/atlases.md#neuropsychological-functions).
 
@@ -30,7 +32,7 @@ Functions and Deficits stay apart because their evidence differs: activation con
 
 40 profiles of adult acquired deficits, in the same six groups as the functions, searchable by name, synonym or cognitive function. Opening one:
 
-- paints the regions its findings cite, one colour per finding, and states what it changed in the view, with **Restore previous view**;
+- paints the regions its findings cite, one colour per finding, and states what it changed in the view, with **Restore previous view**; a finding none of whose regions is coloured in the view (its regions lie in another internal-anatomy set, or take an earlier finding's colour) is outlined in the key;
 - when its findings map both cortex and deep forebrain structures (neglect's caudate and pulvinar, emotion recognition's amygdala), names the deep ones and offers **See through the cortex**; when every mapped region is deep, the cortex is hidden instead;
 - gives the definition, the interpretation limits and each association, with its method (lesion–symptom mapping, meta-analysis, case report or series), study population and publications;
 - keeps each association's mapped regions in reach, each opening its region.

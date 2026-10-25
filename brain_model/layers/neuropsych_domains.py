@@ -78,6 +78,12 @@ def read_definition(path=DEFINITION):
         raise ValueError("At least one domain must be in the overview")
     if not definition["threshold_z"] > 0:
         raise ValueError("The membership threshold must be a positive z")
+    scale = definition["z_scale"]
+    starts = [band["from"] for band in scale]
+    if (not scale or starts[0] != definition["threshold_z"] or starts != sorted(set(starts))
+            or any(len(band["color"]) != 3 or not all(isinstance(value, int) and 0 <= value <= 255
+                                                         for value in band["color"]) for band in scale)):
+        raise ValueError("The z scale must start at the threshold, rise, and give each band three sRGB bytes")
     return definition
 
 
@@ -221,6 +227,7 @@ def partition(regions):
         "structure_atlas": STRUCTURE_ATLAS,
         "structures": sorted(STRUCTURES.values()),
         "threshold_z": definition["threshold_z"],
+        "z_scale": definition["z_scale"],
         "sources": definition["sources"],
         "scores_source": definition["scores_source"],
         "derivation": scores["derivation"],

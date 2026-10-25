@@ -20,10 +20,8 @@ KINDS = {"functions": "function", "populations": "population"}
 
 def read_definition(path=DEFINITION):
     definition = yaml.safe_load(path.read_text())
-    if not (definition.get("label") and definition.get("method") and definition.get("limitations")
-            and len(definition.get("color", [])) == 3
-            and all(isinstance(value, int) and 0 <= value <= 255 for value in definition["color"])):
-        raise ValueError("Term search needs a label, method, limitations and a three-byte sRGB colour")
+    if not (definition.get("label") and definition.get("method") and definition.get("limitations")):
+        raise ValueError("Term search needs a label, method and limitations")
     for kind in KINDS:
         terms = definition[kind]
         if terms != sorted(set(terms)):
@@ -94,7 +92,6 @@ def partition(regions):
         "atlas": SURFACE_ATLAS,
         "structure_atlas": STRUCTURE_ATLAS,
         "threshold_z": threshold,
-        "color": definition["color"],
         "derivation": scores["derivation"],
         "regions": [region["id"] for region in scored],
         "terms": terms,
