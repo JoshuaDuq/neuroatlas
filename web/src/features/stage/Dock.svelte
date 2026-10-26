@@ -105,16 +105,23 @@
 
   $effect(() => stage.observeDock(dock));
 
-  let roving: ReturnType<typeof bindRoving> | undefined;
   function rove(group: HTMLElement) {
-    roving = bindRoving(group, { selector: '.stage-tool' });
-    return () => roving!.dispose();
+    const roving = bindRoving(group, { selector: '.stage-tool' });
+    // Inside an open popover the Tab stop is its own tool, so Shift+Tab from its first control returns
+    // to the tool with the popover still open (stage-tools.js:114-117), not to the first tool.
+    const keepOpenTool = (event: FocusEvent) => {
+      const open = group.querySelector<HTMLElement>('.stage-tool[aria-expanded="true"]');
+      if (!open || (event.target as Element).closest('.stage-tool')) return;
+      for (const tool of group.querySelectorAll<HTMLElement>('.stage-tool')) {
+        tool.tabIndex = tool === open ? 0 : -1;
+      }
+    };
+    group.addEventListener('focusin', keepOpenTool);
+    return () => {
+      group.removeEventListener('focusin', keepOpenTool);
+      roving.dispose();
+    };
   }
-  // A tool that goes leaves the arrows' round.
-  $effect(() => {
-    void tractReference;
-    roving?.sync();
-  });
 
   function focusFirstTool() {
     tools.querySelector<HTMLElement>('.stage-tool:not([hidden])')?.focus({ preventScroll: true });

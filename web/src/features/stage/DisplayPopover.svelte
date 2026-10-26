@@ -111,7 +111,7 @@
     :global(.segmented.choice-group.hemisphere [role='radio']) {
       flex: 1;
       height: auto;
-      min-height: calc(var(--control-height) - 4px);
+      min-height: var(--control-height);
       min-width: 0;
       padding: 0 var(--space-2);
       font-size: var(--text-stage);
@@ -172,6 +172,11 @@
       :global(.segmented.choice-group.hemisphere [role='radio']),
       .check {
         min-height: 44px;
+      }
+      /* The tick box itself is 20 px, as the legacy touch rule has it (phone.css:329). */
+      input[type='checkbox'] {
+        width: 20px;
+        height: 20px;
       }
     }
   }

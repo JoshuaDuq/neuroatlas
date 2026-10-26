@@ -10,7 +10,10 @@ test.beforeEach(({ page: _page }, testInfo) => {
   test.skip(testInfo.project.name === 'next' && !enabled, 'the next stage region is not enabled');
 });
 
-const tool = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
+// Both apps open on the held oblique view, so the tool is "Anatomical view: Oblique" until the camera moves.
+const VIEW = /^Anatomical view/;
+const tool = (page: Page, name: string | RegExp) =>
+  page.getByRole('button', typeof name === 'string' ? { name, exact: true } : { name });
 const dialog = (page: Page, name: string) => page.getByRole('dialog', { name, exact: true });
 const canvas = (page: Page) => page.locator('#viewport canvas');
 
@@ -25,7 +28,7 @@ test.describe('stage dock', () => {
     app,
   }, testInfo) => {
     const { page } = app;
-    for (const name of ['Anatomical view', 'Section', 'Display']) {
+    for (const name of [VIEW, 'Section', 'Display']) {
       await expect(tool(page, name)).toHaveAttribute('aria-haspopup', 'dialog');
       await expect(tool(page, name)).toHaveAttribute('aria-expanded', 'false');
     }
@@ -41,19 +44,19 @@ test.describe('stage dock', () => {
     const { page } = app;
     await tool(page, 'Display').click();
     await expect(dialog(page, 'Display')).toBeVisible();
-    await tool(page, 'Anatomical view').click();
+    await tool(page, VIEW).click();
     await expect(dialog(page, 'Anatomical view')).toBeVisible();
     await expect(dialog(page, 'Display')).toBeHidden();
     await expect(tool(page, 'Display')).toHaveAttribute('aria-expanded', 'false');
 
     await page.keyboard.press('Escape');
     await expect(dialog(page, 'Anatomical view')).toBeHidden();
-    await expect(tool(page, 'Anatomical view')).toBeFocused();
+    await expect(tool(page, VIEW)).toBeFocused();
   });
 
   test('a preset names the view on the tool until the camera is turned off it', async ({ app }) => {
     const { page } = app;
-    await tool(page, 'Anatomical view').click();
+    await tool(page, VIEW).click();
     await page.getByRole('button', { name: 'Left', exact: true }).click();
     await expect(dialog(page, 'Anatomical view')).toBeHidden();
     await expect(tool(page, 'Anatomical view: Left')).toBeFocused();
@@ -73,7 +76,7 @@ test.describe('stage dock', () => {
     app,
   }, testInfo) => {
     const { page } = app;
-    await tool(page, 'Anatomical view').click();
+    await tool(page, VIEW).click();
     const group = page.getByRole('group', { name: 'Turn the model' });
     // g2-orbit-step-buttons.md, WCAG 2.5.7.
     if (testInfo.project.name === 'legacy') {
@@ -84,7 +87,7 @@ test.describe('stage dock', () => {
     await page.keyboard.press('Escape');
 
     // A preset is held; one step turns the camera off it, the popover stays open for the next step.
-    await tool(page, 'Anatomical view').click();
+    await tool(page, VIEW).click();
     await page.getByRole('button', { name: 'Anterior', exact: true }).click();
     await expect(tool(page, 'Anatomical view: Anterior')).toBeVisible();
     await tool(page, 'Anatomical view: Anterior').click();
@@ -122,7 +125,7 @@ test.describe('stage dock', () => {
 
   test('Reset view closes the popover and returns focus to the tool', async ({ app }) => {
     const { page } = app;
-    await tool(page, 'Anatomical view').click();
+    await tool(page, VIEW).click();
     await page.getByRole('button', { name: 'Reset view', exact: true }).click();
     await expect(dialog(page, 'Anatomical view')).toBeHidden();
     await expect(page.getByRole('button', { name: /^Anatomical view/ })).toBeFocused();

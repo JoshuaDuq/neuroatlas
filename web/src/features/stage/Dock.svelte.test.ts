@@ -75,8 +75,7 @@ async function mount(
 ) {
   engine = createFakeEngine({ manifest: published, hostSize: { width, height } });
   engine.camera.setChromeInsets({ bottom: bottomInset }, {});
-  // The opening picture holds the oblique view; most tests start with the camera free of it.
-  engine.camera.orbitBy({ azimuth: 0.1 });
+  // The engine boots holding the oblique view, so the View tool opens named "Anatomical view: Oblique".
   if (held) engine.camera.applyView(held, { immediate: true });
   live = liveState(overrides);
   commands = {
@@ -106,12 +105,19 @@ async function mount(
   return result;
 }
 
+/** The View tool's name follows the held preset, so it is found by its stem; every other name is exact. */
+const locate = (role: 'button' | 'radio' | 'checkbox' | 'slider', name: string) =>
+  page.getByRole(
+    role,
+    name === 'Anatomical view' || name === 'Vue anatomique'
+      ? { name: new RegExp(`^${name}`) }
+      : { name, exact: true },
+  );
 const control = (role: 'button' | 'radio' | 'checkbox' | 'slider', name: string) =>
-  page.getByRole(role, { name, exact: true }).element() as HTMLElement;
+  locate(role, name).element() as HTMLElement;
 const tool = (name: string) => control('button', name);
 /** A real pointer click, which the controls' pointer handling sees. */
-const press = (role: 'button' | 'radio' | 'checkbox', name: string) =>
-  page.getByRole(role, { name, exact: true }).click();
+const press = (role: 'button' | 'radio' | 'checkbox', name: string) => locate(role, name).click();
 const active = () => document.activeElement;
 const dock = () => document.querySelector<HTMLElement>('.stage-dock')!;
 const popover = () => document.querySelector<HTMLElement>('.popover')!;
@@ -151,7 +157,7 @@ describe('the toolbar', () => {
     const tools = [...bar.querySelectorAll<HTMLElement>('.stage-tool')];
     expect(
       tools.map((node) => node.getAttribute('aria-label') ?? node.textContent!.trim()),
-    ).toEqual(['Anatomical view', 'Section', 'Display']);
+    ).toEqual(['Anatomical view: Oblique', 'Section', 'Display']);
     expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1]);
 
     tool('Anatomical view').focus();
@@ -253,19 +259,45 @@ describe('a tool and its popover', () => {
     await mount();
     await open('Anatomical view');
     await open('Display');
-    await vi.waitFor(() => expect(dialogs()).toHaveLength(1));
-    expect(tool('Anatomical view').getAttribute('aria-expanded')).toBe('false');
-    expect(page.getByRole('dialog', { name: 'Display' }).elements()).toHaveLength(1);
+    await vi.waitFor(() =>
+      expect(tool('Anatomical view').getAttribute('aria-expanded')).toBe('false'),
+    );
+    expect(tool('Display').getAttribute('aria-expanded')).toBe('true');
+    expect(tool('Section').getAttribute('aria-expanded')).toBe('false');
+  });
+
+  test.each(['Display', 'Section'])(
+    'Shift+Tab from the first control of %s returns to its own tool with the popover still open',
+    async (name) => {
+      await mount();
+      await open(name);
+      const body = page.getByRole('dialog', { name, exact: true });
+      expect(body.element().contains(active())).toBe(true);
+      await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+      expect(active()).toBe(tool(name));
+      expect(tool(name).getAttribute('aria-expanded')).toBe('true');
+      expect(body.elements()).toHaveLength(1);
+    },
+  );
+
+  test('Tab from the last control of a popover leaves the dock', async () => {
+    await mount();
+    await open('Section');
+    await userEvent.keyboard('{Tab}');
+    expect(active()).toBe(control('button', 'After'));
+    await vi.waitFor(() => expect(tool('Section').getAttribute('aria-expanded')).toBe('false'));
   });
 
   test('opens on the held preset, else the first', async () => {
     await mount();
-    await open('Anatomical view');
-    expect(active()).toBe(control('button', 'Oblique'));
-    await userEvent.keyboard('{Escape}');
     hold('left');
     await open('Anatomical view: Left');
     expect(active()).toBe(control('button', 'Left'));
+    await userEvent.keyboard('{Escape}');
+    engine.camera.orbitBy({ azimuth: 0.1 });
+    flushSync();
+    await open('Anatomical view');
+    expect(active()).toBe(control('button', 'Oblique'));
   });
 
   test('from the keyboard it is instant, from the pointer it grows from the dock', async () => {
@@ -285,7 +317,8 @@ describe('the View tool and the presets', () => {
     await open('Anatomical view');
     const pressed = () =>
       VIEW_NAMES.filter((name) => control('button', t('en', 'views')[name]).ariaPressed === 'true');
-    expect(pressed()).toEqual([]);
+    // The opening picture holds the oblique view.
+    expect(pressed()).toEqual(['oblique']);
 
     hold('left');
     expect(pressed()).toEqual(['left']);
@@ -295,7 +328,7 @@ describe('the View tool and the presets', () => {
     engine.camera.orbitBy({ azimuth: 0.1 });
     flushSync();
     expect(pressed()).toEqual([]);
-    expect(tool('Anatomical view')).toBe(viewTool());
+    expect(viewTool().getAttribute('aria-label')).toBe('Anatomical view');
     expect(live.view.view).toBe('left');
   });
 
@@ -332,7 +365,10 @@ describe('the View tool and the presets', () => {
       const widths = new Set<number>();
       for (const name of ['', ...VIEW_NAMES] as const) {
         if (name) hold(name);
-        else flushSync();
+        else {
+          engine.camera.orbitBy({ azimuth: 0.1 });
+          flushSync();
+        }
         const drawn = viewTool().querySelector('[data-current]')!.textContent!.trim();
         expect(drawn).toBe(name ? views[name] : t(lang, 'viewport').viewTool);
         expect(viewTool().getAttribute('aria-label')!.toLowerCase()).toContain(drawn.toLowerCase());
@@ -347,7 +383,7 @@ describe('the View tool and the presets', () => {
     const names = [...viewTool().querySelectorAll<HTMLElement>('.view-tool-label > span')];
     expect(names).toHaveLength(1 + VIEW_NAMES.length);
     const visible = names.filter((node) => getComputedStyle(node).visibility === 'visible');
-    expect(visible.map((node) => node.textContent!.trim())).toEqual(['View']);
+    expect(visible.map((node) => node.textContent!.trim())).toEqual(['Oblique']);
   });
 
   test('Reset view does it all through the controller, closes the popover and returns focus', async () => {
@@ -515,6 +551,8 @@ describe('a tool that goes away', () => {
     flushSync();
     await vi.waitFor(() => expect(dialogs()).toHaveLength(0));
     expect(tool('Display').getAttribute('aria-expanded')).toBe('false');
+    // Nothing under the sheet takes the focus (WCAG 2.4.11), not a tool and not anything in the dock.
+    expect(dock().contains(active())).toBe(false);
   });
 
   test('is not drawn while the anatomy loads, and a popover open then closes', async () => {

@@ -109,7 +109,7 @@
     }
     :global(.toggle-toolbar.views button) {
       height: auto;
-      min-height: calc(var(--control-height) - 4px);
+      min-height: var(--control-height);
       min-width: 0;
       font-size: var(--text-stage);
       /* At 200 % text a name wraps inside its cell instead of crossing into the next. */
