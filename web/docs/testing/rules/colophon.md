@@ -13,7 +13,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** browser: text order and layout (truncation)
 - **Source:** `index.html:592-596`; `chrome.contract.test.js:283-296` (the statement leads, ahead of the description that truncates); `viewer/styles/masthead.css:453-492`
 - **Expected:** text "Not clinical anatomy Bert · one individual’s MRI reconstruction 12 visible regions Provenance" (FR statement "Pas une anatomie clinique"). With a description wider than the bar, the statement's `scrollWidth === clientWidth` and the description has `text-overflow: ellipsis` with `scrollWidth > clientWidth`.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, order and the French statement); `e2e/parity/provenance.spec.ts` (R; `next` gated off); truncation is uncovered
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `COLO-01`: the statement in each language and state); `src/features/provenance/provenance.svelte.test.ts` (R, order and the French statement); `e2e/parity/provenance.spec.ts` (R; `next` gated off); truncation is uncovered
 
 ### COLO-02 · The description names what is loaded, as the masthead names it
 
@@ -22,7 +22,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** unit (view-model `colophonParts`)
 - **Source:** `header.js:78-84`; `chrome.contract.test.js:283-296`
 - **Expected:** `{display_name:'SNAIL “subj_1”', individual:true}` → "SNAIL subj_1 · one individual’s MRI reconstruction" (FR "SNAIL subj_1 · reconstruction IRM d’un individu"). `individual:false` → "… · averaged reference template" (FR "gabarit de référence moyenné"). `reference {label:'Ref'}` → "Ref · reference data" (FR "Ref · données de référence"). Nothing loaded → `''`. Statement "Not clinical anatomy" / "Pas une anatomie clinique" in all three cases. The published build shows "MGH CDMD sub_013 · one individual’s MRI reconstruction".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R; regex `^SNAIL subj_1 · ` and `/clinical anatomy/` only, so the kind text is not pinned); `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, regex; `next` gated off); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `COLO-02`: the exact description for an individual, a template and a reference, in both languages); `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, regex; `next` gated off)
 
 ### COLO-03 · The count says how many regions are visible, in each language's plural
 

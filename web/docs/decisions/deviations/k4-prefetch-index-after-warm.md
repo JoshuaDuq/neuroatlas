@@ -1,6 +1,6 @@
 # K4 deviation: the head prefetch hands the index over only after the brain's files have started
 
-Chunk K4 (#131; `src/boot/prefetch.js` is F3's head script). Pinned by `parity/F3.test.ts` ("hands
+Chunk K4 (#131; `src/boot/prefetch.js` is F3's head script). Pinned by the ASSET-18 cases in `src/boot/prefetch.test.ts` ("hands
 the index to the app only once the brain it names has started", "still hands over an index that does
 not parse, for the app to report", "still hands over an index that parses but names no brain, for
 the app to report").

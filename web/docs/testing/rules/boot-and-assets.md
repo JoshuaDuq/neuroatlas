@@ -452,7 +452,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `index.html:34-60`
 - **Expected:** atlas `hcp-mmp` → `cortex-hcp-mmp.glb`, anything else → `cortex-destrieux.glb`; detail `aseg` → `structures.glb`, `nextbrain` → `nextbrain.glb`, else `learning.glb`; `#anatomy=bert&atlas=hcp-mmp&detail=nextbrain` → exactly `…/neuroatlas/models/anatomies.json?v=index0000000000a`, `…/bert/cortex-hcp-mmp.glb?v=hcp0000000000000`, `…/bert/manifest.json?v=manifest00000000`, `…/bert/nextbrain.glb?v=fine000000000000`, keyed on `__planumAssets` by the plain URL; all under `/neuroatlas/`.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/boot/prefetch.test.ts` (R)
 
 ### ASSET-17 · The brain to prefetch
 
@@ -461,7 +461,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `index.html:53-67`
 - **Expected:** empty hash, index `{"default":"bert"}` → 4 requests including `/neuroatlas/models/bert/manifest.json`.
-- **Covered by:** `parity/F3.test.ts` (R; plus an I source-regex case)
+- **Covered by:** `src/boot/prefetch.test.ts` (R)
 
 ### ASSET-18 · The index is handed over only after the brain has started
 
@@ -470,7 +470,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** deviation `k4-prefetch-index-after-warm.md`; `index.html:61-67`
 - **Expected:** `{"default":"bert"}` → index resolves `ok` with the manifest already requested; `not json` or `null` → the index text unchanged, 1 request.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/boot/prefetch.test.ts` (R)
 
 ### ASSET-19 · No envelopes or cord for the first frame
 
@@ -479,7 +479,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `index.html:27-33`
 - **Expected:** no request for `manifest.solid_envelopes.file` or any `supplemental_layers[].file`.
-- **Covered by:** `parity/F3.test.ts` (I: source text, not a run of the script)
+- **Covered by:** `src/boot/prefetch.test.ts` (R: runs the script for every atlas and detail level)
 
 ### ASSET-20 · The prefetch names only what the manifest publishes
 
@@ -488,7 +488,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `index.html:38-39`; `public/models/<default>/manifest.json`
 - **Expected:** each quoted `.glb` in the script ∈ atlases ∪ detail levels ∪ supplemental layers; each atlas file and detail level id is present.
-- **Covered by:** `parity/F3.test.ts` (I: source regex)
+- **Covered by:** `src/boot/prefetch.test.ts` (R: runs the script for every atlas and detail level)
 
 ### ASSET-21 · Each prefetched file is requested once on the real page
 
@@ -517,7 +517,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:70-91`
 - **Expected:** two requests for `cortex-destrieux.glb?v=<current>` → 1 network fetch, second body `bytes:models/bert/cortex-destrieux.glb`; manifest and diffusion `.trk.gz` stored too.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-03 · Only current published files are intercepted
 
@@ -526,7 +526,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:22-32, 56-68`
 - **Expected:** unversioned, `?v=previousdeploy00`, `unpublished.glb?v=1`, `assets/index-abc.js`, `elsewhere.test`, POST → not answered, 0 fetches.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-04 · A bad download is never stored
 
@@ -535,7 +535,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:77-88`
 - **Expected:** 502, 206, 200 with bytes of another deploy → nothing stored; then a good 200 → 1 entry.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-05 · A decoded `.gz` is stored by its contents' hash
 
@@ -544,7 +544,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:84-86`
 - **Expected:** `gunzipped[path] = version('decoded tract')`, server sends `decoded tract` → 1 entry.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-06 · A new deploy deletes only what it no longer publishes
 
@@ -553,7 +553,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:41-54`
 - **Expected:** stored `cortex-destrieux` (unchanged) and `structures` (changed) → only `cortex-destrieux` kept; caches left: `planum-models`, `something-else`; `clients.claim()` called.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-07 · A new worker takes over immediately
 
@@ -562,7 +562,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:39`
 - **Expected:** `install` → `skipWaiting()` called.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-08 · Filling the store revalidates
 
@@ -571,7 +571,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:75-76`
 - **Expected:** first fetch options `cache = 'no-cache'`.
-- **Covered by:** `parity/F3.test.ts` (R)
+- **Covered by:** `src/service-worker.test.ts` (R)
 
 ### SW-09 · The page itself is always revalidated
 
@@ -580,7 +580,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/service-worker.js:59-66`
 - **Expected:** navigate `/neuroatlas/` → one fetch of that URL with `no-cache`; redirected → second `fetch(request)`; rejected → `fetch(request)`.
-- **Covered by:** `parity/F3.test.ts` (R, no-cache only); redirect and failure fallbacks uncovered
+- **Covered by:** `src/service-worker.test.ts` (R, no-cache only); redirect and failure fallbacks uncovered
 
 ### SW-10 · A second visit is served by the worker
 
@@ -600,7 +600,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:9`
 - **Expected:** `siteBase('development')` = `siteBase('production')` = `/neuroatlas/`; `siteBase('preview')` = `/neuroatlas/next/`.
-- **Covered by:** `build/site.test.ts` (H; compares with the module's own `ASSET_BASE`/`PREVIEW_BASE`, not the literal paths), `parity/F3.test.ts` (R, `ASSET_BASE` = `/neuroatlas/`)
+- **Covered by:** `build/site.test.ts` (H), `build/published-files.test.ts` (R, `ASSET_BASE` = `/neuroatlas/`)
 
 ### BUILD-02 · The preview does not republish the data
 
@@ -609,7 +609,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** new (`web/vite.config.ts`); preview deploy
 - **Expected:** `copyPublicDir` = `false` for mode `preview`, `true` for `production`.
-- **Covered by:** `parity/F3.test.ts` (H)
+- **Covered by:** `build/published-files.test.ts` (R, over the fixture tree)
 
 ### BUILD-03 · Only the preview is hidden from search
 
@@ -618,7 +618,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** new (`web/vite.config.ts` `preview-noindex`)
 - **Expected:** as stated, in the HTTP response body for the preview.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R; the preview half runs on `next`, the live half on `legacy` only). Could move down to unit: the `preview-noindex` hook, as `parity/F3.test.ts` calls the prefetch hook.
+- **Covered by:** `e2e/parity/harness.spec.ts` (R; the preview half runs on `next`, the live half on `legacy` only). Could move down to unit: the `preview-noindex` hook, as `build/published-files.test.ts` calls the prefetch hook.
 
 ### BUILD-04 · Three.js and the BVH index in their own chunks
 
@@ -627,7 +627,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:31-41`
 - **Expected:** chunk `three` contains `WebGLRenderer`; chunk `bvh` contains `MeshBVH`.
-- **Covered by:** `parity/F3.test.ts` (H)
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
 
 ### BUILD-05 · The version maps the build writes
 
@@ -636,7 +636,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:13-24, 63-65, 84-90`; `scripts/published-version.mjs:10-45`
 - **Expected:** keys exactly `base`, `files`, `gunzipped`; `base` = `/neuroatlas/`; head map non-empty with every key starting `models/`; `sw.js` contains `planum-models`.
-- **Covered by:** `parity/F3.test.ts` (D for the map contents; H for `sw.js` written beside the bundle); `e2e/parity/harness.spec.ts` (R, end to end, versions only). Contents hashing of `.gz` → D only.
+- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job); `e2e/parity/harness.spec.ts` (R, end to end, versions only)
 
 ### BUILD-06 · Charset first, prefetch before the stylesheet
 
@@ -645,7 +645,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** HTML Standard 4.2.5.4; `index.html:4, 34`
 - **Expected:** first 1024 bytes contain `<meta charset="UTF-8"`; index of `window.__planumAssets` < index of `rel="stylesheet"`.
-- **Covered by:** `parity/F3.test.ts` (H)
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
 
 ### BUILD-07 · The prefetch script is inlined with its values
 
@@ -654,7 +654,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:63-65`
 - **Expected:** one `script` tag, `injectTo: 'head'`, no `__PUBLISHED_VERSIONS__` or `__ASSET_BASE__` left.
-- **Covered by:** `parity/F3.test.ts` (H)
+- **Covered by:** `build/published-files.test.ts` (R)
 
 ### BUILD-08 · Development reloads on a rebuilt asset
 
@@ -663,7 +663,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:66-78`
 - **Expected:** `change`/`unlink`/`add` of `models/anatomies.json` → full reload each time and the map gains/loses the entry; `addDir` or `robots.txt` → no reload; both trees are watched.
-- **Covered by:** `parity/F3.test.ts` (R 2, I 1)
+- **Covered by:** `build/published-files.test.ts` (R, over the fixture tree)
 
 ### BUILD-09 · Page language and title
 

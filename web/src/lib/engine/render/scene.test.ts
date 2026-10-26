@@ -12,6 +12,7 @@ import {
 } from 'three';
 import type { WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -21,7 +22,11 @@ import * as outlineOccluders from './outline-occluders.ts';
 import { createPipeline, createScene, planFraming } from './scene.ts';
 
 // Only the renderer is replaced, since it needs a GL context.
-const calls = vi.hoisted(() => ({ order: [] as string[], canvas: null as EventTarget | null }));
+const calls = vi.hoisted(() => ({
+  order: [] as string[],
+  canvas: null as EventTarget | null,
+  loop: null as ((now: number) => void) | null,
+}));
 
 vi.mock('three', async (importOriginal) => {
   const original = await importOriginal<typeof import('three')>();
@@ -48,7 +53,9 @@ vi.mock('three', async (importOriginal) => {
     getPixelRatio = () => this.ratio;
     setSize() {}
     initRenderTarget() {}
-    setAnimationLoop() {}
+    setAnimationLoop(loop: ((now: number) => void) | null) {
+      calls.loop = loop;
+    }
     dispose() {
       calls.order.push('dispose');
     }
@@ -229,6 +236,207 @@ describe('scene lifecycle', () => {
       getPropertyValue: (name: string) => (name === '--scene-exposure' ? '1.2' : '#808080'),
     }));
     assert.doesNotThrow(() => stage.applyTheme());
+    stage.dispose();
+  });
+});
+
+describe('scene motion', () => {
+  let clock = 0;
+  let reduced = false;
+  let resizeObserved: (() => void) | null = null;
+  let composerRatios: number[] = [];
+
+  beforeEach(() => {
+    clock = 1000;
+    reduced = false;
+    composerRatios = [];
+    calls.loop = null;
+    vi.spyOn(performance, 'now').mockImplementation(() => clock);
+    vi.spyOn(EffectComposer.prototype, 'render').mockImplementation(function (
+      this: EffectComposer,
+    ) {
+      composerRatios.push((this as unknown as { _pixelRatio: number })._pixelRatio);
+    });
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resizeObserved = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    vi.stubGlobal('matchMedia', () => ({ matches: reduced }));
+    vi.stubGlobal('document', { documentElement: {} });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  const hostOf = (width: number, height: number) =>
+    ({
+      prepend() {},
+      getBoundingClientRect: () => ({ width, height }),
+    }) as unknown as HTMLElement;
+
+  const plan = () => ({
+    position: new Vector3(0.3, 0.1, 0.4),
+    target: new Vector3(0.01, 0, 0),
+    near: 0.01,
+    far: 5,
+    minDistance: 0.05,
+    maxDistance: 2,
+  });
+
+  /** One frame of the render loop at `offset` ms after the clock's start of 1000. */
+  const frame = (offset: number) => {
+    clock = 1000 + offset;
+    calls.loop!(clock);
+  };
+
+  const close = (actual: number, expected: number, tolerance = 1e-6) =>
+    assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
+
+  it('SCENE-01 an eased move lasts 240 ms, applies its orbit limits on arrival and lands on the plan', () => {
+    const stage = createScene(host);
+    stage.setSize();
+    const start = stage.camera.position.clone();
+    const destination = plan();
+    stage.moveTo(destination);
+    frame(120);
+    const halfway = stage.camera.position;
+    assert.ok(halfway.distanceTo(start) > 1e-3 && halfway.distanceTo(destination.position) > 1e-3);
+    assert.equal(stage.controls.minDistance, 0);
+    assert.equal(stage.controls.maxDistance, Infinity);
+    assert.deepEqual(stage.destination.position, destination.position);
+    frame(240);
+    assert.ok(stage.camera.position.distanceTo(destination.position) < 1e-9);
+    assert.ok(stage.controls.target.distanceTo(destination.target) < 1e-9);
+    assert.equal(stage.controls.minDistance, 0.05);
+    assert.equal(stage.controls.maxDistance, 2);
+    stage.dispose();
+  });
+
+  it('SCENE-02 an immediate move, and every move and slide under reduced motion, land at once', () => {
+    const stage = createScene(host);
+    stage.setSize();
+    stage.moveTo(plan(), { immediate: true });
+    assert.ok(stage.camera.position.distanceTo(new Vector3(0.3, 0.1, 0.4)) < 1e-12);
+    assert.equal(stage.controls.maxDistance, 2);
+
+    reduced = true;
+    const other = createScene(host);
+    other.setSize();
+    other.moveTo(plan());
+    assert.ok(other.camera.position.distanceTo(new Vector3(0.3, 0.1, 0.4)) < 1e-12);
+    assert.deepEqual(other.controls.target.toArray(), [0.01, 0, 0]);
+    // The image's offset is final before any frame: 40 px for an 80 px band under a 600 px canvas.
+    other.setFramingInset({ bottom: 80 });
+    assert.equal(other.camera.view?.offsetY, 40);
+    other.setChromeInsets({ bottom: 200 }, { settle: true });
+    assert.equal(other.camera.view?.offsetY, 140);
+    stage.dispose();
+    other.dispose();
+  });
+
+  it('SCENE-03 a framing inset slides on a cubic ease-in-out, and on the sheet curve beside a settle', () => {
+    const plain = createScene(host);
+    plain.setSize();
+    plain.setFramingInset({ bottom: 80 });
+    // offsetY = 300 - (600 - 80 * ease) / 2; ease(0.25, 0.5, 0.75) = 1/16, 1/2, 15/16.
+    for (const [offset, expected] of [
+      [60, 2.5],
+      [120, 20],
+      [180, 37.5],
+    ] as const) {
+      frame(offset);
+      close(plain.camera.view!.offsetY, expected);
+    }
+    plain.dispose();
+
+    clock = 1000;
+    const beside = createScene(host);
+    beside.setSize();
+    beside.setChromeInsets({ bottom: 300 }, { settle: true });
+    beside.setFramingInset({ bottom: 80 });
+    // Both bands ride cubic-bezier(0.32, 0.72, 0, 1): offsetY = (300 + 80) / 2 * ease.
+    for (const [offset, ease] of [
+      [60, 0.7791312484],
+      [120, 0.9548094095],
+      [180, 0.9923487139],
+    ] as const) {
+      frame(offset);
+      close(beside.camera.view!.offsetY, 190 * ease);
+    }
+    beside.dispose();
+  });
+
+  it('SCENE-05 the sheet shrinks the visible rectangle, not the canvas, the camera or the target', () => {
+    const stage = createScene(hostOf(1000, 700));
+    stage.setSize();
+    stage.moveTo(plan(), { immediate: true });
+    const position = stage.camera.position.toArray();
+    const target = stage.controls.target.toArray();
+    stage.setChromeInsets({ bottom: 200 });
+    assert.equal(stage.visibleRect.height, 500);
+    assert.deepEqual(stage.hostSize, { width: 1000, height: 700 });
+    assert.equal(stage.camera.view?.enabled, true);
+    assert.equal(stage.camera.view?.fullHeight, 700);
+    assert.equal(stage.camera.view?.offsetY, 100);
+    assert.deepEqual(stage.camera.position.toArray(), position);
+    assert.deepEqual(stage.controls.target.toArray(), target);
+    stage.dispose();
+  });
+
+  it('SCENE-06 a framing inset narrows framing but not the visible rectangle, and reports a change', () => {
+    const stage = createScene(host);
+    stage.setSize();
+    assert.equal(stage.setFramingInset({ bottom: 80 }), true);
+    assert.equal(stage.setFramingInset({ bottom: 80 }), false);
+    assert.deepEqual(stage.visibleRect, { x: 0, y: 0, width: 800, height: 600 });
+    close(stage.viewportFit.vertical, 1 - 80 / 600, 1e-12);
+    assert.equal(stage.viewportFit.horizontal, 1);
+    assert.equal(stage.setFramingInset({ bottom: 40 }, { immediate: true }), true);
+    assert.equal(stage.camera.view?.offsetY, 20);
+    stage.dispose();
+  });
+
+  it('SCENE-07 a host resize reports a canvas change and a sheet inset does not', () => {
+    const onResize = vi.fn();
+    const stage = createScene(host, { onResize });
+    resizeObserved!();
+    assert.deepEqual(onResize.mock.calls, [[{ canvasChanged: true }]]);
+    stage.setChromeInsets({ bottom: 100 });
+    assert.deepEqual(onResize.mock.calls.at(-1), [{ canvasChanged: false }]);
+    const count = onResize.mock.calls.length;
+    stage.setChromeInsets({ bottom: 100 });
+    assert.equal(onResize.mock.calls.length, count);
+    stage.dispose();
+  });
+
+  it('SCENE-08 a moving camera draws at the reduced ratio, then once at full after 150 ms, then rests', () => {
+    vi.stubGlobal('devicePixelRatio', 2);
+    const stage = createScene(host);
+    stage.setSize();
+    frame(0);
+    const settledRatio = composerRatios.at(-1)!;
+    stage.moveTo(plan());
+    composerRatios = [];
+    frame(120);
+    assert.ok(composerRatios.length > 0 && composerRatios.every((ratio) => ratio < settledRatio));
+    frame(240);
+    composerRatios = [];
+    frame(300);
+    assert.deepEqual(composerRatios, [], 'nothing is drawn while it is only waiting to rest');
+    frame(400);
+    assert.deepEqual(composerRatios, [settledRatio]);
+    frame(401);
+    assert.equal(calls.loop, null, 'the loop stops until something changes');
+    stage.invalidate();
+    assert.notEqual(calls.loop, null);
     stage.dispose();
   });
 });

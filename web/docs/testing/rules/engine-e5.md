@@ -11,7 +11,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:20,24,304-336,345-379`
 - **Expected:** `moveTo(plan)` at t0. At t0+120 ms the camera lies strictly between the start and the plan, and `controls.minDistance/maxDistance` are still the old ones. At t0+240 ms the position and target equal the plan (≤1e-12 m) and the limits equal the plan's. `scene.destination` returns the plan throughout.
-- **Covered by:** `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/scene.test.ts` (R)
 
 ### SCENE-02 · Immediate moves and reduced motion land at once
 
@@ -20,7 +20,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:41-42,317-324,493-500,516-519`
 - **Expected:** With `matchMedia('(prefers-reduced-motion: reduce)').matches === true`, `moveTo(plan)` leaves the camera on the plan before the next frame. The same holds for `setFramingInset(…)` and `setChromeInsets(…, { settle: true })`, whose offsets are final on the next frame.
-- **Covered by:** `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/scene.test.ts` (R)
 
 ### SCENE-03 · A move beside a settling sheet rides the sheet's curve
 
@@ -29,7 +29,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:24,26-39,333,494,521`
 - **Expected:** The easing is `cubic-bezier(0.32, 0.72, 0, 1)` (the `--ease-sheet` token) over 240 ms beside a settle, and `t<0.5 ? 4t³ : 1-(-2t+2)³/2` otherwise. Sampled at 25/50/75 % of 240 ms, the progress matches the curve within 1e-6.
-- **Covered by:** `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/scene.test.ts` (R)
 
 ### SCENE-04 · Taking hold of the camera mid-move stops the move where it is drawn
 
@@ -49,7 +49,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:99-121,236-259,488-505`
 - **Expected:** On a 1000×700 host, `setChromeInsets({ bottom: 200 })` gives `visibleRect.height === 500` while `hostSize` stays 1000×700. `camera.view` is enabled with the offset `viewOffset` gives, and `camera.position` and `controls.target` are unchanged.
-- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: the rectangle shrinks and a `viewport` event carries the host size; could move down to unit with the fake renderer), `parity/E5.test.ts` (D). The unchanged canvas, camera and target: only D.
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: the rectangle shrinks and a `viewport` event carries the host size; could move down to unit with the fake renderer), `src/lib/engine/render/scene.test.ts` (R)
 
 ### SCENE-06 · Framing clears the dock and colour key without changing the visible rectangle
 
@@ -58,7 +58,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:110-121,507-533`
 - **Expected:** `setFramingInset({ bottom: 80 })` returns `true`, the same call again returns `false`, `visibleRect` is unchanged, and `viewportFit.vertical` drops by 80 / host height. With `{ immediate: true }` the offset is final at once.
-- **Covered by:** `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/scene.test.ts` (R)
 
 ### SCENE-07 · A canvas resize refits; a sheet drag does not
 
@@ -67,7 +67,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:261-286,501-504`
 - **Expected:** A ResizeObserver callback gives `onResize({ canvasChanged: true })`. `setChromeInsets(…)` gives `onResize({ canvasChanged: false })`. Setting the same insets again reports nothing.
-- **Covered by:** `parity/E5.test.ts` (D); `src/lib/engine/framing.test.ts` (R, indirectly through resize)
+- **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/render/scene.test.ts` (R)
 
 ## The render loop
 
@@ -78,7 +78,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:21-22,183-206,381-405`
 - **Expected:** During a move the composer renders at the motion pixel ratio. 150 ms after the last motion one render at the settled ratio follows, then `setAnimationLoop(null)`. Any `invalidate()` restarts the loop.
-- **Covered by:** `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/scene.test.ts` (R)
 
 ## Outlines and theme
 
@@ -147,7 +147,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/picking.js:89-108`
 - **Expected:** `pointermove` at (120, 40) on a canvas at (0, 0), then one frame, gives `onHover(region, { x: 120, y: 40 })` and `cursor === 'pointer'`. With no region it gives `onHover(null, …)` and `cursor === 'grab'`.
-- **Covered by:** `src/lib/engine/render/picking.test.ts` (R; the `pointer` cursor is asserted only in the camera-motion case), `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-16 · Hover asks the anatomy at most once a frame, at the latest position
 
@@ -192,7 +192,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/picking.js:3-14,70-87`
 - **Expected:** Touch drift of 11 px selects and 12 px does not. Mouse drift of 4 px selects and 5 px does not. A non-zero button never selects.
-- **Covered by:** `src/lib/engine/render/picking.test.ts` (R), `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-21 · A click on the empty stage keeps the selection
 
@@ -228,7 +228,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/picking.js:46-68`
 - **Expected:** For a canvas at (left 10, top 5) of 200×100 and a pointer at client (110, 55), the ray equals `Raycaster.setFromCamera((0, 0), camera)` (direction ≤1e-12). Client (10, 5) maps to NDC (-1, 1). With a 0×0 rect, `pick` is never called and nothing is hovered or selected.
-- **Covered by:** `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-25 · Nothing is picked while the tract reference is shown alone
 
@@ -248,7 +248,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/comparison/overlay.js:16-40,42-87`
 - **Expected:** After `highlight('pair-a')`, `outlined` is the single mesh whose `overlap_id` is `'pair-a'`. Its material has `colorWrite === false`, `depthWrite === false` and `side === DoubleSide`. The other meshes have `visible === false`, and the position arrays are byte-equal to the file's.
-- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R; `DoubleSide` and "never pickable" are not asserted), `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R)
 
 ### SCENE-27 · The overlap geometry is loaded once
 
@@ -266,7 +266,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/comparison/overlay.js:52-56,78-87`
 - **Expected:** `highlight(a)` and `highlight(b)` resolve `[false, true]` and the outline is b. `highlight(a)` then `clear()` resolves `false` with no outline.
-- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, clear); `src/lib/engine/index.contract.test.ts` (R, via contract suite: supersede on the real engine, parsing the 16 MB `atlas-overlaps.glb`); `src/lib/engine/contract.test.ts` (W, fake: supersede); `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, clear); `src/lib/engine/index.contract.test.ts` (R, via contract suite: supersede on the real engine, parsing the 16 MB `atlas-overlaps.glb`); `src/lib/engine/contract.test.ts` (W, fake: supersede)
 
 ### SCENE-29 · A hidden overlay outlines nothing until shown again
 
@@ -302,7 +302,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/comparison/overlay.js:61,79,90-95`
 - **Expected:** `highlight` then `dispose` before the load resolves: `highlight` resolves `false`, every geometry is disposed and `outlined` is `[]`. `highlight` after `dispose` rejects `/disposed/`.
-- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, late arrival); `parity/E5.test.ts` (D, after-dispose refusal)
+- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R)
 
 ## Framing plans
 
@@ -313,4 +313,4 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:597-630`
 - **Expected:** Camera at (0.2, 0.1, 0.3), minDistance 0.02, maxDistance 4, bounds (−0.07, −0.1, −0.06)..(0.07, 0.1, 0.08), direction (1, 0, 0), fit {1, 0.45}: the plan's target is the bounds centre and its position differs from the camera's; afterwards the camera position, quaternion, near, far, the controls' target and both limits are unchanged.
-- **Covered by:** `src/lib/engine/render/scene.test.ts` (R), `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/scene.test.ts` (R)

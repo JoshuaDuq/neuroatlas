@@ -260,7 +260,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Level:** unit (view-model `subjectName`)
 - **Source:** `header.js:37-41`; `chrome.contract.test.js:240-245`
 - **Expected:** `MGH CDMD “sub_013”` → `MGH CDMD sub_013`; `SNAIL “subj_1”` → `SNAIL subj_1`; `AOMIC-PIOP1 “sub-0022”` → `AOMIC-PIOP1 sub-0022`; `{id:'x', subject:'x'}` → `x`; `{id:'y'}` → `y`. Also `A  "b"` → "A b", and `””` with no subject or id → "".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R); `parity/C5.test.ts` (D, seeded entries against legacy)
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `MAST-28`)
 
 ### MAST-29 · Colour offers only published colourings, in fixed groups
 
@@ -269,7 +269,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Level:** unit (view-model `colourGroups`); browser only for the optgroup labels in the DOM
 - **Source:** `header.js:9-15, 51-57`; `chrome.contract.test.js:317-331`
 - **Expected:** all published → `[['appearance',['tissue','mri']], ['parcellation',['atlas']], ['networks',['network','cab-np']], [null,['functional']]]`. Networks only → no `cab-np` and no functional group. Option texts on Destrieux: `''` (the hidden paint option), "Tissue", "T1 MRI", "Regions", "Yeo 7 networks", "CAB-NP networks (atlas becomes HCP-MMP)", "Functional divisions (atlas becomes HCP-MMP)". Optgroup labels "Appearance", "Parcellation", "Networks" (FR "Apparence", "Parcellisation", "Réseaux").
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R); `src/features/masthead/DataBar.svelte.test.ts` (R, could move down); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `MAST-29`); `src/features/masthead/DataBar.svelte.test.ts` (R, could move down); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-30 · An option says what else choosing it changes
 
@@ -278,7 +278,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Level:** unit (view-model `colourOption`, `atlasOption`)
 - **Source:** `header.js:59-70`; `chrome.contract.test.js:333-344`
 - **Expected:** `colourOption('en','cab-np',{atlas:'destrieux',required:'hcp-mmp'})` → "CAB-NP networks (atlas becomes HCP-MMP)"; with `atlas:'hcp-mmp'` → "CAB-NP networks". `atlasOption('en','destrieux','hcp-mmp')` → "Destrieux (colour becomes Regions)". With HCP-MMP and CAB-NP shown, the Atlas options are "Destrieux (colour becomes Regions)", "HCP-MMP", "FreeSurfer aseg (colour becomes Regions)". FR: "(l’atlas devient …)", "(la couleur devient …)".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R); `src/features/masthead/DataBar.svelte.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `MAST-30`); `src/features/masthead/DataBar.svelte.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-31 · A tab's paint shows in Colour as a hidden option
 
@@ -295,8 +295,8 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the select's value
 - **Source:** `header.js:72-76, 470-481`; `chrome.contract.test.js:346-350`
-- **Expected:** choose HCP-MMP, status `switching`, no progress → selected text "HCP-MMP · Loading…". Progress 34/100 → "HCP-MMP · Loading 34%" (FR "Chargement 34 %"). Status `ready` with the atlas still `destrieux` → value `destrieux`, text "Destrieux". `loadingText` with no total, or total 0 → "Loading…"; 1/4 → "Loading 25%". `{5, 5}` → "Loading 100%"; French "Chargement 25 %" with a narrow no-break space. The exact strings are checked only by `parity/C5.test.ts` (D).
-- **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (W: compares against `t(lang,'header').loading` and matches `/25/`); `parity/C5.test.ts` (D)
+- **Expected:** choose HCP-MMP, status `switching`, no progress → selected text "HCP-MMP · Loading…". Progress 34/100 → "HCP-MMP · Loading 34%" (FR "Chargement 34 %"). Status `ready` with the atlas still `destrieux` → value `destrieux`, text "Destrieux". `loadingText` with no total, or total 0 → "Loading…"; 1/4 → "Loading 25%". `{5, 5}` → "Loading 100%"; French "Chargement 25 %" with a narrow no-break space.
+- **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (R, `MAST-32`: the exact strings in both languages)
 
 ### MAST-33 · Another subject waits for a download, and focus is not dropped
 
@@ -332,7 +332,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Level:** unit (i18n tables)
 - **Source:** `chrome.contract.test.js:264-281`
 - **Expected:** `header.notes` has more than 10 characters for `destrieux`, `hcp-mmp`, `learning`, `aseg` and `nextbrain` in `en` and `fr`. `display.surfaceColorTitles` is set for `tissue`, `mri`, `atlas`, `network`, `cab-np` and `functional`. `header.subject` is "Subject" / "Sujet". No "Specimen" or "Spécimen" in the masthead.
-- **Covered by:** uncovered (`parity/C1.test.ts` compares the string tables with legacy: D)
+- **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, MAST-36)
 
 ## Data bar: collapse and summary
 
@@ -352,7 +352,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Level:** unit (view-model `dataSummary`) for the parts; browser for the name
 - **Source:** `header.js:43-49, 427-457, 522`; `chrome.contract.test.js:247-262`
 - **Expected:** "Atlas and display settings: CDMD sub_013 · Destrieux · Tissue · Teaching set"; FR prefix "Réglages de l’atlas et de l’affichage: ". `dataSummary({subject:null, atlas:'Destrieux', colour:'Regions', detail:'Teaching set'})` → parts atlas, colour, detail. With a `reference` → `[{part:'subject', text:<reference>}]`. `aria-controls` = the popover's id; `data-tooltip` "Atlas and display settings". Every printed part is in the name.
-- **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); `parity/C5.test.ts` (D)
+- **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (R, `MAST-38`); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-39 · As room shrinks the summary drops internal anatomy, then colour, never the atlas
 

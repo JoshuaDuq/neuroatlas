@@ -4,8 +4,10 @@ export const en = {
   all: 'All functions',
   allDetail: 'Each area in its strongest core assessment function',
   coverage: (count: number, terms: number) =>
-    `${count} functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas` +
-    (terms ? `; searching also finds ${terms} more Neurosynth terms and clinical groups` : '') +
+    `${count} ${count === 1 ? 'function, a' : 'functions, each a'} Neurosynth meta-analysis of the activation literature on HCP-MMP areas` +
+    (terms
+      ? `; searching also finds ${terms} more Neurosynth ${terms === 1 ? 'term or clinical group' : 'terms and clinical groups'}`
+      : '') +
     '. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.',
   noResults:
     'Search a function, task or stimulus, such as “faces” or “reward”, or a clinical group such as “aphasia”.',
@@ -70,9 +72,9 @@ export const fr: typeof en = {
   all: 'Toutes les fonctions',
   allDetail: 'Chaque aire dans la plus forte des fonctions de base de l’évaluation',
   coverage: (count: number, terms: number) =>
-    `${count} fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP` +
+    `${count} ${count > 1 ? 'fonctions, chacune une' : 'fonction, une'} méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP` +
     (terms
-      ? `\u202f; la recherche trouve aussi ${terms} autres termes et groupes cliniques Neurosynth`
+      ? `\u202f; la recherche trouve aussi ${terms} ${terms > 1 ? 'autres termes et groupes cliniques' : 'autre terme ou groupe clinique'} Neurosynth`
       : '') +
     '. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.',
   noResults:

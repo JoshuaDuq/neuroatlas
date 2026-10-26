@@ -20,7 +20,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:44-54`
 - **Expected:** `nextEnabledIndex([false,true,false], 0, 1)` = 2; `(…, 2, -1)` = 0; `([false,true], 0, 1)` = 0; `([true,false], 1, 1)` = 1; `([false], 0, -1)` = 0; `([true,false,false], -1, 1)` = 1; delta 0 or an empty list → the index given.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R; delta 0 and the empty list: `parity/C5.test.ts` only, D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R, `PANEL-01`: delta 0 and the empty list)
 
 ### PANEL-02 · A group name says which vocabulary it is from only when two share it
 
@@ -29,7 +29,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:56-76`
 - **Expected:** Limbic (lobe) beside Limbic (system) → shared `['Limbic']`; "Limbic lobe", "Limbic network", "Limbic system"; Frontal stays "Frontal". fr: "Lobe limbique", "Système limbique". Limbic in a structure group and a tissue-region group → no shared name.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-03 · Groups are sorted by the name the list shows, within each family
 
@@ -38,7 +38,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:77-86`
 - **Expected:** fr, cortex Insula and Limbique, structures Cervelet, Limbique, Tronc cérébral → `Insula, Lobe limbique, Cervelet, Système limbique, Tronc cérébral`.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-04 · A region's group is the one the tree lists it under, named as the tree shows it
 
@@ -47,7 +47,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:87-95`
 - **Expected:** `c` in Frontal → `{ key: 'cortex:Frontal', label: 'Frontal' }`; `a` → `{ key: 'cortex:Limbic', label: 'Limbic lobe' }`; `d` → `{ key: 'structure:Limbic', label: 'Limbic system' }`; `elsewhere` → null.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-05 · A match in another atlas offers the atlas that draws it
 
@@ -56,7 +56,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:96-117`
 - **Expected:** cut atlases destrieux, hcp-mmp, nextbrain: a NextBrain region from destrieux or hcp-mmp → `[['nextbrain', ['nb']]]`; a wmparc region with cut atlases destrieux, hcp-mmp, from nextbrain → `[['destrieux', ['wm']]]`; without nextbrain on offer → throws "No other atlas draws nb". Surface atlases: an hcp-mmp area from destrieux → `['hcp-mmp']`.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-06 · A setting that hides rows is said once, on the section caption
 
@@ -65,7 +65,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:119-133`
 - **Expected:** cortex rows hidden by cortex-hidden (×3) and hemisphere, structure rows removed and no-mri, tissue no-cut → `[['cortex', ['cortex-hidden','hemisphere']], ['tissue', ['no-cut']]]`.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-07 · A hidden row prints only a reason of its own
 
@@ -74,7 +74,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:135-137,356-358`
 - **Expected:** shown → false; hemisphere → false; removed → false; no-mri → true; below-cut-resolution → true. `reasonText('hemisphere', …, 'en')` = "Hemisphere hidden"; `('other-detail', 'learning', 'fr')` = "Dans Ensemble pédagogique"; `('no-such-reason', …, 'en')` = "Hidden"; `('inDetailSet', …, 'fr')` = "Masqué".
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D, the row rule)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-08 · Some reasons offer a switch and one cannot be undone
 
@@ -92,7 +92,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/visibility-control.js:9-19`
 - **Expected:** hidden {a, b}: `['c']` → shown; `['a','b']` → hidden; `['a','c']` → partial; `[]` → shown.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R; the empty list: `parity/C5.test.ts` only, D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R, `PANEL-09`: the empty list)
 
 ### PANEL-10 · A search match is marked without regard to case or accents
 
@@ -101,7 +101,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:154-179`; deviation `c5-match-highlight-offsets.md`
 - **Expected:** "Gyrus cingulaire" / `CINGU` → "Gyrus ", [cingu], "laire"; "Écorce" / `eco` → [Éco], "rce"; "Insula" / `insula` → [Insula]; `zz` or `''` → one unmarked "Insula". "Cortex cérébelleux" with NFD `cérébel` → "Cortex ", [cérébel], "leux"; NFD name with `cerebel` → the NFD "cérébel" marked. `́` → unmarked.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D, composed input only)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ### PANEL-11 · A row explains a match its name does not hold with its code, then its first alias
 
@@ -110,7 +110,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/navigator.js:287-306`
 - **Expected:** Primary visual cortex, code V1, aliases striate cortex, area 17: `v1` → "V1"; `striate` → "striate cortex"; `area` → "area 17"; `visual` → null; `zz` → null. Insula with alias "Île de Reil", `ile` → "Île de Reil".
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R)
 
 ## Clinical: the Deficits and Functions panels
 
@@ -121,7 +121,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/clinical.js:180-198`
 - **Expected:** detail learning → aseg: "Internal anatomy set to FreeSurfer aseg." / "Anatomie interne réglée sur FreeSurfer aseg." With a cut and isolation before: "Section closed, isolation cleared, and internal anatomy set to FreeSurfer aseg." / "Coupe fermée, isolement retiré et anatomie interne réglée sur FreeSurfer aseg." Cut atlas → hcp-mmp: "Cut labels set to HCP-MMP." Before hcp-mmp, cab-np, left; after destrieux, atlas, both, cortex hidden: "Atlas set to Destrieux, colour set to Regions, both hemispheres shown, and cortex hidden." Same settings, or a cut made after → null.
-- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R); `parity/C5.test.ts` (D); the controller's use: CTRL-30 in `controller.md`
+- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R); the controller's use: CTRL-30 in `controller.md`
 
 ### PANEL-13 · The profile's meta line says the work in progress, the failure, or the stage
 
@@ -130,7 +130,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/clinical.js:200-205`; `viewer/ui/panels/functions.js:124-146`
 - **Expected:** idle → the status text. Opening → "Opening anatomy…"; restoring → "Restoring the previous view…". fr `restoreFailed` → "La vue précédente n’a pas pu être entièrement rétablie." Error on `deficit` → "Could not show this deficit’s regions." fr `asset-fetch` on `region` → starts "Impossible d’afficher la région. Un fichier n’a pas pu être téléchargé" and has no "HTTP". Functions tab: busy "Preparing the HCP-MMP areas…", failure "The HCP-MMP areas could not be shown."
-- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R; the Functions text and `asset-updated`: `parity/C5.test.ts` only, D)
+- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R, `PANEL-13`: the Functions text and `asset-updated`)
 
 ### PANEL-14 · A side shared by every finding is said once
 
@@ -139,7 +139,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/clinical.js:167-178`
 - **Expected:** `sharedSide`: six lefts → left; `[right]` → right; two bilateral → bilateral; `[left,right]`, `[left,bilateral,left]`, `[]` → null. `sideStated('left', [left,left])` true; `('right',[right])` true; `('bilateral',[left,right])`, `('left',[left,right])`, `('left',[midline])`, `('left',[])` false.
-- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R)
 
 ### PANEL-15 · A reference's published corrections are listed with their DOI
 
@@ -148,7 +148,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/clinical.js:108-115`; `data/neuropsychology.yaml`
 - **Expected:** two references carry corrections: `10.1073/pnas.98.2.777-e` → `{ doi: 'doi:10.1073/pnas.98.2.777-e', href: 'https://doi.org/10.1073/pnas.98.2.777-e', summary: 'Corrects the spelling “centrolateralis” …' }` and `10.1093/cercor/bhl065`; fr summaries in French. A reference without corrections → `[]`.
-- **Covered by:** `src/lib/core/panels/clinical.test.ts` (W: it re-derives href and summary from the same data and does not check the `doi:` text); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R: pins the `doi:` text, the link and both summaries)
 
 ### PANEL-16 · A region with no deficit has no Neuropsychology section
 
@@ -157,7 +157,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/clinical.js:207-209`
 - **Expected:** `(null, 0)` → false; `({ id: 'destrieux:left:1' }, 0)` → false; `(…, 2)` → true.
-- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R)
 
 ## Inspector
 
@@ -168,7 +168,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/inspector.js:13-29`
 - **Expected:** no region, anatomy → `{ hideTitle: true, hideHint: false, hideFacts: true, hideActions: true }`; no region, deficits, circuits, functions or diffusion → `hideHint: true`. Region on anatomy or deficits → all false.
-- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R)
 
 ### PANEL-18 · A source label names its atlas and keeps its ids apart
 
@@ -177,7 +177,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/inspector.js:31-43`
 - **Expected:** `{ atlas: 'destrieux', source_label_id: 16 }` → `{ atlas: 'Destrieux', ids: '16', stacked: false }`. NextBrain `[161, 10161]` → `ids: '161, 10161'`, not stacked; `[1,2,3]` → stacked. 52 ids in fr → `atlas: 'NextBrain · 52 étiquettes'`, `ids: null`, `all` the full list (cdmd `learning:left:thalamus` has 52). `{ atlas: 'zanatomy' }` → `ids: null`, stacked.
-- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R)
 
 ## Circuits
 
@@ -188,7 +188,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/circuits.js:48-82`
 - **Expected:** step 2, visited [0, 2] → `visited, upcoming, current, upcoming`; step 0 visited [0] → current. `stepperTargets(0,4)` = `{ previous: null, next: 1 }`; `(1,4)` = `{0, 2}`; `(3,4)` = `{2, null}`; `(0,1)` = `{null, null}`.
-- **Covered by:** `src/lib/core/panels/circuits.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/circuits.test.ts` (R)
 
 ## Related evidence
 
@@ -199,7 +199,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/related.js:7-20`
 - **Expected:** `learning:left:thalamus` with constituents `nextbrain:left:458`, `:441` → those three; `nextbrain:left:458` → itself and the thalamus; `aseg:left:10` → itself. cdmd: `learning:left:caudate` → itself, `nextbrain:left:48`, `:118`, `:393`. `'missing'` → "Unknown region: missing".
-- **Covered by:** `src/lib/core/panels/related.test.ts` (R); `parity/C5.test.ts` (D, every published region)
+- **Covered by:** `src/lib/core/panels/related.test.ts` (R)
 
 ### PANEL-21 · Every published constituent is itself a published region
 
@@ -304,7 +304,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/functions.js:124-146`; `viewer/ui/panels/clinical.js:288-313`; `viewer/ui/panels/atlas-comparison.js:65-88`
 - **Expected:** two runs, second resolves `b` then first `a` → outcomes `{ ok: true, value: 'a' }`, `{ ok: true, value: 'b' }`, reported `['result b', 'settled']`. First resolves first → nothing reported until the second. Both reject → errors reported `[current]`, both logged. A throwing action → `{ ok: false, error }`, `onError` once. The action is called before the first await.
-- **Covered by:** `src/lib/core/async/latest.test.ts` (R); `parity/C5.test.ts` (D, seeded schedules; it also holds the "false is not applied" result)
+- **Covered by:** `src/lib/core/async/latest.test.ts` (R)
 
 ### PANEL-32 · Cancelling drops the run in flight without starting another
 
@@ -313,7 +313,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/atlas-comparison.js:65-88`
 - **Expected:** run pending, `cancel()`, resolve `late` → outcome `{ ok: true, value: 'late' }`, no result, no settling; a later run reports `now`.
-- **Covered by:** `src/lib/core/async/latest.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/async/latest.test.ts` (R)
 
 ### PANEL-33 · The latest run settles even when its handler throws
 
@@ -331,4 +331,4 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/circuits.js:260-278`
 - **Expected:** first pending → `busy` true; a second → false, its action not called, no start or settle; first resolves → true, `busy` false; a later run → true. Events of one run: `start busy=true`, `action busy=true`, `settled busy=false`. A failing run → false, `['error', 'settled busy=false']`, logged once; the next run → true.
-- **Covered by:** `src/lib/core/async/latest.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/async/latest.test.ts` (R)

@@ -1,7 +1,6 @@
 # E1 deviations from the legacy render primitives
 
-Chunk E1 (#24). Each entry is a fix under the parity policy on #4 ("do not port bugs"). The
-parity test (`web/parity/E1.test.ts`) excludes these inputs; fixes 1-4 are pinned by tests in
+Chunk E1 (#24). Each entry is a fix under the parity policy on #4 ("do not port bugs"). Fixes 1-4 are pinned by tests in
 `camera-views.test.ts`, `coordinates.test.ts`, `outline-edges.test.ts` and `device.test.ts`.
 
 ## 1. `detectIntegratedGpu` no longer swallows errors and releases its probe context

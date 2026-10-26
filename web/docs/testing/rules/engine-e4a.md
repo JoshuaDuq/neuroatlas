@@ -37,7 +37,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:39-47`; `viewer/slices/sections.js:357-361`; the frame half is RENDER-39 (`engine-e1.md`)
 - **Expected:** tilt 38°, azimuth 71° → unit u, v, n, mutually orthogonal, and the plane passes through the crosshair (distance 0 ± 1e-10); `setAngles(120, 0)` and azimuth 200 → RangeError.
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, orthonormal and anchored; the normal formula is not checked); the contract suite (R, `setAngles(120, 0)` RangeError and stored angles); `src/lib/engine/slices/sections.test.ts` (R, every tilt × azimuth step accepted); `parity/E1.test.ts` (D, formula); the contract suite (R, "accepts a tilt of 0 to 90 and an azimuth of -180 to 180 only, and cuts along their normal": the six refusals with their message, the normal, orthonormality and the plane through the crosshair, on both engines).
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, orthonormal and anchored; the normal formula is not checked); the contract suite (R, `setAngles(120, 0)` RangeError and stored angles); `src/lib/engine/slices/sections.test.ts` (R, every tilt × azimuth step accepted); the contract suite (R, "accepts a tilt of 0 to 90 and an azimuth of -180 to 180 only, and cuts along their normal": the six refusals with their message, the normal, orthonormality and the plane through the crosshair, on both engines)
 
 ### SLICE-04 · Which half a cut removes
 
@@ -113,7 +113,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:67-72`; `viewer/slices/sampling.js:2-29`
 - **Expected:** 4×4 ramp, axial at `[1.5, 1.5, 1]`, FOV 4, size 4, window 127.5/255: first pixel `[70,70,70,255]`, last `[43,43,43,255]`; `pointOnFrame(frame, .125, .125, 4)` = `[0, 3, 1]`.
-- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (S); `parity/E4a.test.ts` (D, seeded sweep)
+- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (S)
 
 ### SLICE-12 · MRI window
 
@@ -122,7 +122,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sampling.js:18-20`; `viewer/slices/sections.js:162-170`
 - **Expected:** centre 127.5, width 255 → grey = I (see SLICE-11); I = 100, centre 90, width 20 → 255; I = 70 → 0.
-- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (S, identity window only); `parity/E4a.test.ts` (D, seeded windows). Non-identity windows: only D.
+- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (S)
 
 ### SLICE-13 · Label overlay
 
@@ -131,7 +131,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sampling.js:21-27`
 - **Expected:** grey 70 under red `[255,0,0]` → `[153, 38, 38, 255]` (153.25 and 38.5, rounded by `Uint8ClampedArray`, ties to even); a plane outside the head → alpha 0.
-- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (S, weak: only `pixels[0] > pixels[1]` and alpha 0; the mutation 0.55/0.45 → 0.3/0.7 survives); `parity/E4a.test.ts` (D). The blend weights are effectively covered only by D.
+- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (S)
 
 ### SLICE-14 · Invalid slice display is refused
 
@@ -140,7 +140,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sampling.js:4-9`
 - **Expected:** size 1, size 2.5, FOV 0, width 0 → RangeError.
-- **Covered by:** `parity/E4a.test.ts` (R part of a D file); no unit test
+- **Covered by:** `src/lib/engine/slices/sampling.test.ts` (R)
 
 ### SLICE-15 · Point readout under the crosshair
 
@@ -149,7 +149,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:414-430`; deviation `e4a-fail-fast-sections.md`
 - **Expected:** on the published CDMD volumes, fixed points with known aseg labels give fixed `{labelId, name, region.id, intensity}` (to be tabulated from the data); `sample()` before `load()` → Error "The linked MRI has not loaded."
-- **Covered by:** `parity/E4a.test.ts` (D, 2003 points against legacy). The contract suite (R for the precondition: `sample` and `pixels` throw before `load()`, message not asserted; W for the result: only `ras` is checked, and `labelId`/`name` by type). No fixed published point is tabulated: uncovered.
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R)
 
 ## The cut controller
 
@@ -169,7 +169,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:107-126`
 - **Expected:** cord bounds z −550…−60, cord hidden → axial range `[-128, 128]`; cord shown → `[-550, 128]`; the limit is the largest absolute bound.
-- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); `parity/E4a.test.ts` (D)
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R)
 
 ### SLICE-18 · Offset range
 
@@ -178,7 +178,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:128-144`
 - **Expected:** published manifest, cord hidden, oblique 30°/30° → `[-147.8, 147.8]` (rounded to 0.1); every tilt 0..90 step 5 × azimuth −180..180 step 15, cord hidden or shown: `crosshairFor(maximum + 0.01)` → RangeError and every in-range step succeeds.
-- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, weak: the sagittal range contains ±128 and `setOffset(maximum + 1)` is a RangeError); `parity/E4a.test.ts` (D); the contract suite (R, "ranges the offset over the volume, wider along an oblique normal": ±128 for the standard cuts, [-147.8, 147.8] at 30°/30°, `maximum + 0.01` refused)
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, weak: the sagittal range contains ±128 and `setOffset(maximum + 1)` is a RangeError); the contract suite (R, "ranges the offset over the volume, wider along an oblique normal": ±128 for the standard cuts, [-147.8, 147.8] at 30°/30°, `maximum + 0.01` refused)
 
 ### SLICE-19 · Crosshair and offset validation
 
@@ -288,7 +288,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:290-338`
 - **Expected:** a surfaceless atlas: tissue → caps, label plane hidden; atlas or network → label plane; a wedged atlas → caps in every mode and under isolation; the cord cap visible and pickable in tissue, atlas and network.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R); `parity/E4a.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R)
 
 ### SLICE-30 · The cut shows only what the display shows
 
@@ -297,7 +297,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:346-365`, `:387-434`
 - **Expected:** label 11101 alpha 1, then hidden → alpha 0 and the pick is `null`; hemisphere `right` → the left label's pick is `null`; isolating another region → `null`; a hidden region's cap → not visible.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R); `parity/E4a.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R; under MRI colour, a cap over a hidden region's label and a cap over background with a region isolated are not picked)
 
 ### SLICE-31 · Published colours are not shaded
 
@@ -306,7 +306,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:339-345`
 - **Expected:** atlas → `tissueVariation` 0; tissue → `appearance.intensity.cut_strength` (> 0).
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R); `parity/E4a.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R)
 
 ### SLICE-32 · GPU and CPU agree on the voxel
 
@@ -324,7 +324,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:401-434`
 - **Expected:** a NextBrain nucleus cap over a Destrieux voxel → `nextbrain:right:10119`; the sampled face over label 11101 → `destrieux:left:1`.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R); `parity/E4a.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R)
 
 ### SLICE-34 · Gyral white matter on the cut
 
@@ -342,7 +342,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:369-385`
 - **Expected:** hovered `destrieux:left:1` → codes `[1, -1]`, lifts `[HIGHLIGHT_LIFT.hovered, 0]`; `{}` → `[-1, -1]`; selected, then a redraw → `[-1, 1]`; a white-matter parcel selected → `[-1, 2]`.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, through uniforms); `src/lib/engine/slices/sections.test.ts` (I, the highlight is passed through to a stub); `parity/E4a.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R), `src/lib/engine/slices/sections.test.ts` (I)
 
 ### SLICE-36 · A cut-only atlas under MRI colour
 

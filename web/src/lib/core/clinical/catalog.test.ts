@@ -288,3 +288,68 @@ test('each finding takes the next colour, a region shared by two the first, and 
     /aphasia has no finding reading/,
   );
 });
+
+test('CAT-45 · a deficit named by the query comes first, then the rest alphabetically; an unknown language fails', () => {
+  const data = fixture();
+  data.groups.push({ id: 'language', name: text });
+  data.deficits.push(
+    {
+      ...structuredClone(data.deficits[0]),
+      id: 'amnesia-transient',
+      name: { en: 'Aaa amnesia', fr: 'Aaa amnésie' },
+      group: 'memory',
+    },
+    {
+      ...structuredClone(data.deficits[0]),
+      id: 'aphasia',
+      name: { en: 'Aphasia', fr: 'Aphasie' },
+      group: 'language',
+      domain: { en: 'Amnesia domain', fr: 'Domaine' },
+    },
+  );
+  const catalog = create(data);
+  assert.deepEqual(
+    catalog.search('amnesia', 'en').map((d) => d.id),
+    // "Aaa amnesia" sorts first by name, but the deficit named by the query leads.
+    ['amnesia', 'amnesia-transient', 'aphasia'],
+  );
+  assert.throws(() => catalog.search('x', 'de' as never), { message: 'Unknown language: de' });
+});
+
+test('CAT-47 · a deficit, reference, region or finding that does not exist fails by name', () => {
+  const catalog = create(fixture());
+  const unknown: [(id: string) => unknown, string][] = [
+    [catalog.get, 'Unknown deficit: missing'],
+    [catalog.reference, 'Unknown reference: missing'],
+    [catalog.forDeficit, 'Unknown deficit: missing'],
+    [catalog.forRegion, 'Unknown region: missing'],
+    [catalog.mappedRegions, 'Unknown deficit: missing'],
+    [catalog.paint, 'Unknown deficit: missing'],
+  ];
+  for (const [call, message] of unknown) assert.throws(() => call('missing'), { message });
+});
+
+test('CAT-49 · the six finding colours, and a seventh finding fails', () => {
+  assert.deepEqual(FINDING_COLORS, [
+    [57, 135, 229],
+    [213, 81, 129],
+    [0, 131, 0],
+    [201, 133, 0],
+    [98, 80, 214],
+    [232, 123, 164],
+  ]);
+  const seven = Array.from({ length: 7 }, (_, i) => ({ id: `f${i}`, mappings: [] }));
+  assert.throws(() => findingPaint('aphasia', seven), {
+    message: 'aphasia has more findings than finding colours.',
+  });
+  assert.equal(findingPaint('aphasia', seven.slice(0, 6)).findings.length, 6);
+});
+
+test('CAT-42 · a misspelt deficit is offered the closest name or alias in the reader’s language', () => {
+  const catalog = create(fixture());
+  assert.equal(catalog.nearest('amnesai', 'en'), 'Amnesia');
+  assert.equal(catalog.nearest('amnesie', 'fr'), 'Amnésie');
+  assert.equal(catalog.nearest('forgetfulnes', 'en'), 'forgetfulness');
+  assert.equal(catalog.nearest('abc', 'en'), null);
+  assert.equal(catalog.nearest('zzzzzz', 'en'), null);
+});

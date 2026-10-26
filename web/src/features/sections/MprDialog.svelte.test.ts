@@ -525,9 +525,8 @@ describe('on a phone', () => {
     await opened();
     sliderElement('Coronal position').focus();
     await page.viewport(390, 844);
-    await expect
-      .poll(() => document.activeElement)
-      .toBe(page.getByRole('radio', { name: 'Axial' }).element());
+    // The phone radio group renders after the resize; the locator is retried until it has focus.
+    await expect.element(page.getByRole('radio', { name: 'Axial' })).toHaveFocus();
   });
 
   test("widening the window while a radio has focus keeps focus in the dialog, on the plane's slider", async () => {

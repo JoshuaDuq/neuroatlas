@@ -157,6 +157,8 @@ export interface AreaRow {
 }
 
 export interface LesionRow {
+  /** Unique among a function's checks; several checks can name the same deficit. */
+  association: string;
   deficit: string;
   name: string;
   detail: string;
@@ -189,6 +191,7 @@ export interface FunctionProfileContent {
 }
 
 type LesionCheck = Parameters<typeof checkedParcels>[0] & {
+  association: string;
   deficit: string;
   deficit_name: Record<Language, string>;
 };
@@ -274,6 +277,7 @@ export function functionProfile(
     noAreas: copy.none(decimal(domains.threshold_z, 0, lang)),
     lesions: checks
       ? checks.map((check) => ({
+          association: check.association,
           deficit: check.deficit,
           name: check.deficit_name[lang],
           detail: `${check.references.join(', ')} · ${checkedParcels(check, lang)}`,

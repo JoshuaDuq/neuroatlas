@@ -96,3 +96,12 @@ test('the commonest atlas is chosen, not the rarest', () => {
     'b',
   );
 });
+
+test('STATE-51 a layer none of the citations needs is left alone', () => {
+  const cortex = { id: 'destrieux:left:38', atlas: 'destrieux', kind: 'cortex' } as const;
+  const structure = { id: 'aseg:right:49', atlas: 'aseg', kind: 'structure' } as const;
+  const { model, settings } = scene(cortex, structure);
+  settings.detail = 'learning';
+  assert.deepEqual(clinicalLayers(model, [structure.id]), { atlas: null, detail: 'aseg' });
+  assert.deepEqual(clinicalLayers(model, [cortex.id]), { atlas: 'destrieux', detail: null });
+});

@@ -19,7 +19,7 @@ export const en = {
   supplemental: 'Supplemental layers',
   files: 'Published files',
   sourceFiles: (n: number, checksummed: boolean) =>
-    `${n} source files${checksummed ? ', each with a SHA-256 checksum' : ''}`,
+    `${n} source ${n === 1 ? 'file' : 'files'}${checksummed ? `, ${n === 1 ? 'with a' : 'each with a'} SHA-256 checksum` : ''}`,
   index: 'Index of the published anatomies',
   tractReference: 'Tract reference',
   sources: 'Sources',
@@ -48,7 +48,7 @@ export const fr: typeof en = {
   supplemental: 'Couches complémentaires',
   files: 'Fichiers publiés',
   sourceFiles: (n: number, checksummed: boolean) =>
-    `${n} fichiers sources${checksummed ? ', chacun avec une somme SHA-256' : ''}`,
+    `${n} ${n > 1 ? 'fichiers sources' : 'fichier source'}${checksummed ? `, ${n > 1 ? 'chacun avec' : 'avec'} une somme SHA-256` : ''}`,
   index: 'Index des anatomies publiées',
   tractReference: 'Référence des faisceaux',
   sources: 'Sources',

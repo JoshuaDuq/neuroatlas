@@ -14,5 +14,5 @@ Chunk E7 (#31). A fix under the parity policy (WCAG 2.2 AA, WAI-ARIA APG, platfo
   conflicts with browser and assistive-technology shortcuts, so a key pressed with Ctrl, Meta or Alt is not
   the canvas's key. The app's own key handler already returns on those modifiers (`app.js:1896`); the held
   view now agrees with it.
-- **Test**: `web/parity/E7.test.ts`, "keeps the view for a camera key pressed with Ctrl, Meta or Alt",
-  which also shows the legacy closure dropping the view on the same key.
+- **Test**: `web/src/lib/engine/held-view.test.ts`, "FACADE-21 the same keys with Ctrl, Meta or Alt are the
+  browser's and keep the view".
