@@ -546,6 +546,26 @@ describe('accessibility', () => {
     );
   });
 
+  test('increased contrast keeps the accent edge of Restore', async () => {
+    render(Fixture, { regionId: CHIASM, isolated: true });
+    const edge = () =>
+      getComputedStyle(root().querySelector('.actions [data-active=true]')!).borderTopColor;
+    const accent = document.body.appendChild(document.createElement('span'));
+    accent.style.color = 'var(--accent)';
+    const accentColour = getComputedStyle(accent).color;
+    accent.remove();
+    await expect.poll(edge).toBe(accentColour);
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
+      // The other commands take --border-control (primary ink here); once their edge has
+      // transitioned in, a Restore that lost its accent would have too.
+      const other = () =>
+        getComputedStyle(root().querySelector('.actions button:not([data-active=true])')!)
+          .borderTopColor;
+      await expect.poll(other).not.toBe('rgba(0, 0, 0, 0)');
+      expect(edge()).toBe(accentColour);
+    });
+  });
+
   test('forced colours keep an edge on the commands and on Restore; reduced motion stops the chevron', async () => {
     render(Fixture, { regionId: CHIASM, isolated: true });
     await withMedia([{ name: 'forced-colors', value: 'active' }], () => {

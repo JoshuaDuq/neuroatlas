@@ -68,6 +68,8 @@ test.describe('selected region', () => {
     const { page } = app;
     await regionPanel(page).getByRole('button', { name: 'Clear selection' }).click();
     await expect(regionPanel(page).getByRole('button', { name: 'Isolate' })).toBeHidden();
+    // The link is written once the camera is idle; the test timeout bounds the wait.
+    await expect.poll(() => app.hash(), { timeout: 0 }).not.toContain('region=');
     const focused = await page.evaluate(() => {
       const active = document.activeElement;
       return active !== null && active !== document.body && active.checkVisibility();

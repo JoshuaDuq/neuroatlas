@@ -420,7 +420,7 @@
 @layer a11y {
   /* Tonal fills alone are too faint to find a button by (a11y.css:39-42). */
   @media (prefers-contrast: more) {
-    .region-detail .actions button {
+    .region-detail .actions button:not([data-active='true']) {
       border-color: var(--border-control);
     }
   }
