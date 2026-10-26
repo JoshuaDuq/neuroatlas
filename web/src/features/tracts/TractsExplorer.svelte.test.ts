@@ -258,7 +258,7 @@ describe('the search', () => {
     expect(region.textContent).toBe('2 tract bundles');
     await search().fill('zzz');
     vi.advanceTimersByTime(500);
-    await expect.poll(() => region.textContent).toBe('No match for “zzz”. Try another tract name.');
+    expect(region.textContent).toBe('No match for “zzz”. Try another tract name.');
   });
 
   test('unmounting while a result count is pending says nothing', async () => {

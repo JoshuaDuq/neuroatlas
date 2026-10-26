@@ -463,5 +463,5 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Kind:** accessibility
 - **Level:** browser: axe
 - **Source:** #4 parity proof
-- **Expected:** zero violations (`wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`): the bar in both themes at 1280 and 390 px; the touch bar and the French desktop bar in one run each (light); the open popover at 390 px in English (light) and in French (dark).
+- **Expected:** zero violations (`wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`): the bar in both themes at 1600 and 390 px; the touch bar and the French desktop bar in one run each (light); the open popover at 390 px in English (light) and in French (dark).
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 4 cases); `e2e/parity/data-bar.spec.ts` (legacy baseline; `next` gated off)
