@@ -13,6 +13,7 @@
   import { t } from '../../lib/core/i18n/index.ts';
   import { stepProgress } from '../../lib/core/panels/circuits.ts';
   import Disclosure from '../../lib/ui/Disclosure.svelte';
+  import { iconGraphic } from '../../lib/ui/IconButton.svelte';
   import type { CircuitExplorer } from './circuits-explorer.svelte.ts';
   import { neighbourKeys } from './neighbour-keys.ts';
 
@@ -109,7 +110,10 @@
           {#each circuit.references as id (id)}
             {@const reference = model.reference(id)}
             <p class="source">
-              <a href={reference.url} target="_blank" rel="noreferrer">{reference.title}</a>
+              <a href={reference.url} target="_blank" rel="noreferrer"
+                >{reference.title}<span class="visually-hidden">{` ${t(lang, 'link').newTab}`}</span
+                >{@render iconGraphic('external-link')}</a
+              >
               <span>{reference.citation}</span>
             </p>
           {/each}
@@ -261,7 +265,11 @@
       font-weight: 500;
       overflow-wrap: anywhere;
     }
-    .source span {
+    .source a :global(.control-icon) {
+      margin-left: var(--space-1);
+      vertical-align: -1px;
+    }
+    .source > span:not(.visually-hidden) {
       display: block;
       margin-top: var(--space-1);
     }

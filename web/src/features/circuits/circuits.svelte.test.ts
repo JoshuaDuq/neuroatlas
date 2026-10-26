@@ -358,6 +358,28 @@ describe('the landmark sequence', () => {
     expect(document.body.textContent).toContain(`Content checked: ${world.explorer.revised}`);
   });
 
+  test.each(['en', 'fr'] as const)(
+    'each source link says it opens a new tab, in its name and with the icon (%s)',
+    async (lang) => {
+      mount(lang);
+      await open('hearing');
+      await userEvent.click(summary(t(lang, 'circuits').evidence));
+      const circuit = world.circuits.get('hearing');
+      const links = [...document.querySelectorAll<HTMLAnchorElement>('.source a')];
+      expect(links).toHaveLength(circuit.references.length);
+      for (const [index, id] of circuit.references.entries()) {
+        const { title } = world.explorer.reference(id);
+        const link = page.getByRole('link', { name: `${title} ${t(lang, 'link').newTab}` });
+        await expect.element(link).toHaveAttribute('href', links[index]!.href);
+        const icon = links[index]!.querySelector('svg.control-icon');
+        expect(icon?.getAttribute('aria-hidden')).toBe('true');
+        expect(icon?.querySelector('path')?.getAttribute('d')).toBe(
+          'M14 4h6v6m0-6-9 9M18 14v5H5V6h5',
+        );
+      }
+    },
+  );
+
   test('a note the reader opened stays open as the lesson moves on, and closes with the next lesson', async () => {
     mount();
     await open('hearing');

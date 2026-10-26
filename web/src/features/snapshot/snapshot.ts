@@ -12,12 +12,6 @@ import { announce } from '../../lib/ui/announcer.svelte.ts';
 import { SNAPSHOT_LAYOUT, snapshotMarkings } from './markings.ts';
 import type { KeyMark, Markings, StageKeysModel } from './markings.ts';
 
-// TODO(C1): moves to the viewport area when the string lands (decision 33 on #4).
-const SAVED: Record<Language, (file: string) => string> = {
-  en: (file) => `Image saved as ${file}.`,
-  fr: (file) => `Image enregistrée : ${file}.`,
-};
-
 const ELLIPSIS = '…';
 
 /** The stage's own type size (--text-stage): markings, the scale bar and the caption's first line. */
@@ -484,7 +478,7 @@ async function save(scene: SnapshotStage, subject: SnapshotSubject) {
   link.href = url;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), REVOKE_AFTER_MS);
-  announce(SAVED[subject.lang](file));
+  announce(t(subject.lang, 'viewport').snapshotSaved(file));
 }
 
 let saving: Promise<void> | null = null;

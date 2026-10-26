@@ -135,8 +135,26 @@ function resolve(node: unknown, area: string, leaf = ''): unknown {
   return node;
 }
 
-const without = (node: unknown, ...keys: string[]) =>
-  Object.fromEntries(Object.entries(node as object).filter(([key]) => !keys.includes(key)));
+/** `node` without `keys`; a dotted key (`operations.fullscreen`) names a member of a nested table. */
+function without(node: unknown, ...keys: string[]): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(node as object)
+      .filter(([key]) => !keys.includes(key))
+      .map(([key, value]) => {
+        const nested = keys
+          .filter((k) => k.startsWith(`${key}.`))
+          .map((k) => k.slice(key.length + 1));
+        return [key, nested.length ? without(value, ...nested) : value];
+      }),
+  );
+}
+
+/** Whether `node` has the member `path`, a dotted key as in `without`. */
+const has = (node: unknown, path: string): boolean =>
+  path
+    .split('.')
+    .reduce<unknown>((at, key) => (at as Record<string, unknown> | undefined)?.[key], node) !==
+  undefined;
 
 /** What a changed key says: a string, or a function called with `args`. */
 interface Changed {
@@ -172,6 +190,7 @@ const ADDED: Record<string, string[]> = {
     'orbitRight',
     'orbitUp',
     'orbitDown',
+    'snapshotSaved', // G6, decision 33: said after the image is saved
     'keyAbsent', // G3: hidden text after a stage-key row whose colour is not drawn (g3-absent-text)
   ],
   workspace: ['panelAria'], // H1a: the name of the complementary landmark
@@ -186,6 +205,7 @@ const ADDED: Record<string, string[]> = {
     'restored', // T1: the spoken restore
     'exported', // T1: the spoken CSV export
   ],
+  errors: ['operations.fullscreen'], // G6, decision 33: the notice when the browser refuses full screen
   shortcuts: ['rangeTo'], // S5b D4: read after a range's dash
 };
 
@@ -234,7 +254,7 @@ describe('C1 i18n against the legacy modules', () => {
         const ours = rest[area] as Record<string, unknown>;
         // An addition must not hide a legacy string from the comparison.
         assert.deepStrictEqual(
-          (ADDED[area] ?? []).filter((key) => key in legacyArea),
+          (ADDED[area] ?? []).filter((key) => has(legacyArea, key)),
           [],
         );
         for (const [key, expected] of Object.entries(CHANGED[area] ?? {})) {
