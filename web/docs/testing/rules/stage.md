@@ -25,7 +25,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: accessibility tree, computed `pointer-events`, Tab order
 - **Source:** `viewer/index.html` overlay markup (aria-hidden); `web/src/features/stage/StageOverlay.svelte`
 - **Expected:** `.stage-overlay` has `aria-hidden="true"` and is a child of `#viewport`; no descendant has `tabindex`; every descendant computes `pointer-events: none`; Tab from the canvas never lands inside the layer. The `main` landmark's aria snapshot contains neither "Drag to rotate", "3D view" nor "mm".
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148)
 
 ### STAGE-02 · The overlays follow the rectangle the reader can see
 
@@ -43,7 +43,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: `:focus-visible` and computed `::after` style
 - **Source:** `viewer/styles/stage.css` (host `::after`); deviation `g1-viewport-host-size.md`
 - **Expected:** Insets `{ bottom: 120 }`, canvas focused by keyboard → host `::after` `border-top-width: 2px`, `bottom: 120px`, `border-top-color: rgb(127, 208, 204)`; under `forced-colors: active` its colour equals the computed `Highlight`. On the built site the ring's four insets equal `--vis-top/right/bottom/left`.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148)
 
 ## Hints
 
@@ -54,7 +54,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** unit (view-model): the wording is chosen from language, pointer and tract reference
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:738-742`; deviation `g1-touch-hints.md`; decision 21 on #4
 - **Expected:** Fine pointer: "Drag to rotate · Scroll to zoom · Click to inspect"; tract reference "Drag to rotate · Scroll to zoom"; French `viewport.navigationHint` / `navigationHintTracts`. Coarse pointer: "Drag to rotate · Pinch to zoom · Tap to inspect", tract reference "Drag to rotate · Pinch to zoom", French tract reference "Glisser : tourner · Pincer : zoom". Keyboard hint: "3D view · Arrow keys rotate · + − zoom".
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; could move down); `e2e/parity/stage-overlay.spec.ts` (R, mouse and touch wording; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; could move down); `e2e/parity/stage-overlay.spec.ts` (R, mouse and touch wording; `next` since #148)
 
 ### STAGE-05 · The keyboard hint shows only while the model has keyboard focus
 
@@ -63,7 +63,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: `:focus-visible` and computed opacity
 - **Source:** `viewer/styles/stage.css` (focus hint); `web/src/features/stage/StageHints.svelte`
 - **Expected:** Before focus: `#viewport-focus-hint` opacity `0`. After a key press and canvas focus: focus hint opacity `1`, `#viewport-help` opacity `0`.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148)
 
 ### STAGE-06 · The navigation hint retires for good at the reader's first gesture on the model
 
@@ -72,7 +72,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: events dispatched to the real canvas (the retire-and-remember logic itself is STORE-35, `state.md`)
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:53-61, 599-621, 734-736`
 - **Expected:** Each of `pointerdown` on the canvas, `wheel` on the canvas, `keydown` ArrowLeft / `+` on the canvas, `stage.retireHint()` → `#viewport-help` `data-dismissed="true"` and `localStorage['planum.stage-hint'] === 'retired'`. `pointerdown` on the host outside the canvas, ArrowLeft on `body`, `a` on the canvas → `data-dismissed="false"`. Selection `a` at open, then `a` again → not retired; then `b` → retired. With `planum.stage-hint = 'retired'` stored, the hint starts dismissed and computes `visibility: hidden`. Built site: one click on the model, reload → still dismissed.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `src/features/stage/Dock.svelte.test.ts` (R, preset and turn button); `src/lib/state/stage-layout.svelte.test.ts` (R, storage); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `src/features/stage/Dock.svelte.test.ts` (R, preset and turn button); `src/lib/state/stage-layout.svelte.test.ts` (R, storage); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148)
 
 ### STAGE-07 · A hint is drawn only where one line fits clear of the top letter, whatever the text size
 
@@ -101,7 +101,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: the letters drawn from camera events (which letter faces which edge per view is RENDER-23)
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:126-129, 465-471, 757-761, 834-841`
 - **Expected:** After `applyView('anterior')`: four letters, each in `R L S I P A`, all distinct; with the camera's edges `{ top, right, bottom, left }` the letters equal those edges. Language `fr` → the same list with R→D, L→G, and the camera is not read. Status `loading` → `#orientation` hidden; `switching` → shown.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the "letter the camera reports" case is W: it only checks that left and right views give four distinct letters, so the fake answers it); `src/features/snapshot/snapshot.svelte.test.ts` (R, letters equal `engine.camera.view.edges`); `e2e/parity/stage-overlay.spec.ts` (W for the letters, R for the French mapping; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the "letter the camera reports" case is W: it only checks that left and right views give four distinct letters, so the fake answers it); `src/features/snapshot/snapshot.svelte.test.ts` (R, letters equal `engine.camera.view.edges`); `e2e/parity/stage-overlay.spec.ts` (W for the letters, R for the French mapping; `next` since #148)
 
 ### STAGE-10 · The scale bar shows its rule in pixels and its length in the reader's notation
 
@@ -110,7 +110,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** unit (view-model) for the label and visibility; the rule width needs the DOM
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:444-463, 759`
 - **Expected:** Scale `{ millimetres: 2.5, pixels: 87.4 }` → `.scale-bar-rule` width `87px`, label "2.5 mm"; French "2,5 mm". `{ millimetres: 10, pixels: 100 }` → "10 mm". Scale `null` → `#scale-bar` hidden; status `loading` with a scale → hidden. Built site: the label matches `^\d+([.,]\d)?\s?mm$` and the rule is 60–150 px.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R for width and visibility; W for the label, whose expectation is re-derived with `withUnit(decimal(…))`; only the French `toContain('2,5')` is fixed); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off); `src/styles/contrast.test.ts` (R, the bar's `--overlay-ink` on `--overlay-halo-core` is 17.99:1, at least 4.5 by WCAG 1.4.3, since axe cannot measure the bar over the canvas)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R for width and visibility; W for the label, whose expectation is re-derived with `withUnit(decimal(…))`; only the French `toContain('2,5')` is fixed); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148); `src/styles/contrast.test.ts` (R, the bar's `--overlay-ink` on `--overlay-halo-core` is 17.99:1, at least 4.5 by WCAG 1.4.3, since axe cannot measure the bar over the canvas)
 
 ### STAGE-11 · The dock and the scale bar share the bottom line, or the bar moves up
 
@@ -128,7 +128,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: computed style under `prefers-reduced-motion`
 - **Source:** `viewer/styles/a11y.css:10-11`
 - **Expected:** `#orientation` and `#scale-bar` compute `transition-property: opacity`.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R, orientation only); `e2e/parity/stage-overlay.spec.ts` (R, both; `next` gated off); the scale bar part is uncovered below e2e
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R, orientation only); `e2e/parity/stage-overlay.spec.ts` (R, both; `next` since #148); the scale bar part is uncovered below e2e
 
 ## Hover chip
 
@@ -139,7 +139,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** unit
 - **Source:** `viewer/app.js:1694-1717`; `web/src/features/stage/hover-text.ts`
 - **Expected:** With catalog name "Area A" for `a`: atlas colouring → "Area A · Left"; midline → "Area A · Midline"; French → "Area A · Gauche"; uncatalogued `x` → "raw x · Left"; `canSelect` false → `null`. Functional (named level `a`→"Frontal") → "Area A · Frontal · Left", French "Area A · Frontal fr · Gauche"; `glass` → "raw glass · Section · Left". CAB-NP `a`→Visual1 → "Area A · Primary visual · Left"; unmapped `zz` → "raw zz · Left". Yeo 7 `[{Vis, 1}]` → "Area A · Visual · Left"; `[{Vis, .5}, {Default, .5}]` → "Area A · Left". Function paint, overview: `a` (attention overview, memory not) → "Area A · Attention · Left", `b` → "raw b · Left"; memory alone: `b` → "raw b · Memory · Left", French `a` → "Area A · Mémoire · Gauche"; term `reading` on `a` only → "Area A · reading · Left", `b` → "raw b · Left"; deficit paint → "Area A · Left"; function paint without domains → throws "no domains".
-- **Covered by:** `src/features/stage/hover-text.test.ts` (R); `src/features/stage/StageOverlay.svelte.test.ts` (R, plain and French chip); `e2e/parity/stage-overlay.spec.ts` (R, ends with " · Left|Right|Midline"; `next` gated off)
+- **Covered by:** `src/features/stage/hover-text.test.ts` (R); `src/features/stage/StageOverlay.svelte.test.ts` (R, plain and French chip); `e2e/parity/stage-overlay.spec.ts` (R, ends with " · Left|Right|Midline"; `next` since #148)
 
 ### STAGE-14 · The chip sits beside the pointer and inside the stage
 
@@ -148,7 +148,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** unit (view-model) for the clamp; browser for the text-size cases
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:850-866`; `viewer/ui/chrome/stage-tools.test.js:142-166`; deviation `g1-measurements-follow-text.md`
 - **Expected:** Stage 320×240, chip 80×40: pointer (12, 14) → left 26px, top 28px; pointer (310, 230) → 232px, 192px. Stage 120×36, chip 280×60, pointer (110, 30) → 8px, 8px. In the app (900×600): pointer (100, 120) → 114px, 134px; pointer (0, 0) → left 14px; pointer (890, 590) → left 900 − width − 8, top 600 − height − 8. Stages 320×400, 844×300, 700×500, 900×600 with 200 % text or 1.4.12 spacing and the pointer 2 px from the corner: the chip's box lies inside the stage's (±0.5 px). Built site: chip left = pointer x + 14 (±2), inside the stage's 8 px gutters.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off); the legacy fixed cases (oversized chip) are uncovered as a unit test
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148); the legacy fixed cases (oversized chip) are uncovered as a unit test
 
 ### STAGE-15 · The chip goes when the pointer leaves or the camera moves, and follows the words under a still pointer
 
@@ -157,7 +157,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** unit (view-model): today browser, over engine events
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:834-841, 850-858`
 - **Expected:** Hover `a` then `null` → hidden. Hover `a`, `applyView('left')` → hidden; hover `a` again → shown. Hover `a`, language `fr` → "Area A · Gauche". Hover `a` → `b` → "Area B · Right". Built site: a wheel turn hides it.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the "rewrites its text only when the words change" case is I: a MutationObserver pins a render optimisation); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the "rewrites its text only when the words change" case is I: a MutationObserver pins a render optimisation); `e2e/parity/stage-overlay.spec.ts` (R; `next` since #148)
 
 ### STAGE-16 · Escape dismisses the chip without moving focus
 
@@ -166,7 +166,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: keyboard dispatch and dialogs
 - **Source:** deviation `g1-hover-chip-dismiss.md` (WCAG 1.4.13); legacy had no dismissal
 - **Expected:** Canvas focused, chip over `a`, Escape → `defaultPrevented === true`, chip hidden, focus on the canvas; pointer over `a` again → still hidden; over `b` → shown. Escape, pointer `null`, then `b` → shown. Escape on `body` with no chip → not prevented. Escape already prevented by another handler → chip stays. Modal dialog open: Escape closes the dialog and the chip stays; the next Escape hides it.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; next-only expectation; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; next-only expectation; `next` since #148)
 
 ### STAGE-17 · The overlays pass axe
 
@@ -175,7 +175,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** browser: axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` passes for EN and FR (desktop width). The phone-width run with the sheet covering the lower canvas is the built-site check.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the test name promises light and dark themes and phone width, but it runs one size and one theme in two languages); `e2e/parity/stage-overlay.spec.ts` (R, phone; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the test name promises light and dark themes and phone width, but it runs one size and one theme in two languages); `e2e/parity/stage-overlay.spec.ts` (R, phone; `next` since #148)
 
 ## The dock
 

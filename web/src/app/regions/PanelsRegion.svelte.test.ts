@@ -16,12 +16,12 @@ import { t } from '../../lib/core/i18n/index.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
-import { expectAxeClean } from '../../lib/ui/a11y-test-support.ts';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import { createApp } from '../application.svelte.ts';
 import type { App } from '../application.svelte.ts';
 import AppShell from '../App.svelte';
 import { shellOptions, startApp } from '../boot.ts';
+import { expectAxeCleanFitted } from './shell-test-support.ts';
 
 // The index of published brains is a file of the site, which the test page does not serve.
 vi.mock('../../lib/core/assets/published-anatomy.ts', async (importOriginal) => ({
@@ -161,10 +161,10 @@ describe('accessibility', () => {
     await boot();
     engine.emit('pick', { id: REGION });
     flushSync();
-    await expectAxeClean();
+    await expectAxeCleanFitted();
     app.ports.back();
     flushSync();
-    await expectAxeClean();
+    await expectAxeCleanFitted();
   });
 });
 
@@ -244,6 +244,29 @@ describe('the explorers’ entry points', () => {
     const region = detail().querySelector('.region-detail')!;
     expect(profile.compareDocumentPosition(region) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(region.hasAttribute('data-under-profile')).toBe(true);
+  });
+});
+
+describe('the Tracts panel’s MRI', () => {
+  test('opens the navigator with the entry animation for a pointer, and without it for Enter', async () => {
+    await boot();
+    await userEvent.click(page.getByRole('tab', { name: 'Tracts' }));
+    const opener = page.getByRole('button', { name: t('en', 'diffusion').mriOpen });
+    const dialog = () =>
+      [...document.querySelectorAll('dialog')].find((candidate) =>
+        candidate.querySelector('h2')?.textContent?.startsWith('MRI with tracts'),
+      )!;
+
+    await userEvent.click(opener);
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    expect(dialog().hasAttribute('data-instant')).toBe(false);
+    await userEvent.keyboard('{Escape}');
+    await vi.waitFor(() => expect(dialog().open).toBe(false));
+
+    (opener.element() as HTMLElement).focus();
+    await userEvent.keyboard('{Enter}');
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    expect(dialog().hasAttribute('data-instant')).toBe(true);
   });
 });
 

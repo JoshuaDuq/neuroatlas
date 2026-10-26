@@ -1,29 +1,34 @@
-// The app shell: landmarks and their order, the skip link, and the data-status cascade.
-import { createRawSnippet, flushSync, mount, unmount } from 'svelte';
+// The app shell: landmarks and their order, the tab order and the data-status cascade, before the engine.
+import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { expectAxeClean } from '../lib/ui/a11y-test-support.ts';
+import { attachAnnouncer } from '../lib/ui/announcer.svelte.ts';
 import type { Language, SessionState } from '../lib/types/index.ts';
 import App from './App.svelte';
+import { APP, createApp } from './application.svelte.ts';
+import type { App as AppStore } from './application.svelte.ts';
 
 let target: HTMLElement;
 let app: Record<string, unknown>;
+let store: AppStore;
+let announcer: HTMLElement;
+let detach: () => void;
 let props = $state<{ status?: SessionState['status']; lang?: Language }>({});
-
-// What H2 and H4 render into the two slots: the banner and contentinfo landmarks.
-const masthead = createRawSnippet(() => ({ render: () => '<header id="masthead"></header>' }));
-const statusBar = createRawSnippet(() => ({ render: () => '<footer id="colophon"></footer>' }));
 
 /** `#app` is the mount point of index.html; the shell sets its data-status and lays it out. */
 function mountShell(shellProps: typeof props = {}) {
   Object.assign(props, shellProps);
-  app = mount(App, { target, props: Object.assign(props, { masthead, statusBar }) });
+  app = mount(App, { target, props, context: new Map([[APP, store]]) });
   flushSync();
 }
 
 beforeEach(async () => {
   // The test frame is phone-sized by default.
   await page.viewport(1280, 800);
+  store = createApp();
+  announcer = document.body.appendChild(document.createElement('p'));
+  detach = attachAnnouncer(announcer);
   target = document.body.appendChild(document.createElement('div'));
   target.id = 'app';
   target.dataset.status = 'loading';
@@ -31,6 +36,9 @@ beforeEach(async () => {
 });
 afterEach(() => {
   unmount(app);
+  store.dispose();
+  detach();
+  announcer.remove();
   target.remove();
   history.replaceState(null, '', location.pathname);
 });
@@ -38,7 +46,7 @@ afterEach(() => {
 describe('landmarks', () => {
   test('one banner, complementary, main and contentinfo, in that order', async () => {
     mountShell();
-    const landmarks = [...target.querySelectorAll('header, aside, main, footer')].map(
+    const landmarks = [...target.querySelectorAll('header#masthead, aside, main, footer')].map(
       (element) => element.tagName,
     );
     expect(landmarks).toEqual(['HEADER', 'ASIDE', 'MAIN', 'FOOTER']);
@@ -70,13 +78,19 @@ describe('landmarks', () => {
 describe('tab order', () => {
   test('the masthead comes first, then the panel, then the stage; main is a focus target only', async () => {
     mountShell();
-    const stops = ['header', 'aside', 'main'].map((selector) =>
+    const stops = ['aside', 'main'].map((selector) =>
       target.querySelector(selector)!.appendChild(document.createElement('button')),
     );
-    for (const stop of stops) {
+    await userEvent.tab();
+    expect(document.activeElement).toBe(target.querySelector('header#masthead .skip-link'));
+    // The masthead's own buttons come before the panel, which comes before the stage.
+    const regions: string[] = [];
+    while (document.activeElement !== stops[1] && regions.length < 30) {
       await userEvent.tab();
-      expect(document.activeElement).toBe(stop);
+      const region = document.activeElement!.closest('header#masthead, aside, main')!.tagName;
+      if (regions.at(-1) !== region) regions.push(region);
     }
+    expect(regions).toEqual(['HEADER', 'ASIDE', 'MAIN']);
     const main = target.querySelector('main')!;
     expect(main.tabIndex).toBe(-1);
     main.focus();
