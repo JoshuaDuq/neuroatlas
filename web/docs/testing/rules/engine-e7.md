@@ -227,7 +227,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:60,111`
 - **Expected:** `decodeState('#' + encodeState({ orbit })).orbit.position[i] === Math.round(position[i]·10)/10`.
-- **Covered by:** `parity/E7.test.ts` (D); the encoding itself belongs to the state area (`src/lib/core/state/url-state.test.ts`)
+- **Covered by:** `parity/E7.test.ts` (D); the encoding itself is STATE-12 and STATE-13 (`core-state.md`, `src/lib/core/state/url-state.test.ts`)
 
 ## Camera reporting
 

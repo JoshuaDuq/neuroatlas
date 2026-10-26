@@ -13,7 +13,7 @@ Deviations: `g1-hover-chip-dismiss.md`, `g1-measurements-follow-text.md`, `g1-to
 `boot-and-assets.md`. Which letter faces each edge, the scale bar's 1-2-5 length and the 5 degree arrow
 step are RENDER-21, RENDER-23 to RENDER-26 (`engine-e1.md`); which region the hover may name is FACADE-28
 (`engine-e7.md`); the thresholds the stage-layout store computes (chrome mode, tall dock, hint room, section
-fold, refit signals, hint storage) are the state catalogue's (`state.md`). Copy quoted is the English
+fold, refit signals, hint storage) are STORE-25 to STORE-35 (`state.md`). Copy quoted is the English
 interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are CSS pixels.
 
 ## The overlay layer
@@ -63,7 +63,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ### STAGE-06 · The navigation hint retires for good at the reader's first gesture on the model
 - **Rule:** A pointer press or wheel turn on the canvas, a camera key on the focused canvas, a preset, a turn button, or selecting a region other than the one the stage opened on retires the navigation hint, and it stays retired on later visits. Gestures elsewhere do not retire it.
 - **Kind:** behaviour
-- **Level:** browser: events dispatched to the real canvas (the retire-and-remember logic itself is the store's, `state.md`)
+- **Level:** browser: events dispatched to the real canvas (the retire-and-remember logic itself is STORE-35, `state.md`)
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:53-61, 599-621, 734-736`
 - **Expected:** Each of `pointerdown` on the canvas, `wheel` on the canvas, `keydown` ArrowLeft / `+` on the canvas, `stage.retireHint()` → `#viewport-help` `data-dismissed="true"` and `localStorage['planum.stage-hint'] === 'retired'`. `pointerdown` on the host outside the canvas, ArrowLeft on `body`, `a` on the canvas → `data-dismissed="false"`. Selection `a` at open, then `a` again → not retired; then `b` → retired. With `planum.stage-hint = 'retired'` stored, the hint starts dismissed and computes `visibility: hidden`. Built site: one click on the model, reload → still dismissed.
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `src/features/stage/Dock.svelte.test.ts` (R, preset and turn button); `src/lib/state/stage-layout.svelte.test.ts` (R, storage); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
@@ -105,7 +105,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ### STAGE-11 · The dock and the scale bar share the bottom line, or the bar moves up
 - **Rule:** The scale bar sits beside the dock while both and the margins fit the visible width. Otherwise it rises above the dock, and a bar that would reach the middle rises one line more. The bar's width, rule and label as drawn, decides, so larger text refits it.
 - **Kind:** behaviour
-- **Level:** browser: measured widths (thresholds are the store's, `state.md`)
+- **Level:** browser: measured widths (thresholds are STORE-25 and STORE-26, `state.md`)
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:19-20, 183-195`; deviation `g1-measurements-follow-text.md`
 - **Expected:** 900 px stage, 300 px dock, scale `{ 10 mm, 100 px }` → bar wider than 100 px, `data-chrome="wide"`; insets `{ right: 460 }` (440 px visible) → `"tight"`. Root font 200 % → the bar's width grows.
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `src/lib/state/stage-layout.svelte.test.ts` (R, wide/tight/stacked thresholds)

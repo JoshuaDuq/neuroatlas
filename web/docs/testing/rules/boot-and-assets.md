@@ -9,9 +9,10 @@ prefetch, service worker), H1b (boot screen, WebGL check, `StageStatus`), I3a (s
 `viewer/i18n/errors.js`, `viewer/model/{asset-cache,published-assets,published-files,published-anatomy}.js`,
 `viewer/comparison/assets.js`, `viewer/diffusion/assets.js`, `viewer/service-worker.js`, the root
 `vite.config.js`, `scripts/published-version.mjs` and the head script of the root `index.html:27-69`.
-Failure wording itself (`startFailure`, `failureNotice`) belongs to the i18n rules of the core area;
-link decoding and the link notice to the state area; the keymap to the controller area; the head
-theme script (`index.html`'s pre-paint script, `src/app/head-script.test.ts`) to the shell area.
+Failure wording itself (`startFailure`, `failureNotice`) is I18N-16 to I18N-19 (`core-i18n.md`);
+link decoding is STATE-01 to STATE-17 (`core-state.md`) and the link notice I18N-20; the keymap is
+KEY- (`controller.md`); the head theme script (`index.html`'s pre-paint script,
+`src/app/head-script.test.ts`) is SHELL-11 to SHELL-14 (`shell.md`).
 The start-sequence rules (BOOT-05 to BOOT-11, BOOT-13 to BOOT-19, BOOT-30, BOOT-31) are plain
 logic; today `src/app/boot.svelte.test.ts` checks them in the browser because `startApp` reads the
 document, `location`, `history` and `window` directly.
@@ -90,7 +91,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/app.js:2115, 2128-2130`
 - **Expected:** `#tab=functions&function=<id>` → detail shown and function `<id>` opened; `#hidden=<region>` → announcer "1 part hidden".
-- **Covered by:** `src/app/boot.svelte.test.ts` (R); restore rules themselves → state area
+- **Covered by:** `src/app/boot.svelte.test.ts` (R); restore rules themselves → LINK-14 to LINK-16 and LINK-19 (`links.md`)
 
 ### BOOT-10 · Download progress during the start
 - **Rule:** The stage shows the download's progress while the start runs; once the start has failed, a late progress event does not paint "Loading" back over the error.
@@ -106,7 +107,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/app.js:68-78, 2131`
 - **Expected:** default start on `cdmd` with prefetch allowed → exactly one `prefetchLayer('hcp-mmp')`.
-- **Covered by:** `src/app/boot.svelte.test.ts` (R); the allow/deny decision → `src/lib/core/state/boot.test.ts` (state area)
+- **Covered by:** `src/app/boot.svelte.test.ts` (R); the allow/deny decision → STATE-62, `src/lib/core/state/boot.test.ts`
 
 ### BOOT-12 · The page exposes the stage status
 - **Rule:** The app root carries the session status (`loading`, `ready`, `error`, `context-lost`) and the shell follows the reader's language.
@@ -148,7 +149,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/i18n/errors.js:12-13, 37-39`; `viewer/i18n/translations.js:501-503`
 - **Expected:** `asset-updated` → "Planum was updated. Reload to continue." with button "Reload".
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R, fixture text only); the mapping from the error code → i18n tests (core area). No start-level test drives an `asset-updated` error.
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R, fixture text only); the mapping from the error code → I18N-16 and I18N-19 (`core-i18n.md`). No start-level test drives an `asset-updated` error.
 
 ### BOOT-16 · Retry and Reload drop the stored anatomy
 - **Rule:** Retry or Reload deletes only the stored model caches and reloads, so a bad stored copy cannot fail the same way again; a browser that blocks Cache Storage still reloads.

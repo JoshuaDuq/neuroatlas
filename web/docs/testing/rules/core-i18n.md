@@ -10,7 +10,7 @@ formatting helpers. Legacy sources: `viewer/i18n/{translations,errors}.js`, `vie
 `web/src/lib/core/format.ts`, `web/src/lib/core/comparison-format.ts`. Deviations:
 `c1-failure-subject.md`, `c1-loading-megabytes.md`, `c1-mri-dialog-french.md`, `c1-mri-dialog-i18n.md`;
 S5b's `s5b-shortcut-strings.md` for the shortcut rows. The code that maps an error to a diffusion code is
-in `core-catalogs.md` (CAT-67); the start screen that shows the failure words is in `boot-and-assets.md`
+in `core-catalogs.md` (CAT-63); the start screen that shows the failure words is in `boot-and-assets.md`
 (BOOT-13 to BOOT-15).
 
 Conventions: NNBSP is U+202F (narrow no-break space), NBSP is U+00A0, the minus sign is U+2212, the em
@@ -201,7 +201,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Level:** unit
 - **Source:** `viewer/i18n/errors.js:21-28`
 - **Expected:** `linkNotice(['pos','lang','pos'],'en').text` "Not applied from this link: section position and language."; `(['pos','lang'],'fr')` "Éléments du lien non appliqués : position de la coupe et langue."; `(['circuit','step'],'en')` "Not applied from this link: circuit."; `(['step','circuit'],'fr')` "Éléments du lien non appliqués : circuit."; `(['step'],'en')` "Not applied from this link: circuit step."; `(['unknown-field'],'en')` "Not applied from this link: unknown-field."; `action` is always `null`.
-- **Covered by:** `src/lib/core/i18n/errors.test.ts` (R); `parity/C1.test.ts` (D, seeded field draws)
+- **Covered by:** `src/lib/core/i18n/errors.test.ts` (R); `parity/C1.test.ts` (D, seeded field draws); `src/app/boot.svelte.test.ts` (R, the anatomy and atlas notices at boot)
 
 ### I18N-21 · A tracts failure is worded from its code
 - **Rule:** The Tracts panel words a failure by one of four codes, in the reader's language, never with the error's English message.
@@ -278,9 +278,10 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D)
 
 ### I18N-30 · A comparison figure never shows a positive overlap as zero
-- **Rule:** The comparison table gives areas and shares at one decimal, without units, in the reader's notation. A positive value below 0.1 reads "<0.1".
+- **Rule:** Stated once as INSP-27 (`inspector.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** decision 39 on #4; `web/src/lib/core/comparison-format.ts`
-- **Expected:** `overlapArea(0.0003)` "<0.1"; `overlapArea(0.08)` "<0.1"; `overlapShare(0.000001)` "<0.1", FR "<0,1"; `overlapShare(0.0008)` "<0.1"; `overlapArea(0.1)` "0.1"; `overlapShare(0.001)` "0.1"; `overlapArea(0)` "0.0"; `overlapShare(0)` "0.0"; `overlapArea(25.36,'fr')` "25,4"; `overlapShare(0.1536)` "15.4", FR "15,4".
-- **Covered by:** `src/lib/core/comparison-format.test.ts` (R)
+- **Source:** see INSP-27
+- **Expected:** see INSP-27
+- **Covered by:** see INSP-27
+

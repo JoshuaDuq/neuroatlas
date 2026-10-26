@@ -96,20 +96,20 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Covered by:** `src/lib/state/stores.svelte.test.ts` (R, could move down)
 
 ### STORE-11 · The link is written 250 ms after the view settles, and as soon as the camera rests
-- **Rule:** A view change schedules the link 250 ms later; a further change restarts the wait. The engine reports `cameraSettled` 250 ms after a move ends, so the link is written then, with no second wait. A camera move after a view change writes once.
+- **Rule:** Stated once as LINK-05 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit (fake timers)
-- **Source:** `viewer/app.js:243-254, 1831, 1858`; `viewer/state/link-writer.js:7`
-- **Expected:** Built at t0 → 1 write at t0+250. `setQuery('gyrus')`, `setQuery('gyrus ')` → still 1 at +249, 2 at +250. `cameraSettled` → 3 writes 1 ms later. A view change followed by `cameraSettled` → 1 write at +1 ms, none more at +250.
-- **Covered by:** `src/lib/state/stores.svelte.test.ts` (R); the writer's own timing is in `links.md`
+- **Source:** see LINK-05
+- **Expected:** see LINK-05
+- **Covered by:** see LINK-05
 
 ### STORE-12 · A held link writes nothing, and a gone component writes nothing
-- **Rule:** While a link restore holds the writer, view changes write nothing. After release and a schedule, one write follows. Once the component that created the link store is gone, nothing is written.
+- **Rule:** Stated once as LINK-05 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit (fake timers)
-- **Source:** `viewer/app.js:243-254`
-- **Expected:** `hold(current)`, `setQuery('held')`, +250 ms → writes unchanged; `release(current)`, `schedule()`, +250 ms → one more write. After the effect root is cleaned up, `setQuery('late')`, `cameraSettled`, +1000 ms → 0 writes.
-- **Covered by:** `src/lib/state/stores.svelte.test.ts` (R)
+- **Source:** see LINK-05
+- **Expected:** see LINK-05
+- **Covered by:** see LINK-05
 
 ## Remembered choices
 

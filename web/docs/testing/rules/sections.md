@@ -15,7 +15,7 @@ research and decision record on #49 and from decision 31 on #4, and are all unco
 point readout values are SLICE-01 to SLICE-37 (`engine-e4a.md`); opening the linked MRI on the selected
 region, lessons and the `M` key are CTRL-39, LESSON-09, LESSON-10, KEY-02 and KEY-12 (`controller.md`); the
 dock that holds the popover and the row is STAGE-18 to STAGE-36 (`stage.md`); the fold threshold of the row
-is computed by the stage-layout store (`state.md`). Copy quoted is the English interface text; "mm" follows
+is computed by the stage-layout store (STORE-29, `state.md`). Copy quoted is the English interface text; "mm" follows
 a narrow no-break space (U+202F); "−" is U+2212.
 
 ## The Section popover
@@ -187,7 +187,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 ### SECT-21 · Where one line would not fit, the row folds Reverse side and Linked MRI behind More
 - **Rule:** The row keeps everything on one line while its natural width fits the visible stage less the two gutters, and folds Reverse side and Linked MRI behind a disclosure "More section controls" otherwise; a phone always folds it and names the plane by its short name. The width is measured with every control beside the slider, also while folded and again when the words change, so the row unfolds once there is room. The dock stays inside the stage.
 - **Kind:** behaviour
-- **Level:** browser: measured widths (the fold decision is the store's, `state.md`)
+- **Level:** browser: measured widths (the fold decision is STORE-29, `state.md`)
 - **Source:** `viewer/ui/chrome/stage-tools.js:3-9`; `stage-tools.test.js:46-54`; `viewer/ui/chrome/viewport-chrome.js:147-176`
 - **Expected:** `compactSection({ room: 748, need: 700 })` false, `(700, 700)` false, `(488, 700)` true, `need: null` (phone) true. App, 1280 wide: no row → `sectionNeed 0`; Coronal → `data-compact="false"`, `sectionNeed` = dock `offsetWidth`; French → a new width, again the dock's; closed → 0. Visible 560 → folded; French re-measured while folded; visible 1280 → unfolded and the dock's width equals the width measured while folded. 560 px stage: More `aria-expanded="false"`, its panel not visible, no "Reverse side"; Enter → `"true"`, Reverse side visible, dock right ≤ 560. Phone 390: folded, full name hidden, short "Sag", dock width 390 − 2 × gutter. Built site phone: More toggles, then "Linked MRI" visible.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R; the "writes its one-line width to the stage layout" case also pins the store field); `src/lib/state/stage-layout.svelte.test.ts` (R, the fold decision); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)

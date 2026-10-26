@@ -6,7 +6,7 @@ excursions, guided lessons, the linked MRI), S5a (the global keymap and the Esca
 announcer's sentences (S1, `speech.ts`). Legacy sources: the command closures in `viewer/app.js`,
 `viewer/learning/{navigation,session}.js`, `viewer/clinical/navigation.js`,
 `viewer/ui/chrome/{sections,shortcuts,workspace}.js`, `viewer/state/{session,internal-mode}.js`.
-Permalink reading and writing (S4) is in the links catalogue. New code: `web/src/lib/controller/`.
+Permalink reading and writing (S4) is in `links.md` (LINK-). New code: `web/src/lib/controller/`.
 Copy quoted below is the English interface text. The selection, display and internal-anatomy rules
 are plain logic except where focus moves (CTRL-04, CTRL-08); `src/lib/controller/anatomy.svelte.test.ts`
 checks them in the browser today and could run in the unit project over the fake engine, as
@@ -128,7 +128,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1163-1189`; `viewer/state/internal-mode.js:33-43`
 - **Expected:** enter then leave → `cortexVisible: true`, `surfaceColor` and `detail` as before; framings internal then whole. Choose detail `aseg`, enter, leave → detail `aseg` again. Choose `nextbrain` while inside → still `nextbrain` after leaving.
-- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `src/lib/core/state/internal-mode.test.ts` (state area, pure); detail restore after `aseg`: `parity/S2.test.ts` only (D)
+- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `src/lib/core/state/internal-mode.test.ts` (STATE-60, pure); detail restore after `aseg`: `parity/S2.test.ts` only (D)
 
 ### CTRL-15 · Leaving says when a colouring was lost to an atlas change
 - **Rule:** If the colouring from before entering needs an atlas (CAB-NP and functional divisions need HCP-MMP) and the reader switched atlas while inside, leaving colours by atlas and says why.
@@ -136,7 +136,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1178-1184`; `viewer/i18n/translations.js:494-495`
 - **Expected:** atlas `hcp-mmp`, colour `cab-np`, enter, atlas `destrieux`, leave → `surfaceColor: 'atlas'`; notice "CAB-NP colours HCP-MMP areas only, so <Destrieux label> shows its own region colours."
-- **Covered by:** `src/lib/core/state/internal-mode.test.ts` (state area: `colourLost` value only); the notice: `parity/S2.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/internal-mode.test.ts` (STATE-61: `colourLost` value only); the notice: `parity/S2.test.ts` only (D)
 
 ### CTRL-16 · Choosing a system enters internal anatomy by the other door
 - **Rule:** Choosing an internal system filters the display to that system. From outside, it first hides the cortex, colours by atlas and records the detail level on screen (not the default), so leaving restores it. It clears the search, opens the structures group and frames the internal structures. "Spinal cord" first shows the cord. An unknown system fails with a notice.
@@ -274,7 +274,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:879-900`; `viewer/ui/panels/clinical.js` (`revealNotice`)
 - **Expected:** a reveal that changes the atlas → a notice that names the change. Surface atlas `destrieux`, with `destrieux` in `cut_atlases` → `cutAtlas: 'destrieux'`.
-- **Covered by:** wording in the panels-clinical area; in the controller, `parity/S3.test.ts` only (D)
+- **Covered by:** wording is PANEL-12 (`core-panels.md`); in the controller, `parity/S3.test.ts` only (D)
 
 ### CTRL-31 · A map with a strongest region beneath the cortex offers to see through it
 - **Rule:** With the cortex shown and fully opaque, a function offers to see through the cortex when one of its 5 strongest regions lies beneath the cortex; the offer names that region, its side and the function. A deficit offers it when its mapped regions include structures beneath the cortex. The deficit's notice names them: all of them up to three, otherwise two and "N other mapped regions". The overview of all functions offers nothing. A deficit mapped on structures alone hides the cortex and offers nothing. A cortex the reader made see-through by hand gets no offer.
@@ -330,7 +330,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:2013-2080` (links set `beforeExcursion = null`)
 - **Expected:** deficit open, `forget()` → Restore not offered.
-- **Covered by:** `src/lib/controller/excursion.test.ts` (R), `src/app/boot.svelte.test.ts` (R, through a real link restore); link restore itself is in the links catalogue
+- **Covered by:** `src/lib/controller/excursion.test.ts` (R), `src/app/boot.svelte.test.ts` (R, through a real link restore); link restore itself is LINK-14 (`links.md`)
 
 ### CTRL-38 · A failed cut-atlas change reaches the caller
 - **Rule:** The cut atlas is the sections' own setting. A rejected change reaches the caller instead of being swallowed. Legacy caught it, and the cuts panel reported it (`app.js:564-566`); no deviation file records the change.
@@ -390,7 +390,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1383-1392`; `viewer/learning/session.js:13-19`
 - **Expected:** `openLessonStep(1)` → `step: 1`; selection = step 1's region; detail shown. `openLessonStep(steps.length)` → `RangeError`; `step` still 1.
-- **Covered by:** `src/lib/controller/lesson.test.ts` (R), `src/lib/core/learning/session.test.ts` (state area), `parity/S3.test.ts` (D)
+- **Covered by:** `src/lib/controller/lesson.test.ts` (R), `src/lib/core/learning/session.test.ts` (CAT-55), `parity/S3.test.ts` (D)
 
 ### LESSON-06 · The landmark in front is the current step's region on the Circuits tab
 - **Rule:** The selection counts as the lesson's landmark only when a lesson is open, the Circuits tab is in front, and the selected region is the current step's region. Focus, Isolate and the Linked MRI use this test (CTRL-05, CTRL-09, LESSON-09).
@@ -484,7 +484,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/state/session.js:13-37`; `viewer/app.js:1921`
 - **Expected:** `c` in a text input → no cortex toggle. ArrowDown on a range input → no tree walk. `c` on a range input → cortex toggled. `c` on a checkbox → toggled.
-- **Covered by:** `src/lib/core/state/session.test.ts` (state area, the predicate); in dispatch: `parity/S5a.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/session.test.ts` (STATE-33, the predicate); in dispatch: `parity/S5a.test.ts` only (D)
 
 ### KEY-06 · Single-key shortcuts can be turned off, and controls with keys of their own keep them
 - **Rule:** Single-character shortcuts stop when the reader turns them off (WCAG 2.1.4). They also never act from a button, summary or tab inside a region that owns its keys. A tree row there is not such a control.
@@ -492,7 +492,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/shortcuts.js:9-25`; `viewer/app.js:1925-1926`
 - **Expected:** `h` on a button in a marked region → nothing; `h` on a plain row in it → hemisphere `left`; single keys off → `h` does nothing.
-- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `src/app/boot.svelte.test.ts` (R, the preference through the window listener), `src/lib/core/keyboard.test.ts` (core area), `parity/S5a.test.ts` (D)
+- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `src/app/boot.svelte.test.ts` (R, the preference through the window listener), `src/lib/core/keyboard.test.ts` (STATE-34), `parity/S5a.test.ts` (D)
 
 ### KEY-07 · On the focused canvas the arrows turn the model and + = - zoom it
 - **Rule:** While the 3D canvas itself has focus, the arrow keys orbit and `+`, `=` and `-` zoom, even with single keys off. Each such key is cancelled. Elsewhere the arrows keep their other uses (KEY-10).

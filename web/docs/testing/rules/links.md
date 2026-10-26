@@ -118,7 +118,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2026-2029`; `viewer/render/camera-views.js` (`viewForRestoredCut`)
 - **Expected:** `cut=coronal&pos=-12.5&rev=1` → `camera.faceCut` is called and the session view becomes the view it reports; `cut=axial&view=left` → view left; `cut=axial&rev=1&view=superior` → view superior; `cut=oblique&tilt=40&az=-60&pos=3` → faces the oblique plane.
-- **Covered by:** `parity/S4.test.ts` only (D); the cut-to-view table: `engine-e7.md` / engine-a area
+- **Covered by:** `parity/S4.test.ts` only (D); the cut-to-view table: FACADE-09 (`engine-e7.md`)
 
 ### LINK-13 · A link ends the Tracts excursion before applying its display, unless it opens Tracts
 - **Rule:** When the Tracts excursion is open (the cortex made translucent for it), a link that does not open the Tracts tab first switches to its own tab (or Anatomy), which ends the excursion, before its display settings apply.
@@ -161,12 +161,12 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Covered by:** `src/lib/controller/links.test.ts` (R, + I: the hold, schedule and release counts are spied calls)
 
 ### LINK-18 · The link notice names the fields in the reader's words, once each
-- **Rule:** The notice for a link lists, in the reader's language, the fields it could not apply, each once, as a list. A step without its circuit means nothing, so a failed circuit is not reported twice as "circuit" and "circuit step".
+- **Rule:** Stated once as I18N-20 (`core-i18n.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/i18n/errors.js` (`linkNotice`); `viewer/i18n/translations.js` (`link.fields`)
-- **Expected:** `['pos','lang','pos']` en → "Not applied from this link: section position and language."; `['pos','lang']` fr → "Éléments du lien non appliqués : position de la coupe et langue."; `['circuit','step']` → "Not applied from this link: circuit."; `['step']` → "Not applied from this link: circuit step." Every parameter of STATE-02 has an en and fr name (`anatomy` → "subject", `cuts` → "cut labels", `cam` → "camera position", `hidden` → "hidden parts").
-- **Covered by:** `src/lib/core/i18n/errors.test.ts` (R; also in the core-i18n area); `src/app/boot.svelte.test.ts` (R, the anatomy and atlas notices at boot)
+- **Source:** see I18N-20
+- **Expected:** see I18N-20
+- **Covered by:** see I18N-20
 
 ### LINK-19 · A restored hidden count is said once, if the announcer exists before the restore
 - **Rule:** The view announcer must exist before the first restore: its first view only records the hidden count, so a link that hides parts changes it and the count is said once. Created after, the restored count is never said.

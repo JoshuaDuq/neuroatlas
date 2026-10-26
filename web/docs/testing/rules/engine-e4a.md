@@ -13,20 +13,20 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 ## Coordinates and frames
 
 ### SLICE-01 · Source RAS and scene coordinates
-- **Rule:** A source RAS point in millimetres maps to scene metres with right → +x, superior → +y, anterior → −z, and maps back exactly.
+- **Rule:** Stated once as RENDER-38 (`engine-e1.md`); this entry only points there, so the rule is tested once.
 - **Kind:** scientific/data
 - **Level:** unit
-- **Source:** `viewer/slices/coordinates.js:3-5`; same rule as RENDER-38 (`engine-e1.md`)
-- **Expected:** RAS `[21, 37, 49]` → world `[0.021, 0.049, -0.037]` → RAS `[21, 37, 49]`.
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D)
+- **Source:** see RENDER-38
+- **Expected:** see RENDER-38
+- **Covered by:** see RENDER-38
 
 ### SLICE-02 · Standard section planes and their orientation letters
-- **Rule:** Sagittal, coronal and axial cuts pass through the crosshair with normals +R, +A and +S, have orthonormal in-plane axes, and label their canvas edges (top, right, bottom, left) sagittal S/P/I/A, coronal S/R/I/L, axial A/R/P/L. Any other name, including names inherited from `Object`, is rejected.
+- **Rule:** Stated once as RENDER-39 (`engine-e1.md`), RENDER-42 (`engine-e1.md`); this entry only points there, so the rule is tested once. No business-rule test checks the edge letters yet.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/slices/coordinates.js:14-18`, `:34-53`; same rule as RENDER-39 and RENDER-42 (`engine-e1.md`)
-- **Expected:** `createFrame('coronal', [12, 23, 34])` → normal `[0, 1, 0]`, centre `[12, 23, 34]`; `createFrame('banana' | 'constructor' | '__proto__', …)` throws `/plane/`; a non-finite crosshair throws `/coordinate/`. Edge letters as listed.
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, normals and rejections); the contract suite (R, `mprFrame` normals for axial and coronal, sagittal cut normal). Edge letters: `parity/E1.test.ts` (D, real `createFrame`) and `parity/f2.test.ts` (D, fake against legacy). No business-rule test checks the letters: uncovered outside D.
+- **Source:** see RENDER-39, RENDER-42
+- **Expected:** see RENDER-39, RENDER-42
+- **Covered by:** see RENDER-39, RENDER-42
 
 ### SLICE-03 · Oblique angles
 - **Rule:** An oblique cut accepts a tilt from 0 to 90° and an azimuth from −180 to 180°, rejecting anything else with a RangeError. The normal is (sin t·cos a, sin t·sin a, cos t), and the frame is orthonormal and anchored to the crosshair.
@@ -37,20 +37,20 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, orthonormal and anchored; the normal formula is not checked); the contract suite (R, `setAngles(120, 0)` RangeError and stored angles); `src/lib/engine/slices/sections.test.ts` (R, every tilt × azimuth step accepted); `parity/E1.test.ts` (D, formula); `parity/f2.test.ts` (D, fake only). Azimuth 200: only D.
 
 ### SLICE-04 · Which half a cut removes
-- **Rule:** By default a cut removes the half on the positive side of its normal (right, anterior, superior, or the oblique normal's side). "Reverse" keeps that half and removes the other. A fractional offset is kept exactly.
+- **Rule:** Stated once as RENDER-40 (`engine-e1.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/slices/coordinates.js:55-59`; same rule as RENDER-40 (`engine-e1.md`)
-- **Expected:** the point centre + normal is clipped (signed distance < 0) without reverse and kept (> 0) with reverse; coronal offset 0.5 mm → plane through world z = −0.0005 (± 1e-12).
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `src/lib/engine/slices/sections.test.ts` (R)
+- **Source:** see RENDER-40
+- **Expected:** see RENDER-40
+- **Covered by:** see RENDER-40
 
 ### SLICE-05 · A cut through a point
-- **Rule:** The offset that puts a plane through a RAS point is the point's projection on the normal, clamped to the allowed range. Non-finite input is an error.
+- **Rule:** Stated once as RENDER-41 (`engine-e1.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/slices/coordinates.js:24-31`; same rule as RENDER-41 (`engine-e1.md`)
-- **Expected:** `[30, -10, 20]` on the sagittal normal → 30, on the coronal normal → −10; `[200, 0, 0]` with range ±128 → 128; `[-200, 0, 0]` → −128.
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D)
+- **Source:** see RENDER-41
+- **Expected:** see RENDER-41
+- **Covered by:** see RENDER-41
 
 ## Volumes
 

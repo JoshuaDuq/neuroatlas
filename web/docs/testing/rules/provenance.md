@@ -11,7 +11,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Kind:** data
 - **Level:** unit (view-model over the published manifest)
 - **Source:** `provenance.js:29-99`; `provenance.test.js:41-45`
-- **Expected:** for `cdmd` with both URLs: labels `Subject, Source data, Reconstruction, Cortical atlases, Functional networks, Functional divisions, Neuropsychological domains, Supplemental layers, Published files`. `{anatomy:{display_name:'X “1”'}}` in `fr` → labels `['Sujet']` and the item's note is `null`.
+- **Expected:** for `cdmd` with both URLs: labels `Subject, Source data, Reconstruction, Cortical atlases, Functional networks, Functional divisions, Neuropsychological domains, Supplemental layers, Published files`. `{anatomy:{display_name:'X “1”'}}` in `fr` → labels `['Sujet']` and the item's note is `null`. `provenanceRows({})` → `[]`. Supplemental layers: "Z-Anatomy spinal cord reference" with the note "CC BY-SA 4.0 · Z-Anatomy, after BodyParts3D (CC BY-SA 2.1 JP)". Licence links resolve beside the manifest: `/neuroatlas/models/cdmd/../licenses/CAB-NP.txt` and `…/../licenses/HCP-Data-Use-Terms.txt`.
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R for the empty case; the full `cdmd` label list is uncovered); `parity/C5.test.ts` (D, seeded manifests with fields removed)
 
 ### PROV-02 · Every link comes from the published records
@@ -43,7 +43,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Kind:** scientific
 - **Level:** unit (view-model over `neuropsych-domains.json`)
 - **Source:** `provenance.js:10-27, 70-82`
-- **Expected:** `executive` → text "Executive functions: “executive function”" and a note starting "Lesion check: Executive dysfunction (Gläscher et al. 2012): G_front_middle (L) 13% coloured, G_front_middle (R) 18% coloured" (coverages 0.127 and 0.183, rounded to whole percents). A mapping with `coverage: null` → "<parcel> (<side>), not measured". A domain with no checks → "No lesion study in Planum’s deficit evidence checks this domain."
+- **Expected:** `executive` → text "Executive functions: “executive function”" and a note starting "Lesion check: Executive dysfunction (Gläscher et al. 2012): G_front_middle (L) 13% coloured, G_front_middle (R) 18% coloured" (coverages 0.127 and 0.183, rounded to whole percents). A mapping with `coverage: null` → "<parcel> (<side>), not measured". A domain with no checks → "No lesion study in Planum’s deficit evidence checks this domain." Pain's NextBrain parcels → "caudal_division_of_ventral_posterior_lateral_nucleus (L), not measured". French uses the side glyphs G/D/Méd and "colorée à 13 %". 26 of the 70 published domains have no check.
 - **Covered by:** `parity/C5.test.ts` (D only; `src/lib/core/panels/provenance.test.ts` never passes `domains`)
 
 ### PROV-06 · Labels are translated; the published data is not
@@ -67,7 +67,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the order of elements
 - **Source:** `provenance.js:5-8, 49-52, 110-134`; `provenance.test.js:63-66`
-- **Expected:** `https://doi.org/10.1/x` → `doi.org/10.1/x`; `https://www.z-anatomy.com/` → `www.z-anatomy.com`. CAB-NP licence link text = the last segment of `license_file`, mono. Under Published files the first child of each item is an `A` ("manifest.json", "anatomies.json") and the second a `.provenance-note`.
+- **Expected:** `https://doi.org/10.1/x` → `doi.org/10.1/x`; `https://www.z-anatomy.com/` → `www.z-anatomy.com`. CAB-NP licence link text = the last segment of `license_file`, mono. Under Published files the first child of each item is an `A` ("manifest.json", "anatomies.json") and the second a `.provenance-note`. `ftp://x/` → `ftp://x` (only the http and https schemes are dropped).
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `shortUrl`); `src/features/provenance/provenance.svelte.test.ts` (R, element order); `parity/C5.test.ts` (D)
 
 ### PROV-09 · The sheet ends with the intended use

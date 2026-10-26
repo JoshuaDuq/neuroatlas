@@ -231,7 +231,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Kind:** data
 - **Level:** unit (view-model `subjectName`)
 - **Source:** `header.js:37-41`; `chrome.contract.test.js:240-245`
-- **Expected:** `MGH CDMD “sub_013”` → `MGH CDMD sub_013`; `SNAIL “subj_1”` → `SNAIL subj_1`; `AOMIC-PIOP1 “sub-0022”` → `AOMIC-PIOP1 sub-0022`; `{id:'x', subject:'x'}` → `x`; `{id:'y'}` → `y`.
+- **Expected:** `MGH CDMD “sub_013”` → `MGH CDMD sub_013`; `SNAIL “subj_1”` → `SNAIL subj_1`; `AOMIC-PIOP1 “sub-0022”` → `AOMIC-PIOP1 sub-0022`; `{id:'x', subject:'x'}` → `x`; `{id:'y'}` → `y`. Also ` A  "b" ` → "A b", and `””` with no subject or id → "".
 - **Covered by:** `src/lib/core/panels/header.test.ts` (R); `parity/C5.test.ts` (D, seeded entries against legacy)
 
 ### MAST-29 · Colour offers only published colourings, in fixed groups
@@ -263,7 +263,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the select's value
 - **Source:** `header.js:72-76, 470-481`; `chrome.contract.test.js:346-350`
-- **Expected:** choose HCP-MMP, status `switching`, no progress → selected text "HCP-MMP · Loading…". Progress 34/100 → "HCP-MMP · Loading 34%" (FR "Chargement 34 %"). Status `ready` with the atlas still `destrieux` → value `destrieux`, text "Destrieux". `loadingText` with no total, or total 0 → "Loading…"; 1/4 → "Loading 25%".
+- **Expected:** choose HCP-MMP, status `switching`, no progress → selected text "HCP-MMP · Loading…". Progress 34/100 → "HCP-MMP · Loading 34%" (FR "Chargement 34 %"). Status `ready` with the atlas still `destrieux` → value `destrieux`, text "Destrieux". `loadingText` with no total, or total 0 → "Loading…"; 1/4 → "Loading 25%". `{5, 5}` → "Loading 100%"; French "Chargement 25 %" with a narrow no-break space. The exact strings are checked only by `parity/C5.test.ts` (D).
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (W: compares against `t(lang,'header').loading` and matches `/25/`); `parity/C5.test.ts` (D)
 
 ### MAST-33 · Another subject waits for a download, and focus is not dropped

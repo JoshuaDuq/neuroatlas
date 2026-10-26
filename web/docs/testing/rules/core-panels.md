@@ -192,78 +192,78 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Masthead and colophon text
 
 ### PANEL-22 · A subject is named with its dataset, without quotation marks
-- **Rule:** The masthead names the subject by its published title without quotation marks and with single spaces, else by its subject, else by its id.
+- **Rule:** Stated once as MAST-28 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/chrome/header.js:38-42`
-- **Expected:** `MGH CDMD “sub_013”` → "MGH CDMD sub_013"; `SNAIL “subj_1”` → "SNAIL subj_1"; ` A  "b" ` → "A b"; `{ id: 'x', subject: 'x' }` → "x"; `{ id: 'y' }` → "y"; `””` with no subject or id → "".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R); `parity/C5.test.ts` (D)
+- **Source:** see MAST-28
+- **Expected:** see MAST-28
+- **Covered by:** see MAST-28
 
 ### PANEL-23 · The collapsed masthead names what is available, or the tract reference alone
-- **Rule:** The summary lists subject, atlas, colouring and internal anatomy, each only when it has text. With the tract reference shown, it names the reference alone, as the subject part.
+- **Rule:** Stated once as MAST-38 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/chrome/header.js:44-50`
-- **Expected:** all four → parts `subject, atlas, colour, detail` with their texts; with `reference: 'SNAIL'` → `[{ part: 'subject', text: 'SNAIL' }]`; no subject → `atlas, colour, detail`; `{ atlas: 'Destrieux' }` → one atlas part.
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R); `parity/C5.test.ts` (D)
+- **Source:** see MAST-38
+- **Expected:** see MAST-38
+- **Covered by:** see MAST-38
 
 ### PANEL-24 · The Colour field offers only the colourings the build publishes, in groups
-- **Rule:** Colour choices are grouped as appearance, parcellation, networks, then the functional divisions alone; a colouring the build does not publish is not offered and an empty group is dropped.
+- **Rule:** Stated once as MAST-29 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/chrome/header.js:52-58`
-- **Expected:** all published (cdmd) → `[['appearance',['tissue','mri']], ['parcellation',['atlas']], ['networks',['network','cab-np']], [null,['functional']]]`; only networks → the first three groups with `['network']`.
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R); `parity/C5.test.ts` (D)
+- **Source:** see MAST-29
+- **Expected:** see MAST-29
+- **Covered by:** see MAST-29
 
 ### PANEL-25 · A colour or atlas option names what choosing it changes
-- **Rule:** A colouring defined on another atlas's areas says the atlas it switches to; an atlas that cannot carry the colouring shown says the colouring becomes region colours.
+- **Rule:** Stated once as MAST-30 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/chrome/header.js:60-71`
-- **Expected:** CAB-NP on destrieux → "CAB-NP networks (atlas becomes HCP-MMP)"; on hcp-mmp → "CAB-NP networks"; tissue → "Tissue". Destrieux while CAB-NP needs hcp-mmp → "Destrieux (colour becomes Regions)"; HCP-MMP → "HCP-MMP"; no requirement → "Destrieux". fr: "… (l’atlas devient …)", "… (la couleur devient …)".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R, en); fr: `parity/C5.test.ts` only (D)
+- **Source:** see MAST-30
+- **Expected:** see MAST-30
+- **Covered by:** see MAST-30
 
 ### PANEL-26 · A download says how far it has come, or that it has started
-- **Rule:** With a known total the status says the share loaded as a whole percent; otherwise it says loading.
+- **Rule:** Stated once as MAST-32 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/chrome/header.js:73-77`
-- **Expected:** none or `{0, 0}` → "Loading…" / "Chargement…"; `{1, 4}` → "Loading 25%" / "Chargement 25 %" (narrow no-break space); `{5, 5}` → "Loading 100%".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R, matches /25/ only); exact strings: `parity/C5.test.ts` only (D)
+- **Source:** see MAST-32
+- **Expected:** see MAST-32
+- **Covered by:** see MAST-32
 
 ### PANEL-27 · The status bar always says it is not clinical anatomy
-- **Rule:** The status bar keeps the statement "Not clinical anatomy" in every state. Once something is loaded it names it as the masthead does, with what kind of data it is; the tract reference is named as reference data.
+- **Rule:** Stated once as COLO-01 (`colophon.md`), COLO-02 (`colophon.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/chrome/header.js:79-84`
-- **Expected:** nothing loaded → description `''`, statement "Not clinical anatomy" / "Pas une anatomie clinique". cdmd → "MGH CDMD sub_013 · one individual’s MRI reconstruction"; an averaged template → "… · averaged reference template"; reference `Ref` → "Ref · reference data".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R, by pattern); exact descriptions: `parity/C5.test.ts` only (D)
+- **Source:** see COLO-01, COLO-02
+- **Expected:** see COLO-01, COLO-02
+- **Covered by:** see COLO-01, COLO-02
 
 ## Provenance
 
 ### PANEL-28 · The provenance sheet lists only what the published records say
-- **Rule:** The sheet's rows come from the index entry and the manifest only, in this order: subject (with its kind), source data, reconstruction, cortical atlases (with HCP-MMP's projection note and licence files), functional networks, functional divisions, neuropsychological domains, supplemental layers, published files. A field not published leaves no row and nothing is invented. Licence files published beside the manifest are linked from its directory. Labels are translated; the data is not.
+- **Rule:** Stated once as PROV-01 (`provenance.md`), PROV-02 (`provenance.md`), PROV-03 (`provenance.md`), PROV-04 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** data
 - **Level:** unit
-- **Source:** `viewer/ui/panels/provenance.js:33-100`
-- **Expected:** cdmd with manifest and index URLs: every link is in the manifest, resolves beside it, or is one of the two URLs; links include `/neuroatlas/models/cdmd/../licenses/CAB-NP.txt`, `…/../licenses/HCP-Data-Use-Terms.txt`, the subject's `https://doi.org/10.6084/m9.figshare.c.5315474.v1`, each atlas citation and each functional citation. Subject "MGH CDMD “sub_013”" with "One individual’s MRI reconstruction"; reconstruction `freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45` (mono, the same in fr); hcp-mmp note "Projected from fsaverage"; files note "39 source files, each with a SHA-256 checksum"; supplemental "Z-Anatomy spinal cord reference" with "CC BY-SA 4.0 · Z-Anatomy, after BodyParts3D (CC BY-SA 2.1 JP)". `{ anatomy: { display_name: 'X “1”' } }` in fr → one row "Sujet" with no kind note. `provenanceRows({})` → `[]`.
-- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R); the row order, the supplemental note and `{}`: `parity/C5.test.ts` only (D)
+- **Source:** see PROV-01, PROV-02, PROV-03, PROV-04
+- **Expected:** see PROV-01, PROV-02, PROV-03, PROV-04
+- **Covered by:** see PROV-01, PROV-02, PROV-03, PROV-04
 
 ### PANEL-29 · Each function's lesion check says how much of each mapped parcel its areas colour
-- **Rule:** In the domains row, each function names its term and a note: the lesion studies that check it, each with its references and, per mapped parcel and side, the share its coloured areas cover (or "not measured" off the surface); or that no lesion study checks it.
+- **Rule:** Stated once as PROV-05 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** data
 - **Level:** unit
-- **Source:** `viewer/ui/panels/provenance.js:11-31`; `public/models/cdmd/neuropsych-domains.json`
-- **Expected:** cdmd executive, check "Executive dysfunction" (Gläscher et al. 2012): "G_front_middle (L) 13% coloured, G_front_middle (R) 18% coloured, G_and_S_cingul-Ant (L) 0% coloured, G_and_S_cingul-Ant (R) 8% coloured". Pain's NextBrain parcels → "caudal_division_of_ventral_posterior_lateral_nucleus (L), not measured". fr glyphs G/D/Méd and "colorée à 13 %". 26 of the 70 domains have no check → "No lesion study in Planum’s deficit evidence checks this domain."
-- **Covered by:** `parity/C5.test.ts` only (D, every published check)
+- **Source:** see PROV-05
+- **Expected:** see PROV-05
+- **Covered by:** see PROV-05
 
 ### PANEL-30 · URLs read without their scheme, and a tract reference lists its own sources
-- **Rule:** A link's text drops `http://` or `https://` and a trailing slash. With the tract reference shown, the sheet names the reference and lists its own sources, not the hidden anatomy; with no sources it has the reference row alone.
+- **Rule:** Stated once as PROV-07 (`provenance.md`), PROV-08 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
-- **Source:** `viewer/ui/panels/provenance.js:6,102-112`
-- **Expected:** `https://doi.org/10.1/x` → `doi.org/10.1/x`; `https://www.z-anatomy.com/` → `www.z-anatomy.com`; `ftp://x/` → `ftp://x`. Reference `{ label: 'SNAIL reference', links: [A] }` → rows "Tract reference" (`SNAIL reference`) and "Sources" (`[{ link: A }]`); `links: []` → the first row only.
-- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R; `ftp` and empty links: `parity/C5.test.ts` only, D)
+- **Source:** see PROV-07, PROV-08
+- **Expected:** see PROV-07, PROV-08
+- **Covered by:** see PROV-07, PROV-08
 
 ## Async runners
 

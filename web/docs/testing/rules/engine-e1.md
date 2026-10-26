@@ -333,7 +333,7 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:3-5`
 - **Expected:** rasToWorld([21, 37, 49]) = (0.021, 0.049, −0.037); worldToRas gives [21, 37, 49] back.
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D). Restated as SLICE-01 in `engine-e4a.md`.
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D). SLICE-01 in `engine-e4a.md` points here.
 
 ### RENDER-39 · Section frames have fixed axes and edge letters
 - **Rule:** Standard section planes have fixed normals, in-plane axes and edge letters. An oblique plane's normal comes from tilt and azimuth. All frames are orthonormal and pass through the requested point.
@@ -341,15 +341,15 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:14-18, 34-53`
 - **Expected:** sagittal normal (1,0,0), u (0,−1,0), v (0,0,1), edges [S,P,I,A]; coronal (0,1,0), u (1,0,0), v (0,0,1), [S,R,I,L]; axial (0,0,1), u (1,0,0), v (0,1,0), [A,R,P,L]. Oblique: n = (sin t cos a, sin t sin a, cos t), u = (−sin a, cos a, 0), v = n × u, no edge letters; defaults t = a = 30° → n ≈ (0.4330, 0.2500, 0.8660). Orthonormal to 1e-10; tilt must be in 0..90 and |azimuth| ≤ 180, else RangeError "Oblique angles are out of range.".
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, standard normals, orthonormality and the plane through the point; the oblique case checks orthonormality only), `parity/E1.test.ts` (D; edge letters, u/v, the oblique normal formula and the range RangeError only here). `parity/f2.test.ts` (D) compares the fake's letters, not these. Restated as SLICE-02 and SLICE-03 in `engine-e4a.md`.
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, standard normals, orthonormality and the plane through the point; the oblique case checks orthonormality only), `parity/E1.test.ts` (D; edge letters, u/v, the oblique normal formula and the range RangeError only here). `parity/f2.test.ts` (D) compares the fake's letters, not these. SLICE-02 points here; SLICE-03 adds the cut controller's angle range. The contract suite (R, `mprFrame` normals for axial and coronal, the sagittal cut normal) also holds part of it.
 
 ### RENDER-40 · A cut removes the positive half unless reversed
 - **Rule:** The clipping plane passes through the frame centre and removes the half on the positive side of the source normal; reverse keeps that half instead.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:56-59`
-- **Expected:** Centre +1 mm along the normal: distance < 0 without reverse and > 0 with reverse. The centre lies on the plane (±1e-10).
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D). Restated as SLICE-04 in `engine-e4a.md`.
+- **Expected:** Centre +1 mm along the normal: distance < 0 without reverse and > 0 with reverse. The centre lies on the plane (±1e-10). A fractional offset is kept exactly: coronal offset 0.5 mm → plane through world z = −0.0005 (± 1e-12).
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D). SLICE-04 in `engine-e4a.md` points here. `src/lib/engine/slices/sections.test.ts` (R, the fractional offset).
 
 ### RENDER-41 · A cut through a point stays inside the volume
 - **Rule:** The offset of a plane through a RAS point is the point's projection on the normal, clamped to the volume's range. Non-finite input is an error.
@@ -357,7 +357,7 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:24-31`
 - **Expected:** [30, −10, 20] on x → 30, on y → −10; [200,0,0] → 128 and [−200,0,0] → −128 for range [−128, 128]. Infinity or a NaN range → Error "A cut through a point needs finite coordinates and a finite range.".
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, clamp), `parity/E1.test.ts` (D, error). Restated as SLICE-05 in `engine-e4a.md`.
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, clamp), `parity/E1.test.ts` (D, error). SLICE-05 in `engine-e4a.md` points here.
 
 ### RENDER-42 · Only real section planes and finite points make a frame
 - **Rule:** A frame needs three finite RAS values and one of the four plane names. Names inherited from Object are not planes.
@@ -365,7 +365,7 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:35-37, 49-50`; deviation `e1-render-primitives.md` #4
 - **Expected:** "banana", "off", "constructor", "toString" and "__proto__" → Error "Unknown section plane: …". NaN or a two-value point → Error "Slice coordinates must be three finite RAS values.".
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R; "banana", the three Object names and NaN; "off" and a two-value point only in D), `parity/E1.test.ts` (D). The plane-name half is restated in SLICE-02.
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R; "banana", the three Object names and NaN; "off" and a two-value point only in D), `parity/E1.test.ts` (D). SLICE-02 points here for the plane names.
 
 ### RENDER-43 · Slice canvas points and centred frames
 - **Rule:** A canvas fraction (x, y) with a top-left origin maps to centre + u·(x − 0.5)·fov + v·(0.5 − y)·fov. A centred frame moves the centre to the normal's line through the origin, at the same offset. The world-to-voxel matrix composes the volume's inverse affine with world → RAS mm.

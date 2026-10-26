@@ -11,7 +11,7 @@ constants in `src/lib/types/constants.ts`. Legacy sources: `viewer/catalog/*.js`
 `viewer/model/brain-atlas.js:68`, `viewer/ui/chrome/workspace.js:6`, `viewer/state/url-state.js`. New code:
 `web/src/lib/core/{catalog,clinical,learning,comparison,diffusion}/`, `web/src/lib/types/constants.ts`.
 Deviation: `c2-search-word-boundary.md`. The words these catalogues' failures are shown in are in
-`core-i18n.md`; which link values decode is in the state and links catalogues.
+`core-i18n.md`; which link values decode is STATE-08 (`core-state.md`).
 
 Data rules give fixed values read from the published files of the default anatomy, `cdmd` (MGH CDMD
 "sub_013", the only entry of `public/models/anatomies.json`): `public/models/cdmd/{manifest,cab-np,
@@ -30,7 +30,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `parity/f1.test.ts` (D); `src/lib/engine/render/camera-views.test.ts` (R, key set only, sorted, not the order)
 
 ### CAT-02 · Section modes, hemispheres and functional levels
-- **Rule:** The section modes, the hemisphere choices and the functional levels are fixed lists. A link accepts exactly these values (the decoding rule is in the links catalogue).
+- **Rule:** The section modes, the hemisphere choices and the functional levels are fixed lists. A link accepts exactly these values (the decoding rule is STATE-08 in `core-state.md`).
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:7`; `viewer/state/url-state.js:55`; `viewer/catalog/functional-regions.js:5`
