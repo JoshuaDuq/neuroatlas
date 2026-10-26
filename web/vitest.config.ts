@@ -42,14 +42,7 @@ export default defineConfig({
             headless: true,
             provider: playwright({
               launchOptions: {
-                args: [
-                  '--use-angle=swiftshader',
-                  '--enable-unsafe-swiftshader',
-                  // Headless Linux has no pointing device, so it reports (hover: none) and
-                  // (pointer: none) where macOS reports a mouse. Pin a mouse (hover = 2,
-                  // fine = 4) so every host runs the same media queries; touch tests emulate.
-                  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
-                ],
+                args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
               },
             }),
             instances: [{ browser: 'chromium' }],
