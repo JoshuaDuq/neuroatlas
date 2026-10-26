@@ -72,7 +72,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
     syncPresentation(engine, view, engineState);
     const catalog = createCatalogStore(regions, view);
     // Before the first restore: a link that loads hidden regions then says their count once.
-    announceView(view, (region, current) => regions.label(region.id, current).name);
+    const speech = announceView(view, (region, current) => regions.label(region.id, current).name);
     const link = createLink({ engine, view, write: () => links.write() });
     const context: AppContext = { engine, engineState, session, lesson, view, catalog, link };
 
@@ -142,7 +142,17 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       defaultAnatomy,
       page: globalThis,
     });
-    return { ...context, regions, clinical, circuits, commands, anatomy, excursions, links };
+    return {
+      ...context,
+      regions,
+      clinical,
+      circuits,
+      commands,
+      anatomy,
+      excursions,
+      links,
+      speech,
+    };
   });
   app.defer(stop);
 
