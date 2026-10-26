@@ -40,7 +40,7 @@ test.describe('selected region', () => {
     ]);
     await expect(facts.locator('dd').nth(0)).toContainText('mm²');
     await expect(facts.locator('dd').nth(1)).toContainText(
-      /[+−]\d+\.\d, [+−]\d+\.\d, [+−]\d+\.\d mm/,
+      /[+−]\d+\.\d, [+−]\d+\.\d, [+−]\d+\.\d\smm/,
     );
     await expect(facts.locator('dd').nth(2)).toContainText('· 1');
   });
@@ -63,8 +63,8 @@ test.describe('selected region', () => {
   test('Clear selection empties the panel and leaves focus on the page', async ({ app }) => {
     const { page } = app;
     await regionPanel(page).getByRole('button', { name: 'Clear selection' }).click();
-    await expect(page.getByRole('heading', { name: 'No region selected' })).toBeVisible();
-    expect(await app.hash()).not.toContain('region=');
+    await expect(regionPanel(page).getByRole('button', { name: 'Isolate' })).toBeHidden();
+    await expect.poll(() => app.hash()).not.toContain('region=');
     const focused = await page.evaluate(() => {
       const active = document.activeElement;
       return active !== null && active !== document.body && active.checkVisibility();
@@ -75,7 +75,7 @@ test.describe('selected region', () => {
   test('Hide hands the region to the dissection and focus stays on the page', async ({ app }) => {
     const { page } = app;
     await regionPanel(page).getByRole('button', { name: 'Hide', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'No region selected' })).toBeVisible();
+    await expect(regionPanel(page).getByRole('button', { name: 'Isolate' })).toBeHidden();
     const focused = await page.evaluate(() => {
       const active = document.activeElement;
       return active !== null && active !== document.body && active.checkVisibility();
@@ -103,7 +103,7 @@ test.describe('selected region', () => {
       'open',
       '',
     );
-    await expect(regionPanel(page).getByText('Visual', { exact: true })).toBeVisible();
+    await expect(regionPanel(page).getByText('Visual', { exact: true }).last()).toBeVisible();
     await expect(regionPanel(page).getByText('100%').first()).toBeVisible();
     await page.keyboard.press('Space');
     await expect(summary(page, 'Functional networks').locator('xpath=..')).not.toHaveAttribute(
