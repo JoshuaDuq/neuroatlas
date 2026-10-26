@@ -7,6 +7,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Framing
 
 ### FACADE-01 · A named view frames the whole drawn anatomy and holds the view
+
 - **Rule:** Choosing a named view frames everything drawn, seen from that view's direction with its up. The anatomy fills the room the interface leaves without leaving it, and the view is marked as held.
 - **Kind:** behaviour
 - **Level:** unit
@@ -15,6 +16,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R, fits), `src/lib/engine/index.svelte.test.ts` (R, via contract suite: held), `parity/E7.test.ts` (D), `parity/E5.test.ts` (D)
 
 ### FACADE-02 · The first framing lands at once
+
 - **Rule:** The opening view is placed without animation. The camera does not swoop out of the brain on every load.
 - **Kind:** behaviour
 - **Level:** unit
@@ -23,6 +25,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** uncovered
 
 ### FACADE-03 · An unknown view is refused and the camera stays
+
 - **Rule:** A view name the camera does not publish is an error, and nothing moves.
 - **Kind:** behaviour
 - **Level:** unit
@@ -31,6 +34,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R)
 
 ### FACADE-04 · "The whole anatomy" is what is drawn
+
 - **Rule:** The whole-anatomy frame (named views, pull back, resize) fits what the reader can see:
   - both hemispheres: the opening brain box;
   - one hemisphere: that hemisphere;
@@ -46,6 +50,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (D)
 
 ### FACADE-05 · Focus on a region frames it from where the reader is looking
+
 - **Rule:** Focusing a selected region frames its drawn meshes along the current heading and lets go of the held view. A region with nothing drawn does nothing and reports so.
 - **Kind:** behaviour
 - **Level:** unit
@@ -54,6 +59,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
 
 ### FACADE-06 · A landmark is framed as its lesson authored it
+
 - **Rule:** A lesson landmark is framed from its authored view, with the authored margin of anatomical context around it, and the held view is released. A landmark with nothing drawn does nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -62,6 +68,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
 
 ### FACADE-07 · A deficit's regions are framed together, from their own side
+
 - **Rule:** A deficit's drawn regions are framed together with context. When they all lie in one hemisphere and the reader is looking from the other side, the camera swings to their side. Nothing drawn means no move and the held view is kept.
 - **Kind:** behaviour
 - **Level:** unit
@@ -70,6 +77,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: nothing drawn); side swing `parity/E7.test.ts` (D)
 
 ### FACADE-08 · Internal anatomy and "pull back" keep the reader's heading and the held view
+
 - **Rule:** Framing the internal structures, or pulling back to the whole anatomy, keeps the current heading and does not release a held view. The internal frame excludes the cord unless the cord system is chosen.
 - **Kind:** behaviour
 - **Level:** unit
@@ -78,6 +86,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: held kept); geometry `parity/E7.test.ts` (D)
 
 ### FACADE-09 · Facing the cut
+
 - **Rule:** "Face the cut" looks straight at the cut plane, from the reversed side when the cut is reversed, with the plane's up. It reports the named view it faces. An oblique cut is faced along its own normal and releases the held view. A cut below the brain (through the cord) is framed in an 8 cm box around its centre.
 - **Kind:** behaviour
 - **Level:** unit
@@ -86,6 +95,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: returned view and held); geometry and cord box `parity/E7.test.ts` (D)
 
 ### FACADE-10 · Focusing a point keeps distance and heading
+
 - **Rule:** Focusing a point (double-click on the surface, or a RAS point) moves the orbit centre onto it, keeping the camera's distance and heading, and releases the held view. Below the brain (on the cord) the camera may come as close as 15 mm.
 - **Kind:** behaviour
 - **Level:** unit
@@ -96,6 +106,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Magnification and resize
 
 ### FACADE-11 · The reader's magnification survives a resize; a named view resets it
+
 - **Rule:** A canvas resize keeps the reader's magnification (camera distance as a multiple of the whole-anatomy fit) and heading, so the picture re-fits rather than clipping or stranding the anatomy. A named view or Reset sets the magnification back to the whole anatomy.
 - **Kind:** behaviour
 - **Level:** unit
@@ -104,6 +115,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R), `parity/E7.test.ts` (D)
 
 ### FACADE-12 · Every framing updates the magnification
+
 - **Rule:** After Focus, a landmark, a deficit, internal anatomy, pull back or a cut face, the next resize keeps the distance that framing chose. It does not jump back to the old whole-brain magnification.
 - **Kind:** behaviour
 - **Level:** unit
@@ -112,6 +124,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R, region and landmark); the other four commands only through `parity/E7.test.ts` (D)
 
 ### FACADE-13 · A framing during an eased move starts from where the move lands
+
 - **Rule:** A framing or capture made while the camera is still easing uses the heading and pose the move is going to, not the half-way camera.
 - **Kind:** behaviour
 - **Level:** unit
@@ -120,6 +133,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/framing.test.ts` (R)
 
 ### FACADE-14 · A resize during an eased move wins
+
 - **Rule:** When the canvas resizes while a move is easing, the camera is placed at once in the new frame, and the old move cannot overwrite it with its old endpoint.
 - **Kind:** behaviour
 - **Level:** unit
@@ -130,6 +144,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Sheet, dock and gestures
 
 ### FACADE-15 · A dock or sheet change keeps the reader's framing, after the finger lifts
+
 - **Rule:** When the dock or settled sheet changes the room, the camera keeps its heading and target and scales its distance by the new fit over the old. A held view is re-framed instead. If a gesture is down, the refit waits for the lift, and the magnification is then read where the refit lands.
 - **Kind:** behaviour
 - **Level:** unit
@@ -138,6 +153,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite, weak: only checks the view stays held); `parity/E7.test.ts` (D)
 
 ### FACADE-16 · Framing reads the interface's clearance when it frames, and reports the viewport
+
 - **Rule:** Each framing measures the interface's current clearance (dock inset and label scale) at that moment. A chrome inset change reports the new visible rectangle and host size.
 - **Kind:** behaviour
 - **Level:** unit
@@ -146,6 +162,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
 
 ### FACADE-17 · A pan cannot lose the anatomy
+
 - **Rule:** During a drag, the orbit centre cannot be panned beyond the bounding sphere of what is drawn. A centre already further out is held where it is rather than pulled in. Any framing lifts the limit.
 - **Kind:** behaviour
 - **Level:** unit
@@ -156,6 +173,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## The held view
 
 ### FACADE-18 · Which commands hold the view and which let it go
+
 - **Rule:** A named view and a non-oblique cut face hold the view, as does a restored camera that was held. Focus, landmark, deficit regions, focus point, a placed link camera, keyboard orbit and zoom, and an oblique cut face let it go. Pull back and internal anatomy leave it as it was.
 - **Kind:** behaviour
 - **Level:** unit
@@ -164,6 +182,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
 
 ### FACADE-19 · A gesture that moves the camera lets go of the view; a click does not
+
 - **Rule:** A drag, pinch or wheel that moves the camera or orbit centre by more than 1e-6 m from where the gesture began releases the held view. A press that moves nothing (a click that selects) keeps it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -172,6 +191,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (D)
 
 ### FACADE-20 · A wheel step's movement still counts just after the step ends
+
 - **Rule:** A wheel step reports its end before the camera moves on the next frame. So a move up to 250 ms after a gesture ends still counts as the reader's and releases the view. A move well after that (an eased framing, damping coming to rest) does not.
 - **Kind:** behaviour
 - **Level:** unit
@@ -180,6 +200,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (D, asserted to the millisecond)
 
 ### FACADE-21 · Camera keys on the canvas let go of the view, browser shortcuts do not
+
 - **Rule:** With the canvas focused, the arrow keys, `+`, `=` and `-` release the held view. The same keys with Ctrl, Meta or Alt are the browser's (page zoom, history) and leave it. Shift is allowed because it is how `+` is typed. Keys pressed elsewhere do nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -188,6 +209,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (R, modifiers; I, key list; D, seeded keys)
 
 ### FACADE-22 · The held state is announced only when it changes
+
 - **Rule:** The application is told when the view becomes held or is let go, never when it is set to what it already is.
 - **Kind:** behaviour
 - **Level:** unit
@@ -198,6 +220,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Capture, restore and the link
 
 ### FACADE-23 · A captured camera restores to itself, with its magnification and held state
+
 - **Rule:** A captured camera (taken where the camera is going) restores the same pose and limits, the same magnification for later resizes, and the same held or released state.
 - **Kind:** behaviour
 - **Level:** unit
@@ -206,6 +229,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: held), `src/lib/engine/framing.test.ts` (R, mid-move), `parity/E7.test.ts` (D)
 
 ### FACADE-24 · What the link carries of the camera
+
 - **Rule:** A held view has no orbit link (the view name carries it), and neither does the tract reference shown alone. Otherwise the link carries the camera position and target in millimetres, exactly the metres × 1000 (rounding is the link writer's job). It carries the up vector only when it differs from the named view's up by more than 1e-3.
 - **Kind:** behaviour
 - **Level:** unit
@@ -214,6 +238,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: null when held, millimetres read back within 1e-3); `src/lib/engine/contract.test.ts` (W, "links no orbit while the tract reference is shown" runs on the fake only, so the real engine's reference case is unproven); exactness and up `parity/E7.test.ts` (D)
 
 ### FACADE-25 · A link camera is placed exactly, or refused
+
 - **Rule:** A camera from a link is placed exactly where it says, with its up or the named view's. The orbit limits widen only as far as needed to admit it. A camera beyond the orbit limit by more than the link's rounding (`ORBIT_ROUNDING_MM` = 2·√(3·0.05²) ≈ 0.173 mm) is refused with a RangeError, and nothing moves. The magnification is then read from the placed camera.
 - **Kind:** behaviour
 - **Level:** unit
@@ -222,6 +247,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
 
 ### FACADE-26 · The link writes the camera to a tenth of a millimetre
+
 - **Rule:** In the page link, camera position and target are rounded to 0.1 mm. A camera placed from a decoded link is within 0.05 mm per axis of the one written.
 - **Kind:** behaviour
 - **Level:** unit
@@ -232,6 +258,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Camera reporting
 
 ### FACADE-27 · The camera is reported per move, outside the change event
+
 - **Rule:** Every camera move reports the orientation letters for the four edges and the scale bar, and every framing command reports that the destination is settled. Neither is part of the model's change event. An eased move keeps reporting frame by frame after the call returns.
 - **Kind:** behaviour
 - **Level:** unit
@@ -242,6 +269,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Presentation
 
 ### FACADE-28 · Hover names a region the reader could select
+
 - **Rule:** Hovering a region names it with the pointer position. Moving within the same region only moves the name and does not redraw the marking. A region the reader cannot select (hidden, or cortex made transparent) is not hovered.
 - **Kind:** behaviour
 - **Level:** unit
@@ -250,6 +278,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (D)
 
 ### FACADE-29 · How the selection and hover are marked depends on what is shown
+
 - **Rule:** On the surface, the selection gets the two-tone outline and the hovered region the halo. While a cut is open there is no outline (it would ring the whole solid) and the cut faces light the hovered and selected regions instead. While the tract reference is shown alone, nothing is outlined.
 - **Kind:** behaviour
 - **Level:** unit
@@ -258,6 +287,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `parity/E7.test.ts` (D)
 
 ### FACADE-30 · An atlas-comparison overlap replaces the selection outline while shown
+
 - **Rule:** While an overlap is highlighted and visible, it is outlined in place of the selection. Hiding the comparison (a cut opening) or clearing it brings the selection's outline back at once, with no other model change needed.
 - **Kind:** behaviour
 - **Level:** unit
@@ -266,6 +296,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.test.ts` (R)
 
 ### FACADE-31 · The canvas is named in the reader's language
+
 - **Rule:** The canvas's accessible name and role description follow the reader's language. While the tract reference is shown alone, the name says so.
 - **Kind:** behaviour
 - **Level:** unit
@@ -276,6 +307,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 ## Engine lifecycle
 
 ### FACADE-32 · The engine does not start if it cannot draw an outline
+
 - **Rule:** The outline programs are compiled before the stage reports ready. If they cannot be, the engine fails to start and frees the scene and the model, rather than starting without a way to mark the selection.
 - **Kind:** behaviour
 - **Level:** unit
@@ -284,6 +316,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.test.ts` (R)
 
 ### FACADE-33 · A snapshot is the settled frame, cropped to the rectangle asked for
+
 - **Rule:** A snapshot is the full-resolution frame, cropped to the stage rectangle given in CSS pixels, at the canvas's pixel ratio, with the brain drawn.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL: renders the settled frame and reads its pixels back
@@ -292,6 +325,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R); `src/lib/engine/contract.test.ts` (W, the fake's canvas sizing only)
 
 ### FACADE-34 · One change event per model change, with the cut beside it
+
 - **Rule:** Every model change reaches the application as one `change` event carrying the model state and the cut's state.
 - **Kind:** behaviour
 - **Level:** unit
@@ -300,6 +334,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.test.ts` (R); `src/lib/engine/index.svelte.test.ts` (R, via contract suite: the copies)
 
 ### FACADE-35 · The engine is disposed once
+
 - **Rule:** Disposing the engine disposes the model, and the model says so.
 - **Kind:** behaviour
 - **Level:** unit
@@ -308,6 +343,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite; could move down to unit: it needs no drawing)
 
 ### FACADE-36 · The scan is shown on the surface only while nothing paints it
+
 - **Rule:** The engine opens with no cut drawn. The MRI surface colour shows the scan unless a paint (a network, a deficit) is over it, in which case the paint wins. Removing the paint brings the scan back.
 - **Kind:** behaviour
 - **Level:** unit
@@ -316,6 +352,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.test.ts` (R)
 
 ### FACADE-37 · The MRI window is linked only once the reader moves it
+
 - **Rule:** The link carries the MRI window only when the linked MRI has loaded and the shown window differs from the published one. The published window is not a link field, and setting the window back to it removes the field.
 - **Kind:** behaviour
 - **Level:** unit
@@ -324,6 +361,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D, 50 seeded windows)
 
 ### FACADE-38 · A listener that unsubscribes hears nothing more
+
 - **Rule:** Subscribing to an engine event returns a function that removes that listener. After it is called the listener receives no further events, so a closed panel does not keep reacting.
 - **Kind:** behaviour
 - **Level:** unit

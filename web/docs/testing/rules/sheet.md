@@ -5,6 +5,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## The rests
 
 ### SHEET-01 · Upright, the sheet rests at peek, half or full, and full leaves a fixed band of picture
+
 - **Rule:** Upright, peek is the grip's measured height (132 px when it cannot be measured), half is half the stage height, and full is the stage height less a 128 px band of picture, the same on every phone.
 - **Kind:** behaviour
 - **Level:** unit
@@ -13,6 +14,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (R); `src/features/sheet/Sheet.svelte.test.ts` (R, the handle steps to round(0.5·H) and H − 128)
 
 ### SHEET-02 · On a short screen the rests stay ordered and inside it, collapsing onto peek rather than overflowing
+
 - **Rule:** Each rest is at least the one below it and never taller than the room. When the fractions fall below peek, the rests coincide with peek. A screen shorter than peek makes peek the whole screen.
 - **Kind:** behaviour
 - **Level:** unit
@@ -21,6 +23,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (W: asserts only `peek ≤ half ≤ full ≤ 200` and `tiny.peek = 80`; its name says "distinct" although at 200 px the three rests are equal; the negative case is uncovered)
 
 ### SHEET-03 · Held sideways, half shares the width evenly and full stops at 62 % so the model stays readable
+
 - **Rule:** Sideways, peek is the wider of 216 px (plus the left safe area) and the one measured row of tabs; half is half the window width; full is 62 % of it. Half always opens past the measured tab row.
 - **Kind:** behaviour
 - **Level:** unit
@@ -29,6 +32,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (R for the halves; W for the rest: only inequalities); `src/features/sheet/Sheet.svelte.test.ts` (R, "held sideways the one row of tabs is 368 px")
 
 ### SHEET-04 · A slow drag settles on the nearest rest, ties going down toward the anatomy
+
 - **Rule:** Without a throw, the sheet settles on the rest nearest the span at release. Exactly between two rests, it takes the lower one.
 - **Kind:** behaviour
 - **Level:** unit
@@ -37,6 +41,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (R; the tie is uncovered); `src/features/sheet/Sheet.svelte.test.ts` (R, "a slow drag … settles on the nearest rest")
 
 ### SHEET-05 · A flick moves exactly one rest in its direction, and stops at the ends
+
 - **Rule:** A release at 0.4 px/ms or faster moves one rest in the direction thrown, however little the finger travelled. A flick past the top or bottom rest stays there. Slower releases are read by position (SHEET-04).
 - **Kind:** behaviour
 - **Level:** unit
@@ -45,6 +50,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (R; the 0.4 threshold itself is uncovered); `src/features/sheet/Sheet.svelte.test.ts` (R, 30 px in 10 ms → half, −30 px → peek, +40 px at full stays full)
 
 ### SHEET-06 · Only the last 100 ms before release count as the throw
+
 - **Rule:** Release velocity is the span change over time across the samples no older than 100 ms at release, oldest to newest. Fewer than two such samples, or no elapsed time, is no throw.
 - **Kind:** behaviour
 - **Level:** unit
@@ -53,6 +59,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (R); `src/features/sheet/Sheet.svelte.test.ts` (R, "a throw that stopped before the finger lifted is not a flick")
 
 ### SHEET-07 · Past the outer rests the sheet resists like a rubber band and never goes more than 72 px beyond
+
 - **Rule:** Between peek and full a drag follows the finger. Past either end it follows at about half speed and ever less, approaching but never reaching 72 px of overshoot.
 - **Kind:** behaviour
 - **Level:** unit
@@ -63,6 +70,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## The phone shell
 
 ### SHEET-08 · On a phone the panel becomes a fixed sheet at the foot of the screen; on a desktop there is no sheet
+
 - **Rule:** The phone shell applies at 800 px wide or less, and on a landscape window 480 px tall or less. There the sheet is fixed to the bottom edge and starts at peek with both panels hidden. Off the phone the sheet is not a box of its own, the grip is gone, nothing is written to the sheet's size, and the stage is told it covers nothing. A landscape window taller than 480 px keeps the bottom sheet.
 - **Kind:** behaviour
 - **Level:** browser — layout/CSS media queries
@@ -71,6 +79,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R; the 800/801 boundary is uncovered); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
 
 ### SHEET-09 · Peek hugs the grip, and follows it when its text grows or shrinks
+
 - **Rule:** At peek the sheet ends where the tab row (and a notice, when one shows) ends, plus the home-indicator band, so nothing of the grip is cut off and no slack is left under it. The peek follows the grip when a selection name, a notice, a language, 200 % text or the WCAG 1.4.12 spacing changes its height, gliding like any change of rest.
 - **Kind:** behaviour
 - **Level:** browser — layout
@@ -79,6 +88,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
 
 ### SHEET-10 · Held sideways the sheet is a side rail from the stage's top, and rotating swaps the axis
+
 - **Rule:** On a short landscape window the same sheet with the same rests sits on the left, starts at the stage's top (so it does not cover the masthead), grows rightward, and at peek is as wide as its one row of tabs, whose labels never wrap. Rotating back restores the bottom sheet.
 - **Kind:** behaviour
 - **Level:** browser — layout
@@ -87,6 +97,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
 
 ### SHEET-11 · The stage is told the span the sheet will land on, and whether it glides there
+
 - **Rule:** The sheet reports what it covers rather than resizing the canvas: upright `{top 0, right: safe right, bottom: span, left: safe left}`, sideways `{top 0, right: safe right, bottom: safe bottom, left: span}`, all zero off the phone. It reports the target span of a change of rest, not the moving box, and says `settle: true` when it moves on its own curve and `settle: false` while it follows a finger. A window narrowed to a phone after load reports the laid-out grip's cover.
 - **Kind:** behaviour
 - **Level:** browser — layout (the span comes from measured boxes)
@@ -95,6 +106,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`; the "narrowed to a phone after load" case skips on legacy as well, so it runs nowhere today)
 
 ### SHEET-12 · A full sheet tells the stage, which then gives up its dock
+
 - **Rule:** The stage layout's `sheetFull` is true exactly while the sheet rests at full on a phone, written before the inset is reported. Leaving the phone shell or unmounting sets it back to false.
 - **Kind:** behaviour
 - **Level:** browser — needs the mounted sheet; the flag itself is plain state
@@ -105,6 +117,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## The handle
 
 ### SHEET-13 · The handle is a button that steps peek, half, full, peek, named for what a press does
+
 - **Rule:** The grip handle is a native button. Each press moves one rest up, and from full it goes back to peek. Its name is "Expand panel" at peek and half and "Collapse panel" at full (FR "Déplier le panneau", "Replier le panneau"). It controls `#workspace-panel`, has no `aria-expanded`, and Escape does not move the sheet. Enter and Space press it.
 - **Kind:** accessibility
 - **Level:** browser — keyboard dispatch to a focused button
@@ -113,6 +126,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/lib/core/detents.test.ts` (R, `stepDetent` walks peek → half → full, stops at the ends, and an unknown rest falls back to peek); `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`; the `aria-controls` case branches `sheet` / `workspace-panel`)
 
 ### SHEET-14 · A rest the reader chooses is announced; resizes and raises that come with another action are not
+
 - **Rule:** After the handle, or a drag or flick that lands on a different rest, a polite message says the new rest. A drag that springs back says nothing, and so do a resize or rotation, the automatic lift when the phone shell is entered with focus in a panel, and a raise by the selection strip, a tab or a pick on the stage.
 - **Kind:** accessibility
 - **Level:** browser — the page's live region
@@ -121,6 +135,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, `next` only; skips on `next` today, so unrun); the strings are in `src/lib/core/i18n/areas/sheet.ts` (I18N-)
 
 ### SHEET-15 · A keyboard press moves the sheet without a glide; a pointer press, a settle or a drag each keep their own motion
+
 - **Rule:** A settled sheet glides over 240 ms on the sheet's curve. A keyboard activation (handle, tab, strip) and the shell entry with panel focus jump at once, and the stage chrome that follows the sheet jumps too. A pointer activation restores the glide. A dragged sheet follows the finger with no transition. With reduced motion only an opacity transition remains.
 - **Kind:** behaviour
 - **Level:** browser — CSS computed style
@@ -131,6 +146,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## Dragging
 
 ### SHEET-16 · A press on the grip becomes a drag after 8 px and follows the finger
+
 - **Rule:** A press with the primary pointer's main button on the grip row, the tab row or the notice becomes a drag once it has travelled 8 px along the sheet's axis (up upright, right sideways). The span is then the span at the press plus the travel, held by SHEET-07, and settles on release by SHEET-04 and SHEET-05. A press in a panel scrolls it instead; a non-primary pointer, another button, and a second finger during a drag do nothing.
 - **Kind:** behaviour
 - **Level:** browser — pointer events on real layout
@@ -139,6 +155,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, mouse flick up and down; legacy only, skips on `next`)
 
 ### SHEET-17 · The click that ends a drag is swallowed; a tap that never dragged is not
+
 - **Rule:** When a drag ends on a button (the handle or a tab), the click that follows the release does nothing, so a drag never also steps the sheet or chooses a mode. After that click the button works again. A press that never passed the threshold leaves its click alone.
 - **Kind:** behaviour
 - **Level:** browser — event order
@@ -147,6 +164,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R)
 
 ### SHEET-18 · A drag that is interrupted returns to the rest it started from
+
 - **Rule:** Cancelling the finger's pointer, the window losing focus, a resize, a rotation or leaving the phone shell ends the press and puts the sheet back on its prior rest; the next press starts a fresh drag. A cancel from another pointer leaves the drag alone. A press still under the threshold is cleared by a blur too.
 - **Kind:** behaviour
 - **Level:** browser — window events and media changes
@@ -157,6 +175,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## The grip's selection
 
 ### SHEET-19 · The grip names the selection at peek, with its clear and the safety statement
+
 - **Rule:** With a selection, the grip shows its name and side letter as a button that opens it, named "Inspect <label>, <side word>" (FR "Examiner <label>, <côté>"), and, when the selection can be cleared, a "Clear selection" button (FR "Effacer la sélection"). The statement "Not clinical anatomy" (FR "Pas une anatomie clinique") is always in the grip. Upright, once the detail view is shown above peek, the name hides (the detail heads itself) and the clear stays.
 - **Kind:** accessibility
 - **Level:** browser — visibility from CSS; the name is a view-model string
@@ -165,6 +184,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, aria snapshots; legacy only, skips on `next`)
 
 ### SHEET-20 · The strip raises a resting sheet and opens the detail, moving focus only if it had it
+
 - **Rule:** Activating the strip raises peek to half (a raised sheet stays where it is), shows the selection's detail, and says nothing. If the strip had focus, focus moves to the detail's Back button, since the strip is hidden by then. A pointer activation that left focus elsewhere does not take it.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -173,6 +193,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, focus on "Back to …"; legacy only, skips on `next`)
 
 ### SHEET-21 · The grip's clear gives focus to the tab in front
+
 - **Rule:** The clear clears the selection; the name and its clear vanish, and focus goes to the selected mode tab.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -183,6 +204,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## Tabs, panels and focus
 
 ### SHEET-22 · Choosing a tab raises a resting sheet, silently, and never lowers a raised one
+
 - **Rule:** A tab chosen while the sheet is at peek (even the tab already chosen) raises it to half without an announcement. A keyboard choice raises it without a glide. A tab chosen at half or full leaves the sheet where it is.
 - **Kind:** behaviour
 - **Level:** browser — click and keyboard on the tablist
@@ -191,6 +213,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
 
 ### SHEET-23 · At peek the panels take no focus; above it every panel stop is on screen below the grip
+
 - **Rule:** The sheet is a non-modal region with no focus trap. Tab walks the handle, the name, its clear, then the tablist as one stop. At peek the panels are hidden, so nothing in them is reachable. At half and full every Tab stop in the panel, as the list scrolls, lies fully on screen and below the grip (WCAG 2.4.11). In the app the sheet comes before the stage in reading order and no stop outside it lands under it.
 - **Kind:** accessibility
 - **Level:** browser — sequential focus and layout
@@ -199,6 +222,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, Tab order and the page-wide 2.4.3 / 2.4.11 walk; legacy only, skips on `next`)
 
 ### SHEET-24 · Settling on peek with focus in a panel moves focus to the handle
+
 - **Rule:** Before the sheet settles on peek while focus is inside a panel, focus moves to the handle, which is always on screen. Focus on a tab, the notice or a grip control stays where it is.
 - **Kind:** accessibility
 - **Level:** browser — focus
@@ -207,6 +231,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R)
 
 ### SHEET-25 · Entering the phone shell keeps a control in use on screen, and the shell remembers its rest
+
 - **Rule:** Entering the phone shell with focus inside a panel lifts a resting sheet to half at once, keeps focus where it was, reports no rest change and says nothing. With focus elsewhere the sheet rests at peek with its glide. Leaving and re-entering the shell keeps the rest it left with. A resize inside the shell re-measures the rest silently.
 - **Kind:** behaviour
 - **Level:** browser — media changes and focus
@@ -217,6 +242,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 ## Size, contrast and look
 
 ### SHEET-26 · Every grip control is a finger's target, and the handle keeps a 24 px line with a name over it
+
 - **Rule:** On a phone and held sideways the handle, the name, its clear and each tab are at least 44 × 44 px. Upright with a selection, the part of the handle a pointer can reach is its own 24 px top line (legacy 20 px). With touch emulation in the app the grip's controls are 44 px.
 - **Kind:** accessibility
 - **Level:** browser — layout and hit testing
@@ -225,6 +251,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, 2.5.8 with `hasTouch`; legacy only, skips on `next`)
 
 ### SHEET-27 · The handle bar holds 3:1 against the sheet, and is ButtonText under forced colours
+
 - **Rule:** The drawn handle bar, the handle's only visual cue, contrasts at least 3:1 with the sheet's background, and in forced colours it is the system ButtonText colour.
 - **Kind:** accessibility
 - **Level:** browser — computed colours
@@ -233,6 +260,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R)
 
 ### SHEET-28 · In the sheet the tab row spans the sheet's column like the legacy sheet tabs
+
 - **Rule:** In the sheet the tabs sit on the sheet's ground, the first label starts under the words above it and the last ends near the edge, the selected tab's underline is as wide as its label, and long labels wrap (upright) or never wrap (sideways). At peek the tab row has no rule under it.
 - **Kind:** behaviour
 - **Level:** browser — layout/CSS
@@ -241,6 +269,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R)
 
 ### SHEET-29 · The phone page never scrolls sideways at 320 px
+
 - **Rule:** At 320 px the assembled page has no horizontal scroll and the last tab is still visible (WCAG 1.4.10).
 - **Kind:** accessibility
 - **Level:** e2e — whole-page layout
@@ -249,6 +278,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Covered by:** `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
 
 ### SHEET-30 · axe finds nothing on the sheet
+
 - **Rule:** The sheet with a selection, at peek and raised, in English and French, both themes, phone and desktop width, has no axe violation.
 - **Kind:** accessibility
 - **Level:** browser — axe

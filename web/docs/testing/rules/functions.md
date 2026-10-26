@@ -7,6 +7,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## The list
 
 ### FUNC-01 · At rest the list shows "All functions", then every curated function under its group
+
 - **Rule:** With no query, the list starts with an "All functions" row, then lists every curated function under its group heading, groups in their published order. A row shows the function's colour swatch, its name and its study count; its accessible name continues with the study count and the areas it reaches. The "All functions" row has no count and no colour.
 - **Kind:** data
 - **Level:** unit (view-model: `functionList`)
@@ -15,6 +16,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R; the group order and row count are re-derived from the data, not fixed); `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-02 · Groups are labelled lists of buttons, and the count column is for the eye
+
 - **Rule:** The list is a group named "Functions". Each group is a `role="group"` labelled by its `h3`, holding a `ul` of `li` buttons; the "All functions" row is its own list. Each heading names the column of study counts ("Studies"), and the column head, the count and the swatch are hidden from assistive technology. A list of buttons, not a listbox.
 - **Kind:** accessibility
 - **Level:** browser — DOM semantics and accessible names
@@ -23,6 +25,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-03 · The list's scope stands under it at rest and leaves while searching
+
 - **Rule:** Under the list a note states the list's scope: how many curated functions, how many more terms a search finds, and what the map is not. A search hides it, since the count is announced instead.
 - **Kind:** data
 - **Level:** unit (view-model) for the sentence; browser for hiding (today the sentence is built in `FunctionList.svelte`)
@@ -31,6 +34,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; checks only "70 functions", re-derived from the data); `e2e/parity/functions.spec.ts` (R; hidden while searching; `next` gated off). The full sentence and the term count are uncovered.
 
 ### FUNC-04 · The list is shown only on the Functions tab
+
 - **Rule:** The search head and the list are hidden while another tab is in front.
 - **Kind:** behaviour
 - **Level:** browser — `hidden` and visibility (the condition is the explorer's `exploring`)
@@ -41,6 +45,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## The search field
 
 ### FUNC-05 · The search field has a visible label and controls the list
+
 - **Rule:** The field is a search input with a visible label above it, no placeholder, `aria-controls` pointing at the list, autocomplete and spell-check off. While it is empty it shows a `/` hint, hidden from assistive technology, only while single-key shortcuts are on and not on a coarse pointer or the phone layout (≤ 800 px, or a short landscape screen).
 - **Kind:** accessibility
 - **Level:** browser — visible label and computed visibility
@@ -49,6 +54,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R: name, and the label's box wider than 40 px; `next` gated off). The missing placeholder and the hidden hint (single keys off, phone, coarse pointer) are uncovered.
 
 ### FUNC-06 · Clear and Escape empty the field and keep focus in it
+
 - **Rule:** With text in the field, a "Clear search" button replaces the `/` hint; pressing it empties the field, removes itself, returns focus to the field and the list returns to rest. Escape in a field with text empties it and is marked handled, so the page's Escape does not also clear the selection. Escape in an empty field, or while an input method is composing, is left to the page. Typing never moves focus.
 - **Kind:** behaviour
 - **Level:** browser — key dispatch to the focused field, focus
@@ -57,6 +63,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-07 · The `/` entry point focuses the field with its text selected
+
 - **Rule:** The panel's `focusSearch` (the `/` key, KEY-09) puts focus in the field and selects its text.
 - **Kind:** behaviour
 - **Level:** browser — focus and selection
@@ -67,6 +74,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## Search
 
 ### FUNC-08 · A query filters the curated functions and lists matching Neurosynth terms after them
+
 - **Rule:** The trimmed query filters the curated functions under their groups. Matching searched terms follow, best match first, in a "Neurosynth terms" group (terms naming a function, task or stimulus) and a "Neurosynth clinical groups" group. At most 20 terms are listed; a note counts the rest. While searching there is no "All functions" row. A term row has no colour, and its name is marked as English in a French interface.
 - **Kind:** data
 - **Level:** unit (view-model: `functionList`)
@@ -75,6 +83,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R); `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-09 · A query that finds nothing says so and offers the nearest name
+
 - **Rule:** When neither a curated function nor a term matches, the list says there is no match and how to search, and offers the nearest name. Pressing the suggestion fills the field with it and keeps focus in the field.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the content; browser for the hand-off to the field
@@ -83,6 +92,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R; the suggested name is only checked non-empty); `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off). The suggested name itself is not pinned anywhere.
 
 ### FUNC-10 · A query that names lesion profiles bridges to the Deficits tab
+
 - **Rule:** While the query matches deficit profiles, the list ends with a bridge naming how many. Pressing it carries the query to the Deficits tab (CTRL-33).
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the press (today the count is read in `FunctionList.svelte`)
@@ -91,6 +101,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-11 · The arrow keys walk the list from the field; every row stays a Tab stop
+
 - **Rule:** ArrowDown or Enter in the field moves focus to the first row. ArrowDown and ArrowUp walk every row, suggestions and bridges included, and stop at the ends; ArrowUp from the first row returns to the field. Every row is a Tab stop, and other keys (Home, End) are left alone.
 - **Kind:** behaviour
 - **Level:** browser — key dispatch and focus
@@ -99,6 +110,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-12 · The result count is said once typing pauses, and again after the field is cleared
+
 - **Rule:** 500 ms after typing pauses, the page announcer says how many curated functions and terms match. Nothing is said before the pause. An equal sentence is not said twice while the field keeps text; clearing the field forgets it, so the same query typed again is said.
 - **Kind:** accessibility
 - **Level:** unit for the sentence (`resultsSentence`); browser with fake timers for the debounce in the component
@@ -107,6 +119,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R: the sentence); `src/features/functions/functions.svelte.test.ts` (R; real 500 ms waits)
 
 ### FUNC-13 · A language switch does not say the count again
+
 - **Rule:** The count is said from the query and the counts only; switching the interface language with a query in the field says nothing.
 - **Kind:** accessibility
 - **Level:** browser — the component's effect (fake timers)
@@ -117,6 +130,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## Opening a function
 
 ### FUNC-14 · Opening a function focuses its heading at once and marks its row
+
 - **Rule:** Pressing a row (click, Enter or Space) opens the function's profile at once: its name, an `h2` that takes focus before the areas are drawn, and the profile scrolled to its top. The row becomes the one `aria-current="true"` row and is handed to the workspace as its current item. Pressing the open function again focuses its heading again.
 - **Kind:** behaviour
 - **Level:** browser — focus and scroll
@@ -125,6 +139,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; the hash part is `links.md`; `next` gated off)
 
 ### FUNC-15 · The meta line says what is being prepared, then what is shown
+
 - **Rule:** Under the heading, the meta line says the areas are being prepared while the run is in flight, then how many areas and structures the function reaches at the threshold; for the overview it says the colouring is on the HCP-MMP areas.
 - **Kind:** data
 - **Level:** unit (view-model: `areaCount`, the explorer's `meta`)
@@ -133,6 +148,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (W: regex only, on the first domain); `src/features/functions/functions.svelte.test.ts` (R: the preparing text and the overview sentence; the counts by regex). The fixed counts are uncovered.
 
 ### FUNC-16 · The meta line is one live region kept across profiles
+
 - **Rule:** One `role="status"` line stays in the page while the reader moves between functions, and only its text changes; an unchanged sentence is not rewritten. A language switch makes a new element, so the translated sentence is not announced again.
 - **Kind:** accessibility
 - **Level:** browser — element identity and DOM mutations
@@ -141,6 +157,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-17 · A later choice overtakes an earlier one, and only the latest speaks
+
 - **Rule:** Opening another function while one is still downloading overtakes it. The earlier run, when it settles or fails later, is logged but changes neither the profile, the meta line nor the busy state.
 - **Kind:** behaviour
 - **Level:** unit (the explorer's run state)
@@ -149,6 +166,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; could move down)
 
 ### FUNC-18 · A failed opening is worded for the reader and belongs to its profile
+
 - **Rule:** If a function's areas cannot be drawn, the meta line says so in the danger colour, the error is logged, the heading keeps focus and a failure that needs a newer deploy raises the Reload notice (CTRL-36). Opening another function, or switching language, clears the failure.
 - **Kind:** behaviour
 - **Level:** unit (the explorer's `meta` and `failed`)
@@ -159,6 +177,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## The profile
 
 ### FUNC-19 · The overview profile lists the overview functions as links
+
 - **Rule:** "All functions" opens a profile with a summary, the caveat, and a "Functions" section listing each overview function with its swatch, name and short area count; it has no areas and no lesion section. A link opens that function.
 - **Kind:** data
 - **Level:** unit (view-model: `functionProfile`); browser for the hand-off
@@ -167,6 +186,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R; the 11 re-derived from the data); `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-20 · A curated function's profile reads kind, caveat, areas, lesion checks, method and source
+
 - **Rule:** A curated function's profile says which evidence it rests on (its Neurosynth term, marked as English, and its study count), the caveat, its areas and structures strongest first, the lesion studies that check the map, how the scores were made and the citation. Each area names its region and side, its functional division (named, else the section division) and its z with one decimal.
 - **Kind:** data
 - **Level:** unit (view-model: `functionProfile`)
@@ -175,6 +195,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R; values by regex); `src/features/functions/functions.svelte.test.ts` (R: the lesion heading)
 
 ### FUNC-21 · Every lesion check is listed, one row per check
+
 - **Rule:** The lesion section lists each check of the map, even when several checks cite the same deficit (one per association), each with its own references and parcels. Pressing one opens its deficit through the Deficits tab's entry point.
 - **Kind:** data
 - **Level:** unit (view-model) for the rows; browser for the hand-off and the keyed render
@@ -183,6 +204,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R: the hand-off, on a domain whose checks are distinct). Repeated deficits are uncovered, and likely broken: `FunctionProfile.svelte` keys the rows by `check.deficit`, which repeats for these seven domains (Svelte's keyed each rejects duplicate keys); no browser test opens one of them.
 
 ### FUNC-22 · A searched term's profile is in English, with its own caveat and no lesion checks
+
 - **Rule:** A searched term's profile names the term in English (marked `lang="en"` in French), with the caveat for a term or for a clinical group, its areas, and no lesion section. A clinical group whose words match lesion profiles bridges to the Deficits tab under "Lesion evidence".
 - **Kind:** data
 - **Level:** unit (view-model: `functionProfile`); browser for `lang` and the press
@@ -191,6 +213,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R; the caveats only checked to differ); `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-23 · An unknown function or area fails loudly
+
 - **Rule:** A profile for an id that is neither a curated function, a term nor the overview is an error; so is an area whose region the anatomy does not know.
 - **Kind:** behaviour
 - **Level:** unit
@@ -199,6 +222,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions-view.test.ts` (R: the function); the unknown area is uncovered
 
 ### FUNC-24 · Twelve areas are listed; the rest wait under a disclosure that closes on another function
+
 - **Rule:** The first 12 areas are listed; the rest sit under a native disclosure, closed, whose summary counts them. Opening another function closes it again.
 - **Kind:** behaviour
 - **Level:** browser — `<details>` state across renders (the split is unit)
@@ -207,6 +231,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-25 · An area button is named by what it shows
+
 - **Rule:** An area button has no `aria-label`. Its name is its content: the region and side, the division and the z score, with the separators and "z" as visually hidden text, so the visible words begin the name in order.
 - **Kind:** accessibility
 - **Level:** browser — accessible name
@@ -215,6 +240,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; the regex accepts the legacy "Show area: " prefix; `next` gated off)
 
 ### FUNC-26 · Opening an area draws it and hands focus to the region's name
+
 - **Rule:** An area opens as a listed region (CTRL-26). Once it is drawn, the region inspector's name takes focus and is brought to the top of the scrolling panel. If it cannot be drawn, the meta line says so and focus stays on the area.
 - **Kind:** behaviour
 - **Level:** browser — focus and scroll position
@@ -223,6 +249,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-27 · While a run is in flight, areas and Restore stay focusable, say so and do nothing
+
 - **Rule:** While any run is in flight, each area button and Restore carry `aria-disabled="true"`, stay focusable, are drawn in the tertiary ink and ignore presses. Focus stays on the control pressed.
 - **Kind:** accessibility
 - **Level:** browser — focus
@@ -231,6 +258,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-28 · The profile is not a landmark
+
 - **Rule:** The profile and its sections are plain blocks under their headings; the panel's `<aside>` is the one landmark.
 - **Kind:** accessibility
 - **Level:** browser — roles
@@ -241,6 +269,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## Restore
 
 ### FUNC-29 · Restore is offered with an open function and returns focus to its row
+
 - **Rule:** "Restore previous view" stands in the location bar's trailing slot while a function is open on the Functions tab and an earlier scene is held. Pressing it puts the scene back (CTRL-27), closes the profile, removes itself and puts focus on the function's row, or on the field when the row is not listed.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -249,6 +278,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-30 · A failed restore keeps Restore and its focus for another try
+
 - **Rule:** If the scene comes back only in part, the meta line says so, Restore stays with focus on it and available, and a second press can succeed.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -259,6 +289,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 ## Language and accessibility checks
 
 ### FUNC-31 · The tab is French in French, and searched terms stay English
+
 - **Rule:** In French the field, the list, the rows and the profile use the French copy; Neurosynth terms are English and marked so.
 - **Kind:** behaviour
 - **Level:** browser — `lang` attributes and accessible names
@@ -267,6 +298,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-32 · axe finds nothing in the list, an open profile or a search
+
 - **Rule:** The list at rest, a profile with its areas disclosure open, and a search for "aphasia" have no axe violations, in both languages and themes and at 1280 and 390 px, and with more contrast.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -275,6 +307,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; the full theme × width matrix in each of 3 states × 2 languages, see the audit's slow tests); `e2e/parity/functions.spec.ts` (R; `next` gated off)
 
 ### FUNC-33 · In forced colours the swatches, the open row and the focus ring stay visible
+
 - **Rule:** With forced colours, a function's swatch keeps its colour, the open row has a solid outline, and a row reached by keyboard has a solid focus ring.
 - **Kind:** accessibility
 - **Level:** browser — computed CSS
@@ -283,6 +316,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-34 · Targets are 24 px with a fine pointer and 44 px with a coarse one
+
 - **Rule:** Every visible button and summary is at least 24 px tall with a fine pointer. With a coarse pointer, rows, areas, the disclosure summary and Restore are at least 44 px tall, and Clear search is at least 44 × 44 px.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -291,6 +325,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-35 · At 200 % text with WCAG 1.4.12 spacing nothing is clipped or overflows
+
 - **Rule:** At 200 % text with the 1.4.12 spacing in a 320 px column, names wrap: no visible button, summary, heading, paragraph or label overflows sideways, no control clips its text, and the page does not scroll sideways. At a phone width the page does not scroll sideways.
 - **Kind:** accessibility
 - **Level:** browser — layout

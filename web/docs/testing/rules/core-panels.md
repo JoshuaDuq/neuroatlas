@@ -14,6 +14,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Navigator: the tree and search
 
 ### PANEL-01 · An arrow key moves past rows that cannot be chosen, and stops at the ends
+
 - **Rule:** In the search results, an arrow arms the next row that can be chosen, skipping disabled ones. Past either end, or with no row to reach, the armed row stays where it is. From the search field (no row armed) the first arrow lands on the first choosable row.
 - **Kind:** behaviour
 - **Level:** unit
@@ -22,6 +23,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R; delta 0 and the empty list: `parity/C5.test.ts` only, D)
 
 ### PANEL-02 · A group name says which vocabulary it is from only when two share it
+
 - **Rule:** Structures and tissue regions are grouped by system, HCP-MMP areas by network, other cortex by lobe. A group name used by two vocabularies at once, such as Limbic, is qualified with its vocabulary; any other name is shown as the atlas gives it. Two families in one vocabulary are not a clash.
 - **Kind:** behaviour
 - **Level:** unit
@@ -30,6 +32,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-03 · Groups are sorted by the name the list shows, within each family
+
 - **Rule:** Families keep the order they are met in; within a family, groups are sorted by their shown, qualified name in the reader's language.
 - **Kind:** behaviour
 - **Level:** unit
@@ -38,6 +41,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-04 · A region's group is the one the tree lists it under, named as the tree shows it
+
 - **Rule:** Revealing a region in the tree opens the group that lists it, under the name the tree shows; a region the tree does not list has no group.
 - **Kind:** behaviour
 - **Level:** unit
@@ -46,6 +50,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-05 · A match in another atlas offers the atlas that draws it
+
 - **Rule:** Search matches drawn by another atlas are offered under the first atlas, in manifest order, that draws each, so the offered switch shows them. A match no other atlas draws is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -54,6 +59,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-06 · A setting that hides rows is said once, on the section caption
+
 - **Rule:** Reasons that come from a display setting (hemisphere, cortex hidden, internal anatomy hidden, cord hidden, isolation, no cut, another system) are said once per section, in the order met, not on each row.
 - **Kind:** behaviour
 - **Level:** unit
@@ -62,6 +68,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-07 · A hidden row prints only a reason of its own
+
 - **Rule:** A setting's reason is on the caption and a removed part's struck eye says it, so a row prints only a reason of its own. The reason names the detail set a region is in, and an unknown reason falls back to "Hidden".
 - **Kind:** behaviour
 - **Level:** unit
@@ -70,6 +77,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D, the row rule)
 
 ### PANEL-08 · Some reasons offer a switch and one cannot be undone
+
 - **Rule:** A row hidden because it is in another atlas or cut atlas offers the switch that shows it. A row too small for the cut explains itself and does nothing when chosen.
 - **Kind:** behaviour
 - **Level:** unit
@@ -78,6 +86,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** uncovered at the view-model level (the tree's behaviour belongs to `anatomy.md`)
 
 ### PANEL-09 · A group eye is shown, hidden or partial
+
 - **Rule:** A group's eye is hidden when every part under it is hidden, partial when some are, and shown otherwise, so a group with hidden parts stays in view.
 - **Kind:** behaviour
 - **Level:** unit
@@ -86,6 +95,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R; the empty list: `parity/C5.test.ts` only, D)
 
 ### PANEL-10 · A search match is marked without regard to case or accents
+
 - **Rule:** The first case- and accent-insensitive occurrence of the query is marked in the name. A composed or decomposed name or query marks the same span. No query, no match, or a query that folds to nothing marks nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -94,6 +104,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D, composed input only)
 
 ### PANEL-11 · A row explains a match its name does not hold with its code, then its first alias
+
 - **Rule:** When the query is not in the name, the row shows the code that matched, else the first alias that matched; when the name holds it, nothing is shown.
 - **Kind:** behaviour
 - **Level:** unit
@@ -104,6 +115,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Clinical: the Deficits and Functions panels
 
 ### PANEL-12 · Opening a deficit says what it changed, in one sentence, and claims nothing else
+
 - **Rule:** After revealing a deficit's regions, the notice names each of the reader's settings the reveal changed, in a fixed order: section closed, isolation cleared, atlas, cut labels, colour, internal anatomy, both hemispheres shown, cortex shown or hidden. A cut or isolation is only ever said when cleared. Nothing changed → no notice. The clauses are joined as a list in the reader's language, capitalised, with a full stop.
 - **Kind:** behaviour
 - **Level:** unit
@@ -112,6 +124,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/clinical.test.ts` (R); `parity/C5.test.ts` (D); the controller's use: CTRL-30 in `controller.md`
 
 ### PANEL-13 · The profile's meta line says the work in progress, the failure, or the stage
+
 - **Rule:** While opening, the line says what is being done (opening anatomy, or restoring the previous view). After a failure it gives the panel's own failure text when it has one, else what the operation could not do in the reader's words, never the developer's message. Otherwise it says what the stage shows.
 - **Kind:** behaviour
 - **Level:** unit
@@ -120,6 +133,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/clinical.test.ts` (R; the Functions text and `asset-updated`: `parity/C5.test.ts` only, D)
 
 ### PANEL-14 · A side shared by every finding is said once
+
 - **Rule:** When every association of a profile has the same side, it is said once under the title; mixed sides stay on each finding. A region link names its side only when the association's own side does not already say it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -128,6 +142,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/clinical.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-15 · A reference's published corrections are listed with their DOI
+
 - **Rule:** Each published correction of a reference is listed in the reader's language with its DOI and a doi.org link.
 - **Kind:** data
 - **Level:** unit
@@ -136,6 +151,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/clinical.test.ts` (W: it re-derives href and summary from the same data and does not check the `doi:` text); `parity/C5.test.ts` (D)
 
 ### PANEL-16 · A region with no deficit has no Neuropsychology section
+
 - **Rule:** The inspector titles a Neuropsychology section only when a region is selected and at least one deficit cites it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -146,6 +162,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Inspector
 
 ### PANEL-17 · The empty inspector is a hint; title, facts and actions wait for a region
+
 - **Rule:** Without a selected region the inspector hides its title, facts and actions; on Anatomy it shows the hint, on any other tab it hides the hint too. A selected region shows all four.
 - **Kind:** behaviour
 - **Level:** unit
@@ -154,6 +171,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/inspector.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-18 · A source label names its atlas and keeps its ids apart
+
 - **Rule:** The source row names the source atlas and its label ids in the code voice. One or two ids share the label's line; more take the line under it; past eight they are counted and the full list is kept. A region with no source id names its atlas alone, on the line under.
 - **Kind:** behaviour
 - **Level:** unit
@@ -164,6 +182,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Circuits
 
 ### PANEL-19 · A lesson's landmarks read as current, seen or ahead, and the stepper offers only real directions
+
 - **Rule:** Each landmark is the current one, one already visited, or one ahead. The stepper offers previous and next only where a landmark exists.
 - **Kind:** behaviour
 - **Level:** unit
@@ -174,6 +193,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Related evidence
 
 ### PANEL-20 · A region shares evidence with its source regions and the structures that contain it
+
 - **Rule:** A selection is linked to itself, to the source regions a grouped structure is the union of, and to the grouped structures that contain it. Another segmentation of the same structure is not the same region. An unknown region is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -182,6 +202,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/panels/related.test.ts` (R); `parity/C5.test.ts` (D, every published region)
 
 ### PANEL-21 · Every published constituent is itself a published region
+
 - **Rule:** The 80 grouped structures in the cdmd manifest name only constituents the manifest publishes.
 - **Kind:** data
 - **Level:** unit
@@ -192,6 +213,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Masthead and colophon text
 
 ### PANEL-22 · A subject is named with its dataset, without quotation marks
+
 - **Rule:** Stated once as MAST-28 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -200,6 +222,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see MAST-28
 
 ### PANEL-23 · The collapsed masthead names what is available, or the tract reference alone
+
 - **Rule:** Stated once as MAST-38 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -208,6 +231,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see MAST-38
 
 ### PANEL-24 · The Colour field offers only the colourings the build publishes, in groups
+
 - **Rule:** Stated once as MAST-29 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -216,6 +240,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see MAST-29
 
 ### PANEL-25 · A colour or atlas option names what choosing it changes
+
 - **Rule:** Stated once as MAST-30 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -224,6 +249,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see MAST-30
 
 ### PANEL-26 · A download says how far it has come, or that it has started
+
 - **Rule:** Stated once as MAST-32 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -232,6 +258,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see MAST-32
 
 ### PANEL-27 · The status bar always says it is not clinical anatomy
+
 - **Rule:** Stated once as COLO-01 (`colophon.md`), COLO-02 (`colophon.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -242,6 +269,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Provenance
 
 ### PANEL-28 · The provenance sheet lists only what the published records say
+
 - **Rule:** Stated once as PROV-01 (`provenance.md`), PROV-02 (`provenance.md`), PROV-03 (`provenance.md`), PROV-04 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** data
 - **Level:** unit
@@ -250,6 +278,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see PROV-01, PROV-02, PROV-03, PROV-04
 
 ### PANEL-29 · Each function's lesion check says how much of each mapped parcel its areas colour
+
 - **Rule:** Stated once as PROV-05 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** data
 - **Level:** unit
@@ -258,6 +287,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** see PROV-05
 
 ### PANEL-30 · URLs read without their scheme, and a tract reference lists its own sources
+
 - **Rule:** Stated once as PROV-07 (`provenance.md`), PROV-08 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
 - **Level:** unit
@@ -268,6 +298,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 ## Async runners
 
 ### PANEL-31 · In a latest-wins panel only the latest run reports
+
 - **Rule:** The Functions and Deficits tabs and the comparison highlight run their work latest-wins: a later run overtakes an earlier one. Every run resolves to its own outcome, but only the latest reports its result, failure or settling. Every failure is logged; only the latest tells the reader. A synchronous throw is a failure of the run. The action starts at once. A run whose value is `false` counts as not applied.
 - **Kind:** behaviour
 - **Level:** unit
@@ -276,6 +307,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/async/latest.test.ts` (R); `parity/C5.test.ts` (D, seeded schedules; it also holds the "false is not applied" result)
 
 ### PANEL-32 · Cancelling drops the run in flight without starting another
+
 - **Rule:** A panel that closes or clears overtakes its run in flight, so a download that lands later reports nothing; the next run reports as usual.
 - **Kind:** behaviour
 - **Level:** unit
@@ -284,6 +316,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/async/latest.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PANEL-33 · The latest run settles even when its handler throws
+
 - **Rule:** The settling handler of the latest run always runs, after the result or failure handler, even when that handler throws; the throw reaches the caller.
 - **Kind:** behaviour
 - **Level:** unit
@@ -292,6 +325,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Covered by:** `src/lib/core/async/latest.test.ts` (R)
 
 ### PANEL-34 · In the Circuits tab a run asked for while another is busy is refused
+
 - **Rule:** The Circuits tab runs one action at a time: a run asked for while another is in flight is turned away, not queued and not overtaking, and starts and settles nothing. Every run that starts settles, with the runner already free; a failure is logged and reported. The run resolves true when its action completed.
 - **Kind:** behaviour
 - **Level:** unit

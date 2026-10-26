@@ -21,6 +21,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 ## The Section popover
 
 ### SECT-01 · The popover offers five planes as a toolbar of toggles, the current one pressed
+
 - **Rule:** The Section popover's planes are a toolbar "Cutting plane" of `aria-pressed` buttons: Full brain, Sagittal, Coronal, Axial, Oblique. The plane on screen, or the one being prepared, is pressed and takes focus as the popover opens. The buttons carry no tooltip that only repeats their name.
 - **Kind:** accessibility
 - **Level:** browser: roles and focus (decision 6 on #4)
@@ -29,6 +30,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-02 · The arrows only move; Enter or a click chooses and gives focus back to Section
+
 - **Rule:** In the plane toolbar the arrow keys move focus without cutting. Enter, Space or a click chooses the plane, closes the popover and returns focus to the Section tool. Choosing the plane already on screen closes the popover and cuts nothing.
 - **Kind:** behaviour
 - **Level:** browser: keyboard and focus
@@ -37,6 +39,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, no second cut); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-03 · On a phone the planes show short names and keep the full ones as their names
+
 - **Rule:** Under the phone query the five planes sit on one row of 44 px targets showing short names; each button is still named by the full name.
 - **Kind:** accessibility
 - **Level:** browser: layout and accessible name
@@ -45,6 +48,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-04 · Cut labels lists the published label sets, and a failed change returns to the labels still cut
+
 - **Rule:** "Cut labels" offers the manifest's cut atlases in the published order. Choosing one changes the labels the cut samples. If the change fails, the select shows the labels still cut and the status line says why.
 - **Kind:** behaviour
 - **Level:** browser: native select (the controller's side is CTRL-38)
@@ -55,6 +59,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 ## Choosing and closing a plane
 
 ### SECT-05 · A chosen plane is named at once, then the cut turns to face the reader
+
 - **Rule:** The row names the chosen plane as soon as it is chosen, with nothing to move while its anatomy is prepared (only Close). When the cut lands, the camera faces the cut from the side it keeps, and the session takes that view.
 - **Kind:** behaviour
 - **Level:** unit (the controls over the fake engine); browser for the drawn pending row
@@ -63,6 +68,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-06 · A new plane meets the region already selected, not the midline
+
 - **Rule:** With a region selected, a newly chosen plane is moved to pass through that region's centroid, clamped to the plane's range.
 - **Kind:** behaviour
 - **Level:** unit (the offset maths is SLICE-05)
@@ -71,6 +77,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R)
 
 ### SECT-07 · Only the latest choice settles the plane
+
 - **Rule:** A plane chosen while another is prepared overtakes it: only the newer one is faced, and an overtaken choice that settles later does not end the newer one's preparation. The plane already on screen, or already being prepared, is not cut again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -79,6 +86,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R)
 
 ### SECT-08 · A failed cut stops preparing and is said, until the reader acts again
+
 - **Rule:** A cut that fails clears the pending plane, leaves the row on the plane really cut (or none), and the status line says and shows the failure, even when no plane is cut. The failure is dropped when the reader acts on the section again or the cut's mode changes; a later return to the same plane does not bring it back.
 - **Kind:** behaviour
 - **Level:** unit for the state; browser for the drawn line
@@ -87,6 +95,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-09 · Close returns to the whole brain, focus on Section, and says so
+
 - **Rule:** Close moves focus to the Section tool at once, before the whole brain is back, forgets a plane being prepared, and the status says "Full brain · no cut" once, from a live region that outlives the row.
 - **Kind:** behaviour
 - **Level:** browser: focus and the live region
@@ -97,6 +106,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 ## The section row
 
 ### SECT-10 · The row is a group named by the plane, above the dock's tools
+
 - **Rule:** While a plane is cut or prepared, and the tract reference is not shown alone, the row is a group named by the plane's noun. It is inside the dock, after the tools in reading order, drawn above them.
 - **Kind:** accessibility
 - **Level:** browser: DOM order and layout
@@ -105,6 +115,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-11 · The position slider is named by its axis, ends in anatomical letters and speaks millimetres
+
 - **Rule:** The slider is named by the plane's axis, spans the plane's offset range in 0.5 mm steps and speaks its value to one decimal in millimetres. The letters at its ends name the plane's negative end first; an oblique plane shows only − and +. The letters are hidden from assistive technology.
 - **Kind:** behaviour
 - **Level:** unit for the words (`axisEnds`); browser for the slider's attributes
@@ -113,6 +124,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-12 · The slider builds one cut at a time and skips to the newest value
+
 - **Rule:** Moving the slider builds the cut as it goes, one build at a time; values that arrive while one is building are replaced by the newest. A build that fails is said, and the next slide still runs.
 - **Kind:** behaviour
 - **Level:** unit
@@ -121,6 +133,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-13 · The spoken sentence waits for the hand to let go, and held sliders keep the reader's value
+
 - **Rule:** While a slider is dragged, or the position slider has focus, the spoken status waits; it is said when the slider is left or released. A focused slider (position, tilt or azimuth) keeps the reader's value against changes from elsewhere and takes the cut's value when left; a still-building slide keeps the reader's angle until the build lands.
 - **Kind:** behaviour
 - **Level:** browser: focus and pointer events
@@ -129,6 +142,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-14 · The status line says where the cut is, on what grid and labels, and what the colours mean
+
 - **Rule:** The spoken sentence gives the position, the source grid and the label set, then what the colouring means on these labels. The shown line leaves out the position, which the slider already shows. Under the MRI colouring it is an MRI cut. It says when the anatomy is being prepared, a failure by its code, a failure the bar caught, and the full brain when nothing is cut.
 - **Kind:** behaviour
 - **Level:** unit
@@ -137,6 +151,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R, shown line and French said)
 
 ### SECT-15 · The exact field moves the cut, restores an empty entry, and explains a value out of range
+
 - **Rule:** The spinbutton "Exact cut position in millimetres" moves the cut to the value committed with Enter, including zero. An empty entry puts the current position back without moving the cut. A value outside the plane's range is not applied: the field is marked invalid and described by a visible message giving the range in the reader's notation, kept after the field is left until corrected.
 - **Kind:** behaviour
 - **Level:** unit for the message (`rangeMessage`); browser for the field
@@ -145,6 +160,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, values reach the cut); `e2e/parity/sections.spec.ts` (R; the range case is next-only, so it runs nowhere today; legacy only, skips on `next`)
 
 ### SECT-16 · Reverse side is named by its words and keeps the other half, facing it
+
 - **Rule:** The checkbox is named by its visible words; its longer meaning is its tooltip and accessible description. Checking it keeps the other half of the cut and turns the camera to face it.
 - **Kind:** behaviour
 - **Level:** browser: accessible name and description (WCAG 2.5.3)
@@ -153,6 +169,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-17 · An oblique cut adds tilt and azimuth in whole degrees
+
 - **Rule:** An oblique plane adds a Tilt and an Azimuth slider, named by their visible words and described by their longer meaning. They speak whole degrees, the azimuth signed. Moving one leaves the other as it was.
 - **Kind:** behaviour
 - **Level:** unit for the degrees (`degrees`); browser for the sliders
@@ -161,6 +178,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-18 · Linked MRI opens at once from the keyboard and ignores presses while it loads
+
 - **Rule:** The row's "Linked MRI" button advertises `M`. It passes on whether it was used from the keyboard (instant) or a pointer. While the scan loads it is `aria-disabled`, stays focusable, and further presses (and `M`) do nothing; it is free again however the opening ends, and a failure is said in the status line.
 - **Kind:** behaviour
 - **Level:** unit for the guard; browser for the attributes
@@ -169,6 +187,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R, present; legacy only, skips on `next`)
 
 ### SECT-19 · The slider, the field and Reverse side wait for a cut
+
 - **Rule:** While the engine has no active cut the position slider, the exact field and Reverse side are disabled.
 - **Kind:** behaviour
 - **Level:** unit (view-model): today browser
@@ -177,6 +196,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-20 · Focus inside the row is handed to a control that is still there
+
 - **Rule:** When the row goes while focus is inside it, focus moves to the Section tool; when the tract reference hides the row and the Section tool together, to the dock's first tool (View). When the row folds its details while focus is in them, focus moves to More.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -185,6 +205,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-21 · Where one line would not fit, the row folds Reverse side and Linked MRI behind More
+
 - **Rule:** The row keeps everything on one line while its natural width fits the visible stage less the two gutters, and folds Reverse side and Linked MRI behind a disclosure "More section controls" otherwise; a phone always folds it and names the plane by its short name. The width is measured with every control beside the slider, also while folded and again when the words change, so the row unfolds once there is room. The dock stays inside the stage.
 - **Kind:** behaviour
 - **Level:** browser: measured widths (the fold decision is STORE-29, `state.md`)
@@ -193,6 +214,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R; the "writes its one-line width to the stage layout" case also pins the store field); `src/lib/state/stage-layout.svelte.test.ts` (R, the fold decision); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
 
 ### SECT-22 · The cut on screen is what the snapshot's caption reports
+
 - **Rule:** The section the caption names is the plane on screen with its offset, tilt and azimuth; nothing while no plane is cut or while one is being prepared.
 - **Kind:** behaviour
 - **Level:** unit
@@ -201,6 +223,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/section-controls.test.ts` (R)
 
 ### SECT-23 · Row targets are 24 px, 44 px on a coarse pointer, and forced colours keep the controls visible
+
 - **Rule:** Every visible control in the row is at least 24 px tall, and 44 px on a coarse pointer. In forced colours the sliders are drawn in system colours and the tick box keeps its native look.
 - **Kind:** accessibility
 - **Level:** browser: layout and computed style
@@ -209,6 +232,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-24 · The row and the popover pass axe
+
 - **Rule:** axe finds no violation with the oblique row showing an out-of-range error and with the Section popover open, in English and French, nor in the folded and unfolded phone row.
 - **Kind:** accessibility
 - **Level:** browser: axe
@@ -219,6 +243,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 ## The linked MRI dialog (G5, not built)
 
 ### SECT-25 · The linked MRI is a modal dialog that opens on Close and gives focus back
+
 - **Rule:** The dialog "Linked MRI sections" is modal and opens after the scan has loaded, with focus on Close. Close, Escape and `M` close it, instantly when done from the keyboard; there is no backdrop dismiss. Focus returns to the opener, else to the Section tool, then the canvas. It keeps the dark imaging palette in both themes.
 - **Kind:** accessibility
 - **Level:** browser: native `showModal`, focus
@@ -227,6 +252,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-26 · Three linked planes, each a named section with an image, a slider and Save PNG
+
 - **Rule:** The dialog shows Sagittal, Coronal and Axial, each a section named by its heading (kept for assistive technology on a phone). Each canvas is an image, not focusable and with no key handler, named with its orientation letters spelled out. Each slider is named by its visible label and spans −128 to 128 mm in 1 mm steps; each Save PNG button names its plane.
 - **Kind:** accessibility
 - **Level:** browser: roles and names
@@ -235,6 +261,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-27 · The crosshair moves by slider, click and wheel, and stays within ±128 mm
+
 - **Rule:** The shared crosshair moves along a plane's axis with that plane's slider (native keys: arrows 1 mm, Page Up/Down 10 mm, Home/End to the limits), to the clicked point on a canvas, and by 1 mm per wheel event, clamped to ±128 mm. Ctrl or Meta with the wheel is left to the browser's zoom. A sampled region that is drawn on the model becomes the selection.
 - **Kind:** behaviour
 - **Level:** unit for steps and clamps; browser for the events
@@ -243,6 +270,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-28 · On a phone one plane is shown at a time, chosen by a radio group
+
 - **Rule:** Under the phone query a radio group "Section plane" picks the one plane shown (Axial by default; arrows move and choose); the hidden planes are not resampled, and the grid is one column whenever one plane is shown.
 - **Kind:** behaviour
 - **Level:** browser: media query and keyboard
@@ -251,6 +279,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-29 · One readout says where the crosshair is and what is there, after a pause
+
 - **Rule:** One status readout gives the crosshair's RAS position, the sampled name and its label number; it is rewritten after 250 ms without movement, not per drag frame. The slider outputs are not live regions. A sample with no name reads "Unlabelled", never "(label undefined)". Tissue names are translated.
 - **Kind:** behaviour
 - **Level:** unit for the words; browser for the live region's timing (with fake timers)
@@ -259,6 +288,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-30 · Window, Level and the segmentation overlay
+
 - **Rule:** The Window (10–256, default 180) and Level (0–255, default 90) sliders set the MRI contrast and speak whole numbers; the "Segmentation overlay" checkbox shows the labels over the MRI.
 - **Kind:** behaviour
 - **Level:** browser: sliders (the window maths is SLICE-12 and SLICE-23)
@@ -267,6 +297,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-31 · Save PNG downloads the plane under a descriptive file name and says so
+
 - **Rule:** Save PNG downloads that plane's image, letters and annotation included, as `<subject>-<plane>-<position to one decimal>mm.png`, and confirms the save in words.
 - **Kind:** behaviour
 - **Level:** unit for the file name and sentence; browser for the download
@@ -275,6 +306,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-32 · Each plane is drawn with its crosshair, edge letters and position
+
 - **Rule:** Each canvas shows the MRI at full opacity, the crosshair as a 1 px blue line over a 3 px dark one, the four edge letters of the plane (French D and G), and "<Plane> <signed position> mm" at the bottom left.
 - **Kind:** behaviour
 - **Level:** browser: canvas pixels (frame letters are RENDER-39)
@@ -283,6 +315,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Covered by:** uncovered
 
 ### SECT-33 · The dialog meets the size, reflow and focus-visibility rules
+
 - **Rule:** Radios, Save, Close and sliders are at least 24 px, 44 px on a coarse pointer. The sticky header never covers the focused control. The dialog reflows at 320 px and 200 % text, and passes axe in both themes, at 1280 and 390 px, in English and French.
 - **Kind:** accessibility
 - **Level:** browser: layout and axe

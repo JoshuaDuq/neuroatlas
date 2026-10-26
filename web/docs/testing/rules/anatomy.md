@@ -5,6 +5,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## The tree
 
 ### ANAT-01 · The anatomy is one named treegrid of section headings, groups and regions
+
 - **Rule:** The list is a single treegrid named "Browse anatomy". Each section (Cortex, Subcortical, Cut labels only) is a level-1 heading row with one cell, no expanded state and no selected state; its groups follow it as level-1 rows, collapsed until opened; an open group's regions are level-2 rows with their place in the group. Groups are not selectable; regions are.
 - **Kind:** accessibility
 - **Level:** browser — ARIA roles, levels and states on the rendered rows
@@ -13,6 +14,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-02 · Groups are named as the tree names them and sorted within their family
+
 - **Rule:** Groups keep the catalog's family order (cortex, then structures, then cut-only tissue) and are sorted alphabetically by their shown name in the reader's language within a family. A group name that two vocabularies share says which one it is.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `labelledGroups`, `groupDisplayName`)
@@ -21,6 +23,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D). The tree's own tests use no shared name.
 
 ### ANAT-03 · A group row says its name and how many regions it holds
+
 - **Rule:** A group row's accessible name is its shown name and its region count. The drawn count and the chevron are decoration. A group none of whose regions is drawn is dimmed like a hidden row.
 - **Kind:** behaviour
 - **Level:** unit (view-model: today `rowLabel` in `AnatomyTree.svelte`)
@@ -29,6 +32,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off). The dimmed group is uncovered.
 
 ### ANAT-04 · A section heading names the display settings that hide its rows
+
 - **Rule:** When display settings hide rows of a section (hemisphere, cortex, internal anatomy, spinal cord, isolation, no cut, another system), the section heading prints those reasons once, joined by " · " in the order first met, and its accessible name carries them in brackets.
 - **Kind:** accessibility
 - **Level:** unit (view-model: `sectionReasons`, `reasonText`)
@@ -37,6 +41,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-05 · A region row says its side and, when it is not drawn, why and what a press does
+
 - **Rule:** A drawn region is named "Name, side". A region that is not drawn but can be revealed is named "Name, side: reason. Activate to reveal." A region nothing can reveal is named "Name, side, not shown: reason." The row prints a reason only when it is the row's own: a setting's reason is on the section heading and a removed part says it with its struck eye.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `regionNode` with `reasonText`, `rowStatesReason`)
@@ -45,6 +50,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-06 · A hidden row names itself in the one tooltip, never in a native title
+
 - **Rule:** No row carries a native `title`. A hidden row's name cell carries the row's name as its U5 tooltip; a drawn row has no tooltip.
 - **Kind:** accessibility
 - **Level:** browser — DOM attributes the U5 tooltip reads
@@ -53,6 +59,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-07 · A region too small for the cut explains itself and does nothing
+
 - **Rule:** A region hidden because it is below the cut's resolution has no eye, is `aria-disabled`, has no selected state, takes no hover wash, shows the default cursor, and ignores Enter, Space, a click and V. Its side letter is drawn without an eye. Group eyes leave it out.
 - **Kind:** behaviour
 - **Level:** browser — `aria-disabled`, cursor and hover style
@@ -61,6 +68,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-08 · Each eye sits in its own cell, in the column of its side
+
 - **Rule:** A row's cells are the name, then Mid, L and R. A region's eye is in the column of its hemisphere; a group has one eye per side that holds revealable regions. A section with a midline part reserves the Mid column down its rows, so L and R stay aligned; other sections do not.
 - **Kind:** behaviour
 - **Level:** browser — cell structure and layout
@@ -69,6 +77,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-09 · A catalog still loading shows a placeholder, never an empty treegrid
+
 - **Rule:** With no groups yet, the tree draws an `aria-hidden` skeleton and no treegrid.
 - **Kind:** accessibility
 - **Level:** browser — what is in the DOM
@@ -79,6 +88,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## Keys and focus in the tree
 
 ### ANAT-10 · Down, Up, Home and End walk the visible rows, section headings included
+
 - **Rule:** With focus on a row, Down and Up move to the next or previous visible row and stop at the ends; Home and End go to the first and last row. Section headings are stops. Rows under a closed group are skipped.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch and real focus
@@ -87,6 +97,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-11 · Right and Left open, close and move between a row and its eyes
+
 - **Rule:** On a row: Right expands a collapsed group and keeps focus on it; on an open group or a region it moves to the row's first eye. Left collapses an open group; on a region it goes to its group. From an eye: Right and Left move between the row's eyes (Right stops at the last); Left from the first eye, and Escape, return to the row; Up and Down go to the same column in the adjacent row, or to the row itself when it has no cell there; Ctrl+Home goes to the first row and Ctrl+End to the last row's nearest eye. `*` expands every group among the focused group's siblings.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch and real focus
@@ -95,6 +106,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-12 · Enter, Space or a click opens a group or chooses a region
+
 - **Rule:** On a group, Enter, Space or a click anywhere on the row opens or closes it. On a drawn region they select it; on a hidden region that can be revealed they reveal it with its reason (undo what hides it, then select); on an unrevealable region nothing happens. A click on an eye does only what the eye does. Selection follows activation, never focus.
 - **Kind:** behaviour
 - **Level:** browser — keyboard and pointer dispatch
@@ -103,6 +115,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-13 · V hides or shows from the row
+
 - **Rule:** V (either case) on a region with an eye presses that eye and leaves focus on the row. On a group with one eye it presses it; on a group with one eye per side it moves focus to the first eye and presses nothing. On a focused eye it presses that eye. On a row with no eye it does nothing.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch and real focus
@@ -111,6 +124,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-14 · The page's own shortcut letters pass through a tree row
+
 - **Rule:** On a row, the page's single-character shortcuts reach the page instead of the treegrid's type-ahead, and move no focus. Any other letter starts a type-ahead search, and a shortcut letter typed after it extends the query.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch to the focused element
@@ -119,6 +133,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-15 · The tree is one Tab stop, and the stop follows the choice
+
 - **Rule:** Exactly one row or eye in the tree has `tabindex="0"`: the first row, or the chosen region's row once it is listed, unless the reader is moving through the grid when the choice changes (then the stop stays where they are). Tab enters on that stop and leaves after it.
 - **Kind:** behaviour
 - **Level:** browser — real focus and Tab order
@@ -127,6 +142,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-16 · The chosen row scrolls into view once per choice
+
 - **Rule:** A new choice scrolls its row into view (nearest edge) once; if its group is closed, it scrolls when the group opens. Clearing the choice resets this.
 - **Kind:** behaviour
 - **Level:** browser — scrolling and geometry
@@ -135,6 +151,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-17 · Other panels can find the chosen row and the tree's stop
+
 - **Rule:** The workspace's current item is the row marked selected, and the `tree-stop` focus target is the tree's Tab stop, so other controls (the dissection bar, the shell) can hand focus to the tree.
 - **Kind:** behaviour
 - **Level:** browser — real focus
@@ -143,6 +160,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-18 · Up and Down from outside the list walk the tree while browsing
+
 - **Rule:** The page's Up and Down (from the canvas or elsewhere) move focus to the next or previous row from the one holding focus (a focused eye counts as its row), or to the first row when focus is outside the tree.
 - **Kind:** behaviour
 - **Level:** browser — real focus
@@ -153,6 +171,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## Visibility eyes
 
 ### ANAT-19 · An eye is named by the action it will take
+
 - **Rule:** A region's or a group side's eye is named "Hide {name}, {side}" while anything under it is drawn and "Show {name}, {side}" when all of it is hidden. The side is a word in the name and a letter on screen (L, R, Mid; French G, D, Méd); the letter is hidden from assistive technology. There is no pressed state.
 - **Kind:** accessibility
 - **Level:** unit (view-model: the label from `hidePart`/`showPart` and `visibilityStateOf`)
@@ -161,6 +180,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-20 · Pressing an eye changes it in place and keeps focus on it
+
 - **Rule:** An eye press calls hide or show for its ids, and the same button stays in the DOM with its new name and state, so focus does not move.
 - **Kind:** behaviour
 - **Level:** browser — real focus on a patched element
@@ -169,6 +189,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-21 · A group side with some regions hidden reads as partly hidden
+
 - **Rule:** A group side whose regions are some hidden and some drawn is partial: its name and tooltip say so, and it still offers Hide. Pressing it hides the side's every revealable region.
 - **Kind:** accessibility
 - **Level:** unit (view-model: `visibilityStateOf` and the label)
@@ -177,6 +198,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-22 · An eye press names the part for the one announcement
+
 - **Rule:** An eye press hands the announcer the part sentence, which the announcer says ahead of the hidden count in one message. The tree writes nothing to the live region itself.
 - **Kind:** accessibility
 - **Level:** unit (view-model: the sentence) — the joined message is S1's (`controller.md`)
@@ -185,6 +207,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/controller/speech.test.ts` (R, the join); `src/app/boot.svelte.test.ts` (R, the join); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off, so the joined sentence never runs on the built next app)
 
 ### ANAT-23 · Expand all opens every group, then becomes Collapse all
+
 - **Rule:** The button over the tree reads "Expand all" unless every group is open, when it reads "Collapse all"; it opens every group or closes them all.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `allExpanded` in `TreeHeader.svelte`)
@@ -195,6 +218,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## Tree presentation
 
 ### ANAT-24 · An open group stays in view over its regions, without covering a focused one
+
 - **Rule:** An open group row sticks to the top of the list while its own regions scroll under it and leaves with them; its regions keep a scroll margin so the sticky row never covers the one scrolled to.
 - **Kind:** accessibility
 - **Level:** browser — CSS position and scroll margin
@@ -203,6 +227,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, but its `parentElement.className === 'treegrid-block'` line is I: drop it)
 
 ### ANAT-25 · Section headings are ruled off and take no hover wash
+
 - **Rule:** Every section heading but the first has a 1 px rule above it; a heading has no hover background.
 - **Kind:** behaviour
 - **Level:** browser — computed style
@@ -211,6 +236,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-26 · Eyes and counts stay visible where state must not hide
+
 - **Rule:** On a fine pointer an eye is revealed while its row is hovered or holds focus by any means (`:focus-within`), is selected, or is hidden. Under forced colours and increased contrast every eye and every group count is drawn; in forced colours the chosen row keeps a 1 px solid system-colour outline. A hidden row's side letter is dimmed. Under reduced motion the chevron turns at once.
 - **Kind:** accessibility
 - **Level:** browser — media emulation and computed style
@@ -219,6 +245,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R; the dimmed letter only checks "different", W-ish). The mouse-pressed eye staying visible on a fine pointer is uncovered.
 
 ### ANAT-27 · Eyes and rows are big enough to hit
+
 - **Rule:** On a fine pointer each eye is at least 24 px square and a row at least 32 px tall; on a coarse pointer each eye is at least 44 px square and a row at least 44 px; a landscape phone keeps eyes at 24 px or more with no sideways scroll.
 - **Kind:** accessibility
 - **Level:** browser — geometry
@@ -227,6 +254,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
 
 ### ANAT-28 · The tree reflows at 320 px, with text spacing and at 200 % text
+
 - **Rule:** At 320 px wide with WCAG 1.4.12 text spacing, and at 200 % text, nothing spills sideways and no row clips its content; names scale with the text.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -235,6 +263,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R)
 
 ### ANAT-29 · The tree has no axe violations
+
 - **Rule:** Expanded, with hidden, partial and unavailable rows and a selection, the tree passes axe in English and French.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -245,6 +274,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## Search
 
 ### ANAT-30 · A query lists its matches in place of the tree, and arms the first
+
 - **Rule:** A non-blank query lists the catalog's ranked matches as options named "Name, side, Group" (the group as the tree names it), arms the first one that can be chosen, and hides the tree with its header and scope. The field is expanded only while the list holds an option. The tree stays mounted, so its open groups and Tab stop survive the search.
 - **Kind:** behaviour
 - **Level:** browser — combobox state and visibility
@@ -253,6 +283,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-31 · The match is marked, and an alias says why a name matched
+
 - **Rule:** The part of the name that matches is marked, regardless of case and accents. When the name does not contain the query, the code or the first alias that does follows the name in brackets, marked, and is said after the name.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `matchSegments`, `matchedAlias`)
@@ -261,6 +292,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, could move down); `parity/C5.test.ts` (D)
 
 ### ANAT-32 · A result that is not drawn says why, and choosing it reveals it
+
 - **Rule:** A match that is not drawn is listed with the same name a tree row has ("Name, side: reason. Activate to reveal."), its reason on the second line and as its U5 tooltip, and no native title. Enter or a click reveals it with its reason and empties the query.
 - **Kind:** behaviour
 - **Level:** browser — combobox choice
@@ -269,6 +301,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-33 · A result too small for the cut is disabled and never armed
+
 - **Rule:** A match below the cut's resolution is listed, `aria-disabled`, named "Name, side, not shown: reason.", skipped by the arrows and never armed; a click on it does nothing and keeps the query.
 - **Kind:** behaviour
 - **Level:** browser — combobox arming (the skip is `nextEnabledIndex`, unit in `core-panels.md`)
@@ -277,6 +310,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R)
 
 ### ANAT-34 · Choosing a result empties the query and leaves focus in the field
+
 - **Rule:** Enter on the armed result or a click on a result selects it (or reveals it), empties the query, brings the tree back around the region, and leaves focus in the field. Escape and the clear button ("Clear search") empty the field, bring the tree back and keep focus in the field. A note's button ("Switch atlas", "Switch cut labels") moves focus to the field before it acts.
 - **Kind:** behaviour
 - **Level:** browser — real focus
@@ -285,6 +319,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-35 · The armed option is the selected one; the chosen region is current
+
 - **Rule:** In the result list only the armed option is `aria-selected="true"`; the option of the region already selected is `aria-current="true"` and is drawn heavier.
 - **Kind:** accessibility
 - **Level:** browser — ARIA states in the listbox
@@ -293,6 +328,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-36 · A search that finds nothing says so, with a hint
+
 - **Rule:** A non-blank query with no match anywhere shows the title "No match for “query”" and the hint after the list. A blank or all-space query shows no sentence. When the only matches are in another atlas, the title stays and the hint is dropped.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `sentences` in `AnatomySearch.svelte`)
@@ -301,6 +337,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-37 · Matches in another atlas are reported, with a switch to that atlas
+
 - **Rule:** Matches that only another surface atlas draws, or only another cut atlas labels, are not dropped: a sentence per atlas counts them and offers a switch to the first atlas in manifest order that draws them. A rejection from the switch is not caught.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `matchesElsewhere` and the sentences)
@@ -309,6 +346,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R)
 
 ### ANAT-38 · A list cut off says how many matches there are
+
 - **Rule:** When the catalog caps the list, the sentence after it gives the shown and total counts and asks for a narrower search.
 - **Kind:** behaviour
 - **Level:** unit (view-model) — the cap of 50 is the catalog's (`core-catalogs.md`)
@@ -317,6 +355,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R)
 
 ### ANAT-39 · What a search found is said once typing pauses
+
 - **Rule:** Once typing pauses, the announcer says the match count for a complete list, then the sentences after the list (title first), only when it differs from what was last said.
 - **Kind:** accessibility
 - **Level:** unit (view-model: the status sentence) — the 500 ms pause is U6's (`ui-kit.md`)
@@ -325,6 +364,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, real 500 ms waits); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-40 · `/` and the page's arrows reach the search
+
 - **Rule:** `/` focuses the field and selects its text. While a search shows, the page's Up and Down from outside the field move focus into the field, keeping its text and armed option, so the next key moves the option where it is announced.
 - **Kind:** behaviour
 - **Level:** browser — real focus and selection
@@ -333,6 +373,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-41 · The search field stays pinned and the armed result is never under it
+
 - **Rule:** While searching, the field stays at the top of the panel as results scroll under it, and the armed result scrolls to just below the field, after typing, after the arrows, and at 200 % text.
 - **Kind:** accessibility
 - **Level:** browser — layout and scrolling
@@ -341,6 +382,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R)
 
 ### ANAT-42 · Results reflow and keep their targets
+
 - **Rule:** At 320 px with text spacing results wrap and nothing spills or clips; at 200 % text result rows grow; on a coarse pointer the clear button, each result and each scope radio are at least 44 px. Under forced colours the matched text is underlined, not only heavier.
 - **Kind:** accessibility
 - **Level:** browser — layout, media emulation
@@ -349,6 +391,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R)
 
 ### ANAT-43 · The search has no axe violations
+
 - **Rule:** Browsing, with results, and with the sentences after the list, the explorer passes axe in English and French.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -359,6 +402,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## Browse scope and system picker
 
 ### ANAT-44 · The browse scope is a radio group of two choices
+
 - **Rule:** "Whole brain" and "By system" are one radio group named "Browse": Tab enters on the checked one, the arrows move and choose, and choosing the checked one again does nothing. While an atlas or detail level loads the group refuses a choice but its radios keep focus. Searching puts the scope away.
 - **Kind:** behaviour
 - **Level:** browser — radio keyboard and focus
@@ -367,6 +411,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
 
 ### ANAT-45 · The system picker lists each system of the detail level once, sorted as shown
+
 - **Rule:** The picker offers "All internal structures" first, then every system the structures of the current detail level belong to, once each, keyed by the English group name and shown and sorted by the name in the reader's language. A name another vocabulary shares is qualified as the tree qualifies it. Another detail level lists its own systems.
 - **Kind:** behaviour
 - **Level:** unit (`system-options.ts` is pure)
@@ -375,6 +420,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R; the first case already calls `systemOptions` directly: move these four cases down to unit); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
 
 ### ANAT-46 · The system picker is a labelled select that shows the display's system
+
 - **Rule:** The picker shows only while browsing by system with no search open. Its visible label "System" names and focuses the select. It shows the system the display holds (the empty value for all), follows the display when another control changes it, and a choice calls the command with the system, or with none for all. Type-ahead goes through the same command.
 - **Kind:** behaviour
 - **Level:** browser — native select and label
@@ -383,6 +429,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, shown under the scope only inside); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
 
 ### ANAT-47 · A refused system choice is put back
+
 - **Rule:** When the choice command fails or is overtaken, the select returns to the system the display holds, and stays there when its options are rebuilt (as by a language switch).
 - **Kind:** behaviour
 - **Level:** browser — bound select value
@@ -391,6 +438,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R)
 
 ### ANAT-48 · The system picker is disabled while an atlas or detail level loads
+
 - **Rule:** While a switch is loading, the system select is disabled, as the scope beside it refuses choices.
 - **Kind:** behaviour
 - **Level:** browser — native `disabled`
@@ -399,6 +447,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R)
 
 ### ANAT-49 · A chosen system is in the link and comes back from it
+
 - **Rule:** Choosing a system writes it to the link; choosing all removes it; reloading the link shows the same system chosen.
 - **Kind:** behaviour
 - **Level:** e2e — permalink round trip on the built site (the URL format is `links.md`'s)
@@ -409,6 +458,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 ## Dissection bar
 
 ### ANAT-50 · While parts are hidden, a Dissection group shows the count and two commands
+
 - **Rule:** The bar is there only while at least one part is hidden, and only in the Anatomy explorer. It is a group named by a visually hidden "Dissection" heading, not a landmark, and holds, in order, the count, Undo and Restore all. The count is plain text (the announcer says it).
 - **Kind:** accessibility
 - **Level:** browser — ARIA group and DOM order
@@ -417,6 +467,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`). "Only in the Anatomy explorer" (legacy `dissection.js:23`) is uncovered: the component has no explorer input, so I1 must mount it only there (`regions.md`).
 
 ### ANAT-51 · The count and commands are worded in the reader's language
+
 - **Rule:** The count says how many parts are hidden, singular or plural; the commands are Undo and Restore all.
 - **Kind:** behaviour
 - **Level:** unit (i18n `dissection.hiddenCount`; `core-i18n.md`)
@@ -425,6 +476,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R, could move down); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
 
 ### ANAT-52 · Undo is disabled with nothing to undo; Restore all never is
+
 - **Rule:** Undo is disabled when the last dissection step cannot be undone, as after opening a link; Restore all is enabled whenever the bar shows. Enter and Space run them; Tab goes from the tree stop to Undo, Restore all, then on, skipping a disabled Undo.
 - **Kind:** behaviour
 - **Level:** browser — native disabled and Tab order
@@ -433,6 +485,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
 
 ### ANAT-53 · Focus is never left on a spent command or a bar that left
+
 - **Rule:** When Undo spends the history while parts remain, focus moves to Restore all. Undo that leaves more to undo keeps focus. When the bar empties with focus in it, focus goes to the tree's Tab stop, or to the tab in front when the tree has none (a search is open). A change made from outside the bar moves no focus.
 - **Kind:** behaviour
 - **Level:** browser — real focus
@@ -441,6 +494,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
 
 ### ANAT-54 · The inspector's Hide hands focus to Undo
+
 - **Rule:** The `dissection-undo` focus target is Undo, or Restore all while Undo is disabled, and none without the bar, so the inspector's Hide never lands on a disabled button. Hiding the selected region from the inspector puts focus on Undo; Undo then brings the part back and focus goes to the tree.
 - **Kind:** behaviour
 - **Level:** browser — focus registry (the cross-panel journey is e2e)
@@ -449,6 +503,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
 
 ### ANAT-55 · A restored link's hidden count is said once
+
 - **Rule:** Opening a link that hides parts says the count once, because the announcer exists before the link is applied. The bar itself does not announce.
 - **Kind:** accessibility
 - **Level:** browser — whole-app boot order (`controller.md` owns the announcer)
@@ -457,6 +512,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `src/app/boot.svelte.test.ts` (R)
 
 ### ANAT-56 · A hidden part is in the link and comes back from it
+
 - **Rule:** Parts hidden from a link show the bar with their count and Undo disabled; Restore all removes them from the link.
 - **Kind:** behaviour
 - **Level:** e2e — permalink round trip on the built site (the URL format is `links.md`'s)
@@ -465,6 +521,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Covered by:** `e2e/parity/dissection.spec.ts` (R; skips on `next`, so no running next-app test)
 
 ### ANAT-57 · The bar and the picker keep their targets and reflow
+
 - **Rule:** Undo and Restore all are at least 24 px (44 px tall on a coarse pointer) and the select at least 24 px tall. At 320 px, 200 % text and text spacing the French bar wraps and the picker keeps its label beside the field, with nothing spilling or clipped. Both pass axe in English and French.
 - **Kind:** accessibility
 - **Level:** browser — geometry, axe

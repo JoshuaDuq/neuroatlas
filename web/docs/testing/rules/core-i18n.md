@@ -27,6 +27,7 @@ values (I18N-22, I18N-28) hold it today.
 ## Tables and lookup
 
 ### I18N-01 · Every English string has a French counterpart, and the reverse
+
 - **Rule:** The English and French tables have the same keys at every depth. A function or a list counts as one entry.
 - **Kind:** behaviour
 - **Level:** unit
@@ -35,6 +36,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R); `src/lib/core/i18n/errors.test.ts` (R, operations and link fields); `parity/C1.test.ts` (D)
 
 ### I18N-02 · Each area file is composed once into each language
+
 - **Rule:** Every file under `areas/` is one area of both tables, and the tables hold nothing else.
 - **Kind:** hygiene
 - **Level:** unit
@@ -43,6 +45,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (H)
 
 ### I18N-03 · French reads French; any other language reads English
+
 - **Rule:** The strings of an area are the French ones for `fr` and the English ones for every other language, including an unknown or empty one and a name that is a property of every object. Looking up a language never fails.
 - **Kind:** behaviour
 - **Level:** unit
@@ -51,6 +54,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R); `parity/C1.test.ts` (D, the fallback over `en`, `fr`, `de`, `unknown`, `''` for every area)
 
 ### I18N-04 · The interface says the approved copy
+
 - **Rule:** Every string, and what every string function says for fixed arguments, is the approved English and French copy: the legacy wording, plus the deviations and amendments recorded on #4 (I18N-05 to I18N-09). A change of wording is a reviewed change of this record.
 - **Kind:** behaviour
 - **Level:** unit
@@ -59,6 +63,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `parity/C1.test.ts` (D, seeded draws diffed against the legacy tables); uncovered as a fixed-value test
 
 ### I18N-05 · The C1 amendments read as approved, in both languages
+
 - **Rule:** The strings later chunks asked for through the C1 queue are in the tables with their approved wording.
 - **Kind:** behaviour
 - **Level:** unit
@@ -80,6 +85,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, `diffusion.matches` only); `parity/C1.test.ts` (D, checks only that these keys are absent from legacy); the rest uncovered
 
 ### I18N-06 · The loading line gives megabytes in the reader's notation
+
 - **Rule:** While the anatomy downloads, the line gives the bytes received and the total, each in megabytes at one decimal with its unit held to it, in the reader's decimal notation.
 - **Kind:** behaviour
 - **Level:** unit
@@ -88,6 +94,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `parity/C1.test.ts` (R inside a D file: the `CHANGED` table asserts these exact strings)
 
 ### I18N-07 · The diffusion MRI dialog is translated, with the French grammar fixes
+
 - **Rule:** The diffusion MRI dialog reads its strings from the `mri` area in both languages. Two French strings use the corrected wording. The grid line names the voxel counts and the spacing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -96,6 +103,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, grid lines); `parity/C1.test.ts` (D for the rest of the dialog; R for the two French fixes)
 
 ### I18N-08 · The linked MRI names its tissue labels and orientation letters in the reader's language
+
 - **Rule:** The linked MRI's tissue label names and its edge letters come from i18n. French writes D for right and G for left.
 - **Kind:** behaviour
 - **Level:** unit
@@ -104,6 +112,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, tissue names); `parity/C1.test.ts` (D, both tables read from the legacy source text); orientation letters uncovered as fixed values
 
 ### I18N-09 · The shortcut sheet lists every key, with the S5b fixes
+
 - **Rule:** The shortcut sheet names every single-key shortcut in both languages. French names Escape "Échap". The Escape row ends with the function or the deficit in both languages, and the `M` row mentions the MRI with tracts.
 - **Kind:** behaviour
 - **Level:** unit
@@ -112,6 +121,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, keys and the end of the Escape rows); `parity/C1.test.ts` (D, the M rows through the `legacyFixed` patch)
 
 ### I18N-10 · The atlas switch shows a short name
+
 - **Rule:** The masthead atlas switch shows the atlas's short name, else its full title, else its id.
 - **Kind:** behaviour
 - **Level:** unit
@@ -122,6 +132,7 @@ values (I18N-22, I18N-28) hold it today.
 ## Counted and interpolated phrases
 
 ### I18N-11 · A counted phrase agrees with its count, in both languages
+
 - **Rule:** A phrase that counts something uses the singular for one and the plural otherwise, in each language's grammar. Large counts group their digits (I18N-23).
 - **Kind:** behaviour
 - **Level:** unit
@@ -130,6 +141,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, regionsMarked, streamlines, coverage, landmarkCount, matches); `parity/C1.test.ts` (D, every function over seeded counts); `circuits.step` and `dissection.hiddenCount` uncovered as fixed values. Note: four phrases ignore the count and read wrongly for 1: `footer.sourceFiles` ("1 source files"), `functions.coverage`, `circuits.coverage` ("1 guided circuits · 1 landmarks") and `diffusion.bundleCollection` ("1 tract bundles", "1 faisceaux"). The published counts are never 1, so the reader never sees it; legacy has the same wording.
 
 ### I18N-12 · The colophon and the MPR note describe the brain that was built
+
 - **Rule:** The colophon names the published subject and says whether it is an individual or a template. The linked MRI note says the same. Neither carries another brain's name.
 - **Kind:** behaviour
 - **Level:** unit
@@ -138,6 +150,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, partial: pattern matches, not the full sentences)
 
 ### I18N-13 · Panel copy names no tab the redesign removed
+
 - **Rule:** The deficit, lesson and tract copy never sends the reader to a tab that no longer exists.
 - **Kind:** behaviour
 - **Level:** unit
@@ -146,6 +159,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R)
 
 ### I18N-14 · The network notes state the denominator and the display threshold
+
 - **Rule:** Both languages say what a network share counts (surface vertices or volume voxels) and that shares under 5 % are hidden.
 - **Kind:** scientific
 - **Level:** unit
@@ -154,6 +168,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R)
 
 ### I18N-15 · A comparison row's name carries the area and the share
+
 - **Rule:** The name of an overlap toggle names the other region, the overlap area and the share of this region, in the reader's notation.
 - **Kind:** behaviour
 - **Level:** unit
@@ -164,6 +179,7 @@ values (I18N-22, I18N-28) hold it today.
 ## Failure wording
 
 ### I18N-16 · A failure says what could not be done, never the raw error
+
 - **Rule:** A failure notice names the operation that failed. A failed download adds what to check. A newer deploy asks for a reload instead. The error's own message is never shown.
 - **Kind:** behaviour
 - **Level:** unit
@@ -172,6 +188,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/errors.test.ts` (R); `parity/C1.test.ts` (D, every operation × four errors × `en`/`fr`/`xx`)
 
 ### I18N-17 · A failure that cannot be worded fails loudly
+
 - **Rule:** Asking for the words of an operation that has none, or of an operation that names its subject without a subject, throws instead of showing "undefined".
 - **Kind:** behaviour
 - **Level:** unit
@@ -180,6 +197,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/errors.test.ts` (R)
 
 ### I18N-18 · Every operation has words in both languages
+
 - **Rule:** Each of the 18 operations has a failure sentence in English and French.
 - **Kind:** behaviour
 - **Level:** unit
@@ -188,6 +206,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/errors.test.ts` (R for the key lists; W for the texts, which it checks only for being non-empty); `parity/C1.test.ts` (D)
 
 ### I18N-19 · A failed start keeps the link only for a download or update failure
+
 - **Rule:** A start that fails on a download or a newer deploy is worded as a failed start, with Retry or Reload, and keeps the link. Any other failure of a page opened from a link says the link could not be opened, and its Retry drops the link. Without a link it is a failed start with Retry.
 - **Kind:** behaviour
 - **Level:** unit
@@ -196,6 +215,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/errors.test.ts` (R); `parity/C1.test.ts` (D)
 
 ### I18N-20 · The link notice names each unapplied field once, in the reader's words
+
 - **Rule:** The notice lists the link fields that were not applied, once each, in their given order, as a list in the reader's language. A circuit step is not named when its circuit is. An unknown field is named as is.
 - **Kind:** behaviour
 - **Level:** unit
@@ -204,6 +224,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/errors.test.ts` (R); `parity/C1.test.ts` (D, seeded field draws); `src/app/boot.svelte.test.ts` (R, the anatomy and atlas notices at boot)
 
 ### I18N-21 · A tracts failure is worded from its code
+
 - **Rule:** The Tracts panel words a failure by one of four codes, in the reader's language, never with the error's English message.
 - **Kind:** behaviour
 - **Level:** unit
@@ -212,6 +233,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/i18n/diffusion.test.ts` (W, non-empty and EN ≠ FR only); `src/lib/core/diffusion/validation.test.ts` (R, not the message); `parity/C1.test.ts` (D)
 
 ### I18N-22 · The tract MRI readout writes the point, T1 and FA in the house style
+
 - **Rule:** The readout gives the crosshair in signed RAS millimetres, the T1 value at no decimals and, where the dataset has an FA map, FA at two decimals. Each label is held to its value; French sets NNBSP before each colon.
 - **Kind:** behaviour
 - **Level:** unit
@@ -222,6 +244,7 @@ values (I18N-22, I18N-28) hold it today.
 ## Number and text formatting
 
 ### I18N-23 · Digits group past four, with a narrow no-break space
+
 - **Rule:** A number of five digits or more groups its digits in threes with NNBSP. Four digits stay together. Counts and quantities group alike.
 - **Kind:** behaviour
 - **Level:** unit
@@ -230,6 +253,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D)
 
 ### I18N-24 · A unit is held to its number
+
 - **Rule:** A unit follows its number after NNBSP, never a breaking space. English sets a percent sign close up; French sets NNBSP before it like any unit.
 - **Kind:** behaviour
 - **Level:** unit
@@ -238,6 +262,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D)
 
 ### I18N-25 · A count agrees with its noun
+
 - **Rule:** A count and its noun agree. English adds -es after s, x, z, ch or sh and turns a consonant + y into -ies. French uses its own word for the nouns it knows. Digits group as I18N-23.
 - **Kind:** behaviour
 - **Level:** unit
@@ -246,6 +271,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R), `src/lib/core/i18n/i18n.test.ts` (R, French); `parity/C1.test.ts` (D, nine nouns × five counts)
 
 ### I18N-26 · A measurement has four significant figures and is never a false zero
+
 - **Rule:** A measured quantity shows four significant figures, grouped digits, the reader's decimal mark and its unit. An absent value is an em dash; a true zero is "0".
 - **Kind:** behaviour
 - **Level:** unit
@@ -254,6 +280,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D, 213 values)
 
 ### I18N-27 · A fixed-decimal number uses the reader's notation and a true minus
+
 - **Rule:** A number at fixed decimals uses a decimal comma in French and U+2212 for negatives. `signed` marks positives with "+", `trim` drops trailing zeros, and a value that rounds to zero carries no sign. A non-finite value is an em dash. The defaults are one decimal and English.
 - **Kind:** behaviour
 - **Level:** unit
@@ -262,6 +289,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D)
 
 ### I18N-28 · A RAS point is a signed triple in millimetres
+
 - **Rule:** A point gives each axis signed, at one decimal, with a true minus, then "mm". English separates axes with ", "; French with NNBSP + "; " because its decimal mark is a comma. A missing, short or non-finite point is an em dash.
 - **Kind:** behaviour
 - **Level:** unit
@@ -270,6 +298,7 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D, 100 seeded points)
 
 ### I18N-29 · Slider readouts give signed millimetres and whole percentages
+
 - **Rule:** A coordinate readout is signed millimetres at one decimal; a fraction reads as a whole percentage, in the reader's notation.
 - **Kind:** behaviour
 - **Level:** unit
@@ -278,10 +307,10 @@ values (I18N-22, I18N-28) hold it today.
 - **Covered by:** `src/lib/core/format.test.ts` (R); `parity/C1.test.ts` (D)
 
 ### I18N-30 · A comparison figure never shows a positive overlap as zero
+
 - **Rule:** Stated once as INSP-27 (`inspector.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** see INSP-27
 - **Expected:** see INSP-27
 - **Covered by:** see INSP-27
-

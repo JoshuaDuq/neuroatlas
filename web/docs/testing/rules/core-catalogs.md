@@ -22,6 +22,7 @@ the expected values change with them in the same commit.
 ## Shared constants (F1)
 
 ### CAT-01 · The seven camera presets, in order
+
 - **Rule:** The named views are oblique, left, right, anterior, posterior, superior and inferior, in that order (the order the view menu and the keys 1 to 6 follow).
 - **Kind:** data
 - **Level:** unit
@@ -30,6 +31,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `parity/f1.test.ts` (D); `src/lib/engine/render/camera-views.test.ts` (R, key set only, sorted, not the order)
 
 ### CAT-02 · Section modes, hemispheres and functional levels
+
 - **Rule:** The section modes, the hemisphere choices and the functional levels are fixed lists. A link accepts exactly these values (the decoding rule is STATE-08 in `core-state.md`).
 - **Kind:** data
 - **Level:** unit
@@ -38,6 +40,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `parity/f1.test.ts` (D, through legacy `decodeState`); `src/lib/core/state/url-state.test.ts` (R, some values)
 
 ### CAT-03 · Six surface colourings, declared once
+
 - **Rule:** The cortex can be coloured by tissue, MRI, atlas, network, CAB-NP or functional division. There is one list, and a link accepts each of them and nothing else.
 - **Kind:** data
 - **Level:** unit
@@ -46,6 +49,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `parity/f1.test.ts` (D); `src/lib/engine/model/brain-atlas.test.ts` (W, `includes('mri')` only)
 
 ### CAT-04 · Five explorers, which are the workspace modes
+
 - **Rule:** The workspace has five explorers, in tab order, and the modes are the same list.
 - **Kind:** data
 - **Level:** unit
@@ -54,6 +58,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/workspace.test.ts` (R, `MODES`); `parity/f1.test.ts` (D)
 
 ### CAT-05 · One compact-layout query, one phone-device query, one coarse-pointer query
+
 - **Rule:** The compact interface, the phone rendering budget and the touch sizes each answer one media query, written the same everywhere it is repeated.
 - **Kind:** hygiene
 - **Level:** unit
@@ -62,6 +67,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/state/media.svelte.test.ts` (R, the two literals); `parity/f1.test.ts` (D, legacy device.js and legacy CSS only; I, pins the `matchMedia` call order of legacy `isPhone`/`isCoarse`); the check on the new stylesheets is uncovered
 
 ### CAT-06 · The published manifest fits the manifest types
+
 - **Rule:** The published manifest is what the types describe, so a type that stops describing the data fails the build.
 - **Kind:** hygiene
 - **Level:** unit
@@ -72,6 +78,7 @@ the expected values change with them in the same commit.
 ## Region labels
 
 ### CAT-07 · Every published region has a name and a group in both languages
+
 - **Rule:** Each region of the published anatomy has a non-empty display name and navigation group in English and in French. A region without one stops the catalogue from building.
 - **Kind:** data
 - **Level:** unit
@@ -80,6 +87,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (S), `src/lib/core/catalog/labels.fr.test.ts` (S); `parity/C2.test.ts` (D); the throw is uncovered
 
 ### CAT-08 · The published regions are all there
+
 - **Rule:** The manifest's declared region counts are met by the regions it lists, so nothing was truncated.
 - **Kind:** data
 - **Level:** unit
@@ -88,6 +96,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (S, declared vs listed, not the fixed numbers), `labels.fr.test.ts` (S, same), `functional-regions.test.ts` (S, hcp-mmp 360)
 
 ### CAT-09 · Destrieux parcels read their curated anatomical names, grouped by lobe
+
 - **Rule:** A Destrieux parcel shows its curated name in the reader's language, its lobe as its group and its common abbreviations as search aliases. Both FreeSurfer spellings of a parcel (`&` and `_and_`) read the same.
 - **Kind:** data
 - **Level:** unit
@@ -96,6 +105,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (R), `labels.fr.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-10 · HCP-MMP areas keep their codes and group by network
+
 - **Rule:** An HCP-MMP area is shown by its published code, never an invented name. It is grouped under the Yeo network it mostly falls in; an area with no network above the threshold falls in an alphabetical bucket.
 - **Kind:** behaviour
 - **Level:** unit
@@ -104,6 +114,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (R), `networks.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-11 · aseg structures read their names without side, grouped by system
+
 - **Rule:** An aseg structure drops its Left-/Right- prefix (laterality is shown on its own) and is grouped by its anatomical system, in both languages.
 - **Kind:** data
 - **Level:** unit
@@ -112,6 +123,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (R), `labels.fr.test.ts` (R)
 
 ### CAT-12 · NextBrain regions keep their published names and file under a system
+
 - **Rule:** A NextBrain region shows its published name with spaces for underscores, or its verified French name where the French table has one. Its group is the anatomical system of its label id, the same for both hemispheres (right ids are left ids + 10000). A label with no system is an error.
 - **Kind:** data
 - **Level:** unit
@@ -120,6 +132,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (R), `labels.fr.test.ts` (R), `internal-anatomy.test.ts` (R), `nextbrain-systems.test.ts` (S for the published regions, R for 209)
 
 ### CAT-13 · Gyral white matter is named for its gyrus and grouped by lobe
+
 - **Rule:** A wmparc white-matter region is named for its Desikan gyrus and grouped by lobe, with its own French name and group for every parcel.
 - **Kind:** data
 - **Level:** unit
@@ -128,6 +141,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (R)
 
 ### CAT-14 · Teaching-set and spinal cord structures use their authored names
+
 - **Rule:** A teaching-set or supplemental structure shows its authored name and system in the reader's language, its family as subgroup, and answers to its source name and the authored aliases of that language.
 - **Kind:** behaviour
 - **Level:** unit
@@ -136,6 +150,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/internal-anatomy.test.ts` (R), `catalog.test.ts` (R)
 
 ### CAT-15 · The medial wall is "Unlabelled" and never a result
+
 - **Rule:** The unlabelled medial surface is named plainly, follows the cortex rules for display, and is never offered as a search result or list row.
 - **Kind:** behaviour
 - **Level:** unit
@@ -144,6 +159,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/labels.test.ts` (R), `labels.fr.test.ts` (R), `catalog.test.ts` (R)
 
 ### CAT-16 · The cerebral cortex hides the forebrain's deep structures only
+
 - **Rule:** A structure counts as beneath the cortex when it is a deep forebrain structure; cerebellar and brainstem structures, and the cortex itself, do not.
 - **Kind:** data
 - **Level:** unit
@@ -154,6 +170,7 @@ the expected values change with them in the same commit.
 ## Visibility
 
 ### CAT-17 · Each family is hidden only by the control that selects it
+
 - **Rule:** A cortical patch is hidden by choosing another surface atlas. A structure is hidden by choosing another detail level, unless the active cut is painting its atlas. A cut-only (tissue) region is shown only on a cut of an atlas that carries it, while a cut is on; one smaller than every cut block says so.
 - **Kind:** behaviour
 - **Level:** unit
@@ -162,6 +179,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/visibility.test.ts` (R); `parity/C2.test.ts` (D, 240 seeded settings × every region)
 
 ### CAT-18 · Display toggles hide what they name, and say so
+
 - **Rule:** The hemisphere choice hides the other side but keeps midline regions. Hiding the cortex, or making it fully transparent, hides cortex, the medial wall and gyral white matter, not structures or other cut-only regions. Hiding internal anatomy hides structures. Hiding the spinal cord hides only the cord. MRI colouring hides regions not registered to the MRI.
 - **Kind:** behaviour
 - **Level:** unit
@@ -170,6 +188,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/visibility.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-19 · Removal beats isolation; isolation hides everything else
+
 - **Rule:** A region the reader removed stays hidden even when it is the isolated one. Isolating a region hides every other region, structures and cut-only regions included.
 - **Kind:** behaviour
 - **Level:** unit
@@ -178,6 +197,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/visibility.test.ts` (R)
 
 ### CAT-20 · A system exploration shows only that system
+
 - **Rule:** While a system is explored, a structure outside it is hidden as 'other-system'; its laterality still applies. With the teaching set as detail, a source region of another atlas is in the system only if it is one of the overview's constituents.
 - **Kind:** behaviour
 - **Level:** unit
@@ -186,6 +206,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/internal-anatomy.test.ts` (R)
 
 ### CAT-21 · Hidden reasons come in a fixed precedence
+
 - **Rule:** When several things hide a region, the reason given is the most fundamental: MRI registration, then the family's own control (cut resolution, cut atlas, cut, detail level or surface atlas), then system, hemisphere, cortex, internal anatomy, spinal cord, removal, isolation.
 - **Kind:** behaviour
 - **Level:** unit
@@ -196,6 +217,7 @@ the expected values change with them in the same commit.
 ## Anatomy list and search
 
 ### CAT-22 · Search ranks exact, prefix, word start, then substring
+
 - **Rule:** A search ignores case, surrounding spaces and accents. It ranks an exact match first, then a match at the start of a name, code or alias, then one at the start of a word, then one inside a word. A word starts after any character that is not a Unicode letter or digit. Ties go by family order, then name in the reader's language, then left before right. An empty query finds nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -204,6 +226,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (R), `labels.fr.test.ts` (R, partial); `parity/C2.test.ts` (D, 142 queries re-ranked with the corrected word predicate)
 
 ### CAT-23 · Search finds names, codes and aliases, and keeps hidden rows
+
 - **Rule:** A search matches display names, codes and aliases (both accented and plain forms). A matching region that is hidden is returned with its reason, never dropped.
 - **Kind:** behaviour
 - **Level:** unit
@@ -212,6 +235,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (R)
 
 ### CAT-24 · A capped result says how many there were
+
 - **Rule:** A search returns at most the asked number of rows and the true total.
 - **Kind:** data
 - **Level:** unit
@@ -220,6 +244,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (W, asserts `total > 50`); `parity/C2.test.ts` (D)
 
 ### CAT-25 · The list shows the active atlas's groups, then structures, then the cut's regions
+
 - **Rule:** The anatomy list holds the cortical groups of the surface atlas, the structure groups of the detail level (and the spinal cord), then the cut-only regions of the cut atlas. Groups sort by name in the reader's language; structures come first when the cortex is hidden. A lobe and a system with the same name stay two groups. Rows sort by family order, name, then hemisphere. While a system is explored, only its structures are listed.
 - **Kind:** behaviour
 - **Level:** unit
@@ -228,6 +253,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (R; the cortex-hidden order and the system filter are uncovered there); `parity/C2.test.ts` (D)
 
 ### CAT-26 · Under CAB-NP colouring, HCP-MMP areas are listed by CAB-NP network
+
 - **Rule:** While CAB-NP colours the surface, HCP-MMP areas are grouped, labelled and searched under the CAB-NP network their colour shows, in the reader's language. Other colourings use the Yeo grouping.
 - **Kind:** behaviour
 - **Level:** unit
@@ -236,6 +262,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (R, fixture); `parity/C2.test.ts` (D)
 
 ### CAT-27 · The visible count excludes the medial surfaces
+
 - **Rule:** The data bar's count of visible regions counts selectable regions only.
 - **Kind:** data
 - **Level:** unit
@@ -244,6 +271,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/catalog.test.ts` (S, derived from the manifest's declared counts); `parity/C2.test.ts` (D)
 
 ### CAT-28 · The list follows the reader's language
+
 - **Rule:** Switching the language relabels the list and the search, and switching back restores the first labels. An unknown id has no entry.
 - **Kind:** behaviour
 - **Level:** unit
@@ -254,6 +282,7 @@ the expected values change with them in the same commit.
 ## Networks
 
 ### CAT-29 · Yeo networks read as their published names
+
 - **Rule:** A Yeo network abbreviation reads as its spelled-out name in the reader's language; an unknown key is shown as is, and a language with no table reads English.
 - **Kind:** data
 - **Level:** unit
@@ -262,6 +291,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/networks.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-30 · Network shares under 5 % are hidden and the rest are not rescaled
+
 - **Rule:** A region's network shares below 5 % are not shown; a share of exactly 5 % is. The shown shares keep their values. The dominant network is the first share that survives; a region with none has no dominant network.
 - **Kind:** scientific
 - **Level:** unit
@@ -270,6 +300,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/networks.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-31 · CAB-NP networks are Ji et al.'s, and the partition is checked
+
 - **Rule:** The twelve CAB-NP networks read as Ji et al. (2019) name them. The published partition must name only known networks, give each a colour, and assign only regions of its atlas to its networks.
 - **Kind:** data
 - **Level:** unit
@@ -278,6 +309,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/networks.test.ts` (R, S for the published names); `parity/C2.test.ts` (D)
 
 ### CAT-32 · A network share says what it counted
+
 - **Rule:** Network shares of cortical parcels count surface vertices; those of projected NextBrain regions count voxels. Any other region has no defined basis.
 - **Kind:** scientific
 - **Level:** unit
@@ -288,6 +320,7 @@ the expected values change with them in the same commit.
 ## Functional regions
 
 ### CAT-33 · The functional partition is checked against the regions it assigns
+
 - **Rule:** The functional-region file must have both levels; each record needs a unique id, names and short names in both languages, a colour, a known source and at least one area; each assignment must name an area of its atlas and a defined record.
 - **Kind:** behaviour
 - **Level:** unit
@@ -296,6 +329,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/functional-regions.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-34 · Every HCP-MMP area has a section, and a named region only where one is published
+
 - **Rule:** An area belongs to one of Glasser's 22 sections and, where a source names one, to a named region. Names and key labels are read in the reader's language.
 - **Kind:** data
 - **Level:** unit
@@ -306,6 +340,7 @@ the expected values change with them in the same commit.
 ## Neuropsychological domains and term search
 
 ### CAT-35 · The domain partition is checked against the regions it scores
+
 - **Rule:** The domain file needs unique groups with both names; domains with a unique id other than "all", both names, a term, a known group, an overview flag, a colour, a study count and a lesion check; at least one overview domain; a z scale that starts at the threshold and rises; and assignments only to scored regions, with known domains at or above the threshold.
 - **Kind:** behaviour
 - **Level:** unit
@@ -314,6 +349,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-36 · An area is drawn as its strongest overview domain, or the one picked
+
 - **Rule:** An area lists its domains strongest first. With no domain picked it is drawn as its strongest overview domain (passing over a stronger one shown only alone); with one picked that it reaches, as that one. A sampled aseg structure is scored like an area.
 - **Kind:** behaviour
 - **Level:** unit
@@ -322,6 +358,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-37 · The Functions list groups domains in authored order and filters by either name or term
+
 - **Rule:** The list shows the groups in authored order, each with its domains in authored order, filtered by a query that matches an English name, a French name or the term, ignoring case and accents. Empty groups are left out.
 - **Kind:** behaviour
 - **Level:** unit
@@ -330,6 +367,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-38 · A domain lists every area it reaches, strongest first
+
 - **Rule:** A domain or searched term lists every area and structure that reaches it, strongest first, ties in published order, with the number of studies its term rests on.
 - **Kind:** scientific
 - **Level:** unit
@@ -338,6 +376,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-39 · The model paint: overview colours, or z bands for one domain
+
 - **Rule:** The overview paints each scored area in its shown domain's colour. One domain or term paints each area it reaches in the colour of its z band: the last band whose start the z reaches. An unknown domain fails.
 - **Kind:** scientific
 - **Level:** unit
@@ -346,6 +385,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D, every domain and term on the published data)
 
 ### CAT-40 · The Neurosynth term search is checked
+
 - **Rule:** The term file must match the domain file's atlases and threshold, name only scored regions, and give each term once, not repeating a curated domain's term, with an integer study count, a kind (function or population) and at least one region at or above the threshold.
 - **Kind:** behaviour
 - **Level:** unit
@@ -354,6 +394,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-41 · Term search ranks the term itself, then word starts, then the rest
+
 - **Rule:** A term query (case, spaces and accents ignored) returns the terms containing it: the exact term first, then terms with a word starting with it, then the rest; more studies first within each, then alphabetical.
 - **Kind:** behaviour
 - **Level:** unit
@@ -362,6 +403,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D)
 
 ### CAT-42 · A misspelt query is offered the closest name
+
 - **Rule:** A query of four letters or more that matched nothing is offered the closest name within one edit per four letters (insertion, deletion, substitution or swap of neighbours), ignoring case and accents; ties go to the earlier name. The Functions list offers curated names first, then terms; the Deficits list offers deficit names and aliases.
 - **Kind:** behaviour
 - **Level:** unit
@@ -370,6 +412,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `parity/C2.test.ts` (D, 60 seeded misspellings), `parity/C3.test.ts` (D, clinical); clinical nearest uncovered as fixed values
 
 ### CAT-43 · The published domains and terms
+
 - **Rule:** The Functions explorer offers the published curated domains and Neurosynth terms.
 - **Kind:** data
 - **Level:** unit
@@ -380,6 +423,7 @@ the expected values change with them in the same commit.
 ## Clinical catalogue
 
 ### CAT-44 · The clinical records are checked before use
+
 - **Rule:** The deficit catalogue refuses data that is incomplete, untranslated or not linked to the atlas, and names the record at fault.
 - **Kind:** behaviour
 - **Level:** unit
@@ -388,6 +432,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R, 14 of these); `parity/C3.test.ts` (D, 46 seeded mutations and the branch-reach suite)
 
 ### CAT-45 · Deficit search finds names, domains, synonyms and findings in the reader's language
+
 - **Rule:** A deficit search ignores case, spaces and accents and matches a deficit's name, domain, aliases, and its findings' titles and networks in the reader's language. The deficit whose name is the query comes first, then the rest alphabetically. An empty query lists every deficit. A language other than English or French fails.
 - **Kind:** behaviour
 - **Level:** unit
@@ -396,6 +441,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S); `parity/C3.test.ts` (D)
 
 ### CAT-46 · Deficits list under their groups in authored order
+
 - **Rule:** The Deficits list shows matching deficits under their group, groups in authored order, and leaves out a group with no match.
 - **Kind:** behaviour
 - **Level:** unit
@@ -404,6 +450,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S)
 
 ### CAT-47 · A deficit and a region reach the same cited findings
+
 - **Rule:** The findings of a deficit and those that map a region are the same records. A region no finding maps has none, whatever another atlas maps. An unknown deficit, reference, region or finding fails.
 - **Kind:** behaviour
 - **Level:** unit
@@ -412,6 +459,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R); `parity/C3.test.ts` (D)
 
 ### CAT-48 · A deficit maps each cited region once, in citation order
+
 - **Rule:** The regions a deficit outlines are those its findings map, once each, in the order they are cited.
 - **Kind:** behaviour
 - **Level:** unit
@@ -420,6 +468,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S)
 
 ### CAT-49 · Each finding has its own colour, up to six
+
 - **Rule:** A deficit's findings take the six finding colours in citation order. A region two findings map takes the first one's colour. One finding can be shown alone. A deficit with more findings than colours, or an unknown finding, fails. Every published deficit fits.
 - **Kind:** behaviour
 - **Level:** unit
@@ -428,6 +477,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S); `parity/C3.test.ts` (D, the colours and the seven-finding throw)
 
 ### CAT-50 · The published clinical content
+
 - **Rule:** The Deficits explorer serves the published records, linked to the default anatomy.
 - **Kind:** data
 - **Level:** unit
@@ -438,6 +488,7 @@ the expected values change with them in the same commit.
 ## Circuits and lessons
 
 ### CAT-51 · The circuit records are checked before use
+
 - **Rule:** The circuit catalogue refuses lessons that are untranslated, uncited or not resolvable to exact landmarks of the anatomy.
 - **Kind:** behaviour
 - **Level:** unit
@@ -446,6 +497,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/learning/catalog.test.ts` (R for source, French text, view, covering regions; W for eight changes asserted with a bare `throws`); `parity/C3.test.ts` (D, 30 seeded mutations and the branch-reach suite)
 
 ### CAT-52 · A landmark resolves to one form, and uncovers what others cover
+
 - **Rule:** A landmark with alternatives (the cerebellar cortex whole or as lobules) resolves to the one form whose regions all exist in this anatomy; zero or two forms fail. Covering regions must be different structures of the landmark's atlas and side. Arriving at a landmark restores what the other landmarks of the circuit cover.
 - **Kind:** behaviour
 - **Level:** unit
@@ -454,6 +506,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/learning/catalog.test.ts` (R, S); `parity/C3.test.ts` (D)
 
 ### CAT-53 · The published circuits
+
 - **Rule:** The Circuits explorer serves nine guided circuits, each tied to a deficit, resolving to exact landmarks of the default anatomy.
 - **Kind:** data
 - **Level:** unit
@@ -462,6 +515,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/learning/catalog.test.ts` (S); `parity/C3.test.ts` (D)
 
 ### CAT-54 · An unknown circuit, landmark or reference fails
+
 - **Rule:** Asking the circuit catalogue for something it does not hold throws.
 - **Kind:** behaviour
 - **Level:** unit
@@ -470,6 +524,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/learning/catalog.test.ts` (R, two of four); `parity/C3.test.ts` (D)
 
 ### CAT-55 · A lesson remembers where it is and what was seen
+
 - **Rule:** Starting a circuit opens its first landmark. Going to a landmark records it as seen, once, in visit order. A start of an unknown circuit, or a move to a landmark that does not exist, fails and changes nothing. Closing forgets the lesson. Restarting starts over. A snapshot is a copy.
 - **Kind:** behaviour
 - **Level:** unit
@@ -478,6 +533,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/learning/session.test.ts` (R); `parity/C3.test.ts` (D, 40 seeded sequences); go-before-start uncovered as a fixed value
 
 ### CAT-56 · Every citation names the work its identifiers point to
+
 - **Rule:** Each clinical, circuit, functional-region, domain and bibliography citation matches the record its PMID, DOI or Bookshelf id resolves to: title, authors, PubMed issue year and published corrections. The records file holds exactly the cited works.
 - **Kind:** data
 - **Level:** unit
@@ -488,6 +544,7 @@ the expected values change with them in the same commit.
 ## Atlas comparison
 
 ### CAT-57 · A comparison gives each overlap as a share of this region
+
 - **Rule:** For a cortical region of one atlas, the comparison lists the regions of the other atlas it overlaps, largest first (ties by target id), each with its area and its share of this region's whole area. The unassigned labels' overlap is added up apart. A non-cortical or unassigned region has no comparison; an unknown id fails.
 - **Kind:** scientific
 - **Level:** unit
@@ -496,6 +553,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/comparison/catalog.test.ts` (R); `parity/C3.test.ts` (D; the equal-area tie-break only there)
 
 ### CAT-58 · The comparison file is checked against the manifest and conserves area
+
 - **Rule:** The comparison data must name this subject, the two cortical atlases in order, the original pial surface, the barycentric vertex-cell method and mm²; pin every source and asset by SHA-256 and match the manifest's atlas files and citations; give a positive total for every cortical region; and give pairs of valid, same-side regions, once each, with unique mesh ids and positive areas, whose sums equal each region's total within a relative 1e-10.
 - **Kind:** scientific
 - **Level:** unit
@@ -504,6 +562,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/comparison/catalog.test.ts` (R, 39 malformed-data cases and 4 manifest cases, asserting only the "Invalid atlas comparison:" prefix); `parity/C3.test.ts` (D, 47 seeded mutations and the branch-reach suite, by message)
 
 ### CAT-59 · The CSV keeps every label, full precision and the provenance
+
 - **Rule:** The comparison CSV has one row per overlap, unassigned labels each on their own row, numbers at full precision, region names in the chosen language and the provenance needed to reproduce it. Cells holding a comma, quote or line break are quoted; lines end with CRLF. Only English and French exports exist; a non-cortical region has none.
 - **Kind:** behaviour
 - **Level:** unit
@@ -512,6 +571,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/comparison/catalog.test.ts` (R); `parity/C3.test.ts` (D)
 
 ### CAT-60 · The published comparison conserves every cortical region both ways
+
 - **Rule:** On the published data every cortical region's overlaps and unassigned part add up to its total, each overlap is the same seen from either side, and the CSV has one row per pair.
 - **Kind:** scientific
 - **Level:** unit
@@ -522,6 +582,7 @@ the expected values change with them in the same commit.
 ## Diffusion
 
 ### CAT-61 · Tracts come from the catalogues the config names
+
 - **Rule:** The viewer serves exactly the tract catalogues `config/model.yaml` lists, each owned by one published anatomy, with the same dataset copy keys in both languages. An anatomy with its own tracts gets them; any other gets CDMD's as an independent reference.
 - **Kind:** data
 - **Level:** unit
@@ -530,6 +591,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/diffusion/catalogs.test.ts` (H for the config match, R for the fallback); `parity/C3.test.ts` (D); the fixed dataset values are uncovered
 
 ### CAT-62 · A diffusion map must be a 3D scalar volume with explicit millimetre space
+
 - **Rule:** A map is accepted only with image data, three spatial dimensions (no fourth beyond one), a scalar data type, millimetre units, a spatial transform (sform or qform) that is a finite, invertible 4 × 4 affine with last row 0 0 0 1, and positive finite voxel spacing.
 - **Kind:** scientific
 - **Level:** unit
@@ -538,6 +600,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/diffusion/validation.test.ts` (R, partial: one change per class, messages for three); `parity/C3.test.ts` (D, 600 seeded headers)
 
 ### CAT-63 · A tracts failure is shown by one of four codes
+
 - **Rule:** A download failure and a newer deploy keep their own code; an invalid map is `invalid-data`; anything else is `failed`.
 - **Kind:** behaviour
 - **Level:** unit
@@ -546,6 +609,7 @@ the expected values change with them in the same commit.
 - **Covered by:** `src/lib/core/diffusion/validation.test.ts` (R, four classes); `parity/C3.test.ts` (D, 89 cases)
 
 ### CAT-64 · Tracts of another subject are an independent reference
+
 - **Rule:** In the Tracts explorer, tracts are an independent reference when their subject is not the anatomy shown. The explorer must know both; elsewhere the question does not arise.
 - **Kind:** behaviour
 - **Level:** unit

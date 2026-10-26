@@ -5,6 +5,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 ## What it lists
 
 ### SHORT-01 · Three groups of 21 key rows, in the reader's language
+
 - **Rule:** The dialog lists the keys in three groups: Panel (8 rows), Model (7 rows) and Display (6 rows), each row a key and what it does, then a note on turning single-key shortcuts off. French: Panneau, Modèle, Affichage.
 - **Kind:** data
 - **Level:** unit
@@ -13,6 +14,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, the keys present); `src/features/shortcuts/shortcuts.svelte.test.ts` (R, the titles and 21 `dt`/`dd`, could move down to unit for the data); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
 
 ### SHORT-02 · Every key the keymap acts on is in the list
+
 - **Rule:** Each key the page keymap handles (`?`, `/`, the tree arrows, the seven view digits, F, I, C, U, S, H, M) appears in the dialog, a range standing for every digit between its ends and the arrows drawn as ↑ and ↓.
 - **Kind:** data
 - **Level:** unit — `SHORTCUT_KEYS` against the i18n rows
@@ -21,6 +23,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R; reads the caps from the DOM, so it is a browser test for a data rule and could move down to unit)
 
 ### SHORT-03 · The rows say what the keys really do (decision 24, comment 81)
+
 - **Rule:** D1: the French Escape row names the function and the deficit, as the English one does. D2: the M row says it also opens or closes the MRI with tracts in Tracts, naming that dialog by its button. D3: the French cap for Escape is "Échap".
 - **Kind:** behaviour
 - **Level:** unit
@@ -29,6 +32,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, D1 and D3); `e2e/parity/shortcuts.spec.ts` (R, D3, accepts Esc or Échap; `next` gated off); D2 only in `parity/C1.test.ts` (D)
 
 ### SHORT-04 · The note says how to turn single-key shortcuts off, or back on
+
 - **Rule:** The note under the list follows the reader's single-key preference, and updates while the dialog is open.
 - **Kind:** behaviour
 - **Level:** unit — the strings; a browser check that the note follows the prop
@@ -39,6 +43,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 ## How keys are written
 
 ### SHORT-05 · Each key is a cap, and a dash between two keys is read as "to"
+
 - **Rule:** A row's keys are split on spaces and each is drawn as a key cap (`kbd`). A dash between two caps is a range: the dash is hidden from assistive technology and a visually hidden "to" (FR "à") follows it, so a screen reader says "1 to 6", not "1 6".
 - **Kind:** accessibility
 - **Level:** browser — the DOM a screen reader reads; the token split is pure and could be a view-model unit test
@@ -47,6 +52,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R, branches legacy's 0; `next` gated off)
 
 ### SHORT-06 · A group is a heading and its list, not an unnamed section
+
 - **Rule:** The dialog's title is a level-2 heading; each group is a level-3 heading followed by a description list of key and action, wrapped in a plain container rather than an unnamed `section`.
 - **Kind:** accessibility
 - **Level:** browser — DOM structure
@@ -57,6 +63,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 ## Opening, closing and focus
 
 ### SHORT-07 · The dialog's title takes focus on opening; Close is the one Tab stop
+
 - **Rule:** On opening, focus goes to the title (a static heading that can take focus), so a screen reader reads the dialog's name and then its content. Close stays the first and only focusable control.
 - **Kind:** accessibility
 - **Level:** browser — focus
@@ -65,6 +72,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R, branches; `next` gated off)
 
 ### SHORT-08 · Opened or closed by a key it appears at once; by a pointer it fades
+
 - **Rule:** An opening or closing made from the keyboard (Enter or Space on the opener or on Close, `?`, Escape) is instant. A pointer opening or a pointer press on Close animates.
 - **Kind:** behaviour
 - **Level:** browser — keyboard versus pointer activation
@@ -73,6 +81,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
 
 ### SHORT-09 · Closing returns focus to the opener, else to the settings button, else leaves it on the page
+
 - **Rule:** Escape or Close returns focus to the control that opened the dialog. When that control is gone (the settings menu closed behind the dialog), focus goes to the "More settings" (⋯) button. When the dialog was opened by `?` with nothing focused, focus stays on the page.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -81,6 +90,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
 
 ### SHORT-10 · Tab stays in the dialog
+
 - **Rule:** While the dialog is open, Tab never reaches the page: focus stays inside the dialog or goes to the browser's own controls.
 - **Kind:** accessibility
 - **Level:** browser — sequential focus
@@ -89,6 +99,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
 
 ### SHORT-11 · `?` reaches the page while the dialog is open, and Escape closes only the dialog
+
 - **Rule:** The dialog does not isolate keys: `?` pressed inside it reaches the page keymap, which closes it (KEY-08). Escape closes the dialog and nothing behind it changes (KEY-03). Keys that scroll the list are not cancelled.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch; e2e for the selection behind it
@@ -97,6 +108,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R, `?` through a stand-in keymap); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
 
 ### SHORT-12 · A language change while open relabels the dialog in place
+
 - **Rule:** Switching the language while the dialog is open rewrites its title, groups, rows, Close and range word, and focus stays on the title.
 - **Kind:** behaviour
 - **Level:** browser — focus across a rerender
@@ -105,6 +117,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R, French labels; `next` gated off)
 
 ### SHORT-13 · The settings menu opens it, and `?` does nothing when single keys are off
+
 - **Rule:** In the app the dialog opens from the "Keyboard shortcuts" item of the "More settings" menu. With single-key shortcuts turned off, `?` does not open it, and the note says how to turn them back on.
 - **Kind:** behaviour
 - **Level:** e2e — the assembled masthead, keymap and stored preference
@@ -115,6 +128,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 ## Size, layout and media
 
 ### SHORT-14 · Close is 24 px, and 44 px on a coarse pointer
+
 - **Rule:** The Close button is at least 24 × 24 px, and exactly 44 × 44 px when the primary pointer is coarse.
 - **Kind:** accessibility
 - **Level:** browser — layout under emulated touch
@@ -123,6 +137,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R, ≥ 24 on a phone; `next` gated off)
 
 ### SHORT-15 · Large text, spacing and small screens keep every row inside the dialog
+
 - **Rule:** With 200 % text and the WCAG 1.4.12 spacing, in English and French, at 1280 and 320 px, no key or description spills sideways and the dialog does not scroll sideways. On a short landscape phone the title and Close stay in view while the list scrolls under them. On a phone the dialog fills the width and the page does not scroll sideways. Upright on a phone the key sits above its description.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -131,6 +146,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R, phone width; `next` gated off)
 
 ### SHORT-16 · Reduced motion drops the scale, and forced colours keep the edges
+
 - **Rule:** With reduced motion the dialog opens with no scale transform. In forced colours the dialog and each key cap keep a visible border.
 - **Kind:** accessibility
 - **Level:** browser — CSS computed style
@@ -139,6 +155,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R)
 
 ### SHORT-17 · axe finds nothing with the dialog open
+
 - **Rule:** The open dialog has no axe violation in light and dark, at desktop and phone width, in English and French, and with more contrast.
 - **Kind:** accessibility
 - **Level:** browser — axe

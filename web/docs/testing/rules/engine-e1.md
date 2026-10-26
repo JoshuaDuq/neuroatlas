@@ -12,6 +12,7 @@ that lists only that file goes away at cutover.
 ## Camera views
 
 ### RENDER-01 · Named views look from fixed anatomical directions
+
 - **Rule:** Each named view puts the camera on a fixed side of the subject. The direction is the unit vector from subject to camera.
 - **Kind:** behaviour
 - **Level:** unit
@@ -20,6 +21,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `parity/E1.test.ts` (D) only. `src/lib/engine/render/camera-views.test.ts` (R) checks the seven keys but no vector; mutating `oblique` to (1, 0.3, -0.45) survives it.
 
 ### RENDER-02 · Polar views keep a readable up
+
 - **Rule:** Looking straight down or up, the screen's up is anterior (superior view) or posterior (inferior view); every other view keeps superior up.
 - **Kind:** behaviour
 - **Level:** unit
@@ -28,6 +30,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-03 · A cut is faced from the side it keeps
+
 - **Rule:** Turning on a cut faces the camera onto the cut surface; the reverse flag flips which side is faced.
 - **Kind:** behaviour
 - **Level:** unit
@@ -36,6 +39,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-04 · A restored link faces its cut unless it names a view
+
 - **Rule:** A link that carries a cut but no view opens facing the cut. A link that names a view keeps that view.
 - **Kind:** behaviour
 - **Level:** unit
@@ -44,6 +48,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-05 · Clipping planes and zoom limits follow what is framed
+
 - **Rule:** Near/far planes and orbit distance limits come from the framed bounds every time, so focusing a small structure lets the camera come close, and returning to the whole brain restores the limits. Elongated structures take their closest approach from their thinnest span.
 - **Kind:** behaviour
 - **Level:** unit
@@ -52,6 +57,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R; checks the ratio and the inequalities, not the formula), `parity/E1.test.ts` (D)
 
 ### RENDER-06 · Framed anatomy spans four fifths of the stage
+
 - **Rule:** Framing places the camera so the anatomy's silhouette spans FRAME_FILL = 0.8 of the visible stage on its tighter axis. Fitting to the vertex silhouette never crops what fitting to the bounding box kept, and stands closer than the box when the box's corners are empty.
 - **Kind:** behaviour
 - **Level:** unit
@@ -60,6 +66,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-07 · Framing fits the part of the canvas the reader can see
+
 - **Rule:** When chrome covers part of the canvas (a phone sheet), framing narrows the frustum slopes by the visible fraction per axis, so the anatomy fits the uncovered rectangle.
 - **Kind:** behaviour
 - **Level:** unit
@@ -68,6 +75,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `parity/E1.test.ts` (D). `src/lib/engine/framing.test.ts` frames with a vertical fit of 0.45 but asserts only the full-canvas ±0.8 bound (W), and `src/lib/engine/render/scene.test.ts` passes a fit to `planFraming` without checking its effect (W). The narrowed span is uncovered outside D.
 
 ### RENDER-08 · A small landmark is framed with its neighbourhood
+
 - **Rule:** Bounds whose bounding sphere is smaller than 50 mm in radius are grown by the same margin on every side until the radius is 50 mm, so a small structure is shown in context. Larger bounds are left unchanged.
 - **Kind:** behaviour
 - **Level:** unit
@@ -76,6 +84,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-09 · Fitting to an empty point list is refused
+
 - **Rule:** Framing an empty silhouette is an error, not a zero distance that would put the camera on its target. `null` still means "fit the box corners".
 - **Kind:** behaviour
 - **Level:** unit
@@ -84,6 +93,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R)
 
 ### RENDER-10 · Planning a framing announces nothing
+
 - **Rule:** Planning a framing sets the camera limits, the destination pose and the orbit target, but sends no 'change' event. The orientation letters listen for that event and would otherwise show the destination's letters over the picture being left.
 - **Kind:** behaviour
 - **Level:** unit
@@ -92,6 +102,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/camera-views.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-11 · A view along the up axis still frames
+
 - **Rule:** When the view direction is parallel to the camera's up (an orbit onto a pole), framing still gives a finite distance and pose.
 - **Kind:** behaviour
 - **Level:** unit
@@ -102,6 +113,7 @@ that lists only that file goes away at cutover.
 ## Camera path
 
 ### RENDER-12 · Animated view changes orbit round the anatomy
+
 - **Rule:** An animated move turns the camera by the shortest rotation between its start and end orientations, interpolating the distance and the target, so the camera swings round the anatomy instead of cutting through it and its roll turns with it. The move ends exactly on the pose an immediate move gives.
 - **Kind:** behaviour
 - **Level:** unit
@@ -112,6 +124,7 @@ that lists only that file goes away at cutover.
 ## Effective viewport
 
 ### RENDER-13 · The visible rectangle is the canvas minus the chrome
+
 - **Rule:** The visible part of the canvas is the canvas inset by the chrome on each side. Insets that would cover the canvas are scaled down in proportion so that a tenth of each axis stays visible. Negative insets count as zero.
 - **Kind:** behaviour
 - **Level:** unit
@@ -120,6 +133,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/effective-viewport.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-14 · Fit scale is the visible fraction of each axis
+
 - **Rule:** The share of each axis left visible, capped at 1, is what RENDER-07 narrows the framing by.
 - **Kind:** behaviour
 - **Level:** unit
@@ -128,6 +142,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/effective-viewport.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-15 · The image is centred in the visible rectangle by shifting the frustum
+
 - **Rule:** When the visible rectangle is off-centre, the projection is shifted so the model sits in the middle of what the reader sees. The camera is not moved, and the frustum keeps its size.
 - **Kind:** behaviour
 - **Level:** unit
@@ -136,6 +151,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/effective-viewport.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-16 · Framing keeps the anatomy off the orientation letters and the scale bar
+
 - **Rule:** The framed band of anatomy lies between the top marking and the dock plus bottom marking, and inside the side markings. A stage too short for its markings still frames a sliver of anatomy.
 - **Kind:** behaviour
 - **Level:** unit
@@ -146,6 +162,7 @@ that lists only that file goes away at cutover.
 ## Orbit controls
 
 ### RENDER-17 · Every view orbits about its own screen axes
+
 - **Rule:** The superior and inferior views (whose up is not +y) respond to sideways and vertical drags in both directions. A sideways drag from above rolls the brain about its anterior–posterior axis. Views with a superior up orbit exactly as the stock controls do.
 - **Kind:** behaviour
 - **Level:** unit
@@ -154,6 +171,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/orbit-controls.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-18 · Zoom closes on the surface under the pointer and never passes it
+
 - **Rule:** Zooming scales the camera and the target together about the first surface point under the pointer (or the centre of the view for a zoom key), so that point stays still on screen and the camera approaches the surface without crossing it. Over empty stage, zoom scales the distance to the target. The distance always stays within the orbit limits.
 - **Kind:** behaviour
 - **Level:** unit
@@ -162,6 +180,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/orbit-controls.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-19 · A zoom ray that misses the level plane is a named error
+
 - **Rule:** If neither a surface nor the plane level with the target is under the zoom ray, zooming fails with a named error rather than a TypeError deep inside.
 - **Kind:** behaviour
 - **Level:** unit
@@ -170,6 +189,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** uncovered
 
 ### RENDER-20 · Turning or panning close in never carries the camera into tissue
+
 - **Rule:** A turn or pan that would bring the camera within minDistance/4 of a surface, along its path or its line of sight, is refused, and the camera backs away from the target instead. Once moves are free again, the camera returns to the distance the reader last chose by zooming. Moves that stay clear, moves that leave a structure, and framing jumps are not touched.
 - **Kind:** behaviour
 - **Level:** unit
@@ -180,6 +200,7 @@ that lists only that file goes away at cutover.
 ## Keyboard orbit
 
 ### RENDER-21 · Arrow keys turn the model five degrees, like a drag
+
 - **Rule:** Each arrow press turns the orbit by ORBIT_STEP = π/36 (5°) at once, without damping, in the direction a drag would. Damping stays on for pointer drags. Holding a key never flips the horizon over a pole, and the distance to the target is kept.
 - **Kind:** behaviour
 - **Level:** unit
@@ -188,6 +209,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/keyboard-orbit.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-22 · Zoom keys step by the wheel's proportion
+
 - **Rule:** `+` and `=` (one key on most layouts) zoom in, and `-` zooms out, by a factor of 1.1 per press. Only the four arrows and these three keys are bound.
 - **Kind:** behaviour
 - **Level:** unit
@@ -198,6 +220,7 @@ that lists only that file goes away at cutover.
 ## Orientation markers
 
 ### RENDER-23 · Edge letters name the anatomical direction toward each edge
+
 - **Rule:** Each viewport edge is labelled with the anatomical direction most aligned with the camera's screen axis toward it. The letters are worked out from the camera itself, so a freely orbited view stays correct. Opposite edges always carry opposite letters. Given the orbit target, the letters are those of the pose about to be drawn, including inside the controls' own 'change' event.
 - **Kind:** behaviour
 - **Level:** unit
@@ -206,6 +229,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/orientation.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-24 · Edge letters are translated without asking the camera again
+
 - **Rule:** French readers see D (droite) for R and G (gauche) for L; S, I, A and P are unchanged. Any other language is English.
 - **Kind:** behaviour
 - **Level:** unit
@@ -216,6 +240,7 @@ that lists only that file goes away at cutover.
 ## Scale bar
 
 ### RENDER-25 · The scale bar is a true 1-2-5 measurement
+
 - **Rule:** The bar shows a length in anatomical millimetres at the target distance. The length is the largest value in the 1-2-5 sequence from 0.1 mm to 1000 mm whose bar is 60 to 150 px long.
 - **Kind:** scientific/data
 - **Level:** unit
@@ -224,6 +249,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/scale-bar.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-26 · No scale bar without a measurable viewport
+
 - **Rule:** A hidden or background tab (zero height) or a non-positive or non-finite distance shows no bar, rather than a false length.
 - **Kind:** behaviour
 - **Level:** unit
@@ -234,6 +260,7 @@ that lists only that file goes away at cutover.
 ## Quality and device
 
 ### RENDER-27 · Presentation quality scales with the device; the anatomy never does
+
 - **Rule:** Pixel ratio, MSAA and prefetching of the other atlas scale with the device. Meshes, labels and coordinates are the same on every device.
 - **Kind:** behaviour
 - **Level:** unit
@@ -242,6 +269,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/quality.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-28 · A moving picture keeps to a pixel budget
+
 - **Rule:** While the camera moves, the pixel ratio is lowered so that a frame fills at most 2 000 000 device pixels, rounded to 0.01 and never above the cap.
 - **Kind:** behaviour
 - **Level:** unit
@@ -250,6 +278,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/quality.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-29 · Phone layout and phone rendering budget are separate questions
+
 - **Rule:** The compact shell applies at width ≤ 800 px, or height ≤ 480 px in landscape. The phone rendering budget applies only at width ≤ 640 px, or height ≤ 480 px in landscape. Tablets and narrow desktop windows get the compact layout without the phone's lower pixel ratio.
 - **Kind:** behaviour
 - **Level:** unit
@@ -258,6 +287,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/device.test.ts` (R, through a hand-written `matchMedia` fake that parses `max-width`; the real media-query strings are not evaluated), `parity/E1.test.ts` (D)
 
 ### RENDER-30 · Only named discrete GPUs count as discrete
+
 - **Rule:** A GPU counts as discrete only when its name is NVIDIA/GeForce/Quadro/RTX/GTX, Radeon RX/Pro, or Intel Arc. Everything else (Apple, Intel iGPU, plain "AMD Radeon Graphics", a withheld or empty name) is integrated. Apple silicon is recognised from the name.
 - **Kind:** behaviour
 - **Level:** unit
@@ -266,6 +296,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/device.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-31 · The GPU probe releases its context and lets failures surface
+
 - **Rule:** Probing the GPU name releases the throwaway WebGL context, and a failure to create it propagates instead of being reported as "integrated". Without a document (server-side or test), the GPU is not integrated.
 - **Kind:** behaviour
 - **Level:** unit
@@ -276,6 +307,7 @@ that lists only that file goes away at cutover.
 ## Outline helpers
 
 ### RENDER-32 · The outline depth pass draws only what can occlude the selection
+
 - **Rule:** While the outline mask renders, meshes whose bounds cannot overlap the selection's projected box (padded by one pixel) are hidden, and every mesh is restored afterwards, even if rendering throws. A selection that crosses the near plane keeps the whole scene. A mesh with children is never hidden. Elongated meshes are rejected by their box even when their bounding sphere overlaps.
 - **Kind:** behaviour
 - **Level:** unit
@@ -284,6 +316,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/outline-occluders.test.ts` (R), `parity/E1.test.ts` (D)
 
 ### RENDER-33 · The halo and the core reuse one mask when they outline the same meshes
+
 - **Rule:** Two outline lists naming the same meshes, in any order, count as the same set, so the core reuses the halo's mask instead of drawing the scene again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -292,6 +325,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/outline-edges.test.ts` (R), `src/lib/engine/render/scene.test.ts` (I, spies that the core paints from the halo's mask texture), `parity/E1.test.ts` (D)
 
 ### RENDER-34 · Painting outline edges leaves the renderer as it found it
+
 - **Rule:** Drawing outline edges from an existing mask gives the same edges as OutlinePass's own tail. The clear colour, clear alpha, autoClear and the stencil test are restored afterwards, also when a draw throws.
 - **Kind:** behaviour
 - **Level:** browser — the drawn edges equal OutlinePass's own only on real WebGL pixels; the state restore on throw is provable at unit
@@ -302,6 +336,7 @@ that lists only that file goes away at cutover.
 ## Border feather
 
 ### RENDER-35 · Parcel borders fade over 1.5 mm of surface
+
 - **Rule:** Along the cortex, a parcel's colour blends into its neighbour's over FEATHER_RADIUS = 1.5 mm of geodesic (edge-path) distance, which hides the zig-zag of borders cut at the ~0.8 mm vertex spacing. On a border vertex the parcels that meet share it evenly (n + 1 parcels: 1/(n + 1) each). The share of the neighbour falls linearly to 0 at the radius. A parcel that shares no vertex is not blended.
 - **Kind:** behaviour
 - **Level:** unit
@@ -310,6 +345,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R), `parity/E2.test.ts` (D; also on the published destrieux and hcp-mmp cortex)
 
 ### RENDER-36 · Feathering refuses input it cannot feather
+
 - **Rule:** Feathering needs indexed geometry, a positive radius, and at most three parcels meeting at a point.
 - **Kind:** behaviour
 - **Level:** unit
@@ -318,6 +354,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R, unindexed only), `parity/E2.test.ts` (D, radius); the four-parcel error is uncovered
 
 ### RENDER-37 · A hidden parcel lends no colour to its neighbours
+
 - **Rule:** The feather palette holds each parcel's current colour, in linear RGB, with alpha 1 when the parcel is shown and 0 when it is hidden. A neighbour therefore never blends toward a parcel the reader removed.
 - **Kind:** behaviour
 - **Level:** unit
@@ -328,6 +365,7 @@ that lists only that file goes away at cutover.
 ## Section coordinates
 
 ### RENDER-38 · Source RAS millimetres map to world metres
+
 - **Rule:** RAS (right, anterior, superior) in mm maps to world (x = R/1000, y = S/1000, z = −A/1000), and back.
 - **Kind:** scientific/data
 - **Level:** unit
@@ -336,6 +374,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D). SLICE-01 in `engine-e4a.md` points here.
 
 ### RENDER-39 · Section frames have fixed axes and edge letters
+
 - **Rule:** Standard section planes have fixed normals, in-plane axes and edge letters. An oblique plane's normal comes from tilt and azimuth. All frames are orthonormal and pass through the requested point.
 - **Kind:** scientific/data
 - **Level:** unit
@@ -344,6 +383,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, standard normals, orthonormality and the plane through the point; the oblique case checks orthonormality only), `parity/E1.test.ts` (D; edge letters, u/v, the oblique normal formula and the range RangeError only here). `parity/f2.test.ts` (D) compares the fake's letters, not these. SLICE-02 points here; SLICE-03 adds the cut controller's angle range. The contract suite (R, `mprFrame` normals for axial and coronal, the sagittal cut normal) also holds part of it.
 
 ### RENDER-40 · A cut removes the positive half unless reversed
+
 - **Rule:** The clipping plane passes through the frame centre and removes the half on the positive side of the source normal; reverse keeps that half instead.
 - **Kind:** behaviour
 - **Level:** unit
@@ -352,6 +392,7 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R), `parity/E1.test.ts` (D). SLICE-04 in `engine-e4a.md` points here. `src/lib/engine/slices/sections.test.ts` (R, the fractional offset).
 
 ### RENDER-41 · A cut through a point stays inside the volume
+
 - **Rule:** The offset of a plane through a RAS point is the point's projection on the normal, clamped to the volume's range. Non-finite input is an error.
 - **Kind:** scientific/data
 - **Level:** unit
@@ -360,14 +401,16 @@ that lists only that file goes away at cutover.
 - **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, clamp), `parity/E1.test.ts` (D, error). SLICE-05 in `engine-e4a.md` points here.
 
 ### RENDER-42 · Only real section planes and finite points make a frame
+
 - **Rule:** A frame needs three finite RAS values and one of the four plane names. Names inherited from Object are not planes.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:35-37, 49-50`; deviation `e1-render-primitives.md` #4
-- **Expected:** "banana", "off", "constructor", "toString" and "__proto__" → Error "Unknown section plane: …". NaN or a two-value point → Error "Slice coordinates must be three finite RAS values.".
+- **Expected:** "banana", "off", "constructor", "toString" and "**proto**" → Error "Unknown section plane: …". NaN or a two-value point → Error "Slice coordinates must be three finite RAS values.".
 - **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R; "banana", the three Object names and NaN; "off" and a two-value point only in D), `parity/E1.test.ts` (D). SLICE-02 points here for the plane names.
 
 ### RENDER-43 · Slice canvas points and centred frames
+
 - **Rule:** A canvas fraction (x, y) with a top-left origin maps to centre + u·(x − 0.5)·fov + v·(0.5 − y)·fov. A centred frame moves the centre to the normal's line through the origin, at the same offset. The world-to-voxel matrix composes the volume's inverse affine with world → RAS mm.
 - **Kind:** scientific/data
 - **Level:** unit

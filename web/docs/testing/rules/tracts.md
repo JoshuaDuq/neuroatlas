@@ -5,6 +5,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## The tract list
 
 ### TRACT-01 · A tract's left and right files share one row, left first; numbered segments share a row named without the number
+
 - **Rule:** Bundles whose id ends in `-left`/`-right` pair into one row, left before right, named by what their names share before " · side". Bundles whose id ends in a number share one row named without the trailing number. A bundle with neither, a row mixing sides and segments, and members whose names disagree are errors.
 - **Kind:** behaviour
 - **Level:** unit
@@ -13,6 +14,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/lib/core/tracts.test.ts` (R); `parity/T1.test.ts` (D)
 
 ### TRACT-02 · The published CDMD collection reads as 13 tracts in both languages
+
 - **Rule:** The 30 published bundles form 13 rows: 11 sided tracts, the whole corpus callosum, and the seven TractSeg callosal segments; every row has a name in English and French. The list shows them in catalog order with the two initial bundles drawn.
 - **Kind:** data
 - **Level:** unit
@@ -21,6 +23,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/lib/core/tracts.test.ts` (S); `parity/T1.test.ts` (D, rows and names equal legacy's for the 30 bundles); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, 13 groups, 30 keys in catalog order); `e2e/parity/tracts.spec.ts` (R; `next` gated off)
 
 ### TRACT-03 · Each tract is a group of keys, each key a checkbox named in full
+
 - **Rule:** Each row is a group named by the tract. Each side or segment is a native checkbox named by the full bundle name, with the same tooltip, showing only a letter (the side glyph) or the segment number.
 - **Kind:** accessibility
 - **Level:** browser — ARIA in the DOM
@@ -29,6 +32,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, aria snapshot; `next` gated off)
 
 ### TRACT-04 · Opening the Tracts tab the first time loads the dataset; the engine follows the tab after that
+
 - **Rule:** The panel loads nothing until the Tracts tab is open. The first opening loads the reference dataset and draws the catalog's initial bundles. Every later opening and closing reaches the engine, also while the first load is still running. The panel is hidden while its tab is not in front.
 - **Kind:** behaviour
 - **Level:** browser — the component's effects with the fake engine (pure enough to move into a view-model unit test)
@@ -37,6 +41,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, the initial two drawn; `next` gated off)
 
 ### TRACT-05 · A key's count and lengths describe it only while its bundle is drawn
+
 - **Rule:** While a bundle is drawn, its key is described by its side letter, the streamline count ("{n} streamlines", or "{shown} of {total} streamlines" after the length filter) and the length summary, or "No streamlines meet this length filter." when none is kept. An undrawn key has no description at all.
 - **Kind:** accessibility
 - **Level:** browser — `aria-describedby` and DOM presence
@@ -45,6 +50,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R; "No streamlines meet this length filter." is uncovered); `e2e/parity/tracts.spec.ts` (R, branches legacy; `next` gated off); the count wording is I18N-
 
 ### TRACT-06 · Lengths read as a paper writes them, in the reader's notation
+
 - **Rule:** A drawn bundle's lengths read "mean M mm (range A–B)", each to one decimal, with a decimal comma in French.
 - **Kind:** behaviour
 - **Level:** unit
@@ -53,6 +59,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/lib/core/tracts.test.ts` (R; the 0.05/0/1000 case is only in the D file); `parity/T1.test.ts` (D)
 
 ### TRACT-07 · A key draws or hides a loaded bundle, and downloads one not yet loaded at its first check
+
 - **Rule:** Checking or unchecking a key whose bundle is loaded draws or hides it at once. Checking a key whose bundle is not loaded downloads it: meanwhile the key stays checked and its row is marked busy; when it arrives, "Loaded: {name}" is said; if the download fails the key unchecks and the alert says why. A download that finishes after the panel is gone says nothing.
 - **Kind:** behaviour
 - **Level:** browser — keyboard and the fake engine's timing
@@ -63,6 +70,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## The search
 
 ### TRACT-08 · The search keeps a tract when its name or any member's name contains the query, ignoring case and accents
+
 - **Rule:** As the reader types (no Enter), rows are kept when the folded query is a substring of the folded row name or any member name in the interface language. Folding lower-cases and removes accents, so "arque" finds "Arqué". English text is never matched in French.
 - **Kind:** behaviour
 - **Level:** unit (view-model); the row hiding is checked in the browser
@@ -71,6 +79,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/lib/core/tracts.test.ts` (R); `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; `next` gated off)
 
 ### TRACT-09 · The list heading counts the bundles kept; with none, an empty state replaces it
+
 - **Rule:** The heading above the list reads "Tract bundles" and the number of bundles kept, named "Tract bundles, N" with a hidden comma so it reads as one phrase. When nothing matches, the heading goes and the empty state says "No match for “{query}”" with the hint "Try another tract name."
 - **Kind:** accessibility
 - **Level:** browser — heading name; the count is a view-model value
@@ -79,6 +88,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, heading contains "2" for "cingul"; `next` gated off)
 
 ### TRACT-10 · The result is said once typing pauses
+
 - **Rule:** 500 ms after typing pauses, the page says the number of bundles kept, or the empty state with its hint. A language switch says nothing; a panel unmounted while a count is pending says nothing.
 - **Kind:** accessibility
 - **Level:** browser — the page's live region (fake timers make it instant)
@@ -87,6 +97,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R; the first case waits on the real 500 ms debounce); the count sentence is in `src/lib/core/i18n/i18n.test.ts` (I18N-)
 
 ### TRACT-11 · Escape and the clear button empty the search and keep focus in it
+
 - **Rule:** With text in the field, Escape clears it, keeps focus there and is consumed; on an empty field Escape is left to the page's cascade. A "Clear search" button shows only while there is text, and clears and refocuses the field (Enter and Space press it). An empty field shows the `/` keycap, hidden from assistive technology; `/` focuses the field (KEY-09).
 - **Kind:** behaviour
 - **Level:** browser — keyboard and focus
@@ -97,6 +108,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## Loading and failure
 
 ### TRACT-12 · While the dataset loads the controls are off and a polite status says so
+
 - **Rule:** Until the reference dataset is ready, everything below the search is disabled, while the search stays usable. A polite status says "Loading reference dataset…", then "Reference dataset ready.", and is never rewritten with the same words.
 - **Kind:** accessibility
 - **Level:** browser — live region and disabled state
@@ -105,6 +117,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-13 · A failed load raises a separate alert and offers Try again, or Reload after an update
+
 - **Rule:** A failure mounts a separate alert with the failure's sentence and empties the status; the controls stay disabled. "Try again" (FR "Réessayer") repeats the failed load, and the alert goes when it starts. When the site was updated, the only help is a page reload, so the button is "Reload" (FR "Recharger").
 - **Kind:** behaviour
 - **Level:** browser — live regions and the fake engine
@@ -113,6 +126,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); the sentences per error code are I18N-
 
 ### TRACT-14 · After a load, focus that fell to the page goes back where it was, else to Try again, else to the search
+
 - **Rule:** A load disables the controls and may remove the button pressed. If focus fell to the page or onto a disabled control, it returns to the remembered element when it can take focus, else to Try again when a failure shows it, else to the search field. Any other re-render moves nothing.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -123,6 +137,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## Display settings and export
 
 ### TRACT-15 · The closed settings still say what they hold: opacity and the length filter
+
 - **Rule:** The "Tract display" disclosure is closed by default; its summary reads the opacity and the minimum length, following the minimum slider as it moves. Open, the controls speak for themselves.
 - **Kind:** behaviour
 - **Level:** unit — the readout; the disclosure in the browser
@@ -131,6 +146,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/lib/core/tracts.test.ts` (R; the 0/250 case is only in the D file); `parity/T1.test.ts` (D); `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, "16% · ≥2 mm" after one step; `next` gated off)
 
 ### TRACT-16 · The opacity slider sets the cortex on the tracts' own anatomy, and the reference outline elsewhere
+
 - **Rule:** On the tracts' own anatomy the slider is "Cortex opacity" and sets the page's cortex opacity; there an overlay checkbox "Show tracts with anatomy" draws the tracts over the anatomy. On another anatomy the slider is "Brain outline opacity" and sets the reference brain outline; there is no overlay checkbox and a note says the tracts come from a different subject. Sliders are named by their label alone and carry their value as text.
 - **Kind:** behaviour
 - **Level:** browser — slider keys and engine calls
@@ -139,6 +155,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, name branch; `next` gated off)
 
 ### TRACT-17 · The minimum length runs from 1 to 250 mm in 1 mm steps; dragging previews, letting go applies
+
 - **Rule:** The minimum-length slider spans 1–250 mm by 1 mm. While dragged it updates its value text and the summary only; on release (or each key press) it applies the filter. What the filter keeps is the engine's rule (DIFF-).
 - **Kind:** behaviour
 - **Level:** browser — `input` versus `change`
@@ -147,6 +164,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; `next` gated off)
 
 ### TRACT-18 · Restore returns the drawn tracts to the catalog's initial bundles, and says so
+
 - **Rule:** "Restore default tracts" sets every loaded bundle's visibility back to the catalog's initial set and nothing else, says "Default tracts restored.", and keeps focus on the button.
 - **Kind:** behaviour
 - **Level:** browser — focus and the announcer
@@ -155,6 +173,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; `next` gated off)
 
 ### TRACT-19 · The lengths CSV has one quoted, formula-safe row per loaded bundle, in English, with LF line ends
+
 - **Rule:** Export downloads `planum-streamline-lengths.csv` (`text/csv;charset=utf-8`): a fixed header, then one row per loaded bundle with its English name quoted (inner quotes doubled, a leading `= + - @` prefixed by `'`), total streamlines, streamlines shown (0 when hidden), the applied minimum, and mean, min and max (blank when none shown). Lines end with `\n`, the file ends with one, and there is no byte-order mark. The export says "Lengths CSV exported.". The values are the engine's (DIFF-).
 - **Kind:** data
 - **Level:** unit — the builder; e2e for the real download
@@ -165,6 +184,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## Notes and the MRI command
 
 ### TRACT-20 · The notes say where the tracts come from, and their links say they open a new tab
+
 - **Rule:** "About this data" opens on the notes: the tracts are in their own T1 reference brain; on the tracts' own anatomy, the linked MRI uses the same scan; on another anatomy, the brain outline is MRI-derived and its provenance is linked. Each link's name ends with "(opens in a new tab)" and it opens in a new tab.
 - **Kind:** behaviour
 - **Level:** browser — link names
@@ -173,6 +193,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-21 · The dock holds one command, "MRI with tracts"
+
 - **Rule:** The foot of the panel holds only the "MRI with tracts" button (FR "IRM avec faisceaux"), which opens the navigator by click, Enter or Space.
 - **Kind:** behaviour
 - **Level:** browser — keyboard activation
@@ -181,6 +202,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; `next` gated off)
 
 ### TRACT-22 · Keyboard order and a language switch keep the reader's place
+
 - **Rule:** In the open settings, Tab walks the overlay checkbox, Cortex opacity, Minimum length, Restore, Export, then About. Enter and Space open and close each disclosure and keep focus on its summary. A language switch keeps the search text, the open sections and the focused key, and says nothing.
 - **Kind:** behaviour
 - **Level:** browser — sequential focus
@@ -189,6 +211,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-23 · Keys and controls are large enough for the pointer in use
+
 - **Rule:** With a fine pointer, keys, the dock button and summaries are at least 24 px and the sliders 24 px. With touch, the keys, the clear button, the summaries, the sliders and the quiet buttons are at least 44 px, the overlay checkbox 20 px. On a short landscape window the keycap hides, the clear button is 36 px and the search text 16 px.
 - **Kind:** accessibility
 - **Level:** browser — layout under emulated pointers
@@ -197,6 +220,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-24 · The panel reflows without clipping, and a focused key is never under the dock
+
 - **Rule:** At 320 px nothing scrolls sideways and no name is cut off; the WCAG 1.4.12 spacing clips nothing. On a phone the list scrolls between a pinned head and dock, and every Tab stop lands between them, at least 24 px clear of the dock after a scroll.
 - **Kind:** accessibility
 - **Level:** browser — layout and focus scroll
@@ -205,6 +229,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-25 · Forced colours, more contrast and reduced motion keep the keys and chevrons readable
+
 - **Rule:** In forced colours a drawn key and an undrawn key differ in fill; with more contrast a key's edge is the control-edge colour; with reduced motion the disclosure chevron does not turn.
 - **Kind:** accessibility
 - **Level:** browser — CSS computed style
@@ -213,6 +238,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (W, the forced-colours case checks only that the two fills differ, not Highlight and Canvas)
 
 ### TRACT-26 · axe finds nothing in the Tracts panel
+
 - **Rule:** With the settings and the notes open, the panel has no axe violation in light and dark, at desktop and phone width, in English and French, and in the assembled app.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -223,6 +249,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## The MRI navigator: opening and lifetime
 
 ### TRACT-27 · The navigator opens as a titled modal on the reader's last view, with the tracts drawn in the explorer
+
 - **Rule:** "MRI with tracts" opens a modal dialog titled with the catalog's MRI title, Close first. A new NiiVue engine gets the contrast window (the T1 map's whole range), the level (its rounded middle), FA opacity 0, the plane (all views, or axial on a phone), the crosshair at the scan's centre (or where the reader left it, or the atlas crosshair: TRACT-29), and the tracts drawn in the explorer with its applied minimum length.
 - **Kind:** behaviour
 - **Level:** browser — engine calls through the fake; e2e for the real scan
@@ -231,6 +258,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R, +I: `resize` called once); `e2e/parity/mri-navigator.spec.ts` (R; legacy only, skips on `next`)
 
 ### TRACT-28 · Until the scan is up the controls and the canvas are off, and a status says so
+
 - **Rule:** While the scan loads, the controls are disabled, the canvas is out of the tab order and its keys do nothing, and a polite status says "Loading the reference MRI and selected tracts…". Once up, a visually hidden "Reference MRI ready." is said. The alert region exists from the start, empty.
 - **Kind:** accessibility
 - **Level:** browser — disabled state and live regions
@@ -239,6 +267,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-29 · The atlas crosshair places the MRI crosshair once; outside the scan it is said and ignored
+
 - **Rule:** On opening, the atlas crosshair (in scan RAS millimetres) places the MRI crosshair, without the load's own move being sent back to the atlas. A crosshair outside the scan's field of view leaves the MRI where it was and says "The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position." visibly.
 - **Kind:** behaviour
 - **Level:** browser — the fake's 2 mm grid
@@ -247,6 +276,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-30 · Closing frees the engine and its canvas; reopening resumes on a fresh one
+
 - **Rule:** Closing disposes the engine, its WebGL context and the volumes, and the next opening draws on a new canvas, resuming the reader's window, level, crosshair and plane. An engine that arrives after the dialog closed is disposed unused; a reopening during a load gets its own engine.
 - **Kind:** behaviour
 - **Level:** browser — the fake's dispose flags
@@ -257,6 +287,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## The MRI navigator: moving the crosshair
 
 ### TRACT-31 · The canvas is a focusable application with a name, a role description and the hint
+
 - **Rule:** Once loaded, the canvas is a focusable `application` named by the catalog's canvas text, described as "MRI viewer" (FR "Visionneuse IRM") and by the hint. Its focus ring is drawn inside its clipping box.
 - **Kind:** accessibility
 - **Level:** browser — ARIA and focus ring
@@ -265,6 +296,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-32 · Six canvas keys move one voxel; with a modifier they are the browser's
+
 - **Rule:** On the focused canvas, ArrowRight/ArrowLeft step the first voxel axis, ArrowUp/ArrowDown the second, PageUp/PageDown the third, one voxel each. With Alt, Ctrl, Meta or Shift held they do nothing and are not cancelled.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch to the focused canvas
@@ -273,6 +305,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R, +I: counts `moveVoxel` calls); `e2e/parity/mri-navigator.spec.ts` (W, only checks the readout changed; legacy only, skips on `next`)
 
 ### TRACT-33 · The voxel fields always show the source voxel the crosshair is on
+
 - **Rule:** The fields are labelled "Source voxel (0-based)", and after any move (a canvas key, a click, Go to voxel) they hold the source voxel under the crosshair, so Go to voxel goes back to the same point. On the CDMD scan, whose first axis runs against the display (affine x = −1), a step to the right lowers the source i.
 - **Kind:** scientific
 - **Level:** e2e — real NiiVue on the published scan (the conversion is DIFF-, unit-tested in `navigation-viewer.test.ts`)
@@ -281,6 +314,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** uncovered at the dialog level (`e2e/parity/mri-navigator.spec.ts` asserts only that the readout text changes); the fake engine cannot show it
 
 ### TRACT-34 · Tab leaves the canvas and walks the dialog's controls in order
+
 - **Rule:** From Close, Tab walks the view select, the three voxel fields, Go to voxel, the canvas, Window, Level and FA opacity, then leaves the dialog for the browser's controls. Nothing is skipped or trapped.
 - **Kind:** accessibility
 - **Level:** browser — sequential focus
@@ -289,6 +323,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-35 · The readout is plain text; a key move is said once the moving stops, a pointer move is not
+
 - **Rule:** The RAS position, T1 value and FA under the crosshair are shown as plain text, not a live region. After canvas keys, the new readout is said once the key repeat pauses (200 ms). A click or a drag says nothing. The formatting is I18N- (`mriReadout`).
 - **Kind:** accessibility
 - **Level:** browser — the announcer
@@ -297,6 +332,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R; the T1 and FA values are the fake's)
 
 ### TRACT-36 · The voxel form is one named group with its ranges, and says where it moved
+
 - **Rule:** The three fields are a group named "Source voxel (0-based)", each named "Voxel i/j/k" and described by its range "0 to {max}" (FR "de 0 à {max}"), required, with native bounds 0 to the axis size − 1. Go to voxel moves the crosshair there, says "Crosshair moved to voxel i, j, k." and moves the atlas crosshair. An out-of-range value is stopped by the form, and nothing is said.
 - **Kind:** accessibility
 - **Level:** browser — native validation and names
@@ -305,6 +341,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (R, names branch; legacy only, skips on `next`)
 
 ### TRACT-37 · Window, Level and FA preview while dragged and apply on release; the plane applies on change
+
 - **Rule:** The Window (1 to the map's span), Level (the map's range) and FA opacity (0–1 by 0.05) sliders update their number while dragged and apply on release; a key press applies at once. The view select ("Linked slices + 3D", Axial, Coronal, Sagittal, 3D) applies on change and is kept for the next opening.
 - **Kind:** behaviour
 - **Level:** browser — `input` versus `change`
@@ -313,6 +350,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (W, the select value only; legacy only, skips on `next`)
 
 ### TRACT-38 · The MRI crosshair moves the atlas crosshair, except while loading
+
 - **Rule:** Every crosshair move the reader makes in the dialog (a key, a click, Go to voxel) sends its scanner point to the atlas crosshair. Moves made by the load itself, and any while loading, do not.
 - **Kind:** behaviour
 - **Level:** browser — the fake's 2 mm grid
@@ -321,6 +359,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-39 · The hint names the keys for a mouse and the taps for a finger
+
 - **Rule:** With a fine pointer the hint says how to click and scroll, adds "Page Up and Page Down step through slices." and, only while single-key shortcuts are on, "M closes this view.". With a coarse pointer it says "Tap a slice to position the crosshair, or enter a voxel below."
 - **Kind:** accessibility
 - **Level:** browser — pointer media query
@@ -331,6 +370,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## The MRI navigator: closing and failure
 
 ### TRACT-40 · M closes the dialog at once, only when single-key shortcuts are on and not while typing
+
 - **Rule:** M (either case) closes the dialog instantly and focus returns to the opener, but only while single-key shortcuts are on, not from an input, select, textarea or editable text, and not with Ctrl, Meta or Alt. Escape closes it too. The keymap's side is KEY-02 and KEY-12.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch
@@ -339,6 +379,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (R; legacy only, skips on `next`)
 
 ### TRACT-41 · A location that does not match the maps fails loudly
+
 - **Rule:** A crosshair report whose number of map values differs from the catalog's maps is an error, logged and shown as "The reference data could not be displayed.", not silently dropped.
 - **Kind:** behaviour
 - **Level:** browser — the component's location handler
@@ -347,6 +388,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-42 · A failed load says why and offers a retry that keeps focus on the page
+
 - **Rule:** A failed load fills the alert with its sentence and disables the controls. "Reload MRI" moves focus to the notes area first, loads again and clears the alert; if it fails again the button returns. After a site update the button is "Reload" and reloads the page.
 - **Kind:** behaviour
 - **Level:** browser — focus and live regions
@@ -355,6 +397,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-43 · A lost WebGL context is shown and retried on a fresh canvas
+
 - **Rule:** When the browser takes the canvas's WebGL context away, the alert says the data could not be displayed and the controls are disabled; "Reload MRI" builds a new engine on a new canvas. A loss during the first load is shown when that load ends, with no "ready". The context that closing the dialog frees on purpose is not reported.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL (`WEBGL_lose_context`)
@@ -365,6 +408,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 ## The MRI navigator: language, size and media
 
 ### TRACT-44 · Every name is in French in French, and a language switch rereads nothing
+
 - **Rule:** In French the dialog, Close, the view select, the voxel group and fields, the canvas and its role description, the sliders and the status are French. A language switch replaces the status element rather than rewriting its text, so it is not read again.
 - **Kind:** accessibility
 - **Level:** browser — names and live region identity
@@ -373,6 +417,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-45 · Targets are 24 px, and 44 px for a finger
+
 - **Rule:** Close, the view select, the voxel fields and Go to voxel are at least 24 × 24 px with a fine pointer. With a coarse pointer every control, the three sliders included, is at least 44 × 44 px, whatever the window width.
 - **Kind:** accessibility
 - **Level:** browser — layout under emulated touch
@@ -381,6 +426,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-46 · The sticky header never covers a focused control, and the dialog reflows at 320 px
+
 - **Rule:** A control brought into view by focus lands below the dialog's sticky header, whose height is measured as it wraps. With 200 % text and the WCAG 1.4.12 spacing, in English and French, at 320 × 640 the dialog does not scroll sideways and no hint, note or footnote overflows.
 - **Kind:** accessibility
 - **Level:** browser — layout and focus scroll
@@ -389,6 +435,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-47 · Forced colours and more contrast keep system colours and visible edges
+
 - **Rule:** In forced colours the buttons keep the system colours (CanvasText edge, ButtonText ink, ButtonFace fill) and the canvas's focus ring is Highlight, inside the box. With more contrast the buttons gain the control-edge border.
 - **Kind:** accessibility
 - **Level:** browser — CSS computed style
@@ -397,6 +444,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-48 · The footnotes give the grid and the files
+
 - **Rule:** Under the controls the dialog gives the scan grid as "{i × j × k} source voxels · {spacing} mm spacing" from the loaded header, the map file names in English, and the catalog's scope note.
 - **Kind:** data
 - **Level:** unit (view-model) — the grid sentence is I18N-; e2e for the real header
@@ -405,6 +453,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Covered by:** `e2e/parity/mri-navigator.spec.ts` (W, the substring "source voxels" only; legacy only, skips on `next`); uncovered in the browser tests
 
 ### TRACT-49 · axe finds nothing with the navigator open
+
 - **Rule:** The open dialog has no axe violation in light and dark, at desktop and phone width, in English and French, and in the assembled app on the real scan.
 - **Kind:** accessibility
 - **Level:** browser — axe

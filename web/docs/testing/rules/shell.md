@@ -7,6 +7,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 ## Landmarks and order
 
 ### SHELL-01 · One banner, one panel, one stage and one status bar, in that order, and no navigation landmark
+
 - **Rule:** The page has exactly one `banner`, one `complementary`, one `main` and one `contentinfo` landmark, in that document order. There is no `navigation` landmark: the mode tabs are a tablist, not a set of links. The panels inside the one `aside` are tabpanels or sections, never nested asides.
 - **Kind:** accessibility
 - **Level:** browser: landmark roles in the DOM
@@ -15,6 +16,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/App.svelte.test.ts` (R, with stub masthead and footer snippets); `e2e/parity/shell.spec.ts` "one banner, main and contentinfo" (R; `next` gated off)
 
 ### SHELL-02 · The panel landmark is named in the reader's language
+
 - **Rule:** The one complementary landmark has an accessible name in the interface language.
 - **Kind:** accessibility
 - **Level:** browser: accessible name of a landmark
@@ -23,6 +25,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/App.svelte.test.ts` (R, French); `src/app/boot.svelte.test.ts` (R, BOOT-12); `e2e/parity/shell.spec.ts` (R, English; `next` gated off)
 
 ### SHELL-03 · The masthead and status slots add no element of their own
+
 - **Rule:** The masthead and status regions render what is composed into them and add no wrapper element. The masthead feature renders the only `banner` and the colophon the only `contentinfo`, so composing them can never nest two landmarks or repeat an id. An empty slot renders nothing.
 - **Kind:** accessibility
 - **Level:** browser: DOM structure
@@ -31,6 +34,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/App.svelte.test.ts` (R for the counts with stub snippets; the empty-slot case is uncovered)
 
 ### SHELL-04 · The masthead comes first, then the panel, then the stage
+
 - **Rule:** In reading and Tab order the masthead comes first, then the panel, then the stage (WCAG 1.3.2, 2.4.3).
 - **Kind:** accessibility
 - **Level:** browser: real Tab order
@@ -39,6 +43,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/App.svelte.test.ts` (R); `e2e/parity/shell.spec.ts` "panel before the stage" and "the masthead is first" (R; `next` gated off)
 
 ### SHELL-05 · The stage can take focus but is not a Tab stop
+
 - **Rule:** The stage landmark is the skip link's target. It can take focus from script and from the `#viewport` anchor (when no canvas can take focus: loading, error), but it is never a Tab stop of its own.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -49,6 +54,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 ## Layout
 
 ### SHELL-06 · Desktop grid: masthead across, panel beside the stage, status bar across
+
 - **Rule:** On a wide window the shell is a full-height grid: a masthead row, then the panel column beside the stage, then the status-bar row. Header and footer are pinned to their rows, so an empty slot cannot move the stage. Changing the panel's content does not resize the stage.
 - **Kind:** behaviour
 - **Level:** browser: layout/CSS
@@ -57,6 +63,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** uncovered (no test reads the desktop grid)
 
 ### SHELL-07 · On a phone the shell is a fixed one-column frame
+
 - **Rule:** Under the phone query the shell is one column: the masthead, then the stage filling the rest. The sheet overlays the stage, the panel's own box disappears (`display: contents`) and the status bar is hidden. The frame never scrolls: only the panel inside the sheet does.
 - **Kind:** behaviour
 - **Level:** browser: layout/CSS
@@ -65,6 +72,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/App.svelte.test.ts` (R, only the `footer` and `aside` display values at 390 px); `e2e/parity/shell.spec.ts` "a phone has no contentinfo" (R; `next` gated off)
 
 ### SHELL-08 · The frame fits both phone orientations and 320×256
+
 - **Rule:** With every region composed, the page fits the window in both orientations and at 320×256 CSS px (WCAG 1.3.4, 1.4.10). Nothing scrolls the page, and the stage stays inside the window with a non-zero height.
 - **Kind:** accessibility
 - **Level:** e2e: needs the composed page (masthead, sheet, stage); a browser test mounting every region with the fake engine would also prove it
@@ -73,6 +81,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `e2e/parity/shell.spec.ts` "fits the frame" ×3 (R; `next` gated off)
 
 ### SHELL-09 · Before the anatomy arrives the panel shows a skeleton, not the inspector
+
 - **Rule:** While the app is loading or failed to start there is nothing to inspect. The inspector is hidden, and the empty tree shows a skeleton of ten rows under the band the tabs will fill, so nothing jumps when they arrive.
 - **Kind:** behaviour
 - **Level:** browser: CSS computed style
@@ -83,6 +92,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 ## Status
 
 ### SHELL-10 · The app root carries the session status
+
 - **Rule:** `#app` carries `data-status`, which is `loading` in the static HTML and then follows the session status. The rest of the page styles itself from it.
 - **Kind:** behaviour
 - **Level:** browser: a DOM attribute set by the component
@@ -93,6 +103,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 ## Before the app loads
 
 ### SHELL-11 · The first paint has the reader's theme
+
 - **Rule:** Before the first paint, a saved `light` or `dark` choice wins. Any other saved value, or none, follows the system's `prefers-color-scheme`. A dark reader never sees a light flash.
 - **Kind:** behaviour
 - **Level:** unit for the resolution (the script run in a VM); e2e for "before the app's script" on the built page
@@ -101,6 +112,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/head-script.test.ts` (R; its oracle is the app's own `resolveTheme`, so a literal table of the values above would also name the rule); `e2e/parity/shell.spec.ts` "the first frame has the system theme", "a saved theme wins over the system" (R; `next` gated off)
 
 ### SHELL-12 · The browser chrome takes the theme's surface colour
+
 - **Rule:** The `theme-color` meta follows the first-paint theme with the theme's base surface colour. The static HTML ships the light value.
 - **Kind:** behaviour
 - **Level:** unit
@@ -109,6 +121,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/head-script.test.ts` (R, read from `tokens.css`); `e2e/parity/shell.spec.ts` (R, dark only; `next` gated off)
 
 ### SHELL-13 · The page language is right before the first paint
+
 - **Rule:** Before any text is painted, `<html lang>` is the link's `lang` when the link names it once as `en` or `fr`. Otherwise it is the saved `planum-lang` when that is `fr`, and otherwise `en`. A `lang` repeated in the link decides nothing, as in link decoding.
 - **Kind:** accessibility
 - **Level:** unit (the script run in a VM); e2e for the built page
@@ -117,6 +130,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/head-script.test.ts` (R; the oracle is `startLanguage(decodeState(hash).state.lang, saved)`); `e2e/parity/shell.spec.ts` "<html lang> follows the link and the saved choice" (R; `next` gated off)
 
 ### SHELL-14 · Blocked site data does not stop the first paint
+
 - **Rule:** When reading `localStorage` throws (site data blocked), the head script still applies the system theme and the link's language.
 - **Kind:** behaviour
 - **Level:** unit
@@ -125,6 +139,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** `src/app/head-script.test.ts` (R)
 
 ### SHELL-15 · The live region exists before the app
+
 - **Rule:** The polite live region is in the initial HTML, empty, so it exists before the first message is spoken.
 - **Kind:** accessibility
 - **Level:** unit (read `index.html`)
@@ -133,6 +148,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** uncovered (attaching to it is U2's, in `state.md`)
 
 ### SHELL-16 · Without scripts the page says what it is and where the data lives
+
 - **Rule:** With scripts off, the page shows a plain English notice: what Planum is, that it needs JavaScript for WebGL 2, and a link to the published anatomy index.
 - **Kind:** behaviour
 - **Level:** unit (read `index.html`); e2e with JavaScript disabled for "it is shown"
@@ -141,6 +157,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Covered by:** uncovered
 
 ### SHELL-17 · Shares name the published site
+
 - **Rule:** The head carries the share metadata of the published site, with absolute URLs, so a shared link renders as a card.
 - **Kind:** hygiene
 - **Level:** unit (read `index.html`)
@@ -151,6 +168,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 ## Accessibility
 
 ### SHELL-18 · The shell passes axe
+
 - **Rule:** The shell has no axe violations (`wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`) in either theme, on desktop or a phone, in English or French.
 - **Kind:** accessibility
 - **Level:** browser for the shell alone; e2e for the whole loaded page (BUILD-10)

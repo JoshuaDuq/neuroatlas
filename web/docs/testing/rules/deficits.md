@@ -7,6 +7,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 ## The list
 
 ### DEF-01 · The list groups every deficit under its group and states the collection's scope
+
 - **Rule:** With no query, the list shows all deficit profiles under their group headings, groups in authored order and empty groups left out. A row shows the deficit's name and, under it, its domain. Under the list a note states the scope; a search hides it.
 - **Kind:** data
 - **Level:** unit (view-model; the grouping is the clinical catalogue's) for the content; browser for the note's removal
@@ -15,6 +16,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; groups only checked as more than 3); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-02 · Groups are labelled lists of buttons
+
 - **Rule:** The list is a group named "Deficits". Each deficit group is a `role="group"` labelled by its `h3`, holding a `ul` of `li` buttons, as the Functions list does. A list of buttons, not a listbox.
 - **Kind:** accessibility
 - **Level:** browser — DOM semantics
@@ -23,6 +25,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-03 · The search field has a visible label, controls the list and shows the `/` hint
+
 - **Rule:** The field has a visible label above it and no placeholder, and `aria-controls` points at the list. While it is empty it shows a `/` hint hidden from assistive technology, only while single-key shortcuts are on (and not on a coarse pointer or the phone layout).
 - **Kind:** accessibility
 - **Level:** browser — visible label and layout
@@ -31,6 +34,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: the accessible name only; `next` gated off)
 
 ### DEF-04 · One clear control, which returns focus to the field
+
 - **Rule:** With text in the field, a "Clear search" button appears and is the only clear control: the browser's own search cancel button is hidden. Pressing it empties the field and returns focus to it.
 - **Kind:** behaviour
 - **Level:** browser — rendering of the native cancel, focus
@@ -39,6 +43,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; I for the native cancel, which is checked by finding the CSS rule's text in the style sheets rather than its effect); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-05 · Escape empties a filled field and keeps focus; on an empty field it is the page's
+
 - **Rule:** Escape in a field with text empties it, keeps focus in the field and is marked handled; the list returns to all 40. Escape in an empty field, or while an input method composes, is left to the page's Escape cascade.
 - **Kind:** behaviour
 - **Level:** browser — key dispatch to the focused field
@@ -47,6 +52,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; `next` gated off); the composing case is uncovered
 
 ### DEF-06 · The `/` entry point focuses the field with its text selected
+
 - **Rule:** `focusSearch` (the `/` key, KEY-09) puts focus in the field and selects its text.
 - **Kind:** behaviour
 - **Level:** browser — focus and selection
@@ -55,6 +61,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-07 · A query that finds nothing says so and offers the nearest name
+
 - **Rule:** With no matching deficit, the list says so, suggests trying a cognitive function, and offers the nearest deficit name. Pressing the suggestion fills the field and keeps focus there.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the content; browser for the hand-off
@@ -63,6 +70,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the suggested name is not pinned); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-08 · A query that names activation maps bridges to the Functions tab
+
 - **Rule:** While the query matches Functions-tab maps, the list ends with a bridge naming how many; pressing it carries the query to the Functions tab (CTRL-33).
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the press
@@ -71,6 +79,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the count is a stub and the press is checked on the controller's call log); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-09 · The arrow keys walk the list from the field; every row stays a Tab stop
+
 - **Rule:** ArrowDown or Enter in the field reaches the first row; ArrowDown and ArrowUp walk the rows, the bridge and the suggestion included; ArrowUp from the first row returns to the field. Every row is a Tab stop; there is no Home or End.
 - **Kind:** behaviour
 - **Level:** browser — key dispatch and focus
@@ -79,6 +88,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-10 · A focused row is never hidden under its sticky group heading
+
 - **Rule:** Walking the list down, up, or backwards with Shift+Tab, the focused row is never covered by its group's sticky heading and stays inside the list's scroll box.
 - **Kind:** accessibility
 - **Level:** browser — layout and scroll
@@ -87,6 +97,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; walks all 40 rows three times, see the audit's slow tests)
 
 ### DEF-11 · Every settled query says its count, a cleared one included
+
 - **Rule:** 500 ms after a query settles, the announcer says how many deficits match. A cleared query says the full count. A different query with the same count is said again. Nothing is said before the pause, and a language change says nothing.
 - **Kind:** accessibility
 - **Level:** unit for the sentence (`results`); browser with fake timers for the debounce in the component
@@ -95,6 +106,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; real 500 ms waits); `e2e/parity/deficits.spec.ts` (R: "1 deficit"; `next` gated off). The language case is uncovered.
 
 ### DEF-12 · The open deficit's row is current
+
 - **Rule:** The row of the open deficit is the one `aria-current="true"` row and is handed to the workspace as its current item.
 - **Kind:** behaviour
 - **Level:** browser — the workspace registry reads the DOM
@@ -105,6 +117,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 ## Opening a deficit
 
 ### DEF-13 · The profile opens at once and its heading takes focus once it is that deficit's
+
 - **Rule:** Pressing a row opens the profile at once (CTRL-24). Once the profile of that deficit is in the page, it scrolls to its top and its heading (an `h2`, `tabindex=-1`) takes focus; a heading still showing another deficit never takes it.
 - **Kind:** behaviour
 - **Level:** browser — focus after render, scroll
@@ -113,6 +126,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; the hash part is `links.md`; `next` gated off)
 
 ### DEF-14 · The profile reads evidence kind, summary, caveat, associations, checked maps and sources
+
 - **Rule:** Under its heading and meta line the profile says how many associations it rests on, the deficit's summary, a caveat that it is reference anatomy, then the associations under one "Associations" heading, the activation maps the evidence checks when there are any, and the sources line with the revision date.
 - **Kind:** data
 - **Level:** unit (view-model) for the content; today built in `ProfileBody.svelte`
@@ -121,6 +135,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R: the single "Associations" heading); `e2e/parity/deficits.spec.ts` (R: the kind line; `next` gated off). The caveat, the checked-maps heading and the sources line are uncovered.
 
 ### DEF-15 · The meta line says what is opening, then the side and what the stage shows
+
 - **Rule:** The meta line says "Opening anatomy…" while the deficit's regions are prepared. Then, when all the profile's associations share a side, it names the side, followed by how many of the mapped regions are drawn now, counted again as the reader hides, cuts or isolates. With a paint on the stage it counts the painted regions and says "coloured".
 - **Kind:** data
 - **Level:** unit (`profile-meta.ts` `stageCounts`; the sentence is a view-model)
@@ -129,6 +144,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/profile-meta.test.ts` (R); `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R, by regex; `next` gated off)
 
 ### DEF-16 · The meta line is one status region updated in place
+
 - **Rule:** One `role="status"` line is mounted with the profile and keeps its element while the reader moves between deficits and languages; only its text changes, so each change is announced.
 - **Kind:** accessibility
 - **Level:** browser — element identity
@@ -137,6 +153,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-17 · A later open overtakes an earlier one, and only the latest reports
+
 - **Rule:** Opening another deficit while one is being prepared overtakes it: the earlier run settling does not end the busy state or change the meta line.
 - **Kind:** behaviour
 - **Level:** unit (the explorer's runner state)
@@ -145,6 +162,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; could move down)
 
 ### DEF-18 · A failure is worded for the reader and belongs to its profile
+
 - **Rule:** A failure is said on the meta line in the reader's words, never the developer's message, in the error style; it is passed to the reload offer (CTRL-36) and focus stays where it was. Another deficit or another language clears it.
 - **Kind:** behaviour
 - **Level:** unit (the explorer's `actionError` and the meta sentence)
@@ -155,6 +173,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 ## Associations and evidence
 
 ### DEF-19 · An association shows its colour, its side once, and its regions in reach
+
 - **Rule:** Each association is an article headed by its title with the swatch of its colour on the brain (hidden from assistive technology). When every association shares a side, the meta line states it and the titles drop the short side; otherwise each title shows the short side for the eye. A screen reader always hears " · <full side>". Each mapped region is a button named "Open region: <name> · <Side>"; its visible text drops the side when it matches the association's. An association with no mapping says "No atlas mapping available."
 - **Kind:** behaviour
 - **Level:** browser — accessible names (the side choices are `sharedSide` / `sideStated`, unit in `core-panels.md`)
@@ -163,6 +182,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: the region names; `next` gated off). Mixed sides and the empty mapping are uncovered here.
 
 ### DEF-20 · A mapped region opens below the profile with its name in focus
+
 - **Rule:** Pressing a mapped region opens it as a listed region (CTRL-26). Once drawn, the region inspector's name takes focus and is brought to the top of the detail view.
 - **Kind:** behaviour
 - **Level:** browser — focus and scroll position
@@ -171,6 +191,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the region is checked on the controller's call log); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-21 · While a run is in flight, region buttons and Restore stay focusable and refuse
+
 - **Rule:** While any run is in flight, region buttons and Restore carry `aria-disabled="true"`, stay focusable, ignore presses and draw as unavailable; the meta line says why. Restore uses the tertiary ink, and `GrayText` in forced colours.
 - **Kind:** accessibility
 - **Level:** browser — focus and computed colour
@@ -179,6 +200,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-22 · Each Evidence summary names its association
+
 - **Rule:** Each association's evidence sits behind a closed disclosure whose summary reads "Evidence" followed by a visually hidden ", <association title>", so the names differ and the visible word begins each.
 - **Kind:** accessibility
 - **Level:** browser — accessible names
@@ -187,6 +209,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: open and close, "Reported finding"; `next` gated off)
 
 ### DEF-23 · Opened evidence survives a language change and closes for another deficit
+
 - **Rule:** A disclosure the reader opened stays open when the language changes and starts closed again when another deficit is opened, coming back included.
 - **Kind:** behaviour
 - **Level:** browser — `<details>` state across renders
@@ -195,6 +218,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-24 · Publications link out in a new tab, say so, and mark English text
+
 - **Rule:** Each publication names its role and method, links its title to the DOI and its PubMed id to PubMed, both in a new tab with `rel="noreferrer"`, and says in words that the link opens a new tab, with an icon hidden from assistive technology. In a French interface the English title and the authors line are marked `lang="en"`. Published corrections follow with their DOI link.
 - **Kind:** accessibility
 - **Level:** browser — `lang` and link attributes
@@ -203,6 +227,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: DOI and PubMed links; `next` gated off). Corrections are uncovered here (`publishedCorrections` is in `core-panels.md`).
 
 ### DEF-25 · A checked map opens that function
+
 - **Rule:** Each activation map the evidence checks is a row with its colour and name; pressing it opens that function through the Functions tab's entry point.
 - **Kind:** behaviour
 - **Level:** browser — the press
@@ -211,6 +236,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; `checkedMaps` is a stub; the real list is CTRL-33)
 
 ### DEF-26 · The profile's sections are not landmarks
+
 - **Rule:** The profile's inner sections carry no accessible name of their own; their headings title them. The workspace's tab panel holds the profile.
 - **Kind:** accessibility
 - **Level:** browser — roles
@@ -221,6 +247,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 ## Restore
 
 ### DEF-27 · Restore is offered with an open deficit and returns focus to its row
+
 - **Rule:** "Restore previous view" stands in the location bar's trailing slot while a deficit is open on the Deficits tab and an earlier scene is held. Pressing it puts the scene back (CTRL-27) and puts focus on the row of the deficit just left, or on the field when that row is not listed. A failure says so on the meta line in the error style and keeps focus on Restore.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -231,6 +258,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 ## Related deficits
 
 ### DEF-28 · A selected region lists the deficits mapped on it or on anatomy it shares
+
 - **Rule:** The region inspector's "Neuropsychology" section lists each deficit mapped on the selected region or on a region it shares anatomy with, once each, with its name and domain. It is not shown, nor titled, when there are none. It is not a landmark. Pressing a row opens that deficit's profile with its heading in focus.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the list; browser for the hand-off
@@ -241,6 +269,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 ## Language and accessibility checks
 
 ### DEF-29 · The tab is French in French
+
 - **Rule:** In French the list, the profile, the meta line and the evidence use the French copy.
 - **Kind:** behaviour
 - **Level:** browser
@@ -249,6 +278,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-30 · axe finds nothing in the list or in a profile with its evidence open
+
 - **Rule:** The list, a profile with every evidence disclosure open, and the French list after a search have no axe violations, in both themes, at 1280 and 390 px.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -257,6 +287,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; `next` gated off)
 
 ### DEF-31 · At 200 % text, or with WCAG 1.4.12 spacing, nothing overflows or clips
+
 - **Rule:** With the root font at 200 %, or with the 1.4.12 spacing, neither column scrolls sideways and no button, summary or field clips its text.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -265,6 +296,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-32 · With a coarse pointer every target is 44 px tall
+
 - **Rule:** With a coarse pointer, every visible button, summary, search field and link in the list and the profile is at least 44 px tall (the location bar sizes its own trailing button).
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -273,6 +305,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-33 · In forced colours the focused heading keeps the highlight ring and Restore reads as a link
+
 - **Rule:** With forced colours, a heading focused after a key press shows its focus ring in `Highlight`, and Restore takes `LinkText`.
 - **Kind:** accessibility
 - **Level:** browser — computed CSS

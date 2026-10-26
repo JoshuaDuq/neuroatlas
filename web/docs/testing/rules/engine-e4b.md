@@ -7,6 +7,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## Opening the model
 
 ### ATLAS-01 · A stale or malformed manifest is refused, naming what is missing
+
 - **Rule:** The model refuses a manifest that is not schema 1 or lacks atlases, regions, detail levels, the appearance, the native envelopes, the glass and see-through opacities its sidecars need, or the anatomy's subject, display name and `individual` flag. The message lists every missing field and says that a stale cached copy causes this. Region metadata must be complete and unique.
 - **Kind:** behaviour
 - **Level:** unit
@@ -15,6 +16,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); the opacity and region-metadata checks are uncovered
 
 ### ATLAS-02 · Published sidecars must fit the model's regions
+
 - **Rule:** The CAB-NP partition, the functional divisions and the neuropsychological domains are checked against the model's regions when the model is built. A partition that assigns a region of another atlas is refused.
 - **Kind:** data
 - **Level:** unit
@@ -23,6 +25,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, CAB-NP); `parity/E4b.test.ts` (D, CDMD sidecars accepted and read the same). The validators' own rules belong to the core catalogue area.
 
 ### ATLAS-03 · The model opens the first atlas and the learning overview by default
+
 - **Rule:** With no choice given, the model opens the manifest's first atlas and the grouped learning overview when it is published, otherwise the first detail level. Before anything has loaded, the settings already name those two, and nothing is drawn.
 - **Kind:** behaviour
 - **Level:** unit
@@ -31,6 +34,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `src/lib/engine/model/assets.test.ts` (S, CDMD learning)
 
 ### ATLAS-04 · An unknown atlas or detail level is refused before anything downloads
+
 - **Rule:** Opening or switching to an atlas or detail level the manifest does not publish fails with an error the app can tell from a failed download, and starts no download.
 - **Kind:** behaviour
 - **Level:** unit
@@ -39,6 +43,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `load`); `parity/E4b.test.ts` (D, `setAtlas`/`setDetail` in the replay)
 
 ### ATLAS-05 · The first frame downloads one atlas and one detail level together, and nothing else
+
 - **Rule:** Opening downloads the chosen cortical atlas and the chosen detail level in parallel. The envelopes, the other atlas, the other detail levels and the cord wait until something needs them.
 - **Kind:** behaviour
 - **Level:** unit
@@ -47,6 +52,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-06 · Published meshes must match their regions and keep their geometry
+
 - **Rule:** Every mesh of a layer must name a manifest region and agree with it on label, hemisphere, atlas, source label and kind. Its material must be the standard glTF one, cortex must carry its morphometry fields, and a layer must hold at least one mesh. The model never moves, scales or reorders the source geometry.
 - **Kind:** data
 - **Level:** unit
@@ -55,6 +61,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `_sulc`, unchanged positions and indices); `src/lib/engine/model/assets.test.ts` (S, CDMD); the mismatch, unknown-region and empty-layer errors are uncovered
 
 ### ATLAS-07 · The published CDMD model has the counts its manifest declares
+
 - **Rule:** Each published layer loads exactly the meshes its manifest entry counts, so every region the reader can find is drawn.
 - **Kind:** data
 - **Level:** unit
@@ -63,6 +70,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/assets.test.ts` (S, all but the aseg, nextbrain and envelope counts); `parity/E4b.test.ts` (D)
 
 ### ATLAS-08 · Downloads share one progress bar
+
 - **Rule:** The downloads one action starts are folded into one progress figure: the bytes loaded and the bytes expected, summed over the downloads that have announced a size. A download that has not yet announced one is left out, so the bar does not sit at zero.
 - **Kind:** behaviour
 - **Level:** unit
@@ -71,6 +79,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/progress.test.ts` (R); `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, 50 seeded trials)
 
 ### ATLAS-09 · A caller who joins a download under way hears its progress
+
 - **Rule:** When a second caller asks for a layer, the envelopes or the cord while that download is already running, it receives the progress events from then on, like the caller that started it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -79,6 +88,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, also asserts the legacy bug `[]`)
 
 ### ATLAS-10 · A layer is downloaded once and kept
+
 - **Rule:** A layer already loaded is shown again from memory. A layer still downloading is shared with the next caller. A failed download is forgotten so the next request tries again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -87,6 +97,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); the layer retry is uncovered (the envelope and cord retries are ATLAS-41, ATLAS-48)
 
 ### ATLAS-11 · Loading from the published manifest reads its sidecars and cleans up on failure
+
 - **Rule:** `BrainAtlas.load` reads the manifest, then the CAB-NP, functional, domain and term sidecars it names (relative to the manifest), then opens the requested atlas with progress. If opening fails, the half-built model is disposed and the error surfaces.
 - **Kind:** behaviour
 - **Level:** unit
@@ -97,6 +108,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## What is drawn
 
 ### ATLAS-12 · One atlas and one detail level are drawn at a time, and shared anatomy stays
+
 - **Rule:** Exactly one cortical atlas and one detail level are visible, plus the cord layer once loaded. Switching atlas swaps the cortex and keeps the internal anatomy.
 - **Kind:** behaviour
 - **Level:** unit
@@ -105,6 +117,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
 
 ### ATLAS-13 · Changing the atlas drops the selection and the isolation, and colours that need the old atlas
+
 - **Rule:** A new atlas clears the selection and the isolation. CAB-NP and functional colours belong to one atlas, so leaving it returns to atlas colours.
 - **Kind:** behaviour
 - **Level:** unit
@@ -113,6 +126,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, colours); `parity/E4b.test.ts` (D, selection and isolation); the selection and isolation part is uncovered by rule tests
 
 ### ATLAS-14 · The latest atlas or detail request wins, and the two do not cancel each other
+
 - **Rule:** When several atlas changes are in flight, the last one asked for is the one shown, whatever order the downloads finish in. Likewise for detail levels. An atlas change and a detail change are independent.
 - **Kind:** behaviour
 - **Level:** unit
@@ -121,6 +135,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, independence); the last-wins part is uncovered
 
 ### ATLAS-15 · Changing the detail level clears the internal-system filter and the isolation
+
 - **Rule:** A new detail level drops the internal-system filter and its constituents, and the isolation. A selection that belongs to the level being left is dropped.
 - **Kind:** behaviour
 - **Level:** unit
@@ -129,6 +144,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `parity/E4b.test.ts` (D); uncovered by rule tests
 
 ### ATLAS-16 · The hemisphere filter
+
 - **Rule:** The reader can show both hemispheres, the left or the right. Midline structures stay. A change clears the isolation and drops a selection that is no longer drawn.
 - **Kind:** behaviour
 - **Level:** unit
@@ -137,6 +153,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
 
 ### ATLAS-17 · Cortex and internal anatomy can each be shown or hidden
+
 - **Rule:** The cortex and the internal anatomy each have an on/off switch that takes only a boolean. Either change clears the isolation.
 - **Kind:** behaviour
 - **Level:** unit
@@ -145,6 +162,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, visibility); `parity/E4b.test.ts` (D, type errors and isolation)
 
 ### ATLAS-18 · Cortex opacity makes the cortex see-through and keeps the isolation
+
 - **Rule:** Cortex opacity runs from 0 to 1 and applies to cortex, the medial wall and exposed white matter, never to internal structures. A see-through surface is drawn transparent without depth writes. Changing it keeps the isolation and the selection.
 - **Kind:** behaviour
 - **Level:** unit
@@ -153,6 +171,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, opacity and range); `parity/E4b.test.ts` (D, transparency flags and isolation)
 
 ### ATLAS-19 · Cut-only regions follow the cut
+
 - **Rule:** A region that exists only on the cut (it has no mesh) can be selected while the cut is open on its atlas, and it stays selected across redraws. It still obeys the hemisphere filter. When the cut closes or shows another atlas, it is dropped and can no longer be selected. Reporting the same cut state again changes nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -161,6 +180,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, CDMD cut atlases); the repeated-state no-op is uncovered
 
 ### ATLAS-20 · The internal-system filter
+
 - **Rule:** The reader can narrow the internal anatomy to one named system of the current detail level, and the learning groups of that system bring their constituents. An unknown system is an error. A change clears the isolation and drops a selection outside the system.
 - **Kind:** behaviour
 - **Level:** unit
@@ -169,6 +189,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/assets.test.ts` (S, "> 5" meshes rather than 14); `src/lib/engine/model/spinal-cord.test.ts` (R, 'Spinal cord'); `parity/E4b.test.ts` (D)
 
 ### ATLAS-21 · Every mesh is drawn exactly when the shared visibility rule says so
+
 - **Rule:** Whatever the settings, a mesh is drawn if and only if the shared visibility rule (`visibilityOf`) says its region is visible, so the list, the search and the 3D view agree.
 - **Kind:** behaviour
 - **Level:** unit
@@ -177,6 +198,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, one state: left hemisphere); `parity/E4b.test.ts` (D, 300 seeded commands); the other states are uncovered by rule tests (a seeded property sweep would keep them)
 
 ### ATLAS-22 · An invalid display command is refused and changes nothing
+
 - **Rule:** Each display command checks its argument first. A refused command throws (an asynchronous one rejects) and leaves the settings, the materials and the events as they were.
 - **Kind:** behaviour
 - **Level:** unit
@@ -185,6 +207,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, functional level and paint messages); `parity/E4b.test.ts` (D, every refusal in the replay); "changes nothing" and the other messages are uncovered by rule tests
 
 ### ATLAS-23 · The model reports its whole display state, and every change
+
 - **Rule:** The settings are the whole display state as a plain value; the state adds the selected region and the number of drawn meshes. Every redraw fires `change` with the state. `selectionchange` fires on every selection, with the region or `null`, and also when a redraw drops the selection.
 - **Kind:** behaviour
 - **Level:** unit
@@ -195,6 +218,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## Colour
 
 ### ATLAS-24 · Surface colours and what each one needs
+
 - **Rule:** The surface can be coloured as tissue, MRI, atlas, network, CAB-NP or functional divisions. A colour is refused when what it draws is missing: the scan for MRI, the network layer for network, the partition and its atlas for CAB-NP, the divisions, their atlas and the glass solids for functional.
 - **Kind:** behaviour
 - **Level:** unit
@@ -203,6 +227,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, all but the network error); `parity/E4b.test.ts` (D)
 
 ### ATLAS-25 · Atlas colour shows the published colours; tissue colour shows tissue with its T1 relief
+
 - **Rule:** Under atlas colour each parcel keeps its published colour and the medial wall is drawn in the unlabelled tissue colour. Under tissue colour every region takes its tissue colour, and only then does the cortex carry its T1 brightness variation, which would distort a published palette.
 - **Kind:** behaviour
 - **Level:** unit
@@ -211,6 +236,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-26 · Network colour draws the published network map
+
 - **Rule:** Under network colour the cortex shows its per-vertex network colours, and where no network reaches (the medial wall) the tissue colour shows. A paint turns the network colours off.
 - **Kind:** behaviour
 - **Level:** unit
@@ -219,6 +245,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `parity/E4b.test.ts` (D); uncovered by rule tests (the fixture has no network layer)
 
 ### ATLAS-27 · CAB-NP colour paints each area whole in its network's colour
+
 - **Rule:** Under CAB-NP colour each area of the partition's atlas takes its network's published sRGB colour; an area in no network keeps its tissue colour.
 - **Kind:** behaviour
 - **Level:** unit
@@ -227,6 +254,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-28 · Functional divisions are solid in their colour, the rest of the cortex is glass
+
 - **Rule:** Under functional colour each area in a division of the chosen level takes the division's colour and is opaque. The rest of the cortex, the medial wall included, is glass at the published glass opacity, scaled by the cortex opacity.
 - **Kind:** behaviour
 - **Level:** unit
@@ -235,6 +263,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, CDMD hcp-mmp)
 
 ### ATLAS-29 · A glass solid closes only an opaque named division, while its patch is drawn
+
 - **Rule:** Behind the glass, a named division's ribbon solid closes it so it reads as a volume. It shows only under functional colour at the named level with the cortex fully opaque, and only while the division's own patch is drawn. Otherwise the solids are hidden.
 - **Kind:** behaviour
 - **Level:** unit
@@ -243,6 +272,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-30 · A paint colours its regions over any surface colour
+
 - **Rule:** A paint (a panel's colours for named regions) draws each named region in its sRGB colour and every other region in its tissue colour, over whatever surface colour is set, which is kept underneath. Under a paint no cortex is glass. A painted area stays opaque when the cortex is see-through, and the unpainted cortex takes the cortex opacity. A paint is replaced whole by id; the same id again changes nothing; null lifts it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -251,6 +281,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; the see-through case is uncovered); `parity/E4b.test.ts` (D)
 
 ### ATLAS-31 · Selection never changes a region's colour
+
 - **Rule:** The selection is drawn by the outline pass alone. The material's colour and emission stay as they were, because under atlas colour the colour is the datum.
 - **Kind:** behaviour
 - **Level:** unit
@@ -259,6 +290,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-32 · The scan on the surface is shown only under MRI colour with no paint
+
 - **Rule:** The scan the cut loads is attached to the model once. Every surface layer and the exposed white matter, including those loaded later, sample the same scan. It is drawn only while the colour is MRI and no paint is applied. Picking and the selection are unaffected.
 - **Kind:** behaviour
 - **Level:** unit
@@ -267,6 +299,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; the paint and already-attached cases are uncovered); `src/lib/engine/index.test.ts` (R, FACADE-36 through the facade); `parity/E4b.test.ts` (D)
 
 ### ATLAS-33 · A parcel's border feather follows its current colour and visibility
+
 - **Rule:** On a cortical layer the parcels blend into their neighbours at the borders. After every redraw the blend uses each parcel's current colour and stops at a parcel that is hidden. Layers that are not cortex are not feathered.
 - **Kind:** behaviour
 - **Level:** unit
@@ -275,6 +308,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `parity/E4b.test.ts` (D, palette bytes in every state); uncovered by rule tests
 
 ### ATLAS-34 · Clipping planes reach every surface the model draws
+
 - **Rule:** The cut's planes apply to every layer, to the exposed white matter and to the glass solids, including layers loaded later. Only normalized, finite planes are accepted. Reset removes them.
 - **Kind:** behaviour
 - **Level:** unit
@@ -285,6 +319,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## Selection, isolation and dissection
 
 ### ATLAS-35 · Only a drawn region can be selected
+
 - **Rule:** The reader can select any region that is drawn now (or shown on the cut). Selecting an unknown region, the medial wall or a region that is not drawn is an error and leaves the selection.
 - **Kind:** behaviour
 - **Level:** unit
@@ -293,6 +328,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
 
 ### ATLAS-36 · Isolation shows the selected region alone
+
 - **Rule:** Isolating shows only the selected region. Releasing the isolation keeps the selection and every other setting. Changing the atlas, detail level, hemisphere, cortex, internal-anatomy or cord visibility, or the internal system, releases it; opacity, colour, paint and planes keep it. Coordinates never change.
 - **Kind:** behaviour
 - **Level:** unit
@@ -301,6 +337,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, which commands release it)
 
 ### ATLAS-37 · Dissection hides regions in undoable batches
+
 - **Rule:** Hiding and showing regions works in batches that are applied whole or not at all, and can be undone step by step. Restore brings every hidden region back as one undoable step. The hidden set survives atlas switches. Other settings are untouched. Reset empties the set and the history.
 - **Kind:** behaviour
 - **Level:** unit
@@ -309,6 +346,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
 
 ### ATLAS-38 · Hiding the isolated region releases the isolation, and undo brings back what it can
+
 - **Rule:** Hiding the isolated region releases the isolation, since nothing would be left to see. Undo restores the region, and restores the isolation and the selection only when the region can still be selected under the current atlas and hemisphere, which undo does not change. A restored selection is announced.
 - **Kind:** behaviour
 - **Level:** unit
@@ -317,6 +355,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-39 · Loading a hidden set releases an isolation it hides
+
 - **Rule:** Replacing the whole hidden set (a permalink restore) follows the same rule as hiding: an isolated region that ends up hidden is released; an isolation the set leaves alone is kept.
 - **Kind:** behaviour
 - **Level:** unit
@@ -325,6 +364,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, also asserts the legacy bug)
 
 ### ATLAS-40 · Reset restores the default view and keeps what was loaded and painted
+
 - **Rule:** Reset returns every display setting to its default: no dissection, no planes, no internal system, both hemispheres, cortex and internal anatomy shown and opaque, the cord hidden (cancelling a pending show), atlas colour, the named functional level, no isolation, no selection. It keeps the current atlas, the detail level, the loaded layers and the paint, which belongs to the panel.
 - **Kind:** behaviour
 - **Level:** unit
@@ -333,6 +373,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, piecewise across cases); `parity/E4b.test.ts` (D); the kept paint and the cancelled cord show are uncovered
 
 ### ATLAS-41 · Removing cortex exposes the native white matter beneath
+
 - **Rule:** When a cortical parcel of the shown atlas is hidden while the cortex is drawn and nothing is isolated, the native white surface of that hemisphere is drawn beneath it. The envelopes download the first time this happens, once, and the model redraws when they arrive. The white matter follows the hemisphere, cortex visibility, atlas, isolation, opacity and planes. It is not a region: it blocks picks through it and cannot be selected. A failed download is reported as a load error and retried by the next exposure.
 - **Kind:** behaviour
 - **Level:** unit
@@ -343,6 +384,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## Picking
 
 ### ATLAS-42 · Picking names the nearest drawn region under the ray
+
 - **Rule:** A pick returns the nearest drawn region the ray hits. The medial wall and other non-regions answer nothing. Hidden regions, hidden hemispheres and undrawn layers are not hit. The caller's ray settings are left as they were, and the geometry is not changed.
 - **Kind:** behaviour
 - **Level:** unit
@@ -351,6 +393,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; I, "every loaded mesh must have a spatial index" and the raycast counts of "picking stops at the first surface"); `parity/E4b.test.ts` (D)
 
 ### ATLAS-43 · A cut does not hide what it leaves
+
 - **Rule:** With planes set, a face the cut removes neither answers a pick nor masks a kept face behind it, and a region the cut removes entirely cannot be picked.
 - **Kind:** behaviour
 - **Level:** unit
@@ -359,6 +402,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
 
 ### ATLAS-44 · A division behind the glass is picked through it
+
 - **Rule:** Under functional colour the glass cortex does not catch the pointer: a division behind it, its patch or its ribbon solid, is what the reader is pointing at. Glass answers only when nothing else is on the ray.
 - **Kind:** behaviour
 - **Level:** unit
@@ -367,6 +411,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
 
 ### ATLAS-45 · Picks on the published model land on drawn regions of the right side
+
 - **Rule:** On the published model, picks agree with what is drawn: the region is drawn and selectable, it is on a shown hemisphere, it is not cortex while the cortex is hidden, it is the isolated region when one is isolated, and it is never a hidden region.
 - **Kind:** data
 - **Level:** unit
@@ -375,6 +420,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `parity/E4b.test.ts` (D, 9,000+ rays compared with legacy); uncovered by rule tests
 
 ### ATLAS-46 · A region's centroid is its box centre in surface RAS millimetres, to 0.1 mm
+
 - **Rule:** The centroid the inspector shows is the centre of the region's bounding box over every loaded layer, in surface RAS millimetres (R, A, S), rounded to 0.1 mm. It is computed once and reused. A region with no mesh, or none, has no centroid.
 - **Kind:** scientific
 - **Level:** unit
@@ -385,6 +431,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## Spinal cord
 
 ### ATLAS-47 · The cord downloads the first time it is shown, once
+
 - **Rule:** The reference cord is a hidden layer: nothing of it downloads until the reader first shows it. After that it is shown again from memory. Its load state reads unloaded, loading, ready or error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -393,6 +440,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `src/lib/engine/model/spinal-cord.test.ts` (R, CDMD)
 
 ### ATLAS-48 · Showing the cord waits for it; hiding cancels; a failure is retried
+
 - **Rule:** Showing the cord resolves once it has downloaded, and until then the cord is neither shown nor selectable. Hiding it while it downloads cancels the show. A failed download leaves the brain as it was, records the error and is retried by the next show. An anatomy that publishes no cord says so.
 - **Kind:** behaviour
 - **Level:** unit
@@ -401,6 +449,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `src/lib/engine/model/assets.test.ts` (S, published-or-not)
 
 ### ATLAS-49 · The published cord assembly is one supplemental system
+
 - **Rule:** CDMD publishes the cord as the `zanatomy` supplemental layer: every region of it is supplemental, not registered to the subject's MRI, and in the "Spinal cord" system. It carries what a straightened template cannot: grey horns, roots, ganglia and the cauda equina.
 - **Kind:** data
 - **Level:** unit
@@ -409,6 +458,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/spinal-cord.test.ts` (S)
 
 ### ATLAS-50 · The cord can be selected and isolated at every detail level, and a root follows its side
+
 - **Rule:** Once shown, the cord is drawn, selectable and isolatable whatever the detail level, also with the cortex hidden, one hemisphere and the "Spinal cord" system chosen. The cord is midline, so no hemisphere hides it; a lateral root follows the hemisphere it belongs to. A hidden cord is not visible for the reason `spinal-cord-hidden` and cannot be selected.
 - **Kind:** behaviour
 - **Level:** unit
@@ -417,6 +467,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/spinal-cord.test.ts` (R; its search assertions belong to the core catalogue area)
 
 ### ATLAS-51 · Cord caps on the cut are tissue-coloured, unshaded and pickable down to the conus
+
 - **Rule:** Cut through, the cord's grey horns cap as grey matter and the cord as white matter, or in the published atlas colour under atlas colour. The cord is not the subject's tissue, so its caps carry no MRI shading or relief. A cut anywhere along the cord, even near the conus where the cord curves away from its box centre, can be picked.
 - **Kind:** behaviour
 - **Level:** unit
@@ -427,6 +478,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 ## Solids the model holds, and disposal
 
 ### ATLAS-52 · Ribbon solids are cut once per atlas and shared; glass solids need the divisions
+
 - **Rule:** The ribbon solid of each parcel is cut from the envelopes once per atlas and kept, so the glass brain and the cut share it. The glass solids are built once from the functional atlas's ribbons, for the named divisions only. A model without functional divisions refuses them.
 - **Kind:** behaviour
 - **Level:** unit
@@ -435,6 +487,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Covered by:** `src/lib/engine/model/brain-atlas.cut.test.ts` (R, wedges kept); `src/lib/engine/model/brain-atlas.test.ts` (R, refusal); `parity/E4b.test.ts` (D, glass solids on CDMD); the named-only and load-once parts are uncovered
 
 ### ATLAS-53 · Disposal releases everything and refuses later work
+
 - **Rule:** Disposing removes the model from the scene and frees every layer, the white matter, the ribbon solids and the glass materials. A download that finishes later is released at once. Later loads are refused. The model reports that it is disposed.
 - **Kind:** behaviour
 - **Level:** unit

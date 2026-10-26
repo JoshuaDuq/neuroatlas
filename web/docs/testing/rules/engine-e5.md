@@ -5,6 +5,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## Camera moves
 
 ### SCENE-01 · An eased camera move lasts 240 ms and lands exactly
+
 - **Rule:** A framing that is not immediate eases the camera from where it is to the planned pose over 240 ms. It ends exactly on the plan, and the plan's orbit limits apply only on arrival, so a distant camera is not yanked by a tighter limit as it leaves.
 - **Kind:** behaviour
 - **Level:** unit
@@ -13,6 +14,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `parity/E5.test.ts` (D)
 
 ### SCENE-02 · Immediate moves and reduced motion land at once
+
 - **Rule:** A move asked for as immediate, and every move, inset slide or sheet settle while the reader prefers reduced motion, lands in one step with no intermediate frames.
 - **Kind:** behaviour
 - **Level:** unit
@@ -21,6 +23,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `parity/E5.test.ts` (D)
 
 ### SCENE-03 · A move beside a settling sheet rides the sheet's curve
+
 - **Rule:** While the sheet settles on its own curve, a camera move or framing-inset slide started in that time uses the sheet's easing, so the picture and the sheet arrive together. Otherwise moves use a cubic ease-in-out.
 - **Kind:** behaviour
 - **Level:** unit
@@ -29,6 +32,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `parity/E5.test.ts` (D)
 
 ### SCENE-04 · Taking hold of the camera mid-move stops the move where it is drawn
+
 - **Rule:** A pointer gesture that starts during an eased move cancels the move. The camera stays where it was drawn, roll included.
 - **Kind:** behaviour
 - **Level:** unit
@@ -39,6 +43,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## The visible rectangle
 
 ### SCENE-05 · The sheet covers the canvas without resizing it
+
 - **Rule:** When the phone sheet covers part of the canvas, the visible rectangle shrinks and the frustum slides so the anatomy centres in what is visible. The canvas is not resized, and neither the camera nor the orbit target moves.
 - **Kind:** behaviour
 - **Level:** unit
@@ -47,6 +52,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: the rectangle shrinks and a `viewport` event carries the host size; could move down to unit with the fake renderer), `parity/E5.test.ts` (D). The unchanged canvas, camera and target: only D.
 
 ### SCENE-06 · Framing clears the dock and colour key without changing the visible rectangle
+
 - **Rule:** A framing inset (the stage dock at the bottom, a colour key at the top or right) narrows the room framing may use, but not the visible rectangle that places those controls. It slides with the camera's move unless asked for at once, and it reports whether it changed.
 - **Kind:** behaviour
 - **Level:** unit
@@ -55,6 +61,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `parity/E5.test.ts` (D)
 
 ### SCENE-07 · A canvas resize refits; a sheet drag does not
+
 - **Rule:** A change of the host's size is reported as a canvas change, which refits the framing. A sheet inset change is reported as not a canvas change, so a drag never fights the finger.
 - **Kind:** behaviour
 - **Level:** unit
@@ -65,6 +72,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## The render loop
 
 ### SCENE-08 · A moving camera draws at reduced resolution; the frame at rest is full resolution
+
 - **Rule:** While the camera or an inset is moving, frames are drawn through a lower-resolution pipeline. A full-resolution frame is drawn once the camera has been at rest for 150 ms, and the loop then stops until something changes.
 - **Kind:** behaviour
 - **Level:** unit
@@ -75,6 +83,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## Outlines and theme
 
 ### SCENE-09 · Selection gets a two-tone outline, hover the halo alone
+
 - **Rule:** An outlined selection is drawn with a light halo behind a dark core, which stays legible over every atlas colour. A hovered region gets the halo alone. Both outlines are off when nothing is outlined.
 - **Kind:** behaviour
 - **Level:** unit
@@ -83,6 +92,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/scene.test.ts` (R: thickness and off-at-start); the selected/hovered split is uncovered
 
 ### SCENE-10 · The theme sets background, outline colours and exposure, and exposure must be a number
+
 - **Rule:** The scene takes its background, outline colours and exposure from the theme tokens. A missing or non-numeric exposure token is an error, not a silent exposure of 1.
 - **Kind:** behaviour
 - **Level:** unit
@@ -91,6 +101,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/scene.test.ts` (R, the three refusals; the `'1.2'` case asserts only that it does not throw, W: `toneMappingExposure` is not read); the colours are uncovered
 
 ### SCENE-11 · The scan on the surface is drawn without tone mapping
+
 - **Rule:** While the MRI is shown on the surface, tone mapping is off and the MRI pixel ratio applies, so the scan's grey levels are not altered. Otherwise neutral tone mapping applies.
 - **Kind:** behaviour
 - **Level:** unit
@@ -101,6 +112,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## Canvas and context
 
 ### SCENE-12 · The canvas is a focusable application
+
 - **Rule:** The canvas is in the tab order and has role `application`, so its arrow keys reach the camera rather than a screen reader's browse mode. Its name is set by the facade (FACADE-31).
 - **Kind:** behaviour
 - **Level:** unit
@@ -109,6 +121,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, role, in the snapshot case; could move down to unit); tabindex is uncovered
 
 ### SCENE-13 · A lost GPU context is reported and a restored one redrawn
+
 - **Rule:** A context loss while the scene is alive is reported upward and prevented by default, so it can be restored. On restore, the lighting, theme and size are applied again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -117,6 +130,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/scene.test.ts` (R, loss reported once; `defaultPrevented` is not asserted); restore is uncovered
 
 ### SCENE-14 · Disposing the scene releases its context without reporting a loss
+
 - **Rule:** Disposing frees the renderer and then releases the WebGL context, so remounting cannot exhaust the browser's context cap. That deliberate release is not reported as a loss.
 - **Kind:** behaviour
 - **Level:** unit
@@ -127,6 +141,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## Picking
 
 ### SCENE-15 · Hover names the region under the pointer
+
 - **Rule:** Moving a mouse or pen over the canvas names the region under it, with the pointer's position relative to the canvas. The cursor is `pointer` over a region and `grab` elsewhere.
 - **Kind:** behaviour
 - **Level:** unit
@@ -135,6 +150,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R; the `pointer` cursor is asserted only in the camera-motion case), `parity/E5.test.ts` (D)
 
 ### SCENE-16 · Hover asks the anatomy at most once a frame, at the latest position
+
 - **Rule:** However far the pointer travels between frames, hover casts one ray per frame, at the last position.
 - **Kind:** behaviour
 - **Level:** unit
@@ -143,6 +159,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-17 · No hover for a finger, or while a button is held
+
 - **Rule:** A touch pointer has no hover, and a move with a button down is an orbit that hover must not slow down.
 - **Kind:** behaviour
 - **Level:** unit
@@ -151,6 +168,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-18 · A camera move clears the hover
+
 - **Rule:** When the camera moves, a hover already shown is cleared once and a queued hover is cancelled. The cursor goes from `pointer` back to `grab` but stays `grabbing` during an active grab.
 - **Kind:** behaviour
 - **Level:** unit
@@ -159,6 +177,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-19 · Leaving the canvas, or a cancelled pointer, clears hover and press
+
 - **Rule:** When the pointer leaves the canvas or is cancelled, the hover name goes away and any pending press is dropped.
 - **Kind:** behaviour
 - **Level:** unit
@@ -167,6 +186,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R, leave); the cancel case is uncovered
 
 ### SCENE-20 · A click selects the region under it; a drag does not
+
 - **Rule:** A primary-button press released within the tap slop selects the region under the release. The slop is under 5 px for a mouse or pen and under 12 px for a finger (near the platform's hit-slop).
 - **Kind:** behaviour
 - **Level:** unit
@@ -175,6 +195,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R), `parity/E5.test.ts` (D)
 
 ### SCENE-21 · A click on the empty stage keeps the selection
+
 - **Rule:** A click that hits no region does not clear the selection; Escape is the deliberate clear.
 - **Kind:** behaviour
 - **Level:** unit
@@ -183,6 +204,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-22 · A second pointer cancels the tap
+
 - **Rule:** A pinch or two-finger drag never ends as a selection, whichever finger lifts first.
 - **Kind:** behaviour
 - **Level:** unit
@@ -191,6 +213,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R)
 
 ### SCENE-23 · Double-click focuses the surface point under the pointer
+
 - **Rule:** A double-click on the surface moves the camera's focus onto the 3D point it hit. A double-click on empty stage does nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -199,6 +222,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/render/picking.test.ts` (R, hit); the miss case is uncovered
 
 ### SCENE-24 · The pick ray goes through the pointer
+
 - **Rule:** The ray used for hover, click and double-click passes through the pointer's position on the canvas, so the named or selected region is the one under the pointer. A canvas with no size picks nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -207,6 +231,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `parity/E5.test.ts` (D)
 
 ### SCENE-25 · Nothing is picked while the tract reference is shown alone
+
 - **Rule:** While the tract reference of another anatomy is shown in place of the atlas, hover and click name and select nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -217,6 +242,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## Comparison overlay
 
 ### SCENE-26 · Highlighting an overlap outlines exactly that overlap, without painting
+
 - **Rule:** Highlighting an overlap outlines only that pair's intersection mesh, and the others stay hidden. The overlap draws no colour and no depth, so atlas colours and depth are unchanged. It is never pickable, and its source geometry is not altered.
 - **Kind:** behaviour
 - **Level:** unit
@@ -225,6 +251,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R; `DoubleSide` and "never pickable" are not asserted), `parity/E5.test.ts` (D)
 
 ### SCENE-27 · The overlap geometry is loaded once
+
 - **Rule:** The overlap file is fetched on the first highlight and reused for every later one.
 - **Kind:** behaviour
 - **Level:** unit
@@ -233,6 +260,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R)
 
 ### SCENE-28 · A later highlight overtakes an earlier one, and clearing cancels a pending one
+
 - **Rule:** When two highlights are in flight, only the later one is shown. A clear while one is loading cancels it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -241,6 +269,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, clear); `src/lib/engine/index.svelte.test.ts` (R, via contract suite: supersede on the real engine, parsing the 16 MB `atlas-overlaps.glb`); `src/lib/engine/contract.test.ts` (W, fake: supersede); `parity/E5.test.ts` (D)
 
 ### SCENE-29 · A hidden overlay outlines nothing until shown again
+
 - **Rule:** Hiding the comparison (for example when a cut opens) removes its outline. Showing it again restores the same overlap.
 - **Kind:** behaviour
 - **Level:** unit
@@ -249,6 +278,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R), `src/lib/engine/index.test.ts` (R)
 
 ### SCENE-30 · Bad overlap data is an error, and the bad file is released
+
 - **Rule:** An unknown overlap id is an error. A file with a missing or duplicate overlap identity, or with no overlap meshes, is rejected and its geometry and materials are released.
 - **Kind:** behaviour
 - **Level:** unit
@@ -257,6 +287,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, unknown and duplicate); the empty file is uncovered
 
 ### SCENE-31 · A failed load is retried on the next highlight
+
 - **Rule:** A failed overlap download is not cached. The next explicit highlight tries again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -265,6 +296,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R)
 
 ### SCENE-32 · Disposal releases everything, including geometry that arrives later
+
 - **Rule:** After disposal no overlap is outlined. Geometry that arrives later is released at once, and a new highlight is refused.
 - **Kind:** behaviour
 - **Level:** unit
@@ -275,6 +307,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 ## Framing plans
 
 ### SCENE-33 · Planning a framing moves nothing on screen
+
 - **Rule:** Working out where a framing will put the camera leaves the drawn camera and the orbit controls exactly as they were: position, rotation, target, clipping planes and orbit limits. Only the returned plan carries the new pose, which the move then eases to.
 - **Kind:** behaviour
 - **Level:** unit

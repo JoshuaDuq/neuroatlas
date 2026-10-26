@@ -20,6 +20,7 @@ document, `location`, `history` and `window` directly.
 ## Capability check
 
 ### BOOT-01 · WebGL 2 is required
+
 - **Rule:** A browser that gives no WebGL 2 context, or throws when asked for one, gets the capability failure and the engine is never opened.
 - **Kind:** behaviour
 - **Level:** unit
@@ -28,6 +29,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/webgl-check.test.ts` (R), `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-02 · Floating-point render targets are required
+
 - **Rule:** A WebGL 2 context without `EXT_color_buffer_float` gets its own capability failure, since the frame is drawn into half-float targets.
 - **Kind:** behaviour
 - **Level:** unit
@@ -36,6 +38,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/webgl-check.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-03 · The capability probe frees its context
+
 - **Rule:** The probe's own WebGL context is released straight away, whether or not the check passes.
 - **Kind:** behaviour
 - **Level:** unit
@@ -44,6 +47,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/webgl-check.test.ts` (R)
 
 ### BOOT-04 · The capability failure screen
+
 - **Rule:** A capability failure is shown and announced once in the reader's language, sets the page language and the error status, and offers no Retry (reloading cannot help).
 - **Kind:** behaviour
 - **Level:** browser — shown text, announcer and `<html lang>` in the DOM
@@ -54,6 +58,7 @@ document, `location`, `history` and `window` directly.
 ## Start sequence
 
 ### BOOT-05 · Which anatomy opens
+
 - **Rule:** A link that names a published anatomy opens it; no anatomy in the link opens the index default; an unpublished one opens the default and the link notice names the anatomy field as not applied.
 - **Kind:** behaviour
 - **Level:** unit
@@ -62,6 +67,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-anatomy.test.ts` (R), `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-06 · The index must name a published default
+
 - **Rule:** An index whose default is not among its anatomies, or an index that cannot be fetched, fails the start; no other subject is substituted.
 - **Kind:** behaviour
 - **Level:** unit
@@ -70,6 +76,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-anatomy.test.ts` (R)
 
 ### BOOT-07 · An unknown layer in a link falls back to the defaults
+
 - **Rule:** When the link names an atlas or detail level this anatomy does not publish, the start retries once with the defaults and the notice names the field; any other error fails the start without a second attempt.
 - **Kind:** behaviour
 - **Level:** unit
@@ -78,6 +85,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-08 · The opening view
+
 - **Rule:** The camera is framed on the oblique view (with the dock in place) before the link is applied, the link is applied while the stage still says loading, and only then does the stage become ready.
 - **Kind:** behaviour
 - **Level:** unit
@@ -86,6 +94,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R for the status per view; I: also pins `setFramingSource` as the first camera call and the region mount order)
 
 ### BOOT-09 · A link's restore reaches the panels and is announced
+
 - **Rule:** The panels are mounted before the link is applied, so a link that opens a function shows it, and what the link restored is announced.
 - **Kind:** behaviour
 - **Level:** unit
@@ -94,6 +103,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R); restore rules themselves → LINK-14 to LINK-16 and LINK-19 (`links.md`)
 
 ### BOOT-10 · Download progress during the start
+
 - **Rule:** The stage shows the download's progress while the start runs; once the start has failed, a late progress event does not paint "Loading" back over the error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -102,6 +112,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-11 · The other atlas is fetched ahead
+
 - **Rule:** Once the first atlas is on screen, the other cortical atlas is fetched in idle time, when the quality profile and connection allow it; a failed prefetch only warns.
 - **Kind:** behaviour
 - **Level:** unit
@@ -110,6 +121,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R); the allow/deny decision → STATE-62, `src/lib/core/state/boot.test.ts`
 
 ### BOOT-12 · The page exposes the stage status
+
 - **Rule:** The app root carries the session status (`loading`, `ready`, `error`, `context-lost`) and the shell follows the reader's language.
 - **Kind:** behaviour
 - **Level:** browser — `data-status` and `aria-label` on the mounted shell
@@ -118,6 +130,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-30 · A command the reader starts overtakes a link still being applied
+
 - **Rule:** Every controller (anatomy, excursions and lessons, links) counts its scene commands on one shared counter, so a command started while a link is still being applied wins, and the link stops without applying the rest.
 - **Kind:** behaviour
 - **Level:** unit
@@ -128,6 +141,7 @@ document, `location`, `history` and `window` directly.
 ## Start failures
 
 ### BOOT-13 · A failed download
+
 - **Rule:** A start that fails on a download says so with Retry, and leaves nothing running.
 - **Kind:** behaviour
 - **Level:** unit
@@ -136,6 +150,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off), `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-14 · A failed start from a link
+
 - **Rule:** On a page opened from a link, a start failure that is not a download failure says the link failed, and Retry opens Planum without the link.
 - **Kind:** behaviour
 - **Level:** unit
@@ -144,6 +159,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R), `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-15 · A newer deploy asks for a reload
+
 - **Rule:** When a downloaded file no longer matches what the page was built for, the reader is told Planum was updated and offered Reload.
 - **Kind:** behaviour
 - **Level:** unit
@@ -152,6 +168,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R, fixture text only); the mapping from the error code → I18N-16 and I18N-19 (`core-i18n.md`). No start-level test drives an `asset-updated` error.
 
 ### BOOT-16 · Retry and Reload drop the stored anatomy
+
 - **Rule:** Retry or Reload deletes only the stored model caches and reloads, so a bad stored copy cannot fail the same way again; a browser that blocks Cache Storage still reloads.
 - **Kind:** behaviour
 - **Level:** unit
@@ -160,6 +177,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-assets.test.ts` (R), `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-17 · A failure after the engine opened releases it
+
 - **Rule:** A start that fails after the engine opened disposes it and shows the failure in the language the page was in.
 - **Kind:** behaviour
 - **Level:** unit
@@ -168,6 +186,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-31 · A download the model starts by itself that fails is told
+
 - **Rule:** After the start, a download the model starts on its own (the white-matter envelopes, when hiding the cortex first exposes white matter) that fails is told as a notice; the app keeps running.
 - **Kind:** behaviour
 - **Level:** unit
@@ -178,6 +197,7 @@ document, `location`, `history` and `window` directly.
 ## Page lifecycle
 
 ### BOOT-18 · Back-forward cache keeps the app
+
 - **Rule:** A page kept for browser Back keeps its running app; the app is disposed once, when the page finally goes.
 - **Kind:** behaviour
 - **Level:** unit
@@ -186,6 +206,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/lifecycle.test.ts` (R), `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-19 · Teardown leaves nothing bound
+
 - **Rule:** Disposing the app unmounts the regions before the engine goes, and removes the keymap and the `hashchange` listener.
 - **Kind:** behaviour
 - **Level:** unit
@@ -194,6 +215,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R for the keymap; I for order and listener spies)
 
 ### BOOT-20 · Commands to an unmounted region fail loudly
+
 - **Rule:** A controller command sent before its region is mounted, or after it unmounted, throws an error naming the command; a question answers no until a region answers it; unmounting a region withdraws only its own ports.
 - **Kind:** behaviour
 - **Level:** unit
@@ -204,6 +226,7 @@ document, `location`, `history` and `window` directly.
 ## Stage status
 
 ### BOOT-21 · Loading without a known size
+
 - **Rule:** While the anatomy loads with no known total, the stage says "Loading anatomy…" with no bar and no Retry.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -212,6 +235,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-22 · The download bar
+
 - **Rule:** With a known total, the stage shows a determinate bar named "Anatomy download" at the rounded percent, and the line gives loaded and total megabytes in the reader's notation.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -220,6 +244,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-23 · What the stage announces
+
 - **Rule:** The stage announces the start of the load, its end and a failure, once each and with the text shown; it never announces a progress event, and leaves the lost-context announcement to the speech layer.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -228,6 +253,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-24 · The error screen
+
 - **Rule:** An error shows its failure text with its button; an error with no failure says "Something went wrong." with Retry; a capability failure has no button.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -236,6 +262,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-25 · A lost graphics context
+
 - **Rule:** When the graphics context is lost the stage says the view was interrupted and is restoring, with no Retry and no bar, keeps the dark scene in both themes, and disappears when the context returns.
 - **Kind:** behaviour
 - **Level:** browser — computed stage background in the light theme
@@ -244,6 +271,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-26 · Focus around the stage status
+
 - **Rule:** When the status hides the focused control, focus moves to Retry (error) or the message (context lost) and returns to the control when the stage is ready again; otherwise focus is not touched, and never taken at boot.
 - **Kind:** behaviour
 - **Level:** browser — focus moves
@@ -252,6 +280,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-27 · Themed, legible boot screens
+
 - **Rule:** The loading and failure screens follow the page theme, the bar's track and fill and the focus ring each reach 3:1, and forced colours keep the message and bar visible.
 - **Kind:** behaviour
 - **Level:** browser — computed colours, forced colours
@@ -260,6 +289,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R; the increased-contrast case is W), `e2e/parity/boot.spec.ts` (R; `next` gated off)
 
 ### BOOT-28 · Retry stays usable on every screen
+
 - **Rule:** Retry is at least 24 px (44 px under a coarse pointer), stays on screen at 320 px width and on a short landscape phone, sits in the upper part of a phone stage, and keeps its label inside under 200 % text and WCAG 1.4.12 spacing.
 - **Kind:** behaviour
 - **Level:** browser — layout/geometry
@@ -268,6 +298,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-29 · The boot screens pass axe
+
 - **Rule:** Loading, download failure, capability failure and context lost are axe-clean in light and dark, desktop and phone, English and French.
 - **Kind:** behaviour
 - **Level:** browser — axe
@@ -278,6 +309,7 @@ document, `location`, `history` and `window` directly.
 ## Published assets
 
 ### ASSET-01 · Each published file is fetched at its own version, revalidated
+
 - **Rule:** Every published file is requested as `<path>?v=<its version>`, the first 16 hex digits of its SHA-256, with `cache: 'no-cache'` and high priority, so a deploy re-downloads only what changed and a stale HTTP cache cannot fail the checksum.
 - **Kind:** behaviour
 - **Level:** unit
@@ -286,6 +318,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-assets.test.ts` (R), `src/lib/core/assets/asset-cache.test.ts` (R), `src/lib/core/assets/diffusion-assets.test.ts` (R)
 
 ### ASSET-02 · An unpublished file is refused before any request
+
 - **Rule:** Asking for a file the build did not publish fails at once, naming the file, and sends nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -294,6 +327,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-assets.test.ts` (R)
 
 ### ASSET-03 · Without a published map requests go unversioned
+
 - **Rule:** With no published map (Node tests, an embedder's bundler) requests go out unversioned and unverified.
 - **Kind:** behaviour
 - **Level:** unit
@@ -302,6 +336,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-assets.test.ts` (R)
 
 ### ASSET-04 · Bytes from another deploy are an update, not data
+
 - **Rule:** Downloaded bytes whose SHA-256 differs from the published record fail as `asset-updated`, never as a data error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -310,6 +345,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/asset-cache.test.ts` (R)
 
 ### ASSET-05 · A `.gz` decoded in transit is checked against its contents
+
 - **Rule:** A `.gz` file a server sends with `Content-Encoding: gzip` arrives decoded, and is checked against the recorded hash and size of its contents.
 - **Kind:** behaviour
 - **Level:** unit
@@ -318,6 +354,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/asset-cache.test.ts` (R)
 
 ### ASSET-06 · Failed downloads carry their cause
+
 - **Rule:** An HTTP failure rejects as `asset-fetch` with its status; a network failure rejects as `asset-fetch` with the original error as cause and no status.
 - **Kind:** behaviour
 - **Level:** unit
@@ -326,6 +363,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/asset-cache.test.ts` (R), `src/lib/core/assets/diffusion-assets.test.ts` (R), `src/lib/core/assets/comparison-assets.test.ts` (R)
 
 ### ASSET-07 · One download per file at a time
+
 - **Rule:** Concurrent requests for the same file share one download, and every caller hears its progress.
 - **Kind:** behaviour
 - **Level:** unit
@@ -334,6 +372,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/asset-cache.test.ts` (R)
 
 ### ASSET-08 · Progress counts decoded bytes
+
 - **Rule:** The progress total is the published decoded size; `Content-Length` is only a fallback and never used under `Content-Encoding`, so the bar never passes 100 %.
 - **Kind:** behaviour
 - **Level:** unit
@@ -342,6 +381,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/asset-cache.test.ts` (R; mutation-checked)
 
 ### ASSET-09 · The app takes over the head script's downloads
+
 - **Rule:** A file the head script already started is taken from it, not fetched a second time.
 - **Kind:** behaviour
 - **Level:** unit
@@ -350,6 +390,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/asset-cache.test.ts` (R)
 
 ### ASSET-10 · Published files come from the site root
+
 - **Rule:** The anatomy index, manifests and diffusion files are read from `/neuroatlas/`, the published root, wherever the page itself is served (the preview lives at `/neuroatlas/next/`).
 - **Kind:** behaviour
 - **Level:** unit
@@ -358,6 +399,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R), `src/lib/core/assets/diffusion-assets.test.ts` (R)
 
 ### ASSET-11 · The anatomy index request
+
 - **Rule:** The anatomy index is requested revalidated and at high priority.
 - **Kind:** behaviour
 - **Level:** unit
@@ -366,6 +408,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/published-anatomy.test.ts` (R)
 
 ### ASSET-12 · Atlas-comparison files are verified against their own checksum
+
 - **Rule:** Comparison JSON and geometry need a 64-hex SHA-256 before any request, must hash to it, and are not cached once loaded; a malformed JSON or a failing digest surfaces as the original error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -374,6 +417,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/comparison-assets.test.ts` (R)
 
 ### ASSET-13 · The published comparison data matches its checksums
+
 - **Rule:** The published cdmd atlas-comparison JSON and geometry hash to the SHA-256 their manifest and JSON declare, the JSON names its anatomy, and the geometry is a GLB.
 - **Kind:** data
 - **Level:** unit
@@ -382,6 +426,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/lib/core/assets/comparison-assets.test.ts` (S)
 
 ### ASSET-14 · Published index default matches the configuration
+
 - **Rule:** The published index lists its own default, and that default is the anatomy `config/model.yaml` builds.
 - **Kind:** data
 - **Level:** unit
@@ -390,6 +435,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `test/repo.test.ts` (H, incidental)
 
 ### ASSET-15 · Every published request on the real page is versioned
+
 - **Rule:** On the served site, every request under `models/` or `diffusion/` carries the version the build published for that file.
 - **Kind:** behaviour
 - **Level:** e2e — every request the served page makes
@@ -400,6 +446,7 @@ document, `location`, `history` and `window` directly.
 ## Head prefetch
 
 ### ASSET-16 · The head script starts the first frame's files
+
 - **Rule:** Before the app's code has parsed, the head script starts the index, the brain's manifest, one cortical atlas and one detail level, each from the published root at its published version, revalidated and at high priority.
 - **Kind:** behaviour
 - **Level:** unit
@@ -408,6 +455,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### ASSET-17 · The brain to prefetch
+
 - **Rule:** The head script prefetches the brain the link names, or else the index's default once the index has arrived.
 - **Kind:** behaviour
 - **Level:** unit
@@ -416,6 +464,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R; plus an I source-regex case)
 
 ### ASSET-18 · The index is handed over only after the brain has started
+
 - **Rule:** With no anatomy in the link, the app receives the index only after the default brain's files have started, so the manifest is never fetched twice; an index that does not parse or names no brain is still handed over for the app to report.
 - **Kind:** behaviour
 - **Level:** unit
@@ -424,6 +473,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### ASSET-19 · No envelopes or cord for the first frame
+
 - **Rule:** The head script does not start the tissue envelopes or the spinal cord; the model fetches those when first needed.
 - **Kind:** behaviour
 - **Level:** unit
@@ -432,6 +482,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (I: source text, not a run of the script)
 
 ### ASSET-20 · The prefetch names only what the manifest publishes
+
 - **Rule:** Every file name the head script can request is published by the default manifest, and every atlas and detail level a link can name has a prefetch entry.
 - **Kind:** behaviour
 - **Level:** unit
@@ -440,6 +491,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (I: source regex)
 
 ### ASSET-21 · Each prefetched file is requested once on the real page
+
 - **Rule:** On the served site, the index, manifest, default atlas and default detail level are each requested exactly once, at their current version.
 - **Kind:** behaviour
 - **Level:** e2e — request count on the served page
@@ -450,6 +502,7 @@ document, `location`, `history` and `window` directly.
 ## Service worker
 
 ### SW-01 · Registration
+
 - **Rule:** In a built site with service-worker support, the app registers `<app base>sw.js` scoped to the app base, only after a successful start; a failed registration is warned about, and development or unsupported browsers register nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -458,6 +511,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `src/boot/keep-cached.test.ts` (R); "only after a successful start" → uncovered (tests run with `PROD=false`, and `e2e/parity/harness.spec.ts` registers the worker itself)
 
 ### SW-02 · Store once, serve after
+
 - **Rule:** The first request for this deploy's version of a published file is fetched and stored; later requests are served from storage.
 - **Kind:** behaviour
 - **Level:** unit
@@ -466,6 +520,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-03 · Only current published files are intercepted
+
 - **Rule:** The worker answers only same-origin GET requests for the version of a published file this deploy publishes; the page, scripts, other versions, unpublished files, other origins and non-GET requests pass through untouched.
 - **Kind:** behaviour
 - **Level:** unit
@@ -474,6 +529,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-04 · A bad download is never stored
+
 - **Rule:** A failed, partial or mismatched response is passed to the page but never stored.
 - **Kind:** behaviour
 - **Level:** unit
@@ -482,6 +538,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-05 · A decoded `.gz` is stored by its contents' hash
+
 - **Rule:** A `.gz` file the server decodes on the way is stored when its contents hash to the published contents version.
 - **Kind:** behaviour
 - **Level:** unit
@@ -490,6 +547,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-06 · A new deploy deletes only what it no longer publishes
+
 - **Rule:** On activation the worker deletes stored files the deploy no longer publishes and the pre-rename `neuroatlas-models*` caches, keeps everything else, and takes control of open pages.
 - **Kind:** behaviour
 - **Level:** unit
@@ -498,6 +556,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-07 · A new worker takes over immediately
+
 - **Rule:** A newly installed worker activates without waiting for every tab to close.
 - **Kind:** behaviour
 - **Level:** unit
@@ -506,6 +565,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-08 · Filling the store revalidates
+
 - **Rule:** The worker fetches a file to store with `cache: 'no-cache'`, so the HTTP cache cannot hand it bytes from before the deploy.
 - **Kind:** behaviour
 - **Level:** unit
@@ -514,6 +574,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R)
 
 ### SW-09 · The page itself is always revalidated
+
 - **Rule:** Navigations always go to the network with `cache: 'no-cache'`; a redirected answer or a network failure falls back to the browser's own request. The site does not work offline.
 - **Kind:** behaviour
 - **Level:** unit
@@ -522,6 +583,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R, no-cache only); redirect and failure fallbacks uncovered
 
 ### SW-10 · A second visit is served by the worker
+
 - **Rule:** On the served site the built worker registers in the app's scope, stores a published file once its bytes match, and serves it on the next visit.
 - **Kind:** behaviour
 - **Level:** e2e — a real service worker across a reload
@@ -532,6 +594,7 @@ document, `location`, `history` and `window` directly.
 ## Build output
 
 ### BUILD-01 · Site paths
+
 - **Rule:** The live site and the development server serve from `/neuroatlas/`; `build:preview` publishes under `/neuroatlas/next/`.
 - **Kind:** behaviour
 - **Level:** unit
@@ -540,6 +603,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `build/site.test.ts` (H; compares with the module's own `ASSET_BASE`/`PREVIEW_BASE`, not the literal paths), `parity/F3.test.ts` (R, `ASSET_BASE` = `/neuroatlas/`)
 
 ### BUILD-02 · The preview does not republish the data
+
 - **Rule:** The preview build leaves the published models and diffusion data out, since the live site already serves them; the production build copies them.
 - **Kind:** behaviour
 - **Level:** unit
@@ -548,6 +612,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (H)
 
 ### BUILD-03 · Only the preview is hidden from search
+
 - **Rule:** The preview's raw HTML carries `<meta name="robots" content="noindex">`; the live site has no robots meta.
 - **Kind:** behaviour
 - **Level:** unit
@@ -556,6 +621,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `e2e/parity/harness.spec.ts` (R; the preview half runs on `next`, the live half on `legacy` only). Could move down to unit: the `preview-noindex` hook, as `parity/F3.test.ts` calls the prefetch hook.
 
 ### BUILD-04 · Three.js and the BVH index in their own chunks
+
 - **Rule:** Three.js core and `three-mesh-bvh` are built into their own `three` and `bvh` chunks, so a chrome-only deploy does not re-download them.
 - **Kind:** behaviour
 - **Level:** unit
@@ -564,6 +630,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (H)
 
 ### BUILD-05 · The version maps the build writes
+
 - **Rule:** The build writes `sw.js` beside the bundle with `{base, files, gunzipped}`: each published file's version (first 16 hex of its SHA-256), and for each `.gz` the first 16 hex of its contents' SHA-256; the head script gets the `models/` versions only.
 - **Kind:** behaviour
 - **Level:** unit
@@ -572,6 +639,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (D for the map contents; H for `sw.js` written beside the bundle); `e2e/parity/harness.spec.ts` (R, end to end, versions only). Contents hashing of `.gz` → D only.
 
 ### BUILD-06 · Charset first, prefetch before the stylesheet
+
 - **Rule:** The built page declares its charset within the first 1024 bytes, and the prefetch script comes before the stylesheet link.
 - **Kind:** behaviour
 - **Level:** unit
@@ -580,6 +648,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (H)
 
 ### BUILD-07 · The prefetch script is inlined with its values
+
 - **Rule:** The build injects the prefetch script inline into `<head>` with the published root and versions written in.
 - **Kind:** behaviour
 - **Level:** unit
@@ -588,6 +657,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (H)
 
 ### BUILD-08 · Development reloads on a rebuilt asset
+
 - **Rule:** In development, adding, changing or removing a file under `public/models` or `public/diffusion` updates its version and reloads the page; other events and files are ignored.
 - **Kind:** behaviour
 - **Level:** unit
@@ -596,6 +666,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `parity/F3.test.ts` (R 2, I 1)
 
 ### BUILD-09 · Page language and title
+
 - **Rule:** The page declares `lang="en"` and the title "Planum" when opened without a language.
 - **Kind:** behaviour
 - **Level:** unit
@@ -604,6 +675,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`); could move down to unit (a read of `index.html`).
 
 ### BUILD-10 · The page frame passes axe
+
 - **Rule:** The loaded page has no axe violations on `next` (legacy recorded as a baseline).
 - **Kind:** behaviour
 - **Level:** e2e — axe on the built, loaded page
@@ -612,6 +684,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`)
 
 ### BUILD-11 · No triple-slash type references
+
 - **Rule:** No source file under `src/` or `parity/` carries a `/// <reference types|lib=…>` directive.
 - **Kind:** behaviour
 - **Level:** unit
@@ -620,6 +693,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `test/no-triple-slash.test.ts` (H)
 
 ### BUILD-12 · Repository helpers read the data-contract files
+
 - **Rule:** `repoRoot` ends with `/`, and `readRepoJson`/`readRepoYaml` read `public/` and `config/` files.
 - **Kind:** behaviour
 - **Level:** unit
@@ -628,6 +702,7 @@ document, `location`, `history` and `window` directly.
 - **Covered by:** `test/repo.test.ts` (H)
 
 ### BUILD-13 · The test browser can draw what the renderer needs
+
 - **Rule:** The headless test browser gives WebGL 2 with `EXT_color_buffer_float` and a complete 4× multisampled RGBA16F framebuffer.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL

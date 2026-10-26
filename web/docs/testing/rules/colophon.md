@@ -7,6 +7,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 ## Content
 
 ### COLO-01 · The status bar opens with the not-clinical statement, which never gives way
+
 - **Rule:** The status bar reads, in order: the statement that this is not clinical anatomy, the description of what is loaded, the count, then the Provenance button. The statement never truncates. The description is what gives way, with an ellipsis.
 - **Kind:** behaviour
 - **Level:** browser: text order and layout (truncation)
@@ -15,6 +16,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, order and the French statement); `e2e/parity/provenance.spec.ts` (R; `next` gated off); truncation is uncovered
 
 ### COLO-02 · The description names what is loaded, as the masthead names it
+
 - **Rule:** The description names the subject as the masthead names it (MAST-28), then what kind of anatomy it is. A tract reference is named as reference data. Before anything has loaded there is no description, and the statement stays in every state.
 - **Kind:** behaviour
 - **Level:** unit (view-model `colophonParts`)
@@ -23,6 +25,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Covered by:** `src/lib/core/panels/header.test.ts` (R; regex `^SNAIL subj_1 · ` and `/clinical anatomy/` only, so the kind text is not pinned); `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, regex; `next` gated off); `parity/C5.test.ts` (D)
 
 ### COLO-03 · The count says how many regions are visible, in each language's plural
+
 - **Rule:** On the anatomy the count is the number of regions drawn, said to be the visible ones, with the right plural. In Tracts mode it names the bundles instead, whatever is loading. Before the first model is ready there is no count.
 - **Kind:** behaviour
 - **Level:** unit (`regionCountText`)
@@ -31,6 +34,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Covered by:** `src/features/colophon/region-count.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, `/\d+ visible regions?/`; `next` gated off)
 
 ### COLO-04 · A download the data bar is not showing is shown in the count
+
 - **Rule:** While a download runs that the data bar is not already showing in one of its fields (a link, or a command from elsewhere), the count shows its progress. When a data-bar field holds the pending choice, the count keeps counting regions.
 - **Kind:** behaviour
 - **Level:** unit (`regionCountText`); the `choosing` flag comes from the data bar through the composition (REGION-17)
@@ -41,6 +45,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 ## The opener and the bar
 
 ### COLO-05 · The Provenance button opens a dialog, once one can be opened
+
 - **Rule:** The status bar ends with a "Provenance" button that says it opens a dialog. It is there only when the page can open the sheet. Legacy shipped it hidden until boot.
 - **Kind:** accessibility
 - **Level:** browser: role and attribute
@@ -49,6 +54,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R for the name and attribute; I for "only when the owner supplies an opener", a component-prop contract); `e2e/parity/provenance.spec.ts` (R; `next` gated off)
 
 ### COLO-06 · The Provenance target is 24 px on a fine pointer and 44 px on a coarse one
+
 - **Rule:** With a fine pointer the status bar is 32 px tall and the button 24 px. With a coarse pointer, at any width, the bar is 45 px: a 1 px rule above a 44 px button that fills it. The page does not scroll because of it.
 - **Kind:** accessibility
 - **Level:** browser: layout under touch emulation
@@ -57,6 +63,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases)
 
 ### COLO-07 · The status bar is a plain footer, not a live region
+
 - **Rule:** The status bar is the page's `contentinfo` landmark and is not live. Its count changes are visual; mode and selection changes are said by the announcer.
 - **Kind:** accessibility
 - **Level:** browser: roles
@@ -65,6 +72,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Covered by:** uncovered (the footer's presence only, in `provenance.svelte.test.ts`)
 
 ### COLO-08 · On a phone the status bar gives way
+
 - **Rule:** Under the phone query the status bar is hidden. The statement moves to the sheet's grip and Provenance to the ⋯ menu.
 - **Kind:** behaviour
 - **Level:** browser: CSS computed style

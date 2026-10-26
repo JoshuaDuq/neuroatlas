@@ -9,6 +9,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 ## Mount points and landmarks
 
 ### REGION-01 · The masthead region holds the masthead, with the data bar in its slot
+
 - **Rule:** The masthead region renders H2's masthead, with H3's data bar in its `data` slot between the brand and the masthead's buttons. It adds no element: the masthead's `header#masthead` is the page's only banner.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -17,6 +18,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered (`src/app/App.svelte.test.ts` mounts stub snippets)
 
 ### REGION-02 · The status region holds the colophon and nothing else
+
 - **Rule:** The status region renders H4's colophon and adds no element: `footer#colophon` is the page's only `contentinfo`.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -25,6 +27,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-03 · The panel region is the one named aside, with no aside inside it
+
 - **Rule:** The panel region is the single `aside#workspace-panel` named "Atlas panel". It holds the workspace's one tablist, the list and detail views and the phone sheet. Nothing inside it is an `aside`; panels are tabpanels or sections.
 - **Kind:** accessibility
 - **Level:** browser (regions + fake engine)
@@ -33,6 +36,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `src/app/App.svelte.test.ts` (R, the empty aside only); `e2e/parity/workspace.spec.ts` and `sheet.spec.ts` (R; `next` gated off)
 
 ### REGION-04 · The stage region is the main landmark and holds the stage
+
 - **Rule:** The stage region is `<main id="viewport" tabindex="-1">`. It holds the canvas, the stage status (start, progress, failure), the overlays, the dock, the stage popovers and the section bar.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -41,6 +45,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-05 · Dialogs are mounted once, by the root, after the regions
+
 - **Rule:** Each dialog is a native `<dialog>` mounted once, as a direct child of the app root after the regions, so stacking and the inert page never depend on region markup. I3b mounts Keyboard shortcuts and Provenance; I2 mounts Linked MRI and Diffusion MRI. The WebGL canvases inside the MRI dialogs exist only while their dialog is open.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -49,6 +54,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-06 · One tooltip serves the whole page
+
 - **Rule:** The page mounts one tooltip, so every `data-tooltip` trigger in the masthead, the panels and the stage shows its tip on hover and on keyboard focus.
 - **Kind:** accessibility
 - **Level:** browser (regions + fake engine)
@@ -59,6 +65,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 ## Ports and single instances
 
 ### REGION-07 · Once the shell mounts, every port is registered
+
 - **Rule:** With every region mounted and the world attached, every controller command reaches a region and every question is answered by one. No command throws "port is not mounted", and no question answers no because nothing registered it.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -67,6 +74,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered (`src/app/boot.svelte.test.ts` registers stub ports)
 
 ### REGION-08 · Regions share the root's single stateful instances
+
 - **Rule:** The scene commands, excursions, anatomy commands and the stage-layout store exist once, in the composition root. Regions and features take them from `getApp()` and never build second ones, so excursion state, the intent counter and the framing source are shared.
 - **Kind:** hygiene
 - **Level:** unit (source scan of `src/app/regions/` and `src/features/`)
@@ -75,6 +83,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-09 · Features do not mount each other or reach into another feature's DOM
+
 - **Rule:** A feature component is mounted only by a region or by its own feature. A feature never finds another feature's element by id. Cross-panel behaviour goes through controller commands and the focus registry.
 - **Kind:** hygiene
 - **Level:** unit (source scan)
@@ -85,6 +94,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 ## Masthead and status composition (I3b)
 
 ### REGION-10 · A setting chosen in the menu applies to the whole app and is remembered
+
 - **Rule:** A language chosen in the settings panel re-labels every region, sets `<html lang>` and is saved. A theme sets `<html data-theme>`, repaints the scene and is saved. Single keys set `html[data-single-keys]` and turn the single-key shortcuts on or off. A link's language is followed but never saved.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine); e2e for the reload journey
@@ -93,6 +103,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `e2e/parity/masthead.spec.ts` "choosing a theme, a language and single keys" (R, the attributes only, not storage; `next` gated off); `src/features/masthead/Masthead.svelte.test.ts` (R, only through its fixture, which applies `lang` itself)
 
 ### REGION-11 · Skip to model focuses the canvas, or the stage when the canvas cannot take focus
+
 - **Rule:** Activating the skip link focuses the model's canvas with a visible focus ring. While no canvas can take focus (loading, error), it focuses the stage landmark. The link's view is not changed.
 - **Kind:** accessibility
 - **Level:** browser (regions + fake engine); one e2e journey on the built page
@@ -101,6 +112,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `e2e/parity/masthead.spec.ts` (R, the ready case: `CANVAS`; `next` gated off); `src/features/masthead/Masthead.svelte.test.ts` (R, only that the handler runs and the hash stays empty)
 
 ### REGION-12 · Full screen and Save image act on the stage, and their labels follow
+
 - **Rule:** The masthead's Full screen and Save image are enabled while the status is `ready` or `switching`. Full screen puts the stage into fullscreen and the labels become "Exit full screen". Leaving fullscreen in any way restores "Full screen". Save image saves the stage's picture (G6).
 - **Kind:** behaviour
 - **Level:** e2e: real fullscreen needs a top-level page
@@ -109,6 +121,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered for the wiring (`src/features/masthead/Masthead.svelte.test.ts` covers the props: MAST-04, MAST-06)
 
 ### REGION-13 · The data bar's choices change the model
+
 - **Rule:** Atlas runs the atlas choice. Colour first lifts a tab's paint, then chooses the colouring. Internal anatomy chooses the detail level. The data bar is fed from the session and the model: status, progress, atlas, colour, detail, paint, the published atlases, detail levels and colourings, the subject and the index's subjects.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine); one e2e journey for a real atlas switch
@@ -117,6 +130,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `e2e/parity/data-bar.spec.ts` "choosing a colour and an atlas changes the select" (R; `next` gated off); `src/features/masthead/DataBar.svelte.test.ts` "each field calls its command" (R at the component boundary: the emitted values only)
 
 ### REGION-14 · Choosing another subject reopens the app on that subject
+
 - **Rule:** Choosing another subject rewrites the link and reloads. The reader keeps atlas, cut, view, panel and language, and loses the selection, isolation, hidden parts, exact camera and MRI window, which belong to the old subject. The link is replaced, not pushed, so Back does not return to the brain just left. Choosing the current subject does nothing.
 - **Kind:** behaviour
 - **Level:** e2e: real reload (needs an index with two subjects; the published index has one, so no Subject field is offered today)
@@ -125,6 +139,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-15 · The data popover and the settings panel share one open state
+
 - **Rule:** The masthead region binds the settings panel's open state to the data bar's, so the two are never open together.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -133,6 +148,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, through a fixture that makes the same binding); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); the region's own binding is uncovered
 
 ### REGION-16 · Alone on screen, the tract reference replaces the subject everywhere
+
 - **Rule:** While the tract reference is shown alone, the data bar names it (with Colour shown as Tissue) and the colophon describes it as reference data. Provenance lists its source and provenance links. In the Tracts tab the status bar counts bundles instead of regions.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -141,6 +157,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered (each part in its own catalogue: MAST-47, COLO-02, COLO-03, PROV-07)
 
 ### REGION-17 · The status bar shows a download only when the data bar does not
+
 - **Rule:** The colophon's count is told whether a data-bar field holds the pending choice, so a download appears in one place only.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -149,6 +166,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `src/features/colophon/region-count.test.ts` (R, the function only); the wiring is uncovered
 
 ### REGION-18 · Provenance opens from the colophon and the phone menu, once the manifest is there
+
 - **Rule:** Both openers, the colophon's button and the phone menu's item, open the one Provenance dialog with the loaded manifest, its URLs and the domains. The menu item waits for the manifest. Closing returns focus to the opener, or to More settings when the opener is gone.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine); the phone journey also as e2e
@@ -157,6 +175,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** `e2e/parity/provenance.spec.ts` (R; `next` gated off); `src/features/provenance/provenance.svelte.test.ts` (R, a fixture composition with `domains: null`)
 
 ### REGION-19 · Keyboard shortcuts opens from the menu and from the keymap
+
 - **Rule:** The menu's Keyboard shortcuts and the `?` key open the one shortcuts dialog through the `toggleShortcuts` port. The menu path returns focus to More settings, and the port answers whether the dialog is open.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -167,6 +186,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 ## Stage composition (I2)
 
 ### REGION-20 · The stage shows the start and its failures from the session, once each
+
 - **Rule:** The stage status in `main` is fed by the session's status and progress and by the app's start failure. It says the start, the end of loading and a start failure once each. Lost and restored context are said by S1's speech, not again here.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -175,6 +195,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered for the composition (`src/app/boot.svelte.test.ts` covers BOOT- with H1b's component)
 
 ### REGION-21 · The MRI dialogs open from the stage and from the controllers
+
 - **Rule:** The Linked MRI dialog opens from the section bar's opener and from the controllers' `showMri`, `openPreparedPlane` and `openMpr`, and closes with `closeMpr`. The Diffusion MRI dialog opens from the Tracts panel's button and from `openDiffusionMri`. `M` toggles the open one. The question ports answer whether each is open.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine; the dialogs' own WebGL is not needed)
@@ -183,6 +204,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-22 · The Tracts minimum length is one shared value
+
 - **Rule:** The minimum streamline length set in the Tracts panel is the one the Diffusion MRI navigator draws with.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -191,6 +213,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered
 
 ### REGION-23 · The stage layout follows the panel and the window
+
 - **Rule:** The stage-layout store knows the visible part of the stage. It is set when the panels set the camera's chrome insets, and on every desktop resize through the engine's viewport event. The phone sheet's full rest reaches the stage's styles.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -201,6 +224,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 ## Panel composition (I1)
 
 ### REGION-24 · The detail view stacks its parts in a fixed order
+
 - **Rule:** The detail view composes, top to bottom: circuit profile, action status, function profile, clinical profile, region detail, related deficits, circuit notes, related circuits. A part with nothing to show is absent.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -209,6 +233,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered (I1 PR #134 open)
 
 ### REGION-25 · A click on the model shows the region; a link's detail does not raise the sheet
+
 - **Rule:** Clicking a region on the model selects it and shows its detail, and on a phone raises the sheet. A link that opens a detail at start shows it without raising a phone's sheet over the camera.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine: a fake pick); one e2e journey
@@ -217,6 +242,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Covered by:** uncovered (CTRL-01 covers the controller with stub ports)
 
 ### REGION-26 · The tract reference resets what the old anatomy left on the stage
+
 - **Rule:** When the tract reference becomes active, the hover outline, the outline cache and the framing cache of the anatomy are reset, so nothing of the hidden anatomy stays drawn or framed.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
@@ -227,6 +253,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 ## Gates and journeys
 
 ### REGION-27 · Each gate flips with its region, and its specs then run green on `next`
+
 - **Rule:** When a region is integrated, its gate file is set to `true` in the same PR, and the specs it lists then run, and pass, on `next`. No spec is dropped from `next` once its region is integrated.
 - **Kind:** hygiene
 - **Level:** e2e

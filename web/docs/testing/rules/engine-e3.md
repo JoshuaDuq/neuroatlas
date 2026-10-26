@@ -20,6 +20,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## The cut face of a solid
 
 ### TISSUE-01 · A cut through a closed solid is exactly its cross-section, in world space
+
 - **Rule:** Cutting a closed mesh by a plane gives triangles that lie on the plane and cover exactly the part of the plane inside the solid, from either side of the plane, through the mesh's world matrix. Concave outlines keep their notches and holes in the solid stay holes.
 - **Kind:** behaviour
 - **Level:** unit
@@ -28,6 +29,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R; area is not asserted), `parity/E3.test.ts` (D, a rotated 6 × 6 × 6 box)
 
 ### TISSUE-02 · A plane that misses gives no face
+
 - **Rule:** A plane that does not meet the solid, or a geometry with no positions, gives an empty result, not a fallback and not an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -36,6 +38,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R), `parity/E3.test.ts` (D, the plane z = 5 under a rotated box)
 
 ### TISSUE-03 · A cut the sectioner cannot vouch for is reported, not filled wrongly
+
 - **Rule:** When the intersection is not a set of closed, simple loops (an edge shared by more than two faces, an open loop, a broken cycle, no interior seed, or a triangulation whose area deviates by more than 1e-3), the result is a fallback with its reason, so the caller keeps the stencil cap.
 - **Kind:** behaviour
 - **Level:** unit
@@ -44,6 +47,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R, `fallback` only; the reason and the other four causes are uncovered)
 
 ### TISSUE-04 · A plane through a vertex still gives a sound face
+
 - **Rule:** A vertex exactly on the plane is moved off it by a tiny amount that depends only on its position, so every copy of that vertex moves alike and the cut never sits on a vertex. A plane through a row of vertices still gives a closed face.
 - **Kind:** behaviour
 - **Level:** unit
@@ -52,6 +56,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** uncovered (`parity/E3.test.ts` cuts the published envelopes through their bounding-box centre but never asserts this)
 
 ### TISSUE-05 · The BVH changes only the speed of a cut
+
 - **Rule:** Cutting with the geometry's indirect BVH, with a plain BVH, or by walking every triangle gives the same face.
 - **Kind:** behaviour
 - **Level:** unit
@@ -62,6 +67,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Earcut
 
 ### TISSUE-06 · Faces with holes are triangulated without losing area
+
 - **Rule:** The vendored earcut triangulates an outline with holes into triangles whose total area equals the outline's area minus the holes'.
 - **Kind:** data
 - **Level:** unit
@@ -70,6 +76,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `parity/E3.test.ts` (D, triangles and deviation equal to the legacy copy)
 
 ### TISSUE-07 · The vendored earcut is upstream 2.2.4
+
 - **Rule:** `earcut.js` is earcut 2.2.4 as published upstream; once `web/.prettierignore` lists it, its bytes are upstream's.
 - **Kind:** hygiene
 - **Level:** unit
@@ -80,6 +87,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Ribbon wedges
 
 ### TISSUE-08 · Each parcel of the ribbon becomes one closed solid
+
 - **Rule:** The cortical ribbon between the pial and white surfaces is closed into one solid per parcel: its pial patch, its white patch reversed, and a wall along the patch boundary. Every solid is closed and consistently wound, which is what the stencil cap counts.
 - **Kind:** behaviour
 - **Level:** unit
@@ -88,6 +96,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R)
 
 ### TISSUE-09 · A triangle belongs to its majority label, and a three-way tie to the lowest
+
 - **Rule:** A triangle goes to the label two or more of its vertices share. When all three differ it goes to the lowest label, as the build does.
 - **Kind:** behaviour
 - **Level:** unit
@@ -96,6 +105,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R)
 
 ### TISSUE-10 · A wedge carries the pial and white coordinates unchanged
+
 - **Rule:** A wedge's vertices are its patch's pial vertices followed by the same vertices on the white surface, copied exactly, with its bounding box computed. Surfaces that do not share one labelled vertex set are refused.
 - **Kind:** behaviour
 - **Level:** unit
@@ -104,6 +114,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R, coordinates); the refusal is uncovered
 
 ### TISSUE-11 · The published ribbon closes into sound parcel solids
+
 - **Rule:** For each atlas that publishes ribbon labels, each hemisphere's published pial and white envelopes and labels give one wedge per label that owns a triangle, every one closed and consistently wound.
 - **Kind:** data
 - **Level:** unit
@@ -114,6 +125,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Loading the cut's solids
 
 ### TISSUE-12 · An atlas with ribbon labels gets one parcel solid per wedge, named by its region
+
 - **Rule:** An atlas that publishes `ribbon_labels` gets, per hemisphere (left then right), one solid per wedge, tagged with its hemisphere, its atlas, kind `ribbon` and the region the label index names. An atlas without ribbon labels gets none. The envelopes are baked into world space first.
 - **Kind:** behaviour
 - **Level:** unit
@@ -122,6 +134,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `parity/E3.test.ts` (D, `userData`, positions and index for both atlases; the empty `nextbrain` result is R); the missing-envelope error is uncovered
 
 ### TISSUE-13 · A ribbon label file of the wrong length is refused
+
 - **Rule:** The ribbon label file must hold two bytes per vertex of both hemispheres. Any other length is an error naming the atlas and both sizes, not a truncated or garbled cut.
 - **Kind:** data
 - **Level:** unit
@@ -130,6 +143,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R)
 
 ### TISSUE-14 · Only the white envelope's cap samples gyral white matter
+
 - **Rule:** Each cut solid gets a solid cap material (SHADER-25) with cap labels (SHADER-30) and the MRI appearance at the cap's lift. Only the white envelope's cap reads the gyral white-matter parcels. A solid not registered to the MRI (the reference cord) gets no relief.
 - **Kind:** behaviour
 - **Level:** unit
@@ -138,6 +152,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, white matter only; the relief is uncovered)
 
 ### TISSUE-15 · Nested solids reach the cut after the solids that enclose them
+
 - **Rule:** Solids are ordered by segmentation volume, largest first, so an enclosing solid is drawn before what it holds. A solid without a volume counts as 0. Equal volumes keep their order.
 - **Kind:** behaviour
 - **Level:** unit
@@ -148,6 +163,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Painting the cut's solids
 
 ### TISSUE-16 · A cut shows only the solids that belong to it
+
 - **Rule:** A parcel solid belongs to its own atlas's cut only. A solid of a detail level belongs only while that level is shown. The pial envelope stands in only for an atlas without parcel solids. Under MRI colour, solids not registered to the MRI are left out.
 - **Kind:** behaviour
 - **Level:** unit
@@ -156,6 +172,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R; the MRI case is D only), `parity/E3.test.ts` (D, 300 seeded states)
 
 ### TISSUE-17 · A solid is painted as the cut label it stands for
+
 - **Rule:** A parcel solid is painted as its region's cut label. A ribbon parcel the segmentation never labelled (the medial wall) is painted as unlabelled cortex. The white envelope is painted as its hemisphere's cerebral white matter label (2 left, 41 right), never as a cortical parcel that reuses that code. The pial envelope and any solid without a label are painted from the solid itself.
 - **Kind:** behaviour
 - **Level:** unit
@@ -164,6 +181,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D)
 
 ### TISSUE-18 · A solid without a cut label keeps the colour its surface has
+
 - **Rule:** An envelope with no label is cortex (pial) or white (white). A painted region takes its paint colour. Under atlas colours a nucleus the cut atlas never labelled keeps its own published mesh colour. Otherwise the solid takes its tissue class colour (SHADER-01), from its declared tissue for the reference cord.
 - **Kind:** behaviour
 - **Level:** unit
@@ -172,6 +190,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D)
 
 ### TISSUE-19 · Only tissue colour carries the T1 variation on a cap
+
 - **Rule:** A cap carries the T1 brightness variation only under tissue (and MRI) colour. Under atlas, network, CAB-NP, functional colours or a paint it carries none, so the cap matches its key. A solid not registered to the MRI never carries it. Relief is light, not colour, and stays.
 - **Kind:** scientific
 - **Level:** unit
@@ -180,6 +199,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, tissue, atlas, network), `parity/E3.test.ts` (D); the same rule for the sampled face is SLICE-31
 
 ### TISSUE-20 · Display controls hide the solids they describe
+
 - **Rule:** A cap is hidden with its removed region, with the hidden hemisphere, and with the cortex when the cortex is hidden or fully transparent. While a region is isolated only its solid stands, plus its own hemisphere's white envelope when the isolated region is a gyral white-matter parcel. Structures follow the internal anatomy's visibility and system filter, and stay up when they are the isolated region.
 - **Kind:** behaviour
 - **Level:** unit
@@ -188,6 +208,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D)
 
 ### TISSUE-21 · A cap answers for the region it was painted as
+
 - **Rule:** Pointing at a cap names the region its colour came from: a parcel names itself, a nucleus the atlas never labelled names itself, the white envelope and an unlabelled wedge name no region, so nothing can light them.
 - **Kind:** behaviour
 - **Level:** unit
@@ -196,6 +217,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `src/lib/engine/tissues/solid-sections.test.ts` (R, hit carries the painted region), `parity/E3.test.ts` (D)
 
 ### TISSUE-22 · Under MRI colour, caps of an atlas without parcel solids name the labels they sample
+
 - **Rule:** Under MRI colour (no paint) on an atlas without parcel solids, a cap without a region samples the cut atlas's labels and answers for no region itself. Isolating a label that only the cut atlas has (no solid stands for it) makes every cap sample, with isolation left to the sampled labels, so the isolated label shows.
 - **Kind:** behaviour
 - **Level:** unit
@@ -206,6 +228,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Drawing the caps
 
 ### TISSUE-23 · A cut draws each solid's cross-section, not a stencil of the whole solid
+
 - **Rule:** A solid whose section is sound is capped with its cross-section triangles only. Its stencil masks are off and the cap writes no stencil, so a cut through hundreds of parcels does not draw every solid twice.
 - **Kind:** behaviour
 - **Level:** unit
@@ -214,6 +237,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R), `parity/E3.test.ts` (D)
 
 ### TISSUE-24 · A cut the sectioner refuses keeps the stencil cap, picked only inside the solid
+
 - **Rule:** When the section is a fallback, the cap is a quad covering the whole plane, centred on the cut's bounds and sized to their diagonal, drawn through the winding-count stencil. A hit on it counts only where the faces behind it along the ray wind to a nonzero count, so a zero-thickness ribbon is not mistaken for inside.
 - **Kind:** behaviour
 - **Level:** unit for placement and picking; browser for the stencil drawing
@@ -222,6 +246,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R), `parity/E3.test.ts` (D, cap placement on seeded planes)
 
 ### TISSUE-25 · Solids the plane misses or the painter hid are not drawn
+
 - **Rule:** A solid the plane misses, or one painted invisible, is not drawn. A solid shown again on a plane that has not moved is cut and drawn then. An unmoved plane reuses the cuts it already made.
 - **Kind:** behaviour
 - **Level:** unit
@@ -230,6 +255,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-26 · Later bands and nested solids cap over the solids around them, without z-fighting
+
 - **Rule:** Caps are drawn by band (envelopes, then parcel solids, then structures) and within a band larger solids first, whatever order they were loaded in. Each later cap is pushed one step further forward, and every cap lies on the same plane at the same place, so what draws last is what shows.
 - **Kind:** behaviour
 - **Level:** unit
@@ -238,6 +264,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R; band order across bands is uncovered), `parity/E3.test.ts` (D)
 
 ### TISSUE-27 · A cut hit names the nearest drawn cap and the solid it landed in
+
 - **Rule:** A pick on the cut returns the nearest visible cap hit inside its solid; among caps within 1e-5 m of each other, the one drawn last (the one on top) wins. A caller can skip hits, which then fall through to the next cap. The hit names the solid and the region it answers for. The cord is pickable down its whole length in every orientation and retained side.
 - **Kind:** behaviour
 - **Level:** unit
@@ -246,6 +273,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R), `parity/E3.test.ts` (D, 48 seeded rays × 8 planes)
 
 ### TISSUE-28 · Hover and selection lift the cap of the region they name, and leave its colour
+
 - **Rule:** A cap's lift follows SHADER-18 for the region the cap answers for. The painted colour is not touched, so a repaint during a drag cannot wipe the lift. Leaving the region puts the lift back to 0.
 - **Kind:** behaviour
 - **Level:** unit
@@ -254,6 +282,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-29 · The cut shares the model's geometry and BVH and never disposes them
+
 - **Rule:** A solid draws from its source mesh's geometry and BVH, building the BVH only if the source has none, and leaves both to their owner on dispose. The BVH must be indirect, because the sectioner relies on triangles keeping their source order.
 - **Kind:** behaviour
 - **Level:** unit
@@ -262,6 +291,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R; the indirect-BVH error is uncovered)
 
 ### TISSUE-30 · A cap that outgrows its buffers frees the old ones
+
 - **Rule:** When a cut needs more cap vertices than the buffers hold, the old buffers are released before larger ones (at least twice the old size, and at least 96 values) take their place.
 - **Kind:** behaviour
 - **Level:** unit
@@ -272,6 +302,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## The section worker
 
 ### TISSUE-31 · The worker cuts exactly what the main thread cuts
+
 - **Rule:** A cut built off the pointer thread gives the same cap, bit for bit, as the synchronous cut, and installing it draws the same vertices. A job for a solid the worker does not hold comes back as a fallback. Solids whose positions cannot be sent (interleaved, normalised, or not three per vertex) are cut on the caller side and merged into the reply.
 - **Kind:** behaviour
 - **Level:** unit
@@ -280,6 +311,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, through the worker module run in-thread), `parity/E3.test.ts` (D, the unknown id and 6 seeded planes on published wedges); the caller-side merge is uncovered
 
 ### TISSUE-32 · A late build never overwrites a newer cut
+
 - **Rule:** A background build is installed only if no synchronous cut ran since it started; otherwise it is dropped.
 - **Kind:** behaviour
 - **Level:** unit
@@ -288,6 +320,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, the true case); the stale drop is uncovered
 
 ### TISSUE-33 · Without `Worker` the caller cuts on its own thread
+
 - **Rule:** The worker is used only where the platform has `Worker`. Without it a build declines, and the caller cuts synchronously. This is the only fallback.
 - **Kind:** behaviour
 - **Level:** unit
@@ -296,6 +329,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-34 · A worker failure is an error, not a silent main-thread cut
+
 - **Rule:** A runtime error in the worker terminates it and rejects the pending build and every later one with that error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -304,6 +338,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-35 · A disposed cut starts no worker and leaves no build waiting
+
 - **Rule:** A warm-up scheduled before dispose starts no worker. Dispose terminates the worker and resolves pending builds with null.
 - **Kind:** behaviour
 - **Level:** unit
@@ -314,6 +349,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Glass-brain ribbon solids
 
 ### TISSUE-36 · A solid region of the glass brain is closed by its ribbon solid
+
 - **Rule:** Behind each region the glass brain draws solid, its ribbon wedge is drawn in the region's published colour while its patch is drawn, so the region does not read as a shell from behind. The wedge is pushed back in depth so the patch and its fold shading show on the shared pial face, and it is clipped by the cut. The group is visible only while one wedge is.
 - **Kind:** behaviour
 - **Level:** unit
@@ -324,6 +360,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 ## Exposed native white matter
 
 ### TISSUE-37 · Hiding cortex lays open the white matter of that hemisphere
+
 - **Rule:** A hemisphere's native white surface is shown when a removed region is a cortical parcel of the shown atlas in a shown hemisphere. Nothing is laid open while the cortex is hidden or transparent, or while a region is isolated. A removed id missing from the region index is a named error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -332,6 +369,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, the error), `src/lib/engine/model/brain-atlas.test.ts` (R, through the model), `parity/E3.test.ts` (D, 100 seeded states)
 
 ### TISSUE-38 · The exposed white surface is white tissue that follows the cortex opacity
+
 - **Rule:** The exposed surfaces are drawn as white tissue (double-sided, manifest lighting, no clear coat on a phone), with the cortex's opacity, transparent and without depth writes below 1, and clipped by the cut. The envelope group must hold exactly one white surface per hemisphere; its meshes start hidden.
 - **Kind:** behaviour
 - **Level:** unit

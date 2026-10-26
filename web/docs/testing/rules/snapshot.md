@@ -15,6 +15,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 ## The caption
 
 ### SNAP-01 · The caption names the subject, then atlas, colouring and internal anatomy, then the view
+
 - **Rule:** The first line is the subject, in bold. The second is the atlas, the colouring and the internal-anatomy level, named as the masthead names them and joined by " · ". The third is the view, when the camera holds a named view. Facts with no words are dropped, and a line with none goes.
 - **Kind:** behaviour
 - **Level:** unit
@@ -23,6 +24,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `parity/G6.test.ts` (D)
 
 ### SNAP-02 · The internal anatomy only where the masthead offers it, the view only while the camera holds it
+
 - **Rule:** The internal-anatomy level is named only when the masthead offers a choice of levels. The view is named only while the camera still sits on it; once the reader has turned the model the caption names no view.
 - **Kind:** behaviour
 - **Level:** unit: the subject is plain data (today tested through `snapshotPlan` in the browser)
@@ -31,6 +33,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R; could move down)
 
 ### SNAP-03 · A section replaces the view with the plane and its signed position
+
 - **Rule:** While a plane is cut, the third line names the section and its signed position to one decimal, with its unit kept on it; an oblique section adds its tilt and signed azimuth in whole degrees. The figures are set in the interface face, not a monospace one.
 - **Kind:** behaviour
 - **Level:** unit
@@ -39,6 +42,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `src/features/snapshot/snapshot.svelte.test.ts` (R); `parity/G6.test.ts` (D)
 
 ### SNAP-04 · The tract reference is named alone
+
 - **Rule:** While the tract reference is shown alone, its name, in bold, replaces the subject and the labels line, and no section is named. A held view is still named.
 - **Kind:** behaviour
 - **Level:** unit
@@ -47,6 +51,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `src/features/snapshot/snapshot.svelte.test.ts` (R); `parity/G6.test.ts` (D)
 
 ### SNAP-05 · Every colouring, view and plane has a fixed caption in both languages
+
 - **Rule:** For each colouring, each named view or none, and each plane or none, in English and French, the caption is a known table of words; every plane's name appears in it.
 - **Kind:** behaviour
 - **Level:** unit (a table test)
@@ -57,6 +62,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 ## Laying out the markings
 
 ### SNAP-06 · A narrow image breaks a caption line between its facts, never inside one
+
 - **Rule:** The facts of a line are packed greedily into lines no wider than the room; a fact wider than the room gets a line of its own, to be shortened there.
 - **Kind:** behaviour
 - **Level:** unit
@@ -65,6 +71,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `parity/G6.test.ts` (D)
 
 ### SNAP-07 · A line too long for its room keeps its start and ends in an ellipsis
+
 - **Rule:** A run that does not fit is cut to the longest start that, with "…", fits; if nothing fits, only "…" is drawn.
 - **Kind:** behaviour
 - **Level:** unit
@@ -73,6 +80,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `parity/G6.test.ts` (D)
 
 ### SNAP-08 · The caption runs from the top left and stops short of the top letter
+
 - **Rule:** The caption starts at the left gutter, its first line centred 24 px from the top, one line every 16 px; the first line is 13 px, the others 12 px, bold runs at weight 600. Its room ends 12 px before the top orientation letter (or at the right gutter when there is none), so the two never touch.
 - **Kind:** behaviour
 - **Level:** browser: canvas text measurement
@@ -81,6 +89,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.parity.svelte.test.ts` (D only); a rule test is uncovered
 
 ### SNAP-09 · The statement and the scale bar share the bottom line until they would meet
+
 - **Rule:** The image always carries "Planum · Not clinical anatomy" at the bottom left. The scale bar sits at the bottom right on the same line while the statement, two gaps and the bar fit between the gutters; otherwise it rises one line and a gap.
 - **Kind:** behaviour
 - **Level:** unit for the positions; browser for the drawn statement
@@ -89,6 +98,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R, positions); `parity/G6.test.ts` (D); `src/features/snapshot/snapshot.parity.svelte.test.ts` (D; the only check that the statement is drawn)
 
 ### SNAP-10 · The scale bar is drawn at its on-screen length
+
 - **Rule:** The image's scale bar is a bracket exactly as many pixels wide as the bar on screen, open at the top with 6 px ends, its label 8 px after it in 13 px type, both with the markings' halo.
 - **Kind:** scientific
 - **Level:** browser: canvas pixels
@@ -97,6 +107,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R, the plan values); the drawn bracket is checked only by `src/features/snapshot/snapshot.parity.svelte.test.ts` (D)
 
 ### SNAP-11 · The letters are drawn where the reader sees them
+
 - **Rule:** Each orientation letter is drawn at the centre of where it is on screen, in 13 px bold with the halo. Without a key band in the top strip the top letter moves up to the caption's line. Over a tall dock, where the screen hides the bottom letter, the image draws it centred one line above the statement. Before the anatomy is drawn there are no letters and no scale bar.
 - **Kind:** behaviour
 - **Level:** browser: measured positions
@@ -105,6 +116,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R)
 
 ### SNAP-12 · Each colour key is redrawn with every row named beside its swatch
+
 - **Rule:** Each shown key is redrawn as its plate, its swatches and its words: the title, the functional level shown beside it, and every row's label beside its own swatch. The picked row is bold and the others regular; a colour not shown in this view stays hollow. A folded key draws its title row only. Rows scrolled out of a long key stay out. The paint key's note is not drawn (legacy, flagged on #4).
 - **Kind:** behaviour
 - **Level:** browser: measured text and computed style
@@ -113,6 +125,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R; "a plate the model says is folded draws its title alone…" is I: a fake keys model that contradicts the DOM pins where the fold is read from)
 
 ### SNAP-13 · Only marks are added; the anatomy is not resampled
+
 - **Rule:** The markings are drawn on the captured frame at its device-pixel ratio in the overlay ink, halo and halo core; the rendered anatomy under them is not filtered or resampled. The faces the marks use are loaded for their words before the frame is captured.
 - **Kind:** scientific
 - **Level:** browser: canvas pixels
@@ -123,6 +136,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 ## Saving
 
 ### SNAP-14 · Save image downloads planum-<atlas>.png of the visible stage
+
 - **Rule:** The download is a PNG of the visible stage (the canvas less what the sheet covers) at device pixels, named after the atlas shown, or "brain" with none.
 - **Kind:** behaviour
 - **Level:** browser: real canvas encode; e2e for the real engine and download
@@ -131,6 +145,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R); `e2e/parity/snapshot.spec.ts` (R; legacy only, skips on `next`)
 
 ### SNAP-15 · The image is handed over as a Blob URL, released 40 s after the click
+
 - **Rule:** The PNG is encoded asynchronously into a Blob and downloaded through an object URL, which is released 40 s after the click, not before, so the browser can finish the file.
 - **Kind:** behaviour
 - **Level:** browser today (`toBlob`, `createObjectURL`); the timing is fake-timer logic
@@ -139,6 +154,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R, fake `setTimeout`)
 
 ### SNAP-16 · A saved image is announced
+
 - **Rule:** When the download has started the page says so, naming the file, in the reader's language.
 - **Kind:** accessibility
 - **Level:** browser: the announcer's live region
@@ -147,6 +163,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R); `e2e/parity/snapshot.spec.ts` (R; next-only, so it runs nowhere today)
 
 ### SNAP-17 · A second request while one is being made joins it
+
 - **Rule:** Asking to save again while a save is in progress gives the same save: one capture, one file, one announcement. Once it has ended, a new request saves again.
 - **Kind:** behaviour
 - **Level:** unit (with a fake stage and encoder); browser today
@@ -155,6 +172,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R)
 
 ### SNAP-18 · A failure is the snapshot notice, and nothing is downloaded or said
+
 - **Rule:** If measuring, capturing or encoding fails, the reader gets the scene commands' snapshot failure notice; no file is downloaded and nothing is announced. A snapshot asked before the stage has been laid out is such a failure.
 - **Kind:** behaviour
 - **Level:** unit (with a fake stage); browser today
@@ -163,6 +181,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R, the capture failure); the not-laid-out case is uncovered
 
 ### SNAP-19 · Save image stays outside the stage
+
 - **Rule:** The Save image control is not part of the stage host, so it is not reachable while the stage is full screen (legacy parity).
 - **Kind:** behaviour
 - **Level:** browser: region composition

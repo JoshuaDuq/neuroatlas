@@ -7,6 +7,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 ## What the sheet says
 
 ### PROV-01 · The sheet has one row per published record, and no empty rows
+
 - **Rule:** The sheet lists, in order, the rows the loaded manifest has data for: Subject, Source data, Reconstruction, Cortical atlases, Functional networks, Functional divisions, Neuropsychological domains, Supplemental layers, Published files. A field the manifest does not publish leaves no row, and nothing is invented. Without the `individual` flag, no kind is claimed.
 - **Kind:** data
 - **Level:** unit (view-model over the published manifest)
@@ -15,6 +16,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R for the empty case; the full `cdmd` label list is uncovered); `parity/C5.test.ts` (D, seeded manifests with fields removed)
 
 ### PROV-02 · Every link comes from the published records
+
 - **Rule:** Each link in the sheet is a URL the manifest publishes, or a licence file it publishes beside itself, or the manifest and index URLs themselves.
 - **Kind:** data
 - **Level:** unit (view-model over the published manifest)
@@ -23,6 +25,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (S)
 
 ### PROV-03 · The sheet names the subject, its reconstruction, every citation and the source files
+
 - **Rule:** The sheet names the subject and its kind, the reconstruction, each atlas with its citation, each functional-division citation, and how many source files the manifest lists and whether each has a checksum.
 - **Kind:** data
 - **Level:** unit (view-model over the published manifest)
@@ -31,6 +34,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (S; the source-file note is matched on `^39 source files` only)
 
 ### PROV-04 · HCP-MMP says where it was projected from
+
 - **Rule:** The HCP-MMP atlas carries a note naming the template it was projected from, when the anatomy publishes one.
 - **Kind:** data
 - **Level:** unit (view-model)
@@ -39,6 +43,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `parity/C5.test.ts` (D only)
 
 ### PROV-05 · Each neuropsychological domain says how its lesion evidence was checked
+
 - **Rule:** When the domain data is loaded, each domain names its term and lists every lesion check: the deficit, its references, and how much of each lesion-mapped parcel the domain's coloured areas cover, with the side. A parcel off the surface is "not measured". A domain no study checks says so.
 - **Kind:** scientific
 - **Level:** unit (view-model over `neuropsych-domains.json`)
@@ -47,6 +52,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `parity/C5.test.ts` (D only; `src/lib/core/panels/provenance.test.ts` never passes `domains`)
 
 ### PROV-06 · Labels are translated; the published data is not
+
 - **Rule:** Row labels and notes are in the interface language. The published values (names, reconstruction, licences, URLs) are shown as published.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -55,6 +61,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R; the labels are checked with `notDeepEqual` only, which is weak)
 
 ### PROV-07 · A tract reference lists its own sources, not the hidden anatomy
+
 - **Rule:** While the tract reference is shown, the sheet lists that reference, then its own source links. The anatomy behind it is not listed. With no source links there is no Sources row.
 - **Kind:** behaviour
 - **Level:** unit (view-model `referenceRows`); browser for the in-place swap (PROV-15)
@@ -63,6 +70,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R); `src/features/provenance/provenance.svelte.test.ts` (R); `parity/C5.test.ts` (D)
 
 ### PROV-08 · URLs read without their scheme; files are named by their file name
+
 - **Rule:** A link's text is its URL without the scheme or a trailing slash. Licence files and published files are set in mono and named by their file name. An item that is only a link shows the link first, with its note under it. Beside a name, the link is the citation under the name.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the order of elements
@@ -71,6 +79,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `shortUrl`); `src/features/provenance/provenance.svelte.test.ts` (R, element order); `parity/C5.test.ts` (D)
 
 ### PROV-09 · The sheet ends with the intended use
+
 - **Rule:** Below the facts, the sheet states that Planum is for research and education, not a medical device.
 - **Kind:** behaviour
 - **Level:** browser: text in the dialog (one fixed string)
@@ -81,6 +90,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 ## The dialog
 
 ### PROV-10 · A modal dialog named Provenance, with a title and Close
+
 - **Rule:** The sheet is a native modal dialog named by its level-2 title "Provenance", with a Close button.
 - **Kind:** accessibility
 - **Level:** browser: roles
@@ -89,6 +99,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R; `next` gated off)
 
 ### PROV-11 · Opening focuses the title, not Close
+
 - **Rule:** On open, focus goes to the dialog's title, so the list starts in view and a screen reader reads the name, then the content. Close is the first Tab stop after it.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -97,6 +108,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, the title; "Close is next" is implied by the Tab-loop case); `e2e/parity/provenance.spec.ts` (R, `next` branch; `next` gated off)
 
 ### PROV-12 · A keyboard open and close are instant; a pointer open and Close animate
+
 - **Rule:** Opening or closing from the keyboard (Enter, Escape, Enter on Close) shows or removes the dialog at once. A pointer open, and a pointer press on Close, animate.
 - **Kind:** behaviour
 - **Level:** browser: keyboard versus pointer activation
@@ -105,6 +117,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 3 cases); `e2e/parity/provenance.spec.ts` (R; `next` gated off)
 
 ### PROV-13 · Focus stays in the dialog while it is open
+
 - **Rule:** Tab and Shift+Tab move among Close and the links and never reach the page behind. Past the last control a native modal may hand focus to the browser's own UI, never to the page.
 - **Kind:** accessibility
 - **Level:** browser: real Tab order
@@ -113,6 +126,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, 40 Tabs; `next` gated off)
 
 ### PROV-14 · Escape closes and returns focus; the page's keys never reach the page
+
 - **Rule:** Escape closes the dialog instantly and returns focus to the button that opened it. While the dialog is open, no key reaches the page: Escape does not clear the selection and letters do not change the view. Keys that scroll the sheet are not cancelled.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch
@@ -121,6 +135,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases); `e2e/parity/provenance.spec.ts` (R, focus return; `next` gated off)
 
 ### PROV-15 · When the opener is gone by the time it closes, focus goes to More settings
+
 - **Rule:** If the button that opened the dialog is no longer shown when it closes, as with the phone menu's item once the menu has closed, focus goes to the ⋯ More settings button.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -129,6 +144,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` "Provenance opens from the ⋯ menu" (R; `next` gated off)
 
 ### PROV-16 · A change while open re-labels in place, and focus is kept or handed to the title
+
 - **Rule:** A language change or a new tract reference while the dialog is open updates the rows in place. A focused link that still exists keeps focus. If the focused link is gone, focus moves to the title, not to the page.
 - **Kind:** accessibility
 - **Level:** browser: focus across a re-render
@@ -137,6 +153,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases)
 
 ### PROV-17 · In French, published English data is marked as English
+
 - **Rule:** With the interface in French, each value the sheet does not translate carries `lang="en"`: subject, reconstruction, atlas, network and layer labels, licence names. Translated labels and notes, the intended use and a French tract-reference label are not marked. In English nothing is marked. URLs and file names are not marked.
 - **Kind:** accessibility
 - **Level:** browser: the `lang` attribute in the rendered DOM (the "identical in both languages" test is a pure function that could be unit)
@@ -145,6 +162,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases); `e2e/parity/provenance.spec.ts` (R, `next` branch: some `[lang="en"]`; `next` gated off)
 
 ### PROV-18 · External links open in a new tab and say so
+
 - **Rule:** Every link to a source opens in a new tab without a referrer. It says so with visually hidden text and an icon (WCAG technique G201).
 - **Kind:** accessibility
 - **Level:** browser: accessible name
@@ -153,6 +171,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `e2e/parity/provenance.spec.ts` (R, `target` on the first link only; `next` gated off). The new-tab cue is uncovered and **not implemented**: `ProvenanceDialog.svelte` renders the link text alone, though `ExternalLink.svelte`, `AtlasComparison.svelte` and `TractsExplorer.svelte` already add `link.newTab`.
 
 ### PROV-19 · A focused link scrolls clear of the sticky header on a phone
+
 - **Rule:** On a phone, a link that takes focus is never hidden under the dialog's sticky header (WCAG 2.4.11).
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -161,6 +180,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R)
 
 ### PROV-20 · The facts reflow and do not spill
+
 - **Rule:** On a wide window the facts are a two-column term and definition list. On a phone they stack in one column. At 200 % text with the WCAG 1.4.12 spacing, no label or note spills and the dialog does not scroll sideways, in English or French, at 1280 or 320 px.
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -169,6 +189,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, the spill part; the column change is uncovered)
 
 ### PROV-21 · Reduced motion and forced colours
+
 - **Rule:** With reduced motion the dialog does not scale. In forced colours it keeps a visible border.
 - **Kind:** accessibility
 - **Level:** browser: CSS computed style under emulated media
@@ -177,6 +198,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R)
 
 ### PROV-22 · The open dialog passes axe
+
 - **Rule:** The open dialog has no axe violations in either theme, on desktop or a phone, in English or French, and with a tract reference.
 - **Kind:** accessibility
 - **Level:** browser: axe

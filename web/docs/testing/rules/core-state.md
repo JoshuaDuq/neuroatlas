@@ -16,6 +16,7 @@ is the English interface text.
 ## The link's text
 
 ### STATE-01 · A link carries only what differs from the default scene
+
 - **Rule:** Writing a scene leaves out every field still at its default, so a default view is a bare link. Atlas, detail, cut atlas and language have no default and are written whenever given.
 - **Kind:** behaviour
 - **Level:** unit
@@ -24,6 +25,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `src/lib/core/state/reader-state.test.ts` (R, "the defaults are exactly what a link leaves out"); `parity/C4.test.ts` (D, the DEFAULTS table)
 
 ### STATE-02 · Each field travels under one short parameter, in a fixed order
+
 - **Rule:** Every scene field has one link parameter. The hidden parts come first, then the other fields in a fixed order, so the same scene always writes the same link.
 - **Kind:** behaviour
 - **Level:** unit
@@ -32,6 +34,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R, by examples); the whole name table: `parity/C4.test.ts` only (D)
 
 ### STATE-03 · Names pass through as readable, opaque strings
+
 - **Rule:** The link does not know which atlases, regions, views, systems, functions or deficits exist; it passes them through for the link check. Colons in region ids and commas in lists stay readable rather than percent-encoded.
 - **Kind:** behaviour
 - **Level:** unit
@@ -40,6 +43,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D)
 
 ### STATE-04 · A selected region is written by its id
+
 - **Rule:** A selected or isolated region given as a region record is written as its id, never as text like "[object Object]".
 - **Kind:** behaviour
 - **Level:** unit
@@ -48,6 +52,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D, seeded records)
 
 ### STATE-05 · Hidden parts travel sorted, once each
+
 - **Rule:** The hidden parts are written sorted and comma separated; an empty set is not written. Reading drops repeats; an empty id in the list or a repeated `hidden` parameter rejects the field.
 - **Kind:** behaviour
 - **Level:** unit
@@ -56,6 +61,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R; the `a,a` case: `parity/C4.test.ts` only, D); `e2e/parity/dissection.spec.ts` (R, a link with a hidden part; legacy only, skips on `next`)
 
 ### STATE-06 · A field that does not parse, or appears twice, is named and left out
+
 - **Rule:** Reading a link never guesses. A field whose value does not parse, or that is repeated, is left out of the state and its parameter is returned in `rejected`; the fields beside it still read. Unknown parameters and empty links carry nothing. Only a string can be read.
 - **Kind:** behaviour
 - **Level:** unit
@@ -64,6 +70,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D, fuzzed hashes)
 
 ### STATE-07 · Flags are 1 or 0, and old colour flags keep their meaning
+
 - **Rule:** Cortex, internal anatomy, cord and reversed side are `1` or `0`; nothing else. A link from when `colors` was a flag still opens with the colouring it meant; nothing writes the old form.
 - **Kind:** behaviour
 - **Level:** unit
@@ -72,6 +79,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-08 · Closed lists take only their own values
+
 - **Rule:** Colour, hemisphere, cut, functional level, tab and language accept only the values the app has.
 - **Kind:** behaviour
 - **Level:** unit
@@ -80,6 +88,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-09 · A cut position is read to a tenth and written toward zero
+
 - **Rule:** The cut position lies within ±512 mm and is read to the nearest tenth. It is written rounded toward zero, so the written value stays inside the plane's range whenever the exact one did; a value a float error short of a tenth counts as that tenth.
 - **Kind:** behaviour
 - **Level:** unit
@@ -88,6 +97,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D, seeded values)
 
 ### STATE-10 · Cut angles are whole degrees in range
+
 - **Rule:** Tilt is 0 to 90 degrees and azimuth -180 to 180, rounded to whole degrees.
 - **Kind:** behaviour
 - **Level:** unit
@@ -96,6 +106,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R; the rounding: `parity/C4.test.ts` only, D)
 
 ### STATE-11 · Cortex opacity is 0 to 1, written to hundredths
+
 - **Rule:** Opacity is read when it is a number from 0 to 1 inclusive and written to two decimals.
 - **Kind:** behaviour
 - **Level:** unit
@@ -104,6 +115,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R; writing to hundredths: `parity/C4.test.ts` only, D)
 
 ### STATE-12 · The exact camera travels in tenths of a millimetre, its up only when it has its own
+
 - **Rule:** `cam` is position and target in millimetres (six numbers), optionally followed by an up vector (nine numbers). Coordinates beyond 100 000 mm, other counts, non-numbers and a zero up are rejected. A hand-written up is normalised. Writing rounds coordinates to tenths and the up to thousandths.
 - **Kind:** behaviour
 - **Level:** unit
@@ -112,6 +124,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D); `parity/E7.test.ts` (D, via FACADE-26)
 
 ### STATE-13 · A written camera reads back inside the orbit limit it was written under
+
 - **Rule:** Writing to tenths can lengthen the camera's distance by at most `ORBIT_ROUNDING_MM` = 2·√(3·0.05²) ≈ 0.1732 mm. A camera read from a link counts as within an orbit limit when its distance is above zero and at most the limit plus that rounding.
 - **Kind:** behaviour
 - **Level:** unit
@@ -120,6 +133,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R); the limit ± 0.17/0.18 cases: `parity/C4.test.ts` only (D)
 
 ### STATE-14 · The MRI window travels as level then width
+
 - **Rule:** The MRI window is two numbers over the scan's 8-bit intensities: level 0 to 255, width 1 to 256. It is written in tenths.
 - **Kind:** behaviour
 - **Level:** unit
@@ -128,6 +142,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R; some bounds `parity/C4.test.ts` only, D)
 
 ### STATE-15 · A lesson step is counted from one in the link
+
 - **Rule:** The link counts lesson steps from one, as the stepper shows them; the scene counts from zero. The first step is the default and is not written.
 - **Kind:** behaviour
 - **Level:** unit
@@ -136,6 +151,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-16 · The language is written whenever given, and the brain whenever named
+
 - **Rule:** A link written with a language carries it, English included, so the reader's language survives sharing; an absent language is left out so startup can use the saved preference. A link names the brain when given; one that names none leaves the choice to the published default.
 - **Kind:** behaviour
 - **Level:** unit
@@ -144,6 +160,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-17 · What a link writes reads back as the same scene
+
 - **Rule:** Reading the link written from a decoded link gives the same state, except that fields at their default are omitted and numbers are rounded as written (STATE-09 to STATE-14).
 - **Kind:** behaviour
 - **Level:** unit
@@ -154,6 +171,7 @@ is the English interface text.
 ## Checking a link against the anatomy
 
 ### STATE-18 · A link may name only what this anatomy publishes
+
 - **Rule:** Each name a decoded link carries is judged against the anatomy on screen. A name it does not publish is dropped and its parameter reported, so the reader can be told. Fields that name nothing (hemisphere, tab when known) pass.
 - **Kind:** behaviour
 - **Level:** unit
@@ -162,6 +180,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/link-check.test.ts` (R); `parity/C4.test.ts` (D, corpus with and without a cord)
 
 ### STATE-19 · A non-region can be hidden but not selected or isolated
+
 - **Rule:** The medial wall and other non-regions are published ids, so a link may hide them, but selecting or isolating one is refused. Every hidden id must be published.
 - **Kind:** behaviour
 - **Level:** unit
@@ -170,6 +189,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/link-check.test.ts` (R)
 
 ### STATE-20 · A lesson step must exist in its circuit
+
 - **Rule:** A step is applied only when the link names a circuit that has that step.
 - **Kind:** behaviour
 - **Level:** unit
@@ -178,6 +198,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/link-check.test.ts` (R)
 
 ### STATE-21 · Showing the cord is refused where the subject publishes none; hiding it never is
+
 - **Rule:** A subject publishes a spinal cord when its manifest lists the `zanatomy` supplemental layer. On a subject without one, a link that shows the cord has that field refused; a link that hides it always passes.
 - **Kind:** behaviour
 - **Level:** unit
@@ -188,6 +209,7 @@ is the English interface text.
 ## The session
 
 ### STATE-22 · Every panel renders from one snapshot
+
 - **Rule:** The session merges the model's state with its own into one snapshot per change; derived lists (search results, groups, visible counts) are never stored in it. The session's own state is reachable only through that snapshot.
 - **Kind:** behaviour
 - **Level:** unit
@@ -196,6 +218,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R; the `session.state` case is I, it pins the absence of a property); `parity/C4.test.ts` (D, seeded action sequences)
 
 ### STATE-23 · An unknown view is refused and an unknown tab is an error
+
 - **Rule:** Setting a view the app does not know is refused and changes nothing; setting an unknown explorer tab throws.
 - **Kind:** behaviour
 - **Level:** unit
@@ -204,6 +227,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R; the notice surviving a refused view: `parity/C4.test.ts` only, D)
 
 ### STATE-24 · Each tab keeps its own search and choice
+
 - **Rule:** The anatomy search, the Functions search, the clinical search and their selections are independent: changing tab keeps them all. Choosing a deficit shows all its findings again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -212,6 +236,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R; the finding reset: `parity/C4.test.ts` only, D)
 
 ### STATE-25 · A masthead choice lifts the open paint until a function, deficit, finding or tab is chosen
+
 - **Rule:** When the reader picks a colour or atlas over a function's or deficit's paint, the paint is lifted. Choosing a function, a deficit, a finding or a tab again puts the paint back.
 - **Kind:** behaviour
 - **Level:** unit
@@ -220,6 +245,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R; `setFinding`: `parity/C4.test.ts` only, D)
 
 ### STATE-26 · Tree groups open and close one by one or all at once
+
 - **Rule:** Toggling a group opens or closes only that group; a bulk set replaces the open set.
 - **Kind:** behaviour
 - **Level:** unit
@@ -228,6 +254,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ### STATE-27 · The language is English or French, anything else English
+
 - **Rule:** The session language is `en` or `fr`; any other value, at creation or later, gives English.
 - **Kind:** behaviour
 - **Level:** unit
@@ -236,6 +263,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ### STATE-28 · The stage status: loading, ready, error and a lost GPU context
+
 - **Rule:** Loading carries its progress; becoming ready clears progress and error; an error is carried as the error, never as a ready viewer; a lost GPU context is a status of its own, said by the stage in the reader's language, with no English error text.
 - **Kind:** behaviour
 - **Level:** unit
@@ -244,6 +272,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ### STATE-29 · A download behind a model on screen is "switching", and is not an action
+
 - **Rule:** A download after the first load leaves the model usable: the status is `switching` with its progress, and back to `ready` when it ends. During the first load a download keeps the `loading` status. Progress is not an action, so a standing notice outlives it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -252,6 +281,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ### STATE-30 · A notice stands until the reader's next action, never on a timer
+
 - **Rule:** A notice stays until the next deliberate action (any setter other than progress) or until it is dismissed. A notice must have text.
 - **Kind:** behaviour
 - **Level:** unit
@@ -260,6 +290,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ### STATE-31 · Notices that meet join into one, each said once
+
 - **Rule:** A notice arriving while another stands joins it in one sentence; a text already said is not repeated; the first action offered wins.
 - **Kind:** behaviour
 - **Level:** unit
@@ -268,6 +299,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ### STATE-32 · While a link is applied, notices wait and follow the link's own
+
 - **Rule:** While a link is being applied its own steps are actions that would clear a notice, so notices are held until the last hold is released, then shown after the link's own notice as one notice. Releasing with nothing to say shows nothing. Releasing when nothing is held is an error that leaves the hold count intact.
 - **Kind:** behaviour
 - **Level:** unit
@@ -278,6 +310,7 @@ is the English interface text.
 ## Keyboard predicates
 
 ### STATE-33 · Shortcuts never act from a field the reader is typing in
+
 - **Rule:** A single-key shortcut may not act from a text-type input (text, search, email, number, password, tel, url, or no type), a textarea, a select or an editable element, so `3b` (an HCP-MMP area) can be typed. A slider keeps its arrows, Home, End, PageUp and PageDown, and every key when the key is not known; other keys pass. Buttons, checkboxes, radios, the canvas and the page pass.
 - **Kind:** behaviour
 - **Level:** unit
@@ -286,6 +319,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/session.test.ts` (R); `parity/C4.test.ts` (D); dispatch: KEY-05 in `controller.md`
 
 ### STATE-34 · Character shortcuts can be turned off, and pressable controls in marked regions keep their keys
+
 - **Rule:** A character key is one character long. One-character shortcuts stop when the reader turns them off (WCAG 2.1.4), and never act from a button, summary or tab inside a region that marks its keys as its own (`data-own-keys`). A tree row there, or a view preset outside those regions, keeps the shortcuts.
 - **Kind:** accessibility
 - **Level:** unit
@@ -296,6 +330,7 @@ is the English interface text.
 ## Restoring a whole scene
 
 ### STATE-35 · A scene to restore leaves nothing implicit
+
 - **Rule:** A scene built from a partial one takes, for every absent field, the default a link omits it for, so applying it turns a cut off and clears isolation. Layers a scene does not name stay as loaded; a scene with no layer at all is an error. False and zero are kept. Region records become ids, hidden parts a set, and the camera defaults to framing the named view. A link's exact camera and MRI window ride along as given.
 - **Kind:** behaviour
 - **Level:** unit
@@ -304,6 +339,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R); `parity/C4.test.ts` (D, seeded partials)
 
 ### STATE-36 · A captured scene writes the link it was captured from
+
 - **Rule:** Decoding a link, building the scene from it and writing that scene gives back the same link fields.
 - **Kind:** behaviour
 - **Level:** unit
@@ -312,6 +348,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-37 · A scene is applied layers first, the camera last
+
 - **Rule:** Restoring applies the atlas and detail level first, then system, hemisphere, cortex, internal anatomy, cord, opacity, hidden parts, functional level and colour, then the cut atlas and the cut (angles, plane, side, then position), then isolation, selection (opening its tree branch), the MRI window, the named view, and last the exact camera. A setting already as wanted is not touched, except the cord and the colour, which are always asked so a showing still downloading is overtaken. The cord is awaited before selection and framing. Hidden parts compare by membership.
 - **Kind:** behaviour
 - **Level:** unit
@@ -320,6 +357,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R); `parity/C4.test.ts` (D, seeded targets and failures)
 
 ### STATE-38 · A failed step is reported with its link fields and the rest still apply
+
 - **Rule:** Each step names the link parameters it applies. A step that fails is recorded with them and the following steps still run, so one bad field does not cost the reader the others.
 - **Kind:** behaviour
 - **Level:** unit
@@ -328,6 +366,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-39 · A cut position the plane cannot hold is the one field lost; a plane that cannot be cut takes its settings with it
+
 - **Rule:** The position is applied after its plane is cut and judged against that plane's range; a position out of range fails alone. When the plane cannot be cut, its position, angles and side are not applied either.
 - **Kind:** behaviour
 - **Level:** unit
@@ -336,6 +375,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-40 · A restore that a later command overtakes stops
+
 - **Rule:** Before each step the restore checks that no later scene command has taken over, and stops applying once one has. It reports no failures for the steps it skipped.
 - **Kind:** behaviour
 - **Level:** unit
@@ -344,6 +384,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-41 · Without a window of its own, a loaded scan returns to its published window
+
 - **Rule:** A scene with no MRI window shows the scan's published window. A window already shown is left alone, and a scan not loaded is not fetched for it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -354,6 +395,7 @@ is the English interface text.
 ## Scene commands
 
 ### STATE-42 · One intent orders the scene changes that wait on downloads
+
 - **Rule:** Each scene change takes the current intent; a later one overtakes it. An overtaken change returns false, draws nothing, and its download does not land over the newer scene. A disposed model overtakes everything.
 - **Kind:** behaviour
 - **Level:** unit
@@ -362,6 +404,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R); `parity/C4.test.ts` (D, seeded scripts)
 
 ### STATE-43 · Downloads report in the status bar, then step aside
+
 - **Rule:** A layer, detail level, envelope, cord, cut or MRI download started by a scene change shows the `switching` status with the summed progress of the downloads that report one, and the status returns to `ready` when the last ends. A layer already held is not reported as a download.
 - **Kind:** behaviour
 - **Level:** unit
@@ -370,6 +413,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R; summing two downloads: `parity/C4.test.ts` only, D)
 
 ### STATE-44 · Asking for the layer on screen is free, unless another is on its way
+
 - **Rule:** Asking for the atlas or detail level already shown does nothing, unless another switch is still loading; then the shown one is asked for again so the older switch does not land. A current switch that the model did not apply is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -378,6 +422,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R; the "not applied" errors: `parity/C4.test.ts` only, D)
 
 ### STATE-45 · A colouring defined on one atlas first shows that atlas
+
 - **Rule:** CAB-NP colours HCP-MMP areas and the functional divisions colour their own atlas's areas, so choosing or restoring them first shows that atlas. A colour chosen later overtakes one still waiting or downloading: keeping the colour shown, a reset and an applied link all win.
 - **Kind:** behaviour
 - **Level:** unit
@@ -386,6 +431,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-46 · Entering the glass brain hides the internal anatomy and says how to show it
+
 - **Rule:** Choosing the functional divisions from the masthead, when they were not shown, hides the internal anatomy and says how to bring it back. Restoring them from a link or scene does not.
 - **Kind:** behaviour
 - **Level:** unit
@@ -394,6 +440,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-47 · The cord's first showing is a download; an anatomy without one refuses
+
 - **Rule:** Showing the cord the first time downloads it with progress. Asking to show it where the subject publishes none is an error; hiding it always works.
 - **Kind:** behaviour
 - **Level:** unit
@@ -402,6 +449,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-48 · The first cut fetches what it caps, and can be overtaken
+
 - **Rule:** The first cut downloads the tissue envelopes it caps, and the cord where one is published. A cut overtaken while it downloads returns false, so the caller does not face it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -410,6 +458,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-49 · Masthead choices retire the standing notice, and a failure leaves one notice
+
 - **Rule:** Choosing an atlas, detail level or colour in the masthead clears the notice an earlier choice left. A failed switch that is still current leaves one notice in the reader's language; an overtaken one says nothing. Leaving HCP-MMP drops CAB-NP to region colours, as its option said.
 - **Kind:** behaviour
 - **Level:** unit
@@ -418,6 +467,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-50 · Cited regions are drawn on the layers that hold most of them, without a cut
+
 - **Rule:** Revealing a set of cited regions loads the atlas and detail level that hold most of them, closes any cut, then shows them (STATE-52). Opening one region does the same and selects it. An empty set does nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -428,6 +478,7 @@ is the English interface text.
 ## Clinical navigation
 
 ### STATE-51 · Cited regions need their layers; the loaded one is kept while it draws any of them
+
 - **Rule:** Cortical evidence needs its atlas: when the loaded atlas draws none of the cited cortical regions, the atlas holding most of them is chosen. Structures likewise choose the detail level holding most of them, since only one is drawn at a time. A layer that already draws some of them is kept (null). An unknown citation, or one that is not cortex or a structure, is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -436,6 +487,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/clinical-navigation.test.ts` (R); `parity/C4.test.ts` (D, seeded citations)
 
 ### STATE-52 · Cited regions are shown together with nothing hiding them
+
 - **Rule:** Showing cited regions clears isolation and the system filter, shows both hemispheres, shows the cortex only if a cortical region is cited (making a fully transparent cortex opaque), shows the internal anatomy if a structure is cited, then shows the regions. An empty list changes nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -446,6 +498,7 @@ is the English interface text.
 ## Paint and the stage key
 
 ### STATE-53 · A tab paints only while it is in front, on its own atlas, and not once lifted
+
 - **Rule:** The open function paints the brain while Functions is in front and the atlas is the one its map is defined on; the open deficit (or one of its findings) paints while Deficits is in front. Nothing paints once the reader lifted the paint, or on another tab. A paint's id names its tab.
 - **Kind:** behaviour
 - **Level:** unit
@@ -454,6 +507,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/paint.test.ts` (R); `parity/C4.test.ts` (D)
 
 ### STATE-54 · The function key lists the overview, or one function's z scale
+
 - **Rule:** With the overview painted, the key lists the overview functions in order, as toggles, with the note on strongest functions. With one function painted, the key is its z scale, strongest band first, not pickable, with the scale note (or the Neurosynth-term note for a term).
 - **Kind:** behaviour
 - **Level:** unit
@@ -462,6 +516,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/paint.test.ts` (R, on a three-domain fixture); the cdmd values and the term note: `parity/C4.test.ts` only (D)
 
 ### STATE-55 · The deficit key lists each finding, and greys one the view does not colour
+
 - **Rule:** With a deficit painted, the key is titled with the deficit and lists each finding in its colour; the finding shown alone is pressed. A finding whose colour no drawn region carries is keyed but marked absent, and the note says why. A finding not picked while another is shown alone is muted, not absent.
 - **Kind:** behaviour
 - **Level:** unit
@@ -470,6 +525,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/paint.test.ts` (R)
 
 ### STATE-56 · Every published function and deficit has a paint and a key in both languages
+
 - **Rule:** Over the published data, every function a link may name and every deficit and finding has a paint on its tab and a stage key whose rows follow STATE-54 and STATE-55.
 - **Kind:** data
 - **Level:** unit
@@ -480,6 +536,7 @@ is the English interface text.
 ## Dissection
 
 ### STATE-57 · Each change of the hidden parts is one undo step
+
 - **Rule:** Hiding, showing and restoring all record one history entry with the reader context to return to, but only when the hidden set changes. Undo puts back the previous set and returns that context; with no history it returns null. Snapshots cannot change the live set.
 - **Kind:** behaviour
 - **Level:** unit
@@ -488,6 +545,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/dissection.test.ts` (R; the no-change and empty-undo cases: `parity/C4.test.ts` only, D)
 
 ### STATE-58 · A shared mask is validated whole and starts with no history
+
 - **Rule:** Loading hidden parts from a link checks every id and starts with no undo history; one unknown id rejects the whole load and keeps the previous set. Ids must come as an array of strings. Reset clears the set and history.
 - **Kind:** behaviour
 - **Level:** unit
@@ -496,6 +554,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/dissection.test.ts` (R; reset: `parity/C4.test.ts` only, D)
 
 ### STATE-59 · The hidden count is said as a sentence in the reader's language
+
 - **Rule:** The announcer says the dissection count as the panel shows it.
 - **Kind:** behaviour
 - **Level:** unit
@@ -506,6 +565,7 @@ is the English interface text.
 ## Internal anatomy
 
 ### STATE-60 · Leaving internal anatomy gives back what entering took, and nothing else
+
 - **Rule:** The reader is inside exactly while the cortex is hidden. Entering records the colouring and detail level it overwrites; leaving shows the cortex, restores that colouring, restores the detail level unless the reader picked another while inside (or it is already the one), and clears the system filter. Hemisphere, opacity and selection are left alone. A session that opened inside still has a way out, with region colours.
 - **Kind:** behaviour
 - **Level:** unit
@@ -514,6 +574,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/internal-mode.test.ts` (R); `parity/C4.test.ts` (D, all colour × detail × atlas combinations)
 
 ### STATE-61 · An atlas switched inside wins over a colouring defined on the atlas left behind
+
 - **Rule:** When the colouring to restore is defined on another atlas than the one now shown, region colours return and the lost colouring is named.
 - **Kind:** behaviour
 - **Level:** unit
@@ -524,6 +585,7 @@ is the English interface text.
 ## Boot decision
 
 ### STATE-62 · The other atlas is fetched ahead only when the GPU and connection allow it
+
 - **Rule:** The cortical atlas worth fetching ahead is the first one not shown, and only on a GPU profile that can hold both and a connection that is neither metered nor slow.
 - **Kind:** behaviour
 - **Level:** unit
@@ -534,6 +596,7 @@ is the English interface text.
 ## The link writer
 
 ### STATE-63 · The link is written once the scene is still
+
 - **Rule:** Every request to write restarts a wait; the link is written once no request came for the wait (250 ms by default, or the wait asked for). A cancelled write never lands.
 - **Kind:** behaviour
 - **Level:** unit
@@ -542,6 +605,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/link-writer.test.ts` (R; `schedule(0)` via `src/lib/state/stores.svelte.test.ts`, see LINK-05); `parity/C4.test.ts` (D, seeded scripts)
 
 ### STATE-64 · While a link is applied the address bar keeps it
+
 - **Rule:** A restore holds the writer with its own intent check: no write lands while that restore is current. A restore that is overtaken holds nothing. An older restore cannot release a newer one's hold.
 - **Kind:** behaviour
 - **Level:** unit
@@ -550,6 +614,7 @@ is the English interface text.
 - **Covered by:** `src/lib/core/state/link-writer.test.ts` (R)
 
 ### STATE-65 · A link without a subject means the published default
+
 - **Rule:** A link names the brain on screen when its anatomy, or the published default if it names none, is that brain.
 - **Kind:** behaviour
 - **Level:** unit

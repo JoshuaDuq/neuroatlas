@@ -7,6 +7,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## Streamline lengths
 
 ### DIFF-01 · A streamline's length is the length of its path
+
 - **Rule:** Each streamline's length is the sum of its segment lengths in millimetres, not the distance between its ends, kept at full precision.
 - **Kind:** scientific
 - **Level:** unit
@@ -15,6 +16,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R); `parity/E6.test.ts` (D, 25 seeded and 4 published tracts)
 
 ### DIFF-02 · Malformed streamlines are refused
+
 - **Rule:** Points that are not whole triples, offsets that do not start at 0 and end at the point count, a streamline of fewer than two points, a non-finite coordinate or a streamline of zero length is a diffusion input error, so a bad file never draws.
 - **Kind:** behaviour
 - **Level:** unit
@@ -23,6 +25,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R; the code and the empty and 4-value cases are uncovered); `parity/E6.test.ts` (D)
 
 ### DIFF-03 · The length summary counts the streamlines at or above the minimum
+
 - **Rule:** At a minimum length, the summary gives the total number of streamlines, how many are at least that long, and the mean, shortest and longest of those, or null when none qualify. The minimum must be a finite number of at least 0.
 - **Kind:** scientific
 - **Level:** unit
@@ -33,6 +36,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## Tract files
 
 ### DIFF-04 · A TRK file decodes the same compressed or already decompressed
+
 - **Rule:** A published `.trk.gz` decodes whether the body arrives gzip-compressed or already decompressed by the HTTP layer.
 - **Kind:** data
 - **Level:** unit
@@ -41,6 +45,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/tract-file.test.ts` (S; the point count is uncovered); `parity/E6.test.ts` (D)
 
 ### DIFF-05 · One download and decode per tract file, shared by the lines and the navigator
+
 - **Rule:** Each tract file is downloaded and decoded once; the 3D lines and the MRI navigator get the same record, which carries one length per streamline. A failed download is not kept, so a retry downloads again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -51,6 +56,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## 3D tract lines
 
 ### DIFF-06 · The lines draw the source points in RAS millimetres
+
 - **Rule:** The 3D lines use the decoded points themselves, unchanged, and one fixed matrix maps RAS millimetres to world metres; no registration is applied here. Their bounds are the bounds of the source points.
 - **Kind:** scientific
 - **Level:** unit
@@ -59,6 +65,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R; I, the asserts that the attribute is the very source array); `src/lib/engine/diffusion/published-data.test.ts` (S); `parity/E6.test.ts` (D, bounds)
 
 ### DIFF-07 · Streamlines are never joined, and the length filter hides whole streamlines
+
 - **Rule:** Each streamline is drawn as its own segments, never joined to the next. The minimum-length filter hides every streamline shorter than the minimum, whole, and keeps those at least as long.
 - **Kind:** behaviour
 - **Level:** unit
@@ -67,6 +74,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R; the inclusive boundary is uncovered; I, attribute identity after filtering); `parity/E6.test.ts` (D)
 
 ### DIFF-08 · A minimum below 1 mm is refused
+
 - **Rule:** The drawn filter needs a minimum of at least 1 mm.
 - **Kind:** behaviour
 - **Level:** unit
@@ -75,6 +83,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R); `parity/E6.test.ts` (D)
 
 ### DIFF-09 · Direction colours show |R|, |A|, |S| as displayed
+
 - **Rule:** Each point is coloured by its local direction: red for left–right, green for front–back, blue for up–down, from the neighbouring points (one-sided at the ends). The values are the display levels after sRGB output, as NiiVue shows them. A point with no direction is black.
 - **Kind:** scientific
 - **Level:** unit
@@ -85,6 +94,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## Reference space
 
 ### DIFF-10 · Scanner RAS maps to surface RAS by the exact published rigid transform
+
 - **Rule:** The tracts, tracked in the scanner frame, are placed on the surface by the published scanner-to-surface transform, applied in the viewer's world metres. It is a coordinate change, not a registration, so distances are kept.
 - **Kind:** scientific
 - **Level:** unit
@@ -93,6 +103,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/reference-space.test.ts` (R); `parity/E6.test.ts` (D, 200 seeded rigid transforms)
 
 ### DIFF-11 · Only a finite, rigid, orientation-preserving transform is accepted
+
 - **Rule:** A missing, malformed or non-finite transform, one with a bottom row other than [0, 0, 0, 1], one that scales, or one that mirrors is refused.
 - **Kind:** behaviour
 - **Level:** unit
@@ -101,6 +112,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/reference-space.test.ts` (R; the bottom-row case and the error classes are uncovered); `parity/E6.test.ts` (D)
 
 ### DIFF-12 · The published CDMD reference space reproduces NiBabel's voxel anchors
+
 - **Rule:** The published transform belongs to the `cdmd` anatomy, is derived from the T1 file it names (checked by hash), and carries three voxel anchors computed independently with NiBabel, which it must reproduce.
 - **Kind:** scientific
 - **Level:** unit
@@ -111,6 +123,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## Published diffusion data
 
 ### DIFF-13 · The scalar maps keep their original bytes and grid
+
 - **Rule:** The T1 and FA maps are published as the original NIfTI files, read as valid 3D scalar maps on the declared grid.
 - **Kind:** data
 - **Level:** unit
@@ -119,6 +132,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/published-data.test.ts` (S)
 
 ### DIFF-14 · Every published bundle decodes in NiBabel's RAS+ space with its recorded geometry
+
 - **Rule:** The catalogue's 30 bundles each have provenance. Each file is the packaged file recorded (gzip of the 0.5 mm resampled TRK, or of the source when lossless), and decodes to the recorded point and streamline counts, with the recorded RAS millimetre samples, also after the world matrix.
 - **Kind:** scientific
 - **Level:** unit
@@ -127,6 +141,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/published-data.test.ts` (S; the resample step is uncovered)
 
 ### DIFF-15 · Length summaries match the packaging's NiBabel values
+
 - **Rule:** The summary the Tracts panel shows equals the one the packaging computed for each bundle at 1, 100 and 200 mm.
 - **Kind:** scientific
 - **Level:** unit
@@ -135,6 +150,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/published-data.test.ts` (S)
 
 ### DIFF-16 · The brain outline is an MRI-derived display surface with its own provenance
+
 - **Rule:** The translucent outline is a marching-cubes surface of the skull-stripped brain in the scanner frame, published with its source, its processing parameters and a limitation note, and its bounds are its RAS bounds in world metres.
 - **Kind:** data
 - **Level:** unit
@@ -145,6 +161,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## Native tract viewer
 
 ### DIFF-17 · Opening the tracts places the outline and the initial bundles on the surface
+
 - **Rule:** Loading reads the outline and the reference space, refuses a reference space of another anatomy, places the whole group by the reference transform, draws the outline translucent without depth writes, then loads the catalogue's initial bundles in order.
 - **Kind:** behaviour
 - **Level:** unit
@@ -153,6 +170,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `parity/E6.test.ts` (D); `src/lib/engine/diffusion/tracts.test.ts` (R, only `snapshot().length > 0`); fixed values are uncovered by rule tests
 
 ### DIFF-18 · Scanner and surface points convert both ways
+
 - **Rule:** A scanner RAS point converts to surface RAS and back through the group's transform, exactly inverse.
 - **Kind:** scientific
 - **Level:** unit
@@ -161,6 +179,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R, round trip); `src/lib/engine/index.svelte.test.ts` (R, round trip via contract suite); `parity/E6.test.ts` (D); the CDMD value is uncovered
 
 ### DIFF-19 · The snapshot summarises each loaded bundle at the current minimum
+
 - **Rule:** For each loaded bundle the snapshot gives its id, English name, both names, file name, whether it is shown, and its length summary at the current minimum.
 - **Kind:** behaviour
 - **Level:** unit
@@ -169,6 +188,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R); `parity/E6.test.ts` (D)
 
 ### DIFF-20 · The minimum applies to every bundle, and a bad one is refused before it is kept
+
 - **Rule:** Setting the minimum length filters every loaded bundle and every bundle loaded later. A minimum below 1 mm, or not a number, is refused before anything changes, also when no bundle is loaded yet.
 - **Kind:** behaviour
 - **Level:** unit
@@ -177,6 +197,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R; the later-loaded case is uncovered); `parity/E6.test.ts` (R, the empty-viewer case)
 
 ### DIFF-21 · A bundle requested twice at once is added once
+
 - **Rule:** Concurrent requests for one bundle share one load, so its lines are added once. Asking for a bundle already loaded shows it. A failed load is forgotten, so the next request loads again.
 - **Kind:** behaviour
 - **Level:** unit
@@ -185,6 +206,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R; the show-again and retry parts are uncovered); `parity/E6.test.ts` (R)
 
 ### DIFF-22 · Bundles are shown or hidden by id
+
 - **Rule:** The reader can show or hide each loaded bundle. An unknown id is an error. The viewer says whether any bundle is shown.
 - **Kind:** behaviour
 - **Level:** unit
@@ -193,6 +215,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R); `src/lib/engine/index.svelte.test.ts` (R, via contract suite); `parity/E6.test.ts` (D)
 
 ### DIFF-23 · The outline's opacity and visibility can be set at any time
+
 - **Rule:** The brain outline's opacity runs from 0 to 1 and its visibility is on or off. Both can be set before the outline has loaded; they apply when it arrives.
 - **Kind:** behaviour
 - **Level:** unit
@@ -201,6 +224,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (W: only that `setOpacity(0.4)` does not throw and 2 throws); `parity/E6.test.ts` (D); the applied values are uncovered by rule tests
 
 ### DIFF-24 · The cut's planes clip every bundle
+
 - **Rule:** The cut's clipping planes apply to the lines of every loaded bundle and of bundles loaded later.
 - **Kind:** behaviour
 - **Level:** unit
@@ -209,6 +233,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** uncovered
 
 ### DIFF-25 · Disposal frees the lines and the outline, and refuses late loads
+
 - **Rule:** Disposing frees every geometry and material and removes the group. An outline or bundle that arrives afterwards is refused.
 - **Kind:** behaviour
 - **Level:** unit
@@ -219,6 +244,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## The engine's tracts domain
 
 ### DIFF-26 · The tracts overlay their own anatomy and are a separate reference on another
+
 - **Rule:** The tracts belong to one anatomy (CDMD). On that anatomy, they show only while the overlay is on, without the outline. On another anatomy the outline and streamlines are an independent reference that shows only while the Tracts tab is active; turning that on or off is announced. Overlaying another anatomy is refused.
 - **Kind:** behaviour
 - **Level:** unit
@@ -227,6 +253,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/tracts.test.ts` (R)
 
 ### DIFF-27 · The tracts load once, on first opening, and say so once
+
 - **Rule:** The first activation loads the outline and the initial bundles. Activations while it loads share that load, and readiness is announced once. Showing, hiding and loading a bundle each announce a visibility change. An unknown bundle id is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -237,6 +264,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 ## MRI navigator
 
 ### DIFF-28 · A source voxel maps to scanner RAS through the published affine
+
 - **Rule:** The navigator speaks zero-based source voxels of the published T1 grid. A voxel converts to its scanner RAS point through the file's affine. A voxel outside the grid, fractional, not a number or not three values is refused.
 - **Kind:** scientific
 - **Level:** unit
@@ -245,6 +273,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R); `parity/E6.test.ts` (D, 500 seeded voxels on an oblique grid too)
 
 ### DIFF-29 · A scanner point goes to its nearest source voxel, or none outside the scan
+
 - **Rule:** A scanner RAS point (for example an atlas point converted from the surface) goes to the nearest source voxel, rounding a half voxel up. A point beyond the cropped scan has no voxel. A point that is not three finite numbers is refused.
 - **Kind:** scientific
 - **Level:** unit
@@ -253,6 +282,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R; the half-voxel cases are uncovered); `parity/E6.test.ts` (D)
 
 ### DIFF-30 · The navigator draws every streamline as a line at the current minimum, with exact lengths
+
 - **Rule:** In the MRI navigator, tracts are drawn as plain lines coloured by local direction, every streamline kept (no decimation), filtered at the panel's minimum against full-precision lengths rather than NiiVue's rounded ones. A minimum below 1 mm is refused, since NiiVue would keep the previous filter at 0.
 - **Kind:** behaviour
 - **Level:** unit
@@ -261,6 +291,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R; I, it pins NiiVue's field names, which are the only observable here); `parity/E6.test.ts` (D)
 
 ### DIFF-31 · The navigator shows exactly the tracts the last call asked for
+
 - **Rule:** `syncTracts(enabled, minimum)` shows exactly the enabled tracts at the minimum. Overlapping calls run one after another, so a tract is added once and the last call decides what shows; a failed call does not block later ones. A bad minimum is refused before anything changes. An unknown tract is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -269,6 +300,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/navigation-viewer.test.ts` (R, NiiVue mocked; the unknown id and refilter are uncovered); `src/lib/engine/index.svelte.test.ts` (R, real NiiVue via contract suite, minimum 0 rejected)
 
 ### DIFF-32 · The crosshair is reported as the source voxel and a three-component point
+
 - **Rule:** Wherever the crosshair moves (a voxel typed, a scanner point, an arrow key, a click), the report gives the scanner point as three values and the source voxel under it, so "Source voxel (0-based)" means one thing, plus the value of every map there. No report is made before the volumes load; a point outside the grid is an error. A step moves one voxel along one axis, in the display's direction.
 - **Kind:** behaviour
 - **Level:** unit
@@ -277,6 +309,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/diffusion/navigation-viewer.test.ts` (R, NiiVue mocked); `src/lib/engine/index.svelte.test.ts` (R, real NiiVue on the published scan, via contract suite)
 
 ### DIFF-33 · The navigator's maps must share one grid, and contrast needs a positive width
+
 - **Rule:** The navigator loads each catalogue map as a validated volume, and all maps must share the reference grid and affine; otherwise it refuses and frees the viewer. The T1 window is set from a finite centre and a positive width. An unknown plane is refused. The FA opacity sets the second map's opacity.
 - **Kind:** behaviour
 - **Level:** unit — with NiiVue mocked, as `navigation-viewer.test.ts` does; the contract suite repeats it on real NiiVue in the browser
@@ -285,6 +318,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, window and plane errors via contract suite); the grid check and the window values are uncovered
 
 ### DIFF-34 · Closing the navigator frees its GPU context
+
 - **Rule:** Disposing the navigator frees its tract meshes and volumes and releases the WebGL context, so reopening it cannot exhaust the browser's context limit. A tract that arrives after disposal is not added.
 - **Kind:** behaviour
 - **Level:** unit — with NiiVue and its `gl` mocked; the release itself is real WebGL only in the browser

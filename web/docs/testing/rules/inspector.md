@@ -5,6 +5,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 ## Empty state
 
 ### INSP-01 · With nothing selected, the Anatomy panel is a hint
+
 - **Rule:** Without a selection, the Anatomy explorer's inspector shows a level-2 title and one hint line, which depends on whether the cortex is drawn. It shows no commands, facts or sections. Outside the Anatomy explorer it shows nothing.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `inspectorEmptyChrome`, the hint choice)
@@ -15,6 +16,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 ## The selected region
 
 ### INSP-02 · The selected region is named with its side and group
+
 - **Rule:** A selected region's name is a level-2 heading that can take focus by request (the `region-title` focus target), beside a "Clear selection" button. Under it, the hemisphere (capitalised side word) and the group (the catalog's group, or "—") follow the reader's language and leave with the selection. A region with notes shows them in the reader's language as the hint.
 - **Kind:** behaviour
 - **Level:** browser — heading, focus target
@@ -23,6 +25,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, but the group value is only checked non-empty and the notes only for length > 0: W for those parts); `e2e/parity/inspector.spec.ts` (R; `next` gated off)
 
 ### INSP-03 · Four commands act on the selection
+
 - **Rule:** A selected region offers, in order, Focus, Isolate (Restore while isolated), Hide and Linked MRI; without a selection they are not rendered. Isolate has no pressed state: its label says what it will do, and it is drawn as active while isolated. Focus and Isolate announce their shortcuts. Linked MRI is named by its text, with "Open linked MRI slices" as its tooltip, and opens at the region at once from the keyboard and with an animation from a pointer. Focus, Hide and Clear call their commands.
 - **Kind:** behaviour
 - **Level:** browser — keyboard vs pointer activation, focus kept on Isolate
@@ -31,6 +34,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; `next` gated off)
 
 ### INSP-04 · Clearing or hiding the selection keeps focus on the page
+
 - **Rule:** Clear × and Hide remove the selection, and with it the commands; focus moves to a visible control instead of the page. The hand-off is S2's (`controller.md`, CTRL-04); Hide hands focus to the dissection bar's Undo (ANAT-54).
 - **Kind:** behaviour
 - **Level:** e2e — a cross-panel journey on the built app (the command logic is browser-tested in the controller)
@@ -39,6 +43,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `e2e/parity/inspector.spec.ts` (R; `next` gated off); `src/lib/controller/anatomy.svelte.test.ts` (R, the commands); `src/features/inspector/inspector.svelte.test.ts` (W, only that the handlers are called)
 
 ### INSP-05 · The datasheet gives the measurement by kind, the centroid and the source
+
 - **Rule:** The datasheet lists the measurement, the centroid and the source label. A structure or a cut region is measured by its segmentation volume, a cortical area by its surface area, each at four significant figures with grouped digits and the unit held to the number. The centroid is in RAS millimetres, each axis signed at one decimal, with a true minus; a region without a centroid shows a dash.
 - **Kind:** scientific
 - **Level:** unit (view-model: metric choice by kind; `quantity` and `formatRas` are C1's, `core-i18n.md`)
@@ -47,6 +52,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, and S for the 49 790 mm³ volume; V1's area figure is uncovered); `e2e/parity/inspector.spec.ts` (W; `next` gated off: "mm²" and a regex for the centroid only)
 
 ### INSP-06 · The source label names the source atlas and its label ids
+
 - **Rule:** The source label row gives the source atlas and its label ids. One or two ids sit beside the atlas name; more than two stack under the label. A reference with no id shows only the atlas, stacked. Past eight ids the row counts them and a native disclosure holds the full list.
 - **Kind:** data
 - **Level:** unit (view-model: `sourceLabel`, `core-panels.md`)
@@ -55,6 +61,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/lib/core/panels/inspector.test.ts` (R; the 8/9 boundary is only in `parity/C5.test.ts`, D); `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; `next` gated off)
 
 ### INSP-07 · An open source list stays open until the region or the language changes
+
 - **Rule:** The long source list's disclosure keeps its open state through display changes (isolation, cortex), and closes when the region or the language changes.
 - **Kind:** behaviour
 - **Level:** browser — native details state across renders
@@ -63,6 +70,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-08 · The sections keep the legacy order
+
 - **Rule:** The DOM follows the screen: name, context, commands, facts; then the comparison slot, constituents, functional division, domains and networks, inside the panel body; the deficits and circuits the region takes part in follow outside it.
 - **Kind:** behaviour
 - **Level:** browser — DOM order
@@ -71,6 +79,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-09 · The evidence sections are collapsed disclosures that keep their state
+
 - **Rule:** Functional division, Neuropsychological functions and Functional networks are disclosures, collapsed by default, whose summaries are plain text (no heading inside, no `h3` anywhere). Enter and Space toggle them. Each keeps its open state from one selection to the next.
 - **Kind:** accessibility
 - **Level:** browser — native details and keyboard
@@ -79,6 +88,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; `next` gated off)
 
 ### INSP-10 · Networks give the region's Yeo shares and its CAB-NP network
+
 - **Rule:** Functional networks lists the region's Yeo 7 network shares of at least 5 %, in published order, each with a swatch, a decorative bar and a whole percentage, then the note for how the shares were counted (vertices or voxels). An HCP-MMP area assigned by CAB-NP adds its one network at 100 % with its note. The caveat closes the section. A region with neither has no section.
 - **Kind:** scientific
 - **Level:** unit (view-model: `networksOf`, `percent`)
@@ -87,6 +97,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (W: checks only a "%" suffix, a final "100 %" and the captions; the shares from the data are uncovered); `e2e/parity/inspector.spec.ts` (W; `next` gated off: "Visual" and "100%")
 
 ### INSP-11 · Functional division gives the area's section and named region
+
 - **Rule:** Only an HCP-MMP area with a published section has this section. It lists the named region when a source names one, then the section, each with its name in the reader's language and a line "kind · source · HCP‑MMP areas: …". The note says when no source names a finer region, adds the published disagreement for a contested area, and ends with the general note.
 - **Kind:** data
 - **Level:** unit (view-model: `functionalRegionOf`, the rows and note)
@@ -95,6 +106,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, but row 2 is matched by a regex)
 
 ### INSP-12 · Domains list the functions an area reaches, in published strength order
+
 - **Rule:** An HCP-MMP cortical area, or a structure the domains sample, has a Neuropsychological functions section. It lists each function that reaches the published threshold in the published order, which is strongest first by the z as a share of that function's own cortical maximum (not by raw z), each with its term and z at one decimal. A scored region that reaches none says so. The note names the source and differs for an area and a structure.
 - **Kind:** scientific
 - **Level:** unit (view-model: `scoredRegion`, `domainsOf`, the note)
@@ -103,6 +115,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (W: one regex on V1's single row, so the order is uncovered)
 
 ### INSP-13 · A region outside every partition has no evidence sections
+
 - **Rule:** A region with no Yeo shares, no CAB-NP network, no functional section and no domain score shows none of the three sections.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -113,6 +126,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 ## Constituents
 
 ### INSP-14 · A learning unit traces back to its constituent regions
+
 - **Rule:** A region made of other regions has a "Constituent regions" disclosure with their count. A structure part is a button that opens it; a part shown only on cuts is text. Each part names the set that holds it ("Cut only" for a cut-only part), and the note follows the list. A part the catalog does not know is an error that names it.
 - **Kind:** data
 - **Level:** browser — buttons that open a region (the list is a pure view-model)
@@ -121,6 +135,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; `next` gated off)
 
 ### INSP-15 · Parts on both sides each say their side
+
 - **Rule:** When the parts span both hemispheres, each part's name ends with its side word for a screen reader, in the button and in the text alike, and a side letter is drawn but hidden from assistive technology. Parts of one side show and say no side. Names follow a language switch.
 - **Kind:** accessibility
 - **Level:** browser — accessible names with hidden text
@@ -131,6 +146,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 ## Inspector presentation
 
 ### INSP-16 · The inspector yields to a lesson or a profile above it
+
 - **Rule:** When the selection is the open lesson's landmark, its name and context are hidden (the lesson's headline names it). Any other region under a lesson, or under a function or deficit profile, is a ruled, smaller second subject. On a phone the inspector has no Clear button of its own. When related deficits or circuits follow, the body drops its bottom padding.
 - **Kind:** behaviour
 - **Level:** browser — computed style and viewport
@@ -139,6 +155,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-17 · Inspector targets and reflow
+
 - **Rule:** Every button and summary is at least 24 px tall on a fine pointer and 44 px on a coarse pointer, summaries included. At 200 % text with WCAG 1.4.12 spacing, in English and French, at 1280 and 320 px, no line spills, buttons enclose their text and the page does not scroll sideways. A very long name wraps.
 - **Kind:** accessibility
 - **Level:** browser — geometry
@@ -147,6 +164,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-18 · Commands keep an edge in increased contrast and forced colours
+
 - **Rule:** Under increased contrast the commands get a visible border and Restore keeps its accent edge. Under forced colours Restore keeps an outline and a border. Under reduced motion the disclosure chevrons turn at once.
 - **Kind:** accessibility
 - **Level:** browser — media emulation
@@ -155,6 +173,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-19 · The inspector has no axe violations
+
 - **Rule:** The empty state, a selected region with every section open, and the long source list pass axe in English and French.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -165,6 +184,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 ## Atlas comparison
 
 ### INSP-20 · The comparison is offered for a cortical region of a manifest that declares one
+
 - **Rule:** The overlap section shows only while the selected region is cortex and the manifest declares an atlas comparison. Otherwise it is hidden, not removed, so its open state survives.
 - **Kind:** behaviour
 - **Level:** unit (view-model: the `shown` predicate)
@@ -173,6 +193,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-21 · The section is named for the other atlas
+
 - **Rule:** The section's summary is the plain text "Overlap with {other atlas}", the manifest's other cortical atlas, in the reader's language. It holds no heading.
 - **Kind:** behaviour
 - **Level:** unit (view-model: the heading)
@@ -181,6 +202,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-22 · The comparison loads once, the first time the section is shown
+
 - **Rule:** The comparison file is requested the first time the section is shown, while it is still closed, and not again when it is hidden and shown, nor for another region. A hidden section loads nothing. Retry loads again.
 - **Kind:** behaviour
 - **Level:** unit (view-model: load phase; the request count is observable with a stubbed fetch)
@@ -189,6 +211,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-23 · The status line says loading and loaded, and is never held back
+
 - **Rule:** The section's status line is on the page from the first paint, empty, and the same node later says "Loading atlas comparison…", then "Atlas comparison loaded." (visually hidden, dropped at the next change). `aria-busy` is on the content while loading or fetching an outline, never on an ancestor of the status line. A language switch replaces the node rather than rewriting it, so it is not said again.
 - **Kind:** accessibility
 - **Level:** browser — live region node identity and attributes
@@ -197,6 +220,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-24 · A failed load says why, offers Retry, and keeps focus in the section
+
 - **Rule:** A failed download or a checksum mismatch is said in the status line, with a Retry button. Retry moves focus to the section's summary before it goes and loads again; the rows appear once it works. A failed load stays when the region changes.
 - **Kind:** behaviour
 - **Level:** browser — real focus
@@ -205,6 +229,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-25 · The rows are the region's overlaps from the data, largest first
+
 - **Rule:** Each row is a region of the other atlas that the selected region overlaps on the pial surface: its name, the overlap area in mm² and the overlap as a share of the selected region's whole pial area, in the catalog's order (largest area first). The area of the region that falls on no labelled region of the other atlas is the Unassigned row. A sentence says what the shares divide.
 - **Kind:** scientific
 - **Level:** unit (catalog plus figures; the catalog is C3's, `core-catalogs.md`)
@@ -213,6 +238,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (S); `src/lib/core/comparison/catalog.test.ts` (S, the catalog); `e2e/parity/atlas-comparison.spec.ts` (S; skips on `next`). The denominator sentence is asserted only by the e2e spec, so it has no running next-app test.
 
 ### INSP-26 · Four rows show, the rest behind a counted disclosure
+
 - **Rule:** The first four rows are listed; any more sit behind a disclosure that says how many, singular or plural.
 - **Kind:** behaviour
 - **Level:** unit (view-model)
@@ -221,6 +247,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-27 · Overlap figures show one decimal, and a positive overlap never shows as zero
+
 - **Rule:** Area and share figures are bare numbers at one decimal in the reader's notation (the column heads carry the units). A share is the fraction times 100. A positive figure below 0.1 shows as "<0.1", never "0.0".
 - **Kind:** scientific
 - **Level:** unit
@@ -229,6 +256,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/lib/core/comparison-format.test.ts` (R; lacks −0, 0.95, 99.95, 100, −1 and `MIN_VALUE`); `parity/R2.test.ts` (D); `src/features/inspector/AtlasComparison.svelte.test.ts` (S, the 0.069 mm² row)
 
 ### INSP-28 · A row is a toggle named with its region, area and share
+
 - **Rule:** Each row is a toggle button whose accessible name carries the region's name, the area with its unit and the share with its unit; the visible name is part of it. The Unassigned row is text whose figures carry their units for a screen reader.
 - **Kind:** accessibility
 - **Level:** unit (view-model: the name; `withUnit` is C1's)
@@ -237,6 +265,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `src/lib/core/comparison-format.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-29 · Pressing a row outlines that overlap on the model
+
 - **Rule:** Pressing a row asks the engine to outline its overlap from the comparison's overlap geometry; the row reads pressed only once the outline is drawn, and the status says the outline is loading meanwhile. Only one row is pressed: another takes the outline over; pressing the pressed row clears it. The latest press wins whatever order the outlines arrive in. A failed outline is said and leaves the row unpressed; an outline the engine did not apply leaves it unpressed silently. A new region or another press drops an outline error.
 - **Kind:** behaviour
 - **Level:** unit (view-model over C5's latest runner and the engine port; today browser with a fake engine)
@@ -245,6 +274,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-30 · The outline goes when its context goes
+
 - **Rule:** Closing the section clears the outline, and opening it again does not bring it back; an outline that arrives after the section closed never applies. Another region, no region, losing the ability to draw outlines, or the section leaving the page clears it.
 - **Kind:** behaviour
 - **Level:** unit (view-model; today browser)
@@ -253,6 +283,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-31 · Without outlines, rows stay focusable and say why
+
 - **Rule:** While a cut is drawn or the tract reference is shown, rows are `aria-disabled`, stay in the Tab order, are described by the view note, and do nothing when pressed; the figures stay. Losing outlines keeps focus on the focused row. The note and description go when outlines come back.
 - **Kind:** accessibility
 - **Level:** browser — focus and `aria-describedby`
@@ -261,6 +292,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-32 · A language switch keeps focus and the press on the same row
+
 - **Rule:** Switching language renames the section and its rows in place: a focused row keeps focus and a pressed row stays pressed.
 - **Kind:** behaviour
 - **Level:** browser — real focus across a re-render
@@ -269,6 +301,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-33 · Download CSV saves every overlap, named for the subject and the region
+
 - **Rule:** "Download CSV" saves the comparison of the selected region as a CSV named `{anatomy}-{region id with ':' as '-'}-atlas-comparison.csv`, with region names in the reader's language, and says it was saved. The CSV's columns and precision are the catalog's (`core-catalogs.md`).
 - **Kind:** data
 - **Level:** browser — the saved file through an anchor click and the page announcer (the name and content are pure)
@@ -277,6 +310,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `src/lib/core/comparison/catalog.test.ts` (R, the CSV); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-34 · The method names its sources, which open in a new tab and say so
+
 - **Rule:** "Method and sources" holds the method text and a link to each atlas of the comparison, to its citation, opening in a new tab with `noopener noreferrer` and a hidden "(opens in a new tab)".
 - **Kind:** behaviour
 - **Level:** browser — link attributes and accessible names
@@ -285,6 +319,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; skips on `next`)
 
 ### INSP-35 · The section, its list and its method stay open across regions
+
 - **Rule:** The section, the "more" list and the method keep their open state from one region to the next, also through a region that hides the section.
 - **Kind:** behaviour
 - **Level:** browser — native details state across renders
@@ -293,6 +328,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-36 · Comparison targets and reflow
+
 - **Rule:** Every button and summary in the section is at least 24 px tall on a fine pointer and 44 px on a coarse one; the source links are at least 24 px. At 200 % text with text spacing, in English and French, at 1280 and 320 px, nothing spills, buttons enclose their text and the page does not scroll sideways.
 - **Kind:** accessibility
 - **Level:** browser — geometry
@@ -301,6 +337,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R; the case "inline disclosures keep legacy weight and height" pins a 32 px height and weight 400 "as legacy": I, replace it with this rule or drop it)
 
 ### INSP-37 · A pressed row and the Unassigned rule survive forced colours
+
 - **Rule:** Under forced colours a pressed row has a 4 px system-colour edge on its inline start and the rule above Unassigned is a solid border; under increased contrast a pressed row has a 4 px accent edge. Normal rendering has no edge.
 - **Kind:** accessibility
 - **Level:** browser — media emulation
@@ -309,6 +346,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-38 · The comparison has no axe violations
+
 - **Rule:** With everything open, with a row pressed, with outlines unavailable, and in the failure state, the section passes axe in English and French.
 - **Kind:** accessibility
 - **Level:** browser — axe

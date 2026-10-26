@@ -18,6 +18,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Style foundation
 
 ### UI-01 · The cascade has six layers in a fixed order, accessibility last
+
 - **Rule:** The stylesheet entry declares the layer order first: tokens, base, elements, components, features, a11y. Built with a component whose styles are in `features`, the bundle keeps that order, so no component rule can undo an accessibility rule whatever its specificity.
 - **Kind:** hygiene
 - **Level:** unit (source scan; the bundle case builds with Vite)
@@ -26,6 +27,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/styles/stylesheets.test.ts` (H); `src/styles/layer-order.test.ts` (H)
 
 ### UI-02 · Every stylesheet is loaded once, in its own layer, before any component
+
 - **Rule:** `index.css` imports the vendored font first, then every other sheet in `src/styles`; `main.ts` imports `index.css` before any component. Each sheet is one layer named after its file. Every rule in a component `<style>` sits in `components`, `features` or `a11y` (keyframes, `@property` and font faces excepted).
 - **Kind:** hygiene
 - **Level:** unit (source scan)
@@ -34,6 +36,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/styles/stylesheets.test.ts` (H)
 
 ### UI-03 · Forced-colour and contrast rules live only in the top-level accessibility layer; hover answers one query
+
 - **Rule:** A `forced-colors` or `prefers-contrast` media block appears only directly inside the top-level `@layer a11y`; no layer is nested. Hover styles appear only under `(hover: hover) and (pointer: fine)` or its negation.
 - **Kind:** hygiene
 - **Level:** unit (source scan)
@@ -42,6 +45,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/styles/stylesheets.test.ts` (H)
 
 ### UI-04 · Type comes from the scale, and every token read is declared
+
 - **Rule:** No retired type token is used; every `line-height` is a scale token, `inherit` or a pixel value; every `var(--x)` read without a fallback is declared in a sheet, a component style or markup.
 - **Kind:** hygiene
 - **Level:** unit (source scan)
@@ -50,6 +54,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/styles/stylesheets.test.ts` (H)
 
 ### UI-05 · Text reads at 4.5:1 and control edges at 3:1 on every ground, in both themes
+
 - **Rule:** In the light and the dark theme, body inks reach 4.5:1 on every panel ground, control edges 3:1; the primary button's ink 4.5:1 on its fills; stage overlay inks 4.5:1 and the overlay control border 3:1 on every plate (WCAG 1.4.3, 1.4.11).
 - **Kind:** accessibility
 - **Level:** unit (contrast computed from the declared tokens)
@@ -58,6 +63,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/styles/contrast.test.ts` (R); `parity/u1.test.ts` (D, the border value)
 
 ### UI-06 · Both themes declare the published palette
+
 - **Rule:** `tokens.css` declares one light set on `:root` and one dark override on `:root[data-theme='dark']`, with the published values; the phone rule is separate.
 - **Kind:** data
 - **Level:** unit (declared values)
@@ -66,6 +72,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `parity/u1.test.ts` (D)
 
 ### UI-07 · A phone or a finger gets 44 px touch sizes; a desktop mouse keeps instrument density
+
 - **Rule:** In the phone shell (narrow, or a phone held sideways) controls, rows and tabs are 44 px, the header taller and the panel inset smaller. A coarse pointer on a desktop-sized window also gets 44 px rows, controls and tabs. A desktop with a fine pointer keeps 32 px.
 - **Kind:** accessibility
 - **Level:** browser: media queries on the real viewport
@@ -74,6 +81,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/styles/phone-tokens.svelte.test.ts` (R); `parity/u1.test.ts` (D, the declarations)
 
 ### UI-08 · Increased contrast strengthens the faint tokens in both themes
+
 - **Rule:** Under `prefers-contrast: more`, in both themes, the faint inks and borders take their stronger counterparts and the overlay plates darken.
 - **Kind:** accessibility
 - **Level:** unit (declared values)
@@ -82,6 +90,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `parity/u1.test.ts` (D); UI-31 checks one component effect
 
 ### UI-09 · One focus ring, for keyboard focus only, in every theme and in forced colours
+
 - **Rule:** Keyboard focus draws a 2 px accent outline 2 px off the element; pointer focus draws none. In forced colours the ring is `Highlight` and buttons, inputs and selects have `CanvasText` borders.
 - **Kind:** accessibility
 - **Level:** browser: computed style for keyboard and pointer focus
@@ -90,6 +99,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `parity/u1.test.ts` (D, declarations only); `src/lib/ui/SearchCombobox.svelte.test.ts` (R, the forced-colour Highlight ring on the search field); the light/dark ring and the no-ring-on-click case are uncovered
 
 ### UI-10 · Hidden is hidden, and visually hidden text stays in the accessibility tree
+
 - **Rule:** `[hidden]` hides an element whatever its own display. `.visually-hidden` takes the text off screen but keeps it readable to assistive technology. The page body uses the UI face on the canvas ground.
 - **Kind:** behaviour
 - **Level:** browser: computed style and accessible name
@@ -98,6 +108,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `parity/u1.test.ts` (D, declarations only)
 
 ### UI-11 · Keys are drawn as caps and quantities line up
+
 - **Rule:** A `kbd` is a 20 px-wide-at-least key cap in the monospace caption face; a key range is tertiary caption text; quantities use tabular figures; copyable codes are monospace caption.
 - **Kind:** behaviour
 - **Level:** browser: computed style
@@ -106,6 +117,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `parity/u1.test.ts` (D, declarations only)
 
 ### UI-12 · A theme switch and an instant overlay show no transition
+
 - **Rule:** While `<html>` carries `data-theme-switching`, and on any element carrying `data-instant` (and its backdrop), transitions are off, and no component rule can turn them back on.
 - **Kind:** behaviour
 - **Level:** browser: computed style
@@ -114,6 +126,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** uncovered (the attributes are set by STORE-19, UI-23, UI-49, UI-54 and UI-55; their CSS effect is not checked)
 
 ### UI-13 · Reduced motion turns a disclosure chevron at once
+
 - **Rule:** Under `prefers-reduced-motion: reduce` disclosure chevrons point the new way without a transition; fades may stay.
 - **Kind:** accessibility
 - **Level:** browser: computed style under emulated media
@@ -124,6 +137,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Interaction services
 
 ### UI-14 · Arrow keys, Home and End step through a one-stop group and wrap
+
 - **Rule:** In a roving group, Right and Down go to the next member, Left and Up to the previous, wrapping; Home to the first, End to the last. Other keys, and an empty group, move nothing.
 - **Kind:** behaviour
 - **Level:** unit
@@ -132,6 +146,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/roving.test.ts` (R); `parity/U2.test.ts` (D, every key × index −1..n × size 0..5)
 
 ### UI-15 · The group's Tab stop is the focused member, else the chosen one, else the first usable
+
 - **Rule:** Disabled and hidden members never hold the Tab stop. The stop is the focused usable member, else the pressed one, else the first usable one, else none.
 - **Kind:** behaviour
 - **Level:** unit
@@ -140,6 +155,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/roving.test.ts` (R); `src/lib/ui/interaction.svelte.test.ts` (R); `parity/U2.test.ts` (D)
 
 ### UI-16 · Arrows move focus in a roving group without choosing; Tab leaves and returns to the chosen one
+
 - **Rule:** An arrow on a usable member moves focus and the Tab stop, skipping disabled members, and is marked handled; it never presses. Enter and Space stay the button's own. Leaving the group hands the stop back to the chosen member, so Tab and Shift+Tab return there. A changed choice or a disabled group moves the stop on `sync`.
 - **Kind:** behaviour
 - **Level:** unit (fake group) for the stop and key handling; browser: real Tab order
@@ -148,6 +164,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/roving.test.ts` (R; the dispose case is I: it pins the listener map); `src/lib/ui/interaction.svelte.test.ts` (R); `parity/U2.test.ts` (D)
 
 ### UI-17 · A modified arrow is the browser's or the platform's
+
 - **Rule:** Roving groups and list navigation leave keys with Alt, Ctrl, Meta or Shift held alone: focus does not move and the event is not cancelled.
 - **Kind:** behaviour
 - **Level:** unit (fake events); browser for a real `keydown`
@@ -156,6 +173,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/roving.test.ts` (R); `src/lib/ui/interaction.svelte.test.ts` (R); `src/lib/ui/list-nav.svelte.test.ts` (R)
 
 ### UI-18 · A sentence is said at once, and the same sentence again is said again
+
 - **Rule:** The page's one polite live region (in the initial HTML) takes each announcement at once. Writing the sentence it already holds would say nothing, so a repeat is cleared and written again 100 ms later; a newer sentence in that gap replaces it. Announcing before the region is attached is an error.
 - **Kind:** accessibility
 - **Level:** unit (region as a plain object, fake timers); browser for the DOM mutation
@@ -164,6 +182,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/announcer.test.ts` (R); `src/lib/ui/interaction.svelte.test.ts` (R)
 
 ### UI-19 · A typed search's count is said once typing pauses, and only when it is new
+
 - **Rule:** The debounced announcer says the latest text 500 ms after the last call, only if it differs from the last sentence it said. Returning to the sentence already said cancels what was pending. `reset` forgets the last sentence (a cleared search may say its count again, decision 37); `reset` and `dispose` cancel what is pending.
 - **Kind:** accessibility
 - **Level:** unit (fake timers)
@@ -172,6 +191,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/announcer.test.ts` (R); `parity/U2.test.ts` (D, the script)
 
 ### UI-20 · Focus is asked for by name and lands only where it can
+
 - **Rule:** An owner registers how to find its element; anyone asks for it by name. The element is looked up at request time, so one rendered later is found. A target that is unregistered, absent, hidden, disabled, inert or not focusable is skipped for the fallback. The request says whether focus landed. A name registered twice is an error until unregistered.
 - **Kind:** behaviour
 - **Level:** browser: real focus and visibility
@@ -180,6 +200,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/interaction.svelte.test.ts` (R)
 
 ### UI-21 · Stranded focus is rescued; focus the reader holds is left alone
+
 - **Rule:** When the focused control hid or disabled itself, or focus is on the body, the named target takes focus. When a usable control has focus, nothing moves.
 - **Kind:** behaviour
 - **Level:** browser: real focus
@@ -188,6 +209,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/interaction.svelte.test.ts` (R)
 
 ### UI-22 · An overlay gives focus back to its opener, unless the opener has gone
+
 - **Rule:** The element focused when an overlay opens is its opener; closing returns focus to it and reports success. If the opener was removed, or nothing was focused, nothing is moved and the result is false.
 - **Kind:** behaviour
 - **Level:** browser: real focus
@@ -196,6 +218,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/interaction.svelte.test.ts` (R)
 
 ### UI-23 · A keyboard activation is told from a pointer click
+
 - **Rule:** A `click` fired by Enter or Space (`detail` 0) is a keyboard activation and opens without an entry animation (`data-instant`); a pointer click (`detail` ≥ 1) animates.
 - **Kind:** behaviour
 - **Level:** browser: real key and pointer events
@@ -204,6 +227,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/interaction.svelte.test.ts` (R; the `setInstant` case is W, it re-reads the attribute it just set)
 
 ### UI-24 · Primitives carry no own-keys marker; the region that holds them does
+
 - **Rule:** A region whose controls use letters or digits (masthead, panels, stage dock) is marked `data-own-keys`, so single-key shortcuts skip its controls. The primitives themselves are not marked.
 - **Kind:** behaviour
 - **Level:** browser: rendered markup
@@ -212,6 +236,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/ChoiceGroup.svelte.test.ts` (R); `src/lib/ui/ToggleToolbar.svelte.test.ts` (R); `src/lib/ui/interaction.svelte.test.ts` (W: the constant matches its own selector); the region side is in `shortcuts.md`
 
 ### UI-25 · A slider drag lasts from its first input until it ends, however it ends
+
 - **Rule:** Over one or several sliders, a drag starts at the first `input` and ends at `change`, `pointerup`, `pointercancel` or `blur`, so a release on the start value or a cancel still ends it. The end is reported once; a release with no drag reports nothing. `focus` and `click` neither start nor end it. Disposed, nothing is tracked.
 - **Kind:** behaviour
 - **Level:** unit (plain event targets)
@@ -220,6 +245,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/drag.test.ts` (R); `parity/U2.test.ts` (D, the 7 × 7 pair matrix)
 
 ### UI-26 · Up and Down cross between a search field and its result rows
+
 - **Rule:** Down or Enter in the field moves to the first row and is handled. Up and Down move between rows and stop at the last; Up from the first row returns to the field. With no rows the field keeps its keys. Keys during IME composition, modified keys and keys on a list child that is not a row are left alone. Each row stays its own Tab stop.
 - **Kind:** behaviour
 - **Level:** browser: focus moves
@@ -228,6 +254,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/list-nav.svelte.test.ts` (R)
 
 ### UI-27 · An opened profile starts at its top, and an opened region's name takes focus
+
 - **Rule:** Opening a profile scrolls every scrolling ancestor to its top. A region opened from a profile has its name scrolled into view and focused; a hidden or absent name is ignored.
 - **Kind:** behaviour
 - **Level:** browser: layout and focus
@@ -238,6 +265,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Buttons and segmented controls
 
 ### UI-28 · An icon button is a native button named by its label, its icon decorative
+
 - **Rule:** An icon button is a `<button type="button">` whose accessible name is its label, with an SVG hidden from assistive technology and no visible text. Enter, Space and a click activate it; a disabled one is neither in the Tab order nor clickable. Disclosure and toggle states pass through.
 - **Kind:** accessibility
 - **Level:** browser: role, name, keyboard
@@ -246,6 +274,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/IconButton.svelte.test.ts` (R)
 
 ### UI-29 · The icon set draws the published shapes
+
 - **Rule:** There are 23 icons; each draws its listed shapes at the legacy size and stroke.
 - **Kind:** data
 - **Level:** unit (view-model: `icons.ts` data); browser only to see one render
@@ -254,6 +283,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/IconButton.svelte.test.ts` (R, could move down); `src/lib/ui/ToggleToolbar.svelte.test.ts` (R)
 
 ### UI-30 · Targets are at least 24 × 24
+
 - **Rule:** Every pressable primitive is at least 24 CSS px wide and tall (WCAG 2.5.8).
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -262,6 +292,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/IconButton.svelte.test.ts` (R); `src/lib/ui/ChoiceGroup.svelte.test.ts` (R); `src/lib/ui/ToggleToolbar.svelte.test.ts` (R); `src/lib/ui/Switch.svelte.test.ts` (R)
 
 ### UI-31 · Forced colours and increased contrast keep a control's state visible
+
 - **Rule:** In forced colours the chosen or expanded state is drawn with a system-colour outline or inversion; with increased contrast a segmented track gets an inset border.
 - **Kind:** accessibility
 - **Level:** browser: computed style under emulated media
@@ -270,6 +301,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/IconButton.svelte.test.ts` (R); `src/lib/ui/ChoiceGroup.svelte.test.ts` (R); `src/lib/ui/ToggleToolbar.svelte.test.ts` (R); `src/lib/ui/Switch.svelte.test.ts` (R)
 
 ### UI-32 · Every primitive is axe clean in both themes, on a desktop and a phone, in each state
+
 - **Rule:** Each primitive, in each of its states (closed and open, off and on, collapsed and expanded, with errors shown), has no axe violations in light and dark, at 1280 × 800 and 390 × 844.
 - **Kind:** accessibility
 - **Level:** browser: axe-core on rendered DOM
@@ -278,6 +310,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/IconButton.svelte.test.ts`, `ChoiceGroup.svelte.test.ts`, `ToggleToolbar.svelte.test.ts`, `Toolbar.svelte.test.ts`, `Switch.svelte.test.ts`, `Collapsible.svelte.test.ts`, `interaction.svelte.test.ts`, `native-primitives.svelte.test.ts`, `overlays.svelte.test.ts`, `SearchCombobox.svelte.test.ts`, `Treegrid.svelte.test.ts` (R each); `kit-spike.svelte.test.ts` (W, the spike fixture only)
 
 ### UI-33 · A cheap exclusive setting is an APG radio group: arrows move and select
+
 - **Rule:** Language, theme, single keys, hemisphere, functional level, MPR planes and tree scope are radio groups named by their label or a visible label. The checked radio is the one Tab stop; all four arrows move and select, wrapping; Tab leaves from the checked radio and Shift+Tab re-enters on it; Space and a click select; a disabled option is skipped.
 - **Kind:** accessibility
 - **Level:** browser: keyboard and focus
@@ -286,6 +319,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/ChoiceGroup.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits RadioGroup in the spike fixture)
 
 ### UI-34 · A radio group busy with a load keeps focus moving but refuses a change
+
 - **Rule:** An `aria-disabled` radio group stays focusable: arrows move focus but select nothing, and a press changes nothing.
 - **Kind:** behaviour
 - **Level:** browser: keyboard and focus
@@ -294,6 +328,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/ChoiceGroup.svelte.test.ts` (R)
 
 ### UI-35 · An abbreviated option keeps a full name that contains its text
+
 - **Rule:** An option shown as an abbreviation is named in full, and the name contains the visible text (WCAG 2.5.3).
 - **Kind:** accessibility
 - **Level:** browser: accessible name
@@ -302,6 +337,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/ChoiceGroup.svelte.test.ts` (R)
 
 ### UI-36 · An action or an expensive choice is a toolbar of pressed buttons: arrows only move focus
+
 - **Rule:** View presets, cut mode and paint picks are an APG toolbar of `aria-pressed` buttons, not radios. The parent decides which is pressed (or none, when a held preset ended). One Tab stop, on the pressed button until focus moves it; a click moves it too; if it becomes disabled it moves to an enabled button. Arrows (all four, handled), Home and End move focus only, skip disabled buttons and wrap; Enter, Space and a click press the focused button.
 - **Kind:** accessibility
 - **Level:** browser: keyboard and focus
@@ -310,6 +346,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/ToggleToolbar.svelte.test.ts` (R)
 
 ### UI-37 · A toolbar of commands has one Tab stop, and only toggles say pressed
+
 - **Rule:** A toolbar is named; a plain command has no `aria-pressed`, a toggle reflects its state. One Tab stop; arrows, Home and End move focus, wrapping and skipping disabled tools; Enter and Space activate; an icon-only tool is named by its label.
 - **Kind:** accessibility
 - **Level:** browser: keyboard and focus
@@ -318,6 +355,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/Toolbar.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits Toolbar, no longer shipped)
 
 ### UI-38 · An on/off setting is an APG switch
+
 - **Rule:** A switch has role `switch`, is named by its visible label and carries its state in `aria-checked`. Space and Enter toggle it, a click on its label too; a disabled switch ignores the keyboard.
 - **Kind:** accessibility
 - **Level:** browser: keyboard
@@ -326,6 +364,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/Switch.svelte.test.ts` (R)
 
 ### UI-39 · A collapsible section is an APG disclosure
+
 - **Rule:** The trigger is a button with `aria-expanded`; closed, the content is not exposed. Enter, Space and a click toggle it and focus stays on the trigger; `aria-controls` points at the region holding the content; it may start open.
 - **Kind:** accessibility
 - **Level:** browser: keyboard and visibility
@@ -336,6 +375,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Native and content primitives
 
 ### UI-40 · A slider says its value with locale, minus sign and unit, and its readout is not its name
+
 - **Rule:** A range field's value is spoken through `aria-valuetext` in the reader's number format, and the visible readout shows the same text. The label names the slider; the readout is hidden from assistive technology, so the value is not in the name and is not announced twice.
 - **Kind:** accessibility
 - **Level:** browser: accessible name and ARIA attributes
@@ -344,6 +384,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R, value text and readout; the name and `aria-hidden` are uncovered)
 
 ### UI-41 · A slider steps with the arrows and jumps with Page keys, Home and End
+
 - **Rule:** Arrows move by one step, PageUp and PageDown by a larger step, Home and End to the limits; each move reports both input and change.
 - **Kind:** behaviour
 - **Level:** browser: native keyboard
@@ -352,6 +393,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R)
 
 ### UI-42 · A value pushed into a focused slider waits until the reader lets go
+
 - **Rule:** While the slider has focus, a new value from outside does not move it; it catches up on blur.
 - **Kind:** behaviour
 - **Level:** browser: focus
@@ -360,6 +402,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R)
 
 ### UI-43 · The exact-value field commits a valid entry, restores an empty one and explains one out of range
+
 - **Rule:** Enter commits a valid number and moves the slider. An emptied field restores the current value without a change. A value out of range is not applied: the field is marked invalid and described by a visible message, the typed text stays (also across Tab), and a valid entry or any slider move clears the error.
 - **Kind:** accessibility
 - **Level:** browser: form interaction
@@ -368,6 +411,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R)
 
 ### UI-44 · A choice from a list is a native select, named by its label
+
 - **Rule:** A select is a native `<select>` (role combobox) named by its label or by a visible `<label for>`, with an optional description; the keyboard changes its value.
 - **Kind:** accessibility
 - **Level:** browser: role and name
@@ -376,6 +420,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R)
 
 ### UI-45 · Disclosure, progress, checkbox groups, drill rows and empty states are the native or button patterns
+
 - **Rule:** A disclosure is a native `<details>` that Enter and Space toggle and whose open state survives a restyle. A progress bar is a named native `<progress>`, determinate or indeterminate. A checkbox group is a fieldset named by its legend; Tab walks the boxes, skipping a disabled one; Space toggles. Drill rows and search bridges are buttons; a drill row marks the open item `aria-current`. An empty state names the query and offers its action as a button.
 - **Kind:** accessibility
 - **Level:** browser: roles, names and keyboard
@@ -384,6 +429,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R)
 
 ### UI-46 · A status line does not repeat an unchanged sentence
+
 - **Rule:** A status line is a `status` region; setting the same sentence again changes no DOM, so nothing is re-announced; a new sentence replaces it.
 - **Kind:** accessibility
 - **Level:** browser: DOM mutations
@@ -392,6 +438,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R)
 
 ### UI-47 · Swatches are decorative, and keep their meaning in forced colours
+
 - **Rule:** Network swatches and share bars are hidden from assistive technology (the row's text names the network); a bar's fill width is its share. In forced colours the swatch keeps its colour and the bar is a `CanvasText` fill on a `Canvas` track.
 - **Kind:** accessibility
 - **Level:** browser: computed style
@@ -400,6 +447,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/native-primitives.svelte.test.ts` (R, decorative and width); the forced-colour part is uncovered
 
 ### UI-48 · Progress, slider and checkbox take system colours in forced colours
+
 - **Rule:** In forced colours the progress fill is `Highlight` on a `Canvas` track, the slider thumb has a `CanvasText` border and a focused slider a 2 px `Highlight` outline, and checkboxes keep their native appearance.
 - **Kind:** accessibility
 - **Level:** browser: computed style under emulated media
@@ -410,6 +458,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Overlays
 
 ### UI-49 · A popover opened from the keyboard appears at once; from the pointer it animates
+
 - **Rule:** A disclosure popover (settings, data) keeps focus on its trigger, which says `aria-expanded`. Opened with Enter or Space it carries `data-instant`; opened with a click it does not.
 - **Kind:** behaviour
 - **Level:** browser: real keyboard and pointer
@@ -418,6 +467,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-50 · Escape closes a popover first, and returns focus to its trigger
+
 - **Rule:** Escape inside an open popover closes it, returns focus to the trigger and is marked handled, so the page's Escape does not also act. With the popover closed, Escape is left to the page.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch order
@@ -426,6 +476,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W)
 
 ### UI-51 · A popover closes when focus leaves it, and only one is open
+
 - **Rule:** Tab out of the last control, or Shift+Tab from the trigger, closes the popover and leaves focus where Tab put it. Focus moving to another popover's trigger, or another popover opened by a command, closes this one. Focus moving to its own trigger, or a window switch, keeps it open.
 - **Kind:** behaviour
 - **Level:** browser: focus events
@@ -434,6 +485,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W)
 
 ### UI-52 · An outside press closes a popover; a command inside closes it and returns focus
+
 - **Rule:** A press outside closes the popover without moving focus to its trigger. A command inside closes it, returns focus to the trigger and runs.
 - **Kind:** behaviour
 - **Level:** browser: pointer and focus
@@ -442,6 +494,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-53 · Up and Down inside a popover stay in the popover
+
 - **Rule:** ArrowUp and ArrowDown on a control inside a popover are marked handled, so the page does not walk the region tree; other keys are left to the control.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch
@@ -450,6 +503,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-54 · Stage popovers focus their pressed control, fade out over 120 ms, and swap at once
+
 - **Rule:** A stage popover moves focus to its pressed control on open, and does not take focus back once the reader moved it to the trigger. An outside press fades it out (0.12 s opacity); Escape closes it at once. A pointer press on another stage trigger swaps them with no fade, the new one `data-instant`. Tab from the last control onto the next stage trigger closes it and leaves focus there.
 - **Kind:** behaviour
 - **Level:** browser: focus, transitions
@@ -458,6 +512,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R); the stage dock itself is in `stage.md`
 
 ### UI-55 · A dialog opened from the keyboard is instant, is named by its heading and returns focus on close
+
 - **Rule:** A modal dialog is named by its heading. Opened with Enter it is instant and Escape closes it instantly; opened and closed with the pointer it animates. Either way focus returns to the opener; with the opener gone, to the fallback target.
 - **Kind:** accessibility
 - **Level:** browser: native `<dialog>`, focus
@@ -466,6 +521,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-56 · A dialog is modal: Tab never reaches the page behind
+
 - **Rule:** While a dialog is open the page behind is inert; Tab cycles inside the dialog (and the browser's own UI).
 - **Kind:** accessibility
 - **Level:** browser: Tab order
@@ -474,6 +530,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-57 · A late close does not undo a dialog opened again
+
 - **Rule:** A `close` event that arrives while the dialog is open is ignored, and a reopen in the frame after a close (Close button or Escape's close request) stays open.
 - **Kind:** behaviour
 - **Level:** browser: native `<dialog>` events
@@ -482,6 +539,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-58 · A dialog may keep the page's keymap out, and Escape still closes it
+
 - **Rule:** A dialog that isolates its keys stops them from reaching the page's keymap; Escape still closes it. Without isolation the page hears its keys.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch
@@ -490,6 +548,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-59 · A dialog fills a phone's width
+
 - **Rule:** On a 390 px wide phone the dialog spans the full width.
 - **Kind:** behaviour
 - **Level:** browser: layout
@@ -498,6 +557,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-60 · A tooltip waits 500 ms for a hover, then the next one within 300 ms comes at once
+
 - **Rule:** A first hover shows its tooltip after 500 ms, with its entry; leaving earlier shows nothing; moving within the trigger does not restart the wait. Once one has closed, the next within 300 ms appears at once, without its entry; after the window the wait applies again. Keyboard focus shows at once and hands over to the next focus without a gap. A dismissal hides the open one and cancels a waiting one; leaving a trigger that is not open leaves the open one.
 - **Kind:** behaviour
 - **Level:** unit (timing with an injected clock); browser for one end-to-end check in Chromium
@@ -506,6 +566,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits' provider in the spike)
 
 ### UI-61 · A tooltip is dismissible, and touch shows none
+
 - **Rule:** Escape, a press or a scroll hides the tooltip (WCAG 1.4.13). A touch pointer shows none. A trigger whose own popover is open shows none.
 - **Kind:** accessibility
 - **Level:** browser: real events
@@ -514,6 +575,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R; press, scroll and the expanded-trigger case are uncovered); `src/lib/ui/kit-spike.svelte.test.ts` (W)
 
 ### UI-62 · The pointer can cross to the tooltip and read it
+
 - **Rule:** While the pointer travels from the trigger to the tooltip, through the box spanning both, the tooltip stays (hoverable). Beside the pair or beyond either end it closes; so does leaving the tooltip.
 - **Kind:** accessibility
 - **Level:** unit (geometry); browser for the real pointer path
@@ -522,6 +584,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-63 · A tooltip describes its trigger only when it adds something, and only while shown
+
 - **Rule:** A shown tooltip is added to its trigger's `aria-describedby`, once, beside existing ids, and removed when it closes. A tooltip that only repeats the trigger's name or a note already describing it is not added. Unmounting during a pending hover shows nothing and leaves no description.
 - **Kind:** accessibility
 - **Level:** unit (`describedBy`); browser for the attribute on a real trigger
@@ -530,6 +593,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W)
 
 ### UI-64 · A tooltip is placed where it fits, inside the viewport and inside an open dialog
+
 - **Rule:** The tooltip sits below its trigger, flips above where there is no room, and stays 8 px inside the viewport. For a control inside an open modal dialog (or the fullscreen element) it is drawn inside that element, so it shows above it.
 - **Kind:** behaviour
 - **Level:** browser: layout
@@ -540,6 +604,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Search combobox
 
 ### UI-65 · A region search is an APG combobox: focus stays in the field, the first usable result is armed
+
 - **Rule:** The field is a combobox with list autocomplete; focus stays in it and `aria-activedescendant` names the armed option. Every new result set arms its first enabled option, so Enter works from the first keystroke. Up and Down arm the previous or next enabled option and stop at the ends; with only disabled options nothing is armed and nothing fails. The armed option is `aria-selected`; the option for what is current elsewhere is `aria-current`, independently.
 - **Kind:** accessibility
 - **Level:** browser: ARIA and keyboard (the next-enabled index is unit, in `core-panels.md`)
@@ -548,6 +613,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits Combobox, no longer shipped)
 
 ### UI-66 · Enter or a click chooses the armed option and keeps the search
+
 - **Rule:** Enter chooses the armed option; the field keeps the typed text, focus and the open list, and the armed option survives Enter and a Tab out and back, so Down moves on from it. A click chooses an option; a disabled option does nothing.
 - **Kind:** behaviour
 - **Level:** browser: keyboard and pointer
@@ -556,6 +622,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R)
 
 ### UI-67 · Escape empties the search first, and is the page's once the field is empty
+
 - **Rule:** Escape in a filled field empties it and is marked handled; in an empty field it is left to the page. During IME composition it is not handled and the text and armed option stay. Escape elsewhere is not taken by the search, and a modal dialog still closes on Escape while results show.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch
@@ -564,6 +631,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R)
 
 ### UI-68 · Clear empties and refocuses the field; the / hint shows only while it is empty
+
 - **Rule:** The clear button empties the field, returns focus to it and disappears. The `/` shortcut hint shows only while the field is empty, and never when single-key shortcuts are off.
 - **Kind:** behaviour
 - **Level:** browser: focus and rendering
@@ -572,6 +640,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R)
 
 ### UI-69 · Only options are in the list; the count is said once typing pauses
+
 - **Rule:** The listbox (named) holds only option groups; notes and their buttons sit after it. The result sentence is said 500 ms after typing pauses (UI-19), and again after a clear. With no match the list collapses (no `aria-expanded`, no armed option) and the no-match note shows. The field controls the listbox.
 - **Kind:** accessibility
 - **Level:** browser: ARIA structure (timing is UI-19, unit)
@@ -580,6 +649,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R)
 
 ### UI-70 · The armed option stays in view
+
 - **Rule:** New results bring the armed option to the top of the scroller; arrow moves bring it in by the nearest edge.
 - **Kind:** behaviour
 - **Level:** browser: layout
@@ -590,6 +660,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 ## Treegrid
 
 ### UI-71 · Only rows under an open parent are in view, each with its level and place among its siblings
+
 - **Rule:** Children are shown only while their parent is expanded; an expanded row under a collapsed ancestor stays hidden. Each row has its level (1-based), its position and the size of its sibling set; only parents are expandable. Expand all is the set of every parent at every depth.
 - **Kind:** behaviour
 - **Level:** unit; browser for the rendered `aria-*` attributes
@@ -598,6 +669,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/treegrid.test.ts` (R); `src/lib/ui/Treegrid.svelte.test.ts` (R)
 
 ### UI-72 · Keys on a row follow the APG treegrid
+
 - **Rule:** Down and Up move to the next and previous visible row and stop at the ends; Home and End go to the first and last row. Right expands a collapsed parent (focus stays) and otherwise goes to the row's first cell; Left collapses an expanded parent and otherwise goes to the parent row. Enter and Space activate the row and select it. `*` expands every sibling parent. V toggles the row's visibility without selecting. Other keys are not the grid's.
 - **Kind:** accessibility
 - **Level:** unit (key-to-action table); browser: focus moves
@@ -606,6 +678,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/treegrid.test.ts` (R); `src/lib/ui/Treegrid.svelte.test.ts` (R)
 
 ### UI-73 · Keys in a cell walk the row's controls and keep the column across rows
+
 - **Rule:** Right and Left move between the row's usable cells, skipping empty and disabled cells; Right on the last stays; Left from the first, and Escape, return to the row. Up and Down go to the same column in the adjacent row, or its nearest usable cell, or the row itself when it has none. Home and End go to the first and last cell; Ctrl+Home and Ctrl+End to the first and last row (its nearest cell, or the row). Enter and Space press the cell's button; V toggles visibility in a cell too.
 - **Kind:** accessibility
 - **Level:** unit (key-to-action table); browser: focus moves
@@ -614,6 +687,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/treegrid.test.ts` (R); `src/lib/ui/Treegrid.svelte.test.ts` (R)
 
 ### UI-74 · Typing a name finds the row, and shortcut keys still work
+
 - **Rule:** On a row, a printable character (not Space or `*`, without Ctrl, Alt or Meta) moves to the next row whose label starts with it, case-insensitive and wrapping; more characters within 500 ms refine the query; a repeated single letter cycles; no match leaves focus. A shortcut key (V) acts when no query is being typed, and extends a query that is. Keys the page lists as its own are left to the page unless a query is under way.
 - **Kind:** behaviour
 - **Level:** unit (match and key tests); browser: the 500 ms query window and focus
@@ -622,6 +696,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/treegrid.test.ts` (R); `src/lib/ui/Treegrid.svelte.test.ts` (R)
 
 ### UI-75 · The grid is one Tab stop: the focused row or cell, else the selected row, else the first
+
 - **Rule:** The grid has one Tab stop, which follows focus and stays unique; Tab leaves the grid and Shift+Tab returns to the stop. Before focus enters, the stop is the selected row, else the first. A selection made outside the grid moves the stop; focus inside is not taken by it.
 - **Kind:** accessibility
 - **Level:** browser: Tab order
@@ -630,6 +705,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/Treegrid.svelte.test.ts` (R)
 
 ### UI-76 · Focus survives the grid changing around it
+
 - **Rule:** When the focused row leaves the view (its parent collapsed by keyboard or pointer), focus and the stop go to the nearest ancestor still shown, else the first row. A button replaced in place keeps focus on its cell. A change elsewhere leaves focus on its row. A grid rebuilt while the reader is outside it leaves focus where it is.
 - **Kind:** behaviour
 - **Level:** unit (`survivingRowId`); browser: real focus
@@ -638,6 +714,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Covered by:** `src/lib/ui/treegrid.test.ts` (R); `src/lib/ui/Treegrid.svelte.test.ts` (R)
 
 ### UI-77 · The grid's structure names the rows, not their cells
+
 - **Rule:** The grid is `role="treegrid"` with a name; rows are `role="row"` with their own names (not the text of their cells); `aria-expanded` is on parents only; `aria-selected` is on selectable rows only, never on group rows; each control sits in its own `gridcell`. A disabled node is `aria-disabled` and takes no hover wash. A top-level row and its open children share one block with no role.
 - **Kind:** accessibility
 - **Level:** browser: ARIA and computed style

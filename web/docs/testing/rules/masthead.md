@@ -7,6 +7,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 ## Skip link, brand and icon buttons
 
 ### MAST-01 · The skip link is the first Tab stop from the first paint
+
 - **Rule:** The masthead renders the skip link first, in the active language, as soon as the page is shown. Its `href` is `#viewport`. Activating it asks the composition to focus the model and leaves the link's view unchanged.
 - **Kind:** accessibility
 - **Level:** browser: real Tab order and focus
@@ -15,6 +16,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/masthead.spec.ts` "the skip link is the first Tab stop" (R; `next` gated off)
 
 ### MAST-02 · The masthead is the banner, with the brand as the page heading
+
 - **Rule:** The masthead is the page's `banner` landmark. Its level-1 heading is the brand.
 - **Kind:** accessibility
 - **Level:** browser: roles
@@ -23,6 +25,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/masthead.spec.ts` (R; `next` gated off)
 
 ### MAST-03 · The icon buttons are named, with the same tooltip and no native title
+
 - **Rule:** Full screen, Save image and More settings are icon buttons named by `aria-label`. Each carries the same text as its tooltip, has no native `title` and an `aria-hidden` icon.
 - **Kind:** accessibility
 - **Level:** browser: accessible names
@@ -31,6 +34,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, English); `e2e/parity/masthead.spec.ts` (R; `next` gated off)
 
 ### MAST-04 · Full screen and Save image wait for the anatomy; More settings does not
+
 - **Rule:** Full screen and Save image are disabled (native `disabled`) until the anatomy is on screen, which is status `ready` or `switching`. More settings works from the first paint.
 - **Kind:** behaviour
 - **Level:** browser: the `disabled` attribute (the status → ready mapping is unit logic)
@@ -39,6 +43,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R for the prop; the status mapping is the composition's: REGION-12)
 
 ### MAST-05 · Without the Fullscreen API no Full screen control is offered
+
 - **Rule:** When `document.fullscreenEnabled` is false, neither the masthead button nor the phone menu item is offered.
 - **Kind:** behaviour
 - **Level:** browser: DOM
@@ -47,6 +52,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R)
 
 ### MAST-06 · The full-screen labels follow the state
+
 - **Rule:** While the document is fullscreen, the masthead button, its tooltip and the phone menu item read "Exit full screen". Otherwise they read "Full screen". The icon is unchanged.
 - **Kind:** accessibility
 - **Level:** browser: accessible names
@@ -57,6 +63,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 ## The settings panel
 
 ### MAST-07 · More settings is a disclosure, not a menu
+
 - **Rule:** More settings opens a non-modal panel of ordinary controls. The trigger carries `aria-expanded` and `aria-controls`, and has no `aria-haspopup`. Nothing has a menu role.
 - **Kind:** accessibility
 - **Level:** browser: ARIA attributes
@@ -65,6 +72,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/masthead.spec.ts` (R, `aria-expanded` only; `next` gated off)
 
 ### MAST-08 · Enter and Space toggle the panel; a keyboard open is instant
+
 - **Rule:** Enter and Space on More settings toggle the panel, and focus stays on the trigger. A keyboard open shows the panel at once; a pointer open animates.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch to the focused trigger
@@ -73,6 +81,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, 2 cases)
 
 ### MAST-09 · Three radio groups, each one Tab stop, then the commands
+
 - **Rule:** The panel holds three radio groups, each named by its row label: Language, Theme and Single-key shortcuts. Each is one Tab stop, on its checked radio, and the commands follow them. Each language radio carries its own language and draws its code, with the code inside its name.
 - **Kind:** accessibility
 - **Level:** browser: roles, Tab order
@@ -81,6 +90,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, 2 cases); `e2e/parity/masthead.spec.ts` "the panel offers language, theme and single-key shortcuts" (R; `next` gated off)
 
 ### MAST-10 · Arrows move and select, and a keyboard choice keeps the panel open
+
 - **Rule:** In a group the arrow keys move and select, wrapping at both ends, and Space selects. A choice made from the keyboard applies at once and leaves the panel open, so the reader can keep walking the options.
 - **Kind:** accessibility
 - **Level:** browser: keyboard
@@ -89,6 +99,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/masthead.spec.ts` "arrows on a choice" (R, `next` branch; `next` gated off)
 
 ### MAST-11 · A pointer choice applies it and closes the panel
+
 - **Rule:** Clicking a radio applies the choice, closes the panel and focuses More settings. Clicking the radio already checked does nothing.
 - **Kind:** behaviour
 - **Level:** browser: focus after close
@@ -97,6 +108,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, 2 cases); `e2e/parity/masthead.spec.ts` "choosing a theme, a language and single keys" (R; `next` gated off)
 
 ### MAST-12 · Every setting change is announced in the language it leaves the page in
+
 - **Rule:** Each change is said politely as "<row label>: <choice>". After a language change, the sentence is in the new language, with the French space before the colon. The panel's own text follows the new language.
 - **Kind:** accessibility
 - **Level:** unit (view-model) for the sentence; browser for the live region
@@ -105,6 +117,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R)
 
 ### MAST-13 · The single-key choice is on the document for the hints
+
 - **Rule:** The page exposes the single-key preference as `html[data-single-keys]`, which the shortcut hints read.
 - **Kind:** behaviour
 - **Level:** browser: a document attribute set by an effect
@@ -113,6 +126,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/masthead.spec.ts` (R; `next` gated off)
 
 ### MAST-14 · The System note is always available
+
 - **Rule:** The note on System ("Follow the device’s light or dark setting", FR "Suivre le réglage clair ou sombre de l’appareil") is its tooltip and also its permanent `aria-describedby` description, so touch and screen-reader users get it too.
 - **Kind:** accessibility
 - **Level:** browser: ARIA description
@@ -121,6 +135,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R)
 
 ### MAST-15 · Escape closes the panel and is consumed
+
 - **Rule:** Escape anywhere in the open panel closes it and focuses More settings. The key is marked handled, so the app's own Escape does not go on to clear the selection.
 - **Kind:** behaviour
 - **Level:** browser: keyboard and focus; the selection half needs the keymap (regions)
@@ -129,6 +144,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, `defaultPrevented`); `e2e/parity/masthead.spec.ts` (R; `next` gated off); the selection half is uncovered
 
 ### MAST-16 · Leaving the panel closes it where the reader went
+
 - **Rule:** Tabbing out of the panel closes it without pulling focus back. A press outside closes it, and focus stays where the press landed.
 - **Kind:** behaviour
 - **Level:** browser: focus
@@ -137,6 +153,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/masthead.spec.ts` (R; `next` gated off)
 
 ### MAST-17 · Arrow keys on a panel command do not reach the page
+
 - **Rule:** An arrow key on an ordinary command in the panel is kept from the page, so the anatomy tree does not move.
 - **Kind:** behaviour
 - **Level:** browser: keyboard dispatch
@@ -145,6 +162,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R)
 
 ### MAST-18 · A command closes the panel before its dialog opens
+
 - **Rule:** Full screen, Provenance and Keyboard shortcuts close the panel and return focus to More settings first. Only then do they act, so a dialog they open takes More settings as its invoker and returns focus there.
 - **Kind:** accessibility
 - **Level:** browser: focus order
@@ -153,6 +171,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, shortcuts only; Provenance and Full screen are uncovered)
 
 ### MAST-19 · On a phone the panel also carries Full screen and Provenance
+
 - **Rule:** Under the phone query the panel offers Full screen and Provenance before Keyboard shortcuts, and the masthead's own Full screen button is hidden. Provenance is offered once the manifest has loaded, and it opens a dialog. On a wide window only Keyboard shortcuts is drawn.
 - **Kind:** behaviour
 - **Level:** browser: layout and DOM
@@ -161,6 +180,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, 2 cases); `e2e/parity/masthead.spec.ts` "on a phone the panel also offers Full screen" (R; `next` gated off)
 
 ### MAST-20 · Single-key shortcuts do not fire from masthead controls
+
 - **Rule:** A key pressed on a masthead control is the control's own. The global single-key shortcuts do not act on it.
 - **Kind:** behaviour
 - **Level:** browser: keymap and a focused masthead control
@@ -169,6 +189,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (I: checks the `data-own-keys` attribute is present, not that keys are kept from the keymap)
 
 ### MAST-21 · The checked radio keeps its width
+
 - **Rule:** The bold checked label does not change the width of any radio, so a choice does not make the row jump.
 - **Kind:** behaviour
 - **Level:** browser: layout
@@ -177,6 +198,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R)
 
 ### MAST-22 · Masthead targets are big enough
+
 - **Rule:** Every masthead button, radio and panel item is at least 24×24 px on a fine pointer (WCAG 2.5.8). Icon buttons are 44×44 px on a phone.
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -185,6 +207,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, 24 px desktop; the 44 px phone size is uncovered)
 
 ### MAST-23 · Enlarged and spaced text stays inside its control
+
 - **Rule:** At 200 % text with the WCAG 1.4.12 spacing override, the skip link's and the radios' text stays inside them.
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -193,6 +216,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R)
 
 ### MAST-24 · Forced colours and reduced motion
+
 - **Rule:** In forced colours the checked radio keeps a visible edge. With reduced motion the panel fades and does not scale.
 - **Kind:** accessibility
 - **Level:** browser: CSS computed style under emulated media
@@ -201,6 +225,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, 2 cases)
 
 ### MAST-25 · The masthead passes axe with its panel open
+
 - **Rule:** The masthead with the panel open has no axe violations in either theme, on desktop or a phone, in English or French.
 - **Kind:** accessibility
 - **Level:** browser: axe
@@ -211,6 +236,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 ## Data bar: fields and options
 
 ### MAST-26 · The data fields are native selects named by their caption and described by their note
+
 - **Rule:** Subject, Atlas, Colour and Internal anatomy are native selects. Each is named by its visible caption and described by its one-line note.
 - **Kind:** accessibility
 - **Level:** browser: accessible name and description
@@ -219,6 +245,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 2 cases); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-27 · A field is offered only when there is a choice
+
 - **Rule:** Subject is a field only when more than one subject is published, and Internal anatomy only when more than one detail level is. With one subject there is no Subject field and no subject text in the bar: the colophon names the subject.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for which fields; browser for the DOM
@@ -227,14 +254,16 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 2 cases); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-28 · A subject is named without quotation marks, dataset first
+
 - **Rule:** A subject's name is its published display name without quotation marks or doubled spaces, which keeps the dataset with the subject. It falls back to the subject id, then the entry id.
 - **Kind:** data
 - **Level:** unit (view-model `subjectName`)
 - **Source:** `header.js:37-41`; `chrome.contract.test.js:240-245`
-- **Expected:** `MGH CDMD “sub_013”` → `MGH CDMD sub_013`; `SNAIL “subj_1”` → `SNAIL subj_1`; `AOMIC-PIOP1 “sub-0022”` → `AOMIC-PIOP1 sub-0022`; `{id:'x', subject:'x'}` → `x`; `{id:'y'}` → `y`. Also ` A  "b" ` → "A b", and `””` with no subject or id → "".
+- **Expected:** `MGH CDMD “sub_013”` → `MGH CDMD sub_013`; `SNAIL “subj_1”` → `SNAIL subj_1`; `AOMIC-PIOP1 “sub-0022”` → `AOMIC-PIOP1 sub-0022`; `{id:'x', subject:'x'}` → `x`; `{id:'y'}` → `y`. Also `A  "b"` → "A b", and `””` with no subject or id → "".
 - **Covered by:** `src/lib/core/panels/header.test.ts` (R); `parity/C5.test.ts` (D, seeded entries against legacy)
 
 ### MAST-29 · Colour offers only published colourings, in fixed groups
+
 - **Rule:** The Colour field offers only the colourings this build publishes, in the groups Appearance (Tissue, T1 MRI), Parcellation (Regions) and Networks (Yeo 7 networks, CAB-NP networks). Functional divisions comes last, on its own.
 - **Kind:** behaviour
 - **Level:** unit (view-model `colourGroups`); browser only for the optgroup labels in the DOM
@@ -243,6 +272,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/lib/core/panels/header.test.ts` (R); `src/features/masthead/DataBar.svelte.test.ts` (R, could move down); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); `parity/C5.test.ts` (D)
 
 ### MAST-30 · An option says what else choosing it changes
+
 - **Rule:** A colouring defined on another atlas names the atlas it switches to. An atlas that cannot show the current colouring names the colouring it falls back to. The selected option, and options with no side effect, carry just their name.
 - **Kind:** behaviour
 - **Level:** unit (view-model `colourOption`, `atlasOption`)
@@ -251,6 +281,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/lib/core/panels/header.test.ts` (R); `src/features/masthead/DataBar.svelte.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); `parity/C5.test.ts` (D)
 
 ### MAST-31 · A tab's paint shows in Colour as a hidden option
+
 - **Rule:** While the Functions or Deficits tab paints the brain, Colour shows that paint's name in an option that cannot be chosen, and its note says which tab set it.
 - **Kind:** behaviour
 - **Level:** browser: `<option hidden>` selected state
@@ -259,6 +290,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R)
 
 ### MAST-32 · A choice that downloads shows its progress, and reverts if it does not land
+
 - **Rule:** While a choice made in a field downloads, that select keeps showing the choice with how far it has come. Once the choice lands, fails or is overtaken, the select shows the model's state again.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the text; browser for the select's value
@@ -267,6 +299,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (W: compares against `t(lang,'header').loading` and matches `/25/`); `parity/C5.test.ts` (D)
 
 ### MAST-33 · Another subject waits for a download, and focus is not dropped
+
 - **Rule:** The Subject select is disabled while a download runs, because another subject is another page. If it had focus, focus moves to Atlas, not to the page.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -275,6 +308,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R)
 
 ### MAST-34 · A download started from the bar is announced at its start and its end
+
 - **Rule:** A choice that has to download is said when it starts and when it lands. Progress is not said per percent. A failure says nothing more, because the notice does. A choice with no download says nothing.
 - **Kind:** accessibility
 - **Level:** browser: live region
@@ -283,6 +317,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 4 cases)
 
 ### MAST-35 · On the bar a note is a tooltip; in the popover it is printed
+
 - **Rule:** On the bar each field's note is its tooltip and never a native `title`. In the popover the notes are printed under the fields, and the tooltips are dropped so nothing is said twice.
 - **Kind:** accessibility
 - **Level:** browser: DOM and visibility
@@ -291,6 +326,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R; the bar case compares the tooltip to the note element it was read from, which is W apart from Atlas); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-36 · Every data choice is explained in a line in both languages
+
 - **Rule:** Each atlas, detail level and colouring has a one-line note in English and French. The field is "Subject", never "Specimen", for an in-vivo MRI.
 - **Kind:** data
 - **Level:** unit (i18n tables)
@@ -301,6 +337,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 ## Data bar: collapse and summary
 
 ### MAST-37 · The bar collapses when it does not fit, and always on phones and touch
+
 - **Rule:** The bar measures itself rather than using a breakpoint. When the fields do not fit, they go behind a summary button. A phone and a coarse pointer always get the summary. The bar refits when its own width changes, not only on a window resize.
 - **Kind:** behaviour
 - **Level:** browser: layout and ResizeObserver
@@ -309,6 +346,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 4 cases); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-38 · The summary names its parts, label first
+
 - **Rule:** The summary button is named "Atlas and display settings:" followed by every part it shows, joined by " · ": subject (when there is a choice), atlas, colour, internal anatomy. A tract reference shows only its own name. The button carries `aria-expanded` and `aria-controls`, and its tooltip is the label alone (WCAG 2.5.3: the visible text is in the name).
 - **Kind:** accessibility
 - **Level:** unit (view-model `dataSummary`) for the parts; browser for the name
@@ -317,6 +355,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/lib/core/panels/header.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); `parity/C5.test.ts` (D)
 
 ### MAST-39 · As room shrinks the summary drops internal anatomy, then colour, never the atlas
+
 - **Rule:** A summary too long for its line hides Internal anatomy, then Colour. The atlas is never dropped; it truncates. The accessible name keeps every part.
 - **Kind:** behaviour
 - **Level:** browser: layout measurement
@@ -325,6 +364,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 2 cases)
 
 ### MAST-40 · The popover is a disclosure: the summary keeps focus and Tab walks the fields
+
 - **Rule:** The summary opens the popover with Enter, Space or a press, and keeps focus. Tab walks the fields in order, then leaves, which closes the popover. A keyboard open is instant; a pointer open animates.
 - **Kind:** accessibility
 - **Level:** browser: keyboard and focus
@@ -333,6 +373,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 4 cases); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-41 · Escape closes the popover onto the summary and is consumed
+
 - **Rule:** Escape closes the open popover, puts focus on the summary and is marked handled, even when a click on a note left focus on the page. The selection is not cleared.
 - **Kind:** behaviour
 - **Level:** browser: keyboard; e2e for "the selection survives" with the real keymap
@@ -341,6 +382,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 2 cases); `e2e/parity/data-bar.spec.ts` "does not clear the selection" (R, the only check of the selection half; `next` gated off)
 
 ### MAST-42 · A press outside closes the popover without moving focus
+
 - **Rule:** A press outside the data group closes the popover, and focus stays where the press landed.
 - **Kind:** behaviour
 - **Level:** browser: pointer and focus
@@ -349,6 +391,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-43 · The data popover and the settings panel are never open together
+
 - **Rule:** Opening the data popover closes the settings panel, and opening the settings panel closes the data popover.
 - **Kind:** behaviour
 - **Level:** browser: two components sharing one bound state (the binding is the composition's: REGION-15)
@@ -357,6 +400,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R); `src/features/masthead/Masthead.svelte.test.ts` (R); `e2e/parity/data-bar.spec.ts` (R; `next` gated off)
 
 ### MAST-44 · Focus is never lost when the bar changes shape
+
 - **Rule:** When the bar collapses under a focused field, the popover opens and the field keeps focus. When it widens under the focused summary, focus goes to the first visible, enabled field. A collapse with focus elsewhere leaves the popover closed.
 - **Kind:** accessibility
 - **Level:** browser: layout and focus
@@ -365,6 +409,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 3 cases)
 
 ### MAST-45 · The popover fits small and enlarged screens
+
 - **Rule:** On a phone the popover ends 12 px from the right edge. In landscape at most 480 px tall it lays the fields out in two columns. At 320 px wide with 200 % text and the WCAG 1.4.12 spacing it stays inside the window and the page does not scroll sideways.
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -373,6 +418,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 3 cases)
 
 ### MAST-46 · Data targets are big enough
+
 - **Rule:** Every field on the bar is at least 24 px (WCAG 2.5.8). On a phone or touch screen the summary and every field are at least 44 px tall.
 - **Kind:** accessibility
 - **Level:** browser: layout
@@ -383,6 +429,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 ## Data bar: tract reference
 
 ### MAST-47 · The tract reference shows its name alone, with its description reachable
+
 - **Rule:** While the tract reference is shown, the bar names it and offers no field. When the reference has a description, its name is a Tab stop, described by that description, and its tooltip opens on keyboard focus. On a phone the summary shows the name alone, with no popover to open.
 - **Kind:** accessibility
 - **Level:** browser: focus and description
@@ -391,6 +438,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, 2 cases)
 
 ### MAST-48 · Focus survives the reference coming, changing and its language
+
 - **Rule:** Focus on the reference's name stays there when the reference is passed again or the language changes. When the reference starts while a field has focus, focus moves on to the next masthead control, not to the page.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -401,6 +449,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 ## Data bar: appearance and axe
 
 ### MAST-49 · Select carets and borders survive forced colours and increased contrast
+
 - **Rule:** Each select's caret is drawn with borders, so it survives forced colours in the system text colour. With increased contrast the fields have a visible border.
 - **Kind:** accessibility
 - **Level:** browser: CSS computed style under emulated media
@@ -409,6 +458,7 @@ Copy quoted is the English interface text unless marked FR. The published build 
 - **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R forced colours; W for contrast: it only asserts the border is not `rgba(0, 0, 0, 0)`)
 
 ### MAST-50 · The bar and the open popover pass axe
+
 - **Rule:** The bar and the open popover have no axe violations in either theme, desktop and phone, English and French, with touch emulation too.
 - **Kind:** accessibility
 - **Level:** browser: axe

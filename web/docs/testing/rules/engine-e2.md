@@ -29,6 +29,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Tissue colours
 
 ### SHADER-01 · Display colours name tissue classes, never a measured albedo
+
 - **Rule:** A region is drawn in its tissue class colour. A declared `tissue` that the palette names wins. Otherwise a non-region is unlabelled and a cortex parcel is cortex. Otherwise the source name decides: a ventricle or CSF token is fluid, a white-matter or callosum name is white, and everything else, a nameless region included, is grey matter.
 - **Kind:** behaviour
 - **Level:** unit
@@ -39,6 +40,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## The cortical surface material
 
 ### SHADER-02 · A surface takes the manifest's tissue lighting and keeps its published colour
+
 - **Rule:** Every anatomical surface is a physical material with the manifest's roughness, coat, index of refraction and specular intensity, and the colour of its published glTF material. On a phone it has no clear coat, because the second lighting pass is what drops frames there.
 - **Kind:** behaviour
 - **Level:** unit
@@ -47,6 +49,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `parity/E2.test.ts` (D) only
 
 ### SHADER-03 · A cortical surface without its shading fields is refused
+
 - **Rule:** A cortex or non-region mesh must carry `_sulc`, `_concavity` and `_t1`, one value per vertex. Anything else is an error naming the field and the region, not an unshaded surface. Structures and tissue regions take no fold shading and need no fields.
 - **Kind:** behaviour
 - **Level:** unit
@@ -55,6 +58,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `parity/E2.test.ts` (D, the missing `_t1` case only); itemSize, count and the structure case are uncovered
 
 ### SHADER-04 · Shading fields are read back in their source units
+
 - **Rule:** The published shading fields are normalised to 0..1 over a span the manifest records in `field_ranges`. The surface reads each value back as `stored × (high − low) + low`. A file without `field_ranges` is read straight through.
 - **Kind:** scientific
 - **Level:** unit (the decode uniforms); browser for the per-fragment result
@@ -63,6 +67,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `parity/E2.test.ts` (D, with and without ranges)
 
 ### SHADER-05 · The T1 signal varies the surface colour by up to the surface strength
+
 - **Rule:** Under tissue colour, a surface is brighter where the registered T1 is high and darker where it is low: colour × (1 + s·(2i − 1)), with i = clamp((T1 − low) / (high − low), 0, 1). The model sets s to 0 under a published palette, so atlas, network and paint colours are not distorted.
 - **Kind:** scientific
 - **Level:** browser — real WebGL for the drawn colour; unit for the uniforms
@@ -71,6 +76,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `tissueVariation` 0.28 under tissue and 0 under atlas and CAB-NP colours), `parity/E2.test.ts` (D); the drawn colour is uncovered
 
 ### SHADER-06 · Folds darken the light that reaches the sulci
+
 - **Rule:** A fold amount mixes sulcal concavity (three quarters) and sulcal depth (one quarter), each through a smoothstep over the manifest's range. Direct diffuse light is scaled by (1 − direct·fold); indirect diffuse and specular light by (1 − indirect·fold). Colour is not touched, only light.
 - **Kind:** scientific
 - **Level:** browser — real WebGL
@@ -79,6 +85,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `parity/E2.test.ts` (D, shader text) only
 
 ### SHADER-07 · Network colours blend over the region colour, never on the medial wall
+
 - **Rule:** On a surface built with the network layer, the region colour mixes toward the vertex's network colour by the network mix times the vertex's network presence. The medial wall has presence 0 and keeps its region colour at any mix. A surface built without the layer has no network mix at all.
 - **Kind:** behaviour
 - **Level:** browser for the drawn colour; unit for `userData`
@@ -89,6 +96,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Network colours
 
 ### SHADER-08 · Each vertex takes its network's published colour, in linear RGB
+
 - **Rule:** A vertex whose `_network` index is k (1 to 7) takes the colour the manifest publishes for the k-th network, decoded from sRGB, with presence 1. Interpolating colours rather than indices means a triangle between two networks blends those two only.
 - **Kind:** data
 - **Level:** unit
@@ -97,6 +105,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R), `parity/E2.test.ts` (D, 10 000 seeded indices)
 
 ### SHADER-09 · A vertex in no network is left transparent
+
 - **Rule:** An index that names no network (0, past the palette, negative or not a number) gives four zeros, so the region keeps its colour. Indices are rounded to the nearest integer first, never wrapped.
 - **Kind:** behaviour
 - **Level:** unit
@@ -105,6 +114,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R, 0 and 99), `parity/E2.test.ts` (D, rounding, NaN, −1)
 
 ### SHADER-10 · Only geometry carrying the network field gets network colours
+
 - **Rule:** A geometry with `_network` gets a four-channel `_networkColor` attribute, one item per vertex, and the call reports true. A geometry without it is left alone and the call reports false.
 - **Kind:** behaviour
 - **Level:** unit
@@ -115,6 +125,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## The MRI appearance
 
 ### SHADER-11 · One scan, window and mark colour are shared live by every material
+
 - **Rule:** Every surface and cut material reads the same scan, contrast window and mark colour. Changing the window or the mark colour reaches every material at once, recompiles none and leaves each material's own colour alone. The scan starts off, with the theme's default mark colour.
 - **Kind:** behaviour
 - **Level:** unit
@@ -123,6 +134,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R), `parity/E2.test.ts` (D)
 
 ### SHADER-12 · An MRI window needs a finite centre and a positive width
+
 - **Rule:** A window with a non-finite centre, or a width that is not finite and positive, is refused, and the current window stays.
 - **Kind:** behaviour
 - **Level:** unit
@@ -131,6 +143,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R; (∞, 5) and the accepted extremes are D only), `parity/E2.test.ts` (D)
 
 ### SHADER-13 · The mark colour is a CSS colour, stored as the bytes it spells
+
 - **Rule:** The mark colour comes from the theme as a CSS colour, trimmed. It is kept as the display bytes the token names, not converted to linear, because it is mixed into a display grey. An empty or non-string value is refused and the current colour stays.
 - **Kind:** behaviour
 - **Level:** unit
@@ -139,6 +152,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R, refusals), `parity/E2.test.ts` (D, all eleven values)
 
 ### SHADER-14 · Under MRI colour a surface shows the scan grey through the window
+
 - **Rule:** With the scan on, a fragment shows the T1 sample at its world point, mapped through the scan's world-to-voxel matrix and sampled at voxel centres, as grey = clamp((signal − centre + width/2) / width, 0, 1). The output is decoded so that the displayed byte equals that grey, as on the linked MRI canvas. Outside the scan grid the signal is 0. With the scan off the material draws as it did.
 - **Kind:** scientific
 - **Level:** browser — real WebGL
@@ -147,6 +161,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/mri-material.svelte.test.ts` (R, the grey); outside-grid and scan-off are uncovered
 
 ### SHADER-15 · A mark on the scan lifts brightness a little and moves hue toward the accent
+
 - **Rule:** A marked fragment's grey is lifted by 0.33 × mark and then tinted toward the accent normalised to unit luma, by min(1.8 × mark, 1). It survives greyscale and colour-blind reading without passing for white matter. The mark amount is 0 on an unmarked surface, the face's lift on a sampled cut face (`lift`) and the cap's lift on a solid cap (`capLift`).
 - **Kind:** behaviour
 - **Level:** browser — real WebGL
@@ -157,6 +172,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Sampled cut faces
 
 ### SHADER-16 · The GPU reads the same label the CPU reads
+
 - **Rule:** On a sampled cut face, the label at a point is the label with the largest trilinear weight over the eight voxels around it, visiting corners in x-fastest order so ties break as on the CPU, with background 0 outside the grid. It equals `Volume.label` (SLICE-09) at every point.
 - **Kind:** scientific
 - **Level:** browser — real WebGL (`usampler3D`, `texelFetch`)
@@ -165,6 +181,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** uncovered (`parity/E2.test.ts` compares the GLSL text only: I)
 
 ### SHADER-17 · A cut face is drawn in its label's palette colour, lit as tissue, and absent where hidden
+
 - **Rule:** A sampled cut face takes its label's palette colour, varied by the T1 at the point as in SHADER-05 with the cut's own strength. A label whose palette alpha is below 0.5 is not drawn at all. The face is double-sided and pushed forward in depth so it wins over the coplanar surface. Unlike surfaces, it keeps its clear coat on a phone.
 - **Kind:** behaviour
 - **Level:** browser for the drawn face; unit for the material settings
@@ -173,6 +190,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, uniforms only), `parity/E2.test.ts` (D); the drawn face is uncovered
 
 ### SHADER-18 · Only the pointed-at and the selected region are lifted, selection the stronger
+
 - **Rule:** A cut face is lifted by 0.45 when its region is selected and by 0.26 when it is pointed at. A region that is both reads as selected. Tissue with no region, and anything while nothing is marked, is not lifted.
 - **Kind:** behaviour
 - **Level:** unit
@@ -181,6 +199,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/highlight.test.ts` (R), `parity/E2.test.ts` (D, every id × state pair)
 
 ### SHADER-19 · A lifted face moves toward white, never darker
+
 - **Rule:** A lift mixes the face colour toward white by the lift amount, on sampled faces, solid caps and white-matter parcels alike, so a marked face reads as coming forward on the dark stage.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL
@@ -189,6 +208,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** uncovered (`parity/E2.test.ts` compares the GLSL text only: I)
 
 ### SHADER-20 · A region is lit by the code its cut face is painted from
+
 - **Rule:** A region's code on a cut is its index in the atlas's label table. Labels without a region have no code. If a region appears twice, the last entry wins.
 - **Kind:** data
 - **Level:** unit
@@ -199,6 +219,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## The cut palette
 
 ### SHADER-21 · A cut shows only the labels the display shows
+
 - **Rule:** A cut label is hidden when its region is removed, when the internal-system filter excludes it, when it is background (code 0, unless cortex), when another region is isolated, or when it lies in the hidden hemisphere (midline labels always pass). Cortex labels and the cerebral white matter codes 2 and 41 follow cortex visibility and need an opacity above 0. A hidden label has palette alpha 0, so it is neither drawn nor picked.
 - **Kind:** behaviour
 - **Level:** unit
@@ -207,6 +228,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `parity/E2.test.ts` (D, seeded sweep over every published atlas)
 
 ### SHADER-22 · Under atlas colours a cut label has the published colour its surface has
+
 - **Rule:** Under atlas colours a cut label takes its published sRGB table colour, decoded the way the surfaces' glTF colours are, so a parcel is one colour on the cut and on the surface. A cut-only label carries its table colour unchanged. A cortex label with no region is unlabelled.
 - **Kind:** data
 - **Level:** unit
@@ -215,6 +237,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `src/lib/engine/tissues/assets.test.ts` (S, every published label), `parity/E2.test.ts` (D)
 
 ### SHADER-23 · Network, CAB-NP and functional colours reach the cut as they reach the surface
+
 - **Rule:** Each colour mode applies only in its own `surfaceColor` (`network`, `cab-np`, `functional`), over the tissue colour. Under network colour a label takes the colour of its region's dominant network, NextBrain cortical parcels included. CAB-NP and functional colours apply to the areas those partitions assign, at the functional level on show. A label with no such colour keeps its tissue colour.
 - **Kind:** behaviour
 - **Level:** unit
@@ -223,6 +246,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `parity/E2.test.ts` (D, predicates and sweep)
 
 ### SHADER-24 · Tissue colour and a paint override the published colours
+
 - **Rule:** Outside atlas colours a label starts as its tissue class colour (SHADER-01). A panel's paint is drawn over any colour mode: a painted region takes the paint colour and every other label its tissue colour.
 - **Kind:** behaviour
 - **Level:** unit
@@ -233,6 +257,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Solid caps
 
 ### SHADER-25 · A solid cap is varied by the MRI and given relief by its gradient
+
 - **Rule:** A solid's cap is lit as tissue. Its colour is varied by the registered T1 with the cut strength. Its normal is bent by the T1 gradient along the face, scaled by the solid relief, so boundaries inside the tissue read as relief. The coat follows the bent normal. The cap starts unlifted, is double-sided, and has no clear coat on a phone.
 - **Kind:** scientific
 - **Level:** browser for the lit cap; unit for the material settings
@@ -243,6 +268,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Gyral white matter on the cap
 
 ### SHADER-26 · A point on the white-matter cut names the parcel whose voxel holds it
+
 - **Rule:** The white-matter parcels are FreeSurfer's gyral wmparc labels, stored as one byte per voxel. A point names the parcel of the label sampled there, or no region for background or outside the grid. Labels in any other storage are refused.
 - **Kind:** data
 - **Level:** unit
@@ -251,6 +277,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `parity/E2.test.ts` (D, 200 seeded points, the uint8 check)
 
 ### SHADER-27 · White matter is sampled only on the cuts of the atlases it was published for
+
 - **Rule:** The parcels light, isolate and name only while the cut atlas is one the record `applies_to`. On any other atlas the white matter is plain.
 - **Kind:** behaviour
 - **Level:** unit
@@ -259,6 +286,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34), `parity/E2.test.ts` (D)
 
 ### SHADER-28 · Isolation, removal and the marks reach the white-matter parcels by code
+
 - **Rule:** While a white-matter parcel is isolated, the cap draws only that parcel; isolating anything else isolates no parcel. A removed parcel is not drawn and comes back when shown. The pointed-at and selected parcels are lifted by the SHADER-18 amounts; background is never lifted.
 - **Kind:** behaviour
 - **Level:** unit for the codes; browser for the discarded and lifted fragments
@@ -267,6 +295,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34/35), `parity/E2.test.ts` (D); the drawn discard and lift are uncovered
 
 ### SHADER-29 · The cap addresses the cropped white-matter grid exactly as the pick does
+
 - **Rule:** The shader's world-to-voxel matrix for the white-matter volume maps a world point to the same voxel the CPU pick reads, through the crop's own affine, so what is lit is what is named.
 - **Kind:** scientific
 - **Level:** unit
@@ -277,6 +306,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Cap labels of cut-only atlases
 
 ### SHADER-30 · Under MRI colour, caps of an atlas without parcel solids sample its labels
+
 - **Rule:** Cap labels are on only under MRI colour and only when the cut atlas has no parcel solids. They read the cut layer's label volume, palette, world-to-voxel matrix and highlight codes and lifts as they stand, and know whether a region is isolated.
 - **Kind:** behaviour
 - **Level:** unit
@@ -285,6 +315,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, enabled and volume, SLICE-36), `parity/E2.test.ts` (D, 50 seeded states)
 
 ### SHADER-31 · A sampled cap hides removed labels and lifts the marked one
+
 - **Rule:** Where a cap samples labels, a fragment whose label is hidden is not drawn, and background is not drawn while a region is isolated. The fragment takes the lift of its label's code. A cap that does not sample labels keeps its own colour and lift.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL
@@ -295,6 +326,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Border feather shader
 
 ### SHADER-32 · A feathered vertex blends in the colours of the parcels across the border
+
 - **Rule:** A feathered vertex's colour is its own colour weighted by one minus the total neighbour weight, plus each neighbour's current colour times its weight (RENDER-35). A hidden neighbour has weight 0 (RENDER-37). The patch composes with whatever the material already draws.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL
@@ -305,6 +337,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Lighting
 
 ### SHADER-33 · The light rig follows the camera
+
 - **Rule:** The scene is lit by a hemisphere light and three white directional lights (key, fill, rim) at fixed places in camera space, aimed just ahead of the camera, with intensities from the manifest. Because the rig rides on the camera, shape stays legible from every orbit. Disposing the lighting removes the rig.
 - **Kind:** behaviour
 - **Level:** browser — `PMREMGenerator` needs WebGL (decision 25); the rig half is pure and could be checked in unit if it were built apart from the environment
@@ -313,6 +346,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Covered by:** `src/lib/engine/render/lighting.parity.svelte.test.ts` (D, rig compared with legacy; the count 7 and the empty camera are R)
 
 ### SHADER-34 · Surfaces reflect a soft studio room
+
 - **Rule:** The environment is three.js's `RoomEnvironment`, prefiltered once with blur sigma 0.04, so metal and coat reflect a soft, non-black studio at every roughness. The generator and the room are released at once; the environment texture is released on dispose.
 - **Kind:** behaviour
 - **Level:** browser — real WebGL
@@ -323,6 +357,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 ## Patch composition
 
 ### SHADER-35 · Every combination of patches the app uses compiles and gets its own program
+
 - **Rule:** Each patch keeps the material's earlier patches and adds its own, in either order, and extends the program cache key. So every combination the model builds compiles, two materials with different patch sets never share a compiled program, and materials with the same set do. The combinations are: anatomical surface (plain or networked; cortex, non-region, structure, tissue region) alone, with the feather, with the MRI patch at each mark (`0.0`, `lift`, `capLift`), and with both in either order; a plain material with the MRI patch (structures, white-matter surfaces); the cut material alone and with the MRI patch; the solid material with or without white matter, with the MRI patch and with cap labels plus the MRI patch; each on desktop and phone.
 - **Kind:** behaviour
 - **Level:** browser for "compiles" (real WebGL program link); unit for the cache keys

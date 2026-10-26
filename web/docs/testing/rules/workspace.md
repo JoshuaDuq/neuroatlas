@@ -5,6 +5,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 ## Mode tabs
 
 ### WORK-01 · The tab row is the five content modes, in session order
+
 - **Rule:** The tabs are, in order, Anatomy, Functions, Deficits, Circuits, Tracts; their mode ids are `anatomy`, `functions`, `deficits`, `circuits`, `diffusion`.
 - **Kind:** data
 - **Level:** unit
@@ -13,6 +14,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, both languages); `e2e/parity/workspace.spec.ts` (R, aria snapshot; `next` gated off)
 
 ### WORK-02 · One tablist; the selected tab is the only Tab stop and controls the panel that is shown
+
 - **Rule:** There is a single tablist, named "Explore the atlas" (FR "Explorer l’atlas"), in both shells. The selected tab has `tabindex=0` and the others `-1`. Only the selected tab has `aria-controls`, pointing at the panel shown. The list (`#navigator`) and the detail (`#inspector`) are both tabpanels labelled by the selected tab; the one not shown is `hidden`. No landmark is nested in the panel.
 - **Kind:** accessibility
 - **Level:** browser — ARIA attributes in the DOM
@@ -21,6 +23,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's five `aria-controls`; `next` gated off); `e2e/parity/sheet.spec.ts` (R, one tablist on a phone; legacy only, skips on `next`)
 
 ### WORK-03 · Arrows, Home and End move focus between tabs without choosing; Enter, Space or a click choose
+
 - **Rule:** Manual activation: ArrowRight and ArrowLeft move focus to the next and previous tab, wrapping; Home and End go to the first and last. None of these chooses a mode. Enter, Space or a click chooses the focused tab, and focus stays on it.
 - **Kind:** accessibility
 - **Level:** browser — keyboard dispatch to the focused tab
@@ -29,6 +32,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, the permalink `tab` follows; `next` gated off)
 
 ### WORK-04 · The tablist leaves vertical and modified arrows alone
+
 - **Rule:** ArrowUp and ArrowDown on a tab are not cancelled, so the page keymap decides (it ignores them in a tab). Arrows with Alt, Ctrl, Meta or Shift are left to the browser and the platform and do not move between tabs.
 - **Kind:** behaviour
 - **Level:** browser — keyboard dispatch
@@ -37,6 +41,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); the keymap side is KEY-10 (`controller.md`)
 
 ### WORK-05 · Choosing the mode already in front is Back in the detail and nothing in the list
+
 - **Rule:** Re-choosing the selected tab while the detail is shown returns to the list, as Back does, and does not re-choose the mode. In the list it does nothing and says nothing. Choosing another mode from the detail returns to the list, forgets the opener, and leaves focus on the new tab.
 - **Kind:** behaviour
 - **Level:** browser — the view switch with focus
@@ -45,6 +50,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
 
 ### WORK-06 · The tablist survives a shell change with its focus
+
 - **Rule:** The tablist and the notice are one instance in both shells, placed by CSS. A resize between desktop and phone keeps focus on a tab, and focus inside the notice stays where it was.
 - **Kind:** behaviour
 - **Level:** browser — focus across a shell change; e2e for the resized app
@@ -53,6 +59,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R, the notice); `e2e/parity/workspace.spec.ts` (R, the resized app; legacy only, `next` gated off)
 
 ### WORK-07 · The tab in front is where stranded focus goes
+
 - **Rule:** The selected tab is registered as the "active tab" focus target, which other features use when the control that had focus is gone.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -63,6 +70,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 ## List and detail
 
 ### WORK-08 · A detail exists for a region in any mode, and for a function, deficit or lesson only in its own mode
+
 - **Rule:** The detail view has something to show when a region is selected (any mode, Tracts included on its own anatomy), or in Functions a function, in Deficits a deficit, in Circuits a lesson's circuit. Tract reference data on another anatomy has no detail. Tracts without its anatomy and reference named is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -71,6 +79,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R; the anatomy ids `bert` and `aomic` are retired but any two ids prove the rule); `src/features/workspace/Workspace.svelte.test.ts` (R, "tract reference data has no detail view")
 
 ### WORK-09 · A new region selection drills in; losing the context returns to the list
+
 - **Rule:** After an update, a region selection that differs from the previous one opens the detail from any mode. The same selection keeps the view the reader chose. When the detail had something to show and no longer does, the list returns. A detail opened before its context arrives waits for it. Tract reference data always shows the list.
 - **Kind:** behaviour
 - **Level:** unit
@@ -79,6 +88,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, the same paths through the component)
 
 ### WORK-10 · Focus follows the view: to Back on a drill-in from the list, back to the opener on return
+
 - **Rule:** A selection made from the list opens the detail and moves focus to Back. A selection made elsewhere (the canvas, a link) opens it and moves no focus. Back from inside the detail returns focus to the control that opened it, else to the list's current item, else to the tab in front. Back with focus outside the detail moves no focus.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -87,6 +97,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, Back and the region link; `next` gated off)
 
 ### WORK-11 · A list that comes back into view shows its current item
+
 - **Rule:** When the detail closes, the list scrolls its current item (the selected tree row, the open function, deficit or circuit) into view. Each list says what its current item is; the first one on screen is used. Back's focus fallback uses the same item.
 - **Kind:** behaviour
 - **Level:** browser — scroll geometry (the registry itself is unit)
@@ -95,6 +106,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R, the registry with stub rows); `src/features/workspace/Workspace.svelte.test.ts` (R, the tree row); function, deficit and circuit rows coming back into view are uncovered here (their own lists register them)
 
 ### WORK-12 · Escape as Back belongs to the caller: the workspace says whether focus is in the detail
+
 - **Rule:** The workspace reports focus as being in the detail only while the detail is shown and focus is inside it; the page keymap uses that to make Escape mean Back.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -105,6 +117,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 ## Location bar
 
 ### WORK-13 · The location reads Mode › Place, and a tree group belongs to Anatomy alone
+
 - **Rule:** The path starts with the mode the detail returns to. In Anatomy it then names the tree group holding the region, if the tree lists it. In another mode it names the place that mode gives (a lesson's circuit, a deficit's group), if any. Tracts has no place.
 - **Kind:** behaviour
 - **Level:** unit
@@ -113,6 +126,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R)
 
 ### WORK-14 · The location bar is a breadcrumb: Back first, then the place, marked as the current location
+
 - **Rule:** The bar is a navigation landmark named "Breadcrumb" (FR "Fil d’Ariane") holding an ordered list. The first item is a Back button named "Back to <mode>" (FR "Retour : <mode>") showing the mode. When there is a place, the second item is a button named "<place>, show in the list" (FR "<place>, afficher dans la liste"), with the same tooltip, and `aria-current="location"` while it is shown.
 - **Kind:** accessibility
 - **Level:** browser — landmark and ARIA; the names are view-model strings
@@ -121,6 +135,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `src/lib/core/workspace.test.ts` (W, only checks `path` is set and the name starts with the label); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
 
 ### WORK-15 · In Anatomy the group crumb returns to the region's own row and focuses it, once
+
 - **Rule:** The group crumb opens the region's place in the tree, returns to the list, scrolls the selected row to the centre and focuses it. Focus moves once, to that row, even when the old opener is still on screen. In another mode the place crumb acts as Back.
 - **Kind:** behaviour
 - **Level:** browser — focus and scroll
@@ -129,6 +144,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R)
 
 ### WORK-16 · The bar holds the circuit stepper and the restore action, and stays on one line at 200 % text
+
 - **Rule:** The circuit stepper (X3) and the restore action (S3) sit to the right of the path. At 200 % text in French, at 1280 and 320 px, the place crumb ends before the stepper starts.
 - **Kind:** behaviour
 - **Level:** browser — layout
@@ -139,6 +155,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 ## Selection strip
 
 ### WORK-17 · The strip leads to the selection only from a list that does not already show it
+
 - **Rule:** The desktop strip shows only in the list view, only when there is a selection label, and only when the list in front does not already show that kind of selection: a region in Anatomy, a landmark in Anatomy or Circuits, a function in Functions, a deficit in Deficits, a lesson in Circuits. An unknown kind is an error. In the phone shell the sheet's grip shows the selection instead (SHEET-19).
 - **Kind:** behaviour
 - **Level:** unit
@@ -147,6 +164,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, through the component, and the sheet shell); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
 
 ### WORK-18 · The strip's name says the side as a word and contains its visible text
+
 - **Rule:** The strip is named "Inspect <label>, <side word>" (FR "Examiner <label>, <côté>"), while it shows the label and the side letter. The same name is used by the phone strip.
 - **Kind:** accessibility
 - **Level:** unit (view-model) — the name is a string; exposure is checked in the browser
@@ -155,6 +173,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, `next` branch; `next` gated off)
 
 ### WORK-19 · The strip opens the detail and Back returns to it; its clear gives stranded focus to the tab in front
+
 - **Rule:** Activating the strip opens the selection's detail (when there is one) and moves focus to Back; Back returns focus to the strip. The clear, shown only for a clearable selection, clears it; once the page has updated, focus that was stranded goes to the selected tab.
 - **Kind:** behaviour
 - **Level:** browser — focus after an update
@@ -165,6 +184,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 ## Notice
 
 ### WORK-20 · The one notice has its text, at most one action and a dismiss, and is not a live region
+
 - **Rule:** A notice shows its text, one optional action ("Reload" or "See through the cortex"; FR "Recharger", "Voir à travers le cortex") and a "Dismiss" icon button (FR "Fermer") with that tooltip. It sits after the tablist and before the panels in both shells. The announcer speaks it, so it has no live role. An unknown action is an error.
 - **Kind:** behaviour
 - **Level:** browser — DOM order and roles; the action label is unit
@@ -173,6 +193,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R)
 
 ### WORK-21 · Dismissing the notice gives focus to the tab in front
+
 - **Rule:** The dismiss clears the notice; focus, which was on the vanished button, goes to the selected tab.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -183,6 +204,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 ## Size, layout and media
 
 ### WORK-22 · Tabs, the strip and Back are 44 px tall; the icon buttons clear 24 px
+
 - **Rule:** Each tab, the strip and Back are at least 44 px tall; "Clear selection" and "Dismiss" are at least 24 × 24 px.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -191,6 +213,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R; Back's 44 px is named in the test title but not measured)
 
 ### WORK-23 · Under forced colours the selected tab is underlined in a system colour
+
 - **Rule:** In forced colours the selected tab carries a solid bottom border and the others do not, so the selection survives the loss of colour.
 - **Kind:** accessibility
 - **Level:** browser — CSS computed style
@@ -199,6 +222,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R)
 
 ### WORK-24 · Large text and text spacing cut nothing off, and only the tab bar scrolls
+
 - **Rule:** With 200 % text (French, an X3 stepper, a notice and the strip) at 1280 and 320 px, and with the WCAG 1.4.12 spacing override, nothing the workspace draws leaves the panel and no text is cut off vertically. At 320 px the tab bar scrolls sideways and the page does not.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -207,6 +231,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R)
 
 ### WORK-25 · On a phone the panel's box gives way to the sheet
+
 - **Rule:** On the desktop `#workspace-panel` is a flex column beside the stage; at phone width it is `display: contents`, so its children become the sheet's own items.
 - **Kind:** behaviour
 - **Level:** browser — CSS cascade across layers
@@ -215,6 +240,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R)
 
 ### WORK-26 · axe finds nothing in the workspace
+
 - **Rule:** The list with a notice and the strip, the detail with its location bar and slots, and the French detail have no axe violation in light and dark, at desktop and 390 px; the same holds with more contrast and reduced motion, and in the assembled app with a region open.
 - **Kind:** accessibility
 - **Level:** browser — axe

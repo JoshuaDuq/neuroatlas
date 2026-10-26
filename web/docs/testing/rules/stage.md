@@ -19,6 +19,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## The overlay layer
 
 ### STAGE-01 · The overlays are passive: unseen by assistive technology, never focused, never a target
+
 - **Rule:** The hints, orientation letters, scale bar and hover chip form one layer over the canvas that is hidden from assistive technology, holds no focusable element and takes no pointer events. Their words are not in the accessibility tree; the canvas carries the instructions.
 - **Kind:** accessibility
 - **Level:** browser: accessibility tree, computed `pointer-events`, Tab order
@@ -27,6 +28,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
 
 ### STAGE-02 · The overlays follow the rectangle the reader can see
+
 - **Rule:** The stage host publishes the visible rectangle (`--vis-*`), the colour keys' band (`--key-*`) and the dock height (`--dock-height`), and marks whether the dock and the scale bar share a line (`data-chrome`) and whether the dock is tall (`data-dock-tall`). The visible rectangle is rewritten when only the host's size changes (deviation g1-viewport-host-size).
 - **Kind:** behaviour
 - **Level:** browser: CSS variables on the real host
@@ -35,6 +37,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R, "writes the visible rectangle…"); `src/lib/state/stage-layout.svelte.test.ts` (R, host-size-only update in the store); the `--vis-bottom` rewrite on the host after a host-only resize is uncovered
 
 ### STAGE-03 · The model's focus ring runs round the visible rectangle
+
 - **Rule:** With keyboard focus on the canvas, a 2 px ring in the stage teal is drawn round the visible rectangle, not under the dock or sheet. In forced-colours mode it is the system Highlight colour.
 - **Kind:** accessibility
 - **Level:** browser: `:focus-visible` and computed `::after` style
@@ -45,6 +48,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Hints
 
 ### STAGE-04 · The navigation hint names the gestures of the reader's pointer
+
 - **Rule:** The navigation hint tells a mouse user to drag, scroll and click, and a touch user (coarse pointer) to drag, pinch and tap. Over the tract reference alone, which has no regions to click, the last part is left out. The keyboard hint names the arrow and zoom keys.
 - **Kind:** behaviour
 - **Level:** unit (view-model): the wording is chosen from language, pointer and tract reference
@@ -53,6 +57,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; could move down); `e2e/parity/stage-overlay.spec.ts` (R, mouse and touch wording; `next` gated off)
 
 ### STAGE-05 · The keyboard hint shows only while the model has keyboard focus
+
 - **Rule:** The keyboard hint is invisible until the canvas has keyboard focus; then it shows and the navigation hint fades out.
 - **Kind:** accessibility
 - **Level:** browser: `:focus-visible` and computed opacity
@@ -61,6 +66,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
 
 ### STAGE-06 · The navigation hint retires for good at the reader's first gesture on the model
+
 - **Rule:** A pointer press or wheel turn on the canvas, a camera key on the focused canvas, a preset, a turn button, or selecting a region other than the one the stage opened on retires the navigation hint, and it stays retired on later visits. Gestures elsewhere do not retire it.
 - **Kind:** behaviour
 - **Level:** browser: events dispatched to the real canvas (the retire-and-remember logic itself is STORE-35, `state.md`)
@@ -69,6 +75,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `src/features/stage/Dock.svelte.test.ts` (R, preset and turn button); `src/lib/state/stage-layout.svelte.test.ts` (R, storage); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
 
 ### STAGE-07 · A hint is drawn only where one line fits clear of the top letter, whatever the text size
+
 - **Rule:** A hint that would reach the top orientation letter (or a colour key in the top band) is not drawn. Its width is measured as drawn, so larger text or text spacing applied after load is respected (WCAG 1.4.4, 1.4.12).
 - **Kind:** accessibility
 - **Level:** browser: layout measurement
@@ -77,6 +84,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); room arithmetic in `src/lib/state/stage-layout.svelte.test.ts` (R)
 
 ### STAGE-08 · The hints follow the reader's contrast setting
+
 - **Rule:** Under increased contrast the hints take the same ink as the orientation letters.
 - **Kind:** accessibility
 - **Level:** browser: computed style under `prefers-contrast: more`
@@ -87,6 +95,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Orientation letters and scale bar
 
 ### STAGE-09 · Four orientation letters frame the picture once the anatomy is on screen
+
 - **Rule:** One letter sits at each edge of the framing rectangle, as the camera reports it; French writes D and G for R and L. The letters are hidden until the anatomy is ready (or switching), and a language change re-words the letters already held without reading the camera again.
 - **Kind:** behaviour
 - **Level:** browser: the letters drawn from camera events (which letter faces which edge per view is RENDER-23)
@@ -95,6 +104,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the "letter the camera reports" case is W: it only checks that left and right views give four distinct letters, so the fake answers it); `src/features/snapshot/snapshot.svelte.test.ts` (R, letters equal `engine.camera.view.edges`); `e2e/parity/stage-overlay.spec.ts` (W for the letters, R for the French mapping; `next` gated off)
 
 ### STAGE-10 · The scale bar shows its rule in pixels and its length in the reader's notation
+
 - **Rule:** The bar's rule is as wide as the camera says, in whole pixels, and its label is the length to one decimal, trimmed, with "mm". It is hidden while the camera gives no scale or the anatomy is not on screen, and then takes no room.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the label and visibility; the rule width needs the DOM
@@ -103,6 +113,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R for width and visibility; W for the label, whose expectation is re-derived with `withUnit(decimal(…))`; only the French `toContain('2,5')` is fixed); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
 
 ### STAGE-11 · The dock and the scale bar share the bottom line, or the bar moves up
+
 - **Rule:** The scale bar sits beside the dock while both and the margins fit the visible width. Otherwise it rises above the dock, and a bar that would reach the middle rises one line more. The bar's width, rule and label as drawn, decides, so larger text refits it.
 - **Kind:** behaviour
 - **Level:** browser: measured widths (thresholds are STORE-25 and STORE-26, `state.md`)
@@ -111,6 +122,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `src/lib/state/stage-layout.svelte.test.ts` (R, wide/tight/stacked thresholds)
 
 ### STAGE-12 · Under reduced motion the markings only fade
+
 - **Rule:** With reduced motion the orientation letters and the scale bar keep only an opacity transition.
 - **Kind:** accessibility
 - **Level:** browser: computed style under `prefers-reduced-motion`
@@ -121,6 +133,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Hover chip
 
 ### STAGE-13 · The hover chip names the region, its division or network, the functions and the side
+
 - **Rule:** Over a region the model lets the reader select, the chip names it by the catalog's label (else its own label), then, joined by " · ": the functional division of the level on show while the surface is coloured by divisions (glass belongs to a section), the network while the surface is coloured by networks (every CAB-NP area; a Yeo 7 region only when one network holds all of it), the functions the area reaches while functions are painted (the overview's domains, the one domain shown, or a searched term only on the areas it carries), and the capitalised side. A region that cannot be selected has no chip. A function painted with no published domains is an error.
 - **Kind:** behaviour
 - **Level:** unit
@@ -129,6 +142,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/hover-text.test.ts` (R); `src/features/stage/StageOverlay.svelte.test.ts` (R, plain and French chip); `e2e/parity/stage-overlay.spec.ts` (R, ends with " · Left|Right|Midline"; `next` gated off)
 
 ### STAGE-14 · The chip sits beside the pointer and inside the stage
+
 - **Rule:** The chip's top-left corner is 14 px right of and below the pointer, clamped to stay 8 px inside the stage. A chip larger than the stage keeps its top and left in view. It stays inside the stage when the text grows (WCAG 1.4.4, 1.4.12).
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the clamp; browser for the text-size cases
@@ -137,6 +151,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off); the legacy fixed cases (oversized chip) are uncovered as a unit test
 
 ### STAGE-15 · The chip goes when the pointer leaves or the camera moves, and follows the words under a still pointer
+
 - **Rule:** The chip hides when no region is under the pointer and whenever the camera moves; the next pointer move brings it back. A change of language, colouring or selection under a still pointer re-words it.
 - **Kind:** behaviour
 - **Level:** unit (view-model): today browser, over engine events
@@ -145,6 +160,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R; the "rewrites its text only when the words change" case is I: a MutationObserver pins a render optimisation); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
 
 ### STAGE-16 · Escape dismisses the chip without moving focus
+
 - **Rule:** Escape hides a showing chip and leaves focus where it is. It stays hidden over the same region and returns over another region, or after the pointer leaves and comes back. The keypress is marked handled so the page's Escape cascade waits for the next one. An Escape already handled, one with no chip showing, and one inside an open modal dialog are left alone.
 - **Kind:** accessibility
 - **Level:** browser: keyboard dispatch and dialogs
@@ -153,6 +169,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R); `e2e/parity/stage-overlay.spec.ts` (R; next-only expectation; `next` gated off)
 
 ### STAGE-17 · The overlays pass axe
+
 - **Rule:** With the dock, a hover chip and a scale bar showing, axe finds no violation in English or French.
 - **Kind:** accessibility
 - **Level:** browser: axe
@@ -163,6 +180,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## The dock
 
 ### STAGE-18 · The dock is one labelled toolbar of three tools
+
 - **Rule:** While View, Section and Display are shown the dock row is a toolbar named "3D viewer tools" with one Tab stop. The arrow keys and Home/End move between the tools, wrapping. Tab leaves the toolbar, and Shift+Tab back into it lands on the focused tool, else the first.
 - **Kind:** accessibility
 - **Level:** browser: focus and keyboard
@@ -171,6 +189,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-19 · Over the tract reference only View is left, and it is not a toolbar
+
 - **Rule:** The tract reference hides Section and Display. The lone View button is an ordinary Tab stop: no toolbar role, no name, arrows do nothing. Showing the anatomy again restores the toolbar.
 - **Kind:** accessibility
 - **Level:** browser: roles and focus
@@ -179,6 +198,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-20 · Each tool opens a named, non-modal popover, one at a time
+
 - **Rule:** A tool opens its popover as a non-modal dialog named by its caption. Opening one closes any other. Focus lands on the pressed choice that is shown and enabled, else the first control. Escape closes it, is marked handled, and returns focus to the tool. While open, the tool is the Tab stop: Shift+Tab from the first control returns to it with the popover still open; Tab from the last control leaves the dock and closes it.
 - **Kind:** behaviour
 - **Level:** browser: focus and keyboard (U5's popover mechanics are in `ui-kit.md`)
@@ -187,6 +207,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-21 · A popover opened from the keyboard appears at once; from a pointer it grows from the dock
+
 - **Rule:** Opening or closing a popover by Enter or Space, or one replacing another, has no animation; a first opening by pointer grows from the dock's corner.
 - **Kind:** behaviour
 - **Level:** browser: CSS animation state
@@ -195,6 +216,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (I: asserts the `data-instant` attribute, not that no animation runs)
 
 ### STAGE-22 · A popover opens above the whole dock on its start edge, inside the visible stage
+
 - **Rule:** Whichever tool opened it, the popover opens upward from the dock's start edge, slides left to stay inside the visible stage, never sits under a side sheet, and never gets a negative size. On a phone it fills the stage between the gutters and stops a third of the stage short of the top; past that it scrolls, and a focused control scrolls into view.
 - **Kind:** behaviour
 - **Level:** unit (placement numbers); browser for the drawn popover
@@ -205,6 +227,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## The View popover
 
 ### STAGE-23 · The View tool names the preset the camera holds
+
 - **Rule:** While the camera sits on a named view the View tool reads that view's name and is named "Anatomical view: <view>"; once the camera is moved off it, the tool reads "View" and is named "Anatomical view". Every name the tool shows is inside its accessible name (WCAG 2.5.3), and only the current name is exposed.
 - **Kind:** accessibility
 - **Level:** unit (view-model) for the name; browser for which name is visible
@@ -213,6 +236,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-24 · The View tool keeps one width whatever it names
+
 - **Rule:** All names sit in one grid cell, so a change of view never moves the other tools.
 - **Kind:** behaviour
 - **Level:** browser: layout
@@ -221,6 +245,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-25 · A preset is pressed only while the camera holds it
+
 - **Rule:** Of the seven presets (Oblique, Left, Right, Anterior, Posterior, Superior, Inferior), the one the camera holds reads as pressed; a drag, a camera key or a turn button moves the camera off it and none is pressed. A view held before the dock mounted is pressed at once.
 - **Kind:** behaviour
 - **Level:** unit (view-model): the pressed state follows `camera.viewHeld` and the session view
@@ -229,6 +254,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`); camera-key release is FACADE-21
 
 ### STAGE-26 · Pressing a preset frames it, closes the popover and returns focus to the View tool
+
 - **Rule:** A preset, by Enter or pointer, asks for that view, closes the popover, puts focus on the View tool and retires the navigation hint.
 - **Kind:** behaviour
 - **Level:** browser: focus
@@ -237,6 +263,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R; the command is a mock, which is the dock-to-controller contract); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-27 · Four turn buttons orbit the model one step without dragging
+
 - **Rule:** The View popover has a group "Turn the model" of four buttons between the presets and Reset view. Each press turns the camera one keyboard-arrow step in that direction, leaves the held preset and retires the hint; the popover stays open and focus stays on the button so it can be pressed again. Nothing is announced.
 - **Kind:** accessibility
 - **Level:** browser: focus stays (the step mapping is RENDER-21)
@@ -245,6 +272,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; the case returns early on legacy and `next` skips, so it runs nowhere today)
 
 ### STAGE-28 · Reset view resets through the controller and returns focus to the View tool
+
 - **Rule:** Reset view, at the foot of the View popover, calls the controller's reset once, closes the popover and gives focus to the View tool.
 - **Kind:** behaviour
 - **Level:** browser: focus
@@ -255,6 +283,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## The Display popover
 
 ### STAGE-29 · The hemisphere is a radio group; the side already shown does nothing
+
 - **Rule:** "Hemisphere" offers Both, Left and Right as a radio group: the arrows move and choose. Choosing the side already shown changes nothing, so the reader's orbit is kept.
 - **Kind:** behaviour
 - **Level:** browser: keyboard (decision 6 on #4)
@@ -263,6 +292,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-30 · The display checkboxes apply at once and show the display they are given
+
 - **Rule:** Show cortex, Show internal anatomy and Show spinal cord apply on change and the popover stays open. Each shows the current display. The spinal cord choice is absent, not disabled, when the subject publishes no cord.
 - **Kind:** behaviour
 - **Level:** browser: native checkbox events (which boxes exist is unit, view-model)
@@ -271,6 +301,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R); `e2e/parity/dock.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-31 · The cortex opacity slider speaks a percentage, steps by 5 % and goes with the cortex
+
 - **Rule:** The opacity slider's value is spoken as a percentage in the reader's notation; an arrow step is 5 %. While the cortex is hidden the slider is removed, not greyed.
 - **Kind:** behaviour
 - **Level:** browser: native range step (the percentage text is I18N formatting)
@@ -281,6 +312,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Tools that go away
 
 ### STAGE-32 · A popover whose tool or dock goes closes, and focus is not lost
+
 - **Rule:** When the tract reference hides Section and Display, their open popover closes and focus inside it, or on the hidden tool, moves to View. An open View popover is left alone. While the dock is not drawn (loading, error, lost context) or the raised phone sheet covers it, any popover closes and nothing in the dock keeps focus.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -291,6 +323,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Size, reflow and media
 
 ### STAGE-33 · Dock targets are 24 px, 44 px on a coarse pointer, at the legacy sizes
+
 - **Rule:** Every tool, popover button, radio and tick-box label is at least 24 × 24 px, and 44 × 44 px on a coarse pointer. At 100 % text the presets are 32 px and the hemisphere radios 28 px tall; under the phone query every choice is 44 px; on a coarse pointer the tick box is 20 × 20 px with an 11 × 6 px tick.
 - **Kind:** accessibility
 - **Level:** browser: layout (WCAG 2.5.8)
@@ -299,6 +332,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-34 · At 200 % text and with text spacing nothing in the dock is clipped
+
 - **Rule:** With 200 % text and the WCAG 1.4.12 spacing override no tool, preset, button, label or paragraph is clipped and no popover scrolls sideways, in either language. On a phone at 200 % the tools wrap inside the dock, which stays inside the stage.
 - **Kind:** accessibility
 - **Level:** browser: layout (WCAG 1.4.4, 1.4.10, 1.4.12)
@@ -307,6 +341,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-35 · The dock answers forced colours, increased contrast and reduced motion
+
 - **Rule:** In forced colours the open tool gets an outline of its own; with increased contrast Reset view gets an edge; with reduced motion the tool chevron turns at once.
 - **Kind:** accessibility
 - **Level:** browser: computed style under media emulation
@@ -315,6 +350,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/Dock.svelte.test.ts` (R)
 
 ### STAGE-36 · The dock passes axe with each popover open
+
 - **Rule:** axe finds no violation with the dock alone and with each of the three popovers open, in English and French.
 - **Kind:** accessibility
 - **Level:** browser: axe
@@ -325,6 +361,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Colour keys
 
 ### STAGE-37 · The stage shows the key of what is painted, titled as the masthead names it
+
 - **Rule:** While the anatomy is ready (or switching): a network colouring keys its networks (Yeo 7 or CAB-NP); the functional colouring keys the divisions of the chosen level, numbered where they have a number; a paint's key replaces the colouring's, which it covers; the direction key, with its three directions, follows the shown streamlines and comes after the others. A colouring with no key, or with no published data, shows none, and nothing shows while loading, after an error or a lost context.
 - **Kind:** behaviour
 - **Level:** unit
@@ -333,6 +370,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/stage-keys.test.ts` (R); `src/features/stage/StageKeys.svelte.test.ts` (R); `e2e/parity/stage-keys.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-38 · A key is a named disclosure over a list with a swatch per row
+
 - **Rule:** Each plate's title row is a toggle (disclosure) controlling the plate's body; a plain key's rows are a list named by the title, which keeps its list role (Safari/VoiceOver); each row has a swatch in its colour. The direction key's swatches are the streamline colours.
 - **Kind:** accessibility
 - **Level:** browser: accessibility tree and computed colours
@@ -341,6 +379,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R); `e2e/parity/stage-keys.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-39 · The reader folds a key, and that fold is kept for the visit
+
 - **Rule:** The title toggle folds the rows away and opens them again by click, Enter or Space, keeping focus. The reader's fold of a map is remembered per map for the visit, outranks the crowd default (STAGE-40) and survives a language change.
 - **Kind:** behaviour
 - **Level:** browser: focus; the per-map memory is unit (view-model)
@@ -349,6 +388,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R; "model() reports each plate's fold…" is I, pinning the shape G6 reads); `e2e/parity/stage-keys.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-40 · A long or crowded key starts folded to its title
+
 - **Rule:** A key of more than 8 rows starts folded where the stage is narrower than 1000 px or its rows would not fit above the dock. On a phone any key starts folded where it would take more than half that room. Rows count 24 px, or 44 px for toggle rows on a phone or coarse pointer; a phone runs two rows to a line, except a deficit's findings and the direction key; the head takes 42 px; the room is the stage height less three gutters and the dock. Before the stage has a size nothing folds, and a key already drawn is not refolded by a resize.
 - **Kind:** behaviour
 - **Level:** unit
@@ -357,6 +397,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/stage-keys.test.ts` (R); `src/features/stage/StageKeys.svelte.test.ts` (R; the three crowd-fold cases duplicate the unit cases); `e2e/parity/stage-keys.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-41 · The functional level is a radio group in the title row
+
 - **Rule:** The functional key's level, Named or Sections, is a radio group "Functional division level": the checked radio follows the state, the arrows move and choose, a click on the level shown chooses nothing, and the rows follow the level.
 - **Kind:** behaviour
 - **Level:** browser: keyboard (decision 6 on #4)
@@ -365,6 +406,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R); `e2e/parity/stage-keys.spec.ts` (R; the arrow case is next-only and runs nowhere today; legacy only, skips on `next`)
 
 ### STAGE-42 · A paint key's rows are toggles that show one row alone
+
 - **Rule:** A pickable paint key with more than one row is a toolbar named by its title, of `aria-pressed` toggles with one Tab stop on the pressed row (else the first). Arrows, Home and End move and wrap; Enter picks; choosing the pressed row again clears the pick. A z scale, or a key of one row, is a plain list with no buttons.
 - **Kind:** behaviour
 - **Level:** browser: keyboard
@@ -373,6 +415,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R); `e2e/parity/stage-keys.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-43 · Focus never falls to the page when a key changes under it
+
 - **Rule:** A row stays the same element as its state changes, so focus stays on it. If the focused row goes, or a crowd fold hides it, focus moves to its plate's toggle; if the plate goes, to the stage host. A row is its finding: focus never passes to a neighbour. A pick that places focus elsewhere itself (opening a profile) is not preceded by a hop to the toggle.
 - **Kind:** accessibility
 - **Level:** browser: focus
@@ -381,6 +424,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R)
 
 ### STAGE-44 · An absent colour is outlined and said; a pick mutes the others
+
 - **Rule:** A row whose colour no drawn region carries has an outlined, unfilled swatch and its name ends with "Not shown in this view", after the visible label. In a picked key the picked row is bold and the rows stepped back from are muted.
 - **Kind:** accessibility
 - **Level:** browser: computed style and accessible name (WCAG 1.4.1, 2.5.3)
@@ -389,6 +433,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R)
 
 ### STAGE-45 · A paint key's note shows only where it does not crowd the rows
+
 - **Rule:** The paint key's note sits under its rows while the key is open on a stage at least 600 px wide. It is dropped when the key is folded, on a narrower stage, or where the stage leaves the rows too little height.
 - **Kind:** behaviour
 - **Level:** unit (view-model) for the fold and width rule; browser for the height rule
@@ -397,6 +442,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R)
 
 ### STAGE-46 · The keys take a band off the framing rectangle, the one that leaves the larger square
+
 - **Rule:** Shown keys take either the top strip down to their foot or a right column, whichever leaves the anatomy the larger square, with a tie going to the strip, in whole pixels. No keys or no stage size, no band. A change of the band reframes the camera once.
 - **Kind:** behaviour
 - **Level:** unit (`keyBand`); browser for the measured keys
@@ -405,6 +451,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/stage-keys.test.ts` (R); `src/features/stage/StageKeys.svelte.test.ts` (R; "the fitting runs on every framing without forcing layout" and "the fitter is let go with the keys" are I: layout-read and `setKeys` spies); `e2e/parity/stage-keys.spec.ts` (R; legacy only, skips on `next`)
 
 ### STAGE-47 · Key targets are 24 px, the level radios keep the spacing exception, touch rows are 44 px
+
 - **Rule:** On a desktop the title toggle and the paint rows are at least 24 px tall; the two 20 px level radios are allowed because a 24 px circle on each centre meets no other target. On a coarse pointer the level radios and paint rows are 44 px; on a phone the title row is 44 px, a deficit's findings run one to a line and networks two.
 - **Kind:** accessibility
 - **Level:** browser: layout (WCAG 2.5.8)
@@ -413,6 +460,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/StageKeys.svelte.test.ts` (R); `e2e/parity/stage-keys.spec.ts` (R, desktop and phone title row; legacy only, skips on `next`)
 
 ### STAGE-48 · Keys reflow, ring their focus in teal and keep their colours in forced colours
+
 - **Rule:** At 200 % text with the 1.4.12 spacing no key row is clipped and the plate does not spill. Keyboard focus is a ring of at least 2 px in the stage teal, inside the plate. In forced colours every swatch keeps its own colour, an absent one stays outlined, and the plate takes a system edge. axe finds nothing.
 - **Kind:** accessibility
 - **Level:** browser: layout, computed style, axe
@@ -423,6 +471,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 ## Full screen
 
 ### STAGE-49 · Only the stage goes full screen, with a visible way out
+
 - **Rule:** Full screen shows the stage host alone. While it is full screen the stage shows an "Exit full screen" control, which takes focus as the stage enters, and every full-screen control's label follows `fullscreenchange`: "Exit full screen" while full screen, "Full screen" otherwise. The exit control is never under the stage's own chrome.
 - **Kind:** accessibility
 - **Level:** browser: the Fullscreen API and focus; e2e for the real masthead and stage together
@@ -431,6 +480,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/fullscreen.svelte.test.ts` (R; a hand-built opener and host, not the real Masthead and Stage); `e2e/parity/snapshot.spec.ts` (R; the exit part is next-only and `next` skips, so it runs nowhere today). The exit control is not mounted in the real stage yet (I2): its presence inside `#viewport` is uncovered below e2e.
 
 ### STAGE-50 · Leaving full screen gives focus back to the control that asked
+
 - **Rule:** On leaving, focus that was on the exit control or nowhere returns to the control that asked for full screen; if that control is gone or disabled, to the stage host. Focus on a stage tool that is still shown stays there. The exit control hides.
 - **Kind:** accessibility
 - **Level:** browser: focus around the Fullscreen API
@@ -439,6 +489,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Covered by:** `src/features/stage/fullscreen.svelte.test.ts` (R); `e2e/parity/snapshot.spec.ts` (R; next-only, runs nowhere today)
 
 ### STAGE-51 · A refused full screen is said, and nothing changes
+
 - **Rule:** When the browser refuses full screen, the reader gets a notice in their language and the labels stay as they were; the error is logged.
 - **Kind:** behaviour
 - **Level:** browser: a real refusal (the notice text is unit)

@@ -7,6 +7,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## The list
 
 ### CIRC-01 · The list offers every guided circuit with its landmark count, and the scope sums the landmarks
+
 - **Rule:** The list shows each circuit as a row with its name and its number of landmarks; the count's noun is read, not shown. Under the list a note counts the circuits and their landmarks, the landmarks counted as the rows count them (the sum of every circuit's steps).
 - **Kind:** data
 - **Level:** unit (view-model: `landmarkTotal`)
@@ -15,6 +16,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits-view.test.ts` (R); `src/features/circuits/circuits.svelte.test.ts` (R; the totals re-derived from the catalogue); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-02 · The list is a labelled group of a real list, and a row's name contains what it shows
+
 - **Rule:** The list is a `role="group"` named "Guided learning" over a `ul` of `li` buttons. The count column and the chevron are hidden from assistive technology. The visible words of a row are contained, in order, in its accessible name.
 - **Kind:** accessibility
 - **Level:** browser — DOM semantics and accessible names
@@ -23,6 +25,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-03 · The list is shown only on the Circuits tab
+
 - **Rule:** The list is hidden while another tab is in front.
 - **Kind:** behaviour
 - **Level:** browser — visibility
@@ -31,6 +34,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-04 · The arrow keys walk the rows without wrapping; every row stays a Tab stop
+
 - **Rule:** ArrowDown and ArrowUp move to the next or previous row and stop at the ends. Keys with Alt, Ctrl, Meta or Shift are left to the browser. Every row is a Tab stop. The `/` key (KEY-09) puts focus on the first circuit.
 - **Kind:** behaviour
 - **Level:** browser — key dispatch and focus
@@ -41,6 +45,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## Opening a lesson
 
 ### CIRC-05 · Opening a circuit marks its row current and puts its first landmark's title in focus
+
 - **Rule:** Pressing a circuit opens its lesson (LESSON-01). The row becomes the one `aria-current="true"` row (it opens a lesson, it does not toggle, so no `aria-pressed`) and the workspace's current item. The profile shows the circuit's name as a visually hidden `h2`, the landmark's name as an `h3` that takes focus, its role and explanation, and the stepper shows "Landmark 1 of N".
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -49,6 +54,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; the hash part is `links.md`; skips on `next`)
 
 ### CIRC-06 · A landmark on its own region names its side and group; elsewhere the profile offers the way back
+
 - **Rule:** While the selected region is the current landmark's, the profile names its hemisphere and its group under the title. Once the reader selects another region, the side and group leave and the profile says "You are exploring another region." with a "Return to landmark" button, which opens the current step again (not the first), selects its region and puts focus on the title.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `landmarkSelected`) for the condition; browser for the focus
@@ -59,6 +65,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## The stepper
 
 ### CIRC-07 · The stepper is Previous, the place and Next; an end control leaves rather than greys out
+
 - **Rule:** The stepper is a group named "Landmarks" holding "Previous landmark", the place in the lesson ("n of N", read as "Landmark n of N") and "Next landmark", each control with the same tooltip. At an end the control that has nowhere to go is hidden. A fixed three-column grid keeps the place still.
 - **Kind:** behaviour
 - **Level:** browser — names and `hidden` (the targets are `stepperTargets`, unit in `core-panels.md`)
@@ -67,6 +74,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-08 · Next and Previous keep focus, and the view follows the landmark
+
 - **Rule:** After Next or Previous the pressed control keeps focus so it can be pressed again; when it has left (an end), focus goes to the other one. The profile is back at its top and the landmark's region is selected.
 - **Kind:** behaviour
 - **Level:** browser — focus and scroll
@@ -75,6 +83,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-09 · A busy stepper control has no hover fill
+
 - **Rule:** While a run is in flight, hovering a stepper control does not draw its hover background.
 - **Kind:** accessibility
 - **Level:** browser — computed CSS
@@ -85,6 +94,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## The landmark sequence and the notes
 
 ### CIRC-10 · The sequence lists every landmark in order and marks the current and the seen ones
+
 - **Rule:** Below the landmark's data, a "Landmarks" heading labels an ordered list (`role="list"`) with one button per landmark: its number and name. The current landmark is `aria-current="step"`; a landmark already seen carries a visually hidden ", seen"; seen, current and ahead differ in shape as well as in ink.
 - **Kind:** accessibility
 - **Level:** browser — roles and accessible names (the progress states are `stepProgress`, unit in `core-panels.md`)
@@ -93,6 +103,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-11 · A landmark row opens that landmark with its title in focus; the arrows walk the sequence
+
 - **Rule:** Pressing a landmark in the sequence opens that step (LESSON-05) and puts focus on the title. ArrowDown and ArrowUp walk the sequence's buttons only and stop at its ends.
 - **Kind:** behaviour
 - **Level:** browser — focus and key dispatch
@@ -101,6 +112,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-12 · Four notes follow the sequence, with one command to the circuit's deficit
+
 - **Rule:** After the sequence come four disclosures: "Connections and scope" (the circuit's summary, route, scope and the schematic caveat), "What this atlas shows" (the step's mapping and the MRI note), "Clinical context" (the circuit's clinical text, "Open deficit evidence" and the reference-anatomy note) and "Sources". The only command among them is "Open deficit evidence", which opens the circuit's deficit through the Deficits tab's entry point.
 - **Kind:** behaviour
 - **Level:** browser — the press (the content is catalogue data)
@@ -109,6 +121,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R: the Deficits tab shown; skips on `next`)
 
 ### CIRC-13 · Sources link out in a new tab, and say so, with the date the content was checked
+
 - **Rule:** Each of the circuit's references is a link to its URL in a new tab with `rel="noreferrer"`, followed by its citation; the note ends with "Content checked: <date>". The link says in words that it opens a new tab (decision 17's shared text, `link.newTab`).
 - **Kind:** accessibility
 - **Level:** browser — link attributes
@@ -117,6 +130,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R: links and date); `e2e/parity/circuits.spec.ts` (R; skips on `next`). The spoken new-tab cue is not implemented yet and is uncovered.
 
 ### CIRC-14 · A note the reader opened stays open as the lesson moves on
+
 - **Rule:** The notes' open state is the reader's: it is kept while the lesson moves between landmarks and starts closed again with the next lesson.
 - **Kind:** behaviour
 - **Level:** browser — `<details>` state across renders
@@ -127,6 +141,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## Related circuits
 
 ### CIRC-15 · Outside the Circuits tab, a landmark's region lists the lessons that pass through it
+
 - **Rule:** Outside the Circuits tab, when the selected region is, holds or lies in a landmark, the region inspector lists "In guided circuits": one row per landmark, in catalogue order, each with the circuit's name and the landmark's place. A row is named by its visible words followed by a hidden ", Landmark". A region in no circuit, or the Circuits tab in front, shows no list. The heading labels the list and it is not a landmark.
 - **Kind:** behaviour
 - **Level:** unit (view-model: `relatedLandmarks`) for the rows; browser for names
@@ -135,6 +150,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits-view.test.ts` (R); `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-16 · A related row opens that lesson at its own landmark, in the Circuits tab
+
 - **Rule:** Pressing a related row opens the lesson on that landmark in the Circuits tab (LESSON-04), not on its first one, and puts focus on the title.
 - **Kind:** behaviour
 - **Level:** browser — focus
@@ -145,6 +161,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## Runs in flight
 
 ### CIRC-17 · While a run is in flight every control stays focusable, says so and refuses
+
 - **Rule:** While a landmark or the lesson's MRI opens, every control of the tab (rows, stepper, sequence, Return, the deficit command, related rows) carries `aria-disabled="true"`, stays focusable and is not natively disabled; a second run is refused. Focus stays on the control pressed. The profile and the notes are `aria-busy`. The status line says "Opening landmark…" and empties when the run ends.
 - **Kind:** accessibility
 - **Level:** browser — focus; the refusal is unit (the busy runner)
@@ -153,6 +170,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-18 · An opening overtaken by a newer scene command ends quietly
+
 - **Rule:** If a newer scene command overtakes the opening (LESSON-03), the tab neither starts a lesson nor moves focus, does not throw, and is no longer busy.
 - **Kind:** behaviour
 - **Level:** unit (the explorer)
@@ -161,6 +179,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R; could move down)
 
 ### CIRC-19 · A failure is said on the status line, in view, and focus stays where it was
+
 - **Rule:** When a run fails, the status line says what could not be done in the reader's words and in the error style, is scrolled into view on the Circuits tab, the error is logged and passed to the reload offer (CTRL-36), and focus stays on the control pressed. The lesson stays on its step. The next run clears the failure.
 - **Kind:** behaviour
 - **Level:** unit (the explorer's `status` and `failed`) for the wording; browser for the scroll and focus
@@ -169,6 +188,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-20 · The status line is in the page before it speaks, and a language switch does not repeat it
+
 - **Rule:** The `role="status"` line is always mounted on the tab, empty and taking no room at rest; only its text changes. A language switch replaces the element, so the sentence in force is not announced again.
 - **Kind:** accessibility
 - **Level:** browser — element identity and layout
@@ -177,6 +197,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-21 · A landmark opened on the region already selected is announced
+
 - **Rule:** After a landmark opens, if the selected region is the one selected before (Return, or the current row of the sequence), the page announcer says the landmark's place and name. When the region changes, the selection sentence is enough and the tab says nothing more.
 - **Kind:** accessibility
 - **Level:** unit (the explorer's `announceStep`) for the sentence; browser for the announcer
@@ -185,6 +206,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-22 · The lesson's Linked MRI runs under the tab's busy run
+
 - **Rule:** The tab's `openMri` is the controller's `panels.openMri` (decision 9): the landmark's Linked MRI opens the lesson's prepared plane (LESSON-09) with the tab's progress and failure text; while it runs the controls refuse and a second MRI run is refused.
 - **Kind:** behaviour
 - **Level:** unit (the explorer) for the refusal and wording; browser for the status line
@@ -195,6 +217,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 ## Language and accessibility checks
 
 ### CIRC-23 · The lesson profile and the related list are not landmarks
+
 - **Rule:** The profile and the related section are plain blocks under their headings; the panel's `<aside>` is the one landmark.
 - **Kind:** accessibility
 - **Level:** browser — roles
@@ -203,6 +226,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** uncovered (only indirectly by axe's landmark rules in CIRC-24)
 
 ### CIRC-24 · axe finds nothing in the list, a lesson, another region, a run or a failure
+
 - **Rule:** The list, an open lesson with Sources open, the reader on another region, a run in flight and a failure have no axe violations, in both languages and themes and at 1280 and 390 px, and with more contrast.
 - **Kind:** accessibility
 - **Level:** browser — axe
@@ -211,6 +235,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R; the full theme × width matrix in each of 5 states × 2 languages, see the audit's slow tests); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
 
 ### CIRC-25 · In forced colours the open circuit, the progress shapes and the focus ring stay visible
+
 - **Rule:** With forced colours, the open circuit's row has a solid outline, the step numbers keep their colours, seen and ahead differ by fill, and a control reached by keyboard has a solid focus ring.
 - **Kind:** accessibility
 - **Level:** browser — computed CSS
@@ -219,6 +244,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-26 · With a coarse pointer every target is 44 px
+
 - **Rule:** With a coarse pointer, circuit rows, related rows, sequence rows, note summaries, the deficit command, Return and the stepper controls are at least 44 px tall, and the stepper controls at least 44 px wide.
 - **Kind:** accessibility
 - **Level:** browser — layout
@@ -227,6 +253,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R)
 
 ### CIRC-27 · At 200 % text with WCAG 1.4.12 spacing nothing is clipped or overflows
+
 - **Rule:** At 200 % text with the 1.4.12 spacing in a 320 px viewport, in French on the longest lesson with its notes open, no visible button, summary, heading, paragraph or description overflows sideways, no control clips its text, the page does not scroll sideways, and the stepper's place stays inside its grid. At a phone width with a lesson open the page does not scroll sideways.
 - **Kind:** accessibility
 - **Level:** browser — layout
