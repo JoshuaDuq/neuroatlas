@@ -1,7 +1,7 @@
 <!--
   Restore previous view (clinical.js:230-236, 328): the one trailing action of the location bar, for
   H5's `trailing` snippet. Shown while a deficit is open and the scene from before its excursion is
-  held. While something runs it stays and says so with aria-disabled, so the focus the click put
+  held. While any run is in flight it stays, draws as unavailable and says so with aria-disabled, so the focus the click put
   here is not dropped (deviation x2-aria-disabled-while-opening).
 -->
 <script lang="ts">
@@ -9,21 +9,12 @@
   import type { View } from '../../lib/state/view.svelte.ts';
   import type { DeficitsExplorer } from './explorer.svelte.ts';
 
-  let {
-    explorer,
-    view,
-    restorable,
-  }: {
-    explorer: DeficitsExplorer;
-    view: View;
-    /** Whether the scene from before the first deficit can be put back. */
-    restorable: boolean;
-  } = $props();
+  let { explorer, view }: { explorer: DeficitsExplorer; view: View } = $props();
 
   const deficit = $derived(view.explorer === 'deficits' ? view.selectedDeficit : null);
 </script>
 
-{#if deficit && restorable}
+{#if deficit && explorer.restorable}
   <button
     type="button"
     class="clinical-restore"
@@ -35,12 +26,24 @@
 {/if}
 
 <style>
+  @layer features {
+    /* While a run is in flight the control stays but reads as unavailable, as the region buttons do. */
+    .clinical-restore[aria-disabled='true'] {
+      color: var(--text-tertiary);
+      cursor: default;
+      text-decoration: none;
+    }
+  }
   @layer a11y {
     /* a11y.css:87 */
     @media (forced-colors: active) {
       .clinical-restore {
         color: LinkText;
         text-decoration: underline;
+      }
+      .clinical-restore[aria-disabled='true'] {
+        color: GrayText;
+        text-decoration: none;
       }
     }
   }

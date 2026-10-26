@@ -13,13 +13,12 @@
   let { explorer, view }: { explorer: DeficitsExplorer; view: View } = $props();
 
   const clinical = $derived(explorer.deps.clinical);
-  const involved = $derived(explorer.deps.involved);
   const lang = $derived(view.lang);
   const deficits = $derived(
     view.selectedRegion
       ? [
           ...new Set(
-            [...involved(view.selectedRegion.id)].flatMap((id) =>
+            [...explorer.involved(view.selectedRegion.id)].flatMap((id) =>
               clinical.forRegion(id).map((association) => association.deficit),
             ),
           ),

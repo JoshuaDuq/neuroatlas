@@ -31,7 +31,7 @@
   const anatomy = $derived(explorer.deps.anatomy);
   const text = $derived(t(lang, 'clinical'));
   const found = $derived(clinical.forDeficit(deficit.id));
-  const maps = $derived(explorer.deps.checkedMaps(deficit.id, lang));
+  const maps = $derived(explorer.checkedMaps(deficit.id, lang));
 
   let expanded = $state<Record<string, boolean>>({});
 </script>
@@ -66,7 +66,7 @@
           <LinkRow
             name={map.name}
             colour={networkCss(map.color)}
-            onclick={() => explorer.deps.onFunction(map.id)}
+            onclick={() => explorer.openFunction(map.id)}
           />
         </li>
       {/each}

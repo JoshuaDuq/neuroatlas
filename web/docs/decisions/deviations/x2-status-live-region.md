@@ -5,11 +5,11 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-clinical.js:269-275 creates `p#clinical-meta role=status` with its text each time the profile renders. A live region inserted already populated is often not announced.
+clinical.js:331-334 creates `p#clinical-meta role=status` with its text each time the profile renders. A live region inserted already populated is often not announced.
 
 ## New behaviour
 
-The heading and a `StatusLine` stay mounted while no deficit is open and the text is updated in place; the rest of the profile mounts once per deficit.
+One `StatusLine` is mounted with the profile and its text is updated in place, never recreated per deficit or language. This helps changes made while a profile is shown: busy to count, a region failure, one deficit to another from the related list, and a language change. The first open from the list is unchanged from legacy: the profile is hidden (outside the accessibility tree) until its text is set in the same flush, and the heading takes focus.
 
 ## Standard cited
 

@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-clinical.js:104-125 opens DOI, PubMed and correction links in a new tab without saying so, and writes English titles, authors and journals with no language in a French interface.
+clinical.js:80-104 opens DOI, PubMed and correction links in a new tab without saying so, and writes English titles, authors and journals with no language in a French interface.
 
 ## New behaviour
 

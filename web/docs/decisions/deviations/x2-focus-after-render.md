@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-viewer/ui/panels/clinical.js:255-263 calls the controller, then looks the heading up at once and focuses whatever `.clinical-profile-name` is in the page. If the new profile is not rendered yet, that is the previous deficit's heading, or nothing.
+viewer/ui/panels/clinical.js:276-284 calls the controller, then looks the heading up at once and focuses whatever `.clinical-profile-name` is in the page. If the new profile is not rendered yet, that is the previous deficit's heading, or nothing.
 
 ## New behaviour
 

@@ -135,7 +135,7 @@ test.describe('deficit profile', () => {
     await expect(region).toBeVisible();
     await region.click();
     await expect.poll(() => app.hash()).toContain('region=');
-    const focused = page.locator('h2:focus');
+    const focused = page.getByRole('heading', { level: 2 }).and(page.locator(':focus'));
     await expect(focused).toBeVisible();
     await expect(focused).not.toHaveText('Aphasia');
   });
@@ -160,7 +160,7 @@ test.describe('deficit profile', () => {
   test('publications link out to DOI and PubMed in a new tab', async ({ app }) => {
     const { page } = app;
     await page.locator('article summary').first().click();
-    const paper = page.locator('article.clinical-publication a, article.publication a').first();
+    const paper = page.getByRole('article').getByRole('link').first();
     await expect(paper).toHaveAttribute('href', /^https:\/\/doi\.org\//);
     await expect(paper).toHaveAttribute('target', '_blank');
     await expect(page.getByRole('link', { name: /^PubMed · \d+/ }).first()).toHaveAttribute(

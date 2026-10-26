@@ -107,13 +107,4 @@
       color: var(--danger);
     }
   }
-  @layer a11y {
-    /* a11y.css:55-56: the heading's focus mark follows the system highlight. */
-    @media (forced-colors: active) {
-      .clinical-profile-name:focus-visible {
-        outline-color: Highlight;
-        border-color: Highlight;
-      }
-    }
-  }
 </style>

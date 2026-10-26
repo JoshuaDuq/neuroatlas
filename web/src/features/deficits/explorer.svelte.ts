@@ -2,7 +2,9 @@ import { tick } from 'svelte';
 import { createLatestRunner } from '../../lib/core/async/latest.ts';
 import type { createCatalog } from '../../lib/core/catalog/catalog.ts';
 import type { ClinicalCatalog } from '../../lib/core/clinical/catalog.ts';
-import type { Language, Rgb } from '../../lib/types/index.ts';
+import type { Excursions } from '../../lib/controller/excursion.svelte.ts';
+import type { SessionStore } from '../../lib/state/session.svelte.ts';
+import type { View } from '../../lib/state/view.svelte.ts';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
 import { scrollToTop } from '../../lib/ui/scroll.ts';
 
@@ -10,25 +12,24 @@ import { scrollToTop } from '../../lib/ui/scroll.ts';
 export interface DeficitsDeps {
   clinical: ClinicalCatalog;
   anatomy: Pick<ReturnType<typeof createCatalog>, 'get'>;
-  /** The regions a selection shares anatomy with (`involved` of the excursion controller). */
-  involved: (id: string) => ReadonlySet<string>;
-  /** The curated functions whose lesion checks cite one of a deficit's associations. */
-  checkedMaps: (deficit: string, lang: Language) => { id: string; name: string; color: Rgb }[];
-  /** How many activation maps the Functions tab finds for the same words. */
-  functionsMatching: (query: string, lang: Language) => number;
-  onQuery: (query: string) => void;
-  /** `excursions.openDeficit`: false when a later command overtook it. */
-  onDeficit: (id: string) => Promise<boolean>;
-  /** `excursions.openListedRegion`. */
-  onRegion: (id: string) => Promise<boolean>;
-  /** The Functions explorer's entry point. */
-  onFunction: (id: string) => unknown;
-  /** `excursions.searchIn('functions', query)`. */
-  onSearchFunctions: (query: string) => unknown;
-  /** `excursions.restoreBeforeExcursion`. */
-  onRestore: () => Promise<boolean>;
-  /** `excursions.offerReload`: hears each failure the meta line reports. */
-  onFailure: (error: unknown) => void;
+  /** The page's view: the language and the open deficit key a failure to the profile it happened in. */
+  view: () => Pick<View, 'lang' | 'selectedDeficit'>;
+  session: Pick<SessionStore, 'setClinicalQuery'>;
+  /** The S3 controller's members the tab calls (`createExcursions`). */
+  excursions: Pick<
+    Excursions,
+    | 'openDeficit'
+    | 'openListedRegion'
+    | 'restoreBeforeExcursion'
+    | 'restorable'
+    | 'offerReload'
+    | 'searchIn'
+    | 'involved'
+    | 'checkedMaps'
+    | 'functionsMatching'
+  >;
+  /** X1's entry point, which opens a function under its own runner. */
+  openFunction: (id: string) => unknown;
 }
 
 type Busy = 'loading' | 'restoring';
@@ -53,7 +54,10 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
   let busy = $state<Busy>('loading');
   let failure = $state<Failure | null>(null);
   let operation = $state<Operation>('deficit');
-  let actionError = $state.raw<unknown>(null);
+  // A failure belongs to the profile it happened in: another deficit or language clears it (clinical.js:521-525).
+  let lastFailure = $state.raw<{ profile: string; error: unknown } | null>(null);
+  const profileKey = () => `${deps.view().lang}|${deps.view().selectedDeficit}`;
+  const actionError = $derived(lastFailure?.profile === profileKey() ? lastFailure.error : null);
 
   /**
    * Runs `action` as the one latest run. False when it failed, or reported that a later command
@@ -71,11 +75,11 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
     busy = busyText;
     failure = failureText;
     operation = failed;
-    actionError = null;
+    lastFailure = null;
     const outcome = await runner.run(action, {
       onError(error) {
-        actionError = error;
-        deps.onFailure(error);
+        lastFailure = { profile: profileKey(), error };
+        deps.excursions.offerReload(error);
       },
       onSettled() {
         opening = false;
@@ -90,7 +94,7 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
    * its top and its heading takes focus (deviation x2-focus-after-render).
    */
   async function openDeficit(id: string): Promise<void> {
-    const running = run(() => deps.onDeficit(id));
+    const running = run(() => deps.excursions.openDeficit(id));
     await tick();
     const { heading } = refs;
     if (heading?.dataset.deficit === id) {
@@ -103,7 +107,7 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
   /** A region opened from a profile is detailed below it: brought into view, its name takes focus. */
   async function openRegion(id: string): Promise<void> {
     if (opening) return;
-    if (!(await run(() => deps.onRegion(id), { failed: 'region' }))) return;
+    if (!(await run(() => deps.excursions.openListedRegion(id), { failed: 'region' }))) return;
     if (requestFocus(FOCUS_TARGETS.regionTitle, { preventScroll: true })) {
       document.activeElement!.scrollIntoView({ block: 'start' });
     }
@@ -112,7 +116,12 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
   /** The profile closes with the excursion it opened, so focus returns to its row in the list. */
   async function restore(deficit: string): Promise<void> {
     if (opening) return;
-    if (!(await run(deps.onRestore, { busyText: 'restoring', failureText: 'restoreFailed' }))) {
+    if (
+      !(await run(() => deps.excursions.restoreBeforeExcursion(), {
+        busyText: 'restoring',
+        failureText: 'restoreFailed',
+      }))
+    ) {
       return;
     }
     await tick();
@@ -140,6 +149,17 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
     get actionError() {
       return actionError;
     },
+    /** Whether the scene from before this excursion's first deficit can be put back. */
+    get restorable() {
+      return deps.excursions.restorable;
+    },
+    involved: deps.excursions.involved,
+    checkedMaps: deps.excursions.checkedMaps,
+    functionsMatching: deps.excursions.functionsMatching,
+    setQuery: (query: string) => deps.session.setClinicalQuery(query),
+    /** A search carried to the Functions tab. */
+    searchFunctions: (query: string) => deps.excursions.searchIn('functions', query),
+    openFunction: deps.openFunction,
     openDeficit,
     openRegion,
     restore,

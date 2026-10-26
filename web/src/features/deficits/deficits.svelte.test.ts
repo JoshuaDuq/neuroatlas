@@ -90,6 +90,25 @@ describe('the list', () => {
     await expect.poll(announced, { timeout: 2000 }).toBe('1 deficit');
   });
 
+  test('focusSearch (the / key) focuses the field and selects its text', async () => {
+    const { explorer } = await mount();
+    await userEvent.fill(field(), 'aphas');
+    (document.querySelector('.row') as HTMLElement).focus();
+    explorer.focusSearch();
+    expect(document.activeElement).toBe(field());
+    expect([field().selectionStart, field().selectionEnd]).toEqual([0, 5]);
+  });
+
+  test('the / hint is hidden when single keys are off', async () => {
+    await mount({ showShortcut: false });
+    expect(document.querySelector('kbd.shortcut')).toBeNull();
+  });
+
+  test('the / hint is shown when single keys are on', async () => {
+    await mount();
+    expect(document.querySelector('kbd.shortcut')!.textContent).toBe('/');
+  });
+
   test('Escape on an empty field is left to the page', async () => {
     await mount();
     field().focus();
@@ -324,6 +343,8 @@ describe('evidence', () => {
     await expect.poll(() => heading().textContent!.trim()).toMatch(/Aphasie/);
     await row('neglect').click();
     await expect.poll(() => heading().textContent!.trim()).toBe('Négligence spatiale');
+    // The bound `open` is applied once the page has settled.
+    await settled();
     expect(document.querySelector<HTMLDetailsElement>('details')!.open).toBe(false);
   });
 
@@ -357,6 +378,12 @@ describe('opening a region from the profile', () => {
       .click();
     expect(calls.at(-1)).toBe('region:destrieux:left:38');
     await expect.poll(() => document.activeElement?.id).toBe('region-title');
+    // Scrolled to the top of the detail view, not left where it was.
+    const rail = document.querySelector<HTMLElement>('[data-testid="detail"]')!;
+    expect(
+      document.getElementById('region-title')!.getBoundingClientRect().top -
+        rail.getBoundingClientRect().top,
+    ).toBeLessThan(2);
   });
 
   test('while a deficit opens, region buttons keep focus and say they are unavailable (x2-aria-disabled-while-opening)', async () => {
@@ -397,6 +424,36 @@ describe('opening a region from the profile', () => {
   });
 });
 
+describe('the meta line', () => {
+  test('a failure belongs to its profile: another language or deficit clears it (clinical.js:521-525)', async () => {
+    const { view } = await mount({ failWith: new Error('Unknown clinical region: x') });
+    await row('aphasia').click();
+    await expect.poll(() => document.activeElement).toBe(heading());
+    document.querySelector<HTMLButtonElement>('button.region')!.click();
+    await expect.poll(() => meta().className).toContain('error');
+    view.lang = 'fr';
+    await expect.poll(() => meta().className).not.toContain('error');
+    expect(meta().textContent).toMatch(/^Hémisphère gauche · /);
+    document.querySelector<HTMLButtonElement>('button.region')!.click();
+    await expect.poll(() => meta().className).toContain('error');
+    await row('amnesia').click();
+    await expect.poll(() => meta().className).not.toContain('error');
+  });
+
+  test('is one region updated in place across deficits and languages (x2-status-live-region)', async () => {
+    const { view } = await mount();
+    await row('aphasia').click();
+    const node = meta();
+    await expect.poll(() => node.textContent).toMatch(/^Left hemisphere/);
+    await row('amnesia').click();
+    await expect.poll(() => node.textContent).toMatch(/^Bilateral landmarks/);
+    view.lang = 'fr';
+    await expect.poll(() => node.textContent).toMatch(/^Repères bilatéraux/);
+    expect(meta()).toBe(node);
+    expect(node.isConnected).toBe(true);
+  });
+});
+
 describe('Restore previous view', () => {
   test('is offered while a deficit is open and focuses the row of the deficit just left', async () => {
     const { calls } = await mount();
@@ -406,6 +463,43 @@ describe('Restore previous view', () => {
     await restore.click();
     expect(calls.at(-1)).toBe('restore');
     await expect.poll(() => document.activeElement).toBe(row('aphasia'));
+  });
+
+  test('while it runs it stays, keeps focus, draws as unavailable and ignores a second press', async () => {
+    let release!: () => void;
+    const { calls } = await mount({
+      restoreHold: new Promise<void>((resolve) => (release = () => resolve())),
+    });
+    await row('aphasia').click();
+    await expect.poll(() => document.activeElement).toBe(heading());
+    const restore = document.querySelector<HTMLButtonElement>('.clinical-restore')!;
+    restore.focus();
+    restore.click();
+    await expect.poll(() => restore.getAttribute('aria-disabled')).toBe('true');
+    expect(meta().textContent).toBe('Restoring the previous view…');
+    expect(getComputedStyle(restore).cursor).toBe('default');
+    expect(restore.disabled).toBe(false);
+    restore.click();
+    await settled();
+    expect(calls.filter((call) => call === 'restore')).toHaveLength(1);
+    expect(document.activeElement).toBe(restore);
+    release();
+    await expect.poll(() => document.querySelector('.clinical-restore')).toBeNull();
+  });
+
+  test('a failed restore says so on the meta line and focus stays on Restore', async () => {
+    const { calls } = await mount({ restoreFails: new Error('boom') });
+    await row('aphasia').click();
+    await expect.poll(() => document.activeElement).toBe(heading());
+    const restore = document.querySelector<HTMLButtonElement>('.clinical-restore')!;
+    restore.focus();
+    restore.click();
+    await expect
+      .poll(() => meta().textContent)
+      .toBe('The previous view could not be fully restored.');
+    expect(meta().className).toContain('error');
+    expect(calls).toContain('failure:boom');
+    expect(document.activeElement).toBe(restore);
   });
 
   test('is not offered when no earlier scene is held', async () => {
@@ -519,35 +613,56 @@ describe('quality', () => {
     }
   });
 
-  test('forced colours: the evidence chevron, the focused heading and Restore keep their marks', async () => {
+  test('forced colours: the focused heading keeps the system highlight ring and Restore is link-coloured (a11y.css:55-56, 87)', async () => {
     await opened();
     await withMedia([{ name: 'forced-colors', value: 'active' }], async () => {
+      const system = (color: string) => {
+        const probe = document.body.appendChild(document.createElement('span'));
+        probe.style.color = color;
+        const resolved = getComputedStyle(probe).color;
+        probe.remove();
+        return resolved;
+      };
       const restore = document.querySelector<HTMLElement>('.clinical-restore')!;
-      expect(getComputedStyle(restore).textDecorationLine).toBe('underline');
+      expect(getComputedStyle(restore).color).toBe(system('LinkText'));
       // A key press makes the next programmatic focus a focus-visible one.
       await userEvent.keyboard('{Shift}');
       heading().focus();
       expect(heading().matches(':focus-visible')).toBe(true);
-      expect(getComputedStyle(heading()).outlineStyle).not.toBe('none');
+      expect(getComputedStyle(heading()).outlineColor).toBe(system('Highlight'));
     });
   });
 
-  test('a focused row is never under its sticky group heading (WCAG 2.4.11)', async () => {
+  test('a focused row is never under its sticky group heading, walking down, up and back with Shift+Tab (WCAG 2.4.11)', async () => {
     await mount();
     const rail = document.querySelector<HTMLElement>('[data-testid="list"]')!;
+    const expectClear = () => {
+      const focused = document.activeElement as HTMLElement;
+      const group = focused.closest('[role="group"][aria-labelledby]')!.querySelector('h3')!;
+      expect(focused.classList.contains('row')).toBe(true);
+      expect(
+        focused.getBoundingClientRect().top,
+        `${focused.textContent} under ${group.textContent}`,
+      ).toBeGreaterThanOrEqual(group.getBoundingClientRect().bottom - 1);
+      expect(focused.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        rail.getBoundingClientRect().bottom + 1,
+      );
+    };
     field().focus();
     await userEvent.keyboard('{ArrowDown}');
-    for (let step = 0; step < rows().length - 1; step += 1) {
+    const last = rows().length - 1;
+    for (let step = 0; step < last; step += 1) {
       await userEvent.keyboard('{ArrowDown}');
-      const focused = document.activeElement as HTMLElement;
-      const group = focused.closest('[role="group"][aria-labelledby]')!;
-      const sticky = group.querySelector('h3')!.getBoundingClientRect();
-      const box = focused.getBoundingClientRect();
-      const frame = rail.getBoundingClientRect();
-      expect(box.top, focused.textContent!).toBeGreaterThanOrEqual(
-        Math.min(sticky.bottom, frame.top + 1) - 1,
-      );
-      expect(box.bottom).toBeLessThanOrEqual(frame.bottom + 1);
+      expectClear();
+    }
+    for (let step = 0; step < last; step += 1) {
+      await userEvent.keyboard('{ArrowUp}');
+      expectClear();
+    }
+    rows()[last].focus();
+    for (let step = 0; step < last; step += 1) {
+      await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+      expectClear();
     }
   });
 });

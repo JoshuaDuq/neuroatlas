@@ -22,6 +22,8 @@
     failWith = null,
     functionMatches = 0,
     restorable = true,
+    restoreHold = null,
+    restoreFails = null,
     showShortcut = true,
   }: {
     manifest: Manifest;
@@ -32,6 +34,10 @@
     failWith?: Error | null;
     functionMatches?: number;
     restorable?: boolean;
+    /** Holds Restore until this settles. */
+    restoreHold?: Promise<void> | null;
+    /** Makes Restore reject. */
+    restoreFails?: Error | null;
     showShortcut?: boolean;
   } = $props();
 
@@ -71,37 +77,52 @@
   } as unknown as View);
   $effect.pre(() => catalog.setLanguage(view.lang));
 
-  const explorer = createDeficitsExplorer({
-    clinical,
-    anatomy: catalog,
-    involved: createInvolvement(regions),
-    checkedMaps: (deficit) =>
-      deficit === 'aphasia' ? [{ id: 'language', name: 'Language', color: [10, 20, 30] }] : [],
-    functionsMatching: () => functionMatches,
-    onQuery(query) {
-      calls.push(`query:${query}`);
-      view.clinicalQuery = query;
+  const excursions = {
+    get restorable() {
+      return restorable;
     },
-    async onDeficit(id) {
+    involved: createInvolvement(regions),
+    checkedMaps: (deficit: string) =>
+      deficit === 'aphasia'
+        ? [{ id: 'language', name: 'Language', color: [10, 20, 30] as const }]
+        : [],
+    functionsMatching: () => functionMatches,
+    async openDeficit(id: string) {
       calls.push(`deficit:${id}`);
       view.explorer = 'deficits';
       view.selectedDeficit = id;
       return hold.find((entry) => entry.id === id)?.release ?? true;
     },
-    async onRegion(id) {
+    async openListedRegion(id: string) {
       calls.push(`region:${id}`);
       if (failWith) throw failWith;
       view.selectedRegion = regions.get(id)!;
       return true;
     },
-    onFunction: (id) => calls.push(`function:${id}`),
-    onSearchFunctions: (query) => calls.push(`search-functions:${query}`),
-    async onRestore() {
+    async restoreBeforeExcursion() {
       calls.push('restore');
+      if (restoreHold) await restoreHold;
+      if (restoreFails) throw restoreFails;
       view.selectedDeficit = null;
       return true;
     },
-    onFailure: (error) => calls.push(`failure:${(error as Error).message}`),
+    offerReload: (error: unknown) => calls.push(`failure:${(error as Error).message}`),
+    searchIn: (mode: string, query: string) => calls.push(`search-${mode}:${query}`),
+  };
+
+  const explorer = createDeficitsExplorer({
+    clinical,
+    anatomy: catalog,
+    view: () => view,
+    session: {
+      setClinicalQuery(query) {
+        calls.push(`query:${query}`);
+        view.clinicalQuery = query;
+        return true;
+      },
+    },
+    excursions: excursions as never,
+    openFunction: (id) => calls.push(`function:${id}`),
   });
 
   let announcer: HTMLElement;
@@ -122,10 +143,11 @@
 <div class="panes">
   <div class="rail" data-testid="list"><DeficitList {explorer} {view} {showShortcut} /></div>
   <div class="rail" data-testid="detail">
-    <div class="trailing"><DeficitRestore {explorer} {view} {restorable} /></div>
+    <div class="trailing"><DeficitRestore {explorer} {view} /></div>
     <DeficitProfile {explorer} {view} />
     <RelatedDeficits {explorer} {view} />
     <h2 id="region-title" tabindex="-1">{view.selectedRegion?.label ?? ''}</h2>
+    <div class="spacer"></div>
   </div>
 </div>
 
@@ -143,6 +165,9 @@
       background: none;
       color: var(--accent);
       font-size: var(--text-caption);
+    }
+    .spacer {
+      height: 800px;
     }
     .rail {
       overflow-y: auto;

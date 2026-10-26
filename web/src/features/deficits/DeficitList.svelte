@@ -35,7 +35,7 @@
   const query = $derived(view.clinicalQuery.trim());
   const groups = $derived(clinical.grouped(query, lang));
   const count = $derived(groups.reduce((sum, entry) => sum + entry.deficits.length, 0));
-  const functions = $derived(query ? explorer.deps.functionsMatching(query, lang) : 0);
+  const functions = $derived(query ? explorer.functionsMatching(query, lang) : 0);
   const near = $derived(groups.length === 0 ? clinical.nearest(query, lang) : null);
 
   // The count is said after typing pauses, for every settled query, a cleared one included, and
@@ -79,11 +79,10 @@
     {explorer}
     query={view.clinicalQuery}
     label={text.searchLabel}
-    placeholder={text.search}
     clearLabel={navigator.clearSearch}
     {showShortcut}
     controls="{uid}-list"
-    onquery={(value) => explorer.deps.onQuery(value)}
+    onquery={(value) => explorer.setQuery(value)}
   />
 </div>
 <div class="deficit-body">
@@ -91,16 +90,18 @@
     {#each groups as { group, deficits } (group.id)}
       <div class="group" role="group" aria-labelledby="{uid}-group-{group.id}">
         <h3 id="{uid}-group-{group.id}" class="group-heading">{group.name[lang]}</h3>
-        {#each deficits as deficit (deficit.id)}
-          <div class="item" data-deficit={deficit.id}>
-            <DrillRow
-              name={deficit.name[lang]}
-              secondary={deficit.domain[lang]}
-              current={view.selectedDeficit === deficit.id}
-              onclick={() => explorer.openDeficit(deficit.id)}
-            />
-          </div>
-        {/each}
+        <ul class="rows">
+          {#each deficits as deficit (deficit.id)}
+            <li data-deficit={deficit.id}>
+              <DrillRow
+                name={deficit.name[lang]}
+                secondary={deficit.domain[lang]}
+                current={view.selectedDeficit === deficit.id}
+                onclick={() => explorer.openDeficit(deficit.id)}
+              />
+            </li>
+          {/each}
+        </ul>
       </div>
     {/each}
     {#if groups.length === 0}
@@ -109,7 +110,7 @@
         <SearchBridge
           text={t(lang, 'functions').suggest(near)}
           onclick={() => {
-            explorer.deps.onQuery(near);
+            explorer.setQuery(near);
             explorer.refs.search?.focus();
           }}
         />
@@ -118,7 +119,7 @@
     {#if functions}
       <SearchBridge
         text={text.functionBridge(functions, query)}
-        onclick={() => explorer.deps.onSearchFunctions(query)}
+        onclick={() => explorer.searchFunctions(query)}
       />
     {/if}
   </div>
@@ -163,25 +164,27 @@
       padding-top: var(--space-3);
       border-top: 0;
     }
-    /* The wrapper adds no box; DrillRow has no selected look of its own (navigator.css:31). */
-    .item {
-      display: contents;
+    .rows {
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
+    /* DrillRow has no selected look of its own (navigator.css:31). */
     /* Arrow navigation keeps the focused row below its sticky group heading (clinical.css:44). */
-    .item :global(.row) {
+    .rows :global(.row) {
       scroll-margin-block-start: calc(var(--lh-caption) + var(--space-6));
     }
-    .item :global(.row[data-selected='true']) {
+    .rows :global(.row[data-selected='true']) {
       background: var(--accent-wash);
       color: var(--accent);
       font-weight: 600;
     }
-    .item :global(.row[data-selected='true'] .secondary) {
+    .rows :global(.row[data-selected='true'] .secondary) {
       color: inherit;
       font-weight: 400;
     }
     @media (hover: hover) and (pointer: fine) {
-      .item :global(.row[data-selected='true']:hover) {
+      .rows :global(.row[data-selected='true']:hover) {
         background: var(--accent-wash);
       }
     }

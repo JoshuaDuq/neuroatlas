@@ -1,6 +1,6 @@
 <!--
-  The deficit search field (index.html:279-295): a native search input with a visually hidden label
-  and a placeholder, a `/` hint, and one clear control (the browser's own is hidden, decision 38 on
+  The deficit search field (index.html:279-295): a native search input with a visible label
+  (WCAG 3.3.2, decision 37 on #4), a `/` hint, and one clear control (the browser's own is hidden, decision 38 on
   #4). Not a combobox: the list under it is plain buttons. Escape with text clears it and keeps
   focus; with none it is left to the page's Escape cascade.
 -->
@@ -11,7 +11,6 @@
     explorer,
     query,
     label,
-    placeholder,
     clearLabel,
     showShortcut,
     controls,
@@ -20,7 +19,6 @@
     explorer: DeficitsExplorer;
     query: string;
     label: string;
-    placeholder: string;
     clearLabel: string;
     showShortcut: boolean;
     /** The id of the list the field filters. */
@@ -48,8 +46,8 @@
   }
 </script>
 
+<label class="field-label" for="{uid}-field">{label}</label>
 <div class="search-box">
-  <label class="visually-hidden" for="{uid}-field">{label}</label>
   <svg
     class="affordance"
     width="14"
@@ -71,7 +69,6 @@
     autocomplete="off"
     spellcheck="false"
     aria-controls={controls}
-    {placeholder}
     value={query}
     oninput={(event) => onquery(event.currentTarget.value)}
     {onkeydown}
@@ -98,6 +95,14 @@
 
 <style>
   @layer features {
+    .field-label {
+      display: block;
+      margin-bottom: var(--space-2);
+      color: var(--text-secondary);
+      font-size: var(--text-caption);
+      font-weight: 600;
+      line-height: var(--lh-caption);
+    }
     .search-box {
       position: relative;
       display: flex;
@@ -118,10 +123,6 @@
       padding-left: 32px;
       padding-right: 36px;
       transition: border-color var(--ui-transition) var(--ease-ui);
-    }
-    input::placeholder {
-      color: var(--text-tertiary);
-      opacity: 1;
     }
     input::-webkit-search-cancel-button {
       appearance: none;

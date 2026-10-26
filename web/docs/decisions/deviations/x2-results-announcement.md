@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-announce.js skips any sentence equal to the last one spoken for ever, and clinical.js:446 says nothing when the query is cleared. Searching "a", "ab", "a" is silent the third time, and so are two different queries with the same count. A language change re-announced the count.
+announce.js skips any sentence equal to the last one spoken for ever, and clinical.js:513 says nothing when the query is cleared. Searching "a", "ab", "a" is silent the third time, and so are two different queries with the same count. A language change re-announced the count.
 
 ## New behaviour
 

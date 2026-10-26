@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-clinical.js:269-280 and index.html:339,417 label the profile, Associations, Checked maps and related sections with `aria-labelledby`, so each is a region landmark.
+clinical.js:330-346 and index.html:339,417 label the profile, Associations, Checked maps and related sections with `aria-labelledby`, so each is a region landmark.
 
 ## New behaviour
 

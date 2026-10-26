@@ -5,11 +5,11 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-clinical.js:337 sets native `disabled` on every region button while a deficit opens, which drops focus from the control just activated; Restore is hidden while it runs, with the same effect.
+clinical.js:389 sets native `disabled` on every region button while a deficit opens, which drops focus from the control just activated; Restore is hidden while it runs, with the same effect.
 
 ## New behaviour
 
-Region buttons carry `aria-disabled="true"` and the handler ignores activation; Restore stays shown with `aria-disabled` while it runs. The meta line says why ("Opening anatomy…" or "Restoring the previous view…").
+Region buttons carry `aria-disabled="true"` and the handler ignores activation; Restore stays shown with `aria-disabled` and draws as unavailable (tertiary ink, default cursor, `GrayText` in forced colours) for any run in flight. The meta line says why ("Opening anatomy…" or "Restoring the previous view…").
 
 ## Standard cited
 

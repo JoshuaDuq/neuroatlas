@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-clinical.js:187 gives every association a `<summary>` named "Evidence", so the controls list shows the same name once per association.
+clinical.js:161 gives every association a `<summary>` named "Evidence", so the controls list shows the same name once per association.
 
 ## New behaviour
 
