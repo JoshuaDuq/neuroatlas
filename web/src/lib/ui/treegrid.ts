@@ -9,6 +9,8 @@ export interface TreegridNode<T> {
   data: T;
   /** Whether the row can be chosen and so carries `aria-selected`; false for a group row. Default true. */
   selectable?: boolean;
+  /** The row explains itself and does nothing: `aria-disabled`, no hover. It still takes focus. */
+  disabled?: boolean;
   children?: readonly TreegridNode<T>[];
 }
 
