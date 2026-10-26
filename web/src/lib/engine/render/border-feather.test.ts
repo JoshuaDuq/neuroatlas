@@ -7,6 +7,7 @@ import {
   featherBorders,
   writeFeatherPalette,
 } from './border-feather.ts';
+import { modelDirectory, publishedLoader } from '../model/test-support.ts';
 
 type ParcelMesh = Mesh<BufferGeometry, MeshStandardMaterial>;
 
@@ -105,4 +106,39 @@ test('feathering refuses unindexed geometry', () => {
   const mesh = strip([0, 1]);
   mesh.geometry.setIndex(null);
   assert.throws(() => featherBorders([mesh]), /indexed/);
+});
+
+test('RENDER-35 on the published destrieux cortex every border weight is a share between 0 and a half, and blends reach some vertices only', async () => {
+  const { scene } = await publishedLoader(modelDirectory('cdmd')).loadAsync('cortex-destrieux.glb');
+  const meshes: ParcelMesh[] = [];
+  scene.traverse((object) => {
+    if (object instanceof Mesh && object.userData['kind'] === 'cortex') meshes.push(object);
+  });
+  assert.equal(meshes.length, 148);
+  featherBorders(meshes);
+  let feathered = 0;
+  let total = 0;
+  for (const mesh of meshes) {
+    const values = mesh.geometry.getAttribute('_feather').array;
+    for (let vertex = 0; vertex < values.length; vertex += FEATHER_ITEM_SIZE) {
+      total += 1;
+      for (const at of [vertex + 1, vertex + 3]) {
+        const weight = values[at]!;
+        assert.ok(weight >= 0 && weight <= 0.5, `${mesh.userData['region_id']}: ${weight}`);
+        if (weight > 0) {
+          assert.ok(values[at - 1]! >= 0 && values[at - 1]! < meshes.length);
+          if (at === vertex + 1) feathered += 1;
+        }
+      }
+    }
+  }
+  // Some vertices blend and the parcels' interiors do not.
+  assert.ok(feathered > 1000 && feathered < total, `${feathered} of ${total}`);
+});
+
+test('RENDER-36 a radius of zero, below zero or not a number is a RangeError', () => {
+  const mesh = strip([0, 1, 2]);
+  for (const radius of [0, -1, NaN]) {
+    assert.throws(() => featherBorders([mesh], radius), RangeError);
+  }
 });

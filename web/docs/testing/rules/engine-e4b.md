@@ -22,7 +22,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:158-180`
 - **Expected:** CAB-NP `{ atlas: 'a', regions: { 'b-left': 'Default' } }` → Error "Invalid CAB-NP assignment: b-left". The CDMD sidecars (`cab-np.json`, `functional-regions.json`, `neuropsych-domains.json`, `neurosynth-terms.json`) are accepted.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, CAB-NP); `parity/E4b.test.ts` (D, CDMD sidecars accepted and read the same). The validators' own rules belong to the core catalogue area.
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, CAB-NP), `src/lib/engine/model/assets.test.ts` (R)
 
 ### ATLAS-03 · The model opens the first atlas and the learning overview by default
 
@@ -40,7 +40,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:221-243,431-465`
 - **Expected:** `BrainAtlas.load(url, 'missing')` → Error "Unknown atlas: missing" with `code === 'unknown-layer'`; atlas `null` → "Unknown atlas: null"; `{ detail: 'missing' }` → "Unknown detail level: missing"; `{ detail: null }` → "Unknown detail level: null". No layer file is fetched. `setAtlas('missing')` and `setDetail('missing')` reject the same way and change nothing.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `load`); `parity/E4b.test.ts` (D, `setAtlas`/`setDetail` in the replay); the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `load`), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
 
 ### ATLAS-05 · The first frame downloads one atlas and one detail level together, and nothing else
 
@@ -67,7 +67,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/assets.test.js:9-60`; `public/models/cdmd/manifest.json`
 - **Expected:** `initialize('destrieux')` → 255 visible meshes (148 Destrieux parcels + 2 non-region surfaces + 105 learning structures). `setAtlas('hcp-mmp')` → 360 cortex meshes; destrieux → 148. Cortex hidden → 105. Cord shown → 255 + 58. `aseg` 32 meshes, `nextbrain` 292, `tissue-envelopes.glb` 4 (left and right pial and white).
-- **Covered by:** `src/lib/engine/model/assets.test.ts` (S, all but the aseg, nextbrain and envelope counts); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/assets.test.ts` (S, all but the aseg, nextbrain and envelope counts)
 
 ### ATLAS-08 · Downloads share one progress bar
 
@@ -76,7 +76,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/progress.js:7-27`; `viewer/model/brain-atlas.js:221-243,291-317`
 - **Expected:** Parts a, b: a 10/20 → {10, 20}; b 5/20 → {15, 40}; a 20/20 → {25, 40}. A part reporting 0/0 emits nothing; then 4/8 → {4, 8}. An event missing `loaded` or `total` counts it as 0. Fixture `initialize('a', onProgress)` (each file reports 10/20 then 20/20) ends at {40, 40} and passes through {10, 20}.
-- **Covered by:** `src/lib/engine/model/progress.test.ts` (R); `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, 50 seeded trials)
+- **Covered by:** `src/lib/engine/model/progress.test.ts` (R), `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-09 · A caller who joins a download under way hears its progress
 
@@ -85,7 +85,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:245,291,364`; deviation `e4b-joined-download-progress.md`
 - **Expected:** Prefetch `loadLayer('b', 'b.glb')` with no listener, then `setAtlas('b', onProgress)` before it finishes → `onProgress` hears loaded [10, 20] and the atlas is `b`. Two `ensureEnvelopes(listener)` calls at once → both listeners hear the same non-empty sequence.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, also asserts the legacy bug `[]`)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-10 · A layer is downloaded once and kept
 
@@ -103,7 +103,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:130-156`
 - **Expected:** CDMD `load('…/models/cdmd/manifest.json', 'hcp-mmp', { onProgress })` → `settings.atlas === 'hcp-mmp'`, `settings.detail === 'learning'`; `cabNp`, `functionalRegions` and `domains` equal the published JSON; the last progress event has `loaded === total > 0`. A rejected open (ATLAS-04) leaves `disposed === true`.
-- **Covered by:** `parity/E4b.test.ts` (D); `src/lib/engine/model/brain-atlas.test.ts` (R, rejection only); the dispose-on-failure part is uncovered
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, rejection only), `src/lib/engine/model/assets.test.ts` (R)
 
 ## What is drawn
 
@@ -114,7 +114,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:431-465,519-530`
 - **Expected:** Fixture `initialize('a')` → 4 visible meshes (a-left, a-right, a-wall, stem). `setAtlas('b')` → 2 (b-left, stem). Back on `a` → 2 visible layer groups.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-13 · Changing the atlas drops the selection and the isolation, and colours that need the old atlas
 
@@ -123,7 +123,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:431-450`
 - **Expected:** Fixture `select('a-right')`, `isolate()`, `setAtlas('b')` → `selectedRegion === null`, `isolatedRegion === null`, one `selectionchange` with `null`. CAB-NP on `a`, then `setAtlas('b')` → `surfaceColor === 'atlas'`; the same for `functional`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, colours); `parity/E4b.test.ts` (D, selection and isolation); the selection and isolation part is uncovered by rule tests; the contract suite (R, "drops the selection and the isolation when the atlas changes", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, colours), the contract suite (R, "drops the selection and the isolation when the atlas changes", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-14 · The latest atlas or detail request wins, and the two do not cancel each other
 
@@ -141,7 +141,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:452-465`
 - **Expected:** CDMD on `learning`, `setInternalSystem('Basal ganglia')`, select and isolate `learning:left:caudate`, `setDetail('aseg')` → `internalSystem === null`, `internalConstituents.size === 0`, `isolatedRegion === null`, `selectedRegion === null`.
-- **Covered by:** `parity/E4b.test.ts` (D); uncovered by rule tests; the contract suite (R, "drops the internal system, the isolation and the selection when the detail level changes", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** the contract suite (R, "drops the internal system, the isolation and the selection when the detail level changes", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/assets.test.ts` (R)
 
 ### ATLAS-16 · The hemisphere filter
 
@@ -150,7 +150,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:745-752`
 - **Expected:** Fixture with `a-left` selected, `setHemisphere('right')` → visible ['a-right', 'stem'], `selectedRegion === null`, `selectionchange` with `null`. `setHemisphere('up')` → Error "Invalid hemisphere: up".
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D); the contract suite (R, "draws the regions each hemisphere, cortex and internal setting shows", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "draws the regions each hemisphere, cortex and internal setting shows", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
 
 ### ATLAS-17 · Cortex and internal anatomy can each be shown or hidden
 
@@ -159,7 +159,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:754-775`
 - **Expected:** Fixture `setInternalVisible(false)` → `visibleMeshCount` 4 → 3; back to 4. `setCortexVisible(false)` → visible ['stem']. `setCortexVisible('yes')` → TypeError "Cortex visibility must be boolean."; `setInternalVisible(0)` → TypeError "Internal anatomy visibility must be boolean.".
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, visibility); `parity/E4b.test.ts` (D, type errors and isolation); the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, visibility), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-18 · Cortex opacity makes the cortex see-through and keeps the isolation
 
@@ -168,7 +168,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:761-767,576-586`
 - **Expected:** Fixture `setCortexOpacity(0.3)` → a-right `opacity` 0.3, `transparent === true`, `depthWrite === false`; `stem` opacity 1. Exposed white matter at 0.6 → 0.6. `setCortexOpacity(1.1)`, `-0.1` or `NaN` → RangeError "Cortex opacity must be between 0 and 1.". With `a-right` isolated, `setCortexOpacity(0.5)` keeps it isolated.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, opacity and range); `parity/E4b.test.ts` (D, transparency flags and isolation); the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, opacity and range), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-19 · Cut-only regions follow the cut
 
@@ -177,7 +177,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:466-479,714-730`
 - **Expected:** Fixture `setCutState({ atlas: 'n', active: true })`, `select('n-left')` → selected; `update()` → still selected, no `selectionchange` with null. `setHemisphere('right')` → selection null, and `select('n-left')` → /not visible/. `setCutState({ atlas: 'n', active: false })` → selection null, `select('n-left')` → /not visible/. The same `setCutState` twice → one `change` event.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, CDMD cut atlases); the repeated-state no-op is uncovered; the contract suite (R, "selects a region only the cut shows, while the cut is open on its atlas", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "selects a region only the cut shows, while the cut is open on its atlas", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-20 · The internal-system filter
 
@@ -186,7 +186,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:731-744`
 - **Expected:** CDMD, cortex hidden, `setInternalSystem('Basal ganglia')` → 14 visible meshes, all with `system_names.en === 'Basal ganglia'`. `setInternalSystem('Imaginary system')` → Error "Unknown internal anatomy system: Imaginary system". With `learning:left:caudate` isolated, `setInternalSystem('Brainstem')` → selection and isolation null. `reset()` → `internalSystem === null`.
-- **Covered by:** `src/lib/engine/model/assets.test.ts` (S, "> 5" meshes rather than 14); `src/lib/engine/model/spinal-cord.test.ts` (R, 'Spinal cord'); `parity/E4b.test.ts` (D); the contract suite (R, "narrows the internal anatomy to one system, dropping what it no longer shows", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/assets.test.ts` (S, "> 5" meshes rather than 14), `src/lib/engine/model/spinal-cord.test.ts` (R, 'Spinal cord'), the contract suite (R, "narrows the internal anatomy to one system, dropping what it no longer shows", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
 
 ### ATLAS-21 · Every mesh is drawn exactly when the shared visibility rule says so
 
@@ -195,7 +195,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:519-545`
 - **Expected:** For every mesh of every layer and every reachable combination of atlas, detail, hemisphere, cortex/internal/cord visibility, internal system, cut, isolation and hidden set: `mesh.visible && layer.scene.visible === visibilityOf(region, settings).visible`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, one state: left hemisphere); `parity/E4b.test.ts` (D, 300 seeded commands); the other states are uncovered by rule tests (a seeded property sweep would keep them); the contract suite (R, "draws the regions each hemisphere, cortex and internal setting shows", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, one state: left hemisphere), the contract suite (R, "draws the regions each hemisphere, cortex and internal setting shows", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-22 · An invalid display command is refused and changes nothing
 
@@ -204,7 +204,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:695-850`
 - **Expected:** `setSurfaceColor('bogus')` → TypeError "Unknown surface colour: bogus". `setFunctionalLevel('lobes')` → TypeError "Unknown functional level: lobes". `setPaint({ id: 5, colors: new Map() })` or `{ id: 'x', colors: {} }` → TypeError "A paint needs an id and a Map of region colours.". `setClippingPlanes([plane with normal (2, 0, 0)])` → Error "Clipping requires normalized, finite Three.js planes.". `setSpinalCordVisible('yes')` rejects with TypeError "Spinal cord visibility must be boolean.". `isolate()` with nothing selected → "Select a region before isolating.". After each, `settings`, every material and the event log are unchanged.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, functional level and paint messages); `parity/E4b.test.ts` (D, every refusal in the replay); "changes nothing" and the other messages are uncovered by rule tests; the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, functional level and paint messages), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-23 · The model reports its whole display state, and every change
 
@@ -213,7 +213,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:480-508,597-603,719-730`
 - **Expected:** Fixture after `initialize('a')`: `settings` equals `{ atlas: 'a', detail: 'aseg', internalSystem: null, internalConstituents: Set{}, cutAtlas: null, cutActive: false, hemisphere: 'both', cortexVisible: true, cortexOpacity: 1, internalVisible: true, spinalCordVisible: false, surfaceColor: 'atlas', functionalLevel: 'named', paint: null, isolatedRegion: null, hiddenRegions: Set{}, dissectionCanUndo: false }`; `state.visibleMeshCount === 4`. `select('a-left')` → events `['change', 'selectionchange:a-left']`; the event's region has `source_label_id === 1`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, settings and selection payload; I, the "does not walk the scene" claim it cannot observe); `parity/E4b.test.ts` (D, event sequence)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, settings and selection payload; I, the "does not walk the scene" claim it cannot observe)
 
 ## Colour
 
@@ -224,7 +224,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:68,789-813`
 - **Expected:** `SURFACE_COLORS` = ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional']. Errors: "MRI must load before selecting MRI appearance."; "This model carries no network layer."; "This model carries no CAB-NP partition."; on atlas `b` "CAB-NP colours a areas; show that atlas first."; "This model carries no functional divisions."; "Functional divisions colour a areas; show that atlas first."; "Glass-brain solids must load before selecting functional divisions.". `'domains'` → "Unknown surface colour: domains".
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, all but the network error); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, all but the network error)
 
 ### ATLAS-25 · Atlas colour shows the published colours; tissue colour shows tissue with its T1 relief
 
@@ -242,7 +242,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:548-552,571-575`
 - **Expected:** CDMD destrieux, `setSurfaceColor('network')` → `networkMix` 1 on every cortex material that carries network colours, material colour the tissue colour, `tissueVariation` 0. Any other colour, or a paint → `networkMix` 0.
-- **Covered by:** `parity/E4b.test.ts` (D); uncovered by rule tests (the fixture has no network layer)
+- **Covered by:** `src/lib/engine/model/assets.test.ts` (R)
 
 ### ATLAS-27 · CAB-NP colour paints each area whole in its network's colour
 
@@ -260,7 +260,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:536-539,569-580,814-823`
 - **Expected:** Fixture named level: a-left 0xff0000, opacity 1; a-right and a-wall opacity 0.1 (`glass_opacity`), transparent, colour 0xc4a897, `tissueVariation` 0. Sections level: a-right 0x00ff00 opacity 1, a-wall 0.1. `setCortexOpacity(0.5)` → a-right 0.5, a-wall 0.05.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, CDMD hcp-mmp)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-29 · A glass solid closes only an opaque named division, while its patch is drawn
 
@@ -278,7 +278,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:560-580,824-832`
 - **Expected:** Fixture functional, `setPaint({ id: 'deficit:aphasia', colors: Map{a-left: [255, 0, 0]} })` → a-left 0xff0000, a-right 0xc4a897, opacity 1 and `glass === false` on a-left, a-right and a-wall; `state.paint.id === 'deficit:aphasia'`. The same id with other colours → no `change` event, colours unchanged. `surfaceColor` stays `functional`. `setPaint(null)` → a-wall glass again. With `setCortexOpacity(0.5)` and a paint: a-left opacity 1, a-right 0.5.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; the see-through case is uncovered); `parity/E4b.test.ts` (D); the contract suite (R, "keeps the surface colour under a paint, replaces it by id and lifts it with null", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "keeps the surface colour under a paint, replaces it by id and lifts it with null", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-31 · Selection never changes a region's colour
 
@@ -296,7 +296,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:524-526,833-843`; deviation `e4b-state-before-load.md`
 - **Expected:** `setMriAnatomy(anatomy)`, `select('a-right')`, `setSurfaceColor('mri')` → `scanEnabled` true, pick on the a-right ray still a-right, selection kept. After `setAtlas('b')` every visible material's compiled `scanVolume` is the scan's texture and `scanEnabled` true; the envelopes loaded afterwards too. A paint → `scanEnabled` false. Tissue colour → false. `setMriAnatomy(null)` → "MRI anatomy has not loaded."; another anatomy after one is attached → "MRI anatomy is already attached."; the same one again → no-op.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; the paint and already-attached cases are uncovered); `src/lib/engine/index.test.ts` (R, FACADE-36 through the facade); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), `src/lib/engine/index.test.ts` (R, FACADE-36 through the facade), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-33 · A parcel's border feather follows its current colour and visibility
 
@@ -305,7 +305,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:412-424,588`; the palette writer is RENDER-37
 - **Expected:** Fixture: layer `a` has a feather palette, `aseg` has none. Under CAB-NP colour, a-left's texel is (1, 0, 0, 1) in linear RGB. After `hideRegions(['a-left'])` its alpha is 0.
-- **Covered by:** `parity/E4b.test.ts` (D, palette bytes in every state); uncovered by rule tests
+- **Covered by:** `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-34 · Clipping planes reach every surface the model draws
 
@@ -314,7 +314,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:553-556,592-596,695-713`
 - **Expected:** `setClippingPlanes([p])` → white matter `material.clippingPlanes` equals [p]; after `setAtlas('b')` the visible material has 1 plane; glass-solid materials carry [p]. `reset()` → `clippingPlanes.length === 0`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; glass solids uncovered); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ## Selection, isolation and dissection
 
@@ -325,7 +325,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:714-730`
 - **Expected:** Fixture on `a`: `select('missing')` → "Unknown region: missing"; `select('a-wall')` → "Cannot select a non-region: a-wall"; `select('b-left')` → "Region is not visible: b-left". `select(null)` clears and fires `selectionchange` with null.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D); the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "words each refusal, and a refused command changes nothing", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
 
 ### ATLAS-36 · Isolation shows the selected region alone
 
@@ -334,7 +334,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:844-858`
 - **Expected:** Fixture `select('a-right')`, `isolate()` → visible [a-right], position unchanged. `clearIsolation()` → isolation null, selection a-right, opacity 0.5 kept, 4 visible. `setHemisphere('both')` while isolated → isolation null.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, which commands release it); the contract suite (R, "shows the isolated region alone, and only what is shown releases it", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "shows the isolated region alone, and only what is shown releases it", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R)
 
 ### ATLAS-37 · Dissection hides regions in undoable batches
 
@@ -343,7 +343,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:860-884`
 - **Expected:** Fixture opacity 0.7, `hideRegions(['a-left', 'stem'])` → hidden {a-left, stem}; the same again → no change; `showRegions(['a-left'])` → {stem}; undo → {a-left, stem}; undo → {} and `dissectionCanUndo === false`; opacity still 0.7. `hideRegions(['a-left', 'missing'])` → /Unknown region/, nothing hidden, nothing to undo. Hidden a-left stays hidden after `setAtlas('b')`, `setAtlas('a')`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D); the contract suite (R, "hides in whole batches, leaves the other settings, and keeps the set across atlases", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "hides in whole batches, leaves the other settings, and keeps the set across atlases", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
 
 ### ATLAS-38 · Hiding the isolated region releases the isolation, and undo brings back what it can
 
@@ -361,7 +361,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:885-888`; deviation `e4b-load-hidden-regions-isolation.md`
 - **Expected:** Fixture a-left isolated, `loadHiddenRegions(['a-left', 'stem'])` → isolation null, hidden {a-left, stem}; `loadHiddenRegions(['a-left'])` alone → 3 visible meshes. a-right isolated, `loadHiddenRegions(['stem'])` → a-right stays isolated.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D, also asserts the legacy bug); the contract suite (R, "releases an isolation a loaded hidden set hides, and keeps one it leaves alone", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R), the contract suite (R, "releases an isolation a loaded hidden set hides, and keeps one it leaves alone", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
 
 ### ATLAS-40 · Reset restores the default view and keeps what was loaded and painted
 
@@ -370,7 +370,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:890-905`
 - **Expected:** After any sequence, `reset()` → `settings` equals ATLAS-23's defaults except `atlas`, `detail` and `paint`, which are unchanged; 4 visible on the fixture; a-right colour back to 0xffffff; one `selectionchange` with null.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, piecewise across cases); `parity/E4b.test.ts` (D); the kept paint and the cancelled cord show are uncovered; the contract suite (R, "resets every setting but the atlas, the detail level and the paint", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, piecewise across cases), the contract suite (R, "resets every setting but the atlas, the detail level and the paint", on the fake and the real engine; moved from `parity/f2.test.ts`, which compared the fake with the legacy model), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R), `src/lib/engine/model/spinal-cord.test.ts` (R)
 
 ### ATLAS-41 · Removing cortex exposes the native white matter beneath
 
@@ -379,7 +379,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:245-290,519-523`
 - **Expected:** Fixture `hideRegions(['a-left'])` → no white mesh until `ensureEnvelopes()` resolves; then one white mesh, hemisphere left, kind non-region, position [0, 0, 0.015], one "Native exposed white matter" group; `tissue-envelopes.glb` fetched once. Hidden for hemisphere right, cortex hidden, atlas b, a-right isolated; shown again after each is undone; hidden after `restoreHiddenRegions()`. A ray through the hidden a-left → `intersect` boundary `white`, `pick` null. First download throws "HTTP 503" → `loaderror` with that error; the next exposure loads.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ## Picking
 
@@ -390,7 +390,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:613-675`
 - **Expected:** Fixture, ray from (0.03, 0, 0.1) along (0, 0, −1) → `a-right`; with `firstHitOnly = true` → `a-right` and `firstHitOnly` still true. `setHemisphere('left')` → null. Ray at x = 0.06 (the medial wall) → null. A ray that misses → null.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; I, "every loaded mesh must have a spatial index" and the raycast counts of "picking stops at the first surface"); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R; I, "every loaded mesh must have a spatial index" and the raycast counts of "picking stops at the first surface")
 
 ### ATLAS-43 · A cut does not hide what it leaves
 
@@ -399,7 +399,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:623-669`
 - **Expected:** Fixture a-right ray with plane ((0, 0, −1), 0) → `a-right` (its kept back face); plane ((0, 0, −1), −0.02) → null. Ray from (−0.1, 0, 0) along +x with plane ((1, 0, 0), −0.02) → `a-right`. Every hit point lies on the kept side of every plane (distance ≥ −1e-9).
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-44 · A division behind the glass is picked through it
 
@@ -408,7 +408,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:613-622`
 - **Expected:** Fixture, internal anatomy hidden, glass a-right in front of a-left: atlas colour → `a-right`; functional → `a-left`; with a-left's patch moved off the ray its solid still answers `a-left`; sections level (a-right is a division) → `a-right`.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R); `parity/E4b.test.ts` (D)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R)
 
 ### ATLAS-45 · Picks on the published model land on drawn regions of the right side
 
@@ -417,7 +417,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:613-675`; `scripts/benchmark-picking.mjs` (ray layout)
 - **Expected:** CDMD destrieux: the ray from (0.25, 0, 0) along −x picks a destrieux cortex region with hemisphere `right`; from (−0.25, 0, 0) along +x, one with hemisphere `left`. Over 100 Fibonacci-sphere rays at 0.25 m aimed at the centre (fixed seed), more than 30 % hit, and for every pick: `canSelect(region)`, `kind !== 'non-region'`; with hemisphere left none is `right`; with the cortex hidden none is cortex; with region r isolated every pick is r or null; after `hideRegions([r])` none is r. Under functional colour on hcp-mmp with glass solids, picks are divisions or glass.
-- **Covered by:** `parity/E4b.test.ts` (D, 9,000+ rays compared with legacy); uncovered by rule tests
+- **Covered by:** `src/lib/engine/model/assets.test.ts` (R)
 
 ### ATLAS-46 · A region's centroid is its box centre in surface RAS millimetres, to 0.1 mm
 
@@ -426,7 +426,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:676-694`
 - **Expected:** Fixture: a-left → [0, 0, 0]; a-right (box at x = 0.03 m) → [30, 0, 0]; the second call returns the same array. `centroidOf('n-left')`, `centroidOf('nonexistent')` and `centroidOf(null)` → null. CDMD with destrieux, hcp-mmp, learning, aseg and nextbrain loaded: at least 400 regions have a centroid; each value is a multiple of 0.1; for every destrieux pair `destrieux:left:N` / `destrieux:right:N`, the right one's R is greater than the left one's.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (W: asserts only three finite numbers and the cache; an axis swap would pass); `parity/E4b.test.ts` (D, every CDMD region); fixed values are uncovered
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (W: asserts only three finite numbers and the cache; an axis swap would pass), `src/lib/engine/model/brain-atlas.sweep.test.ts` (R), `src/lib/engine/model/assets.test.ts` (R)
 
 ## Spinal cord
 
@@ -484,7 +484,7 @@ Conventions: "the fixture" is the synthetic model of the legacy unit tests (atla
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:318-363`
 - **Expected:** CDMD `ensureRibbonWedges('destrieux', base)` twice → the same array and no second `ribbon-destrieux.labels` fetch; envelopes are loaded first. `loadGlassSolids(base)` → solids only for regions in `functional_regions.regions.named` of hcp-mmp; a second call adds nothing. Fixture without divisions → rejects "This model carries no functional divisions.".
-- **Covered by:** `src/lib/engine/model/brain-atlas.cut.test.ts` (R, wedges kept); `src/lib/engine/model/brain-atlas.test.ts` (R, refusal); `parity/E4b.test.ts` (D, glass solids on CDMD); the named-only and load-once parts are uncovered
+- **Covered by:** `src/lib/engine/model/brain-atlas.cut.test.ts` (R, wedges kept), `src/lib/engine/model/brain-atlas.test.ts` (R, refusal); the named-only and load-once parts are uncovered
 
 ### ATLAS-53 · Disposal releases everything and refuses later work
 

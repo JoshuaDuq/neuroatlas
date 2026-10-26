@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { test } from 'vitest';
+import { anatomies, readModel } from '../../core/catalog/test-support.ts';
+import { modelDirectory } from '../model/test-support.ts';
 import { Volume } from './volume.ts';
 
 const identity = [
@@ -88,4 +92,58 @@ test('nontrivial affine preserves hemisphere, voxel centers and spacing', () => 
       ),
     /length/i,
   );
+});
+
+test('SLICE-06 a volume stored in C order or with a shape of two axes is refused', () => {
+  const header = { shape: [4, 4, 4], voxel_to_surface_ras_mm: identity, order: 'F' };
+  for (const bad of [
+    { ...header, order: 'C' },
+    { ...header, shape: [1, 1] },
+  ]) {
+    assert.throws(() => new Volume(bad as never, new Uint8Array(64)), {
+      message: 'Unsupported volume shape or storage order.',
+    });
+  }
+});
+
+test('SLICE-09 on the published white-matter volume, 400 seeded points take a label of the voxels around them, or none', () => {
+  const record = readModel<{
+    white_matter: ConstructorParameters<typeof Volume>[0] & { file: string };
+  }>(`${anatomies.default}/tissue-labels.json`).white_matter;
+  const data = new Uint8Array(
+    gunzipSync(readFileSync(new URL(record.file, modelDirectory(anatomies.default)))),
+  );
+  const volume = new Volume(record, data);
+  let state = 17;
+  const random = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const [nx, ny] = record.shape as [number, number, number];
+  let labelled = 0;
+  for (let step = 0; step < 400; step++) {
+    const point: [number, number, number] = [
+      (random() - 0.5) * 140,
+      (random() - 0.5) * 140,
+      (random() - 0.5) * 140,
+    ];
+    const label = volume.label(point);
+    if (label === 0) continue;
+    labelled += 1;
+    const [i, j, k] = volume.voxel(point);
+    const around = new Set<number>();
+    for (const di of [0, 1])
+      for (const dj of [0, 1])
+        for (const dk of [0, 1]) {
+          const x = Math.floor(i) + di;
+          const y = Math.floor(j) + dj;
+          const z = Math.floor(k) + dk;
+          around.add(data[x + nx * (y + ny * z)] ?? 0);
+        }
+    assert.ok(around.has(label), `label ${label} at ${point} is not among ${[...around]}`);
+  }
+  assert.ok(labelled > 20, `${labelled} labelled points`);
 });

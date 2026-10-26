@@ -10,4 +10,4 @@ Chunk E6 (#30). A fix under the parity policy on #4.
   `setOutlineVisible` already does.
 - **Standard**: F2's engine contract accepts `setOutlineOpacity` at any time, and project rule
   "fail fast" (CLAUDE.md): a valid call must not fail on hidden state. Pinned by
-  `native-viewer.test.ts` and `parity/E6.test.ts`.
+  `native-viewer.test.ts`.

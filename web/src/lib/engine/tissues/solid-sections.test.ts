@@ -1,7 +1,16 @@
 import assert from 'node:assert/strict';
 import { onTestFinished, test, vi } from 'vitest';
 import type { BufferAttribute } from 'three';
-import { BoxGeometry, DoubleSide, Mesh, MeshBasicMaterial, Plane, Raycaster, Vector3 } from 'three';
+import {
+  BoxGeometry,
+  DoubleSide,
+  Matrix4,
+  Mesh,
+  MeshBasicMaterial,
+  Plane,
+  Raycaster,
+  Vector3,
+} from 'three';
 import { readModel } from '../../core/catalog/test-support.ts';
 import type { Appearance } from '../render/materials.ts';
 import { HIGHLIGHT_LIFT } from './highlight.ts';
@@ -424,4 +433,26 @@ test('growing a cap disposes the geometry that held the replaced attribute buffe
   assert.equal(disposed, 1);
   assert.notEqual(solid.section!.getAttribute('position'), old);
   sections.dispose();
+});
+
+test('TISSUE-31 a cut message for a solid the worker never stored comes back as a fallback', async () => {
+  const scope = globalThis as unknown as {
+    onmessage: ((event: { data: WorkerMessage }) => void) | null;
+  };
+  await import('./section-worker.ts');
+  const replies: CutReply[] = [];
+  vi.stubGlobal('postMessage', (reply: CutReply) => replies.push(reply));
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+  });
+  scope.onmessage!({
+    data: {
+      type: 'cut',
+      token: 1,
+      normal: [0, 0, 1],
+      constant: 0,
+      jobs: [{ id: 99, matrix: Array.from(new Matrix4().elements) }],
+    },
+  });
+  assert.deepEqual(replies[0]!.results, [{ id: 99, fallback: true }]);
 });

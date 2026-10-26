@@ -1,7 +1,7 @@
 # E4b deviation: `loadHiddenRegions` releases an isolation the new set removes
 
 Chunk E4b (#28). Pinned by `brain-atlas.test.ts` ("loading a hidden set that holds the isolated
-region releases the isolation") and `parity/E4b.test.ts` ("E4b documented deviations").
+region releases the isolation").
 
 - **Legacy** (`viewer/model/brain-atlas.js:885`): `hideRegions` clears the isolation when the
   isolated region becomes hidden (line 862), but `loadHiddenRegions` replaced the whole hidden set

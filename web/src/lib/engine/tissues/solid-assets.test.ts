@@ -478,3 +478,27 @@ test('a ribbon label file of the wrong length is refused', async () => {
     /hold 6 bytes; the manifest publishes 8/,
   );
 });
+
+test('TISSUE-15 solids without a volume count as 0 and equal volumes keep their order', () => {
+  const source = (id: string, volume?: number) => ({
+    userData: { region_id: id, segmentation_volume_mm3: volume },
+  });
+  const ordered = enclosingFirst([source('a'), source('b', 5), source('c', 0), source('d', 5)]);
+  assert.deepEqual(
+    ordered.map((entry) => entry.userData.region_id),
+    ['b', 'd', 'a', 'c'],
+  );
+});
+
+test('TISSUE-16 a cap not registered to the MRI is left out under MRI colour', () => {
+  const cord = () =>
+    solid({
+      hemisphere: 'left',
+      supplemental: true,
+      mri_registered: false,
+      region_id: 'zanatomy:left:x',
+      tissue: 'white',
+    });
+  assert.equal(paint([cord()], { surfaceColor: 'mri' })[0]!.visible, false);
+  assert.equal(paint([cord()], { surfaceColor: 'tissue' })[0]!.visible, true);
+});

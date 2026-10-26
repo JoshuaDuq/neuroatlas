@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
+import { afterAll, afterEach, beforeAll, test } from 'vitest';
 import { Color, Mesh, Plane, Raycaster, Vector3 } from 'three';
+import type { Group } from 'three';
 import type { MeshPhysicalMaterial } from 'three';
 import type { Region } from '../../types/index.ts';
 import { createCatalog } from '../../core/catalog/catalog.ts';
@@ -21,6 +22,31 @@ const loader = publishedLoader(modelDirectory(published));
 const assembly = manifest.regions.filter((region) => region.atlas === 'zanatomy');
 const cord = assembly.find((region) => region.id === 'zanatomy:midline:cord')!;
 const solidAnatomy = {} as SolidSourceAnatomy;
+/** One model on the published anatomy, shared by the cases and put back to its default view by `reset()`. */
+let model: BrainAtlas;
+let cordScene: Group;
+let beforeShowing: { loaded: boolean; drawn: boolean; shown: boolean };
+
+beforeAll(async () => {
+  model = new BrainAtlas(manifest, loader);
+  await model.initialize('destrieux');
+  // The cord is a hidden reference layer: nothing of it downloads until it is shown.
+  beforeShowing = {
+    loaded: model.layers.has('zanatomy'),
+    drawn: model.visibleMeshes.some((mesh) => mesh.userData['atlas'] === 'zanatomy'),
+    shown: model.settings.spinalCordVisible,
+  };
+  await model.setSpinalCordVisible(true);
+  cordScene = (await loader.loadAsync('spinal-cord.glb')).scene;
+}, 120_000);
+
+afterEach(async () => {
+  model.reset();
+  await model.setDetail(model.defaultDetail);
+});
+
+afterAll(() => model.dispose());
+
 const asSettings = (atlas: BrainAtlas) => atlas.state as unknown as CatalogSettings;
 
 /** A point inside the cord at a given height, superior being +Y in the glTF frame. */
@@ -74,8 +100,6 @@ test(
   'reference cord is searchable, selectable and isolatable in every detail level',
   { timeout: 120_000 },
   async () => {
-    const model = new BrainAtlas(manifest, loader);
-    await model.initialize('destrieux');
     await model.setSpinalCordVisible(true);
     const catalog = createCatalog(manifest);
     for (const level of manifest.detail_levels) {
@@ -108,13 +132,10 @@ test(
       catalog.search('cauda equina', asSettings(model)).rows[0]!.region.id,
       'zanatomy:midline:cauda-equina',
     );
-    model.dispose();
   },
 );
 
 test('a lateral root follows the hemisphere filter its own side declares', async () => {
-  const model = new BrainAtlas(manifest, loader);
-  await model.initialize('destrieux');
   await model.setSpinalCordVisible(true);
   const left = assembly.find((region) => region.id === 'zanatomy:left:anterior-root')!;
   const right = assembly.find((region) => region.id === 'zanatomy:right:anterior-root')!;
@@ -125,16 +146,10 @@ test('a lateral root follows the hemisphere filter its own side declares', async
   assert.equal(visibilityOf(right, model.settings).visible, true);
   // The cord itself is midline, so neither side hides it.
   assert.equal(visibilityOf(cord, model.settings).visible, true);
-  model.dispose();
 });
 
 test('spinal cord visibility toggle hides meshes and prevents selection', async () => {
-  const model = new BrainAtlas(manifest, loader);
-  await model.initialize('destrieux');
-  // The cord is a hidden reference layer: nothing of it downloads until it is shown.
-  assert.equal(model.settings.spinalCordVisible, false);
-  assert.ok(!model.layers.has('zanatomy'));
-  assert.ok(!model.visibleMeshes.some((mesh) => mesh.userData['atlas'] === 'zanatomy'));
+  assert.deepEqual(beforeShowing, { loaded: false, drawn: false, shown: false });
 
   await model.setSpinalCordVisible(true);
   assert.ok(model.visibleMeshes.some((mesh) => mesh.userData['region_id'] === cord.id));
@@ -152,13 +167,10 @@ test('spinal cord visibility toggle hides meshes and prevents selection', async 
   assert.equal(visibilityOf(cord, model.settings).visible, true);
   model.select(cord.id);
   assert.equal(model.state.selectedRegion?.id, cord.id);
-
-  model.dispose();
 });
 
 test('the grey horns cap as grey matter against the cord that surrounds them', async () => {
-  const { scene } = await loader.loadAsync('spinal-cord.glb');
-  const horn = scene.children.find(
+  const horn = cordScene.children.find(
     (child) => child.userData['region_id'] === 'zanatomy:left:anterior-horn',
   ) as SolidSource;
   const sections = new SolidSections();
@@ -185,8 +197,7 @@ test(
   'published cord caps have no subject MRI shading and remain pickable at the lower end',
   { timeout: 120_000 },
   async () => {
-    const { scene } = await loader.loadAsync('spinal-cord.glb');
-    const source = scene.children.find(
+    const source = cordScene.children.find(
       (child) => (child as Mesh).isMesh && child.userData['region_id'] === cord.id,
     ) as SolidSource;
     const sections = new SolidSections();
@@ -241,3 +252,13 @@ test(
     sections.dispose();
   },
 );
+
+test('ATLAS-40 reset cancels a cord show still downloading, and keeps the detail level', async () => {
+  await model.setDetail('aseg');
+  await model.setSpinalCordVisible(false);
+  const shown = model.setSpinalCordVisible(true);
+  model.reset();
+  await shown;
+  assert.equal(model.settings.spinalCordVisible, false);
+  assert.equal(model.settings.detail, 'aseg');
+});

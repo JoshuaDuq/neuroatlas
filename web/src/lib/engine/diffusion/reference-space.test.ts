@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { test } from 'vitest';
-import { Vector3 } from 'three';
+import { Matrix4, Quaternion, Vector3 } from 'three';
 import { readRepoJson, readRepoYaml, repoRoot } from '../../../../test/repo.ts';
 import { createReferenceTransform } from './reference-space.ts';
 
@@ -45,6 +45,54 @@ test('missing, nonfinite or nonrigid coordinate mappings surface as errors', () 
     ],
   ] as unknown as number[][][];
   for (const matrix of invalid) assert.throws(() => createReferenceTransform(matrix), /rigid/);
+});
+
+test('DIFF-11 a bottom row other than 0 0 0 1 is a TypeError and a scaled or mirrored frame a RangeError', () => {
+  const identity = [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
+  ];
+  const withRow = (row: number, values: number[]) =>
+    identity.map((entries, at) => (at === row ? values : entries));
+  assert.throws(() => createReferenceTransform(withRow(3, [0, 0, 1, 1])), {
+    name: 'TypeError',
+    message: 'The reference requires a finite rigid RAS transform.',
+  });
+  assert.throws(() => createReferenceTransform(withRow(0, [2, 0, 0, 0])), {
+    name: 'RangeError',
+    message: 'The reference requires a rigid, orientation-preserving RAS transform.',
+  });
+  assert.throws(() => createReferenceTransform(withRow(0, [-1, 0, 0, 0])), {
+    name: 'RangeError',
+    message: 'The reference requires a rigid, orientation-preserving RAS transform.',
+  });
+});
+
+test('DIFF-10 any seeded rotation and translation keeps distances, and the published transform maps its own anchors', () => {
+  let state = 0xe6;
+  const random = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let trial = 0; trial < 200; trial++) {
+    const frame = new Matrix4().compose(
+      new Vector3(random() * 200 - 100, random() * 200 - 100, random() * 200 - 100),
+      new Quaternion(random() - 0.5, random() - 0.5, random() - 0.5, random() - 0.5).normalize(),
+      new Vector3(1, 1, 1),
+    );
+    const e = frame.elements;
+    const rows = [0, 1, 2, 3].map((row) => [0, 1, 2, 3].map((column) => e[column * 4 + row]!));
+    const transform = createReferenceTransform(rows);
+    const a = new Vector3(random(), random(), random());
+    const b = new Vector3(random(), random(), random());
+    const moved = a.clone().applyMatrix4(transform).distanceTo(b.clone().applyMatrix4(transform));
+    assert.ok(Math.abs(moved - a.distanceTo(b)) < 1e-9);
+  }
 });
 
 interface ReferenceSpace {

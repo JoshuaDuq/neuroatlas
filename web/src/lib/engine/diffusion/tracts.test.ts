@@ -5,18 +5,8 @@ import { createTracts } from './tracts.ts';
 
 /** The asset reader serves `public/diffusion/` from disk, so the outline and the bundles load in Node. */
 vi.mock('../../core/assets/diffusion-assets.ts', async () => {
-  const { readFile } = await import('node:fs/promises');
-  const { resolve } = await import('node:path');
-  const { repoRoot } = await import('../../../../test/repo.ts');
-  return {
-    async readDiffusionAsset(file: string) {
-      const bytes = await readFile(resolve(repoRoot, 'public/diffusion', file));
-      return {
-        url: file,
-        buffer: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
-      };
-    },
-  };
+  const { readPublishedDiffusion } = await import('./test-support.ts');
+  return { readDiffusionAsset: readPublishedDiffusion };
 });
 
 test('setActive loads once, announces readiness once and the reference on another anatomy', async () => {

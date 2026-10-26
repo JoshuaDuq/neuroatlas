@@ -107,3 +107,20 @@ test('the pointed-at and chosen white-matter parcels are lifted by code', () => 
   assert.deepEqual(matter.uniforms.whiteMatterCodes.value.toArray(), [-1, -1]);
   matter.dispose();
 });
+
+test('SHADER-26 labels stored in any other form than one byte are refused, and the parcels it holds are known', () => {
+  assert.throws(
+    () =>
+      createWhiteMatter(record, {
+        ...new Volume(record, new Uint8Array(12)),
+        data: new Uint16Array(12),
+      } as never),
+    {
+      message: 'Expected uint8 white-matter labels.',
+    },
+  );
+  const matter = whiteMatter();
+  assert.equal(matter.holds(PRECENTRAL), true);
+  assert.equal(matter.holds('nope'), false);
+  matter.dispose();
+});

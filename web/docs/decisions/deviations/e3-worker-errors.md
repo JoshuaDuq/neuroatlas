@@ -1,8 +1,7 @@
 # E3 deviation: a cut-worker failure is not hidden
 
-Chunk E3 (#26), decision 26 on #4. A fix under the parity policy ("do not port bugs"). The parity
-test (`web/parity/E3.test.ts`) drives the worker handler directly and never produces a worker
-error; the behaviour below is pinned by `solid-sections.test.ts`.
+Chunk E3 (#26), decision 26 on #4. A fix under the parity policy ("do not port bugs"). The behaviour
+below is pinned by `solid-sections.test.ts`.
 
 ## `SolidSections.ensureWorker` falls back only when `Worker` does not exist
 

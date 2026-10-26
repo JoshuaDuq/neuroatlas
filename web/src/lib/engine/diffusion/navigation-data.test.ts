@@ -62,3 +62,43 @@ test('MRI tract navigation retains full-precision source lengths and determinist
   assert.throws(() => configureNavigationTract(mesh, -1), /length/);
   assert.throws(() => configureNavigationTract(mesh, 0), /at least 1 mm/);
 });
+
+test('DIFF-29 a point half a voxel from a voxel centre rounds up', () => {
+  const origin = header.affine.map((row) => row[3]!);
+  const voxelX = (offset: number) =>
+    scannerVoxel([origin[0]! + offset, origin[1]!, origin[2]!], header)![0]! + 0;
+  assert.deepEqual([-0.5, -0.49, 0.49, 0.5, 0.51].map(voxelX), [0, 0, 0, 1, 1]);
+  for (const point of [
+    [Infinity, 0, 0],
+    [0, 0],
+  ]) {
+    assert.throws(() => scannerVoxel(point, header), /three finite RAS values/);
+  }
+});
+
+test('DIFF-28 a voxel and its scanner point are inverse on an oblique grid, for 500 seeded voxels', () => {
+  const oblique = {
+    dims: [3, 40, 50, 60],
+    affine: [
+      [0.8, 0.1, -0.2, -30.5],
+      [-0.1, 0.9, 0.05, -40.25],
+      [0.2, 0, 1.1, -20],
+      [0, 0, 0, 1],
+    ],
+  };
+  let state = 0xe6;
+  const random = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let trial = 0; trial < 500; trial++) {
+    const voxel = [random() * 40, random() * 50, random() * 60].map(Math.floor);
+    const found = scannerVoxel(sourceVoxelPoint(voxel, oblique), oblique)!.map(
+      (value) => value + 0,
+    );
+    assert.deepEqual(found, voxel);
+  }
+});
