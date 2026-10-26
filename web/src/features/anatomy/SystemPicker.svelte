@@ -41,11 +41,8 @@
   let shown = $derived(value ?? '');
 
   async function choose(system: string) {
-    try {
-      await onChoose(system || null);
-    } finally {
-      shown = value ?? '';
-    }
+    await onChoose(system || null);
+    shown = value ?? '';
   }
 </script>
 

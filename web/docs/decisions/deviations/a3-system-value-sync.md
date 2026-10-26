@@ -9,7 +9,7 @@ A failed command renders (`failIfCurrent` calls `fail()`, which notifies and ren
 
 ## New behaviour
 
-A Svelte bound select is rewritten only when its bound value changes, so a refused choice would stay on screen for good. After the choice command settles, even if it rejects, `SystemPicker.svelte` sets its bound value back to the display's own, and Svelte rewrites the select. The reset goes through the binding, so a later rebuild of the options (a language switch) keeps the display's system.
+A Svelte bound select is rewritten only when its bound value changes, so a refused choice would stay on screen for good. After the choice command settles, `SystemPicker.svelte` sets its bound value back to the display's own, and Svelte rewrites the select. The reset goes through the binding, so a later rebuild of the options (a language switch) keeps the display's system.
 
 ## Standard cited
 

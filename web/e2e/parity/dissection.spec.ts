@@ -154,6 +154,7 @@ test.describe('system picker', () => {
     await bySystem(page).click();
     await system(page).selectOption({ index: 1 });
     await expect.poll(() => app.hash()).toContain('system=');
+    await app.waitForCameraIdle();
     const link = await app.hash();
     const chosen = await system(page).locator('option:checked').textContent();
     // A reload: setting the same hash would be a same-document navigation that loads nothing.
