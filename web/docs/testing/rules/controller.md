@@ -48,7 +48,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** browser — focus moves
 - **Source:** `viewer/app.js:549-556`, `708-711`; deviations `s2-hide-focus-fallback.md` (the wait), `h5-clear-focus.md`
 - **Expected:** focused button removed → `clearSelection()` resolves `true`, the active tab has focus, nothing is selected. Focus on a button that stays → resolves `false`, and focus does not move.
-- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134)
 
 ### CTRL-05 · Focus frames the selection, or the lesson landmark as authored
 
@@ -77,7 +77,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1275-1278`
 - **Expected:** select A, hide [A, B], undo → A selected again. Hide [B], restore all → no hidden regions.
-- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; `next` gated off: not in the config's ignore list, skips itself); `parity/S2.test.ts` (D)
+- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134); `parity/S2.test.ts` (D)
 
 ### CTRL-08 · Hide hands the selection to the dissection and focus to Undo
 
@@ -86,7 +86,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** browser — focus moves
 - **Source:** `viewer/app.js:716-723`; deviation `s2-hide-focus-fallback.md`; decision 35 on #4
 - **Expected:** no selection → resolves `false`, explorer unchanged. Selection → resolves `true`; explorer `anatomy`; list shown; region hidden; focus on Undo. Undo disabled → focus on the tree stop. Both gone → `false`.
-- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; `next` gated off: not in the config's ignore list, skips itself); `parity/S2.test.ts` (D, focus excluded)
+- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134); `parity/S2.test.ts` (D, focus excluded)
 
 ### CTRL-09 · Isolate toggles between the region and the whole brain
 
@@ -278,7 +278,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:846-864`; `viewer/clinical/translations.js:31`
 - **Expected:** deficit, deficit, listed region, Restore → `true`; the re-applied scene is the first capture; Restore not offered; `selectedDeficit: null`; notice "Previous view restored.". On Functions → `selectedFunction: null`. Partial failure → `AggregateError` with each cause logged; Restore still offered; deficit still open. Overtaken → `false`, unchanged. None held → error "no scene".
-- **Covered by:** `src/lib/controller/excursion.test.ts` (R; the scene reader is a `vi.fn`); `e2e/parity/deficits.spec.ts`, `functions.spec.ts` (R; `next` gated off); `parity/S3.test.ts` (D)
+- **Covered by:** `src/lib/controller/excursion.test.ts` (R; the scene reader is a `vi.fn`); `e2e/parity/deficits.spec.ts`, `functions.spec.ts` (R; enabled on `next` since #134); `parity/S3.test.ts` (D)
 
 ### CTRL-28 · Closing the deficit or function ends the excursion where it stands
 
@@ -332,7 +332,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1066-1086`
 - **Expected:** deficit open, `searchIn('functions','memory')` → explorer `functions`, `functionQuery: 'memory'`, `selectedFunction: null`, Restore not offered. `functionsMatching('qqqqzzzz')` → 0. `checkedMaps(d)` → only domains with a lesion check citing d.
-- **Covered by:** `src/lib/controller/excursion.test.ts` (R; the deficit count is W, compared with the same `clinical.search` it calls), `e2e/parity/deficits.spec.ts` (R; `next` gated off), `parity/S3.test.ts` (D)
+- **Covered by:** `src/lib/controller/excursion.test.ts` (R; the deficit count is W, compared with the same `clinical.search` it calls), `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134), `parity/S3.test.ts` (D)
 
 ### CTRL-34 · A stage key row shows one function or one finding alone
 
@@ -399,7 +399,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1311-1322`, `1366-1373`; `viewer/learning/session.js:6-9`
 - **Expected:** `openCircuit(c)` → one capture; lesson `{circuit: c, step: 0, visited: [0]}`; selection = step 0's region; `frameLandmark(region, view, 12, {})`; session view = step view. Opening a second circuit → still one capture.
-- **Covered by:** `src/lib/controller/lesson.test.ts` (R), `src/lib/controller/excursion.svelte.test.ts` (R), `e2e/parity/circuits.spec.ts` (R; `next` gated off: not in the config's ignore list, skips itself), `parity/S3.test.ts` (D)
+- **Covered by:** `src/lib/controller/lesson.test.ts` (R), `src/lib/controller/excursion.svelte.test.ts` (R), `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134), `parity/S3.test.ts` (D)
 
 ### LESSON-02 · A landmark that is not drawn is refused
 
@@ -426,7 +426,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1374-1382`
 - **Expected:** `openLessonLandmark(c, 2)` → explorer `circuits`; lesson `{circuit: c, step: 2, visited: [0, 2]}`; selection = step 2's region.
-- **Covered by:** `src/lib/controller/lesson.test.ts` (R), `e2e/parity/circuits.spec.ts` (R; `next` gated off: not in the config's ignore list, skips itself), `parity/S3.test.ts` (D)
+- **Covered by:** `src/lib/controller/lesson.test.ts` (R), `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134), `parity/S3.test.ts` (D)
 
 ### LESSON-05 · Stepping moves the lesson; a step that does not exist is refused
 
@@ -585,7 +585,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1941-1944`; deviation `s5a-arrows-in-tablist.md`; decision 19 on #4
 - **Expected:** Anatomy, ArrowDown, ArrowUp → walk +1, −1. Functions, Deficits, Circuits or Diffusion → nothing, not cancelled. On a `[role="tab"]` → nothing, not cancelled.
-- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off), `parity/S5a.test.ts` (D, tabs excluded)
+- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134), `parity/S5a.test.ts` (D, tabs excluded)
 
 ### KEY-11 · Digits choose the preset views
 
@@ -621,7 +621,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1968-1981`
 - **Expected:** with cortex on, internal off, cord off, hemisphere `right`: `C U S H` → cortex false, internal true, cord true, hemisphere `both`; none prevented. both→left, left→right, right→both.
-- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `src/app/boot.svelte.test.ts` (R, `c`), `e2e/parity/anatomy-tree.spec.ts` (R, `h`; `next` gated off), `parity/S5a.test.ts` (D)
+- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `src/app/boot.svelte.test.ts` (R, `c`), `e2e/parity/anatomy-tree.spec.ts` (R, `h`; enabled on `next` since #134), `parity/S5a.test.ts` (D)
 
 ### KEY-15 · A control handles its keys before the page
 

@@ -11,7 +11,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — ARIA roles, levels and states on the rendered rows
 - **Source:** `viewer/ui/panels/navigator.js:469-567`; decision record `0002-anatomy-treegrid.md`; deviation `a1-treegrid-structure.md`; decision 8 on #4
 - **Expected:** Fixture, nothing open → row ids `section:cortex`, `cortex:Frontal`, `cortex:Limbic`, `section:structure`, `structure:Basal ganglia`, `section:tissue`, `tissue:Cut labels`, all `aria-level="1"`; groups `aria-expanded="false"`; section rows have neither `aria-expanded` nor `aria-selected`. All open → `d:right:1` has `aria-level="2"`, `aria-posinset="2"`, `aria-setsize="3"`, `aria-selected="false"`. Grid name "Browse anatomy" / "Parcourir l’anatomie".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-02 · Groups are named as the tree names them and sorted within their family
 
@@ -29,7 +29,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: today `rowLabel` in `AnatomyTree.svelte`)
 - **Source:** `viewer/ui/panels/navigator.js:463-467`, `523-546`
 - **Expected:** Fixture: "Frontal, 3 regions", "Limbic, 1 region"; French "Frontal, 3 régions". Published data (legacy baseline): "Frontal, 38 regions", "Central, 6 regions", "Cerebellum, 31 regions", French "Frontal, 38 régions".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off). The dimmed group is uncovered.
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134). The dimmed group is uncovered.
 
 ### ANAT-04 · A section heading names the display settings that hide its rows
 
@@ -38,7 +38,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `sectionReasons`, `reasonText`)
 - **Source:** `viewer/ui/panels/navigator.js:113-129`, `489-509`; deviation `a1-section-reason-name.md`; decision 32 on #4
 - **Expected:** Fixture: "Cortex (Hemisphere hidden)" with the caption "Hemisphere hidden" drawn; "Subcortical" (no reason); "Cut labels only (Visible in a section)". Published data after `h` (hide a hemisphere): a "Cortex (Hemisphere hidden…" row.
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-05 · A region row says its side and, when it is not drawn, why and what a press does
 
@@ -47,7 +47,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `regionNode` with `reasonText`, `rowStatesReason`)
 - **Source:** `viewer/ui/panels/navigator.js:131-137`, `326-371`
 - **Expected:** Fixture with `a:left:2` hidden: "Precentral gyrus, left"; "Superior frontal gyrus, right: Hemisphere hidden. Activate to reveal." (nothing printed); "Putamen, left: Hidden. Activate to reveal." (nothing printed); "Globus pallidus, left: In <detail set>. Activate to reveal." (prints "In …"); "Small nucleus, left, not shown: Too small for the cut." (prints "Too small for the cut"). Published data with a hemisphere hidden: "Middle frontal gyrus, right: Hemisphere hidden. Activate to reveal."
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-06 · A hidden row names itself in the one tooltip, never in a native title
 
@@ -56,7 +56,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — DOM attributes the U5 tooltip reads
 - **Source:** `viewer/ui/panels/navigator.js:366-367`; deviation `a1-drop-title.md`; decision 32 on #4
 - **Expected:** `d:right:2` `.row-main[data-tooltip]` = "Superior frontal gyrus, right: Hemisphere hidden. Activate to reveal."; `d:left:1` has none; `document.querySelector('[title]')` is null.
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-07 · A region too small for the cut explains itself and does nothing
 
@@ -74,7 +74,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — cell structure and layout
 - **Source:** `viewer/ui/panels/navigator.js:478-480`, `533-545`; deviation `a1-treegrid-structure.md`
 - **Expected:** `d:left:1` eye in cell 2, `d:right:1` in cell 3, `a:mid:1` in cell 1; Frontal's eyes sides `left, right`; Basal ganglia's `midline, left`; the `.slot-mid` of `a:left:1` is `display: block`, of `d:left:1` `display: none`. Published data: "Hide Frontal, left", "Hide Frontal, right", "Hide Cerebellum, midline".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-09 · A catalog still loading shows a placeholder, never an empty treegrid
 
@@ -94,7 +94,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — keyboard dispatch and real focus
 - **Source:** `viewer/ui/panels/navigator.js:10-22`, `682-689`; decision record `0002-anatomy-treegrid.md`; deviation `a1-treegrid-structure.md`
 - **Expected:** Fixture: Frontal, Down → Limbic; End → `tissue:Cut labels`; Home → `section:cortex`; Up there stays. Published data, Frontal open: from "Frontomarginal gyrus and sulcus, left", Down → "…, right", Up back; End lands on a level-1 row; Home → the Cortex heading.
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-11 · Right and Left open, close and move between a row and its eyes
 
@@ -103,7 +103,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — keyboard dispatch and real focus
 - **Source:** `viewer/ui/panels/navigator.js:10-36`, `659-698`; decision record `0002-anatomy-treegrid.md`; deviation `u7-treegrid-keys.md` (Right on an open group goes to its first cell, legacy went to the first child)
 - **Expected:** Fixture: Frontal, Right → expanded, focus on Frontal; Right → first eye; Escape → Frontal; Down, Left → Frontal; Left → collapsed. Basal ganglia: Right → Mid eye, Right → L eye, Right stays, Left Left → row. `d:left:1` eye, Down → `d:right:1`'s eye; Up back. Frontal L eye, Up → `section:cortex`; `d:left:3` eye, Down → `section:structure`; Cut labels L eye, Down → `t:left:1` row; Ctrl+End → `t:left:2`'s eye; Ctrl+Home → `section:cortex`; `*` on Frontal → 4 groups expanded. Published data: Frontal, Right Right → "Hide Frontal, left", Right → "Hide Frontal, right".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-12 · Enter, Space or a click opens a group or chooses a region
 
@@ -112,7 +112,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — keyboard and pointer dispatch
 - **Source:** `viewer/ui/panels/navigator.js:252-263`, `386`, `547`; decision record `0002-anatomy-treegrid.md`
 - **Expected:** Fixture with `a:left:2` hidden: Enter on `d:left:1`, Space on `d:right:2`, Enter on `a:left:2`, Enter on `t:left:1` → calls `select d:left:1`, `reveal hemisphere d:right:2`, `reveal removed a:left:2` (nothing for `t:left:1`); `d:left:1` then `aria-selected="true"`. A click on a row's empty area → `select d:left:1`; on Limbic → toggles it; on a section heading → nothing; on `d:left:1`'s eye → `hide d:left:1` and no selection. Published data: Enter on "Middle frontal gyrus, left" writes `region=` to the link.
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-13 · V hides or shows from the row
 
@@ -121,7 +121,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — keyboard dispatch and real focus
 - **Source:** `viewer/ui/panels/navigator.js:17`, `694-695`; decision record `0002-anatomy-treegrid.md`
 - **Expected:** Fixture: `d:left:1`, `v` → `hide d:left:1`, focus on the row; `V` → `show d:left:1`. Frontal, `v` → no call, focus on its first eye. Limbic, `v` → `hide d:left:3`. Frontal's R eye focused, `v` → `hide d:right:1,d:right:2`, focus stays on it. `t:left:1` and `section:cortex` → no call. Published data: "Middle frontal gyrus, left", `v` → its eye reads "Show Middle frontal gyrus, left".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-14 · The page's own shortcut letters pass through a tree row
 
@@ -139,7 +139,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — real focus and Tab order
 - **Source:** `viewer/ui/panels/navigator.js:209-214`, `626-630`
 - **Expected:** Fixture, `selected: d:left:3`, nothing open → the stop is `section:cortex`; after Expand all → `d:left:3`. From Collapse all, Tab → `d:left:3`, Tab → `#after`, Shift+Tab → `d:left:3`. Focus on Frontal, then pick `d:left:3` from outside → `d:left:3` selected and still one stop. Published data, Frontal open → one stop.
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-16 · The chosen row scrolls into view once per choice
 
@@ -177,7 +177,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: the label from `hidePart`/`showPart` and `visibilityStateOf`)
 - **Source:** `viewer/ui/panels/visibility-control.js:125-184`
 - **Expected:** "Hide Precentral gyrus, left" → after a press "Show Precentral gyrus, left"; French "Masquer Precentral gyrus, droite" with letter "D"; letter "L" `aria-hidden="true"`; no `aria-pressed`; the hidden state draws the slash path `m3 3 18 18`. Published data: "Hide Frontal, left", "Masquer Frontal, gauche", "Masquer Frontal, droite".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-20 · Pressing an eye changes it in place and keeps focus on it
 
@@ -195,7 +195,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `visibilityStateOf` and the label)
 - **Source:** `viewer/ui/panels/visibility-control.js:118-123`, `177-181`; deviation `a1-partial-state-name.md`
 - **Expected:** Hide `d:right:1` → Frontal's R eye: `data-partial="true"`, `data-state="shown"`, name "Hide Frontal, right, partially hidden", tooltip "Hide Frontal, right · partially hidden". Press it → "Show Frontal, right", `data-partial="false"`, and `d:right:2`'s eye hidden. Published data: hide "Middle frontal gyrus, left" → "Hide Frontal, left, partially hidden" on next (legacy keeps "Hide Frontal, left"); show it again → not partial.
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/core/panels/navigator.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-22 · An eye press names the part for the one announcement
 
@@ -204,7 +204,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: the sentence) — the joined message is S1's (`controller.md`)
 - **Source:** `viewer/app.js:1670-1676`; deviation `a1-eye-announcement.md`; decisions 32 and 36 on #4
 - **Expected:** Hide then show `d:left:1` → `said` = ["Hidden: Precentral gyrus, left.", "Shown: Precentral gyrus, left."]; French ["Masqué : Precentral gyrus, gauche.", "Affiché : Precentral gyrus, gauche."]; `#announcer` stays "". Whole app, published data: hiding "Middle frontal gyrus, left" announces "Hidden: Middle frontal gyrus, left. 1 part hidden" (legacy: "1 part hidden").
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/controller/speech.test.ts` (R, the join); `src/app/boot.svelte.test.ts` (R, the join); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off, so the joined sentence never runs on the built next app)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `src/lib/controller/speech.test.ts` (R, the join); `src/app/boot.svelte.test.ts` (R, the join); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-23 · Expand all opens every group, then becomes Collapse all
 
@@ -213,7 +213,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `allExpanded` in `TreeHeader.svelte`)
 - **Source:** `viewer/ui/panels/navigator.js:758-762`; `viewer/app.js:643-653`
 - **Expected:** Fixture: "Expand all" → press → 4 groups expanded, "Collapse all" → press → 0 expanded, "Expand all". French "Tout déplier" / "Tout replier".
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ## Tree presentation
 
@@ -251,7 +251,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — geometry
 - **Source:** WCAG 2.2 SC 2.5.8; #4 definition of done (44 px on coarse pointers)
 - **Expected:** Eyes of `d:left:1`, `a:mid:1` and Frontal: ≥ 24 × 24 fine, ≥ 44 × 44 coarse; `d:left:1` row ≥ 32 fine, ≥ 44 coarse; at 812 × 375 eyes ≥ 24 and `scrollWidth ≤ innerWidth`. Published data: "Hide Frontal, left/right", "Hide Middle frontal gyrus, left", "Hide Cerebellum, midline" ≥ 24 (and ≥ 44 with touch).
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-28 · The tree reflows at 320 px, with text spacing and at 200 % text
 
@@ -269,7 +269,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` returns no violations for both languages (fixture); `app.expectAccessible('anatomy-tree')` with Frontal open (published data).
-- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/anatomy/AnatomyTree.svelte.test.ts` (R); `e2e/parity/anatomy-tree.spec.ts` (R; enabled on `next` since #134)
 
 ## Search
 
@@ -280,7 +280,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — combobox state and visibility
 - **Source:** `viewer/ui/panels/navigator.js:326-345`, `390-461`, `742-767`; deviation `a2-expanded-with-options.md`; decision 34 on #4
 - **Expected:** Fixture, "cuneus" → options "Cuneus, left, Occipital" and "Cuneus, right, Occipital"; `aria-expanded="true"`; the armed option is "Cuneus, left"; the treegrid is not visible; Down arms "Cuneus, right". Published data, "middle frontal gyrus" → "Middle frontal gyrus, left, Frontal" armed (`aria-activedescendant` = its id), "…, right, Frontal" listed, the first `mark.query-match` reads "Middle frontal gyrus".
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-31 · The match is marked, and an alias says why a name matched
 
@@ -298,7 +298,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — combobox choice
 - **Source:** `viewer/ui/panels/navigator.js:252-263`, `346-368`; deviation `a2-option-title.md`
 - **Expected:** Fixture, hemisphere `right`, "cuneus" → option "Cuneus, left: Hemisphere hidden. Activate to reveal.", armed; its `[data-tooltip]` the same text; no `[title]` in the listbox; Enter → `reveal hemisphere d:left:cuneus`, field "". Published data after `h`: option "Middle frontal gyrus, right: Hemisphere hidden. Activate to reveal." containing "Hemisphere hidden".
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-33 · A result too small for the cut is disabled and never armed
 
@@ -316,7 +316,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — real focus
 - **Source:** `viewer/ui/panels/navigator.js:252-263`, `386`, `401-402`, `421-423`, `704-732`; deviation `a2-focus-stays-in-field.md`
 - **Expected:** Fixture, "cuneus", Enter → `select d:left:cuneus`, field "", tree visible, focus in the field; a click on "Cuneus, right" → `select d:right:cuneus`, focus in the field; Escape → field "", tree visible, focus in the field. Published data: Enter or a click writes `region=`; the clear button → field "", focus in field, tree visible.
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-35 · The armed option is the selected one; the chosen region is current
 
@@ -325,7 +325,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — ARIA states in the listbox
 - **Source:** `viewer/ui/panels/navigator.js:279`, `600-619`; deviation `a2-active-option-selected.md`; decisions 34 and 40 on #4
 - **Expected:** `selected: d:right:cuneus`, "cuneus" → the one `aria-selected="true"` option is the armed "Cuneus, left"; the one `aria-current="true"` option is "Cuneus, right". Published data, after choosing the right one and coming back: left `aria-selected="true"`, right `false`.
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-36 · A search that finds nothing says so, with a hint
 
@@ -334,7 +334,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `sentences` in `AnatomySearch.svelte`)
 - **Source:** `viewer/ui/panels/navigator.js:428-436`, `745-755`
 - **Expected:** "zzzz" → "No match for “zzzz”" and "Try another spelling, an abbreviation or a synonym. Symptoms and syndromes are under Deficits."; no option; `aria-expanded="false"`. " " → no `.empty`. French "zzzzqq" → "Aucun résultat pour « zzzzqq »".
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, could move down); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-37 · Matches in another atlas are reported, with a switch to that atlas
 
@@ -361,7 +361,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: the status sentence) — the 500 ms pause is U6's (`ui-kit.md`)
 - **Source:** `viewer/ui/panels/navigator.js:242-250`, `411-412`, `449`
 - **Expected:** "cuneus" → "2 matches."; "zzzz" → starts "No match for “zzzz”. Try another spelling, an abbreviation or a synonym"; Destrieux, "v1" → "No match for “v1”. 1 match in HCP-MMP1.0 multimodal atlas."; capped → "Showing 50 of 61 matches. Refine the search to narrow it." (no count). Published data: "zzzzqq" → contains "No match for “zzzzqq”".
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, real 500 ms waits); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, real 500 ms waits); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-40 · `/` and the page's arrows reach the search
 
@@ -370,7 +370,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — real focus and selection
 - **Source:** `viewer/ui/panels/navigator.js:793-798`; `viewer/app.js:1943-1944`; deviation `a2-arrows-focus-field.md`
 - **Expected:** "cuneus", focus elsewhere, `/` → focus in the field, selection `[0, 6]`; walk down → focus in the field, value "cuneus". Published data, "middle", `/` → selection `[0, 6]`.
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-41 · The search field stays pinned and the armed result is never under it
 
@@ -397,7 +397,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` clean for each state; `app.expectAccessible('anatomy-search')` with "middle frontal" results.
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ## Browse scope and system picker
 
@@ -408,7 +408,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — radio keyboard and focus
 - **Source:** `viewer/ui/panels/internal-anatomy.js:64-67`, `76-83`; deviation `a2-tree-scope-radio-group.md`; decision 34 fix 10 on #4
 - **Expected:** One `radiogroup` "Browse"; "Whole brain" checked; Right → call `scope`, "By system" checked; clicking "By system" again → no second call. Loading: `aria-disabled="true"`, not `disabled`, focus stays; Right → no call, focus on the last radio. French "Parcourir", "Cerveau entier". "cun" typed → no radiogroup. Published data: Right from "Whole brain" → "By system" focused and checked, and the "System" select visible.
-- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R); `e2e/parity/anatomy-search.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-45 · The system picker lists each system of the detail level once, sorted as shown
 
@@ -417,7 +417,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (`system-options.ts` is pure)
 - **Source:** `viewer/ui/panels/internal-anatomy.js:86-101`
 - **Expected:** aseg fixture: values `["", "Basal ganglia", "Brainstem", "Limbic", "Ventricles and CSF"]`, labels "All internal structures", then the same names. French labels "Toutes les structures internes", "Ganglions de la base", "Limbique", "Tronc cérébral", "Ventricules et LCS" with values `["", "Basal ganglia", "Limbic", "Brainstem", "Ventricles and CSF"]`. Shared "Limbic" → "Limbic system"; French shared "Limbique" → "Système limbique" (value still "Limbic"). `aseg-fine` → `["", "Cerebellum"]`. Published data: first "All internal structures", the rest sorted with `localeCompare(…, 'en')`.
-- **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R; the first case already calls `systemOptions` directly: move these four cases down to unit); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R; the first case already calls `systemOptions` directly: move these four cases down to unit); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-46 · The system picker is a labelled select that shows the display's system
 
@@ -426,7 +426,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — native select and label
 - **Source:** `viewer/ui/panels/internal-anatomy.js:68`, `85`, `102`
 - **Expected:** Label "System" / "Système"; a label click focuses the select. `value: null` → ""; `value: 'Limbic'` → "Limbic"; set Limbic from outside → "Limbic". Choose "Basal ganglia", then "" → calls `Basal ganglia`, `null`, value "". Tab then `v` → "Ventricles and CSF", one call. Hidden until "By system" in the explorer.
-- **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, shown under the scope only inside); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/SystemPicker.svelte.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, shown under the scope only inside); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-47 · A refused system choice is put back
 
@@ -453,7 +453,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** e2e — permalink round trip on the built site (the URL format is `links.md`'s)
 - **Source:** `viewer/state/url-state.js:155` (`system=`); `viewer/ui/panels/internal-anatomy.js:102`
 - **Expected:** "By system", option 1 → hash contains `system=`, the checked option is that name; option 0 → no `system=`. Reload with the hash → the same hash and the same checked option.
-- **Covered by:** `e2e/parity/dissection.spec.ts` (R; skips on `next`, so no running next-app test)
+- **Covered by:** `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ## Dissection bar
 
@@ -464,7 +464,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — ARIA group and DOM order
 - **Source:** `viewer/ui/panels/dissection.js:20-30`; `viewer/index.html:314-322`; deviation `a3-bar-group.md`; decision 36 on #4
 - **Expected:** 3 hidden → `role=group`, `aria-labelledby` = its `h3` "Dissection"; no `section` or `region`; children text `Dissection`, `3 parts hidden`, `Undo`, `Restore all`; no `aria-live`, `status` or `alert` inside. 0 hidden → no group; hide one → "1 part hidden". Published data: no bar on a plain load; `#hidden=destrieux:left:38` → a group "Dissection" with "1 part hidden".
-- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`). "Only in the Anatomy explorer" (legacy `dissection.js:23`) is uncovered: the component has no explorer input, so I1 must mount it only there (`regions.md`).
+- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134). "Only in the Anatomy explorer" (legacy `dissection.js:23`) is uncovered: the component has no explorer input, so I1 must mount it only there (`regions.md`).
 
 ### ANAT-51 · The count and commands are worded in the reader's language
 
@@ -473,7 +473,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (i18n `dissection.hiddenCount`; `core-i18n.md`)
 - **Source:** `viewer/ui/panels/dissection.js:24-28`
 - **Expected:** en 1 → "1 part hidden", 12 → "12 parts hidden", "Undo", "Restore all"; fr 1 → "1 partie masquée", 12 → "12 parties masquées", "Annuler", "Tout rétablir"; heading "Dissection" in both.
-- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R, could move down); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R, could move down); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-52 · Undo is disabled with nothing to undo; Restore all never is
 
@@ -482,7 +482,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — native disabled and Tab order
 - **Source:** `viewer/ui/panels/dissection.js:29-30`
 - **Expected:** No history → Undo `disabled`, Restore all enabled. Enter, Space on Undo, Enter on Restore all → calls `undo`, `undo`, `restore`. Tab order `tree stop`, `Undo`, `Restore all`, `after`; with Undo disabled, Tab from the stop → Restore all. Published data, `#hidden=…`: Undo disabled, Restore all enabled (French "Annuler" disabled, "Tout rétablir" enabled).
-- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-53 · Focus is never left on a spent command or a bar that left
 
@@ -491,7 +491,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — real focus
 - **Source:** `viewer/ui/panels/dissection.js:31-35`; deviation `a3-focus-fallback.md`; decision 36 on #4
 - **Expected:** History [1], Undo → Undo disabled, focus on Restore all. History [1, 2] → "2 parts hidden", focus on Undo. Restore all (3 hidden) or the last Undo (1 hidden) → no bar, focus on `#stop`; no tree stop → focus on `#tab`. Undo from an outside button → focus stays there. Published data: Restore all → focus on the tree's `[tabindex="0"]`, no `hidden=` in the link; hide "Cerebellum, left" after a `hidden=` link, Undo → "1 part hidden", Undo disabled, focus on Restore all.
-- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-54 · The inspector's Hide hands focus to Undo
 
@@ -500,7 +500,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** browser — focus registry (the cross-panel journey is e2e)
 - **Source:** decision 35 and 36 on #4; deviation `a3-focus-fallback.md`
 - **Expected:** History [1] → `requestFocus('dissection-undo')` true, Undo focused; no history → Restore all focused; no bar → `false`, and with fallback `tree-stop` → `#stop`. Published data, `#region=destrieux:left:38`, Hide → "1 part hidden", Undo enabled and focused; Enter → no bar, focus on the tree's stop.
-- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-55 · A restored link's hidden count is said once
 
@@ -518,7 +518,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** e2e — permalink round trip on the built site (the URL format is `links.md`'s)
 - **Source:** `viewer/state/url-state.js:197-204` (`hidden=`); `viewer/ui/panels/dissection.js:20-30`
 - **Expected:** `#hidden=destrieux:left:38` → "1 part hidden", Undo disabled, axe clean (`dissection`); Restore all → hash has no `hidden=`.
-- **Covered by:** `e2e/parity/dissection.spec.ts` (R; skips on `next`, so no running next-app test)
+- **Covered by:** `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-57 · The bar and the picker keep their targets and reflow
 

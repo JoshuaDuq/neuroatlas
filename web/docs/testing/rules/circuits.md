@@ -13,7 +13,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** unit (view-model: `landmarkTotal`)
 - **Source:** `viewer/ui/panels/circuits.js:150-165`
 - **Expected:** `landmarkTotal` of three circuits with 3, 2 and 1 steps → 6; of none → 0. On the published catalogue the note reads "9 guided circuits · 39 landmarks" (FR "9 parcours guidés · 39 repères"); rows named "Visual pathway , 4 landmarks" (FR "Voie visuelle , 4 repères") and "Memory landmarks , 5 landmarks".
-- **Covered by:** `src/features/circuits/circuits-view.test.ts` (R); `src/features/circuits/circuits.svelte.test.ts` (R; the totals re-derived from the catalogue); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits-view.test.ts` (R); `src/features/circuits/circuits.svelte.test.ts` (R; the totals re-derived from the catalogue); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-02 · The list is a labelled group of a real list, and a row's name contains what it shows
 
@@ -40,7 +40,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — key dispatch and focus
 - **Source:** `viewer/ui/panels/circuits.js:304-314,345`; deviation `u6-list-nav-modifier-keys.md`; decision 37 on #4
 - **Expected:** row 0, Tab → row 1; ArrowUp → row 0; ArrowUp → row 0; ArrowDown × 2 → row 2; last row, ArrowDown → still the last. Shift+ArrowDown → focus unchanged; Alt+ArrowDown → not prevented. `focusFirst()` → row 0 focused.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ## Opening a lesson
 
@@ -51,7 +51,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — focus
 - **Source:** `viewer/ui/panels/circuits.js:167-196,281-289,330-335`; deviation `x3-current-circuit.md`; decision 40 on #4
 - **Expected:** `vision` → `[data-circuit=vision]` `aria-current="true"`, no `aria-pressed`, the only current row; `currentItem()` that row; title `h3[data-circuit-title]` `tabindex=-1`, focused, "Optic chiasm"; hidden `h2` "Visual pathway"; `.circuit-role` = step 0's role; progress "Landmark 1 of 4" (FR "Repère 1 sur 4"). Then `memory` → `vision` not current, "Landmark 1 of 5".
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; the hash part is `links.md`; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; the hash part is `links.md`; enabled on `next` since #134)
 
 ### CIRC-06 · A landmark on its own region names its side and group; elsewhere the profile offers the way back
 
@@ -71,7 +71,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — names and `hidden` (the targets are `stepperTargets`, unit in `core-panels.md`)
 - **Source:** `viewer/ui/panels/circuits.js:74-100`
 - **Expected:** `vision` step 0 → `.circuit-stepper` `role="group"`, `aria-label` "Landmarks"; Previous hidden; Next shown, `aria-label` and `data-tooltip` "Next landmark"; Previous `aria-label` "Previous landmark".
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-08 · Next and Previous keep focus, and the view follows the landmark
 
@@ -80,7 +80,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — focus and scroll
 - **Source:** `viewer/ui/panels/circuits.js:281-289`
 - **Expected:** `hearing`, Next (Enter) → title step 1, focus on Next, "Landmark 2 of 3"; Enter → step 2, Next hidden, focus on Previous; Enter → step 1, focus on Previous. Profile scrolled to 40 px, Next → `scrollTop` 0, selected region = step 1's region.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-09 · A busy stepper control has no hover fill
 
@@ -100,7 +100,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — roles and accessible names (the progress states are `stepProgress`, unit in `core-panels.md`)
 - **Source:** `viewer/ui/panels/circuits.js:47-72,198-205`; deviation `x3-list-structure.md`
 - **Expected:** `hearing` → `ol[role=list]` labelled by `.landmarks-heading`; progress `current, upcoming, upcoming`; only row 0 `aria-current="step"`; row 0 number "1". Next → `visited, current, upcoming`; row 0 text ends ", seen"; row 1 has no "seen"; row 0 no `aria-current`.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-11 · A landmark row opens that landmark with its title in focus; the arrows walk the sequence
 
@@ -109,7 +109,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — focus and key dispatch
 - **Source:** `viewer/ui/panels/circuits.js:281-302,304-314`
 - **Expected:** `hearing`, row 2, Enter → step 2, focus on the title, title = step 2's name. Row 0, ArrowDown → row 1; ArrowDown × 2 → row 2; row 0, ArrowUp → row 0.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-12 · Four notes follow the sequence, with one command to the circuit's deficit
 
@@ -118,16 +118,16 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — the press (the content is catalogue data)
 - **Source:** `viewer/ui/panels/circuits.js:198-226,294`
 - **Expected:** `hearing` → summaries in order "Connections and scope", "What this atlas shows", "Clinical context", "Sources"; buttons outside the sequence: "Open deficit evidence" only; pressing it → the Deficits entry point called once with `word-deafness`. Schematic note "Schematic relationships · not measured connectivity or tractography".
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R: the Deficits tab shown; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R: the Deficits tab shown; enabled on `next` since #134)
 
 ### CIRC-13 · Sources link out in a new tab, and say so, with the date the content was checked
 
 - **Rule:** Each of the circuit's references is a link to its URL in a new tab with `rel="noreferrer"`, followed by its citation; the note ends with "Content checked: <date>". The link says in words that it opens a new tab (decision 17's shared text, `link.newTab`).
 - **Kind:** accessibility
 - **Level:** browser — link attributes
-- **Source:** `viewer/ui/panels/circuits.js:207-218`; decision 17 on #4; X3's request 5 on #4 (comment 71)
+- **Source:** `viewer/ui/panels/circuits.js:207-218`; decision 17 on #4; X3's request 5 on #4 (comment 71); deviation `x3-new-tab-cue.md`
 - **Expected:** `hearing`, Sources open → the links' `href`s are the circuit's reference URLs in order, each `target="_blank"`, `rel="noreferrer"`; "Content checked: 2026-10-24". Each link contains the visually hidden "(opens in a new tab)" (FR "(s’ouvre dans un nouvel onglet)").
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R: links and date); `e2e/parity/circuits.spec.ts` (R; skips on `next`). The spoken new-tab cue is not implemented yet and is uncovered.
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R: links and date); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134). The spoken new-tab cue landed in #136 (deviation `x3-new-tab-cue.md`) and is R-covered there ("each source link says it opens a new tab, in its name and with the icon").
 
 ### CIRC-14 · A note the reader opened stays open as the lesson moves on
 
@@ -136,7 +136,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — `<details>` state across renders
 - **Source:** `viewer/ui/panels/circuits.js:198-226`; deviation `x3-disclosure-state.md`; decision 40 (bug 7) on #4
 - **Expected:** `hearing`, open Sources → open; Next → still open; open `vision` → closed.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ## Related circuits
 
@@ -147,7 +147,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** unit (view-model: `relatedLandmarks`) for the rows; browser for names
 - **Source:** `viewer/ui/panels/circuits.js:229-257`; deviations `x3-label-in-name.md`, `x3-list-structure.md`, `x3-no-landmarks.md`
 - **Expected:** `relatedLandmarks` with regions {thalamus} over circuits (chiasm, thalamus, cortex), (hippocampus, thalamus), (cochlear-nucleus) → [vision 1, memory 1]; {hippocampus, chiasm, unrelated} → [vision 0, memory 0]; {cerebellum} or {} → []. On the app: `vision` open, Anatomy tab → a button named "Visual pathway 1 of 4 , Landmark" under `h3` "In guided circuits", its name starting with its visible words; on the Circuits tab → no `.related`; a structure in no circuit → no `.related`.
-- **Covered by:** `src/features/circuits/circuits-view.test.ts` (R); `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits-view.test.ts` (R); `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-16 · A related row opens that lesson at its own landmark, in the Circuits tab
 
@@ -156,7 +156,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — focus
 - **Source:** `viewer/ui/panels/circuits.js:295-296`
 - **Expected:** select `memory`'s last landmark on Anatomy, press its row → lesson `{circuit: 'memory', step: 4}`, title = step 4's name. From `learning:midline:optic-chiasm` → explorer `circuits`, title "Optic chiasm", focused.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ## Runs in flight
 
@@ -232,7 +232,7 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — axe
 - **Source:** decision record #58
 - **Expected:** `expectAxeClean()` → no violations in each state.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R; the full theme × width matrix in each of 5 states × 2 languages, see the audit's slow tests); `e2e/parity/circuits.spec.ts` (R; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R; the full theme × width matrix in each of 5 states × 2 languages, see the audit's slow tests); `e2e/parity/circuits.spec.ts` (R; enabled on `next` since #134)
 
 ### CIRC-25 · In forced colours the open circuit, the progress shapes and the focus ring stay visible
 
@@ -259,4 +259,4 @@ The lesson commands are in `controller.md` and are not repeated here: opening a 
 - **Level:** browser — layout
 - **Source:** WCAG 2.2 SC 1.4.4, 1.4.10, 1.4.12
 - **Expected:** `cerebellar`, French, three notes open, another region selected → every visible `button, summary, h2, h3, p, dd` `scrollWidth ≤ clientWidth + 1`; `button, summary` `scrollHeight ≤ clientHeight + 1`; root and `.circuit-stepper` `scrollWidth ≤ clientWidth + 1`. 390 px, `cerebellar`, French → page `scrollWidth − clientWidth = 0`.
-- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R: the 390 px page; skips on `next`)
+- **Covered by:** `src/features/circuits/circuits.svelte.test.ts` (R); `e2e/parity/circuits.spec.ts` (R: the 390 px page; enabled on `next` since #134)

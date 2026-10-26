@@ -11,7 +11,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/workspace.js:6`; `viewer/ui/chrome/workspace.test.js:6`
 - **Expected:** `MODES` = `['anatomy', 'functions', 'deficits', 'circuits', 'diffusion']`. Labels EN "Anatomy", "Functions", "Deficits", "Circuits", "Tracts"; FR "Anatomie", "Fonctions", "Déficits", "Circuits", "Faisceaux".
-- **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, both languages); `e2e/parity/workspace.spec.ts` (R, aria snapshot; `next` gated off)
+- **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, both languages); `e2e/parity/workspace.spec.ts` (R, aria snapshot; enabled on `next` since #134)
 
 ### WORK-02 · One tablist; the selected tab is the only Tab stop and controls the panel that is shown
 
@@ -20,7 +20,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — ARIA attributes in the DOM
 - **Source:** `viewer/ui/chrome/workspace.js:101-113,143-167`; decision record 0004; deviations `h5-single-tablist.md`, `h5-tabpanel-semantics.md`; decisions 9 and 13 on #4
 - **Expected:** One `[role=tablist]`. Anatomy `aria-selected="true"`, tabindex 0, `aria-controls="navigator"`; the other four `aria-selected="false"`, tabindex −1, no `aria-controls`. Tabpanels `['navigator', 'inspector']`, both `aria-labelledby` the Anatomy tab, `hidden` `[false, true]`. After a drill-in the Anatomy tab controls `inspector`. No `aside aside` and no `[role=complementary]` inside `#workspace-panel`.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's five `aria-controls`; `next` gated off); `e2e/parity/sheet.spec.ts` (R, one tablist on a phone; legacy only, skips on `next`)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's five `aria-controls`; enabled on `next` since #134); `e2e/parity/sheet.spec.ts` (R, one tablist on a phone; legacy only, skips on `next`)
 
 ### WORK-03 · Arrows, Home and End move focus between tabs without choosing; Enter, Space or a click choose
 
@@ -29,7 +29,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — keyboard dispatch to the focused tab
 - **Source:** `viewer/ui/chrome/workspace.js:65-99`; decision record 0004
 - **Expected:** From Anatomy: Right → Functions; End → Tracts; Right → Anatomy; Left → Tracts; Home → Anatomy; Anatomy still selected, no mode chosen. Right, Enter → `mode:functions`, focus on Functions. Right, Space → `mode:deficits`. Click Tracts → `mode:diffusion`, Tracts tabindex 0, Deficits −1.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, the permalink `tab` follows; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, the permalink `tab` follows; enabled on `next` since #134)
 
 ### WORK-04 · The tablist leaves vertical and modified arrows alone
 
@@ -47,7 +47,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — the view switch with focus
 - **Source:** `viewer/ui/chrome/workspace.js:221-238`; decision 19 on #4
 - **Expected:** In the list, click Anatomy → no call. Row `left:1` → detail; click Anatomy → list, `return` reported, no `mode:anatomy`. From the detail, click Functions → list, `mode:functions` and `view:list`, no `return`, focus on Functions.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134)
 
 ### WORK-06 · The tablist survives a shell change with its focus
 
@@ -56,7 +56,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — focus across a shell change; e2e for the resized app
 - **Source:** decision record 0007; deviation `h5-single-tablist.md`
 - **Expected:** Focus on Reload in a notice; `shell` rails → sheet → rails → focus still on Reload. In the app: Functions chosen by keyboard at 1280 × 800, resized to 390 × 844 → Functions visible, selected and focused; Right, Enter → Deficits, permalink `tab=deficits`.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R, the notice); `e2e/parity/workspace.spec.ts` (R, the resized app; legacy only, `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R, the notice); `e2e/parity/workspace.spec.ts` (R, the resized app; enabled on `next` since #134)
 
 ### WORK-07 · The tab in front is where stranded focus goes
 
@@ -94,7 +94,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — focus
 - **Source:** `viewer/ui/chrome/workspace.js:193-219`; deviation `h5-current-item.md`
 - **Expected:** Click row `left:2` → detail, focus on "Back to Anatomy", heading "Region details" visible; click Back → list, focus on row `left:2`, `return` and `view:list` reported. Selection set with focus on a tab → detail, focus on the tab. Opener hidden → focus on the selected row; selected row hidden too → focus on Anatomy. `back()` with focus on the tab → list, focus on the tab.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, Back and the region link; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, Back and the region link; enabled on `next` since #134)
 
 ### WORK-11 · A list that comes back into view shows its current item
 
@@ -132,7 +132,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — landmark and ARIA; the names are view-model strings
 - **Source:** `viewer/ui/chrome/workspace.js:173-182`; `viewer/index.html:324-337`; deviation `h5-breadcrumb-current.md`
 - **Expected:** Region `left:2` in Anatomy: navigation "Breadcrumb", 2 `ol > li`, "Back to Anatomy" with text "Anatomy", "Frontal, show in the list" with text "Frontal", `aria-current="location"`, tooltip "Frontal, show in the list". Deficits without a place → 1 `li`. French → "Fil d’Ariane", "Retour : Anatomie", "Frontal, afficher dans la liste". The spoken crumb name starts with the visible one in both languages.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `src/lib/core/workspace.test.ts` (W, only checks `path` is set and the name starts with the label); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `src/lib/core/workspace.test.ts` (W, only checks `path` is set and the name starts with the label); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134)
 
 ### WORK-15 · In Anatomy the group crumb returns to the region's own row and focuses it, once
 
@@ -161,7 +161,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/workspace.js:46-56,183-187`; `viewer/ui/chrome/workspace.test.js:186-205`
 - **Expected:** Detail view → false in every mode. List: region in anatomy → false; in deficits, circuits, diffusion → true; landmark in circuits → false; deficit in deficits, function in functions, lesson in circuits → false; function in anatomy → true; `{}` → false; kind `atlas` → throws /kind/. With `shell = 'sheet'` the strip is hidden.
-- **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, through the component, and the sheet shell); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/lib/core/workspace.test.ts` (R); `src/features/workspace/Workspace.svelte.test.ts` (R, through the component, and the sheet shell); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134)
 
 ### WORK-18 · The strip's name says the side as a word and contains its visible text
 
@@ -170,7 +170,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** unit (view-model) — the name is a string; exposure is checked in the browser
 - **Source:** `viewer/ui/chrome/workspace.js:185`; `viewer/ui/chrome/sheet.js:319`; deviation `h5-strip-name-side.md`; decision 19 on #4
 - **Expected:** {label "Precentral gyrus", side "L", sideWord "left"} → "Inspect Precentral gyrus, left", text contains "Precentral gyrus" and "L". FR {side "G", sideWord "gauche"} → "Examiner Precentral gyrus, gauche".
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, `next` branch; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, `next` branch; enabled on `next` since #134)
 
 ### WORK-19 · The strip opens the detail and Back returns to it; its clear gives stranded focus to the tab in front
 
@@ -179,7 +179,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — focus after an update
 - **Source:** `viewer/ui/chrome/workspace.js:256-260`; deviation `h5-clear-focus.md`
 - **Expected:** Deficits, region selected: click "Inspect …" → detail, focus on "Back to Deficits"; click Back → list, focus on the strip. Click "Clear selection" → `clear` reported, strip hidden, focus on Deficits. Lesson selection with `clearable: false` → no `.selection-clear`. In the app, legacy leaves focus on `body` after the clear; next puts it on the tab.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's `body`; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's `body`; enabled on `next` since #134)
 
 ## Notice
 
@@ -246,4 +246,4 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` with no violations in each state.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134)

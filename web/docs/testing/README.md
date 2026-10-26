@@ -14,11 +14,11 @@ conversion needs.
 
 ## Counts
 
-Test files (236: 161 unit and 51 browser Vitest files, 24 Playwright specs), by main class:
+Test files (237: 161 unit and 52 browser Vitest files, 24 Playwright specs), by main class:
 
 | Class                       | Files                                                                |
 | --------------------------- | -------------------------------------------------------------------- |
-| R business rule             | 191 (120 unit, 47 browser, 24 e2e)                                   |
+| R business rule             | 192 (120 unit, 48 browser, 24 e2e)                                   |
 | S scientific or data result | 8                                                                    |
 | D legacy comparison         | 27 (24 of the 25 `parity/*.test.ts`, both `*.parity.svelte.test.ts`) |
 | I implementation-pinning    | 1                                                                    |
@@ -71,8 +71,9 @@ tooltip timers, CSS transitions, viewport churn and real data parsed per case.
 
 ## End-to-end journeys worth keeping on `next`
 
-All three gates in `e2e/parity/enabled/` are `false`, so no region spec runs on `next` today. When the
-gates flip, keep a few journeys and drop the cases a browser test already proves:
+The panels gate in `e2e/parity/enabled/` is `true` since #134, so the eleven panel specs are listed on
+`next` (pull requests skip e2e, so whether they pass there is not yet known); the shell and stage gates are
+`false`. As each gate flips, keep a few journeys and drop the cases a browser test already proves:
 
 1. **Boot**: cold start to ready on the built site, the WebGL failure screen, a failed start that keeps the
    link (`boot.spec.ts`), plus the build harness that already runs (`harness.spec.ts`).

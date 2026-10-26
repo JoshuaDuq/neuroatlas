@@ -2,7 +2,7 @@
 
 Scope: the four region components `web/src/app/regions/{Masthead,Panels,Stage,Status}Region.svelte` and the integration chunks that fill them. I1 (#61) composes the panel region (workspace, sheet, explorers, detail view). I2 (#62) composes the stage region (overlays, dock, popovers, section bar, the Linked MRI and Diffusion MRI dialogs). I3b (#64) composes the masthead and status regions and mounts the Shortcuts and Provenance dialogs. The rules follow the I3a composition contract (comment 70 on #4), conductor decision 6 (comment 39: slot regions add no element), conductor decision 12 (comment 72: the root owns the single stateful instances, and every port is registered once the shell mounts), decision record `0008-dialog-mount-points.md` and the #4 composition rule: features never mount each other, and cross-panel behaviour goes through controller commands and the focus registry. Legacy sources: the root `index.html:96-603, 679-701`, `viewer/app.js:93-160, 606-738, 1406-1545, 1615-1645, 2065-2068`, `viewer/main.js:81`, `viewer/ui/chrome/viewport-chrome.js:684-791, 798-819, 853-884`. New code: `web/src/app/{App.svelte,application.svelte.ts,ports.ts,world.ts,boot.ts}` and the regions.
 
-State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #134; I2 and I3b have not started. All three e2e gates in `web/e2e/parity/enabled/` are `false`, and `playwright.config.ts` drops the gated specs from `next`. The panels gate covers `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts` and `workspace`; the shell gate `data-bar`, `masthead`, `provenance`, `shell` and `shortcuts`; the stage gate `boot` and `stage-overlay`. So almost every rule here is uncovered. Each feature's own rules are in its catalogue (`masthead.md`, `colophon.md`, `provenance.md`, `workspace.md`, `sheet.md`, `stage.md`, `shortcuts.md`, …). This catalogue holds only what composing them adds.
+State on 2026-10-26, after #134 (I1) merged: the panel region composes the workspace, the explorers and the phone sheet, and `src/app/regions/PanelsRegion.svelte.test.ts` tests it; the masthead, stage and status regions are still H1a's slots, and I2 and I3b have not started. The panels gate in `web/e2e/parity/enabled/` is now `true`; the shell and stage gates are `false`, and `playwright.config.ts` drops their specs from `next`. The panels gate covers `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts` and `workspace`; the shell gate `data-bar`, `masthead`, `provenance`, `shell` and `shortcuts`; the stage gate `boot` and `stage-overlay`. So most rules outside the panel composition are uncovered. Each feature's own rules are in its catalogue (`masthead.md`, `colophon.md`, `provenance.md`, `workspace.md`, `sheet.md`, `stage.md`, `shortcuts.md`, …). This catalogue holds only what composing them adds.
 
 **Levels.** "browser (regions + fake engine)" means a Vitest browser test that builds the app with `createApp()`, attaches a `World` built on F2's fake engine, mounts `App.svelte` with the real regions, and asserts DOM, focus and the fake engine's record. This is the default. It is fast and needs no built site. "e2e" is kept for the few journeys that need the built page: a real reload, real fullscreen (the Vitest iframe has no `allowfullscreen`), the real model switching assets, and the gated parity specs as the end-to-end check once each gate flips.
 
@@ -33,7 +33,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Level:** browser (regions + fake engine)
 - **Source:** decision 13 on #4; decision 9 (one tablist); #61 scope; `index.html:189-425`
 - **Expected:** `querySelectorAll('aside').length === 1`; `complementary` named "Atlas panel" (FR "Panneau de l’atlas"); one `[role=tablist]` at both 1280 and 390 px; axe `landmark-complementary-is-top-level` passes.
-- **Covered by:** `src/app/App.svelte.test.ts` (R, the empty aside only); `e2e/parity/workspace.spec.ts` and `sheet.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R, the composed panel and its sheet); `src/app/App.svelte.test.ts` (R, the empty aside); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134); `e2e/parity/sheet.spec.ts` (R; `next` gated off by the stage gate)
 
 ### REGION-04 · The stage region is the main landmark and holds the stage
 
@@ -71,7 +71,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Level:** browser (regions + fake engine)
 - **Source:** conductor decision 12 (comment 72 on #4: "I3b adds a test that every port is registered once the shell mounts"); comment 70 (the port list); comment 85 item 1 (the non-raising detail port for links). The unmounted behaviour is BOOT-20.
 - **Expected:** after mount and `attach(world)`, these do not throw "not mounted": `showDetail`, `showList`, `revealOnSelect`, `back`, `focusSearch`, `walkTree`, `openFunction`, `openDeficit`, `openLessonMri` (I1); `showMri`, `openPreparedPlane`, `openMpr`, `closeMpr`, `openDiffusionMri` (I2); `toggleShortcuts` (I3b). Each question answers true in its state: `shortcutsOpen()` after `toggleShortcuts()`, `mprOpen()` after `openMpr()`, `diffusionMriOpen()` after `openDiffusionMri()`, `focusInDetail()` with focus in a region detail. Unmounting the app withdraws them all.
-- **Covered by:** uncovered (`src/app/boot.svelte.test.ts` registers stub ports)
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R, the panel region's ports: `/` from the detail, Escape as Back, the tree walk, the explorers' entry points); the masthead, stage and status ports are uncovered (`src/app/boot.svelte.test.ts` registers stub ports)
 
 ### REGION-08 · Regions share the root's single stateful instances
 
@@ -230,7 +230,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Level:** browser (regions + fake engine)
 - **Source:** `index.html:339-424`; #61 scope (the CSS sibling rules become the props `profileAbove` and `landmarkSelected`)
 - **Expected:** with a function open and its region selected → the function profile comes before the region detail, and both before related deficits. With a circuit lesson's landmark → the circuit profile first, then notes, then related circuits.
-- **Covered by:** uncovered (I1 PR #134 open)
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R, a deficit's profile above the selected region; the full stacking order is uncovered)
 
 ### REGION-25 · A click on the model shows the region; a link's detail does not raise the sheet
 
@@ -239,7 +239,7 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Level:** browser (regions + fake engine: a fake pick); one e2e journey
 - **Source:** `viewer/app.js:527-546, 2065-2068`; decision 12 (interim effect: a click selects and then throws until I1 registers its ports); comment 85 item 1
 - **Expected:** 1280 px: pick `destrieux:left:30` → the detail heading is that region's name. 390 px: pick → the sheet at half. Open `#tab=functions&function=<id>` at 390 px → the detail is open and the sheet stays at peek.
-- **Covered by:** uncovered (CTRL-01 covers the controller with stub ports)
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R: a pick opens the detail; a function or lesson link keeps the sheet at peek where a pick raises it); the e2e journey is uncovered
 
 ### REGION-26 · The tract reference resets what the old anatomy left on the stage
 
@@ -259,6 +259,6 @@ State on 2026-10-26: the four regions are H1a's empty slots. I1 is open as PR #1
 - **Level:** e2e
 - **Source:** #4 body, "Parity proof"; #61, #62 and #64 acceptance criteria; `playwright.config.ts:13-21`
 - **Expected:** `enabled/panels.ts` `true` after I1 → `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts`, `workspace` listed by `playwright test --list --project next`. `enabled/stage.ts` after I2 → `boot`, `stage-overlay`. `enabled/shell.ts` after I3b → `data-bar`, `masthead`, `provenance`, `shell`, `shortcuts`. Each spec's run-time `test.skip` on `next` is then inactive.
-- **Covered by:** uncovered (all three gates are `false`)
+- **Covered by:** the panels gate is `true` since #134, so its specs (and the self-gated `anatomy-search`, `atlas-comparison`, `circuits`, `dissection` and `mri-navigator`) are listed on `next`; whether they pass there is not yet known, since pull requests skip e2e. The stage and shell gates are `false`: uncovered
 
 The e2e journeys worth keeping on `next` after cutover, one test each: the first boot to a drawn model (BOOT-), the skip link to the canvas (REGION-11), a theme and language chosen and kept across a reload (REGION-10), a real atlas switch from the data bar (REGION-13), another subject through a reload (REGION-14, once two subjects are published), real fullscreen (REGION-12), Provenance from the phone menu (REGION-18), the frame fit (SHELL-08), and the head script before the app (SHELL-11, SHELL-13). Everything else in the gated specs is covered by browser tests of the features and, once written, of the regions.

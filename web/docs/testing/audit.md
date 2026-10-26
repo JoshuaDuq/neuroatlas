@@ -5,9 +5,9 @@ against the rule on #4 (comment of 2026-10-26: parity is proven by business rule
 equivalence). The rule catalogues it points to are in `rules/`; the summary and conversion order are in
 `README.md`.
 
-Audited at `origin/svelte-rebuild` 728168a (after #135 G4 section bar and #137 Playwright container).
-Case counts and timings come from CI run 40377467496 (the PR run of #137, same tree minus the G4 files,
-whose cases were counted from the source).
+Audited at `origin/svelte-rebuild` 92882a4 (after #135 G4 section bar, #137 Playwright container, #136 K5
+follow-ups and #134 I1 panels region). Case counts and timings come from CI run 40377467496 (the PR run of
+#137); files merged after it (the G4 files and `PanelsRegion.svelte.test.ts`) were counted from the source.
 
 ## Legend
 
@@ -24,8 +24,9 @@ whose cases were counted from the source).
 
 **Runs at / should run at:** `unit` is the Vitest `unit` project (Node, no DOM); `browser` is the Vitest
 `browser` project (`*.svelte.test.ts`, Chromium with SwiftShader WebGL); `e2e` is Playwright on the built
-site, projects `legacy` and `next`. All three gates in `e2e/parity/enabled/` are `false`, so the panel,
-shell and stage specs do not run on `next` at all. `—` means the file should go.
+site, projects `legacy` and `next`. Since #134 the panels gate in `e2e/parity/enabled/` is `true`, so the
+panel specs are listed on `next` (whether they pass there is not yet known: pull requests skip e2e); the
+shell and stage gates are `false`, so those specs do not run on `next` at all. `—` means the file should go.
 
 **Action:** keep; convert to rules (the differential checks are replaced by rule tests against fixed
 values, then the file is deleted); move down a level; merge with a duplicate; delete.
@@ -34,13 +35,13 @@ values, then the file is deleted); move down a level; merge with a duplicate; de
 
 | Class                       | Files | Notes                                                                                                                     |
 | --------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------- |
-| R business rule             | 191   | 120 unit, 47 browser, 24 e2e specs; many carry small I, W or S parts, named in the Class column                           |
+| R business rule             | 192   | 120 unit, 48 browser, 24 e2e specs; many carry small I, W or S parts, named in the Class column                           |
 | S scientific or data result | 8     | all unit: published-data checks with values from the data                                                                 |
 | D legacy comparison         | 27    | 24 of the 25 `parity/*.test.ts` files and the two `*.parity.svelte.test.ts` files (`parity/F3.test.ts` is R with D parts) |
 | I implementation-pinning    | 1     | `src/app/ports.test.ts` (kept: a cheap fail-fast contract)                                                                |
 | W weak or tautological      | 1     | `src/lib/ui/kit-spike.svelte.test.ts` (delete)                                                                            |
 | H hygiene                   | 8     | build, repository and stylesheet checks, and the WebGL probe                                                              |
-| Total                       | 236   | 161 unit and 51 browser Vitest files, 24 Playwright specs                                                                 |
+| Total                       | 237   | 161 unit and 52 browser Vitest files, 24 Playwright specs                                                                 |
 
 ## Every test file
 
@@ -80,6 +81,7 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `src/app/head-script.test.ts` | 4 | R | unit | unit | keep (shell area: the pre-paint theme script). Its expected values come from the app's own `resolveTheme`/`startLanguage`, not fixed values: add a few fixed rows |
 | `src/app/lifecycle.test.ts` | 2 | R | unit | unit | keep (BOOT-18) |
 | `src/app/ports.test.ts` | 5 | I | unit | unit | keep (BOOT-20): the ports registry's fail-fast contract, cheap and meaningful, not a reader rule |
+| `src/app/regions/PanelsRegion.svelte.test.ts` | 24 | R | browser | browser | keep (REGION-03, -07, -24, -25; also CTRL-08's focus hand-off to Undo, ANAT-22's joined part and count sentence, the `/` and Escape ports of KEY-); added by #134 after the audit's CI run; one axe case over two states |
 | `src/app/webgl-check.test.ts` | 4 | R | unit | unit | keep (BOOT-01–03) |
 | `src/boot/keep-cached.test.ts` | 3 | R | unit | unit | keep (SW-01; "only after a successful start" is uncovered) |
 | `src/boot/webgl-probe.svelte.test.ts` | 1 | H | browser | browser | keep (BUILD-13): an environment precondition on real WebGL; its 2 viewer refs are comments |
@@ -261,20 +263,20 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `build/site.test.ts` | 1 | H | unit | unit | keep (BUILD-01); assert the literal `/neuroatlas/` and `/neuroatlas/next/`, not the module's own constants |
 | `test/no-triple-slash.test.ts` | 1 | H | unit | unit | keep (BUILD-11) |
 | `test/repo.test.ts` | 1 | H | unit | unit | keep (BUILD-12; holds ASSET-14 incidentally) |
-| `e2e/parity/anatomy-search.spec.ts` | 11 | R | e2e legacy only (skips on next) | browser (one journey e2e) | merge with `AnatomyExplorer.svelte.test.ts` (duplicate) for ANAT-30, -32, -34–-36, -39, -40, -43, -44; keep one `next` journey (query → Enter → `region=` in the link → Back → `aria-selected`); drop the legacy branches at cutover |
-| `e2e/parity/anatomy-tree.spec.ts` | 17 | R | e2e legacy only (next gated off) | browser (one journey e2e) | merge with `AnatomyTree.svelte.test.ts` (duplicate) for ANAT-01, -03–-06, -08, -10, -11, -13, -15, -19, -21, -23, -27, -29; keep on `next` the Enter → `region=` → Back → `aria-selected` journey (ANAT-12) and the joined "Hidden: …. 1 part hidden" announcement (ANAT-22); drop the legacy aria snapshots and branches |
-| `e2e/parity/atlas-comparison.spec.ts` | 10 | R (+S: 2 cases, V1's 956.4 mm² / 34.4 % row in en and fr) | e2e legacy only (skips on next) | browser (two journeys e2e) | keep on `next` the `cut=sagittal` link journey (INSP-31) and the download filename (INSP-33); the rest duplicates `AtlasComparison.svelte.test.ts` (INSP-20–-22, -24–-26, -28–-30, -34, -38); first add the denominator sentence (INSP-25) to the component test, it is asserted only here |
+| `e2e/parity/anatomy-search.spec.ts` | 11 | R | e2e legacy+next (panels gate on since #134) | browser (one journey e2e) | merge with `AnatomyExplorer.svelte.test.ts` (duplicate) for ANAT-30, -32, -34–-36, -39, -40, -43, -44; keep one `next` journey (query → Enter → `region=` in the link → Back → `aria-selected`); drop the legacy branches at cutover |
+| `e2e/parity/anatomy-tree.spec.ts` | 17 | R | e2e legacy+next (panels gate on since #134) | browser (one journey e2e) | merge with `AnatomyTree.svelte.test.ts` (duplicate) for ANAT-01, -03–-06, -08, -10, -11, -13, -15, -19, -21, -23, -27, -29; keep on `next` the Enter → `region=` → Back → `aria-selected` journey (ANAT-12) and the joined "Hidden: …. 1 part hidden" announcement (ANAT-22); drop the legacy aria snapshots and branches |
+| `e2e/parity/atlas-comparison.spec.ts` | 10 | R (+S: 2 cases, V1's 956.4 mm² / 34.4 % row in en and fr) | e2e legacy+next (panels gate on since #134) | browser (two journeys e2e) | keep on `next` the `cut=sagittal` link journey (INSP-31) and the download filename (INSP-33); the rest duplicates `AtlasComparison.svelte.test.ts` (INSP-20–-22, -24–-26, -28–-30, -34, -38); first add the denominator sentence (INSP-25) to the component test, it is asserted only here |
 | `e2e/parity/boot.spec.ts` | 13 (4 per language × en/fr, + 5) | R | e2e legacy only (next gated off) | e2e | keep a few boot journeys (BOOT-01, -02, -04, -12–14, -21–23, -25, -27, -29); drop the French repeats, whose copy unit and `StageStatus.svelte.test.ts` already hold; it is ignored on `next` by `playwright.config.ts` and also skips itself |
-| `e2e/parity/circuits.spec.ts` | 13 | R | e2e legacy only (skips on next) | e2e (2 journeys); the rest browser | reduce to 2 journeys on `next` once the panels gate flips: open a circuit from the list, Next, link `step=` (CIRC-05, -08, LINK); a related row from a region link (CIRC-16). Delete the other 11 (duplicated by `circuits.svelte.test.ts`) and the 2 legacy-project branches. Not in `playwright.config.ts` `nextIgnored`, so it is collected on `next` and every test skips itself |
+| `e2e/parity/circuits.spec.ts` | 13 | R | e2e legacy+next (panels gate on since #134) | e2e (2 journeys); the rest browser | reduce to 2 journeys on `next` now that the panels gate is on: open a circuit from the list, Next, link `step=` (CIRC-05, -08, LINK); a related row from a region link (CIRC-16). Delete the other 11 (duplicated by `circuits.svelte.test.ts`) and the 2 legacy-project branches. Not in `playwright.config.ts` `nextIgnored`, so it is collected on `next` and every test skips itself |
 | `e2e/parity/data-bar.spec.ts` | 12 | R | e2e legacy only (next gated off) | e2e (2 journeys: a real atlas switch, Escape keeps the selection); browser for the rest | keep at the gate flip, then trim to REGION-13 and MAST-41's selection half; the rest duplicates DataBar.svelte.test (MAST-26, -27, -29, -30, -35, -37, -38, -40, -42, -43, -50) |
-| `e2e/parity/deficits.spec.ts` | 15 | R | e2e legacy only (next gated off) | e2e (2 journeys); the rest browser | reduce to 2 journeys: open from the list, open a mapped region, Restore, with `deficit=`/`region=` in the link (DEF-13, -20, -27, LINK); related deficits from a region link (DEF-28). Delete the other 13 (duplicated by `deficits.svelte.test.ts`) and the legacy branch in "the evidence of one finding" |
-| `e2e/parity/dissection.spec.ts` | 8 | R | e2e legacy only (skips on next) | e2e | keep (the only tests of the `hidden=` and `system=` round trips, ANAT-49, ANAT-56, and of inspector Hide → Undo, ANAT-54); the bar wording and focus cases duplicate `DissectionBar.svelte.test.ts` (ANAT-50–-53): drop those; drop the legacy aria snapshot |
+| `e2e/parity/deficits.spec.ts` | 15 | R | e2e legacy+next (panels gate on since #134) | e2e (2 journeys); the rest browser | reduce to 2 journeys: open from the list, open a mapped region, Restore, with `deficit=`/`region=` in the link (DEF-13, -20, -27, LINK); related deficits from a region link (DEF-28). Delete the other 13 (duplicated by `deficits.svelte.test.ts`) and the legacy branch in "the evidence of one finding" |
+| `e2e/parity/dissection.spec.ts` | 8 | R | e2e legacy+next (panels gate on since #134) | e2e | keep (the only tests of the `hidden=` and `system=` round trips, ANAT-49, ANAT-56, and of inspector Hide → Undo, ANAT-54); the bar wording and focus cases duplicate `DissectionBar.svelte.test.ts` (ANAT-50–-53): drop those; drop the legacy aria snapshot |
 | `e2e/parity/dock.spec.ts` | 9 | R | e2e legacy only (skips on next) | e2e (one journey) | Trim to one `next` journey once the stage gate opens: a preset names the View tool, and Display → Left writes `hemi=left` to the link. The rest repeats `Dock.svelte.test.ts` (STAGE-18, -20, -22, -23, -25, -26, -28 to -31, -36). The turn-button case (STAGE-27) returns early on legacy and `next` skips, so it runs nowhere today. |
-| `e2e/parity/functions.spec.ts` | 15 | R | e2e legacy only (next gated off) | e2e (2 journeys); the rest browser | reduce to 2 journeys: open `language` from the list, then Restore, with `function=` in the link (FUNC-14, -29, LINK); a link carrying `function=attention` opens the profile with its areas (FUNC-14, -24). Delete the other 13 (duplicated by `functions.svelte.test.ts`) and the 2 legacy-project branches. Only comments mention `viewer/`; no import |
+| `e2e/parity/functions.spec.ts` | 15 | R | e2e legacy+next (panels gate on since #134) | e2e (2 journeys); the rest browser | reduce to 2 journeys: open `language` from the list, then Restore, with `function=` in the link (FUNC-14, -29, LINK); a link carrying `function=attention` opens the profile with its areas (FUNC-14, -24). Delete the other 13 (duplicated by `functions.svelte.test.ts`) and the 2 legacy-project branches. Only comments mention `viewer/`; no import |
 | `e2e/parity/harness.spec.ts` | 6 (5 per project: each noindex case runs on one) | R | e2e legacy+next | e2e (BUILD-03, -09 could move down to unit) | keep (ASSET-15, -21, SW-10, BUILD-03, -09, -10); it registers `sw.js` itself, so the app's own registration (SW-01) is unchecked |
-| `e2e/parity/inspector.spec.ts` | 8 | R (+W: 2 cases, centroid by regex, networks by "Visual"/"100%") | e2e legacy only (next gated off) | browser (two journeys e2e) | keep on `next` Clear and Hide focus journeys (INSP-04) and a constituent opening its region (INSP-14); the rest duplicates `inspector.svelte.test.ts` (INSP-02, -03, -05, -06, -09, -10, -15, -19) |
+| `e2e/parity/inspector.spec.ts` | 8 | R (+W: 2 cases, centroid by regex, networks by "Visual"/"100%") | e2e legacy+next (panels gate on since #134) | browser (two journeys e2e) | keep on `next` Clear and Hide focus journeys (INSP-04) and a constituent opening its region (INSP-14); the rest duplicates `inspector.svelte.test.ts` (INSP-02, -03, -05, -06, -09, -10, -15, -19) |
 | `e2e/parity/masthead.spec.ts` | 9 | R | e2e legacy only (next gated off) | e2e (2 journeys: skip link to canvas, settings applied to the page); browser for the rest | keep at the gate flip, then trim to REGION-10/-11 journeys; the panel-behaviour cases duplicate Masthead.svelte.test (MAST-01–-03, -07, -09–-11, -13, -15, -16, -19, -25). Drop the legacy branch of the arrows case at cutover |
-| `e2e/parity/mri-navigator.spec.ts` | 4 | R (+W: the key and plane cases assert only that the readout changed and the select's value) | e2e legacy only (skips on next) | e2e | keep (TRACT-27, -30, -32, -36, -37, -40, -48, -49); add the source-voxel check TRACT-33 (Go to voxel 40, 50, 60, ArrowRight → fields 39, 50, 60), the one rule only real NiiVue can prove |
+| `e2e/parity/mri-navigator.spec.ts` | 4 | R (+W: the key and plane cases assert only that the readout changed and the select's value) | e2e legacy+next (panels gate on since #134) | e2e | keep (TRACT-27, -30, -32, -36, -37, -40, -48, -49); add the source-voxel check TRACT-33 (Go to voxel 40, 50, 60, ArrowRight → fields 39, 50, 60), the one rule only real NiiVue can prove |
 | `e2e/parity/provenance.spec.ts` | 6 | R | e2e legacy only (next gated off) | e2e (1 journey: Provenance from the phone menu on the loaded app); browser for the rest | keep at the gate flip, then trim to REGION-18; the rest duplicates provenance.svelte.test (COLO-01–-03, -05, -08; PROV-09–-15, -17, -18, -22). It is the only check of the intended use on the loaded app (PROV-09) |
 | `e2e/parity/sections.spec.ts` | 10 | R | e2e legacy only (skips on next) | e2e (one journey) | Trim to the link journey (`cut=coronal`, `pos=12.5`, `rev=1`) on `next`. The rest repeats `SectionBar.svelte.test.ts` (SECT-01 to -03, -09 to -11, -15 to -18, -21, -24). The out-of-range case and the "Full brain · no cut" announcement are next-only, so they run nowhere today. |
 | `e2e/parity/sheet.spec.ts` | 20 | R | e2e legacy only (skips on next); "a window narrowed to a phone after load" also skips on legacy, so it runs nowhere | e2e for 6 journeys, browser for the rest | keep the journeys: stage told the cover (SHEET-11, incl. desktop → phone, the only evidence for h6-first-inset-report), page-wide focus walk (SHEET-23), touch targets (SHEET-26), 320 px (SHEET-29), axe in the app (SHEET-30), reduced motion still reports; drop the 14 cases that repeat `Sheet.svelte.test.ts` once `next` runs. Its only `viewer/` mention is a provenance comment (line 1): not D |
@@ -283,8 +285,8 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `e2e/parity/snapshot.spec.ts` | 4 | R | e2e legacy only (skips on next; needs shell and stage gates) | e2e | Keep (SNAP-14, SNAP-16, STAGE-49, STAGE-50). These are the only checks of a real download from the real WebGL stage, and of real full screen with the real masthead and stage. The `viewer/` mention is a comment, not an import. "French names both labels" skips on legacy and `next` skips it, so it runs nowhere. The no-Fullscreen-API case and Save image's enabled state are the masthead's (`masthead.md`). |
 | `e2e/parity/stage-keys.spec.ts` | 9 | R | e2e legacy only (skips on next) | e2e (one journey) | Trim to the link journey (`colors=network` key, `level=sections`, `function=language`) on `next`. Targets, folding, French and axe repeat `StageKeys.svelte.test.ts` (STAGE-37, -38, -39, -40, -41, -42, -46, -47, -48). The `viewer/` mention is a comment, not an import. The next-only arrow case runs nowhere today. |
 | `e2e/parity/stage-overlay.spec.ts` | 11 | R (+W: 1 case, the letters check only asks for four distinct letters) | e2e legacy only (next gated off) | e2e (two journeys) | Trim to the hover chip over the real model (real picking, STAGE-13 to -16) and the hint still retired after a reload (STAGE-06). The rest repeats `StageOverlay.svelte.test.ts` (STAGE-01 to -05, -09, -10, -12, -17). It is the only spec in `playwright.config.ts`'s `nextIgnored` among these. |
-| `e2e/parity/tracts.spec.ts` | 13 | R | e2e legacy only (next gated off) | e2e for 3 journeys, browser for the rest | keep the first-opening load (TRACT-02, -04), a real download (TRACT-07) and the real CSV (TRACT-19, tighten the row regex to `"Arcuate fasciculus · left",3639,3639,1,…`); the other 10 repeat `TractsExplorer.svelte.test.ts` |
-| `e2e/parity/workspace.spec.ts` | 12 | R | e2e legacy only (next gated off) | e2e for 2 journeys, browser for the rest | keep the desktop → phone resize keeping tab focus (WORK-06) and the region-link detail (WORK-10, -14); the `tab=` permalink asserts belong to LINK-; the rest repeat `Workspace.svelte.test.ts` |
+| `e2e/parity/tracts.spec.ts` | 13 | R | e2e legacy+next (panels gate on since #134) | e2e for 3 journeys, browser for the rest | keep the first-opening load (TRACT-02, -04), a real download (TRACT-07) and the real CSV (TRACT-19, tighten the row regex to `"Arcuate fasciculus · left",3639,3639,1,…`); the other 10 repeat `TractsExplorer.svelte.test.ts` |
+| `e2e/parity/workspace.spec.ts` | 12 | R | e2e legacy+next (panels gate on since #134) | e2e for 2 journeys, browser for the rest | keep the desktop → phone resize keeping tab focus (WORK-06) and the region-link detail (WORK-10, -14); the `tab=` permalink asserts belong to LINK-; the rest repeat `Workspace.svelte.test.ts` |
 
 ## Rules hiding inside the legacy-comparison files
 
@@ -416,7 +418,7 @@ Notes: it cuts `viewer/app.js` source text with `new Function` and `runInNewCont
 
 Rules hiding inside: LINK-02, LINK-03 (lesson fields), LINK-09 (known ids), LINK-10 (failure naming), LINK-11 (defaults on restore), LINK-12 (facing the cut), LINK-13 (Tracts excursion), LINK-14 (tab, function, deficit, lesson), LINK-15 (lesson landmark), LINK-16 (detail without the sheet; opening an item without an atlas), LINK-17 (overtaken restore). Of these, LINK-09, LINK-11–LINK-16 and most of LINK-10 are covered only here.
 Also checks, which are not rules (drop): identical engine call logs and console output of legacy and new; source slicing of `viewer/app.js` (it fails if the legacy file is edited); the kept-scene bookkeeping as strings.
-Notes: the `fixed` table of 37 scenarios is the value to keep: convert it to an `it.each` table over `createLinks` on the fake engine, each row with its fixed `notApplied`, explorer, function/deficit, lesson and hook calls. The 120 seeded hashes (seed 35) can be dropped, or kept as one property test (restore never throws; returns null or a list of published parameter names). LINK-21, the round trip through the real address bar, is the one e2e journey for this area; no such test runs on `next` today (`e2e/parity/dissection.spec.ts` skips itself on `next`).
+Notes: the `fixed` table of 37 scenarios is the value to keep: convert it to an `it.each` table over `createLinks` on the fake engine, each row with its fixed `notApplied`, explorer, function/deficit, lesson and hook calls. The 120 seeded hashes (seed 35) can be dropped, or kept as one property test (restore never throws; returns null or a list of published parameter names). LINK-21, the round trip through the real address bar, is the one e2e journey for this area; `e2e/parity/dissection.spec.ts` checks parts of it and is enabled on `next` since #134.
 
 ### `parity/S5a.test.ts`
 
@@ -647,7 +649,7 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
 3. **Provenance links lack the "(opens in a new tab)" cue** (PROV-18). `ProvenanceDialog.svelte` sets
    `target="_blank"` without the cue decision 17 on #4 gives H4; `link.newTab` exists and
    `ExternalLink.svelte`, `AtlasComparison.svelte` and `TractsExplorer.svelte` use it.
-4. **Circuit source links lack the same cue** (CIRC-13; decision 17, X3's request 5).
+4. The circuit source links had the same gap (CIRC-13); #136 fixed it (`x3-new-tab-cue.md`).
 5. **Counted phrases that ignore their count** (I18N-11): `footer.sourceFiles`, `functions.coverage`,
    `circuits.coverage` and `diffusion.bundleCollection` read wrongly for 1 ("1 tract bundles",
    "1 faisceaux"); published counts are never 1 today. `functional.contested` uses straight apostrophes
@@ -706,16 +708,19 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
 
 ### Rules no test runs anywhere
 
-- `e2e/parity/circuits.spec.ts` is panels-gated but missing from `nextIgnored` in `playwright.config.ts`, so
-  its 13 tests are collected on `next` and always skip, inflating shard counts.
+- `e2e/parity/circuits.spec.ts`, `anatomy-search`, `atlas-comparison`, `dissection` and `mri-navigator` gate
+  themselves on the panels gate at run time but are not in `nextIgnored` in `playwright.config.ts`. Harmless
+  now that the panels gate is on (#134), but the stage- and shell-gated specs that skip themselves the same
+  way (`dock`, `sections`, `stage-keys`, `snapshot`, `sheet`) are still collected on `next` and always skip,
+  inflating shard counts.
 - `sheet.spec.ts`, "a window narrowed to a phone after load is set up, and is told", skips on legacy by design
   and on `next` behind the gate: it runs nowhere, and it is the only evidence for `h6-first-inset-report.md`.
 - Next-only e2e cases that run nowhere while the gates are false: the dock's turn buttons (STAGE-27), the
   section position's range error and the "Full brain · no cut" announcement, the stage keys' level arrows,
   and the snapshot spec's French labels.
 - The navigator's source-voxel rule (TRACT-33) is checked only against a mocked NiiVue.
-- The `hidden=` and `system=` link round trips (ANAT-49, ANAT-56), and every LINK- rule end to end (LINK-21),
-  run on no test against the next app.
+- Every LINK- rule end to end (LINK-21) runs on no test against the next app; the `hidden=` and `system=`
+  round trips (ANAT-49, ANAT-56) are in `dissection.spec.ts`, enabled on `next` only since #134.
 - About 56 rules are covered only by differential tests and 28 are wholly uncovered; they need rule tests
   before the differential files go.
 
@@ -724,8 +729,8 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
 - The stage's "Exit full screen" control and `createSectionControls` are not mounted in the real stage.
   `DissectionBar.svelte` has no explorer input, so I1 must mount it only in the Anatomy explorer (ANAT-50).
   Save image must stay outside `#viewport` (SNAP-19).
-- Three `TODO(C1)` string tables remain: `snapshot.ts` (`snapshotSaved`), `fullscreen.ts`
-  (`errors.operations.fullscreen`), `section-text.ts` (`cuts.positionRange`).
+- One `TODO(C1)` string table remains: `section-text.ts` (`cuts.positionRange`); #136 moved the snapshot
+  and full-screen strings into i18n.
 - `nextEnabledIndex` exists twice (`SearchCombobox.svelte` and `core/panels/navigator.ts`);
   `features/circuits/neighbour-keys.ts` reimplements U6's arrow-key walk without a unit test;
   `controller/anatomy.ts:136` copies `offsetThrough` untested (CTRL-19).
