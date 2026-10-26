@@ -3,6 +3,8 @@
     value: string;
     /** A disabled option explains itself and does nothing; arrows skip it. */
     disabled?: boolean;
+    /** The option stands for what is current elsewhere (the selected region): `aria-current`. */
+    current?: boolean;
   }
 
   export interface SearchGroup {
@@ -215,6 +217,7 @@
     class="search-option"
     aria-selected={armed === item.value}
     aria-disabled={item.disabled ? 'true' : undefined}
+    aria-current={item.current ? 'true' : undefined}
     data-active={armed === item.value ? 'true' : undefined}
     onpointerdown={(event) => event.preventDefault()}
     onclick={() => !item.disabled && onselect(item.value)}
