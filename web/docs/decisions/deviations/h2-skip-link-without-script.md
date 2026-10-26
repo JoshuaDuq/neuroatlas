@@ -13,4 +13,4 @@ The link is rendered with the masthead, so it is the first Tab stop as soon as t
 
 ## Standard cited
 
-WCAG 2.2 SC 2.4.1 Bypass Blocks; SC 3.1.1 Language of Page. Shares H1a's point on the language of first-paint text.
+WCAG 2.2 SC 2.4.1 Bypass Blocks; SC 3.1.2 Language of Parts. Shares H1a's point on the language of first-paint text.

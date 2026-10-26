@@ -11,6 +11,9 @@
  * Ownership: F2 writes it, E7 implements it, and changes after merge go through
  * the serial engine-contract queue on the tracking issue.
  */
+import type { CabNpPartition } from '../core/catalog/networks.ts';
+import type { FunctionalRegions } from '../core/catalog/functional-regions.ts';
+import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type {
   CutMode,
   DisplaySettings,
@@ -86,13 +89,19 @@ export interface EngineEvents {
   contextRestored: undefined;
   /** Whether the camera still sits on a named view; the held preset button follows it (viewport-chrome.js:560-597). */
   viewHeld: { held: boolean };
-  /** The camera came to rest; the link is written then (app.js:1825). */
+  /**
+   * The camera was placed or came to rest; the link is written then (app.js:1825). A move the application
+   * makes reports at once; one the reader makes, or a coast after it, reports once the camera has rested.
+   */
   cameraSettled: undefined;
   /** A click on the model chose a region (app.js:1813). */
   pick: { id: string };
-  /** The tract reference became active or inactive: the Tracts tab is open on an anatomy the tracts do not belong to (app.js:1431). */
+  /**
+   * The tract reference became active or inactive: the Tracts tab is open on an anatomy the tracts do not belong to
+   * (app.js:1431). The engine has already reframed the last named view, as legacy did, and cleared the hover.
+   */
   tractsActive: { active: boolean };
-  /** The first tract reference finished loading (app.js:1442). */
+  /** The first tract reference finished loading (app.js:1442); while it is shown, the engine has reframed it. */
   tractsReady: undefined;
   /** Which streamlines are drawn changed (app.js:1447). */
   tractsVisibility: undefined;
@@ -119,26 +128,13 @@ export interface Emitter<Events> {
 // ---------------------------------------------------------------------------
 
 /** CAB-NP's partition (`manifest.cab_np` file, validated at brain-atlas.js:163). The atlas it colours is `atlas`. */
-export interface CabNpData {
-  atlas: string;
-  regions: Readonly<Record<string, unknown>>;
-  [key: string]: unknown;
-}
+export type CabNpData = CabNpPartition;
 
 /** The published functional divisions (`manifest.functional_regions` file, brain-atlas.js:164). */
-export interface FunctionalRegionsData {
-  atlas: string;
-  [key: string]: unknown;
-}
+export type FunctionalRegionsData = FunctionalRegions;
 
 /** The neuropsychological domains (`manifest.neuropsych_domains` file, brain-atlas.js:166). */
-export interface DomainsData {
-  atlas: string;
-  domains: { id: string; color: string; [key: string]: unknown }[];
-  lesion_checks: Readonly<Record<string, { deficit: string; [key: string]: unknown }[]>>;
-  search?: { terms: ReadonlyMap<string, unknown> };
-  [key: string]: unknown;
-}
+export type DomainsData = NeuropsychDomains;
 
 // ---------------------------------------------------------------------------
 // Model (BrainAtlas, model/brain-atlas.js)
@@ -212,7 +208,10 @@ export interface EngineModel {
   ensureEnvelopes(onProgress?: OnProgress): Promise<void>;
   /** Download the spinal cord layers (brain-atlas.js:291). */
   ensureSpinalCord(onProgress?: OnProgress): Promise<void>;
-  /** Fetch a layer ahead of a switch, with no display change (app.js:76). */
+  /**
+   * Fetch an atlas or a detail level ahead of a switch, with no display change (app.js:76). Any other id, a
+   * supplemental layer included, rejects with an `unknown-layer` error: those load with their own commands.
+   */
   prefetchLayer(id: string): Promise<void>;
 }
 
@@ -383,7 +382,10 @@ export interface EngineCamera {
   /** The stage dock grew or shrank: keep the heading and scale the distance to the new room (app.js:388). */
   refitDock(): void;
 
-  /** Frame a named view of what is drawn, clear of the interface (app.js:406). Holds the view. */
+  /**
+   * Frame a named view of what is drawn, clear of the interface (app.js:406). Holds the view. Throws for a
+   * view the camera does not publish, leaving the camera where it was.
+   */
   frameCurrent(view: ViewName, options?: MoveOptions): void;
   /** Frame a named view, as the view keys and presets do (app.js:443). Holds the view. */
   applyView(view: ViewName, options?: MoveOptions): void;
@@ -419,7 +421,7 @@ export interface EngineCamera {
   fittedDistance(): number;
   /** Scale the camera's distance from a fit of `before` to the room it has now (app.js:1543). */
   keepFraming(before: number): void;
-  /** Move the camera onto a surface point, released from any view (app.js:1783). */
+  /** Move the camera onto a surface point in RAS millimetres, released from any view (app.js:1783). */
   focusPoint(point: Vec3): void;
 
   /** One arrow key's turn, applied at once; releases the held view (app.js:1859, decision 22). */
@@ -485,9 +487,9 @@ export interface TractBundle {
 }
 
 export interface MriLocation {
-  /** Millimetres in the scan's RAS. */
+  /** The scan's RAS in millimetres: three components, as `setScannerPoint` takes them. */
   mm: Vec3;
-  /** Zero-based voxel. */
+  /** The zero-based source voxel, the grid `setVoxel` takes and the dialog labels, whatever moved the crosshair. */
   vox: Vec3;
   values: { name: string; value: number }[];
 }
@@ -501,6 +503,7 @@ export interface MriNavigator {
   setPlane(plane: MriPlaneChoice): void;
   /** Throws a `RangeError` outside the grid. Reports the location. */
   setVoxel(voxel: Vec3): void;
+  /** Step the crosshair in the display's direction; on a mirrored source axis a positive step lowers the source index. Reports the voxel it lands on. */
   moveVoxel(delta: Vec3): void;
   /** False when the point lies outside the scan's grid. */
   setScannerPoint(point: Vec3): boolean;

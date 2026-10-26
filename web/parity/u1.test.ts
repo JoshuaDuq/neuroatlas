@@ -19,13 +19,28 @@ const normalise = (rules: Record<string, Record<string, string>>) =>
 describe('U1 styles parity', () => {
   it('tokens.css declares exactly the legacy tokens, in both themes', () => {
     const legacy = normalise(declarationsBySelector(read('../../viewer/styles/tokens.css')));
-    const current = normalise(declarationsBySelector(read('../src/styles/tokens.css')));
+    // The phone rule is compared on its own below; here it would overwrite the desktop sizes.
+    const source = read('../src/styles/tokens.css');
+    const phoneStart = source.indexOf('/*\n   * The phone shell');
+    const desktop = source.slice(0, phoneStart).trimEnd() + '\n}\n';
+    const current = normalise(declarationsBySelector(desktop));
     assert.deepEqual(Object.keys(current), [':root', ":root[data-theme='dark']"]);
     // The one documented difference: deviations/u1-overlay-control-contrast.md (WCAG 1.4.11).
     assert.equal(legacy[':root']['--overlay-control-border'], '#6d737b');
     assert.equal(current[':root']['--overlay-control-border'], '#70777f');
     legacy[':root']['--overlay-control-border'] = '#70777f';
     assert.deepEqual(current, legacy);
+  });
+
+  it('the phone rule keeps the legacy touch sizes under the legacy query (phone.css:15)', () => {
+    const source = read('../src/styles/tokens.css');
+    const phone = source.slice(source.indexOf('/*\n   * The phone shell'), source.lastIndexOf('}'));
+    const legacyCss = read('../../viewer/styles/phone.css');
+    const query = '@media (max-width: 800px), (max-height: 480px) and (orientation: landscape)';
+    assert.ok(legacyCss.includes(query));
+    assert.ok(phone.includes(query));
+    const legacy = declarationsBySelector(legacyCss.split('\n').slice(13, 15).join('\n') + '\n}\n');
+    assert.deepEqual(declarationsBySelector(phone)[':root'], legacy[':root']);
   });
 
   it('the increased-contrast token swap matches a11y.css 19-33 of the legacy sheet', () => {

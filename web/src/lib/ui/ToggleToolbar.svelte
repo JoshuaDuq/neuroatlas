@@ -9,7 +9,6 @@
 <script lang="ts" generics="Value extends string">
   import { iconGraphic } from './IconButton.svelte';
   import type { IconName } from './icons.ts';
-  import { OWN_KEYS_ATTRIBUTE } from './keys.ts';
   import { roving } from './Toolbar.svelte';
 
   interface Item {
@@ -48,7 +47,6 @@
       aria-label={item.name}
       disabled={item.disabled}
       onclick={() => onpress(item.value)}
-      {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
     >
       {#if item.icon}{@render iconGraphic(item.icon)}{/if}
       <span class="control-label">{item.label}</span>

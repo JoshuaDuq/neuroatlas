@@ -30,6 +30,12 @@ export function createLanguage(
       document.documentElement.lang = next;
       writePref(PREF_KEYS.language, next, storage);
     },
+    /** The language a link carries: shown and announced, never remembered (app.js:612). */
+    follow(next: Language) {
+      if (!LANGUAGES.includes(next)) throw new RangeError(`Unknown language: ${next}`);
+      language = next;
+      document.documentElement.lang = next;
+    },
   };
 }
 

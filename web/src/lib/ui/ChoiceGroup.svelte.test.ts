@@ -4,7 +4,6 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { expectAxeClean, withMedia } from './a11y-test-support.ts';
 import ChoiceGroup from './ChoiceGroup.svelte';
-import { OWN_KEYS_SELECTOR } from './keys.ts';
 
 const hemispheres = [
   { value: 'both', label: 'Both' },
@@ -105,9 +104,9 @@ describe('ChoiceGroup', () => {
     await expect.element(radio('Français')).toHaveTextContent('FR');
   });
 
-  test('items opt out of the single-key shortcuts', async () => {
+  test('items carry no own-keys marker: the region does (conductor decision 7)', async () => {
     render(ChoiceGroup, { options: hemispheres, value: 'both', label: 'Hemisphere' });
-    expect(document.querySelectorAll(`[role=radio]${OWN_KEYS_SELECTOR}`)).toHaveLength(3);
+    expect(document.querySelectorAll('[data-own-keys]')).toHaveLength(0);
   });
 
   test('targets are at least 24 CSS px', async () => {

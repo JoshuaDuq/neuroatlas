@@ -12,6 +12,7 @@
     movedIndex,
     rowKeyAction,
     survivingRowId,
+    type TreegridRow,
     typeAheadMatch,
     visibleRows,
     type TreegridNode,
@@ -42,6 +43,11 @@
     onactivate?: (node: TreegridNode<T>) => void;
     /** Single-key shortcuts on a row or in a cell, by lower-case key (the legacy `V` for visibility). */
     rowKeys?: Record<string, (node: TreegridNode<T>) => void>;
+    /**
+     * Lower-case single characters left to the page when pressed on a row (its own shortcuts).
+     * Like `rowKeys`, such a key starts no type-ahead query but extends one being typed.
+     */
+    passKeys?: ReadonlySet<string>;
   }
 
   let {
@@ -55,6 +61,7 @@
     action,
     onactivate,
     rowKeys = {},
+    passKeys = new Set<string>(),
   }: Props = $props();
 
   const CONTROL = 'button, a[href], input, select, textarea, [tabindex]';
@@ -62,6 +69,15 @@
 
   let grid: HTMLElement;
   const rows = $derived(visibleRows(nodes, expanded));
+  // Each top-level row and what is open under it, in one plain wrapper: a container for a row to be
+  // sticky within, which a flat list does not give. It has no role, so rows stay the grid's own.
+  const blocks = $derived(
+    rows.reduce<TreegridRow<T>[][]>((all, row) => {
+      if (row.level === 1) all.push([row]);
+      else all.at(-1)!.push(row);
+      return all;
+    }, []),
+  );
   const parents = new Map<string, string | null>();
   // The Tab stop: a row (`cell` null) or one of its cells.
   let stop: { id: string | null; cell: number | null } = { id: null, cell: null };
@@ -184,6 +200,8 @@
       event.stopPropagation();
     };
 
+    // A key the page owns is not for type-ahead, unless a query is already being typed.
+    if (onRow && query === '' && isTypeAheadKey(event) && passKeys.has(key.toLowerCase())) return;
     // A shortcut key starts a query only if one is not already being typed: "v" toggles, "ve" finds.
     if (onRow && isTypeAheadKey(event) && (query !== '' || !rowKeys[key.toLowerCase()])) {
       handled();
@@ -278,7 +296,7 @@
         break;
       default: {
         // The same column in the adjacent row, else its nearest cell that can take focus; a row
-        // with none leaves focus where it is.
+        // with none (a heading, a disabled row) takes focus itself, as a row does.
         const destination = rows[movedIndex(act, index, rows.length)].node.id;
         const nearest = usableColumns(rowElement(destination)!).reduce<number | undefined>(
           (best, c) =>
@@ -286,6 +304,7 @@
           undefined,
         );
         if (nearest !== undefined) focusCell(destination, nearest);
+        else focusRow(destination);
       }
     }
   }
@@ -332,28 +351,33 @@
 </script>
 
 <div role="treegrid" aria-label={label} class="treegrid" bind:this={grid}>
-  {#each rows as row (row.node.id)}
-    {@const toggle = () => {
-      if (row.expandable) setExpanded([row.node.id], !row.expanded);
-    }}
-    <div
-      role="row"
-      class="row"
-      data-id={row.node.id}
-      data-selected={selectable(row.node) ? selectedId === row.node.id : undefined}
-      aria-label={rowLabel?.(row.node)}
-      aria-level={row.level}
-      aria-posinset={row.posinset}
-      aria-setsize={row.setsize}
-      aria-expanded={row.expandable ? row.expanded : undefined}
-      aria-selected={selectable(row.node) ? selectedId === row.node.id : undefined}
-      style:--level={row.level}
-    >
-      <div role="gridcell" class="cell primary">
-        {@render primary(row.node, { expanded: row.expanded, level: row.level, toggle })}
-      </div>
-      {#each actions as id (id)}
-        <div role="gridcell" class="cell action">{@render action?.(row.node, id)}</div>
+  {#each blocks as block (block[0].node.id)}
+    <div class="treegrid-block">
+      {#each block as row (row.node.id)}
+        {@const toggle = () => {
+          if (row.expandable) setExpanded([row.node.id], !row.expanded);
+        }}
+        <div
+          role="row"
+          class="row"
+          data-id={row.node.id}
+          data-selected={selectable(row.node) ? selectedId === row.node.id : undefined}
+          aria-label={rowLabel?.(row.node)}
+          aria-level={row.level}
+          aria-posinset={row.posinset}
+          aria-setsize={row.setsize}
+          aria-expanded={row.expandable ? row.expanded : undefined}
+          aria-selected={selectable(row.node) ? selectedId === row.node.id : undefined}
+          aria-disabled={row.node.disabled || undefined}
+          style:--level={row.level}
+        >
+          <div role="gridcell" class="cell primary">
+            {@render primary(row.node, { expanded: row.expanded, level: row.level, toggle })}
+          </div>
+          {#each actions as id (id)}
+            <div role="gridcell" class="cell action">{@render action?.(row.node, id)}</div>
+          {/each}
+        </div>
       {/each}
     </div>
   {/each}
@@ -380,7 +404,7 @@
       min-width: 0;
     }
     @media (hover: hover) and (pointer: fine) {
-      .row:hover:not([data-selected='true']) {
+      .row:hover:not([data-selected='true'], [aria-disabled='true']) {
         background: var(--surface-hover);
       }
     }
