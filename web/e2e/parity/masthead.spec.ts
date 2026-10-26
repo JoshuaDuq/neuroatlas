@@ -2,14 +2,6 @@
 // deviation record in docs/decisions/deviations/ (h2-radio-groups, h2-close-on-keyboard-choice).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
-import shellEnabled from './enabled/shell.ts';
-
-test.beforeEach(() => {
-  test.skip(
-    test.info().project.name === 'next' && !shellEnabled,
-    'the shell region is not integrated',
-  );
-});
 
 const more = (page: Page) => page.getByRole('button', { name: 'More settings' });
 const html = (page: Page) => page.locator('html');

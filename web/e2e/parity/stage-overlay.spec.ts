@@ -3,11 +3,6 @@
 // docs/decisions/deviations/ (g1-hover-chip-dismiss, g1-touch-hints).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
-import enabled from './enabled/stage.ts';
-
-test.beforeEach(({ page: _page }, testInfo) => {
-  test.skip(testInfo.project.name === 'next' && !enabled, 'the next stage region is not enabled');
-});
 
 const OVERLAYS = '#viewport-help, #viewport-focus-hint, #orientation, #scale-bar, #hover-label';
 const LETTERS = /^[RLSIPAD]$/;

@@ -3,11 +3,6 @@
 // r2-aria-disabled-rows, r2-retry-focus, r2-forced-colours, r2-new-tab-cue) or decision 39 on #4.
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
-import enabled from './enabled/panels.ts';
-
-test.beforeEach(({ page: _page }, testInfo) => {
-  test.skip(testInfo.project.name === 'next' && !enabled, 'the panels region is not integrated');
-});
 
 const V1 = 'hcp-mmp:left:1'; // 5 overlaps: four rows, one behind "1 more overlapping region"
 const panelOf = (page: Page) => page.locator('#region-comparison, .comparison > details');

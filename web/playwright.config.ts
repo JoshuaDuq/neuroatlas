@@ -11,12 +11,23 @@ import stageEnabled from './e2e/parity/enabled/stage.ts';
 const origin = 'http://127.0.0.1:4173';
 
 // The specs whose region is not integrated in the Svelte app are left out of the `next` project,
-// so `--shard` counts only tests that run. The gate files in e2e/parity/enabled stay the one
-// switch: flipping one to true lists its specs again. Each spec also skips itself at run time.
+// so `--shard` counts only tests that run. This map is the only gate: flipping a file in
+// e2e/parity/enabled to true lists its specs again.
 const nextIgnored = [
   ...(panelsEnabled
     ? []
-    : ['anatomy-tree', 'deficits', 'functions', 'inspector', 'tracts', 'workspace']),
+    : [
+        'anatomy-search',
+        'anatomy-tree',
+        'atlas-comparison',
+        'circuits',
+        'deficits',
+        'dissection',
+        'functions',
+        'inspector',
+        'tracts',
+        'workspace',
+      ]),
   ...(shellEnabled ? [] : ['data-bar', 'masthead', 'provenance', 'shell', 'shortcuts']),
   ...(stageEnabled ? [] : ['boot', 'stage-overlay']),
 ].map((name) => `**/parity/${name}.spec.ts`);

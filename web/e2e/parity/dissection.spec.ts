@@ -5,11 +5,6 @@
 // (a3-picker-switching) are covered by the component tests; here are the behaviours on the page.
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
-import enabled from './enabled/panels.ts';
-
-test.beforeEach(({ page: _page }, testInfo) => {
-  test.skip(testInfo.project.name === 'next' && !enabled, 'the panels region is not integrated');
-});
 
 const REGION = 'destrieux:left:38';
 const isNext = () => test.info().project.name === 'next';

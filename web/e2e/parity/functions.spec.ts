@@ -3,11 +3,6 @@
 // decision 37 on #4. The panels region is gated on `next` until I1 mounts it.
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
-import panelsEnabled from './enabled/panels.ts';
-
-test.beforeEach(({ page: _page }, testInfo) => {
-  test.skip(testInfo.project.name === 'next' && !panelsEnabled, 'the panels region is not mounted');
-});
 
 const searchbox = (page: Page) => page.getByRole('searchbox');
 const list = (page: Page) => page.getByRole('group', { name: /^(Functions|Fonctions)$/ });
