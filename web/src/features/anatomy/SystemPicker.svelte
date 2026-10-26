@@ -6,7 +6,6 @@
   (deviations/a3-system-value-sync.md).
 -->
 <script lang="ts">
-  import { tick } from 'svelte';
   import { t } from '../../lib/core/i18n/index.ts';
   import type { Language, Region } from '../../lib/types/index.ts';
   import Select from '../../lib/ui/Select.svelte';
@@ -37,19 +36,22 @@
     ...systemOptions(regions, detail, lang, shared),
   ]);
 
-  let root: HTMLElement;
+  // Svelte rewrites a bound select only when its value changes, so a refused choice is undone
+  // by setting it back here, and not by touching the element.
+  let shown = $derived(value ?? '');
 
   async function choose(system: string) {
-    await onChoose(system || null);
-    // Whatever the command did, the select ends on the display's own value.
-    await tick();
-    root.querySelector('select')!.value = value ?? '';
+    try {
+      await onChoose(system || null);
+    } finally {
+      shown = value ?? '';
+    }
   }
 </script>
 
-<div class="system-picker" bind:this={root}>
+<div class="system-picker">
   <label for={id}>{copy.system}</label>
-  <Select {id} {options} value={value ?? ''} disabled={switching} onchange={choose} />
+  <Select {id} {options} bind:value={shown} disabled={switching} onchange={choose} />
 </div>
 
 <style>

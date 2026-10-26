@@ -156,8 +156,10 @@ test.describe('system picker', () => {
     await expect.poll(() => app.hash()).toContain('system=');
     const link = await app.hash();
     const chosen = await system(page).locator('option:checked').textContent();
-    await app.gotoHash(Object.fromEntries(new URLSearchParams(link)));
+    // A reload: setting the same hash would be a same-document navigation that loads nothing.
+    await page.reload();
     await app.ready();
+    await expect.poll(() => app.hash()).toBe(link);
     await expect(system(page)).toBeVisible();
     await expect(system(page).locator('option:checked')).toHaveText(chosen!);
   });

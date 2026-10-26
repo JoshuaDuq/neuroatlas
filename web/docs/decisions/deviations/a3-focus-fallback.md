@@ -5,7 +5,7 @@ Status: fix, standard cited (approved in decision 36 on #4).
 
 ## Legacy behaviour
 
-When the bar leaves (nothing hidden any more), focus moves to `document.querySelector('#tree [tabindex="0"]')` with optional chaining (`viewer/ui/panels/dissection.js:34`). While a search replaces the tree there is no such element, so nothing is focused and focus drops to `body`.
+When the bar leaves (nothing hidden any more), focus moves to `document.querySelector('#tree [tabindex="0"]')` with optional chaining (`viewer/ui/panels/dissection.js:34`). While a search is open the tree is hidden (`viewer/ui/panels/navigator.js:756`), so its `[tabindex="0"]` row exists but cannot take focus, and focus drops to `body`.
 
 ## New behaviour
 

@@ -19,14 +19,17 @@ const REGIONS: Region[] = [
   structure('a:left-caudate', 'Left-Caudate'),
   structure('a:right-caudate', 'Right-Caudate'),
   structure('a:hippocampus', 'Left-Hippocampus'),
+  structure('a:brainstem', 'Brain-Stem'),
   // Another detail level's structure, and a cortical area: neither is a system of this list.
   structure('n:cerebellum', 'Left-Cerebellum-Cortex', 'aseg-fine'),
   { id: 'd:1', label: 'd:1', hemisphere: 'left', kind: 'cortex', atlas: 'aseg' } as Region,
 ];
 
+let screen: Awaited<ReturnType<typeof render<typeof Fixture>>>;
 const mount = (props: Partial<NonNullable<Props>> = {}) => {
   const calls: string[] = [];
-  render(Fixture, { calls, regions: REGIONS, ...props });
+  const rendered = render(Fixture, { calls, regions: REGIONS, ...props });
+  void rendered.then((view) => (screen = view));
   return calls;
 };
 const select = () => page.getByRole('combobox', { name: /^(System|Système)$/ });
@@ -45,6 +48,7 @@ describe('the options', () => {
       systemOptions(REGIONS, 'aseg', 'en', new Set()).map(({ value, label }) => [value, label]),
     ).toEqual([
       ['Basal ganglia', 'Basal ganglia'],
+      ['Brainstem', 'Brainstem'],
       ['Limbic', 'Limbic'],
       ['Ventricles and CSF', 'Ventricles and CSF'],
     ]);
@@ -55,10 +59,11 @@ describe('the options', () => {
     expect(texts()).toEqual([
       'All internal structures',
       'Basal ganglia',
+      'Brainstem',
       'Limbic',
       'Ventricles and CSF',
     ]);
-    expect(values()).toEqual(['', 'Basal ganglia', 'Limbic', 'Ventricles and CSF']);
+    expect(values()).toEqual(['', 'Basal ganglia', 'Brainstem', 'Limbic', 'Ventricles and CSF']);
   });
 
   test('French: shown in French and sorted by it, still keyed by the English group name', () => {
@@ -67,9 +72,11 @@ describe('the options', () => {
       'Toutes les structures internes',
       'Ganglions de la base',
       'Limbique',
+      'Tronc cérébral',
       'Ventricules et LCS',
     ]);
-    expect(values()).toEqual(['', 'Basal ganglia', 'Limbic', 'Ventricles and CSF']);
+    // Sorted by the French names: by the English keys Brainstem would come second.
+    expect(values()).toEqual(['', 'Basal ganglia', 'Limbic', 'Brainstem', 'Ventricles and CSF']);
   });
 
   test('a name another vocabulary shares says which system it is, and sorts under that name', () => {
@@ -77,6 +84,7 @@ describe('the options', () => {
     expect(texts()).toEqual([
       'All internal structures',
       'Basal ganglia',
+      'Brainstem',
       'Limbic system',
       'Ventricles and CSF',
     ]);
@@ -87,6 +95,7 @@ describe('the options', () => {
       'Toutes les structures internes',
       'Ganglions de la base',
       'Système limbique',
+      'Tronc cérébral',
       'Ventricules et LCS',
     ]);
     expect(values()[2]).toBe('Limbic');
@@ -136,6 +145,15 @@ describe('the field', () => {
     await select().selectOptions('Basal ganglia');
     expect(calls).toEqual(['Basal ganglia']);
     await expect.poll(() => field().value).toBe('Limbic');
+  });
+
+  test('a refused choice stays refused when the options are rebuilt, as by a language switch', async () => {
+    mount({ value: 'Limbic', accepts: false });
+    await select().selectOptions('Brainstem');
+    await expect.poll(() => field().value).toBe('Limbic');
+    await screen.rerender({ lang: 'fr' });
+    expect(texts()).toContain('Tronc cérébral');
+    expect(field().value).toBe('Limbic');
   });
 
   test('it is disabled while an atlas or detail level loads', () => {

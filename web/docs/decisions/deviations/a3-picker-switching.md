@@ -5,7 +5,7 @@ Status: fix, standard cited (approved in decision 36 on #4).
 
 ## Legacy behaviour
 
-The scope buttons are disabled while `status === 'switching'`, but the system select is not (`viewer/ui/panels/internal-anatomy.js:33`). Switching rebuilds the list of systems, so a choice made meanwhile can name a system the new level does not have.
+The scope buttons are disabled while `status === 'switching'`, but the system select is not (`viewer/ui/panels/internal-anatomy.js:33`). Switching rebuilds the list of systems, so a choice made meanwhile can name a system the incoming level does not have. `setInternalSystem` then throws (`viewer/model/brain-atlas.js:731-736`) and the reader gets "Could not show this system."
 
 ## New behaviour
 
@@ -13,4 +13,4 @@ The scope buttons are disabled while `status === 'switching'`, but the system se
 
 ## Standard cited
 
-Consistency within the same region (WCAG 2.2 SC 3.2.4 Consistent Identification, in spirit) and native-control practice: a control that cannot act is disabled, not left to fail.
+A bug fix under the parity policy (decision 36 on #4): a control that cannot act is disabled, as the scope control beside it already is, rather than left to fail.
