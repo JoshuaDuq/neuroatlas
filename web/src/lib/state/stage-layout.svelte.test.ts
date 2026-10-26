@@ -152,6 +152,36 @@ describe('the dock and the keys tell the camera', () => {
   });
 });
 
+describe('the key fitter and onDock', () => {
+  test('framing runs the fitter without ever calling onDock', () => {
+    let calls = 0;
+    const stage = createStageLayout({ media, storage: null, onDock: () => (calls += 1) });
+    stage.setViewport(rect(800, 600), { width: 800, height: 600 });
+    stage.setGutter(20);
+    stage.setKeyFitter(() => stage.setKeys({ top: 30, right: 0 }, { width: 200, height: 30 }));
+    calls = 0;
+    expect(stage.framing().inset.top).toBe(30);
+    expect(calls).toBe(0);
+  });
+
+  test('a desktop viewport change that moves the key band calls onDock; a phone one does not', () => {
+    for (const [phone, expected] of [
+      [false, 1],
+      [true, 0],
+    ] as const) {
+      let calls = 0;
+      const stage = createStageLayout({
+        media: { phone },
+        storage: null,
+        onDock: () => (calls += 1),
+      });
+      stage.setKeyFitter(() => stage.setKeys({ top: 30, right: 0 }, { width: 200, height: 30 }));
+      stage.setViewport(rect(800, 600), { width: 800, height: 600 });
+      expect(calls, `phone ${phone}`).toBe(expected);
+    }
+  });
+});
+
 describe('framing', () => {
   test('before the stage has a size, the dock alone is cleared', () => {
     const stage = createStageLayout({ media, storage: null });

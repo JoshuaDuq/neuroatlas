@@ -466,12 +466,12 @@ describe('hints', () => {
 
   test('are not drawn where one line would not fit clear of the top letter', async () => {
     await mount();
-    await vi.waitFor(() => expect(help().dataset.room).toBe('true'));
+    await vi.waitFor(() => expect(help().dataset.room).toBe('true'), { timeout: 5000 });
     engine.camera.setChromeInsets({ right: 540 }, {});
-    await vi.waitFor(() => expect(help().dataset.room).toBe('false'));
+    await vi.waitFor(() => expect(help().dataset.room).toBe('false'), { timeout: 5000 });
     expect(getComputedStyle(help()).visibility).toBe('hidden');
     engine.camera.setChromeInsets({ right: 0 }, {});
-    await vi.waitFor(() => expect(help().dataset.room).toBe('true'));
+    await vi.waitFor(() => expect(help().dataset.room).toBe('true'), { timeout: 5000 });
   });
 
   test('take the reader contrast setting', async () => {

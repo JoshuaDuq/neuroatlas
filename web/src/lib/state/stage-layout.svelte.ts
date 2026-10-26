@@ -59,6 +59,8 @@ export function createStageLayout({
   let scaleBar: HTMLElement | null = null;
   let keyFitter: (() => void) | null = null;
   let host: HTMLElement | null = null;
+  // While the key fitter runs on the store's own behalf, a changed key band does not call `onDock`.
+  let fitting = false;
 
   const chrome = $derived.by((): ChromeMode => {
     if (!visibleRect?.width) return 'wide';
@@ -138,6 +140,19 @@ export function createStageLayout({
     if (!host) return;
     if (dock.height) host.style.setProperty('--dock-height', `${dock.height}px`);
     host.dataset.dockTall = String(dockTall);
+  }
+
+  /** Runs G3's fitting without signalling a refit; true when it changed the key band. */
+  function fitKeys(): boolean {
+    if (!keyFitter) return false;
+    const before = keyInset;
+    fitting = true;
+    try {
+      keyFitter();
+    } finally {
+      fitting = false;
+    }
+    return before.top !== keyInset.top || before.right !== keyInset.right;
   }
 
   function setDock(size: Size) {
@@ -223,6 +238,9 @@ export function createStageLayout({
       visibleRect = rect;
       hostSize = size;
       writeDock();
+      // A desktop resize reframes at once; a phone's sheet reframes when it settles on a detent
+      // (viewport-chrome.js:721-722).
+      if (fitKeys() && !media.phone) onDock?.();
     },
 
     /** The stage host, whose dock variables are written at once; returns the function that lets go. */
@@ -261,7 +279,7 @@ export function createStageLayout({
       const changed = inset.top !== keyInset.top || inset.right !== keyInset.right;
       keyInset = inset;
       keySize = size;
-      if (changed) onDock?.();
+      if (changed && !fitting) onDock?.();
     },
 
     /** G3's fitting of the keys, run at the start of every framing so it sees the keys as they now are (viewport-chrome.js:265). */
@@ -292,7 +310,7 @@ export function createStageLayout({
      */
     framing: (): FramingClearance => {
       const reach = dockReach();
-      keyFitter?.();
+      fitKeys();
       if (!visibleRect?.height) {
         return { inset: { ...keyInset, bottom: reach }, scale: { horizontal: 1, vertical: 1 } };
       }
