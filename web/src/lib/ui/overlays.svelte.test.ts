@@ -226,6 +226,28 @@ describe('Popover keys and stage variant', () => {
     expect(seen).toEqual([true]);
   });
 
+  test('focus placed in a stage popover is not taken back after the reader moves it to the trigger', async () => {
+    render(Fixture);
+    // Bits places focus twice for every open. Moving it back to the trigger the moment the first
+    // placement lands makes the second one the late call that must leave it there.
+    const stage = el('Stage');
+    const back = (event: FocusEvent) => {
+      if (event.target === stage) return;
+      document.removeEventListener('focusin', back);
+      stage.focus();
+    };
+    stage.focus();
+    document.addEventListener('focusin', back);
+    try {
+      await userEvent.keyboard('{Enter}');
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      expect(attr('Stage', 'aria-expanded')).toBe('true');
+      expect(document.activeElement).toBe(stage);
+    } finally {
+      document.removeEventListener('focusin', back);
+    }
+  });
+
   test('an outside press fades the stage popover out; Escape closes it at once', async () => {
     render(Fixture);
     await button('Stage').click();
