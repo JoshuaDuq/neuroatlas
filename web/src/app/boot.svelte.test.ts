@@ -7,6 +7,8 @@ import domainsFile from '../../../public/models/cdmd/neuropsych-domains.json' wi
 import { validateNeuropsychDomains } from '../lib/core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains } from '../lib/core/catalog/neuropsych-domains.ts';
 import { t } from '../lib/core/i18n/index.ts';
+import { decodeState } from '../lib/core/state/url-state.ts';
+import { ASSET_BASE } from '../../build/site.ts';
 import type { CreateEngine, EngineOptions } from '../lib/engine/api.ts';
 import { createFakeEngine } from '../lib/engine/fake.ts';
 import type { FakeEngine } from '../lib/engine/fake.ts';
@@ -125,13 +127,17 @@ afterEach(() => {
 
 describe('the start', () => {
   test('frames the opening view with the stage’s own framing, then applies the link, then is ready', async () => {
+    // The status each view is framed under: the link's own is applied while loading.
+    const statuses: string[] = [];
+    const applyView = engine.camera.applyView;
+    vi.spyOn(engine.camera, 'applyView').mockImplementation((name, options) => {
+      statuses.push(`${name}:${apps[0]!.session.state.status}`);
+      return applyView(name, options);
+    });
     const { app } = await boot('#view=left');
+    expect(statuses).toEqual(['oblique:loading', 'left:loading']);
     expect(app.session.state.status).toBe('ready');
-    expect(cameraCalls()).toEqual([
-      ['setFramingSource', app.stage.framing],
-      ['applyView', 'oblique', { immediate: true }],
-      ['applyView', 'left', { immediate: true }],
-    ]);
+    expect(cameraCalls()[0]).toEqual(['setFramingSource', app.stage.framing]);
     expect(app.session.state.view).toBe('left');
   });
 
@@ -332,9 +338,12 @@ describe('a failed start', () => {
 
   test('a failed download says so with Retry, and leaves nothing running', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    const { app } = await boot('', async () => {
+    const failing = vi.fn<CreateEngine>(async () => {
       throw assetError;
     });
+    const { app } = await boot('', failing);
+    // Only an unknown layer is retried with the defaults; any other error fails the start.
+    expect(failing).toHaveBeenCalledOnce();
     expect(app.session.state).toMatchObject({ status: 'error', error: assetError });
     expect(app.failure).toEqual({
       text: `${t('en', 'errors').operations.start} ${t('en', 'errors').download}`,
@@ -362,6 +371,119 @@ describe('a failed start', () => {
     expect(app.world).toBeNull();
     expect(app.session.state.status).toBe('error');
     expect(app.failure!.button).toBe(t('fr', 'viewport').retry);
+  });
+});
+
+describe('the start, the published files and the teardown', () => {
+  test('reads the published files from the site root, wherever the page is served', async () => {
+    await boot();
+    expect(createEngine.mock.calls[0]![0].manifestUrl).toBe(
+      `${ASSET_BASE}models/cdmd/manifest.json`,
+    );
+  });
+
+  test('unmounts the regions before it disposes the engine', async () => {
+    const app = createApp();
+    apps.push(app);
+    let disposedAtTeardown: boolean | undefined;
+    stops.push(
+      $effect.root(() => {
+        $effect(() => {
+          if (!app.world) return;
+          const withdraw = app.registerPorts(portStubs());
+          return () => {
+            disposedAtTeardown = engine.model.disposed;
+            withdraw();
+          };
+        });
+      }),
+    );
+    await startApp(app, createEngine);
+    app.dispose();
+    expect(disposedAtTeardown).toBe(false);
+    expect(engine.model.disposed).toBe(true);
+  });
+
+  test('unbinds the hashchange listener it bound', async () => {
+    const add = vi.spyOn(window, 'addEventListener');
+    const remove = vi.spyOn(window, 'removeEventListener');
+    const { app } = await boot();
+    const [, handler] = add.mock.calls.find(([type]) => type === 'hashchange')!;
+    app.dispose();
+    expect(remove).toHaveBeenCalledWith('hashchange', handler);
+  });
+
+  test('gives the engine the theme the reader chooses', async () => {
+    const { app } = await boot();
+    app.theme.choose('dark');
+    expect(
+      engine.calls.filter((call) => call.method === 'applyTheme').map((call) => call.args),
+    ).toContainEqual(['dark']);
+  });
+});
+
+describe('every controller shares the one scene-command counter', () => {
+  const restoring = (world: NonNullable<App['world']>) =>
+    world.links.restore({ state: { view: 'right' }, rejected: [] }, {});
+
+  test('an excursion command overtakes a link restore', async () => {
+    const { app } = await boot();
+    const world = app.world!;
+    const restore = restoring(world);
+    void world.excursions.openCircuit(world.circuits.all[0]!.id);
+    expect(await restore).toBeNull();
+  });
+
+  test('an anatomy command overtakes a link restore', async () => {
+    const { app } = await boot();
+    const restore = restoring(app.world!);
+    void app.world!.anatomy.setSpinalCordVisible(false);
+    expect(await restore).toBeNull();
+  });
+});
+
+describe('the link hooks', () => {
+  test('a view key retires the stage hint', async () => {
+    const { app } = await boot();
+    expect(app.stage.hintRetired).toBe(false);
+    press('1');
+    expect(app.stage.hintRetired).toBe(true);
+  });
+
+  test('a linked region opens the tree group that holds it', async () => {
+    const { app } = await boot(`#region=${PICKED}`);
+    const group = app.world!.catalog.groups.find((entry) =>
+      entry.rows.some((row) => row.region.id === PICKED),
+    )!;
+    expect(app.session.state.expanded.has(group.key)).toBe(true);
+  });
+
+  test('leaving a lesson a link opened returns to the scene the link found', async () => {
+    const circuit = (await boot()).app.world!.circuits.all[0]!.id;
+    apps[0]!.dispose();
+    engine = createFakeEngine({ manifest, domains: domains as never });
+    const { app } = await boot(`#tab=circuits&circuit=${circuit}`);
+    expect(engine.model.state.selectedRegion).not.toBeNull();
+    await app.world!.excursions.leaveLesson();
+    expect(engine.model.state.selectedRegion).toBeNull();
+  });
+
+  test('a link forgets the scene an excursion would restore', async () => {
+    const { app } = await boot();
+    const world = app.world!;
+    await world.excursions.openDeficit(world.clinical.search('', 'en')[0]!.id);
+    expect(world.excursions.restorable).toBe(true);
+    await world.links.restore({ state: {}, rejected: [] }, {});
+    expect(world.excursions.restorable).toBe(false);
+  });
+
+  test('a link ends the Tracts excursion before it applies its own display', async () => {
+    const { app } = await boot();
+    const world = app.world!;
+    world.excursions.chooseExplorer('diffusion');
+    expect(world.excursions.tractsHeld).toBe(true);
+    await world.links.restore(decodeState('opacity=0.5'), {});
+    expect(engine.model.settings.cortexOpacity).toBe(0.5);
   });
 });
 

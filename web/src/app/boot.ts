@@ -1,4 +1,5 @@
 import { flushSync } from 'svelte';
+import { ASSET_BASE } from '../../build/site.ts';
 import { keepAnatomyCached } from '../boot/keep-cached.ts';
 import { loadAnatomies, resolveAnatomy } from '../lib/core/assets/published-anatomy.ts';
 import { t } from '../lib/core/i18n/index.ts';
@@ -108,7 +109,7 @@ export async function startApp(
     // A link is applied field by field: what this anatomy cannot apply is named, not fatal.
     const link = decodeState(location.hash);
     const wanted = link.state;
-    const modelsUrl = `${import.meta.env.BASE_URL}models`;
+    const modelsUrl = `${ASSET_BASE}models`;
     const published = await loadAnatomies(`${modelsUrl}/anatomies.json`);
     const requested = wanted.anatomy ?? undefined;
     const unpublished =

@@ -100,6 +100,7 @@ export function createApp() {
       // Before the engine goes, so the regions that draw from it unmount first.
       cleanups.push(() => {
         world = null;
+        flushSync();
       });
     },
 
