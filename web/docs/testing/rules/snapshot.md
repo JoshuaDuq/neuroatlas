@@ -21,7 +21,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/snapshot.js:15-42`; `snapshot.test.js:7-13`
 - **Expected:** EN `{ subject: 'SNAIL subj_1', atlas: 'destrieux', surfaceColor: 'tissue', detail: 'learning', view: 'anterior' }` → `['SNAIL subj_1', 'Destrieux · Tissue · Teaching set', 'Anterior view']`, first run `strong`. `{ subject: 'S', atlas: null, surfaceColor: 'tissue', detail: null, view: null }` → `['S', 'Tissue']`. `{ subject: '', atlas: 'destrieux', surfaceColor: 'atlas', detail: 'nextbrain', view: 'left' }` → no subject line. French view: posterior → "Vue postérieure".
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `parity/G6.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R)
 
 ### SNAP-02 · The internal anatomy only where the masthead offers it, the view only while the camera holds it
 
@@ -39,7 +39,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/snapshot.js:29-37`; `snapshot.test.js:15-32`
 - **Expected:** French coronal −12.34 → "Coupe coronale · −12,3 mm", no run with `mono`. Oblique 0, tilt 30, azimuth −45 → "Oblique section · 0.0 mm · Tilt 30° · Azimuth −45°". Axial +4 → `['Axial section', '+4.0 mm']`.
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `src/features/snapshot/snapshot.svelte.test.ts` (R); `parity/G6.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `src/features/snapshot/snapshot.svelte.test.ts` (R)
 
 ### SNAP-04 · The tract reference is named alone
 
@@ -48,16 +48,16 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/snapshot.js:22-23`; `viewer/ui/chrome/viewport-chrome.js:805, 814`
 - **Expected:** `{ reference: 'HCP tract reference', view: null }` → `['HCP tract reference']`. With an axial section and `left` held → `[['HCP tract reference'], ['Left view']]`.
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `src/features/snapshot/snapshot.svelte.test.ts` (R); `parity/G6.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `src/features/snapshot/snapshot.svelte.test.ts` (R)
 
 ### SNAP-05 · Every colouring, view and plane has a fixed caption in both languages
 
 - **Rule:** For each colouring, each named view or none, and each plane or none, in English and French, the caption is a known table of words; every plane's name appears in it.
 - **Kind:** behaviour
 - **Level:** unit (a table test)
-- **Source:** `viewer/ui/chrome/snapshot.js:20-42`; `parity/G6.test.ts:23-66` (the sweep to turn into the table)
+- **Source:** `viewer/ui/chrome/snapshot.js:20-42`
 - **Expected:** For `{ subject: 'CDMD sub_013', atlas: 'hcp-mmp', detail: 'learning' }` × `SURFACE_COLORS` × (`VIEW_NAMES` + none) × (none, sagittal 12.34, coronal −0.04, axial 5, oblique −7.5 tilt 30 azimuth −45): the words written out once from the i18n tables (e.g. network, no view, sagittal 12.34 → `['CDMD sub_013', 'HCP-MMP · Yeo 7 networks · Teaching set', 'Sagittal section · +12.3 mm']`; French "Coupe sagittale · +12,3 mm"); the strings "Sagittal", "Coronal", "Axial", "Oblique" all occur.
-- **Covered by:** `parity/G6.test.ts` (D; the only R part is the check that the four plane names occur); the fixed table is uncovered
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R) (fixed tables of the words for every colouring, view and plane, in English and French)
 
 ## Laying out the markings
 
@@ -68,7 +68,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/snapshot.js:44-59`; `snapshot.test.js:44-51`
 - **Expected:** `packFacts([90, 70, 120], 30, 400)` → `[[0, 1, 2]]`; room 200 → `[[0, 1], [2]]`; room 100 → `[[0], [1], [2]]`; `packFacts([300, 70], 30, 100)` → `[[0], [1]]`. Properties for the seeded sweep: fact order kept; a line exceeds the room only when it holds one fact.
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `parity/G6.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R) (fixed cases, and a seeded property test: order kept, a line exceeds the room only with one fact)
 
 ### SNAP-07 · A line too long for its room keeps its start and ends in an ellipsis
 
@@ -77,7 +77,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/snapshot.js:61-71, 119-136`; `snapshot.test.js:53-59`
 - **Expected:** Measure 10 px per character: `ellipsize('Destrieux', 200)` → "Destrieux"; `('Destrieux · Tissue', 100)` → "Destrieux…" (≤ 100 px); `('Destrieux', 5)` → "…". Property: the result is the text, or a prefix with trailing spaces trimmed plus "…", and measures ≤ the width unless it is "…".
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R); `parity/G6.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R) (fixed cases, and a seeded property test: a trimmed prefix plus "…" that fits, or "…")
 
 ### SNAP-08 · The caption runs from the top left and stops short of the top letter
 
@@ -95,7 +95,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit for the positions; browser for the drawn statement
 - **Source:** `viewer/ui/chrome/snapshot.js:73-85, 234-241`; `snapshot.test.js:61-68`; `viewport.snapshotStatement`
 - **Expected:** `bottomLine({ 1120, 824, statementWidth: 190, scaleWidth: 110 })` → statement `{ x: 16, y: 800 }`, scale `{ x: 994, y: 800 }`. `(300, 600, 190, 110)` → scale y 552 (576 − 16 − 8), scale x + 110 = 284. Statement text "Planum · Not clinical anatomy" (French "Planum · Pas une anatomie clinique"), 12 px, at the statement spot. Property: the statement and the bar never overlap.
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R, positions); `parity/G6.test.ts` (D); `src/features/snapshot/snapshot.parity.svelte.test.ts` (D; the only check that the statement is drawn)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R) (positions; a seeded property test: never overlap, shared line exactly when it fits); `src/features/snapshot/snapshot.parity.svelte.test.ts` (D; the only check that the statement is drawn)
 
 ### SNAP-10 · The scale bar is drawn at its on-screen length
 

@@ -172,14 +172,14 @@ describe('createTheme', () => {
     }
   });
 
-  test('the masthead surface is carried into the browser theme colour, also on an OS switch', () => {
+  test('STORE-20: the masthead surface is carried into the browser theme colour, also on an OS switch', () => {
     page.uninstall();
-    page = installFakeDocument({ light: '#ffffff', dark: '#1d1d1f' });
+    page = installFakeDocument({ light: '#ffffff', dark: '#1b1e21' });
     const system = fakeSystem(false);
     const theme = createTheme(() => {}, options(fakeStorage(), system));
     expect(page.meta.content).toBe('#ffffff');
     system.flip(true);
-    expect(page.meta.content).toBe('#1d1d1f');
+    expect(page.meta.content).toBe('#1b1e21');
     theme.choose('light');
     expect(page.meta.content).toBe('#ffffff');
   });
@@ -192,6 +192,19 @@ describe('resolveTheme', () => {
     for (const stored of [null, 'system', 'sepia', '']) {
       expect(resolveTheme(stored, true)).toBe('dark');
       expect(resolveTheme(stored, false)).toBe('light');
+    }
+  });
+});
+
+describe('STORE-18: a stored value other than light or dark follows the system at load', () => {
+  test.each([['sepia'], ['']])('stored %j', (stored) => {
+    for (const dark of [false, true]) {
+      const theme = createTheme(
+        () => {},
+        options(fakeStorage({ 'planum.theme': stored }), fakeSystem(dark)),
+      );
+      expect(theme.choice).toBe('system');
+      expect(theme.current).toBe(dark ? 'dark' : 'light');
     }
   });
 });

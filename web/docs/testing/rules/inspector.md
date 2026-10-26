@@ -253,7 +253,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit
 - **Source:** `viewer/ui/panels/comparison-format.js:1-15`
 - **Expected:** Area: 0 → "0.0"; −0 → "0.0"; 0.0003, 0.05, 0.0500001, 0.08 and 0.0999999 → "<0.1"; `Number.MIN_VALUE` → "<0.1"; 0.1 → "0.1"; 0.95 → "0.9"; 1 → "1.0"; 99.95 → "100.0"; 100 → "100.0"; −1 → "−1.0" (U+2212); 25.36 French → "25,4". Share: 0 → "0.0"; 0.000001 → "<0.1" (French "<0,1"); 0.0008 → "<0.1"; 0.001 → "0.1"; 0.1536 → "15.4" (French "15,4"); `Number.MIN_VALUE / 100` (= 0) → "0.0". Published data: `destrieux:left:4`'s last overlap (0.069 mm², 0.0066 %) → "<0.1" and "<0.1".
-- **Covered by:** `src/lib/core/comparison-format.test.ts` (R; lacks −0, 0.95, 99.95, 100, −1 and `MIN_VALUE`); `parity/R2.test.ts` (D); `src/features/inspector/AtlasComparison.svelte.test.ts` (S, the 0.069 mm² row)
+- **Covered by:** `src/lib/core/comparison-format.test.ts` (R, including the edge values); `src/features/inspector/AtlasComparison.svelte.test.ts` (S, the 0.069 mm² row)
 
 ### INSP-28 · A row is a toggle named with its region, area and share
 
