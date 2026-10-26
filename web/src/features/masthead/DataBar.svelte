@@ -293,9 +293,7 @@
     }
   }
 
-  // Deferred callbacks (a frame, the fonts) may outlive the component.
   const fit = () => {
-    if (!root?.isConnected) return;
     fitBar();
     fitSummary();
   };
@@ -306,12 +304,13 @@
     untrack(fit);
   });
   $effect(() => {
-    // Fitting changes the layout it observes; a frame later keeps that out of the observer's own delivery.
-    const observer = new ResizeObserver(() => requestAnimationFrame(fit));
+    const observer = new ResizeObserver(fit);
     observer.observe(root);
     window.addEventListener('resize', fit);
-    void document.fonts.ready.then(fit);
+    let live = true;
+    void document.fonts.ready.then(() => live && fit());
     return () => {
+      live = false;
       observer.disconnect();
       window.removeEventListener('resize', fit);
     };
@@ -889,7 +888,7 @@
       }
     }
 
-    /* Fields and the summary follow --control-height, which is already 44px here. */
+    /* Touch targets: 44px fields and summary, whatever --control-height is. */
     @media (pointer: coarse), (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
       /* 16px, so focusing a field does not zoom the page on iOS. */
       select,

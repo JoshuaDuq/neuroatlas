@@ -169,6 +169,6 @@ test.describe('data bar on a phone', () => {
   test('the open popover passes axe', async ({ app }) => {
     await summary(app.page).click();
     await expect(field(app.page, 'Atlas')).toBeVisible();
-    await app.expectAccessible('data-bar');
+    await app.expectAccessible('data-bar-popover');
   });
 });
