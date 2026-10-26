@@ -316,12 +316,24 @@ describe('keymap', () => {
 
   it('chooses the view each digit names, and ignores the others', () => {
     const { keymap, commands } = host();
-    for (const key of ['0', '1', '2', '3', '4', '5', '6', '7', '9'])
+    const views: Record<string, string> = {
+      '0': 'oblique',
+      '1': 'left',
+      '2': 'right',
+      '3': 'anterior',
+      '4': 'posterior',
+      '5': 'superior',
+      '6': 'inferior',
+    };
+    for (const key of ['0', '1', '2', '3', '4', '5', '6', '7', '9']) {
+      commands.chooseView.mockClear();
       dispatchKey(press(key), keymap);
-    assert.deepEqual(
-      commands.chooseView.mock.calls.map(([view]) => view),
-      ['oblique', 'left', 'right', 'anterior', 'posterior', 'superior', 'inferior'],
-    );
+      assert.deepEqual(
+        commands.chooseView.mock.calls.map(([view]) => view),
+        key in views ? [views[key]] : [],
+        `key ${key}`,
+      );
+    }
   });
 
   it('writes ? as Shift+/ for aria-keyshortcuts and keeps the other keys as matched', () => {

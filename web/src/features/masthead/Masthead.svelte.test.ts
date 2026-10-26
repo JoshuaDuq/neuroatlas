@@ -69,13 +69,14 @@ describe('Masthead', () => {
     expect(el(more()).hasAttribute('disabled')).toBe(false);
   });
 
-  test('every masthead control opts out of the single-key shortcuts', async () => {
+  test('the masthead is a region whose controls keep their own keys', async () => {
     await render(Fixture);
     await open();
+    expect(document.querySelector('header')!.hasAttribute('data-own-keys')).toBe(true);
     for (const control of document.querySelectorAll(
       'header .icon-button, .settings-menu .menu-item, .settings-menu [role=radio]',
     )) {
-      expect(control.hasAttribute('data-own-keys'), control.outerHTML).toBe(true);
+      expect(control.closest('[data-own-keys]'), control.outerHTML).not.toBeNull();
     }
   });
 
@@ -155,10 +156,7 @@ describe('Masthead', () => {
     expect(document.querySelector('.settings-menu')!.hasAttribute('data-instant')).toBe(false);
   });
 
-  // Bits toggles on keydown and prevents the click, so Popover (U5) never sees a click with
-  // detail 0 for a keyboard open: its own test passes only because an Escape before it left the
-  // instant flag set. Requested on #4; remove `.fails` when Popover handles it.
-  test.fails('a keyboard open carries no entry animation', async () => {
+  test('a keyboard open carries no entry animation', async () => {
     await render(Fixture);
     el(more()).focus();
     await userEvent.keyboard('{Enter}');

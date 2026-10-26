@@ -1,8 +1,9 @@
 /**
- * Marks a pressable control or field that uses letters or digits itself. The global
- * single-key shortcuts (S5a) skip a target carrying it, so an `h` pressed on a hemisphere
- * button does not also change the hemisphere. Replaces the legacy `#sheet, #masthead,
- * #stage-dock` id selector (ui/chrome/shortcuts.js:9-10), which only covered three containers.
+ * Marks a region whose controls use letters or digits themselves: the masthead, the panels
+ * and the stage dock (legacy `#sheet, #masthead, #stage-dock`, ui/chrome/shortcuts.js:9-10).
+ * The global single-key shortcuts (S5a) skip a pressable control inside a marked region, so an
+ * `h` pressed on a hemisphere button does not also change the hemisphere. Controls outside
+ * those regions are not marked (conductor decision 7 on #4).
  */
 export const OWN_KEYS_ATTRIBUTE = 'data-own-keys';
 
