@@ -189,11 +189,30 @@ jobs:
       - name: Run unit and parity tests
         run: npm test --prefix web
 
+      # Bits UI plus the Svelte runtime, as web/docs/decisions/0001-ui-kit.md defines the budget.
+      - name: Check the UI bundle budget
+        shell: bash
+        run: |
+          node .github/scripts/ui-bundle-budget.mjs | tee ui-budget.log
+          cat ui-budget.log >> "$GITHUB_STEP_SUMMARY"
+
+  # In Playwright's image (Playwright's CI guide): Chromium, its system libraries and Xvfb are
+  # already there, so nothing is installed per run. Installing them took 25 s, or 6 to 11 min when
+  # an apt mirror was slow (12 runs in 67). The tag must equal the Playwright version in
+  # web/package-lock.json; the first step fails if a dependency update moves one without the other.
+  # Four shards: the browser suite is about 11 min on one runner (Vitest's sharding guide).
   web-browser:
     needs: changes
     if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -212,38 +231,30 @@ jobs:
           npm ci
           npm ci --prefix web
 
-      # No browser cache: the download is small next to the cache's restore time.
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-        working-directory: web
+      - name: Check the image matches Playwright
+        run: |
+          version=$(node -p "require('./web/node_modules/playwright-core/package.json').version")
+          test "$version" = 1.64.1 || { echo "::error::Playwright is $version; set the container image tag in tests.yml to v$version-noble"; exit 1; }
 
-      # Includes the WebGL probe (src/boot/webgl-probe.svelte.test.ts); its renderer
-      # line goes to the job summary. If it fails on the runner, apply the fallback in that file.
       # Headed under Xvfb, so the browser has a mouse: headless Linux has no pointing device and
       # matches (hover: none) and (pointer: none), where a desktop matches hover and a fine pointer.
       # A launch flag cannot stand in for it, as switching touch emulation off restores the device's.
-      - name: Run browser tests
+      # Includes the WebGL probe (src/boot/webgl-probe.svelte.test.ts); its renderer line goes to
+      # the job summary of the shard that runs it.
+      - name: Run browser tests, shard ${{ matrix.shard }}/4
         shell: bash
         run: |
           set -o pipefail
-          xvfb-run -a npm run test:browser --prefix web -- --browser.headless=false 2>&1 | tee browser-tests.log
-          {
-            echo '### WebGL probe'
-            grep -h 'WebGL renderer' browser-tests.log || echo 'No renderer line in the log.'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # Bits UI plus the Svelte runtime, as web/docs/decisions/0001-ui-kit.md defines the budget.
-      - name: Check the UI bundle budget
-        shell: bash
-        run: |
-          node .github/scripts/ui-bundle-budget.mjs | tee ui-budget.log
-          cat ui-budget.log >> "$GITHUB_STEP_SUMMARY"
+          xvfb-run -a npm run test:browser --prefix web -- --browser.headless=false --shard=${{ matrix.shard }}/4 2>&1 | tee browser-tests.log
+          if grep -qh 'WebGL renderer' browser-tests.log; then
+            { echo '### WebGL probe'; grep -h 'WebGL renderer' browser-tests.log; } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: web-browser-failures
+          name: web-browser-failures-${{ matrix.shard }}
           path: |
             web/src/**/__screenshots__/
             web/.vitest/attachments/
@@ -256,6 +267,9 @@ jobs:
     if: github.event_name != 'pull_request' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
     strategy:
       fail-fast: false
       matrix:
@@ -278,11 +292,6 @@ jobs:
           npm ci
           npm ci --prefix web
 
-      # No browser cache: the download is small next to the cache's restore time.
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-        working-directory: web
-
       # The legacy build empties dist/, so it comes first; the preview goes beside it.
       - name: Build the legacy app
         run: npm run build
@@ -294,7 +303,7 @@ jobs:
 
       # Playwright's CI guide: one worker per job, scaled out by sharding. One retry, and a test
       # that needed it fails the job. The global timeout (25 min) ends the run inside Playwright,
-      # so the artifacts below are still uploaded before the job's 40 min limit (setup can take 10 min on a slow runner).
+      # so the artifacts below are still uploaded before the job's 40 min limit (setup takes a few minutes).
       # Specs of regions not yet integrated are left out of the next project (playwright.config.ts),
       # so the shards split only tests that run: about 21 legacy tests, 12 to 13 min, each.
       - name: Run end-to-end tests (legacy and next), shard ${{ matrix.shard }}/8
