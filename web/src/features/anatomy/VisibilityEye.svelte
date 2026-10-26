@@ -18,9 +18,22 @@
     name: string;
     side: Region['hemisphere'];
     hiddenRegions: ReadonlySet<string>;
-    onHide: (ids: readonly string[]) => void;
-    onShow: (ids: readonly string[]) => void;
+    /** `said` is the part sentence, "Hidden: X, left.", for S1 to join with the hidden count. */
+    onHide: (ids: readonly string[], said: string) => void;
+    onShow: (ids: readonly string[], said: string) => void;
   }
+
+  /** The part sentence of a press (a1-eye-announcement); the legacy copy has none, which parity/C1 holds. */
+  const PRESSED = {
+    en: {
+      hidden: (name: string, side: string) => `Hidden: ${name}, ${side}.`,
+      shown: (name: string, side: string) => `Shown: ${name}, ${side}.`,
+    },
+    fr: {
+      hidden: (name: string, side: string) => `Masqué : ${name}, ${side}.`,
+      shown: (name: string, side: string) => `Affiché : ${name}, ${side}.`,
+    },
+  } satisfies Record<Language, Record<'hidden' | 'shown', (name: string, side: string) => string>>;
 
   let { lang, ids, name, side, hiddenRegions, onHide, onShow }: Props = $props();
 
@@ -30,8 +43,8 @@
   const label = $derived((state === 'hidden' ? copy.showPart : copy.hidePart)(name, sideWord));
 
   function toggle() {
-    if (state === 'hidden') onShow(ids);
-    else onHide(ids);
+    if (state === 'hidden') onShow(ids, PRESSED[lang].shown(name, sideWord));
+    else onHide(ids, PRESSED[lang].hidden(name, sideWord));
   }
 </script>
 
