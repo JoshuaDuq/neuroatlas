@@ -252,7 +252,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -288,8 +288,8 @@ jobs:
       # Playwright's CI guide: one worker per job, scaled out by sharding. One retry, and a test
       # that needed it fails the job. The global timeout (25 min) ends the run inside Playwright,
       # so the artifacts below are still uploaded before the job's 30 min limit.
-      - name: Run end-to-end tests (legacy and next), shard ${{ matrix.shard }}/4
-        run: npm run test:e2e --prefix web -- --workers=1 --retries=1 --fail-on-flaky-tests --global-timeout=1500000 --shard=${{ matrix.shard }}/4
+      - name: Run end-to-end tests (legacy and next), shard ${{ matrix.shard }}/8
+        run: npm run test:e2e --prefix web -- --workers=1 --retries=1 --fail-on-flaky-tests --global-timeout=1500000 --shard=${{ matrix.shard }}/8
 
       - name: Upload failure artifacts
         if: ${{ !cancelled() }}
