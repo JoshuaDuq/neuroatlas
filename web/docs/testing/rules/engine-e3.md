@@ -14,8 +14,7 @@ Legacy sources: `viewer/tissues/plane-section.js`, `earcut.js`, `ribbon-wedges.j
 (`engine-e4a.md`); the cap and cut-face materials are SHADER-17 to SHADER-31 (`engine-e2.md`); the
 GPU cut controller (`gpu-sections`) is E4a. World space is in metres. Published data is the CDMD
 anatomy (`public/models/cdmd/`): `tissue-envelopes.glb` holds four envelopes (left and right, pial
-and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. `parity/E3.test.ts`
-diffs legacy and new (D), so a rule that lists only that file has no business-rule test yet.
+and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The legacy comparison file `parity/E3.test.ts` is deleted.
 
 ## The cut face of a solid
 
@@ -26,7 +25,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/plane-section.js:39-88, 298-382, 415-446`
 - **Expected:** every result vertex within 1e-6 m of the plane. On a 9 × 9 grid over the solid's bounds (points on the surface skipped, more than 16 compared), "covered by a result triangle" equals "inside the solid" for: a 0.1 m box cut at z = 0 with normal +z and −z; an L-shaped extrusion (notch 0.04 × 0.04) at z = 0.025; a 0.08 m square with a 0.03 m hole at z = 0.025; a 0.04 m box translated to (0.1, −0.2, 0.05) cut at x = 0.1. The box cut has area 0.01 m² ± 1e-12.
-- **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R; area is not asserted), `parity/E3.test.ts` (D, a rotated 6 × 6 × 6 box)
+- **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R)
 
 ### TISSUE-02 · A plane that misses gives no face
 
@@ -35,7 +34,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/plane-section.js:53, 300, 353, 380`
 - **Expected:** a 0.1 m box and the plane z = 2 → `{ empty: true }`; a geometry without `position` → `{ empty: true }`.
-- **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R), `parity/E3.test.ts` (D, the plane z = 5 under a rotated box)
+- **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R)
 
 ### TISSUE-03 · A cut the sectioner cannot vouch for is reported, not filled wrongly
 
@@ -53,7 +52,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/plane-section.js:147-157`
 - **Expected:** `BoxGeometry(0.1, 0.1, 0.1, 2, 2, 2)` (vertices at z = 0) cut by z = 0 → positions, not a fallback, area 0.01 m² ± 1e-9, every vertex within 1e-6 m of the plane.
-- **Covered by:** uncovered (`parity/E3.test.ts` cuts the published envelopes through their bounding-box centre but never asserts this)
+- **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R)
 
 ### TISSUE-05 · The BVH changes only the speed of a cut
 
@@ -62,7 +61,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/plane-section.js:50-88`
 - **Expected:** each of the four published envelopes, cut by the 8 planes of mulberry32 seed 31 (6 axis planes within ±30 % of the box, 2 oblique through the centre): the BVH cut and the brute-force cut on an unindexed clone have the same total area ± 1e-12 m² and agree on the TISSUE-01 coverage grid. None is a fallback (confirm once when converting; a fallback there is a data defect).
-- **Covered by:** `parity/E3.test.ts` (D: each path is compared with legacy, never with the other path)
+- **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R)
 
 ## Earcut
 
@@ -73,7 +72,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/earcut.js`; deviation `e3-earcut-formatting.md`; decision 47 on #4
 - **Expected:** 60 polygons from mulberry32 seed 41 (5 to 44 sides, radius 0.7 to 1, half with one reversed ring of radius ≤ 0.2 as a hole) → at least one triangle each, and `earcut.deviation` ≤ 1e-9.
-- **Covered by:** `parity/E3.test.ts` (D, triangles and deviation equal to the legacy copy)
+- **Covered by:** `src/lib/engine/tissues/earcut.test.ts` (R)
 
 ### TISSUE-07 · The vendored earcut is upstream 2.2.4
 
@@ -119,8 +118,8 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/tissues/ribbon-wedges.js:67-81`; `viewer/tissues/solid-assets.js:57-81`
-- **Expected:** CDMD `destrieux` and `hcp-mmp`, left and right (labels split by `vertex_counts`): the number of wedges equals the number of distinct TISSUE-09 owners; each wedge has 0 open edges and consistent winding, and its bounding box lies inside its hemisphere's pial bounding box.
-- **Covered by:** `parity/E3.test.ts` (D, positions, index and box equal to legacy)
+- **Expected:** CDMD `destrieux` and `hcp-mmp`, left and right (labels split by `vertex_counts`): the number of wedges equals the number of distinct TISSUE-09 owners and each wedge's bounding box lies inside its hemisphere's pial bounding box. Not true of the published data: about a third of the wedges (51 of 150 for `destrieux`, 128 of 362 for `hcp-mmp`) have edges carried by other than two triangles and repeated directed edges, where a parcel's patch pinches at a vertex. Open finding; the cut falls back to the stencil cap there (TISSUE-24).
+- **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R)
 
 ## Loading the cut's solids
 
@@ -131,7 +130,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:41-81`
 - **Expected:** CDMD `destrieux` → every solid's `userData` is `{ hemisphere, atlas: 'destrieux', kind: 'ribbon', region_id: region_ids[label] }`, left solids first. `nextbrain` → `[]`. A missing envelope → Error "Missing the left pial envelope.".
-- **Covered by:** `parity/E3.test.ts` (D, `userData`, positions and index for both atlases; the empty `nextbrain` result is R); the missing-envelope error is uncovered
+- **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R)
 
 ### TISSUE-13 · A ribbon label file of the wrong length is refused
 
@@ -158,7 +157,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:35-39`
 - **Expected:** nucleus proprius 73, cord 45710, posterior horn 1180 mm³ → cord, posterior horn, nucleus proprius. [a: undefined, b: 5, c: 0, d: 5] → b, d, a, c.
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D, 40 seeded sources)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R)
 
 ## Painting the cut's solids
 
@@ -169,7 +168,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:129-140, 164-186`
 - **Expected:** an `hcp-mmp` ribbon solid on a `destrieux` cut → not visible. An `aseg` nucleus with detail `aseg` → visible, with detail `nextbrain` → not. Pial envelope: atlas with parcel solids → not visible; without → visible in cortex colour `#c4a897`. A cord cap with `mri_registered: false` under `surfaceColor: 'mri'` → not visible.
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R; the MRI case is D only), `parity/E3.test.ts` (D, 300 seeded states)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R)
 
 ### TISSUE-17 · A solid is painted as the cut label it stands for
 
@@ -178,7 +177,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:101-127`
 - **Expected:** `destrieux:left:1` under atlas colours → linear [23, 220, 60]. `destrieux:left:-1` → visible, unlabelled `#c4a897`. Left white envelope with labels {2: Left-Cerebral-White-Matter [245, 245, 245], HCP-MMP area 2 `R_MST_ROI` [20, 30, 200]} on an `hcp-mmp` cut → linear [245, 245, 245].
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R)
 
 ### TISSUE-18 · A solid without a cut label keeps the colour its surface has
 
@@ -187,7 +186,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:189-205`
 - **Expected:** `nextbrain:left:7` with mesh colour [60, 180, 90]: atlas → linear [60, 180, 90]; tissue, network, cab-np → gray `#a68d80`. Paint {`nextbrain:left:7` → [0, 0, 255]} → linear (0, 0, 1); `nextbrain:left:8` → gray. Cord caps declared white, gray, fluid → `#e5dbc5`, `#a68d80`, `#67777c`. A parcel under network colour (Default 0.7) → linear [205, 62, 78]; under tissue colour → `#c4a897`.
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R)
 
 ### TISSUE-19 · Only tissue colour carries the T1 variation on a cap
 
@@ -196,7 +195,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:167-178`
 - **Expected:** `tissueVariation`: tissue → 0.5; atlas, network, cab-np, functional, paint → 0; `mri_registered: false` → 0 in every mode.
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, tissue, atlas, network), `parity/E3.test.ts` (D); the same rule for the sampled face is SLICE-31
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, tissue, atlas, network)
 
 ### TISSUE-20 · Display controls hide the solids they describe
 
@@ -205,7 +204,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:142-162, 199-219`
 - **Expected:** a left parcel: hemisphere `right`, cortex hidden, or cortex opacity 0 → not visible; hemisphere `left` → visible; removed → not visible. Isolating the parcel → parcel visible, caudate `aseg:left:11` not. Isolating `wmparc:left:3024` (left) → left white envelope visible, right not. `learning:left:caudate` with system `Brainstem` → not visible; system `Basal ganglia` and isolated → visible.
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R)
 
 ### TISSUE-21 · A cap answers for the region it was painted as
 
@@ -214,7 +213,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:187-196`
 - **Expected:** a `destrieux:left:1` wedge → `destrieux:left:1`; the white envelope → `null`; `destrieux:left:99` (not in the table) → `null`; `aseg:left:17` (not in the table) → `aseg:left:17`.
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `src/lib/engine/tissues/solid-sections.test.ts` (R, hit carries the painted region), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R), `src/lib/engine/tissues/solid-sections.test.ts` (R, hit carries the painted region)
 
 ### TISSUE-22 · Under MRI colour, caps of an atlas without parcel solids name the labels they sample
 
@@ -223,7 +222,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-assets.js:179-198`
 - **Expected:** a NextBrain nucleus cap isolated under MRI → visible, `sampledLabels` false, region the nucleus. Isolating `destrieux:left:1` on a cut without a solid for it → `sampledLabels` true, region `null`, the cap visible. With a paint, or on a wedged atlas → `sampledLabels` false.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-36), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-36)
 
 ## Drawing the caps
 
@@ -234,7 +233,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-sections.js:174-199, 324-367`
 - **Expected:** an 18 × 18 × 18 segment 0.1 m box cut at z = 0 → back and front masks hidden, cap `stencilWrite` false, drawn triangles > 0 and < 1/5 of the box's; a ray at (0, 0, 0.2) hits, one at (0.08, 0, 0.2) does not.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-24 · A cut the sectioner refuses keeps the stencil cap, picked only inside the solid
 
@@ -243,7 +242,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit for placement and picking; browser for the stencil drawing
 - **Source:** `viewer/tissues/solid-sections.js:20-23, 54-66, 369-393, 433-441`
 - **Expected:** a front-faces-only ribbon box placed with `{ fallback: true }` → `sectioned` false, quad scale > 0.1; a ray at (0.012, 0.009, 0.2) names `destrieux:left:2`; one at (0.08, 0, 0.2) → `null`.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R), `parity/E3.test.ts` (D, cap placement on seeded planes)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-25 · Solids the plane misses or the painter hid are not drawn
 
@@ -261,7 +260,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-sections.js:145-160`; `viewer/tissues/solid-assets.js:17`
 - **Expected:** bands envelope 0, ribbon 1, structure 2. `tract` (125 mm³) added before `cord` (8000 mm³), both band 2 → order cord, tract; group render order 1, 2; cap polygon offset units −1, −2 (factor −1). After a cut both caps have equal position, quaternion and scale.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R; band order across bands is uncovered), `parity/E3.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-27 · A cut hit names the nearest drawn cap and the solid it landed in
 
@@ -270,7 +269,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-sections.js:407-431`
 - **Expected:** two coplanar boxes, the later in band 2 → the later; skipping it → the first. The cord box (0.012 × 0.48 × 0.01 at (0.002, −0.3, 0.038)) cut through (0.002, −0.5, 0.038) along ±x, ±y, ±z and ±(1, 1, 1)/√3 → `zanatomy:midline:cord` each time. From either side of z = 0 a ray at (0.012, 0.009) hits, at x = 0.08 it does not; plane z = 0.06 → no hit.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R), `parity/E3.test.ts` (D, 48 seeded rays × 8 planes)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
 
 ### TISSUE-28 · Hover and selection lift the cap of the region they name, and leave its colour
 
@@ -308,7 +307,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/section-worker.js:1-35`; `viewer/tissues/solid-sections.js:201-230, 305-322`
 - **Expected:** a rotated, offset 18-segment box cut by z = 0, x = 0.01 and the (1, 1, 1) plane at −0.02 → worker positions equal `sectionTriangles` positions; after `applyBuild` and after `update` the cap vertices are equal. A cut message with job id 99 → `{ id: 99, fallback: true }`.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, through the worker module run in-thread), `parity/E3.test.ts` (D, the unknown id and 6 seeded planes on published wedges); the caller-side merge is uncovered
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, through the worker module run in-thread)
 
 ### TISSUE-32 · A late build never overwrites a newer cut
 
@@ -355,7 +354,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/glass-solids.js:12-52`
 - **Expected:** material DoubleSide, polygon offset factor 1 and units 1, clearcoat 0.08 (0 on a phone). `solidOf(id)` {color: [255, 0, 0]} and shown → visible, linear (1, 0, 0); not shown or no record → hidden. Clipping planes are the ones passed (or null). No visible wedge → group hidden.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, through the model), `parity/E3.test.ts` (D, 40 seeded updates)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, through the model), `src/lib/engine/tissues/glass-solids.test.ts` (R)
 
 ## Exposed native white matter
 
@@ -366,7 +365,7 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/white-matter-surfaces.js:5-17`; deviation `e3-exposed-white-matter-region.md`; decision 46 on #4
 - **Expected:** a left `destrieux` parcel removed on `destrieux`, hemisphere `both` → {left}; hemisphere `right` → {}; on `hcp-mmp` → {}; cortex opacity 0 or isolation → {}. Removed `nope` → Error "Hidden region nope is not in the region index.".
-- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, the error), `src/lib/engine/model/brain-atlas.test.ts` (R, through the model), `parity/E3.test.ts` (D, 100 seeded states)
+- **Covered by:** `src/lib/engine/tissues/solid-assets.test.ts` (R, the error), `src/lib/engine/model/brain-atlas.test.ts` (R, through the model), `src/lib/engine/tissues/white-matter-surfaces.test.ts` (R)
 
 ### TISSUE-38 · The exposed white surface is white tissue that follows the cortex opacity
 
@@ -375,4 +374,4 @@ diffs legacy and new (D), so a rule that lists only that file has no business-ru
 - **Level:** unit
 - **Source:** `viewer/tissues/white-matter-surfaces.js:19-65`
 - **Expected:** colour `#e5dbc5`, kind `non-region`. Cortex opacity 0.4 → opacity 0.4, transparent, no depth write; 1 → opaque with depth write. An empty group → Error "Expected one native left white-matter surface.".
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, visibility through the model), `parity/E3.test.ts` (D, material fields and the error)
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, visibility through the model), `src/lib/engine/tissues/white-matter-surfaces.test.ts` (R)

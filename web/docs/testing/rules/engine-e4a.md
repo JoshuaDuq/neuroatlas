@@ -66,7 +66,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/volume.js:6-19`
 - **Expected:** shape `[2, 3, 4]` with 1 value → `/length/`; order `'C'`, a singular affine or a non-finite entry → error.
-- **Covered by:** `src/lib/engine/slices/volume.test.ts` (S, length only). Order, affine and shape checks: uncovered.
+- **Covered by:** `src/lib/engine/slices/volume.test.ts` (S, length and C-order / two-axis refusals; the affine check stays uncovered)
 
 ### SLICE-07 · Volume download integrity
 
@@ -93,7 +93,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/volume.js:33-54`
 - **Expected:** ramp: `[1.4]³` → 51, `[1.6]³` → 102, `[1.5]³` → 51; corner `[4,9,9,9,4,9,9,9]`: `[0.4,0.4,0.5]` → 9, `[0.2,0.2,0.5]` → 4; all-7 cube: `[-0.4,.5,.5]` → 7, `[-0.6,.5,.5]` → 0.
-- **Covered by:** `src/lib/engine/slices/volume.test.ts` (S)
+- **Covered by:** `src/lib/engine/slices/volume.test.ts` (S, and 400 seeded points on the published white-matter volume)
 
 ### SLICE-10 · Each volume is read through its own affine
 

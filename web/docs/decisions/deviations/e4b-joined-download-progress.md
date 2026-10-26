@@ -1,8 +1,7 @@
 # E4b deviation: a caller that joins a download under way hears its progress
 
 Chunk E4b (#28). Pinned by `brain-atlas.test.ts` ("a download joined while it is under way reports
-its progress to every caller", "the envelope download fans progress out to a joining caller") and
-`parity/E4b.test.ts` ("E4b-joined-download-progress").
+its progress to every caller", "the envelope download fans progress out to a joining caller").
 
 - **Legacy** (`viewer/model/brain-atlas.js:245,291,364`): `loadLayer`, `ensureEnvelopes` and
   `ensureSpinalCord` returned the pending promise to a second caller and dropped that caller's

@@ -342,7 +342,7 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/render/border-feather.js:10-13, 20-68, 92-199`
 - **Expected:** Two strips meeting at x = 0 with 1 mm spacing: border vertices → [neighbour slot, 0.5, 0, 0]; 1 mm in → weight (1 − 1/1.5)/2 = 1/6 ± 1e-6; ≥ 1.5 mm in → 0. Three parcels at one point → [other, 1/3, other, 1/3]. Disjoint strips → all zeros. Shared vertices are matched on exact float bits.
-- **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R), `parity/E2.test.ts` (D; also on the published destrieux and hcp-mmp cortex)
+- **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R; the published destrieux cortex as a data check)
 
 ### RENDER-36 · Feathering refuses input it cannot feather
 
@@ -351,7 +351,7 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/render/border-feather.js:64, 173-176`
 - **Expected:** Unindexed mesh → Error "Feathering needs indexed geometry: <name>". Radius 0, −1 or NaN → RangeError. Four parcels sharing a point → Error "More than three parcels meet at one surface point."
-- **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R, unindexed only), `parity/E2.test.ts` (D, radius); the four-parcel error is uncovered
+- **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R, unindexed only)
 
 ### RENDER-37 · A hidden parcel lends no colour to its neighbours
 
@@ -360,7 +360,7 @@ that lists only that file goes away at cutover.
 - **Level:** unit
 - **Source:** `viewer/render/border-feather.js:202-214`
 - **Expected:** A shown parcel with colour (0.25, 0.5, 0.75) → texel [0.25, 0.5, 0.75, 1]; a hidden parcel → alpha 0.
-- **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/border-feather.test.ts` (R)
 
 ## Section coordinates
 

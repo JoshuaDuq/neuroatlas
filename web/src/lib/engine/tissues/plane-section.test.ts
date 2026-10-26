@@ -11,8 +11,10 @@ import {
   Plane,
   Raycaster,
   Shape,
+  SphereGeometry,
   Vector3,
 } from 'three';
+import { computeBoundsTree } from 'three-mesh-bvh';
 import { sectionTriangles } from './plane-section.ts';
 
 const identity = new Matrix4();
@@ -207,4 +209,73 @@ test('a plane that misses returns no triangles', () => {
     cuttingPlane(0, 0, 1, -2),
   );
   assert.deepEqual(result, { empty: true });
+});
+
+function area(positions: Float32Array): number {
+  let total = 0;
+  const [a, b, c] = [new Vector3(), new Vector3(), new Vector3()];
+  for (let at = 0; at < positions.length; at += 9) {
+    a.fromArray(positions, at);
+    b.fromArray(positions, at + 3);
+    c.fromArray(positions, at + 6);
+    total += b.sub(a).cross(c.sub(a)).length() / 2;
+  }
+  return total;
+}
+
+test('TISSUE-01 the box cut has the area of the square the plane cuts', () => {
+  const { positions } = sectionTriangles(
+    new BoxGeometry(0.1, 0.1, 0.1),
+    identity,
+    cuttingPlane(0, 0, 1, 0),
+  );
+  assert.ok(Math.abs(area(positions!) - 0.01) < 1e-9, String(area(positions!)));
+});
+
+test('TISSUE-02 a plane that misses a 0.1 m box, or a geometry without positions, gives an empty result', () => {
+  assert.deepEqual(
+    sectionTriangles(new BoxGeometry(0.1, 0.1, 0.1), identity, cuttingPlane(0, 0, 1, -2)),
+    { empty: true },
+  );
+  assert.deepEqual(sectionTriangles(new BufferGeometry(), identity, cuttingPlane(0, 0, 1, 0)), {
+    empty: true,
+  });
+});
+
+test('TISSUE-04 a plane through a row of vertices still gives a closed face', () => {
+  const geometry = new BoxGeometry(0.1, 0.1, 0.1, 2, 2, 2);
+  const result = sectionTriangles(geometry, identity, cuttingPlane(0, 0, 1, 0));
+  assert.equal(result.fallback, undefined);
+  assert.ok(Math.abs(area(result.positions!) - 0.01) < 1e-9);
+  for (let at = 2; at < result.positions!.length; at += 3) {
+    assert.ok(Math.abs(result.positions![at]!) < 1e-6);
+  }
+});
+
+test('TISSUE-05 a BVH, an indirect BVH and a walk over every triangle cut the sphere the same', () => {
+  const sphere = () => new SphereGeometry(0.05, 48, 32);
+  const plain = sphere();
+  const indirect = sphere();
+  plain.boundsTree = computeBoundsTree.call(plain);
+  indirect.boundsTree = computeBoundsTree.call(indirect, { indirect: true });
+  const unindexed = sphere().toNonIndexed();
+  let state = 31;
+  const random = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let step = 0; step < 8; step++) {
+    const normal = new Vector3(random() - 0.5, random() - 0.5, random() - 0.5).normalize();
+    const plane = new Plane(normal, (random() - 0.5) * 0.06);
+    const areas = [plain, indirect, unindexed].map((geometry) => {
+      const result = sectionTriangles(geometry, identity, plane);
+      assert.equal(result.fallback, undefined);
+      return area(result.positions!);
+    });
+    assert.ok(areas[0]! > 0);
+    assert.ok(Math.abs(areas[0]! - areas[1]!) < 1e-9 && Math.abs(areas[0]! - areas[2]!) < 1e-9);
+  }
 });

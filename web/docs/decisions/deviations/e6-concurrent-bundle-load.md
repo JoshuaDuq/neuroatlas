@@ -11,5 +11,4 @@ Chunk E6 (#30). A fix under the parity policy on #4.
   in-flight load, so the lines are added once. A call for an already loaded bundle still shows it,
   and a failed load is forgotten so a retry loads again.
 - **Standard**: an asynchronous resource loader must be idempotent per key (the same rule legacy's
-  own `createTractLoader` follows for the download). Pinned by `native-viewer.test.ts` and
-  `parity/E6.test.ts`.
+  own `createTractLoader` follows for the download). Pinned by `native-viewer.test.ts`.

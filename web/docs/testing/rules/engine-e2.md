@@ -23,8 +23,7 @@ low −0.5, high 1.8, concavity −0.08 to 0.04, direct 0.48, indirect 0.78; lig
 key 1.8, fill 0.5, rim 0.7. Colours named "linear" are sRGB bytes / 255 decoded to linear RGB.
 A rule about shader output is stated as the colour a fragment gets; it needs a real GL context
 (Vitest browser mode, SwiftShader) to prove, and its uniform half can be checked in unit tests.
-`parity/E2.test.ts` diffs the compiled shader text and uniforms of legacy and new (D, and I because
-it pins GLSL source), so a rule that lists only that file has no business-rule test yet.
+The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no test needs a browser pixel test.
 
 ## Tissue colours
 
@@ -35,7 +34,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/materials.js:5-13`
 - **Expected:** `{tissue:'white'}` → `#e5dbc5`; `{tissue:'bogus', kind:'cortex'}` → `#c4a897`; `{kind:'non-region'}` → `#c4a897` (unlabelled). Names → fluid `#67777c`: `Left-Lateral-Ventricle`, `Right-Inf-Lat-Vent`, `3rd-Ventricle`, `CSF`. Names → white `#e5dbc5`: `Left-Cerebral-White-Matter`, `CC_Body`, `corpus callosum`. Names → gray `#a68d80`: `Left-paraventricular_nucleus_of_hypothalamus`, `Right-periventricular_nucleus__supraoptic_portion`, `Left-juxtaparaventricular_lateral_hypothalamic_area`, `Left-Caudate`, `''`, no name. A cord cap with `tissue:'fluid'` named `Central canal` → fluid.
-- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R, ventricle and nucleus names), `src/lib/engine/tissues/solid-assets.test.ts` (R, declared tissue), `parity/E2.test.ts` (D, 200 seeded names × kinds × tissues); `CC_` and `callosum` and the unknown-tissue fall-through are D only
+- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R, ventricle and nucleus names), `src/lib/engine/tissues/solid-assets.test.ts` (R, declared tissue), `src/lib/engine/render/materials.test.ts` (R)
 
 ## The cortical surface material
 
@@ -46,7 +45,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/materials.js:104-113`
 - **Expected:** a glTF material `#336699` → `color` `#336699`, roughness 0.62, clearcoat 0.08, clearcoatRoughness 0.45, ior 1.38, specularIntensity 0.55. With `matchMedia` reporting a phone → clearcoat 0, the rest unchanged.
-- **Covered by:** `parity/E2.test.ts` (D) only
+- **Covered by:** `src/lib/engine/render/materials.test.ts` (R)
 
 ### SHADER-03 · A cortical surface without its shading fields is refused
 
@@ -55,7 +54,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/materials.js:114-125`
 - **Expected:** cortex region `r` without `_t1` → Error "Missing source shading attribute _t1: r". `_sulc` with itemSize 2, or a count other than the position count → the same error for `_sulc`. A `structure` mesh with no fields → a material, no error, no fold patch.
-- **Covered by:** `parity/E2.test.ts` (D, the missing `_t1` case only); itemSize, count and the structure case are uncovered
+- **Covered by:** `src/lib/engine/render/materials.test.ts` (R)
 
 ### SHADER-04 · Shading fields are read back in their source units
 
@@ -64,7 +63,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit (the decode uniforms); browser for the per-fragment result
 - **Source:** `viewer/render/materials.js:15-26, 43-45`
 - **Expected:** CDMD `_SULC` [−14.0466, 17.3979] → decode (−14.0466, 31.4445), stored 0.5 → 1.6756 mm ± 1e-4; `_T1` [38.9863, 203.2353] → decode (38.9863, 164.2490), stored 0.5 → 121.1108 ± 1e-4; `_CONCAVITY` [−0.6106, 0.5810]. Without `field_ranges` every decode is (0, 1).
-- **Covered by:** `parity/E2.test.ts` (D, with and without ranges)
+- **Covered by:** `src/lib/engine/render/materials.test.ts` (R)
 
 ### SHADER-05 · The T1 signal varies the surface colour by up to the surface strength
 
@@ -73,7 +72,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL for the drawn colour; unit for the uniforms
 - **Source:** `viewer/render/materials.js:36-38, 87-88`
 - **Expected:** uniforms `t1Range` [85, 180], `tissueVariation` 0.28 at creation. Drawn (lights off, unit diffuse): T1 ≤ 85 → colour × 0.72; T1 132.5 → × 1.00; T1 ≥ 180 → × 1.28, each ± 1/255.
-- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `tissueVariation` 0.28 under tissue and 0 under atlas and CAB-NP colours), `parity/E2.test.ts` (D); the drawn colour is uncovered
+- **Covered by:** `src/lib/engine/model/brain-atlas.test.ts` (R, `tissueVariation` 0.28 under tissue and 0 under atlas and CAB-NP colours), `src/lib/engine/render/materials.test.ts` (R, uniforms)
 
 ### SHADER-06 · Folds darken the light that reaches the sulci
 
@@ -82,7 +81,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL
 - **Source:** `viewer/render/materials.js:92-97`
 - **Expected:** a gyral crown (concavity ≤ −0.08, depth ≤ −0.5) → fold 0, light unchanged. A fundus (concavity ≥ 0.04, depth ≥ 1.8) → fold 1: direct diffuse × 0.52, indirect diffuse and specular × 0.22. Concavity ≥ 0.04 with depth ≤ −0.5 → fold 0.75: direct × 0.64.
-- **Covered by:** `parity/E2.test.ts` (D, shader text) only
+- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
 
 ### SHADER-07 · Network colours blend over the region colour, never on the medial wall
 
@@ -91,7 +90,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser for the drawn colour; unit for `userData`
 - **Source:** `viewer/render/materials.js:36-39, 82-86`; mix set by `viewer/model/brain-atlas.js:548-549`
 - **Expected:** geometry with `_network` → `userData.networkMix` `{ value: 0 }`; without → `null`. Drawn with mix 1: presence 1 → the network colour; presence 0 → the region colour. Mix 0.5, presence 1 → the midpoint ± 1/255.
-- **Covered by:** `parity/E2.test.ts` (D) only
+- **Covered by:** `src/lib/engine/render/materials.test.ts` (R, userData)
 
 ## Network colours
 
@@ -102,7 +101,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/network-colors.js:4, 19-36`
 - **Expected:** CDMD networks `Vis, SomMot, DorsAttn, SalVentAttn, Limbic, Cont, Default`. Index 1 (Vis [120, 18, 134]) → [0.187821, 0.006049, 0.238398, 1] ± 1e-6; index 7 (Default [205, 62, 78]) → [0.610496, 0.048172, 0.076185, 1] ± 1e-6. Red 0.1878 < 120/255, so the palette is not drawn washed out.
-- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R), `parity/E2.test.ts` (D, 10 000 seeded indices)
+- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R)
 
 ### SHADER-09 · A vertex in no network is left transparent
 
@@ -111,7 +110,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/network-colors.js:26-35`
 - **Expected:** 0, 99, −1, NaN, 0.4, 7.5 → [0, 0, 0, 0]. 0.5 → Vis; 1.5 → SomMot; 6.5 and 7.49 → Default.
-- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R, 0 and 99), `parity/E2.test.ts` (D, rounding, NaN, −1)
+- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R, 0 and 99)
 
 ### SHADER-10 · Only geometry carrying the network field gets network colours
 
@@ -120,7 +119,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/network-colors.js:38-46`
 - **Expected:** `_network` [1, 0, 7] → true; itemSize 4, count 3, presence [1, 0, 1]. Empty geometry → false, no `_networkColor`.
-- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/network-colors.test.ts` (R)
 
 ## The MRI appearance
 
@@ -131,7 +130,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/mri-material.js:15-24, 47-52`
 - **Expected:** `createMriUniforms` → `scanEnabled` false, `scanVolume` the given texture, `scanShape` the volume shape [2, 2, 2], `scanWindow` (0, 0), mark bytes [0x4f, 0xb6, 0xe0]. Two materials (`#cc6633` and default), then `setMriWindow(110, 200)` → both compiled uniforms read (110, 200), `material.version` unchanged, colour still `cc6633`.
-- **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R)
 
 ### SHADER-12 · An MRI window needs a finite centre and a positive width
 
@@ -140,7 +139,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/mri-material.js:26-31`
 - **Expected:** (NaN, 180), (90, 0), (90, −1), (90, ∞), (∞, 5) → RangeError "MRI window requires a finite center and positive width."; the window stays (90, 180). (0, 1e-9) and (−5.5, 1e6) are accepted.
-- **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R; (∞, 5) and the accepted extremes are D only), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R)
 
 ### SHADER-13 · The mark colour is a CSS colour, stored as the bytes it spells
 
@@ -149,7 +148,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/render/mri-material.js:33-44`
 - **Expected:** `#4fb6e0` → bytes [0x4f, 0xb6, 0xe0]; `' red '` → [255, 0, 0]; `rgb(10, 200, 30)` → [10, 200, 30]. `''`, `'   '`, `null`, `42`, `undefined` → RangeError "MRI highlight requires a CSS colour."; bytes stay [0x4f, 0xb6, 0xe0]. An unknown name (`notacolour`) does not throw: three.js warns "THREE.Color: Unknown color notacolour" and the colour stays (kept as legacy).
-- **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R, refusals), `parity/E2.test.ts` (D, all eleven values)
+- **Covered by:** `src/lib/engine/render/mri-material.test.ts` (R, refusals)
 
 ### SHADER-14 · Under MRI colour a surface shows the scan grey through the window
 
@@ -178,7 +177,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL (`usampler3D`, `texelFetch`)
 - **Source:** `viewer/tissues/label-sampling.js:9-59`; `viewer/slices/volume.js:33-54`
 - **Expected:** the SLICE-09 fixtures drawn through `labelAt`: ramp `[1.4]³` → 51, `[1.6]³` → 102, `[1.5]³` → 51; corners `[4,9,9,9,4,9,9,9]` at `[0.4,0.4,0.5]` → 9, `[0.2,0.2,0.5]` → 4; all-7 cube at `[−0.4,.5,.5]` → 7, `[−0.6,.5,.5]` → 0.
-- **Covered by:** uncovered (`parity/E2.test.ts` compares the GLSL text only: I)
+- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
 
 ### SHADER-17 · A cut face is drawn in its label's palette colour, lit as tissue, and absent where hidden
 
@@ -187,7 +186,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser for the drawn face; unit for the material settings
 - **Source:** `viewer/tissues/shader.js:6-61`
 - **Expected:** material: DoubleSide, roughness 0.62, clearcoat 0.08 on desktop and phone, polygonOffset factor −1 and units −1. Drawn: palette alpha 0 → no fragment; alpha 1 with `tissueVariation` 0 → the palette colour ± 1/255 (SLICE-31); T1 = 180 with strength 0.5 → palette colour × 1.5.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, uniforms only), `parity/E2.test.ts` (D); the drawn face is uncovered
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, uniforms only)
 
 ### SHADER-18 · Only the pointed-at and the selected region are lifted, selection the stronger
 
@@ -196,7 +195,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/highlight.js:8-17`
 - **Expected:** marks {hovered `destrieux:left:2`, selected `destrieux:left:9`}: `:2` → 0.26, `:9` → 0.45, `:3` → 0. {hovered `x`, selected `x`}: `x` → 0.45. Region `null`, `undefined` or `''` → 0. No marks → 0.
-- **Covered by:** `src/lib/engine/tissues/highlight.test.ts` (R), `parity/E2.test.ts` (D, every id × state pair)
+- **Covered by:** `src/lib/engine/tissues/highlight.test.ts` (R)
 
 ### SHADER-19 · A lifted face moves toward white, never darker
 
@@ -205,7 +204,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL
 - **Source:** `viewer/tissues/highlight.js:27-35`
 - **Expected:** base grey 0.2 (linear): selected → 0.2 + 0.8 × 0.45 = 0.56; hovered → 0.408; lift 0 → 0.2; each ± 1/255.
-- **Covered by:** uncovered (`parity/E2.test.ts` compares the GLSL text only: I)
+- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
 
 ### SHADER-20 · A region is lit by the code its cut face is painted from
 
@@ -214,7 +213,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/highlight.js:19-25`
 - **Expected:** [null, `destrieux:left:2`, `destrieux:left:9`] → `:2` → 1, `:9` → 2, no key for null. [`x`, null, `x`, `''`] → {`x` → 2}.
-- **Covered by:** `src/lib/engine/tissues/highlight.test.ts` (R), `parity/E2.test.ts` (D, repeated ids and every published atlas)
+- **Covered by:** `src/lib/engine/tissues/highlight.test.ts` (R)
 
 ## The cut palette
 
@@ -225,7 +224,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/palette.js:7-23`
 - **Expected:** `destrieux:left:1` removed → alpha 0 at code 1, alpha 1 at code 2. Hemisphere `right` → the left label hidden. Isolating `destrieux:left:1` → it shows, white matter (code 2) does not. Code 0 tissue → hidden; code 2 with cortex opacity 0 → hidden. NextBrain system `Diencephalon` with constituent `nextbrain:left:219` → 219 shown, `nextbrain:left:108` hidden.
-- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `parity/E2.test.ts` (D, seeded sweep over every published atlas)
+- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R)
 
 ### SHADER-22 · Under atlas colours a cut label has the published colour its surface has
 
@@ -234,7 +233,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/palette.js:65-67, 90, 95-103`
 - **Expected:** [23, 220, 60] → linear [0.008568, 0.715694, 0.045186] ± 1e-6, alpha 1; background code 0 → alpha 0. Every CDMD label with a mesh (`cortex-destrieux.glb`, `cortex-hcp-mmp.glb`, `structures.glb`, `nextbrain.glb` where published) equals that mesh's material colour ± 1e-6; every NextBrain cut-only label equals its table colour ± 1e-6.
-- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `src/lib/engine/tissues/assets.test.ts` (S, every published label), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `src/lib/engine/tissues/assets.test.ts` (S, every published label)
 
 ### SHADER-23 · Network, CAB-NP and functional colours reach the cut as they reach the surface
 
@@ -243,7 +242,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/palette.js:26-38, 40-58, 71-84`
 - **Expected:** Default 0.6 / Vis 0.3 → Default [205, 62, 78] linear; white matter → tissue white. CAB-NP `{destrieux:left:1: Default}` with Default [255, 0, 0] → linear (1, 0, 0). Functional `sections` → section-22 [0, 0, 255]; level `named` → tissue cortex. `nextbrain:left:2001` (Default 0.8) → Default; `nextbrain:left:48` (no networks) → tissue gray. Published NextBrain `ctx-` labels under network colour: more than 0 differ from tissue colour. The predicates are true only for their own mode; `usesPaint` only with a paint.
-- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `parity/E2.test.ts` (D, predicates and sweep)
+- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R)
 
 ### SHADER-24 · Tissue colour and a paint override the published colours
 
@@ -252,7 +251,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/palette.js:68-70, 85-89`
 - **Expected:** tissue colour: `G_front_sup` cortex → `#c4a897`, `Left-Cerebral-White-Matter` → `#e5dbc5`, `Left-Lateral-Ventricle` → `#67777c`, three distinct palette entries. Paint {`destrieux:left:1` → [0, 0, 255]} under atlas colours → linear (0, 0, 1); white matter → tissue white.
-- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/palette.test.ts` (R)
 
 ## Solid caps
 
@@ -263,7 +262,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser for the lit cap; unit for the material settings
 - **Source:** `viewer/tissues/solid-material.js:7-82`
 - **Expected:** `userData.tissueVariation` 0.5, `tissueRelief` 0.0012 (m), `highlightLift` 0; DoubleSide; clearcoat 0.08, 0 on a phone. Drawn: a uniform T1 volume → the cap normal equals the face normal (no relief); `tissueRelief` 0 → no relief anywhere.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, `highlightLift`), `src/lib/engine/tissues/solid-assets.test.ts` (R, `tissueVariation` per colour mode), `parity/E2.test.ts` (D); relief is uncovered
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, `highlightLift`), `src/lib/engine/tissues/solid-assets.test.ts` (R, `tissueVariation` per colour mode)
 
 ## Gyral white matter on the cap
 
@@ -274,7 +273,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/white-matter.js:39-40, 72-73`
 - **Expected:** fixture: shape [3, 2, 2], affine [[−1,0,0,10],[0,0,1,0],[0,−1,0,0]], voxel (2,0,0) = 1 (`wmparc:left:3024`), voxel (0,1,1) = 2 (`wmparc:right:4035`). RAS [8, 0, 0] → `wmparc:left:3024`; [10, 1, −1] → `wmparc:right:4035`; [9, 0, 0] → null; [40, 0, 0] → null. `Uint16Array` data → Error "Expected uint8 white-matter labels."; `holds('wmparc:left:3024')` true, `holds('nope')` false.
-- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `parity/E2.test.ts` (D, 200 seeded points, the uint8 check)
+- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R)
 
 ### SHADER-27 · White matter is sampled only on the cuts of the atlases it was published for
 
@@ -283,7 +282,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/white-matter.js:74-75`
 - **Expected:** `applies_to` [destrieux, hcp-mmp]: `hcp-mmp` → active true; `nextbrain` → active false.
-- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34), `parity/E2.test.ts` (D)
+- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34)
 
 ### SHADER-28 · Isolation, removal and the marks reach the white-matter parcels by code
 
@@ -292,7 +291,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit for the codes; browser for the discarded and lifted fragments
 - **Source:** `viewer/tissues/white-matter.js:9-31, 74-90`
 - **Expected:** isolate `wmparc:right:4035` → isolated code 2; isolate `destrieux:left:1` → −1. Hide `wmparc:left:3024` → visibility [255, 0, 255]; show all → [255, 255, 255]. Hover `:3024`, select `:4035` → codes (1, 2), lifts (0.26, 0.45); no marks → codes (−1, −1), lifts (0, 0).
-- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34/35), `parity/E2.test.ts` (D); the drawn discard and lift are uncovered
+- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34/35)
 
 ### SHADER-29 · The cap addresses the cropped white-matter grid exactly as the pick does
 
@@ -301,7 +300,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/white-matter.js:58`; `viewer/slices/coordinates.js:7-12`
 - **Expected:** with the SHADER-26 fixture, `rasToWorld(p)` × matrix: [8, 0, 0] → (2, 0, 0); [10, 1, −1] → (0, 1, 1); [8.4, 0.3, −0.2] → (1.6, 0.2, 0.3), each ± 1e-9.
-- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `parity/E2.test.ts` (D, uniform values)
+- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R)
 
 ## Cap labels of cut-only atlases
 
@@ -312,7 +311,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** unit
 - **Source:** `viewer/tissues/cap-labels.js:5-27`
 - **Expected:** new → off, no volume or palette, highlight codes (−1, −1), lifts (0, 0), not isolated. `surfaceColor` `mri`, not wedged → on; `atlas` or wedged → off; volume, palette, matrix, codes and lifts are the layer's own objects; `isolatedRegion` set → isolated true.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, enabled and volume, SLICE-36), `parity/E2.test.ts` (D, 50 seeded states)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, enabled and volume, SLICE-36)
 
 ### SHADER-31 · A sampled cap hides removed labels and lifts the marked one
 
@@ -321,7 +320,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL
 - **Source:** `viewer/tissues/cap-labels.js:29-62`
 - **Expected:** sampling on, label code 5 with palette alpha 0 → no fragment; code 0, alpha 0, not isolated → drawn in the cap colour; code 0 while isolated → no fragment; code 5 selected (codes (−1, 5), lifts (0, 0.45)) → cap colour lifted by 0.45 (SHADER-19).
-- **Covered by:** uncovered (`parity/E2.test.ts` compares the GLSL text only: I)
+- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
 
 ## Border feather shader
 
@@ -332,7 +331,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL
 - **Source:** `viewer/render/border-feather.js:221-249`
 - **Expected:** own blue (0, 0, 1), feather [slot 1, 0.5, 0, 0], slot 1 red (1, 0, 0) shown → (0.5, 0, 0.5); slot 1 hidden → (0, 0, 1); feather [1, 1/3, 2, 1/3] with slot 2 green → (1/3, 1/3, 1/3); zero weights → own colour; each ± 1/255 before lighting.
-- **Covered by:** uncovered (`parity/E2.test.ts` compares the GLSL text only: I)
+- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
 
 ## Lighting
 
@@ -343,7 +342,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — `PMREMGenerator` needs WebGL (decision 25); the rig half is pure and could be checked in unit if it were built apart from the environment
 - **Source:** `viewer/render/lighting.js:12-25, 28-31`
 - **Expected:** one group on the camera with 7 children: HemisphereLight sky 0xffffff, ground 0x777777 (sRGB hex), intensity 0.28; DirectionalLight 1.8 at (−1.5, 2, 1); 0.5 at (2, 0.3, 0.5); 0.7 at (0.4, 1, −2); each white with its target at (0, 0, −1). After `dispose()` the camera has no children.
-- **Covered by:** `src/lib/engine/render/lighting.parity.svelte.test.ts` (D, rig compared with legacy; the count 7 and the empty camera are R)
+- **Covered by:** `src/lib/engine/render/lighting.svelte.test.ts` (R, real WebGL)
 
 ### SHADER-34 · Surfaces reflect a soft studio room
 
@@ -352,7 +351,7 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser — real WebGL
 - **Source:** `viewer/render/lighting.js:6-10, 26-31`
 - **Expected:** the texture is a PMREM texture (`CubeUVReflectionMapping`). A white metal sphere with that environment, rendered at 64 × 64 at roughness 0, 0.5 and 1 → some non-alpha channel > 0 at each roughness.
-- **Covered by:** `src/lib/engine/render/lighting.parity.svelte.test.ts` (D, every reflected pixel equal to legacy; the non-black check is R)
+- **Covered by:** `src/lib/engine/render/lighting.svelte.test.ts` (R, real WebGL)
 
 ## Patch composition
 
@@ -363,4 +362,4 @@ it pins GLSL source), so a rule that lists only that file has no business-rule t
 - **Level:** browser for "compiles" (real WebGL program link); unit for the cache keys
 - **Source:** `viewer/render/materials.js:100-101`, `mri-material.js:47-52, 92-93`, `border-feather.js:221-247`, `viewer/tissues/cap-labels.js:29-33, 61`, `shader.js:59`, `solid-material.js:79-80`; orders from `viewer/model/brain-atlas.js:261, 399, 419, 838-840`
 - **Expected:** each listed combination drawn once on SwiftShader → no shader compile or link error. Cache keys are pairwise distinct across the set and equal for two materials built the same way. On a cortical surface with the scan off, MRI-then-feather and feather-then-MRI draw the same colour ± 1/255.
-- **Covered by:** `parity/E2.test.ts` (D and I, 398 cases: compiled shader text, uniforms and cache key of each combination × phone compared with legacy); no test compiles them under real WebGL
+- **Covered by:** `src/lib/engine/render/materials.test.ts` (R, cache keys), `src/lib/engine/render/shader-programs.svelte.test.ts` (links under WebGL)

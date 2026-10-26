@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
+import { readFile } from 'node:fs/promises';
+import { afterAll, afterEach, beforeAll, describe, test, vi } from 'vitest';
+import { Raycaster, Vector3 } from 'three';
+import type { Material, Mesh, MeshStandardMaterial } from 'three';
+import type { AnatomicalUserData } from '../render/materials.ts';
+import * as assetCache from '../../core/assets/asset-cache.ts';
+import { readModel } from '../../core/catalog/test-support.ts';
 import { anatomies } from '../../core/catalog/test-support.ts';
 import { BrainAtlas } from './brain-atlas.ts';
 import { modelDirectory, publishedLoader, readManifest } from './test-support.ts';
@@ -78,3 +84,194 @@ for (const { id: published } of anatomies.anatomies) {
     },
   );
 }
+
+// One published model, shared by the rules below and put back to destrieux / learning after each.
+describe('the published CDMD model', () => {
+  const published = 'cdmd';
+  const manifest = readManifest(published);
+  const sidecars = ['cab-np', 'functional-regions', 'neuropsych-domains', 'neurosynth-terms'].map(
+    (name) => readModel<never>(`${published}/${name}.json`),
+  );
+  let model: BrainAtlas;
+
+  beforeAll(async () => {
+    model = new BrainAtlas(manifest, publishedLoader(modelDirectory(published)), ...sidecars);
+    await model.initialize('destrieux');
+  }, 120_000);
+
+  afterEach(async () => {
+    model.reset();
+    await model.setAtlas('destrieux');
+    await model.setDetail('learning');
+  });
+
+  afterAll(() => model.dispose());
+
+  test(
+    'ATLAS-07 the aseg level holds 32 meshes, nextbrain 292 and the envelopes 4',
+    { timeout: 120_000 },
+    async () => {
+      const meshes = async (detail: string) => {
+        await model.setDetail(detail);
+        return (model.layers.get(detail)?.meshes ?? []).length;
+      };
+      assert.equal(await meshes('aseg'), 32);
+      assert.equal(await meshes('nextbrain'), 292);
+      assert.equal((await model.ensureEnvelopes()).length, 4);
+    },
+  );
+
+  test('ATLAS-26 network colour mixes the published network map into every cortex surface that carries it, and a paint turns it off', () => {
+    const mixes = () =>
+      (model.layers.get('destrieux')!.meshes as Mesh[]).flatMap((mesh) => {
+        const { networkMix, tissueVariation } = (mesh.material as Material)
+          .userData as AnatomicalUserData;
+        return networkMix
+          ? [
+              {
+                mix: networkMix.value,
+                variation: tissueVariation.value,
+                color: (mesh.material as MeshStandardMaterial).color.getHexString(),
+              },
+            ]
+          : [];
+      });
+    model.setSurfaceColor('network');
+    const shown = mixes();
+    assert.ok(shown.length >= 100, `${shown.length} networked surfaces`);
+    for (const { mix, variation } of shown) assert.deepEqual([mix, variation], [1, 0]);
+    model.setSurfaceColor('atlas');
+    assert.ok(mixes().every(({ mix }) => mix === 0));
+    model.setSurfaceColor('network');
+    model.setPaint({
+      id: 'function:a',
+      colors: new Map([['destrieux:left:1', [1, 2, 3]]]),
+    } as never);
+    assert.ok(mixes().every(({ mix }) => mix === 0));
+  });
+
+  test('ATLAS-15 changing the detail level clears the internal system, its isolation and the selection', async () => {
+    model.setInternalSystem('Basal ganglia');
+    model.select('learning:left:caudate');
+    model.isolate();
+    assert.equal(model.settings.isolatedRegion, 'learning:left:caudate');
+    await model.setDetail('aseg');
+    assert.equal(model.settings.internalSystem, null);
+    assert.equal(model.settings.internalConstituents.size, 0);
+    assert.equal(model.settings.isolatedRegion, null);
+    assert.equal(model.state.selectedRegion, null);
+  });
+
+  test(
+    'ATLAS-46 every region with a mesh has a centroid in tenths of a millimetre, and right is right of left',
+    { timeout: 120_000 },
+    async () => {
+      await model.setAtlas('hcp-mmp');
+      for (const detail of ['aseg', 'nextbrain', 'learning']) await model.setDetail(detail);
+      await model.setAtlas('destrieux');
+      let found = 0;
+      for (const id of model.regions.keys()) {
+        const centroid = model.centroidOf(id);
+        if (!centroid) continue;
+        found += 1;
+        for (const value of centroid)
+          assert.ok(Math.abs(value * 10 - Math.round(value * 10)) < 1e-6, `${id}: ${value}`);
+      }
+      assert.ok(found >= 400, `${found} centroids`);
+      for (const id of model.regions.keys()) {
+        const [, side, label] = id.split(':');
+        if (!id.startsWith('destrieux:left:') || Number(label) < 1) continue;
+        const left = model.centroidOf(id);
+        const right = model.centroidOf(`destrieux:right:${label}`);
+        if (left && right) assert.ok(right[0] > left[0], `${id}: ${side}`);
+      }
+    },
+  );
+
+  /** Fibonacci-sphere rays at 0.25 m aimed at the centre, as scripts/benchmark-picking.mjs lays them. */
+  const rays = Array.from({ length: 100 }, (_, i) => {
+    const y = 1 - (2 * (i + 0.5)) / 100;
+    const r = Math.sqrt(1 - y * y);
+    const direction = new Vector3(
+      Math.cos(Math.PI * (3 - Math.sqrt(5)) * i) * r,
+      y,
+      Math.sin(Math.PI * (3 - Math.sqrt(5)) * i) * r,
+    );
+    return new Raycaster(direction.clone().multiplyScalar(0.25), direction.negate());
+  });
+
+  function picks() {
+    return rays.map((ray) => model.pick(ray));
+  }
+
+  test('ATLAS-45 a pick lands on a drawn region of the right side, in every display state', () => {
+    for (const [origin, direction, hemisphere] of [
+      [[0.25, 0, 0], [-1, 0, 0], 'right'],
+      [[-0.25, 0, 0], [1, 0, 0], 'left'],
+    ] as const) {
+      const region = model.pick(new Raycaster(new Vector3(...origin), new Vector3(...direction)));
+      assert.equal(region?.kind, 'cortex');
+      assert.equal(region?.atlas, 'destrieux');
+      assert.equal(region?.hemisphere, hemisphere);
+    }
+    const everything = picks();
+    assert.ok(everything.filter(Boolean).length > 30, 'more than 30 % of the rays hit');
+    for (const region of everything) {
+      if (region) assert.ok(model.canSelect(region) && region.kind !== 'non-region', region.id);
+    }
+
+    model.setHemisphere('left');
+    assert.ok(picks().every((region) => region?.hemisphere !== 'right'));
+    model.setHemisphere('both');
+
+    model.setCortexVisible(false);
+    assert.ok(picks().every((region) => region?.kind !== 'cortex'));
+    model.setCortexVisible(true);
+
+    const target = everything.find(Boolean)!;
+    model.select(target.id);
+    model.isolate();
+    assert.ok(picks().every((region) => !region || region.id === target.id));
+    model.clearIsolation();
+    model.hideRegions([target.id]);
+    assert.ok(picks().every((region) => region?.id !== target.id));
+  });
+
+  test(
+    'ATLAS-11 loading from the published manifest reads its sidecars, reports progress and disposes a model that fails to open',
+    { timeout: 120_000 },
+    async () => {
+      vi.spyOn(assetCache, 'fetchAsset').mockImplementation(async (url, options) => {
+        const bytes = await readFile(
+          new URL(String(url).split('/').pop()!, modelDirectory(published)),
+        );
+        const buffer = bytes.buffer.slice(
+          bytes.byteOffset,
+          bytes.byteOffset + bytes.byteLength,
+        ) as ArrayBuffer;
+        options?.onProgress?.({ loaded: buffer.byteLength, total: buffer.byteLength });
+        return buffer;
+      });
+      vi.stubGlobal('location', { href: 'https://example.invalid/' });
+      const url = `https://example.invalid/models/${published}/manifest.json`;
+      const progress: { loaded: number; total: number }[] = [];
+      const loaded = await BrainAtlas.load(url, 'hcp-mmp', {
+        onProgress: (event) => progress.push({ ...event }),
+      });
+      assert.equal(loaded.settings.atlas, 'hcp-mmp');
+      assert.equal(loaded.settings.detail, 'learning');
+      assert.deepEqual(loaded.cabNp, sidecars[0]);
+      assert.deepEqual(loaded.functionalRegions, sidecars[1]);
+      assert.deepEqual(loaded.domains, sidecars[2]);
+      const last = progress.at(-1)!;
+      assert.ok(last.total > 0 && last.loaded === last.total);
+      loaded.dispose();
+
+      const dispose = vi.spyOn(BrainAtlas.prototype, 'dispose');
+      await assert.rejects(BrainAtlas.load(url, 'no-such-atlas'));
+      assert.equal(dispose.mock.calls.length, 1);
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    },
+  );
+});

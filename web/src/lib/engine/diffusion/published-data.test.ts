@@ -10,7 +10,7 @@ import type { TractCatalog } from '../../core/diffusion/catalogs.ts';
 import { validateVolume } from '../../core/diffusion/validation.ts';
 import type { DiffusionVolume } from '../../core/diffusion/validation.ts';
 import { readRepoJson, readRepoYaml, repoRoot } from '../../../../test/repo.ts';
-import { RAS_MM_TO_WORLD, createTractGeometry } from './native-geometry.ts';
+import { RAS_MM_TO_WORLD } from './native-geometry.ts';
 import { streamlineLengths, summarizeLengths } from './streamlines.ts';
 
 interface FileRecord {
@@ -64,8 +64,9 @@ function near(actual: number, expected: number, tolerance = 0.0001) {
 }
 
 for (const { catalog, provenance } of catalogs) {
-  test(`${catalog.id}: bundled scalar maps retain original NIfTI bytes and their declared grid`, async () => {
-    for (const map of catalog.maps) {
+  test.each(catalog.maps.map((map) => [map.file, map] as const))(
+    `${catalog.id}: DIFF-13 scalar map %s retains its original NIfTI bytes and declared grid`,
+    async (_file, map) => {
       const record = provenance.files.find((file) => map.file.endsWith(`/${file.file}`))!;
       const data = await published(map.file);
       assert.equal(digest(data), record.source_sha256);
@@ -77,13 +78,17 @@ for (const { catalog, provenance } of catalogs) {
           near(image.hdr!.affine[row]![column]!, record.affine[row]![column]!);
         }
       }
-    }
-  });
+    },
+  );
 
-  test(`${catalog.id}: all named bundles decode in the NiBabel RAS+ space with matching geometry`, async () => {
+  test(`${catalog.id}: the catalogue names ${BUNDLES[catalog.id]} distinct bundles`, () => {
     assert.equal(catalog.bundles.length, BUNDLES[catalog.id]);
     assert.equal(new Set(catalog.bundles.map((bundle) => bundle.id)).size, catalog.bundles.length);
-    for (const bundle of catalog.bundles) {
+  });
+
+  test.each(catalog.bundles.map((bundle) => [bundle.id, bundle] as const))(
+    `${catalog.id}: DIFF-14 bundle %s decodes in the NiBabel RAS+ space with matching geometry and lengths (DIFF-06, DIFF-15)`,
+    async (_id, bundle) => {
       const record = provenance.files.find((file) => bundle.file.endsWith(`/${file.file}`));
       assert.ok(record, `Missing provenance for ${bundle.id}`);
       const compressed = await published(bundle.file);
@@ -98,20 +103,19 @@ for (const { catalog, provenance } of catalogs) {
         for (let axis = 0; axis < 3; axis++) {
           near(mesh.pts[sample.index * 3 + axis]!, sample.position[axis]!);
         }
-      }
-      const lengths = streamlineLengths(mesh.pts, mesh.offsetPt0);
-      const native = createTractGeometry(mesh.pts, mesh.offsetPt0);
-      const position = native.geometry.getAttribute('position');
-      assert.equal(position.count, record.points);
-      for (const sample of record.rasmm_samples) {
-        const world = new Vector3()
-          .fromBufferAttribute(position, sample.index)
-          .applyMatrix4(RAS_MM_TO_WORLD);
+        // The lines draw these points themselves, with RAS_MM_TO_WORLD as their matrix.
+        const world = new Vector3(
+          ...(mesh.pts.subarray(sample.index * 3, sample.index * 3 + 3) as unknown as [
+            number,
+            number,
+            number,
+          ]),
+        ).applyMatrix4(RAS_MM_TO_WORLD);
         near(world.x * 1000, sample.position[0]!, 0.001);
         near(-world.z * 1000, sample.position[1]!, 0.001);
         near(world.y * 1000, sample.position[2]!, 0.001);
       }
-      native.geometry.dispose();
+      const lengths = streamlineLengths(mesh.pts, mesh.offsetPt0);
       for (const expected of record.length_summaries) {
         const actual = summarizeLengths(lengths, expected.minimum_mm!);
         assert.equal(actual.shown, expected.shown, bundle.id);
@@ -121,10 +125,10 @@ for (const { catalog, provenance } of catalogs) {
           else near(actual[statistic]!, value!, 0.001);
         }
       }
-    }
-  });
+    },
+  );
 
-  test(`${catalog.id}: the MRI outline belongs to the tract reference and has explicit processing provenance`, async () => {
+  test(`${catalog.id}: DIFF-16 the MRI outline belongs to the tract reference and has explicit processing provenance`, async () => {
     const settings = catalog.brain_outline;
     const outline = readRepoJson<OutlineProvenance>(`${directory}${settings.provenance}`);
     // A skull-stripped map is outlined on its own grid; otherwise the catalog names
