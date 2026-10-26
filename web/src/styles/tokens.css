@@ -160,4 +160,16 @@
       --panel-inset: var(--space-4);
     }
   }
+
+  /*
+   * A finger is not a cursor (viewer/styles/phone.css:318). Rows and controls grow to the platform's
+   * minimum target wherever the pointer is coarse, tablets included.
+   */
+  @media (pointer: coarse) {
+    :root {
+      --row-height: 44px;
+      --control-height: 44px;
+      --tab-height: 44px;
+    }
+  }
 }

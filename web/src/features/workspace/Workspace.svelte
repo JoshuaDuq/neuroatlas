@@ -6,8 +6,8 @@
   the features' own, given as snippets.
 
   APG Tabs with manual activation (decision 0004): arrows, Home and End move focus, Enter, Space or a
-  click choose, because choosing Tracts can swap the whole scene. It is hand-written because U3's
-  ModeTabs puts a stub tabpanel per mode in the page and reports no activation of the mode already
+  click choose, because choosing Tracts can swap the whole scene. It is hand-written because a library
+  tablist puts a stub tabpanel per mode in the page and reports no activation of the mode already
   chosen, which here means Back (deviations/h5-tabpanel-semantics.md).
 -->
 <script lang="ts">

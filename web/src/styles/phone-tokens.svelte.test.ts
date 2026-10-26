@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { page } from 'vitest/browser';
+import { cdp, page } from 'vitest/browser';
 import './index.css';
 import '../app/layout.css';
 
@@ -29,6 +29,22 @@ describe('phone tokens (viewer/styles/phone.css:15)', () => {
       expect(token('--tab-height'), at).toBe('44px');
       expect(token('--header-height'), at).toBe('max(52px, 3.25rem)');
       expect(token('--panel-inset'), at).toBe('16px');
+    }
+  });
+
+  test('a coarse pointer on a desktop-sized viewport gets 44px rows, controls and tabs (phone.css:318)', async () => {
+    await page.viewport(1280, 800);
+    expect(token('--row-height')).toBe('32px');
+    // Touch emulation is what makes Chromium report a coarse primary pointer.
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+    try {
+      expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+      expect(token('--row-height')).toBe('44px');
+      expect(token('--control-height')).toBe('44px');
+      expect(token('--tab-height')).toBe('44px');
+      expect(token('--header-height')).toBe('max(48px, 3rem)');
+    } finally {
+      await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false });
     }
   });
 

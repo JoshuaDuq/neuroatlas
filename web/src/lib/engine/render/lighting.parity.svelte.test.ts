@@ -65,48 +65,57 @@ function rig(camera: Camera) {
   }));
 }
 
-test('the light rig and the environment match the legacy module under real WebGL', () => {
-  const renderer = new WebGLRenderer({ canvas: document.createElement('canvas') });
-  const legacyCamera = new PerspectiveCamera();
-  const camera = new PerspectiveCamera();
-  const legacy = legacyLighting.createAnatomicalLighting(renderer, legacyCamera, SETTINGS);
-  const current = createAnatomicalLighting(renderer, camera, SETTINGS);
+// The first reflect() compiles the PBR shader with an environment map on SwiftShader (about 2 s on an
+// idle machine, once per renderer; the other five renders take milliseconds), so a loaded machine
+// can exceed the browser project's 15 s default. 30 s matches the unit project's budget.
+const SHADER_COMPILE_TIMEOUT_MS = 30_000;
 
-  expect(rig(camera)).toStrictEqual(rig(legacyCamera));
-  expect(rig(camera)).toHaveLength(7);
-  const { texture } = current;
-  const expected = legacy.texture;
-  expect(texture.constructor).toBe(expected.constructor);
-  for (const field of [
-    'mapping',
-    'format',
-    'type',
-    'colorSpace',
-    'minFilter',
-    'magFilter',
-    'generateMipmaps',
-  ] as const) {
-    expect(texture[field], field).toBe(expected[field]);
-  }
-  expect([size(texture).width, size(texture).height]).toStrictEqual([
-    size(expected).width,
-    size(expected).height,
-  ]);
+test(
+  'the light rig and the environment match the legacy module under real WebGL',
+  { timeout: SHADER_COMPILE_TIMEOUT_MS },
+  () => {
+    const renderer = new WebGLRenderer({ canvas: document.createElement('canvas') });
+    const legacyCamera = new PerspectiveCamera();
+    const camera = new PerspectiveCamera();
+    const legacy = legacyLighting.createAnatomicalLighting(renderer, legacyCamera, SETTINGS);
+    const current = createAnatomicalLighting(renderer, camera, SETTINGS);
 
-  // The environment itself: every pixel a sphere reflects from it, at three roughnesses.
-  for (const roughness of [0, 0.5, 1]) {
-    const actual = reflect(renderer, texture, roughness);
-    const wanted = reflect(renderer, expected, roughness);
-    expect(
-      actual.some((value, index) => index % 4 !== 3 && value > 0),
-      'the environment is not black',
-    ).toBe(true);
-    expect(actual, `roughness ${roughness}`).toStrictEqual(wanted);
-  }
+    expect(rig(camera)).toStrictEqual(rig(legacyCamera));
+    expect(rig(camera)).toHaveLength(7);
+    const { texture } = current;
+    const expected = legacy.texture;
+    expect(texture.constructor).toBe(expected.constructor);
+    for (const field of [
+      'mapping',
+      'format',
+      'type',
+      'colorSpace',
+      'minFilter',
+      'magFilter',
+      'generateMipmaps',
+    ] as const) {
+      expect(texture[field], field).toBe(expected[field]);
+    }
+    expect([size(texture).width, size(texture).height]).toStrictEqual([
+      size(expected).width,
+      size(expected).height,
+    ]);
 
-  current.dispose();
-  legacy.dispose();
-  expect(camera.children).toHaveLength(0);
-  expect(legacyCamera.children).toHaveLength(0);
-  renderer.dispose();
-});
+    // The environment itself: every pixel a sphere reflects from it, at three roughnesses.
+    for (const roughness of [0, 0.5, 1]) {
+      const actual = reflect(renderer, texture, roughness);
+      const wanted = reflect(renderer, expected, roughness);
+      expect(
+        actual.some((value, index) => index % 4 !== 3 && value > 0),
+        'the environment is not black',
+      ).toBe(true);
+      expect(actual, `roughness ${roughness}`).toStrictEqual(wanted);
+    }
+
+    current.dispose();
+    legacy.dispose();
+    expect(camera.children).toHaveLength(0);
+    expect(legacyCamera.children).toHaveLength(0);
+    renderer.dispose();
+  },
+);
