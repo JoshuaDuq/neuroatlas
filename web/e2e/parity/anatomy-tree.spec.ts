@@ -207,14 +207,14 @@ test.describe('anatomy tree', () => {
   });
 
   test('hiding by eye is announced', async ({ app }) => {
-    // a1-eye-announcement: the tree writes no sentence of its own; S1 joins the part with the count
-    // (K2). Until then next announces nothing here, so this waits for it.
-    test.fixme(isNext(), 'the part sentence with the count is K2 (a1-eye-announcement)');
+    // a1-eye-announcement: the tree writes no sentence of its own; S1 joins the part with the count.
     const { page } = app;
     await openFrontal(page);
     await eye(page, 'Hide Middle frontal gyrus, left').click();
-    // Legacy speaks the count at once (app.js:1676).
-    await expect(page.locator('#announcer')).toHaveText('1 part hidden');
+    // Legacy speaks the count at once (app.js:1676); next names the part first.
+    await expect(page.locator('#announcer')).toHaveText(
+      isNext() ? 'Hidden: Middle frontal gyrus, left. 1 part hidden' : '1 part hidden',
+    );
   });
 
   test('Expand all opens every group and becomes Collapse all', async ({ app }) => {

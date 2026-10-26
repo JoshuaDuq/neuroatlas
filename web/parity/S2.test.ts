@@ -27,7 +27,8 @@ import type { Manifest } from '../src/lib/types/index.ts';
  * as the reference with their bodies as in legacy. Their engine calls are the contract's:
  * `camera.frameRegion` for `visibleMeshes` + `planFraming`, `legacyModel` for the model members the
  * contract renamed. One seeded sequence drives both over fake engines, some commands started
- * without awaiting the one before so that a later one overtakes an earlier. After every step the two
+ * without awaiting the one before, each after a seeded number of microtask turns (the same on both
+ * sides), so that a later one overtakes an earlier at any of its awaits. After every step the two
  * must agree on whether each command threw, on every call made into the engine, on the model's and
  * the sections' state, on the session and on the interface hooks.
  */
@@ -505,12 +506,21 @@ function start(call: () => unknown): Promise<unknown> {
 interface Step {
   name: string;
   args: never[];
+  /** Microtask turns to wait before starting the command; the same on both sides. */
+  delay?: number;
 }
 
-/** Starts the burst on each side, the later commands before the earlier settle, and compares everything. */
+const MAX_DELAY = 11;
+
+/** Starts the burst on each side, each command after its delay and before the earlier settle, and compares everything. */
 async function compareBurst(legacy: Side, current: Side, burst: Step[], label: string) {
   const run = (side: Side) =>
-    Promise.all(burst.map(({ name, args }) => start(() => side.commands[name]!(...args))));
+    Promise.all(
+      burst.map(async ({ name, args, delay = 0 }) => {
+        for (let turn = 0; turn < delay; turn += 1) await Promise.resolve();
+        return start(() => side.commands[name]!(...args));
+      }),
+    );
   const was = await run(legacy);
   const is = await run(current);
   // Focus is placed after the interface updates, which this test has no DOM for.
@@ -568,12 +578,16 @@ describe('S2 parity', () => {
       let step = 0;
       while (step < 60) {
         // A burst of one to three commands, the later ones started before the earlier settle.
-        const burst = Array.from({ length: 1 + Math.floor(random() * 3) }, () => {
+        const burst = Array.from({ length: 1 + Math.floor(random() * 3) }, (_, index) => {
           const name = pick(random, names);
-          return { name, args: (argumentsFor[name] ?? (() => []))() as never[] };
+          return {
+            name,
+            args: (argumentsFor[name] ?? (() => []))() as never[],
+            delay: index === 0 ? 0 : Math.floor(random() * (MAX_DELAY + 1)),
+          };
         });
         const label = `seed ${seed}, step ${step}: ${burst
-          .map(({ name, args }) => `${name}(${JSON.stringify(args)})`)
+          .map(({ name, args, delay }) => `${name}(${JSON.stringify(args)})+${delay}`)
           .join(' | ')}`;
         step += burst.length;
         await compareBurst(legacy, current, burst, label);
@@ -619,6 +633,46 @@ describe('S2 parity', () => {
       ['toggleInternalAnatomy', []],
     ],
   };
+
+  /**
+   * A command that overtakes another at one of its awaits, whichever await that is: `rival` starts
+   * `delay` turns after `command`, for every delay up to MAX_DELAY, once `before` has run.
+   */
+  const OVERTAKES: Record<
+    string,
+    { before: [string, unknown[]][]; command: string; rival: [string, unknown[]] }
+  > = {
+    'entering is overtaken while its detail downloads': {
+      before: [['chooseDetail', ['aseg']]],
+      command: 'toggleInternalAnatomy',
+      rival: ['setSpinalCordVisible', [true]],
+    },
+    'leaving is overtaken before it restores the detail': {
+      before: [
+        ['chooseDetail', ['aseg']],
+        ['toggleInternalAnatomy', []],
+      ],
+      command: 'toggleInternalAnatomy',
+      rival: ['setSpinalCordVisible', [true]],
+    },
+  };
+
+  for (const [name, { before, command, rival }] of Object.entries(OVERTAKES)) {
+    it(`overtaken: ${name}`, async () => {
+      for (let delay = 0; delay <= MAX_DELAY; delay += 1) {
+        const legacy = legacySide();
+        const current = newSide();
+        for (const [prior, args] of before) {
+          await compareBurst(legacy, current, [{ name: prior, args: args as never[] }], name);
+        }
+        const burst = [
+          { name: command, args: [] as never[] },
+          { name: rival[0], args: rival[1] as never[], delay },
+        ];
+        await compareBurst(legacy, current, burst, `${name}, rival after ${delay} turns`);
+      }
+    });
+  }
 
   for (const [name, script] of Object.entries(SCRIPTS)) {
     it(`scripted: ${name}`, async () => {
