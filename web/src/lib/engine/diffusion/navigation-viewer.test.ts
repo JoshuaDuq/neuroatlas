@@ -92,7 +92,13 @@ test('reports the source voxel and a three-component point, not NiiVue’s mirro
     },
   ];
   const values = [{ name: 'FA', value: 0.4 }];
-  viewer['onLocationChange']({ mm: [81.54, -87.38, -94.07, 1], vox: [166, 20, 30], values });
+  // NiiVue's value rows carry more than the contract names.
+  const reported = [{ ...values[0]!, id: 'x', mm: [1, 2, 3] }];
+  viewer['onLocationChange']({
+    mm: [81.54, -87.38, -94.07, 1],
+    vox: [166, 20, 30],
+    values: reported,
+  });
   assert.deepEqual(locations, [{ mm: [81.54, -87.38, -94.07], vox: [5, 13, 6], values }]);
   // Before the volumes load there is no grid to name a voxel in.
   viewer['volumes'] = [];

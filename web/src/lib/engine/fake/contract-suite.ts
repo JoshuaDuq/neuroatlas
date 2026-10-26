@@ -1,5 +1,5 @@
 import { assert } from './assert.ts';
-import { describe, it, onTestFinished } from 'vitest';
+import { describe, it, onTestFinished, vi } from 'vitest';
 import type { Region } from '../../types/index.ts';
 import { HIGH_FREQUENCY_EVENTS } from '../api.ts';
 import type { Engine, EngineEvents, MriLocation } from '../api.ts';
@@ -507,25 +507,13 @@ export function defineEngineContract(
         assert.ok(view);
         assert.deepEqual(Object.keys(view.edges).sort(), ['bottom', 'left', 'right', 'top']);
         assert.deepEqual(engine.camera.view, view);
-      });
-
-      it('reports an eased move as the camera travels, when it has not moved yet at the call', async () => {
-        const { engine } = await boot();
-        const moves = collect(engine, 'camera');
-        const settled = collect(engine, 'cameraSettled');
+        // An eased move: the link follows the destination at once; the real stage reports the camera frame
+        // by frame after the call, where the fake reports it in the call.
+        const reported = moves.length;
+        const placed = settled.length;
         engine.camera.applyView('inferior');
-        // The link follows the destination at once; the real stage reports the camera frame by frame, after
-        // the call, where the fake reports it in the call.
-        assert.ok(settled.length > 0);
-        if (moves.length === 0) {
-          await new Promise<void>((resolve) => {
-            const off = engine.on('camera', () => {
-              off();
-              resolve();
-            });
-          });
-        }
-        assert.ok(moves.length > 0);
+        assert.ok(settled.length > placed);
+        await vi.waitFor(() => assert.ok(moves.length > reported), { timeout: 5_000 });
       });
 
       it('releases the view when it frames something other than a preset', async () => {
@@ -726,7 +714,6 @@ export function defineEngineContract(
         // The report is the source voxel asked for, and the last one: a mirrored axis changes nothing.
         navigator.setVoxel([5, 6, 7]);
         assert.deepEqual(locations.at(-1)?.vox, [5, 6, 7]);
-        assert.equal(locations.at(-1)?.mm.length, 3);
         assert.ok(locations.every((location) => location.values.length > 0));
         assert.throws(() => navigator.setVoxel([dims[1]!, 0, 0]), RangeError);
         assert.throws(() => navigator.setVoxel([0.5, 0, 0]), RangeError);
@@ -734,6 +721,7 @@ export function defineEngineContract(
         navigator.moveVoxel([1, 0, 0]);
         const [x, y, z] = locations.at(-1)!.vox;
         assert.deepEqual([Math.abs(x - 5), y, z], [1, 6, 7]);
+        assert.equal(locations.at(-1)?.mm.length, 3);
         assert.throws(() => navigator.setPlane('OBLIQUE' as never), RangeError);
         navigator.setPlane('AXIAL');
         assert.throws(() => navigator.setWindow(0, 0), RangeError);

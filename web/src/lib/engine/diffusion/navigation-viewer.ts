@@ -49,7 +49,11 @@ export async function createMriNavigationViewer(
     const point = mm.slice(0, 3);
     const vox = scannerVoxel(point, volume.hdr!);
     if (!vox) throw new RangeError(`The crosshair ${point} mm lies outside the MRI grid.`);
-    onLocation({ mm: point as unknown as Vec3, vox: vox as unknown as Vec3, values });
+    onLocation({
+      mm: point as unknown as Vec3,
+      vox: vox as unknown as Vec3,
+      values: values.map(({ name, value }) => ({ name, value })),
+    });
   };
   try {
     await viewer.attachToCanvas(canvas);

@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
-import { Mesh } from 'three';
+import { Matrix4, Mesh } from 'three';
 import type { Object3D } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { t } from '../core/i18n/index.ts';
 import type { Engine } from './api.ts';
 import { createEngine } from './index.ts';
+import { createMriUniforms } from './render/mri-material.ts';
 import { modelDirectory, publishedLoader, readManifest } from './model/test-support.ts';
 import type { Outlined } from './render/scene.ts';
 
@@ -17,8 +18,10 @@ const stage = vi.hoisted(() => ({
   overlap: null as unknown,
   overlayVisible: [] as boolean[],
   warmFails: false,
+  scene: null as import('three').Scene | null,
+  mriAppearance: [] as boolean[],
   rendererDisposed: 0,
-  model: null as { disposed: boolean } | null,
+  model: null as import('./model/brain-atlas.ts').BrainAtlas | null,
 }));
 
 vi.mock('three', async (importOriginal) => {
@@ -76,6 +79,13 @@ vi.mock('./render/scene.ts', async (importOriginal) => {
               target.setOutlined(outlined);
             };
           }
+          if (key === 'setMriAppearance') {
+            return (active: boolean) => {
+              stage.mriAppearance.push(active);
+              target.setMriAppearance(active);
+            };
+          }
+          if (key === 'scene') stage.scene = target.scene;
           if (key === 'warmOutlines') {
             return () => {
               if (stage.warmFails) throw new Error('The outline programs did not compile.');
@@ -139,6 +149,7 @@ beforeEach(() => {
   stage.overlap = new Mesh();
   stage.overlayVisible = [];
   stage.warmFails = false;
+  stage.mriAppearance = [];
   stage.rendererDisposed = 0;
   stage.model = null;
   vi.spyOn(EffectComposer.prototype, 'render').mockImplementation(() => {});
@@ -228,5 +239,28 @@ describe('the engine facade', () => {
     await assert.rejects(boot(), /outline programs did not compile/);
     assert.equal(stage.rendererDisposed, 1);
     assert.equal(stage.model!.disposed, true);
+  });
+
+  it('opens with the cut hidden, and shows the scan on the surface only while nothing paints it', async () => {
+    const engine = await boot();
+    const cut = stage.scene!.children.find((child) => child.name === 'GPU labelled brain sections');
+    assert.equal(cut?.visible, false, 'no cut is drawn until one is chosen');
+    stage.model!.setMriAnatomy({
+      mriUniforms: createMriUniforms({
+        texture: null,
+        worldToVoxel: new Matrix4(),
+        volume: { shape: [1, 1, 1] },
+      }),
+    });
+    engine.model.setSurfaceColor('mri');
+    assert.equal(stage.mriAppearance.at(-1), true);
+    const region = engine.model.manifest.regions.find((candidate) => candidate.kind === 'cortex')!;
+    engine.model.setPaint({ id: 'paint', colors: new Map([[region.id, [1, 2, 3] as const]]) });
+    assert.equal(stage.mriAppearance.at(-1), false, 'a paint replaces the scan');
+    engine.present({ lang: 'en', referenceOnly: true });
+    engine.model.setPaint(null);
+    engine.present({ lang: 'en', referenceOnly: false });
+    assert.equal(stage.mriAppearance.at(-1), true);
+    engine.dispose();
   });
 });

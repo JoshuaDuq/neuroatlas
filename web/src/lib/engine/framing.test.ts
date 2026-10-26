@@ -260,4 +260,15 @@ describe('the heading of a move in flight (deviation e7-heading-in-flight)', () 
     const heading = position.clone().sub(target).normalize();
     assert.ok(heading.distanceTo(VIEW_DIRECTIONS.left) < 1e-9);
   });
+
+  it('captures the destination of an eased move, not the camera half-way', () => {
+    const stage = fixture();
+    stage.camera.applyView('right', { immediate: true });
+    stage.camera.applyView('left');
+    const snapshot = stage.camera.capture();
+    stage.camera.applyView('anterior', { immediate: true });
+    stage.camera.restore('left', snapshot, { immediate: true });
+    const { position, target } = stage.scene.destination;
+    assert.ok(position.clone().sub(target).normalize().distanceTo(VIEW_DIRECTIONS.left) < 1e-9);
+  });
 });
