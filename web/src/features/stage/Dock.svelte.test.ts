@@ -43,6 +43,8 @@ let stage: StageLayout;
 let live: Live;
 let commands: { [K in keyof DockCommands]: Mock<DockCommands[K]> };
 let cleanups: (() => void)[];
+/** What the stage layout's `onDock` runs: the camera refit in the app. */
+let onDock: () => void;
 
 function liveState(overrides: Partial<Live>): Live {
   const state = $state<Live>({
@@ -95,6 +97,7 @@ async function mount(
             return live.phone;
           },
         },
+        onDock: () => onDock(),
       });
     }),
   );
@@ -140,6 +143,7 @@ function hold(view: ViewName) {
 
 beforeEach(async () => {
   cleanups = [];
+  onDock = () => {};
   localStorage.removeItem(PREF_KEYS.stageHint);
   await page.viewport(1280, 800);
 });
@@ -219,8 +223,12 @@ describe('the toolbar', () => {
   });
 
   test('is measured by the stage layout, so the camera keeps its fit', async () => {
+    // The measurement arrives with the layout's ResizeObserver, which a loaded machine can hold
+    // for more than a poll's second: wait for the refit it asks for instead.
+    const refit = new Promise<void>((resolve) => (onDock = resolve));
     await mount();
-    await vi.waitFor(() => expect(stage.dock.height).toBeGreaterThan(0));
+    await refit;
+    expect(stage.dock.height).toBeGreaterThan(0);
     expect(stage.dock.width).toBe(Math.round(dock().getBoundingClientRect().width));
   });
 });
