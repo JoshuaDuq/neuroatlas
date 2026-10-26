@@ -60,6 +60,23 @@ describe('SearchCombobox', () => {
     expect(input().hasAttribute('aria-activedescendant')).toBe(false);
   });
 
+  test('an option marked current says so, whether or not it is the armed one', async () => {
+    render(Fixture, { picks: [] });
+    // "h" matches Hippocampus (disabled), Hypothalamus (armed) and Thalamus (current).
+    await type('h');
+    await expect.poll(() => armed()?.textContent).toBe('Hypothalamus');
+    const states = [...document.querySelectorAll('[role=option]')].map((o) => [
+      o.textContent,
+      o.getAttribute('aria-current'),
+      o.getAttribute('aria-selected'),
+    ]);
+    expect(states).toEqual([
+      ['Hippocampus', null, 'false'],
+      ['Hypothalamus', null, 'true'],
+      ['Thalamus', 'true', 'false'],
+    ]);
+  });
+
   test('Enter chooses the armed option and leaves the search as typed', async () => {
     const picks: string[] = [];
     render(Fixture, { picks });
