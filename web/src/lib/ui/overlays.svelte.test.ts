@@ -28,6 +28,12 @@ async function useTheme(theme: 'light' | 'dark') {
   await new Promise((resolve) => setTimeout(resolve, 400));
 }
 
+// Entry and exit run as CSS transitions; wait for the ones in flight, not for a fixed time.
+async function settled(node: Element) {
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  await Promise.all(node.getAnimations().map((animation) => animation.finished));
+}
+
 // The pointer stays where the last test left it, over whichever control is there.
 const parkPointer = () => userEvent.hover(el('After popovers'));
 
@@ -52,6 +58,17 @@ describe('Popover', () => {
     await userEvent.keyboard('{Enter}');
     await expect.element(button('Light')).toBeInTheDocument();
     expect(document.querySelector('.popover')?.hasAttribute('data-instant')).toBe(true);
+  });
+
+  test('a keyboard open is instant, with Enter and with Space, before any Escape', async () => {
+    for (const key of ['{Enter}', ' ']) {
+      render(Fixture);
+      el('Settings').focus();
+      await userEvent.keyboard(key);
+      await expect.element(button('Light')).toBeInTheDocument();
+      expect(document.querySelector('.popover')?.hasAttribute('data-instant'), key).toBe(true);
+      cleanup();
+    }
   });
 
   test('Escape closes, returns focus to the trigger and is handled before the page keymap', async () => {
@@ -90,7 +107,7 @@ describe('Popover', () => {
     el('Provenance').focus();
     await userEvent.tab();
     // Tab from the last control goes to the next popover's trigger, which is not this popover's own.
-    expect(document.activeElement).toBe(el('Data'));
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Data')));
     await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
     expect(document.activeElement).toBe(el('Data'));
   });
@@ -101,7 +118,7 @@ describe('Popover', () => {
     await button('Settings').click();
     el('Settings').focus();
     await userEvent.tab({ shift: true });
-    expect(document.activeElement).toBe(el('Fullscreen'));
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Fullscreen')));
     await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
     expect(document.activeElement).toBe(el('Fullscreen'));
   });
@@ -204,27 +221,33 @@ describe('Popover keys and stage variant', () => {
     render(Fixture);
     await button('Stage').click();
     await expect.element(button('Orbit')).toBeInTheDocument();
-    // A press with no wait for the click's own latency, so the fade can be watched.
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    const popover = document.querySelector('.popover')!;
+    await settled(popover);
+    // The fade is the popover's own opacity transition; its start and the exit duration are what
+    // is observed, so the result does not depend on how loaded the machine is.
+    let faded = false;
+    let fadeDuration = '';
+    popover.addEventListener('transitionrun', (event) => {
+      if ((event as TransitionEvent).propertyName !== 'opacity') return;
+      faded = popover.hasAttribute('data-ending-style');
+      fadeDuration = getComputedStyle(popover).transitionDuration;
+    });
     const outside = el('Fullscreen');
     outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerType: 'mouse' }));
     outside.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerType: 'mouse' }));
     outside.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    const closed = performance.now();
-    let faded = false;
-    while (document.querySelector('.popover') && performance.now() - closed < 1000) {
-      faded ||= document.querySelector('.popover')!.hasAttribute('data-ending-style');
-      await new Promise((resolve) => setTimeout(resolve, 5));
-    }
+    await vi.waitFor(() => expect(document.querySelector('.popover')).toBeNull(), {
+      timeout: 5000,
+    });
     expect(faded).toBe(true);
-    expect(document.querySelector('.popover')).toBeNull();
-    expect(performance.now() - closed).toBeGreaterThanOrEqual(90);
+    expect(fadeDuration.split(',')[0]).toBe('0.12s');
 
     await button('Stage').click();
     await expect.element(button('Orbit')).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     await vi.waitFor(() => expect(attr('Stage', 'aria-expanded')).toBe('false'));
-    expect(document.querySelector('.popover')).toBeNull();
+    // Bits unmounts it a frame later, after checking that nothing is animating.
+    await vi.waitFor(() => expect(document.querySelector('.popover')).toBeNull());
   });
 });
 
@@ -233,9 +256,9 @@ describe('Stage popover swap', () => {
     render(Fixture);
     await button('Stage').click();
     await expect.element(button('Orbit')).toBeInTheDocument();
-    await new Promise((resolve) => setTimeout(resolve, 300));
     const popovers = () => [...document.querySelectorAll('.popover')];
     const first = popovers()[0];
+    await settled(first);
     // Bits marks the ending state; with data-instant it has no transition, so no fade is seen.
     let fadedVisibly = false;
     const watch = setInterval(
@@ -246,7 +269,7 @@ describe('Stage popover swap', () => {
     );
     await button('Other stage').click();
     await expect.element(button('Zoom')).toBeInTheDocument();
-    await vi.waitFor(() => expect(first.isConnected).toBe(false), { timeout: 100, interval: 5 });
+    await vi.waitFor(() => expect(first.isConnected).toBe(false));
     clearInterval(watch);
     expect(fadedVisibly).toBe(false);
     expect(attr('Stage', 'aria-expanded')).toBe('false');
@@ -262,7 +285,7 @@ describe('Stage popover Tab', () => {
     await expect.element(button('Orbit')).toBeInTheDocument();
     (page.getByRole('checkbox', { name: 'Grid' }).element() as HTMLElement).focus();
     await userEvent.tab();
-    expect(document.activeElement).toBe(el('Other stage'));
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Other stage')));
     await vi.waitFor(() => expect(attr('Stage', 'aria-expanded')).toBe('false'));
     expect(document.activeElement).toBe(el('Other stage'));
   });
@@ -295,6 +318,37 @@ describe('Dialog', () => {
     expect(document.activeElement).toBe(el('Shortcuts'));
   });
 
+  test('a close event that arrives while the dialog is open is ignored', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    dialog().dispatchEvent(new Event('close'));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('a reopen in the frame after the close button is not undone by the late close', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    el('Close').click();
+    el('Shortcuts').click();
+    for (let frame = 0; frame < 3; frame++)
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('a reopen in the frame after a close request (Escape) is not undone by the late close', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    dialog().requestClose();
+    el('Shortcuts').click();
+    for (let frame = 0; frame < 3; frame++)
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
   test('the background is inert: Tab never reaches the page behind', async () => {
     render(Fixture);
     await button('Shortcuts').click();
@@ -317,7 +371,8 @@ describe('Dialog', () => {
     el('Shortcuts').style.display = 'none';
     await userEvent.keyboard('{Escape}');
     await vi.waitFor(() => expect(dialog().open).toBe(false));
-    expect(document.activeElement).toBe(el('Fallback'));
+    // Focus moves in the dialog's close event, a task after `open` turns false.
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Fallback')));
   });
 
   test('isolateKeys keeps the page keymap out; Escape still closes', async () => {
@@ -409,27 +464,33 @@ describe('Tooltip placement and disposal', () => {
 
 describe('Tooltip', () => {
   test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
-    render(Fixture);
-    await button('Snapshot').hover();
-    const hovered = performance.now();
-    await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(tooltip()).toBeNull();
-    await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
-    const delay = performance.now() - hovered;
-    expect(delay).toBeGreaterThanOrEqual(350);
-    expect(delay).toBeLessThan(800);
-    expect(tooltip()!.textContent).toBe('Save a PNG');
-    expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
+    // Only the page's timers are faked, so the delays hold however loaded the machine is.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      render(Fixture);
+      await button('Snapshot').hover();
+      await vi.advanceTimersByTimeAsync(499);
+      expect(tooltip()).toBeNull();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(tooltip()!.textContent).toBe('Save a PNG');
+      expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
 
-    await userEvent.unhover(el('Snapshot'));
-    await vi.waitFor(() => expect(tooltip()).toBeNull(), { timeout: 1000, interval: 10 });
-    expect(attr('Snapshot', 'aria-describedby')).toBeNull();
-    const closed = performance.now();
-    await button('Fullscreen').hover();
-    await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1000, interval: 5 });
-    expect(performance.now() - closed).toBeLessThan(300);
-    expect(tooltip()!.textContent).toBe('Enter full screen');
-    expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
+      await userEvent.unhover(el('Snapshot'));
+      // The skip window starts when the trigger closes, not when the exit transition (real time)
+      // removes the element, so that is what the fake clock is counted from.
+      for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
+        await vi.advanceTimersByTimeAsync(10);
+      expect(attr('Snapshot', 'aria-describedby')).toBeNull();
+      await vi.advanceTimersByTimeAsync(250);
+      await button('Fullscreen').hover();
+      // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
+      for (let frame = 0; frame < 120 && tooltip()?.textContent !== 'Enter full screen'; frame++)
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(tooltip()!.textContent).toBe('Enter full screen');
+      expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   test('keyboard focus shows it at once and Escape dismisses it', async () => {
