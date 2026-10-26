@@ -286,6 +286,25 @@ describe('location bar', () => {
     expect(el(crumb).dataset.tooltip).toBe('Frontal, show in the list');
   });
 
+  test('the group crumb moves focus once, to the row, though the old opener is still on screen', async () => {
+    const { world } = await mount();
+    await row('left:1').click();
+    await expect.poll(view).toBe('detail');
+    // Picked on the canvas meanwhile: the opener (row 1) is on screen, the selection is row 3.
+    world.selectedRegion = { id: 'left:3' };
+    await settle();
+    const crumb = el(button('Frontal, show in the list'));
+    const seen: Element[] = [];
+    const record = (event: FocusEvent) => seen.push(event.target as Element);
+    document.addEventListener('focusin', record);
+    await button('Frontal, show in the list').click();
+    await expect.poll(view).toBe('list');
+    await expect.poll(() => focused()).toBe(el(row('left:3')));
+    await settle();
+    document.removeEventListener('focusin', record);
+    expect(seen.filter((target) => target !== crumb)).toEqual([el(row('left:3'))]);
+  });
+
   test('the group crumb in Anatomy locates the row, returns, and focuses it', async () => {
     const { calls } = await mount({ selectedRegion: { id: 'left:2' } });
     await expect.poll(view).toBe('detail');

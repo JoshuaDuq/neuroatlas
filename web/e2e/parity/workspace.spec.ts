@@ -62,7 +62,8 @@ test.describe('mode tabs', () => {
 
   test('arrows and Home/End move focus, wrapping, and choose nothing', async ({ app }) => {
     const { page } = app;
-    const before = await app.hash();
+    const chosen = () => app.hash().then((hash) => new URLSearchParams(hash).get('tab'));
+    const before = await chosen();
     await tab(page, 'Anatomy').focus();
     await page.keyboard.press('ArrowRight');
     await expect(tab(page, 'Functions')).toBeFocused();
@@ -75,7 +76,7 @@ test.describe('mode tabs', () => {
     await page.keyboard.press('Home');
     await expect(tab(page, 'Anatomy')).toBeFocused();
     await expect(tab(page, 'Anatomy')).toHaveAttribute('aria-selected', 'true');
-    expect(await app.hash()).toBe(before);
+    expect(await chosen()).toBe(before);
   });
 
   test('Enter and Space choose the focused tab, and focus stays on it', async ({ app }) => {
@@ -91,10 +92,11 @@ test.describe('mode tabs', () => {
     await expect(tab(page, 'Deficits')).toHaveAttribute('aria-selected', 'true');
     await expect.poll(() => app.hash()).toContain('tab=deficits');
   });
+});
 
-  test('a phone has the same tabs, and choosing one switches the mode', async ({ app }) => {
+test.describe('phone shell', () => {
+  test('loaded at phone width, the same tabs choose the mode', async ({ app }) => {
     const { page } = app;
-    // Loaded at phone width, so the shell is the sheet from the start.
     await page.setViewportSize({ width: 390, height: 844 });
     await app.gotoHash();
     await app.ready();
@@ -102,6 +104,33 @@ test.describe('mode tabs', () => {
     await tab(page, 'Functions').click();
     await expect(tab(page, 'Functions')).toHaveAttribute('aria-selected', 'true');
     await expect.poll(() => app.hash()).toContain('tab=functions');
+  });
+
+  test('resized to a phone after load, the tabs follow and focus on the tab survives', async ({
+    app,
+  }, testInfo) => {
+    test.slow();
+    const { page } = app;
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await app.gotoHash();
+    await app.ready();
+    await app.waitForCameraIdle();
+    await tab(page, 'Functions').focus();
+    await page.keyboard.press('Enter');
+    await expect(tab(page, 'Functions')).toHaveAttribute('aria-selected', 'true');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await app.waitForCameraIdle();
+    // One tab in front, in the sheet now, still the chosen mode and still focused.
+    await expect(tab(page, 'Functions')).toBeVisible();
+    await expect(tab(page, 'Functions')).toHaveAttribute('aria-selected', 'true');
+    // h5-single-tablist: legacy swaps to a second tablist, so focus is lost with the first;
+    // the next app keeps one instance, and focus stays on it.
+    if (testInfo.project.name === 'next') await expect(tab(page, 'Functions')).toBeFocused();
+    else await tab(page, 'Functions').focus();
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('Enter');
+    await expect(tab(page, 'Deficits')).toHaveAttribute('aria-selected', 'true');
+    await expect.poll(() => app.hash()).toContain('tab=deficits');
   });
 });
 
