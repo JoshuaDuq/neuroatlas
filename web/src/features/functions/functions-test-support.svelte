@@ -8,13 +8,7 @@
   import FunctionRestore from './FunctionRestore.svelte';
   import type { World } from './functions-test-world.ts';
 
-  let {
-    world,
-    registerCurrentItem,
-  }: {
-    world: World;
-    registerCurrentItem: (find: () => HTMLElement | null) => () => void;
-  } = $props();
+  let { world }: { world: World } = $props();
 
   let announcer: HTMLElement;
   let regionTitle: HTMLElement;
@@ -30,7 +24,7 @@
   id="announcer"
 ></div>
 <div class="bar"><FunctionRestore model={world.explorer} /></div>
-<div class="list"><FunctionList model={world.explorer} {registerCurrentItem} /></div>
+<div class="list"><FunctionList model={world.explorer} /></div>
 <div class="detail">
   <FunctionProfile model={world.explorer} />
   <h2 bind:this={regionTitle} tabindex="-1" id="selected-name">Region</h2>

@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { domainAreas } from '../../lib/core/catalog/neuropsych-domains.ts';
+import { currentItem } from '../../lib/core/workspace.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import { AREAS_SHOWN, TERMS_SHOWN } from './functions-view.ts';
@@ -14,10 +15,6 @@ import { createWorld, deferred, type World } from './functions-test-world.ts';
 import Fixture from './functions-test-support.svelte';
 
 let world: World;
-const registerCurrentItem = vi.fn((find: () => HTMLElement | null) => {
-  void find;
-  return () => undefined;
-});
 
 /** A curated function with more than one page of areas, and one with few. */
 const many = () =>
@@ -33,12 +30,11 @@ function mount(lang: 'en' | 'fr' = 'en', explorer = true) {
   if (explorer) world.session.setExplorer('functions');
   world.session.setLang(lang);
   document.documentElement.lang = lang;
-  return render(Fixture, { world, registerCurrentItem });
+  return render(Fixture, { world });
 }
 
 beforeEach(async () => {
   await page.viewport(1280, 800);
-  registerCurrentItem.mockClear();
 });
 afterEach(() => {
   document.documentElement.lang = 'en';
@@ -129,12 +125,10 @@ describe('the list', () => {
 
   test('hands the open row to the workspace through registerCurrentItem', async () => {
     mount();
-    expect(registerCurrentItem).toHaveBeenCalledTimes(1);
-    const find = registerCurrentItem.mock.calls[0]![0];
-    expect(find()).toBeNull();
+    expect(currentItem()).toBeNull();
     await open(few().id);
-    expect(find()).toBe(rowOf(few().id));
-    expect(find()!.getAttribute('aria-current')).toBe('true');
+    expect(currentItem()).toBe(rowOf(few().id));
+    expect(currentItem()!.getAttribute('aria-current')).toBe('true');
   });
 
   test('is hidden outside the Functions tab', async () => {

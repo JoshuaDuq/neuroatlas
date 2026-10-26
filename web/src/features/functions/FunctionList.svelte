@@ -14,6 +14,7 @@
   import { networkCss } from '../../lib/core/catalog/networks.ts';
   import { grouped } from '../../lib/core/format.ts';
   import { t } from '../../lib/core/i18n/index.ts';
+  import { registerCurrentItem } from '../../lib/core/workspace.ts';
   import { createDebouncedAnnouncer } from '../../lib/ui/announcer.svelte.ts';
   import EmptyState from '../../lib/ui/EmptyState.svelte';
   import { listNav } from '../../lib/ui/list-nav.ts';
@@ -21,14 +22,7 @@
   import type { FunctionExplorer } from './functions-explorer.svelte.ts';
   import { functionList, resultsSentence, type FunctionRow } from './functions-view.ts';
 
-  let {
-    model,
-    registerCurrentItem,
-  }: {
-    model: FunctionExplorer;
-    /** H5's `registerCurrentItem` (core/workspace.ts): how the workspace finds the open row. */
-    registerCurrentItem: (find: () => HTMLElement | null) => () => void;
-  } = $props();
+  let { model }: { model: FunctionExplorer } = $props();
 
   const uid = $props.id();
   const lang = $derived(model.lang);
