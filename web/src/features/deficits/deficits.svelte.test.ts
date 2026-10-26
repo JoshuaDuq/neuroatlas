@@ -461,7 +461,8 @@ describe('the meta line', () => {
     expect(meta().textContent).toMatch(/^Hémisphère gauche · /);
     document.querySelector<HTMLButtonElement>('button.region')!.click();
     await expect.poll(() => meta().className).toContain('error');
-    await row('amnesia').click();
+    // Not through the runner, which would clear the failure itself.
+    view.selectedDeficit = 'amnesia';
     await expect.poll(() => meta().className).not.toContain('error');
   });
 
