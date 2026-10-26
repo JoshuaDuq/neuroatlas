@@ -182,6 +182,7 @@
         shell.showDetail();
         raised.raise();
       },
+      showDetailInPlace: () => shell.showDetail(),
       showList() {
         shell.showList();
         raised.raise();

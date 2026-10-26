@@ -53,6 +53,7 @@ const createEngine = vi.fn<CreateEngine>(async () => engine);
 function portStubs() {
   return {
     showDetail: vi.fn(),
+    showDetailInPlace: vi.fn(),
     showList: vi.fn(),
     showMri: vi.fn(),
     openPreparedPlane: vi.fn(async () => {}),
@@ -149,7 +150,8 @@ describe('the start', () => {
   test('mounts the regions before it applies the link, so the controllers find their ports', async () => {
     // A link that opens a function reaches the workspace and the panel's entry point.
     const { ports } = await boot(`#tab=functions&function=${domains.domains[0]!.id}`);
-    expect(ports.showDetail).toHaveBeenCalled();
+    expect(ports.showDetailInPlace).toHaveBeenCalled();
+    expect(ports.showDetail).not.toHaveBeenCalled();
     expect(ports.openFunction).toHaveBeenCalledWith(domains.domains[0]!.id);
   });
 

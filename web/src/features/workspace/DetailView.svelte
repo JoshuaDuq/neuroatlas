@@ -116,11 +116,10 @@
       background: var(--surface-base);
     }
 
-    /* The phone sheet: the detail clears the home indicator (phone.css:226-231). */
+    /* The phone sheet: H6's #inspector carries the home-indicator padding, so there is one rule (phone.css:226-231). */
     @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
       .detail-body {
         -webkit-overflow-scrolling: touch;
-        padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
       }
     }
   }

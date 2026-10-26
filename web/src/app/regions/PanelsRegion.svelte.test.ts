@@ -6,7 +6,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import manifestFile from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import domainsFile from '../../../../public/models/cdmd/neuropsych-domains.json' with { type: 'json' };
-import { validateNeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
+import {
+  domainName,
+  domainRecord,
+  validateNeuropsychDomains,
+} from '../../lib/core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains } from '../../lib/core/catalog/neuropsych-domains.ts';
 import { t } from '../../lib/core/i18n/index.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
@@ -58,6 +62,15 @@ const detailOrList = (selector: string) => document.querySelector<HTMLElement>(s
 const cameraCalls = (method: string) =>
   engine.calls.filter((call) => call.domain === 'camera' && call.method === method);
 const nameOf = (id: string) => app.world!.catalog.label(id).name;
+
+/** Starts again on a link that needs what the first boot knew (a lesson's landmark). */
+async function reboot(hash: string) {
+  app.dispose();
+  unmount(shell!);
+  shell = null;
+  engine = createFakeEngine({ manifest, domains: domains as never });
+  return boot(hash);
+}
 
 beforeEach(async () => {
   await page.viewport(1280, 800);
@@ -230,6 +243,102 @@ describe('the explorers’ entry points', () => {
   });
 });
 
+describe('the phone sheet’s strip and its clear', () => {
+  // The rails show the strip only for what their list is not showing, and a function, deficit or
+  // lesson is held only in its own mode; the sheet's grip names it in front of every panel.
+  beforeEach(() => page.viewport(390, 844));
+  const strip = (name: string) => page.getByRole('button', { name: `Inspect ${name}` });
+  const clear = () => page.getByRole('button', { name: t('en', 'inspector').clearSelection });
+
+  test('an open function is named in the strip, and its clear closes it', async () => {
+    const world = await boot();
+    const id = domains.domains[0]!.id;
+    await expect.element(clear()).not.toBeInTheDocument();
+    await app.ports.openFunction(id);
+    app.ports.back(); // the raised detail covers the grip's title
+    flushSync();
+    await expect.element(strip(domainName(domainRecord(domains, id)!, 'en'))).toBeVisible();
+    await userEvent.click(clear());
+    expect(world.view.current.selectedFunction).toBeNull();
+    await expect.element(clear()).not.toBeInTheDocument();
+  });
+
+  test('an open deficit is named in the strip, and its clear closes it', async () => {
+    const world = await boot();
+    const deficit = world.clinical.grouped('', 'en')[0]!.deficits[0]!;
+    await app.ports.openDeficit(deficit.id);
+    app.ports.back();
+    flushSync();
+    await expect.element(strip(deficit.name.en)).toBeVisible();
+    await userEvent.click(clear());
+    expect(world.view.current.selectedDeficit).toBeNull();
+    await expect.element(clear()).not.toBeInTheDocument();
+  });
+
+  test('a lesson is named in the strip, which offers no clear', async () => {
+    const circuit = (await boot()).circuits.all[0]!;
+    const world = await reboot(`#tab=circuits&circuit=${circuit.id}`);
+    // A landmark names its region; with none selected the strip names the lesson.
+    world.anatomy.selectRegion(null);
+    flushSync();
+    await expect.element(strip(circuit.name.en)).toBeVisible();
+    await expect.element(clear()).not.toBeInTheDocument();
+  });
+});
+
+describe('the location bar and the notice', () => {
+  test('the group crumb clears a search and opens the collapsed group of the selected row', async () => {
+    const world = await boot();
+    engine.emit('pick', { id: REGION });
+    flushSync();
+    const group = world.catalog.groups.find((entry) =>
+      entry.rows.some((row) => row.region.id === REGION),
+    )!;
+    if (world.view.current.expanded.has(group.key)) app.session.toggleGroup(group.key);
+    app.session.setQuery('gyrus');
+    flushSync();
+    expect(world.view.current.expanded.has(group.key)).toBe(false);
+    await userEvent.click(page.getByRole('button', { name: /, show in the list$/ }));
+    expect(world.view.current.query).toBe('');
+    expect(world.view.current.expanded.has(group.key)).toBe(true);
+  });
+
+  test('the notice’s see-through offer lowers the cortex opacity', async () => {
+    const world = await boot();
+    for (const { deficits } of world.clinical.grouped('', 'en')) {
+      for (const { id } of deficits) {
+        await world.excursions.openDeficit(id);
+        if (app.session.state.notice?.action === 'see-through') break;
+      }
+      if (app.session.state.notice?.action === 'see-through') break;
+    }
+    expect(app.session.state.notice?.action).toBe('see-through');
+    expect(engine.model.settings.cortexOpacity).toBe(1);
+    await userEvent.click(page.getByRole('button', { name: t('en', 'display').seeThrough }));
+    expect(engine.model.settings.cortexOpacity).toBeLessThan(1);
+  });
+
+  test('Restore previous view is offered once a function is opened from a scene, and not before', async () => {
+    await boot();
+    engine.emit('pick', { id: REGION });
+    flushSync();
+    const restore = page.getByRole('button', { name: t('en', 'clinical').restore });
+    await expect.element(restore).not.toBeInTheDocument();
+    await app.ports.openFunction(domains.domains[0]!.id);
+    await expect.element(restore).toBeVisible();
+  });
+});
+
+describe('the keymap’s tree walk', () => {
+  test('ArrowDown from outside the tree moves focus onto one of its rows', async () => {
+    await boot();
+    expect(document.activeElement).toBe(document.body);
+    press('ArrowDown');
+    expect(document.activeElement!.closest('[role="row"]')).not.toBeNull();
+    expect(list().contains(document.activeElement)).toBe(true);
+  });
+});
+
 describe('the phone sheet', () => {
   beforeEach(() => page.viewport(390, 844));
 
@@ -259,12 +368,48 @@ describe('the phone sheet', () => {
     expect(cameraCalls('keepFraming')).toEqual([]);
   });
 
-  test('a framing of the reader’s own keeps its size in the room the sheet leaves', async () => {
+  test('a framing of the reader’s own keeps the size the room had before the sheet moved', async () => {
     const world = await boot();
-    world.engine.camera.orbitBy({ azimuth: 0.1 });
+    const { camera } = world.engine;
+    camera.orbitBy({ azimuth: 0.1 });
+    // The fit depends on the room, as the real camera's does, so before and after differ.
+    vi.spyOn(camera, 'fittedDistance').mockImplementation(() => camera.visibleRect.height);
+    const before = camera.fittedDistance();
     app.ports.showDetail();
-    expect(cameraCalls('keepFraming').map(({ args }) => args[0])).toEqual([
-      world.engine.camera.fittedDistance(),
-    ]);
+    expect(camera.fittedDistance()).not.toBe(before);
+    expect(cameraCalls('keepFraming').map(({ args }) => args[0])).toEqual([before]);
+  });
+
+  test('a function link and a lesson link keep the sheet at peek, where a pick raises it', async () => {
+    const circuit = (await boot()).circuits.all[0]!;
+    const landmark = circuit.steps[1]!.region;
+    const atlas = landmark.split(':')[0];
+    const functionId = domains.domains[0]!.id;
+
+    await reboot(`#atlas=hcp-mmp&tab=functions&function=${functionId}`);
+    expect(detail().hidden).toBe(false);
+    expect(sheet().dataset.detent).toBe('peek');
+
+    await reboot(`#atlas=${atlas}&region=${landmark}&tab=circuits&circuit=${circuit.id}&step=1`);
+    expect(detail().hidden).toBe(false);
+    expect(sheet().dataset.detent).toBe('peek');
+
+    engine.emit('pick', { id: REGION });
+    flushSync();
+    expect(sheet().dataset.detent).toBe('half');
+  });
+
+  test('the sheet’s containers carry the home-indicator padding once, not the panels inside them', async () => {
+    await boot();
+    const bottom = (element: Element) => parseFloat(getComputedStyle(element).paddingBottom);
+    engine.emit('pick', { id: REGION });
+    flushSync();
+    expect(bottom(detail())).toBeGreaterThan(0);
+    expect(bottom(detailOrList('.detail-body'))).toBe(0);
+    app.ports.back();
+    flushSync();
+    await userEvent.click(page.getByRole('tab', { name: 'Functions' }));
+    expect(bottom(list())).toBeGreaterThan(0);
+    expect(bottom(detailOrList('.functions > .browser'))).toBe(0);
   });
 });
