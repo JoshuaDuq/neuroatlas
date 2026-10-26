@@ -20,6 +20,9 @@ export const components: Record<string, string> = Object.fromEntries(
     .map((path) => [path, read(new URL(`src/${path}`, webRoot))]),
 );
 
+/** The stage's token mapping (stage-vars.css), which restates the panel tokens over the overlay palette. */
+export const stageVars = read(new URL('src/features/stage/stage-vars.css', webRoot));
+
 export const main = read(new URL('src/main.ts', webRoot));
 
 export const fontsource = read(

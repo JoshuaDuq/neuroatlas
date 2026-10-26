@@ -110,7 +110,7 @@ interface text; "mm" follows a narrow no-break space (U+202F). Pixel values are 
 - **Level:** unit (view-model) for the label and visibility; the rule width needs the DOM
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:444-463, 759`
 - **Expected:** Scale `{ millimetres: 2.5, pixels: 87.4 }` → `.scale-bar-rule` width `87px`, label "2.5 mm"; French "2,5 mm". `{ millimetres: 10, pixels: 100 }` → "10 mm". Scale `null` → `#scale-bar` hidden; status `loading` with a scale → hidden. Built site: the label matches `^\d+([.,]\d)?\s?mm$` and the rule is 60–150 px.
-- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R for width and visibility; W for the label, whose expectation is re-derived with `withUnit(decimal(…))`; only the French `toContain('2,5')` is fixed); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/stage/StageOverlay.svelte.test.ts` (R for width and visibility; W for the label, whose expectation is re-derived with `withUnit(decimal(…))`; only the French `toContain('2,5')` is fixed); `e2e/parity/stage-overlay.spec.ts` (R; `next` gated off); `src/styles/contrast.test.ts` (R, the bar's `--overlay-ink` on `--overlay-halo-core` is 17.99:1, at least 4.5 by WCAG 1.4.3, since axe cannot measure the bar over the canvas)
 
 ### STAGE-11 · The dock and the scale bar share the bottom line, or the bar moves up
 

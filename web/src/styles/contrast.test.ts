@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { declarationsBySelector } from './css-scan.ts';
-import { sheets } from './sources.ts';
+import { declarationsBySelector, styleBlocks } from './css-scan.ts';
+import { components, sheets, stageVars } from './sources.ts';
 
 // WCAG 2.2 1.4.3 (text, 4.5:1) and 1.4.11 (non-text, 3:1), computed from the declared tokens.
 
@@ -12,6 +12,15 @@ const themes = {
   light: declared[':root'],
   dark: { ...declared[':root'], ...darkOverrides },
 };
+
+const stageTokens = declarationsBySelector(stageVars)['.stage-dock, .stage-keys, .stage'];
+if (!stageTokens)
+  throw new Error('stage-vars.css declares no .stage-dock, .stage-keys, .stage rule.');
+const imagingTokens = declarationsBySelector(
+  styleBlocks(components['lib/ui/Dialog.svelte']!).join('\n'),
+)[".dialog[data-variant='imaging']"];
+if (!imagingTokens)
+  throw new Error("Dialog.svelte declares no .dialog[data-variant='imaging'] rule.");
 
 function resolve(theme: Record<string, string>, name: string): string {
   const value = theme[name];
@@ -94,5 +103,32 @@ describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
     for (const ground of OVERLAY_GROUNDS) {
       expect(contrast(theme, '--overlay-control-border', ground), ground).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  // The controls on the stage (DisplayPopover, ViewPopover, SectionPopover, the keys) read the panel names
+  // through stage-vars.css; MprDialog's phone plane group through the imaging dialog's mapping.
+  it.each([
+    ['stage-vars.css', stageTokens],
+    ['the imaging dialog', imagingTokens],
+  ])(
+    'the thumb ring through %s passes 3:1 on the raised fill, the track and the popover surface',
+    (_where, tokens) => {
+      const stage = { ...theme, ...tokens };
+      for (const ground of [
+        '--surface-raised',
+        '--surface-tonal',
+        '--surface-tonal-hover',
+        '--surface-navigation',
+        '--surface-base',
+        '--surface-hover',
+      ]) {
+        expect(contrast(stage, '--thumb-ring', ground), ground).toBeGreaterThanOrEqual(3);
+      }
+    },
+  );
+
+  it('the scale bar ink passes 4.5:1 on its halo core', () => {
+    // axe cannot measure the bar over the canvas; each glyph is painted over a 3 px --overlay-halo-core stroke, the ground its edges touch.
+    expect(contrast(theme, '--overlay-ink', '--overlay-halo-core')).toBeGreaterThanOrEqual(4.5);
   });
 });
