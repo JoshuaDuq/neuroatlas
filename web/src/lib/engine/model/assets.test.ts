@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { afterAll, afterEach, beforeAll, describe, test, vi } from 'vitest';
-import { Raycaster, Vector3 } from 'three';
+import { Color, Plane, Raycaster, Vector3 } from 'three';
+import { tissueColor } from '../render/materials.ts';
 import type { Material, Mesh, MeshStandardMaterial } from 'three';
 import type { AnatomicalUserData } from '../render/materials.ts';
 import * as assetCache from '../../core/assets/asset-cache.ts';
@@ -100,6 +101,10 @@ describe('the published CDMD model', () => {
   }, 120_000);
 
   afterEach(async () => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    // reset() keeps the paint by design (ATLAS-40), so a case that painted must lift it.
+    model.setPaint(null);
     model.reset();
     await model.setAtlas('destrieux');
     await model.setDetail('learning');
@@ -132,6 +137,7 @@ describe('the published CDMD model', () => {
                 mix: networkMix.value,
                 variation: tissueVariation.value,
                 color: (mesh.material as MeshStandardMaterial).color.getHexString(),
+                region: model.regions.get(mesh.userData['region_id'])!,
               },
             ]
           : [];
@@ -139,7 +145,13 @@ describe('the published CDMD model', () => {
     model.setSurfaceColor('network');
     const shown = mixes();
     assert.ok(shown.length >= 100, `${shown.length} networked surfaces`);
-    for (const { mix, variation } of shown) assert.deepEqual([mix, variation], [1, 0]);
+    for (const { mix, variation, color, region } of shown) {
+      assert.deepEqual([mix, variation], [1, 0]);
+      assert.equal(
+        color,
+        new Color(tissueColor(region, manifest.appearance.tissue)).getHexString(),
+      );
+    }
     model.setSurfaceColor('atlas');
     assert.ok(mixes().every(({ mix }) => mix === 0));
     model.setSurfaceColor('network');
@@ -244,6 +256,53 @@ describe('the published CDMD model', () => {
     assert.ok(picks().every((region) => region?.id !== target.id));
   });
 
+  test('ATLAS-45 under a clipping plane a pick is still a drawn, selectable region, and the plane changes what is picked', () => {
+    model.setPaint(null);
+    const open = picks();
+    model.setClippingPlanes([new Plane(new Vector3(0.3, 0.5, 0.8).normalize(), 0.01)]);
+    const clipped = picks();
+    for (const region of clipped) {
+      if (region) assert.ok(model.canSelect(region) && region.kind !== 'non-region', region.id);
+    }
+    assert.ok(
+      clipped.some((region, at) => region?.id !== open[at]?.id),
+      'the plane changes a pick',
+    );
+  });
+
+  test(
+    'ATLAS-45 under functional colour on hcp-mmp with glass solids, a pick is a division or glass cortex',
+    { timeout: 120_000 },
+    async () => {
+      vi.spyOn(assetCache, 'fetchAsset').mockImplementation(async (url) => {
+        const bytes = await readFile(
+          new URL(String(url).split('/').pop()!, modelDirectory(published)),
+        );
+        return bytes.buffer.slice(
+          bytes.byteOffset,
+          bytes.byteOffset + bytes.byteLength,
+        ) as ArrayBuffer;
+      });
+      await model.setAtlas('hcp-mmp');
+      await model.loadGlassSolids(`https://example.invalid/models/${published}/`);
+      model.setSurfaceColor('functional');
+      assert.ok(
+        model.glassSolids!.meshes.some((mesh) => mesh.visible),
+        'a glass solid is drawn',
+      );
+      const found = picks().filter((region) => region !== null);
+      assert.ok(found.length > 30, `${found.length} picks`);
+      for (const region of found) {
+        assert.ok(model.canSelect(region) && region.kind !== 'non-region', region.id);
+        if (region.kind === 'cortex') assert.equal(region.atlas, 'hcp-mmp');
+      }
+      assert.ok(
+        found.some((region) => region.kind === 'cortex'),
+        'a division is picked',
+      );
+    },
+  );
+
   test(
     'ATLAS-11 loading from the published manifest reads its sidecars, reports progress and disposes a model that fails to open',
     { timeout: 120_000 },
@@ -277,8 +336,6 @@ describe('the published CDMD model', () => {
       const dispose = vi.spyOn(BrainAtlas.prototype, 'dispose');
       await assert.rejects(BrainAtlas.load(url, 'no-such-atlas'));
       assert.equal(dispose.mock.calls.length, 1);
-      vi.restoreAllMocks();
-      vi.unstubAllGlobals();
     },
   );
 });

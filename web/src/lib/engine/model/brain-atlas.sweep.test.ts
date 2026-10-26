@@ -370,3 +370,146 @@ test('ATLAS-46 a centroid is the box centre in surface RAS millimetres, computed
   for (const id of ['n-left', 'nonexistent', null]) assert.equal(model.centroidOf(id), null);
   model.dispose();
 });
+
+test('ATLAS-36 a change of view releases the isolation; opacity, colour, paint and planes keep it', async () => {
+  const releasing: [string, (model: Stub) => unknown][] = [
+    ['setAtlas', (model) => model.setAtlas('b')],
+    ['setHemisphere', (model) => model.setHemisphere('left')],
+    ['setCortexVisible', (model) => model.setCortexVisible(false)],
+    ['setInternalVisible', (model) => model.setInternalVisible(false)],
+    ['clearIsolation', (model) => model.clearIsolation()],
+  ];
+  for (const [name, command] of releasing) {
+    const { model } = await opened();
+    model.select('a-right');
+    model.isolate();
+    assert.equal(model.settings.isolatedRegion, 'a-right', name);
+    await command(model);
+    assert.equal(model.settings.isolatedRegion, null, `${name} releases the isolation`);
+    model.dispose();
+  }
+  const keeping: [string, (model: Stub) => unknown][] = [
+    ['setCortexOpacity', (model) => model.setCortexOpacity(0.5)],
+    ['setSurfaceColor', (model) => model.setSurfaceColor('cab-np')],
+    [
+      'setPaint',
+      (model) => model.setPaint({ id: 'function:a', colors: new Map([['a-right', [1, 2, 3]]]) }),
+    ],
+    ['setClippingPlanes', (model) => model.setClippingPlanes([new Plane(new Vector3(0, 0, 1), 1)])],
+  ];
+  for (const [name, command] of keeping) {
+    const { model } = await opened();
+    model.select('a-right');
+    model.isolate();
+    await command(model);
+    assert.equal(model.settings.isolatedRegion, 'a-right', `${name} keeps the isolation`);
+    assert.equal(model.state.selectedRegion?.id, 'a-right', name);
+    model.dispose();
+  }
+});
+
+test('ATLAS-17 the cortex and internal switches take only a boolean, and drop the meshes they hide', async () => {
+  const { model } = await opened();
+  assert.throws(() => model.setCortexVisible('yes'), {
+    name: 'TypeError',
+    message: 'Cortex visibility must be boolean.',
+  });
+  assert.throws(() => model.setInternalVisible(0), {
+    name: 'TypeError',
+    message: 'Internal anatomy visibility must be boolean.',
+  });
+  model.setInternalVisible(false);
+  assert.equal(model.state.visibleMeshCount, 3);
+  model.setInternalVisible(true);
+  assert.equal(model.state.visibleMeshCount, 4);
+  model.setCortexVisible(false);
+  assert.deepEqual(
+    model.visibleMeshes.map((mesh: Stub) => mesh.userData.region_id),
+    ['stem'],
+  );
+  model.dispose();
+});
+
+test('ATLAS-18 a see-through cortex is drawn transparent without depth writes, spares the structures and keeps the isolation', async () => {
+  const { model } = await opened();
+  model.select('a-right');
+  model.isolate();
+  model.setCortexOpacity(0.3);
+  const material = (id: string) =>
+    [...(model.layers as Map<string, Stub>).values()]
+      .flatMap((layer) => layer.meshes as Stub[])
+      .find((mesh) => mesh.userData.region_id === id)!.material;
+  const right = material('a-right');
+  assert.deepEqual([right.opacity, right.transparent, right.depthWrite], [0.3, true, false]);
+  assert.equal(material('stem').opacity, 1);
+  assert.equal(model.settings.isolatedRegion, 'a-right');
+  for (const bad of [1.1, -0.1, NaN]) {
+    assert.throws(() => model.setCortexOpacity(bad), {
+      name: 'RangeError',
+      message: 'Cortex opacity must be between 0 and 1.',
+    });
+  }
+  model.dispose();
+});
+
+test('ATLAS-30 under a paint a painted area stays opaque while the unpainted cortex takes the cortex opacity', async () => {
+  const { model } = await opened();
+  model.setCortexOpacity(0.5);
+  model.setPaint({ id: 'deficit:aphasia', colors: new Map([['a-left', [255, 0, 0]]]) });
+  const opacity = (id: string) =>
+    (model.layers.get('a') as Stub).meshes.find((mesh: Stub) => mesh.userData.region_id === id)
+      .material.opacity;
+  assert.deepEqual([opacity('a-left'), opacity('a-right')], [1, 0.5]);
+  model.dispose();
+});
+
+test('ATLAS-19 reporting the same cut state again changes nothing', async () => {
+  const { model, events } = await opened();
+  model.setCutState({ atlas: 'n', active: true });
+  events.length = 0;
+  model.setCutState({ atlas: 'n', active: true });
+  assert.deepEqual(events, []);
+  model.setCutState({ atlas: 'n', active: false });
+  assert.deepEqual(events, ['change']);
+  model.dispose();
+});
+
+test('ATLAS-32 a scan is attached once, another is refused, and a paint turns the scan off', async () => {
+  const { model } = await opened();
+  const scan = () => ({
+    mriUniforms: createMriUniforms({
+      texture: null,
+      worldToVoxel: new Matrix4(),
+      volume: { shape: [2, 2, 2] },
+    } as never),
+  });
+  assert.throws(() => model.setMriAnatomy(null), { message: 'MRI anatomy has not loaded.' });
+  const first = scan();
+  model.setMriAnatomy(first);
+  model.setMriAnatomy(first);
+  assert.throws(() => model.setMriAnatomy(scan()), { message: 'MRI anatomy is already attached.' });
+  model.setSurfaceColor('mri');
+  assert.equal(first.mriUniforms.scanEnabled.value, true);
+  model.setPaint({ id: 'function:a', colors: new Map([['a-left', [1, 2, 3]]]) });
+  assert.equal(first.mriUniforms.scanEnabled.value, false);
+  model.dispose();
+});
+
+test('ATLAS-34 the cut planes reach the glass solids that are drawn', async () => {
+  const { model } = await opened();
+  const wedges = ['a-left', 'a-right'].map((id) => {
+    const wedge = new Mesh(new BoxGeometry(0.01, 0.01, 0.01));
+    wedge.userData = { region_id: id, atlas: 'a', kind: 'ribbon' };
+    return wedge;
+  });
+  const { appearance } = readRepoYaml<{ appearance: any }>('config/model.yaml');
+  model.glassSolids = createGlassSolids(wedges, appearance);
+  model.group.add(model.glassSolids.group);
+  model.setSurfaceColor('functional');
+  const plane = new Plane(new Vector3(0, 0, 1), 1);
+  model.setClippingPlanes([plane]);
+  const drawn = model.glassSolids.meshes.filter((mesh: Stub) => mesh.visible);
+  assert.ok(drawn.length > 0, 'a glass solid is drawn under functional colour');
+  for (const mesh of drawn) assert.deepEqual(mesh.material.clippingPlanes, [plane]);
+  model.dispose();
+});

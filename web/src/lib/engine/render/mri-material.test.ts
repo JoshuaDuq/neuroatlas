@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
+import { test, vi } from 'vitest';
 import { Data3DTexture, Matrix4, MeshPhysicalMaterial, ShaderLib } from 'three';
 import type { WebGLProgramParametersWithUniforms } from 'three';
 import {
@@ -103,4 +103,38 @@ test('the scan texture handed in is the one the shader samples', () => {
   assert.equal(uniforms.scanVolume.value, texture);
   assert.deepEqual(uniforms.scanShape.value.toArray(), [2, 2, 2]);
   texture.dispose();
+});
+
+test('SHADER-12 an infinite centre is refused, and the extreme windows that are finite are accepted', () => {
+  const uniforms = anatomy();
+  setMriWindow(uniforms, 90, 180);
+  assert.throws(() => setMriWindow(uniforms, Infinity, 5), {
+    name: 'RangeError',
+    message: 'MRI window requires a finite center and positive width.',
+  });
+  assert.deepEqual(uniforms.scanWindow.value.toArray(), [90, 180]);
+  setMriWindow(uniforms, 0, 1e-9);
+  assert.deepEqual(uniforms.scanWindow.value.toArray(), [0, 1e-9]);
+  setMriWindow(uniforms, -5.5, 1e6);
+  assert.deepEqual(uniforms.scanWindow.value.toArray(), [-5.5, 1e6]);
+});
+
+test('SHADER-13 the mark colour is trimmed, any CSS spelling is kept as display bytes, and the refusal names the fault', () => {
+  const uniforms = anatomy();
+  setMriHighlight(uniforms, ' red ');
+  assert.deepEqual(rgb(uniforms.scanHighlight.value), [255, 0, 0]);
+  setMriHighlight(uniforms, 'rgb(10, 200, 30)');
+  assert.deepEqual(rgb(uniforms.scanHighlight.value), [10, 200, 30]);
+  assert.throws(() => setMriHighlight(uniforms, '' as never), {
+    name: 'RangeError',
+    message: 'MRI highlight requires a CSS colour.',
+  });
+  // An unknown name does not throw: three.js warns and the colour stays.
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  setMriHighlight(uniforms, 'notacolour');
+  assert.ok(
+    warn.mock.calls.some(([message]) => String(message).includes('Unknown color notacolour')),
+  );
+  assert.deepEqual(rgb(uniforms.scanHighlight.value), [10, 200, 30]);
+  warn.mockRestore();
 });

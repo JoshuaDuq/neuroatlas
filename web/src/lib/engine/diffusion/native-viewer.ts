@@ -87,7 +87,7 @@ export function createNativeTractViewer(
     group.matrixAutoUpdate = false;
     group.matrix.copy(transform);
     group.add(outline);
-    group.updateWorldMatrix(true, true);
+    group.updateWorldMatrix(true, true, true);
     invalidate();
   }
 

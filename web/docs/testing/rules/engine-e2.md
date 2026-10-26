@@ -81,7 +81,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Level:** browser — real WebGL
 - **Source:** `viewer/render/materials.js:92-97`
 - **Expected:** a gyral crown (concavity ≤ −0.08, depth ≤ −0.5) → fold 0, light unchanged. A fundus (concavity ≥ 0.04, depth ≥ 1.8) → fold 1: direct diffuse × 0.52, indirect diffuse and specular × 0.22. Concavity ≥ 0.04 with depth ≤ −0.5 → fold 0.75: direct × 0.64.
-- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
+- **Covered by:** `src/lib/engine/render/materials.test.ts` (R, the fold uniforms); the drawn darkening is uncovered (needs a browser pixel test)
 
 ### SHADER-07 · Network colours blend over the region colour, never on the medial wall
 
@@ -177,7 +177,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Level:** browser — real WebGL (`usampler3D`, `texelFetch`)
 - **Source:** `viewer/tissues/label-sampling.js:9-59`; `viewer/slices/volume.js:33-54`
 - **Expected:** the SLICE-09 fixtures drawn through `labelAt`: ramp `[1.4]³` → 51, `[1.6]³` → 102, `[1.5]³` → 51; corners `[4,9,9,9,4,9,9,9]` at `[0.4,0.4,0.5]` → 9, `[0.2,0.2,0.5]` → 4; all-7 cube at `[−0.4,.5,.5]` → 7, `[−0.6,.5,.5]` → 0.
-- **Covered by:** uncovered (the legacy comparison is deleted; needs a browser pixel test)
+- **Covered by:** uncovered (needs a browser pixel test; first follow-up, the cut must colour the label the pick names)
 
 ### SHADER-17 · A cut face is drawn in its label's palette colour, lit as tissue, and absent where hidden
 
@@ -262,7 +262,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Level:** browser for the lit cap; unit for the material settings
 - **Source:** `viewer/tissues/solid-material.js:7-82`
 - **Expected:** `userData.tissueVariation` 0.5, `tissueRelief` 0.0012 (m), `highlightLift` 0; DoubleSide; clearcoat 0.08, 0 on a phone. Drawn: a uniform T1 volume → the cap normal equals the face normal (no relief); `tissueRelief` 0 → no relief anywhere.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, `highlightLift`), `src/lib/engine/tissues/solid-assets.test.ts` (R, `tissueVariation` per colour mode)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, `highlightLift`), `src/lib/engine/tissues/solid-assets.test.ts` (R, `tissueVariation` per colour mode); the relief is uncovered
 
 ## Gyral white matter on the cap
 
@@ -291,7 +291,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Level:** unit for the codes; browser for the discarded and lifted fragments
 - **Source:** `viewer/tissues/white-matter.js:9-31, 74-90`
 - **Expected:** isolate `wmparc:right:4035` → isolated code 2; isolate `destrieux:left:1` → −1. Hide `wmparc:left:3024` → visibility [255, 0, 255]; show all → [255, 255, 255]. Hover `:3024`, select `:4035` → codes (1, 2), lifts (0.26, 0.45); no marks → codes (−1, −1), lifts (0, 0).
-- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34/35)
+- **Covered by:** `src/lib/engine/tissues/white-matter.test.ts` (R), `src/lib/engine/tissues/gpu-sections.test.ts` (R, SLICE-34/35); the drawn discard and lift are uncovered
 
 ### SHADER-29 · The cap addresses the cropped white-matter grid exactly as the pick does
 
@@ -311,7 +311,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Level:** unit
 - **Source:** `viewer/tissues/cap-labels.js:5-27`
 - **Expected:** new → off, no volume or palette, highlight codes (−1, −1), lifts (0, 0), not isolated. `surfaceColor` `mri`, not wedged → on; `atlas` or wedged → off; volume, palette, matrix, codes and lifts are the layer's own objects; `isolatedRegion` set → isolated true.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, enabled and volume, SLICE-36)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R, enabled and volume, SLICE-36), `src/lib/engine/tissues/cap-labels.test.ts` (R)
 
 ### SHADER-31 · A sampled cap hides removed labels and lifts the marked one
 

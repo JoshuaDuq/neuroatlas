@@ -135,3 +135,10 @@ test('RENDER-35 on the published destrieux cortex every border weight is a share
   // Some vertices blend and the parcels' interiors do not.
   assert.ok(feathered > 1000 && feathered < total, `${feathered} of ${total}`);
 });
+
+test('RENDER-36 a radius of zero, below zero or not a number is a RangeError', () => {
+  const mesh = strip([0, 1, 2]);
+  for (const radius of [0, -1, NaN]) {
+    assert.throws(() => featherBorders([mesh], radius), RangeError);
+  }
+});

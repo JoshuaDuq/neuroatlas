@@ -94,6 +94,31 @@ test('the wall carries pial and white coordinates unchanged', () => {
   assert.deepEqual(Array.from(position.array.slice(12, 15)), [0, 0, 0]);
 });
 
+/**
+ * Closed and consistently wound where the stencil counts it: every undirected edge is carried by an
+ * even number of triangles, and each directed edge as often as its reverse. A parcel's patch that
+ * pinches at a vertex breaks the stricter two-triangles-per-edge test (TISSUE-08) and still passes.
+ */
+function closedAndWound(geometry: BufferGeometry): boolean {
+  const index = geometry.getIndex()!.array;
+  const directed = new Map<string, number>();
+  for (let i = 0; i < index.length; i += 3) {
+    for (const [a, b] of [
+      [0, 1],
+      [1, 2],
+      [2, 0],
+    ]) {
+      const key = `${index[i + a]}:${index[i + b]}`;
+      directed.set(key, (directed.get(key) ?? 0) + 1);
+    }
+  }
+  for (const [key, count] of directed) {
+    const [a, b] = key.split(':');
+    if ((directed.get(`${b}:${a}`) ?? 0) !== count) return false;
+  }
+  return true;
+}
+
 test('TISSUE-10 surfaces that do not share one labelled vertex set are refused', () => {
   const input = square(7, 7, 7, 7);
   const message = 'Ribbon surfaces must share one labelled vertex set.';
@@ -160,7 +185,13 @@ test.each(['destrieux', 'hcp-mmp'])(
       assert.equal(mine.length, owners.size, `${hemisphere}: one wedge per owning label`);
       pial.updateWorldMatrix(true, false);
       const hull = new Box3().setFromObject(pial).expandByScalar(1e-6);
+      assert.deepEqual(
+        mine.map((source) => source.userData['region_id']),
+        [...owners].map((label) => record.region_ids[label]),
+        `${hemisphere}: each wedge is named by its label's region, in face order`,
+      );
       for (const source of mine) {
+        assert.ok(closedAndWound(source.geometry), `${source.userData['region_id']} is not closed`);
         source.geometry.computeBoundingBox();
         assert.ok(hull.containsBox(source.geometry.boundingBox!), source.userData['region_id']);
         assert.equal(source.userData['atlas'], atlas);

@@ -131,12 +131,12 @@ test('DIFF-17 loading the published tracts places the outline and the initial bu
       ['cst-right', 964],
     ],
   );
-  // The outline's published box (brain-outline.json), as R, S, -A metres.
+  // The outline's box (brain-outline.json) moved by the published transform, as R, S, -A metres.
   const { min, max } = viewer.bounds;
-  [-0.065434, -0.068025, -0.070557].forEach((value, axis) =>
+  [-0.067971, -0.053958, -0.067933].forEach((value, axis) =>
     assert.ok(Math.abs(min.toArray()[axis]! - value) < 1e-6, `min ${axis}: ${min.toArray()[axis]}`),
   );
-  [0.068437, 0.07788, 0.08271].forEach((value, axis) =>
+  [0.0659, 0.091946, 0.085333].forEach((value, axis) =>
     assert.ok(Math.abs(max.toArray()[axis]! - value) < 1e-6, `max ${axis}: ${max.toArray()[axis]}`),
   );
   // DIFF-18: the published frame carries a scanner point to its surface point and back.

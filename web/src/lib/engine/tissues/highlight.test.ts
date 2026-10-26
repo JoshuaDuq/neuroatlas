@@ -35,3 +35,13 @@ test('a region resolves to the code its cut face is painted from', () => {
   assert.equal(codes.get('destrieux:left:9'), 2);
   assert.equal(codes.has(null as never), false);
 });
+
+test('SHADER-20 labels without a region have no code, and a region listed twice takes the last entry', () => {
+  const codes = codeIndex([
+    { region_id: 'x' },
+    { region_id: null },
+    { region_id: 'x' },
+    { region_id: '' },
+  ]);
+  assert.deepEqual([...codes], [['x', 2]]);
+});

@@ -32,6 +32,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | e6-minimum-validation.md                      | fix under the parity policy                                    |
 | e6-navigator-minimum-first.md                 | fix under the parity policy                                    |
 | e6-opacity-before-load.md                     | fix under the parity policy                                    |
+| e6-reference-bounds-placed.md                 | fix under the parity policy                                    |
 | u1-overlay-control-contrast.md                | fix (standard cited)                                           |
 | u1-thumb-ring-contrast.md                     | fix (standard cited)                                           |
 | u2-roving-modifier-keys.md                    | fix under the parity policy                                    |

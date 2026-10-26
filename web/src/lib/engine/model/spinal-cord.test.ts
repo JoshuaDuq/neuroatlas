@@ -252,3 +252,13 @@ test(
     sections.dispose();
   },
 );
+
+test('ATLAS-40 reset cancels a cord show still downloading, and keeps the detail level', async () => {
+  await model.setDetail('aseg');
+  await model.setSpinalCordVisible(false);
+  const shown = model.setSpinalCordVisible(true);
+  model.reset();
+  await shown;
+  assert.equal(model.settings.spinalCordVisible, false);
+  assert.equal(model.settings.detail, 'aseg');
+});

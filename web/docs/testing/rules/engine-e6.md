@@ -13,7 +13,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/streamlines.js:3-30`
 - **Expected:** Points (0,0,0) (3,4,0) (3,4,12) and (0,0,0) (1,1,1) with offsets [0, 3, 5] → Float64Array [17, √3], exact.
-- **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R); `parity/E6.test.ts` (D, 25 seeded and 4 published tracts)
+- **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R)
 
 ### DIFF-02 · Malformed streamlines are refused
 
@@ -22,7 +22,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/streamlines.js:3-30`
 - **Expected:** `DiffusionInputError` with `code === 'streamlines'`. Offsets [1, 2], [0, 1, 2], [0, 3], [0], [0, 2, 1] on two points, empty points, or 4 values → "Invalid streamline points or offsets." or "Each streamline must contain at least two points."; a NaN → "Streamline coordinates must be finite."; two equal points → "A streamline must have nonzero length.".
-- **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R; the code and the empty and 4-value cases are uncovered); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R)
 
 ### DIFF-03 · The length summary counts the streamlines at or above the minimum
 
@@ -31,7 +31,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/streamlines.js:32-48`
 - **Expected:** Lengths [17, √3]: minimum 2 → {total 2, shown 1, mean 17, min 17, max 17}; minimum 20 → {total 2, shown 0, mean null, min null, max null}; minimum 17 → shown 1 (inclusive). Minimum −1, NaN → RangeError "Invalid minimum length.".
-- **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R; the inclusive boundary and NaN are uncovered); `parity/E6.test.ts` (D, every minimum incl. invalid)
+- **Covered by:** `src/lib/engine/diffusion/streamlines.test.ts` (R)
 
 ## Tract files
 
@@ -42,7 +42,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/tract-file.js:4-7`
 - **Expected:** `af.left.trk.gz` as stored and gunzipped → identical `pts` and `offsetPt0`, 3,639 streamlines, 850,570 points.
-- **Covered by:** `src/lib/engine/diffusion/tract-file.test.ts` (S; the point count is uncovered); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/tract-file.test.ts` (S)
 
 ### DIFF-05 · One download and decode per tract file, shared by the lines and the navigator
 
@@ -51,7 +51,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/tract-file.js:14-27`
 - **Expected:** Two concurrent loads of `cdmd-sub-013/callosum_1.trk.gz` → 1 read, the same object; a later load → the same object; `lengths.length === offsetPt0.length − 1` (2,000). A reader throwing "HTTP 503" → two loads reject /503/ and read twice.
-- **Covered by:** `src/lib/engine/diffusion/tract-file.test.ts` (R); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/tract-file.test.ts` (R)
 
 ## 3D tract lines
 
@@ -62,7 +62,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-geometry.js:1-11,62-72`
 - **Expected:** `RAS_MM_TO_WORLD` maps (R, A, S) mm to (R/1000, S/1000, −A/1000) m: (100, 200, 300) → (0.1, 0.3, −0.2) ± 1e-7. The source array is unchanged after building. The geometry's bounding box equals the min and max of the points.
-- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R; I, the asserts that the attribute is the very source array); `src/lib/engine/diffusion/published-data.test.ts` (S); `parity/E6.test.ts` (D, bounds)
+- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R; I, the asserts that the attribute is the very source array), `src/lib/engine/diffusion/published-data.test.ts` (S)
 
 ### DIFF-07 · Streamlines are never joined, and the length filter hides whole streamlines
 
@@ -71,7 +71,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-geometry.js:12-27`
 - **Expected:** Streamlines of 10 and 20 mm (points 0–2 and 3–4): segments [0, 1, 1, 2, 3, 4]; minimum 15 → [3, 4]; minimum 25 → none drawn; minimum 20 → [3, 4] (inclusive).
-- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R; the inclusive boundary is uncovered; I, attribute identity after filtering); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R; I, attribute identity after filtering)
 
 ### DIFF-08 · A minimum below 1 mm is refused
 
@@ -80,7 +80,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-geometry.js:12-16`
 - **Expected:** 0, −1, NaN → RangeError "Minimum streamline length must be at least 1 mm.".
-- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R)
 
 ### DIFF-09 · Direction colours show |R|, |A|, |S| as displayed
 
@@ -89,7 +89,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-geometry.js:29-55`
 - **Expected:** Line (0,0,0) (3,4,0) (6,8,0): point 1 displays (0.6, 0.8, 0) within 1/255. Line along S: (0, 0, 1). Points (1,1,1) ×3 then (4,5,1): point 0 and point 1 (zero central difference) are (0, 0, 0).
-- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R); `parity/E6.test.ts` (D, black vertex); the black point is uncovered by rule tests
+- **Covered by:** `src/lib/engine/diffusion/native-geometry.test.ts` (R)
 
 ## Reference space
 
@@ -100,7 +100,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/reference-space.js:4-24`
 - **Expected:** Rows [[0, −1, 0, 12], [1, 0, 0, −25], [0, 0, 1, 40], [0, 0, 0, 1]]: scanner (100, 200, 300) mm → surface (−188, 75, 340) mm, i.e. world (0.1, 0.3, −0.2) → (−0.188, 0.34, −0.075) within 1e-12 m; a 5 mm offset stays 5 mm within 1e-12 m.
-- **Covered by:** `src/lib/engine/diffusion/reference-space.test.ts` (R); `parity/E6.test.ts` (D, 200 seeded rigid transforms)
+- **Covered by:** `src/lib/engine/diffusion/reference-space.test.ts` (R)
 
 ### DIFF-11 · Only a finite, rigid, orientation-preserving transform is accepted
 
@@ -109,7 +109,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/reference-space.js:4-16`
 - **Expected:** `null`, [[1]], a NaN, bottom row [0, 0, 1, 1] → TypeError "The reference requires a finite rigid RAS transform."; x scaled by 2, x mirrored (−1) → RangeError "The reference requires a rigid, orientation-preserving RAS transform." (tolerance 1e-5 on the determinant and on RᵀR).
-- **Covered by:** `src/lib/engine/diffusion/reference-space.test.ts` (R; the bottom-row case and the error classes are uncovered); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/reference-space.test.ts` (R)
 
 ### DIFF-12 · The published CDMD reference space reproduces NiBabel's voxel anchors
 
@@ -166,8 +166,8 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:19-46,83-86`
-- **Expected:** CDMD `load()` → `ready === true`; the group matrix is the published transform (DIFF-12) and not auto-updated; outline material colour 0xb3babf, roughness 0.8, transparent, `depthWrite === false`, opacity 0.16 (`brain_outline.opacity`); `snapshot()` ids ['af-left', 'cst-right'] with totals 3,639 and 964. `bounds` = outline box: min (−0.067971, −0.053958, −0.067933), max (0.065900, 0.091946, 0.085333) m within 1e-6. Catalogue anatomy `another-anatomy` → rejects "The tract reference space belongs to a different anatomy.".
-- **Covered by:** `parity/E6.test.ts` (D); `src/lib/engine/diffusion/tracts.test.ts` (R, only `snapshot().length > 0`); fixed values are uncovered by rule tests
+- **Expected:** CDMD `load()` → `ready === true`; the group matrix is the published transform (DIFF-12) and not auto-updated; outline material colour 0xb3babf, roughness 0.8, transparent, `depthWrite === false`, opacity 0.16 (`brain_outline.opacity`); `snapshot()` ids ['af-left', 'cst-right'] with totals 3,639 and 964. `bounds` = the outline box moved by the published transform, read right after `load()`: min (−0.067971, −0.053958, −0.067933), max (0.065900, 0.091946, 0.085333) m within 1e-6. Legacy read the unplaced box (deviation `e6-reference-bounds-placed.md`). Catalogue anatomy `another-anatomy` → rejects "The tract reference space belongs to a different anatomy.".
+- **Covered by:** `src/lib/engine/diffusion/tracts.test.ts` (R, only `snapshot().length > 0`), `src/lib/engine/diffusion/native-viewer.test.ts` (R)
 
 ### DIFF-18 · Scanner and surface points convert both ways
 
@@ -176,7 +176,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:78-79`
 - **Expected:** CDMD after `load()`: `scannerToSurface([10, −20, 30])` = [7.4626923, −22.6237411, 44.0663681] within 1e-6 mm; `surfaceToScanner` of that gives [10, −20, 30] within 1e-9 mm. Any rotation and translation of the group: round trip within 1e-9 mm.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R, round trip); `src/lib/engine/index.contract.test.ts` (R, round trip via contract suite); `parity/E6.test.ts` (D); the CDMD value is uncovered
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R, round trip), `src/lib/engine/index.contract.test.ts` (R, round trip via contract suite)
 
 ### DIFF-19 · The snapshot summarises each loaded bundle at the current minimum
 
@@ -185,7 +185,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:116-122`
 - **Expected:** One bundle of 17 mm and 30 mm streamlines: `{ id, catalogId: id, name: bundle.name.en, label: bundle.name, file: 'af.left.trk.gz', visible: true, total: 2, shown: 2 }`; `setMinimum(20)` → shown 1.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R)
 
 ### DIFF-20 · The minimum applies to every bundle, and a bad one is refused before it is kept
 
@@ -194,7 +194,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:109-115`; deviation `e6-minimum-validation.md`
 - **Expected:** Empty viewer: `setMinimum(0)`, `−1`, `NaN` → RangeError "Minimum streamline length must be at least 1 mm."; a bundle loaded afterwards shows all 2 streamlines (minimum still 1). `setMinimum(20)` then load → the new bundle shows 1.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R; the later-loaded case is uncovered); `parity/E6.test.ts` (R, the empty-viewer case)
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R)
 
 ### DIFF-21 · A bundle requested twice at once is added once
 
@@ -203,7 +203,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:48-67`; deviation `e6-concurrent-bundle-load.md`
 - **Expected:** `loadBundle(first)` twice and `loadBundle(second)` at once → 2 tract loads, 2 group children, 2 snapshot rows. A hidden loaded bundle requested again → `visible === true`, no new load.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R; the show-again and retry parts are uncovered); `parity/E6.test.ts` (R)
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R)
 
 ### DIFF-22 · Bundles are shown or hidden by id
 
@@ -212,7 +212,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:68-74`
 - **Expected:** `setVisible(first.id, false)` → `anyVisible === false`; `setVisible('missing', true)` → RangeError "Unknown tract bundle: missing". `hasBundle(first.id)` true after loading.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R); `src/lib/engine/index.contract.test.ts` (R, via contract suite); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R), `src/lib/engine/index.contract.test.ts` (R, via contract suite)
 
 ### DIFF-23 · The outline's opacity and visibility can be set at any time
 
@@ -221,7 +221,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:90-108`; deviation `e6-opacity-before-load.md`
 - **Expected:** `setOpacity(0.5)` before `load()` → outline opacity 0.5 after load; then 0, 0.16, 1 apply at once. `setOpacity(−0.1)`, `1.1`, `NaN` → RangeError "Brain opacity must be between 0 and 1.". `setOutlineVisible(false)` before `load()` → outline hidden after load, at opacity 0.16.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (W: only that `setOpacity(0.4)` does not throw and 2 throws); `parity/E6.test.ts` (D); the applied values are uncovered by rule tests
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (W: only that `setOpacity(0.4)` does not throw and 2 throws)
 
 ### DIFF-24 · The cut's planes clip every bundle
 
@@ -270,7 +270,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/navigation-data.js:4-13`
 - **Expected:** Header dims [3, 256, 256, 150], affine identity with translation (−120.5538330078125, −104.4605712890625, −28.359909057617188): voxel [128, 104, 75] → [7.4461669921875, −0.4605712890625, 46.64009094238281] exactly. [256, 0, 0], [0, −1, 0], [0, 0, 150], [1.5, 0, 0], [NaN, 0, 0], [0, 0] → RangeError "Choose a zero-based source voxel inside the MRI grid.".
-- **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R); `parity/E6.test.ts` (D, 500 seeded voxels on an oblique grid too)
+- **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R)
 
 ### DIFF-29 · A scanner point goes to its nearest source voxel, or none outside the scan
 
@@ -279,7 +279,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/navigation-data.js:14-20`
 - **Expected:** Same header: [7.4461669921875, −0.4605712890625, 46.64009094238281] → [128, 104, 75]; [7.9, −0.9, 46.2] → [128, 104, 75]; the point of [255, 0, 149] → [255, 0, 149]; z −30 or 121.2 → null. At the grid origin offset along x by −0.5, −0.49, 0.49, 0.5, 0.51 voxels → x = 0, 0, 0, 1, 1. [0, NaN, 0], [Infinity, 0, 0], [0, 0] → RangeError "A scanner point needs three finite RAS values.".
-- **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R; the half-voxel cases are uncovered); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R)
 
 ### DIFF-30 · The navigator draws every streamline as a line at the current minimum, with exact lengths
 
@@ -288,7 +288,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/navigation-data.js:21-31`
 - **Expected:** A 17 mm streamline, minimum 16 → `fiberLengths` Float64Array [17], `fiberLength` 16, `fiberRadius` 0, `fiberDither` 0, `fiberDecimationStride` 1, `fiberColor` 'Local'. Minimum 0 or −1 → RangeError "Minimum tract length must be at least 1 mm.".
-- **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R; I, it pins NiiVue's field names, which are the only observable here); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/navigation-data.test.ts` (R; I, it pins NiiVue's field names, which are the only observable here)
 
 ### DIFF-31 · The navigator shows exactly the tracts the last call asked for
 

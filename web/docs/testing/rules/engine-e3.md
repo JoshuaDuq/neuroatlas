@@ -60,7 +60,7 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/tissues/plane-section.js:50-88`
-- **Expected:** each of the four published envelopes, cut by the 8 planes of mulberry32 seed 31 (6 axis planes within ±30 % of the box, 2 oblique through the centre): the BVH cut and the brute-force cut on an unindexed clone have the same total area ± 1e-12 m² and agree on the TISSUE-01 coverage grid. None is a fallback (confirm once when converting; a fallback there is a data defect).
+- **Expected:** a 48 × 32 sphere cut by 8 seeded planes (mulberry32 seed 31): the plain BVH cut, the indirect BVH cut and the brute-force cut on an unindexed clone have the same area ± 1e-9 m², none a fallback. The four published envelopes are not cut by this test.
 - **Covered by:** `src/lib/engine/tissues/plane-section.test.ts` (R)
 
 ## Earcut
@@ -110,7 +110,7 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Level:** unit
 - **Source:** `viewer/tissues/ribbon-wedges.js:18-35, 63-70`
 - **Expected:** the square → 8 vertices, vertex 0 = (0, 0, 1), vertex 4 = (0, 0, 0). Pial 12 values with white 9 values, or 5 labels for 4 vertices → Error "Ribbon surfaces must share one labelled vertex set.".
-- **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R, coordinates); the refusal is uncovered
+- **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R, coordinates and the refusal)
 
 ### TISSUE-11 · The published ribbon closes into sound parcel solids
 
@@ -118,7 +118,7 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/tissues/ribbon-wedges.js:67-81`; `viewer/tissues/solid-assets.js:57-81`
-- **Expected:** CDMD `destrieux` and `hcp-mmp`, left and right (labels split by `vertex_counts`): the number of wedges equals the number of distinct TISSUE-09 owners and each wedge's bounding box lies inside its hemisphere's pial bounding box. Not true of the published data: about a third of the wedges (51 of 150 for `destrieux`, 128 of 362 for `hcp-mmp`) have edges carried by other than two triangles and repeated directed edges, where a parcel's patch pinches at a vertex. Open finding; the cut falls back to the stencil cap there (TISSUE-24).
+- **Expected:** CDMD `destrieux` and `hcp-mmp`, left and right (labels split by `vertex_counts`): the number of wedges equals the number of distinct TISSUE-09 owners, each wedge's bounding box lies inside its hemisphere's pial bounding box, every directed edge is carried as often as its reverse (so every undirected edge by an even number of triangles), and the wedges are named by their region in face order. The wedges are closed but pinched at some vertices: 51 of 150 destrieux and 128 of 362 hcp-mmp wedges have edges carried by more than two triangles where a parcel's patch pinches. A cut through a pinch falls back to the stencil cap (reason `branch`); TISSUE-24.
 - **Covered by:** `src/lib/engine/tissues/ribbon-wedges.test.ts` (R)
 
 ## Loading the cut's solids
@@ -260,7 +260,7 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Level:** unit
 - **Source:** `viewer/tissues/solid-sections.js:145-160`; `viewer/tissues/solid-assets.js:17`
 - **Expected:** bands envelope 0, ribbon 1, structure 2. `tract` (125 mm³) added before `cord` (8000 mm³), both band 2 → order cord, tract; group render order 1, 2; cap polygon offset units −1, −2 (factor −1). After a cut both caps have equal position, quaternion and scale.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R); the order across bands is uncovered (the only case uses band 2 twice)
 
 ### TISSUE-27 · A cut hit names the nearest drawn cap and the solid it landed in
 
@@ -307,7 +307,7 @@ and white), and the Destrieux and HCP-MMP atlases publish `ribbon_labels`. The l
 - **Level:** unit
 - **Source:** `viewer/tissues/section-worker.js:1-35`; `viewer/tissues/solid-sections.js:201-230, 305-322`
 - **Expected:** a rotated, offset 18-segment box cut by z = 0, x = 0.01 and the (1, 1, 1) plane at −0.02 → worker positions equal `sectionTriangles` positions; after `applyBuild` and after `update` the cap vertices are equal. A cut message with job id 99 → `{ id: 99, fallback: true }`.
-- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, through the worker module run in-thread)
+- **Covered by:** `src/lib/engine/tissues/solid-sections.test.ts` (R, through the worker module run in-thread); the caller-side merge is uncovered
 
 ### TISSUE-32 · A late build never overwrites a newer cut
 

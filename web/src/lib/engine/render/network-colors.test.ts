@@ -88,3 +88,17 @@ test('geometry without the field is left alone rather than given empty colours',
   assert.equal(attachNetworkColors(geometry, METADATA), false);
   assert.equal(geometry.getAttribute('_networkColor'), undefined);
 });
+
+test('SHADER-09 an index is rounded to the nearest network, never wrapped, and one that names none is transparent', () => {
+  const indices = [0, 99, -1, NaN, 0.4, 7.5, 0.5, 1.5, 6.5, 7.49];
+  const values = networkColors(new Float32Array(indices), METADATA);
+  for (const vertex of [0, 1, 2, 3, 4, 5]) assert.deepEqual(rgba(values, vertex), [0, 0, 0, 0]);
+  for (const [vertex, name] of [
+    [6, 'Vis'],
+    [7, 'SomMot'],
+    [8, 'Default'],
+    [9, 'Default'],
+  ] as const) {
+    assertChannels(rgba(values, vertex), [...linear(name), 1]);
+  }
+});

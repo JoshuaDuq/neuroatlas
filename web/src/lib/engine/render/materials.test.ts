@@ -162,3 +162,15 @@ test('SHADER-35 two materials with different patch sets never share a program ke
     assert.equal(second.get(name)!.customProgramCacheKey(), material.customProgramCacheKey(), name);
   }
 });
+
+test('SHADER-06 the surface hands the shader the manifest fold ranges and strengths', () => {
+  const material = createAnatomicalMaterial(
+    corticalMesh(false) as never,
+    region({ id: 'r', kind: 'cortex' }),
+    appearance,
+  );
+  const uniforms = compile(material);
+  assert.deepEqual(uniforms['concavityRange']!.value, [-0.08, 0.04]);
+  assert.deepEqual(uniforms['foldRange']!.value, [-0.5, 1.8]);
+  assert.deepEqual(uniforms['foldStrength']!.value, [0.48, 0.78]);
+});

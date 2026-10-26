@@ -1,5 +1,6 @@
 import {
   BufferGeometry,
+  DoubleSide,
   Data3DTexture,
   DataTexture,
   Float32BufferAttribute,
@@ -21,6 +22,7 @@ import { createCutMaterial } from '../tissues/shader.ts';
 import { createSolidMaterial } from '../tissues/solid-material.ts';
 import { createWhiteMatter } from '../tissues/white-matter.ts';
 import { addBorderFeather } from './border-feather.ts';
+import { isPhone } from './device.ts';
 import { createAnatomicalMaterial } from './materials.ts';
 import type { Appearance } from './materials.ts';
 import { addMriAppearance, createMriUniforms } from './mri-material.ts';
@@ -45,7 +47,10 @@ export function corticalMesh(withNetworks: boolean, count = 5) {
       new Float32BufferAttribute(new Float32Array(count * 4).fill(1), 4),
     );
   }
-  return new Mesh(geometry, new MeshStandardMaterial({ color: '#336699', roughness: 0.3 }));
+  return new Mesh(
+    geometry,
+    new MeshStandardMaterial({ color: '#336699', roughness: 0.3, side: DoubleSide }),
+  );
 }
 
 /**
@@ -103,7 +108,12 @@ export function patchCombinations(): Map<string, Material> {
   }
 
   add('plain material + MRI', () => {
-    const material = new MeshPhysicalMaterial({ color: '#abcdef' });
+    // The exposed white matter: double-sided, with the coat unless on a phone.
+    const material = new MeshPhysicalMaterial({
+      color: '#abcdef',
+      side: DoubleSide,
+      clearcoat: isPhone() ? 0 : appearance.tissue.clearcoat,
+    });
     addMriAppearance(material, createMriUniforms(anatomy));
     return material;
   });
