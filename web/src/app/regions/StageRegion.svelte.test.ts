@@ -114,7 +114,7 @@ describe('what the stage region holds', () => {
     expect(dialogs()).toHaveLength(0);
   });
 
-  test('the two MRI dialogs are children of the app root, outside the landmark, and the Tracts MRI draws no canvas while closed', async () => {
+  test('the two MRI dialogs are children of the app root, outside the landmark, and the Tracts MRI holds no navigator while closed', async () => {
     boot();
     expect(dialogs()).toHaveLength(2);
     for (const dialog of dialogs()) {

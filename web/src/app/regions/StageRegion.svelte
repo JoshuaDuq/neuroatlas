@@ -5,7 +5,7 @@
   import { isIndependentTractReference } from '../../lib/core/diffusion/presentation.ts';
   import { visibilityOf } from '../../lib/core/catalog/visibility.ts';
   import { t } from '../../lib/core/i18n/index.ts';
-  import { legendFor } from '../../lib/core/state/paint.ts';
+  import { legendFor, paintFor } from '../../lib/core/state/paint.ts';
   import { publishesSpinalCord } from '../../lib/core/state/scene-commands.ts';
   import type { Vec3 } from '../../lib/engine/api.ts';
   import type { CutMode, ViewName } from '../../lib/types/index.ts';
@@ -257,11 +257,19 @@
       functionalRegions={model.functionalRegions}
       legend={tractReference
         ? null
-        : legendFor(current, {
-            domains: model.domains!,
-            clinical: world.clinical,
-            drawn: (id) => visibilityOf(world.regions.get(id)!.region, current).visible,
-          })}
+        : legendFor(
+            // The paint the session asks for, which the model may not show yet (syncPaint runs in
+            // the world's own effect root), as legacy keyed the paint it had just set (app.js:1613).
+            {
+              ...current,
+              paint: paintFor(current, { domains: model.domains!, clinical: world.clinical }),
+            },
+            {
+              domains: model.domains!,
+              clinical: world.clinical,
+              drawn: (id) => visibilityOf(world.regions.get(id)!.region, current).visible,
+            },
+          )}
       {directionShown}
       onFunctionalLevel={model.setFunctionalLevel}
       onPaintPick={world.excursions.pickPaint}

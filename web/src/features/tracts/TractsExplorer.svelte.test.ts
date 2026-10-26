@@ -847,9 +847,14 @@ describe('media, reflow and targets', () => {
   test('fine pointers get 24 px sliders', async () => {
     await ready();
     await page.getByText('Tract display').click();
-    for (const slider of document.querySelectorAll<HTMLElement>('input[type="range"]')) {
-      expect(slider.getBoundingClientRect().height).toBe(24);
-    }
+    // The disclosure opens on the next frame; poll rather than read the heights at once.
+    await expect
+      .poll(() =>
+        [...document.querySelectorAll<HTMLElement>('input[type="range"]')].map(
+          (slider) => slider.getBoundingClientRect().height,
+        ),
+      )
+      .toSatisfy((heights: number[]) => heights.length > 0 && heights.every((h) => h === 24));
   });
 
   test('touch emulation raises keys, clear button, summaries, sliders and the checkbox', async () => {
