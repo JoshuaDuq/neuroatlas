@@ -140,7 +140,7 @@ describe('Provenance', () => {
     expect(dialog.textContent).toContain('Neuropsychological domains');
     await userEvent.keyboard('{Escape}');
     await vi.waitFor(() => expect(dialog.open).toBe(false));
-    expect(document.activeElement).toBe(opener.element());
+    await vi.waitFor(() => expect(document.activeElement).toBe(opener.element()));
   });
 
   test('opens instantly from the keyboard', async () => {

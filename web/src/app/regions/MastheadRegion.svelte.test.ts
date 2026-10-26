@@ -276,7 +276,7 @@ describe('the dialogs', () => {
     expect(dialog.parentElement).toBe(shell.target);
     await userEvent.keyboard('{Escape}');
     await vi.waitFor(() => expect(dialog.open).toBe(false));
-    expect(document.activeElement).toBe(button('More settings').element());
+    await vi.waitFor(() => expect(document.activeElement).toBe(button('More settings').element()));
     expect(shell.app.ports.shortcutsOpen()).toBe(false);
   });
 
@@ -334,7 +334,9 @@ describe('the dialogs', () => {
       await page.viewport(390, 844);
       await userEvent.keyboard('{Escape}');
       await vi.waitFor(() => expect(dialog.open).toBe(false));
-      expect(document.activeElement).toBe(button('More settings').element());
+      await vi.waitFor(() =>
+        expect(document.activeElement).toBe(button('More settings').element()),
+      );
       await page.viewport(1280, 800);
     }
   });
@@ -378,7 +380,7 @@ describe('the dialogs', () => {
     expect(hrefs).toContain(`${ASSET_BASE}models/anatomies.json`);
     await userEvent.keyboard('{Escape}');
     await vi.waitFor(() => expect(dialog.open).toBe(false));
-    expect(document.activeElement).toBe(button('More settings').element());
+    await vi.waitFor(() => expect(document.activeElement).toBe(button('More settings').element()));
   });
 
   test('the tract reference has its own Provenance rows, from the Tracts panel’s links', async () => {
