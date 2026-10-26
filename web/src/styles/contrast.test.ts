@@ -5,9 +5,12 @@ import { sheets } from './sources.ts';
 // WCAG 2.2 1.4.3 (text, 4.5:1) and 1.4.11 (non-text, 3:1), computed from the declared tokens.
 
 const declared = declarationsBySelector(sheets['tokens.css']);
+// A lookup that finds nothing spreads to nothing and would silently test the dark theme with the light tokens.
+const darkOverrides = declared[":root[data-theme='dark']"];
+if (!darkOverrides) throw new Error("tokens.css declares no :root[data-theme='dark'] rule.");
 const themes = {
   light: declared[':root'],
-  dark: { ...declared[':root'], ...declared[":root[data-theme='dark']"] },
+  dark: { ...declared[':root'], ...darkOverrides },
 };
 
 function resolve(theme: Record<string, string>, name: string): string {
@@ -47,7 +50,7 @@ const OVERLAY_GROUNDS = [
   '--overlay-track-hover',
 ];
 
-describe.each(Object.entries(themes))('%s theme', (name, theme) => {
+describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
   it('panel text passes 4.5:1 on every panel ground', () => {
     for (const ink of [
       '--text-primary',
@@ -65,8 +68,6 @@ describe.each(Object.entries(themes))('%s theme', (name, theme) => {
   it('control edges pass 3:1 on every panel ground', () => {
     for (const edge of ['--border-control', '--thumb-ring']) {
       for (const ground of PANEL_GROUNDS) {
-        // Known bug, reported in the K9 PR: the dark thumb ring is 2.92:1 on --surface-raised.
-        if (name === 'dark' && edge === '--thumb-ring' && ground === '--surface-raised') continue;
         expect(contrast(theme, edge, ground), `${edge} on ${ground}`).toBeGreaterThanOrEqual(3);
       }
     }

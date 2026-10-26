@@ -60,7 +60,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (contrast computed from the declared tokens)
 - **Source:** WCAG 2.2 SC 1.4.3, 1.4.11; deviation `u1-overlay-control-contrast.md`
 - **Expected:** Inks `--text-primary`, `--text-secondary`, `--text-tertiary`, `--accent`, `--danger` ≥ 4.5 on `--surface-base`, `-navigation`, `-sunken`, `-canvas`, `-hover`, `-raised`, `-tonal`, `-tonal-hover`; `--border-control`, `--thumb-ring` ≥ 3 on them; `--primary-ink` ≥ 4.5 on `--primary-fill`, `--primary-fill-hover`; `--overlay-ink`, `-ink-muted`, `-ink-faint`, `-accent`, `-danger` ≥ 4.5 and `--overlay-control-border` ≥ 3 on `--overlay-plate`, `-plate-hover`, `-track`, `-track-hover`. `--overlay-control-border` is `#70777f`: 3.96, 3.34, 3.43, 3.01:1 on those four (±0.01).
-- **Covered by:** `src/styles/contrast.test.ts` (R; the dark theme was tested with the light tokens until K9 fixed its selector key; the dark `--thumb-ring` on `--surface-raised` is 2.92:1 and is excluded, a bug reported in the K9 PR)
+- **Covered by:** `src/styles/contrast.test.ts` (R; the dark theme was tested with the light tokens until K9 fixed its selector key, and now fails if that rule is missing; the dark `--thumb-ring` was 2.92:1 on `--surface-raised` and is fixed, deviation `u1-thumb-ring-contrast.md`)
 
 ### UI-06 · Both themes declare the published palette
 
@@ -68,8 +68,8 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Kind:** data
 - **Level:** unit (declared values)
 - **Source:** `viewer/styles/tokens.css`; deviation `u1-overlay-control-contrast.md`
-- **Expected:** The selectors before the phone rule are exactly `:root` and `:root[data-theme='dark']`. Fixed values include `--surface-base` `#ffffff` light and `#1b1e21` dark, and `--overlay-control-border` `#70777f`. The full table is a fixed token list taken once from today's `tokens.css` (it equals the legacy palette apart from that border).
-- **Covered by:** `src/styles/tokens.test.ts` (R, the selectors and the published inks, grounds and borders of both themes and the overlay border; not every token is pinned)
+- **Expected:** The selectors before the phone rule are exactly `:root` and `:root[data-theme='dark']`. Fixed values include `--surface-base` `#ffffff` light and `#1b1e21` dark, and `--overlay-control-border` `#70777f`. The full table is a fixed token list taken once from today's `tokens.css` (it equals the legacy palette apart from that border and the dark `--thumb-ring`).
+- **Covered by:** `src/styles/tokens.test.ts` (R, the selectors and each theme's whole declared set against a fixed literal: 94 in `:root`, 22 in the dark override)
 
 ### UI-07 · A phone or a finger gets 44 px touch sizes; a desktop mouse keeps instrument density
 

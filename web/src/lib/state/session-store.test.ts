@@ -19,26 +19,59 @@ describe('STORE-03: a session command shows at once and keeps the session’s an
     expect(store.state.explorer).toBe('anatomy');
   });
 
-  test('after a run of commands the state equals the session’s own assembled state', () => {
+  test('after each of the 22 commands, in a fixed order, the state equals the session’s own assembled state', () => {
     const options = { views: ['oblique', 'left'] };
     const store = createSessionStore(options);
     const core = createSession(options);
-    const run = (command: (session: typeof core | typeof store) => unknown) => {
-      expect(command(store)).toEqual(command(core));
-      expect(store.state).toEqual(core.assemble({}));
-    };
-    run((s) => s.setQuery('gyrus'));
-    run((s) => s.setExplorer('functions'));
-    run((s) => s.setFunction('language'));
-    run((s) => s.liftPaint());
-    run((s) => s.toggleGroup('a'));
-    run((s) => s.setLang('fr'));
-    run((s) => s.setStatus('loading'));
-    run((s) => s.setProgress({ loaded: 1, total: 4 }));
-    run((s) => s.notify({ text: 'One.', action: 'reload' }));
-    run((s) => s.setError(new Error('boom')));
-    expect(store.state.lang).toBe('fr');
-    expect(store.state.explorer).toBe('functions');
+    const error = new Error('boom');
+    const commands: Array<[string, unknown[]]> = [
+      ['setView', ['left']],
+      ['setQuery', ['gyrus']],
+      ['setExplorer', ['functions']],
+      ['setFunctionQuery', ['lang']],
+      ['setFunction', ['language']],
+      ['setClinicalQuery', ['aph']],
+      ['setDeficit', ['aphasia']],
+      ['setFinding', ['naming']],
+      ['liftPaint', []],
+      ['toggleGroup', ['a']],
+      ['setExpanded', [['a', 'b']]],
+      ['setTheme', ['dark']],
+      ['setLang', ['fr']],
+      ['setStatus', ['ready']],
+      ['setProgress', [{ loaded: 1, total: 4 }]],
+      ['setStatus', ['ready']],
+      ['setSwitching', [{ loaded: 2, total: 4 }]],
+      ['endSwitching', []],
+      ['notify', [{ text: 'One.', action: 'reload' }]],
+      ['holdNotices', []],
+      ['notify', [{ text: 'Held.' }]],
+      ['releaseNotices', [{ text: 'Lead.' }]],
+      ['setContextLost', []],
+      ['setError', [error]],
+    ];
+    for (const [name, args] of commands) {
+      const command = (session: object) =>
+        (session as Record<string, (...a: unknown[]) => unknown>)[name]!(...args);
+      expect(command(store), name).toEqual(command(core));
+      expect(store.state, name).toEqual(core.assemble({}));
+    }
+    expect(store.state).toMatchObject({
+      view: 'left',
+      query: 'gyrus',
+      explorer: 'functions',
+      functionQuery: 'lang',
+      selectedFunction: 'language',
+      clinicalQuery: 'aph',
+      selectedDeficit: 'aphasia',
+      selectedFinding: 'naming',
+      paintLifted: true,
+      theme: 'dark',
+      lang: 'fr',
+      status: 'error',
+      error,
+    });
+    expect([...store.state.expanded]).toEqual(['a', 'b']);
   });
 });
 

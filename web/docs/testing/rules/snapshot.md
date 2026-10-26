@@ -55,7 +55,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Rule:** For each colouring, each named view or none, and each plane or none, in English and French, the caption is a known table of words; every plane's name appears in it.
 - **Kind:** behaviour
 - **Level:** unit (a table test)
-- **Source:** `viewer/ui/chrome/snapshot.js:20-42`; `parity/G6.test.ts:23-66` (the sweep to turn into the table)
+- **Source:** `viewer/ui/chrome/snapshot.js:20-42`
 - **Expected:** For `{ subject: 'CDMD sub_013', atlas: 'hcp-mmp', detail: 'learning' }` × `SURFACE_COLORS` × (`VIEW_NAMES` + none) × (none, sagittal 12.34, coronal −0.04, axial 5, oblique −7.5 tilt 30 azimuth −45): the words written out once from the i18n tables (e.g. network, no view, sagittal 12.34 → `['CDMD sub_013', 'HCP-MMP · Yeo 7 networks · Teaching set', 'Sagittal section · +12.3 mm']`; French "Coupe sagittale · +12,3 mm"); the strings "Sagittal", "Coronal", "Axial", "Oblique" all occur.
 - **Covered by:** `src/features/snapshot/snapshot.test.ts` (R) (fixed tables of the words for every colouring, view and plane, in English and French)
 
