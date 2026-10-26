@@ -9,7 +9,7 @@ workspace.js:143-145 builds two tablists (`#workspace-tabs`, `#sheet-tabs`) and 
 
 ## New behaviour
 
-A single tablist positioned by CSS in both shells; one instance per panel; manual activation kept. See 0004 and 0007.
+A single tablist positioned by CSS in both shells; one instance per panel; manual activation kept. See 0004 and 0007. Because the instance survives a shell change, focus on a tab survives a resize between desktop and phone; with the legacy mirrored lists it is lost when the first list is swapped for the second.
 
 ## Standard cited
 
