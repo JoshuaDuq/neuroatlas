@@ -1,19 +1,7 @@
 <!-- Fixture for the Deficits tests: the four panels as I1 composes them, over the real catalogs and a fake session. Not shipped. -->
-<script module lang="ts">
-  import type { View } from '../../lib/state/view.svelte.ts';
-  import type { DeficitsExplorer } from './explorer.svelte.ts';
-
-  export interface Fixture {
-    view: View;
-    explorer: DeficitsExplorer;
-    calls: string[];
-    /** The finders `registerCurrentItem` received. */
-    finders: Set<() => HTMLElement | null>;
-  }
-</script>
-
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { View } from '../../lib/state/view.svelte.ts';
   import { createCatalog } from '../../lib/core/catalog/catalog.ts';
   import { loadClinicalCatalog } from '../../lib/core/clinical/load.ts';
   import { createInvolvement } from '../../lib/core/panels/related.ts';
@@ -23,13 +11,14 @@
   import DeficitList from './DeficitList.svelte';
   import DeficitProfile from './DeficitProfile.svelte';
   import DeficitRestore from './DeficitRestore.svelte';
+  import type { Fixture } from './deficits-test-support.ts';
   import { createDeficitsExplorer } from './explorer.svelte.ts';
   import RelatedDeficits from './RelatedDeficits.svelte';
 
   let {
     manifest,
     onready,
-    hold = null,
+    hold = [],
     failWith = null,
     functionMatches = 0,
     restorable = true,
@@ -37,8 +26,8 @@
   }: {
     manifest: Manifest;
     onready: (fixture: Fixture) => void;
-    /** Holds `openDeficit` for this deficit until the test releases it. */
-    hold?: { id: string; release: Promise<boolean> } | null;
+    /** Holds `openDeficit` for these deficits until the test releases it. */
+    hold?: { id: string; release: Promise<boolean> }[];
     /** Makes `onRegion` reject. */
     failWith?: Error | null;
     functionMatches?: number;
@@ -98,7 +87,7 @@
       calls.push(`deficit:${id}`);
       view.explorer = 'deficits';
       view.selectedDeficit = id;
-      return hold?.id === id ? hold.release : true;
+      return hold.find((entry) => entry.id === id)?.release ?? true;
     },
     async onRegion(id) {
       calls.push(`region:${id}`);
@@ -146,22 +135,24 @@
 </div>
 
 <style>
-  .panes {
-    display: grid;
-    grid-template-columns: 380px 380px;
-    height: 600px;
-  }
-  /* H5's location bar styles the one trailing button (layout.css:97-117). */
-  .trailing :global(button) {
-    padding: var(--space-2) var(--panel-inset);
-    border: 0;
-    background: none;
-    color: var(--accent);
-    font-size: var(--text-caption);
-  }
-  .rail {
-    overflow-y: auto;
-    min-height: 0;
-    background: var(--surface-base);
+  @layer features {
+    .panes {
+      display: grid;
+      grid-template-columns: 380px 380px;
+      height: 600px;
+    }
+    /* H5's location bar styles the one trailing button (layout.css:97-117). */
+    .trailing :global(button) {
+      padding: var(--space-2) var(--panel-inset);
+      border: 0;
+      background: none;
+      color: var(--accent);
+      font-size: var(--text-caption);
+    }
+    .rail {
+      overflow-y: auto;
+      min-height: 0;
+      background: var(--surface-base);
+    }
   }
 </style>

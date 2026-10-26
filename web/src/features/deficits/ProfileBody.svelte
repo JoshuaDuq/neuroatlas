@@ -47,7 +47,9 @@
       {lang}
       color={colours.get(association.id)!}
       sideOnRow={!side}
-      bind:open={() => expanded[association.id] ?? false, (open) => (expanded[association.id] = open)}
+      bind:open={
+        () => expanded[association.id] ?? false, (open) => (expanded[association.id] = open)
+      }
       opening={explorer.opening}
       {clinical}
       {anatomy}

@@ -14,8 +14,7 @@
     reference,
     role,
     lang,
-  }: { reference: ClinicalReference; role: 'supporting' | 'qualifying'; lang: Language } =
-    $props();
+  }: { reference: ClinicalReference; role: 'supporting' | 'qualifying'; lang: Language } = $props();
 
   const text = $derived(t(lang, 'clinical'));
   const english = $derived(lang === 'fr' ? 'en' : undefined);

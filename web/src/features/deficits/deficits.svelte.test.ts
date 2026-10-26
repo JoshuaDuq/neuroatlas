@@ -8,7 +8,8 @@ import manifest from '../../../../public/models/cdmd/manifest.json';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import '../../app/layout.css';
-import Harness, { type Fixture } from './deficits-test-support.svelte';
+import type { Fixture } from './deficits-test-support.ts';
+import Harness from './deficits-test-support.svelte';
 
 type Props = Omit<Parameters<typeof Harness>[1], 'manifest' | 'onready'>;
 
@@ -32,12 +33,16 @@ const row = (id: string) =>
 const heading = () => document.querySelector('h2.clinical-profile-name') as HTMLElement;
 const meta = () => document.querySelector('.clinical-profile [role="status"]') as HTMLElement;
 const announced = () => document.querySelector('.visually-hidden[role="status"]')!.textContent;
-const settle = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+/** Two animation frames: styles and layout have been applied. */
+const settled = () =>
+  new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 describe('the list', () => {
   test('groups the deficits under headings, each group named by its heading, and states its scope', async () => {
     await mount();
-    const groups = document.querySelectorAll('[data-testid="list"] [role="group"][aria-labelledby]');
+    const groups = document.querySelectorAll(
+      '[data-testid="list"] [role="group"][aria-labelledby]',
+    );
     expect(groups.length).toBeGreaterThan(3);
     for (const group of groups) {
       const label = document.getElementById(group.getAttribute('aria-labelledby')!)!;
@@ -77,9 +82,10 @@ describe('the list', () => {
     field().focus();
     await userEvent.keyboard('aphas');
     await expect.poll(announced, { timeout: 2000 }).toBe('1 deficit');
+    // Stands for the screen reader having spoken it: only a new write is said again.
+    document.querySelector('.visually-hidden[role="status"]')!.textContent = '';
     await userEvent.fill(field(), 'amnesi');
     await expect.poll(() => rows().length).toBe(1);
-    // The live region was cleared and written again, so it is spoken again.
     await expect.poll(announced, { timeout: 2000 }).toBe('1 deficit');
   });
 
@@ -206,7 +212,7 @@ describe('opening a deficit', () => {
   test('the meta line says what is opening, then the side and what the stage shows', async () => {
     let release!: (value: boolean) => void;
     const { view } = await mount({
-      hold: { id: 'aphasia', release: new Promise((resolve) => (release = resolve)) },
+      hold: [{ id: 'aphasia', release: new Promise((resolve) => (release = resolve)) }],
     });
     await row('aphasia').click();
     await expect.poll(() => meta().textContent).toBe('Opening anatomy…');
@@ -231,14 +237,24 @@ describe('opening a deficit', () => {
 
   test('a later open overtakes an earlier one: only the latest reports', async () => {
     let release!: (value: boolean) => void;
-    await mount({ hold: { id: 'aphasia', release: new Promise((resolve) => (release = resolve)) } });
+    let releaseLatest!: (value: boolean) => void;
+    const { explorer } = await mount({
+      hold: [
+        { id: 'aphasia', release: new Promise((resolve) => (release = resolve)) },
+        { id: 'amnesia', release: new Promise((resolve) => (releaseLatest = resolve)) },
+      ],
+    });
     await row('aphasia').click();
     await row('amnesia').click();
     await expect.poll(() => heading().textContent!.trim()).toBe('Amnesia');
     release(false);
-    await settle(50);
-    expect(heading().textContent!.trim()).toBe('Amnesia');
-    expect(meta().textContent).not.toBe('Opening anatomy…');
+    await settled();
+    // The overtaken run settled, but the latest is still preparing: the line still says so.
+    expect(explorer.opening).toBe(true);
+    expect(meta().textContent).toBe('Opening anatomy…');
+    releaseLatest(true);
+    await expect.poll(() => explorer.opening).toBe(false);
+    expect(meta().textContent).toMatch(/regions? visible$/);
   });
 
   test('entry point: openDeficit(id) opens, scrolls, focuses the heading and awaits the preparation', async () => {
@@ -262,7 +278,9 @@ describe('opening a deficit', () => {
     const region = articles[0].querySelector<HTMLElement>('button.region')!;
     expect(region.getAttribute('aria-label')).toMatch(/^Open region: .+ · Right$/);
     expect(region.textContent!.trim()).not.toContain('Right');
-    expect(page.getByRole('heading', { level: 3, name: 'Associations' }).elements()).toHaveLength(1);
+    expect(page.getByRole('heading', { level: 3, name: 'Associations' }).elements()).toHaveLength(
+      1,
+    );
   });
 
   test('Checked maps open the Functions explorer with that map', async () => {
@@ -305,6 +323,8 @@ describe('evidence', () => {
     expect(document.querySelector('summary')!.textContent).toMatch(/^Données probantes, /);
     await row('aphasia').click();
     await expect.poll(() => heading().textContent!.trim()).toMatch(/Aphasie/);
+    await row('neglect').click();
+    await expect.poll(() => heading().textContent!.trim()).toBe('Négligence spatiale');
     expect(document.querySelector<HTMLDetailsElement>('details')!.open).toBe(false);
   });
 
@@ -322,7 +342,9 @@ describe('evidence', () => {
     await expect.poll(() => link.textContent).toContain('(s’ouvre dans un nouvel onglet)');
     expect(link.querySelector('[lang="en"]')).not.toBeNull();
     expect(document.querySelector('article.publication p.note')!.getAttribute('lang')).toBe(null);
-    expect(document.querySelectorAll('article.publication p.note[lang="en"]').length).toBeGreaterThan(0);
+    expect(
+      document.querySelectorAll('article.publication p.note[lang="en"]').length,
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -330,7 +352,10 @@ describe('opening a region from the profile', () => {
   test('the region’s name takes focus, scrolled to the top of its view', async () => {
     const { calls } = await mount();
     await row('aphasia').click();
-    await page.getByRole('button', { name: /^Open region: Middle temporal gyrus/ }).first().click();
+    await page
+      .getByRole('button', { name: /^Open region: Middle temporal gyrus/ })
+      .first()
+      .click();
     expect(calls.at(-1)).toBe('region:destrieux:left:38');
     await expect.poll(() => document.activeElement?.id).toBe('region-title');
   });
@@ -338,12 +363,14 @@ describe('opening a region from the profile', () => {
   test('while a deficit opens, region buttons keep focus and say they are unavailable (x2-aria-disabled-while-opening)', async () => {
     let release!: (value: boolean) => void;
     const { calls } = await mount({
-      hold: { id: 'amnesia', release: new Promise((resolve) => (release = resolve)) },
+      hold: [{ id: 'amnesia', release: new Promise((resolve) => (release = resolve)) }],
     });
     await row('aphasia').click();
     await expect.poll(() => document.activeElement).toBe(heading());
     await row('amnesia').click();
-    await expect.poll(() => document.querySelector('button.region')!.getAttribute('aria-disabled')).toBe('true');
+    await expect
+      .poll(() => document.querySelector('button.region')!.getAttribute('aria-disabled'))
+      .toBe('true');
     const disabled = document.querySelector<HTMLButtonElement>('button.region')!;
     expect(disabled.disabled).toBe(false);
     disabled.focus();
@@ -351,7 +378,9 @@ describe('opening a region from the profile', () => {
     disabled.click();
     expect(calls.filter((call) => call.startsWith('region:'))).toEqual([]);
     release(true);
-    await expect.poll(() => document.querySelector('button.region')!.hasAttribute('aria-disabled')).toBe(false);
+    await expect
+      .poll(() => document.querySelector('button.region')!.hasAttribute('aria-disabled'))
+      .toBe(false);
   });
 
   test('a failure is worded for the reader on the meta line and heard by offerReload; focus stays put', async () => {
@@ -411,7 +440,9 @@ describe('related deficits', () => {
     view.selectedRegion = (manifest as unknown as Manifest).regions.find(
       (region) => region.id === 'destrieux:left:-1',
     )!;
-    await expect.poll(() => document.querySelector<HTMLElement>('section.related')!.hidden).toBe(true);
+    await expect
+      .poll(() => document.querySelector<HTMLElement>('section.related')!.hidden)
+      .toBe(true);
   });
 });
 
@@ -435,7 +466,7 @@ describe('quality', () => {
     await opened();
     document.documentElement.style.fontSize = '200%';
     try {
-      await settle(100);
+      await settled();
       for (const rail of document.querySelectorAll<HTMLElement>('.rail')) {
         expect(rail.scrollWidth, 'horizontal overflow').toBeLessThanOrEqual(rail.clientWidth);
       }
@@ -450,7 +481,7 @@ describe('quality', () => {
     style.textContent = `*{line-height:1.5 !important;letter-spacing:.12em !important;word-spacing:.16em !important}
       p{margin-bottom:2em !important}`;
     try {
-      await settle(100);
+      await settled();
       for (const rail of document.querySelectorAll<HTMLElement>('.rail')) {
         expect(rail.scrollWidth).toBeLessThanOrEqual(rail.clientWidth);
       }
@@ -471,7 +502,7 @@ describe('quality', () => {
     await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
     try {
       expect(matchMedia('(pointer: coarse)').matches).toBe(true);
-      await settle(100);
+      await settled();
       const targets = document.querySelectorAll<HTMLElement>(
         'button, summary, input[type="search"], a',
       );
@@ -514,7 +545,9 @@ describe('quality', () => {
       const sticky = group.querySelector('h3')!.getBoundingClientRect();
       const box = focused.getBoundingClientRect();
       const frame = rail.getBoundingClientRect();
-      expect(box.top, focused.textContent!).toBeGreaterThanOrEqual(Math.min(sticky.bottom, frame.top + 1) - 1);
+      expect(box.top, focused.textContent!).toBeGreaterThanOrEqual(
+        Math.min(sticky.bottom, frame.top + 1) - 1,
+      );
       expect(box.bottom).toBeLessThanOrEqual(frame.bottom + 1);
     }
   });

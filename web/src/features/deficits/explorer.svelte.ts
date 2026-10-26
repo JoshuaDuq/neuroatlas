@@ -118,7 +118,9 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
       return;
     }
     await tick();
-    const row = refs.list?.querySelector<HTMLElement>(`[data-deficit="${CSS.escape(deficit)}"] .row`);
+    const row = refs.list?.querySelector<HTMLElement>(
+      `[data-deficit="${CSS.escape(deficit)}"] .row`,
+    );
     (row ?? refs.search)?.focus();
   }
 

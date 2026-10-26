@@ -43,10 +43,7 @@ test('counts what is drawn now of the regions a deficit maps, and says whether t
 test('a hidden hemisphere, an isolated region or a removed region is not counted as shown', () => {
   const ids = clinical.mappedRegions('aphasia');
   assert.equal(stageCounts(ids, regionOf, { ...settings, hemisphere: 'right' }, false).shown, 0);
-  assert.equal(
-    stageCounts(ids, regionOf, { ...settings, isolatedRegion: ids[0] }, false).shown,
-    1,
-  );
+  assert.equal(stageCounts(ids, regionOf, { ...settings, isolatedRegion: ids[0] }, false).shown, 1);
   assert.equal(
     stageCounts(ids, regionOf, { ...settings, hiddenRegions: new Set([ids[0]]) }, false).shown,
     ids.length - 1,

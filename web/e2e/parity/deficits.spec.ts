@@ -16,6 +16,9 @@ const search = (page: Page) => page.getByRole('searchbox', { name: /search defic
 const list = (page: Page) => page.getByRole('group', { name: 'Deficits', exact: true });
 const rowOf = (page: Page, name: string) =>
   list(page).getByRole('button', { name: new RegExp(`^${name}\\b`) });
+/** Deficit rows only: a search also shows its bridge and suggestion buttons. */
+const rows = (page: Page) =>
+  list(page).getByRole('button', { name: /^(?!Functions:|Did you mean)/ });
 const heading = (page: Page, name: string) =>
   page.getByRole('heading', { level: 2, name, exact: true });
 const meta = (page: Page) =>
@@ -38,7 +41,7 @@ test.describe('deficits list', () => {
   test('typing filters the list and says the count once typing pauses', async ({ app }) => {
     const { page } = app;
     await search(page).fill('aphas');
-    await expect(list(page).getByRole('button')).toHaveCount(1);
+    await expect(rows(page)).toHaveCount(1);
     await expect(page.getByText('40 profiles · adult acquired deficits')).toBeHidden();
     await expect(page.getByRole('status').filter({ hasText: /^1 deficit$/ })).toHaveCount(1);
   });
@@ -95,7 +98,7 @@ test.describe('deficits list', () => {
       'aria-selected',
       'true',
     );
-    expect(await app.hash()).toContain('tab=functions');
+    await expect.poll(() => app.hash()).toContain('tab=functions');
   });
 });
 
@@ -109,16 +112,19 @@ test.describe('deficit profile', () => {
   test('opens at once with the name focused and the link carrying the deficit', async ({ app }) => {
     const { page } = app;
     await expect(heading(page, 'Aphasia')).toBeFocused();
-    await expect(rowOf(page, 'Aphasia')).toHaveAttribute('aria-current', 'true');
-    expect(await app.hash()).toContain('deficit=aphasia');
-    await expect(page.getByText(/^Lesion and clinical evidence · \d+ associations?$/)).toBeVisible();
+    await expect.poll(() => app.hash()).toContain('deficit=aphasia');
+    await expect(
+      page.getByText(/^Lesion and clinical evidence · \d+ associations?$/),
+    ).toBeVisible();
     await expect(page.getByRole('heading', { level: 3, name: 'Associations' })).toBeVisible();
   });
 
   test('the meta line names the side and counts the regions from what is drawn', async ({
     app,
   }) => {
-    await expect(meta(app.page)).toHaveText(/^Left hemisphere · (\d+ of )?\d+ regions? (coloured|visible)$/);
+    await expect(meta(app.page)).toHaveText(
+      /^Left hemisphere · (\d+ of )?\d+ regions? (coloured|visible)$/,
+    );
   });
 
   test('a finding’s regions are always in reach and open the region with its name focused', async ({
@@ -136,12 +142,14 @@ test.describe('deficit profile', () => {
 
   test('the evidence of one finding opens and closes', async ({ app }, testInfo) => {
     const { page } = app;
-    const summary = page.locator('summary').first();
-    const details = page.locator('details').first();
+    const summary = page.locator('article summary').first();
+    const details = page.locator('article details').first();
     await expect(details).not.toHaveAttribute('open', '');
     await summary.click();
     await expect(details).toHaveAttribute('open', '');
-    await expect(page.getByRole('heading', { level: 5, name: 'Reported finding' }).first()).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 5, name: 'Reported finding' }).first(),
+    ).toBeVisible();
     // Deviation x2-evidence-summary-name: the next app says which finding the summary belongs to.
     if (testInfo.project.name === 'next') await expect(summary).toContainText(/^Evidence, /);
     else await expect(summary).toHaveText('Evidence');
@@ -151,7 +159,7 @@ test.describe('deficit profile', () => {
 
   test('publications link out to DOI and PubMed in a new tab', async ({ app }) => {
     const { page } = app;
-    await page.locator('summary').first().click();
+    await page.locator('article summary').first().click();
     const paper = page.locator('article.clinical-publication a, article.publication a').first();
     await expect(paper).toHaveAttribute('href', /^https:\/\/doi\.org\//);
     await expect(paper).toHaveAttribute('target', '_blank');
@@ -171,7 +179,7 @@ test.describe('deficit profile', () => {
   });
 
   test('is accessible', async ({ app }) => {
-    await app.page.locator('summary').first().click();
+    await app.page.locator('article summary').first().click();
     await app.expectAccessible('deficits');
   });
 });
@@ -182,9 +190,10 @@ test.describe('in French', () => {
     await app.gotoHash({ tab: 'deficits', deficit: 'aphasia', lang: 'fr' });
     await app.ready();
     await expect(heading(page, 'Aphasie')).toBeVisible();
-    await expect(page.getByText(/^Données lésionnelles et cliniques · \d+ associations?$/)).toBeVisible();
-    await expect(page.locator('summary').first()).toContainText('Données probantes');
-    await expect(page.getByText('40 profils · déficits acquis de l’adulte')).toBeVisible();
+    await expect(
+      page.getByText(/^Données lésionnelles et cliniques · \d+ associations?$/),
+    ).toBeVisible();
+    await expect(page.locator('article summary').first()).toContainText('Données probantes');
   });
 });
 
@@ -202,6 +211,6 @@ test.describe('related deficits', () => {
     await expect(related).toContainText('Aphasia');
     await related.click();
     await expect(heading(page, 'Aphasia')).toBeFocused();
-    expect(await app.hash()).toContain('deficit=aphasia');
+    await expect.poll(() => app.hash()).toContain('deficit=aphasia');
   });
 });

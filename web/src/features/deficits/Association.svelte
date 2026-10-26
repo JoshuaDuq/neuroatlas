@@ -89,8 +89,7 @@
 
   <details class="evidence" bind:open>
     <summary
-      >{text.findings}<span class="visually-hidden">{`, ${association.title[lang]}`}</span
-      ></summary
+      >{text.findings}<span class="visually-hidden">{`, ${association.title[lang]}`}</span></summary
     >
     <div class="body">
       <p class="note">{association.network[lang]}</p>
