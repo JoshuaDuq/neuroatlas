@@ -10,6 +10,7 @@
 
   let {
     calls = [],
+    said = [],
     lang = 'en',
     groups = GROUPS,
     selected: initialSelected = null,
@@ -17,6 +18,7 @@
     hide = [],
   }: {
     calls?: string[];
+    said?: string[];
     lang?: Language;
     groups?: CatalogGroup[];
     selected?: string | null;
@@ -52,12 +54,14 @@
     selectedId = id;
   }}
   onReveal={(reason, id) => calls.push(`reveal ${reason} ${id}`)}
-  onHide={(ids) => {
+  onHide={(ids, sentence) => {
     calls.push(`hide ${ids.join(',')}`);
+    said.push(sentence);
     hidden = new Set([...hidden, ...ids]);
   }}
-  onShow={(ids) => {
+  onShow={(ids, sentence) => {
     calls.push(`show ${ids.join(',')}`);
+    said.push(sentence);
     hidden = new Set([...hidden].filter((id) => !ids.includes(id)));
   }}
 />

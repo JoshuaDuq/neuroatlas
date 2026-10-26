@@ -8,11 +8,12 @@ export function createLinkWriter(write: () => void, delay = 250) {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let holding: () => boolean = () => false;
   return {
-    schedule() {
+    /** Writes after `wait` ms of stillness; the default is the writer's own delay. */
+    schedule(wait = delay) {
       clearTimeout(timer);
       timer = setTimeout(() => {
         if (!holding()) write();
-      }, delay);
+      }, wait);
     },
     hold(current: () => boolean) {
       holding = current;

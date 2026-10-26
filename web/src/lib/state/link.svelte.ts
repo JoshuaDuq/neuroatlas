@@ -3,9 +3,12 @@ import type { Engine } from '../engine/api.ts';
 import type { ViewStore } from './view.svelte.ts';
 
 /**
- * Writes the link once the scene settles (app.js:243-254, 1831, 1858): after a view change, and
- * when the camera comes to rest. `write` is the caller's; hold and release are the link
- * restore's (`createLinkWriter`). It stops with the component that created it.
+ * Writes the link once the scene settles (app.js:243-254, 1831, 1858): 250 ms after a view
+ * change, and when the camera settles. The engine's `cameraSettled` comes 250 ms after a reader's
+ * move ends (link-writer.js:7), so that move writes the link ~250 ms after rest; an application
+ * move reports it at once, so its link is written when the move starts and again after it rests.
+ * `write` is the caller's; hold and release are the link restore's (`createLinkWriter`). It stops
+ * with the component that created it.
  */
 export function createLink({
   engine,
@@ -17,15 +20,10 @@ export function createLink({
   write: () => void;
 }) {
   const writer = createLinkWriter(write);
-  let cameraSettled = $state(0);
-  $effect(() =>
-    engine.on('cameraSettled', () => {
-      cameraSettled += 1;
-    }),
-  );
+  $effect(() => engine.on('cameraSettled', () => writer.schedule(0)));
   $effect(() => {
-    // The view and the camera are this effect's whole input; the writer ignores their values.
-    void [view.current, cameraSettled];
+    // The view is this effect's whole input; the writer ignores its value.
+    void view.current;
     writer.schedule();
     return writer.cancel;
   });
