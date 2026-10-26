@@ -3,7 +3,7 @@
 // and chrome.contract.test.js:226.
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
-import { render } from 'vitest-browser-svelte';
+import { cleanup, render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
 import type { Engine } from '../../lib/engine/api.ts';
@@ -53,6 +53,9 @@ beforeEach(() => {
   release = attachAnnouncer(region);
 });
 afterEach(() => {
+  // Unmount first: a search debounce still pending disposes with the component, so it cannot
+  // announce into a detached region.
+  cleanup();
   release();
   region.remove();
 });
@@ -363,6 +366,8 @@ describe('loading, failure and retry', () => {
     download.resolve();
     await expect.poll(() => document.activeElement).toBe(el('Cingulum · left'));
     expect(el('Cingulum · left').checked).toBe(true);
+    // The load announces after it settles; the test must not end (and detach the announcer) before.
+    await expect.poll(() => region.textContent).toBe('Loaded: Cingulum · left');
   });
 });
 
