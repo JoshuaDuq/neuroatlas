@@ -448,7 +448,8 @@ describe('the section row’s guards', () => {
     ['on a desktop', false],
     ['on a phone', true],
   ])('a first cut that fails leaves no row, and its failure stays drawn %s', async (_, phone) => {
-    await mount({ phone });
+    if (phone) await page.viewport(390, 844);
+    await mount({ phone }, phone ? { width: 390, height: 600 } : {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
     cut.mockRejectedValueOnce(new Error('download failed'));
     await controls.choose('sagittal');
@@ -492,7 +493,7 @@ describe('the section row’s guards', () => {
     expect(active()).not.toBe(tilt);
     expect(said()).toBe(before);
     tilt.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
-    await vi.waitFor(() => expect(said()).toMatch(/^Tissue cut at \+5\.0 mm/));
+    await vi.waitFor(() => expect(said()).toMatch(/^Tissue cut at \+5\.0\u202fmm/));
   });
 
   test('an angle slider keeps the reader’s value while they hold it, and both catch up when left', async () => {
