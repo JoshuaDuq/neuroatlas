@@ -9,7 +9,7 @@ Full screen is the name of the masthead button and the menu item whether or not 
 
 ## New behaviour
 
-While the document is fullscreen, driven by `fullscreenchange` through the `fullscreen` prop, both read "Exit full screen" / "Quitter le plein écran". The string comes from G6 through C1; until it lands H2 takes it as the `exitFullscreenLabel` prop. The icon is unchanged.
+While the document is fullscreen, driven by `fullscreenchange` through the `fullscreen` prop, both read "Exit full screen" / "Quitter le plein écran". The string is `viewport.exitFullscreen`. The icon is unchanged.
 
 ## Standard cited
 

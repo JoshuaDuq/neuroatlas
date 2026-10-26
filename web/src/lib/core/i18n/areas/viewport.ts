@@ -6,6 +6,9 @@ const megabytes = (bytes: number, unit: 'MB' | 'Mo', lang: 'en' | 'fr') =>
 export const en = {
   navigationHint: 'Drag to rotate · Scroll to zoom · Click to inspect',
   navigationHintTracts: 'Drag to rotate · Scroll to zoom',
+  // For a finger rather than a mouse (decision 21 on #4).
+  navigationHintTouch: 'Drag to rotate · Pinch to zoom · Tap to inspect',
+  navigationHintTractsTouch: 'Drag to rotate · Pinch to zoom',
   // Shown while the model has keyboard focus.
   keyboardHint: '3D view · Arrow keys rotate · + − zoom',
   viewAria: 'Anatomical view',
@@ -25,6 +28,7 @@ export const en = {
   snapshotView: (name: string) => `${name} view`,
   snapshotStatement: 'Planum · Not clinical anatomy',
   fullscreen: 'Full screen',
+  exitFullscreen: 'Exit full screen',
   loadingAnatomy: 'Loading anatomy…',
   loadingWithTotal: (l: number, t: number) =>
     `Loading anatomy · ${megabytes(l, 'MB', 'en')} / ${megabytes(t, 'MB', 'en')}`,
@@ -40,6 +44,8 @@ export const en = {
 export const fr: typeof en = {
   navigationHint: 'Glisser : tourner · Molette : zoom · Clic : inspecter',
   navigationHintTracts: 'Glisser : tourner · Molette : zoom',
+  navigationHintTouch: 'Glisser\u202f: tourner · Pincer\u202f: zoom · Toucher\u202f: inspecter',
+  navigationHintTractsTouch: 'Glisser\u202f: tourner · Pincer\u202f: zoom',
   keyboardHint: 'Vue 3D · Flèches : tourner · + − : zoom',
   viewAria: 'Vue anatomique',
   viewToolAria: (name: string) => `Vue anatomique : ${name.toLowerCase()}`,
@@ -56,6 +62,7 @@ export const fr: typeof en = {
   snapshotView: (name: string) => `Vue ${name.toLowerCase()}`,
   snapshotStatement: 'Planum · Pas une anatomie clinique',
   fullscreen: 'Plein écran',
+  exitFullscreen: 'Quitter le plein écran',
   loadingAnatomy: 'Chargement de l’anatomie…',
   loadingWithTotal: (l: number, t: number) =>
     `Chargement de l’anatomie · ${megabytes(l, 'Mo', 'fr')} / ${megabytes(t, 'Mo', 'fr')}`,

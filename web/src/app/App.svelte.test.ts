@@ -51,7 +51,7 @@ describe('landmarks', () => {
   test('the complementary landmark is named in the reader’s language', async () => {
     mountShell({ lang: 'fr' });
     await expect
-      .element(page.getByRole('complementary', { name: 'Détails anatomiques' }))
+      .element(page.getByRole('complementary', { name: 'Panneau de l’atlas' }))
       .toBeInTheDocument();
   });
 

@@ -48,7 +48,8 @@ test('UI actions and shortcuts are fully translated in English and French', () =
     const keys = t(lang, 'shortcuts')
       .groups.flatMap(([, items]) => items)
       .map(([key]) => key);
-    for (const expectedKey of ['F', 'I', 'M', 'C', 'S', 'H', '0', '1 – 6', '/', 'Esc']) {
+    const escape = lang === 'fr' ? 'Échap' : 'Esc';
+    for (const expectedKey of ['F', 'I', 'M', 'C', 'S', 'H', '0', '1 – 6', '/', escape]) {
       assert.ok(keys.includes(expectedKey), `Missing shortcut ${expectedKey} in ${lang}`);
     }
   }
@@ -199,4 +200,20 @@ test('both languages explain the actual denominator and the display threshold', 
   for (const notes of [english.notes, french.notes]) {
     for (const note of Object.values(notes)) assert.match(note, /5\s?%/);
   }
+});
+
+test('the spoken tract filter result counts bundles in the reader’s grammar', () => {
+  assert.equal(t('en', 'diffusion').matches(1), '1 tract bundle');
+  assert.equal(t('en', 'diffusion').matches(12), '12 tract bundles');
+  assert.equal(t('fr', 'diffusion').matches(1), '1 faisceau');
+  assert.equal(t('fr', 'diffusion').matches(12), '12 faisceaux');
+});
+
+test('the French Escape row names the function and the deficit, as the English row does', () => {
+  const row = (lang: string) =>
+    t(lang, 'shortcuts')
+      .groups.flatMap(([, items]) => items)
+      .find(([key]) => key === (lang === 'fr' ? 'Échap' : 'Esc'))![1];
+  assert.match(row('en'), /function or deficit$/);
+  assert.match(row('fr'), /la fonction ou le déficit$/);
 });
