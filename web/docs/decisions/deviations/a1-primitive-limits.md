@@ -6,7 +6,7 @@ Status: ported. Recorded because the primitive changed to carry them.
 ## Legacy behaviour
 
 1. An open group's row is `position: sticky` inside its own `.tree-group` block, so its name stays in view while its regions scroll, and leaves with them; its regions keep a `scroll-margin-block` so the sticky row does not cover a focused one (`viewer/styles/navigator.css:120-135`).
-2. A region too small for the cut (`below-cut-resolution`) is `aria-disabled="true"` on its row, takes no hover wash and shows the default cursor (`viewer/ui/panels/navigator.js:360-363`, `navigator.css:27,31`).
+2. A region too small for the cut (`below-cut-resolution`) is `aria-disabled="true"` on its row, takes no hover wash and shows the default cursor (`viewer/ui/panels/navigator.js:360-363`, `navigator.css:27,33`).
 
 ## New behaviour
 

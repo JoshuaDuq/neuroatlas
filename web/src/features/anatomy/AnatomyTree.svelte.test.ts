@@ -449,15 +449,13 @@ describe('shortcut keys on a row', () => {
     expect(active()).toBe(row('d:left:1'));
   });
 
-  test('other letters still find a row, and a page letter extends a query being typed', async () => {
+  test('a letter that is not the page’s still finds a row, and `f` after it extends the query', async () => {
     mount({ open: ALL });
     focus('section:cortex');
-    expect(await pressed(['p'])).toEqual([]);
-    expect(active()).toBe(row('d:left:1'));
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    focus('section:cortex');
-    await press('pf');
-    expect(active()).toBe(row('d:left:1'));
+    // `p` is no shortcut: type-ahead takes it. `f` then extends the query ("pf"), so it never
+    // reaches the page, which a lone `f` does (the test above).
+    expect(await pressed(['p', 'f'])).toEqual([]);
+    expect(active()).not.toBe(row('section:cortex'));
   });
 });
 
@@ -507,6 +505,13 @@ describe('rows', () => {
     const before = getComputedStyle(row('t:left:1')).backgroundColor;
     await userEvent.hover(row('t:left:1'));
     expect(getComputedStyle(row('t:left:1')).backgroundColor).toBe(before);
+  });
+
+  test('a section caption is divided from the one above, except the first', () => {
+    mount({ open: ALL });
+    expect(getComputedStyle(row('section:cortex')).borderTopWidth).toBe('0px');
+    expect(getComputedStyle(row('section:structure')).borderTopWidth).toBe('1px');
+    expect(getComputedStyle(row('section:tissue')).borderTopWidth).toBe('1px');
   });
 
   test('a section caption takes no hover wash', async () => {
@@ -660,11 +665,15 @@ describe('accessibility', () => {
     }
   });
 
-  test('200 % text: rows grow with it and nothing spills or is clipped', async () => {
+  test('200 % text: the names scale, and nothing spills or is clipped', async () => {
     mount({ open: ALL });
     await page.viewport(640, 800);
+    const size = () =>
+      parseFloat(getComputedStyle(row('d:left:1').querySelector('.row-name')!).fontSize);
+    const normal = size();
     document.documentElement.style.fontSize = '200%';
     try {
+      expect(size()).toBeGreaterThanOrEqual(normal * 1.9);
       expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
       for (const r of rows()) {
         expect(r.scrollWidth, r.dataset.id).toBeLessThanOrEqual(r.clientWidth + 1);

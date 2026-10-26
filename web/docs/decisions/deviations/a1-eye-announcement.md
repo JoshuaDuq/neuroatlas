@@ -1,7 +1,7 @@
 # Hiding or showing a part is announced
 
 Chunk: A1
-Status: fix, standard cited. Approved as decision 32 on #4.
+Status: fix, standard cited. Approved as decision 32 on #4. The part sentence is K2's: until it lands, a press is announced only by S1's count sentence (as legacy), and the parity test for it is `fixme` on next.
 
 ## Legacy behaviour
 

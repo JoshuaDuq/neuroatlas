@@ -95,7 +95,7 @@
     font-weight: 500;
   }
   /* An open group's name stays in view while its regions scroll, and leaves with them (its block). */
-  .treegrid-block {
+  .anatomy-tree .treegrid-block {
     isolation: isolate;
   }
   .anatomy-tree .row[aria-expanded='true'] {
@@ -143,7 +143,7 @@
     border-top: 1px solid var(--border-subtle);
     cursor: default;
   }
-  .anatomy-tree .row:first-child:has(.section-label) {
+  .anatomy-tree .treegrid-block:first-child > .row:has(.section-label) {
     margin-top: 0;
     border-top: 0;
   }
