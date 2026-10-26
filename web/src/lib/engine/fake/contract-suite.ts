@@ -92,7 +92,7 @@ type Opening = ReturnType<typeof openingOf>;
 
 /**
  * Put a shared engine's model and cut back to their opening state through the public API alone, and prove
- * they are there. The camera, the tracts' settings and the MRI window are not asserted.
+ * the model's settings and the cut are there. The camera, the tracts' settings and the MRI window are not asserted.
  * What a case downloaded stays downloaded: a layer, the volumes, the tracts, the cord.
  */
 async function restore(engine: Engine, opening: Opening) {
@@ -117,7 +117,11 @@ async function restore(engine: Engine, opening: Opening) {
   comparison.clear();
   comparison.setVisible(true);
   if (tracts.ready) await tracts.setActive(false);
-  assert.deepEqual(modelOf(engine), opening.settings, 'the model is back to its opening state');
+  assert.deepEqual(
+    modelOf(engine),
+    opening.settings,
+    "the model's settings are back to their opening state",
+  );
   assert.deepEqual(cutOf(sections.state), opening.cut, 'the cut is back to its opening state');
 }
 

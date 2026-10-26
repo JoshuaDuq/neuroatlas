@@ -624,7 +624,7 @@ document, `location`, `history` and `window` directly.
 
 - **Rule:** Three.js core and `three-mesh-bvh` are built into their own `three` and `bvh` chunks, so a chrome-only deploy does not re-download them.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** post-build check of `web/dist` (`web-check`)
 - **Source:** `vite.config.js:31-41`
 - **Expected:** chunk `three` contains `WebGLRenderer`; chunk `bvh` contains `MeshBVH`.
 - **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
@@ -642,7 +642,7 @@ document, `location`, `history` and `window` directly.
 
 - **Rule:** The built page declares its charset within the first 1024 bytes, and the prefetch script comes before the stylesheet link.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** post-build check of `web/dist` (`web-check`)
 - **Source:** HTML Standard 4.2.5.4; `index.html:4, 34`
 - **Expected:** first 1024 bytes contain `<meta charset="UTF-8"`; index of `window.__planumAssets` < index of `rel="stylesheet"`.
 - **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
@@ -679,13 +679,13 @@ document, `location`, `history` and `window` directly.
 - **Rule:** The loaded page has no axe violations on `next` (legacy recorded as a baseline).
 - **Kind:** behaviour
 - **Level:** e2e — axe on the built, loaded page
-- **Source:** `web/parity/README.md` (browser parity)
+- **Source:** new (browser parity harness, `e2e/parity/`)
 - **Expected:** zero violations on `next`.
 - **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`)
 
 ### BUILD-11 · No triple-slash type references
 
-- **Rule:** No source file under `src/` or `parity/` carries a `/// <reference types|lib=…>` directive.
+- **Rule:** No source file under `src/` carries a `/// <reference types|lib=…>` directive.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `web/tsconfig*.json` split
