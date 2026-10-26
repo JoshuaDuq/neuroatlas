@@ -29,7 +29,7 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Level:** unit
 - **Source:** deviation `s5b-shortcut-strings.md` (D1 to D3); decision 24 on #4; comment 81 on #4; `viewer/i18n/translations.js:919`; `viewer/app.js:1912-1914,1948-1953`
 - **Expected:** EN Escape row ends "function or deficit"; FR row "Dans une vue détaillée : revenir à la liste. Ailleurs : effacer la recherche, puis la sélection, puis la fonction ou le déficit". M row EN "Open or close linked MRI slices; in Tracts, the MRI with tracts", FR "Ouvrir ou fermer les coupes IRM ; dans Faisceaux, l’IRM avec faisceaux". FR Escape cap "Échap".
-- **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, D1 and D3); `e2e/parity/shortcuts.spec.ts` (R, D3, accepts Esc or Échap; `next` gated off); D2 only in `parity/C1.test.ts` (D)
+- **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R, D1 and D3); `e2e/parity/shortcuts.spec.ts` (R, D3, accepts Esc or Échap; `next` gated off); D2 (the M rows) in `src/lib/core/i18n/i18n.test.ts` (R, I18N-09)
 
 ### SHORT-04 · The note says how to turn single-key shortcuts off, or back on
 

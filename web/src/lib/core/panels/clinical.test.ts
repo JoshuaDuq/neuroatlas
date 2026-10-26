@@ -148,3 +148,63 @@ test('neuropsychology is omitted when the region has no associations', () => {
   assert.equal(relatedRegionVisible({ id: 'destrieux:left:1' }, 0), false);
   assert.equal(relatedRegionVisible({ id: 'destrieux:left:1' }, 2), true);
 });
+
+test('PANEL-13 a changed asset says to reload, in the reader’s language', () => {
+  const updated = Object.assign(new Error('Asset changed'), { code: 'asset-updated' });
+  assert.equal(
+    stageMessage(CLINICAL_TEXT.en, { ...idle, error: updated }),
+    'Planum was updated. Reload to continue.',
+  );
+  assert.equal(
+    stageMessage(CLINICAL_TEXT.fr, { ...idle, lang: 'fr', error: updated, operation: 'region' }),
+    'Planum a été mis à jour. Rechargez la page pour continuer.',
+  );
+});
+
+test('PANEL-13 the Functions tab brings its own busy and failure text', () => {
+  const functions = {
+    ...CLINICAL_TEXT.en,
+    loading: TRANSLATIONS.en.functions.loading,
+    failed: TRANSLATIONS.en.functions.failed,
+  };
+  const state = { ...idle, operation: 'colour', error: new Error('x') };
+  assert.equal(
+    stageMessage(functions, { ...state, error: null, opening: true }),
+    'Preparing the HCP-MMP areas…',
+  );
+  assert.equal(
+    stageMessage(functions, { ...state, failure: 'failed' }),
+    'The HCP-MMP areas could not be shown.',
+  );
+  assert.equal(
+    stageMessage(functions, { ...state, failure: 'restoreFailed' }),
+    'The previous view could not be fully restored.',
+  );
+});
+
+test('PANEL-15 the two published corrections are listed with their DOI, link and summary', () => {
+  const data = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
+  const corrected = data.references.filter((reference) => reference.corrections);
+  assert.deepEqual(
+    corrected.map((reference) => reference.id),
+    ['karnath-2000', 'bouvier-2006'],
+  );
+  assert.deepEqual(publishedCorrections(corrected[0], 'en'), [
+    {
+      doi: 'doi:10.1073/pnas.98.2.777-e',
+      href: 'https://doi.org/10.1073/pnas.98.2.777-e',
+      summary:
+        'Corrects the spelling “centrolateralis” in the discussion and a missing colon in the Table 2 legend. No finding is affected.',
+    },
+  ]);
+  assert.deepEqual(publishedCorrections(corrected[0], 'fr'), [
+    {
+      doi: 'doi:10.1073/pnas.98.2.777-e',
+      href: 'https://doi.org/10.1073/pnas.98.2.777-e',
+      summary:
+        'Corrige l’orthographe « centrolateralis » dans la discussion et un deux-points manquant dans la légende du tableau 2. Aucun résultat n’est modifié.',
+    },
+  ]);
+  assert.equal(publishedCorrections(corrected[1], 'en')[0].doi, 'doi:10.1093/cercor/bhl065');
+  assert.match(publishedCorrections(corrected[1], 'fr')[0].summary, /^Corrige une phrase/);
+});

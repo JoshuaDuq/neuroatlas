@@ -21,3 +21,36 @@ test('the tract MRI readout writes its point as the linked MRI does: signed, one
   assert.match(mriReadout([0, 0, 0], Number.NaN, 0, 'en'), /T1:\u00a0—/);
   assert.doesNotMatch(mriReadout([0, 0, 0], 1, undefined, 'en'), /FA/);
 });
+
+test('I18N-21 · a diffusion failure is worded from its code and never with the error message', () => {
+  const words = {
+    en: {
+      'asset-fetch':
+        'The reference data could not be downloaded. Check the connection, then try again.',
+      'asset-updated':
+        'Planum was updated while this page was open. Reload the page to load the new data.',
+      'invalid-data': 'The reference data could not be read.',
+      failed: 'The reference data could not be displayed.',
+    },
+    fr: {
+      'asset-fetch':
+        'Les données de référence n’ont pas pu être téléchargées. Vérifiez la connexion, puis réessayez.',
+      'asset-updated':
+        'Planum a été mis à jour pendant que cette page était ouverte. Rechargez la page pour charger les nouvelles données.',
+      'invalid-data': 'Les données de référence n’ont pas pu être lues.',
+      failed: 'Les données de référence n’ont pas pu être affichées.',
+    },
+  } as const;
+  for (const lang of ['en', 'fr'] as const) {
+    for (const [code, text] of Object.entries(words[lang])) {
+      assert.equal(diffusionError(lang, code as keyof (typeof words)['en']), text);
+    }
+  }
+});
+
+test('I18N-22 · the tract MRI readout holds each label to its value', () => {
+  assert.equal(
+    mriReadout([-1, 2, 3], 10, 0.5, 'en'),
+    'RAS: −1.0, +2.0, +3.0 mm · T1: 10 · FA: 0.50',
+  );
+});

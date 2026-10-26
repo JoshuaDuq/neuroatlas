@@ -13,7 +13,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** unit (view-model over the published manifest)
 - **Source:** `provenance.js:29-99`; `provenance.test.js:41-45`
 - **Expected:** for `cdmd` with both URLs: labels `Subject, Source data, Reconstruction, Cortical atlases, Functional networks, Functional divisions, Neuropsychological domains, Supplemental layers, Published files`. `{anatomy:{display_name:'X “1”'}}` in `fr` → labels `['Sujet']` and the item's note is `null`. `provenanceRows({})` → `[]`. Supplemental layers: "Z-Anatomy spinal cord reference" with the note "CC BY-SA 4.0 · Z-Anatomy, after BodyParts3D (CC BY-SA 2.1 JP)". Licence links resolve beside the manifest: `/neuroatlas/models/cdmd/../licenses/CAB-NP.txt` and `…/../licenses/HCP-Data-Use-Terms.txt`.
-- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R for the empty case; the full `cdmd` label list is uncovered); `parity/C5.test.ts` (D, seeded manifests with fields removed)
+- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `PROV-01`: the empty case and the full `cdmd` label list, supplemental note and licence links)
 
 ### PROV-02 · Every link comes from the published records
 
@@ -31,7 +31,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** unit (view-model over the published manifest)
 - **Source:** `provenance.js:43-48, 53-58, 65-69, 89-97`; `provenance.test.js:30-39`
 - **Expected:** Subject "MGH CDMD “sub_013”" with the note "One individual’s MRI reconstruction". Reconstruction `freesurfer-macOS-darwin_arm64-8.2.0-20260314-d932c45`, set in mono. Each `atlases[].citation` and each `functional_regions.citations[]` is linked. Published files: `manifest.json` with the note "39 source files, each with a SHA-256 checksum" (FR "39 fichiers sources, chacun avec une somme SHA-256"), then `anatomies.json` with the note "Index of the published anatomies".
-- **Covered by:** `src/lib/core/panels/provenance.test.ts` (S; the source-file note is matched on `^39 source files` only)
+- **Covered by:** `src/lib/core/panels/provenance.test.ts` (S; R `PROV-03` pins the subject, reconstruction and the source-file note in both languages)
 
 ### PROV-04 · HCP-MMP says where it was projected from
 
@@ -40,7 +40,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** unit (view-model)
 - **Source:** `provenance.js:53-57`
 - **Expected:** `cdmd` → the HCP-MMP item's note is "Projected from fsaverage" (FR "Projeté depuis fsaverage"); Destrieux has no note.
-- **Covered by:** `parity/C5.test.ts` (D only)
+- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `PROV-04`)
 
 ### PROV-05 · Each neuropsychological domain says how its lesion evidence was checked
 
@@ -49,7 +49,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** unit (view-model over `neuropsych-domains.json`)
 - **Source:** `provenance.js:10-27, 70-82`
 - **Expected:** `executive` → text "Executive functions: “executive function”" and a note starting "Lesion check: Executive dysfunction (Gläscher et al. 2012): G_front_middle (L) 13% coloured, G_front_middle (R) 18% coloured" (coverages 0.127 and 0.183, rounded to whole percents). A mapping with `coverage: null` → "<parcel> (<side>), not measured". A domain with no checks → "No lesion study in Planum’s deficit evidence checks this domain." Pain's NextBrain parcels → "caudal_division_of_ventral_posterior_lateral_nucleus (L), not measured". French uses the side glyphs G/D/Méd and "colorée à 13 %". 26 of the 70 published domains have no check.
-- **Covered by:** `parity/C5.test.ts` (D only; `src/lib/core/panels/provenance.test.ts` never passes `domains`)
+- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `PROV-05`, over the published `neuropsych-domains.json`)
 
 ### PROV-06 · Labels are translated; the published data is not
 
@@ -67,7 +67,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** unit (view-model `referenceRows`); browser for the in-place swap (PROV-15)
 - **Source:** `provenance.js:101-108`; `provenance.test.js:57-61`; `header.js:543-549`
 - **Expected:** `{label:'SNAIL reference', links:[{href:'https://example.org/a', text:'A'}]}` → rows "Tract reference" `[{text:'SNAIL reference'}]` and "Sources" `[{link:…}]` (FR "Référence des faisceaux", "Sources"). `links: []` → one row.
-- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R); `src/features/provenance/provenance.svelte.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R); `src/features/provenance/provenance.svelte.test.ts` (R)
 
 ### PROV-08 · URLs read without their scheme; files are named by their file name
 
@@ -76,7 +76,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** unit (view-model) for the text; browser for the order of elements
 - **Source:** `provenance.js:5-8, 49-52, 110-134`; `provenance.test.js:63-66`
 - **Expected:** `https://doi.org/10.1/x` → `doi.org/10.1/x`; `https://www.z-anatomy.com/` → `www.z-anatomy.com`. CAB-NP licence link text = the last segment of `license_file`, mono. Under Published files the first child of each item is an `A` ("manifest.json", "anatomies.json") and the second a `.provenance-note`. `ftp://x/` → `ftp://x` (only the http and https schemes are dropped).
-- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `shortUrl`); `src/features/provenance/provenance.svelte.test.ts` (R, element order); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/provenance.test.ts` (R, `shortUrl`); `src/features/provenance/provenance.svelte.test.ts` (R, element order)
 
 ### PROV-09 · The sheet ends with the intended use
 
