@@ -75,7 +75,7 @@
   }
 </script>
 
-<header id="masthead">
+<header id="masthead" {...{ [OWN_KEYS_ATTRIBUTE]: '' }}>
   <a class="skip-link" href="#viewport" onclick={skip}>{t(lang, 'header').skipToModel}</a>
   <div class="identity">
     <span class="brand-mark" aria-hidden="true">{@render iconGraphic('brand')}</span>
