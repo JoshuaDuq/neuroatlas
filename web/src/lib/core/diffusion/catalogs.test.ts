@@ -35,3 +35,38 @@ test('an anatomy with tracts of its own gets them, any other the CDMD reference'
   assert.equal(tractCatalog('cdmd'), TRACT_CATALOGS[0]);
   assert.equal(tractCatalog('aomic'), TRACT_CATALOGS[0]);
 });
+
+test('CAT-61 · the CDMD tract catalog: its subject, maps, 30 bundles with two initial, overlay and copy keys', () => {
+  const [cdmd] = TRACT_CATALOGS;
+  assert.deepEqual(paths, ['data/diffusion-cdmd.yaml']);
+  assert.equal(cdmd.id, 'cdmd-sub-013');
+  assert.equal(cdmd.anatomy, 'cdmd');
+  assert.equal(cdmd.reference_space, 'cdmd-sub-013/surface-space.json');
+  assert.deepEqual(
+    cdmd.maps.map((map) => map.id),
+    ['t1', 'fa'],
+  );
+  assert.equal(cdmd.bundles.length, 30);
+  assert.deepEqual(
+    cdmd.bundles.filter((bundle) => bundle.initial).map((bundle) => bundle.id),
+    ['af-left', 'cst-right'],
+  );
+  assert.equal(cdmd.overlay_cortex_opacity, 0.16);
+  assert.equal(cdmd.resample_step_mm, 0.5);
+  for (const lang of ['en', 'fr'] as const) {
+    assert.deepEqual(Object.keys(cdmd.text[lang]).sort(), [
+      'dataset',
+      'files',
+      'mriCanvas',
+      'mriScope',
+      'mriTitle',
+      'otherAnatomy',
+    ]);
+  }
+});
+
+test('CAT-61 · an unlisted, empty or inherited-property anatomy name gets the CDMD catalog', () => {
+  for (const anatomy of ['cdmd', 'aomic', '', 'toString']) {
+    assert.equal(tractCatalog(anatomy), TRACT_CATALOGS[0], anatomy);
+  }
+});

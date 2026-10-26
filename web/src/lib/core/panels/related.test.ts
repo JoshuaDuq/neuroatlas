@@ -40,3 +40,23 @@ test('every published constituent is itself a published region', () => {
     for (const id of involved(region.id)) assert.ok(published.has(id), id);
   }
 });
+
+test('PANEL-20 the published caudate and thalamus are linked to the source regions they unite', () => {
+  const manifest = readRepoJson<Manifest>('public/models/cdmd/manifest.json');
+  const involved = createInvolvement(
+    new Map(manifest.regions.map((region) => [region.id, region])),
+  );
+  assert.deepEqual([...involved('learning:left:caudate')].sort(), [
+    'learning:left:caudate',
+    'nextbrain:left:118',
+    'nextbrain:left:393',
+    'nextbrain:left:48',
+  ]);
+  const thalamus = involved('learning:left:thalamus');
+  assert.equal(thalamus.size, 53, 'itself and its 52 source regions');
+  assert.ok(thalamus.has('nextbrain:left:190'));
+  assert.deepEqual([...involved('nextbrain:left:48')].sort(), [
+    'learning:left:caudate',
+    'nextbrain:left:48',
+  ]);
+});

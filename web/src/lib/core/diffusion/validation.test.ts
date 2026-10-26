@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
+import { describe, test } from 'vitest';
 import { AssetError } from '../assets/published-assets.ts';
 import { diffusionError } from '../i18n/diffusion.ts';
 import { isIndependentTractReference } from './presentation.ts';
@@ -115,4 +115,151 @@ test('only a tract exploration of another subject than the anatomy’s is indepe
     () => isIndependentTractReference({ explorer: 'diffusion', anatomy: 'cdmd' }),
     /identify the anatomy/,
   );
+});
+
+describe('CAT-62 · a diffusion map must be a 3D scalar volume in millimetres', () => {
+  const rejected: [string, (v: ReturnType<typeof volume>) => unknown, string, string][] = [];
+  const add = (
+    name: string,
+    mutate: (v: ReturnType<typeof volume>) => unknown,
+    code: string,
+    message: string,
+  ) => rejected.push([name, mutate, code, message]);
+  const EMPTY = 'The volume contains no readable image data.';
+  const DIMENSIONS = 'Use a three-dimensional map, not a raw 4D acquisition.';
+  const SCALAR = 'Use a scalar map rather than a vector or RGB image.';
+  const UNITS = 'The NIfTI spatial units must explicitly be millimeters.';
+  const TRANSFORM = 'The NIfTI needs a valid spatial transform.';
+  const SPACING = 'The NIfTI needs a valid spatial transform and voxel spacing.';
+
+  add('no header', (v) => ((v as { hdr?: unknown }).hdr = undefined), 'empty', EMPTY);
+  add('no image', (v) => ((v as { img?: unknown }).img = undefined), 'empty', EMPTY);
+  add('an empty image', (v) => ((v as { img?: unknown }).img = []), 'empty', EMPTY);
+  add('a header of only two dimensions', (v) => (v.hdr.dims[0] = 2), 'dimensions', DIMENSIONS);
+  for (const slot of [4, 5, 6, 7]) {
+    add(
+      `a size of 2 in dimension ${slot}`,
+      (v) => (v.hdr.dims[slot] = 2),
+      'dimensions',
+      DIMENSIONS,
+    );
+  }
+  for (const size of [0, -1, 1.5, NaN]) {
+    add(`a spatial size of ${size}`, (v) => (v.hdr.dims[2] = size), 'dimensions', DIMENSIONS);
+  }
+  for (const type of [128, 0, 32, 1024]) {
+    add(`datatype ${type}`, (v) => (v.hdr.datatypeCode = type), 'scalar', SCALAR);
+  }
+  for (const units of [0, 1, 3, 4, 6, 7]) {
+    add(`spatial units ${units}`, (v) => (v.hdr.xyzt_units = units), 'units', UNITS);
+  }
+  add('no transform code', (v) => (v.hdr.sform_code = 0), 'transform', TRANSFORM);
+  add(
+    'no affine',
+    (v) => ((v.hdr as { affine?: unknown }).affine = undefined),
+    'transform',
+    TRANSFORM,
+  );
+  add('an affine of three rows', (v) => v.hdr.affine.pop(), 'transform', TRANSFORM);
+  add(
+    'an affine row of three values',
+    (v) => ((v.hdr.affine as number[][])[1] = [0, 1, 0]),
+    'transform',
+    TRANSFORM,
+  );
+  for (const value of [NaN, Infinity]) {
+    add(`an affine value of ${value}`, (v) => (v.hdr.affine[0][1] = value), 'transform', TRANSFORM);
+  }
+  add('a singular affine', (v) => (v.hdr.affine[0][0] = 0), 'transform', SPACING);
+  add('a last row of 0 0 0 2', (v) => (v.hdr.affine[3][3] = 2), 'transform', SPACING);
+  add('a last row of 1 0 0 1', (v) => (v.hdr.affine[3][0] = 1), 'transform', SPACING);
+  for (const size of [0, -1, NaN, Infinity]) {
+    add(`a voxel spacing of ${size}`, (v) => (v.hdr.pixDims[2] = size), 'transform', SPACING);
+  }
+
+  for (const [name, mutate, code, message] of rejected) {
+    test(`CAT-62 · refuses ${name}`, () => {
+      const invalid = volume();
+      mutate(invalid);
+      assert.throws(
+        () => validateVolume(invalid),
+        (error: DiffusionInputError) => {
+          assert.equal(error.name, 'DiffusionInputError');
+          assert.equal(error.code, code);
+          assert.equal(error.message, message);
+          assert.ok(error instanceof Error);
+          return true;
+        },
+      );
+    });
+  }
+
+  test('CAT-62 · accepts an oblique affine, either transform code and any spatial unit with millimetre bits', () => {
+    const oblique = volume();
+    oblique.hdr.affine = [
+      [0.5, 0.1, 0, 3],
+      [-0.1, 0.5, 0, 4],
+      [0, 0, 2, 5],
+      [0, 0, 0, 1],
+    ];
+    assert.doesNotThrow(() => validateVolume(oblique));
+    const qform = volume();
+    Object.assign(qform.hdr, { sform_code: 0, qform_code: 1 });
+    assert.doesNotThrow(() => validateVolume(qform));
+    for (const units of [10, 18, 34]) {
+      const withTime = volume();
+      withTime.hdr.xyzt_units = units;
+      assert.doesNotThrow(() => validateVolume(withTime), String(units));
+    }
+    for (const type of [2, 4, 8, 16, 64, 256, 512, 768]) {
+      const scalar = volume();
+      scalar.hdr.datatypeCode = type;
+      assert.doesNotThrow(() => validateVolume(scalar), String(type));
+    }
+  });
+});
+
+test('CAT-63 · a tracts failure is shown by one of four codes', () => {
+  const withCode = (code: unknown) => ({ code });
+  const cases: [unknown, string][] = [
+    [withCode('asset-fetch'), 'asset-fetch'],
+    [Object.assign(new Error('x'), { code: 'asset-fetch' }), 'asset-fetch'],
+    [withCode('asset-updated'), 'asset-updated'],
+    [new AssetError('asset-updated', 'x'), 'asset-updated'],
+    [new DiffusionInputError('empty', 'x'), 'invalid-data'],
+    [new RangeError('x'), 'failed'],
+    [new Error('x'), 'failed'],
+    [null, 'failed'],
+    [undefined, 'failed'],
+    ['asset-fetch', 'failed'],
+    ...['empty', 'other', 3, null, undefined].map((code): [unknown, string] => [
+      withCode(code),
+      'failed',
+    ]),
+  ];
+  for (const [error, expected] of cases) assert.equal(diffusionErrorCode(error), expected);
+});
+
+test('CAT-64 · an explorer other than diffusion is never an independent reference, whatever the subjects', () => {
+  for (const explorer of ['anatomy', 'functions', 'deficits', 'circuits'] as const) {
+    for (const anatomy of ['cdmd', 'aomic', '', null, undefined]) {
+      assert.equal(
+        isIndependentTractReference({ explorer, anatomy, referenceAnatomy: 'cdmd' }),
+        false,
+      );
+    }
+  }
+});
+
+test('CAT-64 · tract exploration with the anatomy or the reference missing or empty fails', () => {
+  for (const missing of ['', null, undefined]) {
+    for (const state of [
+      { explorer: 'diffusion' as const, anatomy: missing, referenceAnatomy: 'cdmd' },
+      { explorer: 'diffusion' as const, anatomy: 'cdmd', referenceAnatomy: missing },
+    ]) {
+      assert.throws(() => isIndependentTractReference(state), {
+        message: 'Tract exploration must identify the anatomy and reference subject.',
+      });
+    }
+  }
 });

@@ -20,7 +20,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `labelledGroups`, `groupDisplayName`)
 - **Source:** `viewer/ui/panels/navigator.js:56-84`
 - **Expected:** A Limbic lobe beside a Limbic system → "Limbic lobe" and "Limbic system" (French "Système limbique"); a name used by one vocabulary only is unchanged. Sorting uses the qualified name.
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `parity/C5.test.ts` (D). The tree's own tests use no shared name.
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R). The tree's own tests use no shared name.
 
 ### ANAT-03 · A group row says its name and how many regions it holds
 
@@ -289,7 +289,7 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 - **Level:** unit (view-model: `matchSegments`, `matchedAlias`)
 - **Source:** `viewer/ui/panels/navigator.js:154-178`, `283-327`
 - **Expected:** French, "CUNEUS" → two marks "Cunéus"; "ifg" → option "Opercular part of the inferior frontal gyrus, IFG, left, Frontal", its mark "IFG", its text contains "(IFG)".
-- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, could move down); `parity/C5.test.ts` (D)
+- **Covered by:** `src/lib/core/panels/navigator.test.ts` (R); `src/features/anatomy/AnatomyExplorer.svelte.test.ts` (R, could move down)
 
 ### ANAT-32 · A result that is not drawn says why, and choosing it reveals it
 

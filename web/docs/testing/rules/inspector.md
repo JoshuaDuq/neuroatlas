@@ -11,7 +11,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: `inspectorEmptyChrome`, the hint choice)
 - **Source:** `viewer/ui/panels/inspector.js:13-22`, `265-305`; deviations `r1-hidden-actions.md`, `r1-summary-headings.md`
 - **Expected:** h2 "No region selected" and "Select a region on the model or in the anatomy list."; cortex hidden → "Cortex is hidden — internal structures are selectable."; no `button`, `dl` or `details`. Explorer `functions` → empty text. French h2 "Aucune région sélectionnée".
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `src/lib/core/panels/inspector.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `src/lib/core/panels/inspector.test.ts` (R)
 
 ## The selected region
 
@@ -58,7 +58,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: `sourceLabel`, `core-panels.md`)
 - **Source:** `viewer/ui/panels/inspector.js:24-42`, `237-262`
 - **Expected:** `hcp-mmp:left:1` (`source_label_id` 1) → "… · 1", `.code` "1", not stacked. `zanatomy:midline:cord` (no id) → stacked. `learning:left:thalamus` (52 `source_label_ids`) → summary ending "52 labels" (French "52 étiquettes") and the 52 ids joined by ", ". The boundary: 8 ids listed, 9 counted.
-- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R; the 8/9 boundary is only in `parity/C5.test.ts`, D); `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R, with the 8/9 boundary); `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
 
 ### INSP-07 · An open source list stays open until the region or the language changes
 

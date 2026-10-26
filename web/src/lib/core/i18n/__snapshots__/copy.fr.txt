@@ -1,0 +1,1428 @@
+{
+ "app": {
+  "spoken": [
+   "[\"Alpha\",\"\"] → \"Sélectionné : Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Sélectionné : , Alpha\"",
+   "[\"Alpha\",\"\"] → \"Sélectionné : Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Sélectionné : , Alpha\"",
+   "[\"Alpha\",\"\"] → \"Sélectionné : Alpha, \""
+  ],
+  "selectionCleared": [
+   "[\"Alpha\"] → \"Sélection effacée — Alpha n’est plus visible.\"",
+   "[\"\"] → \"Sélection effacée —  n’est plus visible.\"",
+   "[\"Alpha\"] → \"Sélection effacée — Alpha n’est plus visible.\"",
+   "[\"\"] → \"Sélection effacée —  n’est plus visible.\"",
+   "[\"Alpha\"] → \"Sélection effacée — Alpha n’est plus visible.\""
+  ],
+  "cabNpAtlasOnly": [
+   "[\"Alpha\"] → \"CAB-NP ne colore que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\"",
+   "[\"\"] → \"CAB-NP ne colore que les aires HCP-MMP :  affiche donc les couleurs de ses régions.\"",
+   "[\"Alpha\"] → \"CAB-NP ne colore que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\"",
+   "[\"\"] → \"CAB-NP ne colore que les aires HCP-MMP :  affiche donc les couleurs de ses régions.\"",
+   "[\"Alpha\"] → \"CAB-NP ne colore que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\""
+  ],
+  "functionalAtlasOnly": [
+   "[\"Alpha\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\"",
+   "[\"\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP :  affiche donc les couleurs de ses régions.\"",
+   "[\"Alpha\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\"",
+   "[\"\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP :  affiche donc les couleurs de ses régions.\"",
+   "[\"Alpha\"] → \"Les divisions fonctionnelles ne colorent que les aires HCP-MMP : Alpha affiche donc les couleurs de ses régions.\""
+  ],
+  "functionalHidesInternal": "L’anatomie interne est masquée ; Affichage la montre à nouveau."
+ },
+ "atlases": {
+  "destrieux": "Atlas anatomique de Destrieux",
+  "hcp-mmp": "Atlas multimodal HCP-MMP1.0",
+  "learning": "Ensemble pédagogique : grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés",
+  "aseg": "Segmentation sous-corticale FreeSurfer",
+  "nextbrain": "Atlas histologique NextBrain",
+  "cerebnet": "Lobules cérébelleux FastSurfer CerebNet",
+  "wmparc": "Parcellisation de la substance blanche FreeSurfer",
+  "zanatomy": "Moelle épinière de référence Z-Anatomy"
+ },
+ "circuits": {
+  "heading": "Apprentissage guidé",
+  "landmarks": "Repères",
+  "landmark": "Repère",
+  "visited": "vu",
+  "landmarkCount": [
+   "[0] → \"0 repère\"",
+   "[1] → \"1 repère\"",
+   "[2] → \"2 repères\"",
+   "[183] → \"183 repères\"",
+   "[12345] → \"12345 repères\""
+  ],
+  "coverage": [
+   "[0,1] → \"0 parcours guidés · 1 repères\"",
+   "[1,2] → \"1 parcours guidés · 2 repères\"",
+   "[2,183] → \"2 parcours guidés · 183 repères\"",
+   "[183,12345] → \"183 parcours guidés · 12345 repères\"",
+   "[12345,0] → \"12345 parcours guidés · 0 repères\""
+  ],
+  "schematic": "Relations schématiques · sans mesure de connectivité ni tractographie",
+  "connections": "Connexions et portée",
+  "previousLandmark": "Repère précédent",
+  "nextLandmark": "Repère suivant",
+  "returnToLandmark": "Revenir au repère",
+  "otherSelection": "Vous explorez une autre région.",
+  "mapping": "Ce que montre cet atlas",
+  "clinical": "Contexte clinique",
+  "clinicalLink": "Ouvrir les données sur le déficit",
+  "clinicalNote": "Anatomie de référence ; ces associations ne prédisent pas le déficit d’un patient individuel.",
+  "evidence": "Sources",
+  "revised": "Contenu vérifié",
+  "loading": "Ouverture du repère…",
+  "mriNote": "Dans l’IRM liée, le réticule marque le centroïde du repère 3D, qui peut se situer hors d’une structure courbe. Les étiquettes IRM peuvent utiliser un autre atlas.",
+  "step": [
+   "[0,1] → \"Repère 1 sur 1\"",
+   "[1,2] → \"Repère 2 sur 2\"",
+   "[2,183] → \"Repère 3 sur 183\"",
+   "[183,12345] → \"Repère 184 sur 12345\"",
+   "[12345,0] → \"Repère 12346 sur 0\""
+  ],
+  "stepShort": [
+   "[0,1] → \"1 sur 1\"",
+   "[1,2] → \"2 sur 2\"",
+   "[2,183] → \"3 sur 183\"",
+   "[183,12345] → \"184 sur 12345\"",
+   "[12345,0] → \"12346 sur 0\""
+  ],
+  "inCircuits": "Dans les parcours guidés"
+ },
+ "clinical": {
+  "deficits": "Déficits",
+  "search": "Rechercher un déficit",
+  "searchLabel": "Rechercher un déficit ou une fonction cognitive",
+  "coverage": "{count} profils · déficits acquis de l’adulte",
+  "noResults": "Essayez un autre terme ou une fonction cognitive.",
+  "evidenceKind": [
+   "[0] → \"Données lésionnelles et cliniques · 0 associations\"",
+   "[1] → \"Données lésionnelles et cliniques · 1 association\"",
+   "[2] → \"Données lésionnelles et cliniques · 2 associations\"",
+   "[183] → \"Données lésionnelles et cliniques · 183 associations\"",
+   "[12345] → \"Données lésionnelles et cliniques · 12345 associations\""
+  ],
+  "checkedMaps": "Cartes d’activation que ces données vérifient",
+  "deepMapped": [
+   "[\"Alpha\",1] → \"Alpha se trouve sous le cortex.\"",
+   "[\"\",2] → \" se trouvent sous le cortex.\"",
+   "[\"Alpha\",183] → \"Alpha se trouvent sous le cortex.\"",
+   "[\"\",12345] → \" se trouvent sous le cortex.\"",
+   "[\"Alpha\",0] → \"Alpha se trouvent sous le cortex.\""
+  ],
+  "otherMapped": [
+   "[0] → \"0 autres régions cartographiées\"",
+   "[1] → \"1 autre région cartographiée\"",
+   "[2] → \"2 autres régions cartographiées\"",
+   "[183] → \"183 autres régions cartographiées\"",
+   "[12345] → \"12345 autres régions cartographiées\""
+  ],
+  "functionBridge": [
+   "[0,\"\"] → \"Fonctions<NNBSP>: 0 cartes d’activation correspondent à «<NBSP><NBSP>»\"",
+   "[1,\"Alpha\"] → \"Fonctions<NNBSP>: 1 carte d’activation correspond à «<NBSP>Alpha<NBSP>»\"",
+   "[2,\"\"] → \"Fonctions<NNBSP>: 2 cartes d’activation correspondent à «<NBSP><NBSP>»\"",
+   "[183,\"Alpha\"] → \"Fonctions<NNBSP>: 183 cartes d’activation correspondent à «<NBSP>Alpha<NBSP>»\"",
+   "[12345,\"\"] → \"Fonctions<NNBSP>: 12345 cartes d’activation correspondent à «<NBSP><NBSP>»\""
+  ],
+  "results": [
+   "[0] → \"Aucun résultat\"",
+   "[1] → \"1 déficit\"",
+   "[2] → \"2 déficits\"",
+   "[183] → \"183 déficits\"",
+   "[12345] → \"12345 déficits\""
+  ],
+  "related": "Neuropsychologie",
+  "associations": "Associations",
+  "findings": "Données probantes",
+  "studyFinding": "Résultat rapporté",
+  "limits": "Interprétation",
+  "mapping": "Correspondance anatomique approximative",
+  "openRegion": "Voir la région",
+  "regionsMarked": [
+   "[0,1,true] → \"0 région sur 1 colorée\"",
+   "[1,2,false] → \"1 région sur 2 visible\"",
+   "[2,183,true] → \"2 régions sur 183 colorées\"",
+   "[183,12345,false] → \"183 régions sur 12345 visibles\"",
+   "[12345,0,true] → \"12345 régions sur 0 colorées\""
+  ],
+  "changed": {
+   "cut": "coupe fermée",
+   "isolation": "isolement retiré",
+   "hemisphere": "deux hémisphères affichés",
+   "cortexHidden": "cortex masqué",
+   "cortexShown": "cortex affiché",
+   "atlas": [
+    "[\"Alpha\"] → \"atlas réglé sur Alpha\"",
+    "[\"\"] → \"atlas réglé sur \"",
+    "[\"Alpha\"] → \"atlas réglé sur Alpha\"",
+    "[\"\"] → \"atlas réglé sur \"",
+    "[\"Alpha\"] → \"atlas réglé sur Alpha\""
+   ],
+   "detail": [
+    "[\"Alpha\"] → \"anatomie interne réglée sur Alpha\"",
+    "[\"\"] → \"anatomie interne réglée sur \"",
+    "[\"Alpha\"] → \"anatomie interne réglée sur Alpha\"",
+    "[\"\"] → \"anatomie interne réglée sur \"",
+    "[\"Alpha\"] → \"anatomie interne réglée sur Alpha\""
+   ],
+   "colour": [
+    "[\"Alpha\"] → \"coloration réglée sur Alpha\"",
+    "[\"\"] → \"coloration réglée sur \"",
+    "[\"Alpha\"] → \"coloration réglée sur Alpha\"",
+    "[\"\"] → \"coloration réglée sur \"",
+    "[\"Alpha\"] → \"coloration réglée sur Alpha\""
+   ],
+   "cutAtlas": [
+    "[\"Alpha\"] → \"étiquettes de coupe réglées sur Alpha\"",
+    "[\"\"] → \"étiquettes de coupe réglées sur \"",
+    "[\"Alpha\"] → \"étiquettes de coupe réglées sur Alpha\"",
+    "[\"\"] → \"étiquettes de coupe réglées sur \"",
+    "[\"Alpha\"] → \"étiquettes de coupe réglées sur Alpha\""
+   ]
+  },
+  "restore": "Rétablir la vue précédente",
+  "restoring": "Rétablissement de la vue précédente…",
+  "stageRestored": "Vue précédente rétablie.",
+  "restoreFailed": "La vue précédente n’a pas pu être entièrement rétablie.",
+  "evidence": "Publications",
+  "supporting": "Étude à l’appui",
+  "qualifying": "Données contradictoires",
+  "population": "Population étudiée",
+  "abstract": "Source consultée : résumé",
+  "correction": "Correction publiée",
+  "full-text": "Source consultée : texte intégral",
+  "sources": "Sélection de publications · pas une revue systématique",
+  "revised": "Contenu vérifié",
+  "referenceOnly": "Anatomie de référence<NNBSP>; les associations ne prédisent pas le déficit d’un patient individuel.",
+  "mappingEmpty": "Aucune correspondance disponible dans l’atlas.",
+  "loading": "Ouverture de l’anatomie…",
+  "methods": {
+   "lesion-mapping": "Cartographie lésion–symptôme",
+   "meta-analysis": "Méta-analyse de cartographie lésionnelle",
+   "case-report": "Étude de cas",
+   "case-series": "Série de cas"
+  },
+  "laterality": {
+   "left": "Hémisphère gauche",
+   "right": "Hémisphère droit",
+   "bilateral": "Repères bilatéraux"
+  },
+  "lateralityShort": {
+   "left": "Gauche",
+   "right": "Droite",
+   "bilateral": "Bilatéral"
+  }
+ },
+ "comparison": {
+  "heading": [
+   "[\"Alpha\"] → \"Recouvrement avec Alpha\"",
+   "[\"\"] → \"Recouvrement avec \"",
+   "[\"Alpha\"] → \"Recouvrement avec Alpha\"",
+   "[\"\"] → \"Recouvrement avec \"",
+   "[\"Alpha\"] → \"Recouvrement avec Alpha\""
+  ],
+  "denominator": "Parts de toute la surface piale de cette région.",
+  "highlight": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Tracer le recouvrement avec Alpha, , Alpha de cette région\"",
+   "[\"\",\"Alpha\",\"\"] → \"Tracer le recouvrement avec , Alpha,  de cette région\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Tracer le recouvrement avec Alpha, , Alpha de cette région\"",
+   "[\"\",\"Alpha\",\"\"] → \"Tracer le recouvrement avec , Alpha,  de cette région\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Tracer le recouvrement avec Alpha, , Alpha de cette région\""
+  ],
+  "more": [
+   "[0] → \"0 autres régions en recouvrement\"",
+   "[1] → \"1 autre région en recouvrement\"",
+   "[2] → \"2 autres régions en recouvrement\"",
+   "[183] → \"183 autres régions en recouvrement\"",
+   "[12345] → \"12345 autres régions en recouvrement\""
+  ],
+  "columns": [
+   "Région",
+   "Surface (mm²)",
+   "Part (%)"
+  ],
+  "unassigned": "Non assigné",
+  "export": "Télécharger CSV",
+  "loading": "Chargement de la comparaison des atlas…",
+  "highlightLoading": "Chargement du contour de recouvrement…",
+  "retry": "Réessayer la comparaison",
+  "ready": "Comparaison des atlas chargée.",
+  "exported": "Fichier CSV de la comparaison des atlas téléchargé.",
+  "viewNote": "Désactivez les coupes pour tracer les recouvrements. Les mesures portent sur toute la région, y compris les parties masquées.",
+  "methodHeading": "Méthode et sources",
+  "method": "Surface des triangles piaux originaux de ce sujet, avec les mêmes limites par milieux et centroïdes que dans le modèle. Les pourcentages incluent la surface non assignée et ne sont pas renormalisés. Les petits recouvrements restent dans le tableau et l’export. Les valeurs affichées sont arrondies<NNBSP>; le CSV conserve toute la précision. Les étiquettes HCP-MMP sont projetées depuis un atlas de groupe par les sphères recalées, sans mesure des limites chez cet individu. Il s’agit d’une correspondance spatiale, sans équivalence fonctionnelle."
+ },
+ "cuts": {
+  "cuttingPlane": "Plan de coupe",
+  "modes": {
+   "off": "Cerveau entier",
+   "sagittal": "Sagittal",
+   "coronal": "Coronal",
+   "axial": "Axial",
+   "oblique": "Oblique"
+  },
+  "modesShort": {
+   "off": "Entier",
+   "sagittal": "Sag",
+   "coronal": "Cor",
+   "axial": "Ax",
+   "oblique": "Obl"
+  },
+  "axes": {
+   "off": "Position (mm)",
+   "sagittal": "Coordonnée D (mm) : − gauche / + droite",
+   "coronal": "Coordonnée A (mm) : − postérieur / + antérieur",
+   "axial": "Coordonnée S (mm) : − inférieur / + supérieur",
+   "oblique": "Décalage normal depuis l’origine (mm)"
+  },
+  "exactPositionAria": "Position exacte de coupe en millimètres",
+  "tilt": "Inclinaison depuis l’axe axial",
+  "azimuth": "Rotation autour de l’axe supérieur",
+  "tiltShort": "Inclinaison",
+  "azimuthShort": "Azimut",
+  "reverseSide": "Inverser le côté conservé",
+  "reverseShort": "Inverser le côté",
+  "openLinkedMpr": "IRM liée",
+  "closeCut": "Fermer la coupe et afficher le cerveau entier",
+  "moreControls": "Autres réglages de coupe",
+  "openMprTitle": "Ouvrir les coupes IRM liées",
+  "statusFull": "Cerveau entier · aucune coupe",
+  "statusPreparing": "Préparation de l’anatomie…",
+  "statusActive": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Coupe tissulaire à Alpha<NNBSP>mm · grille source de Alpha<NNBSP>mm · étiquettes \"",
+   "[\"\",\"Alpha\",\"\"] → \"Coupe tissulaire à <NNBSP>mm · grille source de <NNBSP>mm · étiquettes Alpha\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Coupe tissulaire à Alpha<NNBSP>mm · grille source de Alpha<NNBSP>mm · étiquettes \"",
+   "[\"\",\"Alpha\",\"\"] → \"Coupe tissulaire à <NNBSP>mm · grille source de <NNBSP>mm · étiquettes Alpha\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Coupe tissulaire à Alpha<NNBSP>mm · grille source de Alpha<NNBSP>mm · étiquettes \""
+  ],
+  "statusMri": [
+   "[\"Alpha\",\"\"] → \"Coupe IRM à Alpha<NNBSP>mm · grille source de 1<NNBSP>mm · étiquettes \"",
+   "[\"\",\"Alpha\"] → \"Coupe IRM à <NNBSP>mm · grille source de 1<NNBSP>mm · étiquettes Alpha\"",
+   "[\"Alpha\",\"\"] → \"Coupe IRM à Alpha<NNBSP>mm · grille source de 1<NNBSP>mm · étiquettes \"",
+   "[\"\",\"Alpha\"] → \"Coupe IRM à <NNBSP>mm · grille source de 1<NNBSP>mm · étiquettes Alpha\"",
+   "[\"Alpha\",\"\"] → \"Coupe IRM à Alpha<NNBSP>mm · grille source de 1<NNBSP>mm · étiquettes \""
+  ],
+  "grid": [
+   "[\"Alpha\",\"\"] → \"Grille source de <NNBSP>mm · étiquettes Alpha\"",
+   "[\"\",\"Alpha\"] → \"Grille source de Alpha<NNBSP>mm · étiquettes \"",
+   "[\"Alpha\",\"\"] → \"Grille source de <NNBSP>mm · étiquettes Alpha\"",
+   "[\"\",\"Alpha\"] → \"Grille source de Alpha<NNBSP>mm · étiquettes \"",
+   "[\"Alpha\",\"\"] → \"Grille source de <NNBSP>mm · étiquettes Alpha\""
+  ],
+  "gridMri": [
+   "[\"Alpha\"] → \"IRM · grille source de 1<NNBSP>mm · étiquettes Alpha\"",
+   "[\"\"] → \"IRM · grille source de 1<NNBSP>mm · étiquettes \"",
+   "[\"Alpha\"] → \"IRM · grille source de 1<NNBSP>mm · étiquettes Alpha\"",
+   "[\"\"] → \"IRM · grille source de 1<NNBSP>mm · étiquettes \"",
+   "[\"Alpha\"] → \"IRM · grille source de 1<NNBSP>mm · étiquettes Alpha\""
+  ],
+  "sectionNames": {
+   "sagittal": "Coupe sagittale",
+   "coronal": "Coupe coronale",
+   "axial": "Coupe axiale",
+   "oblique": "Coupe oblique"
+  },
+  "networkByRegion": "réseaux par part dominante de chaque région",
+  "cabNpByArea": "réseau CAB-NP de chaque aire HCP-MMP",
+  "cabNpOtherLabels": "CAB-NP ne colore que les étiquettes HCP-MMP",
+  "functionalByArea": "division fonctionnelle de chaque aire HCP-MMP",
+  "functionalOtherLabels": "les divisions fonctionnelles ne colorent que les étiquettes HCP-MMP",
+  "domainsByArea": "fonctions neuropsychologiques de chaque aire HCP-MMP",
+  "domainsOtherLabels": "les fonctions neuropsychologiques ne colorent que les étiquettes HCP-MMP",
+  "hcpDerived": "HCP dérivées",
+  "destrieuxNative": "Destrieux natives",
+  "nextbrainWarped": "NextBrain recalées",
+  "nextbrainSegmented": "NextBrain segmentées sur ce cerveau",
+  "cutLabels": "Étiquettes de coupe"
+ },
+ "deficitKey": {
+  "keyAll": "Une couleur par constat<NNBSP>; une région citée par plusieurs constats prend la couleur du premier, et les régions couleur tissu ne sont pas citées. Choisissez un constat pour l’afficher seul.",
+  "keyOne": "Les régions que cite ce constat<NNBSP>; les régions couleur tissu ne sont pas citées.",
+  "keyAbsent": "Un constat cerné n’a aucune région colorée dans cette vue.",
+  "keyPicked": "Seulement les régions de ce constat. Choisissez-le de nouveau pour tous les constats."
+ },
+ "diffusion": {
+  "bundleCollection": [
+   "[0] → \"0 faisceaux\"",
+   "[1] → \"1 faisceaux\"",
+   "[2] → \"2 faisceaux\"",
+   "[183] → \"183 faisceaux\"",
+   "[12345] → \"12345 faisceaux\""
+  ],
+  "bundles": "Faisceaux",
+  "brainOpacity": "Opacité du contour cérébral",
+  "minimum": "Longueur minimale (mm)",
+  "cortexOpacity": "Opacité du cortex",
+  "showOverlay": "Afficher les faisceaux avec l’anatomie",
+  "mriOpen": "IRM avec faisceaux",
+  "nativeReference": "Faisceaux dans leur propre cerveau de référence T1.",
+  "nativeCanvas": "Cerveau de référence et faisceaux. Glisser ou utiliser les flèches pour tourner, défiler ou appuyer sur plus et moins pour zoomer. Sélectionner les faisceaux dans le panneau.",
+  "outlineLimit": "Contour cérébral dérivé de l’IRM, sans étiquettes corticales sur ce contour.",
+  "mriHint": "L’IRM liée utilise la même image, et une coupe tranche les deux couches ensemble.",
+  "metricsScope": "Les nombres et longueurs utilisent les trajectoires sources complètes après le filtre de longueur. Les coupes modifient seulement la vue.",
+  "outlineProvenance": "Méthode et provenance du contour cérébral",
+  "search": "Rechercher des faisceaux",
+  "noMatchHint": "Essayez un autre nom de faisceau.",
+  "retry": "Recharger les données de référence",
+  "tryAgain": "Réessayer",
+  "matches": [
+   "[\"Alpha\"] → \"Alpha faisceaux\"",
+   "[\"\"] → \" faisceaux\"",
+   "[\"Alpha\"] → \"Alpha faisceaux\"",
+   "[\"\"] → \" faisceaux\"",
+   "[\"Alpha\"] → \"Alpha faisceaux\""
+  ],
+  "loaded": [
+   "[\"Alpha\"] → \"Chargé : Alpha\"",
+   "[\"\"] → \"Chargé : \"",
+   "[\"Alpha\"] → \"Chargé : Alpha\"",
+   "[\"\"] → \"Chargé : \"",
+   "[\"Alpha\"] → \"Chargé : Alpha\""
+  ],
+  "restored": "Faisceaux initiaux rétablis.",
+  "exported": "CSV des longueurs exporté.",
+  "ready": "Données de référence prêtes.",
+  "loading": "Chargement des données de référence…",
+  "restore": "Rétablir les faisceaux initiaux",
+  "exportMetrics": "Exporter les longueurs CSV",
+  "streamlines": [
+   "[0,1] → \"0 sur 1 trajectoires\"",
+   "[1,2] → \"1 sur 2 trajectoires\"",
+   "[2,183] → \"2 sur 183 trajectoires\"",
+   "[183,12345] → \"183 sur 12<NNBSP>345 trajectoires\"",
+   "[12345,0] → \"12<NNBSP>345 sur 0 trajectoires\""
+  ],
+  "mean": "moyenne",
+  "range": "étendue",
+  "noShown": "Aucune trajectoire ne satisfait ce filtre de longueur.",
+  "source": "Source des données · CC0",
+  "about": "À propos de ces données",
+  "settings": "Affichage des faisceaux",
+  "errors": {
+   "asset-fetch": "Les données de référence n’ont pas pu être téléchargées. Vérifiez la connexion, puis réessayez.",
+   "asset-updated": "Planum a été mis à jour pendant que cette page était ouverte. Rechargez la page pour charger les nouvelles données.",
+   "invalid-data": "Les données de référence n’ont pas pu être lues.",
+   "failed": "Les données de référence n’ont pas pu être affichées."
+  }
+ },
+ "display": {
+  "hemisphere": "Hémisphère",
+  "seeThrough": "Voir à travers le cortex",
+  "seenThrough": "Cortex rendu transparent<NNBSP>; ses aires colorées restent opaques. Affichage règle l’opacité.",
+  "opaqueAgain": "Cortex rendu de nouveau opaque.",
+  "both": "Les deux",
+  "left": "Gauche",
+  "right": "Droite",
+  "internalAnatomy": "Anatomie interne",
+  "showCortex": "Afficher le cortex",
+  "cortexOpacity": "Opacité du cortex",
+  "showInternal": "Afficher l’anatomie interne",
+  "showSpinalCord": "Afficher la moelle épinière",
+  "spinalCordUnavailable": "Aucune moelle épinière n’est publiée pour ce sujet.",
+  "surfaceColors": {
+   "tissue": "Tissu",
+   "mri": "IRM T1",
+   "atlas": "Régions",
+   "network": "Réseaux Yeo 7",
+   "cab-np": "Réseaux CAB-NP",
+   "functional": "Divisions fonctionnelles"
+  },
+  "paints": {
+   "function": "Fonctions",
+   "deficit": "Déficit"
+  },
+  "paintTitles": {
+   "function": "Choisi dans l’onglet Fonctions<NNBSP>: fonctions neuropsychologiques sur les aires HCP-MMP, là où les études rapportent régulièrement une activation (Neurosynth). Choisissez une couleur ici pour l’afficher à la place.",
+   "deficit": "Choisi dans l’onglet Déficits<NNBSP>: les régions citées par les constats du déficit ouvert, une couleur par constat. Choisissez une couleur ici pour l’afficher à la place."
+  },
+  "surfaceColorTitles": {
+   "tissue": "Couleurs des tissus, nuancées par la luminosité T1",
+   "mri": "Intensité IRM T1 recalée en niveaux de gris · région sélectionnée teintée",
+   "atlas": "Couleurs des régions de l’atlas",
+   "network": "Réseaux fonctionnels (Yeo 7)",
+   "cab-np": "Réseaux fonctionnels (CAB-NP, 12) sur les aires HCP-MMP",
+   "functional": "Divisions fonctionnelles sur les aires HCP-MMP : sections de Glasser 2016 et régions nommées de Glasser 2016 et Rolls 2022, 2023"
+  },
+  "resetView": "Réinitialiser la vue"
+ },
+ "dissection": {
+  "heading": "Dissection",
+  "undo": "Annuler",
+  "restoreAll": "Tout rétablir",
+  "hideSelected": "Masquer",
+  "hiddenCount": [
+   "[0] → \"Tout est visible\"",
+   "[1] → \"1 partie masquée\"",
+   "[2] → \"2 parties masquées\"",
+   "[183] → \"183 parties masquées\"",
+   "[12345] → \"12345 parties masquées\""
+  ],
+  "hidePart": [
+   "[\"Alpha\",\"\"] → \"Masquer Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Masquer , Alpha\"",
+   "[\"Alpha\",\"\"] → \"Masquer Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Masquer , Alpha\"",
+   "[\"Alpha\",\"\"] → \"Masquer Alpha, \""
+  ],
+  "showPart": [
+   "[\"Alpha\",\"\"] → \"Afficher Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Afficher , Alpha\"",
+   "[\"Alpha\",\"\"] → \"Afficher Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Afficher , Alpha\"",
+   "[\"Alpha\",\"\"] → \"Afficher Alpha, \""
+  ],
+  "partial": "partiellement masqué",
+  "partHidden": [
+   "[\"Alpha\",\"\"] → \"Masqué : Alpha, .\"",
+   "[\"\",\"Alpha\"] → \"Masqué : , Alpha.\"",
+   "[\"Alpha\",\"\"] → \"Masqué : Alpha, .\"",
+   "[\"\",\"Alpha\"] → \"Masqué : , Alpha.\"",
+   "[\"Alpha\",\"\"] → \"Masqué : Alpha, .\""
+  ],
+  "partShown": [
+   "[\"Alpha\",\"\"] → \"Affiché : Alpha, .\"",
+   "[\"\",\"Alpha\"] → \"Affiché : , Alpha.\"",
+   "[\"Alpha\",\"\"] → \"Affiché : Alpha, .\"",
+   "[\"\",\"Alpha\"] → \"Affiché : , Alpha.\"",
+   "[\"Alpha\",\"\"] → \"Affiché : Alpha, .\""
+  ]
+ },
+ "domains": {
+  "heading": "Fonctions neuropsychologiques",
+  "score": [
+   "[\"Alpha\",\"\"] → \"« Alpha » · z<NBSP>\"",
+   "[\"\",\"Alpha\"] → \"«  » · z<NBSP>Alpha\"",
+   "[\"Alpha\",\"\"] → \"« Alpha » · z<NBSP>\"",
+   "[\"\",\"Alpha\"] → \"«  » · z<NBSP>Alpha\"",
+   "[\"Alpha\",\"\"] → \"« Alpha » · z<NBSP>\""
+  ],
+  "none": [
+   "[\"Alpha\"] → \"Aucune fonction n’atteint z<NBSP>Alpha ici.\"",
+   "[\"\"] → \"Aucune fonction n’atteint z<NBSP> ici.\"",
+   "[\"Alpha\"] → \"Aucune fonction n’atteint z<NBSP>Alpha ici.\"",
+   "[\"\"] → \"Aucune fonction n’atteint z<NBSP> ici.\"",
+   "[\"Alpha\"] → \"Aucune fonction n’atteint z<NBSP>Alpha ici.\""
+  ],
+  "noteStructure": [
+   "[\"Alpha\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après Alpha. Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\"",
+   "[\"\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après . Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\"",
+   "[\"Alpha\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après Alpha. Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\"",
+   "[\"\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après . Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\"",
+   "[\"Alpha\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après Alpha. Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\""
+  ],
+  "note": [
+   "[\"Alpha\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après Alpha<NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\"",
+   "[\"\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après <NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\"",
+   "[\"Alpha\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après Alpha<NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\"",
+   "[\"\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après <NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\"",
+   "[\"Alpha\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après Alpha<NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\""
+  ],
+  "keyTitle": "Fonctions neuropsychologiques",
+  "band": [
+   "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>à<NBSP>3.5\"",
+   "[\"\",null] → \"z<NBSP>≥<NBSP>\"",
+   "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>à<NBSP>3.5\"",
+   "[\"\",null] → \"z<NBSP>≥<NBSP>\"",
+   "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>à<NBSP>3.5\""
+  ],
+  "keyScale": "Constance z moyenne par aire<NNBSP>; plus foncé, plus constant. Les aires couleur tissu sont sous 3.",
+  "keyScaleTerm": "Terme Neurosynth. Constance z moyenne par aire<NNBSP>; plus foncé, plus constant. Les aires couleur tissu sont sous 3.",
+  "keyAll": "Chaque aire montre sa fonction la plus forte<NNBSP>; les aires couleur tissu n’en atteignent aucune. Choisissez-en une pour voir toutes ses aires.",
+  "termOf": [
+   "[\"Alpha\",\"\"] → \"Alpha<NNBSP>: «  »\"",
+   "[\"\",\"Alpha\"] → \"<NNBSP>: « Alpha »\"",
+   "[\"Alpha\",\"\"] → \"Alpha<NNBSP>: «  »\"",
+   "[\"\",\"Alpha\"] → \"<NNBSP>: « Alpha »\"",
+   "[\"Alpha\",\"\"] → \"Alpha<NNBSP>: «  »\""
+  ],
+  "lesionCheck": [
+   "[[\"a\",\"b\"]] → \"Vérification lésionnelle<NNBSP>: a<NNBSP>; b.\"",
+   "[[\"one\"]] → \"Vérification lésionnelle<NNBSP>: one.\"",
+   "[[]] → \"Vérification lésionnelle<NNBSP>: .\"",
+   "[[\"a\",\"b\"]] → \"Vérification lésionnelle<NNBSP>: a<NNBSP>; b.\"",
+   "[[\"one\"]] → \"Vérification lésionnelle<NNBSP>: one.\""
+  ],
+  "lesionItem": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha ()<NNBSP>: Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha)<NNBSP>: \"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha ()<NNBSP>: Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha)<NNBSP>: \"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha ()<NNBSP>: Alpha\""
+  ],
+  "parcelCoverage": [
+   "[\"Alpha\",\"\"] → \"Alpha colorée à \"",
+   "[\"\",\"Alpha\"] → \" colorée à Alpha\"",
+   "[\"Alpha\",\"\"] → \"Alpha colorée à \"",
+   "[\"\",\"Alpha\"] → \" colorée à Alpha\"",
+   "[\"Alpha\",\"\"] → \"Alpha colorée à \""
+  ],
+  "parcelOffSurface": [
+   "[\"Alpha\"] → \"Alpha, non mesurée\"",
+   "[\"\"] → \", non mesurée\"",
+   "[\"Alpha\"] → \"Alpha, non mesurée\"",
+   "[\"\"] → \", non mesurée\"",
+   "[\"Alpha\"] → \"Alpha, non mesurée\""
+  ],
+  "noLesionCheck": "Aucune étude lésionnelle des données de déficits de Planum ne vérifie ce domaine."
+ },
+ "errors": {
+  "updated": "Planum a été mis à jour. Rechargez la page pour continuer.",
+  "download": "Un fichier n’a pas pu être téléchargé. Vérifiez la connexion et réessayez.",
+  "reload": "Recharger",
+  "dismiss": "Fermer",
+  "linkRetry": "Réessayer ouvre Planum sans ce lien.",
+  "webgl2": "Cette visionneuse nécessite WebGL 2, que ce navigateur ou cet appareil ne fournit pas. Une version récente de Firefox, Chrome, Edge ou Safari pour ordinateur la fera fonctionner.",
+  "floatTargets": "Cette visionneuse nécessite WebGL 2 avec des cibles de rendu à virgule flottante (EXT_color_buffer_float), que ce navigateur ou cet appareil ne fournit pas. Une version récente de Firefox, Chrome, Edge ou Safari pour ordinateur la fera fonctionner.",
+  "contextLost": "La vue 3D a été interrompue par le pilote graphique. Restauration…",
+  "operations": {
+   "start": "Impossible de charger l’anatomie.",
+   "link": "Impossible d’ouvrir ce lien.",
+   "layer": [
+    "[\"Alpha\"] → \"Impossible de charger Alpha.\"",
+    "[\"\"] → \"Impossible de charger .\"",
+    "[\"Alpha\"] → \"Impossible de charger Alpha.\"",
+    "[\"\"] → \"Impossible de charger .\"",
+    "[\"Alpha\"] → \"Impossible de charger Alpha.\""
+   ],
+   "colour": [
+    "[\"Alpha\"] → \"Impossible d’afficher la coloration « Alpha ».\"",
+    "[\"\"] → \"Impossible d’afficher la coloration «  ».\"",
+    "[\"Alpha\"] → \"Impossible d’afficher la coloration « Alpha ».\"",
+    "[\"\"] → \"Impossible d’afficher la coloration «  ».\"",
+    "[\"Alpha\"] → \"Impossible d’afficher la coloration « Alpha ».\""
+   ],
+   "region": "Impossible d’afficher la région.",
+   "cord": "Impossible d’afficher la moelle épinière.",
+   "system": "Impossible d’afficher ce système.",
+   "internal": "Impossible d’afficher l’anatomie interne.",
+   "whiteMatter": "Impossible d’afficher la substance blanche sous le cortex masqué.",
+   "wholeBrain": "Impossible de revenir au cerveau entier.",
+   "snapshot": "Impossible d’enregistrer l’image.",
+   "section": "Impossible de préparer la coupe.",
+   "deficit": "Impossible d’afficher les régions de ce déficit.",
+   "landmark": "Impossible d’afficher ce repère.",
+   "mri": "Impossible d’ouvrir l’IRM liée.",
+   "comparison": "Impossible de charger la comparaison des atlas.",
+   "overlap": "Impossible de charger le contour du chevauchement.",
+   "restore": "Impossible de rétablir la vue précédente.",
+   "fullscreen": "Impossible de passer en plein écran."
+  }
+ },
+ "footer": {
+  "referenceColophon": [
+   "[\"Alpha\"] → \"Alpha · données de référence\"",
+   "[\"\"] → \" · données de référence\"",
+   "[\"Alpha\"] → \"Alpha · données de référence\"",
+   "[\"\"] → \" · données de référence\"",
+   "[\"Alpha\"] → \"Alpha · données de référence\""
+  ],
+  "colophon": [
+   "[\"Alpha\",false] → \"Alpha · gabarit de référence moyenné\"",
+   "[\"\",true] → \" · reconstruction IRM d’un individu\"",
+   "[\"Alpha\",false] → \"Alpha · gabarit de référence moyenné\"",
+   "[\"\",true] → \" · reconstruction IRM d’un individu\"",
+   "[\"Alpha\",false] → \"Alpha · gabarit de référence moyenné\""
+  ],
+  "statementAlone": "Pas une anatomie clinique",
+  "visibleRegions": [
+   "[0] → \"0 régions visibles\"",
+   "[1] → \"1 région visible\"",
+   "[2] → \"2 régions visibles\"",
+   "[183] → \"183 régions visibles\"",
+   "[12345] → \"12345 régions visibles\""
+  ],
+  "provenance": "Provenance",
+  "close": "Fermer",
+  "subject": "Sujet",
+  "kind": [
+   "[true] → \"Reconstruction IRM d’un individu\"",
+   "[false] → \"Gabarit de référence moyenné\"",
+   "[true] → \"Reconstruction IRM d’un individu\"",
+   "[false] → \"Gabarit de référence moyenné\"",
+   "[true] → \"Reconstruction IRM d’un individu\""
+  ],
+  "sourceData": "Données sources",
+  "reconstruction": "Reconstruction",
+  "atlases": "Atlas corticaux",
+  "projectedFrom": [
+   "[\"Alpha\"] → \"Projeté depuis Alpha\"",
+   "[\"\"] → \"Projeté depuis \"",
+   "[\"Alpha\"] → \"Projeté depuis Alpha\"",
+   "[\"\"] → \"Projeté depuis \"",
+   "[\"Alpha\"] → \"Projeté depuis Alpha\""
+  ],
+  "networks": "Réseaux fonctionnels",
+  "functional": "Divisions fonctionnelles",
+  "domains": "Domaines neuropsychologiques",
+  "supplemental": "Couches complémentaires",
+  "files": "Fichiers publiés",
+  "sourceFiles": [
+   "[0,false] → \"0 fichiers sources\"",
+   "[1,true] → \"1 fichiers sources, chacun avec une somme SHA-256\"",
+   "[2,false] → \"2 fichiers sources\"",
+   "[183,true] → \"183 fichiers sources, chacun avec une somme SHA-256\"",
+   "[12345,false] → \"12345 fichiers sources\""
+  ],
+  "index": "Index des anatomies publiées",
+  "tractReference": "Référence des faisceaux",
+  "sources": "Sources",
+  "intendedUse": "Pour la recherche et l’enseignement. Planum n’est pas un dispositif médical et ne doit pas servir au diagnostic, au traitement ni à aucune autre décision clinique."
+ },
+ "functional": {
+  "heading": "Division fonctionnelle",
+  "named": "Région nommée",
+  "section": [
+   "[0] → \"Section 0\"",
+   "[1] → \"Section 1\"",
+   "[2] → \"Section 2\"",
+   "[183] → \"Section 183\"",
+   "[12345] → \"Section 12345\""
+  ],
+  "unnamed": "Aucune source ne nomme de région plus fine pour cette aire<NNBSP>; elle n’est montrée que dans sa section.",
+  "areas": [
+   "[\"Alpha\"] → \"Aires HCP‑MMP<NNBSP>: Alpha\"",
+   "[\"\"] → \"Aires HCP‑MMP<NNBSP>: \"",
+   "[\"Alpha\"] → \"Aires HCP‑MMP<NNBSP>: Alpha\"",
+   "[\"\"] → \"Aires HCP‑MMP<NNBSP>: \"",
+   "[\"Alpha\"] → \"Aires HCP‑MMP<NNBSP>: Alpha\""
+  ],
+  "contested": [
+   "[0,1] → \"La table 1 de Glasser donne la section 0 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 1.\"",
+   "[1,2] → \"La table 1 de Glasser donne la section 1 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 2.\"",
+   "[2,183] → \"La table 1 de Glasser donne la section 2 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 183.\"",
+   "[183,12345] → \"La table 1 de Glasser donne la section 183 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 12345.\"",
+   "[12345,0] → \"La table 1 de Glasser donne la section 12345 comme section principale de cette aire<NNBSP>; le texte du supplément la range dans la section 0.\""
+  ],
+  "note": "Regroupements publiés d’aires HCP-MMP entières, portés sur ce cerveau par sa projection HCP-MMP<NNBSP>; sans mesure fonctionnelle de ce cerveau.",
+  "keyAria": "Niveau des divisions fonctionnelles",
+  "levels": {
+   "named": "Nommées",
+   "sections": "Sections"
+  }
+ },
+ "functions": {
+  "search": "Rechercher une fonction",
+  "list": "Fonctions",
+  "all": "Toutes les fonctions",
+  "allDetail": "Chaque aire dans la plus forte des fonctions de base de l’évaluation",
+  "coverage": [
+   "[0,1] → \"0 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 1 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
+   "[1,2] → \"1 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 2 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
+   "[2,183] → \"2 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 183 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
+   "[183,12345] → \"183 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 12345 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
+   "[12345,0] → \"12345 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\""
+  ],
+  "noResults": "Cherchez une fonction, une tâche ou un stimulus, comme «<NBSP>faces<NBSP>» ou «<NBSP>reward<NBSP>», ou un groupe clinique comme «<NBSP>aphasia<NBSP>».",
+  "term": [
+   "[\"Alpha\",\"\"] → \"Données d’activation · terme Neurosynth «<NBSP>Alpha<NBSP>» · \"",
+   "[\"\",\"Alpha\"] → \"Données d’activation · terme Neurosynth «<NBSP><NBSP>» · Alpha\"",
+   "[\"Alpha\",\"\"] → \"Données d’activation · terme Neurosynth «<NBSP>Alpha<NBSP>» · \"",
+   "[\"\",\"Alpha\"] → \"Données d’activation · terme Neurosynth «<NBSP><NBSP>» · Alpha\"",
+   "[\"Alpha\",\"\"] → \"Données d’activation · terme Neurosynth «<NBSP>Alpha<NBSP>» · \""
+  ],
+  "areas": [
+   "[0,1,\"Alpha\"] → \"0 aires HCP-MMP et 1 structure à z<NBSP>≥<NBSP>Alpha\"",
+   "[1,2,\"\"] → \"1 aire HCP-MMP et 2 structures à z<NBSP>≥<NBSP>\"",
+   "[2,183,\"Alpha\"] → \"2 aires HCP-MMP et 183 structures à z<NBSP>≥<NBSP>Alpha\"",
+   "[183,12345,\"\"] → \"183 aires HCP-MMP et 12345 structures à z<NBSP>≥<NBSP>\"",
+   "[12345,0,\"Alpha\"] → \"12345 aires HCP-MMP à z<NBSP>≥<NBSP>Alpha\""
+  ],
+  "areasShort": [
+   "[0,1] → \"0 aires, 1 structure\"",
+   "[1,2] → \"1 aire, 2 structures\"",
+   "[2,183] → \"2 aires, 183 structures\"",
+   "[183,12345] → \"183 aires, 12345 structures\"",
+   "[12345,0] → \"12345 aires\""
+  ],
+  "none": [
+   "[\"Alpha\"] → \"Aucune aire HCP-MMP ni structure n’atteint z<NBSP>Alpha.\"",
+   "[\"\"] → \"Aucune aire HCP-MMP ni structure n’atteint z<NBSP>.\"",
+   "[\"Alpha\"] → \"Aucune aire HCP-MMP ni structure n’atteint z<NBSP>Alpha.\"",
+   "[\"\"] → \"Aucune aire HCP-MMP ni structure n’atteint z<NBSP>.\"",
+   "[\"Alpha\"] → \"Aucune aire HCP-MMP ni structure n’atteint z<NBSP>Alpha.\""
+  ],
+  "areasHeading": "Aires et structures, de la plus forte à la plus faible",
+  "more": [
+   "[0] → \"0 autres aires\"",
+   "[1] → \"1 autre aire\"",
+   "[2] → \"2 autres aires\"",
+   "[183] → \"183 autres aires\"",
+   "[12345] → \"12345 autres aires\""
+  ],
+  "openArea": "Afficher l’aire",
+  "overviewHeading": "Fonctions",
+  "lesionHeading": "Déficits qui vérifient cette carte",
+  "lesionNote": "Part de chaque parcelle citée que la carte colore, mesurée sur fsaverage. Une vérification de la carte par les études lésionnelles, jamais ajustée pour réussir.",
+  "loading": "Préparation des aires HCP-MMP…",
+  "failed": "Les aires HCP-MMP n’ont pas pu être affichées.",
+  "shown": "Affichée sur les aires HCP-MMP",
+  "termsHeading": "Termes Neurosynth",
+  "populationsHeading": "Groupes cliniques Neurosynth",
+  "caveat": "Là où les études de groupes en bonne santé rapportent une activation<NNBSP>: ni ce cerveau, ni ce qu’une lésion altérerait.",
+  "deepStrongest": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), la région la plus forte de Alpha, se trouve sous le cortex.\"",
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha), la région la plus forte de , se trouve sous le cortex.\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), la région la plus forte de Alpha, se trouve sous le cortex.\"",
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha), la région la plus forte de , se trouve sous le cortex.\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), la région la plus forte de Alpha, se trouve sous le cortex.\""
+  ],
+  "deepAmong": [
+   "[\"Alpha\",\"\",\"Alpha\",183] → \"Alpha (), parmi les 183 régions les plus fortes de Alpha, se trouve sous le cortex.\"",
+   "[\"\",\"Alpha\",\"\",12345] → \" (Alpha), parmi les 12345 régions les plus fortes de , se trouve sous le cortex.\"",
+   "[\"Alpha\",\"\",\"Alpha\",0] → \"Alpha (), parmi les 0 régions les plus fortes de Alpha, se trouve sous le cortex.\"",
+   "[\"\",\"Alpha\",\"\",1] → \" (Alpha), parmi les 1 régions les plus fortes de , se trouve sous le cortex.\"",
+   "[\"Alpha\",\"\",\"Alpha\",2] → \"Alpha (), parmi les 2 régions les plus fortes de Alpha, se trouve sous le cortex.\""
+  ],
+  "suggest": [
+   "[\"Alpha\"] → \"Vouliez-vous dire «<NBSP>Alpha<NBSP>»<NNBSP>?\"",
+   "[\"\"] → \"Vouliez-vous dire «<NBSP><NBSP>»<NNBSP>?\"",
+   "[\"Alpha\"] → \"Vouliez-vous dire «<NBSP>Alpha<NBSP>»<NNBSP>?\"",
+   "[\"\"] → \"Vouliez-vous dire «<NBSP><NBSP>»<NNBSP>?\"",
+   "[\"Alpha\"] → \"Vouliez-vous dire «<NBSP>Alpha<NBSP>»<NNBSP>?\""
+  ],
+  "termDetail": [
+   "[\"Alpha\",\"\"] → \"Alpha · \"",
+   "[\"\",\"Alpha\"] → \" · Alpha\"",
+   "[\"Alpha\",\"\"] → \"Alpha · \"",
+   "[\"\",\"Alpha\"] → \" · Alpha\"",
+   "[\"Alpha\",\"\"] → \"Alpha · \""
+  ],
+  "studiesColumn": "Études",
+  "termsMore": [
+   "[0] → \"0 autres termes correspondent<NNBSP>; précisez la recherche pour réduire la liste.\"",
+   "[1] → \"1 autre terme correspond<NNBSP>; précisez la recherche pour réduire la liste.\"",
+   "[2] → \"2 autres termes correspondent<NNBSP>; précisez la recherche pour réduire la liste.\"",
+   "[183] → \"183 autres termes correspondent<NNBSP>; précisez la recherche pour réduire la liste.\"",
+   "[12345] → \"12345 autres termes correspondent<NNBSP>; précisez la recherche pour réduire la liste.\""
+  ],
+  "termCaveat": "Un terme Neurosynth, et non une fonction retenue<NNBSP>: choisi parce qu’il désigne une fonction, une tâche ou un stimulus, mais sa carte n’a été vérifiée ni par rapport à ce qu’il désigne ni par des études lésionnelles.",
+  "populationCaveat": "Un groupe clinique<NNBSP>: ses études comparent surtout des personnes atteintes à des personnes en bonne santé. La carte montre où elles rapportent une activation, et non où une lésion cause l’affection.",
+  "lesionBridgeHeading": "Données lésionnelles",
+  "deficitBridge": [
+   "[0,\"\"] → \"Déficits<NNBSP>: 0 profils lésionnels correspondent à «<NBSP><NBSP>»\"",
+   "[1,\"Alpha\"] → \"Déficits<NNBSP>: 1 profil lésionnel correspond à «<NBSP>Alpha<NBSP>»\"",
+   "[2,\"\"] → \"Déficits<NNBSP>: 2 profils lésionnels correspondent à «<NBSP><NBSP>»\"",
+   "[183,\"Alpha\"] → \"Déficits<NNBSP>: 183 profils lésionnels correspondent à «<NBSP>Alpha<NBSP>»\"",
+   "[12345,\"\"] → \"Déficits<NNBSP>: 12345 profils lésionnels correspondent à «<NBSP><NBSP>»\""
+  ],
+  "results": [
+   "[0,1] → \"1 terme Neurosynth\"",
+   "[1,2] → \"1 fonction et 2 termes Neurosynth\"",
+   "[2,183] → \"2 fonctions et 183 termes Neurosynth\"",
+   "[183,12345] → \"183 fonctions et 12345 termes Neurosynth\"",
+   "[12345,0] → \"12345 fonctions\""
+  ]
+ },
+ "header": {
+  "atlasShort": {
+   "destrieux": "Destrieux",
+   "hcp-mmp": "HCP-MMP",
+   "learning": "Ensemble pédagogique",
+   "aseg": "FreeSurfer aseg",
+   "nextbrain": "NextBrain",
+   "cerebnet": "CerebNet",
+   "wmparc": "wmparc",
+   "zanatomy": "Moelle"
+  },
+  "subject": "Sujet",
+  "atlas": "Atlas",
+  "colour": "Couleur",
+  "colourGroups": {
+   "appearance": "Apparence",
+   "parcellation": "Parcellisation",
+   "networks": "Réseaux"
+  },
+  "atlasBecomes": [
+   "[\"Alpha\",\"\"] → \"Alpha (l’atlas devient )\"",
+   "[\"\",\"Alpha\"] → \" (l’atlas devient Alpha)\"",
+   "[\"Alpha\",\"\"] → \"Alpha (l’atlas devient )\"",
+   "[\"\",\"Alpha\"] → \" (l’atlas devient Alpha)\"",
+   "[\"Alpha\",\"\"] → \"Alpha (l’atlas devient )\""
+  ],
+  "colourBecomes": [
+   "[\"Alpha\",\"\"] → \"Alpha (la couleur devient )\"",
+   "[\"\",\"Alpha\"] → \" (la couleur devient Alpha)\"",
+   "[\"Alpha\",\"\"] → \"Alpha (la couleur devient )\"",
+   "[\"\",\"Alpha\"] → \" (la couleur devient Alpha)\"",
+   "[\"Alpha\",\"\"] → \"Alpha (la couleur devient )\""
+  ],
+  "dataSummary": "Réglages de l’atlas et de l’affichage",
+  "notes": {
+   "destrieux": "Régions des sillons et des gyrus, 74 par hémisphère",
+   "hcp-mmp": "Aires multimodales, 180 par hémisphère (Glasser 2016)",
+   "learning": "Grandes structures regroupant des étiquettes NextBrain et aseg, avec les lobules cérébelleux CerebNet là où ils sont publiés",
+   "aseg": "Segmentation sous-corticale automatique standard de FreeSurfer",
+   "nextbrain": "Atlas d’origine histologique, segmenté sur ce sujet à 0,4<NNBSP>mm"
+  },
+  "skipToModel": "Aller au modèle",
+  "languageSwitch": "Langue",
+  "shortcuts": "Raccourcis clavier",
+  "theme": "Thème",
+  "systemTheme": "Système",
+  "systemThemeNote": "Suivre le réglage clair ou sombre de l’appareil",
+  "lightTheme": "Clair",
+  "darkTheme": "Sombre",
+  "singleKeys": "Raccourcis à une touche",
+  "singleKeysOn": "Oui",
+  "singleKeysOff": "Non",
+  "loading": "Chargement…",
+  "loadingProgress": [
+   "[\"Alpha\"] → \"Chargement Alpha\"",
+   "[\"\"] → \"Chargement \"",
+   "[\"Alpha\"] → \"Chargement Alpha\"",
+   "[\"\"] → \"Chargement \"",
+   "[\"Alpha\"] → \"Chargement Alpha\""
+  ]
+ },
+ "inspector": {
+  "title": "Détails anatomiques",
+  "panelLabel": "Sélection et affichage",
+  "clearSelection": "Effacer la sélection",
+  "noRegionSelected": "Aucune région sélectionnée",
+  "hintCortex": "Sélectionnez une région sur le modèle ou dans la liste anatomique.",
+  "hintStructures": "Le cortex est masqué — les structures internes sont sélectionnables.",
+  "hemisphere": "Hémisphère",
+  "group": "Lobe / Système",
+  "surfaceArea": "Surface",
+  "volume": "Volume",
+  "centroid": "Centroïde (RAS)",
+  "sourceLabel": "Étiquette source",
+  "linkedMri": "IRM liée",
+  "focus": "Cibler",
+  "isolate": "Isoler",
+  "restore": "Rétablir",
+  "constituentsHeading": "Régions constitutives",
+  "constituentsNote": "Union de régions sources. Surface lissée pour la lecture<NNBSP>; volume mesuré sur les voxels sources. Les petites régions sans surface restent accessibles en coupe.",
+  "constituentCutOnly": "Coupe seulement"
+ },
+ "link": {
+  "newTab": "(s’ouvre dans un nouvel onglet)",
+  "notApplied": [
+   "[\"Alpha\"] → \"Éléments du lien non appliqués : Alpha.\"",
+   "[\"\"] → \"Éléments du lien non appliqués : .\"",
+   "[\"Alpha\"] → \"Éléments du lien non appliqués : Alpha.\"",
+   "[\"\"] → \"Éléments du lien non appliqués : .\"",
+   "[\"Alpha\"] → \"Éléments du lien non appliqués : Alpha.\""
+  ],
+  "fields": {
+   "anatomy": "sujet",
+   "atlas": "atlas",
+   "cuts": "étiquettes de coupe",
+   "system": "système",
+   "detail": "anatomie interne",
+   "region": "région sélectionnée",
+   "isolate": "région isolée",
+   "view": "vue",
+   "cam": "position de la caméra",
+   "cut": "coupe",
+   "pos": "position de la coupe",
+   "rev": "côté inversé",
+   "tilt": "inclinaison de la coupe",
+   "az": "azimut de la coupe",
+   "hemi": "hémisphère",
+   "cortex": "affichage du cortex",
+   "internal": "affichage de l’anatomie interne",
+   "cord": "moelle épinière",
+   "colors": "coloration",
+   "level": "niveau fonctionnel",
+   "function": "fonction",
+   "opacity": "opacité du cortex",
+   "mri": "fenêtre IRM",
+   "tab": "onglet",
+   "deficit": "déficit",
+   "circuit": "circuit",
+   "step": "étape du circuit",
+   "lang": "langue",
+   "hidden": "parties masquées"
+  }
+ },
+ "menu": {
+  "more": "Plus de réglages"
+ },
+ "mpr": {
+  "title": "Coupes IRM liées",
+  "subtitle": "Cliquez pour positionner le réticule partagé. Les flèches déplacent d’un millimètre source.",
+  "close": "Fermer",
+  "savePng": "Enregistrer PNG",
+  "contrastWindow": "Fenêtre",
+  "windowCenter": "Niveau",
+  "segmentationOverlay": "Superposition de segmentation",
+  "labels": {
+   "sagittal": "Sagittal",
+   "coronal": "Coronal",
+   "axial": "Axial"
+  },
+  "planes": "Plan de coupe",
+  "positionLabel": [
+   "[\"Alpha\"] → \"Position Alpha\"",
+   "[\"\"] → \"Position \"",
+   "[\"Alpha\"] → \"Position Alpha\"",
+   "[\"\"] → \"Position \"",
+   "[\"Alpha\"] → \"Position Alpha\""
+  ],
+  "sliceAria": [
+   "[\"Alpha\"] → \"Coupe IRM Alpha. Cliquez pour placer le réticule ; les touches fléchées changent de coupe.\"",
+   "[\"\"] → \"Coupe IRM . Cliquez pour placer le réticule ; les touches fléchées changent de coupe.\"",
+   "[\"Alpha\"] → \"Coupe IRM Alpha. Cliquez pour placer le réticule ; les touches fléchées changent de coupe.\"",
+   "[\"\"] → \"Coupe IRM . Cliquez pour placer le réticule ; les touches fléchées changent de coupe.\"",
+   "[\"Alpha\"] → \"Coupe IRM Alpha. Cliquez pour placer le réticule ; les touches fléchées changent de coupe.\""
+  ],
+  "sliderAria": [
+   "[\"Alpha\"] → \"Position IRM Alpha\"",
+   "[\"\"] → \"Position IRM \"",
+   "[\"Alpha\"] → \"Position IRM Alpha\"",
+   "[\"\"] → \"Position IRM \"",
+   "[\"Alpha\"] → \"Position IRM Alpha\""
+  ],
+  "note": [
+   "[{\"individual\":true}] → \"Grille 1 mm d’un sujet unique · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.\"",
+   "[{\"individual\":false}] → \"Grille 1 mm d’un gabarit moyenné · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.\"",
+   "[{\"individual\":true}] → \"Grille 1 mm d’un sujet unique · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.\"",
+   "[{\"individual\":false}] → \"Grille 1 mm d’un gabarit moyenné · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.\"",
+   "[{\"individual\":true}] → \"Grille 1 mm d’un sujet unique · coordonnées RAS de surface · G/D explicitement marqués. L’IRM montre le volume complet indépendamment de la visibilité de surface. Les aires corticales de l’atlas restent des étiquettes de surface.\""
+  ],
+  "readout": [
+   "[\"Alpha\",\"\",2] → \"Alpha —  (étiquette 2)\"",
+   "[\"\",\"Alpha\",183] → \" — Alpha (étiquette 183)\"",
+   "[\"Alpha\",\"\",12345] → \"Alpha —  (étiquette 12345)\"",
+   "[\"\",\"Alpha\",0] → \" — Alpha (étiquette 0)\"",
+   "[\"Alpha\",\"\",1] → \"Alpha —  (étiquette 1)\""
+  ]
+ },
+ "mri": {
+  "dialog": {
+   "close": "Fermer",
+   "hint": "Cliquer sur une coupe pour placer le réticule. Faire défiler pour parcourir les coupes ; les touches fléchées déplacent le réticule d’un voxel.",
+   "plane": "Vue",
+   "all": "Coupes liées + 3D",
+   "axial": "Axiale",
+   "coronal": "Coronale",
+   "sagittal": "Sagittale",
+   "voxel": "Voxel source (indices à partir de 0)",
+   "go": "Aller au voxel",
+   "window": "Fenêtre",
+   "center": "Niveau",
+   "faOpacity": "Opacité FA",
+   "loading": "Chargement de l’IRM de référence et des faisceaux sélectionnés…",
+   "retry": "Recharger l’IRM",
+   "outside": "Le réticule de l’atlas est hors du champ de cette image ; l’IRM garde sa position.",
+   "grid": [
+    "[[1,2,3],\"\"] → \"1 × 2 × 3 voxels source · espacement de \"",
+    "[[182,218,182],\"Alpha\"] → \"182 × 218 × 182 voxels source · espacement de Alpha\"",
+    "[[1,2,3],\"\"] → \"1 × 2 × 3 voxels source · espacement de \"",
+    "[[182,218,182],\"Alpha\"] → \"182 × 218 × 182 voxels source · espacement de Alpha\"",
+    "[[1,2,3],\"\"] → \"1 × 2 × 3 voxels source · espacement de \""
+   ],
+   "ready": "IRM de référence prête.",
+   "viewer": "Visionneuse IRM",
+   "voxelName": [
+    "[\"Alpha\"] → \"Voxel Alpha\"",
+    "[\"\"] → \"Voxel \"",
+    "[\"Alpha\"] → \"Voxel Alpha\"",
+    "[\"\"] → \"Voxel \"",
+    "[\"Alpha\"] → \"Voxel Alpha\""
+   ],
+   "range": [
+    "[0] → \"de 0 à 0\"",
+    "[1] → \"de 0 à 1\"",
+    "[2] → \"de 0 à 2\"",
+    "[183] → \"de 0 à 183\"",
+    "[12345] → \"de 0 à 12345\""
+   ],
+   "moved": [
+    "[[1,2,3]] → \"Réticule déplacé au voxel 1, 2, 3.\"",
+    "[[182,218,182]] → \"Réticule déplacé au voxel 182, 218, 182.\"",
+    "[[1,2,3]] → \"Réticule déplacé au voxel 1, 2, 3.\"",
+    "[[182,218,182]] → \"Réticule déplacé au voxel 182, 218, 182.\"",
+    "[[1,2,3]] → \"Réticule déplacé au voxel 1, 2, 3.\""
+   ],
+   "hintKeys": "Page précédente et Page suivante changent de coupe.",
+   "hintClose": "M ferme cette vue.",
+   "hintTouch": "Toucher une coupe pour placer le réticule, ou saisir un voxel ci-dessous."
+  },
+  "tissueNames": {
+   "Unknown": "Non étiqueté",
+   "???": "Non étiqueté",
+   "Left-Cerebral-White-Matter": "Substance blanche cérébrale",
+   "Right-Cerebral-White-Matter": "Substance blanche cérébrale",
+   "Left-Cerebral-Cortex": "Cortex cérébral gauche",
+   "Right-Cerebral-Cortex": "Cortex cérébral droit",
+   "CSF": "Liquide cérébro-spinal (LCS)",
+   "Left-vessel": "Vaisseau cérébral",
+   "Right-vessel": "Vaisseau cérébral",
+   "WM-hypointensities": "Hypointensités de la substance blanche",
+   "ctx_lh_Medial_wall": "Paroi médiale",
+   "ctx_rh_Medial_wall": "Paroi médiale"
+  }
+ },
+ "navigator": {
+  "title": "Explorateur d’atlas",
+  "findRegion": "Trouver une région",
+  "clearSearch": "Effacer la recherche",
+  "expandAll": "Tout déplier",
+  "collapseAll": "Tout replier",
+  "searchPlaceholder": "Rechercher des régions",
+  "searchResults": "Résultats de recherche",
+  "browseAnatomy": "Parcourir l’anatomie",
+  "cortex": "Cortex",
+  "subcortical": "Sous-cortical",
+  "cutOnly": "Étiquettes de coupe seulement",
+  "groupIn": {
+   "lobe": [
+    "[\"Alpha\"] → \"Lobe alpha\"",
+    "[\"\"] → \"Lobe \"",
+    "[\"Alpha\"] → \"Lobe alpha\"",
+    "[\"\"] → \"Lobe \"",
+    "[\"Alpha\"] → \"Lobe alpha\""
+   ],
+   "network": [
+    "[\"Alpha\"] → \"Réseau alpha\"",
+    "[\"\"] → \"Réseau \"",
+    "[\"Alpha\"] → \"Réseau alpha\"",
+    "[\"\"] → \"Réseau \"",
+    "[\"Alpha\"] → \"Réseau alpha\""
+   ],
+   "system": [
+    "[\"Alpha\"] → \"Système alpha\"",
+    "[\"\"] → \"Système \"",
+    "[\"Alpha\"] → \"Système alpha\"",
+    "[\"\"] → \"Système \"",
+    "[\"Alpha\"] → \"Système alpha\""
+   ]
+  },
+  "scope": "Parcourir",
+  "scopeWhole": "Cerveau entier",
+  "scopeSystem": "Par système",
+  "system": "Système",
+  "allSystems": "Toutes les structures internes",
+  "noMatch": [
+   "[\"Alpha\"] → \"Aucun résultat pour « Alpha »\"",
+   "[\"\"] → \"Aucun résultat pour «  »\"",
+   "[\"Alpha\"] → \"Aucun résultat pour « Alpha »\"",
+   "[\"\"] → \"Aucun résultat pour «  »\"",
+   "[\"Alpha\"] → \"Aucun résultat pour « Alpha »\""
+  ],
+  "noMatchHint": "Essayez une autre orthographe, une abréviation ou un synonyme. Les symptômes et syndromes sont sous Déficits.",
+  "showingCapped": [
+   "[0,\"\"] → \"Affichage de 0 sur . Affinez la recherche pour restreindre.\"",
+   "[1,\"Alpha\"] → \"Affichage de 1 sur Alpha. Affinez la recherche pour restreindre.\"",
+   "[2,\"\"] → \"Affichage de 2 sur . Affinez la recherche pour restreindre.\"",
+   "[183,\"Alpha\"] → \"Affichage de 183 sur Alpha. Affinez la recherche pour restreindre.\"",
+   "[12345,\"\"] → \"Affichage de 12345 sur . Affinez la recherche pour restreindre.\""
+  ],
+  "matchesInOther": [
+   "[\"Alpha\",\"\"] → \"Alpha dans . \"",
+   "[\"\",\"Alpha\"] → \" dans Alpha. \"",
+   "[\"Alpha\",\"\"] → \"Alpha dans . \"",
+   "[\"\",\"Alpha\"] → \" dans Alpha. \"",
+   "[\"Alpha\",\"\"] → \"Alpha dans . \""
+  ],
+  "switchAtlas": "Changer d’atlas",
+  "matchesInOtherCut": [
+   "[\"Alpha\",\"\"] → \"Alpha dans , qui n’étiquette que les coupes. \"",
+   "[\"\",\"Alpha\"] → \" dans Alpha, qui n’étiquette que les coupes. \"",
+   "[\"Alpha\",\"\"] → \"Alpha dans , qui n’étiquette que les coupes. \"",
+   "[\"\",\"Alpha\"] → \" dans Alpha, qui n’étiquette que les coupes. \"",
+   "[\"Alpha\",\"\"] → \"Alpha dans , qui n’étiquette que les coupes. \""
+  ],
+  "switchCutAtlas": "Changer les étiquettes de coupe",
+  "rowHiddenAria": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha,  : Alpha. Activer pour afficher.\"",
+   "[\"\",\"Alpha\",\"\"] → \", Alpha : . Activer pour afficher.\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha,  : Alpha. Activer pour afficher.\"",
+   "[\"\",\"Alpha\",\"\"] → \", Alpha : . Activer pour afficher.\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha,  : Alpha. Activer pour afficher.\""
+  ],
+  "rowUnavailableAria": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , non affiché : Alpha.\"",
+   "[\"\",\"Alpha\",\"\"] → \", Alpha, non affiché : .\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , non affiché : Alpha.\"",
+   "[\"\",\"Alpha\",\"\"] → \", Alpha, non affiché : .\"",
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , non affiché : Alpha.\""
+  ]
+ },
+ "networks": {
+  "heading": "Réseaux fonctionnels",
+  "yeo": "Réseaux de Yeo (7)",
+  "cabNp": "Réseaux CAB-NP",
+  "cabNpNote": "L’aire HCP-MMP entière est assignée à un seul réseau par CAB-NP (Ji et al. 2019).",
+  "notes": {
+   "vertices": "Parts des sommets source assignés<NNBSP>; sommets non assignés exclus. Parts inférieures à 5<NNBSP>% masquées sans renormalisation.",
+   "voxels": "Parts des voxels corticaux assignés<NNBSP>; voxels non assignés exclus. Parts inférieures à 5<NNBSP>% masquées sans renormalisation."
+  },
+  "caveat": "Réseaux de repos de groupe, sans mesure fonctionnelle de ce cerveau."
+ },
+ "orientation": {
+  "R": "D",
+  "L": "G",
+  "S": "S",
+  "I": "I",
+  "P": "P",
+  "A": "A"
+ },
+ "reasons": {
+  "no-mri": "Hors du volume IRM",
+  "hemisphere": "Hémisphère masqué",
+  "cortex-hidden": "Cortex masqué",
+  "internal-hidden": "Anatomie interne masquée",
+  "spinal-cord-hidden": "Moelle épinière masquée",
+  "isolated": "Masqué par l’isolement",
+  "removed": "Masqué",
+  "no-cut": "Visible en coupe",
+  "below-cut-resolution": "Trop petit pour la coupe",
+  "other-detail": "Dans un autre niveau de détail",
+  "inDetailSet": [
+   "[\"Alpha\"] → \"Dans Alpha\"",
+   "[\"\"] → \"Dans \"",
+   "[\"Alpha\"] → \"Dans Alpha\"",
+   "[\"\"] → \"Dans \"",
+   "[\"Alpha\"] → \"Dans Alpha\""
+  ],
+  "other-system": "Dans un autre système",
+  "fallback": "Masqué"
+ },
+ "sheet": {
+  "expand": "Déplier le panneau",
+  "collapse": "Replier le panneau",
+  "detent": {
+   "peek": "Panneau replié",
+   "half": "Panneau à moitié ouvert",
+   "full": "Panneau entièrement ouvert"
+  }
+ },
+ "shortcuts": {
+  "title": "Raccourcis clavier",
+  "close": "Fermer",
+  "rangeTo": "à",
+  "groups": [
+   [
+    "Panneau",
+    [
+     [
+      "/",
+      "Activer le champ de recherche"
+     ],
+     [
+      "← →",
+      "Sur les onglets de mode : passer entre Anatomie, Fonctions, Déficits, Circuits et Faisceaux"
+     ],
+     [
+      "Échap",
+      "Dans une vue détaillée : revenir à la liste. Ailleurs : effacer la recherche, puis la sélection, puis la fonction ou le déficit"
+     ],
+     [
+      "↑ ↓",
+      "Parcourir les résultats ou l’arborescence"
+     ],
+     [
+      "→ ←",
+      "Dans l’arbre : ouvrir ou fermer un groupe, ou atteindre l’œil d’une région"
+     ],
+     [
+      "Début Fin",
+      "Première ou dernière ligne de l’arbre"
+     ],
+     [
+      "Entrée",
+      "Sélectionner la région ciblée"
+     ],
+     [
+      "V",
+      "Masquer ou afficher la ligne ciblée de l’arbre"
+     ]
+    ]
+   ],
+   [
+    "Modèle",
+    [
+     [
+      "Tab",
+      "Placer le focus sur le modèle"
+     ],
+     [
+      "← → ↑ ↓",
+      "Faire tourner le modèle, une fois ciblé"
+     ],
+     [
+      "+ −",
+      "Zoomer ou dézoomer le modèle"
+     ],
+     [
+      "1 – 6",
+      "Vue gauche, droite, antérieure, postérieure, supérieure, inférieure"
+     ],
+     [
+      "0",
+      "Revenir à la vue oblique"
+     ],
+     [
+      "F",
+      "Cibler la région sélectionnée"
+     ],
+     [
+      "I",
+      "Isoler ou rétablir la région sélectionnée"
+     ]
+    ]
+   ],
+   [
+    "Affichage",
+    [
+     [
+      "C",
+      "Afficher ou masquer le cortex"
+     ],
+     [
+      "U",
+      "Afficher ou masquer l’anatomie interne"
+     ],
+     [
+      "S",
+      "Afficher ou masquer la moelle épinière"
+     ],
+     [
+      "H",
+      "Changer d’hémisphère : les deux, gauche, droite"
+     ],
+     [
+      "M",
+      "Ouvrir ou fermer les coupes IRM ; dans Faisceaux, l’IRM avec faisceaux"
+     ],
+     [
+      "?",
+      "Ouvrir cette liste"
+     ]
+    ]
+   ]
+  ],
+  "singleKeysNote": [
+   "[true] → \"Les raccourcis à une touche valables sur toute la page (lettres, chiffres, / et ?) peuvent être désactivés dans le menu des réglages.\"",
+   "[false] → \"Les raccourcis à une touche valables sur toute la page sont désactivés. Réactivez-les dans le menu des réglages.\"",
+   "[true] → \"Les raccourcis à une touche valables sur toute la page (lettres, chiffres, / et ?) peuvent être désactivés dans le menu des réglages.\"",
+   "[false] → \"Les raccourcis à une touche valables sur toute la page sont désactivés. Réactivez-les dans le menu des réglages.\"",
+   "[true] → \"Les raccourcis à une touche valables sur toute la page (lettres, chiffres, / et ?) peuvent être désactivés dans le menu des réglages.\""
+  ]
+ },
+ "sides": {
+  "glyphs": {
+   "left": "G",
+   "right": "D",
+   "midline": "Méd"
+  },
+  "words": {
+   "left": "gauche",
+   "right": "droite",
+   "midline": "ligne médiane"
+  },
+  "capitalized": {
+   "left": "Gauche",
+   "right": "Droite",
+   "midline": "Ligne médiane"
+  }
+ },
+ "viewport": {
+  "navigationHint": "Glisser<NNBSP>: tourner · Molette<NNBSP>: zoom · Clic<NNBSP>: inspecter",
+  "navigationHintTracts": "Glisser<NNBSP>: tourner · Molette<NNBSP>: zoom",
+  "navigationHintTouch": "Glisser<NNBSP>: tourner · Pincer<NNBSP>: zoom · Toucher<NNBSP>: inspecter",
+  "navigationHintTractsTouch": "Glisser<NNBSP>: tourner · Pincer<NNBSP>: zoom",
+  "keyboardHint": "Vue 3D · Flèches<NNBSP>: tourner · + −<NNBSP>: zoom",
+  "viewAria": "Vue anatomique",
+  "viewToolAria": [
+   "[\"Alpha\"] → \"Vue anatomique<NNBSP>: alpha\"",
+   "[\"\"] → \"Vue anatomique<NNBSP>: \"",
+   "[\"Alpha\"] → \"Vue anatomique<NNBSP>: alpha\"",
+   "[\"\"] → \"Vue anatomique<NNBSP>: \"",
+   "[\"Alpha\"] → \"Vue anatomique<NNBSP>: alpha\""
+  ],
+  "viewTool": "Vue",
+  "sectionTool": "Coupe",
+  "displayTool": "Affichage",
+  "dockLabel": "Outils du visualiseur 3D",
+  "orbitGroup": "Faire pivoter le modèle",
+  "orbitLeft": "Tourner à gauche",
+  "orbitRight": "Tourner à droite",
+  "orbitUp": "Tourner vers le haut",
+  "orbitDown": "Tourner vers le bas",
+  "directionKey": {
+   "title": "Direction locale des trajectoires",
+   "leftRight": "Gauche–droite",
+   "anteriorPosterior": "Antéro-postérieur",
+   "superiorInferior": "Supéro-inférieur"
+  },
+  "keyAbsent": "Absent de cette vue",
+  "snapshot": "Enregistrer l’image (PNG)",
+  "snapshotView": [
+   "[\"Alpha\"] → \"Vue alpha\"",
+   "[\"\"] → \"Vue \"",
+   "[\"Alpha\"] → \"Vue alpha\"",
+   "[\"\"] → \"Vue \"",
+   "[\"Alpha\"] → \"Vue alpha\""
+  ],
+  "snapshotStatement": "Planum · Pas une anatomie clinique",
+  "fullscreen": "Plein écran",
+  "exitFullscreen": "Quitter le plein écran",
+  "snapshotSaved": [
+   "[\"Alpha\"] → \"Image enregistrée : Alpha.\"",
+   "[\"\"] → \"Image enregistrée : .\"",
+   "[\"Alpha\"] → \"Image enregistrée : Alpha.\"",
+   "[\"\"] → \"Image enregistrée : .\"",
+   "[\"Alpha\"] → \"Image enregistrée : Alpha.\""
+  ],
+  "loadingAnatomy": "Chargement de l’anatomie…",
+  "loadingWithTotal": [
+   "[0,1] → \"Chargement de l’anatomie · 0,0<NNBSP>Mo / 0,0<NNBSP>Mo\"",
+   "[1,2] → \"Chargement de l’anatomie · 0,0<NNBSP>Mo / 0,0<NNBSP>Mo\"",
+   "[2,183] → \"Chargement de l’anatomie · 0,0<NNBSP>Mo / 0,0<NNBSP>Mo\"",
+   "[183,12345] → \"Chargement de l’anatomie · 0,0<NNBSP>Mo / 0,0<NNBSP>Mo\"",
+   "[12345,0] → \"Chargement de l’anatomie · 0,0<NNBSP>Mo / 0,0<NNBSP>Mo\""
+  ],
+  "progressAria": "Téléchargement de l’anatomie",
+  "loaded": "Anatomie chargée.",
+  "canvasRole": "visionneuse anatomique 3D",
+  "canvasLabel": "Modèle du cerveau. Glissez ou utilisez les flèches pour tourner, défilez ou appuyez sur plus et moins pour zoomer, cliquez sur une région pour la sélectionner.",
+  "error": "Une erreur est survenue.",
+  "retry": "Réessayer"
+ },
+ "views": {
+  "oblique": "Oblique",
+  "left": "Gauche",
+  "right": "Droite",
+  "anterior": "Antérieure",
+  "posterior": "Postérieure",
+  "superior": "Supérieure",
+  "inferior": "Inférieure"
+ },
+ "workspace": {
+  "modes": {
+   "anatomy": "Anatomie",
+   "functions": "Fonctions",
+   "deficits": "Déficits",
+   "circuits": "Circuits",
+   "diffusion": "Faisceaux"
+  },
+  "tabsAria": "Explorer l’atlas",
+  "panelAria": "Panneau de l’atlas",
+  "inspect": [
+   "[\"Alpha\"] → \"Examiner Alpha\"",
+   "[\"\"] → \"Examiner \"",
+   "[\"Alpha\"] → \"Examiner Alpha\"",
+   "[\"\"] → \"Examiner \"",
+   "[\"Alpha\"] → \"Examiner Alpha\""
+  ],
+  "back": [
+   "[\"Alpha\"] → \"Retour : Alpha\"",
+   "[\"\"] → \"Retour : \"",
+   "[\"Alpha\"] → \"Retour : Alpha\"",
+   "[\"\"] → \"Retour : \"",
+   "[\"Alpha\"] → \"Retour : Alpha\""
+  ],
+  "path": "Fil d’Ariane",
+  "showInList": [
+   "[\"Alpha\"] → \"Alpha, afficher dans la liste\"",
+   "[\"\"] → \", afficher dans la liste\"",
+   "[\"Alpha\"] → \"Alpha, afficher dans la liste\"",
+   "[\"\"] → \", afficher dans la liste\"",
+   "[\"Alpha\"] → \"Alpha, afficher dans la liste\""
+  ]
+ }
+}
