@@ -78,7 +78,15 @@ async function expectAxeClean(
     for (const theme of ['light', 'dark']) {
       document.documentElement.dataset.theme = theme;
       for (const [width, height] of sizes) {
-        await page.viewport(width, height);
+        // A new size reaches the frame in a later rendering step, which a loaded machine can hold
+        // past a poll's one second: wait for the resize itself, then for the bar to refit.
+        if (innerWidth !== width || innerHeight !== height) {
+          const resized = new Promise((resolve) =>
+            addEventListener('resize', resolve, { once: true }),
+          );
+          await page.viewport(width, height);
+          await resized;
+        }
         await expect.poll(() => bar().hasAttribute('data-collapsed')).toBe(collapsedAt(width));
         const results = await axe.run(document.body, {
           runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],

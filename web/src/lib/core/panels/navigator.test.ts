@@ -9,6 +9,7 @@ import {
   matchesElsewhere,
   matchSegments,
   nextEnabledIndex,
+  reasonText,
   regionGroup,
   rowStatesReason,
   sectionReasons,
@@ -32,6 +33,14 @@ test('an arrow at the end of the list leaves the armed row where it is', () => {
 
 test('the first arrow from an empty field lands on the first choosable row', () => {
   assert.equal(nextEnabledIndex([true, false, false], -1, 1), 1);
+});
+
+test('a hidden row says its own reason, names the detail set it is in, or falls back', () => {
+  assert.equal(reasonText('hemisphere', 'destrieux', 'en'), 'Hemisphere hidden');
+  assert.equal(reasonText('other-detail', 'learning', 'fr'), 'Dans Ensemble pédagogique');
+  assert.equal(reasonText('no-such-reason', undefined, 'en'), 'Hidden');
+  // A key of the table that is not a sentence is no reason either.
+  assert.equal(reasonText('inDetailSet', undefined, 'fr'), 'Masqué');
 });
 
 test('an eye is shown, hidden, or partial, so a group with hidden parts stays in view', () => {

@@ -99,7 +99,8 @@
     void arm(flat.find((o) => !o.disabled)?.value ?? null, 'start');
   });
 
-  function move(delta: number) {
+  /** Arms the next enabled option `delta` away, as Down (1) or Up (-1) in the field would. */
+  export function move(delta: number) {
     const current = flat.findIndex((o) => o.value === armed);
     const index = nextEnabledIndex(
       flat.map((o) => o.disabled === true),
