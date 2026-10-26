@@ -181,7 +181,11 @@ export function createFunctionExplorer(deps: FunctionExplorerDeps) {
     async openArea(region: string): Promise<void> {
       if (opening) return;
       const outcome = await start(OPEN_AREA, () => excursions.openListedRegion(region));
-      if (outcome.ok && outcome.value !== false) requestFocus(FOCUS_TARGETS.regionTitle);
+      if (!outcome.ok || outcome.value === false) return;
+      // The region's name is brought to the top below the profile, then takes focus (clinical.js:23-30).
+      if (requestFocus(FOCUS_TARGETS.regionTitle, { preventScroll: true })) {
+        (document.activeElement as HTMLElement).scrollIntoView({ block: 'start' });
+      }
     },
 
     /** The profile closes with the excursion it opened, so focus returns to its row in the list. */

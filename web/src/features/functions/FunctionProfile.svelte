@@ -40,7 +40,10 @@
       {content.name}
     </h2>
   {/if}
-  <p class="meta" role="status" data-error={String(model.failed)}>{model.meta}</p>
+  <!-- A new language is a new element: text inserted with its element is not announced. -->
+  {#key model.lang}
+    <p class="meta" role="status" data-error={String(model.failed)}>{model.meta}</p>
+  {/key}
   {#if content && id}
     <div class="content">
       {#if content.all}

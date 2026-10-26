@@ -110,6 +110,7 @@
       bind:this={input}
       id="{uid}-search"
       type="search"
+      aria-controls="{uid}-list"
       autocomplete="off"
       spellcheck="false"
       bind:value={() => model.query, (value) => model.setQuery(value)}
@@ -142,7 +143,7 @@
 </div>
 
 <div class="browser" hidden={!model.exploring}>
-  <div role="group" aria-label={copy.list} bind:this={listElement}>
+  <div id="{uid}-list" role="group" aria-label={copy.list} bind:this={listElement}>
     {#if content.overview}
       <ul class="rows">
         <li>{@render row(content.overview)}</li>

@@ -31,8 +31,10 @@
 </div>
 
 <style>
-  .bar {
-    display: flex;
-    height: var(--tab-height);
+  @layer features {
+    .bar {
+      display: flex;
+      height: var(--tab-height);
+    }
   }
 </style>

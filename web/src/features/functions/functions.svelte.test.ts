@@ -98,13 +98,15 @@ describe('the list', () => {
     }
   });
 
-  test('the search field has a visible label, no aria-controls and the / hint', async () => {
+  test('the search field has a visible label, aria-controls the list and the / hint', async () => {
     mount();
     const label = document.querySelector<HTMLLabelElement>('label.field-label')!;
     expect(label.textContent).toBe('Search functions');
     expect(label.checkVisibility()).toBe(true);
     expect(label.htmlFor).toBe(fieldElement().id);
-    expect(fieldElement().hasAttribute('aria-controls')).toBe(false);
+    expect(fieldElement().getAttribute('aria-controls')).toBe(
+      document.querySelector('[role="group"][aria-label="Functions"]')!.id,
+    );
     expect(fieldElement().autocomplete).toBe('off');
     expect(document.querySelector('kbd')!.textContent).toBe('/');
     expect(document.querySelector('kbd')!.getAttribute('aria-hidden')).toBe('true');
@@ -354,7 +356,9 @@ describe('opening a function', () => {
     mount();
     const scroller = document.querySelector<HTMLElement>('.detail')!;
     scroller.style.cssText = 'height: 120px; overflow-y: auto';
+    await open(few().id);
     scroller.scrollTop = 80;
+    expect(scroller.scrollTop).toBeGreaterThan(0);
     await open(many().id);
     expect(scroller.scrollTop).toBe(0);
   });
@@ -494,10 +498,20 @@ describe('areas', () => {
     mount();
     await open(few().id);
     const button = area();
+    const panel = document.querySelector<HTMLElement>('.detail')!;
+    // Room below the name, so it can reach the top.
+    panel.append(Object.assign(document.createElement('div'), { style: 'height: 2000px' }));
+    panel.style.cssText = 'height: 200px; overflow-y: auto';
     button.focus();
     await userEvent.keyboard('{Enter}');
     await expect.poll(() => document.activeElement?.id).toBe('selected-name');
     expect(meta().getAttribute('data-error')).toBe('false');
+    // The name is at the top of the scrolling panel, as legacy brought it.
+    const scroller = document.querySelector<HTMLElement>('.detail')!;
+    expect(
+      document.getElementById('selected-name')!.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top,
+    ).toBeLessThanOrEqual(2);
 
     await open(few().id);
     const failing = deferred();
@@ -517,6 +531,7 @@ describe('areas', () => {
     await open(few().id);
     const gate = deferred();
     world.hold.reveal = () => gate.promise;
+    const opened = vi.spyOn(world.excursions, 'openListedRegion');
     const first = area(0);
     first.focus();
     await userEvent.keyboard('{Enter}');
@@ -524,9 +539,9 @@ describe('areas', () => {
     expect(first.getAttribute('aria-disabled')).toBe('true');
     expect(first.hasAttribute('disabled')).toBe(false);
     expect(document.activeElement).toBe(first);
-    const before = world.engine.calls.length;
     await userEvent.keyboard('{Enter}');
-    expect(world.engine.calls.length).toBe(before);
+    area(1).click();
+    expect(opened).toHaveBeenCalledTimes(1);
     expect(document.activeElement).toBe(first);
     gate.resolve();
     await expect.poll(() => area(0).getAttribute('aria-disabled')).toBeNull();
@@ -537,18 +552,23 @@ describe('areas', () => {
 describe('runs: latest wins, failures are worded and offer a reload', () => {
   test('a later choice overtakes an earlier one: only the latest speaks', async () => {
     mount();
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const slow = deferred();
     world.hold.reveal = () => slow.promise;
     const [a, b] = [world.domains.domains[0]!, world.domains.domains[1]!];
-    void world.explorer.openFunction(a.id);
+    const earlier = world.explorer.openFunction(a.id);
     world.hold.reveal = null;
     await world.explorer.openFunction(b.id);
     await expect.poll(() => meta().textContent).toMatch(/HCP-MMP/);
-    slow.resolve();
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // The earlier run fails after the later one succeeded: it is logged, and it says nothing.
+    slow.reject(new Error('late failure'));
+    expect(await earlier).toBe(false);
+    expect(error).toHaveBeenCalled();
     expect(world.session.state.selectedFunction).toBe(b.id);
     expect(meta().textContent).toMatch(/HCP-MMP/);
+    expect(meta().getAttribute('data-error')).toBe('false');
     expect(world.explorer.opening).toBe(false);
+    error.mockRestore();
   });
 
   test('a failure says the areas could not be shown, logs it, and a newer-deploy failure raises the Reload notice', async () => {
@@ -733,7 +753,6 @@ describe('accessibility', () => {
         expect(element.scrollWidth, element.outerHTML).toBeLessThanOrEqual(element.clientWidth + 1);
         // A name that grows is taller, never cut: no fixed height on any control.
         if (element.matches('button, summary')) {
-          expect(getComputedStyle(element).height).not.toBe('');
           expect(element.scrollHeight, element.outerHTML).toBeLessThanOrEqual(
             element.clientHeight + 1,
           );
