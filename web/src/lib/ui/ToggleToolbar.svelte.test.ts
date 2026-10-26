@@ -3,7 +3,6 @@ import { describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { expectAxeClean, withMedia } from './a11y-test-support.ts';
-import { OWN_KEYS_SELECTOR } from './keys.ts';
 import ToggleToolbar from './ToggleToolbar.svelte';
 
 const presets = [
@@ -100,9 +99,9 @@ describe('ToggleToolbar', () => {
     expect(svg?.querySelector('path')?.getAttribute('d')).toBe('M4 14.5 9 9.5h11l-5 5Z');
   });
 
-  test('buttons opt out of the single-key shortcuts and are at least 24 px', async () => {
+  test('buttons carry no own-keys marker (the region does) and are at least 24 px', async () => {
     render(ToggleToolbar, props());
-    expect(document.querySelectorAll(`button${OWN_KEYS_SELECTOR}`)).toHaveLength(4);
+    expect(document.querySelectorAll('[data-own-keys]')).toHaveLength(0);
     for (const b of document.querySelectorAll('button')) {
       const box = b.getBoundingClientRect();
       expect(box.width).toBeGreaterThanOrEqual(24);

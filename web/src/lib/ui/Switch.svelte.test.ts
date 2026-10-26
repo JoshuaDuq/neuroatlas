@@ -9,6 +9,17 @@ const toggle = () => page.getByRole('switch', { name: 'Single-key shortcuts' });
 const el = () => toggle().element() as HTMLElement;
 const props = (extra = {}) => ({ checked: false, label: 'Single-key shortcuts', ...extra });
 
+// Two frames start the transitions a change triggers; then they are awaited, not timed.
+async function settled() {
+  for (let frame = 0; frame < 2; frame++)
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  await Promise.all(
+    el()
+      .getAnimations({ subtree: true })
+      .map((animation) => animation.finished),
+  );
+}
+
 describe('Switch', () => {
   test('role switch named by its visible label, state in aria-checked', async () => {
     render(Switch, props({ checked: true }));
@@ -49,7 +60,8 @@ describe('Switch', () => {
       expect(getComputedStyle(el()).borderTopColor).toBe(getComputedStyle(thumb).backgroundColor);
       const off = getComputedStyle(thumb).backgroundColor;
       el().click();
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      // The colours transition; read them once the transitions have finished.
+      await settled();
       expect(getComputedStyle(thumb).backgroundColor).not.toBe(off);
       expect(getComputedStyle(el()).backgroundColor).toBe(off);
     });
