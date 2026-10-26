@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { declarationsBySelector } from './css-scan.ts';
-import { sheets } from './sources.ts';
+import { sheets, stageVars } from './sources.ts';
 
 // WCAG 2.2 1.4.3 (text, 4.5:1) and 1.4.11 (non-text, 3:1), computed from the declared tokens.
 
@@ -12,6 +12,10 @@ const themes = {
   light: declared[':root'],
   dark: { ...declared[':root'], ...darkOverrides },
 };
+
+const stageTokens = declarationsBySelector(stageVars)['.stage-dock, .stage-keys, .stage'];
+if (!stageTokens)
+  throw new Error('stage-vars.css declares no .stage-dock, .stage-keys, .stage rule.');
 
 function resolve(theme: Record<string, string>, name: string): string {
   const value = theme[name];
@@ -94,5 +98,25 @@ describe.each(Object.entries(themes))('%s theme', (_name, theme) => {
     for (const ground of OVERLAY_GROUNDS) {
       expect(contrast(theme, '--overlay-control-border', ground), ground).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  // The controls on the stage (DisplayPopover, ViewPopover, the dock) read the panel names through stage-vars.css.
+  it('the stage thumb ring passes 3:1 on the raised fill, the track and the popover surface', () => {
+    const stage = { ...theme, ...stageTokens };
+    for (const ground of [
+      '--surface-raised',
+      '--surface-tonal',
+      '--surface-tonal-hover',
+      '--surface-navigation',
+      '--surface-base',
+      '--surface-hover',
+    ]) {
+      expect(contrast(stage, '--thumb-ring', ground), ground).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('the scale bar ink passes 4.5:1 on its halo core', () => {
+    // axe cannot measure the bar over the canvas; the halo core is the darkest ground its text sits on.
+    expect(contrast(theme, '--overlay-ink', '--overlay-halo-core')).toBeGreaterThanOrEqual(4.5);
   });
 });

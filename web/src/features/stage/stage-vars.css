@@ -27,8 +27,8 @@
     --surface-raised: var(--overlay-raised);
     --border-subtle: var(--overlay-border);
     --border-control: var(--overlay-control-border);
-    /* 3.3:1 against the track, so the selected thumb keeps an edge without its shadow. */
-    --thumb-ring: var(--overlay-control-border);
+    /* 3.7:1 on the raised fill and 5.2:1 on the track, so the selected thumb keeps an edge without its shadow. */
+    --thumb-ring: var(--overlay-ink-faint);
     color: var(--overlay-ink);
   }
 

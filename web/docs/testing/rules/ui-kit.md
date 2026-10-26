@@ -58,16 +58,16 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Rule:** In the light and the dark theme, body inks reach 4.5:1 on every panel ground, control edges 3:1; the primary button's ink 4.5:1 on its fills; stage overlay inks 4.5:1 and the overlay control border 3:1 on every plate (WCAG 1.4.3, 1.4.11).
 - **Kind:** accessibility
 - **Level:** unit (contrast computed from the declared tokens)
-- **Source:** WCAG 2.2 SC 1.4.3, 1.4.11; deviation `u1-overlay-control-contrast.md`
+- **Source:** WCAG 2.2 SC 1.4.3, 1.4.11; deviation `u1-overlay-control-contrast.md`, `u1-stage-thumb-ring-contrast.md`
 - **Expected:** Inks `--text-primary`, `--text-secondary`, `--text-tertiary`, `--accent`, `--danger` ≥ 4.5 on `--surface-base`, `-navigation`, `-sunken`, `-canvas`, `-hover`, `-raised`, `-tonal`, `-tonal-hover`; `--border-control`, `--thumb-ring` ≥ 3 on them; `--primary-ink` ≥ 4.5 on `--primary-fill`, `--primary-fill-hover`; `--overlay-ink`, `-ink-muted`, `-ink-faint`, `-accent`, `-danger` ≥ 4.5 and `--overlay-control-border` ≥ 3 on `--overlay-plate`, `-plate-hover`, `-track`, `-track-hover`. `--overlay-control-border` is `#70777f`: 3.96, 3.34, 3.43, 3.01:1 on those four (±0.01).
-- **Covered by:** `src/styles/contrast.test.ts` (R; the dark theme was tested with the light tokens until K9 fixed its selector key, and now fails if that rule is missing; the dark `--thumb-ring` was 2.92:1 on `--surface-raised` and is fixed, deviation `u1-thumb-ring-contrast.md`)
+- **Covered by:** `src/styles/contrast.test.ts` (R; the dark theme was tested with the light tokens until K9 fixed its selector key, and now fails if that rule is missing; the dark `--thumb-ring` was 2.92:1 on `--surface-raised` and is fixed, deviation `u1-thumb-ring-contrast.md`; the stage's `--thumb-ring`, read through `stage-vars.css`, ≥ 3 on `--surface-raised`, `-tonal`, `-tonal-hover`, `-navigation`, `-base` and `-hover`, deviation `u1-stage-thumb-ring-contrast.md`; the scale bar's ink, STAGE-10)
 
 ### UI-06 · Both themes declare the published palette
 
 - **Rule:** `tokens.css` declares one light set on `:root` and one dark override on `:root[data-theme='dark']`, with the published values; the phone rule is separate.
 - **Kind:** data
 - **Level:** unit (declared values)
-- **Source:** `viewer/styles/tokens.css`; deviation `u1-overlay-control-contrast.md`
+- **Source:** `viewer/styles/tokens.css`; deviation `u1-overlay-control-contrast.md`, `u1-stage-thumb-ring-contrast.md`
 - **Expected:** The selectors before the phone rule are exactly `:root` and `:root[data-theme='dark']`. Fixed values include `--surface-base` `#ffffff` light and `#1b1e21` dark, and `--overlay-control-border` `#70777f`. The full table is a fixed token list taken once from today's `tokens.css` (it equals the legacy palette apart from that border and the dark `--thumb-ring`).
 - **Covered by:** `src/styles/tokens.test.ts` (R, the selectors and each theme's whole declared set against a fixed literal: 94 in `:root`, 22 in the dark override)
 
