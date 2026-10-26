@@ -60,6 +60,17 @@ describe('Popover', () => {
     expect(document.querySelector('.popover')?.hasAttribute('data-instant')).toBe(true);
   });
 
+  test('a keyboard open is instant, with Enter and with Space, before any Escape', async () => {
+    for (const key of ['{Enter}', ' ']) {
+      render(Fixture);
+      el('Settings').focus();
+      await userEvent.keyboard(key);
+      await expect.element(button('Light')).toBeInTheDocument();
+      expect(document.querySelector('.popover')?.hasAttribute('data-instant'), key).toBe(true);
+      cleanup();
+    }
+  });
+
   test('Escape closes, returns focus to the trigger and is handled before the page keymap', async () => {
     render(Fixture);
     const seen: boolean[] = [];
@@ -313,6 +324,28 @@ describe('Dialog', () => {
     await vi.waitFor(() => expect(dialog().open).toBe(true));
     dialog().dispatchEvent(new Event('close'));
     await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('a reopen in the frame after the close button is not undone by the late close', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    el('Close').click();
+    el('Shortcuts').click();
+    for (let frame = 0; frame < 3; frame++)
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('a reopen in the frame after a close request (Escape) is not undone by the late close', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    dialog().requestClose();
+    el('Shortcuts').click();
+    for (let frame = 0; frame < 3; frame++)
+      await new Promise((resolve) => requestAnimationFrame(resolve));
     expect(dialog().open).toBe(true);
   });
 

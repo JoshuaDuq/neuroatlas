@@ -54,9 +54,10 @@
     } else dialog.close();
   });
 
-  // Fires for Escape, the close button and `open = false` alike.
+  // Fires for Escape, the close button and `open = false` alike, a task after the element closed.
   function onclose(event: Event) {
-    // A close that arrives after the dialog was shown again is stale (the one-frame reopen race).
+    // `open` already follows the request (`oncancel`, the close button), so the owner may have
+    // reopened the dialog before this event arrives; that close is stale.
     if ((event.currentTarget as HTMLDialogElement).open) return;
     open = false;
     const returned = returnToOpener?.() ?? false;
@@ -64,7 +65,12 @@
     if (!returned) fallbackFocus?.()?.focus();
   }
 
-  const oncancel = () => (instant = true);
+  // The close request closes the element at once; `open` follows it now, so a reopen in the
+  // same frame is a change and shows the dialog again.
+  const oncancel = () => {
+    instant = true;
+    open = false;
+  };
   const onkeydown = (event: KeyboardEvent) => {
     if (isolateKeys) event.stopPropagation();
   };

@@ -73,6 +73,10 @@
 
   /* Phone, and a landscape phone: the twin of PHONE_QUERY. */
   @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+    /* After the tablet rule above, as phone.css followed layout.css: a landscape phone is 801-1000 px wide too. */
+    :root {
+      --panel-inset: var(--space-4);
+    }
     #app {
       padding: 0;
       gap: 0;
