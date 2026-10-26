@@ -1,7 +1,6 @@
 <script lang="ts">
   import { hasContext, untrack } from 'svelte';
   import type { Snippet } from 'svelte';
-  import { MINIMUM_LENGTH } from '../../lib/core/tracts.ts';
   import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
   import { isIndependentTractReference } from '../../lib/core/diffusion/presentation.ts';
   import { visibilityOf } from '../../lib/core/catalog/visibility.ts';
@@ -144,9 +143,6 @@
   // The Tracts MRI navigator, which draws the tracts at the panel's minimum length.
   let diffusionMri = $state(false);
   let diffusionInstant = $state(false);
-  // TODO(I3a): the Tracts panel's minimum is not shared (#4); until `app.tractsMinimum` lands the
-  // navigator opens with the control's default.
-  const tractsMinimum = MINIMUM_LENGTH.min;
 
   /** The atlas crosshair as a point of the scan, while the tracts are the anatomy's own. */
   function scanPoint(): Vec3 | null {
@@ -170,19 +166,24 @@
   $effect(() => {
     if (!app || !world || !stage) return;
     const { sections, mpr } = stage;
-    return app.registerPorts({
+    const withdraw = app.registerPorts({
       showMri: (options) => mpr.show(options),
       openPreparedPlane: (plane, canOpen) => mpr.openPreparedPlane(plane, canOpen),
       // `M` shares the opener's busy guard (legacy `M` clicked the opener).
       openMpr: () => void sections.openLinkedMri({ instant: true }),
       closeMpr: () => mpr.close({ instant: true }),
-      openDiffusionMri() {
-        diffusionInstant = true;
+      openDiffusionMri(options) {
+        diffusionInstant = options.instant;
         diffusionMri = true;
       },
       mprOpen: () => mpr.isOpen(),
       diffusionMriOpen: () => diffusionMri,
     });
+    return () => {
+      withdraw();
+      // A slider frame still queued would run after the dialog is gone.
+      mpr.dispose();
+    };
   });
 </script>
 
@@ -298,7 +299,7 @@
     engine={world.engine}
     anatomy={current.anatomy}
     lang={current.lang}
-    minimum={tractsMinimum}
+    minimum={app.tractsMinimum}
     singleKeys={app.keyPreference.enabled}
     getPoint={scanPoint}
     onPoint={moveCrosshair}
@@ -312,8 +313,9 @@
     .exit-fullscreen {
       position: absolute;
       z-index: 4;
-      top: var(--stage-gutter);
-      right: var(--stage-gutter);
+      /* Below the top letter's line, which a wide plate would cover on a phone. */
+      top: calc(var(--vis-top) + var(--stage-gutter) + var(--lh-caption) + var(--space-2));
+      right: calc(var(--vis-right) + var(--stage-gutter));
       display: inline-flex;
       align-items: center;
       gap: var(--space-2);
@@ -337,10 +339,13 @@
       }
     }
     :global(#viewport:fullscreen .stage-keys) {
-      top: calc(var(--vis-top) + var(--stage-gutter) + var(--control-height) + var(--space-2));
+      top: calc(
+        var(--vis-top) + var(--stage-gutter) + var(--lh-caption) + var(--space-2) +
+          var(--control-height) + var(--space-2)
+      );
       max-height: calc(
         100% - var(--vis-top) - var(--vis-bottom) - 3 * var(--stage-gutter) - var(--dock-height) -
-          var(--control-height) - var(--space-2)
+          var(--lh-caption) - var(--control-height) - 2 * var(--space-2)
       );
     }
     /* A raised phone sheet leaves the picture a strip: the tools and markings would collide in it (stage.css:720-721). */

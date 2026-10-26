@@ -88,7 +88,8 @@ export interface KeymapCommands {
   walkTree(step: 1 | -1): void;
   /** Dismisses the stage hint, then frames the view (app.js:1878-1881). */
   chooseView(view: ViewName, options: { immediate: true }): void;
-  openDiffusionMri(): void;
+  /** Opens the Tracts MRI; `instant` for a keyboard opening. */
+  openDiffusionMri(options: { instant: boolean }): void;
   /** Presses the linked MRI opener; a no-op while it is disabled (sections.js:236). */
   openMpr(options: { instant: true }): void;
   closeMpr(): void;
@@ -157,7 +158,7 @@ const COMMANDS: readonly Command[] = [
     run: (press, commands, state) => {
       if (state.explorer === 'diffusion') {
         press.preventDefault();
-        commands.openDiffusionMri();
+        commands.openDiffusionMri({ instant: true });
       } else if (!state.tractReferenceActive) {
         press.preventDefault();
         commands.openMpr({ instant: true });

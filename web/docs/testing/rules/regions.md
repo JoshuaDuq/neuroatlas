@@ -46,11 +46,11 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 
 ### REGION-05 · Dialogs are mounted once, by the root, after the regions
 
-- **Rule:** Each dialog is a native `<dialog>` mounted once, as a direct child of the app root after the regions, so stacking and the inert page never depend on region markup. I3b mounts Keyboard shortcuts and Provenance; I2 mounts Linked MRI and Diffusion MRI. The WebGL canvases inside the MRI dialogs exist only while their dialog is open.
+- **Rule:** Each dialog is a native `<dialog>` mounted once, as a direct child of the app root, so stacking and the inert page never depend on region markup (top layer). I3b mounts Keyboard shortcuts and Provenance; I2 mounts Linked MRI and Diffusion MRI, which follow the stage's `<main>` because the regions render as fragments. The Tracts MRI holds no GPU context, volume or navigator while closed (decision 0008); G5's panes are 2D canvases.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
 - **Source:** decision record `0008-dialog-mount-points.md`; `index.html:599-697`
-- **Expected:** four `dialog` elements, one each with the names "Keyboard shortcuts", "Provenance", the Linked MRI and Diffusion MRI titles. Each one's parent is the app root, after `footer` in document order. With one open, it `matches(':modal')` and the regions are inert (a click on a masthead button does nothing). No `canvas` inside a closed MRI dialog.
+- **Expected:** four `dialog` elements, one each with the names "Keyboard shortcuts", "Provenance", the Linked MRI and Diffusion MRI titles. Each one's parent is the app root. With one open, it `matches(':modal')` and the regions are inert (a click on a masthead button does nothing). While the Tracts MRI is closed the engine holds no navigator.
 - **Covered by:** uncovered
 
 ### REGION-06 · One tooltip serves the whole page
@@ -258,7 +258,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Kind:** hygiene
 - **Level:** e2e
 - **Source:** #4 body, "Parity proof"; #61, #62 and #64 acceptance criteria; `playwright.config.ts:13-21`
-- **Expected:** `enabled/panels.ts` `true` after I1 → `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts`, `workspace` listed by `playwright test --list --project next`. `enabled/stage.ts` after I2 → `boot`, `stage-overlay`. `enabled/shell.ts` after I3b → `data-bar`, `masthead`, `provenance`, `shell`, `shortcuts`. Each spec's run-time `test.skip` on `next` is then inactive.
+- **Expected:** `enabled/panels.ts` `true` after I1 → `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts`, `workspace` listed by `playwright test --list --project next`. `enabled/stage.ts` after I2 → `stage-overlay`. `enabled/shell.ts` after I3b → `boot` (the stage status is mounted by the shell), `data-bar`, `masthead`, `provenance`, `shell`, `shortcuts`. Each spec's run-time `test.skip` on `next` is then inactive.
 - **Covered by:** the panels gate is `true` since #134, so its specs (and the self-gated `anatomy-search`, `atlas-comparison`, `circuits`, `dissection` and `mri-navigator`) are listed on `next`; whether they pass there is not yet known, since pull requests skip e2e. The stage and shell gates are `false`: uncovered
 
 The e2e journeys worth keeping on `next` after cutover, one test each: the first boot to a drawn model (BOOT-), the skip link to the canvas (REGION-11), a theme and language chosen and kept across a reload (REGION-10), a real atlas switch from the data bar (REGION-13), another subject through a reload (REGION-14, once two subjects are published), real fullscreen (REGION-12), Provenance from the phone menu (REGION-18), the frame fit (SHELL-08), and the head script before the app (SHELL-11, SHELL-13). Everything else in the gated specs is covered by browser tests of the features and, once written, of the regions.

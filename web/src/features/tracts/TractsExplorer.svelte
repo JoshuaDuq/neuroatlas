@@ -63,7 +63,7 @@
     overlay?: boolean;
     /** The length filter in millimetres, as last applied. */
     minimum?: number;
-    onOpenMri: () => void;
+    onOpenMri: (event: MouseEvent) => void;
   } = $props();
 
   const tracts = $derived(engine.tracts);

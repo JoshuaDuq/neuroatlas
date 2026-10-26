@@ -11,6 +11,7 @@ import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { flushSync } from 'svelte';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import '../../app/layout.css';
 import Fixture from './mri-navigator-test-support.svelte';
@@ -343,6 +344,72 @@ describe('what the reader hears', () => {
     vi.advanceTimersByTime(2000);
     expect(said().textContent).toBe('');
     vi.useRealTimers();
+  });
+
+  /** A key press on the canvas, as the navigator hears it, with no wait for the keyboard's own timing. */
+  const key = (name: string) =>
+    canvas().dispatchEvent(
+      new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }),
+    );
+
+  test('a key move is said once the keys have rested for 200 ms, and only the last one', async () => {
+    await opened();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(150);
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(199);
+    flushSync();
+    expect(said().textContent).toBe('');
+    await vi.advanceTimersByTimeAsync(1);
+    flushSync();
+    expect(said().textContent).toBe(
+      'RAS:\u00a0+12.0, +8.0, +10.0\u202fmm · T1:\u00a015 · FA:\u00a00.75',
+    );
+  });
+
+  test('a move back to the sentence last said writes nothing to the live region', async () => {
+    await opened();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(200);
+    flushSync();
+    expect(said().textContent).not.toBe('');
+    let writes = 0;
+    const observer = new MutationObserver((records) => (writes += records.length));
+    observer.observe(said(), { childList: true, characterData: true, subtree: true });
+    key('ArrowLeft');
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(1000);
+    flushSync();
+    await Promise.resolve();
+    expect(writes).toBe(0);
+    observer.disconnect();
+  });
+
+  test('after the dialog is closed and opened again the same sentence is said again', async () => {
+    await opened();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowRight');
+    vi.advanceTimersByTime(200);
+    flushSync();
+    const first = said().textContent;
+    expect(first).not.toBe('');
+    vi.useRealTimers();
+    await closing(() => userEvent.keyboard('{Escape}'));
+    expect(said().textContent).toBe('');
+    await openFromKeyboard();
+    await expect.element(planeSelect()).toBeEnabled();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowLeft');
+    key('ArrowRight');
+    vi.advanceTimersByTime(200);
+    flushSync();
+    expect(said().textContent).toBe(first);
   });
 
   test('the readout is plain text, not a live region', async () => {

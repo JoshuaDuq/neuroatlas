@@ -48,7 +48,11 @@ async function boot(hash = '') {
   history.replaceState(null, '', `${location.pathname}${hash}`);
   app = createApp();
   shell = mount(AppShell, { target, ...shellOptions(app) });
-  await startApp(app, async () => engine);
+  // As the real engine does: its canvas is the stage's first child, which axe reads as an image.
+  await startApp(app, async ({ host }) => {
+    host.prepend(engine.canvas);
+    return engine;
+  });
   flushSync();
   return app.world!;
 }
