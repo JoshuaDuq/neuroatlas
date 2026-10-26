@@ -184,7 +184,7 @@
       --surface-tonal-hover: var(--overlay-track-hover);
       --border-subtle: var(--overlay-border);
       --border-control: var(--overlay-control-border);
-      --thumb-ring: var(--overlay-control-border);
+      --thumb-ring: var(--overlay-ink-faint);
       --danger: var(--overlay-danger);
       border-color: var(--border-subtle);
     }

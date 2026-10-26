@@ -4,4 +4,4 @@
 - **New:** `--overlay-control-border: #70777f` (same hue, lightness only, the smallest step that reaches 3:1 on every one of those grounds). Ratios: 3.96, 3.34, 3.43 and 3.01:1. Identical in both themes, because the overlay palette is theme-independent. The `prefers-contrast: more` override is unchanged.
 - **Standard:** WCAG 2.2 SC 1.4.11 Non-text Contrast (user interface component boundaries need 3:1 against adjacent colours).
 - **Checked by:** `src/styles/contrast.test.ts`; `src/styles/tokens.test.ts` pins `#70777f`.
-- **Not covered:** none. `--overlay-raised` is a fill, not a ground this border is drawn on; the stage's selected-segment ring, which is, uses `--overlay-ink-faint` instead (`u1-stage-thumb-ring-contrast.md`).
+- **Not covered:** none. `--overlay-raised` is a fill, not a ground this border is drawn on; the selected-segment ring on the stage and in the imaging dialog, which is, uses `--overlay-ink-faint` instead (`u1-stage-thumb-ring-contrast.md`).
