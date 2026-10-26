@@ -35,6 +35,20 @@ const rested = () =>
       .getAnimations()
       .map((animation) => animation.finished),
   );
+const contrast = (a: string, b: string) => {
+  const luminance = (colour: string) => {
+    const [r, g, bl] = colour
+      .match(/[\d.]+/g)!
+      .slice(0, 3)
+      .map((c) => {
+        const v = Number(c) / 255;
+        return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      });
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * bl!;
+  };
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi! + 0.05) / (lo! + 0.05);
+};
 const lastInsets = (recorded: Recorded) => recorded.insets.at(-1)!;
 
 interface Mounted {
@@ -43,12 +57,12 @@ interface Mounted {
   recorded: Recorded;
 }
 
-async function mount(size = PHONE, fields: Partial<World> = {}): Promise<Mounted> {
+async function mount(size = PHONE, fields: Partial<World> = {}, rows = 3): Promise<Mounted> {
   await page.viewport(...size);
   const world = $state(newWorld(fields));
   const stage = { sheetFull: false };
   const recorded = newRecorded();
-  render(Fixture, { world, stage, recorded });
+  render(Fixture, { world, stage, recorded, rows });
   await expect.element(tab(world.lang === 'fr' ? 'Anatomie' : 'Anatomy')).toBeVisible();
   return { world, stage, recorded };
 }
@@ -57,14 +71,14 @@ async function mount(size = PHONE, fields: Partial<World> = {}): Promise<Mounted
 function pointer(
   type: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel',
   target: EventTarget,
-  { x = 30, y = 0, at = 0, id = 1, primary = true } = {},
+  { x = 30, y = 0, at = 0, id = 1, primary = true, button = 0 } = {},
 ) {
   const event = new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
     pointerId: id,
     isPrimary: primary,
-    button: 0,
+    button,
     clientX: x,
     clientY: y,
   });
@@ -430,10 +444,10 @@ describe('dragging the grip', () => {
     await rested();
     const peek = span();
     const side = grip();
-    side.move(20, 10);
+    side.move(10, 10);
     expect(dragging()).toBe('true');
-    expect(span()).toBe(peek + 20);
-    side.release(20, 400);
+    expect(span()).toBe(peek + 10);
+    side.release(10, 400);
     expect(sheet().dataset.detent).toBe('peek');
     expect(span()).toBe(peek);
   });
@@ -703,29 +717,37 @@ describe('targets and contrast', () => {
     },
   );
 
-  test('the handle bar is drawn from a control colour that holds 3:1 against the sheet, and the forced one is a system colour', async () => {
+  test('the handle bar holds 3:1 against the sheet, and under forced colours it is the system ButtonText', async () => {
     await mount();
     const bar = document.querySelector('.sheet-handle-bar')!;
-    const ratio = (a: string, b: string) => {
-      const luminance = (colour: string) => {
-        const [r, g, bl] = colour
-          .match(/[\d.]+/g)!
-          .slice(0, 3)
-          .map((c) => {
-            const v = Number(c) / 255;
-            return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-          });
-        return 0.2126 * r! + 0.7152 * g! + 0.0722 * bl!;
-      };
-      const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-      return (hi! + 0.05) / (lo! + 0.05);
-    };
     expect(
-      ratio(getComputedStyle(bar).backgroundColor, getComputedStyle(sheet()).backgroundColor),
+      contrast(getComputedStyle(bar).backgroundColor, getComputedStyle(sheet()).backgroundColor),
     ).toBeGreaterThanOrEqual(3);
     await withMedia([{ name: 'forced-colors', value: 'active' }], () => {
-      expect(getComputedStyle(bar).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+      const probe = document.body.appendChild(document.createElement('span'));
+      probe.style.color = 'ButtonText';
+      const buttonText = getComputedStyle(probe).color;
+      probe.remove();
+      expect(getComputedStyle(bar).backgroundColor).toBe(buttonText);
+      expect(
+        contrast(getComputedStyle(bar).backgroundColor, getComputedStyle(sheet()).backgroundColor),
+      ).toBeGreaterThanOrEqual(3);
     });
+  });
+
+  test('with a name over it, the handle still has a 24 px line a pointer reaches (WCAG 2.5.8)', async () => {
+    await mount(PHONE, { selection: SELECTION });
+    await rested();
+    const rect = box(handle());
+    const x = rect.left + rect.width / 2;
+    let line = 0;
+    // A quarter pixel at a time, since the line starts on a fractional edge.
+    for (let y = rect.top + 0.125; y < rect.bottom; y += 0.25) {
+      if (document.elementFromPoint(x, y)?.closest('.sheet-handle') !== handle()) break;
+      line += 0.25;
+    }
+    // The 24 px line, less the pixel hit-testing snaps off a fractional edge; legacy measures 20.
+    expect(line).toBeGreaterThanOrEqual(23);
   });
 
   test('axe finds nothing in either theme, on a phone and a desktop, with a selection and the sheet raised', async () => {
@@ -737,5 +759,156 @@ describe('targets and contrast', () => {
   test('axe finds nothing in French', async () => {
     await mount(PHONE, { lang: 'fr', selection: SELECTION });
     await expectAxeClean();
+  });
+});
+
+describe('legacy cases ported, and the notice', () => {
+  test('returning to the phone shell keeps the detent it left with (sheet.test.js:103-133)', async () => {
+    await mount();
+    await userEvent.click(handle());
+    await userEvent.click(handle());
+    await page.viewport(...DESKTOP);
+    await vi.waitFor(() => expect(sheet().dataset.detent).toBeUndefined());
+    await page.viewport(...PHONE);
+    await vi.waitFor(() => expect(sheet().dataset.detent).toBe('full'));
+    await rested();
+    expect(span()).toBe(fullSpan());
+  });
+
+  test('a keyboard activation of a tab raises a resting sheet without a glide (sheet.test.js:215-222)', async () => {
+    await mount();
+    tab('Functions').element().focus();
+    await userEvent.keyboard('{Enter}');
+    expect(sheet().dataset.detent).toBe('half');
+    expect(sheet().hasAttribute('data-instant')).toBe(true);
+  });
+
+  test('a notice in the grip grows the peek, is on screen, drags the sheet, and shrinks it again', async () => {
+    const { world } = await mount();
+    await rested();
+    const bare = span();
+    world.notice = { text: 'The view was restored' };
+    await vi.waitFor(() => expect(span()).toBeGreaterThan(bare));
+    await rested();
+    const notice = document.querySelector('.notice') as HTMLElement;
+    expect(box(notice).bottom).toBeLessThanOrEqual(innerHeight);
+    expect(innerHeight - box(notice).bottom).toBeLessThan(3);
+    const finger = grip(notice);
+    finger.move(30, 10);
+    expect(dragging()).toBe('true');
+    finger.cancel(30, 20);
+    await userEvent.click(page.getByRole('button', { name: 'Dismiss' }));
+    await vi.waitFor(() => expect(span()).toBe(bare));
+  });
+
+  test('only the primary button presses the grip', async () => {
+    await mount();
+    await rested();
+    const rect = box(handle());
+    pointer('pointerdown', handle(), { x: rect.left + 30, y: rect.top + 4, button: 1 });
+    pointer('pointermove', window, { x: rect.left + 30, y: rect.top - 100, at: 10 });
+    expect(dragging()).toBe('false');
+  });
+
+  test('a drag that springs back to its rest announces nothing', async () => {
+    await mount();
+    await rested();
+    const finger = grip();
+    finger.move(30, 400);
+    finger.release(30, 800);
+    expect(sheet().dataset.detent).toBe('peek');
+    expect(announced()).toBe('');
+  });
+});
+
+describe('the tab row matches the legacy sheet tabs', () => {
+  test('ground, label column, underline and wrapping, measured at 390 px', async () => {
+    await mount();
+    await rested();
+    const tabs = [...tablist().children] as HTMLElement[];
+    expect(getComputedStyle(tablist()).backgroundColor).toBe(
+      getComputedStyle(sheet()).backgroundColor,
+    );
+    // The first label stands at the panel inset, under the words above it, as the last ends at 16 px from the edge.
+    expect(box(tabs[0]!).left + 4).toBe(16);
+    expect(box(tabs.at(-1)!).right).toBe(innerWidth - 12);
+    const selected = tabs.find((t) => t.getAttribute('aria-selected') === 'true')!;
+    const underline = getComputedStyle(selected, '::before');
+    expect([underline.left, underline.right]).toEqual(['0px', '0px']);
+    expect(getComputedStyle(selected).whiteSpace).toBe('normal');
+  });
+
+  test('held sideways the one row of tabs is 368 px, and a label never wraps', async () => {
+    await mount(SIDEWAYS);
+    await rested();
+    expect(span()).toBe(368);
+    expect(getComputedStyle(tablist().children[0]!).whiteSpace).toBe('nowrap');
+  });
+});
+
+describe('WCAG 2.4.11 Focus Not Obscured, inside the sheet', () => {
+  /** Every Tab stop from the handle until focus leaves the sheet. */
+  async function stops() {
+    // Each box is read as focus arrives: the list scrolls under the next stop.
+    const seen = (element: HTMLElement) => ({ element, rect: box(element) });
+    handle().focus();
+    const found = [seen(handle())];
+    for (let step = 0; step < 50; step += 1) {
+      await userEvent.tab();
+      const active = focused() as HTMLElement;
+      if (!sheet().contains(active)) break;
+      found.push(seen(active));
+    }
+    return found;
+  }
+
+  test.each(['half', 'full'])(
+    'at %s every stop is fully on screen and below the grip',
+    async (rest) => {
+      await mount(PHONE, { selection: SELECTION, notice: { text: 'A notice' } }, 30);
+      handle().click();
+      if (rest === 'full') handle().click();
+      await rested();
+      const grip = [
+        document.querySelector('.sheet-grip-row')!,
+        tablist(),
+        document.querySelector('.notice')!,
+      ];
+      const floor = Math.max(...grip.map((part) => box(part).bottom));
+      const inPanel = (await stops()).filter(({ element }) => el('navigator').contains(element));
+      // The search field and every row: the list scrolled, so most began out of view.
+      expect(inPanel.length).toBeGreaterThanOrEqual(31);
+      for (const { element, rect } of inPanel) {
+        const name = element.textContent || element.tagName;
+        expect(rect.top, name).toBeGreaterThanOrEqual(floor - 0.5);
+        expect(rect.bottom, name).toBeLessThanOrEqual(innerHeight + 0.5);
+      }
+    },
+  );
+
+  test('at peek every stop is in the grip', async () => {
+    await mount(PHONE, { selection: SELECTION }, 30);
+    await rested();
+    const found = await stops();
+    expect(found.length).toBeGreaterThanOrEqual(4);
+    for (const { element, rect } of found) {
+      expect(el('navigator').contains(element)).toBe(false);
+      expect(rect.bottom).toBeLessThanOrEqual(innerHeight);
+      expect(rect.top).toBeGreaterThanOrEqual(box(sheet()).top);
+    }
+  });
+});
+
+describe('the notice in the grip, once shown', () => {
+  test('a notice that grows taller grows the peek with it', async () => {
+    const { world } = await mount(PHONE, { notice: { text: 'Short' } });
+    await rested();
+    const short = span();
+    world.notice = {
+      text: 'A much longer message that has to wrap over several lines here. '.repeat(4),
+    };
+    await vi.waitFor(() => expect(span()).toBeGreaterThan(short));
+    await rested();
+    expect(innerHeight - box(document.querySelector('.notice')!).bottom).toBeLessThan(3);
   });
 });

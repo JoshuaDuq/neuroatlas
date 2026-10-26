@@ -195,6 +195,8 @@
 
   /** `quick` writes `data-instant`: no glide for the sheet or the stage chrome that follows it. */
   function setDetent(next: Detent, { notify = true, quick = false, say = false } = {}) {
+    // A drag that springs back to where it began has changed nothing to announce.
+    const changed = next !== detent;
     // A panel that is about to hide takes its focus with it, so the handle takes it first (deviations/h6-peek-focus.md).
     const active = document.activeElement;
     if (next === 'peek' && active && root.contains(active) && active.closest('[role="tabpanel"]')) {
@@ -207,7 +209,7 @@
     stage.sheetFull = next === 'full';
     applySpan(heights()[next]);
     if (notify) onDetent(next);
-    if (say) announce(detentAnnouncement(lang, next));
+    if (say && changed) announce(detentAnnouncement(lang, next));
   }
 
   /** Content chosen with the sheet at rest should be seen; a raised sheet stays where it was put. */
@@ -388,7 +390,7 @@
     watch();
     // A notice comes and goes in the grip.
     const mutations = new MutationObserver(watch);
-    mutations.observe(root, { childList: true, subtree: true });
+    mutations.observe(workspace().tabs.parentElement!, { childList: true });
 
     return () => {
       safeObserver.disconnect();
@@ -682,10 +684,20 @@
       /* The labels run from the sheet's column to its right edge, so the first stands under the words above it. */
       #sheet :global(.workspace-tabs) {
         justify-content: space-between;
+        gap: 0;
         padding-inline: calc(var(--panel-inset) - var(--space-1));
+        background: var(--surface-base);
       }
+      /* Each label is its tab, as legacy's sheet tabs were: no pull-in margin, the underline as wide as the label, long labels wrap. */
       #sheet :global(.workspace-tab) {
         flex: 0 1 auto;
+        min-width: 0;
+        margin-inline: 0;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      #sheet :global(.workspace-tab[aria-selected='true'])::before {
+        inset: auto 0 0;
       }
       /* Nothing follows the tabs at rest, so their rule would only underline the screen edge. */
       #sheet[data-detent='peek'] :global(.workspace-tabs) {

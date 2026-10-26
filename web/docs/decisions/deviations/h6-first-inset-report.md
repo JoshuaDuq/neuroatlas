@@ -1,15 +1,15 @@
-# The sheet reports what it covers from a laid-out grip, and drops the media-query fallbacks
+# The sheet drops its media-query fallbacks and is mounted after the engine
 
 Chunk: H6
 
 ## Legacy behaviour
 
-`createSheet` measures and reports its first inset at construction (sheet.js:309), before the scene or the stage chrome may exist (`chrome?.setViewport`), and guards `matchMedia` and `ResizeObserver` with fallbacks (sheet.js:35-38, 245, 295). On the desktop to phone transition after load the stage's `--vis-bottom` stalled at 0 for a minute in one load in five (G1 review on #4, issuecomment-6405672591).
+`createSheet` reports its first inset from `onModeChange()` at construction (sheet.js:298) and guards `matchMedia` and `ResizeObserver` with fallbacks (sheet.js:35-38, 245, 295). On the desktop to phone transition after load, the stage's `--vis-bottom` stalled at 0 for a minute in one load in five (G1 review on #4, issuecomment-6405672591). The cause was not found: the scene and the chrome both exist before `createSheet` (app.js:118, 1465, 1516), and a measurement shows legacy and next both make three inset reports at mount.
 
 ## New behaviour
 
-The sheet is a component under the engine's composition: the shell is read from `createMedia`, the first measurement runs in an effect after the grip is in the DOM and laid out, and the probe's and the grip's `ResizeObserver` callbacks (which report once on `observe`, after layout) re-report the span. Every change of rest reports its target span through `onInsets`. Browsers without `matchMedia` or `ResizeObserver` are not supported, so the fallbacks are gone and a missing one throws.
+The fallbacks are gone: a browser without `matchMedia` or `ResizeObserver` is not supported and a missing one throws. The sheet is a component mounted under the composition after the engine (the I3a contract), takes `media` and `stage` as props, and reports the target span of every change of rest through `onInsets`. This record does not claim the stall is fixed; the `next` e2e test of the desktop to phone transition is the evidence.
 
 ## Standard cited
 
-CLAUDE.md: fail fast, no silent fallbacks. WHATWG Resize Observer: the first observation is delivered after layout.
+CLAUDE.md: fail fast, no silent fallbacks.

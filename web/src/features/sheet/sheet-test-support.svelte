@@ -17,9 +17,14 @@
     stage: { sheetFull: boolean };
     recorded: Recorded;
     holder?: { sheet?: Sheet };
+    /** How many rows the list holds; more than fit make it scroll. */
+    rows?: number;
   };
 
-  let { world, stage, recorded, holder = {} }: Props = $props();
+  let { world, stage, recorded, holder = {}, rows = 3 }: Props = $props();
+  const ids = $derived(
+    rows === 3 ? REGIONS : Array.from({ length: rows }, (_, i) => `left:${i + 1}`),
+  );
 
   const media = createMedia();
   let announcer: HTMLElement;
@@ -103,7 +108,7 @@
         {#snippet list()}
           <input aria-label="Search regions" />
           <div style="overflow: auto; flex: 1">
-            {#each REGIONS as id (id)}
+            {#each ids as id (id)}
               <button
                 type="button"
                 data-row

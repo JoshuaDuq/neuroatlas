@@ -6,6 +6,7 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
 import enabled from './enabled/panels.ts';
+import stageEnabled from './enabled/stage.ts';
 
 test.beforeEach(({ page: _page }, testInfo) => {
   test.skip(testInfo.project.name === 'next' && !enabled, 'the panels region is not integrated');
@@ -140,7 +141,14 @@ test.describe('the rests', () => {
   });
 });
 
+// The stage's `--vis-*` margins are written by the stage region (G1), so these also need it.
+const needsStage = (project: string) => project === 'next' && !(enabled && stageEnabled);
+
 test.describe('the stage is told what the sheet covers', () => {
+  test.beforeEach(({ page: _page }, testInfo) => {
+    test.skip(needsStage(testInfo.project.name), 'the stage region is not integrated');
+  });
+
   test('the bottom margin follows each rest', async ({ app }) => {
     const { page } = app;
     await load(app);
@@ -197,6 +205,31 @@ test.describe('the selection in the grip', () => {
     await expect(back(page)).toBeFocused();
     await expect(handle(page)).toHaveAccessibleName('Expand panel');
     await expect.poll(() => span(page)).toBeGreaterThan(200);
+  });
+
+  test('the grip at peek, with a selection, and at half (aria snapshots)', async ({
+    app,
+  }, testInfo) => {
+    const { page } = app;
+    // The next app's strip names the side as a word (h5-strip-name-side); both name the statement and the tabs.
+    const name =
+      testInfo.project.name === 'next' ? /^Inspect .+, (left|right|midline)$/ : /^Inspect /;
+    await expect(strip(page)).toHaveAccessibleName(name);
+    await expect(handle(page)).toMatchAriaSnapshot('- button "Expand panel"');
+    await expect(clear(page)).toMatchAriaSnapshot('- button "Clear selection"');
+    await expect(page.getByRole('tablist', { name: 'Explore the atlas' })).toMatchAriaSnapshot(`
+      - tablist "Explore the atlas":
+        - tab "Anatomy" [selected]
+        - tab "Functions"
+        - tab "Deficits"
+        - tab "Circuits"
+        - tab "Tracts"
+    `);
+    await expect(page.getByText('Not clinical anatomy')).toBeVisible();
+    await expect(page.getByRole('tabpanel')).toHaveCount(0);
+    await handle(page).click();
+    await expect(handle(page)).toMatchAriaSnapshot('- button "Expand panel"');
+    await expect(page.getByRole('tabpanel')).toHaveCount(1);
   });
 
   test('clear clears the selection and focus goes to the tab in front', async ({ app }) => {
@@ -307,7 +340,8 @@ test.describe('WCAG 2.2', () => {
 
   test('reduced motion leaves the sheet a fade, and it still reports what it covers', async ({
     app,
-  }) => {
+  }, testInfo) => {
+    test.skip(needsStage(testInfo.project.name), 'the stage region is not integrated');
     const { page } = app;
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await load(app);

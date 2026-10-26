@@ -12,4 +12,4 @@ Before the sheet settles on peek with focus inside a panel, focus moves to the h
 
 ## Standard cited
 
-WCAG 2.2 SC 2.4.3 Focus Order and 2.4.7 Focus Visible; WAI-ARIA APG, "Managing focus": when the element that holds focus is hidden, focus moves to a logical place.
+WCAG 2.2 SC 2.4.3 Focus Order and 2.4.7 Focus Visible; WAI-ARIA APG, "Developing a Keyboard Interface", "Discernible and Predictable Keyboard Focus": focus is not lost when the element that holds it goes away, and moves to a logical place.
