@@ -89,6 +89,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | h4-coarse-target.md                           | fix (standard cited)                                           |
 | h4-initial-focus.md                           | fix (standard cited)                                           |
 | h4-lang-of-parts.md                           | fix (standard cited)                                           |
+| h4-new-tab-cue.md                             | fix (decision 17 on #4; standard cited)                        |
 | h4-rerender-focus.md                          | fix (standard cited)                                           |
 | h5-breadcrumb-current.md                      | fix (standard cited; no status line in the record)             |
 | h5-clear-focus.md                             | fix (standard cited; no status line in the record)             |

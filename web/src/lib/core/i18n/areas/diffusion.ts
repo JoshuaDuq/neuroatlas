@@ -1,7 +1,7 @@
 import { grouped } from '../../format.ts';
 
 export const en = {
-  bundleCollection: (count: number) => `${count} tract bundles`,
+  bundleCollection: (count: number) => `${count} tract ${count === 1 ? 'bundle' : 'bundles'}`,
   bundles: 'Tract bundles',
   brainOpacity: 'Brain outline opacity',
   minimum: 'Minimum length (mm)',
@@ -51,7 +51,7 @@ export const en = {
 };
 
 export const fr: typeof en = {
-  bundleCollection: (count: number) => `${count} faisceaux`,
+  bundleCollection: (count: number) => `${count} ${count > 1 ? 'faisceaux' : 'faisceau'}`,
   bundles: 'Faisceaux',
   brainOpacity: 'Opacité du contour cérébral',
   minimum: 'Longueur minimale (mm)',
