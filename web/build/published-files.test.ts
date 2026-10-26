@@ -4,20 +4,32 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it, vi } from 'vitest';
-import type { Plugin } from 'vite';
+import type { Plugin, UserConfig } from 'vite';
+import viteConfig from '../vite.config.ts';
 import { FIXTURE_FILES, FIXTURE_GZ } from './published-fixture.ts';
 import { headVersions, publishedAssets, workerVersions } from './published-files.ts';
 import { ASSET_BASE } from './site.ts';
 
-// The plugin hashes `public/`; here it hashes the small fixture tree instead.
+// The plugin hashes `public/`; here it hashes the small fixture tree instead, once it has checked
+// that it was asked for the real one.
+const fixture = await vi.hoisted(async () => {
+  const { createPublishedFixture } = await import('./published-fixture.ts');
+  return createPublishedFixture();
+});
+afterAll(() => rmSync(fixture, { recursive: true, force: true }));
 vi.mock('../../scripts/published-version.mjs', async (importActual) => {
   const actual = await importActual<typeof import('../../scripts/published-version.mjs')>();
-  const { createPublishedFixture } = await import('./published-fixture.ts');
-  const fixture = createPublishedFixture();
+  const published = fileURLToPath(new URL('../../public', import.meta.url));
   return {
     ...actual,
-    publishedFiles: () => actual.publishedFiles(fixture),
-    publishedRecord: (_directory: string, path: string) => actual.publishedRecord(fixture, path),
+    publishedFiles: (directory: string) => {
+      expect(directory).toBe(published);
+      return actual.publishedFiles(fixture);
+    },
+    publishedRecord: (directory: string, path: string) => {
+      expect(directory).toBe(published);
+      return actual.publishedRecord(fixture, path);
+    },
   };
 });
 
@@ -85,6 +97,21 @@ describe('the version maps the build writes', () => {
       gunzipped: { 'diffusion/b.trk.gz': 'aaaaaaaaaaaaaaaa' },
     });
     expect(headVersions(published)).toEqual({ 'models/a.glb': '0123456789abcdef' });
+  });
+});
+
+describe('the build config', () => {
+  const copiesPublicDir = (mode: string) =>
+    (
+      (viteConfig as (env: { mode: string; command: 'build' }) => UserConfig)({
+        mode,
+        command: 'build',
+      }).build ?? {}
+    ).copyPublicDir;
+
+  it('BUILD-02 copies the published data in production and leaves it out of the preview', () => {
+    expect(copiesPublicDir('preview')).toBe(false);
+    expect(copiesPublicDir('production')).toBe(true);
   });
 });
 

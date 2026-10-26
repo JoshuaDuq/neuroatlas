@@ -381,7 +381,7 @@ describe('keymap outcomes', () => {
   function outcome(
     state: Partial<KeymapState>,
     key: string,
-    target: object | null = null,
+    target: object | 'canvas' | null = null,
     extra: object = {},
   ) {
     const log: string[] = [];
@@ -391,7 +391,7 @@ describe('keymap outcomes', () => {
         log.push(args.length ? `${name}(${JSON.stringify(args)})` : name),
       );
     }
-    const event = press(key, target === canvas ? canvas : target, extra);
+    const event = press(key, target === 'canvas' ? canvas : target, extra);
     dispatchKey(event, keymap);
     return { log, prevented: calls(event.preventDefault) > 0 };
   }
@@ -415,6 +415,18 @@ describe('keymap outcomes', () => {
       for (const modifier of ['ctrlKey', 'metaKey', 'altKey']) {
         assert.deepEqual(
           outcome({ selectedRegion: REGION }, key, null, { [modifier]: true }),
+          { log: [], prevented: false },
+          `${key} with ${modifier}`,
+        );
+      }
+    }
+  });
+
+  it('KEY-01 leaves Ctrl, Meta and Alt with a zoom or arrow key on the focused canvas to the browser', () => {
+    for (const key of ['+', '=', '-', 'ArrowLeft', 'c']) {
+      for (const modifier of ['ctrlKey', 'metaKey', 'altKey']) {
+        assert.deepEqual(
+          outcome({}, key, 'canvas', { [modifier]: true }),
           { log: [], prevented: false },
           `${key} with ${modifier}`,
         );

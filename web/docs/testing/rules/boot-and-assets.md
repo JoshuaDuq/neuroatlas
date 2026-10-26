@@ -609,7 +609,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** new (`web/vite.config.ts`); preview deploy
 - **Expected:** `copyPublicDir` = `false` for mode `preview`, `true` for `production`.
-- **Covered by:** `build/build-output.test.ts` (R, over the fixture tree)
+- **Covered by:** `build/published-files.test.ts` (R, over the fixture tree)
 
 ### BUILD-03 · Only the preview is hidden from search
 
@@ -627,7 +627,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:31-41`
 - **Expected:** chunk `three` contains `WebGLRenderer`; chunk `bvh` contains `MeshBVH`.
-- **Covered by:** `build/build-output.test.ts` (R, over the fixture tree)
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
 
 ### BUILD-05 · The version maps the build writes
 
@@ -636,7 +636,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:13-24, 63-65, 84-90`; `scripts/published-version.mjs:10-45`
 - **Expected:** keys exactly `base`, `files`, `gunzipped`; `base` = `/neuroatlas/`; head map non-empty with every key starting `models/`; `sw.js` contains `planum-models`.
-- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `build/build-output.test.ts` (`sw.js` written beside the bundle); `e2e/parity/harness.spec.ts` (R, end to end, versions only)
+- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job); `e2e/parity/harness.spec.ts` (R, end to end, versions only)
 
 ### BUILD-06 · Charset first, prefetch before the stylesheet
 
@@ -645,7 +645,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** HTML Standard 4.2.5.4; `index.html:4, 34`
 - **Expected:** first 1024 bytes contain `<meta charset="UTF-8"`; index of `window.__planumAssets` < index of `rel="stylesheet"`.
-- **Covered by:** `build/build-output.test.ts` (R, over the fixture tree)
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
 
 ### BUILD-07 · The prefetch script is inlined with its values
 

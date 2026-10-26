@@ -456,6 +456,8 @@ describe('the camera a link restores', () => {
     { hash: 'cut=oblique&tilt=40&az=-60&pos=3', view: 'oblique' },
   ])('LINK-12 $hash faces the cut when no view is named', async ({ hash, view }) => {
     const { restore, engine, session } = restorer();
+    // A view other than the cut's own, so the view can only come from what faceCut reports.
+    session.setView('left');
     const spy = faceCut(engine);
     await restore(hash);
     expect(spy).toHaveBeenCalledOnce();

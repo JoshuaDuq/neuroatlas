@@ -433,6 +433,16 @@ const FUNCTIONAL = { atlas: 'hcp-mmp' };
 describe('the six reveal reasons beyond the first two (CTRL-18)', () => {
   const framedRegion = () => cameraCalls().filter((call) => call.method === 'frameRegion');
 
+  test('CTRL-18 cortex-hidden: the cortex is shown and opaque, then the region is selected and framed', async () => {
+    const { anatomy } = build();
+    engine.model.setCortexOpacity(0.4);
+    engine.model.setCortexVisible(false);
+    await anatomy.revealRegion('cortex-hidden', SULCUS);
+    expect(engine.model.settings).toMatchObject({ cortexVisible: true, cortexOpacity: 1 });
+    expect(engine.model.state.selectedRegion?.id).toBe(SULCUS);
+    expect(cameraMethods()).toEqual(['frameRegion']);
+  });
+
   test('CTRL-18 internal-hidden: the internal structures are shown, then the region is selected and framed', async () => {
     const { anatomy } = build();
     await engine.model.setDetail('aseg');
@@ -470,6 +480,7 @@ describe('the six reveal reasons beyond the first two (CTRL-18)', () => {
     await anatomy.revealRegion('no-mri', CORD);
     expect(engine.model.settings.surfaceColor).toBe('tissue');
     expect(engine.model.state.selectedRegion?.id).toBe(CORD);
+    expect(framedRegion().at(-1)!.args[0]).toBe(CORD);
   });
 
   test("CTRL-18 other-detail: the region's own detail level is loaded, then the region is selected", async () => {
@@ -487,6 +498,7 @@ describe('the six reveal reasons beyond the first two (CTRL-18)', () => {
     await anatomy.revealRegion('other-system', 'learning:left:amygdala');
     expect(engine.model.settings.internalSystem).toBeNull();
     expect(engine.model.state.selectedRegion?.id).toBe('learning:left:amygdala');
+    expect(framedRegion().map((call) => call.args[0])).toEqual(['learning:left:amygdala']);
   });
 });
 
@@ -603,9 +615,11 @@ describe('the doors into internal anatomy and out again', () => {
     await engine.model.setDetail('aseg');
     await anatomy.toggleInternalAnatomy();
     expect(engine.model.settings.detail).toBe(engine.model.defaultDetail);
+    const framed = cameraCalls().length;
     const leaving = anatomy.toggleInternalAnatomy();
     const cord = anatomy.setSpinalCordVisible(true);
     await Promise.all([leaving, cord]);
+    expect(cameraMethods().slice(framed)).toEqual(['frameWhole']);
     expect(engine.model.settings.detail).toBe(engine.model.defaultDetail);
     expect(engine.model.settings.spinalCordVisible).toBe(true);
   });

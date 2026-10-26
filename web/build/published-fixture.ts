@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 
@@ -29,6 +29,5 @@ export function createPublishedFixture(): string {
   };
   for (const [path, { text }] of Object.entries(FIXTURE_FILES)) write(path, text);
   write(FIXTURE_GZ.path, Buffer.from(FIXTURE_GZ.base64, 'base64'));
-  process.on('exit', () => rmSync(directory, { recursive: true, force: true }));
   return directory;
 }
