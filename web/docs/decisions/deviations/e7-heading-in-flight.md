@@ -13,7 +13,7 @@ Chunk E7 (#31). A fix under the parity policy (one read of "where the camera is"
   over seeded poses); only a framing started mid-move differs, and it now continues from where the
   move lands.
 - **Standard**: a bug fix, not a standards departure. The legacy already reads the destination for
-  the sheet and the dock (`heading()`, `app.js:1496`) and says why at `app.js:1846`: a command takes
+  the sheet and the dock (`heading()`, `app.js:1507`) and says why at `app.js:1846`: a command takes
   the state the move is heading for. This makes the other readers agree with them.
 - **Test**: `src/lib/engine/framing.test.ts`, "frames the whole brain along the heading the eased move
   is going to".

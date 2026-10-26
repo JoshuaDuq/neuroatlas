@@ -10,8 +10,9 @@ Chunk E7 (#31). A fix under the parity policy (WCAG 2.2 AA, WAI-ARIA APG, platfo
 - **New** (`engine/held-view.ts`, `createHeldView`): the same keydown on the canvas releases the view
   only when none of Ctrl, Meta and Alt is down. Shift stays allowed: it is how `+` is typed on most
   layouts. The app's own key handler and the held view now agree on what a camera key is.
-- **Standard**: key events with these modifiers are the user agent's or the page's shortcuts, not the
-  widget's own keys (WCAG 2.2 SC 2.1.4 Character Key Shortcuts, and the WAI-ARIA APG's keyboard
-  interaction guidance that a widget leaves browser and assistive-technology shortcuts alone).
+- **Standard**: the WAI-ARIA Authoring Practices Guide, "Developing a Keyboard Interface": a widget avoids
+  conflicts with browser and assistive-technology shortcuts, so a key pressed with Ctrl, Meta or Alt is not
+  the canvas's key. The app's own key handler already returns on those modifiers (`app.js:1896`); the held
+  view now agrees with it.
 - **Test**: `web/parity/E7.test.ts`, "keeps the view for a camera key pressed with Ctrl, Meta or Alt",
   which also shows the legacy closure dropping the view on the same key.

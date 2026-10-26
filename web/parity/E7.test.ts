@@ -239,18 +239,19 @@ function legacyFraming(world: World) {
       faceCut, focusPoint, refitDock, keepFraming, restoreCamera, placeOrbit, orbitLink, rememberZoom,
       fittedDistance, heading, refitViewport: () => refitViewport(),
       get zoom() { return zoom; },
+      // The sheet's onInsets while a gesture is down (app.js:1520-1521).
+      setFitPending(before) { fitPending = before; },
       resetCaches() { cachedFramingBounds = null; cachedFramingPoints = null; },
     };`,
   )(deps);
-  return {
-    ...closure,
-    circuitCatalog: deps.circuitCatalog,
-    session: deps.session,
-    chrome,
-    get held() {
-      return held;
+  // A spread would read the getters once; these stay live.
+  return Object.defineProperties(
+    { ...closure, circuitCatalog: deps.circuitCatalog, session: deps.session, chrome },
+    {
+      zoom: { get: () => closure.zoom },
+      held: { get: () => held },
     },
-  } as Stub;
+  ) as Stub;
 }
 
 function currentFraming(world: World) {
@@ -442,7 +443,10 @@ describe('E7 framing: the legacy closure and camera.* give Object.is-equal desti
             'keepFraming',
             'placeOrbit',
             'restore',
+            'gesture',
+            'gesture',
           ]);
+          for (const world of worlds) world.scene.moves.length = 0;
           const label = `${universe.name}, step ${step}: ${command}`;
           const immediate = random() < 0.5;
           if (command === 'applyView' || command === 'frameCurrent') {
@@ -518,8 +522,11 @@ describe('E7 framing: the legacy closure and camera.* give Object.is-equal desti
               world.scene.resize(width, height);
               world.framingSource = sourced;
             }
-            legacy.applyView('left', { immediate: true });
-            camera.applyView('left', { immediate: true });
+            // Half the time no view is framed first, so the magnification carried from earlier commands decides.
+            if (random() < 0.5) {
+              legacy.applyView('left', { immediate: true });
+              camera.applyView('left', { immediate: true });
+            }
             assertSame(`${label}: before the resize`, ...bothScenes());
             for (const world of worlds) world.scene.resize(width * 1.4, height * 0.8);
             legacy.refitViewport();
@@ -544,6 +551,59 @@ describe('E7 framing: the legacy closure and camera.* give Object.is-equal desti
             for (const world of worlds) world.framingSource = next;
             legacy.keepFraming(before);
             camera.keepFraming(before);
+          } else if (command === 'gesture') {
+            // A drag, and what lands while it is down (app.js:1830-1851): a dock change, the sheet's deferred
+            // refit, a framing that clears it; each waits for the lift.
+            if (random() < 0.4) {
+              const away = new Vector3(between(random, 0.1, 0.4), 0.2, 0.1);
+              for (const world of worlds) world.scene.controls.target.copy(away);
+            }
+            const before = legacy.fittedDistance(legacy.heading());
+            for (const world of worlds) world.scene.controls.dispatchEvent({ type: 'start' });
+            for (const axis of ['x', 'y', 'z'] as const) {
+              const [a, b] = [worlds[0].scene.controls, worlds[1].scene.controls];
+              assert.ok(Object.is(a.cursor[axis], b.cursor[axis]), `${label}: pan cursor ${axis}`);
+            }
+            assert.ok(
+              Object.is(
+                worlds[0].scene.controls.maxTargetRadius,
+                worlds[1].scene.controls.maxTargetRadius,
+              ),
+              `${label}: pan radius`,
+            );
+            const next = {
+              inset: { bottom: between(random, 0, 200) },
+              scale: { horizontal: 1, vertical: between(random, 0.7, 1) },
+            };
+            for (const world of worlds) world.framingSource = next;
+            if (random() < 0.7) {
+              legacy.refitDock();
+              camera.refitDock();
+            }
+            if (random() < 0.7) {
+              // The sheet's own reading, as `onInsets` makes it while a gesture is down.
+              legacy.setFitPending(before);
+              camera.keepFraming(before);
+            }
+            if (random() < 0.25) {
+              const view = pick(random, VIEWS);
+              legacy.applyView(view, { immediate: true });
+              camera.applyView(view, { immediate: true });
+            }
+            assertSame(`${label}: while the pointer is down`, ...bothScenes());
+            // A framing lifts the pan limit the gesture set; otherwise it holds.
+            assert.ok(
+              Object.is(
+                worlds[0].scene.controls.maxTargetRadius,
+                worlds[1].scene.controls.maxTargetRadius,
+              ),
+              `${label}: pan radius after what landed`,
+            );
+            for (const world of worlds) world.scene.controls.dispatchEvent({ type: 'end' });
+            assertSame(`${label}: at the lift`, ...bothScenes());
+            // The magnification the gesture left decides where the next resize puts the camera.
+            legacy.refitViewport();
+            framing.onResize({ canvasChanged: true });
           } else if (command === 'placeOrbit') {
             const stage = worlds[0].scene;
             const orbit = {
@@ -566,6 +626,9 @@ describe('E7 framing: the legacy closure and camera.* give Object.is-equal desti
               label,
             );
             assert.deepEqual(camera.orbitLink(), legacy.orbitLink(), `${label}: the link`);
+            // The magnification the placed camera implies decides where the next resize puts it.
+            legacy.refitViewport();
+            framing.onResize({ canvasChanged: true });
           } else {
             const pose = {
               ...worlds[0].scene.destination,
@@ -576,8 +639,17 @@ describe('E7 framing: the legacy closure and camera.* give Object.is-equal desti
             const view = pick(random, VIEWS);
             legacy.restoreCamera(view, pose, { immediate });
             camera.restore(view, pose as unknown as CameraSnapshot, { immediate });
+            assert.deepEqual(
+              worlds[1].scene.moves,
+              worlds[0].scene.moves,
+              `${label}: eased or at once`,
+            );
             const again = camera.capture();
             camera.restore(view, again, { immediate: true });
+            worlds[1].scene.moves.length = worlds[0].scene.moves.length;
+            // The restored magnification decides where the next resize puts the camera.
+            legacy.refitViewport();
+            framing.onResize({ canvasChanged: true });
             assertSame(`${label}: a captured camera restores to itself`, ...bothScenes());
           }
           // Documented deviation (e7-zoom-after-framing): legacy kept a stale magnification after a framing
@@ -595,6 +667,11 @@ describe('E7 framing: the legacy closure and camera.* give Object.is-equal desti
             legacy.rememberZoom();
           }
           assertSame(label, ...bothScenes());
+          assert.deepEqual(
+            worlds[1].scene.moves,
+            worlds[0].scene.moves,
+            `${label}: eased or at once`,
+          );
           assert.equal(held.held, legacy.held, `${label}: whether the view is held`);
           reset();
         }

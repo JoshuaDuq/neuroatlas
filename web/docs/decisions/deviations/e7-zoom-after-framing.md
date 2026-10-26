@@ -15,10 +15,11 @@ Chunk E7 (#31). A fix under the parity policy (a state that contradicts the pict
   (`rememberZoom`), the way `placeOrbit` already does. The destination plans are unchanged (the
   differential test is `Object.is`-equal on them); only the stored multiple differs, and so only what
   the next resize does.
-- **Standard**: a bug fix, not a standards departure. The legacy already keeps the magnification
-  consistent with the picture in `placeOrbit` (`app.js:810`) and in the sheet's deferred refit
-  (`app.js:1846`), and a resize that moves what the reader framed is the "viewport change moves
-  the content" failure that WCAG 2.2 SC 1.4.10 (Reflow) asks a responsive view to avoid.
+- **Standard**: a bug fix, not a standards departure. The legacy states the intent at `app.js:257-262`: the
+  magnification is "held across a resize so that a stage which changes shape re-fits instead of clipping the
+  anatomy off its sides or stranding it in the middle of a much larger field". A resize after Focus did the
+  stranding it names. `placeOrbit` already keeps the magnification consistent (`app.js:809`) and so does the
+  sheet's deferred refit (`app.js:1846`); this makes the other framings agree with them.
 - **Test**: `src/lib/engine/framing.test.ts`, "keeps the distance Focus chose when the stage next
   resizes". `web/parity/E7.test.ts` gives the legacy side the same bookkeeping
   (`rememberZoom()` after those commands), so the comparison across later resizes stays exact.

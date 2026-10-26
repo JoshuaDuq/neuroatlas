@@ -208,7 +208,10 @@ export interface EngineModel {
   ensureEnvelopes(onProgress?: OnProgress): Promise<void>;
   /** Download the spinal cord layers (brain-atlas.js:291). */
   ensureSpinalCord(onProgress?: OnProgress): Promise<void>;
-  /** Fetch a layer ahead of a switch, with no display change (app.js:76). */
+  /**
+   * Fetch an atlas or a detail level ahead of a switch, with no display change (app.js:76). Any other id, a
+   * supplemental layer included, rejects with an `unknown-layer` error: those load with their own commands.
+   */
   prefetchLayer(id: string): Promise<void>;
 }
 
@@ -484,9 +487,9 @@ export interface TractBundle {
 }
 
 export interface MriLocation {
-  /** Millimetres in the scan's RAS. */
+  /** The scan's RAS in millimetres: three components, as `setScannerPoint` takes them. */
   mm: Vec3;
-  /** Zero-based voxel. */
+  /** The zero-based source voxel, the grid `setVoxel` takes and the dialog labels, whatever moved the crosshair. */
   vox: Vec3;
   values: { name: string; value: number }[];
 }
@@ -500,6 +503,7 @@ export interface MriNavigator {
   setPlane(plane: MriPlaneChoice): void;
   /** Throws a `RangeError` outside the grid. Reports the location. */
   setVoxel(voxel: Vec3): void;
+  /** Step the crosshair in the display's direction; on a mirrored source axis a positive step lowers the source index. Reports the voxel it lands on. */
   moveVoxel(delta: Vec3): void;
   /** False when the point lies outside the scan's grid. */
   setScannerPoint(point: Vec3): boolean;

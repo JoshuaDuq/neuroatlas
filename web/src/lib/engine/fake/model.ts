@@ -363,6 +363,12 @@ export function createFakeModel({
       update();
     },
     async prefetchLayer(id) {
+      if (
+        !manifest.atlases.some((atlas) => atlas.id === id) &&
+        !levels.some((level) => level.id === id)
+      ) {
+        throw unknownLayer(`Unknown layer: ${id}`);
+      }
       layers.add(id);
     },
 

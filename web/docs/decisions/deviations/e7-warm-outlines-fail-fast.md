@@ -11,4 +11,4 @@ Chunk E7 (#31). A fix under the parity policy (CLAUDE.md: fail fast, no silent f
   reports it.
 - **Standard**: project rule "fail fast; no broad exception swallowing" (CLAUDE.md). The outline is
   the selection's only mark on a surface, so a stage that cannot draw it is not ready.
-- **Test**: the contract suite boots the real engine through this path (`src/lib/engine/index.svelte.test.ts`).
+- **Test**: `src/lib/engine/index.test.ts`, "rejects when the outline programs cannot be compiled, freeing the scene and the model"; the contract boot (`index.svelte.test.ts`) covers the success path.

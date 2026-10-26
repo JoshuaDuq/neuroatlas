@@ -239,7 +239,7 @@ describe('the magnification after a framing (deviation e7-zoom-after-framing)', 
     assert.ok(Math.abs(stage.distance() - focused) < 1e-12);
   });
 
-  it('keeps the distance of a landmark, a cut face and the whole brain after a gesture too', () => {
+  it('keeps the distance of a landmark when the stage next resizes', () => {
     const stage = fixture({ meshes: drawn() });
     stage.camera.applyView('left', { immediate: true });
     assert.equal(stage.camera.frameLandmark('small', 'anterior', 5, { immediate: true }), true);

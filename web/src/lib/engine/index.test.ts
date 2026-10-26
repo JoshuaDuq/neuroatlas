@@ -16,6 +16,9 @@ const stage = vi.hoisted(() => ({
   attributes: new Map<string, string>(),
   overlap: null as unknown,
   overlayVisible: [] as boolean[],
+  warmFails: false,
+  rendererDisposed: 0,
+  model: null as { disposed: boolean } | null,
 }));
 
 vi.mock('three', async (importOriginal) => {
@@ -46,7 +49,9 @@ vi.mock('three', async (importOriginal) => {
     setSize() {}
     initRenderTarget() {}
     setAnimationLoop() {}
-    dispose() {}
+    dispose() {
+      stage.rendererDisposed++;
+    }
     forceContextLoss() {}
   }
   return { ...original, WebGLRenderer: FakeRenderer };
@@ -71,7 +76,11 @@ vi.mock('./render/scene.ts', async (importOriginal) => {
               target.setOutlined(outlined);
             };
           }
-          if (key === 'warmOutlines') return () => {};
+          if (key === 'warmOutlines') {
+            return () => {
+              if (stage.warmFails) throw new Error('The outline programs did not compile.');
+            };
+          }
           return Reflect.get(target, key) as unknown;
         },
       });
@@ -88,6 +97,7 @@ vi.mock('./model/brain-atlas.ts', async (importOriginal) => {
         publishedLoader(modelDirectory('cdmd')),
       );
       await model.initialize();
+      stage.model = model;
       return model;
     }
   }
@@ -128,6 +138,9 @@ beforeEach(() => {
   stage.attributes.clear();
   stage.overlap = new Mesh();
   stage.overlayVisible = [];
+  stage.warmFails = false;
+  stage.rendererDisposed = 0;
+  stage.model = null;
   vi.spyOn(EffectComposer.prototype, 'render').mockImplementation(() => {});
   vi.stubGlobal(
     'ResizeObserver',
@@ -207,5 +220,13 @@ describe('the engine facade', () => {
     assert.equal(last.model.hemisphere, 'left');
     assert.equal(last.sections.mode, 'off');
     engine.dispose();
+  });
+
+  // Deviation e7-warm-outlines-fail-fast: legacy logged the failure and started anyway.
+  it('rejects when the outline programs cannot be compiled, freeing the scene and the model', async () => {
+    stage.warmFails = true;
+    await assert.rejects(boot(), /outline programs did not compile/);
+    assert.equal(stage.rendererDisposed, 1);
+    assert.equal(stage.model!.disposed, true);
   });
 });

@@ -291,6 +291,17 @@ export function defineEngineContract(
         assert.equal(engine.model.settings.atlas, atlas);
       });
 
+      it('refuses to prefetch what is not an atlas or a detail level', async () => {
+        const { engine } = await boot();
+        // A supplemental layer loads with its own command (the E4b review).
+        await assert.rejects(engine.model.prefetchLayer('zanatomy'), rejectsWith('unknown-layer'));
+        await assert.rejects(
+          engine.model.prefetchLayer('no-such-layer'),
+          rejectsWith('unknown-layer'),
+        );
+        assert.equal(engine.model.hasLayer('zanatomy'), false);
+      });
+
       it('reports centroids in RAS millimetres only for geometry it has', async () => {
         const { engine, left, cortex, otherAtlas } = await boot();
         assert.equal(engine.model.centroidOf(null), null);
@@ -464,10 +475,14 @@ export function defineEngineContract(
       it('holds a named view, and tells when it is let go', async () => {
         const { engine } = await boot();
         const { camera } = engine;
-        // The real engine opens on the held oblique view; start from a released camera in both.
+        // The page opens on the held oblique view, which a link does not carry.
+        assert.equal(camera.viewHeld, true);
+        assert.equal(camera.orbitLink(), null);
+        const held = collect(engine, 'viewHeld');
         camera.orbitBy({ azimuth: 0.1 });
         assert.equal(camera.viewHeld, false);
-        const held = collect(engine, 'viewHeld');
+        assert.deepEqual(held, [{ held: false }]);
+        held.length = 0;
         camera.applyView('left', { immediate: true });
         assert.equal(camera.viewHeld, true);
         camera.frameCurrent('right');
@@ -492,6 +507,25 @@ export function defineEngineContract(
         assert.ok(view);
         assert.deepEqual(Object.keys(view.edges).sort(), ['bottom', 'left', 'right', 'top']);
         assert.deepEqual(engine.camera.view, view);
+      });
+
+      it('reports an eased move as the camera travels, when it has not moved yet at the call', async () => {
+        const { engine } = await boot();
+        const moves = collect(engine, 'camera');
+        const settled = collect(engine, 'cameraSettled');
+        engine.camera.applyView('inferior');
+        // The link follows the destination at once; the real stage reports the camera frame by frame, after
+        // the call, where the fake reports it in the call.
+        assert.ok(settled.length > 0);
+        if (moves.length === 0) {
+          await new Promise<void>((resolve) => {
+            const off = engine.on('camera', () => {
+              off();
+              resolve();
+            });
+          });
+        }
+        assert.ok(moves.length > 0);
       });
 
       it('releases the view when it frames something other than a preset', async () => {
@@ -689,19 +723,17 @@ export function defineEngineContract(
         );
         onTestFinished(() => navigator.dispose());
         const { dims } = navigator.header;
-        navigator.setVoxel([0, 0, 0]);
-        // NiiVue also reports the location in its own voxel order after a draw, so a report of the voxel
-        // asked for is what the contract can promise, not that it is the last one.
-        const reported = (voxel: number[]) =>
-          locations.some((location) => location.vox.every((v, axis) => v === voxel[axis]));
-        assert.ok(reported([0, 0, 0]));
+        // The report is the source voxel asked for, and the last one: a mirrored axis changes nothing.
+        navigator.setVoxel([5, 6, 7]);
+        assert.deepEqual(locations.at(-1)?.vox, [5, 6, 7]);
+        assert.equal(locations.at(-1)?.mm.length, 3);
         assert.ok(locations.every((location) => location.values.length > 0));
         assert.throws(() => navigator.setVoxel([dims[1]!, 0, 0]), RangeError);
         assert.throws(() => navigator.setVoxel([0.5, 0, 0]), RangeError);
-        const before = locations.length;
+        // A step runs in the display's direction, so a mirrored source axis steps down: one voxel, one axis.
         navigator.moveVoxel([1, 0, 0]);
-        // NiiVue steps in its own voxel order, so only that a location was reported is promised.
-        assert.ok(locations.length > before);
+        const [x, y, z] = locations.at(-1)!.vox;
+        assert.deepEqual([Math.abs(x - 5), y, z], [1, 6, 7]);
         assert.throws(() => navigator.setPlane('OBLIQUE' as never), RangeError);
         navigator.setPlane('AXIAL');
         assert.throws(() => navigator.setWindow(0, 0), RangeError);
