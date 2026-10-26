@@ -2,7 +2,7 @@ import { assert } from './assert.ts';
 import { describe, it, onTestFinished, vi } from 'vitest';
 import type { Region } from '../../types/index.ts';
 import { HIGH_FREQUENCY_EVENTS } from '../api.ts';
-import type { Engine, EngineEvents, MriLocation } from '../api.ts';
+import type { Engine, EngineEvents, MriLocation, Vec3 } from '../api.ts';
 
 export interface ContractFixtures {
   /** The canvas `tracts.createMriNavigator` draws on; the fake ignores it. */
@@ -701,6 +701,15 @@ export function defineEngineContract(
         assert.throws(() => tracts.setOutlineOpacity(2), RangeError);
         tracts.setOutlineOpacity(0.5);
         tracts.setOverlay(true);
+      });
+
+      it('converts a point between the scan and the surface, both ways', async () => {
+        const { engine } = await boot();
+        const scanner: Vec3 = [10, -20, 30];
+        const surface = engine.tracts.scannerToSurface(scanner);
+        assert.equal(surface.length, 3);
+        const back = engine.tracts.surfaceToScanner(surface);
+        back.forEach((value, axis) => assert.ok(Math.abs(value - scanner[axis]!) < 1e-6));
       });
 
       it('opens the MRI navigator on a canvas', async () => {

@@ -16,6 +16,9 @@
     { group: 'Deep', value: 'putamen', label: 'Putamen', disabled: true },
     { group: 'Deep', value: 'caudate', label: 'Caudate' },
   ];
+  let combobox: SearchCombobox;
+  export const move = (delta: number) => combobox.move(delta);
+
   let query = $state('');
   const found = $derived(
     query.trim() === ''
@@ -31,6 +34,7 @@
 
 <div data-scroller style:overflow="auto" style:height={tall ? '300px' : undefined}>
   <SearchCombobox
+    bind:this={combobox}
     bind:query
     {groups}
     {showShortcut}

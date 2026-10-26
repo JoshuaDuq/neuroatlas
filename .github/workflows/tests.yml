@@ -5,6 +5,8 @@ on:
     branches: [main, svelte-rebuild]
   # Called by the deploy workflow, which publishes nothing unless this passes.
   workflow_call:
+  # Runs everything, including the end-to-end tests that pull requests skip.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -217,11 +219,14 @@ jobs:
 
       # Includes the WebGL probe (src/boot/webgl-probe.svelte.test.ts); its renderer
       # line goes to the job summary. If it fails on the runner, apply the fallback in that file.
+      # Headed under Xvfb, so the browser has a mouse: headless Linux has no pointing device and
+      # matches (hover: none) and (pointer: none), where a desktop matches hover and a fine pointer.
+      # A launch flag cannot stand in for it, as switching touch emulation off restores the device's.
       - name: Run browser tests
         shell: bash
         run: |
           set -o pipefail
-          npm run test:browser --prefix web 2>&1 | tee browser-tests.log
+          xvfb-run -a npm run test:browser --prefix web -- --browser.headless=false 2>&1 | tee browser-tests.log
           {
             echo '### WebGL probe'
             grep -h 'WebGL renderer' browser-tests.log || echo 'No renderer line in the log.'
@@ -244,9 +249,11 @@ jobs:
             web/.vitest/attachments/
           if-no-files-found: ignore
 
+  # About 25 minutes a shard and flaky on the runners' software WebGL, so pull requests skip it:
+  # it runs when started by hand (Actions → Tests → Run workflow) and before a deploy.
   web-e2e:
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: github.event_name != 'pull_request' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:

@@ -1,6 +1,6 @@
 import type { Language, Region } from '../../types/index.ts';
 import type { RegionLabel } from '../catalog/labels.ts';
-import { t } from '../i18n/index.ts';
+import { atlasSwitchLabel, t } from '../i18n/index.ts';
 
 /** What the tree's naming and ordering read of a catalog group. */
 interface NamedGroup {
@@ -145,6 +145,17 @@ export function sectionReasons(
     }
   }
   return said;
+}
+
+/**
+ * Why a row is not on screen, as the tree and the search results print it (navigator.js:356-358):
+ * a region of another detail set names that set; a reason with no sentence of its own says the fallback.
+ */
+export function reasonText(reason: string, atlas: string | undefined, lang: Language): string {
+  const reasons = t(lang, 'reasons');
+  if (reason === 'other-detail') return reasons.inDetailSet(atlasSwitchLabel(atlas!, lang));
+  const text = (reasons as Record<string, unknown>)[reason];
+  return typeof text === 'string' ? text : reasons.fallback;
 }
 
 /**

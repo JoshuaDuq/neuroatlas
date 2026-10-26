@@ -113,6 +113,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | t1-retry-label.md                             | fix (decision 42, B10)                                         |
 | t1-search-folds-accents.md                    | fix (decision 42)                                              |
 | t1-status-and-alert.md                        | fix (decision 42, B1)                                          |
+| k4-prefetch-index-after-warm.md               | fix (standard cited)                                           |
 | Announce the orientation after keyboard orbit | **rejected** for now; not implemented, no file                 |
 
 Approvals: the decisions of 2026-10-25 recorded on #4.

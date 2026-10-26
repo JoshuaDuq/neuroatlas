@@ -1,5 +1,6 @@
 // SearchCombobox in Chromium against the APG combobox (list autocomplete) keyboard table.
 import axe from 'axe-core';
+import { flushSync } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
@@ -45,6 +46,22 @@ describe('SearchCombobox', () => {
     await userEvent.keyboard('{ArrowUp}');
     expect(armed()?.textContent).toBe('Hypothalamus');
     expect(document.activeElement).toBe(input());
+  });
+
+  test('move() arms as the arrows do, from wherever focus is', async () => {
+    const { component } = await render(Fixture, { picks: [] });
+    await type('h');
+    await expect.poll(() => armed()?.textContent).toBe('Hypothalamus');
+    input().blur();
+    flushSync(() => component.move(1));
+    expect(armed()?.textContent).toBe('Thalamus');
+    flushSync(() => component.move(1));
+    expect(armed()?.textContent).toBe('Thalamus');
+    // Up skips the disabled Hippocampus and stops at the first enabled option.
+    flushSync(() => component.move(-1));
+    expect(armed()?.textContent).toBe('Hypothalamus');
+    flushSync(() => component.move(-1));
+    expect(armed()?.textContent).toBe('Hypothalamus');
   });
 
   test('with only disabled options the arrows arm nothing and throw nothing', async () => {

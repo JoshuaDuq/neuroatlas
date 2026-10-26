@@ -39,10 +39,11 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { t, atlasSwitchLabel } from '../../lib/core/i18n/index.ts';
+  import { t } from '../../lib/core/i18n/index.ts';
   import { count } from '../../lib/core/format.ts';
   import {
     labelledGroups,
+    reasonText,
     rowStatesReason,
     sectionReasons,
     UNREVEALABLE,
@@ -108,19 +109,12 @@
   let root: HTMLElement;
   let scrolledId: string | null = null;
 
-  const reasonText = (reason: string, atlas: string | undefined): string => {
-    const reasons = t(lang, 'reasons');
-    if (reason === 'other-detail') return reasons.inDetailSet(atlasSwitchLabel(atlas!, lang));
-    const text = (reasons as Record<string, unknown>)[reason];
-    return typeof text === 'string' ? text : reasons.fallback;
-  };
-
   function regionNode(row: CatalogRow, midline: boolean): TreegridNode<TreeNodeData> {
     const copy = t(lang, 'navigator');
     const name = row.label.name;
     const side = t(lang, 'sides').words[row.region.hemisphere];
     const eye = !UNREVEALABLE.has(row.reason);
-    const reason = row.visible ? null : reasonText(row.reason, row.region.atlas);
+    const reason = row.visible ? null : reasonText(row.reason, row.region.atlas, lang);
     return {
       id: row.region.id,
       label: name,
@@ -168,7 +162,7 @@
             type: 'section',
             name,
             said: (said.get(section) ?? [])
-              .map((reason) => reasonText(reason, undefined))
+              .map((reason) => reasonText(reason, undefined, lang))
               .join(' · '),
           },
         });

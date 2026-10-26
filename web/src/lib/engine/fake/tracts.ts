@@ -132,6 +132,9 @@ export function createFakeTracts({
     setOverlay(visible) {
       overlay = visible;
     },
+    // The surface sits off the scanner, so a caller that skips the conversion is caught.
+    scannerToSurface: ([x, y, z]) => [x + 1, y - 2, z + 3],
+    surfaceToScanner: ([x, y, z]) => [x - 1, y + 2, z - 3],
     async createMriNavigator(_canvas, onLocation) {
       // The decode the 3D lines share (tract-file.js:12); it changes nothing that is drawn.
       const decode = async (id: string) => {

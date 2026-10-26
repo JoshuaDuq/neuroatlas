@@ -28,13 +28,17 @@ const stageBox = () => box(el('viewport'));
 /** The sheet's written size along its axis. */
 const span = () => parseFloat(sideways() ? sheet().style.width : sheet().style.height);
 const sideways = () => innerWidth > innerHeight && innerHeight <= 480;
-/** The sheet has glided to where it was told to be. */
-const rested = () =>
-  Promise.all(
-    sheet()
-      .getAnimations()
-      .map((animation) => animation.finished),
-  );
+/** Animations still playing; a finished one that holds its end state stays listed, so it is skipped. */
+const playing = (target: Element | Document) =>
+  target.getAnimations().filter((animation) => animation.playState !== 'finished');
+/**
+ * The sheet has glided to where it was told to be. A transition that a newer one replaces rejects
+ * its `finished` with an AbortError, so every one is waited on and the sheet is looked at again.
+ */
+const rested = async () => {
+  for (let running = playing(sheet()); running.length > 0; running = playing(sheet()))
+    await Promise.allSettled(running.map((animation) => animation.finished));
+};
 const contrast = (a: string, b: string) => {
   const luminance = (colour: string) => {
     const [r, g, bl] = colour
@@ -841,7 +845,15 @@ describe('the tab row matches the legacy sheet tabs', () => {
   test('held sideways the one row of tabs is 368 px, and a label never wraps', async () => {
     await mount(SIDEWAYS);
     await rested();
-    expect(span()).toBe(368);
+    // The row is as wide as its labels, which each platform's text shaping measures a little
+    // differently (369 px on Linux): the sheet hugs the row it has, to the next whole pixel.
+    const row =
+      box(tablist().lastElementChild!).right +
+      parseFloat(getComputedStyle(tablist()).paddingRight) -
+      box(sheet()).left +
+      parseFloat(getComputedStyle(sheet()).borderRightWidth);
+    expect(span()).toBe(Math.ceil(row));
+    expect(Math.abs(span() - 368)).toBeLessThanOrEqual(1);
     expect(getComputedStyle(tablist().children[0]!).whiteSpace).toBe('nowrap');
   });
 });

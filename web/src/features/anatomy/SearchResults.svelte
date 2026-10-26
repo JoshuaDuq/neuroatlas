@@ -9,8 +9,13 @@
 -->
 <script lang="ts">
   import type { CatalogRow } from '../../lib/core/catalog/catalog.ts';
-  import { atlasSwitchLabel, t } from '../../lib/core/i18n/index.ts';
-  import { matchedAlias, matchSegments, UNREVEALABLE } from '../../lib/core/panels/navigator.ts';
+  import { t } from '../../lib/core/i18n/index.ts';
+  import {
+    matchedAlias,
+    matchSegments,
+    reasonText,
+    UNREVEALABLE,
+  } from '../../lib/core/panels/navigator.ts';
   import type { Language } from '../../lib/types/index.ts';
 
   interface Props {
@@ -29,14 +34,7 @@
   const side = $derived(t(lang, 'sides').words[row.region.hemisphere]);
   const alias = $derived(matchedAlias(row.label, query));
   const heard = $derived(alias ? `${row.label.name}, ${alias}` : row.label.name);
-  const reason = $derived.by(() => {
-    if (row.visible) return null;
-    const reasons = t(lang, 'reasons');
-    if (row.reason === 'other-detail')
-      return reasons.inDetailSet(atlasSwitchLabel(row.region.atlas!, lang));
-    const text = (reasons as Record<string, unknown>)[row.reason];
-    return typeof text === 'string' ? text : reasons.fallback;
-  });
+  const reason = $derived(row.visible ? null : reasonText(row.reason, row.region.atlas, lang));
   const spoken = $derived(
     row.visible
       ? `${heard}, ${side}, ${place}`
