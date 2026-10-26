@@ -137,10 +137,14 @@ function resolve(node: unknown, area: string, leaf = ''): unknown {
 const without = (node: unknown, ...keys: string[]) =>
   Object.fromEntries(Object.entries(node as object).filter(([key]) => !keys.includes(key)));
 
+/** Legacy keys whose i18n wording deliberately differs, each asserted on its own below. */
+const CHANGED: Record<string, string[]> = {
+  viewport: ['loadingWithTotal'], // c1-loading-megabytes
+};
+
 /** Keys of a legacy area that the i18n area adds; the legacy tables have no counterpart. */
 const ADDED: Record<string, string[]> = {
   viewport: [
-    'loadingWithTotal', // c1-loading-megabytes, asserted below
     'navigationHintTouch', // G1, decision 21: the hints name touch gestures
     'navigationHintTractsTouch', // G1, decision 21
     'exitFullscreen', // H2/G6, decision 33: the label while the stage is fullscreen
@@ -167,10 +171,13 @@ const ADDED: Record<string, string[]> = {
   shortcuts: ['rangeTo'], // S5b D4: read after a range's dash
 };
 
+/** The keys left out of an area's comparison with the legacy table. */
+const skipped = (area: string) => [...(ADDED[area] ?? []), ...(CHANGED[area] ?? [])];
+
 /** The S5b fixes of s5b-shortcut-strings.md applied to the legacy rows: D1 and D3 to the French Escape row, D2 to the `M` row. */
 const D2: Record<string, string> = {
-  en: '; in Tracts, the diffusion MRI',
-  fr: ' ; dans Faisceaux, l’IRM de diffusion',
+  en: '; in Tracts, the MRI with tracts',
+  fr: ' ; dans Faisceaux, l’IRM avec faisceaux',
 };
 function legacyFixed(area: string, table: any, lang: string) {
   if (area !== 'shortcuts') return table;
@@ -205,7 +212,12 @@ describe('C1 i18n against the legacy modules', () => {
       const legacy = { ...LEGACY_TRANSLATIONS[lang] };
       assert.deepStrictEqual(Object.keys(rest).sort(), Object.keys(legacy).sort());
       for (const area of Object.keys(legacy)) {
-        const added = ADDED[area] ?? [];
+        // An addition must not hide a legacy string from the comparison.
+        assert.deepStrictEqual(
+          (ADDED[area] ?? []).filter((key) => key in legacy[area as keyof typeof legacy]),
+          [],
+        );
+        const added = skipped(area);
         assert.deepStrictEqual(
           resolve(without(rest[area], ...added), area),
           resolve(
@@ -219,6 +231,10 @@ describe('C1 i18n against the legacy modules', () => {
 
     it(`${lang}: the per-domain tables are reproduced`, () => {
       const { diffusionText } = withoutAdditions(TRANSLATIONS[lang]);
+      assert.deepStrictEqual(
+        ADDED.diffusion!.filter((key) => key in DIFFUSION_TEXT[lang]),
+        [],
+      );
       assert.deepStrictEqual(
         resolve(TRANSLATIONS[lang].clinical, 'clinical'),
         resolve(CLINICAL_TEXT[lang], 'clinical'),
@@ -249,11 +265,8 @@ describe('C1 i18n against the legacy modules', () => {
     for (const lang of ['en', 'fr', 'de', 'unknown', '']) {
       for (const area of Object.keys(LEGACY_TRANSLATIONS.en)) {
         assert.deepStrictEqual(
-          resolve(without(t(lang, area as 'header'), ...(ADDED[area] ?? [])), area),
-          resolve(
-            without(legacyFixed(area, legacyT(lang, area), lang), ...(ADDED[area] ?? [])),
-            area,
-          ),
+          resolve(without(t(lang, area as 'header'), ...skipped(area)), area),
+          resolve(without(legacyFixed(area, legacyT(lang, area), lang), ...skipped(area)), area),
         );
       }
     }
@@ -440,6 +453,10 @@ describe('strings moved into the mri area', () => {
       'hintTouch',
     ];
     for (const lang of ['en', 'fr'] as const) {
+      assert.deepStrictEqual(
+        added.filter((key) => key in legacy[lang]),
+        [],
+      );
       // Four French wordings are grammar fixes (c1-mri-dialog-french), asserted below.
       const changed = [...added, ...(lang === 'fr' ? ['hint', 'voxel'] : [])];
       assert.deepStrictEqual(
