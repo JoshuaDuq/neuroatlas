@@ -12,7 +12,7 @@
     { group: 'Limbic', value: 'amygdala', label: 'Amygdala' },
     { group: 'Limbic', value: 'hippocampus', label: 'Hippocampus', disabled: true },
     { group: 'Limbic', value: 'hypothalamus', label: 'Hypothalamus' },
-    { group: 'Deep', value: 'thalamus', label: 'Thalamus' },
+    { group: 'Deep', value: 'thalamus', label: 'Thalamus', current: true },
     { group: 'Deep', value: 'putamen', label: 'Putamen', disabled: true },
     { group: 'Deep', value: 'caudate', label: 'Caudate' },
   ];
