@@ -225,7 +225,7 @@ test.describe('the selection in the grip', () => {
         - tab "Circuits"
         - tab "Tracts"
     `);
-    await expect(page.getByText('Not clinical anatomy')).toBeVisible();
+    await expect(sheet(page).getByText('Not clinical anatomy')).toBeVisible();
     await expect(page.getByRole('tabpanel')).toHaveCount(0);
     await handle(page).click();
     await expect(handle(page)).toMatchAriaSnapshot('- button "Expand panel"');
