@@ -542,6 +542,10 @@ export interface EngineTracts {
   setOutlineOpacity(opacity: number): void;
   /** Draw the streamlines over the anatomy's own brain (native-ui.js:256-261). */
   setOverlay(visible: boolean): void;
+  /** A point of the scan, in scanner RAS mm, where the sections' crosshair puts it (native-ui.js:109). */
+  scannerToSurface(point: Vec3): Vec3;
+  /** The sections' crosshair as a point of the scan, in scanner RAS mm (native-ui.js:107). */
+  surfaceToScanner(point: Vec3): Vec3;
   /** Open the NiiVue navigator on a canvas. The scan, FA and the shared tract decode load with it. */
   createMriNavigator(
     canvas: HTMLCanvasElement,
