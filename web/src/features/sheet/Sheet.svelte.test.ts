@@ -841,7 +841,15 @@ describe('the tab row matches the legacy sheet tabs', () => {
   test('held sideways the one row of tabs is 368 px, and a label never wraps', async () => {
     await mount(SIDEWAYS);
     await rested();
-    expect(span()).toBe(368);
+    // The row is as wide as its labels, which each platform's text shaping measures a little
+    // differently (369 px on Linux): the sheet hugs the row it has, to the next whole pixel.
+    const row =
+      box(tablist().lastElementChild!).right +
+      parseFloat(getComputedStyle(tablist()).paddingRight) -
+      box(sheet()).left +
+      parseFloat(getComputedStyle(sheet()).borderRightWidth);
+    expect(span()).toBe(Math.ceil(row));
+    expect(Math.abs(span() - 368)).toBeLessThanOrEqual(1);
     expect(getComputedStyle(tablist().children[0]!).whiteSpace).toBe('nowrap');
   });
 });
