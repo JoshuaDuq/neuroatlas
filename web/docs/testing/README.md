@@ -12,6 +12,8 @@ conversion needs.
   tests ranked by seconds saved, and the findings outside the classification (bugs, changes from legacy with
   no deviation record, decisions needed).
 
+> **Status (2026-10-26):** the conversion below is done. K8 to K16 replaced all 27 legacy-comparison files with rule tests and deleted them, and K16 removed `web/parity/`. The counts, order and slow-test figures record the audit as it was taken, as `audit.md` does.
+
 ## Counts
 
 Test files (237: 161 unit and 52 browser Vitest files, 24 Playwright specs), by main class:

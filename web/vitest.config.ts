@@ -6,10 +6,8 @@ import { yamlRecords } from './build/yaml-records.ts';
 
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
-// One Three.js instance across web/.
 const shared = {
   plugins: [svelte(), yamlRecords()],
-  resolve: { dedupe: ['three', 'three-mesh-bvh', '@niivue/niivue', 'yaml'] },
   server: { fs: { allow: [repositoryRoot] } },
 };
 

@@ -164,14 +164,11 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            web/package-lock.json
+          cache-dependency-path: web/package-lock.json
 
+      # web/ is self-contained: no web file imports the legacy viewer since K6's conversion.
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix web
+        run: npm ci --prefix web
 
       - name: Lint
         run: npm run lint --prefix web
@@ -228,14 +225,11 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            web/package-lock.json
+          cache-dependency-path: web/package-lock.json
 
+      # web/ is self-contained: no web file imports the legacy viewer since K6's conversion.
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix web
+        run: npm ci --prefix web
 
       - name: Check the image matches Playwright
         run: |
