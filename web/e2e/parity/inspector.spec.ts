@@ -3,6 +3,11 @@
 // r1-constituent-side, r1-hidden-actions) or decision 35 on #4.
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
+import enabled from './enabled/panels.ts';
+
+test.beforeEach(({ page: _page }, testInfo) => {
+  test.skip(testInfo.project.name === 'next' && !enabled, 'the next panels region is not enabled');
+});
 
 const V1 = 'hcp-mmp:left:1';
 const regionPanel = (page: Page) => page.locator('#region-detail, .region-detail');

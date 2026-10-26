@@ -3,6 +3,11 @@
 // docs/decisions/deviations/ (h5-tabpanel-semantics, h5-strip-name-side, h5-clear-focus).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
+import enabled from './enabled/panels.ts';
+
+test.beforeEach(({ page: _page }, testInfo) => {
+  test.skip(testInfo.project.name === 'next' && !enabled, 'the panels region is not integrated');
+});
 
 const REGION = 'destrieux:left:38';
 const MODES = ['Anatomy', 'Functions', 'Deficits', 'Circuits', 'Tracts'];

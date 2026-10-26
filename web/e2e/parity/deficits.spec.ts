@@ -3,6 +3,14 @@
 // x2-aria-disabled-while-opening, x2-focus-after-render, x2-results-announcement).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
+import panelsEnabled from './enabled/panels.ts';
+
+test.beforeEach(() => {
+  test.skip(
+    test.info().project.name === 'next' && !panelsEnabled,
+    'the panels region is not integrated',
+  );
+});
 
 const search = (page: Page) => page.getByRole('searchbox', { name: /search deficits/i });
 const list = (page: Page) => page.getByRole('group', { name: 'Deficits', exact: true });

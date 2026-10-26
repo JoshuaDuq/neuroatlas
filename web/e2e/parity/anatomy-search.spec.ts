@@ -3,6 +3,11 @@
 // deviation record in docs/decisions/deviations/ (a2-*).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
+import enabled from './enabled/panels.ts';
+
+test.beforeEach(({ page: _page }, testInfo) => {
+  test.skip(testInfo.project.name === 'next' && !enabled, 'the panels region is not integrated');
+});
 
 const isNext = () => test.info().project.name === 'next';
 const field = (page: Page) =>

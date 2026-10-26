@@ -2,6 +2,14 @@
 // deviation record in docs/decisions/deviations/ (h4-initial-focus, h4-lang-of-parts).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
+import shellEnabled from './enabled/shell.ts';
+
+test.beforeEach(({ browserName: _browser }, testInfo) => {
+  test.skip(
+    testInfo.project.name === 'next' && !shellEnabled,
+    'the shell region is not integrated',
+  );
+});
 
 const opener = (page: Page) => page.getByRole('button', { name: 'Provenance', exact: true });
 const dialog = (page: Page) => page.getByRole('dialog', { name: 'Provenance' });

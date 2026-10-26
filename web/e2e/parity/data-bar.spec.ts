@@ -3,6 +3,14 @@
 // between the apps each cite a deviation record in docs/decisions/deviations/ (h3-*).
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
+import shellEnabled from './enabled/shell.ts';
+
+test.beforeEach(() => {
+  test.skip(
+    test.info().project.name === 'next' && !shellEnabled,
+    'the shell region is not integrated',
+  );
+});
 
 const field = (page: Page, name: string) => page.getByRole('combobox', { name, exact: true });
 const summary = (page: Page) => page.getByRole('button', { name: /^Atlas and display settings: / });

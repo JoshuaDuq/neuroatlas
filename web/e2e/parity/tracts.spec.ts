@@ -3,11 +3,16 @@
 // the two cites its deviation record.
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '../fixtures.ts';
+import panelsEnabled from './enabled/panels.ts';
 
 const AF_LEFT = 'Arcuate fasciculus · left';
 const AF_RIGHT = 'Arcuate fasciculus · right';
 
-test.beforeEach(async ({ app }) => {
+test.beforeEach(async ({ app }, testInfo) => {
+  test.skip(
+    testInfo.project.name === 'next' && !panelsEnabled,
+    'The panels region is not integrated yet (I1).',
+  );
   // The first opening decodes the reference dataset on software WebGL.
   test.setTimeout(240_000);
   await app.gotoHash({ tab: 'diffusion' });

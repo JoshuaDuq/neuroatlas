@@ -2,6 +2,11 @@
 // Role and name locators run on `legacy` and `next`; each difference cites its deviation record
 // in web/docs/decisions/deviations/ or decision 13 on #4.
 import { expect, test } from '../fixtures.ts';
+import enabled from './enabled/shell.ts';
+
+test.beforeEach(({ page: _page }, testInfo) => {
+  test.skip(testInfo.project.name === 'next' && !enabled, 'the next shell region is not enabled');
+});
 
 const STATUSES = /^(loading|ready|switching|error|context-lost)$/;
 
