@@ -28,6 +28,7 @@ export const en = {
     comparison: 'Could not load the atlas comparison.',
     overlap: 'Could not load the overlap outline.',
     restore: 'Could not restore the previous view.',
+    fullscreen: 'Could not enter full screen.',
   },
 };
 
@@ -61,5 +62,6 @@ export const fr: typeof en = {
     comparison: 'Impossible de charger la comparaison des atlas.',
     overlap: 'Impossible de charger le contour du chevauchement.',
     restore: 'Impossible de rétablir la vue précédente.',
+    fullscreen: 'Impossible de passer en plein écran.',
   },
 };

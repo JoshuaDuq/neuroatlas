@@ -9,7 +9,7 @@ Status: fix (standard cited); the string is approved in decision 33 on #4
 
 ## New behaviour
 
-The call is direct. A rejection is logged and shown as a notice: "Could not enter full screen." / "Impossible de passer en plein écran." The strings sit in a local table marked `TODO(C1)` until C1 adds `errors.operations.fullscreen`.
+The call is direct. A rejection is logged and shown as a notice: "Could not enter full screen." / "Impossible de passer en plein écran." The string is `errors.operations.fullscreen` in i18n, shown through `failureNotice(error, lang, 'fullscreen')`.
 
 ## Standard cited
 

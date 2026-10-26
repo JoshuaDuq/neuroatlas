@@ -38,6 +38,7 @@ export const en = {
   snapshotStatement: 'Planum · Not clinical anatomy',
   fullscreen: 'Full screen',
   exitFullscreen: 'Exit full screen',
+  snapshotSaved: (file: string) => `Image saved as ${file}.`,
   loadingAnatomy: 'Loading anatomy…',
   loadingWithTotal: (l: number, t: number) =>
     `Loading anatomy · ${megabytes(l, 'MB', 'en')} / ${megabytes(t, 'MB', 'en')}`,
@@ -79,6 +80,7 @@ export const fr: typeof en = {
   snapshotStatement: 'Planum · Pas une anatomie clinique',
   fullscreen: 'Plein écran',
   exitFullscreen: 'Quitter le plein écran',
+  snapshotSaved: (file: string) => `Image enregistrée : ${file}.`,
   loadingAnatomy: 'Chargement de l’anatomie…',
   loadingWithTotal: (l: number, t: number) =>
     `Chargement de l’anatomie · ${megabytes(l, 'Mo', 'fr')} / ${megabytes(t, 'Mo', 'fr')}`,
