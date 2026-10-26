@@ -36,7 +36,13 @@ async function violations() {
 async function pageSettled() {
   // Reading layout brings style up to date, so a change made just now has started its transitions.
   void document.body.offsetHeight;
-  await Promise.all(document.getAnimations().map((animation) => animation.finished));
+  // A transition that a newer one replaces rejects its `finished`, so look again until none is left.
+  for (
+    let running = document.getAnimations();
+    running.length > 0;
+    running = document.getAnimations()
+  )
+    await Promise.allSettled(running.map((animation) => animation.finished));
 }
 
 async function useTheme(theme: 'light' | 'dark') {

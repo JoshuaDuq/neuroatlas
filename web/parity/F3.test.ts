@@ -296,6 +296,13 @@ describe('the head prefetch script', () => {
     expect(requested).toHaveLength(1);
   });
 
+  it('still hands over an index that parses but names no brain, for the app to report', async () => {
+    const { requested, window } = run('', versions, 'null');
+    const index = window.__planumAssets!['https://example.org/neuroatlas/models/anatomies.json']!;
+    expect(await (await index).text()).toBe('null');
+    expect(requested).toHaveLength(1);
+  });
+
   it('is injected inline into head by the build plugin', () => {
     const [tag] = hook(publishedAssets(), 'transformIndexHtml')('') as {
       tag: string;

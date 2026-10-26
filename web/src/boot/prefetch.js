@@ -36,18 +36,17 @@ window.__planumAssets = window.__planumAssets || {};
   else {
     // The app reads the index from this same entry, so it gets the response only once the
     // brain's files have started: it cannot ask for the manifest first and fetch it twice.
-    // An index that does not parse is the app's to report, so the response still goes through.
+    // An index that does not parse, or names no brain, is the app's to report, so the response
+    // still goes through.
     window.__planumAssets[new URL(root + 'models/anatomies.json', location.origin).href] =
       index.then(function (response) {
         return response
           .clone()
           .json()
-          .then(
-            function (published) {
-              warm(published.default);
-            },
-            function () {},
-          )
+          .then(function (published) {
+            warm(published.default);
+          })
+          .catch(function () {})
           .then(function () {
             return response;
           });

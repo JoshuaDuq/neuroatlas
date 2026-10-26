@@ -28,13 +28,14 @@ const stageBox = () => box(el('viewport'));
 /** The sheet's written size along its axis. */
 const span = () => parseFloat(sideways() ? sheet().style.width : sheet().style.height);
 const sideways = () => innerWidth > innerHeight && innerHeight <= 480;
-/** The sheet has glided to where it was told to be. */
-const rested = () =>
-  Promise.all(
-    sheet()
-      .getAnimations()
-      .map((animation) => animation.finished),
-  );
+/**
+ * The sheet has glided to where it was told to be. A transition that a newer one replaces rejects
+ * its `finished` with an AbortError, so every one is waited on and the sheet is looked at again.
+ */
+const rested = async () => {
+  for (let running = sheet().getAnimations(); running.length > 0; running = sheet().getAnimations())
+    await Promise.allSettled(running.map((animation) => animation.finished));
+};
 const contrast = (a: string, b: string) => {
   const luminance = (colour: string) => {
     const [r, g, bl] = colour
