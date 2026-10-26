@@ -435,7 +435,11 @@
       background: var(--border-subtle);
     }
 
-    :global(.comparison-status:not(:empty)) {
+    /* Legacy zeroes whatever follows a section summary (components.css:354); the note's own 8px would show. */
+    .comparison :global(.comparison-status) {
+      margin-top: 0;
+    }
+    .comparison :global(.comparison-status:not(:empty)) {
       margin-bottom: var(--space-2);
     }
     .comparison-retry {

@@ -13,4 +13,4 @@ The summary holds the text only, as R1's other sections do (`r1-summary-headings
 
 ## Standard cited
 
-WCAG 2.2 SC 1.3.1 and 4.1.2; WAI-ARIA APG Disclosure pattern; GOV.UK Details component (plain-text summary).
+ARIA 1.2: a `summary` in a `details` has the button role, and the children of a button are presentational, so a heading inside it is dropped or flattened by assistive technology (WCAG 2.2 SC 1.3.1 and 4.1.2); GOV.UK Design System, Details (plain-text summary).

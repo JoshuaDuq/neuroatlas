@@ -10,7 +10,7 @@ test.beforeEach(({ page: _page }, testInfo) => {
 });
 
 const V1 = 'hcp-mmp:left:1'; // 5 overlaps: four rows, one behind "1 more overlapping region"
-const panelOf = (page: Page) => page.locator('#region-comparison, .comparison');
+const panelOf = (page: Page) => page.locator('#region-comparison, .comparison > details');
 const summaryOf = (page: Page) => panelOf(page).locator('summary').first();
 const rowsOf = (page: Page) =>
   panelOf(page).getByRole('button', {

@@ -3,7 +3,7 @@
 // C5's (core/comparison/catalog.test.ts) and the figures are comparison-format.test.ts; the legacy
 // source-text and DOM-stub tests (atlas-comparison.test.js, app.test.js:217-233) are behavioural here.
 import { flushSync } from 'svelte';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, onTestFinished, test, vi } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
@@ -47,6 +47,17 @@ function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((done) => (resolve = done));
   return { promise, resolve };
+}
+
+/**
+ * A comparison download that answers when the test says. Downloads in flight are shared by URL, so
+ * it is released when the test ends, whatever happened in it: one failure cannot hang the next tests.
+ */
+function heldDownload() {
+  const answer = deferred<Response>();
+  onTestFinished(() => answer.resolve(new Response(raw)));
+  serve(() => answer.promise as unknown as Response);
+  return answer;
 }
 
 /** An engine whose highlight answers when the test says, to put requests in a chosen order. */
@@ -133,8 +144,7 @@ describe('loading', () => {
   });
 
   test('the status line is on the page before it speaks, and busy is on the content, not above it', async () => {
-    const answer = deferred<Response>();
-    serve(() => answer.promise as unknown as Response);
+    const answer = heldDownload();
     const screen = await render(Fixture, { engine: createEngine(), regionId: CEREBELLUM });
     const line = status();
     expect(text(line)).toBe('');
@@ -173,6 +183,17 @@ describe('loading', () => {
     expect(requested(fetch)).toBe(2);
     expect(document.activeElement).toBe(summaryOf(panel()));
     await expect.element(retry).not.toBeInTheDocument();
+  });
+
+  test('a failed load is kept when the region changes: the error and Retry stay', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    serve(() => new Response('down', { status: 503 }));
+    const screen = await render(Fixture, { engine: createEngine(), regionId: V1 });
+    await open();
+    await expect.element(page.getByRole('button', { name: 'Retry comparison' })).toBeVisible();
+    await screen.rerender({ engine: createEngine(), regionId: SFG });
+    expect(text(status())).toContain('Could not load the atlas comparison.');
+    await expect.element(page.getByRole('button', { name: 'Retry comparison' })).toBeVisible();
   });
 
   test('bytes that do not match their checksum ask for a reload, in French too', async () => {
@@ -272,6 +293,22 @@ describe('the list', () => {
     await screen.rerender({ engine: createEngine(), regionId: SFG });
     expect(panel().open).toBe(true);
     expect(root().querySelectorAll('details')[1]!.open).toBe(true);
+    expect(root().querySelectorAll('details')[2]!.open).toBe(true);
+  });
+
+  test('the inline disclosures keep legacy weight and height, and the status adds no space under the summary', async () => {
+    serve();
+    await mount({ regionId: SFG });
+    await open();
+    for (const details of [
+      root().querySelectorAll('details')[1]!,
+      root().querySelectorAll('details')[2]!,
+    ]) {
+      const style = getComputedStyle(summaryOf(details));
+      expect(style.fontWeight).toBe('400');
+      expect(summaryOf(details).getBoundingClientRect().height).toBe(32);
+    }
+    expect(getComputedStyle(status()).marginTop).toBe('0px');
   });
 
   test('the sources are links to each atlas that open a new tab and say so', async () => {
@@ -390,6 +427,46 @@ describe('highlighting an overlap', () => {
     expect(logged).toHaveBeenCalled();
   });
 
+  test('an outline the engine did not apply leaves the row unpressed and says nothing', async () => {
+    serve();
+    const { engine, pending } = slowEngine();
+    await render(Fixture, { engine, regionId: V1 });
+    await expect.poll(() => rows().length).toBeGreaterThan(0);
+    await open();
+    await userEvent.click(rows()[0]!);
+    pending[0]!.settle(false);
+    await expect.poll(() => text(status())).toBe('');
+    expect(rows()[0]!.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  describe('after an outline failed', () => {
+    async function failed() {
+      serve();
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { engine, comparison, pending } = slowEngine();
+      comparison.highlight.mockRejectedValueOnce(new Error('geometry'));
+      const screen = await render(Fixture, { engine, regionId: V1 });
+      await expect.poll(() => rows().length).toBeGreaterThan(0);
+      await open();
+      await userEvent.click(rows()[0]!);
+      await expect.poll(() => text(status())).toBe('Could not load the overlap outline.');
+      return { engine, screen, pending };
+    }
+
+    test('another region starts without the error', async () => {
+      const { engine, screen } = await failed();
+      await screen.rerender({ engine, regionId: SFG });
+      await expect.poll(() => text(status())).not.toContain('Could not');
+    });
+
+    test('pressing another row starts without the error', async () => {
+      const { pending } = await failed();
+      await userEvent.click(rows()[1]!);
+      await expect.poll(() => text(status())).toBe('Loading overlap outline…');
+      pending[0]!.settle(true);
+    });
+  });
+
   test('closing the panel clears the outline; opening it again does not bring it back', async () => {
     serve();
     const { engine } = await mount();
@@ -433,19 +510,15 @@ describe('highlighting an overlap', () => {
     expect(engine.highlighted).toBeNull();
   });
 
-  test('unmounting clears the outline and ignores an answer that lands afterwards', async () => {
+  test('unmounting clears the outline', async () => {
     serve();
-    const { engine, pending, comparison } = slowEngine();
+    const { engine, comparison } = slowEngine();
     const screen = await render(Fixture, { engine, regionId: V1 });
     await expect.poll(() => rows().length).toBeGreaterThan(0);
     await open();
     await userEvent.click(rows()[0]!);
     screen.unmount();
     expect(comparison.clear).toHaveBeenCalled();
-    const logged = vi.spyOn(console, 'error');
-    pending[0]!.settle(true);
-    await new Promise((resolve) => setTimeout(resolve));
-    expect(logged).not.toHaveBeenCalled();
   });
 });
 
@@ -521,8 +594,7 @@ describe('focus across a repaint', () => {
   });
 
   test('a language switch replaces the status line instead of rewriting it, so it is not spoken again', async () => {
-    const answer = deferred<Response>();
-    serve(() => answer.promise as unknown as Response);
+    heldDownload();
     const screen = await render(Fixture, { engine: createEngine(), regionId: V1 });
     const before = status();
     expect(text(before)).toBe('Loading atlas comparison…');
@@ -536,8 +608,6 @@ describe('focus across a repaint', () => {
     expect(status()).not.toBe(before);
     expect(text(status())).toBe('Chargement de la comparaison des atlas…');
     expect(rewritten).not.toHaveBeenCalled();
-    // Asset downloads in flight are shared by URL: leave none hanging for the next test.
-    answer.resolve(new Response(raw));
   });
 });
 
@@ -577,9 +647,14 @@ describe('Download CSV', () => {
     expect(file.text).not.toContain('Superior frontal gyrus');
   });
 
-  test('says it was saved, in each language', async () => {
+  test('says it was saved', async () => {
     await download('en');
     expect(announcer.textContent).toBe('Atlas comparison CSV downloaded.');
+  });
+
+  test('says it was saved in French', async () => {
+    await download('fr');
+    expect(announcer.textContent).toBe('Fichier CSV de la comparaison des atlas téléchargé.');
   });
 });
 

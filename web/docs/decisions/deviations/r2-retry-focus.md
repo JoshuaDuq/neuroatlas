@@ -13,4 +13,4 @@ Retry moves focus to the panel's `<summary>` before the button goes, and the sta
 
 ## Standard cited
 
-WCAG 2.2 SC 2.4.3 Focus Order and 3.2.2 On Input; APG guidance that focus is never left on a removed element.
+WCAG 2.2 SC 2.4.3 Focus Order: focus moves to a control that is still there, in a meaningful order, instead of falling to the page when the focused button goes.
