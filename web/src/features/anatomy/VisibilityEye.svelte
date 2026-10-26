@@ -24,6 +24,7 @@
   }
 
   /** The part sentence of a press (a1-eye-announcement); the legacy copy has none, which parity/C1 holds. */
+  // TODO(C1): dissection.partHidden / partShown
   const PRESSED = {
     en: {
       hidden: (name: string, side: string) => `Hidden: ${name}, ${side}.`,

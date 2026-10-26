@@ -4,8 +4,9 @@ import type { ViewStore } from './view.svelte.ts';
 
 /**
  * Writes the link once the scene settles (app.js:243-254, 1831, 1858): 250 ms after a view
- * change, and as the camera comes to rest, which the engine's `cameraSettled` has already
- * debounced by the same 250 ms (link-writer.js:7), so a camera move writes ~250 ms after rest.
+ * change, and when the camera settles. The engine's `cameraSettled` comes 250 ms after a reader's
+ * move ends (link-writer.js:7), so that move writes the link ~250 ms after rest; an application
+ * move reports it at once, so its link is written when the move starts and again after it rests.
  * `write` is the caller's; hold and release are the link restore's (`createLinkWriter`). It stops
  * with the component that created it.
  */

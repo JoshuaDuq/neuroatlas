@@ -16,6 +16,7 @@ import { createSessionStore } from '../lib/state/session.svelte.ts';
 import { createStageLayout } from '../lib/state/stage-layout.svelte.ts';
 import { createTheme } from '../lib/state/theme.svelte.ts';
 import type { Language } from '../lib/types/index.ts';
+import type { announceView } from '../lib/state/view.svelte.ts';
 import { createPorts } from './ports.ts';
 
 /** What the page is told when the start fails: `startFailure`'s text, or a capability error's alone. */
@@ -39,6 +40,8 @@ export interface World extends AppContext {
   anatomy: AnatomyCommands;
   excursions: Excursions;
   links: Links;
+  /** The live announcer: an eye press hands it the part sentence after its command. */
+  speech: ReturnType<typeof announceView>;
 }
 
 /** Runs `build` where `$effect`s may be created and settles them, as a component's setup would. */
