@@ -330,6 +330,21 @@ describe('visibility eyes', () => {
     expect(row('cortex:Frontal').getAttribute('aria-label')).toBe('Frontal, 3 régions');
   });
 
+  test.each([
+    ['en', ['Hidden: Precentral gyrus, left.', 'Shown: Precentral gyrus, left.']],
+    ['fr', ['Masqué : Precentral gyrus, gauche.', 'Affiché : Precentral gyrus, gauche.']],
+  ] as const)(
+    '%s: an eye press hands S1 the part sentence to join with the count',
+    async (lang, expected) => {
+      const said: string[] = [];
+      render(Fixture, { open: ALL, lang, said });
+      await userEvent.click(eyes('d:left:1')[0]);
+      await userEvent.click(eyes('d:left:1')[0]);
+      expect(said).toEqual(expected);
+      expect(announced()).toBe('');
+    },
+  );
+
   test('the accessible name carries the visible letter’s meaning (2.5.3: side word, letter hidden from it)', () => {
     mount({ open: ALL });
     for (const eye of eyes('d:left:1')) {

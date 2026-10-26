@@ -44,10 +44,14 @@ export function createView({
 
 export type ViewStore = ReturnType<typeof createView>;
 
-/** Says the view's changes through the page's one announcer (app.js:1658-1693). */
+/**
+ * Says the view's changes through the page's one announcer (app.js:1658-1693). The returned `part`
+ * takes the sentence of an eye press, which is said with the hidden count it changes.
+ */
 export function announceView(view: ViewStore, regionName: (region: Region, view: View) => string) {
   const speech = createSpeech((region) => regionName(region, view.current));
   $effect(() => {
     for (const sentence of speech.next(view.current)) announce(sentence);
   });
+  return { part: speech.part };
 }

@@ -72,3 +72,24 @@ test('French sentences follow the view’s language', () => {
     'Sélectionné : Precentral gyrus, droite',
   ]);
 });
+
+test('an eye press’s part sentence leads the count and joins a notice or selection that goes with it', () => {
+  const { next, part } = speech();
+  next(base);
+  part('Hidden: Precentral gyrus, left.');
+  assert.deepEqual(next({ ...base, hiddenRegions: new Set(['a']) }), [
+    'Hidden: Precentral gyrus, left. 1 part hidden',
+  ]);
+  part('Shown: Precentral gyrus, left.');
+  assert.deepEqual(next({ ...base, notice: { text: 'Done' } }), [
+    'Done. Shown: Precentral gyrus, left. All parts shown',
+  ]);
+});
+
+test('a part sentence is said once and only with a changed count', () => {
+  const { next, part } = speech();
+  next(base);
+  part('Hidden: Precentral gyrus, left.');
+  assert.deepEqual(next(base), []);
+  assert.deepEqual(next({ ...base, hiddenRegions: new Set(['a']) }), ['1 part hidden']);
+});
