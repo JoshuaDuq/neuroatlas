@@ -8,7 +8,6 @@
 -->
 <script lang="ts" generics="Value extends string">
   import { RadioGroup } from 'bits-ui';
-  import { OWN_KEYS_ATTRIBUTE } from './keys.ts';
 
   interface Option {
     value: Value;
@@ -37,12 +36,7 @@
   class={['segmented', 'choice-group', className]}
 >
   {#each options as option (option.value)}
-    <RadioGroup.Item
-      value={option.value}
-      disabled={option.disabled}
-      aria-label={option.name}
-      {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
-    >
+    <RadioGroup.Item value={option.value} disabled={option.disabled} aria-label={option.name}>
       {option.label}
     </RadioGroup.Item>
   {/each}

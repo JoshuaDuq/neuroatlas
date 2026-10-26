@@ -43,6 +43,26 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | u5-tooltip-container.md                       | implementation note, not a fix                         |
 | u6-list-nav-modifier-keys.md                  | fix under the parity policy                            |
 | u7-treegrid-keys.md                           | fix, standard cited (follows the approved u7-treegrid) |
+| c5-match-highlight-offsets.md                 | fix (standard cited; the record states no status line) |
+| e4a-cut-atlas-rollback.md                     | fix under the parity policy                            |
+| e4a-fail-fast-sections.md                     | fix under the parity policy                            |
+| e4a-model-change-single-report.md             | fix under the parity policy                            |
+| e4a-offset-ready-while-off.md                 | fix under the parity policy                            |
+| e4b-joined-download-progress.md               | fix (standard cited; the record states no status line) |
+| e4b-load-hidden-regions-isolation.md          | fix (standard cited; the record states no status line) |
+| e4b-state-before-load.md                      | fix (standard cited; the record states no status line) |
+| h1a-html-lang.md                              | fix (standard cited; the record states no status line) |
+| h1a-skip-link.md                              | fix (standard cited; the record states no status line) |
+| h2-close-on-keyboard-choice.md                | fix (standard cited), decision 15 on #4                |
+| h2-focus-before-dialog.md                     | fix (standard cited)                                   |
+| h2-fullscreen-label.md                        | approved (decision 4 on #4)                            |
+| h2-radio-groups.md                            | approved (decision 6 on #4)                            |
+| h2-settings-announcements.md                  | approved (decision 15 on #4)                           |
+| h2-skip-link-without-script.md                | fix (standard cited)                                   |
+| h2-system-theme-note.md                       | fix (standard cited)                                   |
+| s1-announcer-one-sentence.md                  | fix (standard cited; the record states no status line) |
+| s2-hide-focus-fallback.md                     | fix (standard cited; the record states no status line) |
+| s5a-arrows-in-tablist.md                      | fix (no approval needed; decision 19 on #4)            |
 | Announce the orientation after keyboard orbit | **rejected** for now; not implemented, no file         |
 
 Approvals: the decisions of 2026-10-25 recorded on #4.

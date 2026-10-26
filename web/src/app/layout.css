@@ -17,6 +17,12 @@
     grid-column: 1 / -1;
     grid-row: 3;
   }
+  /* The status bar holds the Provenance button, 44px on a coarse pointer (H4, deviations/h4-coarse-target.md). */
+  @media (pointer: coarse) {
+    #app {
+      --footer-height: 45px; /* 44px target below the bar's 1px rule */
+    }
+  }
   #workspace-panel {
     grid-column: 1;
     grid-row: 2;
@@ -73,6 +79,10 @@
 
   /* Phone, and a landscape phone: the twin of PHONE_QUERY. */
   @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+    /* After the tablet rule above, as phone.css followed layout.css: a landscape phone is 801-1000 px wide too. */
+    :root {
+      --panel-inset: var(--space-4);
+    }
     #app {
       padding: 0;
       gap: 0;

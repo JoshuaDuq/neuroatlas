@@ -145,4 +145,19 @@
     --thumb-ring: #7a8189;
     --shadow-popover: 0 6px 16px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.3);
   }
+
+  /*
+   * The phone shell's touch sizes (viewer/styles/phone.css:15). The query matches a phone in either
+   * orientation: a landscape phone is 812 by 375, so a max-width alone would give it the desktop.
+   * It is the twin of PHONE_QUERY in render/device.js.
+   */
+  @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+    :root {
+      --control-height: 44px;
+      --row-height: 44px;
+      --tab-height: 44px;
+      --header-height: max(52px, 3.25rem);
+      --panel-inset: var(--space-4);
+    }
+  }
 }
