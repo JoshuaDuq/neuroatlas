@@ -700,6 +700,14 @@ async function stage(width: number, height: number) {
   document.documentElement.style.height = '100%';
   document.body.style.height = '100%';
   document.body.style.margin = '0';
+  // The panel's own ancestors need a definite height for its list to scroll under the pinned dock.
+  for (
+    let node = document.querySelector('.tracts')?.parentElement;
+    node;
+    node = node.parentElement
+  ) {
+    if (node !== document.body && node !== document.documentElement) node.style.height = '100%';
+  }
   await page.viewport(width, height);
 }
 afterEach(async () => {
@@ -772,15 +780,28 @@ describe('media, reflow and targets', () => {
   test('on a phone a focused key is never under the dock (WCAG 2.4.11)', async () => {
     await ready();
     await stage(390, 700);
+    const list = document.querySelector<HTMLElement>('.body')!;
+    // Without a list that scrolls under a pinned dock, every key would be trivially clear of it.
+    expect(list.scrollHeight).toBeGreaterThan(list.clientHeight);
     const dock = document.querySelector<HTMLElement>('.dock')!.getBoundingClientRect();
+    expect(dock.bottom).toBeLessThanOrEqual(innerHeight + 0.5);
     const head = document.querySelector<HTMLElement>('.head')!.getBoundingClientRect();
     searchEl().focus();
+    let scrolled = 0;
     for (let step = 0; step < 30; step += 1) {
+      const before = list.scrollTop;
       await userEvent.tab();
       const box = (document.activeElement as HTMLElement).getBoundingClientRect();
       expect(box.bottom, `key ${step + 1}`).toBeLessThanOrEqual(dock.top + 0.5);
       expect(box.top, `key ${step + 1}`).toBeGreaterThanOrEqual(head.bottom - 0.5);
+      // The dock is a sibling, not an overlay; scroll-padding-block-end keeps a key the browser had to
+      // scroll to clear of the list's foot too, not flush against the dock.
+      if (list.scrollTop > before) {
+        scrolled += 1;
+        expect(dock.top - box.bottom, `key ${step + 1}`).toBeGreaterThanOrEqual(24);
+      }
     }
+    expect(scrolled).toBeGreaterThan(0);
   });
 
   test('fine pointers get 24 px sliders', async () => {

@@ -80,6 +80,7 @@ export function settingsReadout(opacity: number, minimum: number, lang: Language
 }
 
 export const LENGTHS_CSV_FILENAME = 'planum-streamline-lengths.csv';
+export const LENGTHS_CSV_TYPE = 'text/csv;charset=utf-8';
 
 /**
  * The lengths of the bundles loaded so far, one CSV row each (the native viewer's `snapshot()`), in

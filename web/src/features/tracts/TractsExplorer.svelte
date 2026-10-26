@@ -19,6 +19,7 @@
   import { t } from '../../lib/core/i18n/index.ts';
   import {
     LENGTHS_CSV_FILENAME,
+    LENGTHS_CSV_TYPE,
     MINIMUM_LENGTH,
     buildLengthsCsv,
     foldForSearch,
@@ -249,7 +250,7 @@
     downloadText(
       buildLengthsCsv(tracts.snapshot(), minimum),
       LENGTHS_CSV_FILENAME,
-      'text/csv;charset=utf-8',
+      LENGTHS_CSV_TYPE,
     );
     announce(added.exported);
   }

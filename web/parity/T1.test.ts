@@ -10,6 +10,8 @@ import {
 import { DIFFUSION_TEXT } from '../../viewer/diffusion/translations.js';
 import { TRACT_CATALOGS } from '../src/lib/core/diffusion/catalogs.ts';
 import {
+  LENGTHS_CSV_FILENAME,
+  LENGTHS_CSV_TYPE,
   buildLengthsCsv,
   lengthSummary,
   settingsReadout,
@@ -119,8 +121,8 @@ describe('the lengths CSV against saveLengths', () => {
     for (const minimum of [1, 40, 250]) {
       const legacy = await legacyDownload(bundles, minimum);
       assert.equal(buildLengthsCsv(bundles, minimum), legacy.text);
-      assert.equal(legacy.type, 'text/csv;charset=utf-8');
-      assert.equal(legacy.filename, 'planum-streamline-lengths.csv');
+      assert.equal(legacy.type, LENGTHS_CSV_TYPE);
+      assert.equal(legacy.filename, LENGTHS_CSV_FILENAME);
     }
   });
 });
