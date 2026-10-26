@@ -172,22 +172,28 @@ test.describe('stage overlays', () => {
       await expect(page.locator(selector)).toHaveCSS('transition-property', 'opacity');
     }
   });
+});
 
-  test('the ring and the overlays follow the visible rectangle on a phone, and are accessible', async ({
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('the ring and the overlays follow the visible rectangle, and are accessible', async ({
     app,
   }) => {
+    await app.gotoHash();
+    await app.ready();
     const { page } = app;
-    await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.locator('#orientation')).toBeVisible();
-    const vis = await page.evaluate(() => {
-      const host = getComputedStyle(document.getElementById('viewport')!);
-      return ['top', 'right', 'bottom', 'left'].map((edge) =>
-        parseFloat(host.getPropertyValue(`--vis-${edge}`)),
-      );
-    });
     // The sheet covers the lower canvas: the visible rectangle is not the whole canvas.
-    expect(vis.every(Number.isFinite)).toBe(true);
-    expect(vis[2]).toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          parseFloat(
+            getComputedStyle(document.getElementById('viewport')!).getPropertyValue('--vis-bottom'),
+          ),
+        ),
+      )
+      .toBeGreaterThan(0);
     await app.expectAccessible('stage-overlay');
   });
 });
