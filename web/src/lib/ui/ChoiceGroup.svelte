@@ -24,19 +24,36 @@
     options: readonly Option[];
     value: Value;
     class?: string;
+    /**
+     * The group cannot be changed now, but its radios stay focusable: a native `disabled` would drop
+     * focus to the page when a choice starts the load that disables it (deviations/a2-tree-scope-radio-group.md).
+     */
+    ariaDisabled?: boolean;
   };
 
-  let { options, value = $bindable(), label, labelledby, class: className }: Props = $props();
+  let {
+    options,
+    value = $bindable(),
+    label,
+    labelledby,
+    class: className,
+    ariaDisabled = false,
+  }: Props = $props();
 </script>
 
 <RadioGroup.Root
-  bind:value={() => value, (next) => (value = next as Value)}
+  bind:value={() => value, (next) => ariaDisabled || (value = next as Value)}
   aria-label={label}
   aria-labelledby={labelledby}
   class={['segmented', 'choice-group', className]}
 >
   {#each options as option (option.value)}
-    <RadioGroup.Item value={option.value} disabled={option.disabled} aria-label={option.name}>
+    <RadioGroup.Item
+      value={option.value}
+      disabled={option.disabled}
+      aria-disabled={ariaDisabled ? 'true' : undefined}
+      aria-label={option.name}
+    >
       {option.label}
     </RadioGroup.Item>
   {/each}
@@ -71,12 +88,16 @@
         background-color var(--ui-transition) var(--ease-ui),
         color var(--ui-transition) var(--ease-ui);
     }
-    :global(.segmented.choice-group [role='radio']:disabled) {
+    :global(.segmented.choice-group [role='radio']:disabled),
+    :global(.segmented.choice-group [role='radio'][aria-disabled='true']) {
       color: var(--text-tertiary);
       cursor: default;
     }
     @media (hover: hover) and (pointer: fine) {
-      :global(.segmented.choice-group [role='radio']:hover:not(:disabled, [aria-checked='true'])) {
+      :global(
+        .segmented.choice-group
+          [role='radio']:hover:not(:disabled, [aria-disabled='true'], [aria-checked='true'])
+      ) {
         background: var(--surface-tonal-hover);
         color: var(--text-primary);
       }
