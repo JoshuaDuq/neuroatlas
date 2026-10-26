@@ -15,12 +15,15 @@
     region,
     lang,
     get,
+    label,
     onregion,
   }: {
     region: Region | null;
     lang: Language;
-    /** The catalog's entry for a region id, labelled in `lang`. */
-    get: (id: string) => { region: Region; label: RegionLabel } | null;
+    /** The catalog's entry for a region id, or null. */
+    get: (id: string) => { region: Region } | null;
+    /** The region's label in `lang`: it reads `lang`, so a language switch renames the parts. */
+    label: (id: string) => RegionLabel;
     onregion: (id: string) => void;
   } = $props();
 
@@ -32,7 +35,7 @@
     (region?.constituent_regions ?? []).map((id) => {
       const entry = get(id);
       if (!entry) throw new Error(`Missing learning constituent: ${id}`);
-      return { id, ...entry };
+      return { id, region: entry.region, label: label(id) };
     }),
   );
   const sided = $derived(new Set(entries.map((entry) => entry.region.hemisphere)).size > 1);

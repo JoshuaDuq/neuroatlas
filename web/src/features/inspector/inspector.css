@@ -6,6 +6,16 @@
   .region-detail {
     padding: var(--panel-inset);
   }
+  /* Related deficits or circuits follow as sections of their own and bring their own 24px (detail.css:75). */
+  .region-detail:not(:last-child) {
+    padding-bottom: 0;
+  }
+  /* The sheet's grip has its own clear (phone.css:142). */
+  @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+    .region-detail .selection-clear {
+      display: none;
+    }
+  }
 
   /* Region ------------------------------------------------------------- */
   .region-detail .selection-head {
@@ -73,14 +83,16 @@
   }
 
   /* Under a lesson the landmark is already the headline above; any other selection is a smaller second subject. */
-  .region-detail[data-landmark-selected='true'] .selection-head {
+  /* X3's profile already prints the landmark's hemisphere and group. */
+  .region-detail[data-landmark-selected='true'] .selection-head,
+  .region-detail[data-landmark-selected='true'] .selection-context {
     display: none;
   }
   .region-detail[data-landmark-selected='true'] {
     padding-top: 0;
   }
   .region-detail[data-landmark-selected='false'],
-  .region-detail[data-under-profile] {
+  .region-detail[data-under-profile]:has(.selection-head) {
     border-top: 1px solid var(--border-subtle);
   }
   .region-detail[data-landmark-selected] .region-name,
@@ -362,11 +374,16 @@
     color: var(--text-tertiary);
     white-space: nowrap;
   }
+  /* The side glyph is the tree's .row-side (navigator.css:61-72). */
   .region-detail .constituent-side {
     flex: none;
+    min-width: 2ch;
     font-size: var(--text-caption);
+    font-weight: 600;
     line-height: var(--lh-caption);
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
+    text-align: right;
+    white-space: nowrap;
   }
   /* A link in a button's body: 24 px with a fine pointer (WCAG 2.5.8), 44 with a coarse one. */
   .region-detail .constituents-list button {
@@ -392,6 +409,7 @@
     }
   }
   @media (pointer: coarse) {
+    .region-detail .evidence-section summary,
     .region-detail .constituents > summary,
     .region-detail .constituents-list button {
       min-height: 44px;
@@ -400,6 +418,12 @@
 }
 
 @layer a11y {
+  /* Tonal fills alone are too faint to find a button by (a11y.css:39-42). */
+  @media (prefers-contrast: more) {
+    .region-detail .actions button {
+      border-color: var(--border-control);
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .region-detail .constituents > summary::after,
     .region-detail .actions button {

@@ -6,6 +6,7 @@ import { flushSync, mount } from 'svelte';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
+import manifest from '../../../../public/models/cdmd/manifest.json';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
 import '../../app/layout.css';
@@ -21,6 +22,10 @@ const NOTED = 'zanatomy:midline:cord'; // carries notes and no source label
 
 beforeEach(() => page.viewport(1280, 800));
 
+const regionIds = (id: string) =>
+  (manifest.regions as unknown as { id: string; source_label_ids?: number[] }[]).find(
+    (region) => region.id === id,
+  )!.source_label_ids!;
 const text = (element: Element) => element.textContent!.replace(/\s+/g, ' ').trim();
 const root = () => document.querySelector('.region-detail') as HTMLElement;
 const section = (name: RegExp | string) =>
@@ -138,12 +143,58 @@ describe('selected region', () => {
     expect(document.activeElement!.getAttribute('tabindex')).toBe('-1');
   });
 
-  test('a lesson landmark hides the name; another region is a ruled, smaller subject', async () => {
+  test('a lesson landmark hides the name and the context; another region is a ruled, smaller subject', async () => {
     const screen = await render(Fixture, { regionId: V1, landmarkSelected: true });
     expect(getComputedStyle(root().querySelector('.selection-head')!).display).toBe('none');
+    expect(getComputedStyle(root().querySelector('.selection-context')!).display).toBe('none');
     await screen.rerender({ regionId: V1, landmarkSelected: false });
+    expect(getComputedStyle(root().querySelector('.selection-context')!).display).toBe('flex');
     expect(getComputedStyle(root()).borderTopWidth).toBe('1px');
     expect(getComputedStyle(root().querySelector('.region-name')!).fontSize).toBe('16px');
+  });
+
+  test('under a profile the rule and the smaller name need a name to apply to', async () => {
+    const screen = await render(Fixture, {
+      regionId: null,
+      explorer: 'functions',
+      underProfile: true,
+    });
+    expect(getComputedStyle(root()).borderTopWidth).toBe('0px');
+    await screen.rerender({ regionId: V1, underProfile: true });
+    expect(getComputedStyle(root()).borderTopWidth).toBe('1px');
+    expect(getComputedStyle(root().querySelector('.region-name')!).fontSize).toBe('16px');
+    await screen.rerender({ regionId: V1, underProfile: false });
+    expect(getComputedStyle(root()).borderTopWidth).toBe('0px');
+  });
+
+  test('the context follows the language and leaves with the selection', async () => {
+    const screen = await render(Fixture, { regionId: THALAMUS });
+    const read = () => [...root().querySelectorAll('.selection-context dd')].map(text);
+    const [side, group] = read();
+    expect(side).toBe('Left');
+    await screen.rerender({ regionId: THALAMUS, lang: 'fr' });
+    const [sideFr, groupFr] = read();
+    expect(sideFr).toBe('Gauche');
+    expect(groupFr).not.toBe(group);
+    expect(groupFr!.length).toBeGreaterThan(0);
+    await screen.rerender({ regionId: null, lang: 'fr' });
+    expect(root().querySelector('.selection-context')).toBeNull();
+    expect(root().querySelector('dl.facts')).toBeNull();
+  });
+
+  test('related sections following remove the body bottom padding; alone it keeps 24 px', async () => {
+    const screen = await render(Fixture, { regionId: V1 });
+    expect(getComputedStyle(root()).paddingBottom).toBe('0px');
+    await screen.rerender({ regionId: V1, slots: false });
+    expect(getComputedStyle(root()).paddingBottom).not.toBe('0px');
+  });
+
+  test('on a phone the inspector has no Clear button of its own', async () => {
+    render(Fixture, { regionId: V1 });
+    await page.viewport(390, 844);
+    expect(getComputedStyle(root().querySelector('.selection-clear')!).display).toBe('none');
+    await page.viewport(1280, 800);
+    expect(getComputedStyle(root().querySelector('.selection-clear')!).display).not.toBe('none');
   });
 });
 
@@ -175,7 +226,7 @@ describe('commands', () => {
   test('Linked MRI: a keyboard activation is instant, a pointer click is not', async () => {
     const calls: unknown[] = [];
     render(Fixture, { regionId: V1, calls });
-    const mri = button('Open linked MRI slices');
+    const mri = button('Linked MRI');
     await mri.click();
     mri.element().focus();
     await userEvent.keyboard('{Enter}');
@@ -184,7 +235,9 @@ describe('commands', () => {
       { mri: { atRegion: true, instant: true } },
     ]);
     expect(mri.element().textContent!.trim()).toBe('Linked MRI');
-    expect(mri.element().getAttribute('aria-keyshortcuts')).toBe('M');
+    expect(mri.element().hasAttribute('aria-keyshortcuts')).toBe(false);
+    expect(mri.element().hasAttribute('aria-label')).toBe(false);
+    expect(mri.element().getAttribute('data-tooltip')).toBe('Open linked MRI slices');
   });
 
   test('Tab walks Clear, the four commands, the source and each section, then Enter toggles one', async () => {
@@ -224,6 +277,8 @@ describe('source label', () => {
     const screen = await render(Fixture, { regionId: THALAMUS });
     const disclosure = () => root().querySelector<HTMLDetailsElement>('.source-labels details')!;
     expect(text(disclosure().querySelector('summary')!)).toMatch(/\d+ labels$/);
+    const ids = regionIds(THALAMUS);
+    expect(text(disclosure().querySelector('.code')!)).toBe(ids.join(', '));
     disclosure().open = true;
     await screen.rerender({ regionId: THALAMUS, isolated: true, cortexVisible: false });
     expect(disclosure().open).toBe(true);
@@ -357,6 +412,27 @@ describe('constituents', () => {
     await expect.element(page.getByRole('button', { name: /, left$/ })).toBeVisible();
   });
 
+  test('names follow a language switch, as legacy rebuilt the list per language', async () => {
+    const screen = await render(Fixture, { regionId: CHIASM });
+    const names = () =>
+      [...document.querySelectorAll('.constituents-list button')].map((node) => text(node));
+    expect(names()[0]).toMatch(/^Optic chiasm, left$/i);
+    await screen.rerender({ regionId: CHIASM, lang: 'fr' });
+    expect(names()[0]).toMatch(/^Chiasma optique, gauche$/);
+  });
+
+  test("the side glyph is set like the tree's: secondary ink, 600, right-aligned", async () => {
+    render(Fixture, { regionId: CHIASM });
+    const glyph = getComputedStyle(document.querySelector('.constituent-side')!);
+    expect(glyph.fontWeight).toBe('600');
+    expect(glyph.textAlign).toBe('right');
+    expect(glyph.whiteSpace).toBe('nowrap');
+    const probe = document.body.appendChild(document.createElement('span'));
+    probe.style.color = 'var(--text-secondary)';
+    expect(glyph.color).toBe(getComputedStyle(probe).color);
+    probe.remove();
+  });
+
   test('French side words', async () => {
     render(Fixture, { regionId: CHIASM, lang: 'fr' });
     expect(text(document.querySelector('.constituents-list button')!)).toMatch(/, gauche$/);
@@ -364,32 +440,36 @@ describe('constituents', () => {
 });
 
 describe('targets, reflow and text spacing', () => {
-  test('a fine pointer gets at least 24 px; a coarse pointer 44', async () => {
-    const open = (target: ParentNode) => {
-      for (const details of target.querySelectorAll('details')) details.open = true;
-    };
-    const targets = () =>
-      [...root().querySelectorAll<HTMLElement>('button, summary')].map(
-        (node) =>
-          [
-            text(node) || node.getAttribute('aria-label'),
-            node.getBoundingClientRect().height,
-          ] as const,
-      );
-    render(Fixture, { regionId: CHIASM });
-    open(root());
-    for (const [name, height] of targets()) expect(height, String(name)).toBeGreaterThanOrEqual(24);
-    const session = cdp();
-    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
-    try {
-      await page.viewport(1180, 820);
-      expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+  for (const regionId of [CHIASM, FRONTAL]) {
+    test(`a fine pointer gets at least 24 px; a coarse pointer 44 (${regionId})`, async () => {
+      const targets = () =>
+        [...root().querySelectorAll<HTMLElement>('button, summary')].map(
+          (node) =>
+            [
+              text(node) || node.getAttribute('aria-label'),
+              node.getBoundingClientRect().height,
+            ] as const,
+        );
+      render(Fixture, { regionId });
+      for (const details of root().querySelectorAll('details')) details.open = true;
+      expect(targets().length).toBeGreaterThan(5);
       for (const [name, height] of targets())
-        expect(height, String(name)).toBeGreaterThanOrEqual(44);
-    } finally {
-      await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
-    }
-  });
+        expect(height, String(name)).toBeGreaterThanOrEqual(24);
+      const session = cdp();
+      await session.send('Emulation.setTouchEmulationEnabled', {
+        enabled: true,
+        maxTouchPoints: 5,
+      });
+      try {
+        await page.viewport(1180, 820);
+        expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+        for (const [name, height] of targets())
+          expect(height, String(name)).toBeGreaterThanOrEqual(44);
+      } finally {
+        await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+      }
+    });
+  }
 
   test('200 % text and the WCAG 1.4.12 spacing keep every line inside the panel, down to 320 px', async () => {
     const screen = await render(Fixture, { regionId: FRONTAL });
@@ -436,9 +516,14 @@ describe('targets, reflow and text spacing', () => {
 });
 
 describe('accessibility', () => {
-  for (const lang of ['en', 'fr'] as const) {
-    test(`axe is clean, light and dark, desktop and phone (${lang}, selected, sections open)`, async () => {
-      render(Fixture, { regionId: CHIASM, lang });
+  for (const [lang, regionId] of [
+    ['en', CHIASM],
+    ['fr', CHIASM],
+    ['en', FRONTAL],
+    ['fr', FRONTAL],
+  ] as const) {
+    test(`axe is clean, light and dark, desktop and phone (${lang}, ${regionId}, sections open)`, async () => {
+      render(Fixture, { regionId, lang });
       for (const details of root().querySelectorAll('details')) details.open = true;
       await expectAxeClean();
     });
@@ -450,6 +535,15 @@ describe('accessibility', () => {
     await screen.rerender({ regionId: THALAMUS });
     for (const details of root().querySelectorAll('details')) details.open = true;
     await expectAxeClean();
+  });
+
+  test('increased contrast gives the commands an edge', async () => {
+    render(Fixture, { regionId: CHIASM });
+    const first = () => getComputedStyle(root().querySelector('.actions button')!).borderTopColor;
+    expect(first()).toBe('rgba(0, 0, 0, 0)');
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], () =>
+      expect.poll(first).not.toBe('rgba(0, 0, 0, 0)'),
+    );
   });
 
   test('forced colours keep an edge on the commands and on Restore; reduced motion stops the chevron', async () => {
@@ -477,6 +571,7 @@ describe('failure', () => {
             region: { id: 'x', constituent_regions: ['ghost'] } as never,
             lang: 'en',
             get: () => null,
+            label: () => ({}) as never,
             onregion: () => {},
           },
         }),

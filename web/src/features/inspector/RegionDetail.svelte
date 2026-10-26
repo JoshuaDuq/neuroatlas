@@ -52,7 +52,9 @@
     cabNp: CabNpPartition | null;
     functionalRegions: FunctionalRegions | null;
     domains: NeuropsychDomains | null;
+    /** Takes no arguments: I1 wires `focusSelection()`, which frames with an animation (only the F key is immediate). */
     onfocus: () => void;
+    /** Takes no arguments: I1 wires `isolateSelection`. */
     onisolate: () => void;
     /** S2's `hideSelection`: it hands focus on. */
     onhide: () => void;
@@ -144,8 +146,6 @@
       <button
         type="button"
         class="linked-mri"
-        aria-label={t(lang, 'cuts').openMprTitle}
-        aria-keyshortcuts={ARIA_KEYSHORTCUTS.linkedMri}
         data-tooltip={t(lang, 'cuts').openMprTitle}
         onclick={(event) => openLinkedMri({ atRegion: true, instant: isKeyboardActivation(event) })}
       >
@@ -160,7 +160,7 @@
     {/if}
   {/if}
   {@render comparison?.()}
-  <Constituents {region} {lang} get={catalog.get} {onregion} />
+  <Constituents {region} {lang} get={catalog.get} label={catalog.label} {onregion} />
   <FunctionalSection {region} {lang} {functionalRegions} />
   <DomainSection {region} {lang} {domains} />
   <NetworkSection {region} {lang} colors={networkColors} {cabNp} />

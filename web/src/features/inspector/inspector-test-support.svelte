@@ -20,6 +20,7 @@
     isolated = false,
     landmarkSelected,
     underProfile,
+    slots = true,
     calls = [],
   }: {
     regionId?: string | null;
@@ -29,6 +30,7 @@
     isolated?: boolean;
     landmarkSelected?: boolean;
     underProfile?: boolean;
+    slots?: boolean;
     calls?: unknown[];
   } = $props();
 
@@ -64,6 +66,6 @@
   openLinkedMri={(options) => calls.push({ mri: options })}
 >
   {#snippet comparison()}<div data-slot="comparison"></div>{/snippet}
-  {#snippet relatedDeficits()}<div data-slot="deficits"></div>{/snippet}
-  {#snippet relatedCircuits()}<div data-slot="circuits"></div>{/snippet}
+  {#snippet relatedDeficits()}{#if slots}<div data-slot="deficits"></div>{/if}{/snippet}
+  {#snippet relatedCircuits()}{#if slots}<div data-slot="circuits"></div>{/if}{/snippet}
 </RegionDetail>

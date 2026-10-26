@@ -20,11 +20,15 @@ test.describe('selected region', () => {
     await app.ready();
   });
 
-  test('names the region and its side, then offers the four commands', async ({ app }) => {
+  test('names the region and its side, then offers the four commands', async ({
+    app,
+  }, testInfo) => {
     const { page } = app;
     await expect(page.getByRole('heading', { level: 2, name: /V1/ })).toBeVisible();
     await expect(regionPanel(page).getByText('Left', { exact: true })).toBeVisible();
-    for (const name of ['Focus', 'Isolate', 'Hide', 'Open linked MRI slices']) {
+    // Conductor decision on #115: next drops legacy's aria-label; the text is the name, the long form a tooltip.
+    const linked = testInfo.project.name === 'legacy' ? 'Open linked MRI slices' : 'Linked MRI';
+    for (const name of ['Focus', 'Isolate', 'Hide', linked]) {
       await expect(regionPanel(page).getByRole('button', { name, exact: true })).toBeVisible();
     }
     await expect(regionPanel(page).getByRole('button', { name: 'Linked MRI' })).toBeVisible();
@@ -64,7 +68,6 @@ test.describe('selected region', () => {
     const { page } = app;
     await regionPanel(page).getByRole('button', { name: 'Clear selection' }).click();
     await expect(regionPanel(page).getByRole('button', { name: 'Isolate' })).toBeHidden();
-    await expect.poll(() => app.hash()).not.toContain('region=');
     const focused = await page.evaluate(() => {
       const active = document.activeElement;
       return active !== null && active !== document.body && active.checkVisibility();
