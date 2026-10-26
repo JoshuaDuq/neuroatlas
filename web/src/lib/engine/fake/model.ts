@@ -22,11 +22,13 @@ import { belongsToDetail, visibilityOf } from '../../core/catalog/visibility.ts'
 import { labelOf } from '../../core/catalog/labels.ts';
 import { coded, sameSet } from './support.ts';
 
+type FakeFile = { atlas: string; [field: string]: unknown };
+
 export interface FakeModelOptions {
   manifest: Manifest;
-  cabNp?: CabNpData;
-  functionalRegions?: FunctionalRegionsData;
-  domains?: DomainsData;
+  cabNp?: FakeFile;
+  functionalRegions?: FakeFile;
+  domains?: FakeFile;
   /** Called after every state change, as the real model's `change` event (brain-atlas.js:602). */
   changed: () => void;
 }
@@ -159,9 +161,10 @@ export function createFakeModel({
   const model: FakeModel = {
     manifest,
     regions,
-    cabNp: cabNp ?? null,
-    functionalRegions: functionalRegions ?? null,
-    domains: domains ?? null,
+    // A test supplies only the fields it reads; the contract types the whole published file.
+    cabNp: (cabNp ?? null) as unknown as CabNpData | null,
+    functionalRegions: (functionalRegions ?? null) as unknown as FunctionalRegionsData | null,
+    domains: (domains ?? null) as unknown as DomainsData | null,
     defaultDetail,
     get settings() {
       return settings();

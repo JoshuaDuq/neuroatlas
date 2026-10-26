@@ -2,19 +2,12 @@ import assert from 'node:assert/strict';
 import { describe, it, vi } from 'vitest';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import type { Manifest } from '../types/index.ts';
-import type { CabNpData, FunctionalRegionsData } from './api.ts';
 import { defineEngineContract } from './fake/contract-suite.ts';
 import { createFakeEngine } from './fake.ts';
 
 const published = manifest as unknown as Manifest;
-const cabNp: CabNpData = { id: 'cab-np', atlas: 'hcp-mmp', networks: [], colors: {}, regions: {} };
-const functionalRegions: FunctionalRegionsData = {
-  id: 'functional',
-  atlas: 'hcp-mmp',
-  sources: {},
-  levels: { sections: [], named: [] },
-  regions: { sections: {}, named: {} },
-};
+const cabNp = { atlas: 'hcp-mmp', regions: {} };
+const functionalRegions = { atlas: 'hcp-mmp' };
 
 const create = () => createFakeEngine({ manifest: published, cabNp, functionalRegions });
 
