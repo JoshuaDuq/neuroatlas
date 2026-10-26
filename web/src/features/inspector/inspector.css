@@ -234,14 +234,14 @@
   .region-detail .evidence-section details {
     margin-top: 0;
   }
-  .region-detail .evidence-section summary,
+  .region-detail .evidence-section > details > summary,
   .region-detail .constituents > summary {
     min-height: var(--row-height);
     padding-block: var(--space-2);
     font-weight: 500;
     overflow-wrap: anywhere;
   }
-  .region-detail .evidence-section details[open],
+  .region-detail .evidence-section > details[open],
   .region-detail .constituents[open] {
     padding-bottom: var(--space-4);
   }
@@ -409,7 +409,7 @@
     }
   }
   @media (pointer: coarse) {
-    .region-detail .evidence-section summary,
+    .region-detail .evidence-section > details > summary,
     .region-detail .constituents > summary,
     .region-detail .constituents-list button {
       min-height: 44px;
