@@ -50,6 +50,10 @@ test('the caption matches legacy for every colouring, view, section and the trac
     { subject: '', atlas: 'destrieux', surfaceColor: 'atlas', detail: 'nextbrain', view: 'left' },
     { reference: 'HCP tract reference', view: 'left', section: null },
   );
+  // Every plane the app offers is swept: its name is drawn in the caption.
+  const captions = JSON.stringify(cases.map((facts) => drawn(snapshotCaption('en', facts))));
+  for (const name of ['Sagittal', 'Coronal', 'Axial', 'Oblique'])
+    assert.ok(captions.includes(name), name);
   for (const lang of ['en', 'fr'] as const) {
     for (const facts of cases) {
       assert.deepEqual(
