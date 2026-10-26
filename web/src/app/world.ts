@@ -134,7 +134,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
           );
           if (group && !view.current.expanded.has(group.key)) session.toggleGroup(group.key);
         },
-        showDetail: ports.showDetail,
+        showDetail: ports.showDetailInPlace,
         openFunction: ports.openFunction,
         openDeficit: ports.openDeficit,
       },

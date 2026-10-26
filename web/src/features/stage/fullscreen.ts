@@ -3,14 +3,9 @@
 // masthead reads `active` and calls `toggle`, and the stage's "Exit full screen" button takes `exitControl`.
 import { on } from 'svelte/events';
 import { createSubscriber } from 'svelte/reactivity';
+import { failureNotice } from '../../lib/core/i18n/errors.ts';
 import type { Language, Notice } from '../../lib/types/index.ts';
 import { captureInvoker } from '../../lib/ui/focus.ts';
-
-// TODO(C1): `errors.operations.fullscreen` (decision 33 on #4); the notice is then `failureNotice(error, lang, 'fullscreen')`.
-const FAILED: Record<Language, string> = {
-  en: 'Could not enter full screen.',
-  fr: 'Impossible de passer en plein écran.',
-};
 
 export function createFullscreen({
   host,
@@ -44,7 +39,7 @@ export function createFullscreen({
       restore = captureInvoker();
       host.requestFullscreen().catch((error: unknown) => {
         console.error(error);
-        notify({ text: FAILED[lang()], action: null });
+        notify(failureNotice(error, lang(), 'fullscreen'));
       });
     },
 
