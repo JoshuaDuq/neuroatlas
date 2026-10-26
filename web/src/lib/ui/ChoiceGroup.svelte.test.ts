@@ -91,6 +91,24 @@ describe('ChoiceGroup', () => {
     expect(checked()).toEqual(['Sagittal']);
   });
 
+  test('aria-disabled keeps focus on the radios and refuses a change', async () => {
+    render(ChoiceGroup, {
+      options: hemispheres,
+      value: 'both',
+      label: 'Hemisphere',
+      ariaDisabled: true,
+    });
+    expect(el('Both').hasAttribute('disabled')).toBe(false);
+    expect(el('Both').getAttribute('aria-disabled')).toBe('true');
+    el('Both').focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(checked()).toEqual(['Both']);
+    expect(document.activeElement).toBe(el('Left'));
+    // A press is refused as well: Playwright would not click an aria-disabled control.
+    el('Right').click();
+    expect(checked()).toEqual(['Both']);
+  });
+
   test('an abbreviated label keeps its full accessible name, which contains the text', async () => {
     render(ChoiceGroup, {
       options: [
