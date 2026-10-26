@@ -1,0 +1,65 @@
+/*
+ * The overlay palette the dock and keys read, and the model's focus ring (stage.css:22-65, a11y.css:85).
+ * Anything drawn on the stage is lit by the stage, in both themes: the ground under it is near-black
+ * either way. The host's own variables (--vis-*, --key-*, --dock-height, --stage-edge) are declared in
+ * StageOverlay.svelte, where the stylesheet test can see them.
+ */
+@layer features {
+  /* Controls on the stage read the overlay palette through the panel's token names. */
+  .stage-dock,
+  .stage-keys,
+  .stage {
+    color-scheme: dark;
+    --text-primary: var(--overlay-ink);
+    --text-secondary: var(--overlay-ink-muted);
+    --text-tertiary: var(--overlay-ink-faint);
+    --accent: var(--overlay-accent);
+    --accent-hover: var(--overlay-accent-hover);
+    --accent-wash: var(--overlay-accent-wash);
+    --primary-fill: var(--overlay-primary-fill);
+    --primary-fill-hover: var(--overlay-primary-fill-hover);
+    --surface-base: var(--overlay-plate);
+    --surface-navigation: var(--overlay-track);
+    --surface-sunken: var(--scene-background);
+    --surface-hover: var(--overlay-plate-hover);
+    --surface-tonal: var(--overlay-track);
+    --surface-tonal-hover: var(--overlay-track-hover);
+    --surface-raised: var(--overlay-raised);
+    --border-subtle: var(--overlay-border);
+    --border-control: var(--overlay-control-border);
+    /* 3.3:1 against the track, so the selected thumb keeps an edge without its shadow. */
+    --thumb-ring: var(--overlay-control-border);
+    color: var(--overlay-ink);
+  }
+
+  /* --accent is measured against a rail; on the stage it is the overlay's teal. */
+  #viewport :focus-visible {
+    outline-color: var(--overlay-accent);
+  }
+
+  /*
+   * The model's keyboard focus: a teal ring round the visible stage, kept off the anatomy by a dark
+   * hairline, with the keys named at the top left. The canvas's own ring would run under the dock and,
+   * on a phone, under the sheet.
+   */
+  #viewport canvas:focus-visible {
+    outline: none;
+  }
+  #viewport:has(> canvas:focus-visible)::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: var(--vis-top) var(--vis-right) var(--vis-bottom) var(--vis-left);
+    border: 2px solid var(--overlay-accent);
+    box-shadow: inset 0 0 0 1px var(--overlay-halo-core);
+    pointer-events: none;
+  }
+}
+
+@layer a11y {
+  @media (forced-colors: active) {
+    #viewport:has(> canvas:focus-visible)::after {
+      border-color: Highlight;
+    }
+  }
+}

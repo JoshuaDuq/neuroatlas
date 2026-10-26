@@ -39,6 +39,8 @@ export const ICONS = {
   'close-small': { shapes: [path('m6 6 12 12M6 18 18 6')], size: 14, strokeWidth: 1.6 },
   'chevron-right': { shapes: [path('m9 6 6 6-6 6')], size: 14 },
   search: { shapes: [circle(11, 11, 7), path('M20 20l-3.5-3.5')], size: 14, strokeWidth: 2 },
+  // A link that opens a new tab (T1, decision 17 on #4).
+  'external-link': { shapes: [path('M14 4h6v6m0-6-9 9M18 14v5H5V6h5')], size: 12 },
   reset: { shapes: [path('M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5')] },
 
   // The circuit stepper.
