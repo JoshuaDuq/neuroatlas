@@ -2,31 +2,19 @@
  "app": {
   "spoken": [
    "[\"Alpha\",\"\"] → \"Selected: Alpha, \"",
-   "[\"\",\"Alpha\"] → \"Selected: , Alpha\"",
-   "[\"Alpha\",\"\"] → \"Selected: Alpha, \"",
-   "[\"\",\"Alpha\"] → \"Selected: , Alpha\"",
-   "[\"Alpha\",\"\"] → \"Selected: Alpha, \""
+   "[\"\",\"Alpha\"] → \"Selected: , Alpha\""
   ],
   "selectionCleared": [
    "[\"Alpha\"] → \"Selection cleared — Alpha is no longer shown.\"",
-   "[\"\"] → \"Selection cleared —  is no longer shown.\"",
-   "[\"Alpha\"] → \"Selection cleared — Alpha is no longer shown.\"",
-   "[\"\"] → \"Selection cleared —  is no longer shown.\"",
-   "[\"Alpha\"] → \"Selection cleared — Alpha is no longer shown.\""
+   "[\"\"] → \"Selection cleared —  is no longer shown.\""
   ],
   "cabNpAtlasOnly": [
    "[\"Alpha\"] → \"CAB-NP colours HCP-MMP areas only, so Alpha shows its own region colours.\"",
-   "[\"\"] → \"CAB-NP colours HCP-MMP areas only, so  shows its own region colours.\"",
-   "[\"Alpha\"] → \"CAB-NP colours HCP-MMP areas only, so Alpha shows its own region colours.\"",
-   "[\"\"] → \"CAB-NP colours HCP-MMP areas only, so  shows its own region colours.\"",
-   "[\"Alpha\"] → \"CAB-NP colours HCP-MMP areas only, so Alpha shows its own region colours.\""
+   "[\"\"] → \"CAB-NP colours HCP-MMP areas only, so  shows its own region colours.\""
   ],
   "functionalAtlasOnly": [
    "[\"Alpha\"] → \"Functional divisions colour HCP-MMP areas only, so Alpha shows its own region colours.\"",
-   "[\"\"] → \"Functional divisions colour HCP-MMP areas only, so  shows its own region colours.\"",
-   "[\"Alpha\"] → \"Functional divisions colour HCP-MMP areas only, so Alpha shows its own region colours.\"",
-   "[\"\"] → \"Functional divisions colour HCP-MMP areas only, so  shows its own region colours.\"",
-   "[\"Alpha\"] → \"Functional divisions colour HCP-MMP areas only, so Alpha shows its own region colours.\""
+   "[\"\"] → \"Functional divisions colour HCP-MMP areas only, so  shows its own region colours.\""
   ],
   "functionalHidesInternal": "Internal anatomy is hidden; Display shows it again."
  },
@@ -153,31 +141,19 @@
    "cortexShown": "cortex shown",
    "atlas": [
     "[\"Alpha\"] → \"atlas set to Alpha\"",
-    "[\"\"] → \"atlas set to \"",
-    "[\"Alpha\"] → \"atlas set to Alpha\"",
-    "[\"\"] → \"atlas set to \"",
-    "[\"Alpha\"] → \"atlas set to Alpha\""
+    "[\"\"] → \"atlas set to \""
    ],
    "detail": [
     "[\"Alpha\"] → \"internal anatomy set to Alpha\"",
-    "[\"\"] → \"internal anatomy set to \"",
-    "[\"Alpha\"] → \"internal anatomy set to Alpha\"",
-    "[\"\"] → \"internal anatomy set to \"",
-    "[\"Alpha\"] → \"internal anatomy set to Alpha\""
+    "[\"\"] → \"internal anatomy set to \""
    ],
    "colour": [
     "[\"Alpha\"] → \"colour set to Alpha\"",
-    "[\"\"] → \"colour set to \"",
-    "[\"Alpha\"] → \"colour set to Alpha\"",
-    "[\"\"] → \"colour set to \"",
-    "[\"Alpha\"] → \"colour set to Alpha\""
+    "[\"\"] → \"colour set to \""
    ],
    "cutAtlas": [
     "[\"Alpha\"] → \"cut labels set to Alpha\"",
-    "[\"\"] → \"cut labels set to \"",
-    "[\"Alpha\"] → \"cut labels set to Alpha\"",
-    "[\"\"] → \"cut labels set to \"",
-    "[\"Alpha\"] → \"cut labels set to Alpha\""
+    "[\"\"] → \"cut labels set to \""
    ]
   },
   "restore": "Restore previous view",
@@ -216,18 +192,12 @@
  "comparison": {
   "heading": [
    "[\"Alpha\"] → \"Overlap with Alpha\"",
-   "[\"\"] → \"Overlap with \"",
-   "[\"Alpha\"] → \"Overlap with Alpha\"",
-   "[\"\"] → \"Overlap with \"",
-   "[\"Alpha\"] → \"Overlap with Alpha\""
+   "[\"\"] → \"Overlap with \""
   ],
   "denominator": "Shares of this region’s full pial surface.",
   "highlight": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Highlight overlap with Alpha, , Alpha of this region\"",
-   "[\"\",\"Alpha\",\"\"] → \"Highlight overlap with , Alpha,  of this region\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Highlight overlap with Alpha, , Alpha of this region\"",
-   "[\"\",\"Alpha\",\"\"] → \"Highlight overlap with , Alpha,  of this region\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Highlight overlap with Alpha, , Alpha of this region\""
+   "[\"\",\"Alpha\",\"\"] → \"Highlight overlap with , Alpha,  of this region\""
   ],
   "more": [
    "[0] → \"0 more overlapping regions\"",
@@ -290,31 +260,19 @@
   "statusPreparing": "Preparing anatomy…",
   "statusActive": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Tissue cut at Alpha<NNBSP>mm · Alpha<NNBSP>mm source grid · \"",
-   "[\"\",\"Alpha\",\"\"] → \"Tissue cut at <NNBSP>mm · <NNBSP>mm source grid · Alpha\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Tissue cut at Alpha<NNBSP>mm · Alpha<NNBSP>mm source grid · \"",
-   "[\"\",\"Alpha\",\"\"] → \"Tissue cut at <NNBSP>mm · <NNBSP>mm source grid · Alpha\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Tissue cut at Alpha<NNBSP>mm · Alpha<NNBSP>mm source grid · \""
+   "[\"\",\"Alpha\",\"\"] → \"Tissue cut at <NNBSP>mm · <NNBSP>mm source grid · Alpha\""
   ],
   "statusMri": [
    "[\"Alpha\",\"\"] → \"MRI cut at Alpha<NNBSP>mm · 1<NNBSP>mm source grid · \"",
-   "[\"\",\"Alpha\"] → \"MRI cut at <NNBSP>mm · 1<NNBSP>mm source grid · Alpha\"",
-   "[\"Alpha\",\"\"] → \"MRI cut at Alpha<NNBSP>mm · 1<NNBSP>mm source grid · \"",
-   "[\"\",\"Alpha\"] → \"MRI cut at <NNBSP>mm · 1<NNBSP>mm source grid · Alpha\"",
-   "[\"Alpha\",\"\"] → \"MRI cut at Alpha<NNBSP>mm · 1<NNBSP>mm source grid · \""
+   "[\"\",\"Alpha\"] → \"MRI cut at <NNBSP>mm · 1<NNBSP>mm source grid · Alpha\""
   ],
   "grid": [
    "[\"Alpha\",\"\"] → \"<NNBSP>mm source grid · Alpha\"",
-   "[\"\",\"Alpha\"] → \"Alpha<NNBSP>mm source grid · \"",
-   "[\"Alpha\",\"\"] → \"<NNBSP>mm source grid · Alpha\"",
-   "[\"\",\"Alpha\"] → \"Alpha<NNBSP>mm source grid · \"",
-   "[\"Alpha\",\"\"] → \"<NNBSP>mm source grid · Alpha\""
+   "[\"\",\"Alpha\"] → \"Alpha<NNBSP>mm source grid · \""
   ],
   "gridMri": [
    "[\"Alpha\"] → \"MRI · 1<NNBSP>mm source grid · Alpha\"",
-   "[\"\"] → \"MRI · 1<NNBSP>mm source grid · \"",
-   "[\"Alpha\"] → \"MRI · 1<NNBSP>mm source grid · Alpha\"",
-   "[\"\"] → \"MRI · 1<NNBSP>mm source grid · \"",
-   "[\"Alpha\"] → \"MRI · 1<NNBSP>mm source grid · Alpha\""
+   "[\"\"] → \"MRI · 1<NNBSP>mm source grid · \""
   ],
   "sectionNames": {
    "sagittal": "Sagittal section",
@@ -366,18 +324,15 @@
   "retry": "Reload reference dataset",
   "tryAgain": "Try again",
   "matches": [
-   "[\"Alpha\"] → \"Alpha tract bundles\"",
-   "[\"\"] → \" tract bundles\"",
-   "[\"Alpha\"] → \"Alpha tract bundles\"",
-   "[\"\"] → \" tract bundles\"",
-   "[\"Alpha\"] → \"Alpha tract bundles\""
+   "[0] → \"0 tract bundles\"",
+   "[1] → \"1 tract bundle\"",
+   "[2] → \"2 tract bundles\"",
+   "[183] → \"183 tract bundles\"",
+   "[12345] → \"12345 tract bundles\""
   ],
   "loaded": [
    "[\"Alpha\"] → \"Loaded: Alpha\"",
-   "[\"\"] → \"Loaded: \"",
-   "[\"Alpha\"] → \"Loaded: Alpha\"",
-   "[\"\"] → \"Loaded: \"",
-   "[\"Alpha\"] → \"Loaded: Alpha\""
+   "[\"\"] → \"Loaded: \""
   ],
   "restored": "Default tracts restored.",
   "exported": "Lengths CSV exported.",
@@ -459,109 +414,68 @@
   ],
   "hidePart": [
    "[\"Alpha\",\"\"] → \"Hide Alpha, \"",
-   "[\"\",\"Alpha\"] → \"Hide , Alpha\"",
-   "[\"Alpha\",\"\"] → \"Hide Alpha, \"",
-   "[\"\",\"Alpha\"] → \"Hide , Alpha\"",
-   "[\"Alpha\",\"\"] → \"Hide Alpha, \""
+   "[\"\",\"Alpha\"] → \"Hide , Alpha\""
   ],
   "showPart": [
    "[\"Alpha\",\"\"] → \"Show Alpha, \"",
-   "[\"\",\"Alpha\"] → \"Show , Alpha\"",
-   "[\"Alpha\",\"\"] → \"Show Alpha, \"",
-   "[\"\",\"Alpha\"] → \"Show , Alpha\"",
-   "[\"Alpha\",\"\"] → \"Show Alpha, \""
+   "[\"\",\"Alpha\"] → \"Show , Alpha\""
   ],
   "partial": "partially hidden",
   "partHidden": [
    "[\"Alpha\",\"\"] → \"Hidden: Alpha, .\"",
-   "[\"\",\"Alpha\"] → \"Hidden: , Alpha.\"",
-   "[\"Alpha\",\"\"] → \"Hidden: Alpha, .\"",
-   "[\"\",\"Alpha\"] → \"Hidden: , Alpha.\"",
-   "[\"Alpha\",\"\"] → \"Hidden: Alpha, .\""
+   "[\"\",\"Alpha\"] → \"Hidden: , Alpha.\""
   ],
   "partShown": [
    "[\"Alpha\",\"\"] → \"Shown: Alpha, .\"",
-   "[\"\",\"Alpha\"] → \"Shown: , Alpha.\"",
-   "[\"Alpha\",\"\"] → \"Shown: Alpha, .\"",
-   "[\"\",\"Alpha\"] → \"Shown: , Alpha.\"",
-   "[\"Alpha\",\"\"] → \"Shown: Alpha, .\""
+   "[\"\",\"Alpha\"] → \"Shown: , Alpha.\""
   ]
  },
  "domains": {
   "heading": "Neuropsychological functions",
   "score": [
    "[\"Alpha\",\"\"] → \"“Alpha” · z<NBSP>\"",
-   "[\"\",\"Alpha\"] → \"“” · z<NBSP>Alpha\"",
-   "[\"Alpha\",\"\"] → \"“Alpha” · z<NBSP>\"",
-   "[\"\",\"Alpha\"] → \"“” · z<NBSP>Alpha\"",
-   "[\"Alpha\",\"\"] → \"“Alpha” · z<NBSP>\""
+   "[\"\",\"Alpha\"] → \"“” · z<NBSP>Alpha\""
   ],
   "none": [
    "[\"Alpha\"] → \"No function reaches z<NBSP>Alpha here.\"",
-   "[\"\"] → \"No function reaches z<NBSP> here.\"",
-   "[\"Alpha\"] → \"No function reaches z<NBSP>Alpha here.\"",
-   "[\"\"] → \"No function reaches z<NBSP> here.\"",
-   "[\"Alpha\"] → \"No function reaches z<NBSP>Alpha here.\""
+   "[\"\"] → \"No function reaches z<NBSP> here.\""
   ],
   "noteStructure": [
    "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from Alpha. Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\"",
-   "[\"\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from . Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\"",
-   "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from Alpha. Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\"",
-   "[\"\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from . Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\"",
-   "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from Alpha. Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\""
+   "[\"\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from . Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\""
   ],
   "note": [
    "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from Alpha: where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\"",
-   "[\"\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from : where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\"",
-   "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from Alpha: where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\"",
-   "[\"\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from : where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\"",
-   "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from Alpha: where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\""
+   "[\"\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from : where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\""
   ],
   "keyTitle": "Neuropsychological functions",
   "band": [
    "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>to<NBSP>3.5\"",
-   "[\"\",null] → \"z<NBSP>≥<NBSP>\"",
-   "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>to<NBSP>3.5\"",
-   "[\"\",null] → \"z<NBSP>≥<NBSP>\"",
-   "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>to<NBSP>3.5\""
+   "[\"\",null] → \"z<NBSP>≥<NBSP>\""
   ],
   "keyScale": "Mean consistency z per area; darker is more consistent. Tissue-coloured areas fall below 3.",
   "keyScaleTerm": "Neurosynth term. Mean consistency z per area; darker is more consistent. Tissue-coloured areas fall below 3.",
   "keyAll": "Each area shows its strongest function; tissue-coloured areas reach none. Choose one to see all its areas.",
   "termOf": [
    "[\"Alpha\",\"\"] → \"Alpha: “”\"",
-   "[\"\",\"Alpha\"] → \": “Alpha”\"",
-   "[\"Alpha\",\"\"] → \"Alpha: “”\"",
-   "[\"\",\"Alpha\"] → \": “Alpha”\"",
-   "[\"Alpha\",\"\"] → \"Alpha: “”\""
+   "[\"\",\"Alpha\"] → \": “Alpha”\""
   ],
   "lesionCheck": [
    "[[\"a\",\"b\"]] → \"Lesion check: a; b.\"",
    "[[\"one\"]] → \"Lesion check: one.\"",
-   "[[]] → \"Lesion check: .\"",
-   "[[\"a\",\"b\"]] → \"Lesion check: a; b.\"",
-   "[[\"one\"]] → \"Lesion check: one.\""
+   "[[]] → \"Lesion check: .\""
   ],
   "lesionItem": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (): Alpha\"",
-   "[\"\",\"Alpha\",\"\"] → \" (Alpha): \"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (): Alpha\"",
-   "[\"\",\"Alpha\",\"\"] → \" (Alpha): \"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (): Alpha\""
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha): \""
   ],
   "parcelCoverage": [
    "[\"Alpha\",\"\"] → \"Alpha  coloured\"",
-   "[\"\",\"Alpha\"] → \" Alpha coloured\"",
-   "[\"Alpha\",\"\"] → \"Alpha  coloured\"",
-   "[\"\",\"Alpha\"] → \" Alpha coloured\"",
-   "[\"Alpha\",\"\"] → \"Alpha  coloured\""
+   "[\"\",\"Alpha\"] → \" Alpha coloured\""
   ],
   "parcelOffSurface": [
    "[\"Alpha\"] → \"Alpha, not measured\"",
-   "[\"\"] → \", not measured\"",
-   "[\"Alpha\"] → \"Alpha, not measured\"",
-   "[\"\"] → \", not measured\"",
-   "[\"Alpha\"] → \"Alpha, not measured\""
+   "[\"\"] → \", not measured\""
   ],
   "noLesionCheck": "No lesion study in Planum’s deficit evidence checks this domain."
  },
@@ -579,17 +493,11 @@
    "link": "Could not open this link.",
    "layer": [
     "[\"Alpha\"] → \"Could not load Alpha.\"",
-    "[\"\"] → \"Could not load .\"",
-    "[\"Alpha\"] → \"Could not load Alpha.\"",
-    "[\"\"] → \"Could not load .\"",
-    "[\"Alpha\"] → \"Could not load Alpha.\""
+    "[\"\"] → \"Could not load .\""
    ],
    "colour": [
     "[\"Alpha\"] → \"Could not show the Alpha colouring.\"",
-    "[\"\"] → \"Could not show the  colouring.\"",
-    "[\"Alpha\"] → \"Could not show the Alpha colouring.\"",
-    "[\"\"] → \"Could not show the  colouring.\"",
-    "[\"Alpha\"] → \"Could not show the Alpha colouring.\""
+    "[\"\"] → \"Could not show the  colouring.\""
    ],
    "region": "Could not show the region.",
    "cord": "Could not show the spinal cord.",
@@ -611,17 +519,11 @@
  "footer": {
   "referenceColophon": [
    "[\"Alpha\"] → \"Alpha · reference data\"",
-   "[\"\"] → \" · reference data\"",
-   "[\"Alpha\"] → \"Alpha · reference data\"",
-   "[\"\"] → \" · reference data\"",
-   "[\"Alpha\"] → \"Alpha · reference data\""
+   "[\"\"] → \" · reference data\""
   ],
   "colophon": [
    "[\"Alpha\",false] → \"Alpha · averaged reference template\"",
-   "[\"\",true] → \" · one individual’s MRI reconstruction\"",
-   "[\"Alpha\",false] → \"Alpha · averaged reference template\"",
-   "[\"\",true] → \" · one individual’s MRI reconstruction\"",
-   "[\"Alpha\",false] → \"Alpha · averaged reference template\""
+   "[\"\",true] → \" · one individual’s MRI reconstruction\""
   ],
   "statementAlone": "Not clinical anatomy",
   "visibleRegions": [
@@ -636,20 +538,14 @@
   "subject": "Subject",
   "kind": [
    "[true] → \"One individual’s MRI reconstruction\"",
-   "[false] → \"Averaged reference template\"",
-   "[true] → \"One individual’s MRI reconstruction\"",
-   "[false] → \"Averaged reference template\"",
-   "[true] → \"One individual’s MRI reconstruction\""
+   "[false] → \"Averaged reference template\""
   ],
   "sourceData": "Source data",
   "reconstruction": "Reconstruction",
   "atlases": "Cortical atlases",
   "projectedFrom": [
    "[\"Alpha\"] → \"Projected from Alpha\"",
-   "[\"\"] → \"Projected from \"",
-   "[\"Alpha\"] → \"Projected from Alpha\"",
-   "[\"\"] → \"Projected from \"",
-   "[\"Alpha\"] → \"Projected from Alpha\""
+   "[\"\"] → \"Projected from \""
   ],
   "networks": "Functional networks",
   "functional": "Functional divisions",
@@ -680,11 +576,8 @@
   ],
   "unnamed": "No source names a finer region for this area, so it is shown only within its section.",
   "areas": [
-   "[\"Alpha\"] → \"HCP‑MMP areas: Alpha\"",
-   "[\"\"] → \"HCP‑MMP areas: \"",
-   "[\"Alpha\"] → \"HCP‑MMP areas: Alpha\"",
-   "[\"\"] → \"HCP‑MMP areas: \"",
-   "[\"Alpha\"] → \"HCP‑MMP areas: Alpha\""
+   "[\"Alpha\"] → \"HCP<NBHY>MMP areas: Alpha\"",
+   "[\"\"] → \"HCP<NBHY>MMP areas: \""
   ],
   "contested": [
    "[0,1] → \"Glasser's Table 1 gives section 0 as this area's primary section; the supplement's section text lists it under section 1.\"",
@@ -715,10 +608,7 @@
   "noResults": "Search a function, task or stimulus, such as “faces” or “reward”, or a clinical group such as “aphasia”.",
   "term": [
    "[\"Alpha\",\"\"] → \"Activation evidence · Neurosynth term “Alpha” · \"",
-   "[\"\",\"Alpha\"] → \"Activation evidence · Neurosynth term “” · Alpha\"",
-   "[\"Alpha\",\"\"] → \"Activation evidence · Neurosynth term “Alpha” · \"",
-   "[\"\",\"Alpha\"] → \"Activation evidence · Neurosynth term “” · Alpha\"",
-   "[\"Alpha\",\"\"] → \"Activation evidence · Neurosynth term “Alpha” · \""
+   "[\"\",\"Alpha\"] → \"Activation evidence · Neurosynth term “” · Alpha\""
   ],
   "areas": [
    "[0,1,\"Alpha\"] → \"0 HCP-MMP areas and 1 structure at z<NBSP>≥<NBSP>Alpha\"",
@@ -736,10 +626,7 @@
   ],
   "none": [
    "[\"Alpha\"] → \"No HCP-MMP area or structure reaches z<NBSP>Alpha.\"",
-   "[\"\"] → \"No HCP-MMP area or structure reaches z<NBSP>.\"",
-   "[\"Alpha\"] → \"No HCP-MMP area or structure reaches z<NBSP>Alpha.\"",
-   "[\"\"] → \"No HCP-MMP area or structure reaches z<NBSP>.\"",
-   "[\"Alpha\"] → \"No HCP-MMP area or structure reaches z<NBSP>Alpha.\""
+   "[\"\"] → \"No HCP-MMP area or structure reaches z<NBSP>.\""
   ],
   "areasHeading": "Areas and structures, strongest first",
   "more": [
@@ -761,10 +648,7 @@
   "caveat": "Where studies of healthy groups report activation: not this brain, and not what damage would impair.",
   "deepStrongest": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), the strongest region of Alpha, lies beneath the cortex.\"",
-   "[\"\",\"Alpha\",\"\"] → \" (Alpha), the strongest region of , lies beneath the cortex.\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), the strongest region of Alpha, lies beneath the cortex.\"",
-   "[\"\",\"Alpha\",\"\"] → \" (Alpha), the strongest region of , lies beneath the cortex.\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), the strongest region of Alpha, lies beneath the cortex.\""
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha), the strongest region of , lies beneath the cortex.\""
   ],
   "deepAmong": [
    "[\"Alpha\",\"\",\"Alpha\",183] → \"Alpha (), among the 183 strongest regions of Alpha, lies beneath the cortex.\"",
@@ -775,17 +659,11 @@
   ],
   "suggest": [
    "[\"Alpha\"] → \"Did you mean “Alpha”?\"",
-   "[\"\"] → \"Did you mean “”?\"",
-   "[\"Alpha\"] → \"Did you mean “Alpha”?\"",
-   "[\"\"] → \"Did you mean “”?\"",
-   "[\"Alpha\"] → \"Did you mean “Alpha”?\""
+   "[\"\"] → \"Did you mean “”?\""
   ],
   "termDetail": [
    "[\"Alpha\",\"\"] → \"Alpha · \"",
-   "[\"\",\"Alpha\"] → \" · Alpha\"",
-   "[\"Alpha\",\"\"] → \"Alpha · \"",
-   "[\"\",\"Alpha\"] → \" · Alpha\"",
-   "[\"Alpha\",\"\"] → \"Alpha · \""
+   "[\"\",\"Alpha\"] → \" · Alpha\""
   ],
   "studiesColumn": "Studies",
   "termsMore": [
@@ -834,17 +712,11 @@
   },
   "atlasBecomes": [
    "[\"Alpha\",\"\"] → \"Alpha (atlas becomes )\"",
-   "[\"\",\"Alpha\"] → \" (atlas becomes Alpha)\"",
-   "[\"Alpha\",\"\"] → \"Alpha (atlas becomes )\"",
-   "[\"\",\"Alpha\"] → \" (atlas becomes Alpha)\"",
-   "[\"Alpha\",\"\"] → \"Alpha (atlas becomes )\""
+   "[\"\",\"Alpha\"] → \" (atlas becomes Alpha)\""
   ],
   "colourBecomes": [
    "[\"Alpha\",\"\"] → \"Alpha (colour becomes )\"",
-   "[\"\",\"Alpha\"] → \" (colour becomes Alpha)\"",
-   "[\"Alpha\",\"\"] → \"Alpha (colour becomes )\"",
-   "[\"\",\"Alpha\"] → \" (colour becomes Alpha)\"",
-   "[\"Alpha\",\"\"] → \"Alpha (colour becomes )\""
+   "[\"\",\"Alpha\"] → \" (colour becomes Alpha)\""
   ],
   "dataSummary": "Atlas and display settings",
   "notes": {
@@ -868,10 +740,7 @@
   "loading": "Loading…",
   "loadingProgress": [
    "[\"Alpha\"] → \"Loading Alpha\"",
-   "[\"\"] → \"Loading \"",
-   "[\"Alpha\"] → \"Loading Alpha\"",
-   "[\"\"] → \"Loading \"",
-   "[\"Alpha\"] → \"Loading Alpha\""
+   "[\"\"] → \"Loading \""
   ]
  },
  "inspector": {
@@ -899,10 +768,7 @@
   "newTab": "(opens in a new tab)",
   "notApplied": [
    "[\"Alpha\"] → \"Not applied from this link: Alpha.\"",
-   "[\"\"] → \"Not applied from this link: .\"",
-   "[\"Alpha\"] → \"Not applied from this link: Alpha.\"",
-   "[\"\"] → \"Not applied from this link: .\"",
-   "[\"Alpha\"] → \"Not applied from this link: Alpha.\""
+   "[\"\"] → \"Not applied from this link: .\""
   ],
   "fields": {
    "anatomy": "subject",
@@ -955,31 +821,19 @@
   "planes": "Section plane",
   "positionLabel": [
    "[\"Alpha\"] → \"Alpha position\"",
-   "[\"\"] → \" position\"",
-   "[\"Alpha\"] → \"Alpha position\"",
-   "[\"\"] → \" position\"",
-   "[\"Alpha\"] → \"Alpha position\""
+   "[\"\"] → \" position\""
   ],
   "sliceAria": [
    "[\"Alpha\"] → \"Alpha MRI. Click to place crosshair; arrow keys change slice.\"",
-   "[\"\"] → \" MRI. Click to place crosshair; arrow keys change slice.\"",
-   "[\"Alpha\"] → \"Alpha MRI. Click to place crosshair; arrow keys change slice.\"",
-   "[\"\"] → \" MRI. Click to place crosshair; arrow keys change slice.\"",
-   "[\"Alpha\"] → \"Alpha MRI. Click to place crosshair; arrow keys change slice.\""
+   "[\"\"] → \" MRI. Click to place crosshair; arrow keys change slice.\""
   ],
   "sliderAria": [
    "[\"Alpha\"] → \"Alpha MRI position\"",
-   "[\"\"] → \" MRI position\"",
-   "[\"Alpha\"] → \"Alpha MRI position\"",
-   "[\"\"] → \" MRI position\"",
-   "[\"Alpha\"] → \"Alpha MRI position\""
+   "[\"\"] → \" MRI position\""
   ],
   "note": [
    "[{\"individual\":true}] → \"1 mm single-subject grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\"",
-   "[{\"individual\":false}] → \"1 mm averaged-template grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\"",
-   "[{\"individual\":true}] → \"1 mm single-subject grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\"",
-   "[{\"individual\":false}] → \"1 mm averaged-template grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\"",
-   "[{\"individual\":true}] → \"1 mm single-subject grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\""
+   "[{\"individual\":false}] → \"1 mm averaged-template grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\""
   ],
   "readout": [
    "[\"Alpha\",\"\",2] → \"Alpha —  (label 2)\"",
@@ -1008,19 +862,13 @@
    "outside": "The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position.",
    "grid": [
     "[[1,2,3],\"\"] → \"1 × 2 × 3 source voxels ·  spacing\"",
-    "[[182,218,182],\"Alpha\"] → \"182 × 218 × 182 source voxels · Alpha spacing\"",
-    "[[1,2,3],\"\"] → \"1 × 2 × 3 source voxels ·  spacing\"",
-    "[[182,218,182],\"Alpha\"] → \"182 × 218 × 182 source voxels · Alpha spacing\"",
-    "[[1,2,3],\"\"] → \"1 × 2 × 3 source voxels ·  spacing\""
+    "[[182,218,182],\"Alpha\"] → \"182 × 218 × 182 source voxels · Alpha spacing\""
    ],
    "ready": "Reference MRI ready.",
    "viewer": "MRI viewer",
    "voxelName": [
     "[\"Alpha\"] → \"Voxel Alpha\"",
-    "[\"\"] → \"Voxel \"",
-    "[\"Alpha\"] → \"Voxel Alpha\"",
-    "[\"\"] → \"Voxel \"",
-    "[\"Alpha\"] → \"Voxel Alpha\""
+    "[\"\"] → \"Voxel \""
    ],
    "range": [
     "[0] → \"0 to 0\"",
@@ -1031,10 +879,7 @@
    ],
    "moved": [
     "[[1,2,3]] → \"Crosshair moved to voxel 1, 2, 3.\"",
-    "[[182,218,182]] → \"Crosshair moved to voxel 182, 218, 182.\"",
-    "[[1,2,3]] → \"Crosshair moved to voxel 1, 2, 3.\"",
-    "[[182,218,182]] → \"Crosshair moved to voxel 182, 218, 182.\"",
-    "[[1,2,3]] → \"Crosshair moved to voxel 1, 2, 3.\""
+    "[[182,218,182]] → \"Crosshair moved to voxel 182, 218, 182.\""
    ],
    "hintKeys": "Page Up and Page Down step through slices.",
    "hintClose": "M closes this view.",
@@ -1070,24 +915,15 @@
   "groupIn": {
    "lobe": [
     "[\"Alpha\"] → \"Alpha lobe\"",
-    "[\"\"] → \" lobe\"",
-    "[\"Alpha\"] → \"Alpha lobe\"",
-    "[\"\"] → \" lobe\"",
-    "[\"Alpha\"] → \"Alpha lobe\""
+    "[\"\"] → \" lobe\""
    ],
    "network": [
     "[\"Alpha\"] → \"Alpha network\"",
-    "[\"\"] → \" network\"",
-    "[\"Alpha\"] → \"Alpha network\"",
-    "[\"\"] → \" network\"",
-    "[\"Alpha\"] → \"Alpha network\""
+    "[\"\"] → \" network\""
    ],
    "system": [
     "[\"Alpha\"] → \"Alpha system\"",
-    "[\"\"] → \" system\"",
-    "[\"Alpha\"] → \"Alpha system\"",
-    "[\"\"] → \" system\"",
-    "[\"Alpha\"] → \"Alpha system\""
+    "[\"\"] → \" system\""
    ]
   },
   "scope": "Browse",
@@ -1097,10 +933,7 @@
   "allSystems": "All internal structures",
   "noMatch": [
    "[\"Alpha\"] → \"No match for “Alpha”\"",
-   "[\"\"] → \"No match for “”\"",
-   "[\"Alpha\"] → \"No match for “Alpha”\"",
-   "[\"\"] → \"No match for “”\"",
-   "[\"Alpha\"] → \"No match for “Alpha”\""
+   "[\"\"] → \"No match for “”\""
   ],
   "noMatchHint": "Try another spelling, an abbreviation or a synonym. Symptoms and syndromes are under Deficits.",
   "showingCapped": [
@@ -1112,33 +945,21 @@
   ],
   "matchesInOther": [
    "[\"Alpha\",\"\"] → \"Alpha in . \"",
-   "[\"\",\"Alpha\"] → \" in Alpha. \"",
-   "[\"Alpha\",\"\"] → \"Alpha in . \"",
-   "[\"\",\"Alpha\"] → \" in Alpha. \"",
-   "[\"Alpha\",\"\"] → \"Alpha in . \""
+   "[\"\",\"Alpha\"] → \" in Alpha. \""
   ],
   "switchAtlas": "Switch atlas",
   "matchesInOtherCut": [
    "[\"Alpha\",\"\"] → \"Alpha in , which labels cuts only. \"",
-   "[\"\",\"Alpha\"] → \" in Alpha, which labels cuts only. \"",
-   "[\"Alpha\",\"\"] → \"Alpha in , which labels cuts only. \"",
-   "[\"\",\"Alpha\"] → \" in Alpha, which labels cuts only. \"",
-   "[\"Alpha\",\"\"] → \"Alpha in , which labels cuts only. \""
+   "[\"\",\"Alpha\"] → \" in Alpha, which labels cuts only. \""
   ],
   "switchCutAtlas": "Switch cut labels",
   "rowHiddenAria": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, : Alpha. Activate to reveal.\"",
-   "[\"\",\"Alpha\",\"\"] → \", Alpha: . Activate to reveal.\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, : Alpha. Activate to reveal.\"",
-   "[\"\",\"Alpha\",\"\"] → \", Alpha: . Activate to reveal.\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, : Alpha. Activate to reveal.\""
+   "[\"\",\"Alpha\",\"\"] → \", Alpha: . Activate to reveal.\""
   ],
   "rowUnavailableAria": [
    "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , not shown: Alpha.\"",
-   "[\"\",\"Alpha\",\"\"] → \", Alpha, not shown: .\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , not shown: Alpha.\"",
-   "[\"\",\"Alpha\",\"\"] → \", Alpha, not shown: .\"",
-   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , not shown: Alpha.\""
+   "[\"\",\"Alpha\",\"\"] → \", Alpha, not shown: .\""
   ]
  },
  "networks": {
@@ -1173,10 +994,7 @@
   "other-detail": "In another detail level",
   "inDetailSet": [
    "[\"Alpha\"] → \"In Alpha\"",
-   "[\"\"] → \"In \"",
-   "[\"Alpha\"] → \"In Alpha\"",
-   "[\"\"] → \"In \"",
-   "[\"Alpha\"] → \"In Alpha\""
+   "[\"\"] → \"In \""
   ],
   "other-system": "In another system",
   "fallback": "Hidden"
@@ -1297,10 +1115,7 @@
   ],
   "singleKeysNote": [
    "[true] → \"Page-wide single-key shortcuts (letters, numbers, / and ?) can be turned off in the settings menu.\"",
-   "[false] → \"Page-wide single-key shortcuts are off. Turn them back on in the settings menu.\"",
-   "[true] → \"Page-wide single-key shortcuts (letters, numbers, / and ?) can be turned off in the settings menu.\"",
-   "[false] → \"Page-wide single-key shortcuts are off. Turn them back on in the settings menu.\"",
-   "[true] → \"Page-wide single-key shortcuts (letters, numbers, / and ?) can be turned off in the settings menu.\""
+   "[false] → \"Page-wide single-key shortcuts are off. Turn them back on in the settings menu.\""
   ]
  },
  "sides": {
@@ -1329,10 +1144,7 @@
   "viewAria": "Anatomical view",
   "viewToolAria": [
    "[\"Alpha\"] → \"Anatomical view: Alpha\"",
-   "[\"\"] → \"Anatomical view: \"",
-   "[\"Alpha\"] → \"Anatomical view: Alpha\"",
-   "[\"\"] → \"Anatomical view: \"",
-   "[\"Alpha\"] → \"Anatomical view: Alpha\""
+   "[\"\"] → \"Anatomical view: \""
   ],
   "viewTool": "View",
   "sectionTool": "Section",
@@ -1353,20 +1165,14 @@
   "snapshot": "Save image (PNG)",
   "snapshotView": [
    "[\"Alpha\"] → \"Alpha view\"",
-   "[\"\"] → \" view\"",
-   "[\"Alpha\"] → \"Alpha view\"",
-   "[\"\"] → \" view\"",
-   "[\"Alpha\"] → \"Alpha view\""
+   "[\"\"] → \" view\""
   ],
   "snapshotStatement": "Planum · Not clinical anatomy",
   "fullscreen": "Full screen",
   "exitFullscreen": "Exit full screen",
   "snapshotSaved": [
    "[\"Alpha\"] → \"Image saved as Alpha.\"",
-   "[\"\"] → \"Image saved as .\"",
-   "[\"Alpha\"] → \"Image saved as Alpha.\"",
-   "[\"\"] → \"Image saved as .\"",
-   "[\"Alpha\"] → \"Image saved as Alpha.\""
+   "[\"\"] → \"Image saved as .\""
   ],
   "loadingAnatomy": "Loading anatomy…",
   "loadingWithTotal": [
@@ -1404,25 +1210,16 @@
   "panelAria": "Atlas panel",
   "inspect": [
    "[\"Alpha\"] → \"Inspect Alpha\"",
-   "[\"\"] → \"Inspect \"",
-   "[\"Alpha\"] → \"Inspect Alpha\"",
-   "[\"\"] → \"Inspect \"",
-   "[\"Alpha\"] → \"Inspect Alpha\""
+   "[\"\"] → \"Inspect \""
   ],
   "back": [
    "[\"Alpha\"] → \"Back to Alpha\"",
-   "[\"\"] → \"Back to \"",
-   "[\"Alpha\"] → \"Back to Alpha\"",
-   "[\"\"] → \"Back to \"",
-   "[\"Alpha\"] → \"Back to Alpha\""
+   "[\"\"] → \"Back to \""
   ],
   "path": "Breadcrumb",
   "showInList": [
    "[\"Alpha\"] → \"Alpha, show in the list\"",
-   "[\"\"] → \", show in the list\"",
-   "[\"Alpha\"] → \"Alpha, show in the list\"",
-   "[\"\"] → \", show in the list\"",
-   "[\"Alpha\"] → \"Alpha, show in the list\""
+   "[\"\"] → \", show in the list\""
   ]
  }
 }

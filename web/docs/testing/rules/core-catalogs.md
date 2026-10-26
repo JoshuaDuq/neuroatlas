@@ -165,7 +165,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `viewer/catalog/labels.js:47-53`
 - **Expected:** on `cdmd`: `aseg:left:17` (hippocampus), `aseg:left:12` (putamen), `aseg:midline:253` (corpus callosum), `learning:left:fornix`, `learning:left:subthalamic` → true; `aseg:left:8` (cerebellar cortex), `learning:left:pons`, `learning:left:dentate`, `nextbrain:left:352` (substantia nigra), `destrieux:left:38` → false.
-- **Covered by:** `src/lib/core/catalog/labels.test.ts` (S); `src/lib/core/catalog/published-catalog.test.ts` (S, every region)
+- **Covered by:** `src/lib/core/catalog/labels.test.ts` (S); `src/lib/core/catalog/published-catalog.test.ts` (S, eight ids and every cortical region; the ten ids of `labels.test.ts` repeat it)
 
 ## Visibility
 
@@ -245,7 +245,7 @@ the expected values change with them in the same commit.
 
 ### CAT-25 · The list shows the active atlas's groups, then structures, then the cut's regions
 
-- **Rule:** The anatomy list holds the cortical groups of the surface atlas, the structure groups of the detail level (and the spinal cord), then the cut-only regions of the cut atlas. Groups sort by name in the reader's language; structures come first when the cortex is hidden. A lobe and a system with the same name stay two groups. Rows sort by family order, name, then hemisphere. While a system is explored, only its structures are listed.
+- **Rule:** The anatomy list holds the cortical groups of the surface atlas, the structure groups of the detail level (and the spinal cord), then the cut-only regions of the cut atlas. Groups sort by name in the reader's language; structures come first when the cortex is hidden. A lobe and a system with the same name stay two groups. Rows sort by family order, name, then hemisphere. While a system is explored, its structure groups are the only ones listed; cortex and cut-only groups are unchanged.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/catalog/catalog.js:138-180`
@@ -381,7 +381,7 @@ the expected values change with them in the same commit.
 - **Kind:** scientific
 - **Level:** unit
 - **Source:** `viewer/catalog/neuropsych-domains.js:163-181`
-- **Expected:** fixture bands 3 / 5 / 10: overview id "function:all" → `hcp-mmp:left:1` [4,5,6], `hcp-mmp:right:1` [1,2,3], `aseg:left:18` [4,5,6]; language → both [30,30,30]; memory → `hcp-mmp:left:1` [50,50,50], `aseg:left:18` [30,30,30]; `term:fear` id "function:term:fear", `aseg:left:18` [50,50,50]; "praxis" and "term:praxis" throw "Unknown neuropsychological domain: <id>". Published bands start at 3, 5, 10: z 2.9 → none, 3 and 4.99 → 3, 5 → 5, 10 and 25 → 10. Published overview paint colours 249 of the 289 scored regions.
+- **Expected:** fixture bands 3 / 5 / 10: overview id "function:all" → `hcp-mmp:left:1` [4,5,6], `hcp-mmp:right:1` [1,2,3], `aseg:left:18` [4,5,6]; language → both [30,30,30]; memory → `hcp-mmp:left:1` [50,50,50], `aseg:left:18` [30,30,30]; `term:fear` id "function:term:fear", `aseg:left:18` [50,50,50]; "praxis" and "term:praxis" throw "Unknown neuropsychological domain: <id>". Published bands start at 3, 5, 10: z 2.9 → none, 3 and 4.99 → 3, 5 → 5, 10 and 25 → 10. Published overview paint colours 249 regions (of the 289 with a domain assignment).
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ### CAT-40 · The Neurosynth term search is checked
@@ -417,7 +417,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `public/models/cdmd/neuropsych-domains.json`, `neurosynth-terms.json`
-- **Expected:** atlas hcp-mmp, structure atlas aseg with 19 sampled structures, threshold z 3, bands from 3, 5, 10; 6 groups (attention-executive, memory, language-number, perception, sensorimotor, social-emotional); 70 domains, 11 in the overview (executive, working-memory, long-term-memory, language, attention, visuospatial, social-cognition, visual-perception, motor, auditory-perception, emotion); 289 scored regions; 277 terms (232 function, 45 population) over 379 regions; the files validate together.
+- **Expected:** atlas hcp-mmp, structure atlas aseg with 19 sampled structures, threshold z 3, bands from 3, 5, 10; 6 groups (attention-executive, memory, language-number, perception, sensorimotor, social-emotional); 70 domains, 11 in the overview (executive, working-memory, long-term-memory, language, attention, visuospatial, social-cognition, visual-perception, motor, auditory-perception, emotion); 289 regions with an assignment; 277 terms (232 function, 45 population) over 379 regions; the files validate together.
 - **Covered by:** `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ## Clinical catalogue
@@ -576,7 +576,7 @@ the expected values change with them in the same commit.
 - **Kind:** scientific
 - **Level:** unit
 - **Source:** `public/models/cdmd/atlas-comparison.json`
-- **Expected:** 1202 pairs, 512 totals (508 cortical regions and 4 unassigned labels), method "barycentric-vertex-cells"; for every one of the 508 regions |Σ rows + unassigned − total| ≤ total × 1e-10; each row's reverse has the same area and mesh id; share = area / total exactly. `destrieux:left:38`: target hcp-mmp, total 2157.579 mm² (± 1e-9), 10 rows, the first `hcp-mmp:left:132` 683.954 mm² (share 0.31700 ± 1e-5, mesh `overlap:left:38:132`), then `hcp-mmp:left:137` 460.214 mm², unassigned 0; its CSV has 10 rows.
+- **Expected:** 1202 pairs, 512 totals (508 cortical regions and 4 unassigned labels), method "barycentric-vertex-cells"; for every one of the 508 regions |Σ rows + unassigned − total| ≤ total × 1e-10; each row's reverse has the same area and mesh id; share = area / total exactly. `destrieux:left:38`: target hcp-mmp, total 2157.57944415253 mm² (± 1e-9), 10 rows, the first `hcp-mmp:left:132` 683.954 mm² (share 0.31700 ± 1e-5, mesh `overlap:left:38:132`), then `hcp-mmp:left:137` 460.214 mm², unassigned 0; its CSV has 10 rows.
 - **Covered by:** `src/lib/core/comparison/catalog.test.ts` (S, conservation and reversibility; counts and the `destrieux:left:38` values)
 
 ## Diffusion

@@ -342,7 +342,7 @@ test('I18N-09 · the shortcut sheet’s Escape and M rows carry the S5b wording'
   );
 });
 
-test('I18N-10 · the atlas switch shows the short name, else the title, else the id', () => {
+test('I18N-10 · the atlas switch shows the short name, else the id (the full-title branch is unreachable: every atlas has a short name)', () => {
   assert.equal(atlasSwitchLabel('wmparc', 'en'), 'wmparc');
   assert.equal(atlasSwitchLabel('nextbrain', 'fr'), 'NextBrain');
   assert.equal(atlasSwitchLabel('unheard-of', 'fr'), 'unheard-of');

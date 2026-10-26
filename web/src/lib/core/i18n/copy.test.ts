@@ -55,6 +55,7 @@ const KINDS: Record<string, string> = {
   'circuits.coverage': 'nn',
   'circuits.step': 'nn',
   'circuits.stepShort': 'nn',
+  'diffusion.matches': 'n',
   'diffusion.streamlines': 'nn',
   'diffusion.bundleCollection': 'n',
   'mri.grid': 'ds',
@@ -69,7 +70,7 @@ type Fn = (...args: unknown[]) => unknown;
 /** What a function says at the fixed arguments; a throw is recorded too. */
 function sample(fn: Fn, path: string): string[] {
   const kinds = KINDS[path] ?? 's'.repeat(fn.length);
-  const calls: string[] = [];
+  const calls = new Set<string>();
   for (let i = 0; i < 5; i++) {
     const args = [...kinds].map((kind, position) => {
       const pool = POOLS[kind as keyof typeof POOLS] as readonly unknown[];
@@ -81,9 +82,9 @@ function sample(fn: Fn, path: string): string[] {
     } catch (error) {
       said = `throws ${(error as Error).message}`;
     }
-    calls.push(`${JSON.stringify(args)} → ${JSON.stringify(said)}`);
+    calls.add(`${JSON.stringify(args)} → ${JSON.stringify(said)}`);
   }
-  return calls;
+  return [...calls];
 }
 
 /** The table with each function replaced by what it says. */
@@ -101,8 +102,9 @@ function resolve(node: unknown, path: string): unknown {
   return node;
 }
 
-/** Spaces that look alike are written by name, so a review can see them. */
-const visible = (json: string) => json.replaceAll(' ', '<NNBSP>').replaceAll(' ', '<NBSP>');
+/** Spaces and hyphens that look alike are written by name, so a review can see them. */
+const visible = (json: string) =>
+  json.replaceAll(' ', '<NNBSP>').replaceAll(' ', '<NBSP>').replaceAll('\u2011', '<NBHY>');
 
 for (const lang of ['en', 'fr'] as const) {
   test(`I18N-04 · the ${lang} interface says the approved copy`, async () => {

@@ -69,8 +69,8 @@ values (I18N-22, I18N-28) hold it today.
 - **Level:** unit
 - **Source:** decisions 15, 17, 20, 21, 22, 24, 32, 39, 42 on #4; G3 `keyAbsent` request; H1a `panelAria` request; T1 and R2 requests
 - **Expected:** EN / FR:
-  `viewport.navigationHintTouch` "Drag to rotate · Pinch to zoom · Tap to inspect" / "Glisser : tourner · Pincer : zoom · Toucher : inspecter";
-  `viewport.navigationHintTractsTouch` "Drag to rotate · Pinch to zoom" / "Glisser : tourner · Pincer : zoom";
+  `viewport.navigationHintTouch` "Drag to rotate · Pinch to zoom · Tap to inspect" / "Glisser : tourner · Pincer : zoom · Toucher : inspecter";
+  `viewport.navigationHintTractsTouch` "Drag to rotate · Pinch to zoom" / "Glisser : tourner · Pincer : zoom";
   `viewport.exitFullscreen` "Exit full screen" / "Quitter le plein écran";
   `viewport.dockLabel` "3D viewer tools" / "Outils du visualiseur 3D";
   `viewport.orbitGroup` "Turn the model" / "Faire pivoter le modèle"; `orbitLeft|Right|Up|Down` "Turn left|right|up|down" / "Tourner à gauche|à droite|vers le haut|vers le bas";
@@ -126,14 +126,14 @@ values (I18N-22, I18N-28) hold it today.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/i18n/translations.js:1074-1077`; `web/src/lib/core/i18n/index.ts:113-118`
-- **Expected:** `atlasSwitchLabel('destrieux','en')` "Destrieux"; `('hcp-mmp','fr')` "HCP-MMP"; `('nextbrain','en')` "NextBrain"; `('learning','en')` "Teaching set"; `('learning','fr')` "Ensemble pédagogique"; `('wmparc','en')` "FreeSurfer white-matter parcellation" (no short name); `('unheard-of')` "unheard-of"; an unknown language reads English.
+- **Expected:** `atlasSwitchLabel('destrieux','en')` "Destrieux"; `('hcp-mmp','fr')` "HCP-MMP"; `('nextbrain','en')` "NextBrain"; `('learning','en')` "Teaching set"; `('learning','fr')` "Ensemble pédagogique"; `('wmparc','en')` "wmparc" (the short name; every atlas has one, so the full-title branch cannot be reached today); `('unheard-of')` "unheard-of"; an unknown language reads English.
 - **Covered by:** `src/lib/core/i18n/i18n.test.ts` (R) (I18N-10)
 
 ## Counted and interpolated phrases
 
 ### I18N-11 · A counted phrase agrees with its count, in both languages
 
-- **Rule:** A phrase that counts something uses the singular for one and the plural otherwise, in each language's grammar. Large counts group their digits (I18N-23).
+- **Rule:** A phrase that counts something uses the singular for one and the plural otherwise, in each language's grammar. The streamline count groups its digits (I18N-23); the other counts are written without grouping (12345 stays "12345").
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/clinical/translations.js`, `viewer/learning/translations.js`, `viewer/diffusion/translations.js`, `viewer/i18n/translations.js`

@@ -17,6 +17,7 @@ import {
   validateNeuropsychDomains,
   type TermRecord,
 } from './neuropsych-domains.ts';
+import { nearest } from './nearest.ts';
 import { asRegion } from './test-support.ts';
 
 // The fixtures are mutated into invalid shapes on purpose, so they are not typed as the real thing.
@@ -418,11 +419,17 @@ test('a term below the threshold, reaching nothing, of no kind, repeating a cura
   }
 });
 
-test('a misspelt query is offered the closest name or term within one edit per four letters', () => {
+test('CAT-42 · a misspelt query is offered the closest name or term within one edit per four letters', () => {
   const published = validateNeuropsychDomains(partition(), regions, terms());
   assert.equal(nearestName(published, 'Langauge', 'en'), 'Language');
   assert.equal(nearestName(published, 'interferance', 'en'), 'interference');
   assert.equal(nearestName(published, 'memoire', 'fr'), 'Mémoire');
   assert.equal(nearestName(published, 'nicotine', 'en'), null);
   assert.equal(nearestName(published, 'fea', 'en'), null);
+});
+
+test('CAT-42 · the allowance is one edit per four letters of the query', () => {
+  assert.equal(nearest('lnagauge', ['Language']), 'Language'); // two edits, eight letters
+  assert.equal(nearest('lnagaueg', ['Language']), null); // three edits, eight letters
+  assert.equal(nearest('mtoro', ['Motor']), null); // two edits, five letters
 });

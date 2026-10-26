@@ -148,7 +148,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/clinical.js:108-115`; `data/neuropsychology.yaml`
 - **Expected:** two references carry corrections: `10.1073/pnas.98.2.777-e` → `{ doi: 'doi:10.1073/pnas.98.2.777-e', href: 'https://doi.org/10.1073/pnas.98.2.777-e', summary: 'Corrects the spelling “centrolateralis” …' }` and `10.1093/cercor/bhl065`; fr summaries in French. A reference without corrections → `[]`.
-- **Covered by:** `src/lib/core/panels/clinical.test.ts` (W: it re-derives href and summary from the same data and does not check the `doi:` text)
+- **Covered by:** `src/lib/core/panels/clinical.test.ts` (R: pins the `doi:` text, the link and both summaries)
 
 ### PANEL-16 · A region with no deficit has no Neuropsychology section
 
