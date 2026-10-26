@@ -6,7 +6,9 @@ import manifestFile from '../../../public/models/cdmd/manifest.json' with { type
 import domainsFile from '../../../public/models/cdmd/neuropsych-domains.json' with { type: 'json' };
 import { validateNeuropsychDomains } from '../lib/core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains } from '../lib/core/catalog/neuropsych-domains.ts';
+import { loadClinicalCatalog } from '../lib/core/clinical/load.ts';
 import { t } from '../lib/core/i18n/index.ts';
+import { loadCircuitCatalog } from '../lib/core/learning/load.ts';
 import { decodeState } from '../lib/core/state/url-state.ts';
 import { ASSET_BASE } from '../../build/site.ts';
 import type { CreateEngine, EngineOptions } from '../lib/engine/api.ts';
@@ -467,9 +469,7 @@ describe('the link hooks', () => {
   });
 
   test('leaving a lesson a link opened returns to the scene the link found', async () => {
-    const circuit = (await boot()).app.world!.circuits.all[0]!.id;
-    apps[0]!.dispose();
-    engine = createFakeEngine({ manifest, domains: domains as never });
+    const circuit = loadCircuitCatalog(manifest, loadClinicalCatalog(manifest)).all[0]!.id;
     const { app } = await boot(`#tab=circuits&circuit=${circuit}`);
     expect(engine.model.state.selectedRegion).not.toBeNull();
     await app.world!.excursions.leaveLesson();
