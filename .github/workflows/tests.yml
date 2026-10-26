@@ -150,7 +150,6 @@ jobs:
       - name: Run viewer tests
         run: npm test
 
-  # The parity tests import the legacy modules, so the root dependencies are installed too.
   web-check:
     needs: changes
     if: needs.changes.outputs.web == 'true'
@@ -186,7 +185,7 @@ jobs:
       - name: Type-check (TypeScript 7)
         run: npm run check:ts7 --prefix web
 
-      - name: Run unit and parity tests
+      - name: Run unit tests
         run: npm test --prefix web
 
       # What deploy ships (copyPublicDir is off in the preview), checked once for the chunks, the

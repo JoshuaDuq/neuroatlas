@@ -6,7 +6,7 @@ import { yamlRecords } from './build/yaml-records.ts';
 
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
-// One Three.js instance for web/ and the legacy viewer/ modules the parity tests import.
+// One Three.js instance across web/.
 const shared = {
   plugins: [svelte(), yamlRecords()],
   resolve: { dedupe: ['three', 'three-mesh-bvh', '@niivue/niivue', 'yaml'] },
@@ -21,14 +21,9 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          // The parity tests build and read the whole site; shared runners are slow.
+          // Some tests build and read the whole site; shared runners are slow.
           testTimeout: 30_000,
-          include: [
-            'src/**/*.test.ts',
-            'build/**/*.test.ts',
-            'parity/**/*.test.ts',
-            'test/**/*.test.ts',
-          ],
+          include: ['src/**/*.test.ts', 'build/**/*.test.ts', 'test/**/*.test.ts'],
           exclude: ['src/**/*.svelte.test.ts'],
         },
       },

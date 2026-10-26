@@ -14,8 +14,7 @@
     "format": "prettier .",
     "test": "vitest run --project unit",
     "test:browser": "vitest run --project browser",
-    "test:e2e": "playwright test",
-    "test:parity": "vitest run --project unit parity"
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource-variable/source-sans-3": "5.3.0",

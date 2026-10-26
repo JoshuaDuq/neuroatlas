@@ -16,7 +16,6 @@
   },
   "include": [
     "build/**/*.ts",
-    "parity/**/*.ts",
     "e2e/**/*.ts",
     "playwright.config.ts",
     "vite.config.ts",

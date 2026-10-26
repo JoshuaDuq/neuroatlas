@@ -8,4 +8,4 @@
 
 **Standard:** word boundaries between letters and digits follow Unicode UAX #29 (Text Segmentation) and ECMAScript Unicode property escapes (`\p{L}`, `\p{N}`); the function's own contract is "starts at a word boundary".
 
-**Tests:** `catalog.test.ts` (French `ra`); `published-catalog.test.ts` (CAT-22) fixes the published search totals under the corrected predicate (the legacy comparison, `web/parity/C2.test.ts`, is gone).
+**Tests:** `catalog.test.ts` (French `ra`); `published-catalog.test.ts` (CAT-22) fixes the published search rows under the corrected predicate (its "Broca" and "cuneus" first-five rows fail with the legacy predicate) (the legacy comparison, `web/parity/C2.test.ts`, is gone).

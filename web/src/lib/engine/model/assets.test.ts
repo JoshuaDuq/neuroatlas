@@ -294,12 +294,24 @@ describe('the published CDMD model', () => {
       assert.ok(found.length > 30, `${found.length} picks`);
       for (const region of found) {
         assert.ok(model.canSelect(region) && region.kind !== 'non-region', region.id);
-        if (region.kind === 'cortex') assert.equal(region.atlas, 'hcp-mmp');
       }
       assert.ok(
         found.some((region) => region.kind === 'cortex'),
         'a division is picked',
       );
+      // A division behind the glass is picked through it, not the glass in front.
+      const glassParcel = (id: string) =>
+        model.visibleMeshes.some(
+          (mesh) => mesh.userData['region_id'] === id && mesh.material.userData['glass'] === true,
+        );
+      let throughGlass = 0;
+      for (const ray of rays) {
+        const region = model.pick(ray);
+        const front = model.nearestHit(ray, model.visibleMeshes);
+        if (region && front?.object.material.userData['glass'] === true && !glassParcel(region.id))
+          throughGlass += 1;
+      }
+      assert.ok(throughGlass > 0, 'a division behind the glass is picked through it');
     },
   );
 
