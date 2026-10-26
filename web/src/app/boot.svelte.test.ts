@@ -510,7 +510,7 @@ describe('the mounted shell', () => {
     flushSync();
     expect(target.dataset.status).toBe('ready');
     expect(target.querySelector('aside')!.getAttribute('aria-label')).toBe(
-      t('fr', 'inspector').title,
+      t('fr', 'workspace').panelAria,
     );
     unmount(shell);
     target.remove();

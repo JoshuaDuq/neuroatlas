@@ -48,7 +48,6 @@
   {singleKeys}
   ready
   fullscreen={false}
-  exitFullscreenLabel="Exit full screen"
   provenanceReady
   bind:settingsOpen
   onSkipToModel={() => {}}

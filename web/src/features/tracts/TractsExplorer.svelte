@@ -36,7 +36,6 @@
   import RangeField from '../../lib/ui/RangeField.svelte';
   import StatusLine from '../../lib/ui/StatusLine.svelte';
   import { announce, createDebouncedAnnouncer } from '../../lib/ui/announcer.svelte.ts';
-  import { tractsCopy } from './copy.ts';
   import { downloadText } from './download.ts';
   import TractRow from './TractRow.svelte';
 
@@ -73,7 +72,7 @@
   const rows = $derived(tractRows(catalog.bundles));
   const text = $derived(t(lang, 'diffusion'));
   const dataset = $derived(catalog.text[lang]);
-  const added = $derived(tractsCopy(lang));
+  const link = $derived(t(lang, 'link'));
 
   /** The engine is not reactive: its events, and every call made here, re-read what the panel shows. */
   let ready = $state(false);
@@ -218,7 +217,7 @@
     const name = catalog.bundles.find((bundle) => bundle.id === id)!.name[lang];
     void load(() => tracts.loadBundle(id)).then((ok) => {
       pending.delete(id);
-      if (ok && !destroyed) announce(added.loaded(name));
+      if (ok && !destroyed) announce(text.loaded(name));
     });
   }
 
@@ -228,7 +227,7 @@
   }
 
   function say() {
-    results.say(matches === 0 ? `${noMatch}. ${text.noMatchHint}` : added.matches(matches));
+    results.say(matches === 0 ? `${noMatch}. ${text.noMatchHint}` : text.matches(matches));
   }
 
   function clearSearch() {
@@ -247,7 +246,7 @@
         );
       }
     });
-    announce(added.restored);
+    announce(text.restored);
   }
 
   function exportCsv() {
@@ -256,7 +255,7 @@
       LENGTHS_CSV_FILENAME,
       LENGTHS_CSV_TYPE,
     );
-    announce(added.exported);
+    announce(text.exported);
   }
 
   /** Moves focus to the search field (the global `/` key). */
@@ -342,7 +341,7 @@
     {/if}
     {#if showRetry}
       <button bind:this={retryButton} type="button" class="retry" onclick={retry}>
-        {updated ? t(lang, 'errors').reload : added.tryAgain}
+        {updated ? t(lang, 'errors').reload : text.tryAgain}
       </button>
     {/if}
 
@@ -439,7 +438,7 @@
         <p class="note">{text.metricsScope}</p>
         <p class="note">{dataset.files}</p>
         <a class="source" href={catalog.source} target="_blank" rel="noreferrer">
-          {text.source}<span class="visually-hidden"> {added.newTab}</span>{@render iconGraphic(
+          {text.source}<span class="visually-hidden"> {link.newTab}</span>{@render iconGraphic(
             'external-link',
           )}
         </a>
@@ -451,7 +450,7 @@
             rel="noreferrer"
           >
             {text.outlineProvenance}<span class="visually-hidden">
-              {added.newTab}</span
+              {link.newTab}</span
             >{@render iconGraphic('external-link')}
           </a>
         {/if}

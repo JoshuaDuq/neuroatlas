@@ -9,7 +9,7 @@ The navigation hint reads "Drag to rotate · Scroll to zoom · Click to inspect"
 
 ## New behaviour
 
-Where the primary pointer is coarse (`(pointer: coarse)`), the hint names the gestures a finger makes: "Drag to rotate · Pinch to zoom · Tap to inspect", and for the independent tract reference "Drag to rotate · Pinch to zoom"; French "Glisser : tourner · Pincer : zoom · Toucher : inspecter" and "Glisser : tourner · Pincer : zoom". The strings are a local table marked `TODO(C1)` in `StageHints.svelte` until `viewport.navigationHintTouch` and `navigationHintTractsTouch` are in i18n (requested on #4). Mouse and keyboard devices keep the legacy wording.
+Where the primary pointer is coarse (`(pointer: coarse)`), the hint names the gestures a finger makes: "Drag to rotate · Pinch to zoom · Tap to inspect", and for the independent tract reference "Drag to rotate · Pinch to zoom"; French "Glisser : tourner · Pincer : zoom · Toucher : inspecter" and "Glisser : tourner · Pincer : zoom". The strings now live in the `viewport` i18n namespace as `navigationHintTouch` and `navigationHintTractsTouch`. Mouse and keyboard devices keep the legacy wording.
 
 ## Standard cited
 
