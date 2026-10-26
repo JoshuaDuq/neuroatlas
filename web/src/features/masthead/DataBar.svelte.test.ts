@@ -425,10 +425,10 @@ describe('DataBar touch and refit', () => {
   test('on a phone every field and the summary are 44 px targets (WCAG 2.5.8)', async () => {
     await phone();
     await summary().click();
-    await settle();
-    expect(box(el(summary())).height).toBeGreaterThan(43.9);
+    // offsetHeight is the layout size: the popover's scale-in does not change it.
+    expect(el(summary()).offsetHeight).toBeGreaterThanOrEqual(44);
     for (const select of bar().querySelectorAll('select')) {
-      expect(box(select).height).toBeGreaterThan(43.9);
+      expect((select as HTMLElement).offsetHeight).toBeGreaterThanOrEqual(44);
     }
   });
 
@@ -436,13 +436,12 @@ describe('DataBar touch and refit', () => {
     await withTouch(async () => {
       await wide();
       expect(bar().hasAttribute('data-collapsed')).toBe(true);
-      expect(box(el(summary())).height).toBeGreaterThan(43.9);
+      expect(el(summary()).offsetHeight).toBeGreaterThanOrEqual(44);
       // As wide as its words, not the whole column.
       expect(box(el(summary())).width).toBeLessThan(500);
       await summary().click();
-      await settle();
       for (const select of bar().querySelectorAll('select')) {
-        expect(box(select).height).toBeGreaterThan(43.9);
+        expect((select as HTMLElement).offsetHeight).toBeGreaterThanOrEqual(44);
       }
       const popover = bar().querySelector('.masthead-data')!;
       expect(Math.abs(box(popover).left - box(el(summary())).left)).toBeLessThan(3);
