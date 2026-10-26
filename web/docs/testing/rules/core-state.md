@@ -121,7 +121,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:77-111,125-128`
 - **Expected:** `{ position: [-312.44, 95.06, -140.61], target: [1.23, -10.27, 4.5] }` → `cam=-312.4,95.1,-140.6,1.2,-10.3,4.5`. Up `[0, 0.6, 0.8]` round trips. `cam=0,0,300,0,0,0,0,2,0` → up `[0, 1, 0]`. `cam=1,2,3`, `1,2,3,4,5,x`, `0,0,200000,0,0,0`, `1,2,3,4,5,6,0,0,0`, `1,2,3,4,5,6,7,8,9,10` rejected.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/E7.test.ts` (D, via FACADE-26)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-13 · A written camera reads back inside the orbit limit it was written under
 

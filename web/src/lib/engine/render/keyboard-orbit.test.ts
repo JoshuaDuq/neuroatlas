@@ -95,3 +95,9 @@ test('every arrow and zoom key is bound, and nothing else is', () => {
   ]);
   assert.deepEqual(Object.keys(DOLLY_KEYS).sort(), ['+', '-', '=']);
 });
+
+test('RENDER-22 each zoom key steps the distance by a factor of 1.1', () => {
+  assert.equal(DOLLY_KEYS['+'], 1 / 1.1);
+  assert.equal(DOLLY_KEYS['='], 1 / 1.1);
+  assert.equal(DOLLY_KEYS['-'], 1.1);
+});

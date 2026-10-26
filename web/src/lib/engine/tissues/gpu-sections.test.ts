@@ -75,6 +75,47 @@ test('MRI uses smooth solids for every atlas and keeps cap picking and highlight
   sections.dispose();
 });
 
+/** An MRI-coloured cut capped by a smooth envelope, whose face answers for the label voxel under it. */
+function mriEnvelopeCap() {
+  const stage = fixture();
+  const source = new Mesh(
+    new BoxGeometry(0.01, 0.01, 0.01),
+    new MeshBasicMaterial({ side: DoubleSide }),
+  );
+  source.userData = { hemisphere: 'left', boundary: 'pial' };
+  addSolidSources(
+    stage.sections.solids,
+    [source],
+    stage.sections.anatomy,
+    appearance,
+    BANDS.envelope,
+  );
+  stage.model.state.surfaceColor = 'mri';
+  const cut = () => stage.sections.update(centeredFrame('coronal', [0, 0, 0]), 'destrieux');
+  cut();
+  const ray = new Raycaster(new Vector3(0.0002, 0.0002, -0.1), new Vector3(0, 0, 1));
+  return { ...stage, ray, cut };
+}
+
+test('SLICE-30 under MRI colour, a cap over a hidden region’s label is not picked', () => {
+  const { sections, model, region, ray, cut } = mriEnvelopeCap();
+  assert.equal(sections.intersect(ray)?.region.id, region.id);
+  model.state.hiddenRegions = new Set([region.id]);
+  cut();
+  assert.equal(sections.intersect(ray), null);
+  sections.dispose();
+});
+
+test('SLICE-30 under MRI colour with a region isolated, a cap over background is not picked', () => {
+  const { sections, model, region, layer, ray, cut } = mriEnvelopeCap();
+  layer.volume.data.fill(0);
+  assert.notEqual(sections.intersect(ray), null, 'background shows without an isolation');
+  model.state.isolatedRegion = region.id;
+  cut();
+  assert.equal(sections.intersect(ray), null);
+  sections.dispose();
+});
+
 test('MRI cut-only labels highlight and isolate inside smooth envelopes', () => {
   const { sections, model, layer, region } = fixture();
   const source = new Mesh(

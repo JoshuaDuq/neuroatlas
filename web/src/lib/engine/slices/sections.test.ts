@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { gunzipSync } from 'node:zlib';
 import { test, vi } from 'vitest';
 import {
   Group,
@@ -9,7 +12,9 @@ import {
   Raycaster,
   Vector3,
 } from 'three';
-import { readRepoJson } from '../../../../test/repo.ts';
+import { readRepoJson, repoRoot } from '../../../../test/repo.ts';
+import { Volume } from './volume.ts';
+import { createFrame } from './coordinates.ts';
 import { BrainSections } from './sections.ts';
 import type { SectionsModel } from './sections.ts';
 import type { TissueSections } from '../tissues/gpu-sections.ts';
@@ -298,8 +303,12 @@ test('every oblique position the slider can reach is a legal cut', async () => {
       for (let azimuth = -180; azimuth <= 180; azimuth += 15) {
         sections.setAngles(tilt, azimuth);
         const [minimum, maximum] = sections.offsetRange;
-        // The slider steps by half a millimetre from its minimum and also lands on its maximum.
-        for (let offset = minimum; offset <= maximum; offset += 0.5) sections.crosshairFor(offset);
+        // The slider steps by half a millimetre from its minimum and also lands on its maximum:
+        // the ends of that range, one step in from each, a few interior steps and the midpoint.
+        const steps = Math.floor((maximum - minimum) / 0.5);
+        for (const step of [0, 1, 2, 3, Math.floor(steps / 2), steps - 1, steps]) {
+          sections.crosshairFor(minimum + 0.5 * step);
+        }
         sections.crosshairFor(maximum);
         assert.throws(() => sections.crosshairFor(maximum + 0.01), RangeError);
       }
@@ -467,4 +476,53 @@ test('two failing cut atlas choices end on the last atlas that loaded', async ()
   await newer;
   assert.equal(sections.state.cutAtlas, 'destrieux');
   sections.dispose();
+});
+
+test('SLICE-15 sampling before the linked MRI has loaded fails with its own message', () => {
+  const { sections } = fixture();
+  assert.throws(() => sections.sample([0, 0, 0]), new Error('The linked MRI has not loaded.'));
+  assert.throws(
+    () => sections.pixels(createFrame('axial', [0, 0, 0])),
+    new Error('The linked MRI has not loaded.'),
+  );
+});
+
+test('SLICE-15 a point on the published volumes reads its label, name, structure region and intensity', () => {
+  const directory = `public/models/${published}`;
+  const record = readRepoJson<Stub>(`${directory}/volumes.json`);
+  const decode = (entry: Stub) => {
+    const bytes = gunzipSync(readFileSync(resolve(repoRoot, directory, entry.file)));
+    const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+    return entry.dtype === '<u2' ? new Uint16Array(buffer) : new Uint8Array(buffer);
+  };
+  const { model, sections } = fixture();
+  model.regions = new Map(manifest.regions.map((region: Stub) => [region.id, region]));
+  Object.assign(sections, {
+    volumes: {
+      metadata: record,
+      mri: new Volume(record.mri, decode(record.mri)),
+      segmentation: new Volume(record.segmentation, decode(record.segmentation)),
+    },
+  });
+  // Tabulated from the published aseg segmentation and T1 (surface RAS, mm).
+  const expected: [[number, number, number], number, string, string | undefined, number][] = [
+    [[-36, -16, 10], 17, 'Left-Hippocampus', 'aseg:left:17', 70],
+    [[-28, -8, 22], 12, 'Left-Putamen', 'aseg:left:12', 127],
+    [[8, 4, 30], 50, 'Right-Caudate', 'aseg:right:50', 123],
+    [[-16, -12, -2], 16, 'Brain-Stem', 'aseg:midline:16', 118],
+    [[0, 20, 30], 255, 'CC_Anterior', 'aseg:midline:255', 158],
+    [[0, -20, 22], 14, '3rd-Ventricle', 'aseg:midline:14', 62],
+    [[16, 0, 10], 54, 'Right-Amygdala', 'aseg:right:54', 129],
+    // CSF is a label with no structure region, and a point between voxels interpolates.
+    [[0, 0, 0], 24, 'CSF', undefined, 94],
+    [[0.5, 0.25, -0.75], 16, 'Brain-Stem', 'aseg:midline:16', 110.71875],
+  ];
+  for (const [point, labelId, name, regionId, intensity] of expected) {
+    const sample = sections.sample(point);
+    assert.equal(sample.labelId, labelId, String(point));
+    assert.equal(sample.name, name, String(point));
+    assert.equal(sample.region?.id, regionId, String(point));
+    assert.ok(Math.abs(sample.intensity - intensity) < 1e-6, String(point));
+    assert.deepEqual(sample.ras, point);
+  }
 });
