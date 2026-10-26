@@ -83,6 +83,8 @@
   const sentences = $derived.by((): Note[] => {
     const atlasNames = t(lang, 'atlases') as Record<string, string | undefined>;
     const named = ({ id, label }: Surface) => atlasNames[id] ?? label;
+    // Nothing is being searched for: the notes are not shown (navigator.js:745-755).
+    if (!trimmed) return [];
     const result: Note[] = [];
     const capped = found.total - found.rows.length;
     // The hint is for a search that found nothing anywhere; matches elsewhere are the next step.
@@ -112,7 +114,7 @@
         action: { label: copy.switchCutAtlas, run: () => onCutAtlas(other.id) },
       });
     }
-    if (trimmed && here.length === 0) result[0].title = copy.noMatch(trimmed);
+    if (here.length === 0) result[0].title = copy.noMatch(trimmed);
     return result;
   });
 
@@ -133,6 +135,7 @@
       options: here.map((row) => ({
         value: row.region.id,
         disabled: !row.visible && UNREVEALABLE.has(row.reason),
+        current: row.region.id === selectedId,
       })),
     },
   ]);

@@ -9,8 +9,8 @@ Status: fix, standard cited.
 
 ## New behaviour
 
-One `radiogroup` named "Browse" of two radios (U3 `ChoiceGroup`): Tab enters on the checked one, arrows move and choose, Space chooses. Both are disabled while an atlas or detail level loads, as before.
+One `radiogroup` named "Browse" of two radios (U3 `ChoiceGroup`): Tab enters on the checked one, arrows move and choose, Space chooses. While an atlas or detail level loads the group is `aria-disabled` (U3 `ChoiceGroup` `ariaDisabled`): the radios stay focusable and a choice is refused, so focus is not dropped to the page. Legacy set native `disabled` (`internal-anatomy.js:33`), which drops focus when choosing a scope is what starts the load.
 
 ## Standard cited
 
-WAI-ARIA Authoring Practices, Radio Group pattern; decision 6 on #4 (approved); `u3-segmented-controls.md`.
+WAI-ARIA Authoring Practices, Radio Group pattern; decision 6 and decision 34 fix 10 on #4; WCAG 2.2 SC 2.4.3 Focus Order; `u3-segmented-controls.md`.

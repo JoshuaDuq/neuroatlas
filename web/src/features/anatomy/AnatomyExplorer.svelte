@@ -77,6 +77,21 @@
   const searching = $derived(query.trim().length > 0);
   const scope = $derived(inside ? 'system' : 'whole');
 
+  let explorer: HTMLElement;
+  // The pinned field and its ground cover the top of the scroller: what scrolls into view
+  // (the armed result) must stop below them, at any text size.
+  $effect(() => {
+    const box = explorer.querySelector<HTMLElement>('.search-box')!;
+    const measure = () => {
+      const margin = parseFloat(getComputedStyle(box).marginTop);
+      explorer.style.setProperty('--field-clearance', `${box.offsetHeight + 2 * margin}px`);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    return () => observer.disconnect();
+  });
+
   let finder: ReturnType<typeof AnatomySearch>;
   let tree: ReturnType<typeof AnatomyTree>;
 
@@ -93,7 +108,7 @@
   }
 </script>
 
-<div class="explorer" data-searching={searching || undefined}>
+<div class="explorer" bind:this={explorer} data-searching={searching || undefined}>
   <h2 class="visually-hidden">{copy.title}</h2>
   <AnatomySearch
     bind:this={finder}
@@ -118,9 +133,10 @@
           class="tree-scope"
           label={copy.scope}
           options={[
-            { value: 'whole', label: copy.scopeWhole, disabled: switching },
-            { value: 'system', label: copy.scopeSystem, disabled: switching },
+            { value: 'whole', label: copy.scopeWhole },
+            { value: 'system', label: copy.scopeSystem },
           ]}
+          ariaDisabled={switching}
           bind:value={() => scope, () => onScope()}
         />
       </TreeHeader>
@@ -160,6 +176,7 @@
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-gutter: stable;
+      scroll-padding-block-start: var(--field-clearance, 0px);
     }
     /*
      * The field is the head of the panel (layout.css:120-132): on the inset, with a ground behind it

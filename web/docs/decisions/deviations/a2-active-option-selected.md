@@ -9,8 +9,8 @@ Status: fix, standard cited.
 
 ## New behaviour
 
-`aria-selected="true"` is on the armed option only (U6's `SearchCombobox`). The selected region is marked on its row by weight and the accent wash, as before, but no longer in the accessibility tree: an option cannot carry both meanings, and `aria-current` on an option has no support in the screen readers this serves. A spoken cue needs a C1 string (requested on #4: a visually hidden "selected" suffix); until then the sighted mark stays.
+`aria-selected="true"` is on the armed option only (U6's `SearchCombobox`). The option for the selected region carries `aria-current="true"` (U6's `current` flag), beside the weight and accent wash it already had, so the state is in the accessibility tree and is not a second meaning of `aria-selected`.
 
 ## Standard cited
 
-WAI-ARIA Authoring Practices, Combobox pattern, listbox popup: `aria-selected="true"` on the option that is visually indicated as focused (the "Editable Combobox With List Autocomplete" example); decision 34 on #4.
+WAI-ARIA 1.2: `aria-current` is a global state, valid on an `option`; WAI-ARIA Authoring Practices, Combobox pattern, listbox popup: `aria-selected="true"` on the option that is visually indicated as focused (the "Editable Combobox With List Autocomplete" example); decision 34 and decision 40 (`aria-current` for the current row) on #4.

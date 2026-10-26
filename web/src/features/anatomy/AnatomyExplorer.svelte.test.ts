@@ -42,7 +42,7 @@ describe('results', () => {
     await expect.element(optionNamed('Cuneus, left, Occipital')).toBeInTheDocument();
     await expect.element(optionNamed('Cuneus, right, Occipital')).toBeInTheDocument();
     expect(input().getAttribute('aria-expanded')).toBe('true');
-    expect(armed()?.getAttribute('aria-label') ?? armed()?.textContent).toContain('Cuneus, left');
+    expect(armed()?.textContent).toContain('Cuneus, left');
     expect(visible(grid())).toBe(false);
     // Down walks to the other one, and Escape empties the field and brings the tree back.
     await userEvent.keyboard('{ArrowDown}');
@@ -123,7 +123,7 @@ describe('results', () => {
     expect(document.activeElement).toBe(input());
   });
 
-  test('aria-selected marks the armed option only; the selected region is marked on its row', async () => {
+  test('aria-selected marks the armed option only; the selected region is aria-current', async () => {
     mount({ selected: 'd:right:cuneus' });
     await search('cuneus');
     await expect.element(optionNamed(/^Cuneus, right/)).toBeInTheDocument();
@@ -133,16 +133,22 @@ describe('results', () => {
         .map((option) => option.textContent),
     ).toEqual([armed()!.textContent]);
     expect(armed()!.textContent).toContain('left');
-    const marked = options().filter((option) => option.querySelector('.result[data-selected]'));
-    expect(marked.map((option) => option.textContent)).toEqual([
-      expect.stringContaining('Cuneus, right'),
-    ]);
+    expect(
+      options()
+        .filter((option) => option.getAttribute('aria-current') === 'true')
+        .map((option) => option.textContent),
+    ).toEqual([expect.stringContaining('Cuneus, right')]);
   });
 });
 
 describe('the sentences after the list', () => {
   test('nothing found anywhere: the title and a hint, a collapsed field, and both said once', async () => {
     mount();
+    // Browsing and an all-blank field show no sentence.
+    expect(document.querySelector('.empty, .empty-title')).toBeNull();
+    await search(' ');
+    expect(document.querySelector('.empty, .empty-title')).toBeNull();
+    await userEvent.keyboard('{Backspace}');
     await search('zzzz');
     await expect.element(page.getByText('No match for “zzzz”')).toBeInTheDocument();
     await expect
@@ -233,13 +239,20 @@ describe('browsing scope', () => {
     expect(calls).toEqual(['scope']);
   });
 
-  test('both are disabled while an atlas or level loads', async () => {
-    mount();
-    await page.getByRole('button', { name: 'switch' }).click();
-    await expect.element(radios().first()).toBeDisabled();
-    await expect.element(radios().last()).toBeDisabled();
-    await page.getByRole('button', { name: 'switch' }).click();
-    await expect.element(radios().first()).toBeEnabled();
+  test('while a load runs the scope cannot change, but focus stays on its radio', async () => {
+    const calls = mount();
+    const first = radios().first().element() as HTMLElement;
+    first.focus();
+    // A programmatic press: a mouse press would take focus itself.
+    document.getElementById('switch')!.click();
+    await expect.poll(() => first.getAttribute('aria-disabled')).toBe('true');
+    expect(first.hasAttribute('disabled')).toBe(false);
+    expect(document.activeElement).toBe(first);
+    await userEvent.keyboard('{ArrowRight}');
+    expect(calls).toEqual([]);
+    expect(document.activeElement).toBe(radios().last().element());
+    document.getElementById('switch')!.click();
+    await expect.poll(() => first.hasAttribute('aria-disabled')).toBe(false);
   });
 
   test('searching puts the scope, the system picker and the tree away, and a French panel names it in French', async () => {
@@ -377,5 +390,22 @@ describe('layout and accessibility', () => {
     const box = document.querySelector('.search-box')!.getBoundingClientRect();
     expect(box.top).toBeGreaterThanOrEqual(scroller.getBoundingClientRect().top);
     expect(box.top).toBeLessThan(scroller.getBoundingClientRect().top + 24);
+  });
+
+  test('the armed result is never under the pinned field, after typing or arrowing back to the first', async () => {
+    mount({ crowd: 60 });
+    await search('v1');
+    await expect.poll(() => options().length).toBe(50);
+    const covered = () => {
+      const box = armed()!.getBoundingClientRect();
+      // The title line of the armed row is what the reader points at.
+      return !armed()!.contains(document.elementFromPoint(box.left + 40, box.top + 6));
+    };
+    await expect.poll(covered).toBe(false);
+    await userEvent.keyboard('{ArrowDown>20/}');
+    await expect.poll(covered).toBe(false);
+    await userEvent.keyboard('{ArrowUp>20/}');
+    expect(armed()).toBe(options()[0]);
+    await expect.poll(covered).toBe(false);
   });
 });
