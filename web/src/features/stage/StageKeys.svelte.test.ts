@@ -11,7 +11,7 @@ import { createStageLayout } from '../../lib/state/stage-layout.svelte.ts';
 import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import Fixture from './stage-keys-test-support.svelte';
-import type { ColoredNetworks } from './stage-keys.ts';
+import type { ColoredNetworks, KeyPlate } from './stage-keys.ts';
 
 /** Waits for what a `ResizeObserver` delivers: it reports before the next paint, which a loaded machine can delay. */
 const eventually = <T>(check: () => T | Promise<T>) => vi.waitFor(check, { timeout: 5000 });
@@ -85,6 +85,7 @@ type Live = {
 
 let stage: StageLayout;
 let live: Live;
+let handle: { model?: () => (KeyPlate & { open: boolean })[] };
 const onFunctionalLevel = vi.fn();
 const onPaintPick = vi.fn();
 const onDock = vi.fn();
@@ -115,7 +116,8 @@ function mount(
     ...overrides,
   });
   live = reactive;
-  return render(Fixture, { stage, live, onFunctionalLevel, onPaintPick, width, height });
+  handle = {};
+  return render(Fixture, { stage, live, onFunctionalLevel, onPaintPick, width, height, handle });
 }
 
 const find = <T extends HTMLElement = HTMLElement>(selector: string) =>
@@ -230,6 +232,25 @@ describe('folding', () => {
     await expect.element(toggle('CAB-NP networks')).toHaveAttribute('aria-expanded', 'true');
     live.lang = 'fr';
     await expect.element(toggle('Réseaux CAB-NP')).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('model() reports each plate’s fold, crowd-folded or reader-folded, and the functional level', async () => {
+    mount({ surfaceColor: 'cab-np' }, { width: 900 });
+    const model = () => handle.model!();
+    expect(model().map(({ name, open }) => [name, open])).toEqual([['network', false]]);
+    await toggle('CAB-NP networks').click();
+    expect(model()[0]!.open).toBe(true);
+    await toggle('CAB-NP networks').click();
+    expect(model()[0]!.open).toBe(false);
+    live.surfaceColor = 'network';
+    await expect.element(toggle('Yeo 7 networks')).toBeVisible();
+    expect(model()[0]).toMatchObject({ open: true, level: null });
+    await toggle('Yeo 7 networks').click();
+    expect(model()[0]!.open).toBe(false);
+    live.surfaceColor = 'functional';
+    live.functionalLevel = 'sections';
+    await expect.element(toggle('Functional divisions')).toBeVisible();
+    expect(model()[0]).toMatchObject({ name: 'functional', open: true, level: 'sections' });
   });
 
   test('a resize does not refold a key the stage has already drawn', async () => {
@@ -547,11 +568,15 @@ describe('targets, reflow and the stage’s colours', () => {
     const [a, b] = boxes.map(centre) as [{ x: number; y: number }, { x: number; y: number }];
     expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(24);
     const toggle = find('.stage-key-toggle').getBoundingClientRect();
-    for (const c of [a, b]) {
-      const nearestX = Math.min(Math.max(c.x, toggle.left), toggle.right);
-      const nearestY = Math.min(Math.max(c.y, toggle.top), toggle.bottom);
-      expect(Math.hypot(c.x - nearestX, c.y - nearestY)).toBeGreaterThanOrEqual(12);
-    }
+    const gap = (c: { x: number; y: number }, box: DOMRect) =>
+      Math.hypot(
+        Math.max(box.left - c.x, 0, c.x - box.right),
+        Math.max(box.top - c.y, 0, c.y - box.bottom),
+      );
+    expect(gap(a, toggle)).toBeGreaterThanOrEqual(12);
+    expect(gap(b, toggle)).toBeGreaterThanOrEqual(12);
+    expect(gap(a, boxes[1]!)).toBeGreaterThanOrEqual(12);
+    expect(gap(b, boxes[0]!)).toBeGreaterThanOrEqual(12);
   });
 
   test('a coarse pointer makes the level and the paint rows 44 px', async () => {

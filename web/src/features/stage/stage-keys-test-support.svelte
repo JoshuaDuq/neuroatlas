@@ -36,7 +36,11 @@
     /** The stage's size in CSS pixels. */
     width?: number;
     height?: number;
+    /** Receives `keys.model`, which the snapshot reads (G6). */
+    handle?: { model?: StageKeys['model'] };
   }
+
+  let keys: StageKeys;
 
   let {
     stage,
@@ -45,7 +49,12 @@
     onPaintPick = () => {},
     width = 1200,
     height = 800,
+    handle,
   }: Props = $props();
+
+  $effect(() => {
+    if (handle) handle.model = () => keys.model();
+  });
 </script>
 
 <main
@@ -62,6 +71,7 @@
 >
   <canvas id="stage-canvas" tabindex="0" aria-label="Brain model"></canvas>
   <StageKeys
+    bind:this={keys}
     {stage}
     media={live.media}
     lang={live.lang}
