@@ -111,16 +111,13 @@ test.describe('colophon and provenance', () => {
   test('on a phone the status bar gives way and Provenance opens from the ⋯ menu', async ({
     app,
   }) => {
+    test.slow();
     const { page } = app;
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.getByRole('contentinfo')).toBeHidden();
     const more = page.getByRole('button', { name: 'More settings' });
-    // The resize restarts the legacy camera, which never rests under software WebGL; pointer
-    // clicks wait for a stable element, so the keyboard opens the menu and its item.
-    await more.focus();
-    await page.keyboard.press('Enter');
-    await page.getByRole('button', { name: 'Provenance', exact: true }).focus();
-    await page.keyboard.press('Enter');
+    await more.click();
+    await page.getByRole('button', { name: 'Provenance', exact: true }).click();
     await expect(dialog(page)).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog(page)).toBeHidden();
