@@ -9,7 +9,7 @@ A finding whose colour no drawn region carries gets `li[data-absent]`: its swatc
 
 ## New behaviour
 
-The row's name ends with visually hidden text, "Not shown in this view" / "Absent de cette vue". The outline and faint ink stay. The words are a local table marked `TODO(C1)` until C1 adds the string (requested on #4).
+The row's name ends with visually hidden text, "Not shown in this view" / "Absent de cette vue". The outline and faint ink stay. The words are `viewport.keyAbsent` in i18n.
 
 ## Standard cited
 

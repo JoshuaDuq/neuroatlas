@@ -23,6 +23,15 @@ export const en = {
       'The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position.',
     grid: (dims: readonly number[], spacing: string) =>
       `${dims.join(' × ')} source voxels · ${spacing} spacing`,
+    // T2's additions (decision 41 on #4, deviations t2-*).
+    ready: 'Reference MRI ready.',
+    viewer: 'MRI viewer',
+    voxelName: (axis: string) => `Voxel ${axis}`,
+    range: (max: number) => `0 to ${max}`,
+    moved: (voxel: readonly number[]) => `Crosshair moved to voxel ${voxel.join(', ')}.`,
+    hintKeys: 'Page Up and Page Down step through slices.',
+    hintClose: 'M closes this view.',
+    hintTouch: 'Tap a slice to position the crosshair, or enter a voxel below.',
   },
   tissueNames: {
     Unknown: 'Unlabelled',
@@ -59,6 +68,14 @@ export const fr: typeof en = {
     outside: 'Le réticule de l’atlas est hors du champ de cette image ; l’IRM garde sa position.',
     grid: (dims: readonly number[], spacing: string) =>
       `${dims.join(' × ')} voxels source · espacement de ${spacing}`,
+    ready: 'IRM de référence prête.',
+    viewer: 'Visionneuse IRM',
+    voxelName: (axis: string) => `Voxel ${axis}`,
+    range: (max: number) => `de 0 à ${max}`,
+    moved: (voxel: readonly number[]) => `Réticule déplacé au voxel ${voxel.join(', ')}.`,
+    hintKeys: 'Page précédente et Page suivante changent de coupe.',
+    hintClose: 'M ferme cette vue.',
+    hintTouch: 'Toucher une coupe pour placer le réticule, ou saisir un voxel ci-dessous.',
   },
   tissueNames: {
     Unknown: 'Non étiqueté',
