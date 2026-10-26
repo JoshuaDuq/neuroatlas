@@ -566,7 +566,8 @@ describe('Tooltip', () => {
       await userEvent.tab();
     }
     expect(document.activeElement).toBe(el('Snapshot'));
-    await vi.waitFor(() => expect(tooltip()?.textContent).toBe('Save a PNG'));
+    // No timer is advanced: only the frames it takes to draw.
+    await frames(() => tooltip()?.textContent === 'Save a PNG', 'focus shows it at once');
     await userEvent.keyboard('{Escape}');
     await vi.waitFor(() => expect(tooltip()).toBeNull());
   });

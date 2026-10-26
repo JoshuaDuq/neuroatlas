@@ -4,7 +4,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
-import { expectAxeClean, expectAxeCleanHere, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import { newWorld, type World } from '../workspace/workspace-test-world.ts';
 import Fixture from './sheet-test-support.svelte';
@@ -781,7 +781,9 @@ describe('targets and contrast', () => {
 
   test('axe finds nothing in French', async () => {
     await mount(PHONE, { lang: 'fr', selection: SELECTION });
-    await expectAxeCleanHere();
+    await expectAxeCleanOnce('light', 390);
+    // expectAxeCleanOnce leaves the window at 1280 px.
+    requested = null;
   });
 });
 

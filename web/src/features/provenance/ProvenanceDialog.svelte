@@ -23,6 +23,7 @@
     type ProvenanceRow,
   } from '../../lib/core/panels/provenance.ts';
   import Dialog from '../../lib/ui/Dialog.svelte';
+  import { iconGraphic } from '../../lib/ui/IconButton.svelte';
 
   interface Props {
     open?: boolean;
@@ -90,7 +91,9 @@
       class={['provenance-link', item.link.mono && 'code']}
       href={item.link.href}
       target="_blank"
-      rel="noreferrer">{item.link.text}</a
+      rel="noreferrer"
+      >{item.link.text}<span class="visually-hidden">{` ${t(lang, 'link').newTab}`}</span
+      >{@render iconGraphic('external-link')}</a
     >
   {/if}
 {/snippet}
@@ -182,6 +185,10 @@
       overflow-wrap: anywhere;
       /* A focused link scrolls clear of the sticky header (WCAG 2.4.11). */
       scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top) + var(--space-2));
+    }
+    .provenance-link :global(.control-icon) {
+      margin-left: var(--space-1);
+      vertical-align: -1px;
     }
     .provenance-use {
       margin: var(--space-4) 0 0;

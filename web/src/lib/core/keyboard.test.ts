@@ -9,6 +9,11 @@ const element = ({ matches = false, inside = false, kind = 'button' } = {}) => (
 });
 
 describe('keyboard', () => {
+  it('STATE-34 character keys are one character long, counting an emoji as one', () => {
+    for (const key of ['é', '😀']) assert.equal(isCharacterKey(key), true, key);
+    for (const key of ['Dead', 5, null]) assert.equal(isCharacterKey(key), false, String(key));
+  });
+
   it('character keys are the one-character ones', () => {
     for (const key of ['h', 'H', '0', '6', '?', '/', '+']) {
       assert.equal(isCharacterKey(key), true, key);

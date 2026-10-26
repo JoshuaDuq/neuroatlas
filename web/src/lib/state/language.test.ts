@@ -5,12 +5,27 @@ import { createLanguage, startLanguage } from './language.svelte.ts';
 import { blockedStorage, fakeStorage } from './test-support.ts';
 
 describe('startLanguage', () => {
-  test('the start language is the link’s, else the saved one, else English', () => {
+  test('STORE-22: the start language is the link’s, else the saved one, else English', () => {
     expect(startLanguage('fr', 'en')).toBe('fr');
     expect(startLanguage(undefined, 'fr')).toBe('fr');
     expect(startLanguage(undefined, null)).toBe('en');
     expect(startLanguage('en', 'fr')).toBe('en');
     expect(startLanguage(undefined, 'de')).toBe('en');
+  });
+});
+
+describe('STORE-22: every saved value with and without a link language', () => {
+  test.each([
+    [undefined, null, 'en'],
+    [undefined, 'en', 'en'],
+    [undefined, 'fr', 'fr'],
+    [undefined, 'de', 'en'],
+    ['fr', null, 'fr'],
+    ['fr', 'en', 'fr'],
+    ['en', 'fr', 'en'],
+    ['en', 'de', 'en'],
+  ] as const)('link %j, saved %j starts in %s', (link, saved, expected) => {
+    expect(startLanguage(link, saved)).toBe(expected);
   });
 });
 

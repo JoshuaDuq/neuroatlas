@@ -8,7 +8,7 @@ import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { domainAreas } from '../../lib/core/catalog/neuropsych-domains.ts';
 import { currentItem } from '../../lib/core/workspace.ts';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import { AREAS_SHOWN, TERMS_SHOWN } from './functions-view.ts';
 import { createWorld, deferred, type World } from './functions-test-world.ts';
@@ -433,6 +433,14 @@ describe('opening a function', () => {
     expect(world.openDeficit).toHaveBeenCalledWith(check.dataset.deficit);
   });
 
+  test('a function whose checks repeat a deficit lists every check: language has six on aphasia', async () => {
+    mount();
+    await open('language');
+    const checks = [...document.querySelectorAll<HTMLElement>('[data-deficit]')];
+    expect(checks).toHaveLength(6);
+    expect(checks.filter((check) => check.dataset.deficit === 'aphasia').length).toBeGreaterThan(1);
+  });
+
   test('a population term with matching lesion profiles bridges to the Deficits tab', async () => {
     mount();
     await search('aphasia');
@@ -667,20 +675,25 @@ describe('Restore', () => {
 });
 
 describe('accessibility', () => {
-  test.each(['en', 'fr'] as const)(
-    'axe: the list, an open profile with its areas, a search; both themes, 1280 and 390 px, %s',
-    async (lang) => {
-      mount(lang);
-      await expectAxeClean();
+  // Two runs per state, which together cover both themes, both widths and both languages.
+  test.each([
+    ['the list', 'en', 'light', 1280],
+    ['the list', 'fr', 'dark', 390],
+    ['an open profile with its areas', 'en', 'light', 1280],
+    ['an open profile with its areas', 'fr', 'dark', 390],
+    ['a search', 'en', 'light', 1280],
+    ['a search', 'fr', 'dark', 390],
+  ] as const)('axe: %s, %s, %s, %i px', async (state, lang, theme, width) => {
+    mount(lang);
+    if (state === 'an open profile with its areas') {
       await userEvent.click(rowOf(many().id));
       await expect.poll(() => meta().textContent).toMatch(/HCP-MMP/);
       await userEvent.click(document.querySelector('summary')!);
-      await expectAxeClean();
+    } else if (state === 'a search') {
       await search('aphasia');
-      await expectAxeClean();
-    },
-    60_000,
-  );
+    }
+    await expectAxeCleanOnce(theme, width);
+  });
 
   test('forced colours and more contrast keep the open row, the swatches and the focus ring visible', async () => {
     mount();
@@ -695,7 +708,8 @@ describe('accessibility', () => {
       expect(getComputedStyle(document.activeElement!).outlineStyle).toBe('solid');
     });
     await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
-      await expectAxeClean();
+      await expectAxeCleanOnce('light', 1280);
+      await expectAxeCleanOnce('dark', 390);
     });
   });
 

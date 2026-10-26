@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import '../../app/layout.css';
 import Fixture from './provenance-test-support.svelte';
@@ -246,15 +246,44 @@ describe('Provenance dialog', () => {
     }
   });
 
-  test('axe is clean with the dialog open, light and dark, desktop and phone, English and French', async () => {
-    const screen = await render(Fixture, props());
-    await openFromKeyboard();
-    await expectAxeClean();
-    await screen.rerender(props({ lang: 'fr' }));
-    await expectAxeClean();
-    await screen.rerender(props({ reference }));
-    await expectAxeClean();
-  });
+  test.each([
+    ['en', '(opens in a new tab)'],
+    ['fr', '(s’ouvre dans un nouvel onglet)'],
+  ] as const)(
+    'every link opens a new tab and says so, with the external-link icon, in %s',
+    async (lang, cue) => {
+      render(Fixture, props({ lang }));
+      await openFromKeyboard();
+      expect(links().length).toBeGreaterThan(0);
+      for (const link of links()) {
+        expect(link.target, link.href).toBe('_blank');
+        expect(link.rel).toBe('noreferrer');
+        const text = link.querySelector('.visually-hidden')!.previousSibling!.textContent!;
+        expect(link.textContent!.trim(), link.href).toBe(`${text} ${cue}`);
+        expect(link.querySelector('svg.control-icon'), link.href).not.toBeNull();
+      }
+      const first = links()[0]!;
+      await expect
+        .element(page.getByRole('link', { name: first.textContent!.trim() }).first())
+        .toBeVisible();
+    },
+  );
+
+  // Two runs per state, which together cover both themes, both widths and both languages.
+  // The keyboard open is instant, so there is no animation to wait out.
+  test.each([
+    ['the anatomy', null, 'en', 'light', 1280],
+    ['the anatomy', null, 'fr', 'dark', 390],
+    ['a tract reference', reference, 'en', 'light', 1280],
+    ['a tract reference', reference, 'fr', 'dark', 390],
+  ] as const)(
+    'axe is clean with the dialog open on %s, %s, %s, %i px',
+    async (_state, shown, lang, theme, width) => {
+      render(Fixture, props({ lang, reference: shown }));
+      await openFromKeyboard();
+      await expectAxeCleanOnce(theme, width);
+    },
+  );
 
   test('an item that is only a link lists it before its note', async () => {
     render(Fixture, props());
@@ -269,7 +298,7 @@ describe('Provenance dialog', () => {
     ] as const) {
       const children = [...item!.children];
       expect(children[0]!.tagName).toBe('A');
-      expect(children[0]!.textContent).toBe(name);
+      expect(children[0]!.textContent).toBe(`${name} (opens in a new tab)`);
       expect(children[1]!.className).toContain('provenance-note');
     }
   });

@@ -422,3 +422,205 @@ describe('revealing a region', () => {
     expect(cameraMethods()).toEqual(['frameRegion']);
   });
 });
+
+const ASEG_HIPPOCAMPUS = 'aseg:left:17';
+const NEXTBRAIN_CAUDATE_HEAD = 'nextbrain:left:48';
+const CUT_ONLY = 'wmparc:left:3001';
+const MRI = { fieldOfView: 256, size: 4, windowCenter: 100, windowWidth: 200 };
+const CAB_NP = { atlas: 'hcp-mmp', regions: {} };
+const FUNCTIONAL = { atlas: 'hcp-mmp' };
+
+describe('the six reveal reasons beyond the first two (CTRL-18)', () => {
+  const framedRegion = () => cameraCalls().filter((call) => call.method === 'frameRegion');
+
+  test('CTRL-18 cortex-hidden: the cortex is shown and opaque, then the region is selected and framed', async () => {
+    const { anatomy } = build();
+    engine.model.setCortexOpacity(0.4);
+    engine.model.setCortexVisible(false);
+    await anatomy.revealRegion('cortex-hidden', SULCUS);
+    expect(engine.model.settings).toMatchObject({ cortexVisible: true, cortexOpacity: 1 });
+    expect(engine.model.state.selectedRegion?.id).toBe(SULCUS);
+    expect(cameraMethods()).toEqual(['frameRegion']);
+  });
+
+  test('CTRL-18 internal-hidden: the internal structures are shown, then the region is selected and framed', async () => {
+    const { anatomy } = build();
+    await engine.model.setDetail('aseg');
+    engine.model.setInternalVisible(false);
+    await anatomy.revealRegion('internal-hidden', ASEG_HIPPOCAMPUS);
+    expect(engine.model.settings.internalVisible).toBe(true);
+    expect(engine.model.state.selectedRegion?.id).toBe(ASEG_HIPPOCAMPUS);
+    expect(framedRegion().map((call) => call.args[0])).toEqual([ASEG_HIPPOCAMPUS]);
+  });
+
+  test('CTRL-18 spinal-cord-hidden: the cord is shown, then selected and framed', async () => {
+    const { anatomy } = build();
+    await anatomy.revealRegion('spinal-cord-hidden', CORD);
+    expect(engine.model.settings.spinalCordVisible).toBe(true);
+    expect(engine.model.state.selectedRegion?.id).toBe(CORD);
+    expect(framedRegion().map((call) => call.args[0])).toEqual([CORD]);
+  });
+
+  test('CTRL-18 isolated: the isolation is released, then the other region is selected and framed', async () => {
+    const { anatomy } = build();
+    anatomy.selectRegion(SULCUS);
+    anatomy.isolateSelection();
+    expect(engine.model.settings.isolatedRegion).toBe(SULCUS);
+    await anatomy.revealRegion('isolated', 'destrieux:left:38');
+    expect(engine.model.settings.isolatedRegion).toBeNull();
+    expect(engine.model.state.selectedRegion?.id).toBe('destrieux:left:38');
+    expect(framedRegion().at(-1)!.args[0]).toBe('destrieux:left:38');
+  });
+
+  test('CTRL-18 no-mri: the tissue colouring replaces the MRI one, then the region is selected', async () => {
+    engine = createFakeEngine({ manifest: published, mri: MRI });
+    const { anatomy } = build();
+    await engine.sections.setSurfaceColor('mri');
+    expect(engine.model.settings.surfaceColor).toBe('mri');
+    await anatomy.revealRegion('no-mri', CORD);
+    expect(engine.model.settings.surfaceColor).toBe('tissue');
+    expect(engine.model.state.selectedRegion?.id).toBe(CORD);
+    expect(framedRegion().at(-1)!.args[0]).toBe(CORD);
+  });
+
+  test("CTRL-18 other-detail: the region's own detail level is loaded, then the region is selected", async () => {
+    const { anatomy } = build();
+    await engine.model.setDetail('aseg');
+    await anatomy.revealRegion('other-detail', NEXTBRAIN_CAUDATE_HEAD);
+    expect(engine.model.settings.detail).toBe('nextbrain');
+    expect(engine.model.state.selectedRegion?.id).toBe(NEXTBRAIN_CAUDATE_HEAD);
+    expect(framedRegion().map((call) => call.args[0])).toEqual([NEXTBRAIN_CAUDATE_HEAD]);
+  });
+
+  test('CTRL-18 other-system: the system filter is cleared, then the region is selected', async () => {
+    const { anatomy } = build();
+    engine.model.setInternalSystem('Basal ganglia');
+    await anatomy.revealRegion('other-system', 'learning:left:amygdala');
+    expect(engine.model.settings.internalSystem).toBeNull();
+    expect(engine.model.state.selectedRegion?.id).toBe('learning:left:amygdala');
+    expect(framedRegion().map((call) => call.args[0])).toEqual(['learning:left:amygdala']);
+  });
+});
+
+describe('a cut-only region (CTRL-19)', () => {
+  test.each([
+    { centroid: [10, -20, 5], expected: -20 },
+    { centroid: [-60, 0, 90], expected: 0 },
+  ] as const)(
+    'CTRL-19 reveal no-cut opens a coronal cut through the centroid $centroid at offset $expected',
+    async ({ centroid, expected }) => {
+      const { anatomy } = build();
+      vi.spyOn(engine.model, 'centroidOf').mockReturnValue([...centroid]);
+      await anatomy.revealRegion('no-cut', CUT_ONLY);
+      expect(engine.sections.state.mode).toBe('coronal');
+      expect(engine.sections.offset).toBe(expected);
+      expect(engine.model.state.selectedRegion?.id).toBe(CUT_ONLY);
+    },
+  );
+
+  test('CTRL-19 the offset is clamped to the cut range', async () => {
+    const { anatomy } = build();
+    const [minimum, maximum] = engine.sections.offsetRange;
+    expect([minimum, maximum]).toEqual([-128, 128]);
+    vi.spyOn(engine.model, 'centroidOf').mockReturnValue([0, -500, 0]);
+    await anatomy.revealRegion('no-cut', CUT_ONLY);
+    expect(engine.sections.offset).toBe(minimum);
+  });
+
+  test('CTRL-19 a centroid that is not finite fails the reveal with a notice', async () => {
+    const { anatomy, session } = build();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(engine.model, 'centroidOf').mockReturnValue([0, Number.NaN, 0]);
+    await anatomy.revealRegion('no-cut', CUT_ONLY);
+    expect(session.state.notice).not.toBeNull();
+    expect(engine.model.state.selectedRegion).toBeNull();
+  });
+});
+
+describe('the spinal cord and reset', () => {
+  test('CTRL-11 hiding the cord while a cord region is selected clears the selection and says so', async () => {
+    const { anatomy, session } = build();
+    await anatomy.setSpinalCordVisible(true);
+    anatomy.selectRegion(CORD);
+    await anatomy.setSpinalCordVisible(false);
+    expect(engine.model.state.selectedRegion).toBeNull();
+    expect(session.state.notice?.text).toBe('Selection cleared — Spinal cord is no longer shown.');
+  });
+
+  test('CTRL-12 a command still loading when Reset is pressed applies nothing after it', async () => {
+    const { anatomy } = build();
+    await engine.model.setDetail('aseg');
+    const entering = anatomy.toggleInternalAnatomy();
+    anatomy.reset();
+    await entering;
+    expect(engine.model.settings).toMatchObject({ cortexVisible: true, hemisphere: 'both' });
+    expect(cameraMethods()).not.toContain('frameInternal');
+  });
+});
+
+describe('the doors into internal anatomy and out again', () => {
+  test('CTRL-14 leaving puts back the detail level that was on screen, aseg included', async () => {
+    const { anatomy } = build();
+    await engine.model.setDetail('aseg');
+    await anatomy.toggleInternalAnatomy();
+    expect(engine.model.settings.detail).toBe(engine.model.defaultDetail);
+    await anatomy.toggleInternalAnatomy();
+    expect(engine.model.settings.detail).toBe('aseg');
+  });
+
+  test('CTRL-14 a detail level chosen while inside is kept on leaving', async () => {
+    const { anatomy, scene } = build();
+    await engine.model.setDetail('aseg');
+    await anatomy.toggleInternalAnatomy();
+    await scene.chooseDetail('nextbrain');
+    await anatomy.toggleInternalAnatomy();
+    expect(engine.model.settings.detail).toBe('nextbrain');
+  });
+
+  test('CTRL-15 leaving says why the CAB-NP colouring is gone after an atlas change inside', async () => {
+    engine = createFakeEngine({
+      manifest: published,
+      mri: MRI,
+      cabNp: CAB_NP,
+      functionalRegions: FUNCTIONAL,
+    });
+    const { anatomy, scene, session } = build();
+    await scene.chooseAtlas('hcp-mmp');
+    await scene.chooseSurfaceColor('cab-np');
+    expect(engine.model.settings.surfaceColor).toBe('cab-np');
+    await anatomy.toggleInternalAnatomy();
+    await scene.chooseAtlas('destrieux');
+    await anatomy.toggleInternalAnatomy();
+    expect(engine.model.settings.surfaceColor).toBe('atlas');
+    expect(session.state.notice?.text).toBe(
+      'CAB-NP colours HCP-MMP areas only, so Destrieux shows its own region colours.',
+    );
+  });
+
+  test('CTRL-16 the second door records the detail on screen, so leaving restores it', async () => {
+    const { anatomy, scene } = build();
+    await engine.model.setDetail('aseg');
+    await anatomy.chooseInternalSystem('Basal ganglia');
+    await scene.chooseDetail('learning');
+    await anatomy.toggleInternalAnatomy();
+    expect(engine.model.settings).toMatchObject({
+      cortexVisible: true,
+      internalSystem: null,
+      detail: 'learning',
+    });
+  });
+
+  test('CTRL-17 leaving is overtaken by the cord command: the detail is not restored over it', async () => {
+    const { anatomy } = build();
+    await engine.model.setDetail('aseg');
+    await anatomy.toggleInternalAnatomy();
+    expect(engine.model.settings.detail).toBe(engine.model.defaultDetail);
+    const framed = cameraCalls().length;
+    const leaving = anatomy.toggleInternalAnatomy();
+    const cord = anatomy.setSpinalCordVisible(true);
+    await Promise.all([leaving, cord]);
+    expect(cameraMethods().slice(framed)).toEqual(['frameWhole']);
+    expect(engine.model.settings.detail).toBe(engine.model.defaultDetail);
+    expect(engine.model.settings.spinalCordVisible).toBe(true);
+  });
+});

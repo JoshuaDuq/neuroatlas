@@ -11,7 +11,7 @@ import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import type { Language } from '../../lib/types/index.ts';
-import { expectAxeClean, expectAxeCleanHere, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import TractsExplorer from './TractsExplorer.svelte';
 
@@ -255,7 +255,7 @@ describe('the search', () => {
     vi.advanceTimersByTime(499);
     expect(region.textContent).toBe('');
     vi.advanceTimersByTime(1);
-    await expect.poll(() => region.textContent).toBe('2 tract bundles');
+    expect(region.textContent).toBe('2 tract bundles');
     await search().fill('zzz');
     vi.advanceTimersByTime(500);
     await expect.poll(() => region.textContent).toBe('No match for “zzz”. Try another tract name.');
@@ -618,7 +618,7 @@ describe('targets and media', () => {
       await page.getByText(lang === 'en' ? 'Tract display' : 'Affichage des faisceaux').click();
       await page.getByText(lang === 'en' ? 'About this data' : 'À propos de ces données').click();
       // The full theme and width matrix once, in English; French is the same layout, so once.
-      await (lang === 'en' ? expectAxeClean() : expectAxeCleanHere());
+      await (lang === 'en' ? expectAxeClean() : expectAxeCleanOnce('light', 1280));
       view.unmount();
     }
   });

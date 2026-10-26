@@ -244,12 +244,12 @@ describe('SearchCombobox', () => {
     vi.advanceTimersByTime(499);
     expect(region.textContent).toBe('');
     vi.advanceTimersByTime(1);
-    await expect.poll(() => region.textContent).toBe('3 matches.');
+    expect(region.textContent).toBe('3 matches.');
     await userEvent.keyboard('{Escape}');
     region.textContent = '';
     await type('h');
     vi.advanceTimersByTime(500);
-    await expect.poll(() => region.textContent).toBe('3 matches.');
+    expect(region.textContent).toBe('3 matches.');
   });
 
   test('no matches: the field is collapsed and the note is shown', async () => {

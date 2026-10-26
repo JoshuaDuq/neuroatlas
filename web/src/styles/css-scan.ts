@@ -1,4 +1,4 @@
-// A small CSS block scanner for the stylesheet invariant tests (stylesheets.test.ts, parity/u1.test.ts).
+// A small CSS block scanner for the stylesheet invariant tests (stylesheets.test.ts, tokens.test.ts, contrast.test.ts).
 // It understands nesting by braces only: rules, at-rules, @layer blocks and statements such as @import.
 
 export interface CssNode {

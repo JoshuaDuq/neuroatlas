@@ -37,3 +37,39 @@ describe('trackDrag', () => {
     expect(ended).toBe(1);
   });
 });
+
+describe('UI-25: over every pair of events on two sliders', () => {
+  const events = ['input', 'change', 'pointerup', 'pointercancel', 'blur', 'focus', 'click'];
+  const ENDINGS = new Set(['change', 'pointerup', 'pointercancel', 'blur']);
+
+  test('dragging is true exactly when the latest start or end event was input; focus and click change nothing', () => {
+    for (const first of events) {
+      for (const second of events) {
+        const [a, b] = [new EventTarget(), new EventTarget()];
+        const drag = trackDrag([a, b], () => {});
+        a.dispatchEvent(new Event(first));
+        b.dispatchEvent(new Event(second));
+        const latest = [first, second]
+          .filter((event) => event === 'input' || ENDINGS.has(event))
+          .at(-1);
+        expect(drag.dragging, `${first} then ${second}`).toBe(latest === 'input');
+      }
+    }
+  });
+
+  test('focus and click neither start nor end a drag', () => {
+    const slider = new EventTarget();
+    let ended = 0;
+    const drag = trackDrag([slider], () => {
+      ended += 1;
+    });
+    slider.dispatchEvent(new Event('focus'));
+    slider.dispatchEvent(new Event('click'));
+    expect(drag.dragging).toBe(false);
+    slider.dispatchEvent(new Event('input'));
+    slider.dispatchEvent(new Event('focus'));
+    slider.dispatchEvent(new Event('click'));
+    expect(drag.dragging).toBe(true);
+    expect(ended).toBe(0);
+  });
+});

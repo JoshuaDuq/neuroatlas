@@ -8,4 +8,4 @@
 
 **Standard:** the Unicode Standard, ch. 3, conformance clause C6 (processes must not treat canonically equivalent sequences as distinct), with UAX #15 (Normalization Forms).
 
-**Tests:** `panels/navigator.test.ts` (decomposed query, decomposed name, both); `web/parity/C5.test.ts` compares with the legacy algorithm on composed input only.
+**Tests:** `panels/navigator.test.ts` (decomposed query, decomposed name, both). The legacy comparison on composed input (`web/parity/C5.test.ts`) is gone; the fixed cases above are the record.

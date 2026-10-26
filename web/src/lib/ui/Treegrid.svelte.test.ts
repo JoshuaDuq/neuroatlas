@@ -187,7 +187,10 @@ describe('type-ahead', () => {
     mount();
     focus('frontal');
     await press('{ArrowRight}');
-    await press('po');
+    await press('p');
+    expect(active()).toBe(row('precentral'));
+    vi.advanceTimersByTime(499);
+    await press('o');
     expect(active()).toBe(row('postcentral'));
     pause();
     await press('l');

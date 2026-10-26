@@ -16,7 +16,7 @@ async function open(
 }
 
 describe('showing a landmark', () => {
-  test('the model accepts a hidden landmark only after the tour reveals it', async () => {
+  test('LESSON-07 the model accepts a hidden landmark only after the tour reveals it', async () => {
     const scene = createScene();
     const { model } = scene.engine;
     model.setInternalVisible(false);
@@ -27,7 +27,7 @@ describe('showing a landmark', () => {
     assert.equal(model.state.internalVisible, true);
   });
 
-  test('a deep cerebellar lesson uncovers the nucleus and returning restores every covering lobule', async () => {
+  test('LESSON-07 a deep cerebellar lesson uncovers the nucleus and returning restores every covering lobule', async () => {
     const scene = createScene();
     const { model } = scene.engine;
     const [cortex, dentate] = scene.circuits.get('cerebellar').steps;
@@ -41,15 +41,17 @@ describe('showing a landmark', () => {
     for (const id of dentate!.covering_regions!) assert.ok(!model.state.hiddenRegions.has(id), id);
   });
 
-  test('a lesson shows its landmark’s own side, and both for a midline one', async () => {
+  test('LESSON-07 a lesson shows its landmark’s own side, and both for a midline one', async () => {
     const scene = createScene();
     await open(scene, { region: 'learning:left:fornix', restores: [] });
     assert.equal(scene.engine.model.state.hemisphere, 'left');
     await open(scene, { region: 'learning:midline:optic-chiasm', restores: [] });
     assert.equal(scene.engine.model.state.hemisphere, 'both');
+    await open(scene, { region: 'learning:right:caudate', restores: [] });
+    assert.equal(scene.engine.model.state.hemisphere, 'right');
   });
 
-  test('an unknown landmark region is refused', () => {
+  test('LESSON-07 an unknown landmark region is refused', () => {
     const scene = createScene();
     assert.throws(
       () => showCircuitLandmark(scene.engine.model, { region: 'nowhere', restores: [] }),
@@ -75,9 +77,14 @@ describe('preparing the MRI', () => {
     ]);
   });
 
-  test('missing geometry and MRI loading failures surface rather than opening another location', async () => {
+  test('LESSON-09 missing geometry and MRI loading failures surface rather than opening another location', async () => {
     const model = { centroidOf: (): null | number[] => null } as unknown as EngineModel;
     const none = {} as EngineSections;
+    await assert.rejects(
+      prepareCircuitMri(model, none, { region: 'missing', plane: 'axial' }),
+      /centroid/,
+    );
+    model.centroidOf = () => [1, 2] as unknown as null;
     await assert.rejects(
       prepareCircuitMri(model, none, { region: 'missing', plane: 'axial' }),
       /centroid/,

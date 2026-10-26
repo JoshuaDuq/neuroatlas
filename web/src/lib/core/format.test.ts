@@ -121,3 +121,52 @@ test('digit groups start past four digits, as in counts and quantities alike', (
   assert.equal(grouped(1234), '1234');
   assert.equal(grouped(123456), `123${NNBSP}456`);
 });
+
+test('I18N-23 · five digits group in threes with a narrow no-break space, four stay together', () => {
+  assert.equal(grouped(12345), `12${NNBSP}345`);
+  assert.equal(grouped(21472), `21${NNBSP}472`);
+});
+
+test('I18N-24 · no output holds its unit to its number with a breaking space', () => {
+  for (const text of [
+    quantity(5, 'mm²'),
+    formatRas([1, 2, 3]),
+    millimetres(1, 'en'),
+    percent(0.5, 'fr'),
+  ]) {
+    assert.doesNotMatch(text, /[  ](?:mm|%)/);
+  }
+});
+
+test('I18N-25 · a count takes its noun’s English plural and French word', () => {
+  assert.equal(count(2, 'match'), '2 matches');
+  assert.equal(count(2, 'box'), '2 boxes');
+  assert.equal(count(2, 'branch'), '2 branches');
+  assert.equal(count(2, 'bus'), '2 buses');
+  assert.equal(count(0, 'region', 'fr'), '0 régions');
+  assert.equal(count(1, 'région', 'fr'), '1 région');
+  assert.equal(count(1, 'correspondance', 'fr'), '1 correspondance');
+  assert.equal(count(2, 'label', 'fr'), '2 étiquettes');
+  assert.equal(count(2, 'day', 'fr'), '2 days');
+});
+
+test('I18N-26 · a measurement is four significant figures, with an em dash for anything absent', () => {
+  assert.equal(quantity(Infinity, 'mm²'), '—');
+  assert.equal(quantity(3214.153, 'mm²', 'en'), `3214${NNBSP}mm²`);
+});
+
+test('I18N-27 · a fixed-decimal number defaults to one decimal and a true minus', () => {
+  assert.equal(decimal(-3), `${MINUS}3.0`);
+  assert.equal(decimal(Infinity), '—');
+});
+
+test('I18N-28 · a point that is not a numeric triple is an em dash', () => {
+  assert.equal(formatRas('abc' as unknown as number[]), '—');
+  assert.equal(formatRas([0, -0.04, 0.04], 'fr'), `0,0${NNBSP}; 0,0${NNBSP}; 0,0${NNBSP}mm`);
+});
+
+test('I18N-29 · slider readouts hold their unit with a narrow no-break space', () => {
+  assert.equal(millimetres(12.5, 'en'), `+12.5${NNBSP}mm`);
+  assert.equal(millimetres(-3, 'fr'), `${MINUS}3,0${NNBSP}mm`);
+  assert.equal(percent(0.35, 'fr'), `35${NNBSP}%`);
+});

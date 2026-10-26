@@ -264,3 +264,86 @@ test('fitting to an empty point list is refused rather than reporting a zero dis
     RangeError,
   );
 });
+
+const close = (actual: number, expected: number, tolerance: number) =>
+  assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
+
+const projectedReach = (camera: PerspectiveCamera, bounds: Box3) => {
+  camera.updateProjectionMatrix();
+  let x = 0;
+  let y = 0;
+  for (const px of [bounds.min.x, bounds.max.x]) {
+    for (const py of [bounds.min.y, bounds.max.y]) {
+      for (const pz of [bounds.min.z, bounds.max.z]) {
+        const point = new Vector3(px, py, pz).project(camera);
+        x = Math.max(x, Math.abs(point.x));
+        y = Math.max(y, Math.abs(point.y));
+      }
+    }
+  }
+  return { x, y };
+};
+
+test('RENDER-01 each named view looks from a fixed anatomical direction', () => {
+  const expected: Record<ViewName, [number, number, number]> = {
+    left: [-1, 0, 0],
+    right: [1, 0, 0],
+    anterior: [0, 0, -1],
+    posterior: [0, 0, 1],
+    superior: [0, 1, 0],
+    inferior: [0, -1, 0],
+    oblique: [-0.8796, 0.2639, -0.3958],
+  };
+  for (const [view, direction] of Object.entries(expected) as [ViewName, number[]][]) {
+    const actual = VIEW_DIRECTIONS[view].toArray();
+    direction.forEach((component, axis) => close(actual[axis]!, component, 1e-4));
+    close(VIEW_DIRECTIONS[view].length(), 1, 1e-12);
+  }
+});
+
+test('RENDER-05 the clipping planes and orbit limits follow the framed sphere and thinnest span', () => {
+  const whole = cameraConstraints(brain);
+  close(whole.near, 0.001565, 1e-6);
+  close(whole.far, 15.65, 1e-2);
+  close(whole.minDistance, 0.0391, 1e-4);
+  close(whole.maxDistance, 3.91, 1e-2);
+  const cord = cameraConstraints(
+    new Box3(new Vector3(-0.006, -0.25, -0.01), new Vector3(0.006, 0.25, 0.01)),
+  );
+  // Thinnest span 12 mm: half of it, well under a quarter of the radius.
+  close(cord.minDistance, 0.006, 1e-12);
+  // A very thin box is held to the 5 mm floor.
+  const sheet = cameraConstraints(
+    new Box3(new Vector3(-0.1, -0.1, -0.0005), new Vector3(0.1, 0.1, 0.0005)),
+  );
+  close(sheet.minDistance, 0.005, 1e-12);
+});
+
+test('RENDER-07 a fit narrows the frustum so the anatomy fits the uncovered rectangle', () => {
+  // A sheet covering half the canvas height: a wide box is bound by the vertical axis.
+  const tall = new Box3(new Vector3(-0.03, -0.09, -0.03), new Vector3(0.03, 0.09, 0.03));
+  const camera = new PerspectiveCamera(35, 1.7, 0.001, 10);
+  frameBounds(camera, tall, VIEW_DIRECTIONS.left, { vertical: 0.5 });
+  close(projectedReach(camera, tall).y, 0.4, 1e-9);
+  frameBounds(camera, tall, VIEW_DIRECTIONS.left, {});
+  close(projectedReach(camera, tall).y, 0.8, 1e-9);
+  // Covering half the width of a portrait canvas binds the horizontal axis.
+  const wide = new Box3(new Vector3(-0.09, -0.03, -0.03), new Vector3(0.09, 0.03, 0.03));
+  const portrait = new PerspectiveCamera(35, 0.6, 0.001, 10);
+  frameBounds(portrait, wide, VIEW_DIRECTIONS.anterior, { horizontal: 0.5 });
+  close(projectedReach(portrait, wide).x, 0.4, 1e-9);
+});
+
+test('RENDER-11 a view along the up axis still frames to a finite pose', () => {
+  for (const [direction, up] of [
+    [new Vector3(0, 1, 0), new Vector3(0, 1, 0)],
+    [new Vector3(0, 0, 1), new Vector3(0, 0, 1)],
+  ] as const) {
+    const camera = new PerspectiveCamera(35, 1.6, 0.001, 10);
+    camera.up.copy(up);
+    const distance = fitDistance(camera, brain, direction);
+    assert.ok(Number.isFinite(distance) && distance > 0);
+    frameBounds(camera, brain, direction);
+    assert.ok(camera.position.toArray().every(Number.isFinite));
+  }
+});
