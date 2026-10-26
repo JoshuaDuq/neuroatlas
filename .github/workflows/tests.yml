@@ -5,6 +5,8 @@ on:
     branches: [main, svelte-rebuild]
   # Called by the deploy workflow, which publishes nothing unless this passes.
   workflow_call:
+  # Runs everything, including the end-to-end tests that pull requests skip.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -247,9 +249,11 @@ jobs:
             web/.vitest/attachments/
           if-no-files-found: ignore
 
+  # About 25 minutes a shard and flaky on the runners' software WebGL, so pull requests skip it:
+  # it runs when started by hand (Actions → Tests → Run workflow) and before a deploy.
   web-e2e:
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: github.event_name != 'pull_request' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
