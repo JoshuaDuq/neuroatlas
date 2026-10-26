@@ -48,7 +48,9 @@ const dialogs = () => [...document.querySelectorAll<HTMLDialogElement>('dialog')
 const dialogNamed = (name: string) =>
   dialogs().find((dialog) => dialog.querySelector('h2')?.textContent === name)!;
 const press = (key: string) =>
-  document.body.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+  document.body.dispatchEvent(
+    new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
+  );
 
 beforeEach(async () => {
   await page.viewport(1280, 800);
@@ -109,10 +111,11 @@ describe('what the stage region holds', () => {
     }
     // No navigator, so no GPU context or volume, exists while the dialog is closed.
     expect(engine.tracts.navigators).toHaveLength(0);
-    expect(dialogs().map((dialog) => dialog.querySelector('h2')?.textContent).sort()).toEqual([
-      'MRI with tracts · MGH CDMD sub_013',
-      'Linked MRI sections',
-    ].sort());
+    expect(
+      dialogs()
+        .map((dialog) => dialog.querySelector('h2')?.textContent)
+        .sort(),
+    ).toEqual(['MRI with tracts · MGH CDMD sub_013', 'Linked MRI sections'].sort());
   });
 
   test('the exit control is kept mounted and hidden outside full screen, named by its visible text', async () => {
@@ -135,7 +138,10 @@ describe('what the stage region holds', () => {
           rules: { region: { enabled: false } },
         },
       );
-      expect(results.violations.map((violation) => violation.id), theme).toEqual([]);
+      expect(
+        results.violations.map((violation) => violation.id),
+        theme,
+      ).toEqual([]);
     }
     delete document.documentElement.dataset.theme;
   });
@@ -243,11 +249,11 @@ describe('save image', () => {
       hostSize: { width: 1000, height: 700 },
     });
     flushSync();
-    const click = vi
-      .spyOn(HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(function (this: HTMLAnchorElement) {
-        expect(this.download).toBe(`planum-${app.world!.view.current.atlas}.png`);
-      });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      expect(this.download).toBe(`planum-${app.world!.view.current.atlas}.png`);
+    });
     await (region as never as { saveImage(): Promise<void> }).saveImage();
     expect(click).toHaveBeenCalledOnce();
     expect(announcer.textContent).toBe(
