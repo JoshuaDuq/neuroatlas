@@ -129,15 +129,27 @@
       // Focus never falls to the page: a row that went leaves it on its plate's toggle, a plate that
       // went on the stage.
       const focused = active as HTMLElement;
-      void tick().then(() => {
-        if (focused.isConnected && focused.checkVisibility()) return;
-        const toggle = host!.querySelector<HTMLElement>(
-          `[data-name="${holder.dataset.name}"] .stage-key-toggle`,
-        );
-        (toggle ?? host!.closest<HTMLElement>('#viewport')!).focus();
-      });
+      // A frame later, so a command the change came from (a pick that opens a profile) may place focus
+      // first; it is taken only if it is still on what went, or on the page.
+      void tick().then(() =>
+        requestAnimationFrame(() => {
+          // The keys were unmounted in the meantime: nothing to hand focus to.
+          if (!host || (focused.isConnected && focused.checkVisibility())) return;
+          const now = document.activeElement;
+          if (now && now !== document.body && now !== focused) return;
+          const toggle = host.querySelector<HTMLElement>(
+            `[data-name="${holder.dataset.name}"] .stage-key-toggle`,
+          );
+          (toggle ?? host.closest<HTMLElement>('#viewport')!).focus();
+        }),
+      );
     });
   });
+
+  /** The plates as drawn, with each one's fold: what the snapshot draws (G6) reads, without scraping. */
+  export function model(): (KeyPlate & { open: boolean })[] {
+    return plates.map((plate) => ({ ...plate, open: isOpen(plate) }));
+  }
 
   function toggleFold(plate: KeyPlate) {
     folds.set(plate.map, !isOpen(plate));
@@ -192,9 +204,8 @@
 
 {#snippet content(row: KeyRow)}
   <Swatch colour={row.absent ? 'transparent' : swatchColor(row.color)} />
-  <span class="stage-key-label"
-    >{row.label}{#if row.absent}<span class="visually-hidden">. {ABSENT[lang]}</span>{/if}</span
-  >
+  <span class="stage-key-label">{row.label}</span>
+  {#if row.absent}<span class="visually-hidden">. {ABSENT[lang]}</span>{/if}
 {/snippet}
 
 {#snippet rows(plate: KeyPlate)}
@@ -353,13 +364,13 @@
       transform: translateY(4px) rotate(-135deg);
     }
 
-    /* The level shares the title row: a track in the key's own type, at least 24 px high. */
+    /* The level shares the title row: a track in the key's own type; 20 px buttons, as legacy, whose 24 px circles touch no other target (WCAG 2.5.8). */
     .stage-key :global(.functional-level) {
       flex: none;
       margin-right: calc(-1 * var(--space-2));
     }
     .stage-key :global(.functional-level [role='radio']) {
-      min-height: 24px;
+      min-height: 20px;
       height: auto;
       padding: 0 var(--space-2);
       font-size: var(--text-caption);

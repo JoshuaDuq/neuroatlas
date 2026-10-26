@@ -69,6 +69,8 @@ describe('keyPlates', () => {
       sources({ surfaceColor: 'functional', functionalLevel: 'sections' }),
     );
     expect(sections[0]!.rows.map((row) => row.label)).toEqual(['1 · Early']);
+    expect([named.level, sections[0]!.level]).toEqual(['named', 'sections']);
+    expect(keyPlates(sources({ surfaceColor: 'network' }))[0]!.level).toBeNull();
   });
 
   test('a paint covers the colour under it: its plate stands alone and carries the legend', () => {

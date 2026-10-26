@@ -1,6 +1,6 @@
 // G3: the stage's colour keys (viewer/ui/chrome/viewport-chrome.js:269-430), run on both apps with
 // role and name locators. Each difference between them cites its deviation record in
-// docs/decisions/deviations/ (g3-level-radio-group, g3-paint-toolbar, g3-level-target-size). The stage
+// docs/decisions/deviations/ (g3-level-radio-group, g3-paint-toolbar). The stage
 // region is gated on `next` until I2 mounts it.
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
@@ -128,7 +128,7 @@ test.describe('colour keys', () => {
     await expect(keys(page).getByRole('toolbar')).toHaveCount(0);
   });
 
-  test('targets: the title row and the rows are 24 px or more; the level too on next (g3-level-target-size)', async ({
+  test('targets: the title row and the rows are 24 px or more; the 20 px level buttons keep the spacing exception', async ({
     app,
   }, testInfo) => {
     const { page } = app;
@@ -139,13 +139,24 @@ test.describe('colour keys', () => {
       expect(await height(row)).toBeGreaterThanOrEqual(24);
     }
     const next = testInfo.project.name === 'next';
-    const levelButton = keys(page)
+    const buttons = await keys(page)
       .getByRole(next ? 'radiogroup' : 'group', { name: 'Functional division level' })
       .getByRole(next ? 'radio' : 'button')
-      .first();
-    const tall = await height(levelButton);
-    if (next) expect(tall).toBeGreaterThanOrEqual(24);
-    else expect(tall).toBeLessThan(24);
+      .all();
+    const boxes = (await Promise.all(buttons.map((button) => button.boundingBox()))).map(
+      (box) => box!,
+    );
+    // WCAG 2.5.8: an undersized target is allowed where a 24 px circle on its centre meets no other target.
+    expect(boxes).toHaveLength(2);
+    for (const box of boxes) expect(box.height).toBeLessThan(24);
+    const [a, b] = boxes.map((box) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 }));
+    expect(Math.hypot(a!.x - b!.x, a!.y - b!.y)).toBeGreaterThanOrEqual(24);
+    const toggle = (await plateToggle(page, 'Functional divisions').boundingBox())!;
+    for (const c of [a!, b!]) {
+      const dx = Math.max(toggle.x - c.x, 0, c.x - (toggle.x + toggle.width));
+      const dy = Math.max(toggle.y - c.y, 0, c.y - (toggle.y + toggle.height));
+      expect(Math.hypot(dx, dy)).toBeGreaterThanOrEqual(12);
+    }
   });
 });
 

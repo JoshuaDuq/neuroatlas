@@ -43,6 +43,8 @@ export interface KeyPlate {
   rows: KeyRow[];
   /** The paint key's sentence under its rows; empty for the others. */
   note: string;
+  /** The functional plate's level; null for the others. */
+  level: FunctionalLevel | null;
   /** Each row is a toggle that shows that row alone. */
   pickable: boolean;
 }
@@ -106,6 +108,7 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
       title: maps[surfaceColor]!,
       rows: partition.networks.map((key) => row(key, partition.colors[key]!, name(key, lang))),
       note: '',
+      level: null,
       pickable: false,
     });
   }
@@ -123,6 +126,7 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
         ),
       ),
       note: '',
+      level: sources.functionalLevel,
       pickable: false,
     });
   }
@@ -136,6 +140,7 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
         row(entry.id, entry.color, entry.label, entry.pressed, entry.absent),
       ),
       note: legend.note,
+      level: null,
       pickable: legend.pickable !== false && legend.rows.length > 1,
     });
   }
@@ -152,6 +157,7 @@ export function keyPlates(sources: KeySources): KeyPlate[] {
         row('si', 'var(--scene-direction-si)', copy.superiorInferior),
       ],
       note: '',
+      level: null,
       pickable: false,
     });
   }

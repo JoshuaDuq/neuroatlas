@@ -91,12 +91,16 @@ const onDock = vi.fn();
 
 function mount(
   overrides: Partial<Live> = {},
-  { width = 1200, height = 800 }: { width?: number; height?: number } = {},
+  {
+    width = 1200,
+    height = 800,
+    sized = true,
+  }: { width?: number; height?: number; sized?: boolean } = {},
 ) {
   stage = createStageLayout({ media: { phone: false }, onDock, storage: null });
   stage.setGutter(12);
   stage.setDock({ width: 300, height: 38 });
-  stage.setViewport({ x: 0, y: 0, width, height }, { width, height });
+  if (sized) stage.setViewport({ x: 0, y: 0, width, height }, { width, height });
   const reactive = $state<Live>({
     lang: 'en',
     status: 'ready',
@@ -195,6 +199,21 @@ describe('folding', () => {
     await expect.element(toggle('CAB-NP networks')).toHaveAttribute('aria-expanded', 'true');
     live.surfaceColor = 'network';
     await expect.element(toggle('Yeo 7 networks')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('a key longer than eight rows folds when the stage first gets a width under 1000 px', async () => {
+    mount({ surfaceColor: 'cab-np' }, { sized: false });
+    await expect.element(toggle('CAB-NP networks')).toHaveAttribute('aria-expanded', 'true');
+    stage.setViewport({ x: 0, y: 0, width: 900, height: 800 }, { width: 900, height: 800 });
+    await expect.element(toggle('CAB-NP networks')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('a coarse pointer weighs the paint rows as 44 px and folds a key whose rows no longer fit', async () => {
+    const rows = Array.from({ length: 9 }, (_, i) => finding(`f${i}`, `Finding ${i}`));
+    mount({ legend: { ...DEFICIT, rows } }, { height: 400 });
+    await expect.element(toggle('Aphasia')).toHaveAttribute('aria-expanded', 'true');
+    live.media.coarsePointer = true;
+    await expect.element(toggle('Aphasia')).toHaveAttribute('aria-expanded', 'false');
   });
 
   test('a key of more than eight rows starts folded on a stage under 1000 px, and open on a wide one', async () => {
@@ -329,6 +348,32 @@ describe('paint rows', () => {
     ]);
   });
 
+  test('a pick that places focus itself, as opening a profile does, is not preceded by the toggle', async () => {
+    const title = document.body.appendChild(document.createElement('h2'));
+    title.tabIndex = -1;
+    const seen: string[] = [];
+    const record = (event: Event) => seen.push((event.target as HTMLElement).className);
+    document.addEventListener('focusin', record);
+    onPaintPick.mockImplementation(async () => {
+      live.legend = { ...DEFICIT, pickable: false };
+      await tick();
+      title.focus();
+    });
+    try {
+      mount({ legend: DEFICIT });
+      rowButtons()[0]!.focus();
+      seen.length = 0;
+      await userEvent.keyboard('{Enter}');
+      await vi.waitFor(() => expect(document.activeElement).toBe(title));
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      expect(document.activeElement).toBe(title);
+      expect(seen.filter((name) => name.includes('stage-key-toggle'))).toEqual([]);
+    } finally {
+      document.removeEventListener('focusin', record);
+      title.remove();
+    }
+  });
+
   test('a key the crowd folds under the focused row hands focus to its toggle', async () => {
     const rows = Array.from({ length: 9 }, (_, i) => finding(`f${i}`, `Finding ${i}`));
     mount({ legend: { ...DEFICIT, rows } }, { height: 400 });
@@ -360,7 +405,9 @@ describe('paint rows', () => {
     expect(getComputedStyle(swatch('Broca')).boxShadow).toBe('none');
     // Its name starts with the visible label (2.5.3) and ends with why it is faint (1.4.1).
     const button = page.getByRole('button', { name: /^Wernicke/ });
-    expect(button.element().textContent).toMatch(/^\s*Wernicke\.\s*Not shown in this view$/);
+    expect(button.element().textContent).toMatch(/^\s*Wernicke\s*\.\s*Not shown in this view$/);
+    // The visible label is its own element, apart from the hidden words.
+    expect(button.element().querySelector('.stage-key-label')!.textContent).toBe('Wernicke');
     expect(page.getByRole('button', { name: 'Broca', exact: true }).element()).toBeTruthy();
     live.lang = 'fr';
     await expect.element(page.getByRole('button', { name: /Absent de cette vue/ })).toBeVisible();
@@ -484,7 +531,7 @@ describe('framing', () => {
 describe('targets, reflow and the stage’s colours', () => {
   const height = (element: Element) => element.getBoundingClientRect().height;
 
-  test('every control is at least 24 px tall on a desktop', async () => {
+  test('desktop targets: rows and toggle are 24 px; the 20 px level buttons keep WCAG 2.5.8’s spacing exception', async () => {
     mount({ legend: DEFICIT });
     for (const button of [...rowButtons(), find('.stage-key-toggle')]) {
       expect(height(button), button.textContent!).toBeGreaterThanOrEqual(24);
@@ -492,12 +539,22 @@ describe('targets, reflow and the stage’s colours', () => {
     live.legend = null;
     live.surfaceColor = 'functional';
     await expect.element(page.getByRole('radio', { name: 'Named' })).toBeVisible();
-    for (const radio of document.querySelectorAll('[role=radio]')) {
-      expect(height(radio), radio.textContent!).toBeGreaterThanOrEqual(24);
+    const radios = [...document.querySelectorAll('[role=radio]')];
+    const boxes = radios.map((radio) => radio.getBoundingClientRect());
+    for (const box of boxes) expect(box.height).toBeLessThan(24);
+    // A 24 px circle on each button's centre reaches neither the other button's circle nor the toggle.
+    const centre = (box: DOMRect) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 });
+    const [a, b] = boxes.map(centre) as [{ x: number; y: number }, { x: number; y: number }];
+    expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(24);
+    const toggle = find('.stage-key-toggle').getBoundingClientRect();
+    for (const c of [a, b]) {
+      const nearestX = Math.min(Math.max(c.x, toggle.left), toggle.right);
+      const nearestY = Math.min(Math.max(c.y, toggle.top), toggle.bottom);
+      expect(Math.hypot(c.x - nearestX, c.y - nearestY)).toBeGreaterThanOrEqual(12);
     }
   });
 
-  test('a coarse pointer makes the toggle, the level and the paint rows 44 px', async () => {
+  test('a coarse pointer makes the level and the paint rows 44 px', async () => {
     mount({ legend: DEFICIT });
     const session = cdp();
     await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
