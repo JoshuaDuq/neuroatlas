@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it, vi } from 'vitest';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import type { Manifest } from '../types/index.ts';
+import { HIGH_FREQUENCY_EVENTS } from './api.ts';
 import { defineEngineContract } from './fake/contract-suite.ts';
 import { createFakeEngine } from './fake.ts';
 
@@ -15,6 +16,10 @@ const create = () => createFakeEngine({ manifest: published, cabNp, functionalRe
 defineEngineContract('fake', create, { canvas: {} as HTMLCanvasElement });
 
 describe('the fake engine', () => {
+  it('names the per-frame events', () => {
+    assert.deepEqual([...HIGH_FREQUENCY_EVENTS], ['camera', 'hover', 'viewport']);
+  });
+
   it('records the application’s calls in order, and no getter or event', () => {
     const engine = create();
     engine.model.setHemisphere('left');

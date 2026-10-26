@@ -312,6 +312,9 @@ export function createFakeModel({
       requireRegions(ids);
       dissection.hidden = new Set(ids);
       dissection.history = [];
+      if (values.isolatedRegion && dissection.hidden.has(values.isolatedRegion)) {
+        values.isolatedRegion = null;
+      }
       update();
     },
     reset() {
