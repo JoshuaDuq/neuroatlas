@@ -72,8 +72,8 @@
     onSelect: (id: string) => void;
     /** A region that is not on screen was chosen: undo what hides it, then select it. */
     onReveal: (reason: HiddenReason, id: string) => void;
-    onHide: (ids: readonly string[]) => void;
-    onShow: (ids: readonly string[]) => void;
+    onHide: (ids: readonly string[], said: string) => void;
+    onShow: (ids: readonly string[], said: string) => void;
   }
 
   let {
