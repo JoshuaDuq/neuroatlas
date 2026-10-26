@@ -115,12 +115,33 @@ test.describe('keyboard shortcuts dialog', () => {
     await expect(dialog(page)).toBeHidden();
   });
 
+  test('on a phone it fills the screen and returns focus to ⋯', async ({ app }) => {
+    const { page } = app;
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openFromMenu(page);
+    const sheet = dialog(page);
+    await expect(sheet).toBeVisible();
+    const close = await sheet.getByRole('button', { name: 'Close' }).boundingBox();
+    expect(close!.width).toBeGreaterThanOrEqual(24);
+    // The sheet settles from scale(0.98), so allow for that.
+    expect((await sheet.boundingBox())!.width).toBeGreaterThanOrEqual(380);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
+    await expect(more(page)).toBeFocused();
+  });
+});
+
+// Each of these boots the app once, in the state it needs, rather than after a default boot.
+test.describe('keyboard shortcuts dialog, booted otherwise', () => {
   test('with single-key shortcuts off ? does nothing, and the note says how to turn them on', async ({
     app,
   }) => {
     const { page } = app;
-    await page.evaluate(() => localStorage.setItem('planum.single-key-shortcuts', 'off'));
-    await page.reload();
+    await page.addInitScript(() => localStorage.setItem('planum.single-key-shortcuts', 'off'));
+    await app.gotoHash();
     await app.ready();
     await page.keyboard.press('?');
     await expect(dialog(page)).toBeHidden();
@@ -143,23 +164,5 @@ test.describe('keyboard shortcuts dialog', () => {
     await expect(sheet.getByRole('button', { name: 'Fermer' })).toBeVisible();
     // The strings are the same until C1's amendment lands (s5b-shortcut-strings D3).
     await expect(sheet.locator('kbd', { hasText: /^(Esc|Échap)$/ })).toBeVisible();
-  });
-
-  test('on a phone it fills the screen and returns focus to ⋯', async ({ app }) => {
-    const { page } = app;
-    await page.setViewportSize({ width: 390, height: 844 });
-    await openFromMenu(page);
-    const sheet = dialog(page);
-    await expect(sheet).toBeVisible();
-    const close = await sheet.getByRole('button', { name: 'Close' }).boundingBox();
-    expect(close!.width).toBeGreaterThanOrEqual(24);
-    // The sheet settles from scale(0.98), so allow for that.
-    expect((await sheet.boundingBox())!.width).toBeGreaterThanOrEqual(380);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
-    await page.keyboard.press('Escape');
-    await expect(sheet).toBeHidden();
-    await expect(more(page)).toBeFocused();
   });
 });

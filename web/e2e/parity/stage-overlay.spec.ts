@@ -19,7 +19,11 @@ async function hoverModel(page: Page) {
   );
   for (const point of points) {
     await page.mouse.move(point.x, point.y, { steps: 3 });
-    await page.waitForTimeout(150);
+    // Hover is picked on the next animation frame (viewer/render/picking.js:96); two frames on,
+    // it has answered, however slowly frames come.
+    await page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+    );
     if (await chip(page).isVisible()) return point;
   }
   throw new Error('No region under any probed point.');
