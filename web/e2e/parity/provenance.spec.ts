@@ -113,11 +113,14 @@ test.describe('colophon and provenance', () => {
   }) => {
     const { page } = app;
     await page.setViewportSize({ width: 390, height: 844 });
-    await app.waitForCameraIdle();
     await expect(page.getByRole('contentinfo')).toBeHidden();
     const more = page.getByRole('button', { name: 'More settings' });
-    await more.click();
-    await page.getByRole('button', { name: 'Provenance', exact: true }).click();
+    // The resize restarts the legacy camera, which never rests under software WebGL; pointer
+    // clicks wait for a stable element, so the keyboard opens the menu and its item.
+    await more.focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('button', { name: 'Provenance', exact: true }).focus();
+    await page.keyboard.press('Enter');
     await expect(dialog(page)).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog(page)).toBeHidden();
