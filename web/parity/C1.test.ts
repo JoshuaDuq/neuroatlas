@@ -95,6 +95,7 @@ const KINDS: Record<string, string> = {
   'diffusion.streamlines': 'nn',
   'diffusion.bundleCollection': 'n',
   'mri.grid': 'ds',
+  'viewport.loadingWithTotal': 'nn',
 };
 
 type Fn = (...args: unknown[]) => unknown;
@@ -137,9 +138,26 @@ function resolve(node: unknown, area: string, leaf = ''): unknown {
 const without = (node: unknown, ...keys: string[]) =>
   Object.fromEntries(Object.entries(node as object).filter(([key]) => !keys.includes(key)));
 
-/** Legacy keys whose i18n wording deliberately differs, each asserted on its own below. */
-const CHANGED: Record<string, string[]> = {
-  viewport: ['loadingWithTotal'], // c1-loading-megabytes
+/** What a changed key says: a string, or a function called with `args`. */
+interface Changed {
+  args?: unknown[];
+  en: string;
+  fr: string;
+}
+
+/**
+ * Legacy keys whose i18n wording deliberately differs. The comparison loop checks each entry: the
+ * key is in the legacy area, its output differs from legacy, and it says exactly `en` / `fr`.
+ */
+const CHANGED: Record<string, Record<string, Changed>> = {
+  viewport: {
+    // c1-loading-megabytes: megabytes in the reader's notation
+    loadingWithTotal: {
+      args: [12.3 * 1_048_576, 46.1 * 1_048_576],
+      en: 'Loading anatomy · 12.3\u202fMB / 46.1\u202fMB',
+      fr: 'Chargement de l’anatomie · 12,3\u202fMo / 46,1\u202fMo',
+    },
+  },
 };
 
 /** Keys of a legacy area that the i18n area adds; the legacy tables have no counterpart. */
@@ -172,7 +190,7 @@ const ADDED: Record<string, string[]> = {
 };
 
 /** The keys left out of an area's comparison with the legacy table. */
-const skipped = (area: string) => [...(ADDED[area] ?? []), ...(CHANGED[area] ?? [])];
+const skipped = (area: string) => [...(ADDED[area] ?? []), ...Object.keys(CHANGED[area] ?? {})];
 
 /** The S5b fixes of s5b-shortcut-strings.md applied to the legacy rows: D1 and D3 to the French Escape row, D2 to the `M` row. */
 const D2: Record<string, string> = {
@@ -212,18 +230,28 @@ describe('C1 i18n against the legacy modules', () => {
       const legacy = { ...LEGACY_TRANSLATIONS[lang] };
       assert.deepStrictEqual(Object.keys(rest).sort(), Object.keys(legacy).sort());
       for (const area of Object.keys(legacy)) {
+        const legacyArea = legacyFixed(area, legacy[area as keyof typeof legacy], lang);
+        const ours = rest[area] as Record<string, unknown>;
         // An addition must not hide a legacy string from the comparison.
         assert.deepStrictEqual(
-          (ADDED[area] ?? []).filter((key) => key in legacy[area as keyof typeof legacy]),
+          (ADDED[area] ?? []).filter((key) => key in legacyArea),
           [],
         );
+        for (const [key, expected] of Object.entries(CHANGED[area] ?? {})) {
+          assert.ok(key in legacyArea, `${lang}.${area}.${key} is not a legacy key`);
+          assert.notDeepStrictEqual(
+            resolve(ours[key], area, key),
+            resolve(legacyArea[key], area, key),
+            `${lang}.${area}.${key} is unchanged`,
+          );
+          const value = ours[key];
+          const said = typeof value === 'function' ? value(...expected.args!) : value;
+          assert.equal(said, expected[lang], `${lang}.${area}.${key}`);
+        }
         const added = skipped(area);
         assert.deepStrictEqual(
-          resolve(without(rest[area], ...added), area),
-          resolve(
-            without(legacyFixed(area, legacy[area as keyof typeof legacy], lang), ...added),
-            area,
-          ),
+          resolve(without(ours, ...added), area),
+          resolve(without(legacyArea, ...added), area),
           `${lang}.${area}`,
         );
       }
@@ -249,17 +277,6 @@ describe('C1 i18n against the legacy modules', () => {
       );
     });
   }
-
-  it("the loading line sets megabytes in the reader's notation (c1-loading-megabytes)", () => {
-    assert.equal(
-      TRANSLATIONS.en.viewport.loadingWithTotal(12.3 * 1_048_576, 46.1 * 1_048_576),
-      'Loading anatomy · 12.3\u202fMB / 46.1\u202fMB',
-    );
-    assert.equal(
-      TRANSLATIONS.fr.viewport.loadingWithTotal(12.3 * 1_048_576, 46.1 * 1_048_576),
-      'Chargement de l’anatomie · 12,3\u202fMo / 46,1\u202fMo',
-    );
-  });
 
   it('t falls back to English exactly as the legacy lookup does', () => {
     for (const lang of ['en', 'fr', 'de', 'unknown', '']) {
