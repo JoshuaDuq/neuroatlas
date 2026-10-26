@@ -1,0 +1,26 @@
+[
+  {
+    "id": "label-content-name-mismatch",
+    "impact": "serious",
+    "targets": [
+      "div[data-group-key=\"cortex:Central\"]",
+      "div[data-group-key=\"cortex:Cingulate\"]",
+      "div[data-group-key=\"cortex:Frontal\"]",
+      "div[data-group-key=\"cortex:Insula\"]",
+      "div[data-group-key=\"cortex:Lateral fissure\"]",
+      "div[data-group-key=\"cortex:Limbic\"]",
+      "div[data-group-key=\"cortex:Occipital\"]",
+      "div[data-group-key=\"cortex:Parietal\"]",
+      "div[data-group-key=\"cortex:Temporal\"]",
+      "div[data-group-key=\"structure:Basal forebrain\"]",
+      "div[data-group-key=\"structure:Basal ganglia\"]",
+      "div[data-group-key=\"structure:Brainstem\"]",
+      "div[data-group-key=\"structure:Cerebellum\"]",
+      "div[data-group-key=\"structure:Diencephalon\"]",
+      "div[data-group-key=\"structure:Limbic\"]",
+      "div[data-group-key=\"structure:Spinal cord\"]",
+      "div[data-group-key=\"structure:Ventricles and CSF\"]",
+      "div[aria-labelledby=\"tree-section-structure\"] > .tree-group:nth-child(9) > .group-row[role=\"treeitem\"][aria-level=\"1\"]"
+    ]
+  }
+]

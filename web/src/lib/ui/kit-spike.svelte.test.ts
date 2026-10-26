@@ -90,8 +90,10 @@ describe('Bits UI against the APG', () => {
     const last = page.getByRole('button', { name: 'Shortcuts' });
     (last.element() as HTMLElement).focus();
     await userEvent.tab();
-    expect(document.activeElement).toBe(
-      page.getByRole('button', { name: 'After settings' }).element(),
+    await vi.waitFor(() =>
+      expect(document.activeElement).toBe(
+        page.getByRole('button', { name: 'After settings' }).element(),
+      ),
     );
     await vi.waitFor(() => expect(attr(trigger, 'aria-expanded')).toBe('false'));
     await expect.element(last).not.toBeInTheDocument();
@@ -127,13 +129,18 @@ describe('Bits UI against the APG', () => {
 
       // Leaving closes it; a second trigger entered within 300 ms opens at once.
       await userEvent.unhover(first);
-      // Bits closes after pointer leave through its grace logic; step until it has.
-      for (let step = 0; step < 100 && shown() !== null; step++)
+      // Bits closes after pointer leave through its grace logic; step until the trigger says so.
+      // The skip window starts then, not when the exit transition (real time) removes the
+      // element, so that is what the fake clock is counted from.
+      const trigger = first.element();
+      for (let step = 0; step < 100 && trigger.getAttribute('data-state') !== 'closed'; step++)
         await vi.advanceTimersByTimeAsync(10);
-      expect(shown()).toBeNull();
+      expect(trigger.getAttribute('data-state')).toBe('closed');
       await vi.advanceTimersByTimeAsync(250);
       await second.hover();
-      await vi.advanceTimersByTimeAsync(0);
+      // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
+      for (let frame = 0; frame < 120 && shown() !== 'Enter full screen'; frame++)
+        await new Promise((resolve) => requestAnimationFrame(resolve));
       expect(shown()).toBe('Enter full screen');
     } finally {
       vi.useRealTimers();

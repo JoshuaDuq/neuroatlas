@@ -132,6 +132,9 @@
       event.preventDefault();
       return;
     }
+    // Bits toggles on Enter and Space keydown and prevents the click, so no click ever reports
+    // the keyboard.
+    if ((event.key === 'Enter' || event.key === ' ') && own(event.target)) instant = true;
     if (event.key !== 'Escape' || !open) return;
     event.preventDefault();
     close({ restoreFocus: true, instantly: true });
