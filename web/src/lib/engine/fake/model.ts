@@ -22,11 +22,13 @@ import { belongsToDetail, visibilityOf } from '../../core/catalog/visibility.ts'
 import { labelOf } from '../../core/catalog/labels.ts';
 import { coded, sameSet } from './support.ts';
 
+type FakeFile = { atlas: string; [field: string]: unknown };
+
 export interface FakeModelOptions {
   manifest: Manifest;
-  cabNp?: CabNpData;
-  functionalRegions?: FunctionalRegionsData;
-  domains?: DomainsData;
+  cabNp?: FakeFile;
+  functionalRegions?: FakeFile;
+  domains?: FakeFile;
   /** Called after every state change, as the real model's `change` event (brain-atlas.js:602). */
   changed: () => void;
 }
@@ -48,6 +50,17 @@ interface Dissected {
   hidden: ReadonlySet<string>;
   selectedId: string | null;
   isolatedId: string | null;
+}
+
+/**
+ * A centroid coordinate off the midline axes, in tenths of a millimetre like the real model's, and the
+ * same for the same key. A section through a region then has a non-zero offset on every plane, which
+ * the panel's clamp (`offsetThrough`) needs to be tested against.
+ */
+function spread(key: string, span: number): number {
+  let hash = 0;
+  for (const character of key) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  return Math.round(((hash % 1201) / 600 - 1) * span * 10) / 10;
 }
 
 /**
@@ -148,9 +161,10 @@ export function createFakeModel({
   const model: FakeModel = {
     manifest,
     regions,
-    cabNp: cabNp ?? null,
-    functionalRegions: functionalRegions ?? null,
-    domains: domains ?? null,
+    // A test supplies only the fields it reads; the contract types the whole published file.
+    cabNp: (cabNp ?? null) as unknown as CabNpData | null,
+    functionalRegions: (functionalRegions ?? null) as unknown as FunctionalRegionsData | null,
+    domains: (domains ?? null) as unknown as DomainsData | null,
     defaultDetail,
     get settings() {
       return settings();
@@ -184,7 +198,7 @@ export function createFakeModel({
       const region = id ? regions.get(id) : undefined;
       if (!region || !layerLoaded(region)) return null;
       const side = region.hemisphere === 'left' ? -1 : region.hemisphere === 'right' ? 1 : 0;
-      return [side * 30, 0, 0] satisfies Vec3;
+      return [side * 30, spread(region.id, 60), spread(`${region.id}:z`, 40)] satisfies Vec3;
     },
     canSelect,
 
@@ -349,6 +363,12 @@ export function createFakeModel({
       update();
     },
     async prefetchLayer(id) {
+      if (
+        !manifest.atlases.some((atlas) => atlas.id === id) &&
+        !levels.some((level) => level.id === id)
+      ) {
+        throw unknownLayer(`Unknown layer: ${id}`);
+      }
       layers.add(id);
     },
 

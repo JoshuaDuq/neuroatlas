@@ -1,5 +1,5 @@
-import assert from 'node:assert/strict';
-import { describe, it, onTestFinished } from 'vitest';
+import { assert } from './assert.ts';
+import { describe, it, onTestFinished, vi } from 'vitest';
 import type { Region } from '../../types/index.ts';
 import { HIGH_FREQUENCY_EVENTS } from '../api.ts';
 import type { Engine, EngineEvents, MriLocation } from '../api.ts';
@@ -249,6 +249,23 @@ export function defineEngineContract(
         assert.equal(model.settings.internalSystem, null);
       });
 
+      it('colours the surface at once, leaving the cut alone', async () => {
+        const { engine, atlas } = await boot();
+        const { model, sections } = engine;
+        const changes = collect(engine, 'change');
+        const cut = sections.state;
+        model.setSurfaceColor('tissue');
+        assert.equal(model.settings.surfaceColor, 'tissue');
+        assert.equal(changes.at(-1)?.model.surfaceColor, 'tissue');
+        assert.deepEqual(sections.state, cut);
+        model.setSurfaceColor('atlas');
+        assert.equal(model.settings.surfaceColor, 'atlas');
+        assert.throws(() => model.setSurfaceColor('plaid' as never), TypeError);
+        assert.throws(() => model.setSurfaceColor('mri'), /MRI must load/);
+        assert.equal(model.settings.atlas, atlas);
+        assert.equal(model.settings.surfaceColor, 'atlas', 'a refused colour is not applied');
+      });
+
       it('downloads the spinal cord on first showing', async () => {
         const { engine } = await boot();
         const { model } = engine;
@@ -274,11 +291,26 @@ export function defineEngineContract(
         assert.equal(engine.model.settings.atlas, atlas);
       });
 
+      it('refuses to prefetch what is not an atlas or a detail level', async () => {
+        const { engine } = await boot();
+        // A supplemental layer loads with its own command (the E4b review).
+        await assert.rejects(engine.model.prefetchLayer('zanatomy'), rejectsWith('unknown-layer'));
+        await assert.rejects(
+          engine.model.prefetchLayer('no-such-layer'),
+          rejectsWith('unknown-layer'),
+        );
+        assert.equal(engine.model.hasLayer('zanatomy'), false);
+      });
+
       it('reports centroids in RAS millimetres only for geometry it has', async () => {
         const { engine, left, cortex, otherAtlas } = await boot();
         assert.equal(engine.model.centroidOf(null), null);
         const centre = engine.model.centroidOf(left.id);
         assert.ok(centre && centre.length === 3 && centre.every(Number.isFinite));
+        assert.ok(
+          centre.every((value) => value !== 0),
+          'a centroid lies off every plane through the origin',
+        );
         assert.equal(engine.model.centroidOf(cortex('left', otherAtlas).id), null);
         assert.equal(engine.model.isRegionDrawn(left.id), true);
         assert.equal(engine.model.isRegionDrawn(cortex('left', otherAtlas).id), false);
@@ -307,7 +339,11 @@ export function defineEngineContract(
         const changes = collect(engine, 'change');
         engine.sections.setDisplay({ reverse: true });
         engine.sections.setDisplay({ reverse: false });
-        const [first, second] = changes.slice(-2).map((change) => change.sections);
+        // A command may report more than once (the cut and the model each emit); the last report of each
+        // is what a listener ends up holding.
+        const snapshots = changes.map((change) => change.sections);
+        const first = snapshots.findLast((snapshot) => snapshot.reverse);
+        const second = snapshots.at(-1);
         assert.notEqual(first, second);
         assert.equal(first!.reverse, true);
         assert.equal(second!.reverse, false);
@@ -439,8 +475,14 @@ export function defineEngineContract(
       it('holds a named view, and tells when it is let go', async () => {
         const { engine } = await boot();
         const { camera } = engine;
+        // The page opens on the held oblique view, which a link does not carry.
+        assert.equal(camera.viewHeld, true);
+        assert.equal(camera.orbitLink(), null);
         const held = collect(engine, 'viewHeld');
+        camera.orbitBy({ azimuth: 0.1 });
         assert.equal(camera.viewHeld, false);
+        assert.deepEqual(held, [{ held: false }]);
+        held.length = 0;
         camera.applyView('left', { immediate: true });
         assert.equal(camera.viewHeld, true);
         camera.frameCurrent('right');
@@ -458,13 +500,20 @@ export function defineEngineContract(
         const moves = collect(engine, 'camera');
         const settled = collect(engine, 'cameraSettled');
         const changes = collect(engine, 'change');
-        engine.camera.applyView('superior');
+        engine.camera.applyView('superior', { immediate: true });
         assert.ok(moves.length > 0 && settled.length > 0);
         assert.equal(changes.length, 0);
         const [view] = moves.slice(-1);
         assert.ok(view);
         assert.deepEqual(Object.keys(view.edges).sort(), ['bottom', 'left', 'right', 'top']);
         assert.deepEqual(engine.camera.view, view);
+        // An eased move: the link follows the destination at once; the real stage reports the camera frame
+        // by frame after the call, where the fake reports it in the call.
+        const reported = moves.length;
+        const placed = settled.length;
+        engine.camera.applyView('inferior');
+        assert.ok(settled.length > placed);
+        await vi.waitFor(() => assert.ok(moves.length > reported), { timeout: 5_000 });
       });
 
       it('releases the view when it frames something other than a preset', async () => {
@@ -662,13 +711,17 @@ export function defineEngineContract(
         );
         onTestFinished(() => navigator.dispose());
         const { dims } = navigator.header;
-        navigator.setVoxel([0, 0, 0]);
-        assert.deepEqual(locations.at(-1)?.vox, [0, 0, 0]);
-        assert.ok(locations.at(-1)!.values.length > 0);
+        // The report is the source voxel asked for, and the last one: a mirrored axis changes nothing.
+        navigator.setVoxel([5, 6, 7]);
+        assert.deepEqual(locations.at(-1)?.vox, [5, 6, 7]);
+        assert.ok(locations.every((location) => location.values.length > 0));
         assert.throws(() => navigator.setVoxel([dims[1]!, 0, 0]), RangeError);
         assert.throws(() => navigator.setVoxel([0.5, 0, 0]), RangeError);
+        // A step runs in the display's direction, so a mirrored source axis steps down: one voxel, one axis.
         navigator.moveVoxel([1, 0, 0]);
-        assert.deepEqual(locations.at(-1)?.vox, [1, 0, 0]);
+        const [x, y, z] = locations.at(-1)!.vox;
+        assert.deepEqual([Math.abs(x - 5), y, z], [1, 6, 7]);
+        assert.equal(locations.at(-1)?.mm.length, 3);
         assert.throws(() => navigator.setPlane('OBLIQUE' as never), RangeError);
         navigator.setPlane('AXIAL');
         assert.throws(() => navigator.setWindow(0, 0), RangeError);

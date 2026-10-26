@@ -95,8 +95,9 @@ export function createFakeCamera({
   let position: Vector = [...DIRECTIONS.oblique].map((v) => v * DISTANCE_MM) as Vector;
   let target: Vector = [0, 0, 0];
   let up: Vector = [0, 1, 0];
-  let held = false;
-  let view = '' as string;
+  // The engine opens on the held oblique view (app.js:2114).
+  let held = true;
+  let view: string = 'oblique';
   let size: Size = { ...hostSize };
   let visibleRect: Rect = { x: 0, y: 0, ...hostSize };
   let framingSource: (() => FramingClearance) | null = null;
@@ -264,12 +265,12 @@ export function createFakeCamera({
       }
       position = [...orbit.position];
       target = [...orbit.target];
-      up = orbit.up ? [...orbit.up] : upFor((view || 'oblique') as ViewName);
+      up = orbit.up ? [...orbit.up] : upFor(view as ViewName);
       reframe();
     },
     orbitLink() {
       if (held || referenceActive()) return null;
-      const named = upFor((view || 'oblique') as ViewName);
+      const named = upFor(view as ViewName);
       const differs = distanceBetween(up, named) > 1e-3;
       return { position: [...position], target: [...target], ...(differs ? { up: [...up] } : {}) };
     },

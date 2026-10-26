@@ -123,6 +123,10 @@
     return () => offs.forEach((off) => off());
   });
   $effect(() => results.dispose);
+  let destroyed = false;
+  $effect(() => () => {
+    destroyed = true;
+  });
 
   $effect(() => {
     tracts.setOverlay(overlay);
@@ -214,7 +218,7 @@
     const name = catalog.bundles.find((bundle) => bundle.id === id)!.name[lang];
     void load(() => tracts.loadBundle(id)).then((ok) => {
       pending.delete(id);
-      if (ok) announce(added.loaded(name));
+      if (ok && !destroyed) announce(added.loaded(name));
     });
   }
 
