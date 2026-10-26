@@ -18,6 +18,8 @@ test.describe('colophon and provenance', () => {
   test.beforeEach(async ({ app }) => {
     await app.gotoHash();
     await app.ready();
+    // The legacy camera animates after ready; a click during it never becomes "stable".
+    await app.waitForCameraIdle();
   });
 
   test('the status bar states what this is, then names what is loaded', async ({ app }) => {
@@ -94,6 +96,7 @@ test.describe('colophon and provenance', () => {
     const { page } = app;
     await app.gotoHash({ lang: 'fr' });
     await app.ready();
+    await app.waitForCameraIdle();
     await expect(page.getByRole('contentinfo')).toContainText('Pas une anatomie clinique');
     await page.getByRole('button', { name: 'Provenance', exact: true }).click();
     const sheet = page.getByRole('dialog', { name: 'Provenance' });
@@ -108,6 +111,7 @@ test.describe('colophon and provenance', () => {
   test('on a phone the status bar gives way and Provenance opens from the ⋯ menu', async ({
     app,
   }) => {
+    test.slow();
     const { page } = app;
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.getByRole('contentinfo')).toBeHidden();
