@@ -29,10 +29,19 @@ async function violations() {
   return results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' ')}`);
 }
 
-// The theme change and an entry animation both pass through blended colours; axe reads them after.
+/**
+ * Every transition and animation on the page has finished: a theme change and an entry animation
+ * both pass through blended colours and sizes, and under load they outlast any fixed wait.
+ */
+async function pageSettled() {
+  // Reading layout brings style up to date, so a change made just now has started its transitions.
+  void document.body.offsetHeight;
+  await Promise.all(document.getAnimations().map((animation) => animation.finished));
+}
+
 async function useTheme(theme: 'light' | 'dark') {
   document.documentElement.dataset.theme = theme;
-  await new Promise((resolve) => setTimeout(resolve, 400));
+  await pageSettled();
 }
 
 // Entry and exit run as CSS transitions; wait for the ones in flight, not for a fixed time.
@@ -446,6 +455,7 @@ describe('Dialog', () => {
     expect(await violations()).toEqual([]);
     await page.viewport(390, 844);
     try {
+      await pageSettled();
       expect(await violations()).toEqual([]);
       expect(dialog().getBoundingClientRect().width).toBe(390);
     } finally {
@@ -549,7 +559,7 @@ describe('Tooltip', () => {
     await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
     const tip = tooltip()!;
     await userEvent.hover(tip);
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(tooltip()).toBe(tip);
     await userEvent.unhover(tip);
     await vi.waitFor(() => expect(tooltip()).toBeNull(), { timeout: 1000, interval: 10 });
