@@ -38,7 +38,6 @@
   import IconButton, { iconGraphic } from '../../lib/ui/IconButton.svelte';
   import { isKeyboardActivation } from '../../lib/ui/instant.ts';
   import { OWN_KEYS_ATTRIBUTE } from '../../lib/ui/keys.ts';
-  import { detentAnnouncement } from './copy.ts';
 
   type Props = {
     lang: Language;
@@ -209,7 +208,7 @@
     stage.sheetFull = next === 'full';
     applySpan(heights()[next]);
     if (notify) onDetent(next);
-    if (say && changed) announce(detentAnnouncement(lang, next));
+    if (say && changed) announce(copy.detent[next]);
   }
 
   /** Content chosen with the sheet at rest should be seen; a raised sheet stays where it was put. */

@@ -144,9 +144,19 @@ const ADDED: Record<string, string[]> = {
     'navigationHintTouch', // G1, decision 21: the hints name touch gestures
     'navigationHintTractsTouch', // G1, decision 21
     'exitFullscreen', // H2/G6, decision 33: the label while the stage is fullscreen
+    'dockLabel', // G2, decision 22: the dock toolbar's name
+    'orbitGroup', // G2, decision 22: the View popover's turn buttons (g2-orbit-step-buttons)
+    'orbitLeft',
+    'orbitRight',
+    'orbitUp',
+    'orbitDown',
+    'keyAbsent', // G3: hidden text after a stage-key row whose colour is not drawn (g3-absent-text)
   ],
   workspace: ['panelAria'], // H1a: the name of the complementary landmark
   link: ['newTab'], // X2/T1, decision 17: the cue after a link that opens a new tab
+  dissection: ['partHidden', 'partShown'], // A1: the part sentence of an eye press (a1-eye-announcement)
+  sheet: ['detent'], // H6, decision 20: said after the reader moves the sheet
+  comparison: ['ready', 'exported'], // R2: the spoken load and CSV export (r2-status-live)
   diffusion: [
     'tryAgain', // T1, decision 42
     'matches', // T1: the spoken filter result
@@ -157,19 +167,27 @@ const ADDED: Record<string, string[]> = {
   shortcuts: ['rangeTo'], // S5b D4: read after a range's dash
 };
 
-/** The legacy French Escape row with the two S5b fixes of s5b-shortcut-strings.md (D1, D3) applied. */
+/** The S5b fixes of s5b-shortcut-strings.md applied to the legacy rows: D1 and D3 to the French Escape row, D2 to the `M` row. */
+const D2: Record<string, string> = {
+  en: '; in Tracts, the diffusion MRI',
+  fr: ' ; dans Faisceaux, l’IRM de diffusion',
+};
 function legacyFixed(area: string, table: any, lang: string) {
-  if (area !== 'shortcuts' || lang !== 'fr') return table;
-  let rows = 0;
+  if (area !== 'shortcuts') return table;
+  const fixed = { escape: 0, m: 0 };
   const groups = table.groups.map(([heading, items]: [string, [string, string][]]) => [
     heading,
     items.map(([key, text]) => {
-      if (key !== 'Esc') return [key, text];
-      rows++;
+      if (key === 'M') {
+        fixed.m++;
+        return [key, text + (D2[lang] ?? D2.en)];
+      }
+      if (key !== 'Esc' || lang !== 'fr') return [key, text];
+      fixed.escape++;
       return ['Échap', text.replace('puis le déficit', 'puis la fonction ou le déficit')];
     }),
   ]);
-  assert.equal(rows, 1);
+  assert.deepStrictEqual(fixed, { escape: lang === 'fr' ? 1 : 0, m: 1 });
   return { ...table, groups };
 }
 
@@ -410,9 +428,20 @@ describe('strings moved into the mri area', () => {
 
   it('the diffusion MRI dialog strings are the legacy TEXT table', () => {
     const legacy = literal('diffusion/navigation-ui.js', 'TEXT');
+    // T2's additions (decision 41 on #4, deviations t2-*); the legacy dialog has none of them.
+    const added = [
+      'ready',
+      'viewer',
+      'voxelName',
+      'range',
+      'moved',
+      'hintKeys',
+      'hintClose',
+      'hintTouch',
+    ];
     for (const lang of ['en', 'fr'] as const) {
       // Four French wordings are grammar fixes (c1-mri-dialog-french), asserted below.
-      const changed = lang === 'fr' ? ['hint', 'voxel'] : [];
+      const changed = [...added, ...(lang === 'fr' ? ['hint', 'voxel'] : [])];
       assert.deepStrictEqual(
         resolve(without(TRANSLATIONS[lang].mri.dialog, ...changed), 'mri'),
         resolve(without(legacy[lang], ...changed), 'mri'),

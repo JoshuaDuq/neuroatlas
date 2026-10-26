@@ -23,19 +23,6 @@
     onShow: (ids: readonly string[], said: string) => void;
   }
 
-  /** The part sentence of a press (a1-eye-announcement); the legacy copy has none, which parity/C1 holds. */
-  // TODO(C1): dissection.partHidden / partShown
-  const PRESSED = {
-    en: {
-      hidden: (name: string, side: string) => `Hidden: ${name}, ${side}.`,
-      shown: (name: string, side: string) => `Shown: ${name}, ${side}.`,
-    },
-    fr: {
-      hidden: (name: string, side: string) => `Masqué : ${name}, ${side}.`,
-      shown: (name: string, side: string) => `Affiché : ${name}, ${side}.`,
-    },
-  } satisfies Record<Language, Record<'hidden' | 'shown', (name: string, side: string) => string>>;
-
   let { lang, ids, name, side, hiddenRegions, onHide, onShow }: Props = $props();
 
   const state = $derived(visibilityStateOf(ids, hiddenRegions));
@@ -44,8 +31,8 @@
   const label = $derived((state === 'hidden' ? copy.showPart : copy.hidePart)(name, sideWord));
 
   function toggle() {
-    if (state === 'hidden') onShow(ids, PRESSED[lang].shown(name, sideWord));
-    else onHide(ids, PRESSED[lang].hidden(name, sideWord));
+    if (state === 'hidden') onShow(ids, copy.partShown(name, sideWord));
+    else onHide(ids, copy.partHidden(name, sideWord));
   }
 </script>
 
