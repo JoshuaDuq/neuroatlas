@@ -52,7 +52,8 @@ async function bootWorld(create: () => Promise<Engine> | Engine) {
   const [atlas, otherAtlas] = manifest.atlases.map((entry) => entry.id) as [string, string];
   const cortex = (side: 'left' | 'right', inAtlas = atlas) =>
     manifest.regions.find(
-      (region) => region.kind === 'cortex' && region.atlas === inAtlas && region.hemisphere === side,
+      (region) =>
+        region.kind === 'cortex' && region.atlas === inAtlas && region.hemisphere === side,
     ) as Region;
   return {
     engine,
@@ -242,6 +243,17 @@ export function defineEngineContract(
         assert.equal(engine.model.centroidOf(cortex('left', otherAtlas).id), null);
         assert.equal(engine.model.isRegionDrawn(left.id), true);
         assert.equal(engine.model.isRegionDrawn(cortex('left', otherAtlas).id), false);
+      });
+
+      it('refuses to prefetch what is not an atlas or a detail level', async () => {
+        const { engine } = world();
+        // A supplemental layer loads with its own command (the E4b review).
+        await assert.rejects(engine.model.prefetchLayer('zanatomy'), rejectsWith('unknown-layer'));
+        await assert.rejects(
+          engine.model.prefetchLayer('no-such-layer'),
+          rejectsWith('unknown-layer'),
+        );
+        assert.equal(engine.model.hasLayer('zanatomy'), false);
       });
 
       it('downloads the spinal cord on first showing', async () => {
@@ -550,10 +562,16 @@ export function defineEngineContract(
         const { model } = world().engine;
         const { left, right } = world();
         model.setSurfaceColor('tissue');
-        model.setPaint({ id: 'deficit:aphasia', colors: new Map([[left.id, [255, 0, 0] as const]]) });
+        model.setPaint({
+          id: 'deficit:aphasia',
+          colors: new Map([[left.id, [255, 0, 0] as const]]),
+        });
         assert.equal(model.settings.paint?.id, 'deficit:aphasia');
         assert.equal(model.settings.surfaceColor, 'tissue', 'the colour stays underneath');
-        model.setPaint({ id: 'deficit:other', colors: new Map([[right.id, [0, 255, 0] as const]]) });
+        model.setPaint({
+          id: 'deficit:other',
+          colors: new Map([[right.id, [0, 255, 0] as const]]),
+        });
         assert.equal(model.settings.paint?.id, 'deficit:other', 'a paint is replaced whole');
         model.setPaint(null);
         assert.equal(model.settings.paint, null);
@@ -686,7 +704,10 @@ export function defineEngineContract(
         )!.system_names!.en!;
         await model.setAtlas(otherAtlas);
         const painted = cortex('right', otherAtlas);
-        model.setPaint({ id: 'function:test', colors: new Map([[painted.id, [1, 2, 3] as const]]) });
+        model.setPaint({
+          id: 'function:test',
+          colors: new Map([[painted.id, [1, 2, 3] as const]]),
+        });
         model.setHemisphere('left');
         model.setCortexOpacity(0.4);
         model.setInternalVisible(false);
@@ -782,7 +803,8 @@ export function defineEngineContract(
       });
 
       it('narrows the internal anatomy to one system, dropping what it no longer shows', () => {
-        const { model, regions } = world().engine;
+        const { engine, regions } = world();
+        const { model } = engine;
         model.setCortexVisible(false);
         model.setInternalSystem('Basal ganglia');
         assert.equal(model.state.visibleMeshCount, 14);
@@ -827,17 +849,6 @@ export function defineEngineContract(
         assert.ok(engine.model.hasLayer(otherAtlas));
         assert.equal(engine.model.settings.atlas, atlas);
       });
-
-      it('refuses to prefetch what is not an atlas or a detail level', async () => {
-        const { engine } = world();
-        // A supplemental layer loads with its own command (the E4b review).
-        await assert.rejects(engine.model.prefetchLayer('zanatomy'), rejectsWith('unknown-layer'));
-        await assert.rejects(
-          engine.model.prefetchLayer('no-such-layer'),
-          rejectsWith('unknown-layer'),
-        );
-        assert.equal(engine.model.hasLayer('zanatomy'), false);
-      });
     });
 
     describe('sections', () => {
@@ -871,7 +882,10 @@ export function defineEngineContract(
         await Promise.all([first, second]);
         assert.equal(sections.state.mode, 'off');
         assert.equal(model.settings.cutActive, false);
-        await assert.rejects(sections.setMode('diagonal' as never), exactly('Unknown cut mode: diagonal'));
+        await assert.rejects(
+          sections.setMode('diagonal' as never),
+          exactly('Unknown cut mode: diagonal'),
+        );
       });
 
       it('frames the standard planes with fixed axes and edge letters', async () => {
@@ -970,7 +984,11 @@ export function defineEngineContract(
           [0, -181],
           [0, 200],
         ] as const) {
-          refuses(() => sections.setAngles(tilt, azimuth), RangeError, 'Oblique angles are out of range.');
+          refuses(
+            () => sections.setAngles(tilt, azimuth),
+            RangeError,
+            'Oblique angles are out of range.',
+          );
         }
         assert.deepEqual([sections.state.tilt, sections.state.azimuth], [30, 30]);
         for (const [tilt, azimuth] of [
@@ -1025,7 +1043,10 @@ export function defineEngineContract(
         const { engine } = world();
         const { model, sections } = engine;
         const cutOnly = model.manifest.regions.find(
-          (region) => region.kind === 'tissue-region' && region.atlas === 'nextbrain' && region.hemisphere === 'left',
+          (region) =>
+            region.kind === 'tissue-region' &&
+            region.atlas === 'nextbrain' &&
+            region.hemisphere === 'left',
         )!;
         assert.throws(() => model.select(cutOnly.id), /not visible/);
         await sections.setMode('axial');
@@ -1033,7 +1054,11 @@ export function defineEngineContract(
         model.select(cutOnly.id);
         assert.equal(model.state.selectedRegion?.id, cutOnly.id);
         model.setCortexOpacity(0.5);
-        assert.equal(model.state.selectedRegion?.id, cutOnly.id, 'it stays selected across redraws');
+        assert.equal(
+          model.state.selectedRegion?.id,
+          cutOnly.id,
+          'it stays selected across redraws',
+        );
         model.setHemisphere('right');
         assert.equal(model.state.selectedRegion, null, 'it obeys the hemisphere filter');
         assert.throws(() => model.select(cutOnly.id), /not visible/);

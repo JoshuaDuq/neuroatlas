@@ -1,6 +1,6 @@
 # Engine E7 rules: the engine facade, framing and presentation
 
-Scope: chunk E7 (#31). This covers where the camera goes and what it keeps: framing a named view, a region, a landmark, a deficit, the internal anatomy or a cut; the reader's magnification across resizes; refits for the sheet and dock; the pan limit; the held view; and the camera as a link carries it. In legacy these live in `viewer/app.js` (241-524, 750-822, 1116-1138, 1281-1297, 1515-1550, 1783-1851) and `viewer/ui/chrome/viewport-chrome.js` (47-51, 560-614), and in the new app in `web/src/lib/engine/framing.ts` and `held-view.ts`. Also covered: hover and selection marking (`app.js:1721-1751,1798-1812` → `presentation.ts`) and the facade's own contract (`engine/index.ts`, `api.ts`, the contract suite in `engine/fake/contract-suite.ts`). The scene's eased moves and picking are in `engine-e5.md`. The link's text encoding (`viewer/state/url-state.js`) is in `core-state.md` (STATE-) and its restore and write in `links.md` (LINK-); the engine's side of the MRI window link is FACADE-37 here. "Via contract suite" means a case of `src/lib/engine/fake/contract-suite.ts`. It runs on the real engine in `src/lib/engine/index.svelte.test.ts` and on the fake in `src/lib/engine/contract.test.ts`; only the first proves the app, so the fake run is not listed again.
+Scope: chunk E7 (#31). This covers where the camera goes and what it keeps: framing a named view, a region, a landmark, a deficit, the internal anatomy or a cut; the reader's magnification across resizes; refits for the sheet and dock; the pan limit; the held view; and the camera as a link carries it. In legacy these live in `viewer/app.js` (241-524, 750-822, 1116-1138, 1281-1297, 1515-1550, 1783-1851) and `viewer/ui/chrome/viewport-chrome.js` (47-51, 560-614), and in the new app in `web/src/lib/engine/framing.ts` and `held-view.ts`. Also covered: hover and selection marking (`app.js:1721-1751,1798-1812` → `presentation.ts`) and the facade's own contract (`engine/index.ts`, `api.ts`, the contract suite in `engine/fake/contract-suite.ts`). The scene's eased moves and picking are in `engine-e5.md`. The link's text encoding (`viewer/state/url-state.js`) is in `core-state.md` (STATE-) and its restore and write in `links.md` (LINK-); the engine's side of the MRI window link is FACADE-37 here. "Via contract suite" means a case of `src/lib/engine/fake/contract-suite.ts`. It runs on the real engine in `src/lib/engine/index.contract.test.ts` and on the fake in `src/lib/engine/contract.test.ts`; only the first proves the app, so the fake run is not listed again.
 
 Shared expectations. "The anatomy fits" means every drawn vertex projects inside ±`FRAME_FILL` (0.8) of the cleared frame on both axes, with 1e-9 tolerance. The cleared frame is the visible rectangle minus the framing inset, scaled by the framing source's `scale`. Distances are in metres; links are in millimetres.
 
@@ -13,7 +13,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:406-446`; `viewer/render/camera-views.js:63`
 - **Expected:** After `applyView(v)` for each of the published views, the heading equals `VIEW_DIRECTIONS[v]` (≤1e-9) and `camera.up` equals `upFor(v)`. The anatomy fits, and the view's largest extent reaches at least 0.8×FRAME_FILL (tight, not just inside). `viewHeld === true`.
-- **Covered by:** `src/lib/engine/framing.test.ts` (R, fits), `src/lib/engine/index.svelte.test.ts` (R, via contract suite: held), `parity/E7.test.ts` (D), `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/framing.test.ts` (R, fits), `src/lib/engine/index.contract.test.ts` (R, via contract suite: held), `parity/E7.test.ts` (D), `parity/E5.test.ts` (D)
 
 ### FACADE-02 · The first framing lands at once
 
@@ -56,7 +56,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:510-524`
 - **Expected:** `frameRegion(id)` returns `true`, the region's meshes fit, the heading is unchanged (≤1e-9) and `viewHeld === false`. For an id with no drawn mesh it returns `false` and the camera and held state are unchanged.
-- **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/index.contract.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
 
 ### FACADE-06 · A landmark is framed as its lesson authored it
 
@@ -65,7 +65,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:456-472`
 - **Expected:** `frameLandmark(id, 'anterior', 20)` returns `true`, the heading equals `VIEW_DIRECTIONS.anterior`, and the region box grown by 0.020 m (then `withContext`) fits. `viewHeld === false`. An undrawn region returns `false`.
-- **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/framing.test.ts` (R), `src/lib/engine/index.contract.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
 
 ### FACADE-07 · A deficit's regions are framed together, from their own side
 
@@ -74,7 +74,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:474-494`
 - **Expected:** Viewing from `right` (+x), `frameRegions([leftRegionA, leftRegionB])` gives a heading with x < 0. `frameRegions(['no-such-region'])` emits no camera event and leaves `viewHeld` as it was.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: nothing drawn); side swing `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: nothing drawn); side swing `parity/E7.test.ts` (D)
 
 ### FACADE-08 · Internal anatomy and "pull back" keep the reader's heading and the held view
 
@@ -83,7 +83,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:1116-1138`
 - **Expected:** After `applyView('left')`, both `frameInternal()` and `frameWhole()` keep the heading on `left` (≤1e-9) and `viewHeld === true`. With the cord shown under the brain, the internal frame lies entirely above the brain's lower bound.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: held kept); geometry `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: held kept); geometry `parity/E7.test.ts` (D)
 
 ### FACADE-09 · Facing the cut
 
@@ -92,7 +92,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:1281-1297`
 - **Expected:** With no cut it returns `null`. Coronal returns `anterior` and holds; coronal reversed returns `posterior`; oblique returns `'oblique'` and `viewHeld === false`. The heading equals ±normal (≤1e-9). With the centre below `bounds.min.y`, the framed box is centre ± 0.04 m.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: returned view and held); geometry and cord box `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: returned view and held); geometry and cord box `parity/E7.test.ts` (D)
 
 ### FACADE-10 · Focusing a point keeps distance and heading
 
@@ -101,7 +101,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:1783-1797`
 - **Expected:** `focusPoint([x, y, z] mm)` makes the target equal to `rasToWorld` of the point. The position moves by the same delta, and `viewHeld === false`. For a point with world y < `bounds.min.y`, `minDistance === min(previous, 0.015)`.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: release); geometry `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: release); geometry `parity/E7.test.ts` (D)
 
 ## Magnification and resize
 
@@ -150,7 +150,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:386-400,1515-1550,1830-1851`
 - **Expected:** With a fit `before` and the source now giving fit `after`, `keepFraming(before)` gives distance = old × after/before (≤1e-12), with the same heading and target. Between `start` and `end`, `refitDock()` and `keepFraming()` move nothing, and at `end` the same result applies.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite, weak: only checks the view stays held); `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite, weak: only checks the view stays held); `parity/E7.test.ts` (D)
 
 ### FACADE-16 · Framing reads the interface's clearance when it frames, and reports the viewport
 
@@ -159,7 +159,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:365-376,1524-1530`
 - **Expected:** A framing source counted by calls is asked at least once per `applyView`. After `setChromeInsets({ bottom: 200 })`, a `viewport` event carries `hostSize` equal to `camera.hostSize` and the shrunk `visibleRect`.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite)
 
 ### FACADE-17 · A pan cannot lose the anatomy
 
@@ -179,7 +179,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:440,463,491,520,787,806,1290,1784`
 - **Expected:** As listed, checked through `viewHeld` after each command starting from `applyView('left')`.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite), `parity/E7.test.ts` (D)
 
 ### FACADE-19 · A gesture that moves the camera lets go of the view; a click does not
 
@@ -215,7 +215,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:560-568`
 - **Expected:** `release, hold, hold, release, release` reports `[true, false]`. `applyView('left')` then `frameCurrent('right')` emits one `{ held: true }`.
-- **Covered by:** `parity/E7.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
+- **Covered by:** `parity/E7.test.ts` (R), `src/lib/engine/index.contract.test.ts` (R, via contract suite)
 
 ## Capture, restore and the link
 
@@ -226,7 +226,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:753-766,781-789`
 - **Expected:** `capture()` then `restore(view, snapshot, immediate)` reproduces position, target, up, near, far and the limits exactly. A held capture restores `viewHeld === true` and a released one `false`. The next resize gives the same distance as before the capture.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: held), `src/lib/engine/framing.test.ts` (R, mid-move), `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: held), `src/lib/engine/framing.test.ts` (R, mid-move), `parity/E7.test.ts` (D)
 
 ### FACADE-24 · What the link carries of the camera
 
@@ -235,7 +235,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:791-792,813-822`
 - **Expected:** After `applyView`, `orbitLink() === null`. After `orbitBy`, position[i] equals `destination.position[i] * 1000` (`Object.is`). With the up leaning 0.0009 from `upFor(view)` there is no `up` key; with 0.0011 `up` equals `camera.up.toArray()`. With the reference active it is `null`.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: null when held, millimetres read back within 1e-3); `src/lib/engine/contract.test.ts` (W, "links no orbit while the tract reference is shown" runs on the fake only, so the real engine's reference case is unproven); exactness and up `parity/E7.test.ts` (D)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: null when held, millimetres read back within 1e-3); `src/lib/engine/contract.test.ts` (W, "links no orbit while the tract reference is shown" runs on the fake only, so the real engine's reference case is unproven); exactness and up `parity/E7.test.ts` (D)
 
 ### FACADE-25 · A link camera is placed exactly, or refused
 
@@ -244,7 +244,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:794-811`; `viewer/state/url-state.js:84-90`
 - **Expected:** An orbit at `maxDistance·1000 + ORBIT_ROUNDING_MM/2` mm is placed, and `maxDistance` grows to admit it. At `+ 2·ORBIT_ROUNDING_MM` it throws `RangeError` and the camera is unchanged. Placing a link read back with `orbitLink()` reproduces it within 1e-3 mm, and `viewHeld === false`.
-- **Covered by:** `parity/E7.test.ts` (R), `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
+- **Covered by:** `parity/E7.test.ts` (R), `src/lib/engine/index.contract.test.ts` (R, via contract suite)
 
 ### FACADE-26 · The link writes the camera to a tenth of a millimetre
 
@@ -264,7 +264,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:1817-1823`; `web/src/lib/engine/api.ts` (`HIGH_FREQUENCY_EVENTS`)
 - **Expected:** `applyView('superior', immediate)` emits at least one `camera` event with `edges` keys `bottom, left, right, top`, at least one `cameraSettled`, and no `change`. `camera.view` equals the last event. `HIGH_FREQUENCY_EVENTS` is `['camera', 'hover', 'viewport']`.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite)
 
 ## Presentation
 
@@ -322,7 +322,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** browser — real WebGL: renders the settled frame and reads its pixels back
 - **Source:** `viewer/render/scene.js:551-566`
 - **Expected:** `captureSnapshot({ x: 100, y: 50, width: 400, height: 300 })` gives a canvas of `round(400·ratio)` × `round(300·ratio)` with more than 8 distinct colours in a sparse sample.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R); `src/lib/engine/contract.test.ts` (W, the fake's canvas sizing only)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R); `src/lib/engine/contract.test.ts` (W, the fake's canvas sizing only)
 
 ### FACADE-34 · One change event per model change, with the cut beside it
 
@@ -331,7 +331,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:1611-1639`
 - **Expected:** `model.setHemisphere('left')` makes the last `change` have `model.hemisphere === 'left'` and `sections.mode === 'off'`. Each event carries its own copy of the cut state: after `setDisplay({ reverse: true })` then `{ reverse: false }`, the last event with `reverse` true still says true and the final one says false, and two reads of `sections.state` are different objects.
-- **Covered by:** `src/lib/engine/index.test.ts` (R); `src/lib/engine/index.svelte.test.ts` (R, via contract suite: the copies)
+- **Covered by:** `src/lib/engine/index.test.ts` (R); `src/lib/engine/index.contract.test.ts` (R, via contract suite: the copies)
 
 ### FACADE-35 · The engine is disposed once
 
@@ -340,7 +340,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `web/src/lib/engine/index.ts`
 - **Expected:** `model.disposed` is `false` before `dispose()` and `true` after.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite; could move down to unit: it needs no drawing)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite; could move down to unit: it needs no drawing)
 
 ### FACADE-36 · The scan is shown on the surface only while nothing paints it
 
@@ -358,7 +358,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `viewer/app.js:825-832`
 - **Expected:** Before `load()`: `mriWindowLink() === null`. After it, with the published window shown: `null`. `setWindow(c + 10, w + 20)` → `{ center: c + 10, width: w + 20 }`. `setWindow(c, w)` → `null`. A centre or width that differs by 1 alone is linked.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite), `parity/E7.test.ts` (D, 50 seeded windows)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite), `parity/E7.test.ts` (D, 50 seeded windows)
 
 ### FACADE-38 · A listener that unsubscribes hears nothing more
 
@@ -367,4 +367,4 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Level:** unit
 - **Source:** `web/src/lib/engine/index.ts` (`createEvents`)
 - **Expected:** A `change` listener hears `select(left)`; after its `off()`, `select(null)` adds no event.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite)
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite)

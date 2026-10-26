@@ -1,13 +1,15 @@
 import { afterAll, beforeAll, vi } from 'vitest';
 import { defineEngineContract } from './fake/contract-suite.ts';
-import { bootHeadless, stubHeadlessGlobals, stubPublishedFetch } from './headless-support.ts';
-import type { HeadlessProbe } from './headless-renderer.ts';
+import { bootHeadless, stubHeadlessGlobals, stubPublishedFetch } from './headless-test-support.ts';
+import type { HeadlessProbe } from './headless-renderer-test-support.ts';
 
-const probe = vi.hoisted(
-  (): HeadlessProbe => ({ attributes: new Map(), rendererDisposed: 0, loop: null }),
-);
+const probe = vi.hoisted((): HeadlessProbe => ({
+  attributes: new Map(),
+  rendererDisposed: 0,
+  loop: null,
+}));
 vi.mock('three', async (importOriginal) =>
-  (await import('./headless-renderer.ts')).withHeadlessRenderer(
+  (await import('./headless-renderer-test-support.ts')).withHeadlessRenderer(
     await importOriginal<typeof import('three')>(),
     probe,
   ),
@@ -29,6 +31,9 @@ vi.mock('./render/scene.ts', async (importOriginal) => {
   };
 });
 
+// Booting parses 35 MB of GLB, and a shared machine is slow.
+vi.setConfig({ testTimeout: 120_000, hookTimeout: 120_000 });
+
 beforeAll(() => {
   stubHeadlessGlobals();
   stubPublishedFetch();
@@ -38,8 +43,9 @@ afterAll(() => {
   vi.unstubAllGlobals();
 });
 
+// The MRI navigator needs a canvas and NiiVue's WebGL: `index.svelte.test.ts` runs that case.
 defineEngineContract('real engine, headless', bootHeadless, {
-  canvas: {} as HTMLCanvasElement,
+  drawFrame: () => probe.loop?.(performance.now() + 1000),
   comparison: {
     id: 'overlap:left:-1:0',
     geometry: {

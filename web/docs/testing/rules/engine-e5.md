@@ -1,6 +1,6 @@
 # Engine E5 rules: scene, picking and comparison overlay
 
-Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera moves and the visible rectangle (`viewer/render/scene.js` → `web/src/lib/engine/render/scene.ts`), turning pointer events into hover, selection and focus (`viewer/render/picking.js` → `render/picking.ts`), and the atlas-comparison overlap outline (`viewer/comparison/overlay.js` → `comparison/overlay.ts`). The framing plans, held view and presentation that use the scene are in `engine-e7.md`. Named-view geometry, the visible-rectangle arithmetic and the camera path (`camera-views`, `effective-viewport`, `camera-path`) are in `engine-e1.md` (RENDER-01–RENDER-16). "Via contract suite" means a case of `src/lib/engine/fake/contract-suite.ts`, run on the real engine by `src/lib/engine/index.svelte.test.ts` and on the fake by `src/lib/engine/contract.test.ts`.
+Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera moves and the visible rectangle (`viewer/render/scene.js` → `web/src/lib/engine/render/scene.ts`), turning pointer events into hover, selection and focus (`viewer/render/picking.js` → `render/picking.ts`), and the atlas-comparison overlap outline (`viewer/comparison/overlay.js` → `comparison/overlay.ts`). The framing plans, held view and presentation that use the scene are in `engine-e7.md`. Named-view geometry, the visible-rectangle arithmetic and the camera path (`camera-views`, `effective-viewport`, `camera-path`) are in `engine-e1.md` (RENDER-01–RENDER-16). "Via contract suite" means a case of `src/lib/engine/fake/contract-suite.ts`, run on the real engine by `src/lib/engine/index.contract.test.ts` and on the fake by `src/lib/engine/contract.test.ts`.
 
 ## Camera moves
 
@@ -49,7 +49,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/render/scene.js:99-121,236-259,488-505`
 - **Expected:** On a 1000×700 host, `setChromeInsets({ bottom: 200 })` gives `visibleRect.height === 500` while `hostSize` stays 1000×700. `camera.view` is enabled with the offset `viewOffset` gives, and `camera.position` and `controls.target` are unchanged.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, via contract suite: the rectangle shrinks and a `viewport` event carries the host size; could move down to unit with the fake renderer), `parity/E5.test.ts` (D). The unchanged canvas, camera and target: only D.
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, via contract suite: the rectangle shrinks and a `viewport` event carries the host size; could move down to unit with the fake renderer), `parity/E5.test.ts` (D). The unchanged canvas, camera and target: only D.
 
 ### SCENE-06 · Framing clears the dock and colour key without changing the visible rectangle
 
@@ -266,7 +266,7 @@ Scope: chunk E5 (#29). This covers the render scene and its loop, eased camera m
 - **Level:** unit
 - **Source:** `viewer/comparison/overlay.js:52-56,78-87`
 - **Expected:** `highlight(a)` and `highlight(b)` resolve `[false, true]` and the outline is b. `highlight(a)` then `clear()` resolves `false` with no outline.
-- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, clear); `src/lib/engine/index.svelte.test.ts` (R, via contract suite: supersede on the real engine, parsing the 16 MB `atlas-overlaps.glb`); `src/lib/engine/contract.test.ts` (W, fake: supersede); `parity/E5.test.ts` (D)
+- **Covered by:** `src/lib/engine/comparison/overlay.test.ts` (R, clear); `src/lib/engine/index.contract.test.ts` (R, via contract suite: supersede on the real engine, parsing the 16 MB `atlas-overlaps.glb`); `src/lib/engine/contract.test.ts` (W, fake: supersede); `parity/E5.test.ts` (D)
 
 ### SCENE-29 · A hidden overlay outlines nothing until shown again
 

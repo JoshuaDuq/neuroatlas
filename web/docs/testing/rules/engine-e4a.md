@@ -1,6 +1,6 @@
 # Engine E4a rules: slices, volumes and GPU sections
 
-Scope: chunk E4a (#27), plus the plane rules of F2 that `parity/f2.test.ts` checks against the fake
+Scope: chunk E4a (#27), plus the plane rules of F2 that the contract suite checks on the fake and the real engine
 engine. It covers the coordinate frames of a cut, CPU sampling of the published MRI and label volumes,
 the linked MRI slice images and their point readout, the cut controller (`BrainSections`: modes,
 range, crosshair, cut atlas, status) and the GPU cut faces (`TissueSections`: caps, the sampled label
@@ -8,7 +8,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 `viewer/slices/volume.js`, `viewer/slices/sections.js`, `viewer/tissues/gpu-sections.js`. New code:
 `web/src/lib/engine/slices/*.ts`, `web/src/lib/engine/tissues/gpu-sections.ts`. Deviations:
 `e4a-cut-atlas-rollback.md`, `e4a-fail-fast-sections.md`, `e4a-model-change-single-report.md`,
-`e4a-offset-ready-while-off.md`. RAS is the source surface RAS in millimetres throughout. SLICE-01–SLICE-05 restate the coordinate rules that `engine-e1.md` owns as RENDER-38–RENDER-42; they keep their IDs, but each is tested once, under the RENDER ID. "The contract suite" below is `src/lib/engine/fake/contract-suite.ts`, run on the real engine by `src/lib/engine/index.svelte.test.ts` and on the fake by `src/lib/engine/contract.test.ts`.
+`e4a-offset-ready-while-off.md`. RAS is the source surface RAS in millimetres throughout. SLICE-01–SLICE-05 restate the coordinate rules that `engine-e1.md` owns as RENDER-38–RENDER-42; they keep their IDs, but each is tested once, under the RENDER ID. "The contract suite" below is `src/lib/engine/fake/contract-suite.ts`, run on the real engine by `src/lib/engine/index.contract.test.ts` and on the fake by `src/lib/engine/contract.test.ts`.
 
 ## Coordinates and frames
 
@@ -37,7 +37,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/coordinates.js:39-47`; `viewer/slices/sections.js:357-361`; the frame half is RENDER-39 (`engine-e1.md`)
 - **Expected:** tilt 38°, azimuth 71° → unit u, v, n, mutually orthogonal, and the plane passes through the crosshair (distance 0 ± 1e-10); `setAngles(120, 0)` and azimuth 200 → RangeError.
-- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, orthonormal and anchored; the normal formula is not checked); the contract suite (R, `setAngles(120, 0)` RangeError and stored angles); `src/lib/engine/slices/sections.test.ts` (R, every tilt × azimuth step accepted); `parity/E1.test.ts` (D, formula); `parity/f2.test.ts` (D, fake only). Azimuth 200: only D.
+- **Covered by:** `src/lib/engine/slices/coordinates.test.ts` (R, orthonormal and anchored; the normal formula is not checked); the contract suite (R, `setAngles(120, 0)` RangeError and stored angles); `src/lib/engine/slices/sections.test.ts` (R, every tilt × azimuth step accepted); `parity/E1.test.ts` (D, formula); the contract suite (R, "accepts a tilt of 0 to 90 and an azimuth of -180 to 180 only, and cuts along their normal": the six refusals with their message, the normal, orthonormality and the plane through the crosshair, on both engines).
 
 ### SLICE-04 · Which half a cut removes
 
@@ -160,7 +160,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:7`, `:241-256`, `:467-472`
 - **Expected:** `setMode('coronal')` pending, then `setMode('off')` → mode `off`; `setMode('diagonal')` → "Unknown cut mode: diagonal".
-- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R, latest mode wins); the contract suite (R, "Unknown cut mode", cut reported to the model); `parity/f2.test.ts` (D, fake only)
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R, latest mode wins); the contract suite (R, "Unknown cut mode", cut reported to the model); the contract suite (R, "chooses the latest of the modes it is asked for, and words an unknown one", on both engines)
 
 ### SLICE-17 · Coordinate bounds
 
@@ -178,7 +178,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:128-144`
 - **Expected:** published manifest, cord hidden, oblique 30°/30° → `[-147.8, 147.8]` (rounded to 0.1); every tilt 0..90 step 5 × azimuth −180..180 step 15, cord hidden or shown: `crosshairFor(maximum + 0.01)` → RangeError and every in-range step succeeds.
-- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, weak: the sagittal range contains ±128 and `setOffset(maximum + 1)` is a RangeError); `parity/E4a.test.ts` (D); `parity/f2.test.ts` (D, fake only)
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, weak: the sagittal range contains ±128 and `setOffset(maximum + 1)` is a RangeError); `parity/E4a.test.ts` (D); the contract suite (R, "ranges the offset over the volume, wider along an oblique normal": ±128 for the standard cuts, [-147.8, 147.8] at 30°/30°, `maximum + 0.01` refused)
 
 ### SLICE-19 · Crosshair and offset validation
 
@@ -187,7 +187,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:258-304`
 - **Expected:** cord shown, axial `setOffset(-500)` → crosshair z −500; then sagittal `setOffset(0)` keeps z −500; oblique 45°/0° from `[100, 0, -100]` with offset 60 → crosshair·normal = 60 ± 1e-10, all coordinates within ±128; `setCrosshair([1e6,0,0])`, NaN → RangeError.
-- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, `setCrosshair([1e6, 0, 0])` and NaN RangeError, `setOffset(10)` and `setOffsetReady(-20)`); `parity/f2.test.ts` (D, fake only)
+- **Covered by:** `src/lib/engine/slices/sections.test.ts` (R); the contract suite (R, `setCrosshair([1e6, 0, 0])` and NaN RangeError, `setOffset(10)` and `setOffsetReady(-20)`); the contract suite (R, "moves the crosshair along the normal of the cut and no other way", on both engines; the cord-shown values stay with `sections.test.ts`)
 
 ### SLICE-20 · A shrinking range pulls the crosshair in
 
@@ -277,7 +277,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit — a contract-suite case, so the fake and the real engine meet it alike
 - **Source:** `viewer/slices/sections.js:363-370`
 - **Expected:** `setDisplay({ reverse: 1 })` throws TypeError "Section display options must be boolean." and the state keeps `reverse: false, overlay: false`. `setDisplay({ reverse: true, overlay: true })` → both true; then `setDisplay({ overlay: false })` → reverse still true, overlay false.
-- **Covered by:** `src/lib/engine/fake/contract-suite.ts` "validates the oblique angles and the display options" (R, through `contract.test.ts` and `index.svelte.test.ts`; asserts the TypeError but not its message or the unchanged state); `parity/f2.test.ts` (D, the seeded `{ reverse: 1 }` draw)
+- **Covered by:** `src/lib/engine/fake/contract-suite.ts` "validates the oblique angles and the display options" (R, through `contract.test.ts` and `index.contract.test.ts`; and "refuses a display option that is not a boolean, and changes nothing": the exact message and the unchanged state, on both engines)
 
 ## GPU cut faces
 
