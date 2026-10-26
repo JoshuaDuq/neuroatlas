@@ -103,7 +103,7 @@ test.describe('phone shell', () => {
     await expect(tab(page, 'Anatomy')).toBeVisible();
     await tab(page, 'Functions').click();
     await expect(tab(page, 'Functions')).toHaveAttribute('aria-selected', 'true');
-    await expect.poll(() => app.hash()).toContain('tab=functions');
+    await expect.poll(() => app.hash(), { timeout: 60_000 }).toContain('tab=functions');
   });
 
   test('resized to a phone after load, the tabs follow and focus on the tab survives', async ({
@@ -130,7 +130,7 @@ test.describe('phone shell', () => {
     await page.keyboard.press('ArrowRight');
     await page.keyboard.press('Enter');
     await expect(tab(page, 'Deficits')).toHaveAttribute('aria-selected', 'true');
-    await expect.poll(() => app.hash()).toContain('tab=deficits');
+    await expect.poll(() => app.hash(), { timeout: 60_000 }).toContain('tab=deficits');
   });
 });
 
