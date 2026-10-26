@@ -39,3 +39,24 @@ test('the announcer sentence follows the count, in both languages', () => {
   assert.equal(said('fr', 1), '1 partie masquée');
   assert.equal(said('fr', 7), '7 parties masquées');
 });
+
+test('STATE-57 a change that changes nothing records no history, and undo with none returns null', () => {
+  const dissection = createDissection(regions);
+  assert.equal(dissection.undo(), null);
+  assert.equal(dissection.restore({}), false);
+  assert.equal(dissection.show(['left'], {}), false);
+  assert.equal(dissection.state.dissectionCanUndo, false);
+  assert.equal(dissection.hide(['left'], {}), true);
+  assert.equal(dissection.hide(['left'], {}), false);
+  assert.equal(dissection.state.dissectionCanUndo, true);
+  assert.deepEqual(dissection.undo(), {});
+  assert.equal(dissection.state.dissectionCanUndo, false);
+});
+
+test('STATE-58 reset clears the hidden parts and the history', () => {
+  const dissection = createDissection(regions);
+  dissection.hide(['left', 'right'], {});
+  dissection.reset();
+  assert.equal(dissection.state.hiddenRegions.size, 0);
+  assert.equal(dissection.state.dissectionCanUndo, false);
+});

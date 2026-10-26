@@ -235,3 +235,13 @@ test('a decomposed query or name marks the same span as a composed one', () => {
 test('a query that folds to nothing marks nothing', () => {
   assert.deepEqual(matchSegments('Insula', '\u0301'), [{ text: 'Insula', match: false }]);
 });
+
+test('PANEL-01 a step of zero, or an empty list, leaves the armed row where it is', () => {
+  assert.equal(nextEnabledIndex([false, false], 1, 0), 1);
+  assert.equal(nextEnabledIndex([], 3, 1), 3);
+  assert.equal(nextEnabledIndex([], -1, -1), -1);
+});
+
+test('PANEL-09 a group with no parts under it shows its eye', () => {
+  assert.equal(visibilityStateOf([], new Set(['a', 'b'])), 'shown');
+});

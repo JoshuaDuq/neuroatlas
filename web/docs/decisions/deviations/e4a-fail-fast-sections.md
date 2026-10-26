@@ -1,9 +1,8 @@
 # E4a deviation: the cut calls its collaborators directly and names an unloaded MRI
 
 Chunk E4a (#27). A fix under the parity policy (CLAUDE.md: "fail fast, no silent fallbacks"). Two
-changes, neither of which alters a result the app can reach in production; the parity test
-(`web/parity/E4a.test.ts`) pins that `sample()` and `pixels()` match the legacy values once the
-MRI is loaded.
+changes, neither of which alters a result the app can reach in production;
+`sections.test.ts` (SLICE-15) pins the values `sample()` reads once the MRI is loaded.
 
 ## Direct calls on members that always exist
 

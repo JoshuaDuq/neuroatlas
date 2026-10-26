@@ -5,7 +5,7 @@ export const en = {
   visited: 'seen',
   landmarkCount: (count: number) => `${count} ${count === 1 ? 'landmark' : 'landmarks'}`,
   coverage: (circuits: number, landmarks: number) =>
-    `${circuits} guided circuits · ${landmarks} landmarks`,
+    `${circuits} guided ${circuits === 1 ? 'circuit' : 'circuits'} · ${landmarks} ${landmarks === 1 ? 'landmark' : 'landmarks'}`,
   schematic: 'Schematic relationships · not measured connectivity or tractography',
   connections: 'Connections and scope',
   previousLandmark: 'Previous landmark',
@@ -34,7 +34,7 @@ export const fr: typeof en = {
   visited: 'vu',
   landmarkCount: (count: number) => `${count} ${count > 1 ? 'repères' : 'repère'}`,
   coverage: (circuits: number, landmarks: number) =>
-    `${circuits} parcours guidés · ${landmarks} repères`,
+    `${circuits} ${circuits > 1 ? 'parcours guidés' : 'parcours guidé'} · ${landmarks} ${landmarks > 1 ? 'repères' : 'repère'}`,
   schematic: 'Relations schématiques · sans mesure de connectivité ni tractographie',
   connections: 'Connexions et portée',
   previousLandmark: 'Repère précédent',

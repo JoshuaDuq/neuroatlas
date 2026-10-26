@@ -217,3 +217,213 @@ test('the French Escape row names the function and the deficit, as the English r
   assert.match(row('en'), /function or deficit$/);
   assert.match(row('fr'), /la fonction ou le déficit$/);
 });
+
+test('counted phrases read right for a count of 1 and of 2, in both languages', () => {
+  const footer = both('footer');
+  const functions = both('functions');
+  assert.equal(footer.en.sourceFiles(1, false), '1 source file');
+  assert.equal(footer.en.sourceFiles(2, false), '2 source files');
+  assert.equal(footer.en.sourceFiles(1, true), '1 source file, with a SHA-256 checksum');
+  assert.equal(footer.en.sourceFiles(2, true), '2 source files, each with a SHA-256 checksum');
+  assert.equal(footer.fr.sourceFiles(1, false), '1 fichier source');
+  assert.equal(footer.fr.sourceFiles(2, false), '2 fichiers sources');
+  assert.equal(footer.fr.sourceFiles(1, true), '1 fichier source, avec une somme SHA-256');
+  assert.equal(footer.fr.sourceFiles(2, true), '2 fichiers sources, chacun avec une somme SHA-256');
+
+  assert.match(
+    functions.en.coverage(1, 1),
+    /^1 function, a Neurosynth meta-analysis .*finds 1 more Neurosynth term or clinical group\./,
+  );
+  assert.match(
+    functions.en.coverage(2, 2),
+    /^2 functions, each a Neurosynth meta-analysis .*finds 2 more Neurosynth terms and clinical groups\./,
+  );
+  assert.match(
+    functions.fr.coverage(1, 1),
+    /^1 fonction, une méta-analyse Neurosynth .*trouve aussi 1 autre terme ou groupe clinique Neurosynth\./,
+  );
+  assert.match(
+    functions.fr.coverage(2, 2),
+    /^2 fonctions, chacune une méta-analyse Neurosynth .*trouve aussi 2 autres termes et groupes cliniques Neurosynth\./,
+  );
+
+  assert.equal(CIRCUIT_TEXT.en.coverage(1, 1), '1 guided circuit · 1 landmark');
+  assert.equal(CIRCUIT_TEXT.en.coverage(2, 2), '2 guided circuits · 2 landmarks');
+  assert.equal(CIRCUIT_TEXT.fr.coverage(1, 1), '1 parcours guidé · 1 repère');
+  assert.equal(CIRCUIT_TEXT.fr.coverage(2, 2), '2 parcours guidés · 2 repères');
+
+  assert.deepEqual([1, 2].map(DIFFUSION_TEXT.en.bundleCollection), [
+    '1 tract bundle',
+    '2 tract bundles',
+  ]);
+  assert.deepEqual([1, 2].map(DIFFUSION_TEXT.fr.bundleCollection), ['1 faisceau', '2 faisceaux']);
+});
+
+test('the contested-section note uses typographic apostrophes', () => {
+  assert.equal(
+    both('functional').en.contested(3, 5),
+    'Glasser’s Table 1 gives section 3 as this area’s primary section; the supplement’s section text lists it under section 5.',
+  );
+});
+
+const NNBSP = ' ';
+
+test('I18N-05 · the strings later chunks asked for read as approved, in both languages', () => {
+  const rows: [string, string, string, string][] = [
+    [
+      'viewport.navigationHintTouch',
+      'Drag to rotate · Pinch to zoom · Tap to inspect',
+      'Glisser\u202f: tourner · Pincer\u202f: zoom · Toucher\u202f: inspecter',
+      '',
+    ],
+    [
+      'viewport.navigationHintTractsTouch',
+      'Drag to rotate · Pinch to zoom',
+      'Glisser\u202f: tourner · Pincer\u202f: zoom',
+      '',
+    ],
+    ['viewport.exitFullscreen', 'Exit full screen', 'Quitter le plein écran', ''],
+    ['viewport.dockLabel', '3D viewer tools', 'Outils du visualiseur 3D', ''],
+    ['viewport.orbitGroup', 'Turn the model', 'Faire pivoter le modèle', ''],
+    ['viewport.orbitLeft', 'Turn left', 'Tourner à gauche', ''],
+    ['viewport.orbitRight', 'Turn right', 'Tourner à droite', ''],
+    ['viewport.orbitUp', 'Turn up', 'Tourner vers le haut', ''],
+    ['viewport.orbitDown', 'Turn down', 'Tourner vers le bas', ''],
+    ['viewport.keyAbsent', 'Not shown in this view', 'Absent de cette vue', ''],
+    ['workspace.panelAria', 'Atlas panel', 'Panneau de l’atlas', ''],
+    ['link.newTab', '(opens in a new tab)', '(s’ouvre dans un nouvel onglet)', ''],
+    ['comparison.ready', 'Atlas comparison loaded.', 'Comparaison des atlas chargée.', ''],
+    [
+      'comparison.exported',
+      'Atlas comparison CSV downloaded.',
+      'Fichier CSV de la comparaison des atlas téléchargé.',
+      '',
+    ],
+    ['diffusion.tryAgain', 'Try again', 'Réessayer', ''],
+    ['diffusion.restored', 'Default tracts restored.', 'Faisceaux initiaux rétablis.', ''],
+    ['diffusion.exported', 'Lengths CSV exported.', 'CSV des longueurs exporté.', ''],
+    ['shortcuts.rangeTo', 'to', 'à', ''],
+  ];
+  const at = (lang: 'en' | 'fr', path: string) =>
+    path
+      .split('.')
+      .reduce<unknown>((node, key) => (node as Record<string, unknown>)[key], TRANSLATIONS[lang]);
+  for (const [path, en, fr] of rows) {
+    assert.equal(at('en', path), en, path);
+    assert.equal(at('fr', path), fr, path);
+  }
+  const call = (lang: 'en' | 'fr', path: string, ...args: unknown[]) =>
+    (at(lang, path) as (...a: unknown[]) => string)(...args);
+  assert.equal(call('en', 'dissection.partHidden', 'X', 'Y'), 'Hidden: X, Y.');
+  assert.equal(call('fr', 'dissection.partHidden', 'X', 'Y'), 'Masqué : X, Y.');
+  assert.equal(call('en', 'dissection.partShown', 'X', 'Y'), 'Shown: X, Y.');
+  assert.equal(call('fr', 'dissection.partShown', 'X', 'Y'), 'Affiché : X, Y.');
+  assert.equal(call('en', 'diffusion.loaded', 'X'), 'Loaded: X');
+  assert.equal(call('fr', 'diffusion.loaded', 'X'), 'Chargé : X');
+  const detent = (lang: 'en' | 'fr') => Object.values(TRANSLATIONS[lang].sheet.detent);
+  assert.deepEqual(detent('en'), ['Panel collapsed', 'Panel half open', 'Panel fully open']);
+  assert.deepEqual(detent('fr'), [
+    'Panneau replié',
+    'Panneau à moitié ouvert',
+    'Panneau entièrement ouvert',
+  ]);
+});
+
+test('I18N-06 · the loading line gives megabytes at one decimal in the reader’s notation', () => {
+  const bytes = [12.3 * 1_048_576, 46.1 * 1_048_576] as const;
+  assert.equal(
+    TRANSLATIONS.en.viewport.loadingWithTotal(...bytes),
+    `Loading anatomy · 12.3${NNBSP}MB / 46.1${NNBSP}MB`,
+  );
+  assert.equal(
+    TRANSLATIONS.fr.viewport.loadingWithTotal(...bytes),
+    `Chargement de l’anatomie · 12,3${NNBSP}Mo / 46,1${NNBSP}Mo`,
+  );
+});
+
+test('I18N-07 · the MRI dialog reads its strings from the mri area, with the French fixes', () => {
+  const { en, fr } = { en: TRANSLATIONS.en.mri.dialog, fr: TRANSLATIONS.fr.mri.dialog };
+  assert.equal(
+    fr.hint,
+    'Cliquer sur une coupe pour placer le réticule. Faire défiler pour parcourir les coupes ; les touches fléchées déplacent le réticule d’un voxel.',
+  );
+  assert.equal(fr.voxel, 'Voxel source (indices à partir de 0)');
+  assert.equal(en.ready, 'Reference MRI ready.');
+  assert.equal(en.hintClose, 'M closes this view.');
+  for (const key of [
+    'ready',
+    'viewer',
+    'voxelName',
+    'range',
+    'moved',
+    'hintKeys',
+    'hintClose',
+    'hintTouch',
+  ]) {
+    assert.ok(key in en && key in fr, key);
+  }
+});
+
+test('I18N-08 · the linked MRI names its tissue labels and edge letters in the reader’s language', () => {
+  assert.equal(TRANSLATIONS.en.mri.tissueNames.Unknown, 'Unlabelled');
+  assert.equal(TRANSLATIONS.fr.mri.tissueNames.Unknown, 'Non étiqueté');
+  assert.equal(Object.keys(TRANSLATIONS.en.mri.tissueNames).length, 12);
+  assert.equal(Object.keys(TRANSLATIONS.fr.mri.tissueNames).length, 12);
+  assert.deepEqual(TRANSLATIONS.en.orientation, { R: 'R', L: 'L', S: 'S', I: 'I', P: 'P', A: 'A' });
+  assert.deepEqual(TRANSLATIONS.fr.orientation, { R: 'D', L: 'G', S: 'S', I: 'I', P: 'P', A: 'A' });
+});
+
+test('I18N-09 · the shortcut sheet’s Escape and M rows carry the S5b wording', () => {
+  const row = (lang: string, key: string) =>
+    t(lang, 'shortcuts')
+      .groups.flatMap(([, items]) => items)
+      .find(([name]) => name === key)![1];
+  assert.equal(
+    row('en', 'Esc'),
+    'In a detail view: back to the list. Elsewhere: clear the search, then the selection, then the function or deficit',
+  );
+  assert.match(row('fr', 'Échap'), /puis la sélection, puis la fonction ou le déficit$/);
+  assert.equal(row('en', 'M'), 'Open or close linked MRI slices; in Tracts, the MRI with tracts');
+  assert.equal(
+    row('fr', 'M'),
+    'Ouvrir ou fermer les coupes IRM ; dans Faisceaux, l’IRM avec faisceaux',
+  );
+});
+
+test('I18N-10 · the atlas switch shows the short name, else the id (the full-title branch is unreachable: every atlas has a short name)', () => {
+  assert.equal(atlasSwitchLabel('wmparc', 'en'), 'wmparc');
+  assert.equal(atlasSwitchLabel('nextbrain', 'fr'), 'NextBrain');
+  assert.equal(atlasSwitchLabel('unheard-of', 'fr'), 'unheard-of');
+  assert.equal(atlasSwitchLabel('learning', 'xx'), 'Teaching set');
+  assert.equal(atlasSwitchLabel('learning'), 'Teaching set');
+});
+
+test('I18N-11 · a counted phrase agrees with its count in both languages', () => {
+  assert.equal(CIRCUIT_TEXT.en.step(1, 2), 'Landmark 2 of 2');
+  assert.equal(CIRCUIT_TEXT.fr.step(1, 2), 'Repère 2 sur 2');
+  assert.deepEqual([1, 2].map(TRANSLATIONS.en.dissection.hiddenCount), [
+    '1 part hidden',
+    '2 parts hidden',
+  ]);
+  assert.deepEqual([1, 2].map(TRANSLATIONS.fr.dissection.hiddenCount), [
+    '1 partie masquée',
+    '2 parties masquées',
+  ]);
+  assert.equal(DIFFUSION_TEXT.en.streamlines(12345, 12345), `12${NNBSP}345 streamlines`);
+});
+
+test('MAST-36 · every data choice has a note in both languages, and the field is Subject', () => {
+  for (const lang of ['en', 'fr'] as const) {
+    const notes: Record<string, string> = TRANSLATIONS[lang].header.notes;
+    for (const id of ['destrieux', 'hcp-mmp', 'learning', 'aseg', 'nextbrain']) {
+      assert.ok(notes[id]!.length > 10, `${lang} ${id}`);
+    }
+    const titles = TRANSLATIONS[lang].display.surfaceColorTitles;
+    for (const choice of ['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional']) {
+      assert.ok(Object.hasOwn(titles, choice), `${lang} ${choice}`);
+    }
+    assert.doesNotMatch(JSON.stringify(TRANSLATIONS[lang].header), /Specimen|Spécimen/);
+  }
+  assert.equal(TRANSLATIONS.en.header.subject, 'Subject');
+  assert.equal(TRANSLATIONS.fr.header.subject, 'Sujet');
+});

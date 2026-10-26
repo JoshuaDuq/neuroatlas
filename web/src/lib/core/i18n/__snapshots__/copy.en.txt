@@ -1,0 +1,1225 @@
+{
+ "app": {
+  "spoken": [
+   "[\"Alpha\",\"\"] → \"Selected: Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Selected: , Alpha\""
+  ],
+  "selectionCleared": [
+   "[\"Alpha\"] → \"Selection cleared — Alpha is no longer shown.\"",
+   "[\"\"] → \"Selection cleared —  is no longer shown.\""
+  ],
+  "cabNpAtlasOnly": [
+   "[\"Alpha\"] → \"CAB-NP colours HCP-MMP areas only, so Alpha shows its own region colours.\"",
+   "[\"\"] → \"CAB-NP colours HCP-MMP areas only, so  shows its own region colours.\""
+  ],
+  "functionalAtlasOnly": [
+   "[\"Alpha\"] → \"Functional divisions colour HCP-MMP areas only, so Alpha shows its own region colours.\"",
+   "[\"\"] → \"Functional divisions colour HCP-MMP areas only, so  shows its own region colours.\""
+  ],
+  "functionalHidesInternal": "Internal anatomy is hidden; Display shows it again."
+ },
+ "atlases": {
+  "destrieux": "Destrieux anatomical atlas",
+  "hcp-mmp": "HCP-MMP1.0 multimodal atlas",
+  "learning": "Teaching set: overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published",
+  "aseg": "FreeSurfer subcortical segmentation",
+  "nextbrain": "NextBrain histological atlas",
+  "cerebnet": "FastSurfer CerebNet cerebellar lobules",
+  "wmparc": "FreeSurfer white-matter parcellation",
+  "zanatomy": "Z-Anatomy spinal cord reference"
+ },
+ "circuits": {
+  "heading": "Guided learning",
+  "landmarks": "Landmarks",
+  "landmark": "Landmark",
+  "visited": "seen",
+  "landmarkCount": [
+   "[0] → \"0 landmarks\"",
+   "[1] → \"1 landmark\"",
+   "[2] → \"2 landmarks\"",
+   "[183] → \"183 landmarks\"",
+   "[12345] → \"12345 landmarks\""
+  ],
+  "coverage": [
+   "[0,1] → \"0 guided circuits · 1 landmark\"",
+   "[1,2] → \"1 guided circuit · 2 landmarks\"",
+   "[2,183] → \"2 guided circuits · 183 landmarks\"",
+   "[183,12345] → \"183 guided circuits · 12345 landmarks\"",
+   "[12345,0] → \"12345 guided circuits · 0 landmarks\""
+  ],
+  "schematic": "Schematic relationships · not measured connectivity or tractography",
+  "connections": "Connections and scope",
+  "previousLandmark": "Previous landmark",
+  "nextLandmark": "Next landmark",
+  "returnToLandmark": "Return to landmark",
+  "otherSelection": "You are exploring another region.",
+  "mapping": "What this atlas shows",
+  "clinical": "Clinical context",
+  "clinicalLink": "Open deficit evidence",
+  "clinicalNote": "Reference anatomy; these associations do not predict an individual patient’s deficit.",
+  "evidence": "Sources",
+  "revised": "Content checked",
+  "loading": "Opening landmark…",
+  "mriNote": "In the linked MRI, the crosshair marks the 3D landmark’s centroid, which may fall outside a curved structure. MRI labels can use a different atlas.",
+  "step": [
+   "[0,1] → \"Landmark 1 of 1\"",
+   "[1,2] → \"Landmark 2 of 2\"",
+   "[2,183] → \"Landmark 3 of 183\"",
+   "[183,12345] → \"Landmark 184 of 12345\"",
+   "[12345,0] → \"Landmark 12346 of 0\""
+  ],
+  "stepShort": [
+   "[0,1] → \"1 of 1\"",
+   "[1,2] → \"2 of 2\"",
+   "[2,183] → \"3 of 183\"",
+   "[183,12345] → \"184 of 12345\"",
+   "[12345,0] → \"12346 of 0\""
+  ],
+  "inCircuits": "In guided circuits"
+ },
+ "clinical": {
+  "deficits": "Deficits",
+  "search": "Search deficits",
+  "searchLabel": "Search deficits or cognitive functions",
+  "coverage": "{count} profiles · adult acquired deficits",
+  "noResults": "Try another term or a cognitive function.",
+  "evidenceKind": [
+   "[0] → \"Lesion and clinical evidence · 0 associations\"",
+   "[1] → \"Lesion and clinical evidence · 1 association\"",
+   "[2] → \"Lesion and clinical evidence · 2 associations\"",
+   "[183] → \"Lesion and clinical evidence · 183 associations\"",
+   "[12345] → \"Lesion and clinical evidence · 12345 associations\""
+  ],
+  "checkedMaps": "Activation maps this evidence checks",
+  "deepMapped": [
+   "[\"Alpha\",1] → \"Alpha lies beneath the cortex.\"",
+   "[\"\",2] → \" lie beneath the cortex.\"",
+   "[\"Alpha\",183] → \"Alpha lie beneath the cortex.\"",
+   "[\"\",12345] → \" lie beneath the cortex.\"",
+   "[\"Alpha\",0] → \"Alpha lie beneath the cortex.\""
+  ],
+  "otherMapped": [
+   "[0] → \"0 other mapped regions\"",
+   "[1] → \"1 other mapped region\"",
+   "[2] → \"2 other mapped regions\"",
+   "[183] → \"183 other mapped regions\"",
+   "[12345] → \"12345 other mapped regions\""
+  ],
+  "functionBridge": [
+   "[0,\"\"] → \"Functions: 0 activation maps match “”\"",
+   "[1,\"Alpha\"] → \"Functions: 1 activation map matches “Alpha”\"",
+   "[2,\"\"] → \"Functions: 2 activation maps match “”\"",
+   "[183,\"Alpha\"] → \"Functions: 183 activation maps match “Alpha”\"",
+   "[12345,\"\"] → \"Functions: 12345 activation maps match “”\""
+  ],
+  "results": [
+   "[0] → \"No match\"",
+   "[1] → \"1 deficit\"",
+   "[2] → \"2 deficits\"",
+   "[183] → \"183 deficits\"",
+   "[12345] → \"12345 deficits\""
+  ],
+  "related": "Neuropsychology",
+  "associations": "Associations",
+  "findings": "Evidence",
+  "studyFinding": "Reported finding",
+  "limits": "Interpretation",
+  "mapping": "Approximate anatomical mapping",
+  "openRegion": "Open region",
+  "regionsMarked": [
+   "[0,1,true] → \"0 of 1 region coloured\"",
+   "[1,2,false] → \"1 of 2 regions visible\"",
+   "[2,183,true] → \"2 of 183 regions coloured\"",
+   "[183,12345,false] → \"183 of 12345 regions visible\"",
+   "[12345,0,true] → \"12345 of 0 regions coloured\""
+  ],
+  "changed": {
+   "cut": "section closed",
+   "isolation": "isolation cleared",
+   "hemisphere": "both hemispheres shown",
+   "cortexHidden": "cortex hidden",
+   "cortexShown": "cortex shown",
+   "atlas": [
+    "[\"Alpha\"] → \"atlas set to Alpha\"",
+    "[\"\"] → \"atlas set to \""
+   ],
+   "detail": [
+    "[\"Alpha\"] → \"internal anatomy set to Alpha\"",
+    "[\"\"] → \"internal anatomy set to \""
+   ],
+   "colour": [
+    "[\"Alpha\"] → \"colour set to Alpha\"",
+    "[\"\"] → \"colour set to \""
+   ],
+   "cutAtlas": [
+    "[\"Alpha\"] → \"cut labels set to Alpha\"",
+    "[\"\"] → \"cut labels set to \""
+   ]
+  },
+  "restore": "Restore previous view",
+  "restoring": "Restoring the previous view…",
+  "stageRestored": "Previous view restored.",
+  "restoreFailed": "The previous view could not be fully restored.",
+  "evidence": "Publications",
+  "supporting": "Supporting study",
+  "qualifying": "Contrasting evidence",
+  "population": "Study population",
+  "abstract": "Source inspected: abstract",
+  "correction": "Correction published",
+  "full-text": "Source inspected: full text",
+  "sources": "Selected literature · not a systematic review",
+  "revised": "Content checked",
+  "referenceOnly": "Reference anatomy; associations do not predict an individual patient’s deficit.",
+  "mappingEmpty": "No atlas mapping available.",
+  "loading": "Opening anatomy…",
+  "methods": {
+   "lesion-mapping": "Lesion–symptom mapping",
+   "meta-analysis": "Meta-analysis of lesion mapping",
+   "case-report": "Case report",
+   "case-series": "Case series"
+  },
+  "laterality": {
+   "left": "Left hemisphere",
+   "right": "Right hemisphere",
+   "bilateral": "Bilateral landmarks"
+  },
+  "lateralityShort": {
+   "left": "Left",
+   "right": "Right",
+   "bilateral": "Bilateral"
+  }
+ },
+ "comparison": {
+  "heading": [
+   "[\"Alpha\"] → \"Overlap with Alpha\"",
+   "[\"\"] → \"Overlap with \""
+  ],
+  "denominator": "Shares of this region’s full pial surface.",
+  "highlight": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Highlight overlap with Alpha, , Alpha of this region\"",
+   "[\"\",\"Alpha\",\"\"] → \"Highlight overlap with , Alpha,  of this region\""
+  ],
+  "more": [
+   "[0] → \"0 more overlapping regions\"",
+   "[1] → \"1 more overlapping region\"",
+   "[2] → \"2 more overlapping regions\"",
+   "[183] → \"183 more overlapping regions\"",
+   "[12345] → \"12345 more overlapping regions\""
+  ],
+  "columns": [
+   "Region",
+   "Area (mm²)",
+   "Share (%)"
+  ],
+  "unassigned": "Unassigned",
+  "export": "Download CSV",
+  "loading": "Loading atlas comparison…",
+  "highlightLoading": "Loading overlap outline…",
+  "retry": "Retry comparison",
+  "ready": "Atlas comparison loaded.",
+  "exported": "Atlas comparison CSV downloaded.",
+  "viewNote": "Turn off sections to outline overlaps. Measurements use the full region, including hidden parts.",
+  "methodHeading": "Method and sources",
+  "method": "Surface area on this subject’s original pial triangles, using the same midpoint/centroid boundaries as the viewer. Percentages include unassigned area and are not rescaled. Small overlaps remain in the table and export. Values shown are rounded; CSV retains full precision. HCP-MMP labels are projected from a group atlas through registered spheres, not measured boundaries in this individual. This is spatial correspondence, not functional equivalence."
+ },
+ "cuts": {
+  "cuttingPlane": "Cutting plane",
+  "modes": {
+   "off": "Full brain",
+   "sagittal": "Sagittal",
+   "coronal": "Coronal",
+   "axial": "Axial",
+   "oblique": "Oblique"
+  },
+  "modesShort": {
+   "off": "Full",
+   "sagittal": "Sag",
+   "coronal": "Cor",
+   "axial": "Ax",
+   "oblique": "Obl"
+  },
+  "axes": {
+   "off": "Position (mm)",
+   "sagittal": "R coordinate (mm): − left / + right",
+   "coronal": "A coordinate (mm): − posterior / + anterior",
+   "axial": "S coordinate (mm): − inferior / + superior",
+   "oblique": "Normal offset from origin (mm)"
+  },
+  "exactPositionAria": "Exact cut position in millimetres",
+  "tilt": "Tilt from axial",
+  "azimuth": "Rotation around superior axis",
+  "tiltShort": "Tilt",
+  "azimuthShort": "Azimuth",
+  "reverseSide": "Reverse retained side",
+  "reverseShort": "Reverse side",
+  "openLinkedMpr": "Linked MRI",
+  "closeCut": "Close section and show the full brain",
+  "moreControls": "More section controls",
+  "openMprTitle": "Open linked MRI slices",
+  "statusFull": "Full brain · no cut",
+  "statusPreparing": "Preparing anatomy…",
+  "statusActive": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Tissue cut at Alpha<NNBSP>mm · Alpha<NNBSP>mm source grid · \"",
+   "[\"\",\"Alpha\",\"\"] → \"Tissue cut at <NNBSP>mm · <NNBSP>mm source grid · Alpha\""
+  ],
+  "statusMri": [
+   "[\"Alpha\",\"\"] → \"MRI cut at Alpha<NNBSP>mm · 1<NNBSP>mm source grid · \"",
+   "[\"\",\"Alpha\"] → \"MRI cut at <NNBSP>mm · 1<NNBSP>mm source grid · Alpha\""
+  ],
+  "grid": [
+   "[\"Alpha\",\"\"] → \"<NNBSP>mm source grid · Alpha\"",
+   "[\"\",\"Alpha\"] → \"Alpha<NNBSP>mm source grid · \""
+  ],
+  "gridMri": [
+   "[\"Alpha\"] → \"MRI · 1<NNBSP>mm source grid · Alpha\"",
+   "[\"\"] → \"MRI · 1<NNBSP>mm source grid · \""
+  ],
+  "sectionNames": {
+   "sagittal": "Sagittal section",
+   "coronal": "Coronal section",
+   "axial": "Axial section",
+   "oblique": "Oblique section"
+  },
+  "networkByRegion": "networks by each region’s dominant share",
+  "cabNpByArea": "CAB-NP network of each HCP-MMP area",
+  "cabNpOtherLabels": "CAB-NP colours HCP-MMP labels only",
+  "functionalByArea": "functional division of each HCP-MMP area",
+  "functionalOtherLabels": "functional divisions colour HCP-MMP labels only",
+  "domainsByArea": "neuropsychological functions of each HCP-MMP area",
+  "domainsOtherLabels": "neuropsychological functions colour HCP-MMP labels only",
+  "hcpDerived": "derived HCP labels",
+  "destrieuxNative": "native Destrieux labels",
+  "nextbrainWarped": "warped NextBrain labels",
+  "nextbrainSegmented": "NextBrain labels segmented on this brain",
+  "cutLabels": "Cut labels"
+ },
+ "deficitKey": {
+  "keyAll": "One colour per finding; a region several findings cite takes the first one’s colour, and tissue-coloured regions are not cited. Choose a finding to show it alone.",
+  "keyOne": "The regions this finding cites; tissue-coloured regions are not cited.",
+  "keyAbsent": "An outlined finding has no region coloured in this view.",
+  "keyPicked": "Only this finding’s regions. Choose it again for every finding."
+ },
+ "diffusion": {
+  "bundleCollection": [
+   "[0] → \"0 tract bundles\"",
+   "[1] → \"1 tract bundle\"",
+   "[2] → \"2 tract bundles\"",
+   "[183] → \"183 tract bundles\"",
+   "[12345] → \"12345 tract bundles\""
+  ],
+  "bundles": "Tract bundles",
+  "brainOpacity": "Brain outline opacity",
+  "minimum": "Minimum length (mm)",
+  "cortexOpacity": "Cortex opacity",
+  "showOverlay": "Show tracts with anatomy",
+  "mriOpen": "MRI with tracts",
+  "nativeReference": "Tracts in their own T1 reference brain.",
+  "nativeCanvas": "Reference brain and tracts. Drag or use arrow keys to rotate, scroll or press plus and minus to zoom. Select tract bundles in the side panel.",
+  "outlineLimit": "MRI-derived brain outline; no cortical atlas labels on this outline.",
+  "mriHint": "The linked MRI uses the same scan, and a cut slices both layers together.",
+  "metricsScope": "Counts and lengths use complete source streamlines after the length filter. Section cuts affect the view only.",
+  "outlineProvenance": "Brain outline method and provenance",
+  "search": "Search tracts",
+  "noMatchHint": "Try another tract name.",
+  "retry": "Reload reference dataset",
+  "tryAgain": "Try again",
+  "matches": [
+   "[0] → \"0 tract bundles\"",
+   "[1] → \"1 tract bundle\"",
+   "[2] → \"2 tract bundles\"",
+   "[183] → \"183 tract bundles\"",
+   "[12345] → \"12345 tract bundles\""
+  ],
+  "loaded": [
+   "[\"Alpha\"] → \"Loaded: Alpha\"",
+   "[\"\"] → \"Loaded: \""
+  ],
+  "restored": "Default tracts restored.",
+  "exported": "Lengths CSV exported.",
+  "ready": "Reference dataset ready.",
+  "loading": "Loading reference dataset…",
+  "restore": "Restore default tracts",
+  "exportMetrics": "Export lengths CSV",
+  "streamlines": [
+   "[0,1] → \"0 of 1 streamlines\"",
+   "[1,2] → \"1 of 2 streamlines\"",
+   "[2,183] → \"2 of 183 streamlines\"",
+   "[183,12345] → \"183 of 12<NNBSP>345 streamlines\"",
+   "[12345,0] → \"12<NNBSP>345 of 0 streamlines\""
+  ],
+  "mean": "mean",
+  "range": "range",
+  "noShown": "No streamlines meet this length filter.",
+  "source": "Dataset source · CC0",
+  "about": "About this data",
+  "settings": "Tract display",
+  "errors": {
+   "asset-fetch": "The reference data could not be downloaded. Check the connection, then try again.",
+   "asset-updated": "Planum was updated while this page was open. Reload the page to load the new data.",
+   "invalid-data": "The reference data could not be read.",
+   "failed": "The reference data could not be displayed."
+  }
+ },
+ "display": {
+  "hemisphere": "Hemisphere",
+  "seeThrough": "See through the cortex",
+  "seenThrough": "Cortex made see-through; its painted areas stay opaque. Display sets the opacity.",
+  "opaqueAgain": "Cortex made opaque again.",
+  "both": "Both",
+  "left": "Left",
+  "right": "Right",
+  "internalAnatomy": "Internal anatomy",
+  "showCortex": "Show cortex",
+  "cortexOpacity": "Cortex opacity",
+  "showInternal": "Show internal anatomy",
+  "showSpinalCord": "Show spinal cord",
+  "spinalCordUnavailable": "No spinal cord is published for this subject.",
+  "surfaceColors": {
+   "tissue": "Tissue",
+   "mri": "T1 MRI",
+   "atlas": "Regions",
+   "network": "Yeo 7 networks",
+   "cab-np": "CAB-NP networks",
+   "functional": "Functional divisions"
+  },
+  "paints": {
+   "function": "Functions",
+   "deficit": "Deficit"
+  },
+  "paintTitles": {
+   "function": "Set by the Functions tab: neuropsychological functions on HCP-MMP areas, where studies consistently report activation (Neurosynth). Choose a colour here to show it instead.",
+   "deficit": "Set by the Deficits tab: the regions the open deficit’s findings cite, one colour per finding. Choose a colour here to show it instead."
+  },
+  "surfaceColorTitles": {
+   "tissue": "Tissue colours, shaded by T1 brightness",
+   "mri": "Registered T1 MRI intensity in greyscale · selected region tinted",
+   "atlas": "Atlas region colours",
+   "network": "Functional networks (Yeo 7)",
+   "cab-np": "Functional networks (CAB-NP, 12) on HCP-MMP areas",
+   "functional": "Functional divisions on HCP-MMP areas: Glasser 2016 sections and named regions from Glasser 2016 and Rolls 2022, 2023"
+  },
+  "resetView": "Reset view"
+ },
+ "dissection": {
+  "heading": "Dissection",
+  "undo": "Undo",
+  "restoreAll": "Restore all",
+  "hideSelected": "Hide",
+  "hiddenCount": [
+   "[0] → \"All parts shown\"",
+   "[1] → \"1 part hidden\"",
+   "[2] → \"2 parts hidden\"",
+   "[183] → \"183 parts hidden\"",
+   "[12345] → \"12345 parts hidden\""
+  ],
+  "hidePart": [
+   "[\"Alpha\",\"\"] → \"Hide Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Hide , Alpha\""
+  ],
+  "showPart": [
+   "[\"Alpha\",\"\"] → \"Show Alpha, \"",
+   "[\"\",\"Alpha\"] → \"Show , Alpha\""
+  ],
+  "partial": "partially hidden",
+  "partHidden": [
+   "[\"Alpha\",\"\"] → \"Hidden: Alpha, .\"",
+   "[\"\",\"Alpha\"] → \"Hidden: , Alpha.\""
+  ],
+  "partShown": [
+   "[\"Alpha\",\"\"] → \"Shown: Alpha, .\"",
+   "[\"\",\"Alpha\"] → \"Shown: , Alpha.\""
+  ]
+ },
+ "domains": {
+  "heading": "Neuropsychological functions",
+  "score": [
+   "[\"Alpha\",\"\"] → \"“Alpha” · z<NBSP>\"",
+   "[\"\",\"Alpha\"] → \"“” · z<NBSP>Alpha\""
+  ],
+  "none": [
+   "[\"Alpha\"] → \"No function reaches z<NBSP>Alpha here.\"",
+   "[\"\"] → \"No function reaches z<NBSP> here.\""
+  ],
+  "noteStructure": [
+   "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from Alpha. Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\"",
+   "[\"\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from . Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\""
+  ],
+  "note": [
+   "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from Alpha: where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\"",
+   "[\"\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from : where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\""
+  ],
+  "keyTitle": "Neuropsychological functions",
+  "band": [
+   "[\"Alpha\",\"3.5\"] → \"z<NBSP>Alpha<NBSP>to<NBSP>3.5\"",
+   "[\"\",null] → \"z<NBSP>≥<NBSP>\""
+  ],
+  "keyScale": "Mean consistency z per area; darker is more consistent. Tissue-coloured areas fall below 3.",
+  "keyScaleTerm": "Neurosynth term. Mean consistency z per area; darker is more consistent. Tissue-coloured areas fall below 3.",
+  "keyAll": "Each area shows its strongest function; tissue-coloured areas reach none. Choose one to see all its areas.",
+  "termOf": [
+   "[\"Alpha\",\"\"] → \"Alpha: “”\"",
+   "[\"\",\"Alpha\"] → \": “Alpha”\""
+  ],
+  "lesionCheck": [
+   "[[\"a\",\"b\"]] → \"Lesion check: a; b.\"",
+   "[[\"one\"]] → \"Lesion check: one.\"",
+   "[[]] → \"Lesion check: .\""
+  ],
+  "lesionItem": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (): Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha): \""
+  ],
+  "parcelCoverage": [
+   "[\"Alpha\",\"\"] → \"Alpha  coloured\"",
+   "[\"\",\"Alpha\"] → \" Alpha coloured\""
+  ],
+  "parcelOffSurface": [
+   "[\"Alpha\"] → \"Alpha, not measured\"",
+   "[\"\"] → \", not measured\""
+  ],
+  "noLesionCheck": "No lesion study in Planum’s deficit evidence checks this domain."
+ },
+ "errors": {
+  "updated": "Planum was updated. Reload to continue.",
+  "download": "A file could not be downloaded. Check the connection and try again.",
+  "reload": "Reload",
+  "dismiss": "Dismiss",
+  "linkRetry": "Retry opens Planum without this link.",
+  "webgl2": "This viewer needs WebGL 2, which this browser or device does not provide. A current desktop Firefox, Chrome, Edge or Safari will run it.",
+  "floatTargets": "This viewer needs WebGL 2 with floating-point render targets (EXT_color_buffer_float), which this browser or device does not provide. A current desktop Firefox, Chrome, Edge or Safari will run it.",
+  "contextLost": "The 3D view was interrupted by the graphics driver. Restoring…",
+  "operations": {
+   "start": "Could not load the anatomy.",
+   "link": "Could not open this link.",
+   "layer": [
+    "[\"Alpha\"] → \"Could not load Alpha.\"",
+    "[\"\"] → \"Could not load .\""
+   ],
+   "colour": [
+    "[\"Alpha\"] → \"Could not show the Alpha colouring.\"",
+    "[\"\"] → \"Could not show the  colouring.\""
+   ],
+   "region": "Could not show the region.",
+   "cord": "Could not show the spinal cord.",
+   "system": "Could not show this system.",
+   "internal": "Could not show the internal anatomy.",
+   "whiteMatter": "Could not show the white matter beneath the hidden cortex.",
+   "wholeBrain": "Could not return to the whole brain.",
+   "snapshot": "Could not save the image.",
+   "section": "Could not prepare the section.",
+   "deficit": "Could not show this deficit’s regions.",
+   "landmark": "Could not show this landmark.",
+   "mri": "Could not open the linked MRI.",
+   "comparison": "Could not load the atlas comparison.",
+   "overlap": "Could not load the overlap outline.",
+   "restore": "Could not restore the previous view.",
+   "fullscreen": "Could not enter full screen."
+  }
+ },
+ "footer": {
+  "referenceColophon": [
+   "[\"Alpha\"] → \"Alpha · reference data\"",
+   "[\"\"] → \" · reference data\""
+  ],
+  "colophon": [
+   "[\"Alpha\",false] → \"Alpha · averaged reference template\"",
+   "[\"\",true] → \" · one individual’s MRI reconstruction\""
+  ],
+  "statementAlone": "Not clinical anatomy",
+  "visibleRegions": [
+   "[0] → \"0 visible regions\"",
+   "[1] → \"1 visible region\"",
+   "[2] → \"2 visible regions\"",
+   "[183] → \"183 visible regions\"",
+   "[12345] → \"12345 visible regions\""
+  ],
+  "provenance": "Provenance",
+  "close": "Close",
+  "subject": "Subject",
+  "kind": [
+   "[true] → \"One individual’s MRI reconstruction\"",
+   "[false] → \"Averaged reference template\""
+  ],
+  "sourceData": "Source data",
+  "reconstruction": "Reconstruction",
+  "atlases": "Cortical atlases",
+  "projectedFrom": [
+   "[\"Alpha\"] → \"Projected from Alpha\"",
+   "[\"\"] → \"Projected from \""
+  ],
+  "networks": "Functional networks",
+  "functional": "Functional divisions",
+  "domains": "Neuropsychological domains",
+  "supplemental": "Supplemental layers",
+  "files": "Published files",
+  "sourceFiles": [
+   "[0,false] → \"0 source files\"",
+   "[1,true] → \"1 source file, with a SHA-256 checksum\"",
+   "[2,false] → \"2 source files\"",
+   "[183,true] → \"183 source files, each with a SHA-256 checksum\"",
+   "[12345,false] → \"12345 source files\""
+  ],
+  "index": "Index of the published anatomies",
+  "tractReference": "Tract reference",
+  "sources": "Sources",
+  "intendedUse": "For research and education. Planum is not a medical device and must not be used for diagnosis, treatment or any other clinical decision."
+ },
+ "functional": {
+  "heading": "Functional division",
+  "named": "Named region",
+  "section": [
+   "[0] → \"Section 0\"",
+   "[1] → \"Section 1\"",
+   "[2] → \"Section 2\"",
+   "[183] → \"Section 183\"",
+   "[12345] → \"Section 12345\""
+  ],
+  "unnamed": "No source names a finer region for this area, so it is shown only within its section.",
+  "areas": [
+   "[\"Alpha\"] → \"HCP<NBHY>MMP areas: Alpha\"",
+   "[\"\"] → \"HCP<NBHY>MMP areas: \""
+  ],
+  "contested": [
+   "[0,1] → \"Glasser’s Table 1 gives section 0 as this area’s primary section; the supplement’s section text lists it under section 1.\"",
+   "[1,2] → \"Glasser’s Table 1 gives section 1 as this area’s primary section; the supplement’s section text lists it under section 2.\"",
+   "[2,183] → \"Glasser’s Table 1 gives section 2 as this area’s primary section; the supplement’s section text lists it under section 183.\"",
+   "[183,12345] → \"Glasser’s Table 1 gives section 183 as this area’s primary section; the supplement’s section text lists it under section 12345.\"",
+   "[12345,0] → \"Glasser’s Table 1 gives section 12345 as this area’s primary section; the supplement’s section text lists it under section 0.\""
+  ],
+  "note": "Published groupings of whole HCP-MMP areas, reaching this brain through its HCP-MMP projection; not measured function in this brain.",
+  "keyAria": "Functional division level",
+  "levels": {
+   "named": "Named",
+   "sections": "Sections"
+  }
+ },
+ "functions": {
+  "search": "Search functions",
+  "list": "Functions",
+  "all": "All functions",
+  "allDetail": "Each area in its strongest core assessment function",
+  "coverage": [
+   "[0,1] → \"0 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 1 more Neurosynth term or clinical group. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
+   "[1,2] → \"1 function, a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 2 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
+   "[2,183] → \"2 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 183 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
+   "[183,12345] → \"183 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 12345 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
+   "[12345,0] → \"12345 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\""
+  ],
+  "noResults": "Search a function, task or stimulus, such as “faces” or “reward”, or a clinical group such as “aphasia”.",
+  "term": [
+   "[\"Alpha\",\"\"] → \"Activation evidence · Neurosynth term “Alpha” · \"",
+   "[\"\",\"Alpha\"] → \"Activation evidence · Neurosynth term “” · Alpha\""
+  ],
+  "areas": [
+   "[0,1,\"Alpha\"] → \"0 HCP-MMP areas and 1 structure at z<NBSP>≥<NBSP>Alpha\"",
+   "[1,2,\"\"] → \"1 HCP-MMP area and 2 structures at z<NBSP>≥<NBSP>\"",
+   "[2,183,\"Alpha\"] → \"2 HCP-MMP areas and 183 structures at z<NBSP>≥<NBSP>Alpha\"",
+   "[183,12345,\"\"] → \"183 HCP-MMP areas and 12345 structures at z<NBSP>≥<NBSP>\"",
+   "[12345,0,\"Alpha\"] → \"12345 HCP-MMP areas at z<NBSP>≥<NBSP>Alpha\""
+  ],
+  "areasShort": [
+   "[0,1] → \"0 areas, 1 structure\"",
+   "[1,2] → \"1 area, 2 structures\"",
+   "[2,183] → \"2 areas, 183 structures\"",
+   "[183,12345] → \"183 areas, 12345 structures\"",
+   "[12345,0] → \"12345 areas\""
+  ],
+  "none": [
+   "[\"Alpha\"] → \"No HCP-MMP area or structure reaches z<NBSP>Alpha.\"",
+   "[\"\"] → \"No HCP-MMP area or structure reaches z<NBSP>.\""
+  ],
+  "areasHeading": "Areas and structures, strongest first",
+  "more": [
+   "[0] → \"0 more areas\"",
+   "[1] → \"1 more area\"",
+   "[2] → \"2 more areas\"",
+   "[183] → \"183 more areas\"",
+   "[12345] → \"12345 more areas\""
+  ],
+  "openArea": "Show area",
+  "overviewHeading": "Functions",
+  "lesionHeading": "Deficits that check this map",
+  "lesionNote": "Share of each cited parcel the map colours, measured on fsaverage. A check of the map against lesion studies, never tuned to pass.",
+  "loading": "Preparing the HCP-MMP areas…",
+  "failed": "The HCP-MMP areas could not be shown.",
+  "shown": "Shown on the HCP-MMP areas",
+  "termsHeading": "Neurosynth terms",
+  "populationsHeading": "Neurosynth clinical groups",
+  "caveat": "Where studies of healthy groups report activation: not this brain, and not what damage would impair.",
+  "deepStrongest": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha (), the strongest region of Alpha, lies beneath the cortex.\"",
+   "[\"\",\"Alpha\",\"\"] → \" (Alpha), the strongest region of , lies beneath the cortex.\""
+  ],
+  "deepAmong": [
+   "[\"Alpha\",\"\",\"Alpha\",183] → \"Alpha (), among the 183 strongest regions of Alpha, lies beneath the cortex.\"",
+   "[\"\",\"Alpha\",\"\",12345] → \" (Alpha), among the 12345 strongest regions of , lies beneath the cortex.\"",
+   "[\"Alpha\",\"\",\"Alpha\",0] → \"Alpha (), among the 0 strongest regions of Alpha, lies beneath the cortex.\"",
+   "[\"\",\"Alpha\",\"\",1] → \" (Alpha), among the 1 strongest regions of , lies beneath the cortex.\"",
+   "[\"Alpha\",\"\",\"Alpha\",2] → \"Alpha (), among the 2 strongest regions of Alpha, lies beneath the cortex.\""
+  ],
+  "suggest": [
+   "[\"Alpha\"] → \"Did you mean “Alpha”?\"",
+   "[\"\"] → \"Did you mean “”?\""
+  ],
+  "termDetail": [
+   "[\"Alpha\",\"\"] → \"Alpha · \"",
+   "[\"\",\"Alpha\"] → \" · Alpha\""
+  ],
+  "studiesColumn": "Studies",
+  "termsMore": [
+   "[0] → \"0 more terms match; type more to narrow the list.\"",
+   "[1] → \"1 more term matches; type more to narrow the list.\"",
+   "[2] → \"2 more terms match; type more to narrow the list.\"",
+   "[183] → \"183 more terms match; type more to narrow the list.\"",
+   "[12345] → \"12345 more terms match; type more to narrow the list.\""
+  ],
+  "termCaveat": "A Neurosynth term, not a curated function: chosen for naming a function, task or stimulus, but its map was not checked against what it names or against lesion studies.",
+  "populationCaveat": "A clinical group: its studies mostly compare people with the condition with healthy people. The map shows where they report activation, not where damage causes the condition.",
+  "lesionBridgeHeading": "Lesion evidence",
+  "deficitBridge": [
+   "[0,\"\"] → \"Deficits: 0 lesion profiles match “”\"",
+   "[1,\"Alpha\"] → \"Deficits: 1 lesion profile matches “Alpha”\"",
+   "[2,\"\"] → \"Deficits: 2 lesion profiles match “”\"",
+   "[183,\"Alpha\"] → \"Deficits: 183 lesion profiles match “Alpha”\"",
+   "[12345,\"\"] → \"Deficits: 12345 lesion profiles match “”\""
+  ],
+  "results": [
+   "[0,1] → \"1 Neurosynth term\"",
+   "[1,2] → \"1 function and 2 Neurosynth terms\"",
+   "[2,183] → \"2 functions and 183 Neurosynth terms\"",
+   "[183,12345] → \"183 functions and 12345 Neurosynth terms\"",
+   "[12345,0] → \"12345 functions\""
+  ]
+ },
+ "header": {
+  "atlasShort": {
+   "destrieux": "Destrieux",
+   "hcp-mmp": "HCP-MMP",
+   "learning": "Teaching set",
+   "aseg": "FreeSurfer aseg",
+   "nextbrain": "NextBrain",
+   "cerebnet": "CerebNet",
+   "wmparc": "wmparc",
+   "zanatomy": "Spinal cord"
+  },
+  "subject": "Subject",
+  "atlas": "Atlas",
+  "colour": "Colour",
+  "colourGroups": {
+   "appearance": "Appearance",
+   "parcellation": "Parcellation",
+   "networks": "Networks"
+  },
+  "atlasBecomes": [
+   "[\"Alpha\",\"\"] → \"Alpha (atlas becomes )\"",
+   "[\"\",\"Alpha\"] → \" (atlas becomes Alpha)\""
+  ],
+  "colourBecomes": [
+   "[\"Alpha\",\"\"] → \"Alpha (colour becomes )\"",
+   "[\"\",\"Alpha\"] → \" (colour becomes Alpha)\""
+  ],
+  "dataSummary": "Atlas and display settings",
+  "notes": {
+   "destrieux": "Sulcal and gyral regions, 74 per hemisphere",
+   "hcp-mmp": "Multimodal areas, 180 per hemisphere (Glasser 2016)",
+   "learning": "Overview structures grouped from NextBrain and aseg labels, with CerebNet cerebellar lobules where published",
+   "aseg": "FreeSurfer’s standard automatic subcortical segmentation",
+   "nextbrain": "Histology-based atlas, segmented on this subject at 0.4<NNBSP>mm"
+  },
+  "skipToModel": "Skip to model",
+  "languageSwitch": "Language",
+  "shortcuts": "Keyboard shortcuts",
+  "theme": "Theme",
+  "systemTheme": "System",
+  "systemThemeNote": "Follow the device’s light or dark setting",
+  "lightTheme": "Light",
+  "darkTheme": "Dark",
+  "singleKeys": "Single-key shortcuts",
+  "singleKeysOn": "On",
+  "singleKeysOff": "Off",
+  "loading": "Loading…",
+  "loadingProgress": [
+   "[\"Alpha\"] → \"Loading Alpha\"",
+   "[\"\"] → \"Loading \""
+  ]
+ },
+ "inspector": {
+  "title": "Anatomical details",
+  "panelLabel": "Selection and display",
+  "clearSelection": "Clear selection",
+  "noRegionSelected": "No region selected",
+  "hintCortex": "Select a region on the model or in the anatomy list.",
+  "hintStructures": "Cortex is hidden — internal structures are selectable.",
+  "hemisphere": "Hemisphere",
+  "group": "Lobe / System",
+  "surfaceArea": "Surface area",
+  "volume": "Volume",
+  "centroid": "Centroid (RAS)",
+  "sourceLabel": "Source label",
+  "linkedMri": "Linked MRI",
+  "focus": "Focus",
+  "isolate": "Isolate",
+  "restore": "Restore",
+  "constituentsHeading": "Constituent regions",
+  "constituentsNote": "Union of source regions. Surface smoothed for readability; volume measured from source voxels. Small regions without a surface remain available on cuts.",
+  "constituentCutOnly": "Cut only"
+ },
+ "link": {
+  "newTab": "(opens in a new tab)",
+  "notApplied": [
+   "[\"Alpha\"] → \"Not applied from this link: Alpha.\"",
+   "[\"\"] → \"Not applied from this link: .\""
+  ],
+  "fields": {
+   "anatomy": "subject",
+   "atlas": "atlas",
+   "cuts": "cut labels",
+   "system": "system",
+   "detail": "internal anatomy",
+   "region": "selected region",
+   "isolate": "isolated region",
+   "view": "view",
+   "cam": "camera position",
+   "cut": "section",
+   "pos": "section position",
+   "rev": "reversed side",
+   "tilt": "section tilt",
+   "az": "section azimuth",
+   "hemi": "hemisphere",
+   "cortex": "cortex shown",
+   "internal": "internal anatomy shown",
+   "cord": "spinal cord",
+   "colors": "colour",
+   "level": "functional level",
+   "function": "function",
+   "opacity": "cortex opacity",
+   "mri": "MRI window",
+   "tab": "panel",
+   "deficit": "deficit",
+   "circuit": "circuit",
+   "step": "circuit step",
+   "lang": "language",
+   "hidden": "hidden parts"
+  }
+ },
+ "menu": {
+  "more": "More settings"
+ },
+ "mpr": {
+  "title": "Linked MRI sections",
+  "subtitle": "Click to position the shared crosshair. Arrows move one source millimetre.",
+  "close": "Close",
+  "savePng": "Save PNG",
+  "contrastWindow": "Window",
+  "windowCenter": "Level",
+  "segmentationOverlay": "Segmentation overlay",
+  "labels": {
+   "sagittal": "Sagittal",
+   "coronal": "Coronal",
+   "axial": "Axial"
+  },
+  "planes": "Section plane",
+  "positionLabel": [
+   "[\"Alpha\"] → \"Alpha position\"",
+   "[\"\"] → \" position\""
+  ],
+  "sliceAria": [
+   "[\"Alpha\"] → \"Alpha MRI. Click to place crosshair; arrow keys change slice.\"",
+   "[\"\"] → \" MRI. Click to place crosshair; arrow keys change slice.\""
+  ],
+  "sliderAria": [
+   "[\"Alpha\"] → \"Alpha MRI position\"",
+   "[\"\"] → \" MRI position\""
+  ],
+  "note": [
+   "[{\"individual\":true}] → \"1 mm single-subject grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\"",
+   "[{\"individual\":false}] → \"1 mm averaged-template grid · surface RAS coordinates · L/R explicitly marked. MRI shows the full volume independently of surface visibility. Cortical atlas areas remain surface labels.\""
+  ],
+  "readout": [
+   "[\"Alpha\",\"\",2] → \"Alpha —  (label 2)\"",
+   "[\"\",\"Alpha\",183] → \" — Alpha (label 183)\"",
+   "[\"Alpha\",\"\",12345] → \"Alpha —  (label 12345)\"",
+   "[\"\",\"Alpha\",0] → \" — Alpha (label 0)\"",
+   "[\"Alpha\",\"\",1] → \"Alpha —  (label 1)\""
+  ]
+ },
+ "mri": {
+  "dialog": {
+   "close": "Close",
+   "hint": "Click a slice to position the crosshair. Scroll through slices; arrow keys move one voxel.",
+   "plane": "View",
+   "all": "Linked slices + 3D",
+   "axial": "Axial",
+   "coronal": "Coronal",
+   "sagittal": "Sagittal",
+   "voxel": "Source voxel (0-based)",
+   "go": "Go to voxel",
+   "window": "Window",
+   "center": "Level",
+   "faOpacity": "FA opacity",
+   "loading": "Loading the reference MRI and selected tracts…",
+   "retry": "Reload MRI",
+   "outside": "The atlas crosshair lies outside this scan’s field of view; the MRI keeps its position.",
+   "grid": [
+    "[[1,2,3],\"\"] → \"1 × 2 × 3 source voxels ·  spacing\"",
+    "[[182,218,182],\"Alpha\"] → \"182 × 218 × 182 source voxels · Alpha spacing\""
+   ],
+   "ready": "Reference MRI ready.",
+   "viewer": "MRI viewer",
+   "voxelName": [
+    "[\"Alpha\"] → \"Voxel Alpha\"",
+    "[\"\"] → \"Voxel \""
+   ],
+   "range": [
+    "[0] → \"0 to 0\"",
+    "[1] → \"0 to 1\"",
+    "[2] → \"0 to 2\"",
+    "[183] → \"0 to 183\"",
+    "[12345] → \"0 to 12345\""
+   ],
+   "moved": [
+    "[[1,2,3]] → \"Crosshair moved to voxel 1, 2, 3.\"",
+    "[[182,218,182]] → \"Crosshair moved to voxel 182, 218, 182.\""
+   ],
+   "hintKeys": "Page Up and Page Down step through slices.",
+   "hintClose": "M closes this view.",
+   "hintTouch": "Tap a slice to position the crosshair, or enter a voxel below."
+  },
+  "tissueNames": {
+   "Unknown": "Unlabelled",
+   "???": "Unlabelled",
+   "Left-Cerebral-White-Matter": "Cerebral white matter",
+   "Right-Cerebral-White-Matter": "Cerebral white matter",
+   "Left-Cerebral-Cortex": "Left cerebral cortex",
+   "Right-Cerebral-Cortex": "Right cerebral cortex",
+   "CSF": "Cerebrospinal fluid (CSF)",
+   "Left-vessel": "Cerebral vessel",
+   "Right-vessel": "Cerebral vessel",
+   "WM-hypointensities": "White matter hypointensities",
+   "ctx_lh_Medial_wall": "Medial wall",
+   "ctx_rh_Medial_wall": "Medial wall"
+  }
+ },
+ "navigator": {
+  "title": "Atlas explorer",
+  "findRegion": "Find a region",
+  "clearSearch": "Clear search",
+  "expandAll": "Expand all",
+  "collapseAll": "Collapse all",
+  "searchPlaceholder": "Search regions",
+  "searchResults": "Search results",
+  "browseAnatomy": "Browse anatomy",
+  "cortex": "Cortex",
+  "subcortical": "Subcortical",
+  "cutOnly": "Cut labels only",
+  "groupIn": {
+   "lobe": [
+    "[\"Alpha\"] → \"Alpha lobe\"",
+    "[\"\"] → \" lobe\""
+   ],
+   "network": [
+    "[\"Alpha\"] → \"Alpha network\"",
+    "[\"\"] → \" network\""
+   ],
+   "system": [
+    "[\"Alpha\"] → \"Alpha system\"",
+    "[\"\"] → \" system\""
+   ]
+  },
+  "scope": "Browse",
+  "scopeWhole": "Whole brain",
+  "scopeSystem": "By system",
+  "system": "System",
+  "allSystems": "All internal structures",
+  "noMatch": [
+   "[\"Alpha\"] → \"No match for “Alpha”\"",
+   "[\"\"] → \"No match for “”\""
+  ],
+  "noMatchHint": "Try another spelling, an abbreviation or a synonym. Symptoms and syndromes are under Deficits.",
+  "showingCapped": [
+   "[0,\"\"] → \"Showing 0 of . Refine the search to narrow it.\"",
+   "[1,\"Alpha\"] → \"Showing 1 of Alpha. Refine the search to narrow it.\"",
+   "[2,\"\"] → \"Showing 2 of . Refine the search to narrow it.\"",
+   "[183,\"Alpha\"] → \"Showing 183 of Alpha. Refine the search to narrow it.\"",
+   "[12345,\"\"] → \"Showing 12345 of . Refine the search to narrow it.\""
+  ],
+  "matchesInOther": [
+   "[\"Alpha\",\"\"] → \"Alpha in . \"",
+   "[\"\",\"Alpha\"] → \" in Alpha. \""
+  ],
+  "switchAtlas": "Switch atlas",
+  "matchesInOtherCut": [
+   "[\"Alpha\",\"\"] → \"Alpha in , which labels cuts only. \"",
+   "[\"\",\"Alpha\"] → \" in Alpha, which labels cuts only. \""
+  ],
+  "switchCutAtlas": "Switch cut labels",
+  "rowHiddenAria": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, : Alpha. Activate to reveal.\"",
+   "[\"\",\"Alpha\",\"\"] → \", Alpha: . Activate to reveal.\""
+  ],
+  "rowUnavailableAria": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha, , not shown: Alpha.\"",
+   "[\"\",\"Alpha\",\"\"] → \", Alpha, not shown: .\""
+  ]
+ },
+ "networks": {
+  "heading": "Functional networks",
+  "yeo": "Yeo 7 networks",
+  "cabNp": "CAB-NP networks",
+  "cabNpNote": "The whole HCP-MMP area is assigned to one network by CAB-NP (Ji et al. 2019).",
+  "notes": {
+   "vertices": "Shares of assigned source vertices; unassigned vertices excluded. Shares below 5% hidden without rescaling.",
+   "voxels": "Shares of assigned cortical voxels; unassigned voxels excluded. Shares below 5% hidden without rescaling."
+  },
+  "caveat": "Group resting-state networks, not measured function in this brain."
+ },
+ "orientation": {
+  "R": "R",
+  "L": "L",
+  "S": "S",
+  "I": "I",
+  "P": "P",
+  "A": "A"
+ },
+ "reasons": {
+  "no-mri": "Outside the MRI scan",
+  "hemisphere": "Hemisphere hidden",
+  "cortex-hidden": "Cortex hidden",
+  "internal-hidden": "Internal anatomy hidden",
+  "spinal-cord-hidden": "Spinal cord hidden",
+  "isolated": "Hidden by isolation",
+  "removed": "Hidden",
+  "no-cut": "Visible in a section",
+  "below-cut-resolution": "Too small for the cut",
+  "other-detail": "In another detail level",
+  "inDetailSet": [
+   "[\"Alpha\"] → \"In Alpha\"",
+   "[\"\"] → \"In \""
+  ],
+  "other-system": "In another system",
+  "fallback": "Hidden"
+ },
+ "sheet": {
+  "expand": "Expand panel",
+  "collapse": "Collapse panel",
+  "detent": {
+   "peek": "Panel collapsed",
+   "half": "Panel half open",
+   "full": "Panel fully open"
+  }
+ },
+ "shortcuts": {
+  "title": "Keyboard shortcuts",
+  "close": "Close",
+  "rangeTo": "to",
+  "groups": [
+   [
+    "Panel",
+    [
+     [
+      "/",
+      "Focus the search field"
+     ],
+     [
+      "← →",
+      "On the mode tabs: move between Anatomy, Functions, Deficits, Circuits and Tracts"
+     ],
+     [
+      "Esc",
+      "In a detail view: back to the list. Elsewhere: clear the search, then the selection, then the function or deficit"
+     ],
+     [
+      "↑ ↓",
+      "Move through results or the tree"
+     ],
+     [
+      "→ ←",
+      "In the tree: open or close a group, or reach a region’s eye control"
+     ],
+     [
+      "Home End",
+      "First or last row of the tree"
+     ],
+     [
+      "Enter",
+      "Select the focused region"
+     ],
+     [
+      "V",
+      "Hide or show the focused tree row"
+     ]
+    ]
+   ],
+   [
+    "Model",
+    [
+     [
+      "Tab",
+      "Move focus to the model"
+     ],
+     [
+      "← → ↑ ↓",
+      "Turn the model, once it has focus"
+     ],
+     [
+      "+ −",
+      "Zoom the model in or out"
+     ],
+     [
+      "1 – 6",
+      "Left, right, anterior, posterior, superior, inferior view"
+     ],
+     [
+      "0",
+      "Return to the oblique view"
+     ],
+     [
+      "F",
+      "Focus the selected region"
+     ],
+     [
+      "I",
+      "Isolate or restore the selected region"
+     ]
+    ]
+   ],
+   [
+    "Display",
+    [
+     [
+      "C",
+      "Show or hide the cortex"
+     ],
+     [
+      "U",
+      "Show or hide internal anatomy"
+     ],
+     [
+      "S",
+      "Show or hide the spinal cord"
+     ],
+     [
+      "H",
+      "Cycle hemisphere: both, left, right"
+     ],
+     [
+      "M",
+      "Open or close linked MRI slices; in Tracts, the MRI with tracts"
+     ],
+     [
+      "?",
+      "Open this list"
+     ]
+    ]
+   ]
+  ],
+  "singleKeysNote": [
+   "[true] → \"Page-wide single-key shortcuts (letters, numbers, / and ?) can be turned off in the settings menu.\"",
+   "[false] → \"Page-wide single-key shortcuts are off. Turn them back on in the settings menu.\""
+  ]
+ },
+ "sides": {
+  "glyphs": {
+   "left": "L",
+   "right": "R",
+   "midline": "Mid"
+  },
+  "words": {
+   "left": "left",
+   "right": "right",
+   "midline": "midline"
+  },
+  "capitalized": {
+   "left": "Left",
+   "right": "Right",
+   "midline": "Midline"
+  }
+ },
+ "viewport": {
+  "navigationHint": "Drag to rotate · Scroll to zoom · Click to inspect",
+  "navigationHintTracts": "Drag to rotate · Scroll to zoom",
+  "navigationHintTouch": "Drag to rotate · Pinch to zoom · Tap to inspect",
+  "navigationHintTractsTouch": "Drag to rotate · Pinch to zoom",
+  "keyboardHint": "3D view · Arrow keys rotate · + − zoom",
+  "viewAria": "Anatomical view",
+  "viewToolAria": [
+   "[\"Alpha\"] → \"Anatomical view: Alpha\"",
+   "[\"\"] → \"Anatomical view: \""
+  ],
+  "viewTool": "View",
+  "sectionTool": "Section",
+  "displayTool": "Display",
+  "dockLabel": "3D viewer tools",
+  "orbitGroup": "Turn the model",
+  "orbitLeft": "Turn left",
+  "orbitRight": "Turn right",
+  "orbitUp": "Turn up",
+  "orbitDown": "Turn down",
+  "directionKey": {
+   "title": "Local streamline direction",
+   "leftRight": "Left–right",
+   "anteriorPosterior": "Anterior–posterior",
+   "superiorInferior": "Superior–inferior"
+  },
+  "keyAbsent": "Not shown in this view",
+  "snapshot": "Save image (PNG)",
+  "snapshotView": [
+   "[\"Alpha\"] → \"Alpha view\"",
+   "[\"\"] → \" view\""
+  ],
+  "snapshotStatement": "Planum · Not clinical anatomy",
+  "fullscreen": "Full screen",
+  "exitFullscreen": "Exit full screen",
+  "snapshotSaved": [
+   "[\"Alpha\"] → \"Image saved as Alpha.\"",
+   "[\"\"] → \"Image saved as .\""
+  ],
+  "loadingAnatomy": "Loading anatomy…",
+  "loadingWithTotal": [
+   "[0,1] → \"Loading anatomy · 0.0<NNBSP>MB / 0.0<NNBSP>MB\"",
+   "[1,2] → \"Loading anatomy · 0.0<NNBSP>MB / 0.0<NNBSP>MB\"",
+   "[2,183] → \"Loading anatomy · 0.0<NNBSP>MB / 0.0<NNBSP>MB\"",
+   "[183,12345] → \"Loading anatomy · 0.0<NNBSP>MB / 0.0<NNBSP>MB\"",
+   "[12345,0] → \"Loading anatomy · 0.0<NNBSP>MB / 0.0<NNBSP>MB\""
+  ],
+  "progressAria": "Anatomy download",
+  "loaded": "Anatomy loaded.",
+  "canvasRole": "3D anatomy viewer",
+  "canvasLabel": "Brain model. Drag or use the arrow keys to rotate, scroll or press plus and minus to zoom, click a region to select.",
+  "error": "Something went wrong.",
+  "retry": "Retry"
+ },
+ "views": {
+  "oblique": "Oblique",
+  "left": "Left",
+  "right": "Right",
+  "anterior": "Anterior",
+  "posterior": "Posterior",
+  "superior": "Superior",
+  "inferior": "Inferior"
+ },
+ "workspace": {
+  "modes": {
+   "anatomy": "Anatomy",
+   "functions": "Functions",
+   "deficits": "Deficits",
+   "circuits": "Circuits",
+   "diffusion": "Tracts"
+  },
+  "tabsAria": "Explore the atlas",
+  "panelAria": "Atlas panel",
+  "inspect": [
+   "[\"Alpha\"] → \"Inspect Alpha\"",
+   "[\"\"] → \"Inspect \""
+  ],
+  "back": [
+   "[\"Alpha\"] → \"Back to Alpha\"",
+   "[\"\"] → \"Back to \""
+  ],
+  "path": "Breadcrumb",
+  "showInList": [
+   "[\"Alpha\"] → \"Alpha, show in the list\"",
+   "[\"\"] → \", show in the list\""
+  ]
+ }
+}

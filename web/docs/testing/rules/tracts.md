@@ -11,7 +11,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit
 - **Source:** `viewer/diffusion/controls.js:18-46`; `viewer/diffusion/controls.test.js:13-34`
 - **Expected:** `af-right` "Arcuate fasciculus · right" + `af-left` "… · left" → one sided row, parts `['left', 'right']`, name "Arcuate fasciculus". `cc-1`, `cc-2` "Corpus callosum · source segment 1/2" → unsided, parts `['1', '2']`, EN "Corpus callosum · source segment", FR "Corps calleux · segment source". `fornix` → throws "neither a side nor a segment"; `x-left` "One · left" + `x-right` "Other · right" → name throws /disagree/; `x-left` + `x-1` → throws "mixes sides and segments".
-- **Covered by:** `src/lib/core/tracts.test.ts` (R); `parity/T1.test.ts` (D)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R)
 
 ### TRACT-02 · The published CDMD collection reads as 13 tracts in both languages
 
@@ -20,7 +20,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit
 - **Source:** `data/diffusion-cdmd.yaml`; `config/model.yaml` (`tract_catalogs`); `viewer/diffusion/controls.test.js:36-46`
 - **Expected:** For each catalog in `config/model.yaml`: members summed = bundles; `cdmd-sub-013` → 13 rows; `TRACT_CATALOGS[0].bundles.length` = 30; every `tractRowName(row, 'en' | 'fr')` non-empty. Row names include "Arcuate fasciculus", "Corticospinal tract", "Cingulum", "Corpus callosum · whole", "Corpus callosum · TractSeg segment". Initial: `af-left`, `cst-right`.
-- **Covered by:** `src/lib/core/tracts.test.ts` (S); `parity/T1.test.ts` (D, rows and names equal legacy's for the 30 bundles); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, 13 groups, 30 keys in catalog order); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R) (S, 13 rows per catalog; the 30-bundle names); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, 13 groups, 30 keys in catalog order); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
 
 ### TRACT-03 · Each tract is a group of keys, each key a checkbox named in full
 
@@ -56,7 +56,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit
 - **Source:** `viewer/diffusion/controls.js:112-116`; `viewer/diffusion/controls.test.js:48-54`
 - **Expected:** `{mean 142.25, min 75, max 239.46}` → EN "mean 142.3 mm (range 75.0–239.5)", FR "moyenne 142,3 mm (étendue 75,0–239,5)". `{mean 0.05, min 0, max 1000}` → EN "mean 0.1 mm (range 0.0–1000.0)", FR "moyenne 0,1 mm (étendue 0,0–1000,0)".
-- **Covered by:** `src/lib/core/tracts.test.ts` (R; the 0.05/0/1000 case is only in the D file); `parity/T1.test.ts` (D)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R)
 
 ### TRACT-07 · A key draws or hides a loaded bundle, and downloads one not yet loaded at its first check
 
@@ -143,7 +143,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit — the readout; the disclosure in the browser
 - **Source:** `viewer/diffusion/controls.js:118-121`; `viewer/diffusion/native-ui.js:228-238`
 - **Expected:** `settingsReadout(0.16, 1, 'en')` = "16% · ≥1 mm"; `(1, 40, 'fr')` = "100 % · ≥40 mm"; `(0, 250, 'en')` = "0% · ≥250 mm"; `(0, 250, 'fr')` = "0 % · ≥250 mm". Closed by default, summary "16% · ≥1 mm" (FR "16 % · ≥1 mm"); opened → the readout is hidden.
-- **Covered by:** `src/lib/core/tracts.test.ts` (R; the 0/250 case is only in the D file); `parity/T1.test.ts` (D); `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, "16% · ≥2 mm" after one step; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R); `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, "16% · ≥2 mm" after one step; enabled on `next` since #134)
 
 ### TRACT-16 · The opacity slider sets the cortex on the tracts' own anatomy, and the reference outline elsewhere
 
@@ -179,7 +179,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit — the builder; e2e for the real download
 - **Source:** `viewer/diffusion/controls.js:123-135`; decisions 29 and 42 on #4
 - **Expected:** Header `bundle,total_streamlines,enabled_streamlines,minimum_length_mm,mean_length_mm,min_length_mm,max_length_mm`. At minimum 40: `"Arcuate · left",1234,1000,40,142.25,75,239.5`; `"'=SUM(A1)",…`; `"'+x"`, `"'-x"`, `"'@x"`; hidden `"He said ""hi"", left",1234,0,40,,,`; at 250 with shown 0 → `"Arcuate · left",1234,0,250,,,`; no `\r`; not starting with U+FEFF. In the app at minimum 1 the first row is af-left, `"Arcuate fasciculus · left",3639,3639,1,…` (3,639 streamlines per DIFF-).
-- **Covered by:** `src/lib/core/tracts.test.ts` (R; the file name and MIME type and a row per catalog bundle are only in the D file); `parity/T1.test.ts` (D, byte-identical to legacy for the catalog and edge rows at 1, 40, 250); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, the file name, a `blob:` link and the announcement); `e2e/parity/tracts.spec.ts` (R, header, LF and a row regex; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R) (the builder, the file name and MIME type, one row per catalog bundle); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, the file name, a `blob:` link and the announcement); `e2e/parity/tracts.spec.ts` (R, header, LF and a row regex; enabled on `next` since #134)
 
 ## Notes and the MRI command
 

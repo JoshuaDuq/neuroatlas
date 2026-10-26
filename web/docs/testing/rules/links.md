@@ -14,7 +14,7 @@ The link's text format and the pure steps a restore is made of are in `core-stat
 (STATE-01 to STATE-41, STATE-63 to STATE-65); the camera as a link carries it in `engine-e7.md`
 (FACADE-24 to FACADE-26); the boot sequence around the restore in `boot-and-assets.md`
 (BOOT-05, BOOT-07 to BOOT-09, BOOT-14). The unit tests run `createLinks` over the fake engine
-on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/S4.test.ts`.
+on the cdmd manifest; "the corpus" below was the fixed scenario table of the deleted `parity/S4.test.ts`; each rule is now a fixed case in `src/lib/controller/links.test.ts`.
 
 ## Writing the link
 
@@ -34,7 +34,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:1773-1780`
 - **Expected:** any written link on cdmd starts `#anatomy=cdmd&` and ends `&lang=en` (or `lang=fr`).
-- **Covered by:** `src/lib/controller/links.test.ts` (R); `parity/S4.test.ts` (D, link state)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-03 · The link carries the cut the sections hold, the lesson, the camera and the MRI window
 
@@ -43,7 +43,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:1753-1780`
 - **Expected:** coronal at offset 12.34 → `{ cut: 'coronal', cutOffset: <sections.offset> }`, written `cut=coronal&pos=12.3`. Oblique, angles (40, -60), reversed → `{ cut: 'oblique', cutReverse: true, cutTilt: 40, cutAzimuth: -60 }`. `orbit` equals `camera.orbitLink()`; window (50, 60) → `mriWindow: { center: 50, width: 60 }`. Lesson `language` at step 2 → `circuit: 'language', circuitStep: 2`; none → `circuitStep: 0`.
-- **Covered by:** `src/lib/controller/links.test.ts` (R; the lesson fields: `parity/S4.test.ts` only, D)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-04 · The cut atlas comes from the sections while the model has none
 
@@ -103,7 +103,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:1992-2006`
 - **Expected:** cdmd: `colors=functional` passes; with no functional regions published → `colors` not applied. `function=term-a` passes when `term-a` is a published term. `deficit=bogus` → `deficit` not applied. Creating links with `model.domains` null throws "This build publishes no neuropsychological domains for the Functions tab."
-- **Covered by:** `parity/S4.test.ts` only (D); the domain error is uncovered
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-10 · The notice names first what did not read, then what this anatomy lacks, then what failed
 
@@ -112,7 +112,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2024,2033-2038`
 - **Expected:** `atlas=missing&view=sideways&hemi=left` → `['atlas', 'view']`, hemisphere left. `pos=abc&tilt=999&opacity=2&mri=1,2,3` → those four parameters, in link-field order. A busy scene with a cut on, `hemi=left`, where turning the cut off throws → `['cut']`. `cut=coronal&pos=3&rev=1` where cutting throws → `['cut', 'rev', 'pos']` (the step's field order, filtered to those named).
-- **Covered by:** `src/lib/controller/links.test.ts` (R, first case); the failure naming: `parity/S4.test.ts` only (D)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-11 · A link names only the parts it holds; the rest of the scene goes to the defaults
 
@@ -121,7 +121,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2025-2031`
 - **Expected:** cdmd, a busy scene (lesson open, region selected, coronal cut, window 50/60), `hemi=right` → atlas destrieux, detail `learning`, cut atlas destrieux, no cut, no selection, the published MRI window, hemisphere right. A link without `atlas` on an hcp-mmp scene → atlas destrieux, the manifest's first.
-- **Covered by:** `parity/S4.test.ts` only (D)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-12 · Without a view of its own, a link with a cut faces its cut
 
@@ -130,7 +130,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2026-2029`; `viewer/render/camera-views.js` (`viewForRestoredCut`)
 - **Expected:** `cut=coronal&pos=-12.5&rev=1` → `camera.faceCut` is called and the session view becomes the view it reports; `cut=axial&view=left` → view left; `cut=axial&rev=1&view=superior` → view superior; `cut=oblique&tilt=40&az=-60&pos=3` → faces the oblique plane.
-- **Covered by:** `parity/S4.test.ts` only (D); the cut-to-view table: FACADE-09 (`engine-e7.md`)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-13 · A link ends the Tracts excursion before applying its display, unless it opens Tracts
 
@@ -139,7 +139,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2019-2023`
 - **Expected:** Tracts open, `tab=anatomy` → `chooseExplorer('anatomy')` before any scene step, then again after; `tab=diffusion` → no early switch.
-- **Covered by:** `parity/S4.test.ts` only (D)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-14 · After the scene, the link opens its tab, function, deficit and lesson
 
@@ -148,7 +148,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2039-2050`
 - **Expected:** `tab=functions&function=language` → explorer `functions`, function `language`, deficit null, lesson closed, both kept scenes null. `tab=circuits&circuit=language&step=2` → lesson `language` at step 1. `tab=circuits&circuit=bogus&step=9` → notApplied `['circuit', 'step']` (the notice names only the circuit, LINK-18), lesson closed. At boot the panels are mounted before the link is applied, so `#tab=functions&function=<id>` shows the detail with that function open.
-- **Covered by:** `src/app/boot.svelte.test.ts` (R, the boot half: a function link opens its detail); the rest only `parity/S4.test.ts` (D)
+- **Covered by:** `src/lib/controller/links.test.ts` (R); `src/app/boot.svelte.test.ts` (R, the boot half: a function link opens its detail)
 
 ### LINK-15 · A lesson linked without its landmark opens on it
 
@@ -157,7 +157,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2051-2063`
 - **Expected:** `tab=circuits&circuit=language&step=2` → `rememberLessonScene` with a scene carrying a camera, then `openLandmark('destrieux:left:2')`. Landmark throws → notApplied ends with `step`. Landmark overtaken → `restore` returns null. With `region=destrieux:left:1` → no landmark opened.
-- **Covered by:** `parity/S4.test.ts` only (D)
+- **Covered by:** `src/lib/controller/links.test.ts` (R)
 
 ### LINK-16 · The panel opens on what the link names, without raising the sheet
 
@@ -166,7 +166,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Level:** unit
 - **Source:** `viewer/app.js:2064-2073`
 - **Expected:** `tab=functions&function=language` → `showDetail`, then `openFunction('language')`. `tab=functions&function=language&atlas=destrieux` → `showDetail` only. `tab=deficits&deficit=aphasia&atlas=destrieux` → `showDetail` only; without the atlas → `openDeficit('aphasia')`. `tab=anatomy` → neither.
-- **Covered by:** `parity/S4.test.ts` only (D); the non-raising port: `src/app/boot.svelte.test.ts` (BOOT-09)
+- **Covered by:** `src/lib/controller/links.test.ts` (R); the non-raising port: `src/app/boot.svelte.test.ts` (BOOT-09)
 
 ### LINK-17 · A restore holds the address bar and the notices until it settles, and an overtaken one says nothing
 

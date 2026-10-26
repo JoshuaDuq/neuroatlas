@@ -340,7 +340,7 @@ describe('evidence sections', () => {
     const contested = regions.find((region) => region.source_name === 'L_23c_ROI')!;
     render(Fixture, { regionId: contested.id });
     expect(text(section('Functional division'))).toContain(
-      "Glasser's Table 1 gives section 7 as this area's primary section",
+      'Glasser’s Table 1 gives section 7 as this area’s primary section',
     );
   });
 

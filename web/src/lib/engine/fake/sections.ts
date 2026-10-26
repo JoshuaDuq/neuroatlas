@@ -106,6 +106,7 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
     error: null,
   };
   let solids = false;
+  let modeRequest = 0;
   let display: MriDisplay | null = null;
   const published: MriDisplay = mri ?? {
     fieldOfView: 256,
@@ -241,8 +242,10 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
     },
     async setMode(mode) {
       if (!CUTS.includes(mode)) throw new Error(`Unknown cut mode: ${mode}`);
+      const request = ++modeRequest;
       if (mode !== 'off') {
         await model.ensureEnvelopes();
+        if (request !== modeRequest) return;
         solids = true;
       }
       state.mode = mode;

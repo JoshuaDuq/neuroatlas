@@ -7,6 +7,8 @@ import type { TractCatalog } from './diffusion/catalogs.ts';
 import { t } from './i18n/index.ts';
 import {
   buildLengthsCsv,
+  LENGTHS_CSV_FILENAME,
+  LENGTHS_CSV_TYPE,
   foldForSearch,
   lengthSummary,
   settingsReadout,
@@ -146,4 +148,54 @@ test('the lengths CSV quotes names, guards formulas and blanks hidden bundles', 
 test('a bundle with no length left after the filter exports blank metrics', () => {
   const csv = buildLengthsCsv([loaded({ shown: 0, mean: null, min: null, max: null })], 250);
   assert.equal(csv.split('\n')[1], '"Arcuate · left",1234,0,250,,,');
+});
+
+test('TRACT-02: the 30 catalog bundles read as 13 rows whose names include the known tracts', () => {
+  const rows = tractRows(TRACT_CATALOGS[0]!.bundles);
+  assert.equal(rows.length, 13);
+  const names = rows.map((row) => tractRowName(row, 'en'));
+  for (const name of [
+    'Arcuate fasciculus',
+    'Corticospinal tract',
+    'Cingulum',
+    'Corpus callosum \u00b7 whole',
+    'Corpus callosum \u00b7 TractSeg segment',
+  ])
+    assert.ok(names.includes(name), name);
+});
+
+test('TRACT-06: tiny and zero-based lengths keep one decimal in both languages', () => {
+  const metrics = { mean: 0.05, min: 0, max: 1000 };
+  assert.equal(
+    lengthSummary(metrics, t('en', 'diffusion'), 'en'),
+    'mean 0.1\u202fmm (range 0.0\u20131000.0)',
+  );
+  assert.equal(
+    lengthSummary(metrics, t('fr', 'diffusion'), 'fr'),
+    'moyenne 0,1\u202fmm (\u00e9tendue 0,0\u20131000,0)',
+  );
+});
+
+test('TRACT-15: a zero opacity and a 250 mm filter read in both languages', () => {
+  assert.equal(settingsReadout(0, 250, 'en'), '0% \u00b7 \u2265250\u202fmm');
+  assert.equal(settingsReadout(0, 250, 'fr'), '0\u202f% \u00b7 \u2265250\u202fmm');
+});
+
+test('TRACT-19: the download is named planum-streamline-lengths.csv and typed text/csv', () => {
+  assert.equal(LENGTHS_CSV_FILENAME, 'planum-streamline-lengths.csv');
+  assert.equal(LENGTHS_CSV_TYPE, 'text/csv;charset=utf-8');
+});
+
+test('TRACT-19: a CSV of the 30 catalog bundles has a header, 30 rows in catalog order and a final newline', () => {
+  const bundles = TRACT_CATALOGS[0]!.bundles;
+  const lines = buildLengthsCsv(
+    bundles.map((b) => loaded({ id: b.id, name: b.name.en })),
+    1,
+  ).split('\n');
+  assert.equal(lines.length, 32);
+  assert.equal(lines[31], '');
+  assert.deepEqual(
+    lines.slice(1, 31).map((line) => line.split(',')[0]),
+    bundles.map((b) => `"${b.name.en}"`),
+  );
 });
