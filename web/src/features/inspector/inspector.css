@@ -1,0 +1,418 @@
+/*
+ * The region inspector (detail.css:1-127, 204-234, 266-281; layout.css:161-164; components.css:387-407).
+ * Every rule hangs on `.region-detail`, so the panel's other sections keep their own.
+ */
+@layer features {
+  .region-detail {
+    padding: var(--panel-inset);
+  }
+
+  /* Region ------------------------------------------------------------- */
+  .region-detail .selection-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: var(--space-3);
+  }
+  .region-detail .selection-head > h2 {
+    flex: 1;
+    min-width: 0;
+  }
+  /* The × sits on the title's first line; its box reaches past the panel's inset. */
+  .region-detail .selection-clear {
+    flex: none;
+    margin: -4px calc(-1 * var(--space-2)) -4px 0;
+    color: var(--text-tertiary);
+  }
+  .region-detail .selection-clear:focus-visible,
+  .region-detail .region-name:focus-visible {
+    outline-offset: -2px;
+  }
+  .region-detail .region-name {
+    font-size: var(--text-headline);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: var(--lh-title);
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+  .region-detail .selection-context {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-2);
+    margin-top: var(--space-1);
+    color: var(--text-secondary);
+    font-size: var(--text-ui);
+    line-height: var(--lh-ui);
+  }
+  .region-detail .selection-context dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .region-detail .selection-context .context-group {
+    padding-left: var(--space-2);
+    border-left: 1px solid var(--border-control);
+  }
+  .region-detail .selected-hint {
+    margin-top: var(--space-2);
+    font-size: var(--text-ui);
+    color: var(--text-secondary);
+    line-height: var(--lh-prose);
+  }
+  /* With nothing selected: a title and one line, set like the panel's other empty states. */
+  .region-detail .selection-empty {
+    font-size: var(--text-title);
+    font-weight: 600;
+    line-height: var(--lh-title);
+    overflow-wrap: anywhere;
+  }
+  .region-detail .selection-empty + .selected-hint {
+    margin-top: var(--space-1);
+    line-height: var(--lh-ui);
+  }
+
+  /* Under a lesson the landmark is already the headline above; any other selection is a smaller second subject. */
+  .region-detail[data-landmark-selected='true'] .selection-head {
+    display: none;
+  }
+  .region-detail[data-landmark-selected='true'] {
+    padding-top: 0;
+  }
+  .region-detail[data-landmark-selected='false'],
+  .region-detail[data-under-profile] {
+    border-top: 1px solid var(--border-subtle);
+  }
+  .region-detail[data-landmark-selected] .region-name,
+  .region-detail[data-under-profile] .region-name {
+    font-size: var(--text-title);
+  }
+
+  /* Actions ------------------------------------------------------------ */
+  /* One left-aligned row of tonal commands; Linked MRI is told apart by its accent ink. */
+  .region-detail .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+  .region-detail .actions button {
+    flex: none;
+    max-width: 100%;
+    min-height: var(--control-height);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    background: var(--surface-tonal);
+    color: var(--text-primary);
+    font-size: var(--text-ui);
+    font-weight: 500;
+    line-height: var(--lh-ui);
+    white-space: normal;
+    overflow-wrap: normal;
+    cursor: pointer;
+    transition:
+      background-color var(--ui-transition) var(--ease-ui),
+      color var(--ui-transition) var(--ease-ui),
+      border-color var(--ui-transition) var(--ease-ui);
+  }
+  /* The 320px compact panel keeps all four commands on one line. */
+  @media (min-width: 801px) and (max-width: 1000px) {
+    .region-detail .actions button {
+      padding-inline: var(--space-2);
+    }
+  }
+  .region-detail .actions .linked-mri {
+    color: var(--accent);
+  }
+  /* Latched isolation is drawn as a selection, teal wash and edge, so it never reads as the MRI command. */
+  .region-detail .actions [data-active='true'] {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+    color: var(--accent);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .region-detail .actions button:hover {
+      background: var(--surface-tonal-hover);
+    }
+    .region-detail .actions .linked-mri:hover {
+      color: var(--accent-hover);
+    }
+  }
+  @media (pointer: coarse) {
+    .region-detail .actions button {
+      min-height: 44px;
+    }
+  }
+
+  /* Facts -------------------------------------------------------------- */
+  /* A quiet ledger at the same 16px; labels recede while measured values align right. */
+  .region-detail .facts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    column-gap: var(--space-3);
+    align-items: baseline;
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    line-height: var(--lh-ui);
+  }
+  .region-detail .facts dt,
+  .region-detail .facts dd {
+    min-width: 0;
+    padding: calc((var(--row-height) - var(--lh-ui)) / 2) 0;
+    overflow-wrap: anywhere;
+  }
+  .region-detail .facts dt {
+    color: var(--text-secondary);
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+  }
+  .region-detail .facts dd {
+    font-size: var(--text-ui);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .region-detail .facts .fact-metric {
+    font-weight: 600;
+  }
+  .region-detail .facts .fact-source {
+    color: var(--text-secondary);
+    font-size: var(--text-caption);
+    font-weight: 400;
+    line-height: var(--lh-caption);
+  }
+  /* A value too long to share its label's line (a list of source ids, a reference's full name) takes the line under it. */
+  .region-detail .facts .stacked {
+    grid-column: 1 / -1;
+  }
+  .region-detail .facts dt.stacked {
+    padding-bottom: 0;
+  }
+  .region-detail .facts dd.stacked {
+    padding: 0 0 var(--space-2);
+    text-align: left;
+  }
+  /* Long source lists are readable and selectable by keyboard and touch, without a tooltip. */
+  .region-detail .source-labels summary {
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+  }
+  .region-detail .source-labels .code {
+    padding: var(--space-1) 0 var(--space-2);
+    color: var(--text-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  /* Sections ----------------------------------------------------------- */
+  .region-detail .detail-note {
+    margin-top: var(--space-2);
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    color: var(--text-secondary);
+  }
+  /* Evidence and constituents read as one compact ruled index under the facts. */
+  .region-detail .evidence-section,
+  .region-detail .constituents {
+    margin-top: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .region-detail .evidence-section details {
+    margin-top: 0;
+  }
+  .region-detail .evidence-section summary,
+  .region-detail .constituents > summary {
+    min-height: var(--row-height);
+    padding-block: var(--space-2);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .region-detail .evidence-section details[open],
+  .region-detail .constituents[open] {
+    padding-bottom: var(--space-4);
+  }
+  .region-detail .evidence-section .network-list {
+    padding-top: var(--space-1);
+  }
+  .region-detail .network-map {
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-2);
+    font-size: var(--text-caption);
+    font-weight: 500;
+    line-height: var(--lh-caption);
+    color: var(--text-secondary);
+  }
+  .region-detail .detail-note + .network-map {
+    margin-top: var(--space-4);
+  }
+
+  /* The swatch names the network, the bar measures it. */
+  .region-detail .network-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .region-detail .network-row {
+    display: grid;
+    grid-template-columns: 10px minmax(0, 1fr) minmax(32px, 56px) 3rem;
+    align-items: start;
+    gap: var(--space-2);
+    min-height: var(--row-height);
+    padding: calc((var(--row-height) - var(--lh-ui)) / 2) 0;
+    font-size: var(--text-ui);
+    line-height: var(--lh-ui);
+  }
+  .region-detail .network-row-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .region-detail .network-share {
+    text-align: right;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .region-detail .functional-row {
+    grid-template-columns: 10px minmax(0, 1fr);
+  }
+  .region-detail .functional-row .network-row-name > span {
+    display: block;
+  }
+  .region-detail .functional-row-meta {
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    color: var(--text-secondary);
+  }
+
+  /* Constituent regions ------------------------------------------------ */
+  /* The summary reads as the other sections' (U4 Disclosure): the heading and its count, the chevron at the right end. */
+  .region-detail .constituents > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--text-ui);
+    line-height: var(--lh-ui);
+    color: var(--text-primary);
+  }
+  .region-detail .constituents > summary::-webkit-details-marker {
+    display: none;
+  }
+  .region-detail .constituents > summary::after {
+    content: '';
+    order: 1;
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin: 0 3px;
+    color: var(--text-tertiary);
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(var(--chevron-turn, 90deg)) translateX(-1.6px) rotate(-45deg);
+    transition: transform var(--ui-transition) var(--ease-ui);
+  }
+  .region-detail .constituents[open] > summary::after {
+    --chevron-turn: -90deg;
+  }
+  .region-detail .constituents > summary:focus-visible {
+    outline-offset: -2px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .region-detail .constituents > summary:hover {
+      color: var(--accent);
+    }
+  }
+  .region-detail .disclosure-count {
+    margin-right: auto;
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    font-weight: 400;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  .region-detail .constituents-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .region-detail .constituents-list li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    min-width: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+  .region-detail .constituents-list li > :first-child {
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-2) 0;
+    overflow-wrap: anywhere;
+  }
+  /* The tail names the internal-anatomy set the constituent opens in, or that it exists on cuts only. */
+  .region-detail .constituent-set {
+    flex: none;
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+  .region-detail .constituent-side {
+    flex: none;
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    color: var(--text-tertiary);
+  }
+  /* A link in a button's body: 24 px with a fine pointer (WCAG 2.5.8), 44 with a coarse one. */
+  .region-detail .constituents-list button {
+    min-height: 24px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    font: inherit;
+    font-weight: 400;
+    text-align: left;
+    white-space: normal;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .region-detail .constituents-list button:focus-visible {
+    outline-offset: -2px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .region-detail .constituents-list button:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+  @media (pointer: coarse) {
+    .region-detail .constituents > summary,
+    .region-detail .constituents-list button {
+      min-height: 44px;
+    }
+  }
+}
+
+@layer a11y {
+  @media (prefers-reduced-motion: reduce) {
+    .region-detail .constituents > summary::after,
+    .region-detail .actions button {
+      transition: none;
+    }
+  }
+  @media (forced-colors: active) {
+    .region-detail .actions button {
+      border-color: ButtonText;
+    }
+    .region-detail .actions [data-active='true'] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+}
