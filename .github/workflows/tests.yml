@@ -221,7 +221,11 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npm run test:browser --prefix web 2>&1 | tee browser-tests.log
+          cd web
+          npx vitest run --project browser src/probe.svelte.test.ts src/lib/ui/Treegrid.svelte.test.ts -t "probe|disabled node" 2>&1 | grep -E "PROBE|✓|×|Tests " || true
+          echo ==== headed under xvfb
+          xvfb-run -a npx vitest run --project browser --browser.headless=false src/probe.svelte.test.ts src/lib/ui/Treegrid.svelte.test.ts -t "probe|disabled node" 2>&1 | grep -E "PROBE|✓|×|Tests " || true
+          exit 1
           {
             echo '### WebGL probe'
             grep -h 'WebGL renderer' browser-tests.log || echo 'No renderer line in the log.'
