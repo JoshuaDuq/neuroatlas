@@ -182,6 +182,18 @@ describe('the key fitter and onDock', () => {
   });
 });
 
+describe('the key fitter and onDock, unchanged band', () => {
+  test('a desktop viewport change that leaves the key band as it was does not call onDock', () => {
+    let calls = 0;
+    const stage = createStageLayout({ media, storage: null, onDock: () => (calls += 1) });
+    stage.setKeyFitter(() => stage.setKeys({ top: 30, right: 0 }, { width: 200, height: 30 }));
+    stage.setViewport(rect(800, 600), { width: 800, height: 600 });
+    expect(calls).toBe(1);
+    stage.setViewport(rect(700, 600), { width: 700, height: 600 });
+    expect(calls).toBe(1);
+  });
+});
+
 describe('framing', () => {
   test('before the stage has a size, the dock alone is cleared', () => {
     const stage = createStageLayout({ media, storage: null });

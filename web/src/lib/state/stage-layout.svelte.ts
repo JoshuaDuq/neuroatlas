@@ -282,7 +282,11 @@ export function createStageLayout({
       if (changed && !fitting) onDock?.();
     },
 
-    /** G3's fitting of the keys, run at the start of every framing so it sees the keys as they now are (viewport-chrome.js:265). */
+    /**
+     * G3's fitting of the keys (viewport-chrome.js:265, 721). It runs on every framing, after the dock is measured,
+     * and on every viewport change, which is every frame of a sheet drag: it must not force layout, so G3 builds it
+     * from sizes it has cached (its own ResizeObserver) and calls `setKeys` only with what changed.
+     */
     setKeyFitter(fit: () => void): () => void {
       keyFitter = fit;
       return () => {
