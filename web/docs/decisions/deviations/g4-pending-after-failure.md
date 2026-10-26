@@ -9,7 +9,7 @@ Choosing a plane sets `pendingPlane` and awaits the cut (ui/chrome/sections.js:1
 
 ## New behaviour
 
-The pending plane is cleared however the cut ends. A failed cut leaves the row on the plane that is really cut (or removes it when none is), and the status line says the failure ("Could not prepare the section.") until the cut changes again.
+The pending plane is cleared however the cut ends. A failed cut leaves the row on the plane that is really cut (or removes it when none is), and the status line says the failure ("Could not prepare the section.") until the reader acts on the section again or another command changes the plane. The line is drawn even when no plane is cut (the first cut is the one that downloads), so the failure is visible and not only spoken. Only the latest plane choice ends the pending plane, so Axial, Full brain, Axial within one download keeps the second Axial pending.
 
 ## Standard cited
 
