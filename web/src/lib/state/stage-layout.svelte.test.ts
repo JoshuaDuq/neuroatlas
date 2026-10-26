@@ -6,6 +6,9 @@ import { PREF_KEYS } from './prefs.ts';
 import { fakeStorage } from './test-support.ts';
 import { createStageLayout } from './stage-layout.svelte.ts';
 
+/** Waits for what a `ResizeObserver` delivers: it reports before the next paint, which a loaded machine can delay. */
+const eventually = <T>(check: () => T | Promise<T>) => vi.waitFor(check, { timeout: 5000 });
+
 const media = { phone: false };
 
 const rect = (width: number, height: number) => ({ x: 0, y: 0, width, height });
@@ -90,9 +93,9 @@ describe('layout derivations', () => {
     const dock = document.body.appendChild(document.createElement('div'));
     dock.style.cssText = 'position: fixed; width: 321px; height: 45px;';
     const stop = stage.observeDock(dock);
-    await vi.waitFor(() => expect(stage.dock).toEqual({ width: 321, height: 45 }));
+    await eventually(() => expect(stage.dock).toEqual({ width: 321, height: 45 }));
     dock.style.height = '60px';
-    await vi.waitFor(() => expect(stage.dock.height).toBe(60));
+    await eventually(() => expect(stage.dock.height).toBe(60));
     stop();
   });
 });
@@ -134,9 +137,9 @@ describe('the dock and the keys tell the camera', () => {
     const dock = document.body.appendChild(document.createElement('div'));
     dock.style.cssText = 'position: fixed; width: 300px; height: 40px;';
     const stop = stage.observeDock(dock);
-    await vi.waitFor(() => expect(calls).toEqual([40]));
+    await eventually(() => expect(calls).toEqual([40]));
     dock.style.height = '90px';
-    await vi.waitFor(() => expect(calls).toEqual([40, 90]));
+    await eventually(() => expect(calls).toEqual([40, 90]));
     stop();
   });
 

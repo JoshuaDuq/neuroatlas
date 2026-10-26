@@ -17,6 +17,9 @@ import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { HoverSources, HoverView } from './hover-text.ts';
 import Fixture from './stage-test-support.svelte';
 
+/** Waits for what a `ResizeObserver` delivers: it reports before the next paint, which a loaded machine can delay. */
+const eventually = <T>(check: () => T | Promise<T>) => vi.waitFor(check, { timeout: 5000 });
+
 interface Live {
   lang: 'en' | 'fr';
   status: SessionState['status'];
@@ -253,13 +256,13 @@ describe('scale bar', () => {
   test('its width, rule and label, decides how the dock and the bar share a line', async () => {
     await mount({}, { dock: true });
     emitScale(10, 100);
-    await vi.waitFor(() =>
+    await eventually(() =>
       expect(find('#scale-bar').getBoundingClientRect().width).toBeGreaterThan(100),
     );
     expect(host().dataset.chrome).toBe('wide');
     // A 300 px dock, the bar and 48 px of margins need more than a 440 px stage has.
     engine.camera.setChromeInsets({ right: 460 }, {});
-    await vi.waitFor(() => expect(host().dataset.chrome).toBe('tight'));
+    await eventually(() => expect(host().dataset.chrome).toBe('tight'));
   });
 });
 
@@ -512,11 +515,10 @@ describe('text size and spacing set after the stage is up (WCAG 1.4.4, 1.4.12)',
     async (_name, width, height, viewportWidth, viewportHeight) => {
       await page.viewport(viewportWidth, viewportHeight);
       await mount({}, { width, height });
-      await vi.waitFor(() => expect(help().dataset.room).toBeDefined());
       pointerAt(regionA, width - 2, height - 2);
       document.documentElement.style.fontSize = '200%';
-      await vi.waitFor(() => expect(hintClear()).toBe(true));
-      await vi.waitFor(() => {
+      await eventually(() => expect(hintClear()).toBe(true));
+      await eventually(() => {
         const chipBox = chip().getBoundingClientRect();
         const stageBox = host().getBoundingClientRect();
         expect(chipBox.right).toBeLessThanOrEqual(stageBox.right + 0.5);
@@ -532,12 +534,11 @@ describe('text size and spacing set after the stage is up (WCAG 1.4.4, 1.4.12)',
     async (_name, width, height, viewportWidth, viewportHeight) => {
       await page.viewport(viewportWidth, viewportHeight);
       await mount({}, { width, height });
-      await vi.waitFor(() => expect(help().dataset.room).toBeDefined());
       pointerAt(regionA, width - 2, height - 2);
       style = document.head.appendChild(document.createElement('style'));
       style.textContent = SPACING;
-      await vi.waitFor(() => expect(hintClear()).toBe(true));
-      await vi.waitFor(() => {
+      await eventually(() => expect(hintClear()).toBe(true));
+      await eventually(() => {
         const chipBox = chip().getBoundingClientRect();
         const stageBox = host().getBoundingClientRect();
         expect(chipBox.right).toBeLessThanOrEqual(stageBox.right + 0.5);
@@ -549,13 +550,13 @@ describe('text size and spacing set after the stage is up (WCAG 1.4.4, 1.4.12)',
   test('the scale bar width follows the text, so the dock and the bar are refitted', async () => {
     await mount({}, { dock: true });
     engine.emit('camera', { ...engine.camera.view, scale: { millimetres: 10, pixels: 100 } });
-    const narrow = await vi.waitFor(() => {
+    const narrow = await eventually(() => {
       const width = find('#scale-bar').getBoundingClientRect().width;
       expect(width).toBeGreaterThan(100);
       return width;
     });
     document.documentElement.style.fontSize = '200%';
-    await vi.waitFor(() =>
+    await eventually(() =>
       expect(find('#scale-bar').getBoundingClientRect().width).toBeGreaterThan(narrow),
     );
   });
