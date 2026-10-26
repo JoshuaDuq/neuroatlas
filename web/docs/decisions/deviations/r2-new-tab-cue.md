@@ -9,7 +9,7 @@ Status: fix (decision 17 and 39, B6); listed in the R2 PR
 
 ## New behaviour
 
-A visually hidden "(opens in a new tab)" / "(s’ouvre dans un nouvel onglet)" follows each link's text, then the shared `external-link` icon; `rel="noopener noreferrer"`. The text is T1's `newTab` string (decision 17), held in the component until C1 moves it.
+A visually hidden "(opens in a new tab)" / "(s’ouvre dans un nouvel onglet)" follows each link's text, then the shared `external-link` icon; `rel="noopener noreferrer"`. The text is decision 17's shared `link.newTab` string.
 
 ## Standard cited
 

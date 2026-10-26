@@ -35,34 +35,15 @@
   const uid = $props.id();
   const turnCaptionId = `turn-caption-${uid}`;
 
-  // TODO(C1): `viewport.orbitGroup` and `orbitLeft`/`orbitRight`/`orbitUp`/`orbitDown` (requested on #4).
-  const TURN = {
-    en: {
-      group: 'Turn the model',
-      left: 'Turn left',
-      right: 'Turn right',
-      up: 'Turn up',
-      down: 'Turn down',
-    },
-    fr: {
-      group: 'Faire pivoter le modèle',
-      left: 'Tourner à gauche',
-      right: 'Tourner à droite',
-      up: 'Tourner vers le haut',
-      down: 'Tourner vers le bas',
-    },
-  } as const;
-
   const copy = $derived(t(lang, 'viewport'));
   const names = $derived(t(lang, 'views'));
-  const turnCopy = $derived(lang === 'fr' ? TURN.fr : TURN.en);
   const presets = $derived(VIEW_NAMES.map((value) => ({ value, label: names[value] })));
 
   const TURNS = [
-    { key: 'left', icon: 'arrow-left', turn: ORBIT_KEYS.ArrowLeft },
-    { key: 'right', icon: 'arrow-right', turn: ORBIT_KEYS.ArrowRight },
-    { key: 'up', icon: 'arrow-up', turn: ORBIT_KEYS.ArrowUp },
-    { key: 'down', icon: 'arrow-down', turn: ORBIT_KEYS.ArrowDown },
+    { key: 'orbitLeft', icon: 'arrow-left', turn: ORBIT_KEYS.ArrowLeft },
+    { key: 'orbitRight', icon: 'arrow-right', turn: ORBIT_KEYS.ArrowRight },
+    { key: 'orbitUp', icon: 'arrow-up', turn: ORBIT_KEYS.ArrowUp },
+    { key: 'orbitDown', icon: 'arrow-down', turn: ORBIT_KEYS.ArrowDown },
   ] as const;
 </script>
 
@@ -77,15 +58,10 @@
     close();
   }}
 />
-<p id={turnCaptionId} class="stage-field-label turn-caption">{turnCopy.group}</p>
+<p id={turnCaptionId} class="stage-field-label turn-caption">{copy.orbitGroup}</p>
 <div role="group" aria-labelledby={turnCaptionId} class="turn">
   {#each TURNS as { key, icon, turn } (key)}
-    <IconButton
-      {icon}
-      label={turnCopy[key]}
-      data-tooltip={turnCopy[key]}
-      onclick={() => onTurn(turn)}
-    />
+    <IconButton {icon} label={copy[key]} data-tooltip={copy[key]} onclick={() => onTurn(turn)} />
   {/each}
 </div>
 <button

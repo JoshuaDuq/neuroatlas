@@ -69,9 +69,6 @@
     sectionBar,
   }: Props = $props();
 
-  // TODO(C1): `viewport.dockLabel` (requested on #4).
-  const DOCK_LABEL = { en: '3D viewer tools', fr: 'Outils du visualiseur 3D' } as const;
-
   const uid = $props.id();
   const viewCaptionId = `view-caption-${uid}`;
   const sectionLabelId = `section-tool-${uid}`;
@@ -176,7 +173,7 @@
     bind:this={tools}
     class="stage-toolbar"
     role={toolbar ? 'toolbar' : undefined}
-    aria-label={toolbar ? DOCK_LABEL[lang === 'fr' ? 'fr' : 'en'] : undefined}
+    aria-label={toolbar ? copy.dockLabel : undefined}
     {@attach rove}
   >
     <StagePopover

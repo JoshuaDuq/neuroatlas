@@ -74,31 +74,6 @@
     fallbackFocus,
   }: Props = $props();
 
-  // TODO(C1): these move to `mri.dialog` with the C1 amendment requested on #4; French is for the
-  // user's review (decision 41).
-  const NEW_COPY = {
-    en: {
-      ready: 'Reference MRI ready.',
-      viewer: 'MRI viewer',
-      voxelName: (axis: string) => `Voxel ${axis}`,
-      range: (max: number) => `0 to ${max}`,
-      moved: (voxel: readonly number[]) => `Crosshair moved to voxel ${voxel.join(', ')}.`,
-      hintKeys: 'Page Up and Page Down step through slices.',
-      hintClose: 'M closes this view.',
-      hintTouch: 'Tap a slice to position the crosshair, or enter a voxel below.',
-    },
-    fr: {
-      ready: 'IRM de référence prête.',
-      viewer: 'Visionneuse IRM',
-      voxelName: (axis: string) => `Voxel ${axis}`,
-      range: (max: number) => `de 0 à ${max}`,
-      moved: (voxel: readonly number[]) => `Réticule déplacé au voxel ${voxel.join(', ')}.`,
-      hintKeys: 'Page précédente et Page suivante changent de coupe.',
-      hintClose: 'M ferme cette vue.',
-      hintTouch: 'Toucher une coupe pour placer le réticule, ou saisir un voxel ci-dessous.',
-    },
-  } as const;
-
   const AXES = ['i', 'j', 'k'] as const;
   /** The canvas keys, as a step along the source voxel axes. */
   const MOVES: Readonly<Record<string, Vec3>> = {
@@ -111,7 +86,6 @@
   };
 
   const copy = $derived(t(lang, 'mri').dialog);
-  const extra = $derived(NEW_COPY[lang]);
   const catalog = $derived(tractCatalog(anatomy));
   const dataset = $derived(catalog.text[lang]!);
   const map = $derived(catalog.maps[0]!);
@@ -151,7 +125,7 @@
   const updated = $derived(errorCode === 'asset-updated');
   const showRetry = $derived(failure !== null && !busy);
   const statusText = $derived(
-    busy ? copy.loading : outside ? copy.outside : ready ? extra.ready : '',
+    busy ? copy.loading : outside ? copy.outside : ready ? copy.ready : '',
   );
   const planes = $derived([
     { value: 'MULTIPLANAR', label: copy.all },
@@ -176,8 +150,8 @@
   );
   const hint = $derived(
     coarse.current
-      ? extra.hintTouch
-      : [copy.hint, extra.hintKeys, singleKeys ? extra.hintClose : ''].filter(Boolean).join(' '),
+      ? copy.hintTouch
+      : [copy.hint, copy.hintKeys, singleKeys ? copy.hintClose : ''].filter(Boolean).join(' '),
   );
 
   const uid = $props.id();
@@ -345,7 +319,7 @@
     event.preventDefault();
     const target = voxel as unknown as Vec3;
     run(() => navigator!.setVoxel([...target]));
-    if (failure === null) announce(extra.moved(voxel as number[]));
+    if (failure === null) announce(copy.moved(voxel as number[]));
   }
 
   function onCanvasKeydown(event: KeyboardEvent) {
@@ -416,7 +390,7 @@
             <span class="voxel">
               <label>
                 <span aria-hidden="true">{axis}</span>
-                <span class="visually-hidden">{extra.voxelName(axis)}</span>
+                <span class="visually-hidden">{copy.voxelName(axis)}</span>
                 <input
                   type="number"
                   class="code"
@@ -430,7 +404,7 @@
                 />
               </label>
               <span id="{uid}-range-{axis}" class="visually-hidden">
-                {dims ? extra.range(dims[index]! - 1) : ''}
+                {dims ? copy.range(dims[index]! - 1) : ''}
               </span>
             </span>
           {/each}
@@ -447,7 +421,7 @@
         <canvas
           bind:this={canvas}
           role="application"
-          aria-roledescription={extra.viewer}
+          aria-roledescription={copy.viewer}
           aria-label={dataset.mriCanvas}
           aria-describedby="{uid}-hint"
           tabindex={controlsOff ? -1 : 0}
