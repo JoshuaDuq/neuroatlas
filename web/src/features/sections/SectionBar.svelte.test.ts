@@ -466,6 +466,54 @@ describe('the section row’s guards', () => {
     expect(shown()).not.toBe('Could not prepare the section.');
   });
 
+  test('a failure is dropped when the cut changes: a plane away and back does not bring it back', async () => {
+    await mount();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    cut.mockRejectedValueOnce(new Error('download failed'));
+    await controls.choose('sagittal');
+    flushSync();
+    expect(shown()).toBe('Could not prepare the section.');
+    await engine.sections.setMode('coronal');
+    flushSync();
+    await engine.sections.setMode('off');
+    flushSync();
+    expect(said()).toBe('Full brain · no cut');
+    expect(shown()).toBeNull();
+  });
+
+  test('leaving Tilt for Azimuth while the tilt is still building keeps the reader’s tilt', async () => {
+    await mount();
+    await cutPlane('oblique');
+    let land!: () => void;
+    const building = new Promise<void>((resolve) => (land = resolve));
+    const original = engine.sections.setAnglesReady.bind(engine.sections);
+    const ready = vi
+      .spyOn(engine.sections, 'setAnglesReady')
+      .mockImplementationOnce(async (tilt, azimuth) => {
+        await building;
+        return original(tilt, azimuth);
+      });
+    const tilt = control('slider', 'Tilt') as HTMLInputElement;
+    const azimuth = control('slider', 'Azimuth') as HTMLInputElement;
+    tilt.focus();
+    tilt.value = '45';
+    tilt.dispatchEvent(new Event('input', { bubbles: true }));
+    azimuth.focus();
+    flushSync();
+    expect(tilt.value).toBe('45');
+    land();
+    await vi.waitFor(() => expect(controls.state.tilt).toBe(45));
+    azimuth.value = '40';
+    azimuth.dispatchEvent(new Event('input', { bubbles: true }));
+    await vi.waitFor(() =>
+      expect(ready.mock.calls).toEqual([
+        [45, 30],
+        [45, 40],
+      ]),
+    );
+    expect(tilt.value).toBe('45');
+  });
+
   test('the longer meanings describe the checkbox and the sliders while the tooltip is shown', async () => {
     await mount();
     await cutPlane('oblique');

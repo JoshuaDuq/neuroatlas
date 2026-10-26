@@ -88,6 +88,16 @@
     azimuth = nextAzimuth;
   });
 
+  // A failure belongs to the cut it happened on: when the mode changes it is dropped, not just hidden, so a
+  // command that moves the plane away and back does not bring it back.
+  const cutMode = $derived(controls.state.mode);
+  let seenMode = untrack(() => cutMode);
+  $effect.pre(() => {
+    if (cutMode === seenMode) return;
+    seenMode = cutMode;
+    untrack(() => controls.forgetFailure());
+  });
+
   const sentences = $derived(
     sectionSentences({
       lang,
@@ -165,7 +175,8 @@
   /** Leaving a cut angle's slider: both sliders catch up with the cut, as the position slider does. */
   function leaveAngles() {
     angleFocused = false;
-    ({ tilt, azimuth } = controls.state);
+    // While a slide is building the cut lags the sliders: the cut catches up when it lands.
+    if (!controls.sliding) ({ tilt, azimuth } = controls.state);
   }
 
   function closeSection() {

@@ -149,6 +149,12 @@ export function createSectionControls({
     get spacing() {
       return measures.spacing;
     },
+    /** A slide is queued or building: the cut's angles lag the sliders until it lands. */
+    get sliding() {
+      return sliding;
+    },
+    /** The cut's mode changed under the failure: it is no longer the news (SectionBar drops it). */
+    forgetFailure: act,
     get failure(): unknown {
       return failure !== null && failure.mode === state.mode ? failure.error : null;
     },
