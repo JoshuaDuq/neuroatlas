@@ -52,24 +52,6 @@
     outlineAvailable: boolean;
   } = $props();
 
-  /**
-   * Strings the panel adds to the legacy set (decision 39 on #4, deviations r2-status-live and
-   * r2-new-tab-cue). They wait here for C1's amendment queue and move to `i18n/areas/comparison.ts`
-   * unchanged; `newTab` is decision 17's shared text.
-   */
-  const added = {
-    en: {
-      ready: 'Atlas comparison loaded.',
-      exported: 'Atlas comparison CSV downloaded.',
-      newTab: '(opens in a new tab)',
-    },
-    fr: {
-      ready: 'Comparaison des atlas chargée.',
-      exported: 'Fichier CSV de la comparaison des atlas téléchargé.',
-      newTab: '(s’ouvre dans un nouvel onglet)',
-    },
-  } satisfies Record<Language, Record<string, string>>;
-
   const FIRST_ROWS = 4;
   const uid = $props.id();
 
@@ -94,7 +76,6 @@
   let justLoaded = $state(false);
 
   const copy = $derived(t(lang, 'comparison'));
-  const extra = $derived(added[lang]);
   const shown = $derived(Boolean(manifest.atlas_comparison) && region?.kind === 'cortex');
   const sourceId = $derived(shown ? region!.id : null);
 
@@ -123,7 +104,7 @@
         : busy
           ? copy.highlightLoading
           : justLoaded
-            ? extra.ready
+            ? copy.ready
             : '',
   );
 
@@ -199,7 +180,7 @@
     link.download = `${manifest.anatomy.id}-${sourceId!.replaceAll(':', '-')}-atlas-comparison.csv`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    announce(extra.exported);
+    announce(copy.exported);
   }
 
   // The data loads once, the first time the panel is shown, though the disclosure is still closed.
@@ -274,7 +255,7 @@
   <Disclosure variant="section" summary={heading} bind:open>
     {#key lang}
       <StatusLine
-        class="detail-note comparison-status{status === extra.ready ? ' visually-hidden' : ''}"
+        class="detail-note comparison-status{status === copy.ready ? ' visually-hidden' : ''}"
         text={status}
       />
     {/key}
@@ -327,7 +308,7 @@
               {#each manifest.atlases.filter( (atlas) => loaded!.data.atlases.includes(atlas.id) ) as atlas (atlas.id)}
                 <a href={atlas.citation} target="_blank" rel="noopener noreferrer"
                   >{atlasSwitchLabel(atlas.id, lang)}<span class="visually-hidden"
-                    >{` ${extra.newTab}`}</span
+                    >{` ${t(lang, 'link').newTab}`}</span
                   >{@render iconGraphic('external-link')}</a
                 >
               {/each}

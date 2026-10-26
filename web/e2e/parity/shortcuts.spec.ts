@@ -149,7 +149,7 @@ test.describe('keyboard shortcuts dialog', () => {
       'Affichage',
     ]);
     await expect(sheet.getByRole('button', { name: 'Fermer' })).toBeVisible();
-    // The strings are the same until C1's amendment lands (s5b-shortcut-strings D3).
+    // Legacy prints Esc; the next app prints Échap (s5b-shortcut-strings D3).
     await expect(sheet.locator('kbd', { hasText: /^(Esc|Échap)$/ })).toBeVisible();
   });
 

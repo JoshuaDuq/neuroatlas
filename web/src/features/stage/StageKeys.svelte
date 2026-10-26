@@ -71,9 +71,6 @@
     onPaintPick,
   }: Props = $props();
 
-  // TODO(C1): moves to i18n when the string lands (requested on #4).
-  const ABSENT = { en: 'Not shown in this view', fr: 'Absent de cette vue' } as const;
-
   const plates = $derived(
     keyPlates({
       lang,
@@ -205,7 +202,7 @@
 {#snippet content(row: KeyRow)}
   <Swatch colour={row.absent ? 'transparent' : swatchColor(row.color)} />
   <span class="stage-key-label">{row.label}</span>
-  {#if row.absent}<span class="visually-hidden">. {ABSENT[lang]}</span>{/if}
+  {#if row.absent}<span class="visually-hidden">. {t(lang, 'viewport').keyAbsent}</span>{/if}
 {/snippet}
 
 {#snippet rows(plate: KeyPlate)}
