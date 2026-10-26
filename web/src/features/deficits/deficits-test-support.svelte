@@ -12,7 +12,7 @@
   import DeficitProfile from './DeficitProfile.svelte';
   import DeficitRestore from './DeficitRestore.svelte';
   import type { Fixture } from './deficits-test-support.ts';
-  import { createDeficitsExplorer } from './explorer.svelte.ts';
+  import { createDeficitsExplorer, type DeficitsDeps } from './explorer.svelte.ts';
   import RelatedDeficits from './RelatedDeficits.svelte';
 
   let {
@@ -106,22 +106,26 @@
       view.selectedDeficit = null;
       return true;
     },
-    offerReload: (error: unknown) => calls.push(`failure:${(error as Error).message}`),
-    searchIn: (mode: string, query: string) => calls.push(`search-${mode}:${query}`),
-  };
+    offerReload(error: unknown) {
+      calls.push(`failure:${(error as Error).message}`);
+    },
+    async searchIn(mode: 'functions' | 'deficits', query: string) {
+      calls.push(`search-${mode}:${query}`);
+    },
+  } satisfies DeficitsDeps['excursions'];
 
   const explorer = createDeficitsExplorer({
     clinical,
     anatomy: catalog,
-    view: () => view,
     session: {
+      state: view,
       setClinicalQuery(query) {
         calls.push(`query:${query}`);
         view.clinicalQuery = query;
         return true;
       },
     },
-    excursions: excursions as never,
+    excursions,
     openFunction: (id) => calls.push(`function:${id}`),
   });
 

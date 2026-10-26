@@ -136,6 +136,31 @@ describe('the list', () => {
     expect(rows().every((button) => button.tabIndex === 0)).toBe(true);
   });
 
+  test('the field has a visible label, no placeholder and aria-controls the list (x2-search-label)', async () => {
+    await mount();
+    const label = document.querySelector<HTMLLabelElement>('label.field-label')!;
+    expect(label.textContent).toBe('Search deficits or cognitive functions');
+    // Not the 1 px box of a visually hidden label.
+    expect(label.getBoundingClientRect().height).toBeGreaterThan(8);
+    expect(label.htmlFor).toBe(field().id);
+    expect(field().placeholder).toBe('');
+    expect(field().getAttribute('aria-controls')).toBe(
+      document.querySelector('[role="group"][aria-label="Deficits"]')!.id,
+    );
+  });
+
+  test('each group is a list of its deficits (x2-list-semantics)', async () => {
+    await mount();
+    const groups = [...document.querySelectorAll('[role="group"][aria-labelledby]')];
+    expect(groups.length).toBeGreaterThan(3);
+    for (const group of groups) {
+      const items = group.querySelectorAll('ul > li');
+      expect(items.length).toBeGreaterThan(0);
+      expect(group.querySelectorAll('ul > li > button.row')).toHaveLength(items.length);
+    }
+    expect(document.querySelectorAll('ul > li > button.row')).toHaveLength(40);
+  });
+
   test('one clear control: the custom button, with the native cancel hidden (D9)', async () => {
     await mount();
     expect(document.querySelector('.search-clear, .clear')).toBeNull();
@@ -477,7 +502,17 @@ describe('Restore previous view', () => {
     restore.click();
     await expect.poll(() => restore.getAttribute('aria-disabled')).toBe('true');
     expect(meta().textContent).toBe('Restoring the previous view…');
-    expect(getComputedStyle(restore).cursor).toBe('default');
+    const ink = (color: string) => {
+      const probe = document.body.appendChild(document.createElement('span'));
+      probe.style.color = color;
+      const resolved = getComputedStyle(probe).color;
+      probe.remove();
+      return resolved;
+    };
+    expect(getComputedStyle(restore).color).toBe(ink('var(--text-tertiary)'));
+    await withMedia([{ name: 'forced-colors', value: 'active' }], () => {
+      expect(getComputedStyle(restore).color).toBe(ink('GrayText'));
+    });
     expect(restore.disabled).toBe(false);
     restore.click();
     await settled();

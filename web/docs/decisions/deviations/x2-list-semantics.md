@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-clinical.js:224-260 builds each group as `div[role=group]` holding bare buttons, so a screen reader does not say how many deficits a group has.
+clinical.js:41-49, 63-71 builds each group as `div[role=group]` holding bare buttons, so a screen reader does not say how many deficits a group has.
 
 ## New behaviour
 

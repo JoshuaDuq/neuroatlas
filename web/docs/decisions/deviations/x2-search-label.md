@@ -5,7 +5,7 @@ Status: fix (standard cited)
 
 ## Legacy behaviour
 
-index.html:279-295 and clinical.js:412-415 give the field a visually hidden label and a placeholder.
+index.html:279-295 and clinical.js:486-487 give the field a visually hidden label and a placeholder.
 
 ## New behaviour
 

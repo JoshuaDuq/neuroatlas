@@ -4,7 +4,6 @@ import type { createCatalog } from '../../lib/core/catalog/catalog.ts';
 import type { ClinicalCatalog } from '../../lib/core/clinical/catalog.ts';
 import type { Excursions } from '../../lib/controller/excursion.svelte.ts';
 import type { SessionStore } from '../../lib/state/session.svelte.ts';
-import type { View } from '../../lib/state/view.svelte.ts';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
 import { scrollToTop } from '../../lib/ui/scroll.ts';
 
@@ -12,9 +11,8 @@ import { scrollToTop } from '../../lib/ui/scroll.ts';
 export interface DeficitsDeps {
   clinical: ClinicalCatalog;
   anatomy: Pick<ReturnType<typeof createCatalog>, 'get'>;
-  /** The page's view: the language and the open deficit key a failure to the profile it happened in. */
-  view: () => Pick<View, 'lang' | 'selectedDeficit'>;
-  session: Pick<SessionStore, 'setClinicalQuery'>;
+  /** The language and the open deficit key a failure to the profile it happened in. */
+  session: Pick<SessionStore, 'state' | 'setClinicalQuery'>;
   /** The S3 controller's members the tab calls (`createExcursions`). */
   excursions: Pick<
     Excursions,
@@ -56,7 +54,7 @@ export function createDeficitsExplorer(deps: DeficitsDeps) {
   let operation = $state<Operation>('deficit');
   // A failure belongs to the profile it happened in: another deficit or language clears it (clinical.js:521-525).
   let lastFailure = $state.raw<{ profile: string; error: unknown } | null>(null);
-  const profileKey = () => `${deps.view().lang}|${deps.view().selectedDeficit}`;
+  const profileKey = () => `${deps.session.state.lang}|${deps.session.state.selectedDeficit}`;
   const actionError = $derived(lastFailure?.profile === profileKey() ? lastFailure.error : null);
 
   /**
