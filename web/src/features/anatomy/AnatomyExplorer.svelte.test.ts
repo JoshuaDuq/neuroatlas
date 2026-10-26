@@ -413,6 +413,9 @@ describe('layout and accessibility', () => {
     document.documentElement.style.fontSize = '200%';
     try {
       expect(field.getBoundingClientRect().height).toBeGreaterThan(before);
+      // A size change reaches the page in its next rendered frame, as it would for a reader;
+      // the keys below can otherwise all land inside the frame the text grew in.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       // Walking back to the first result scrolls it up to the larger field's edge.
       await userEvent.keyboard('{Escape}');
       await search('v1');
