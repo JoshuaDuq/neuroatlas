@@ -32,7 +32,7 @@ test.describe('landmarks', () => {
       await expect(panels).toHaveCount(0);
     } else {
       await expect(panels).toHaveCount(1);
-      await expect(panels).toHaveAccessibleName('Anatomical details');
+      await expect(panels).toHaveAccessibleName('Atlas panel');
     }
 
     // WCAG 1.3.2: the sequence a screen reader reads has the panel before the stage.
