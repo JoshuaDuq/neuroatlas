@@ -1,27 +1,13 @@
 <!--
   A reversible visibility action for a region or a group's side (viewer/ui/panels/visibility-control.js).
   The name is the action ("Hide X, left"), so there is no aria-pressed, which would read backwards
-  against it. It lives in its own treegrid cell and is patched in place, so focus stays on it.
+  against it. It lives in its own treegrid cell and is patched in place, so focus stays on it. What
+  a press says is S1's: the part and the hidden count in one sentence (decisions 32 and 36).
 -->
-<script module lang="ts">
-  // TODO(C1): move to the dissection area of the i18n dictionary (requested on #4, decision 32).
-  const ANNOUNCEMENTS = {
-    en: {
-      hidden: (name: string, side: string) => `Hidden: ${name}, ${side}.`,
-      shown: (name: string, side: string) => `Shown: ${name}, ${side}.`,
-    },
-    fr: {
-      hidden: (name: string, side: string) => `Masqué : ${name}, ${side}.`,
-      shown: (name: string, side: string) => `Affiché : ${name}, ${side}.`,
-    },
-  } as const;
-</script>
-
 <script lang="ts">
   import { t } from '../../lib/core/i18n/index.ts';
   import { visibilityStateOf } from '../../lib/core/panels/navigator.ts';
   import type { Language, Region } from '../../lib/types/index.ts';
-  import { announce } from '../../lib/ui/announcer.svelte.ts';
   import { iconGraphic } from '../../lib/ui/IconButton.svelte';
 
   interface Props {
@@ -44,10 +30,8 @@
   const label = $derived((state === 'hidden' ? copy.showPart : copy.hidePart)(name, sideWord));
 
   function toggle() {
-    const hiding = state !== 'hidden';
-    if (hiding) onHide(ids);
-    else onShow(ids);
-    announce(ANNOUNCEMENTS[lang][hiding ? 'hidden' : 'shown'](name, sideWord));
+    if (state === 'hidden') onShow(ids);
+    else onHide(ids);
   }
 </script>
 

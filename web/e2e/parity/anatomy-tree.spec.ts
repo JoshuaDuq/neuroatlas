@@ -248,9 +248,43 @@ test.describe('anatomy tree', () => {
       page,
       'Middle frontal gyrus, right: Hemisphere hidden. Activate to reveal.',
     );
-    // a1-drop-title: legacy duplicates the name in a native title.
-    if (isNext()) await expect(hidden).not.toHaveAttribute('title', /.+/);
-    else await expect(hidden).toHaveAttribute('title', /.+/);
+    // a1-drop-title: legacy duplicates the name in a native title; next shows it in U5's tooltip.
+    if (isNext()) {
+      await expect(hidden).not.toHaveAttribute('title', /.+/);
+      await expect(hidden.locator('.row-main')).toHaveAttribute(
+        'data-tooltip',
+        /Hemisphere hidden/,
+      );
+    } else {
+      await expect(hidden).toHaveAttribute('title', /.+/);
+      // The legacy baseline of a section with a hidden hemisphere.
+      await expect(tree(page)).toMatchAriaSnapshot(`
+        - tree "Browse anatomy":
+          - group "Cortex":
+            - treeitem "Frontal, 38 regions" [expanded] [level=1]:
+              - group:
+                - treeitem /Middle frontal gyrus, right/ [level=2]
+      `);
+    }
+  });
+
+  test('a part that is hidden: its eye offers Show, and its group is partly hidden', async ({
+    app,
+  }) => {
+    const { page } = app;
+    await openFrontal(page);
+    await eye(page, 'Hide Middle frontal gyrus, left').click();
+    await expect(eye(page, 'Show Middle frontal gyrus, left')).toBeVisible();
+    if (!isNext()) {
+      await expect(tree(page)).toMatchAriaSnapshot(`
+        - tree "Browse anatomy":
+          - group "Cortex":
+            - treeitem "Frontal, 38 regions" [expanded] [level=1]:
+              - button "Hide Frontal, left"
+              - group:
+                - treeitem /Middle frontal gyrus, left/ [level=2]
+      `);
+    }
   });
 
   test('French: the names, the counts and the eyes', async ({ app }) => {
@@ -262,6 +296,15 @@ test.describe('anatomy tree', () => {
     await expect(eye(page, 'Masquer Frontal, gauche')).toBeVisible();
     await expect(eye(page, 'Masquer Frontal, droite')).toBeVisible();
     await expect(page.getByRole('button', { name: /^Tout (déplier|replier)$/ })).toBeVisible();
+    if (!isNext()) {
+      await expect(tree(page)).toMatchAriaSnapshot(`
+        - tree "Parcourir l’anatomie":
+          - group "Cortex":
+            - treeitem "Frontal, 38 régions" [level=1]:
+              - button "Masquer Frontal, gauche"
+              - button "Masquer Frontal, droite"
+      `);
+    }
   });
 
   test('targets: each eye is at least 24 px square', async ({ app }) => {
@@ -284,5 +327,27 @@ test.describe('anatomy tree', () => {
   }) => {
     await openFrontal(app.page);
     await app.expectAccessible('anatomy-tree');
+  });
+
+  test.describe('coarse pointer', () => {
+    test.use({ hasTouch: true });
+
+    test('each eye is 44 px square', async ({ app }) => {
+      const { page } = app;
+      await openFrontal(page);
+      await expect
+        .poll(() => page.evaluate(() => matchMedia('(pointer: coarse)').matches))
+        .toBe(true);
+      for (const name of [
+        'Hide Frontal, left',
+        'Hide Frontal, right',
+        'Hide Middle frontal gyrus, left',
+        'Hide Cerebellum, midline',
+      ]) {
+        const box = (await eye(page, name).boundingBox())!;
+        expect(box.width, name).toBeGreaterThanOrEqual(44);
+        expect(box.height, name).toBeGreaterThanOrEqual(44);
+      }
+    });
   });
 });

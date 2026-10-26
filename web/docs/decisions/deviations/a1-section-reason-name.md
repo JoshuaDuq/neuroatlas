@@ -13,4 +13,4 @@ The section's heading row carries the caption in its accessible name, "Cortex (H
 
 ## Standard cited
 
-WCAG 2.2 SC 1.3.1 Info and Relationships (information shown visually is available programmatically) and SC 3.3.2.
+WCAG 2.2 SC 1.3.1 Info and Relationships (information shown visually is available programmatically).

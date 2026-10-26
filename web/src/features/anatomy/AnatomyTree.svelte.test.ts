@@ -1,7 +1,8 @@
 // The anatomy tree against the APG Treegrid table, the legacy navigator.js cases
 // (navigator.test.js; chrome.contract.test.js:431) and decision 32 on #4, as behaviour in Chromium.
+import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { currentItem } from '../../lib/core/workspace.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
@@ -295,10 +296,11 @@ describe('visibility eyes', () => {
     expect(eye.dataset.state).toBe('hidden');
     expect(eye.querySelector('path[d="m3 3 18 18"]')).not.toBeNull();
     expect(eye.querySelector('.visibility-side')!.textContent).toBe('L');
-    expect(announced()).toBe('Hidden: Precentral gyrus, left.');
+    // What a press says is S1's sentence (decision 32); the tree writes none of its own.
+    expect(announced()).toBe('');
     await press(' ');
     expect(calls).toEqual(['hide d:left:1', 'show d:left:1']);
-    expect(announced()).toBe('Shown: Precentral gyrus, left.');
+    expect(announced()).toBe('');
   });
 
   test('a group’s side is partly hidden when one of its regions is, and says so in name and tooltip', async () => {
@@ -323,7 +325,7 @@ describe('visibility eyes', () => {
     expect(eye.getAttribute('aria-label')).toBe('Masquer Precentral gyrus, droite');
     expect(eye.querySelector('.visibility-side')!.textContent).toBe('D');
     await userEvent.click(eye);
-    expect(announced()).toBe('Masqué : Precentral gyrus, droite.');
+    expect(announced()).toBe('');
     expect(grid().getAttribute('aria-label')).toBe('Parcourir l’anatomie');
     expect(row('cortex:Frontal').getAttribute('aria-label')).toBe('Frontal, 3 régions');
   });
@@ -427,17 +429,131 @@ describe('Expand all', () => {
 });
 
 describe('shortcut keys on a row', () => {
-  // U7's type-ahead consumes every printable key on a row, so `f i c u s h m ? / 0-6` cannot reach
-  // the keymap from it (decision 7). Flips when Treegrid can leave keys to the page (request on #4).
-  test.fails('a keymap letter reaches the page from a row', async () => {
-    mount({ open: ALL });
+  // Decision 7: a row leaves the page's own single characters to the keymap instead of type-ahead.
+  const pressed = async (keys: string[]) => {
     const reached: string[] = [];
-    const listener = (event: KeyboardEvent) => reached.push(event.key);
+    const listener = (event: KeyboardEvent) => {
+      if (!event.defaultPrevented) reached.push(event.key);
+    };
     window.addEventListener('keydown', listener);
-    focus('d:left:1');
-    await press('f');
+    for (const key of keys) await press(key);
     window.removeEventListener('keydown', listener);
-    expect(reached).toEqual(['f']);
+    return reached;
+  };
+
+  test('f i c u s h m ? / and 0-6 reach the page from a row, and move no focus', async () => {
+    mount({ open: ALL });
+    focus('d:left:1');
+    const keys = ['f', 'i', 'c', 'u', 's', 'h', 'm', '?', '/', '0', '3', '6'];
+    expect(await pressed(keys)).toEqual(keys);
+    expect(active()).toBe(row('d:left:1'));
+  });
+
+  test('other letters still find a row, and a page letter extends a query being typed', async () => {
+    mount({ open: ALL });
+    focus('section:cortex');
+    expect(await pressed(['p'])).toEqual([]);
+    expect(active()).toBe(row('d:left:1'));
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    focus('section:cortex');
+    await press('pf');
+    expect(active()).toBe(row('d:left:1'));
+  });
+});
+
+describe('from a cell, across rows that have no cell', () => {
+  const eyeOf = (id: string, side: string) => eyes(id).find((eye) => eye.dataset.side === side)!;
+
+  test('Up from the first group goes to its section heading row; Down from a section’s last eye goes to the next heading', async () => {
+    mount({ open: ALL });
+    eyeOf('cortex:Frontal', 'left').focus();
+    await press('{ArrowUp}');
+    expect(active()).toBe(row('section:cortex'));
+    eyes('d:left:3')[0].focus();
+    await press('{ArrowDown}');
+    expect(active()).toBe(row('section:structure'));
+  });
+
+  test('Down onto a region with no eye goes to that row', async () => {
+    mount({ open: ALL });
+    eyeOf('tissue:Cut labels', 'left').focus();
+    await press('{ArrowDown}');
+    expect(active()).toBe(row('t:left:1'));
+  });
+
+  test('Ctrl+Home goes to the first row and Ctrl+End to the last row’s nearest eye', async () => {
+    mount({ open: ALL });
+    eyeOf('cortex:Frontal', 'left').focus();
+    await press('{Control>}{End}{/Control}');
+    expect(active()).toBe(eyes('t:left:2')[0]);
+    await press('{Control>}{Home}{/Control}');
+    expect(active()).toBe(row('section:cortex'));
+  });
+
+  test('* opens every group among its siblings', async () => {
+    mount();
+    focus('cortex:Frontal');
+    await press('*');
+    expect(rows().filter((r) => r.getAttribute('aria-expanded') === 'true')).toHaveLength(4);
+  });
+});
+
+describe('rows', () => {
+  test('a region no control can reveal is aria-disabled, and takes no hover wash or pointer', async () => {
+    mount({ open: ALL });
+    expect(row('t:left:1').getAttribute('aria-disabled')).toBe('true');
+    expect(row('t:left:2').hasAttribute('aria-disabled')).toBe(false);
+    expect(getComputedStyle(row('t:left:1')).cursor).toBe('default');
+    const before = getComputedStyle(row('t:left:1')).backgroundColor;
+    await userEvent.hover(row('t:left:1'));
+    expect(getComputedStyle(row('t:left:1')).backgroundColor).toBe(before);
+  });
+
+  test('a section caption takes no hover wash', async () => {
+    mount({ open: ALL });
+    await userEvent.hover(row('section:cortex'));
+    expect(getComputedStyle(row('section:cortex')).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+  });
+
+  test('an open group stays in view over its regions, and regions clear it when scrolled to', () => {
+    mount({ open: ['cortex:Frontal'] });
+    expect(getComputedStyle(row('cortex:Frontal')).position).toBe('sticky');
+    expect(getComputedStyle(row('cortex:Limbic')).position).not.toBe('sticky');
+    expect(getComputedStyle(row('d:left:1')).scrollMarginTop).not.toBe('0px');
+    expect(row('d:left:1').parentElement!.className).toBe('treegrid-block');
+    expect(row('d:left:1').parentElement).toBe(row('cortex:Frontal').parentElement);
+  });
+
+  test('a hidden row names itself in a tooltip, and a visible one has none; no title anywhere', () => {
+    mount({ open: ALL });
+    const tip = (id: string) => row(id).querySelector<HTMLElement>('.row-main')!.dataset.tooltip;
+    expect(tip('d:right:2')).toBe(
+      'Superior frontal gyrus, right: Hemisphere hidden. Activate to reveal.',
+    );
+    expect(tip('d:left:1')).toBeUndefined();
+    expect(document.querySelector('[title]')).toBeNull();
+  });
+
+  test('a hidden row’s side letter is dimmed, a shown one’s is not', () => {
+    mount({ open: ALL });
+    const color = (id: string) =>
+      getComputedStyle(row(id).querySelector('.visibility-side')!).color;
+    expect(color('d:right:2')).not.toBe(color('d:left:1'));
+  });
+
+  test('a click anywhere on a row acts, even off its name; a button’s click is its own', async () => {
+    const calls = mount({ open: ALL });
+    // The row itself is what an empty side slot's area hits.
+    row('d:left:1').click();
+    expect(calls).toEqual(['select d:left:1']);
+    row('cortex:Limbic').click();
+    await tick();
+    expect(row('cortex:Limbic').getAttribute('aria-expanded')).toBe('false');
+    row('t:left:1').querySelector<HTMLElement>('.row-name')!.click();
+    row('section:cortex').click();
+    expect(calls).toEqual(['select d:left:1']);
+    eyes('d:left:1')[0].click();
+    expect(calls).toEqual(['select d:left:1', 'hide d:left:1']);
   });
 });
 
@@ -524,6 +640,49 @@ describe('accessibility', () => {
       }
     } finally {
       spacing.remove();
+    }
+  });
+
+  test('coarse pointer: each eye is 44 px square and a row is at least 44 px', async () => {
+    mount({ open: ALL });
+    const session = cdp();
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    try {
+      expect(matchMedia('(pointer: coarse)').matches).toBe(true);
+      for (const eye of [...eyes('d:left:1'), ...eyes('a:mid:1'), ...eyes('cortex:Frontal')]) {
+        const box = eye.getBoundingClientRect();
+        expect(box.width, eye.getAttribute('aria-label')!).toBeGreaterThanOrEqual(44);
+        expect(box.height, eye.getAttribute('aria-label')!).toBeGreaterThanOrEqual(44);
+      }
+      expect(row('d:left:1').getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+    } finally {
+      await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+    }
+  });
+
+  test('200 % text: rows grow with it and nothing spills or is clipped', async () => {
+    mount({ open: ALL });
+    await page.viewport(640, 800);
+    document.documentElement.style.fontSize = '200%';
+    try {
+      expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
+      for (const r of rows()) {
+        expect(r.scrollWidth, r.dataset.id).toBeLessThanOrEqual(r.clientWidth + 1);
+        expect(r.scrollHeight, r.dataset.id).toBeLessThanOrEqual(r.clientHeight + 1);
+      }
+    } finally {
+      document.documentElement.style.fontSize = '';
+    }
+  });
+
+  test('a landscape phone (812 x 375): no sideways spill, and the eyes are 24 px or more', async () => {
+    mount({ open: ALL });
+    await page.viewport(812, 375);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
+    for (const eye of eyes('d:left:1')) {
+      const box = eye.getBoundingClientRect();
+      expect(box.width).toBeGreaterThanOrEqual(24);
+      expect(box.height).toBeGreaterThanOrEqual(24);
     }
   });
 });

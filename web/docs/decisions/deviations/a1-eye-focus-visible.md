@@ -5,7 +5,7 @@ Status: fix, standard cited.
 
 ## Legacy behaviour
 
-On a fine pointer the group eyes are `opacity: 0` and a region's eye icon too, until the row is hovered, holds `:focus-visible` or `:has(:focus-visible)`, or is selected or hidden (`viewer/styles/navigator.css:195-208`). `:focus-visible` does not match an eye focused by a mouse press, so the eye can vanish under the pointer that just pressed it. Forced colours and `prefers-contrast: more` do not override `opacity`, so a control can stay invisible there.
+On a fine pointer the group eyes are `opacity: 0` and a region's eye icon too, until the row is hovered, holds `:focus-visible` or `:has(:focus-visible)`, or is selected or hidden (`viewer/styles/navigator.css:205-220`). `:focus-visible` does not match an eye focused by a mouse press, so the eye can vanish under the pointer that just pressed it. Forced colours and `prefers-contrast: more` do not override `opacity`, so a control can stay invisible there.
 
 ## New behaviour
 

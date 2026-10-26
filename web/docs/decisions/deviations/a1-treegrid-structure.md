@@ -5,7 +5,7 @@ Status: fix, standard cited. Follows decision 8 on #4 (approved) and `u7-treegri
 
 ## Legacy behaviour
 
-`#tree` is `role="tree"`. Between it and its `treeitem` rows sit a `role="group"` per section (labelled by an `aria-hidden` heading) and, inside each group row, an `aria-owns` pointing at a sibling `role="group"` of children (`viewer/ui/panels/navigator.js:489-540`). Each `treeitem` also holds focusable `button`s (the eyes). ARIA 1.2 does not allow that: a `tree` owns `treeitem`s and `group`s of `treeitem`s, and an interactive control cannot nest inside a `treeitem`, whose children are presentational.
+`#tree` is `role="tree"`. Between it and its `treeitem` rows sit a `role="group"` per section (labelled by an `aria-hidden` heading) and, inside each group row, an `aria-owns` pointing at a sibling `role="group"` of children (`viewer/ui/panels/navigator.js:489-540`). Each `treeitem` also holds focusable `button`s (the eyes). The tree structure itself is valid ARIA, but a tree has no cell model: APG Tree View gives a focusable control inside a `treeitem` nowhere to stand, so each eye was a button inside the item it acts on, and the keyboard reached it by a private convention.
 
 ## New behaviour
 
@@ -15,4 +15,4 @@ U7's `Treegrid` is a flat list of rows with no `rowgroup`, so a section heading 
 
 ## Standard cited
 
-WAI-ARIA 1.2 required owned elements and `treegrid`; WAI-ARIA APG Treegrid pattern; WCAG 2.2 SC 1.3.1 and 4.1.2.
+WAI-ARIA APG Treegrid pattern (controls in their own cells; Right and Left move between cells); decision 8 on #4; WCAG 2.2 SC 4.1.2.

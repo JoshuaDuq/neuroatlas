@@ -1,18 +1,18 @@
-# Two legacy details the Treegrid primitive cannot carry yet
+# Two legacy details the Treegrid primitive needed to carry
 
-Chunk: A1
-Status: not a standards fix; legacy behaviour that U7's `Treegrid` cannot express. Flagged on #4 for U7's owner. A1 does not decide it.
+Chunk: A1 (with the U7 hand-over for `Treegrid.svelte`)
+Status: ported. Recorded because the primitive changed to carry them.
 
 ## Legacy behaviour
 
-1. An open group's row is `position: sticky` inside its own `.tree-group` block, so its name stays in view while its regions scroll, and leaves with them (`viewer/styles/navigator.css:121-131`).
-2. A region too small for the cut (`below-cut-resolution`) is `aria-disabled="true"` on its row (`viewer/ui/panels/navigator.js:360-363`).
+1. An open group's row is `position: sticky` inside its own `.tree-group` block, so its name stays in view while its regions scroll, and leaves with them; its regions keep a `scroll-margin-block` so the sticky row does not cover a focused one (`viewer/styles/navigator.css:120-135`).
+2. A region too small for the cut (`below-cut-resolution`) is `aria-disabled="true"` on its row, takes no hover wash and shows the default cursor (`viewer/ui/panels/navigator.js:360-363`, `navigator.css:27,31`).
 
 ## New behaviour
 
-1. Not ported. `Treegrid` renders one flat list of rows, so a sticky group row has no per-group container to stop at: it would stay pinned for the rest of the tree. It needs a group wrapper (an APG `rowgroup`) from U7.
-2. The row's name says it ("Name, side, not shown: reason."), it has no eye, no `aria-selected`, and Enter, Space and a click do nothing. `aria-disabled` itself needs a `disabled` flag on `TreegridNode`, which sets it on the row it owns.
+1. `Treegrid` renders each top-level row and the rows open under it inside one plain `<div class="treegrid-block">`. It has no role, so rows are still the grid's own children for ARIA and axe, and the key handling is unchanged. The tree makes the open group row sticky within its block and gives level-2 rows the scroll margin.
+2. `TreegridNode.disabled` renders `aria-disabled="true"` on the row and removes the hover wash. The tree sets it for the unavailable region and gives the row the default cursor.
 
 ## Standard cited
 
-None: both are parity gaps, not departures from a standard.
+WCAG 2.2 SC 2.4.11 Focus Not Obscured (the scroll margin); WAI-ARIA 1.2 `aria-disabled` on `row`. Parity with legacy otherwise.

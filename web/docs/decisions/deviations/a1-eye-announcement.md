@@ -5,11 +5,11 @@ Status: fix, standard cited. Approved as decision 32 on #4.
 
 ## Legacy behaviour
 
-Pressing an eye changes the dissection, the label of the focused button and, later, the count sentence ("N parts hidden") that is merged into the next unrelated announcement (`viewer/app.js:1670-1678`, `viewer/ui/panels/dissection.js:28`). Nothing says which part was hidden or shown when the button is pressed, and screen readers often do not re-read a focused button whose name changed.
+Pressing an eye changes the dissection and the label of the focused button, and the count sentence ("N parts hidden") is announced at once when nothing else is being said (`viewer/app.js:1676`, `dissectionSaid`). Nothing says which part was hidden or shown, and screen readers often do not re-read a focused button whose name changed.
 
 ## New behaviour
 
-The eye announces through the page's one announcer, at once: "Hidden: {name}, {side}." / "Shown: {name}, {side}." (French "Masqué : …" / "Affiché : …"). The same applies to `V`. The count sentence stays with S1. The two strings are held in `VisibilityEye.svelte` until C1 adds them to the dissection area (requested on #4).
+The part is named in the announcement: "Hidden: {name}, {side}." / "Shown: {name}, {side}." (French "Masqué : …" / "Affiché : …"), joined with the count sentence. The tree writes no sentence of its own: both would go to the page's one polite region in the same turn and the later would replace the first. Joining them is S1's (decisions 32 and 36 on #4; K2 follows): `VisibilityEye` only calls `onHide`/`onShow`, and the controller says the part with the count. The strings are C1's.
 
 ## Standard cited
 

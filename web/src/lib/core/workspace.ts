@@ -137,7 +137,7 @@ const finders = new Set<Find>();
 
 /**
  * A list registers how to find its current item: the selected tree row, the open function,
- * deficit, circuit or landmark. The workspace asks without knowing any list's markup
+ * deficit or circuit row. The workspace asks without knowing any list's markup
  * (it replaces legacy's selector string, workspace.js:9-12). Returns the unregister function.
  */
 export function registerCurrentItem(find: Find): () => void {

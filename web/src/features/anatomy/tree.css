@@ -94,8 +94,23 @@
     background: var(--surface-base);
     font-weight: 500;
   }
+  /* An open group's name stays in view while its regions scroll, and leaves with them (its block). */
+  .treegrid-block {
+    isolation: isolate;
+  }
   .anatomy-tree .row[aria-expanded='true'] {
+    position: sticky;
+    top: -1px;
+    z-index: 1;
+    background: var(--surface-base);
     font-weight: 600;
+  }
+  /* A focused or revealed region clears the sticky group row above it (WCAG 2.4.11). */
+  .anatomy-tree .row[aria-level='2'] {
+    scroll-margin-block: calc(var(--row-height) + var(--space-5));
+  }
+  .anatomy-tree .row[aria-disabled='true'] {
+    cursor: default;
   }
   .chevron {
     flex: none;
@@ -219,6 +234,10 @@
   .visibility-control[data-partial='true'] {
     background: var(--surface-tonal);
   }
+  /* A hidden or dimmed row dims its letter too (navigator.css:198). */
+  .anatomy-tree .row:has(.row-main[data-hidden]) .visibility-side {
+    color: var(--text-tertiary);
+  }
 
   /*
    * Quiet at rest with a mouse. A group shows its count where its eyes will be and trades it for them
@@ -228,6 +247,10 @@
   @media (hover: hover) and (pointer: fine) {
     .anatomy-tree .row[aria-expanded]:hover {
       background: var(--surface-hover);
+    }
+    /* A section's caption is not a control: no wash. */
+    .anatomy-tree .row:has(.section-label):hover {
+      background: transparent;
     }
     .visibility-control:hover:not(:disabled) {
       background: var(--surface-tonal);
@@ -280,6 +303,24 @@
   @media not ((hover: hover) and (pointer: fine)) {
     .anatomy-tree[data-midline] .slot-mid {
       display: block;
+    }
+  }
+
+  /*
+   * A finger is not a cursor: eyes and rows grow to 44 px wherever the pointer is coarse, tablets
+   * included, with no padding on top of the eye (phone.css:317-333).
+   */
+  @media (pointer: coarse) {
+    .anatomy-tree {
+      --eye-slot: 44px;
+      --row-height: 44px;
+      --control-height: 44px;
+    }
+    .visibility-control {
+      height: 44px;
+    }
+    .anatomy-tree .row {
+      padding-block: 0;
     }
   }
 

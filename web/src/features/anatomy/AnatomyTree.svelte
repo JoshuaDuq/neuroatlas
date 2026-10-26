@@ -48,6 +48,7 @@
     UNREVEALABLE,
   } from '../../lib/core/panels/navigator.ts';
   import type { HiddenReason } from '../../lib/core/catalog/visibility.ts';
+  import { SHORTCUT_KEYS } from '../../lib/controller/keymap.ts';
   import { registerCurrentItem } from '../../lib/core/workspace.ts';
   import type { Language } from '../../lib/types/index.ts';
   import { FOCUS_TARGETS, registerFocusTarget } from '../../lib/ui/focus.ts';
@@ -88,6 +89,22 @@
     onShow,
   }: Props = $props();
 
+  // The page's own single characters: a row leaves them to the keymap instead of type-ahead.
+  const PAGE_KEYS: ReadonlySet<string> = new Set(
+    [
+      SHORTCUT_KEYS.shortcuts,
+      SHORTCUT_KEYS.search,
+      ...Object.values(SHORTCUT_KEYS.views),
+      SHORTCUT_KEYS.focusSelection,
+      SHORTCUT_KEYS.isolate,
+      SHORTCUT_KEYS.cortex,
+      SHORTCUT_KEYS.internal,
+      SHORTCUT_KEYS.spinalCord,
+      SHORTCUT_KEYS.hemisphere,
+      SHORTCUT_KEYS.linkedMri,
+    ].map((key) => key.toLowerCase()),
+  );
+
   let root: HTMLElement;
   let scrolledId: string | null = null;
 
@@ -108,6 +125,7 @@
       id: row.region.id,
       label: name,
       selectable: eye,
+      disabled: !eye,
       data: {
         type: 'region',
         row,
@@ -216,6 +234,15 @@
     }
   }
 
+  /** A click anywhere on a row, outside its buttons, does what Enter does (navigator.js:386, 547). */
+  function onRowClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) return;
+    const id = target.closest<HTMLElement>('[role="row"]')?.dataset.id;
+    const node = rows.find((row) => row.node.id === id)?.node;
+    if (node) activate(node);
+  }
+
   /**
    * `V`: a focused eye is pressed; a row with one eye presses it; a group with one per side goes to
    * them to choose (navigator.js:694-695).
@@ -260,7 +287,14 @@
   });
 </script>
 
-<div class="anatomy-tree" bind:this={root} data-midline={anyMidline || undefined}>
+<!-- A pointer affordance: the keyboard's way to the same action is the grid's own (Enter, Space). -->
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+<div
+  class="anatomy-tree"
+  bind:this={root}
+  onclick={onRowClick}
+  data-midline={anyMidline || undefined}
+>
   {#if nodes.length}
     <Treegrid
       label={t(lang, 'navigator').browseAnatomy}
@@ -271,6 +305,7 @@
       actions={SIDES}
       onactivate={activate}
       rowKeys={{ v: toggleVisibility }}
+      passKeys={PAGE_KEYS}
     >
       {#snippet primary(node, state)}
         {@const data = node.data}
@@ -285,15 +320,14 @@
             count={data.group.rows.length}
             expanded={state.expanded}
             dimmed={!data.group.rows.some((row) => row.visible)}
-            toggle={state.toggle}
           />
         {:else}
           <TreeRow
             name={data.row.label.name}
             reason={data.reason}
+            tooltip={data.row.visible ? undefined : data.name}
             hidden={!data.row.visible}
             unavailable={!data.eye}
-            activate={() => activate(node)}
           />
         {/if}
       {/snippet}
