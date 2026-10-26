@@ -152,6 +152,30 @@ describe('an excursion into a function', () => {
     assert.equal(scene.reader.apply.mock.calls.length, 1);
   });
 
+  test('CTRL-29 a deficit opened from a lesson ends it and hands over the scene from before it', async () => {
+    const scene = createScene();
+    const [circuit] = scene.circuits.all;
+    await scene.excursions.openCircuit(circuit!.id);
+    const held = scene.reader.capture.mock.results[0]!.value;
+
+    await scene.excursions.openDeficit(DEFICIT);
+    assert.equal(scene.lesson.state.circuit, null);
+    assert.equal(scene.reader.capture.mock.calls.length, 1);
+    await scene.excursions.restoreBeforeExcursion();
+    assert.equal(scene.reader.apply.mock.calls[0]![0], held);
+    await scene.excursions.leaveLesson();
+    assert.equal(scene.reader.apply.mock.calls.length, 1);
+  });
+
+  test('CTRL-30 opening a function says the atlas it changed, and labels the cut by that atlas', async () => {
+    const scene = createScene();
+    assert.equal(scene.engine.model.settings.atlas, 'destrieux');
+    await scene.excursions.openFunction('language');
+    assert.equal(scene.engine.model.settings.atlas, 'hcp-mmp');
+    assert.match(scene.session.state.notice!.text, /HCP-MMP/);
+    assert.equal(scene.engine.sections.state.cutAtlas, 'hcp-mmp');
+  });
+
   test('a region it names is selected and framed, and holds the scene if none is held', async () => {
     const scene = createScene();
     assert.equal(await scene.excursions.openListedRegion('destrieux:left:25'), true);
@@ -177,6 +201,13 @@ describe('the offer to see through the cortex', () => {
     );
     assert.match(scene.session.state.notice!.text, /see-through/);
     assert.equal(scene.session.state.notice!.action, null);
+  });
+
+  test('CTRL-31 a cortex the reader made see-through by hand gets no offer', async () => {
+    const scene = createScene();
+    scene.engine.model.setCortexOpacity(0.4);
+    await scene.excursions.openFunction(deepFunction(scene));
+    assert.equal(scene.session.state.notice?.action ?? null, null);
   });
 
   test('the overview offers nothing', async () => {

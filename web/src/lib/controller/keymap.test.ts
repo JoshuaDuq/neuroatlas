@@ -366,3 +366,222 @@ describe('keymap', () => {
     assert.equal(listeners.size, 0);
   });
 });
+
+/** A fixed table of key presses and what they do: the commands issued, in order, and whether the key is cancelled. */
+describe('keymap outcomes', () => {
+  const marked = (control: boolean) => ({
+    tagName: 'BUTTON',
+    matches: () => control,
+    closest: (selector: string) => (selector === '[data-own-keys]' ? {} : null),
+  });
+  const TEXT = { tagName: 'INPUT', type: 'text' };
+  const RANGE = { tagName: 'INPUT', type: 'range' };
+  const CHECKBOX = { tagName: 'INPUT', type: 'checkbox' };
+
+  function outcome(
+    state: Partial<KeymapState>,
+    key: string,
+    target: object | null = null,
+    extra: object = {},
+  ) {
+    const log: string[] = [];
+    const { keymap, commands, canvas } = host(state);
+    for (const name of COMMAND_NAMES) {
+      commands[name].mockImplementation((...args: unknown[]) =>
+        log.push(args.length ? `${name}(${JSON.stringify(args)})` : name),
+      );
+    }
+    const event = press(key, target === canvas ? canvas : target, extra);
+    dispatchKey(event, keymap);
+    return { log, prevented: calls(event.preventDefault) > 0 };
+  }
+
+  it('KEY-01 leaves a key with Ctrl, Meta or Alt to the browser, whatever the key', () => {
+    for (const key of [
+      'Escape',
+      '?',
+      '/',
+      '0',
+      '1',
+      'f',
+      'i',
+      'c',
+      'u',
+      's',
+      'h',
+      'm',
+      'ArrowDown',
+    ]) {
+      for (const modifier of ['ctrlKey', 'metaKey', 'altKey']) {
+        assert.deepEqual(
+          outcome({ selectedRegion: REGION }, key, null, { [modifier]: true }),
+          { log: [], prevented: false },
+          `${key} with ${modifier}`,
+        );
+      }
+    }
+  });
+
+  it('KEY-01 still acts with Shift, and leaves a composing or already handled key alone', () => {
+    assert.deepEqual(outcome({}, 'H', null, { shiftKey: true }), {
+      log: ['setHemisphere(["left"])'],
+      prevented: false,
+    });
+    for (const key of ['c', '1', '?', 'Escape']) {
+      for (const extra of [{ isComposing: true }, { defaultPrevented: true }]) {
+        assert.deepEqual(outcome({ selectedRegion: REGION }, key, null, extra), {
+          log: [],
+          prevented: false,
+        });
+      }
+    }
+  });
+
+  it('KEY-04 Escape in a text field that did not use it still clears the selection', () => {
+    assert.deepEqual(outcome({ selectedRegion: REGION }, 'Escape', TEXT), {
+      log: ['clearSelection', 'rescueFocus'],
+      prevented: false,
+    });
+    assert.deepEqual(
+      outcome({ selectedRegion: REGION }, 'Escape', TEXT, { defaultPrevented: true }),
+      {
+        log: [],
+        prevented: false,
+      },
+    );
+  });
+
+  it('KEY-05 a text field, textarea, select or editable element keeps every shortcut key', () => {
+    const state = { selectedRegion: REGION };
+    for (const target of [
+      TEXT,
+      { tagName: 'INPUT', type: 'search' },
+      { tagName: 'INPUT' },
+      { tagName: 'TEXTAREA' },
+      { tagName: 'SELECT' },
+      { tagName: 'DIV', isContentEditable: true },
+    ]) {
+      for (const key of ['c', 'h', 'f', '1', '/', '?', 'm', 'ArrowDown']) {
+        assert.deepEqual(outcome(state, key, target), { log: [], prevented: false }, key);
+      }
+    }
+  });
+
+  it('KEY-05 a slider keeps its arrows but not the other keys, and a checkbox keeps nothing', () => {
+    assert.deepEqual(outcome({}, 'ArrowDown', RANGE), { log: [], prevented: false });
+    assert.deepEqual(outcome({}, 'c', RANGE), {
+      log: ['setCortexVisible([false])'],
+      prevented: false,
+    });
+    assert.deepEqual(outcome({}, 'c', CHECKBOX), {
+      log: ['setCortexVisible([false])'],
+      prevented: false,
+    });
+  });
+
+  it('KEY-06 a button in a marked region keeps h; a plain row there, or single keys off, decide', () => {
+    assert.deepEqual(outcome({}, 'h', marked(true)), { log: [], prevented: false });
+    assert.deepEqual(outcome({}, 'h', marked(false)), {
+      log: ['setHemisphere(["left"])'],
+      prevented: false,
+    });
+    assert.deepEqual(outcome({ singleKeys: false }, 'h'), { log: [], prevented: false });
+    // The question mark is a character key too.
+    assert.deepEqual(outcome({ singleKeys: false }, '?'), { log: [], prevented: false });
+    // Escape and the arrows are not.
+    assert.deepEqual(outcome({ singleKeys: false, selectedDeficit: 'd' }, 'Escape'), {
+      log: ['closeDeficit', 'rescueFocus'],
+      prevented: false,
+    });
+    assert.deepEqual(outcome({ singleKeys: false }, 'ArrowDown'), {
+      log: ['walkTree([1])'],
+      prevented: true,
+    });
+  });
+
+  it('KEY-07 on the canvas the arrows turn and + = - zoom, each cancelled, with single keys off', () => {
+    const run = (key: string) => {
+      const log: string[] = [];
+      const { keymap, commands } = host({ singleKeys: false });
+      commands.orbitBy.mockImplementation(() => log.push('orbitBy'));
+      commands.dolly.mockImplementation((factor: number) =>
+        log.push(`dolly ${factor < 1 ? 'in' : 'out'}`),
+      );
+      const event = press(key, keymap.canvas);
+      dispatchKey(event, keymap);
+      return { log, prevented: calls(event.preventDefault) === 1 };
+    };
+    assert.deepEqual(run('+'), { log: ['dolly in'], prevented: true });
+    assert.deepEqual(run('='), { log: ['dolly in'], prevented: true });
+    assert.deepEqual(run('-'), { log: ['dolly out'], prevented: true });
+    for (const key of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']) {
+      assert.deepEqual(run(key), { log: ['orbitBy'], prevented: true }, key);
+    }
+  });
+
+  it('KEY-09 / shows the list and focuses the search of the explorer in front', () => {
+    for (const explorer of ['anatomy', 'functions', 'deficits', 'circuits', 'diffusion'] as const) {
+      assert.deepEqual(outcome({ explorer }, '/'), {
+        log: ['showList', `focusSearch(["${explorer}"])`],
+        prevented: true,
+      });
+    }
+  });
+
+  it('KEY-12 M opens the linked MRI, but not under the tract reference', () => {
+    assert.deepEqual(outcome({}, 'm'), { log: ['openMpr([{"instant":true}])'], prevented: true });
+    assert.deepEqual(outcome({ tractReferenceActive: true }, 'M'), { log: [], prevented: false });
+    assert.deepEqual(outcome({ explorer: 'diffusion' }, 'M'), {
+      log: ['openDiffusionMri'],
+      prevented: true,
+    });
+  });
+
+  it('KEY-13 F and I act only with a selection, in either case, and cancel only then', () => {
+    for (const [key, command] of [
+      ['f', 'focusSelection([{"immediate":true}])'],
+      ['F', 'focusSelection([{"immediate":true}])'],
+      ['i', 'isolateSelection'],
+      ['I', 'isolateSelection'],
+    ]) {
+      assert.deepEqual(outcome({ selectedRegion: REGION }, key), {
+        log: [command],
+        prevented: true,
+      });
+      assert.deepEqual(outcome({}, key), { log: [], prevented: false });
+      assert.deepEqual(outcome({ selectedRegion: REGION, tractReferenceActive: true }, key), {
+        log: [],
+        prevented: false,
+      });
+    }
+  });
+
+  it('KEY-14 C, U, S and H do nothing under the tract reference', () => {
+    for (const key of ['c', 'u', 's', 'h', 'C', 'U', 'S', 'H']) {
+      assert.deepEqual(outcome({ tractReferenceActive: true }, key), { log: [], prevented: false });
+    }
+  });
+
+  it('KEY-01 Enter, Space, Tab, a and 7 do nothing and are not cancelled', () => {
+    for (const key of ['Enter', ' ', 'Tab', 'a', '7']) {
+      assert.deepEqual(
+        outcome({ selectedRegion: REGION }, key),
+        { log: [], prevented: false },
+        key,
+      );
+    }
+  });
+
+  it('KEY-08 only ? acts while the sheet is open, and it is cancelled', () => {
+    assert.deepEqual(outcome({ shortcutsOpen: true }, '?'), {
+      log: ['toggleShortcuts([{"instant":true}])'],
+      prevented: true,
+    });
+    for (const key of ['/', 'ArrowDown', '0', 'f', 'h', 'm', 'Escape']) {
+      assert.deepEqual(outcome({ shortcutsOpen: true, selectedRegion: REGION }, key), {
+        log: [],
+        prevented: false,
+      });
+    }
+  });
+});
