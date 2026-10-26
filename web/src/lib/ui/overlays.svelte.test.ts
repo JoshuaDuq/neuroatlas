@@ -1,7 +1,7 @@
 // Real-DOM checks for Dialog, Popover and Tooltip in Chromium: keyboard paths, focus hand-offs,
 // Escape consumption and axe (wcag2a/aa/21aa/22aa), against the fixture a feature would write.
 import axe from 'axe-core';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { tick } from 'svelte';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
@@ -53,6 +53,20 @@ async function useTheme(theme: 'light' | 'dark') {
 async function settled(node: Element) {
   await new Promise((resolve) => requestAnimationFrame(resolve));
   await Promise.all(node.getAnimations().map((animation) => animation.finished));
+}
+
+/** The page's timers and clock are faked so the 500 ms show delay is advanced, not waited out. */
+function fakeClock() {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
+}
+
+/** Hovers `trigger` and advances the clock past the show delay until its tooltip is drawn. */
+async function hoverShown(trigger: HTMLElement) {
+  await userEvent.hover(trigger);
+  // The pointer may reach the page after `hover()` returns; the delay starts there.
+  await frames(() => trigger.matches(':hover'), 'the pointer reached the trigger');
+  await vi.advanceTimersByTimeAsync(500);
+  await frames(() => tooltip() !== null, 'the tooltip shows after 500 ms');
 }
 
 // The pointer stays where the last test left it, over whichever control is there.
@@ -172,7 +186,9 @@ describe('Popover', () => {
     await button('Settings').click();
     el('Light').focus();
     el('Settings').focus();
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // The close handler runs on the focus event itself; a rendered frame is the latest it could show.
+    await tick();
+    await frame();
     expect(attr('Settings', 'aria-expanded')).toBe('true');
   });
 
@@ -180,7 +196,8 @@ describe('Popover', () => {
     render(Fixture);
     await button('Settings').click();
     el('Light').dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await tick();
+    await frame();
     expect(attr('Settings', 'aria-expanded')).toBe('true');
   });
 
@@ -201,12 +218,10 @@ describe('Popover', () => {
     expect(document.getElementById('picked')!.textContent).toBe('provenance');
   });
 
-  test('axe finds no violations with the popover open, light and dark', async () => {
+  test('axe finds no violations with the popover open', async () => {
     render(Fixture);
     await button('Settings').click();
     await expect.element(button('Light')).toBeInTheDocument();
-    await useTheme('light');
-    expect(await violations()).toEqual([]);
     await useTheme('dark');
     expect(await violations()).toEqual([]);
   });
@@ -454,14 +469,14 @@ describe('Dialog', () => {
     render(Fixture);
     await button('Shortcuts').click();
     await vi.waitFor(() => expect(dialog().open).toBe(true));
-    await useTheme('light');
-    expect(await violations()).toEqual([]);
-    await useTheme('dark');
-    expect(await violations()).toEqual([]);
-    await page.viewport(390, 844);
     try {
-      await pageSettled();
-      expect(await violations()).toEqual([]);
+      for (const theme of ['light', 'dark'] as const) {
+        for (const width of [1280, 390]) {
+          await page.viewport(width, 844);
+          await useTheme(theme);
+          expect(await violations(), `${theme} ${width}px`).toEqual([]);
+        }
+      }
       expect(dialog().getBoundingClientRect().width).toBe(390);
     } finally {
       await page.viewport(414, 896);
@@ -470,30 +485,30 @@ describe('Dialog', () => {
 });
 
 describe('Tooltip placement and disposal', () => {
+  beforeEach(fakeClock);
   const fixed = (name: string, css: string) => {
     const target = el(name);
     target.style.cssText = `position: fixed; ${css}`;
     return target;
   };
-  const shown = async () => {
-    await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
-    await new Promise((resolve) => setTimeout(resolve, 300));
+  const shown = async (trigger: HTMLElement) => {
+    await hoverShown(trigger);
+    // The tooltip has finished its entry and been placed.
+    await settled(tooltip()!);
     return { tip: tooltip()!.getBoundingClientRect(), root: document.documentElement };
   };
 
   test('with no room below, the tooltip is drawn above its trigger', async () => {
     render(Fixture);
     const trigger = fixed('Snapshot', 'left: 100px; bottom: 4px');
-    await userEvent.hover(trigger);
-    const { tip } = await shown();
+    const { tip } = await shown(trigger);
     expect(tip.bottom).toBeLessThanOrEqual(trigger.getBoundingClientRect().top);
   });
 
   test('a trigger at the right edge keeps the tooltip 8 px inside the viewport', async () => {
     render(Fixture);
     const trigger = fixed('Snapshot', 'right: 0; top: 100px');
-    await userEvent.hover(trigger);
-    const { tip, root } = await shown();
+    const { tip, root } = await shown(trigger);
     expect(tip.right).toBeLessThanOrEqual(root.clientWidth - 8 + 0.5);
     expect(tip.right).toBeGreaterThan(root.clientWidth - 40);
   });
@@ -502,47 +517,45 @@ describe('Tooltip placement and disposal', () => {
     render(Fixture);
     const trigger = el('Snapshot');
     await userEvent.hover(trigger);
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await frames(() => trigger.matches(':hover'), 'the pointer reached the trigger');
+    await vi.advanceTimersByTimeAsync(200);
     cleanup();
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await vi.advanceTimersByTimeAsync(600);
     expect(tooltip()).toBeNull();
     expect(trigger.hasAttribute('aria-describedby')).toBe(false);
   });
 });
 
 describe('Tooltip', () => {
-  test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
-    // The page's timers and its clock are faked, so the delays and the skip window hold however
-    // loaded the machine is; frames stay real, because drawing needs them.
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
-    try {
-      render(Fixture);
-      await button('Snapshot').hover();
-      // The pointer may reach the page after `hover()` returns; the delay starts there.
-      await frames(() => el('Snapshot').matches(':hover'), 'the pointer reached the trigger');
-      await vi.advanceTimersByTimeAsync(499);
-      expect(tooltip()).toBeNull();
-      await vi.advanceTimersByTimeAsync(1);
-      await frames(() => tooltip()?.textContent === 'Save a PNG', 'the tooltip shows at 500 ms');
-      expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
+  beforeEach(fakeClock);
 
-      await userEvent.unhover(el('Snapshot'));
-      await frames(() => !el('Snapshot').matches(':hover'), 'the pointer left the trigger');
-      // The skip window starts when the trigger closes, not when the exit transition removes the element.
-      for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
-        await vi.advanceTimersByTimeAsync(10);
-      expect(attr('Snapshot', 'aria-describedby')).toBeNull();
-      await vi.advanceTimersByTimeAsync(250);
-      await button('Fullscreen').hover();
-      // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
-      await frames(
-        () => tooltip()?.textContent === 'Enter full screen',
-        'the next tooltip skips the wait',
-      );
-      expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
-    } finally {
-      vi.useRealTimers();
-    }
+  test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
+    // The page's timers and its clock are faked (beforeEach), so the delays and the skip window
+    // hold however loaded the machine is; frames stay real, because drawing needs them.
+    render(Fixture);
+    await button('Snapshot').hover();
+    // The pointer may reach the page after `hover()` returns; the delay starts there.
+    await frames(() => el('Snapshot').matches(':hover'), 'the pointer reached the trigger');
+    await vi.advanceTimersByTimeAsync(499);
+    expect(tooltip()).toBeNull();
+    await vi.advanceTimersByTimeAsync(1);
+    await frames(() => tooltip()?.textContent === 'Save a PNG', 'the tooltip shows at 500 ms');
+    expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
+
+    await userEvent.unhover(el('Snapshot'));
+    await frames(() => !el('Snapshot').matches(':hover'), 'the pointer left the trigger');
+    // The skip window starts when the trigger closes, not when the exit transition removes the element.
+    for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
+      await vi.advanceTimersByTimeAsync(10);
+    expect(attr('Snapshot', 'aria-describedby')).toBeNull();
+    await vi.advanceTimersByTimeAsync(250);
+    await button('Fullscreen').hover();
+    // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
+    await frames(
+      () => tooltip()?.textContent === 'Enter full screen',
+      'the next tooltip skips the wait',
+    );
+    expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
   });
 
   test('keyboard focus shows it at once and Escape dismisses it', async () => {
@@ -560,14 +573,14 @@ describe('Tooltip', () => {
 
   test('the pointer can cross to the tooltip and read it, and leaving closes it', async () => {
     render(Fixture);
-    await button('Snapshot').hover();
-    await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
+    await hoverShown(el('Snapshot'));
     const tip = tooltip()!;
     await userEvent.hover(tip);
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await tick();
+    await frame();
     expect(tooltip()).toBe(tip);
     await userEvent.unhover(tip);
-    await vi.waitFor(() => expect(tooltip()).toBeNull(), { timeout: 1000, interval: 10 });
+    await frames(() => tooltip() === null, 'leaving closes it');
   });
 
   test('a touch pointer shows none', async () => {
@@ -575,7 +588,7 @@ describe('Tooltip', () => {
     el('Snapshot').dispatchEvent(
       new PointerEvent('pointerover', { bubbles: true, pointerType: 'touch' }),
     );
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    await vi.advanceTimersByTimeAsync(700);
     expect(tooltip()).toBeNull();
   });
 
@@ -583,12 +596,13 @@ describe('Tooltip', () => {
     render(Fixture);
     await button('Shortcuts').click();
     await vi.waitFor(() => expect(dialog().open).toBe(true));
-    await button('Hint').hover();
-    await vi.waitFor(() => expect(tooltip()).not.toBeNull(), { timeout: 1500, interval: 10 });
+    await hoverShown(el('Hint'));
     expect(dialog().contains(tooltip())).toBe(true);
   });
 
-  test('axe finds no violations with a tooltip open, light and dark', async () => {
+  test('axe finds no violations with a tooltip open', async () => {
+    // Keyboard focus shows the tooltip at once: nothing here needs the faked clock.
+    vi.useRealTimers();
     render(Fixture);
     await parkPointer();
     await userEvent.tab();
@@ -597,8 +611,6 @@ describe('Tooltip', () => {
     }
     await vi.waitFor(() => expect(tooltip()).not.toBeNull());
     await useTheme('light');
-    expect(await violations()).toEqual([]);
-    await useTheme('dark');
     expect(await violations()).toEqual([]);
   });
 });

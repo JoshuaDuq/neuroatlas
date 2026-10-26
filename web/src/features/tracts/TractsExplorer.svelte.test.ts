@@ -1,7 +1,7 @@
 // The Tracts panel against the fake engine (F2): keyboard paths, focus hand-offs, live regions,
 // event order. Ported from viewer/diffusion/native-ui.test.js (source-text checks became DOM checks)
 // and chrome.contract.test.js:226.
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, onTestFinished, test, vi } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
@@ -11,7 +11,7 @@ import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import type { Language } from '../../lib/types/index.ts';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanHere, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import TractsExplorer from './TractsExplorer.svelte';
 
@@ -249,13 +249,16 @@ describe('the search', () => {
 
   test('the result count is announced once typing pauses, and the empty state is too', async () => {
     await ready();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     await search().fill('arcuate');
     expect(region.textContent).toBe('');
-    await expect.poll(() => region.textContent, { timeout: 2000 }).toBe('2 tract bundles');
+    vi.advanceTimersByTime(499);
+    expect(region.textContent).toBe('');
+    vi.advanceTimersByTime(1);
+    await expect.poll(() => region.textContent).toBe('2 tract bundles');
     await search().fill('zzz');
-    await expect
-      .poll(() => region.textContent, { timeout: 2000 })
-      .toBe('No match for “zzz”. Try another tract name.');
+    vi.advanceTimersByTime(500);
+    await expect.poll(() => region.textContent).toBe('No match for “zzz”. Try another tract name.');
   });
 
   test('unmounting while a result count is pending says nothing', async () => {
@@ -614,7 +617,8 @@ describe('targets and media', () => {
       const { view } = await ready(createEngine(), { lang });
       await page.getByText(lang === 'en' ? 'Tract display' : 'Affichage des faisceaux').click();
       await page.getByText(lang === 'en' ? 'About this data' : 'À propos de ces données').click();
-      await expectAxeClean();
+      // The full theme and width matrix once, in English; French is the same layout, so once.
+      await (lang === 'en' ? expectAxeClean() : expectAxeCleanHere());
       view.unmount();
     }
   });
@@ -638,8 +642,6 @@ describe('the engine follows the tab', () => {
     load.resolve();
   });
 });
-
-const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
 describe('keys and sliders', () => {
   test('Enter and Space press the clear button, the summaries and the MRI button', async () => {
@@ -737,6 +739,12 @@ describe('keys and sliders', () => {
 
 /** A phone-sized stage: the panel fills the window, its list scrolls under a pinned head and dock. */
 async function stage(width: number, height: number) {
+  onTestFinished(async () => {
+    document.documentElement.style.height = '';
+    document.body.style.height = '';
+    document.body.style.margin = '';
+    await page.viewport(1280, 800);
+  });
   document.documentElement.style.height = '100%';
   document.body.style.height = '100%';
   document.body.style.margin = '0';
@@ -750,13 +758,6 @@ async function stage(width: number, height: number) {
   }
   await page.viewport(width, height);
 }
-afterEach(async () => {
-  document.documentElement.style.height = '';
-  document.body.style.height = '';
-  document.body.style.margin = '';
-  await page.viewport(1280, 800);
-});
-
 describe('media, reflow and targets', () => {
   test('contrast: more draws the key edge in the control-edge colour', async () => {
     await ready();
@@ -866,7 +867,7 @@ describe('media, reflow and targets', () => {
     });
     try {
       expect(matchMedia('(pointer: coarse)').matches).toBe(true);
-      await settle();
+      await new Promise((resolve) => requestAnimationFrame(resolve));
       const sized = (selector: string) => {
         const nodes = [...document.querySelectorAll<HTMLElement>(selector)].filter((node) =>
           node.checkVisibility(),

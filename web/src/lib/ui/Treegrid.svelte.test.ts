@@ -1,6 +1,6 @@
 // Real-DOM checks of the treegrid against the APG Treegrid keyboard table, in Chromium.
 import axe from 'axe-core';
-import { describe, expect, onTestFinished, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, onTestFinished, test, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Fixture from './treegrid-fixture.svelte';
@@ -165,12 +165,20 @@ describe('APG keys with focus on a row', () => {
 });
 
 describe('type-ahead', () => {
+  // The query ends 500 ms after the last key; the page's timers are faked so no test waits it out.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+  const pause = () => vi.advanceTimersByTime(500);
   test('a letter moves to the next row starting with it, a longer query refines', async () => {
     mount();
     focus('frontal');
     await press('i');
     expect(active()).toBe(row('insula'));
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    pause();
     await press('l');
     expect(active()).toBe(row('limbic'));
   });
@@ -181,7 +189,7 @@ describe('type-ahead', () => {
     await press('{ArrowRight}');
     await press('po');
     expect(active()).toBe(row('postcentral'));
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    pause();
     await press('l');
     expect(active()).toBe(row('limbic'));
   });
@@ -307,7 +315,8 @@ describe('leaving the grid', () => {
     // Collapse all rebuilds the grid; the reader is outside it.
     (document.getElementById('collapse-all') as HTMLElement).focus();
     (document.getElementById('collapse-all') as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // One macrotask turn runs the grid's zero-delay focus-leave timer, queued before this one.
+    await new Promise((resolve) => setTimeout(resolve));
     expect(active()).toBe(document.getElementById('collapse-all'));
   });
 });

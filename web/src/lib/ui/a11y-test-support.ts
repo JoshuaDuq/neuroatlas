@@ -41,6 +41,17 @@ export async function expectAxeClean(): Promise<void> {
   }
 }
 
+/** axe once, on what is rendered now, in the current theme and at the current size. */
+export async function expectAxeCleanHere(): Promise<void> {
+  const still = document.head.appendChild(document.createElement('style'));
+  still.textContent = '*, *::before, *::after { transition: none !important; }';
+  try {
+    expect(await violations()).toEqual([]);
+  } finally {
+    still.remove();
+  }
+}
+
 /** Runs `check` with the browser emulating a media feature, then restores it. */
 export async function withMedia(
   features: { name: string; value: string }[],

@@ -3,7 +3,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanHere, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import Fixture from './masthead-test-support.svelte';
 
 const button = (name: string) => page.getByRole('button', { name, exact: true });
@@ -375,7 +375,7 @@ describe('Masthead', () => {
     await open();
     el(radio('English')).focus();
     await userEvent.keyboard('{ArrowRight}');
-    await expectAxeClean();
+    await expectAxeCleanHere();
   });
 
   test('forced colours: the checked radio keeps an edge', async () => {

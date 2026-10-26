@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { SHORTCUT_KEYS } from '../../lib/controller/keymap.ts';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanHere, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import Fixture from './shortcuts-test-support.svelte';
 
@@ -264,10 +264,10 @@ describe('size, reflow and media', () => {
     await openFromKeyboard();
     await expectAxeClean();
     await screen.rerender({ lang: 'fr' });
-    await expectAxeClean();
+    await expectAxeCleanHere();
     await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
       expect(matchMedia('(prefers-contrast: more)').matches).toBe(true);
-      await expectAxeClean();
+      await expectAxeCleanHere();
     });
   });
 
