@@ -143,7 +143,12 @@ test.describe('constituents', () => {
     if (testInfo.project.name === 'next') {
       await expect(parts.locator('[aria-hidden=true]')).toHaveCount(2);
     }
+    // A part opens in the set that holds it, so the 29 MB NextBrain layer loads first
+    // (constituents.js:46); the app reports `switching` until it is on screen.
+    const layer = page.waitForRequest(/\/nextbrain\.glb\?/);
     await parts.nth(0).getByRole('button').click();
+    await layer;
+    await app.ready();
     await expect(page.getByRole('heading', { level: 2 })).not.toHaveText(/Optic chiasm/);
   });
 });
