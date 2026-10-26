@@ -280,6 +280,22 @@ describe('the head prefetch script', () => {
     );
   });
 
+  it('hands the index to the app only once the brain it names has started', async () => {
+    const { requested, window } = run('', versions, '{"default":"bert"}');
+    const index = window.__planumAssets!['https://example.org/neuroatlas/models/anatomies.json']!;
+    expect((await index).ok).toBe(true);
+    expect(requested).toContain(
+      'https://example.org/neuroatlas/models/bert/manifest.json?v=manifest00000000',
+    );
+  });
+
+  it('still hands over an index that does not parse, for the app to report', async () => {
+    const { requested, window } = run('', versions, 'not json');
+    const index = window.__planumAssets!['https://example.org/neuroatlas/models/anatomies.json']!;
+    expect(await (await index).text()).toBe('not json');
+    expect(requested).toHaveLength(1);
+  });
+
   it('is injected inline into head by the build plugin', () => {
     const [tag] = hook(publishedAssets(), 'transformIndexHtml')('') as {
       tag: string;
