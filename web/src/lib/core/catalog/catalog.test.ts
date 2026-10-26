@@ -320,6 +320,20 @@ test('spinal cord rows sit under their family, in the order the model publishes'
   );
 });
 
+test('CAT-22 · results in the same tier go by family order, then by name', () => {
+  const cord = createCatalog({
+    regions: [
+      cordRegion('alpha', 'left', 'Alpha tract', 'Second family', 2),
+      cordRegion('zeta', 'left', 'Zeta tract', 'First family', 1),
+    ],
+  });
+  const found = cord.search('tract', settings({ detail: 'learning' }));
+  assert.deepEqual(
+    found.rows.map((row) => row.label.name),
+    ['Zeta tract', 'Alpha tract'],
+  );
+});
+
 test('spinal cord structures answer to the clinical aliases of each language', () => {
   const tract = cordRegion(
     'posterolateral-tract',

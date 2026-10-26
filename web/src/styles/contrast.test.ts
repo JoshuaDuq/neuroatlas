@@ -5,9 +5,12 @@ import { sheets } from './sources.ts';
 // WCAG 2.2 1.4.3 (text, 4.5:1) and 1.4.11 (non-text, 3:1), computed from the declared tokens.
 
 const declared = declarationsBySelector(sheets['tokens.css']);
+// A lookup that finds nothing spreads to nothing and would silently test the dark theme with the light tokens.
+const darkOverrides = declared[":root[data-theme='dark']"];
+if (!darkOverrides) throw new Error("tokens.css declares no :root[data-theme='dark'] rule.");
 const themes = {
   light: declared[':root'],
-  dark: { ...declared[':root'], ...declared[':root[data-theme="dark"]'] },
+  dark: { ...declared[':root'], ...darkOverrides },
 };
 
 function resolve(theme: Record<string, string>, name: string): string {

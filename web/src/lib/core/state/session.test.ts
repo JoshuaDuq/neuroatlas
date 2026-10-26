@@ -311,3 +311,70 @@ test('releasing notices that were never held fails and leaves the hold count int
   s.releaseNotices();
   assert.equal(s.assemble(modelState).notice!.text, 'Waits.');
 });
+
+test('STATE-22 a fresh session starts loading, in English and the dark theme, with nothing chosen', () => {
+  const snapshot = session().assemble({ atlas: 'destrieux' });
+  assert.deepEqual(
+    {
+      view: snapshot.view,
+      query: snapshot.query,
+      explorer: snapshot.explorer,
+      functionQuery: snapshot.functionQuery,
+      selectedFunction: snapshot.selectedFunction,
+      clinicalQuery: snapshot.clinicalQuery,
+      selectedDeficit: snapshot.selectedDeficit,
+      selectedFinding: snapshot.selectedFinding,
+      paintLifted: snapshot.paintLifted,
+      expanded: [...snapshot.expanded],
+      theme: snapshot.theme,
+      lang: snapshot.lang,
+      status: snapshot.status,
+      progress: snapshot.progress,
+      error: snapshot.error,
+      notice: snapshot.notice,
+    },
+    {
+      view: 'oblique',
+      query: '',
+      explorer: 'anatomy',
+      functionQuery: '',
+      selectedFunction: null,
+      clinicalQuery: '',
+      selectedDeficit: null,
+      selectedFinding: null,
+      paintLifted: false,
+      expanded: [],
+      theme: 'dark',
+      lang: 'en',
+      status: 'loading',
+      progress: null,
+      error: null,
+      notice: null,
+    },
+  );
+  assert.equal(snapshot.atlas, 'destrieux');
+});
+
+test('STATE-23 a refused view leaves the standing notice where it was', () => {
+  const s = session();
+  s.notify({ text: 'Standing' });
+  assert.equal(s.setView('sideways'), false);
+  assert.equal(s.assemble(modelState).notice?.text, 'Standing');
+  assert.equal(s.setView('superior'), true);
+});
+
+test('STATE-24 choosing a deficit shows all its findings again', () => {
+  const s = session();
+  s.setFinding('naming');
+  assert.equal(s.assemble(modelState).selectedFinding, 'naming');
+  s.setDeficit('aphasia');
+  assert.equal(s.assemble(modelState).selectedFinding, null);
+});
+
+test('STATE-25 choosing a finding puts a lifted paint back', () => {
+  const s = session();
+  s.liftPaint();
+  assert.equal(s.assemble(modelState).paintLifted, true);
+  s.setFinding('naming');
+  assert.equal(s.assemble(modelState).paintLifted, false);
+});

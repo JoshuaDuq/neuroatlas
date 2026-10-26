@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
-import { test } from 'vitest';
-import type { Paint } from '../../types/index.ts';
-import type { NeuropsychDomains } from '../catalog/neuropsych-domains.ts';
-import { findingPaint } from '../clinical/catalog.ts';
+import { beforeAll, describe, test } from 'vitest';
+import type { Manifest, Paint } from '../../types/index.ts';
+import { readRepoYaml } from '../../../../test/repo.ts';
+import { readModel } from '../catalog/test-support.ts';
+import { ALL_DOMAINS, validateNeuropsychDomains } from '../catalog/neuropsych-domains.ts';
+import type { NeuropsychDomains, NeurosynthTerms } from '../catalog/neuropsych-domains.ts';
+import { createClinicalCatalog, findingPaint } from '../clinical/catalog.ts';
 import type { ClinicalCatalog } from '../clinical/catalog.ts';
+import type { ClinicalData } from '../clinical/types.ts';
 import { legendFor, paintFor, paintKind } from './paint.ts';
 import type { PaintState } from './paint.ts';
 
@@ -143,4 +147,120 @@ test('a finding none of whose regions is drawn coloured is keyed as absent, and 
     'a finding not picked is muted, not absent',
   );
   drawn.add('destrieux:left:2');
+});
+
+describe('the published cdmd functions and deficits', () => {
+  const manifest = readModel<Manifest>('cdmd/manifest.json');
+  const regionsById = new Map(manifest.regions.map((region) => [region.id, region]));
+  const load = <T>(path: string) => readModel<T>(`cdmd/${path}`);
+  let published: ReturnType<typeof validateNeuropsychDomains>;
+  let data: ClinicalData;
+  let catalog: ClinicalCatalog;
+  let both: { domains: typeof published; clinical: ClinicalCatalog };
+  beforeAll(() => {
+    published = validateNeuropsychDomains(
+      load<NeuropsychDomains>(manifest.neuropsych_domains!.file),
+      regionsById,
+      load<NeurosynthTerms>(manifest.neurosynth_terms!.file),
+    );
+    data = readRepoYaml<ClinicalData>('data/neuropsychology.yaml');
+    catalog = createClinicalCatalog(data, manifest);
+    both = { domains: published, clinical: catalog };
+  });
+  const functionState = (selectedFunction: string, lang: 'en' | 'fr' = 'en'): PaintState => ({
+    explorer: 'functions',
+    atlas: 'hcp-mmp',
+    selectedFunction,
+    selectedDeficit: null,
+    selectedFinding: null,
+    paintLifted: false,
+    lang,
+  });
+
+  test('STATE-54 a function keys its z bands, strongest first, in the language of the reader', () => {
+    const state = functionState('language', 'fr');
+    const paint = paintFor(state, both)!;
+    const fr = legendFor({ ...state, paint }, { ...both, drawn: () => true })!;
+    assert.equal(fr.title, 'Langage');
+    assert.equal(fr.pickable, false);
+    assert.deepEqual(
+      fr.rows.map((row) => [row.label, row.color]),
+      [
+        ['z ≥ 10', [10, 62, 125]],
+        ['z 5 à 10', [43, 131, 199]],
+        ['z 3 à 5', [150, 200, 240]],
+      ],
+    );
+    const en = legendFor({ ...state, lang: 'en', paint }, { ...both, drawn: () => true })!;
+    assert.deepEqual(
+      en.rows.map((row) => row.label),
+      ['z ≥ 10', 'z 5 to 10', 'z 3 to 5'],
+    );
+    assert.equal(
+      en.note,
+      'Mean consistency z per area; darker is more consistent. Tissue-coloured areas fall below 3.',
+    );
+  });
+
+  test('STATE-54 the overview keys the eleven overview functions, none pressed', () => {
+    const state = functionState('all');
+    const overview = legendFor(
+      { ...state, paint: paintFor(state, both) },
+      { ...both, drawn: () => true },
+    )!;
+    assert.equal(overview.title, 'Neuropsychological functions');
+    assert.equal(
+      overview.note,
+      'Each area shows its strongest function; tissue-coloured areas reach none. Choose one to see all its areas.',
+    );
+    assert.equal(overview.rows.length, 11);
+    assert.equal(overview.rows[0]!.id, 'executive');
+    assert.equal(overview.rows[10]!.id, 'emotion');
+    assert.ok(overview.rows.every((row) => row.pressed === false));
+  });
+
+  test('STATE-56 every function, term, deficit and finding has a paint and a key in both languages', () => {
+    assert.equal(published.domains.length, 70);
+    const terms = [...published.search!.terms.keys()];
+    assert.equal(terms.length, 277);
+    const everyDrawn = { ...both, drawn: () => true };
+    for (const id of [ALL_DOMAINS, ...published.domains.map((d) => d.id), ...terms]) {
+      const state = functionState(id);
+      const paint = paintFor(state, both)!;
+      assert.equal(paint.id, `function:${id}`, id);
+      assert.equal(paintFor({ ...state, atlas: 'destrieux' }, both), null, id);
+      if (id === ALL_DOMAINS) continue;
+      for (const lang of ['en', 'fr'] as const) {
+        const legend = legendFor({ ...state, lang, paint }, everyDrawn)!;
+        assert.equal(legend.rows.length, 3, id);
+      }
+    }
+    assert.equal(data.deficits.length, 40);
+    for (const deficit of data.deficits) {
+      const state: PaintState = {
+        explorer: 'deficits',
+        atlas: 'destrieux',
+        selectedFunction: null,
+        selectedDeficit: deficit.id,
+        selectedFinding: null,
+        paintLifted: false,
+        lang: 'en',
+      };
+      const findings = catalog.paint(deficit.id).findings.map(({ association }) => association.id);
+      for (const finding of [null, ...findings]) {
+        const chosen = { ...state, selectedFinding: finding };
+        const paint = paintFor(chosen, both)!;
+        assert.equal(
+          paint.id,
+          finding ? `deficit:${deficit.id}:${finding}` : `deficit:${deficit.id}`,
+        );
+        assert.equal(paintFor({ ...chosen, paintLifted: true }, both), null);
+        for (const lang of ['en', 'fr'] as const) {
+          const legend = legendFor({ ...chosen, lang, paint }, everyDrawn)!;
+          assert.equal(legend.title, deficit.name[lang === 'en' ? 'en' : 'fr'], deficit.id);
+          assert.equal(legend.rows.length, findings.length, deficit.id);
+        }
+      }
+    }
+  });
 });

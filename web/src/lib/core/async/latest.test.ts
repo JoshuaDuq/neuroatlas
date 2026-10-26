@@ -185,3 +185,17 @@ test('the latest run settles even when its handler throws', async () => {
   expect(onSettled).toHaveBeenCalledOnce();
   log.mockRestore();
 });
+
+test('PANEL-31 a run whose value is false resolves as ok and hands false to the latest run only', async () => {
+  const runner = createLatestRunner();
+  const earlier = deferred<boolean>();
+  const later = deferred<boolean>();
+  const reported: boolean[] = [];
+  const first = runner.run(() => earlier.promise, { onResult: (value) => reported.push(value) });
+  const second = runner.run(() => later.promise, { onResult: (value) => reported.push(value) });
+  later.resolve(false);
+  earlier.resolve(true);
+  assert.deepEqual(await second, { ok: true, value: false });
+  assert.deepEqual(await first, { ok: true, value: true });
+  assert.deepEqual(reported, [false], 'the panel reads false as not applied');
+});

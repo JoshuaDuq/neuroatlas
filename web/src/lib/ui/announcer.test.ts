@@ -112,3 +112,37 @@ describe('createDebouncedAnnouncer', () => {
     expect(region.writes).toEqual(['quick']);
   });
 });
+
+test('UI-19: a scripted typing session writes each settled sentence once, at its fixed time', () => {
+  const say = createDebouncedAnnouncer();
+  const start = Date.now();
+  const writes: Array<[number, string]> = [];
+  const stop = vi.spyOn(region.element, 'textContent', 'set');
+  stop.mockImplementation((value: string) => {
+    writes.push([Date.now() - start, value]);
+  });
+  const script: Array<[number, string]> = [
+    [0, 'a'],
+    [100, 'ab'],
+    [400, 'abc'],
+    [700, 'abc'],
+    [499, 'abcd'],
+    [50, 'abc'],
+    [600, 'abc'],
+    [10, 'x'],
+    [500, 'x'],
+    [600, 'y'],
+    [600, 'x'],
+  ];
+  for (const [wait, text] of script) {
+    vi.advanceTimersByTime(wait);
+    say.say(text);
+  }
+  vi.advanceTimersByTime(2000);
+  expect(writes).toEqual([
+    [1000, 'abc'],
+    [2859, 'x'],
+    [3959, 'y'],
+    [4559, 'x'],
+  ]);
+});

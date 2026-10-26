@@ -166,3 +166,39 @@ function checkAnatomy(catalog: ClinicalCatalog) {
     'destrieux:left:34',
   ]);
 }
+
+describe('published clinical content: fixed values', () => {
+  const [, manifest] = manifests[0];
+  const catalog = createClinicalCatalog(data, manifest);
+
+  test('CAT-50 · the published records are the revision of 2026-10-22: 6 groups, 40 deficits, 60 references, 58 associations', () => {
+    assert.equal(catalog.revised, '2026-10-22');
+    assert.equal(data.groups.length, 6);
+    assert.equal(data.deficits.length, 40);
+    assert.equal(data.references.length, 60);
+    assert.equal(data.associations.length, 58);
+  });
+
+  test('CAT-45 · a published search ignores case and accents and ranks the named deficit first', () => {
+    const ids = (query: string, lang: 'en' | 'fr') => catalog.search(query, lang).map((d) => d.id);
+    assert.deepEqual(ids('amnesia', 'en'), ['amnesia']);
+    assert.deepEqual(ids('AMNÉSIA', 'en'), ['amnesia']);
+    assert.deepEqual(ids('memory', 'en'), ['agraphia', 'amnesia']);
+    assert.equal(ids('', 'fr').length, 40);
+    assert.deepEqual(ids('unlisted', 'en'), []);
+  });
+
+  test('CAT-42 · a misspelt published deficit is offered the closest name', () => {
+    assert.equal(catalog.nearest('aphasai', 'en'), 'Aphasia');
+    assert.equal(catalog.nearest('amnesie', 'fr'), 'Amnésie');
+    assert.equal(catalog.nearest('abc', 'en'), null);
+  });
+
+  test('CAT-49 · aphasia has the most findings, six, and its paint colours 7 regions', () => {
+    const counts = data.deficits.map((d) => catalog.forDeficit(d.id).length);
+    assert.equal(Math.max(...counts), 6);
+    assert.equal(catalog.forDeficit('aphasia').length, 6);
+    assert.equal(catalog.paint('aphasia').paint.colors.size, 7);
+    assert.equal(catalog.paint('aphasia').paint.id, 'deficit:aphasia');
+  });
+});
