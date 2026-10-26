@@ -5,7 +5,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { Language } from '../../lib/types/index.ts';
-  import { NEW_TAB } from './copy.ts';
+  import { t } from '../../lib/core/i18n/index.ts';
 
   let {
     href,
@@ -23,7 +23,7 @@
 
 <a {href} target="_blank" rel="noreferrer"
   ><span lang={contentLang}>{@render children()}</span><span class="visually-hidden"
-    >{` ${NEW_TAB[lang]}`}</span
+    >{` ${t(lang, 'link').newTab}`}</span
   ><svg
     class="new-tab"
     viewBox="0 0 24 24"

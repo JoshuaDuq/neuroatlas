@@ -2,6 +2,7 @@
 // Escape consumption and axe (wcag2a/aa/21aa/22aa), against the fixture a feature would write.
 import axe from 'axe-core';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { tick } from 'svelte';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import '../../styles/index.css';
@@ -12,6 +13,12 @@ const button = (name: string) => page.getByRole('button', { name, exact: true })
 const el = (name: string) => button(name).element() as HTMLElement;
 const attr = (name: string, attribute: string) => el(name).getAttribute(attribute);
 const tooltip = () => document.querySelector<HTMLElement>('[role="tooltip"]');
+const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+/** Real frames until `done`, which fails fast with `what` rather than waiting out the test timeout. */
+async function frames(done: () => boolean, what: string) {
+  for (let count = 0; count < 300 && !done(); count++) await frame();
+  expect(done(), what).toBe(true);
+}
 const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
 
 async function violations() {
@@ -38,6 +45,8 @@ async function settled(node: Element) {
 const parkPointer = () => userEvent.hover(el('After popovers'));
 
 afterEach(() => {
+  // A test that times out never reaches its own `finally`; a faked clock must not leak into the next.
+  vi.useRealTimers();
   document.documentElement.removeAttribute('data-theme');
 });
 
@@ -217,6 +226,28 @@ describe('Popover keys and stage variant', () => {
     expect(seen).toEqual([true]);
   });
 
+  test('focus placed in a stage popover is not taken back after the reader moves it to the trigger', async () => {
+    render(Fixture);
+    // Bits places focus twice for every open. Moving it back to the trigger the moment the first
+    // placement lands makes the second one the late call that must leave it there.
+    const stage = el('Stage');
+    const back = (event: FocusEvent) => {
+      if (event.target === stage) return;
+      document.removeEventListener('focusin', back);
+      stage.focus();
+    };
+    stage.focus();
+    document.addEventListener('focusin', back);
+    try {
+      await userEvent.keyboard('{Enter}');
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      expect(attr('Stage', 'aria-expanded')).toBe('true');
+      expect(document.activeElement).toBe(stage);
+    } finally {
+      document.removeEventListener('focusin', back);
+    }
+  });
+
   test('an outside press fades the stage popover out; Escape closes it at once', async () => {
     render(Fixture);
     await button('Stage').click();
@@ -332,6 +363,7 @@ describe('Dialog', () => {
     await button('Shortcuts').click();
     await vi.waitFor(() => expect(dialog().open).toBe(true));
     el('Close').click();
+    await tick();
     el('Shortcuts').click();
     for (let frame = 0; frame < 3; frame++)
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -343,6 +375,7 @@ describe('Dialog', () => {
     await button('Shortcuts').click();
     await vi.waitFor(() => expect(dialog().open).toBe(true));
     dialog().requestClose();
+    await tick();
     el('Shortcuts').click();
     for (let frame = 0; frame < 3; frame++)
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -464,29 +497,33 @@ describe('Tooltip placement and disposal', () => {
 
 describe('Tooltip', () => {
   test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
-    // Only the page's timers are faked, so the delays hold however loaded the machine is.
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    // The page's timers and its clock are faked, so the delays and the skip window hold however
+    // loaded the machine is; frames stay real, because drawing needs them.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
     try {
       render(Fixture);
       await button('Snapshot').hover();
+      // The pointer may reach the page after `hover()` returns; the delay starts there.
+      await frames(() => el('Snapshot').matches(':hover'), 'the pointer reached the trigger');
       await vi.advanceTimersByTimeAsync(499);
       expect(tooltip()).toBeNull();
       await vi.advanceTimersByTimeAsync(1);
-      expect(tooltip()!.textContent).toBe('Save a PNG');
+      await frames(() => tooltip()?.textContent === 'Save a PNG', 'the tooltip shows at 500 ms');
       expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
 
       await userEvent.unhover(el('Snapshot'));
-      // The skip window starts when the trigger closes, not when the exit transition (real time)
-      // removes the element, so that is what the fake clock is counted from.
+      await frames(() => !el('Snapshot').matches(':hover'), 'the pointer left the trigger');
+      // The skip window starts when the trigger closes, not when the exit transition removes the element.
       for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
         await vi.advanceTimersByTimeAsync(10);
       expect(attr('Snapshot', 'aria-describedby')).toBeNull();
       await vi.advanceTimersByTimeAsync(250);
       await button('Fullscreen').hover();
       // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
-      for (let frame = 0; frame < 120 && tooltip()?.textContent !== 'Enter full screen'; frame++)
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-      expect(tooltip()!.textContent).toBe('Enter full screen');
+      await frames(
+        () => tooltip()?.textContent === 'Enter full screen',
+        'the next tooltip skips the wait',
+      );
       expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
     } finally {
       vi.useRealTimers();

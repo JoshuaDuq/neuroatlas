@@ -40,9 +40,6 @@
 
   const copy = $derived(t(lang, 'shortcuts'));
 
-  // Moves to `shortcuts.rangeTo` with the C1 amendment (deviations/s5b-shortcut-strings.md).
-  const RANGE_TO: Record<Language, string> = { en: 'to', fr: 'à' };
-
   /** A dash between two keys is a range, not a key to press (shortcuts.js:12-13). */
   const isRange = (token: string) => /^[–—-]$/.test(token);
   const caps = (keys: string) => keys.split(' ').filter(Boolean);
@@ -69,7 +66,7 @@
               {#if isRange(token)}
                 <span class="key-range"
                   ><span aria-hidden="true">{token}</span><span class="visually-hidden"
-                    >{RANGE_TO[lang]}</span
+                    >{copy.rangeTo}</span
                   ></span
                 >
               {:else}

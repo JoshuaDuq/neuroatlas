@@ -513,15 +513,6 @@ describe('sizes and media', () => {
       expect(getComputedStyle(el(tab('Functions'))).borderBottomStyle).not.toBe('solid');
     });
   });
-
-  test('French at 320 px: the tabs scroll inside their bar and nothing overflows the panel', async () => {
-    await mount({ lang: 'fr' });
-    await page.viewport(320, 700);
-    const bar = document.querySelector<HTMLElement>('[role=tablist]')!;
-    expect(bar.scrollWidth).toBeGreaterThan(bar.clientWidth);
-    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(320);
-    expectContained();
-  });
 });
 
 /** Nothing the workspace draws leaves the panel, and no text is cut off vertically. */
@@ -580,6 +571,13 @@ describe('large text and spacing', () => {
       );
       await expect.poll(view).toBe('detail');
       expectContained();
+      if (width === 320) {
+        // At 100 % the French labels fit 320 px; 200 % text is what forces the bar to scroll (1.4.4).
+        const bar = document.querySelector<HTMLElement>('[role=tablist]')!;
+        expect(bar.scrollWidth).toBeGreaterThan(bar.clientWidth);
+        expect(getComputedStyle(bar).overflowX).toBe('auto');
+        expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(320);
+      }
       const crumb = el(
         page.getByRole('button', { name: /afficher dans la liste/ }),
       ).getBoundingClientRect();

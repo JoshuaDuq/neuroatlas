@@ -42,6 +42,7 @@ function build() {
     view: ReturnType<typeof createView>;
     catalogStore: ReturnType<typeof createCatalogStore>;
     link: ReturnType<typeof createLink>;
+    speech: ReturnType<typeof announceView>;
     written: number;
   };
   parts.written = 0;
@@ -59,7 +60,10 @@ function build() {
     syncPaint(engine.model, parts.view, sources);
     syncPresentation(engine, parts.view, parts.engineState);
     parts.catalogStore = createCatalogStore(catalog, parts.view);
-    announceView(parts.view, (selected, view) => catalog.label(selected.id, view).name);
+    parts.speech = announceView(
+      parts.view,
+      (selected, view) => catalog.label(selected.id, view).name,
+    );
     parts.link = createLink({
       engine,
       view: parts.view,
@@ -270,6 +274,20 @@ describe('the announcer', () => {
     expect(region.textContent).toMatch(new RegExp(`^Selected: ${name}, \\w+\\. All parts shown$`));
   });
 
+  test('an eye press says the part and the count it changed as one sentence', () => {
+    const { speech } = build();
+    const id = published.regions.find((candidate) => engine.model.canSelect(candidate))!.id;
+    speech.part('Hidden: Precentral gyrus, left.');
+    engine.model.hideRegions([id]);
+    flushSync();
+    expect(region.textContent).toBe('Hidden: Precentral gyrus, left. 1 part hidden');
+
+    speech.part('Shown: Precentral gyrus, left.');
+    engine.model.showRegions([id]);
+    flushSync();
+    expect(region.textContent).toBe('Shown: Precentral gyrus, left. All parts shown');
+  });
+
   test('says the lost context and its restoration', () => {
     const { session } = build();
     session.setStatus('ready');
@@ -300,10 +318,23 @@ describe('the link', () => {
     vi.advanceTimersByTime(1);
     expect(parts.written).toBe(2);
 
+    // E7 has already waited 250 ms for the camera to rest, so the link is written then, not 250 ms on.
     engine.emit('cameraSettled', undefined);
     flushSync();
-    vi.advanceTimersByTime(250);
+    vi.advanceTimersByTime(1);
     expect(parts.written).toBe(3);
+  });
+
+  test('a camera move that follows a view change writes once, at rest', () => {
+    const parts = build();
+    vi.advanceTimersByTime(250);
+    parts.session.setQuery('moved');
+    flushSync();
+    engine.emit('cameraSettled', undefined);
+    vi.advanceTimersByTime(1);
+    expect(parts.written).toBe(2);
+    vi.advanceTimersByTime(250);
+    expect(parts.written).toBe(2);
   });
 
   test('waits while the restore holds it, and writes once it is released and scheduled', () => {

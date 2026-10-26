@@ -22,22 +22,12 @@
 
   let { stage, lang, coarsePointer, tractReference }: Props = $props();
 
-  // TODO(C1): `viewport.navigationHintTouch` and `navigationHintTractsTouch` (requested on #4).
-  const TOUCH = {
-    en: {
-      navigation: 'Drag to rotate · Pinch to zoom · Tap to inspect',
-      tracts: 'Drag to rotate · Pinch to zoom',
-    },
-    fr: {
-      navigation: 'Glisser\u202f: tourner · Pincer\u202f: zoom · Toucher\u202f: inspecter',
-      tracts: 'Glisser\u202f: tourner · Pincer\u202f: zoom',
-    },
-  } as const;
-
   const copy = $derived(t(lang, 'viewport'));
   const navigation = $derived(
     coarsePointer
-      ? TOUCH[lang][tractReference ? 'tracts' : 'navigation']
+      ? tractReference
+        ? copy.navigationHintTractsTouch
+        : copy.navigationHintTouch
       : tractReference
         ? copy.navigationHintTracts
         : copy.navigationHint,

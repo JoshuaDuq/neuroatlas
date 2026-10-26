@@ -13,5 +13,5 @@
 <aside
   id="workspace-panel"
   {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
-  aria-label={t(lang, 'inspector').title}
+  aria-label={t(lang, 'workspace').panelAria}
 ></aside>

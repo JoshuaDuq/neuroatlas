@@ -23,6 +23,9 @@ import {
 
 // Real WebGL: what a mark does to a cut face is what the fragment shader writes.
 const SIGNAL = 100;
+// Each test compiles its own MeshPhysicalMaterial program on SwiftShader (0.1 to 0.3 s on an idle
+// machine), which a loaded machine can stretch past the browser project's 15 s default.
+const SHADER_COMPILE_TIMEOUT_MS = 30_000;
 
 const oetf = (value: number) =>
   value <= 0.0031308 ? 12.92 * value : 1.055 * value ** (1 / 2.4) - 0.055;
@@ -68,21 +71,29 @@ function render(mark: string): [number, number, number] {
 
 const luma = ([red, green, blue]: number[]) => 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
 
-test('an unmarked cut face is the scan grey, with no hue', () => {
-  const [red, green, blue] = render('0.0');
-  // (100 - 150 + 100) / 200 of the window.
-  expect(red).toBeCloseTo(0.25, 2);
-  expect(green).toBeCloseTo(red, 3);
-  expect(blue).toBeCloseTo(red, 3);
-});
+test(
+  'an unmarked cut face is the scan grey, with no hue',
+  { timeout: SHADER_COMPILE_TIMEOUT_MS },
+  () => {
+    const [red, green, blue] = render('0.0');
+    // (100 - 150 + 100) / 200 of the window.
+    expect(red).toBeCloseTo(0.25, 2);
+    expect(green).toBeCloseTo(red, 3);
+    expect(blue).toBeCloseTo(red, 3);
+  },
+);
 
-test('a marked cut face takes the accent as hue at the lifted grey, instead of washing toward white', () => {
-  const tone = render('1.0');
-  const [red, , blue] = tone as [number, number, number];
-  // The mark moves hue toward the accent (#4fb6e0 is blue-green)...
-  expect(blue - red).toBeGreaterThan(0.2);
-  // ...while luma is the grey lifted by 0.33, not white: a luminance-only mark would
-  // read as brighter tissue.
-  expect(luma(tone)).toBeCloseTo(0.25 + 0.33, 2);
-  expect(luma(tone)).toBeLessThan(0.9);
-});
+test(
+  'a marked cut face takes the accent as hue at the lifted grey, instead of washing toward white',
+  { timeout: SHADER_COMPILE_TIMEOUT_MS },
+  () => {
+    const tone = render('1.0');
+    const [red, , blue] = tone as [number, number, number];
+    // The mark moves hue toward the accent (#4fb6e0 is blue-green)...
+    expect(blue - red).toBeGreaterThan(0.2);
+    // ...while luma is the grey lifted by 0.33, not white: a luminance-only mark would
+    // read as brighter tissue.
+    expect(luma(tone)).toBeCloseTo(0.25 + 0.33, 2);
+    expect(luma(tone)).toBeLessThan(0.9);
+  },
+);

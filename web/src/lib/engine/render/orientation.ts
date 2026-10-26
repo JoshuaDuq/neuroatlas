@@ -1,4 +1,5 @@
 import { Matrix4, type Object3D, type Vector3 } from 'three';
+import { t } from '../../core/i18n/index.ts';
 import type { Language } from '../../types/index.ts';
 
 export type Edge = 'right' | 'left' | 'top' | 'bottom';
@@ -72,24 +73,14 @@ function letterFor([x, y, z]: Direction): Letter {
   return best.letter;
 }
 
-// TODO(C1): these French letters belong in i18n once its strings are merged.
-const FR_LETTERS: Readonly<Record<Letter, string>> = {
-  R: 'D',
-  L: 'G',
-  S: 'S',
-  I: 'I',
-  P: 'P',
-  A: 'A',
-};
-
 /** English edge letters in the reader's language. */
 export function localizeEdges(
   raw: Record<Edge, Letter>,
   lang: Language = 'en',
 ): Record<Edge, string> {
-  if (lang !== 'fr') return raw;
+  const letters = t(lang, 'orientation');
   return Object.fromEntries(
-    Object.entries(raw).map(([edge, letter]) => [edge, FR_LETTERS[letter]]),
+    Object.entries(raw).map(([edge, letter]) => [edge, letters[letter]]),
   ) as Record<Edge, string>;
 }
 

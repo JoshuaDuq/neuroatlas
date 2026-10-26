@@ -183,11 +183,8 @@ describe('Provenance dialog', () => {
     render(Fixture, props());
     await openFromKeyboard();
     (document.querySelector('.colophon') as HTMLElement).style.display = 'none';
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(() => dialog().open).toBe(false);
-    await expect
-      .poll(() => document.activeElement)
-      .toBe(page.getByRole('button', { name: 'More' }).element());
+    await closing(() => userEvent.keyboard('{Escape}'));
+    expect(document.activeElement).toBe(page.getByRole('button', { name: 'More' }).element());
   });
 
   test('a language change while open re-labels in place; English data is marked only in French', async () => {

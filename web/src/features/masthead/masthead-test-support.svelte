@@ -48,7 +48,6 @@
   {singleKeys}
   {ready}
   {fullscreen}
-  exitFullscreenLabel={lang === 'fr' ? 'Quitter le plein écran' : 'Exit full screen'}
   {provenanceReady}
   bind:settingsOpen
   onSkipToModel={() => calls.push('skip')}

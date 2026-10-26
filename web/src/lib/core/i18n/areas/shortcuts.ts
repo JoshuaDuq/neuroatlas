@@ -4,6 +4,8 @@ export type ShortcutGroup = [heading: string, rows: [key: string, description: s
 export const en = {
   title: 'Keyboard shortcuts',
   close: 'Close',
+  // Read after the dash of a key range such as 1 – 6 (deviations/s5b-shortcut-strings.md).
+  rangeTo: 'to',
   groups: [
     [
       'Panel',
@@ -54,6 +56,7 @@ export const en = {
 export const fr: typeof en = {
   title: 'Raccourcis clavier',
   close: 'Fermer',
+  rangeTo: 'à',
   groups: [
     [
       'Panneau',
@@ -64,8 +67,8 @@ export const fr: typeof en = {
           'Sur les onglets de mode : passer entre Anatomie, Fonctions, Déficits, Circuits et Faisceaux',
         ],
         [
-          'Esc',
-          'Dans une vue détaillée : revenir à la liste. Ailleurs : effacer la recherche, puis la sélection, puis le déficit',
+          'Échap',
+          'Dans une vue détaillée : revenir à la liste. Ailleurs : effacer la recherche, puis la sélection, puis la fonction ou le déficit',
         ],
         ['↑ ↓', 'Parcourir les résultats ou l’arborescence'],
         ['→ ←', 'Dans l’arbre : ouvrir ou fermer un groupe, ou atteindre l’œil d’une région'],

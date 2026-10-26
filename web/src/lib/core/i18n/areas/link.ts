@@ -1,4 +1,6 @@
 export const en = {
+  // Said after a link that leaves the app (decision 17 on #4).
+  newTab: '(opens in a new tab)',
   notApplied: (fields: string) => `Not applied from this link: ${fields}.`,
   fields: {
     anatomy: 'subject',
@@ -34,6 +36,7 @@ export const en = {
 };
 
 export const fr: typeof en = {
+  newTab: '(s’ouvre dans un nouvel onglet)',
   notApplied: (fields: string) => `Éléments du lien non appliqués : ${fields}.`,
   fields: {
     anatomy: 'sujet',

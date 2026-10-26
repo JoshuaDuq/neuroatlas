@@ -158,6 +158,14 @@ describe('the start', () => {
     await vi.waitFor(() => expect(region.textContent).toBe('1 part hidden'));
   });
 
+  test('hands the page the announcer’s part sentence, said with the count the next change makes', async () => {
+    const { app } = await boot();
+    app.world!.speech.part('Hidden: X, left.');
+    app.world!.anatomy.hideRegions([hiddenRegion]);
+    flushSync();
+    expect(region.textContent).toBe('Hidden: X, left. 1 part hidden');
+  });
+
   test('names an unpublished anatomy and opens the published one', async () => {
     const { app } = await boot('#anatomy=nobody');
     expect(createEngine.mock.calls[0]![0].manifestUrl).toMatch(/\/models\/cdmd\/manifest\.json$/);
@@ -502,7 +510,7 @@ describe('the mounted shell', () => {
     flushSync();
     expect(target.dataset.status).toBe('ready');
     expect(target.querySelector('aside')!.getAttribute('aria-label')).toBe(
-      t('fr', 'inspector').title,
+      t('fr', 'workspace').panelAria,
     );
     unmount(shell);
     target.remove();

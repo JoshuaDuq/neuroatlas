@@ -59,8 +59,7 @@ parity test (`web/parity/E1.test.ts`) excludes these inputs; fixes 1-4 are pinne
 
 - `quality.ts` still does not read a `hardwareConcurrency` input; the legacy test passed one and
   nothing used it, so the field is dropped from the type and from the ported test.
-- French edge letters (`D G S I P A`) stay in `orientation.ts` until C1's i18n lands (marked with a
-  TODO); moving them is a string change for C1.
+- French edge letters (`D G S I P A`) now live in the `orientation` i18n namespace; `orientation.ts` reads them from there.
 - `VIEW_DIRECTIONS` keeps sharing mutable `Vector3`s; consumers clone, as before.
 - `outline-edges.ts` depends on private `OutlinePass` fields (`_oldClearColor`, `_fsQuad`); the
   exact-pinned `three` must be re-checked on any upgrade.

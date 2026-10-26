@@ -137,11 +137,47 @@ function resolve(node: unknown, area: string, leaf = ''): unknown {
 const without = (node: unknown, ...keys: string[]) =>
   Object.fromEntries(Object.entries(node as object).filter(([key]) => !keys.includes(key)));
 
+/** Keys of a legacy area that the i18n area adds; the legacy tables have no counterpart. */
+const ADDED: Record<string, string[]> = {
+  viewport: [
+    'loadingWithTotal', // c1-loading-megabytes, asserted below
+    'navigationHintTouch', // G1, decision 21: the hints name touch gestures
+    'navigationHintTractsTouch', // G1, decision 21
+    'exitFullscreen', // H2/G6, decision 33: the label while the stage is fullscreen
+  ],
+  workspace: ['panelAria'], // H1a: the name of the complementary landmark
+  link: ['newTab'], // X2/T1, decision 17: the cue after a link that opens a new tab
+  diffusion: [
+    'tryAgain', // T1, decision 42
+    'matches', // T1: the spoken filter result
+    'loaded', // T1: the spoken load result
+    'restored', // T1: the spoken restore
+    'exported', // T1: the spoken CSV export
+  ],
+  shortcuts: ['rangeTo'], // S5b D4: read after a range's dash
+};
+
+/** The legacy French Escape row with the two S5b fixes of s5b-shortcut-strings.md (D1, D3) applied. */
+function legacyFixed(area: string, table: any, lang: string) {
+  if (area !== 'shortcuts' || lang !== 'fr') return table;
+  let rows = 0;
+  const groups = table.groups.map(([heading, items]: [string, [string, string][]]) => [
+    heading,
+    items.map(([key, text]) => {
+      if (key !== 'Esc') return [key, text];
+      rows++;
+      return ['Échap', text.replace('puis le déficit', 'puis la fonction ou le déficit')];
+    }),
+  ]);
+  assert.equal(rows, 1);
+  return { ...table, groups };
+}
+
 /** The composed table of one language, with the areas this chunk adds left out. */
 const withoutAdditions = (table: Record<string, unknown>) => {
   const { mri: _mri, clinical: _clinical, circuits: _circuits, diffusion, ...rest } = table;
-  const { errors: _errors, ...diffusionText } = diffusion as Record<string, unknown>;
-  return { rest, diffusionText };
+  const { errors: _errors, ...withAdded } = diffusion as Record<string, unknown>;
+  return { rest, diffusionText: without(withAdded, ...ADDED.diffusion!) };
 };
 
 describe('C1 i18n against the legacy modules', () => {
@@ -151,11 +187,13 @@ describe('C1 i18n against the legacy modules', () => {
       const legacy = { ...LEGACY_TRANSLATIONS[lang] };
       assert.deepStrictEqual(Object.keys(rest).sort(), Object.keys(legacy).sort());
       for (const area of Object.keys(legacy)) {
-        // The loading line's megabytes are a deviation, asserted below.
-        const leaf = area === 'viewport' ? ['loadingWithTotal'] : [];
+        const added = ADDED[area] ?? [];
         assert.deepStrictEqual(
-          resolve(without(rest[area], ...leaf), area),
-          resolve(without(legacy[area as keyof typeof legacy], ...leaf), area),
+          resolve(without(rest[area], ...added), area),
+          resolve(
+            without(legacyFixed(area, legacy[area as keyof typeof legacy], lang), ...added),
+            area,
+          ),
           `${lang}.${area}`,
         );
       }
@@ -193,15 +231,9 @@ describe('C1 i18n against the legacy modules', () => {
     for (const lang of ['en', 'fr', 'de', 'unknown', '']) {
       for (const area of Object.keys(LEGACY_TRANSLATIONS.en)) {
         assert.deepStrictEqual(
+          resolve(without(t(lang, area as 'header'), ...(ADDED[area] ?? [])), area),
           resolve(
-            without(
-              t(lang, area as 'header'),
-              ...(area === 'viewport' ? ['loadingWithTotal'] : []),
-            ),
-            area,
-          ),
-          resolve(
-            without(legacyT(lang, area), ...(area === 'viewport' ? ['loadingWithTotal'] : [])),
+            without(legacyFixed(area, legacyT(lang, area), lang), ...(ADDED[area] ?? [])),
             area,
           ),
         );

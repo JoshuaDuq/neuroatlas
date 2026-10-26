@@ -21,8 +21,6 @@
     ready: boolean;
     /** The stage is fullscreen, from `fullscreenchange`: the labels become "Exit full screen". */
     fullscreen: boolean;
-    /** "Exit full screen" in the current language, until viewport.exitFullscreen is in i18n (G6, C1). */
-    exitFullscreenLabel: string;
     provenanceReady: boolean;
     /** The settings panel; H3's data popover closes it by setting this false. */
     settingsOpen?: boolean;
@@ -44,7 +42,6 @@
     singleKeys,
     ready,
     fullscreen,
-    exitFullscreenLabel,
     provenanceReady,
     settingsOpen = $bindable(false),
     data,
@@ -62,7 +59,7 @@
   const fullscreenAvailable = document.fullscreenEnabled;
 
   const viewport = $derived(t(lang, 'viewport'));
-  const fullscreenLabel = $derived(fullscreen ? exitFullscreenLabel : viewport.fullscreen);
+  const fullscreenLabel = $derived(fullscreen ? viewport.exitFullscreen : viewport.fullscreen);
 
   $effect(() => {
     document.documentElement.dataset.singleKeys = singleKeys ? 'on' : 'off';
