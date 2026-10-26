@@ -35,3 +35,21 @@ test('comparison row names include the visible area and share with localized uni
     assert.equal(t(lang, 'comparison').highlight('Area 44', area, share), expected);
   }
 });
+
+test('INSP-27: edge figures round to one decimal and only a positive part below 0.1 is "<0.1"', () => {
+  for (const [area, expected] of [
+    [-0, '0.0'],
+    [0.05, '<0.1'],
+    [0.0500001, '<0.1'],
+    [0.0999999, '<0.1'],
+    [Number.MIN_VALUE, '<0.1'],
+    [0.95, '0.9'],
+    [1, '1.0'],
+    [99.95, '100.0'],
+    [100, '100.0'],
+    [-1, '−1.0'],
+  ] as const) {
+    assert.equal(overlapArea(area), expected, `area ${area}`);
+  }
+  assert.equal(overlapShare(Number.MIN_VALUE / 100), '0.0');
+});

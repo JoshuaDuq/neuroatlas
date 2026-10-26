@@ -3,7 +3,7 @@
 Status: decided under the delegation on #4 (standards-based; #4 decisions 14 and 15). Chunks H2, H3, U5.
 
 - The settings panel (`#masthead-menu`) holds radio groups, a toggle and buttons. `role=menu` promises menuitems and a different key model, so it is wrong here. Pattern: APG Disclosure with a non-modal popover: trigger button with `aria-expanded` + `aria-controls`; content is a labelled region of ordinary controls in the tab order.
-- Building block: Bits Popover behind the Planum Popover wrapper, configured as the spike proves (`kit-spike/Spike.svelte`, "Popover: Tab out ..." test):
+- Building block: Bits Popover behind the Planum Popover wrapper, configured as the U0 spike showed and `src/lib/ui/overlays.svelte.test.ts` now proves ("Tab out of the last control closes it ..."):
   - `trapFocus={false}` (non-modal; #4 decision 14);
   - **no Portal**: the content stays right after the trigger in the DOM, so Tab continues in document order (WCAG 2.4.3). With a Portal, Tab from the last control left the document;
   - close on focus-out: a `focusout` handler on the content closes it when `relatedTarget` is neither inside the content nor the trigger (legacy `header.js:135-138`);

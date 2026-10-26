@@ -32,7 +32,7 @@ export function createSessionStore(options: SessionOptions) {
   const core = createSession(options);
   let state = $state.raw<SessionState>(core.assemble({}));
   const refresh = () => {
-    state = core.assemble({});
+    ;
   };
   const { assemble: _assemble, ...commands } = core;
   const reactive = refreshingAll(commands, refresh);
