@@ -53,6 +53,7 @@ beforeEach(() => {
   release = attachAnnouncer(region);
 });
 afterEach(() => {
+  vi.useRealTimers();
   // Unmount first: a search debounce still pending disposes with the component, so it cannot
   // announce into a detached region.
   cleanup();
@@ -257,6 +258,17 @@ describe('the search', () => {
       .toBe('No match for “zzz”. Try another tract name.');
   });
 
+  test('unmounting while a result count is pending says nothing', async () => {
+    await ready();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    searchEl().value = 'arcuate';
+    searchEl().dispatchEvent(new Event('input', { bubbles: true }));
+    cleanup();
+    vi.advanceTimersByTime(500);
+    vi.useRealTimers();
+    expect(region.textContent).toBe('');
+  });
+
   test('focusSearch puts focus in the field', async () => {
     const view = await ready();
     (view.view.component as unknown as { focusSearch(): void }).focusSearch();
@@ -349,6 +361,27 @@ describe('loading, failure and retry', () => {
     expect(page.getByRole('button', { name: 'Try again' }).elements()).toHaveLength(0);
   });
 
+  test('unmounting during a download announces nothing when it finishes', async () => {
+    const download = deferred();
+    const base = createEngine();
+    const engine = slowEngine(base, {
+      loadBundle: async (id) => {
+        await download.promise;
+        await base.tracts.loadBundle(id);
+      },
+    });
+    await render(TractsExplorer, props(engine));
+    await expect.poll(() => !el('Cingulum · left').closest('fieldset')!.disabled).toBe(true);
+    await key('Cingulum · left').click();
+    cleanup();
+    download.resolve();
+    // The load has finished once the engine holds the bundle; the announcement would follow it.
+    await expect.poll(() => engine.tracts.hasBundle('cg-left')).toBe(true);
+    // A macrotask turn lets every promise continuation of the load run first.
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(region.textContent).toBe('');
+  });
+
   test('focus on a key survives the download that disabled it', async () => {
     const download = deferred();
     const base = createEngine();
@@ -366,8 +399,6 @@ describe('loading, failure and retry', () => {
     download.resolve();
     await expect.poll(() => document.activeElement).toBe(el('Cingulum · left'));
     expect(el('Cingulum · left').checked).toBe(true);
-    // The load announces after it settles; the test must not end (and detach the announcer) before.
-    await expect.poll(() => region.textContent).toBe('Loaded: Cingulum · left');
   });
 });
 
@@ -675,17 +706,21 @@ describe('keys and sliders', () => {
     const engine = createEngine();
     const view = await render(TractsExplorer, props(engine));
     await expect.poll(() => !el('Cingulum · left').closest('fieldset')!.disabled).toBe(true);
-    await search().fill('cing');
-    await settle();
     await page.getByText('Tract display').click();
     el('Cingulum · left').focus();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    searchEl().value = 'cing';
+    searchEl().dispatchEvent(new Event('input', { bubbles: true }));
+    vi.advanceTimersByTime(500);
+    expect(region.textContent).toBe('2 tract bundles');
     region.textContent = '';
     await view.rerender(props(engine, { lang: 'fr' }));
+    vi.advanceTimersByTime(500);
+    vi.useRealTimers();
+    expect(region.textContent).toBe('');
     expect(searchEl().value).toBe('cing');
     expect(settings().open).toBe(true);
     expect(document.activeElement).toBe(el('Cingulum · gauche'));
-    await settle();
-    expect(region.textContent).toBe('');
   });
 
   test('the search head carries the aria-hidden / keycap and the caption comes before the list', async () => {
