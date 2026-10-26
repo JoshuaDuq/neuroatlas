@@ -1,11 +1,8 @@
 import type { Manifest } from '../../types/index.ts';
 import type {
-  CabNpData,
-  DomainsData,
   Engine,
   EngineComparison,
   EngineEvents,
-  FunctionalRegionsData,
   MriDisplay,
   Presentation,
   Rect,
@@ -24,12 +21,15 @@ export type { Call } from './support.ts';
 export type { FakeMriNavigator } from './mri.ts';
 export type { FakeBundle, FakeTracts } from './tracts.ts';
 
+type FakeFile = { atlas: string; [field: string]: unknown };
+
 export interface FakeEngineOptions {
   /** The published manifest to serve, e.g. `public/models/cdmd/manifest.json`. */
   manifest: Manifest;
-  cabNp?: CabNpData;
-  functionalRegions?: FunctionalRegionsData;
-  domains?: DomainsData;
+  /** What the fake reads of each published file: its atlas, and whatever else a test supplies. */
+  cabNp?: FakeFile;
+  functionalRegions?: FakeFile;
+  domains?: FakeFile;
   /** The stage canvas; without one, `canvas` and `captureSnapshot` need a DOM to create it. */
   canvas?: HTMLCanvasElement;
   hostSize?: Size;

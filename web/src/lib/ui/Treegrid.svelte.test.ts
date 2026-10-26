@@ -1,11 +1,18 @@
 // Real-DOM checks of the treegrid against the APG Treegrid keyboard table, in Chromium.
 import axe from 'axe-core';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, onTestFinished, test } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Fixture from './treegrid-fixture.svelte';
 
-const mount = (props: { initialSelected?: string | null; wide?: boolean } = {}) => {
+const mount = (
+  props: {
+    initialSelected?: string | null;
+    wide?: boolean;
+    blank?: boolean;
+    pass?: ReadonlySet<string>;
+  } = {},
+) => {
   const log: string[] = [];
   const screen = render(Fixture, { log, ...props });
   return { log, screen };
@@ -393,6 +400,96 @@ describe('cells without a control, and disabled cells', () => {
     await press('{ArrowUp}');
     // The row above has no cell in column 2: the nearest is its eye (column 1).
     expect(active()).toBe(cellButtons('limbic')[1]);
+  });
+});
+
+describe('cell focus across rows that have no cell', () => {
+  test('Down and Up land on the row itself when its neighbour has no usable cell', async () => {
+    mount({ blank: true });
+    focus('insula');
+    await press('{ArrowRight}');
+    await press('{ArrowDown}');
+    expect(active()).toBe(row('rule'));
+    focus('limbic');
+    await press('{ArrowRight}');
+    await press('{ArrowUp}');
+    expect(active()).toBe(row('rule'));
+  });
+
+  test('Ctrl+Home goes to the first row when it has no cell, Ctrl+End to the last row’s nearest cell', async () => {
+    mount({ blank: true });
+    focus('insula');
+    await press('{ArrowRight}');
+    await press('{Control>}{Home}{/Control}');
+    expect(active()).toBe(row('top'));
+    focus('insula');
+    await press('{ArrowRight}');
+    await press('{Control>}{End}{/Control}');
+    expect(active()).toBe(cellButtons('limbic')[0]);
+  });
+
+  test('a disabled node is aria-disabled and takes no hover wash', async () => {
+    document.documentElement.style.setProperty('--surface-hover', 'rgb(10, 20, 30)');
+    onTestFinished(() => {
+      document.documentElement.style.removeProperty('--surface-hover');
+    });
+    mount({ blank: true });
+    expect(row('rule').getAttribute('aria-disabled')).toBe('true');
+    expect(row('top').hasAttribute('aria-disabled')).toBe(false);
+    const before = getComputedStyle(row('rule')).backgroundColor;
+    await userEvent.hover(row('rule'));
+    expect(getComputedStyle(row('rule')).backgroundColor).toBe(before);
+    await userEvent.hover(row('insula'));
+    expect(getComputedStyle(row('insula')).backgroundColor).not.toBe(before);
+  });
+});
+
+describe('structure: blocks', () => {
+  test('a top-level row and its open children share one role-less block', async () => {
+    mount();
+    focus('frontal');
+    await press('{ArrowRight}');
+    const block = row('frontal').parentElement!;
+    expect(block.classList.contains('treegrid-block')).toBe(true);
+    expect(block.hasAttribute('role')).toBe(false);
+    expect(row('precentral').parentElement).toBe(block);
+    expect(row('insula').parentElement).not.toBe(block);
+  });
+});
+
+describe('passKeys', () => {
+  const pressedOnWindow = async (keys: string[]) => {
+    const reached: string[] = [];
+    const listener = (event: KeyboardEvent) => {
+      if (!event.defaultPrevented) reached.push(event.key);
+    };
+    window.addEventListener('keydown', listener);
+    for (const key of keys) await press(key);
+    window.removeEventListener('keydown', listener);
+    return reached;
+  };
+
+  test('a listed key is left to the page, and starts no query', async () => {
+    mount({ pass: new Set(['i', 'n']) });
+    focus('frontal');
+    expect(await pressedOnWindow(['i'])).toEqual(['i']);
+    expect(active()).toBe(row('frontal'));
+  });
+
+  test('a listed key extends a query already being typed', async () => {
+    mount({ pass: new Set(['n']) });
+    focus('frontal');
+    await press('i');
+    expect(active()).toBe(row('insula'));
+    expect(await pressedOnWindow(['n'])).toEqual([]);
+    expect(active()).toBe(row('insula'));
+  });
+
+  test('unlisted keys still find rows', async () => {
+    mount({ pass: new Set(['n']) });
+    focus('frontal');
+    await press('l');
+    expect(active()).toBe(row('limbic'));
   });
 });
 
