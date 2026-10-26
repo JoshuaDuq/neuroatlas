@@ -91,7 +91,8 @@ function openingOf(engine: Engine) {
 type Opening = ReturnType<typeof openingOf>;
 
 /**
- * Put a shared engine back to its opening state through the public API alone, and prove it is there.
+ * Put a shared engine's model and cut back to their opening state through the public API alone, and prove
+ * they are there. The camera, the tracts' settings and the MRI window are not asserted.
  * What a case downloaded stays downloaded: a layer, the volumes, the tracts, the cord.
  */
 async function restore(engine: Engine, opening: Opening) {
@@ -141,6 +142,9 @@ async function cutsReportingThePlane({ engine }: World) {
   assert.equal(sections.active, false);
   await assert.rejects(sections.setMode('diagonal' as never), /Unknown cut mode/);
   await sections.setMode('coronal');
+  // The slider's path builds the cut in the worker where there is one.
+  await sections.setOffsetReady(10);
+  assert.ok(Math.abs(sections.offset - 10) < 1e-9);
   assert.equal(sections.state.mode, 'coronal');
   assert.equal(sections.active, true);
   assert.equal(model.settings.cutActive, true);
@@ -178,7 +182,7 @@ async function opensTheMriNavigator({ engine }: World, canvas: HTMLCanvasElement
   navigator.dispose();
 }
 
-/** One engine for the cases of a `describe`, put back to its opening state after each. */
+/** One engine for the cases of a `describe`, has its model and cut put back to their opening state after each. */
 function sharedEngine(create: () => Promise<Engine> | Engine) {
   let world: World | null = null;
   let opening: Opening | null = null;
@@ -210,7 +214,7 @@ function freshEngine(create: () => Promise<Engine> | Engine) {
  * reads everything it needs from the engine's own manifest, so it holds for any published anatomy that has
  * two cortical atlases, the learning detail level, CAB-NP and the functional divisions.
  *
- * The cases of a group share one engine and are put back to its opening state after each; the cases that
+ * The cases of a group share one engine and have their model and cut put back to their opening state after each; the cases that
  * assert what has not been downloaded yet ("first use") run in order on one engine, and the few that
  * cannot share it get their own. `captureSnapshot` needs a canvas and a frame, so each implementation
  * tests it where it can draw (`defineStageContract`).
@@ -243,6 +247,21 @@ export function defineEngineContract(
         assert.equal(engine.model.centroidOf(cortex('left', otherAtlas).id), null);
         assert.equal(engine.model.isRegionDrawn(left.id), true);
         assert.equal(engine.model.isRegionDrawn(cortex('left', otherAtlas).id), false);
+      });
+
+      it('prefetches a layer without changing the display', async () => {
+        const { engine, otherAtlas, atlas } = world();
+        assert.equal(engine.model.hasLayer(otherAtlas), false);
+        await engine.model.prefetchLayer(otherAtlas);
+        assert.ok(engine.model.hasLayer(otherAtlas));
+        assert.equal(engine.model.settings.atlas, atlas);
+      });
+
+      it('downloads the envelopes on request', async () => {
+        const { engine } = world();
+        assert.equal(engine.model.envelopesLoaded, false);
+        await engine.model.ensureEnvelopes();
+        assert.equal(engine.model.envelopesLoaded, true);
       });
 
       it('refuses to prefetch what is not an atlas or a detail level', async () => {
@@ -531,6 +550,7 @@ export function defineEngineContract(
         model.setPaint(null);
         const releasers: [string, () => unknown][] = [
           ['hemisphere', () => model.setHemisphere('left')],
+          ['cortex', () => model.setCortexVisible(false)],
           ['internal anatomy', () => model.setInternalVisible(false)],
           ['internal system', () => model.setInternalSystem(system)],
           ['spinal cord', () => model.setSpinalCordVisible(true)],
@@ -659,6 +679,9 @@ export function defineEngineContract(
         assert.deepEqual([...model.settings.hiddenRegions], [right.id]);
         model.restoreHiddenRegions();
         assert.equal(model.settings.hiddenRegions.size, 0);
+        assert.equal(model.settings.dissectionCanUndo, true, 'a restore is one undoable step');
+        model.undoDissection();
+        assert.deepEqual([...model.settings.hiddenRegions], [right.id]);
         model.loadHiddenRegions([left.id]);
         assert.deepEqual([...model.settings.hiddenRegions], [left.id]);
         assert.equal(model.settings.dissectionCanUndo, false, 'a loaded link has no history');
@@ -835,19 +858,6 @@ export function defineEngineContract(
         assert.throws(() => model.setSurfaceColor('mri'), /MRI must load/);
         assert.equal(model.settings.atlas, atlas);
         assert.equal(model.settings.surfaceColor, 'atlas', 'a refused colour is not applied');
-      });
-
-      it('downloads the envelopes on request', async () => {
-        const { engine } = world();
-        await engine.model.ensureEnvelopes();
-        assert.equal(engine.model.envelopesLoaded, true);
-      });
-
-      it('prefetches a layer without changing the display', async () => {
-        const { engine, otherAtlas, atlas } = world();
-        await engine.model.prefetchLayer(otherAtlas);
-        assert.ok(engine.model.hasLayer(otherAtlas));
-        assert.equal(engine.model.settings.atlas, atlas);
       });
     });
 
@@ -1069,21 +1079,6 @@ export function defineEngineContract(
         assert.throws(() => model.select(cutOnly.id), /not visible/);
       });
 
-      it('colours the surface, downloading what the colour needs', async () => {
-        const { engine } = world();
-        const { sections, model } = engine;
-        await sections.setSurfaceColor('mri');
-        assert.equal(model.settings.surfaceColor, 'mri');
-        await sections.setSurfaceColor('atlas');
-        assert.equal(model.settings.surfaceColor, 'atlas');
-        await sections.setSurfaceColor('functional', () => false);
-        assert.equal(
-          model.settings.surfaceColor,
-          'atlas',
-          'an overtaken download lands without a colour change',
-        );
-      });
-
       it('refuses a colour whose atlas is not on screen', async () => {
         const { engine } = world();
         const { cabNp, functionalRegions } = engine.model;
@@ -1106,8 +1101,24 @@ export function defineEngineContract(
       });
     });
 
-    // The linked MRI is unloaded when this case opens, and the "first use" group has loaded it.
+    // These cases need the MRI unloaded as they open; the "first use" group's linked-MRI case loads it.
     describe('before the MRI loads', () => {
+      it('colours the surface, downloading what the colour needs', async () => {
+        const { engine } = await fresh();
+        const { sections, model } = engine;
+        assert.throws(() => model.setSurfaceColor('mri'), /MRI must load/);
+        await sections.setSurfaceColor('mri');
+        assert.equal(model.settings.surfaceColor, 'mri');
+        await sections.setSurfaceColor('atlas');
+        assert.equal(model.settings.surfaceColor, 'atlas');
+        await sections.setSurfaceColor('functional', () => false);
+        assert.equal(
+          model.settings.surfaceColor,
+          'atlas',
+          'an overtaken download lands without a colour change',
+        );
+      });
+
       it('resamples the planes and samples the volume only once loaded', async () => {
         const { engine } = await fresh();
         const { sections } = engine;

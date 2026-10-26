@@ -23,7 +23,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 ### SLICE-02 · Standard section planes and their orientation letters
 
-- **Rule:** Stated once as RENDER-39 (`engine-e1.md`), RENDER-42 (`engine-e1.md`); this entry only points there, so the rule is tested once. No business-rule test checks the edge letters yet.
+- **Rule:** Stated once as RENDER-39 (`engine-e1.md`), RENDER-42 (`engine-e1.md`); this entry only points there, so the rule is tested once. The contract suite checks the edge letters of the three standard planes ("frames the standard planes with fixed axes and edge letters").
 - **Kind:** behaviour
 - **Level:** see RENDER-39, RENDER-42
 - **Source:** see RENDER-39, RENDER-42
