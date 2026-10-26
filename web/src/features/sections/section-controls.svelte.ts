@@ -65,8 +65,11 @@ export function createSectionControls({
   const { sections, model, camera } = engine;
   // The plane the reader chose while its anatomy is still being prepared.
   let pendingPlane = $state<CutMode | null>(null);
-  // A failure is shown until the cut changes again, as the legacy status line was until the next render.
-  let failure = $state.raw<{ error: unknown; at: SectionsState } | null>(null);
+  // Counts the plane choices: only the latest one settling ends the pending plane.
+  let choices = 0;
+  // A failure is said and shown until the reader acts on the section again, or another command changes
+  // the plane (g4-pending-after-failure).
+  let failure = $state.raw<{ error: unknown; mode: CutMode } | null>(null);
   let opening = $state(false);
 
   const state = $derived(engineState.sections);
@@ -83,7 +86,12 @@ export function createSectionControls({
 
   function report(error: unknown) {
     console.error(error);
-    failure = { error, at: engineState.sections };
+    failure = { error, mode: sections.state.mode };
+  }
+
+  /** The reader acts on the section again: an earlier failure is no longer the news. */
+  function act() {
+    failure = null;
   }
 
   /** The cut faces the reader, from the side it keeps (app.js:1281). */
@@ -142,7 +150,7 @@ export function createSectionControls({
       return measures.spacing;
     },
     get failure(): unknown {
-      return failure !== null && failure.at === state ? failure.error : null;
+      return failure !== null && failure.mode === state.mode ? failure.error : null;
     },
     /** The Linked MRI is loading: a second press waits for it. */
     get opening() {
@@ -162,7 +170,9 @@ export function createSectionControls({
      * overtakes it. The bar names the plane at once. A plane already chosen does nothing.
      */
     async choose(plane: CutMode) {
+      act();
       if (plane === (pendingPlane ?? sections.state.mode)) return;
+      const choice = ++choices;
       pendingPlane = plane === 'off' ? null : plane;
       try {
         if (!(await commands.cut(plane, commands.begin()))) return;
@@ -178,13 +188,16 @@ export function createSectionControls({
       } catch (error) {
         report(error);
       } finally {
-        // Also after a failure: the bar then says why instead of preparing for ever (g4-pending-after-failure).
-        if (pendingPlane === plane) pendingPlane = null;
+        // Also after a failure, so the bar says why instead of preparing for ever; and only for the latest
+        // choice, so an overtaken one cannot end a newer plane's preparation (g4-pending-after-failure).
+        if (choice === choices) pendingPlane = null;
       }
     },
 
     /** The bar's Close: the whole brain again. The caller has already moved focus to the Section tool. */
     async close() {
+      act();
+      choices++;
       pendingPlane = null;
       try {
         await sections.setMode('off');
@@ -195,11 +208,13 @@ export function createSectionControls({
 
     /** The position slider: the picture keeps the last complete cut until the next is ready. */
     slideOffset(offset: number) {
+      act();
       slide(() => sections.setOffsetReady(offset));
     },
 
     /** The exact field, already checked against the range. */
     setOffset(offset: number) {
+      act();
       try {
         sections.setOffset(offset);
       } catch (error) {
@@ -208,10 +223,12 @@ export function createSectionControls({
     },
 
     slideAngles(tilt: number, azimuth: number) {
+      act();
       slide(() => sections.setAnglesReady(tilt, azimuth));
     },
 
     setReverse(reverse: boolean) {
+      act();
       try {
         sections.setDisplay({ reverse });
         face();
@@ -222,6 +239,7 @@ export function createSectionControls({
 
     /** On failure the sections keep the previous labels, and the bar says why. */
     async setCutAtlas(atlas: string) {
+      act();
       try {
         await sections.setCutAtlas(atlas);
       } catch (error) {
@@ -232,6 +250,7 @@ export function createSectionControls({
     /** The bar's Linked MRI, and the `M` key (the keymap's `openMpr` port, I2). */
     async openLinkedMri({ instant }: { instant: boolean }) {
       if (opening) return;
+      act();
       opening = true;
       try {
         await openLinkedMri({ instant });
