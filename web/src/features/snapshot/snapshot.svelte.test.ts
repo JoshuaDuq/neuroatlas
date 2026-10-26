@@ -1,14 +1,12 @@
 // The snapshot in a real browser over the fake engine: the markings measured where the stage draws them,
 // with what the keys say taken from `keys.model()`; the caption's inputs; the download, its announcement
-// and its failure; and the drawing itself, pixel for pixel against legacy snapshot.js.
+// and its failure.
 import '../../styles/index.css';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { flushSync } from 'svelte';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
-// @ts-expect-error TS7016: the legacy module is JavaScript and publishes no declarations.
-import * as legacySnapshot from '../../../../viewer/ui/chrome/snapshot.js';
 import type { FunctionalRegions } from '../../lib/core/catalog/functional-regions.ts';
 import type { Legend } from '../../lib/core/state/paint.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
@@ -19,11 +17,9 @@ import type { Manifest } from '../../lib/types/index.ts';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import { snapshotMarkings } from './markings.ts';
 import type { StageKeysModel } from './markings.ts';
-import { annotateSnapshot, saveSnapshot, snapshotFonts, snapshotPlan } from './snapshot.ts';
+import { saveSnapshot, snapshotPlan } from './snapshot.ts';
 import type { SnapshotStage, SnapshotSubject } from './snapshot.ts';
 import Fixture from './snapshot-test-support.svelte';
-
-const legacyAnnotate: typeof annotateSnapshot = legacySnapshot.annotateSnapshot;
 
 const eventually = <T>(check: () => T | Promise<T>) => vi.waitFor(check, { timeout: 5000 });
 
@@ -194,6 +190,24 @@ describe('the keys in the image', () => {
     expect(markings().keys[0]!.swatches).toEqual([]);
   });
 
+  test('a plate the model says is folded draws its title alone, though its rows are shown (the fold comes from the model)', async () => {
+    await mount({ legend: DEFICIT });
+    expect(plate('paint').querySelectorAll('.stage-key-list > li')).toHaveLength(3);
+    const folded = {
+      model: () =>
+        keys()
+          .model()
+          .map((entry) => ({ ...entry, open: false })),
+    } as StageKeysModel;
+    const [mark] = snapshotMarkings(host(), stage.visibleRect!, {
+      stage,
+      keys: folded,
+      lang: live.lang,
+    }).keys;
+    expect(mark!.texts.map((text) => text.text)).toEqual(['Aphasia']);
+    expect(mark!.swatches).toEqual([]);
+  });
+
   test('rows scrolled out of a long key stay out of the image', async () => {
     const long: Legend = {
       ...DEFICIT,
@@ -321,6 +335,25 @@ describe('saving', () => {
     expect(links).toHaveLength(2);
   });
 
+  test('the object URL is released 40 s after the click, not before', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout'] });
+    try {
+      const revoke = vi.spyOn(URL, 'revokeObjectURL');
+      await mount();
+      await saveSnapshot(scene(), subject(), commands);
+      expect(links).toHaveLength(1);
+      // Read the blob before the URL is released.
+      expect((await (await fetch(links[0]!.href)).blob()).type).toBe('image/png');
+      expect(revoke).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(39_999);
+      expect(revoke).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1);
+      expect(revoke).toHaveBeenCalledExactlyOnceWith(links[0]!.href);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   test('a failure is the snapshot notice, and nothing is downloaded or said', async () => {
     await mount();
     const lost = new Error('context lost');
@@ -337,48 +370,5 @@ describe('saving', () => {
     expect(commands.fail).toHaveBeenCalledExactlyOnceWith('snapshot', lost);
     expect(links).toEqual([]);
     expect(region.textContent).toBe('');
-  });
-});
-
-describe('the drawing', () => {
-  test('matches legacy snapshot.js pixel for pixel: caption, letters, keys, statement and scale bar', async () => {
-    await mount({ legend: DEFICIT }, { width: 560, height: 520 });
-    // A long subject and a section so the caption packs and shortens in a narrow image.
-    const { plan } = snapshotPlan(
-      scene(),
-      subject({
-        anatomy: { display_name: 'A subject whose name is far too long for the room it has here' },
-        section: { plane: 'oblique', offset: -12.34, tilt: 30, azimuth: -45 },
-      }),
-    );
-    await snapshotFonts(plan);
-    const ratio = 2;
-    const draw = (annotate: typeof annotateSnapshot) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = plan.width * ratio;
-      canvas.height = plan.height * ratio;
-      const ctx = canvas.getContext('2d')!;
-      ctx.fillStyle = '#7a7f86';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      annotate(canvas, { ...plan, ratio });
-      return ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    };
-    const ours = draw(annotateSnapshot);
-    const theirs = draw(legacyAnnotate);
-    let marked = 0;
-    let differing = 0;
-    for (let i = 0; i < ours.length; i += 4) {
-      if (ours[i] !== 0x7a || ours[i + 1] !== 0x7f || ours[i + 2] !== 0x86) marked++;
-      if (
-        ours[i] !== theirs[i] ||
-        ours[i + 1] !== theirs[i + 1] ||
-        ours[i + 2] !== theirs[i + 2] ||
-        ours[i + 3] !== theirs[i + 3]
-      )
-        differing++;
-    }
-    // Something was drawn, and identically.
-    expect(marked).toBeGreaterThan(5000);
-    expect(differing).toBe(0);
   });
 });

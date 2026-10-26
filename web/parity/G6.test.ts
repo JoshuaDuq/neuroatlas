@@ -14,7 +14,7 @@ import {
   snapshotCaption,
 } from '../src/features/snapshot/snapshot.ts';
 import type { CaptionFacts } from '../src/features/snapshot/snapshot.ts';
-import { SURFACE_COLORS, VIEW_NAMES } from '../src/lib/types/constants.ts';
+import { CUTS, SURFACE_COLORS, VIEW_NAMES } from '../src/lib/types/constants.ts';
 
 /** Legacy writes a missing fact as `null` before dropping it; only the drawn runs are compared. */
 const drawn = (lines: { text: unknown; strong?: boolean }[][][]) =>
@@ -23,10 +23,13 @@ const drawn = (lines: { text: unknown; strong?: boolean }[][][]) =>
 test('the caption matches legacy for every colouring, view, section and the tract reference, in both languages', () => {
   const sections = [
     null,
-    { plane: 'sagittal', offset: 12.34, tilt: 0, azimuth: 0 },
-    { plane: 'axial', offset: -0.04, tilt: 0, azimuth: 0 },
-    { plane: 'oblique', offset: -7.5, tilt: 30, azimuth: -45 },
-  ] as const;
+    ...CUTS.filter((cut) => cut !== 'off').map((plane, index) => ({
+      plane,
+      offset: [12.34, -0.04, 5, -7.5][index]!,
+      tilt: plane === 'oblique' ? 30 : 0,
+      azimuth: plane === 'oblique' ? -45 : 0,
+    })),
+  ];
   const cases: CaptionFacts[] = [];
   for (const surfaceColor of SURFACE_COLORS) {
     for (const view of [...VIEW_NAMES, null]) {
