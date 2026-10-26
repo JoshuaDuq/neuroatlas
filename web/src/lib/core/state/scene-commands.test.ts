@@ -416,3 +416,54 @@ test('a detail choice retires the standing notice', async () => {
   await choosing;
   assert.equal(scene.model.detailId, 'nextbrain');
 });
+
+test('STATE-43 downloads running together report their summed progress', async () => {
+  const scene = fixture();
+  const cutting = scene.commands.cut('axial', scene.commands.begin());
+  await scene.settle();
+  scene.tick('envelopes', 1, 4);
+  scene.tick('zanatomy', 5, 15);
+  assert.deepEqual(scene.session.assemble({}).progress, { loaded: 6, total: 19 });
+  await scene.finish('envelopes');
+  await scene.finish('zanatomy');
+  assert.equal(await cutting, true);
+  assert.equal(scene.session.assemble({}).status, 'ready');
+});
+
+test('STATE-44 a current switch the model did not apply is an error naming the layer', async () => {
+  const atlas = fixture();
+  atlas.model.setAtlas = async () => {};
+  await assert.rejects(
+    atlas.commands.loadAtlas('destrieux', atlas.commands.begin()),
+    /^Error: Atlas not applied: destrieux$/,
+  );
+  const detail = fixture();
+  detail.model.setDetail = async () => {};
+  await assert.rejects(
+    detail.commands.loadDetail('learning', detail.commands.begin()),
+    /^Error: Detail level not applied: learning$/,
+  );
+});
+
+test('STATE-50 revealing regions closes the cut before showing them; an empty set does nothing', async () => {
+  const scene = fixture();
+  scene.model.envelopes = [];
+  scene.sections.mode = 'axial';
+  const revealing = scene.commands.revealRegions(['destrieux:left:12'], scene.commands.begin());
+  await scene.settle();
+  await scene.finish('destrieux');
+  assert.equal(await revealing, true);
+  assert.deepEqual(
+    [scene.model.atlasId, scene.sections.mode, scene.shown],
+    ['destrieux', 'off', [['destrieux:left:12']]],
+  );
+
+  const idle = fixture();
+  idle.sections.mode = 'axial';
+  assert.equal(await idle.commands.revealRegions([], idle.commands.begin()), true);
+  assert.deepEqual([idle.sections.mode, idle.shown, idle.model.atlasRequest], ['axial', [], 0]);
+
+  const opening = fixture();
+  assert.equal(await opening.commands.openRegion('aseg:left:11', opening.commands.begin()), true);
+  assert.deepEqual([opening.shown, opening.model.selectedId], [[['aseg:left:11']], 'aseg:left:11']);
+});

@@ -37,8 +37,8 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/state/session.js`; new `session.svelte.ts`
-- **Expected:** Views `['oblique', 'left']`. `setView('left')` → `true`, `state.view === 'left'`; `setView('nowhere')` → `false`, `state.view` stays `'left'`; `setExplorer('nowhere')` throws `Error('Unknown explorer: nowhere')`. Over a seeded run of the 22 commands (seeds 1–8, 400 steps, mulberry32), after each step `store.state` deep-equals the session's `assemble({})` and the return or throw is the session's. The command semantics themselves are C4 (`core-state.md`).
-- **Covered by:** `src/lib/state/stores.svelte.test.ts` (R, three commands only); `parity/S1.test.ts` (D)
+- **Expected:** Views `['oblique', 'left']`. `setView('left')` → `true`, `state.view === 'left'`; `setView('nowhere')` → `false`, `state.view` stays `'left'`; `setExplorer('nowhere')` throws `Error('Unknown explorer: nowhere')`. A fixed sequence of every command (`setView`, `setQuery`, `setExplorer`, `setFunctionQuery`, `setFunction`, `setClinicalQuery`, `setDeficit`, `setFinding`, `liftPaint`, `toggleGroup`, `setExpanded`, `setTheme`, `setLang`, `setStatus`, `setProgress`, `setSwitching`, `endSwitching`, `notify`, `holdNotices`, `releaseNotices`, `setContextLost`, `setError`): after each, `store.state` deep-equals the core session's `assemble({})` and the return is the session's; the final state is view `left`, explorer `functions`, theme `dark`, lang `fr`, status `error`. The command semantics themselves are C4 (`core-state.md`).
+- **Covered by:** `src/lib/state/session-store.test.ts` (R) (fixed commands; the state equals the core session's after each); `src/lib/state/stores.svelte.test.ts` (R, three commands)
 
 ### STORE-04 · The lesson store shows each step taken, and refuses a step that does not exist
 
@@ -47,7 +47,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit
 - **Source:** `viewer/learning/session.js`
 - **Expected:** A lesson of 4 steps. `start('c')` → `{ circuit: 'c', step: 0, visited: [0] }`; `go(2)` → `{ circuit: 'c', step: 2, visited: [0, 2] }`; `go(2)` again keeps `visited: [0, 2]`; `go(4)`, `go(-1)` and `go(1.5)` throw `RangeError('Invalid landmark index: …')` and the state is unchanged; `close()` → `{ circuit: null, step: 0, visited: [] }`.
-- **Covered by:** `src/lib/state/stores.svelte.test.ts` (R, start and go only, through STORE-01); `parity/S1.test.ts` (D); `src/lib/core/learning/session.test.ts` (R, the core rules)
+- **Covered by:** `src/lib/state/session-store.test.ts` (R); `src/lib/state/stores.svelte.test.ts` (R, start and go, through STORE-01); `src/lib/core/learning/session.test.ts` (R, the core rules)
 
 ### STORE-05 · Notices held while a link applies show only at the last release
 
@@ -161,7 +161,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit (fake document and media query)
 - **Source:** `viewer/state/theme.js:25-60`
 - **Expected:** The query asked is `(prefers-color-scheme: dark)`. System light → `choice 'system'`, `current 'light'`, `data-theme="light"`, reported `['light']`; system dark → the same with `'dark'`. Flip to dark then light → `current` follows, reported `['light', 'dark', 'light']`.
-- **Covered by:** `src/lib/state/theme.test.ts` (R); `parity/U2.test.ts` (D)
+- **Covered by:** `src/lib/state/theme.test.ts` (R)
 
 ### STORE-17 · Light or dark is remembered and stops the following; System forgets it
 
@@ -170,7 +170,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit
 - **Source:** `viewer/state/theme.js:62-85`
 - **Expected:** `choose('dark')` → stored `planum.theme = 'dark'`, 0 listeners, OS flips ignored, reported `['light', 'dark']`; `choose('light')` → stored `'light'`, `data-theme="light"`. Stored `'dark'` at load → `choice 'dark'`, 0 listeners. Stored `'light'`, system dark, `choose('system')` → key removed, `current 'dark'`, 1 listener; again → still 1; flip to light → reported `['light', 'dark', 'dark', 'light']`; `dispose()` → 0. Blocked storage, system dark: `dark` → `choose('light')` → `light` → `choose('system')` → `dark`.
-- **Covered by:** `src/lib/state/theme.test.ts` (R); `parity/U2.test.ts` (D, also the stored values `'sepia'` and none against both OS settings)
+- **Covered by:** `src/lib/state/theme.test.ts` (R)
 
 ### STORE-18 · A stored light or dark wins at load; anything else follows the system
 
@@ -188,7 +188,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit (fake animation frames)
 - **Source:** `viewer/state/theme.js:41-44`; deviation `u2-theme-switch-frames.md`
 - **Expected:** `choose('dark')` → `data-theme-switching=""` and `data-theme="dark"`; after frame 1 still present; after frame 2 absent. `choose('dark')`, frame, `choose('light')`, frame → still present; next frame → absent. `choose('dark')`, `dispose()` → absent at once and after two frames. The CSS side is UI-12.
-- **Covered by:** `src/lib/state/theme.test.ts` (R); `parity/U2.test.ts` (D)
+- **Covered by:** `src/lib/state/theme.test.ts` (R)
 
 ### STORE-20 · The browser's own chrome continues the masthead colour
 
@@ -197,7 +197,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit (fake computed style); browser for the real token
 - **Source:** `viewer/state/theme.js:45-47`
 - **Expected:** With `--surface-base` light `#ffffff`, dark `#1b1e21` (`src/styles/tokens.css:19, 135`): load light → meta `#ffffff`; OS to dark → `#1b1e21`; `choose('light')` → `#ffffff`.
-- **Covered by:** `src/lib/state/theme.test.ts` (R, with fake surfaces `#ffffff`/`#1d1d1f`; the real dark token is uncovered); `parity/U2.test.ts` (D)
+- **Covered by:** `src/lib/state/theme.test.ts` (R) (fake surfaces `#ffffff` and the real dark `#1b1e21`; the token itself is pinned by UI-06 in `src/styles/tokens.test.ts`)
 
 ### STORE-21 · An unknown theme choice is an error
 
@@ -206,7 +206,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit
 - **Source:** `viewer/state/theme.js:68`
 - **Expected:** `choose('sepia')` throws `RangeError('Unknown theme choice: sepia')`; `choice` stays `'system'`.
-- **Covered by:** `src/lib/state/theme.test.ts` (R); `parity/U2.test.ts` (D)
+- **Covered by:** `src/lib/state/theme.test.ts` (R)
 
 ## Language
 
@@ -217,7 +217,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 - **Level:** unit
 - **Source:** `viewer/state/boot.js:4-7`
 - **Expected:** `('fr', 'en') → 'fr'`; `(none, 'fr') → 'fr'`; `(none, null) → 'en'`; `('en', 'fr') → 'en'`; `(none, 'de') → 'en'`. Links `#lang=de` and `#lang=en&lang=fr` decode to no language, so the saved value decides.
-- **Covered by:** `src/lib/state/language.test.ts` (R); `parity/U2.test.ts` (D, 6 links × 4 saved values)
+- **Covered by:** `src/lib/state/language.test.ts` (R, every saved value with and without a link language; the link column is S4's)
 
 ### STORE-23 · A chosen language is remembered and sets the page language; a link's is not remembered
 

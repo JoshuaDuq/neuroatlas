@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { afterEach, describe, it, vi } from 'vitest';
-import { EventDispatcher, PerspectiveCamera } from 'three';
+import { EventDispatcher, PerspectiveCamera, Raycaster } from 'three';
 import type { Vector3 } from 'three';
 import { createPicker } from './picking.ts';
 
@@ -24,13 +24,13 @@ function frames() {
 
 type Listener = (event: unknown) => void;
 
-function canvas() {
+function canvas(rect = { left: 0, top: 0, width: 200, height: 100 }) {
   const listeners = new Map<string, Listener>();
   return {
     style: { cursor: '' },
     addEventListener: (type: string, fn: Listener) => listeners.set(type, fn),
     removeEventListener: (type: string) => listeners.delete(type),
-    getBoundingClientRect: () => ({ left: 0, top: 0, width: 200, height: 100 }),
+    getBoundingClientRect: () => rect,
     emit(type: string, event: Record<string, unknown> = {}) {
       listeners.get(type)?.({
         clientX: 100,
@@ -241,5 +241,86 @@ describe('picker', () => {
     domElement.emit('pointermove', { ...touch, pointerId: 2, isPrimary: false, clientX: 190 });
     domElement.emit('pointerup', { ...touch, pointerId: 1, clientX: 118 });
     assert.deepEqual(chosen, []);
+  });
+});
+
+describe('pick ray and cursor', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('SCENE-15 the cursor is pointer over a region and grab elsewhere', () => {
+    const clock = frames();
+    let region: Region | null = { id: 'destrieux:left:1' };
+    const domElement = canvas();
+    createPicker<Region>({
+      domElement: domElement as unknown as HTMLElement,
+      camera: new PerspectiveCamera(),
+      model: () => ({ pick: () => region }),
+      onSelect: () => {},
+    });
+    domElement.emit('pointermove');
+    clock.run();
+    assert.equal(domElement.style.cursor, 'pointer');
+    region = null;
+    domElement.emit('pointermove');
+    clock.run();
+    assert.equal(domElement.style.cursor, 'grab');
+  });
+
+  it('SCENE-24 the ray passes through the pointer, measured from the canvas corner', () => {
+    const camera = new PerspectiveCamera(35, 2, 0.01, 10);
+    camera.position.set(0.1, 0.2, 0.5);
+    camera.lookAt(0, 0, 0);
+    camera.updateMatrixWorld();
+    const domElement = canvas({ left: 10, top: 5, width: 200, height: 100 });
+    const rays: Raycaster['ray'][] = [];
+    const clock = frames();
+    createPicker<Region>({
+      domElement: domElement as unknown as HTMLElement,
+      camera,
+      model: () => ({
+        pick: (raycaster) => {
+          rays.push(raycaster.ray.clone());
+          return null;
+        },
+      }),
+      onSelect: () => {},
+    });
+    const through = (clientX: number, clientY: number, x: number, y: number) => {
+      domElement.emit('pointermove', { clientX, clientY });
+      clock.run();
+      const expected = new Raycaster();
+      expected.setFromCamera({ x, y } as never, camera);
+      const ray = rays.at(-1)!;
+      assert.ok(ray.origin.distanceTo(expected.ray.origin) < 1e-12);
+      assert.ok(ray.direction.distanceTo(expected.ray.direction) < 1e-12);
+    };
+    // The canvas centre is NDC (0, 0), and its top-left corner is (-1, 1).
+    through(110, 55, 0, 0);
+    through(10, 5, -1, 1);
+    through(210, 105, 1, -1);
+  });
+
+  it('SCENE-24 a canvas with no size picks nothing', () => {
+    const clock = frames();
+    const domElement = canvas({ left: 0, top: 0, width: 0, height: 0 });
+    const pick = vi.fn(() => ({ id: 'destrieux:left:1' }));
+    const hovered = vi.fn();
+    const selected = vi.fn();
+    createPicker<Region>({
+      domElement: domElement as unknown as HTMLElement,
+      camera: new PerspectiveCamera(),
+      model: () => ({ pick }),
+      onHover: hovered,
+      onSelect: selected,
+    });
+    domElement.emit('pointermove');
+    clock.run();
+    domElement.emit('pointerdown', { button: 0 });
+    domElement.emit('pointerup', { button: 0 });
+    assert.equal(pick.mock.calls.length, 0);
+    assert.equal(selected.mock.calls.length, 0);
+    assert.ok(hovered.mock.calls.every(([region]) => region === null));
   });
 });

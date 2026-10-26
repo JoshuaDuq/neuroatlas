@@ -118,3 +118,116 @@ test('a download says how far it has come, or that it has started', () => {
     assert.match(loadingText(lang, { loaded: 1, total: 4 }), /25/);
   }
 });
+
+test('MAST-28 a name loses its quotation marks and doubled spaces, and may end up empty', () => {
+  assert.equal(subjectName({ id: 'x', display_name: 'MGH CDMD “sub_013”' }), 'MGH CDMD sub_013');
+  assert.equal(subjectName({ id: 'x', display_name: ' A  "b" ' }), 'A b');
+  assert.equal(subjectName({ display_name: '””' }), '');
+  assert.equal(subjectName({ id: 'y', subject: 'sub' }), 'sub', 'the subject before the entry id');
+});
+
+test('MAST-29 Colour offers each published colouring under its name, in both languages', () => {
+  const required = (mode: string) =>
+    mode === 'cab-np' || mode === 'functional' ? 'hcp-mmp' : null;
+  const names = (lang: 'en' | 'fr') =>
+    (['tissue', 'mri', 'atlas', 'network', 'cab-np', 'functional'] as const).map((mode) =>
+      colourOption(lang, mode, { atlas: 'destrieux', required: required(mode) }),
+    );
+  assert.deepEqual(names('en'), [
+    'Tissue',
+    'T1 MRI',
+    'Regions',
+    'Yeo 7 networks',
+    'CAB-NP networks (atlas becomes HCP-MMP)',
+    'Functional divisions (atlas becomes HCP-MMP)',
+  ]);
+  assert.deepEqual(names('fr'), [
+    'Tissu',
+    'IRM T1',
+    'Régions',
+    'Réseaux Yeo 7',
+    'Réseaux CAB-NP (l’atlas devient HCP-MMP)',
+    'Divisions fonctionnelles (l’atlas devient HCP-MMP)',
+  ]);
+  assert.deepEqual(colourGroups({}), [
+    ['appearance', ['tissue', 'mri']],
+    ['parcellation', ['atlas']],
+  ]);
+  assert.deepEqual(colourGroups({ cabNp: {}, functionalRegions: {} }).slice(2), [
+    ['networks', ['cab-np']],
+    [null, ['functional']],
+  ]);
+});
+
+test('MAST-30 an atlas option names the colouring it falls back to, in both languages', () => {
+  const options = (lang: 'en' | 'fr') =>
+    ['destrieux', 'hcp-mmp', 'aseg'].map((id) => atlasOption(lang, id, 'hcp-mmp'));
+  assert.deepEqual(options('en'), [
+    'Destrieux (colour becomes Regions)',
+    'HCP-MMP',
+    'FreeSurfer aseg (colour becomes Regions)',
+  ]);
+  assert.deepEqual(options('fr'), [
+    'Destrieux (la couleur devient Régions)',
+    'HCP-MMP',
+    'FreeSurfer aseg (la couleur devient Régions)',
+  ]);
+  assert.equal(
+    colourOption('fr', 'cab-np', { atlas: 'hcp-mmp', required: 'hcp-mmp' }),
+    'Réseaux CAB-NP',
+  );
+});
+
+test('MAST-32 a download shows its percentage, or that it has started', () => {
+  assert.equal(loadingText('en'), 'Loading…');
+  assert.equal(loadingText('en', null), 'Loading…');
+  assert.equal(loadingText('en', { loaded: 0, total: 0 }), 'Loading…');
+  assert.equal(loadingText('en', { loaded: 1, total: 4 }), 'Loading 25%');
+  assert.equal(loadingText('en', { loaded: 5, total: 5 }), 'Loading 100%');
+  assert.equal(loadingText('fr'), 'Chargement…');
+  assert.equal(loadingText('fr', { loaded: 1, total: 4 }), 'Chargement 25 %');
+  assert.equal(loadingText('fr', { loaded: 5, total: 5 }), 'Chargement 100 %');
+});
+
+test('MAST-38 a summary with a tract reference shows only the reference, and drops empty parts', () => {
+  assert.deepEqual(dataSummary({ subject: '', atlas: 'Destrieux', reference: '' }), [
+    { part: 'atlas', text: 'Destrieux' },
+  ]);
+  assert.deepEqual(dataSummary({ subject: 'bert', atlas: null, colour: undefined }), [
+    { part: 'subject', text: 'bert' },
+  ]);
+});
+
+test('COLO-01 the statement is the same in every state, in each language', () => {
+  const anatomy = { display_name: 'SNAIL “subj_1”', individual: true };
+  for (const parts of [undefined, { anatomy }, { reference: { label: 'Ref' } }]) {
+    assert.equal(colophonParts('en', parts).statement, 'Not clinical anatomy');
+    assert.equal(colophonParts('fr', parts).statement, 'Pas une anatomie clinique');
+  }
+});
+
+test('COLO-02 the description names the subject and what kind of anatomy it is', () => {
+  const named = (individual: boolean) => ({
+    anatomy: { display_name: 'SNAIL “subj_1”', individual },
+  });
+  assert.equal(
+    colophonParts('en', named(true)).description,
+    'SNAIL subj_1 · one individual’s MRI reconstruction',
+  );
+  assert.equal(
+    colophonParts('fr', named(true)).description,
+    'SNAIL subj_1 · reconstruction IRM d’un individu',
+  );
+  assert.equal(
+    colophonParts('en', named(false)).description,
+    'SNAIL subj_1 · averaged reference template',
+  );
+  assert.equal(
+    colophonParts('fr', named(false)).description,
+    'SNAIL subj_1 · gabarit de référence moyenné',
+  );
+  const reference = { reference: { label: 'Ref' } };
+  assert.equal(colophonParts('en', reference).description, 'Ref · reference data');
+  assert.equal(colophonParts('fr', reference).description, 'Ref · données de référence');
+  assert.equal(colophonParts('en').description, '');
+});

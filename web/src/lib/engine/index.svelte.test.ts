@@ -1,8 +1,8 @@
-import { expect, onTestFinished, test, vi } from 'vitest';
+import { afterAll, expect, onTestFinished, test, vi } from 'vitest';
 import '../../styles/tokens.css';
 import outlineUrl from '../../../../public/diffusion/cdmd-sub-013/brain-outline.json?url';
 import manifestUrl from '../../../../public/models/cdmd/manifest.json?url';
-import { defineEngineContract } from './fake/contract-suite.ts';
+import { defineStageContract } from './fake/contract-suite.ts';
 import { createEngine } from './index.ts';
 
 // The tract data is served from the site's `diffusion/` directory, which this project has no public
@@ -18,16 +18,22 @@ globalThis.fetch = (input, init) => {
   );
 };
 
-// Each case boots the engine, which parses 35 MB of GLB on a software GL context.
+// Booting the engine parses 35 MB of GLB on a software GL context. The rest of the engine contract runs
+// in the unit project (`index.contract.test.ts`); this file keeps what needs real WebGL.
 vi.setConfig({ testTimeout: 180_000, hookTimeout: 180_000 });
 
 // The real engine on the CDMD manifest, on real WebGL (SwiftShader), against the contract the fake meets.
 // The stage has room: the sheet case shrinks the visible rectangle.
+const hosts: HTMLElement[] = [];
+afterAll(() => {
+  for (const host of hosts) host.remove();
+});
+
 async function boot() {
   const host = document.createElement('div');
   host.style.cssText = 'position:fixed;left:0;top:0;width:1000px;height:700px';
   document.body.append(host);
-  onTestFinished(() => host.remove());
+  hosts.push(host);
   return createEngine({ host, manifestUrl, theme: 'light' });
 }
 
@@ -37,16 +43,7 @@ const parent = document.createElement('div');
 document.body.append(parent);
 parent.append(canvas);
 
-defineEngineContract('real engine', boot, {
-  canvas,
-  comparison: {
-    id: 'overlap:left:-1:0',
-    geometry: {
-      file: 'atlas-overlaps.glb',
-      sha256: 'c6ebb202fc9ec9852cc75ae8e6023d7efdd85e10e084abc3901e65d397b1d80c',
-    },
-  },
-});
+defineStageContract('real engine', boot, { canvas });
 
 test('captures the settled frame, cropped to the stage rectangle asked for, with the brain drawn', async () => {
   const engine = await boot();

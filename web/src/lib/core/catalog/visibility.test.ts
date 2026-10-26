@@ -148,6 +148,67 @@ test('reasons are reported in a fixed precedence, most fundamental first', () =>
   assert.equal(visibilityOf(region({ hemisphere: 'midline' }), everything).reason, 'cortex-hidden');
 });
 
+test('CAT-21 · each reason beats the next one in the precedence', () => {
+  const cord = region({
+    atlas: 'zanatomy',
+    kind: 'structure',
+    supplemental: true,
+    mri_registered: false,
+  });
+  const removedAndIsolated = {
+    surfaceColor: 'mri',
+    spinalCordVisible: false,
+    hiddenRegions: new Set([cord.id]),
+    isolatedRegion: 'other',
+  };
+  assert.equal(visibilityOf(cord, settings(removedAndIsolated)).reason, 'no-mri');
+
+  const putamen = region({
+    id: 'aseg:left:12',
+    atlas: 'aseg',
+    kind: 'structure',
+    source_name: 'Left-Putamen',
+  });
+  const wrongSystem = settings({
+    internalSystem: 'Brainstem',
+    hemisphere: 'right',
+    hiddenRegions: new Set([putamen.id]),
+  });
+  assert.equal(visibilityOf(putamen, wrongSystem).reason, 'other-system');
+
+  const left = region();
+  const removed = new Set([left.id]);
+  assert.equal(
+    visibilityOf(left, settings({ hemisphere: 'right', hiddenRegions: removed })).reason,
+    'hemisphere',
+  );
+  assert.equal(
+    visibilityOf(left, settings({ cortexVisible: false, hiddenRegions: removed })).reason,
+    'cortex-hidden',
+  );
+  const structure = region({ id: 'aseg:left:12', atlas: 'aseg', kind: 'structure' });
+  assert.equal(
+    visibilityOf(
+      structure,
+      settings({ internalVisible: false, hiddenRegions: new Set([structure.id]) }),
+    ).reason,
+    'internal-hidden',
+  );
+  const cordOnly = region({
+    id: 'zanatomy:left:1',
+    atlas: 'zanatomy',
+    kind: 'structure',
+    supplemental: true,
+  });
+  assert.equal(
+    visibilityOf(
+      cordOnly,
+      settings({ spinalCordVisible: false, hiddenRegions: new Set([cordOnly.id]) }),
+    ).reason,
+    'spinal-cord-hidden',
+  );
+});
+
 // --- cut-only regions: no mesh, drawn only where the plane samples them ------
 
 const tissue = (over = {}) =>

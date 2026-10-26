@@ -3,7 +3,14 @@ import { test } from 'vitest';
 import { Box3, Vector3 } from 'three';
 import { cameraConstraints } from '../../engine/render/camera-views.ts';
 import type { LinkInput, Orbit, Region } from '../../types/index.ts';
-import { decodeState, encodeState, orbitWithin, towardZero } from './url-state.ts';
+import {
+  DEFAULTS,
+  PARAMS,
+  decodeState,
+  encodeState,
+  orbitWithin,
+  towardZero,
+} from './url-state.ts';
 
 /** A link every field of which parses. */
 function decoded(hash: string) {
@@ -379,4 +386,173 @@ test('url-state encodes and decodes lang', () => {
   assert.equal(decodeState('#atlas=destrieux&lang=fr').state.lang, 'fr');
   assert.equal(decodeState('#atlas=destrieux&lang=en').state.lang, 'en');
   assert.deepEqual(decodeState('#atlas=destrieux&lang=unknown').rejected, ['lang']);
+});
+
+test('STATE-02 every field has one parameter, written in a fixed order after the hidden parts', () => {
+  const written = encodeState({
+    hiddenRegions: new Set(['b', 'a']),
+    anatomy: 'cdmd',
+    atlas: 'destrieux',
+    cutAtlas: 'nextbrain',
+    internalSystem: 'limbic',
+    detail: 'aseg',
+    selectedRegion: 'r',
+    isolatedRegion: 'i',
+    view: 'left',
+    orbit: { position: [1, 2, 3], target: [4, 5, 6] },
+    cut: 'axial',
+    cutOffset: 5,
+    cutReverse: true,
+    cutTilt: 40,
+    cutAzimuth: 50,
+    hemisphere: 'left',
+    cortexVisible: false,
+    internalVisible: false,
+    spinalCordVisible: true,
+    surfaceColor: 'functional',
+    functionalLevel: 'sections',
+    cortexOpacity: 0.5,
+    mriWindow: { center: 1, width: 2 },
+    explorer: 'functions',
+    selectedFunction: 'language',
+    selectedDeficit: 'aphasia',
+    circuit: 'visual',
+    circuitStep: 1,
+    lang: 'fr',
+  });
+  assert.deepEqual(
+    written.split('&').map((pair) => pair.split('=')[0]),
+    [
+      'hidden',
+      'anatomy',
+      'atlas',
+      'cuts',
+      'system',
+      'detail',
+      'region',
+      'isolate',
+      'view',
+      'cam',
+      'cut',
+      'pos',
+      'rev',
+      'tilt',
+      'az',
+      'hemi',
+      'cortex',
+      'internal',
+      'cord',
+      'colors',
+      'level',
+      'opacity',
+      'mri',
+      'tab',
+      'function',
+      'deficit',
+      'circuit',
+      'step',
+      'lang',
+    ],
+  );
+  assert.equal(
+    written,
+    'hidden=a,b&anatomy=cdmd&atlas=destrieux&cuts=nextbrain&system=limbic&detail=aseg&region=r&isolate=i&view=left&cam=1,2,3,4,5,6&cut=axial&pos=5&rev=1&tilt=40&az=50&hemi=left&cortex=0&internal=0&cord=1&colors=functional&level=sections&opacity=0.5&mri=1,2&tab=functions&function=language&deficit=aphasia&circuit=visual&step=2&lang=fr',
+  );
+  assert.deepEqual(PARAMS, {
+    anatomy: 'anatomy',
+    atlas: 'atlas',
+    cutAtlas: 'cuts',
+    internalSystem: 'system',
+    detail: 'detail',
+    selectedRegion: 'region',
+    isolatedRegion: 'isolate',
+    view: 'view',
+    orbit: 'cam',
+    cut: 'cut',
+    cutOffset: 'pos',
+    cutReverse: 'rev',
+    cutTilt: 'tilt',
+    cutAzimuth: 'az',
+    hemisphere: 'hemi',
+    cortexVisible: 'cortex',
+    internalVisible: 'internal',
+    spinalCordVisible: 'cord',
+    surfaceColor: 'colors',
+    functionalLevel: 'level',
+    cortexOpacity: 'opacity',
+    mriWindow: 'mri',
+    explorer: 'tab',
+    selectedFunction: 'function',
+    selectedDeficit: 'deficit',
+    circuit: 'circuit',
+    circuitStep: 'step',
+    lang: 'lang',
+    hiddenRegions: 'hidden',
+  });
+});
+
+test('STATE-05 a repeated hidden id is read once', () => {
+  assert.deepEqual(decoded('#hidden=a,a').hiddenRegions, ['a']);
+});
+
+test('STATE-10 cut angles are whole degrees in range', () => {
+  assert.deepEqual(
+    [decoded('#tilt=0').cutTilt, decoded('#tilt=90').cutTilt, decoded('#tilt=44.6').cutTilt],
+    [0, 90, 45],
+  );
+  assert.deepEqual([decoded('#az=-180').cutAzimuth, decoded('#az=180').cutAzimuth], [-180, 180]);
+  for (const hash of ['#tilt=91', '#tilt=-1', '#az=181', '#az=-181']) {
+    assert.equal(decodeState(hash).rejected.length, 1, hash);
+  }
+});
+
+test('STATE-11 opacity is written to hundredths and read in 0 to 1', () => {
+  assert.equal(encodeState({ cortexOpacity: 0.456 }), 'opacity=0.46');
+  assert.equal(encodeState({ cortexOpacity: 0.35 }), 'opacity=0.35');
+  assert.equal(decoded('#opacity=0.456').cortexOpacity, 0.456);
+  for (const value of ['1.01', '-0.1', '5', 'NaN', 'Infinity', 'true', '']) {
+    assert.deepEqual(decodeState(`#opacity=${value}`).rejected, ['opacity'], value);
+  }
+});
+
+test('STATE-13 a camera counts as within an orbit limit up to 0.17 mm beyond it, not 0.18', () => {
+  const at = (distance: number): Orbit => ({ position: [0, 0, distance], target: [0, 0, 0] });
+  assert.equal(orbitWithin(at(100), 100), true);
+  assert.equal(orbitWithin(at(100.17), 100), true);
+  assert.equal(orbitWithin(at(100.18), 100), false);
+});
+
+test('STATE-14 the MRI window has level 0 to 255 and width 1 to 256, written in tenths', () => {
+  assert.equal(encodeState({ mriWindow: { center: 90.04, width: 180.06 } }), 'mri=90,180.1');
+  assert.deepEqual(decoded('#mri=0,1').mriWindow, { center: 0, width: 1 });
+  assert.deepEqual(decoded('#mri=255,256').mriWindow, { center: 255, width: 256 });
+  for (const value of ['90', '300,100', '90,0', '256,1', '-1,10', '10,257', '1,2,3', 'a,b']) {
+    assert.deepEqual(decodeState(`#mri=${value}`).rejected, ['mri'], value);
+  }
+});
+
+test('STATE-17 a fixed corpus of links reads back as the same scene once written', () => {
+  const corpus = [
+    'anatomy=cdmd&atlas=hcp-mmp&cuts=nextbrain&system=limbic&detail=aseg',
+    'region=destrieux:left:29&isolate=aseg:left:17&view=superior&hemi=right',
+    'hidden=aseg:left:17,destrieux:left:29&cortex=0&internal=0&cord=1',
+    'cut=oblique&pos=-12.3&rev=1&tilt=44&az=-45',
+    'cut=sagittal&pos=512&tilt=0&az=-180',
+    'colors=functional&level=sections&opacity=0.46',
+    'colors=tissue&tab=functions&function=language',
+    'tab=circuits&deficit=aphasia&circuit=visual&step=4&lang=fr',
+    'cam=10,-20,30,0,0,0&mri=128,256',
+    'cam=1,2,3,4,5,6,0,0.6,0.8&mri=0,1',
+    'colors=0&hemi=both&cortex=1&view=oblique&opacity=1',
+  ];
+  for (const hash of corpus) {
+    const first = decoded(hash);
+    const written = encodeState({ ...first, hiddenRegions: new Set(first.hiddenRegions) });
+    const withoutDefaults = Object.fromEntries(
+      Object.entries(first).filter(
+        ([key, value]) => !(key in DEFAULTS && value === DEFAULTS[key as keyof typeof DEFAULTS]),
+      ),
+    );
+    assert.deepEqual(decoded(written), withoutDefaults, hash);
+  }
 });

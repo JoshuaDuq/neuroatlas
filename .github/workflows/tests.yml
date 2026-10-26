@@ -189,6 +189,13 @@ jobs:
       - name: Run unit and parity tests
         run: npm test --prefix web
 
+      # What deploy ships (copyPublicDir is off in the preview), checked once for the chunks, the
+      # page's head and the service worker's version map; it also hashes the real public/ tree.
+      - name: Build the preview and check the built site
+        run: |
+          npm run build:preview --prefix web
+          node .github/scripts/check-dist.mjs
+
       # Bits UI plus the Svelte runtime, as web/docs/decisions/0001-ui-kit.md defines the budget.
       - name: Check the UI bundle budget
         shell: bash

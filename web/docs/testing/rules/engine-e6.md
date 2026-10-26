@@ -176,7 +176,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:78-79`
 - **Expected:** CDMD after `load()`: `scannerToSurface([10, −20, 30])` = [7.4626923, −22.6237411, 44.0663681] within 1e-6 mm; `surfaceToScanner` of that gives [10, −20, 30] within 1e-9 mm. Any rotation and translation of the group: round trip within 1e-9 mm.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R, round trip); `src/lib/engine/index.svelte.test.ts` (R, round trip via contract suite); `parity/E6.test.ts` (D); the CDMD value is uncovered
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R, round trip); `src/lib/engine/index.contract.test.ts` (R, round trip via contract suite); `parity/E6.test.ts` (D); the CDMD value is uncovered
 
 ### DIFF-19 · The snapshot summarises each loaded bundle at the current minimum
 
@@ -212,7 +212,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-viewer.js:68-74`
 - **Expected:** `setVisible(first.id, false)` → `anyVisible === false`; `setVisible('missing', true)` → RangeError "Unknown tract bundle: missing". `hasBundle(first.id)` true after loading.
-- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R); `src/lib/engine/index.svelte.test.ts` (R, via contract suite); `parity/E6.test.ts` (D)
+- **Covered by:** `src/lib/engine/diffusion/native-viewer.test.ts` (R); `src/lib/engine/index.contract.test.ts` (R, via contract suite); `parity/E6.test.ts` (D)
 
 ### DIFF-23 · The outline's opacity and visibility can be set at any time
 
@@ -259,7 +259,7 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit
 - **Source:** `viewer/diffusion/native-ui.js:78-294`
 - **Expected:** Two `setActive(true)` at once → one `tractsReady`; off and on again → still one. `loadBundle(id)` and `setVisible(id, …)` → `tractsVisibility`. `loadBundle('missing')` → RangeError "Unknown tract bundle: missing".
-- **Covered by:** `src/lib/engine/diffusion/tracts.test.ts` (R); `src/lib/engine/index.svelte.test.ts` (R, via contract suite on the real engine)
+- **Covered by:** `src/lib/engine/diffusion/tracts.test.ts` (R); `src/lib/engine/index.contract.test.ts` (R, via contract suite on the real engine)
 
 ## MRI navigator
 
@@ -324,4 +324,4 @@ Conventions: points are RAS millimetres. World coordinates are metres with x = R
 - **Level:** unit — with NiiVue and its `gl` mocked; the release itself is real WebGL only in the browser
 - **Source:** `viewer/diffusion/navigation-viewer.js:97-107`
 - **Expected:** After `dispose()`: every mesh unloaded, `volumes` empty, `WEBGL_lose_context.loseContext()` called once; a `syncTracts` whose load resolves afterwards adds nothing.
-- **Covered by:** `src/lib/engine/index.svelte.test.ts` (R, dispose runs; the context release is not asserted); uncovered
+- **Covered by:** `src/lib/engine/index.contract.test.ts` (R, dispose runs; the context release is not asserted); uncovered

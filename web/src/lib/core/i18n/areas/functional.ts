@@ -6,7 +6,7 @@ export const en = {
   // A no-break hyphen: the atlas name never splits across the meta line's wrap.
   areas: (list: string) => `HCP‑MMP areas: ${list}`,
   contested: (primary: number | string, alternative: number | string) =>
-    `Glasser's Table 1 gives section ${primary} as this area's primary section; the supplement's section text lists it under section ${alternative}.`,
+    `Glasser’s Table 1 gives section ${primary} as this area’s primary section; the supplement’s section text lists it under section ${alternative}.`,
   note: 'Published groupings of whole HCP-MMP areas, reaching this brain through its HCP-MMP projection; not measured function in this brain.',
   keyAria: 'Functional division level',
   levels: { named: 'Named', sections: 'Sections' },

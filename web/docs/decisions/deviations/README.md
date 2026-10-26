@@ -33,6 +33,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | e6-navigator-minimum-first.md                 | fix under the parity policy                                    |
 | e6-opacity-before-load.md                     | fix under the parity policy                                    |
 | u1-overlay-control-contrast.md                | fix (standard cited)                                           |
+| u1-thumb-ring-contrast.md                     | fix (standard cited)                                           |
 | u2-roving-modifier-keys.md                    | fix under the parity policy                                    |
 | u2-theme-switch-frames.md                     | fix under the parity policy                                    |
 | u4-number-field-range-error.md                | fix under the parity policy                                    |
@@ -89,6 +90,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | h4-coarse-target.md                           | fix (standard cited)                                           |
 | h4-initial-focus.md                           | fix (standard cited)                                           |
 | h4-lang-of-parts.md                           | fix (standard cited)                                           |
+| h4-new-tab-cue.md                             | fix (decision 17 on #4; standard cited)                        |
 | h4-rerender-focus.md                          | fix (standard cited)                                           |
 | h5-breadcrumb-current.md                      | fix (standard cited; no status line in the record)             |
 | h5-clear-focus.md                             | fix (standard cited; no status line in the record)             |
