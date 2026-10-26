@@ -392,14 +392,14 @@ describe('layout and accessibility', () => {
     expect(box.top).toBeLessThan(scroller.getBoundingClientRect().top + 24);
   });
 
-  test('the armed result is never under the pinned field, after typing or arrowing back to the first', async () => {
+  test('the armed result is never under the pinned field, after typing, arrowing, or text at 200 %', async () => {
     mount({ crowd: 60 });
     await search('v1');
     await expect.poll(() => options().length).toBe(50);
     const covered = () => {
       const box = armed()!.getBoundingClientRect();
-      // The title line of the armed row is what the reader points at.
-      return !armed()!.contains(document.elementFromPoint(box.left + 40, box.top + 6));
+      // One pixel into the row: its very top is what a covering field would hide.
+      return !armed()!.contains(document.elementFromPoint(box.left + 40, box.top + 1));
     };
     await expect.poll(covered).toBe(false);
     await userEvent.keyboard('{ArrowDown>20/}');
@@ -407,5 +407,21 @@ describe('layout and accessibility', () => {
     await userEvent.keyboard('{ArrowUp>20/}');
     expect(armed()).toBe(options()[0]);
     await expect.poll(covered).toBe(false);
+    // The field grows with the text, and what scrolls into view must clear it at that size too.
+    const field = document.querySelector('.search-box')!;
+    const before = field.getBoundingClientRect().height;
+    document.documentElement.style.fontSize = '200%';
+    try {
+      expect(field.getBoundingClientRect().height).toBeGreaterThan(before);
+      // Walking back to the first result scrolls it up to the larger field's edge.
+      await userEvent.keyboard('{Escape}');
+      await search('v1');
+      await expect.poll(() => options().length).toBe(50);
+      await userEvent.keyboard('{ArrowDown>20/}{ArrowUp>20/}');
+      expect(armed()).toBe(options()[0]);
+      await expect.poll(covered).toBe(false);
+    } finally {
+      document.documentElement.style.fontSize = '';
+    }
   });
 });

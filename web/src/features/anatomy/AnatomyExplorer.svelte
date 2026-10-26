@@ -197,6 +197,10 @@
       inset: calc(-1 * var(--space-3)) calc(-1 * var(--panel-inset)) calc(-1 * var(--space-2));
       background: var(--surface-base);
     }
+    /* Results start below the ground, which reaches this far under the field. */
+    .explorer[data-searching] :global(.search-box) {
+      margin-block-end: var(--space-3);
+    }
     .explorer[data-searching] :global(.search-box)::before {
       inset-block-end: calc(-1 * var(--space-3));
       border-bottom: 1px solid var(--border-subtle);

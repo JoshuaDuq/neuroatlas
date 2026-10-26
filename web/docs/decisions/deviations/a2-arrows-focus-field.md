@@ -13,4 +13,4 @@ While a search shows, `moveFocus` puts focus in the field, keeping its text and 
 
 ## Standard cited
 
-WAI-ARIA Authoring Practices, Combobox pattern (`aria-activedescendant` is on the element that has focus); WCAG 2.2 SC 4.1.2 Name, Role, Value. U6 may export a `move(delta)` so that one key is enough (requested on #4).
+WAI-ARIA Authoring Practices, Combobox pattern (`aria-activedescendant` is on the element that has focus); WCAG 2.2 SC 4.1.2 Name, Role, Value. U6 may export a `move(delta)` so that one key is enough (queued by the conductor).
