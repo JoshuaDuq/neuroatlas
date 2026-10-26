@@ -100,6 +100,8 @@ const voxels = () =>
 const slider = (name: string) => page.getByRole('slider', { name });
 const notes = () => dialog().querySelector('.notes') as HTMLElement;
 const alertText = () => notes().querySelector('[role="alert"]')!.textContent!.trim();
+/** The dialog's own live region, where what the reader does here is said. */
+const said = () => dialog().querySelector('[role="status"].said') as HTMLElement;
 const statusNode = () => notes().querySelector('[role="status"]') as HTMLElement;
 const names = (calls: Call[], name: string) => calls.filter(([call]) => call === name);
 
@@ -331,15 +333,15 @@ describe('what the reader hears', () => {
     canvas().focus();
     await userEvent.keyboard('{ArrowRight}');
     await expect
-      .poll(() => region.textContent)
+      .poll(() => said().textContent)
       .toBe('RAS:\u00a0+10.0, +8.0, +10.0\u202fmm · T1:\u00a014 · FA:\u00a00.63');
 
-    region.textContent = '';
+    said().textContent = '';
     vi.useFakeTimers();
     // What NiiVue reports for a click or a drag: no key was pressed.
     base.tracts.navigators[0]!.setVoxel([1, 2, 3]);
     vi.advanceTimersByTime(2000);
-    expect(region.textContent).toBe('');
+    expect(said().textContent).toBe('');
     vi.useRealTimers();
   });
 
@@ -360,8 +362,24 @@ describe('what the reader hears', () => {
     await voxelInput('k').fill('3');
     await page.getByRole('button', { name: 'Go to voxel' }).click();
     expect(names(calls, 'setVoxel').at(-1)).toEqual(['setVoxel', [[1, 2, 3]]]);
-    expect(region.textContent).toBe('Crosshair moved to voxel 1, 2, 3.');
+    expect(said().textContent).toBe('Crosshair moved to voxel 1, 2, 3.');
+    expect(region.textContent).toBe('');
     expect(onPoint).toHaveBeenLastCalledWith([2, 4, 6]);
+  });
+
+  test('what is said is said inside the modal dialog, where it is not inert, and a repeat is spoken again', async () => {
+    await opened();
+    const live = said();
+    expect(live.closest('dialog')).toBe(dialog());
+    expect(dialog().matches(':modal')).toBe(true);
+    const go = page.getByRole('button', { name: 'Go to voxel' });
+    await go.click();
+    expect(live.textContent).toBe('Crosshair moved to voxel 4, 4, 5.');
+    // The same sentence again is cleared, then written, so the region changes and is spoken again.
+    await go.click();
+    expect(live.textContent).toBe('');
+    await expect.poll(() => live.textContent).toBe('Crosshair moved to voxel 4, 4, 5.');
+    expect(region.textContent).toBe('');
   });
 
   test('a voxel outside the grid is stopped by the form and named by its range', async () => {
@@ -371,7 +389,7 @@ describe('what the reader hears', () => {
     await page.getByRole('button', { name: 'Go to voxel' }).click();
     expect((voxelInput('i').element() as HTMLInputElement).validity.rangeOverflow).toBe(true);
     expect(names(calls, 'setVoxel')).toHaveLength(before);
-    expect(region.textContent).toBe('');
+    expect(said().textContent).toBe('');
     await expect.element(voxelInput('i')).toHaveAccessibleDescription('0 to 7');
     await expect.element(voxelInput('k')).toHaveAccessibleDescription('0 to 9');
     await expect.element(page.getByRole('group', { name: 'Source voxel (0-based)' })).toBeVisible();

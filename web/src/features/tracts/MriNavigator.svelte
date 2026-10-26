@@ -14,6 +14,8 @@
   - the voxel fields are one named group with their range (deviations/t2-voxel-group.md);
   - `M` follows the single-key preference (deviations/t2-shortcut-toggle.md); modified arrow keys
     are left to the browser (deviations/t2-key-modifiers.md);
+  - what the reader does here is said through a live region inside the dialog, as the page's announcer
+    is inert under a modal (deviations/i2-navigator-live-region.md);
   - Retry keeps focus on the page (deviations/t2-retry-focus.md); a lost WebGL context is shown
     and retried (deviations/t2-context-lost.md).
 -->
@@ -39,7 +41,6 @@
   import RangeField from '../../lib/ui/RangeField.svelte';
   import Select from '../../lib/ui/Select.svelte';
   import StatusLine from '../../lib/ui/StatusLine.svelte';
-  import { announce, createDebouncedAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 
   interface Props {
     open?: boolean;
@@ -118,7 +119,44 @@
   let active = false;
   /** The key that moved the crosshair is being handled: its result is said, not only drawn. */
   let keyMove = false;
-  const moves = createDebouncedAnnouncer(200);
+  /** A key move is said once the keys have rested. */
+  const MOVE_QUIET_MS = 200;
+  /** The page announcer's repeat gap (`REPEAT_GAP_MS`, src/lib/ui/announcer.svelte.ts, not exported). */
+  const REPEAT_GAP_MS = 100;
+  // The dialog's one live region. The page's announcer is outside the modal dialog, so inert while it
+  // is open and never spoken (deviations/i2-navigator-live-region.md); this one is inside.
+  let said = $state('');
+  let spoken: string | null = null;
+  let repeat: ReturnType<typeof setTimeout> | undefined;
+  let rest: ReturnType<typeof setTimeout> | undefined;
+
+  /** Says `text` now. The same sentence again is cleared, then written after a gap, so it is spoken again. */
+  function speak(text: string) {
+    clearTimeout(repeat);
+    if (said === text) {
+      said = '';
+      repeat = setTimeout(() => (said = text), REPEAT_GAP_MS);
+      return;
+    }
+    said = text;
+  }
+
+  /** Says the latest text once calls pause, and only when it differs from the last move said. */
+  function sayMove(text: string) {
+    clearTimeout(rest);
+    if (text === spoken) return;
+    rest = setTimeout(() => {
+      spoken = text;
+      speak(text);
+    }, MOVE_QUIET_MS);
+  }
+
+  function silence() {
+    clearTimeout(rest);
+    clearTimeout(repeat);
+    said = '';
+    spoken = null;
+  }
 
   const controlsOff = $derived(busy || !navigator || lost);
   const errorCode = $derived(failure && diffusionErrorCode(failure.error));
@@ -182,7 +220,7 @@
     if (!busy) outside = false;
     voxel = next.vox.map(Math.round);
     if (keyMove) {
-      moves.say(mriReadout(next.mm, next.values[0]!.value, next.values[1]?.value, lang));
+      sayMove(mriReadout(next.mm, next.values[0]!.value, next.values[1]?.value, lang));
     }
     if (!busy && open) onPoint(next.mm);
   }
@@ -250,6 +288,7 @@
 
   function stop() {
     session++;
+    silence();
     busy = false;
     ready = false;
     release();
@@ -267,7 +306,8 @@
   $effect(() => () => {
     session++;
     navigator?.dispose();
-    moves.dispose();
+    clearTimeout(rest);
+    clearTimeout(repeat);
   });
 
   // The sticky header grows when its title wraps (200 % text, a narrow phone): the focus scroll
@@ -319,7 +359,7 @@
     event.preventDefault();
     const target = voxel as unknown as Vec3;
     run(() => navigator!.setVoxel([...target]));
-    if (failure === null) announce(copy.moved(voxel as number[]));
+    if (failure === null) speak(copy.moved(voxel as number[]));
   }
 
   function onCanvasKeydown(event: KeyboardEvent) {
@@ -372,6 +412,7 @@
         {failure && errorCode ? diffusionError(lang, errorCode) : ''}
       </p>
     </div>
+    <StatusLine class="visually-hidden said" text={said} />
     {#if showRetry}
       <button type="button" class="retry" onclick={retry}>
         {updated ? t(lang, 'errors').reload : copy.retry}
