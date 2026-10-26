@@ -8,8 +8,7 @@ import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { domainAreas } from '../../lib/core/catalog/neuropsych-domains.ts';
 import { currentItem } from '../../lib/core/workspace.ts';
-import { withMedia } from '../../lib/ui/a11y-test-support.ts';
-import { expectAxeCleanOnce } from '../../lib/ui/axe-state-support.ts';
+import { expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import { AREAS_SHOWN, TERMS_SHOWN } from './functions-view.ts';
 import { createWorld, deferred, type World } from './functions-test-world.ts';
@@ -676,12 +675,14 @@ describe('Restore', () => {
 });
 
 describe('accessibility', () => {
-  // One run per state: the theme and the width each get their own state, and French one more.
+  // Two runs per state, which together cover both themes, both widths and both languages.
   test.each([
     ['the list', 'en', 'light', 1280],
-    ['an open profile with its areas', 'en', 'dark', 390],
-    ['a search', 'en', 'dark', 1280],
-    ['an open profile with its areas', 'fr', 'light', 390],
+    ['the list', 'fr', 'dark', 390],
+    ['an open profile with its areas', 'en', 'light', 1280],
+    ['an open profile with its areas', 'fr', 'dark', 390],
+    ['a search', 'en', 'light', 1280],
+    ['a search', 'fr', 'dark', 390],
   ] as const)('axe: %s, %s, %s, %i px', async (state, lang, theme, width) => {
     mount(lang);
     if (state === 'an open profile with its areas') {
@@ -708,6 +709,7 @@ describe('accessibility', () => {
     });
     await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
       await expectAxeCleanOnce('light', 1280);
+      await expectAxeCleanOnce('dark', 390);
     });
   });
 

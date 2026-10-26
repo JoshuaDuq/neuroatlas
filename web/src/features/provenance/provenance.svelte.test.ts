@@ -5,8 +5,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
-import { withMedia } from '../../lib/ui/a11y-test-support.ts';
-import { expectAxeCleanOnce } from '../../lib/ui/axe-state-support.ts';
+import { expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import '../../app/layout.css';
 import Fixture from './provenance-test-support.svelte';
@@ -270,14 +269,16 @@ describe('Provenance dialog', () => {
     },
   );
 
-  // One run per state; the keyboard open is instant, so there is no animation to wait out.
+  // Two runs per state, which together cover both themes, both widths and both languages.
+  // The keyboard open is instant, so there is no animation to wait out.
   test.each([
-    ['en', null, 'light', 1280],
-    ['fr', null, 'dark', 390],
-    ['en', reference, 'dark', 1280],
+    ['the anatomy', null, 'en', 'light', 1280],
+    ['the anatomy', null, 'fr', 'dark', 390],
+    ['a tract reference', reference, 'en', 'light', 1280],
+    ['a tract reference', reference, 'fr', 'dark', 390],
   ] as const)(
-    'axe is clean with the dialog open: %s, reference %j, %s, %i px',
-    async (lang, shown, theme, width) => {
+    'axe is clean with the dialog open on %s, %s, %s, %i px',
+    async (_state, shown, lang, theme, width) => {
       render(Fixture, props({ lang, reference: shown }));
       await openFromKeyboard();
       await expectAxeCleanOnce(theme, width);
