@@ -10,9 +10,22 @@
     log,
     initialSelected = null,
     wide = false,
-  }: { log: string[]; initialSelected?: string | null; wide?: boolean } = $props();
+    blank = false,
+    pass = new Set<string>(),
+  }: {
+    log: string[];
+    initialSelected?: string | null;
+    wide?: boolean;
+    /** Adds rows with no control: 'top' first, a disabled 'rule' after insula. */
+    blank?: boolean;
+    pass?: ReadonlySet<string>;
+  } = $props();
   const leaf = (id: string, label: string): TreegridNode<null> => ({ id, label, data: null });
+  const withBlank = untrack(() => blank);
+  const blankNodes = (): TreegridNode<null>[] =>
+    withBlank ? [{ id: 'top', label: 'Top', data: null, selectable: false }] : [];
   const nodes: TreegridNode<null>[] = [
+    ...blankNodes(),
     {
       id: 'frontal',
       label: 'Frontal',
@@ -21,6 +34,9 @@
       children: [leaf('precentral', 'Precentral'), leaf('postcentral', 'Postcentral')],
     },
     leaf('insula', 'Insula'),
+    ...(withBlank
+      ? [{ id: 'rule', label: 'Rule', data: null, selectable: false, disabled: true }]
+      : []),
     {
       id: 'limbic',
       label: 'Limbic',
@@ -53,22 +69,29 @@
     log.push(`activate ${node.id}`);
   }}
   rowKeys={{ v: (node) => flip(node.id) }}
+  passKeys={pass}
 >
   {#snippet primary(node, state)}
-    <button type="button" onclick={() => log.push(`select ${node.id}`)}>{node.label}</button>
-    {#if node.children}
-      <button
-        type="button"
-        class="toggle"
-        aria-label={`Expand ${node.label}`}
-        onclick={state.toggle}
-      >
-        {state.expanded ? '-' : '+'}
-      </button>
+    {#if node.id === 'top' || node.id === 'rule'}
+      <span>{node.label}</span>
+    {:else}
+      <button type="button" onclick={() => log.push(`select ${node.id}`)}>{node.label}</button>
+      {#if node.children}
+        <button
+          type="button"
+          class="toggle"
+          aria-label={`Expand ${node.label}`}
+          onclick={state.toggle}
+        >
+          {state.expanded ? '-' : '+'}
+        </button>
+      {/if}
     {/if}
   {/snippet}
   {#snippet action(node, id)}
-    {#if id === 'eye'}
+    {#if node.id === 'top' || node.id === 'rule'}
+      <!-- A row with no control in any cell. -->
+    {:else if id === 'eye'}
       <!-- Re-created when the state flips, as a rebuilt visibility control is. -->
       {#key hidden.has(node.id)}
         <button
