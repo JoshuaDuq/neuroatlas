@@ -37,11 +37,10 @@ async function pageSettled() {
   // Reading layout brings style up to date, so a change made just now has started its transitions.
   void document.body.offsetHeight;
   // A transition that a newer one replaces rejects its `finished`, so look again until none is left.
-  for (
-    let running = document.getAnimations();
-    running.length > 0;
-    running = document.getAnimations()
-  )
+  // A finished animation that holds its end state stays listed, so only playing ones are awaited.
+  const playing = () =>
+    document.getAnimations().filter((animation) => animation.playState !== 'finished');
+  for (let running = playing(); running.length > 0; running = playing())
     await Promise.allSettled(running.map((animation) => animation.finished));
 }
 
