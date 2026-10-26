@@ -10,6 +10,9 @@ export const en = {
   loading: 'Loading atlas comparison…',
   highlightLoading: 'Loading overlap outline…',
   retry: 'Retry comparison',
+  // Spoken when the panel loads and after the CSV export (r2-status-live).
+  ready: 'Atlas comparison loaded.',
+  exported: 'Atlas comparison CSV downloaded.',
   viewNote:
     'Turn off sections to outline overlaps. Measurements use the full region, including hidden parts.',
   methodHeading: 'Method and sources',
@@ -30,6 +33,8 @@ export const fr: typeof en = {
   loading: 'Chargement de la comparaison des atlas…',
   highlightLoading: 'Chargement du contour de recouvrement…',
   retry: 'Réessayer la comparaison',
+  ready: 'Comparaison des atlas chargée.',
+  exported: 'Fichier CSV de la comparaison des atlas téléchargé.',
   viewNote:
     'Désactivez les coupes pour tracer les recouvrements. Les mesures portent sur toute la région, y compris les parties masquées.',
   methodHeading: 'Méthode et sources',

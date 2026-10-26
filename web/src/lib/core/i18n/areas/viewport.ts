@@ -16,6 +16,13 @@ export const en = {
   viewTool: 'View',
   sectionTool: 'Section',
   displayTool: 'Display',
+  // The stage dock and the View popover's turn buttons (decision 22 on #4).
+  dockLabel: '3D viewer tools',
+  orbitGroup: 'Turn the model',
+  orbitLeft: 'Turn left',
+  orbitRight: 'Turn right',
+  orbitUp: 'Turn up',
+  orbitDown: 'Turn down',
   // Streamline colour is each segment's local direction: |x| red, |y| green, |z| blue.
   directionKey: {
     title: 'Local streamline direction',
@@ -23,6 +30,8 @@ export const en = {
     anteriorPosterior: 'Anterior–posterior',
     superiorInferior: 'Superior–inferior',
   },
+  // Visually hidden after a stage-key row whose colour is not drawn (WCAG 1.4.1).
+  keyAbsent: 'Not shown in this view',
   snapshot: 'Save image (PNG)',
   // Written onto the exported image, which travels without the page around it.
   snapshotView: (name: string) => `${name} view`,
@@ -52,12 +61,19 @@ export const fr: typeof en = {
   viewTool: 'Vue',
   sectionTool: 'Coupe',
   displayTool: 'Affichage',
+  dockLabel: 'Outils du visualiseur 3D',
+  orbitGroup: 'Faire pivoter le modèle',
+  orbitLeft: 'Tourner à gauche',
+  orbitRight: 'Tourner à droite',
+  orbitUp: 'Tourner vers le haut',
+  orbitDown: 'Tourner vers le bas',
   directionKey: {
     title: 'Direction locale des trajectoires',
     leftRight: 'Gauche–droite',
     anteriorPosterior: 'Antéro-postérieur',
     superiorInferior: 'Supéro-inférieur',
   },
+  keyAbsent: 'Absent de cette vue',
   snapshot: 'Enregistrer l’image (PNG)',
   snapshotView: (name: string) => `Vue ${name.toLowerCase()}`,
   snapshotStatement: 'Planum · Pas une anatomie clinique',
