@@ -159,6 +159,48 @@ test('the slider builds one cut at a time and skips to the newest value', async 
   await vi.waitFor(() => expect(controls.offset).toBe(7));
 });
 
+describe('choosing again before a download ends', () => {
+  test('Axial, Full brain, Axial: the first Axial settling does not end the second one’s preparation', async () => {
+    const first = deferred<boolean>();
+    const second = deferred<boolean>();
+    const controls = build();
+    cut.mockImplementationOnce(() => first.promise);
+    const choosingFirst = controls.choose('axial');
+    await controls.choose('off');
+    cut.mockImplementationOnce(async (plane) => {
+      await second.promise;
+      await engine.sections.setMode(plane);
+      return true;
+    });
+    const choosingSecond = controls.choose('axial');
+    first.resolve(false);
+    await choosingFirst;
+    expect(controls.plane).toBe('axial');
+    expect(controls.pending).toBe(true);
+    second.resolve(true);
+    await choosingSecond;
+    expect(controls.pending).toBe(false);
+    expect(controls.state.mode).toBe('axial');
+  });
+});
+
+describe('the slide queue after a failure', () => {
+  test('a rejected build is said, and the next slide still runs', async () => {
+    const controls = build();
+    await controls.choose('axial');
+    const error = new Error('build failed');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const ready = vi.spyOn(engine.sections, 'setOffsetReady').mockRejectedValueOnce(error);
+    controls.slideOffset(5);
+    await vi.waitFor(() => expect(controls.failure).toBe(error));
+    // Acting on the section again replaces the failure, with the mode unchanged.
+    controls.slideOffset(6);
+    expect(controls.failure).toBeNull();
+    await vi.waitFor(() => expect(controls.offset).toBe(6));
+    expect(ready.mock.calls).toEqual([[5], [6]]);
+  });
+});
+
 test('Reverse side keeps the other half and turns the camera to face it', async () => {
   const controls = build();
   await controls.choose('coronal');

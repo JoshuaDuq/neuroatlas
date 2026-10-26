@@ -4,6 +4,7 @@
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
   import type { Language, Paint, SurfaceColor } from '../../lib/types/index.ts';
   import '../../styles/index.css';
+  import Tooltip from '../../lib/ui/Tooltip.svelte';
   import Dock from '../stage/Dock.svelte';
   import type { DockCommands } from '../stage/dock-commands.ts';
   import '../stage/stage-vars.css';
@@ -51,6 +52,7 @@
   });
 </script>
 
+<Tooltip />
 <button type="button">Before</button>
 <main
   id="viewport"

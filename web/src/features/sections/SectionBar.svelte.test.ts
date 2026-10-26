@@ -443,6 +443,85 @@ describe('the section row', () => {
   });
 });
 
+describe('the section row’s guards', () => {
+  test.each([
+    ['on a desktop', false],
+    ['on a phone', true],
+  ])('a first cut that fails leaves no row, and its failure stays drawn %s', async (_, phone) => {
+    await mount({ phone });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    cut.mockRejectedValueOnce(new Error('download failed'));
+    await controls.choose('sagittal');
+    flushSync();
+    expect(group()).toBeNull();
+    expect(said()).toBe('Could not prepare the section.');
+    expect(shown()).toBe('Could not prepare the section.');
+    const status = bar().querySelector('[role="status"]')!.getBoundingClientRect();
+    expect(status.width).toBeGreaterThan(1);
+    expect(status.height).toBeGreaterThan(1);
+    // The reader choosing again is the next news: the line goes with the failure.
+    await controls.choose('sagittal');
+    flushSync();
+    expect(shown()).not.toBe('Could not prepare the section.');
+  });
+
+  test('the longer meanings describe the checkbox and the sliders while the tooltip is shown', async () => {
+    await mount();
+    await cutPlane('oblique');
+    const reverse = locate('checkbox', 'Reverse side');
+    const tilt = locate('slider', 'Tilt');
+    const azimuth = locate('slider', 'Azimuth');
+    reverse.element().focus();
+    await expect.element(reverse).toHaveAccessibleDescription('Reverse retained side');
+    tilt.element().focus();
+    await expect.element(tilt).toHaveAccessibleDescription('Tilt from axial');
+    azimuth.element().focus();
+    await expect.element(azimuth).toHaveAccessibleDescription('Rotation around superior axis');
+  });
+
+  test('the sentence waits while an angle slider is dragged, and is said at the release', async () => {
+    await mount();
+    await cutPlane('oblique');
+    const before = said();
+    const tilt = control('slider', 'Tilt') as HTMLInputElement;
+    tilt.value = '45';
+    tilt.dispatchEvent(new Event('input', { bubbles: true }));
+    controls.setOffset(5);
+    flushSync();
+    await vi.waitFor(() => expect(controls.offset).toBe(5));
+    expect(active()).not.toBe(tilt);
+    expect(said()).toBe(before);
+    tilt.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+    await vi.waitFor(() => expect(said()).toMatch(/^Tissue cut at \+5\.0 mm/));
+  });
+
+  test('an angle slider keeps the reader’s value while they hold it, and both catch up when left', async () => {
+    await mount();
+    await cutPlane('oblique');
+    const tilt = control('slider', 'Tilt') as HTMLInputElement;
+    const azimuth = control('slider', 'Azimuth') as HTMLInputElement;
+    tilt.focus();
+    engine.sections.setAngles(60, -90);
+    flushSync();
+    expect([tilt.value, azimuth.value]).toEqual(['30', '30']);
+    tilt.blur();
+    flushSync();
+    expect([tilt.value, azimuth.value]).toEqual(['60', '-90']);
+  });
+
+  test('the slider, the field and Reverse side cannot be used while the engine has no cut', async () => {
+    await mount();
+    await cutPlane('oblique');
+    expect([position().disabled, exact().disabled]).toEqual([false, false]);
+    vi.spyOn(engine.sections, 'active', 'get').mockReturnValue(false);
+    controls.setOffset(1);
+    flushSync();
+    expect(position().disabled).toBe(true);
+    expect(exact().disabled).toBe(true);
+    expect((control('checkbox', 'Reverse side') as HTMLInputElement).disabled).toBe(true);
+  });
+});
+
 describe('the compact row', () => {
   test('writes its one-line width to the stage layout, again in French, and nothing once gone', async () => {
     await mount({}, { width: 1280, height: 700 });

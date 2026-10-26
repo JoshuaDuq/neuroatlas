@@ -51,6 +51,8 @@
   const plane = $derived(controls.plane);
   const shown = $derived(plane !== 'off' && !tractReference);
   const pending = $derived(controls.pending);
+  // A failure is drawn even when no plane is cut: the first cut is the one that downloads, and it can fail.
+  const failed = $derived(controls.failure !== null);
   const compact = $derived(stage.sectionCompact);
   const ends = $derived(axisEnds(plane, lang));
   const [minimum, maximum] = $derived(controls.offsetRange);
@@ -160,6 +162,12 @@
     stage.sectionNeed = width;
   });
 
+  /** Leaving a cut angle's slider: both sliders catch up with the cut, as the position slider does. */
+  function leaveAngles() {
+    angleFocused = false;
+    ({ tilt, azimuth } = controls.state);
+  }
+
   function closeSection() {
     focusTool();
     void controls.close();
@@ -185,6 +193,7 @@
   bind:this={bar}
   class="section-bar"
   data-shown={shown ? '' : undefined}
+  data-failed={failed ? '' : undefined}
   data-pending={pending}
   data-compact={compact}
   data-expanded={expanded}
@@ -245,9 +254,10 @@
             <span class="cut-unit" aria-hidden="true">mm</span>
           </div>
           <div bind:this={details} id={detailsId} class="cut-details">
-            <label class="check" data-tooltip={copy.reverseSide}>
+            <label class="check">
               <input
                 type="checkbox"
+                data-tooltip={copy.reverseSide}
                 checked={controls.state.reverse}
                 disabled={!controls.active}
                 onchange={(event) => controls.setReverse(event.currentTarget.checked)}
@@ -290,10 +300,11 @@
       {/if}
       {#if controls.state.mode === 'oblique' && !pending}
         <div class="section-bar-row cut-angles">
-          <label class="cut-angle" data-tooltip={copy.tilt}>
+          <label class="cut-angle">
             <span>{copy.tiltShort}</span>
             <input
               type="range"
+              data-tooltip={copy.tilt}
               min="0"
               max="90"
               step="1"
@@ -301,7 +312,7 @@
               aria-valuetext={degrees(tilt, lang)}
               {@attach tracked}
               onfocus={() => (angleFocused = true)}
-              onblur={() => (angleFocused = false)}
+              onblur={leaveAngles}
               oninput={(event) => {
                 dragging = true;
                 tilt = event.currentTarget.valueAsNumber;
@@ -310,10 +321,11 @@
             />
             <output aria-hidden="true">{degrees(tilt, lang)}</output>
           </label>
-          <label class="cut-angle" data-tooltip={copy.azimuth}>
+          <label class="cut-angle">
             <span>{copy.azimuthShort}</span>
             <input
               type="range"
+              data-tooltip={copy.azimuth}
               min="-180"
               max="180"
               step="1"
@@ -321,7 +333,7 @@
               aria-valuetext={degrees(azimuth, lang, true)}
               {@attach tracked}
               onfocus={() => (angleFocused = true)}
-              onblur={() => (angleFocused = false)}
+              onblur={leaveAngles}
               oninput={(event) => {
                 dragging = true;
                 azimuth = event.currentTarget.valueAsNumber;
@@ -336,7 +348,7 @@
   {/if}
   <!-- The slider and the field state the position; the sentence carrying it is spoken once it settles. -->
   <p role="status" class="cut-status">
-    <span class="visually-hidden">{said}</span>{#if shown}<span aria-hidden="true"
+    <span class="visually-hidden">{said}</span>{#if shown || failed}<span aria-hidden="true"
         >{sentences.shown}</span
       >{/if}
   </p>
@@ -345,14 +357,14 @@
 <style>
   @layer features {
     /* The dock's upper row while a plane is cut, ruled off from the tools under it. */
-    .section-bar[data-shown] {
+    .section-bar:is([data-shown], [data-failed]) {
       /* The plane's name starts on the tools' words: the toolbar's inset and a tool's padding. */
       padding: var(--space-1) var(--space-1) var(--space-2) calc(var(--space-1) + var(--space-3));
       border-bottom: 1px solid var(--overlay-border);
       color: var(--overlay-ink);
     }
-    /* With no plane only the live region is left, and it draws nothing. */
-    .section-bar:not([data-shown]) .cut-status {
+    /* With no plane and no failure only the live region is left, and it draws nothing. */
+    .section-bar:not([data-shown], [data-failed]) .cut-status {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -559,7 +571,7 @@
       text-align: right;
       color: var(--overlay-ink);
     }
-    .section-bar[data-shown] .cut-status {
+    .section-bar:is([data-shown], [data-failed]) .cut-status {
       margin: var(--space-1) 0 0;
       padding-right: var(--space-2);
       font-size: var(--text-caption);
@@ -648,8 +660,8 @@
       input[type='range'] {
         height: 44px;
       }
-      /* Folded, the status line still speaks; it is simply not drawn. */
-      .section-bar:not([data-expanded='true']) .cut-status {
+      /* Folded, the status line still speaks; it is simply not drawn, unless it is a failure. */
+      .section-bar:not([data-expanded='true'], [data-failed]) .cut-status {
         position: absolute;
         width: 1px;
         height: 1px;
