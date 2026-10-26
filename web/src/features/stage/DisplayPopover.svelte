@@ -111,7 +111,7 @@
     :global(.segmented.choice-group.hemisphere [role='radio']) {
       flex: 1;
       height: auto;
-      min-height: var(--control-height);
+      min-height: calc(var(--control-height) - 4px);
       min-width: 0;
       padding: 0 var(--space-2);
       font-size: var(--text-stage);
@@ -168,6 +168,12 @@
     input[type='checkbox']:checked::before {
       border-color: var(--surface-base);
     }
+    /* Every choice in a phone popover is a full 44 px target (stage.css:638); the phone query is tokens.css's. */
+    @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
+      :global(.segmented.choice-group.hemisphere [role='radio']) {
+        min-height: 44px;
+      }
+    }
     @media (pointer: coarse) {
       :global(.segmented.choice-group.hemisphere [role='radio']),
       .check {
@@ -177,6 +183,10 @@
       input[type='checkbox'] {
         width: 20px;
         height: 20px;
+      }
+      input[type='checkbox']::before {
+        width: 11px;
+        height: 6px;
       }
     }
   }

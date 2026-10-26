@@ -644,6 +644,42 @@ describe('size, reflow and media', () => {
     }
   });
 
+  test('presets, hemisphere buttons and tick boxes have the legacy sizes', async () => {
+    await mount();
+    const sizes = async () => {
+      await open('Anatomical view');
+      const presets = [...document.querySelectorAll<HTMLElement>('.views button')].map(
+        (node) => node.offsetHeight,
+      );
+      await userEvent.keyboard('{Escape}');
+      await open('Display');
+      const radios = [...document.querySelectorAll<HTMLElement>('.popover [role="radio"]')].map(
+        (node) => node.offsetHeight,
+      );
+      await userEvent.keyboard('{Escape}');
+      return { presets, radios };
+    };
+    // stage.css:445, components.css:221.
+    expect(await sizes()).toEqual({ presets: Array(7).fill(32), radios: Array(3).fill(28) });
+    // stage.css:638: every choice in a phone popover is a full 44 px target.
+    await page.viewport(390, 844);
+    expect(await sizes()).toEqual({ presets: Array(7).fill(44), radios: Array(3).fill(44) });
+    await page.viewport(1280, 800);
+
+    const session = cdp();
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    try {
+      await open('Display');
+      const box = document.querySelector<HTMLInputElement>('.popover input[type="checkbox"]')!;
+      // phone.css:329, 335.
+      expect([box.offsetWidth, box.offsetHeight]).toEqual([20, 20]);
+      const tick = getComputedStyle(box, '::before');
+      expect([tick.width, tick.height]).toEqual(['11px', '6px']);
+    } finally {
+      await session.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+    }
+  });
+
   test.each(['en', 'fr'] as const)(
     '%s: text at 200 % and the WCAG 1.4.12 spacing clip nothing in the dock or its popovers',
     async (lang) => {

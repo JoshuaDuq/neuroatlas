@@ -103,9 +103,18 @@
   const own = (node: EventTarget | null) =>
     node instanceof Element && node.closest(`[id="${triggerId}"]`) !== null;
 
+  // Bits can mount the focus scope twice for one open; the second must not take the focus back from
+  // where the reader has since moved it (Shift+Tab to the trigger).
+  let focusPlaced = false;
+  $effect(() => {
+    if (!open) focusPlaced = false;
+  });
+
   // The pressed choice, else the first control, so arrows start where the choice is.
   function focusStart(event: Event) {
     event.preventDefault();
+    if (focusPlaced) return;
+    focusPlaced = true;
     const controls = [...(content?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [])].filter(
       (control) => control.checkVisibility() && !(control as HTMLButtonElement).disabled,
     );
