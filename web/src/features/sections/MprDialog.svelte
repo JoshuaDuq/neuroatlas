@@ -10,7 +10,7 @@
   - a phone shows one plane at a time, chosen by a radio group, in one column
     (deviations/g5-plane-radio.md, g5-plane-layout.md); each plane is a named section whose heading
     stays for assistive technology (g5-panel-names.md);
-  - the readout is the one live region, said after the crosshair has rested
+  - the readout is said through the dialog's one live region after the crosshair has rested
     (g5-outputs-not-live.md, g5-unlabelled-sample.md); Save PNG is named by its plane and confirmed
     (g5-save-names.md, g5-save-announce.md); the wheel leaves Ctrl and Meta to the browser's zoom
     (g5-wheel-modifiers.md).
@@ -27,7 +27,7 @@
   import ChoiceGroup from '../../lib/ui/ChoiceGroup.svelte';
   import Dialog from '../../lib/ui/Dialog.svelte';
   import RangeField from '../../lib/ui/RangeField.svelte';
-  import { announce, createDebouncedAnnouncer } from '../../lib/ui/announcer.svelte.ts';
+  import StatusLine from '../../lib/ui/StatusLine.svelte';
   import type { MprDialogController } from './mpr-dialog.svelte.ts';
   import { AXES, COORDINATE_LIMIT, PLANES, drawPanel } from './mpr-draw.ts';
   import {
@@ -61,7 +61,10 @@
   const uid = $props.id();
   const copy = $derived(t(lang, 'mpr'));
   const phone = new MediaQuery(PHONE_QUERY);
-  const moves = createDebouncedAnnouncer(READOUT_QUIET_MS);
+  // The dialog's one live region. The page's announcer is outside the modal dialog, so inert while it
+  // is open; this one is inside.
+  let said = $state('');
+  let quiet: ReturnType<typeof setTimeout> | undefined;
 
   let root = $state<HTMLElement>();
   const canvases: Partial<Record<MprPlane, HTMLCanvasElement>> = {};
@@ -117,15 +120,17 @@
   let spoken: string | null = null;
   $effect(() => {
     const text = readout;
+    clearTimeout(quiet);
     if (!mpr.open) {
       spoken = null;
-      moves.reset();
+      said = '';
       return;
     }
-    if (spoken !== null && text !== spoken) moves.say(text);
+    if (spoken !== null && text !== spoken)
+      quiet = setTimeout(() => (said = text), READOUT_QUIET_MS);
     spoken = text;
   });
-  $effect(() => () => moves.dispose());
+  $effect(() => () => clearTimeout(quiet));
 
   // The sticky header grows when its title wraps (200 % text, a narrow phone): the focus scroll
   // margin follows its measured height (WCAG 2.4.11).
@@ -200,12 +205,16 @@
     };
   }
 
-  function save(plane: MprPlane) {
+  async function save(plane: MprPlane) {
     const link = document.createElement('a');
     link.download = pngFileName(anatomy.subject, plane, crosshair[AXES[plane]]);
     link.href = canvases[plane]!.toDataURL('image/png');
     link.click();
-    announce(savedAnnouncement(plane, lang));
+    // The same sentence again must change the region to be spoken again.
+    clearTimeout(quiet);
+    said = '';
+    await tick();
+    said = savedAnnouncement(plane, lang);
   }
 </script>
 
@@ -238,12 +247,6 @@
           aria-labelledby="{uid}-{plane}"
         >
           <h3 id="{uid}-{plane}">{planeName(plane, lang)}</h3>
-          <button
-            type="button"
-            class="save"
-            aria-label={`${copy.savePng}${saveSuffix(plane, lang)}`}
-            onclick={() => save(plane)}>{copy.savePng}</button
-          >
           <!-- A picture of data is an image (ARIA 1.2 img; HTML-AAM allows it on canvas). -->
           <!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
           <canvas
@@ -255,21 +258,33 @@
             {@attach pointer(plane)}
           ></canvas>
           <div class="position">
-            <RangeField
-              label={positionLabel(plane, lang)}
-              value={crosshair[AXES[plane]]}
+            <label for="{uid}-position-{plane}">{positionLabel(plane, lang)}</label>
+            <output class="value" for="{uid}-position-{plane}" aria-hidden="true"
+              >{millimetres(crosshair[AXES[plane]], lang)}</output
+            >
+            <input
+              id="{uid}-position-{plane}"
+              type="range"
               min={-COORDINATE_LIMIT}
               max={COORDINATE_LIMIT}
-              step={1}
-              format={(value) => millimetres(value, lang)}
-              oninput={(value) => mpr.moveTo(plane, value)}
+              step="1"
+              value={crosshair[AXES[plane]]}
+              aria-valuetext={millimetres(crosshair[AXES[plane]], lang)}
+              oninput={(event) => mpr.moveTo(plane, event.currentTarget.valueAsNumber)}
             />
           </div>
+          <button
+            type="button"
+            class="save"
+            aria-label={`${copy.savePng}${saveSuffix(plane, lang)}`}
+            onclick={() => save(plane)}>{copy.savePng}</button
+          >
         </section>
       {/each}
     </div>
 
     <p class="where measure">{readout}</p>
+    <StatusLine class="visually-hidden" text={said} />
 
     <div class="display">
       <RangeField
@@ -369,10 +384,40 @@
       border-radius: var(--radius-mark);
       cursor: crosshair;
     }
+    /* The label, its value and the slider, as the legacy label wrapped them: the slider always shows
+       the crosshair, which a RangeField holds back while it has focus. */
     .position {
       grid-column: 1 / -1;
       grid-row: 3;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      column-gap: var(--space-3);
       margin-top: var(--space-2);
+      font-size: var(--text-ui);
+    }
+    .position label {
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .value {
+      color: var(--text-tertiary);
+      font-size: var(--text-caption);
+      line-height: var(--lh-caption);
+      font-variant-numeric: tabular-nums;
+    }
+    .position input {
+      grid-column: 1 / -1;
+      width: 100%;
+      margin: var(--space-1) 0 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    @media (pointer: coarse) {
+      .position input {
+        height: 44px;
+        margin: 0;
+      }
     }
     /* The crosshair's position and label: a tonal readout, not a boxed field. */
     .where {
@@ -484,6 +529,7 @@
     }
     @media (forced-colors: active) {
       .save:focus-visible,
+      .position input:focus-visible,
       input[type='checkbox']:focus-visible {
         outline: 2px solid Highlight;
       }

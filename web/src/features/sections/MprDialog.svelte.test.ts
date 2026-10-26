@@ -11,7 +11,6 @@ import type { FakeEngine } from '../../lib/engine/fake.ts';
 import { createEngineSync } from '../../lib/state/engine-sync.svelte.ts';
 import type { Language, Manifest } from '../../lib/types/index.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
-import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import { createMprDialog } from './mpr-dialog.svelte.ts';
 import type { MprDialogController } from './mpr-dialog.svelte.ts';
 import Fixture from './mpr-test-support.svelte';
@@ -22,10 +21,8 @@ const anatomy = { subject: 'sub_013', individual: true };
 let engine: FakeEngine;
 let mpr: MprDialogController;
 let live: { lang: Language };
-let region: HTMLElement;
-let release: () => void;
 let announced: string[];
-let watcher: MutationObserver;
+let watcher: MutationObserver | undefined;
 
 function liveState(): { lang: Language } {
   const state = $state<{ lang: Language }>({ lang: 'en' });
@@ -43,21 +40,13 @@ beforeEach(async () => {
     engine,
     select: () => {},
   });
-  region = document.body.appendChild(document.createElement('div'));
-  release = attachAnnouncer(region);
   announced = [];
-  watcher = new MutationObserver(() => {
-    if (region.textContent) announced.push(region.textContent);
-  });
-  watcher.observe(region, { childList: true, characterData: true, subtree: true });
 });
 afterEach(() => {
   mpr.dispose();
-  watcher.disconnect();
+  watcher?.disconnect();
   vi.restoreAllMocks();
   cleanup();
-  release();
-  region.remove();
 });
 
 async function mount() {
@@ -68,10 +57,17 @@ async function mount() {
     live,
     anatomy,
   });
+  // What the dialog's live region is made to say, in order.
+  const status = statusRegion();
+  watcher = new MutationObserver(() => {
+    if (status.textContent) announced.push(status.textContent);
+  });
+  watcher.observe(status, { childList: true, characterData: true, subtree: true });
   return result;
 }
 
 const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
+const statusRegion = () => document.querySelector('dialog [role="status"]') as HTMLElement;
 const opener = () => page.getByRole('button', { name: 'Linked MRI' }).element() as HTMLElement;
 const section = (plane: string) =>
   dialog().querySelector<HTMLElement>(`.plane[data-plane="${plane}"]`)!;
@@ -170,7 +166,7 @@ describe('the three planes', () => {
     expect(crosshair()).toEqual([0, 0, 0]);
   });
 
-  test("Tab visits Close, then each plane's Save and slider, then Window, Level and the overlay", async () => {
+  test("Tab visits Close, then each plane's slider and Save, then Window, Level and the overlay", async () => {
     await opened();
     const nameOf = (element: HTMLElement) =>
       (element as HTMLInputElement).labels?.[0]?.textContent?.trim() ??
@@ -183,12 +179,12 @@ describe('the three planes', () => {
     }
     expect(names).toEqual([
       'Close',
-      'Save PNG, sagittal',
       'Sagittal position',
-      'Save PNG, coronal',
+      'Save PNG, sagittal',
       'Coronal position',
-      'Save PNG, axial',
+      'Save PNG, coronal',
       'Axial position',
+      'Save PNG, axial',
       'Window',
       'Level',
       'Segmentation overlay',
@@ -243,6 +239,22 @@ describe('moving the crosshair', () => {
     engine.sections.setCrosshair([10, 20, 30]);
     await expect.poll(() => sliderElement('Coronal position').value).toBe('20');
     expect(sliderElement('Axial position').value).toBe('30');
+  });
+
+  test('a position slider that has focus still shows the crosshair when the wheel moves it', async () => {
+    await opened();
+    sliderElement('Axial position').focus();
+    for (let notch = 0; notch < 3; notch++) {
+      canvas('axial').dispatchEvent(
+        new WheelEvent('wheel', { deltaY: -100, bubbles: true, cancelable: true }),
+      );
+    }
+    await expect.poll(() => sliderElement('Axial position').value).toBe('3');
+    expect(sliderElement('Axial position').getAttribute('aria-valuetext')).toMatch(/^\+3\.0.mm$/);
+    await userEvent.keyboard('{ArrowUp}');
+    await frame();
+    await frame();
+    expect(crosshair()[2]).toBe(4);
   });
 
   test('a click on a picture puts the crosshair under it, in that plane', async () => {
@@ -334,6 +346,10 @@ describe('the pictures', () => {
   });
 
   test('every voxel is shown, however the segmentation covers it', async () => {
+    // Voxels no label covers come back transparent; the picture still shows their intensity.
+    vi.spyOn(engine.sections, 'pixels').mockImplementation(
+      () => new Uint8ClampedArray(SIZE * SIZE * 4),
+    );
     await opened();
     await expect.poll(() => canvas('sagittal').width).toBe(SIZE);
     expect(pixel('sagittal', 5, 5)[3]).toBe(255);
@@ -403,12 +419,14 @@ describe('the readout', () => {
     expect(announced).toEqual(['+4.0, 0.0, 0.0\u202fmm — Unlabelled (label 0)']);
   });
 
-  test('is the only thing the dialog says: no output or status of its own is exposed', async () => {
+  test('is the only live region in the page that can be heard: exactly one, inside the dialog, polite', async () => {
     await opened();
-    const live = dialog().querySelectorAll(
-      '[role="status"], [role="alert"], [aria-live]:not([aria-live="off"]), output:not([aria-hidden="true"])',
+    const live = document.querySelectorAll(
+      '[role="status"], [role="alert"], [role="log"], [aria-live]:not([aria-live="off"]), output:not([aria-hidden="true"])',
     );
-    expect([...live]).toEqual([]);
+    expect([...live]).toEqual([statusRegion()]);
+    expect(dialog().contains(statusRegion())).toBe(true);
+    expect(getComputedStyle(statusRegion()).position).toBe('absolute');
   });
 });
 
@@ -428,7 +446,7 @@ describe('Save PNG', () => {
     expect(clicked).toHaveLength(1);
     expect(clicked[0]!.download).toBe('sub_013-axial--7.5mm.png');
     expect(clicked[0]!.href.startsWith('data:image/png;base64,')).toBe(true);
-    expect(region.textContent).toBe('Saved the axial section as a PNG.');
+    await expect.poll(() => statusRegion().textContent).toBe('Saved the axial section as a PNG.');
   });
 
   test('says so in French', async () => {
@@ -436,7 +454,9 @@ describe('Save PNG', () => {
     live.lang = 'fr';
     await opened();
     await page.getByRole('button', { name: 'Enregistrer PNG, sagittal', exact: true }).click();
-    expect(region.textContent).toBe('Coupe sagittale enregistrée au format PNG.');
+    await expect
+      .poll(() => statusRegion().textContent)
+      .toBe('Coupe sagittale enregistrée au format PNG.');
   });
 });
 
