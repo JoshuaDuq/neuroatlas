@@ -36,7 +36,25 @@ export async function createMriNavigationViewer(
   });
   const meshes = new Map<string, NVMesh>();
   let disposed = false;
-  viewer.onLocationChange = (location) => onLocation(location as MriLocation);
+  // NiiVue reports its own RAS-reordered voxel, which mirrors the source grid of a right-to-left scan.
+  // The dialog and `setVoxel` speak source voxels, so the report is rebuilt from the scanner point.
+  viewer.onLocationChange = (location) => {
+    const { mm, values } = location as unknown as {
+      mm: number[];
+      values: MriLocation['values'];
+    };
+    const volume = viewer.volumes[0];
+    // A location reported while the volumes are still loading has no grid to name a voxel in.
+    if (!volume) return;
+    const point = mm.slice(0, 3);
+    const vox = scannerVoxel(point, volume.hdr!);
+    if (!vox) throw new RangeError(`The crosshair ${point} mm lies outside the MRI grid.`);
+    onLocation({
+      mm: point as unknown as Vec3,
+      vox: vox as unknown as Vec3,
+      values: values.map(({ name, value }) => ({ name, value })),
+    });
+  };
   try {
     await viewer.attachToCanvas(canvas);
     for (const map of catalog.maps) {
