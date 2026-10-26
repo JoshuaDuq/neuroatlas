@@ -28,7 +28,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `viewer/render/camera-views.js:8`
 - **Expected:** `VIEW_NAMES` = `['oblique','left','right','anterior','posterior','superior','inferior']`; the keys of `VIEW_DIRECTIONS` are this list in this order.
-- **Covered by:** `parity/f1.test.ts` (D); `src/lib/engine/render/camera-views.test.ts` (R, key set only, sorted, not the order)
+- **Covered by:** `src/lib/types/constants.test.ts` (R, the order); `src/lib/engine/render/camera-views.test.ts` (R, key set only)
 
 ### CAT-02 · Section modes, hemispheres and functional levels
 
@@ -37,7 +37,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `viewer/slices/sections.js:7`; `viewer/state/url-state.js:55`; `viewer/catalog/functional-regions.js:5`
 - **Expected:** `CUTS` = `['off','sagittal','coronal','axial','oblique']`; `HEMISPHERES` = `['both','left','right']`; `FUNCTIONAL_LEVELS` = `['named','sections']`. Probed with off, sagittal, coronal, axial, oblique, both, left, right, named, sections, anatomy, functions, deficits, circuits, diffusion, bogus and "", `cut=` accepts exactly `CUTS`, `hemi=` exactly `HEMISPHERES`, `level=` exactly `FUNCTIONAL_LEVELS`.
-- **Covered by:** `parity/f1.test.ts` (D, through legacy `decodeState`); `src/lib/core/state/url-state.test.ts` (R, some values)
+- **Covered by:** `src/lib/types/constants.test.ts` (R, the lists); `src/lib/core/state/url-state.test.ts` (R, some values; the decoder's acceptance is STATE-08)
 
 ### CAT-03 · Six surface colourings, declared once
 
@@ -46,7 +46,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `viewer/model/brain-atlas.js:68`; `viewer/state/url-state.js:36`
 - **Expected:** `SURFACE_COLORS` = `['tissue','mri','atlas','network','cab-np','functional']`; `colors=bogus` and `colors=rgb` are rejected.
-- **Covered by:** `parity/f1.test.ts` (D); `src/lib/engine/model/brain-atlas.test.ts` (W, `includes('mri')` only)
+- **Covered by:** `src/lib/types/constants.test.ts` (R); `src/lib/engine/model/brain-atlas.test.ts` (W, `includes('mri')` only)
 
 ### CAT-04 · Five explorers, which are the workspace modes
 
@@ -55,7 +55,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `viewer/ui/chrome/workspace.js:6`; `viewer/state/url-state.js:38`
 - **Expected:** `EXPLORERS` = `MODES` = `['anatomy','functions','deficits','circuits','diffusion']`; `tab=` accepts exactly these.
-- **Covered by:** `src/lib/core/workspace.test.ts` (R, `MODES`); `parity/f1.test.ts` (D)
+- **Covered by:** `src/lib/core/workspace.test.ts` (R, `MODES`); `src/lib/types/constants.test.ts` (R)
 
 ### CAT-05 · One compact-layout query, one phone-device query, one coarse-pointer query
 
@@ -64,7 +64,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `viewer/render/device.js:13-21`; `viewer/styles/{phone,stage,dialogs,masthead}.css`
 - **Expected:** `PHONE_QUERY` = "(max-width: 800px), (max-height: 480px) and (orientation: landscape)"; `PHONE_DEVICE_QUERY` = "(max-width: 640px), (max-height: 480px) and (orientation: landscape)"; `COARSE_POINTER_QUERY` = "(pointer: coarse)". Every `@media` block in `web/src` that sets the compact layout uses the `PHONE_QUERY` literal exactly (today 22 stylesheets and components repeat it, from `app/layout.css` to `lib/ui/Dialog.svelte`); no `max-width: 800px` query appears in any other form.
-- **Covered by:** `src/lib/state/media.svelte.test.ts` (R, the two literals); `parity/f1.test.ts` (D, legacy device.js and legacy CSS only; I, pins the `matchMedia` call order of legacy `isPhone`/`isCoarse`); the check on the new stylesheets is uncovered
+- **Covered by:** `src/lib/state/media.svelte.test.ts` (R, the two literals); `src/lib/types/constants.test.ts` (R, the three literals, and every compact-layout `@media` block in `web/src` stylesheets and components uses the `PHONE_QUERY` literal)
 
 ### CAT-06 · The published manifest fits the manifest types
 
@@ -73,7 +73,7 @@ the expected values change with them in the same commit.
 - **Level:** unit
 - **Source:** `web/src/lib/types/manifest.ts`, `region.ts`
 - **Expected:** `schema_version` 1; `anatomy.id` "cdmd"; every region's `kind` is one of cortex, structure, non-region, tissue-region and its `hemisphere` one of left, right, midline; `atlases`, `detail_levels`, `supplemental_layers`, `cut_atlases` non-empty; the assignment type-checks under `npm run check`.
-- **Covered by:** `parity/f1.test.ts` (H; keep as is, it does not use legacy)
+- **Covered by:** `src/lib/types/manifest.test.ts` (H)
 
 ## Region labels
 
