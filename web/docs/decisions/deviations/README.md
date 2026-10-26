@@ -134,6 +134,12 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | g3-level-radio-group.md                       | approved (decision 6 on #4)                                    |
 | g3-list-role.md                               | fix (standard cited)                                           |
 | g3-paint-toolbar.md                           | approved (decision 6 on #4)                                    |
+| g4-angle-held-while-focused.md                | fix (bug)                                                      |
+| g4-focus-when-bar-hidden.md                   | fix (standard cited)                                           |
+| g4-label-in-name.md                           | fix (standard cited)                                           |
+| g4-linked-mri-busy.md                         | fix (decision 31 on #4)                                        |
+| g4-pending-after-failure.md                   | fix (bug)                                                      |
+| g4-status-outlives-bar.md                     | fix (standard cited)                                           |
 | g6-fullscreen-failure.md                      | fix (standard cited); string: decision 33                      |
 | g6-fullscreen-focus.md                        | fix (standard cited)                                           |
 | g6-paint-row-labels.md                        | fix (legacy bug); flagged on #4                                |
@@ -141,9 +147,9 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | g6-snapshot-reentry.md                        | fix (standard cited)                                           |
 | h6-detent-announcements.md                    | approved on #4 (decision 20)                                   |
 | h6-first-inset-report.md                      | fix under the parity policy                                    |
-| h6-handle-controls.md                         | fix under the parity policy                                    |
-| h6-handle-target.md                           | fix under the parity policy                                    |
-| h6-peek-focus.md                              | fix under the parity policy                                    |
+| h6-handle-controls.md                         | fix (standard cited; the record states no status line)         |
+| h6-handle-target.md                           | fix (standard cited; the record states no status line)         |
+| h6-peek-focus.md                              | fix (standard cited; the record states no status line)         |
 | r2-aria-disabled-rows.md                      | fix (decision 39, B3)                                          |
 | r2-forced-colours.md                          | fix (decision 39, B5)                                          |
 | r2-new-tab-cue.md                             | fix (decision 17 and 39, B6)                                   |
