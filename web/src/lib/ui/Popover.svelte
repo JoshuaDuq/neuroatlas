@@ -114,7 +114,6 @@
   function focusStart(event: Event) {
     event.preventDefault();
     if (focusPlaced) return;
-    focusPlaced = true;
     const controls = [...(content?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [])].filter(
       (control) => control.checkVisibility() && !(control as HTMLButtonElement).disabled,
     );
@@ -124,7 +123,9 @@
           control.getAttribute('aria-pressed') === 'true' ||
           control.getAttribute('aria-checked') === 'true',
       ) ?? controls[0];
-    target?.focus({ preventScroll: true });
+    if (!target) return;
+    target.focus({ preventScroll: true });
+    focusPlaced = true;
   }
 
   // Closing owns its focus (see `close`); Bits' own return to the trigger would also follow a Tab-out.
