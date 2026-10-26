@@ -6,6 +6,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { t } from '../../lib/core/i18n/index.ts';
+  import { registerCurrentItem } from '../../lib/core/workspace.ts';
   import type { View } from '../../lib/state/view.svelte.ts';
   import { createDebouncedAnnouncer } from '../../lib/ui/announcer.svelte.ts';
   import DrillRow from '../../lib/ui/DrillRow.svelte';
@@ -61,7 +62,7 @@
     return () => (explorer.refs.list = null);
   });
   $effect(() =>
-    explorer.deps.registerCurrentItem(
+    registerCurrentItem(
       () => list?.querySelector<HTMLElement>('.row[aria-current="true"]') ?? null,
     ),
   );

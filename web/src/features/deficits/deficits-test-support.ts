@@ -6,6 +6,4 @@ export interface Fixture {
   view: View;
   explorer: DeficitsExplorer;
   calls: string[];
-  /** The finders `registerCurrentItem` received. */
-  finders: Set<() => HTMLElement | null>;
 }

@@ -43,7 +43,6 @@
   // svelte-ignore state_referenced_locally
   const regions = new Map<string, Region>(manifest.regions.map((region) => [region.id, region]));
   const calls: string[] = [];
-  const finders = new Set<() => HTMLElement | null>();
 
   const view = $state({
     lang: 'en',
@@ -103,10 +102,6 @@
       return true;
     },
     onFailure: (error) => calls.push(`failure:${(error as Error).message}`),
-    registerCurrentItem(find) {
-      finders.add(find);
-      return () => finders.delete(find);
-    },
   });
 
   let announcer: HTMLElement;
@@ -115,7 +110,7 @@
     const unregister = registerFocusTarget(FOCUS_TARGETS.regionTitle, () =>
       document.getElementById('region-title'),
     );
-    onready({ view, explorer, calls, finders });
+    onready({ view, explorer, calls });
     return () => {
       detach();
       unregister();

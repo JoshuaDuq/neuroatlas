@@ -29,8 +29,6 @@ export interface DeficitsDeps {
   onRestore: () => Promise<boolean>;
   /** `excursions.offerReload`: hears each failure the meta line reports. */
   onFailure: (error: unknown) => void;
-  /** `registerCurrentItem` of `lib/core/workspace.ts`: how the workspace finds the open deficit's row. */
-  registerCurrentItem: (find: () => HTMLElement | null) => () => void;
 }
 
 type Busy = 'loading' | 'restoring';

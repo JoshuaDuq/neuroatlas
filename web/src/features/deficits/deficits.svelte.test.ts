@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json';
+import { currentItem } from '../../lib/core/workspace.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import '../../app/layout.css';
@@ -174,12 +175,10 @@ describe('the list', () => {
   });
 
   test('registers the open deficit as the workspace’s current item', async () => {
-    const { finders, view } = await mount();
-    expect(finders.size).toBe(1);
-    const find = [...finders][0];
-    expect(find()).toBeNull();
+    const { view } = await mount();
+    expect(currentItem()).toBeNull();
     view.selectedDeficit = 'aphasia';
-    await expect.poll(() => find()).toBe(row('aphasia'));
+    await expect.poll(() => currentItem()).toBe(row('aphasia'));
     expect(row('aphasia').getAttribute('aria-current')).toBe('true');
   });
 });
