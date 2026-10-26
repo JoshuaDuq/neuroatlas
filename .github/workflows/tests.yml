@@ -217,11 +217,14 @@ jobs:
 
       # Includes the WebGL probe (src/boot/webgl-probe.svelte.test.ts); its renderer
       # line goes to the job summary. If it fails on the runner, apply the fallback in that file.
+      # Headed under Xvfb, so the browser has a mouse: headless Linux has no pointing device and
+      # matches (hover: none) and (pointer: none), where a desktop matches hover and a fine pointer.
+      # A launch flag cannot stand in for it, as switching touch emulation off restores the device's.
       - name: Run browser tests
         shell: bash
         run: |
           set -o pipefail
-          npm run test:browser --prefix web 2>&1 | tee browser-tests.log
+          xvfb-run -a npm run test:browser --prefix web -- --browser.headless=false 2>&1 | tee browser-tests.log
           {
             echo '### WebGL probe'
             grep -h 'WebGL renderer' browser-tests.log || echo 'No renderer line in the log.'
