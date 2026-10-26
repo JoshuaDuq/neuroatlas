@@ -378,6 +378,17 @@ describe('opening a function', () => {
     for (let i = 1; i < writes.length; i += 1) expect(writes[i]).not.toBe(writes[i - 1]);
   });
 
+  test('a language switch makes a new status element holding the French count, not a rewrite', async () => {
+    mount();
+    await open(few().id);
+    const english = meta();
+    world.session.setLang('fr');
+    flushSync();
+    expect(meta()).not.toBe(english);
+    expect(english.isConnected).toBe(false);
+    expect(meta().textContent).toMatch(/^\d+ aires? HCP-MMP/);
+  });
+
   test('re-selecting the open function focuses its heading again', async () => {
     mount();
     await open(few().id);
