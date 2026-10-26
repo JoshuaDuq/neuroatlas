@@ -411,9 +411,10 @@ describe('the readout', () => {
     await opened();
     await new Promise((resolve) => setTimeout(resolve, 400));
     expect(announced).toEqual([]);
+    // Four moves inside the quiet period, whatever the machine's speed.
     for (const x of [1, 2, 3, 4]) {
       engine.sections.setCrosshair([x, 0, 0]);
-      await frame();
+      await new Promise((resolve) => setTimeout(resolve, 0));
     }
     await expect.poll(() => announced.length, { timeout: 2000 }).toBe(1);
     expect(announced).toEqual(['+4.0, 0.0, 0.0\u202fmm — Unlabelled (label 0)']);
@@ -447,6 +448,24 @@ describe('Save PNG', () => {
     expect(clicked[0]!.download).toBe('sub_013-axial--7.5mm.png');
     expect(clicked[0]!.href.startsWith('data:image/png;base64,')).toBe(true);
     await expect.poll(() => statusRegion().textContent).toBe('Saved the axial section as a PNG.');
+  });
+
+  test('saving the same plane twice is spoken twice: the sentence is cleared, then written a moment later', async () => {
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    await opened();
+    const writes: { text: string; at: number }[] = [];
+    new MutationObserver(() =>
+      writes.push({ text: statusRegion().textContent!, at: performance.now() }),
+    ).observe(statusRegion(), { childList: true, characterData: true, subtree: true });
+    const save = page.getByRole('button', { name: 'Save PNG, axial', exact: true });
+    await save.click();
+    await expect.poll(() => statusRegion().textContent).toBe('Saved the axial section as a PNG.');
+    writes.length = 0;
+    await save.click();
+    await expect
+      .poll(() => writes.map((write) => write.text))
+      .toEqual(['', 'Saved the axial section as a PNG.']);
+    expect(writes[1]!.at - writes[0]!.at).toBeGreaterThanOrEqual(16);
   });
 
   test('says so in French', async () => {
@@ -558,6 +577,42 @@ describe('the sticky header', () => {
 });
 
 describe('contrast and colour modes', () => {
+  test('the position sliders are drawn exactly as the Window slider: no native appearance, the same box', async () => {
+    await opened();
+    const drawn = (name: string) => {
+      const style = getComputedStyle(sliderElement(name));
+      return [
+        style.appearance,
+        style.height,
+        style.marginTop,
+        style.accentColor,
+        style.backgroundColor,
+      ];
+    };
+    expect(drawn('Window')[0]).toBe('none');
+    for (const name of ['Sagittal position', 'Coronal position', 'Axial position']) {
+      expect(drawn(name), name).toEqual(drawn('Window'));
+    }
+  });
+
+  test('forced colours draw the position sliders in system colours', async () => {
+    await opened();
+    const resolve = (colour: string) => {
+      const probe = document.body.appendChild(document.createElement('div'));
+      probe.style.color = colour;
+      const resolved = getComputedStyle(probe).color;
+      probe.remove();
+      return resolved;
+    };
+    await withMedia([{ name: 'forced-colors', value: 'active' }], () => {
+      const slider = sliderElement('Axial position');
+      expect(getComputedStyle(slider).forcedColorAdjust).toBe('none');
+      expect(getComputedStyle(slider, '::-webkit-slider-thumb').borderTopColor).toBe(
+        resolve('CanvasText'),
+      );
+    });
+  });
+
   test('forced colours draw the checkbox as a system control', async () => {
     await opened();
     await withMedia([{ name: 'forced-colors', value: 'active' }], () => {

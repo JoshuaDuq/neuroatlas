@@ -9,7 +9,7 @@ The slider has `aria-label="Sagittal MRI position"` while the visible label read
 
 ## New behaviour
 
-U4's `RangeField` names the slider by its visible `<label>`: "Sagittal position" / "Position sagittale". `aria-valuetext` is the signed millimetre value.
+A native range named by its own `<label for>`, the visible words: "Sagittal position" / "Position sagittale". `aria-valuetext` is the signed millimetre value; the value readout beside it is `aria-hidden`.
 
 ## Standard cited
 
