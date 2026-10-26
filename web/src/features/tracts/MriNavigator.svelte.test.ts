@@ -501,6 +501,8 @@ describe('failure', () => {
     await expect.element(page.getByRole('button', { name: 'Reload MRI' })).toBeVisible();
     expect((planeSelect().element() as HTMLSelectElement).disabled).toBe(true);
     expect(alertText()).toBe('The reference data could not be displayed.');
+    // The scan came up on a dead context: no "ready" is said.
+    expect(statusNode().textContent).toBe('');
   });
 
   test('closing a dialog frees its context without that being reported as a failure', async () => {
@@ -694,10 +696,10 @@ describe('accessibility', () => {
   });
 
   /** What a property resolves to for a system colour or a token, measured on a probe in the dialog. */
-  const resolved = (property: 'color', value: string) => {
+  const resolved = (property: 'color' | 'backgroundColor', value: string) => {
     const probe = dialog().querySelector('.navigator')!.appendChild(document.createElement('i'));
-    probe.style.setProperty(property, value);
-    const out = getComputedStyle(probe).color;
+    probe.style.setProperty(property === 'color' ? 'color' : 'background-color', value);
+    const out = getComputedStyle(probe)[property];
     probe.remove();
     return out;
   };
@@ -709,6 +711,9 @@ describe('accessibility', () => {
       expect(matchMedia('(forced-colors: active)').matches).toBe(true);
       // The browser forces these; the test holds the component to leaving them alone.
       expect(go().borderTopColor).toBe(resolved('color', 'CanvasText'));
+      // Text and fill too: `forced-color-adjust: none` on the buttons would keep the theme's own.
+      expect(go().color).toBe(resolved('color', 'ButtonText'));
+      expect(go().backgroundColor).toBe(resolved('backgroundColor', 'ButtonFace'));
       canvas().focus({ focusVisible: true });
       const ring = getComputedStyle(canvas());
       expect(ring.outlineColor).toBe(resolved('color', 'Highlight'));
