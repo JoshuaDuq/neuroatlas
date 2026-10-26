@@ -353,6 +353,12 @@ function assertFramed(
   if (tight) assert.ok(Math.max(x, y) >= FRAME_FILL - 1e-6, `framed loosely: ${x}, ${y}`);
 }
 
+/** The orbit target is the centre of the box framed (the vertices are float32). */
+const assertTarget = (stage: ReturnType<typeof fixture>, centre: [number, number, number]) => {
+  const { target } = stage.scene.destination;
+  assert.ok(target.distanceTo(new Vector3(...centre)) < 1e-9, `target ${target.toArray()}`);
+};
+
 const headingOf = (stage: ReturnType<typeof fixture>) => {
   const { position, target } = stage.scene.destination;
   return position.clone().sub(target).normalize();
@@ -431,6 +437,8 @@ describe('the whole anatomy is what is drawn', () => {
     });
     stage.camera.applyView('left', { immediate: true });
     assertFramed(stage, drawnMeshes);
+    // The box framed is the region's own, not the whole brain's.
+    assertTarget(stage, [-0.015, 0.03, 0.01]);
   });
 
   it('FACADE-04 with the cortex hidden, the drawn structures are framed and the cord is not', () => {
@@ -442,6 +450,8 @@ describe('the whole anatomy is what is drawn', () => {
     });
     stage.camera.applyView('left', { immediate: true });
     assertFramed(stage, structures);
+    // The structures' box, with the cord (down to y = -0.525) left out.
+    assertTarget(stage, [0.0025, 0.02, 0.0025]);
   });
 
   it('FACADE-04 the tract reference shown alone frames its streamlines once loaded', () => {
@@ -659,6 +669,8 @@ describe('the reader’s magnification', () => {
     for (const [name, command] of commands) {
       const stage = fixture({ meshes: structuredCloneMeshes(meshes) });
       stage.camera.applyView('left', { immediate: true });
+      // Magnified, so the command's own fit differs from the one the view left behind.
+      stage.camera.dolly(0.5);
       command(stage);
       const chosen = stage.distance();
       stage.resize(390, 792);

@@ -297,7 +297,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Level:** unit
 - **Source:** `viewer/tissues/gpu-sections.js:346-365`, `:387-434`
 - **Expected:** label 11101 alpha 1, then hidden → alpha 0 and the pick is `null`; hemisphere `right` → the left label's pick is `null`; isolating another region → `null`; a hidden region's cap → not visible.
-- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R)
+- **Covered by:** `src/lib/engine/tissues/gpu-sections.test.ts` (R; under MRI colour, a cap over a hidden region's label and a cap over background with a region isolated are not picked)
 
 ### SLICE-31 · Published colours are not shaded
 

@@ -175,7 +175,7 @@ describe('what the snapshot draws', () => {
     rows.forEach((y, index) => expect(y).toBe(24 + 16 * index));
     for (const call of caption.filter((c) => c.y > 24)) expect(call.font).toContain('12px');
     for (const call of caption) {
-      expect(call.x + measure(call.font, call.text)).toBeLessThanOrEqual(room + 16 + 1e-6);
+      expect(call.x + measure(call.font, call.text)).toBeLessThanOrEqual(room + 1e-6);
     }
     // The long subject is shortened to fit.
     const first = caption.filter((call) => call.y === 24);
@@ -191,9 +191,13 @@ describe('what the snapshot draws', () => {
     const [leftFoot, rightFoot] = lines as [[number, number], [number, number], [number, number]];
     expect(rightFoot[0] - leftFoot[0]).toBe(Math.round(pixels) - 1);
     expect(leftFoot[1]).toBe(rightFoot[1]);
+    // On the bottom line of the 560×520 image (y 496), with the foot a pixel below its centre.
+    expect(leftFoot[1]).toBe(498.5);
     const drawn = texts.find((call) => call.text === label)!;
     // The bracket is snapped to whole pixels, the label is not.
     expect(Math.abs(drawn.x - (leftFoot[0] - 0.5 + pixels + 8))).toBeLessThanOrEqual(0.5);
+    // The bar and its label end at the right gutter, 16 px from the edge.
+    expect(Math.abs(drawn.x + measure(drawn.font, label) - 544)).toBeLessThan(1e-6);
   });
 
   test('SNAP-11 each orientation letter is drawn centred where it is on screen', async () => {
@@ -233,6 +237,15 @@ describe('what the snapshot draws', () => {
     // The plate, then one swatch per row; a colour not shown in this view is hollow.
     const swatches = rounded.slice(1);
     expect(swatches.length).toBe(3);
+    swatches.forEach((swatch, row) => {
+      const planned = key.swatches[row]!;
+      expect([swatch.x, swatch.y, swatch.width, swatch.height]).toEqual([
+        planned.x,
+        planned.y,
+        planned.width,
+        planned.height,
+      ]);
+    });
     // Broca (70, 120, 200) and Arcuate (160, 120, 200) are filled; Wernicke is not shown in this view.
     expect(swatches.map((swatch) => swatch.fill)).toEqual([
       '#4678c8',

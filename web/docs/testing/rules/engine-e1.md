@@ -283,7 +283,7 @@ below are relative to `web/`. `parity/E1.test.ts` was deleted once each rule had
 - **Level:** unit
 - **Source:** `viewer/render/device.js:13-21, 79-83`
 - **Expected:** At device ratio 2: 390×844 → compact, phone, cap 1 (also 1 when integrated); 681×900 and 800×900 → compact, not phone, cap 2 (1.5 integrated); 821×900, 1000×900 → not compact, cap 2; 844×390 → compact, phone, cap 1.
-- **Covered by:** `src/lib/engine/render/device.test.ts` (R)
+- **Covered by:** `src/lib/engine/render/device.test.ts` (R, through a hand-written `matchMedia` fake that parses `max-width`; the real media-query strings are not evaluated)
 
 ### RENDER-30 · Only named discrete GPUs count as discrete
 

@@ -46,7 +46,7 @@ Shared expectations. "The anatomy fits" means every drawn vertex projects inside
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:266-307,320-345`
-- **Expected:** On the CDMD model, for each of the six display states (both hemispheres, one hemisphere, an isolated region, the cortex hidden, the cord beneath the brain, the cord on its own; proved in `framing.test.ts` on a synthetic brain), `applyView('left')` makes the drawn meshes fit. In "one hemisphere" no right-hemisphere vertex limits the fit (the frame is tighter than the both-hemispheres frame). With the cord shown, the cord's lowest vertex is inside the frame.
+- **Expected:** On a synthetic brain (boxes with the user data framing reads), for each of the six display states (both hemispheres, one hemisphere, an isolated region, the cortex hidden, the cord beneath the brain, the cord on its own; proved in `framing.test.ts` on a synthetic brain), `applyView('left')` makes the drawn meshes fit. In "one hemisphere" no right-hemisphere vertex limits the fit (the frame is tighter than the both-hemispheres frame). With the cord shown, the cord's lowest vertex is inside the frame.
 - **Covered by:** `src/lib/engine/framing.test.ts` (R)
 
 ### FACADE-05 · Focus on a region frames it from where the reader is looking
