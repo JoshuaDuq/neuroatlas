@@ -29,6 +29,11 @@ export interface UiPorts
   openFunction: ExcursionDeps['panels']['openFunction'];
   openDeficit: ExcursionDeps['panels']['openDeficit'];
   openLessonMri: ExcursionDeps['panels']['openMri'];
+  /**
+   * Shows the detail without raising a phone's sheet over the camera: a link restores a view,
+   * it does not pick (`links.hooks.showDetail`). `showDetail` (a selection) raises it.
+   */
+  showDetailInPlace(): void;
   /** Focus is inside a region's detail view, where Escape is Back. */
   focusInDetail(): boolean;
   mprOpen(): boolean;
@@ -42,6 +47,7 @@ const QUERIES = ['focusInDetail', 'mprOpen', 'diffusionMriOpen', 'shortcutsOpen'
 const COMMANDS: Record<Exclude<keyof UiPorts, (typeof QUERIES)[number]>, true> = {
   showDetail: true,
   showList: true,
+  showDetailInPlace: true,
   showMri: true,
   openPreparedPlane: true,
   revealOnSelect: true,

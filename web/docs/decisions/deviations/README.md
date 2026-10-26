@@ -114,6 +114,88 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | t1-search-folds-accents.md                    | fix (decision 42)                                              |
 | t1-status-and-alert.md                        | fix (decision 42, B1)                                          |
 | k4-prefetch-index-after-warm.md               | fix (standard cited)                                           |
+| a2-active-option-selected.md                  | fix (standard cited)                                           |
+| a2-arrows-focus-field.md                      | fix (standard cited)                                           |
+| a2-expanded-with-options.md                   | fix (standard cited)                                           |
+| a2-focus-stays-in-field.md                    | fix (standard cited)                                           |
+| a2-match-mark-forced-colours.md               | fix (standard cited)                                           |
+| a2-option-title.md                            | fix (standard cited)                                           |
+| a2-tree-scope-radio-group.md                  | fix (standard cited)                                           |
+| a3-bar-group.md                               | fix (standard cited) (approved in decision 36 on #4)           |
+| a3-focus-fallback.md                          | fix (standard cited) (approved in decision 36 on #4)           |
+| a3-initial-count.md                           | fix (standard cited) (approved in decision 36 on #4)           |
+| a3-picker-switching.md                        | fix (standard cited) (approved in decision 36 on #4)           |
+| a3-system-value-sync.md                       | fix (standard cited) (approved in decision 36 on #4)           |
+| g2-dock-toolbar.md                            | fix (standard cited)                                           |
+| g2-focus-when-tool-hidden.md                  | fix (standard cited)                                           |
+| g2-text-reflow.md                             | fix (standard cited)                                           |
+| g3-absent-text.md                             | fix (standard cited)                                           |
+| g3-focus-handoff.md                           | fix (standard cited)                                           |
+| g3-level-radio-group.md                       | approved (decision 6 on #4)                                    |
+| g3-list-role.md                               | fix (standard cited)                                           |
+| g3-paint-toolbar.md                           | approved (decision 6 on #4)                                    |
+| g4-angle-held-while-focused.md                | fix (bug)                                                      |
+| g4-focus-when-bar-hidden.md                   | fix (standard cited)                                           |
+| g4-label-in-name.md                           | fix (standard cited)                                           |
+| g4-linked-mri-busy.md                         | fix (decision 31 on #4)                                        |
+| g4-pending-after-failure.md                   | fix (bug)                                                      |
+| g4-status-outlives-bar.md                     | fix (standard cited)                                           |
+| g6-fullscreen-failure.md                      | fix (standard cited); string: decision 33                      |
+| g6-fullscreen-focus.md                        | fix (standard cited)                                           |
+| g6-paint-row-labels.md                        | fix (legacy bug); flagged on #4                                |
+| g6-snapshot-blob.md                           | fix (standard cited)                                           |
+| g6-snapshot-reentry.md                        | fix (standard cited)                                           |
+| h6-detent-announcements.md                    | approved on #4 (decision 20)                                   |
+| h6-first-inset-report.md                      | fix under the parity policy                                    |
+| h6-handle-controls.md                         | fix (standard cited; the record states no status line)         |
+| h6-handle-target.md                           | fix (standard cited; the record states no status line)         |
+| h6-peek-focus.md                              | fix (standard cited; the record states no status line)         |
+| r2-aria-disabled-rows.md                      | fix (decision 39, B3)                                          |
+| r2-forced-colours.md                          | fix (decision 39, B5)                                          |
+| r2-new-tab-cue.md                             | fix (decision 17 and 39, B6)                                   |
+| r2-retry-focus.md                             | fix (decision 39, B4)                                          |
+| r2-status-live.md                             | fix (decision 39, B2, B2b, B7)                                 |
+| r2-summary-heading.md                         | fix (decision 39, B1)                                          |
+| t2-canvas-application.md                      | fix (D1 (decision 41))                                         |
+| t2-coarse-targets.md                          | fix (T2 decision record on #60, targets)                       |
+| t2-context-lost.md                            | fix (fix 12 (decision 41))                                     |
+| t2-focus-not-obscured.md                      | fix (D9 (decision 41))                                         |
+| t2-hint.md                                    | fix (D10 (decision 41))                                        |
+| t2-key-modifiers.md                           | fix (D7 (decision 41))                                         |
+| t2-location-fail-fast.md                      | fix (fix 10 (decision 41))                                     |
+| t2-readout-not-live.md                        | fix (D3 (decision 41))                                         |
+| t2-retry-focus.md                             | fix (D8 (decision 41))                                         |
+| t2-shortcut-toggle.md                         | fix (D6 (decision 41))                                         |
+| t2-slider-output.md                           | fix (D4 (decision 41))                                         |
+| t2-status-and-alert.md                        | fix (D2 (decision 41))                                         |
+| t2-voxel-group.md                             | fix (D5 and fix 11 (decision 41))                              |
+| x1-area-name.md                               | fix (standard cited)                                           |
+| x1-focusable-while-opening.md                 | fix (standard cited)                                           |
+| x1-list-semantics.md                          | fix (standard cited)                                           |
+| x1-meta-status.md                             | fix (standard cited)                                           |
+| x1-no-landmarks.md                            | fix (standard cited)                                           |
+| x1-restore-focus.md                           | fix (standard cited)                                           |
+| x1-result-announcement.md                     | fix (standard cited)                                           |
+| x1-search-label.md                            | fix (standard cited)                                           |
+| x2-aria-disabled-while-opening.md             | fix (standard cited)                                           |
+| x2-evidence-summary-name.md                   | fix (standard cited)                                           |
+| x2-external-links.md                          | fix (standard cited)                                           |
+| x2-focus-after-render.md                      | fix (standard cited)                                           |
+| x2-list-semantics.md                          | fix (standard cited)                                           |
+| x2-results-announcement.md                    | fix (standard cited)                                           |
+| x2-search-label.md                            | fix (standard cited)                                           |
+| x2-section-landmarks.md                       | fix (standard cited)                                           |
+| x2-single-clear-control.md                    | fix (standard cited)                                           |
+| x2-status-live-region.md                      | fix (standard cited)                                           |
+| x3-busy-keeps-focus.md                        | fix (decision 40 on #4, bug 2)                                 |
+| x3-current-circuit.md                         | fix (decision 40 on #4, overrides the issue text)              |
+| x3-disclosure-state.md                        | fix (decision 40 on #4, bug 8)                                 |
+| x3-label-in-name.md                           | fix (standard cited)                                           |
+| x3-list-structure.md                          | fix (standard cited)                                           |
+| x3-new-tab-cue.md                             | fix (decisions 17 and 40 on #4; X3 request, item 5)            |
+| x3-no-landmarks.md                            | fix (standard cited, decision 13 on #4)                        |
+| x3-status-always-mounted.md                   | fix (decision 40 on #4, bug 3)                                 |
+| x3-step-announcement.md                       | fix (decision 40 on #4, bug 5)                                 |
 | Announce the orientation after keyboard orbit | **rejected** for now; not implemented, no file                 |
 
 Approvals: the decisions of 2026-10-25 recorded on #4.
