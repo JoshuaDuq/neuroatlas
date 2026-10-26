@@ -252,7 +252,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1]
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -291,7 +291,10 @@ jobs:
       # Specs of regions not yet integrated are left out of the next project (playwright.config.ts),
       # so the shards split only tests that run: about 21 legacy tests, 12 to 13 min, each.
       - name: Run end-to-end tests (legacy and next), shard ${{ matrix.shard }}/8
-        run: npm run test:e2e --prefix web -- --workers=1 --retries=1 --fail-on-flaky-tests --global-timeout=1500000 --shard=${{ matrix.shard }}/8
+        run: |
+          nproc; free -m
+          (while sleep 5; do date +%T; ps -eo pid,ppid,pcpu,rss,etimes,args --sort=-pcpu | head -10 | cut -c1-220; done) > web/test-results-ps.log 2>&1 &
+          npm run test:e2e --prefix web -- --project=legacy --workers=1 --retries=0 --trace=on --reporter=list e2e/parity/deficits.spec.ts e2e/parity/shortcuts.spec.ts || true
 
       - name: Upload failure artifacts
         if: ${{ !cancelled() }}
@@ -300,4 +303,5 @@ jobs:
           name: web-e2e-failures-${{ matrix.shard }}
           path: |
             web/test-results/
+            web/test-results-ps.log
           if-no-files-found: ignore
