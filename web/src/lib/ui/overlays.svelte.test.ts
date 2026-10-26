@@ -2,6 +2,7 @@
 // Escape consumption and axe (wcag2a/aa/21aa/22aa), against the fixture a feature would write.
 import axe from 'axe-core';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { tick } from 'svelte';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import '../../styles/index.css';
@@ -12,6 +13,18 @@ const button = (name: string) => page.getByRole('button', { name, exact: true })
 const el = (name: string) => button(name).element() as HTMLElement;
 const attr = (name: string, attribute: string) => el(name).getAttribute(attribute);
 const tooltip = () => document.querySelector<HTMLElement>('[role="tooltip"]');
+/** Resolves when a tooltip with this text is in the page, however long a loaded machine takes to draw it (the test's own timeout bounds it, and the page's timers may be faked). */
+const tooltipDrawn = (text: string) =>
+  new Promise<void>((resolve) => {
+    const observer = new MutationObserver(check);
+    function check() {
+      if (tooltip()?.textContent !== text) return;
+      observer.disconnect();
+      resolve();
+    }
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    check();
+  });
 const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
 
 async function violations() {
@@ -38,6 +51,8 @@ async function settled(node: Element) {
 const parkPointer = () => userEvent.hover(el('After popovers'));
 
 afterEach(() => {
+  // A test that times out never reaches its own `finally`; a faked clock must not leak into the next.
+  vi.useRealTimers();
   document.documentElement.removeAttribute('data-theme');
 });
 
@@ -332,6 +347,7 @@ describe('Dialog', () => {
     await button('Shortcuts').click();
     await vi.waitFor(() => expect(dialog().open).toBe(true));
     el('Close').click();
+    await tick();
     el('Shortcuts').click();
     for (let frame = 0; frame < 3; frame++)
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -343,6 +359,7 @@ describe('Dialog', () => {
     await button('Shortcuts').click();
     await vi.waitFor(() => expect(dialog().open).toBe(true));
     dialog().requestClose();
+    await tick();
     el('Shortcuts').click();
     for (let frame = 0; frame < 3; frame++)
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -469,23 +486,32 @@ describe('Tooltip', () => {
     try {
       render(Fixture);
       await button('Snapshot').hover();
-      await vi.advanceTimersByTimeAsync(499);
-      expect(tooltip()).toBeNull();
-      await vi.advanceTimersByTimeAsync(1);
+      // The pointer event may reach the page after `hover()` returns on a loaded machine, so the
+      // clock is counted up in steps and the tooltip may not exist before the 500 ms have run.
+      let waited = 0;
+      while (tooltip() === null && waited < 2000) {
+        await vi.advanceTimersByTimeAsync(10);
+        waited += 10;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      expect(waited).toBeGreaterThanOrEqual(500);
+      expect(waited).toBeLessThan(2000);
       expect(tooltip()!.textContent).toBe('Save a PNG');
       expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
 
       await userEvent.unhover(el('Snapshot'));
       // The skip window starts when the trigger closes, not when the exit transition (real time)
-      // removes the element, so that is what the fake clock is counted from.
+      // removes the element, so that is what the fake clock is counted from: not before the page has
+      // seen the pointer leave, which a loaded machine can delay.
+      while (el('Snapshot').matches(':hover'))
+        await new Promise((resolve) => requestAnimationFrame(resolve));
       for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
         await vi.advanceTimersByTimeAsync(10);
       expect(attr('Snapshot', 'aria-describedby')).toBeNull();
       await vi.advanceTimersByTimeAsync(250);
       await button('Fullscreen').hover();
       // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
-      for (let frame = 0; frame < 120 && tooltip()?.textContent !== 'Enter full screen'; frame++)
-        await new Promise((resolve) => requestAnimationFrame(resolve));
+      await tooltipDrawn('Enter full screen');
       expect(tooltip()!.textContent).toBe('Enter full screen');
       expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
     } finally {

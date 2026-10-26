@@ -44,7 +44,10 @@ async function mount(
 beforeEach(async () => {
   await page.viewport(1280, 800);
 });
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  document.documentElement.style.fontSize = '';
+});
 
 describe('mode tabs', () => {
   test('one tablist of five tabs; the selected one is the only Tab stop and controls the shown panel', async () => {
@@ -514,11 +517,14 @@ describe('sizes and media', () => {
     });
   });
 
-  test('French at 320 px: the tabs scroll inside their bar and nothing overflows the panel', async () => {
+  // At 100 % the French labels fit 320 px; 200 % text (WCAG 1.4.4) is what forces the bar to scroll.
+  test('French at 320 px and 200 % text: the tabs scroll inside their bar and nothing overflows the panel', async () => {
+    document.documentElement.style.fontSize = '200%';
     await mount({ lang: 'fr' });
     await page.viewport(320, 700);
     const bar = document.querySelector<HTMLElement>('[role=tablist]')!;
     expect(bar.scrollWidth).toBeGreaterThan(bar.clientWidth);
+    expect(getComputedStyle(bar).overflowX).toBe('auto');
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(320);
     expectContained();
   });

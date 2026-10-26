@@ -55,6 +55,14 @@ const canvas = () => find<HTMLCanvasElement>('#stage-canvas');
 const letters = () =>
   ['top', 'right', 'bottom', 'left'].map((edge) => find(`[data-edge="${edge}"]`).textContent);
 
+/** Focus the canvas after a key press, so the browser takes it for keyboard focus (:focus-visible) without a Tab walk that ends elsewhere under load. */
+async function focusByKeyboard() {
+  await userEvent.keyboard('a');
+  canvas().focus();
+  expect(document.activeElement).toBe(canvas());
+  expect(canvas().matches(':focus-visible')).toBe(true);
+}
+
 function liveState(overrides: Partial<Live>): Live {
   const state = $state<Live>({
     lang: 'en',
@@ -162,9 +170,7 @@ describe('the layer', () => {
     await mount();
     engine.camera.setChromeInsets({ bottom: 120 }, {});
     flushSync();
-    canvas().focus();
-    await userEvent.keyboard('{Tab}{Shift>}{Tab}{/Shift}');
-    expect(document.activeElement).toBe(canvas());
+    await focusByKeyboard();
     const ring = getComputedStyle(host(), '::after');
     expect(ring.borderTopWidth).toBe('2px');
     expect(ring.bottom).toBe('120px');
@@ -173,8 +179,7 @@ describe('the layer', () => {
 
   test('the ring is a system colour in forced-colours mode', async () => {
     await mount();
-    canvas().focus();
-    await userEvent.keyboard('{Tab}{Shift>}{Tab}{/Shift}');
+    await focusByKeyboard();
     await withMedia([{ name: 'forced-colors', value: 'active' }], () => {
       expect(getComputedStyle(host(), '::after').borderTopColor).not.toBe('rgb(127, 208, 204)');
     });
@@ -469,7 +474,8 @@ describe('hints', () => {
 
   test('are not drawn where one line would not fit clear of the top letter', async () => {
     await mount();
-    await vi.waitFor(() => expect(help().dataset.room).toBe('true'), { timeout: 5000 });
+    await eventually(() => expect(stage.hintRoom).not.toBeNull());
+    expect(help().dataset.room).toBe('true');
     engine.camera.setChromeInsets({ right: 540 }, {});
     await vi.waitFor(() => expect(help().dataset.room).toBe('false'), { timeout: 5000 });
     expect(getComputedStyle(help()).visibility).toBe('hidden');
