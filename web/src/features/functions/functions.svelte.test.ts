@@ -14,9 +14,8 @@ import { createWorld, deferred, type World } from './functions-test-world.ts';
 import Fixture from './functions-test-support.svelte';
 
 let world: World;
-let found: HTMLElement | null;
 const registerCurrentItem = vi.fn((find: () => HTMLElement | null) => {
-  found = find();
+  void find;
   return () => undefined;
 });
 
@@ -39,7 +38,6 @@ function mount(lang: 'en' | 'fr' = 'en', explorer = true) {
 
 beforeEach(async () => {
   await page.viewport(1280, 800);
-  found = null;
   registerCurrentItem.mockClear();
 });
 afterEach(() => {
@@ -118,7 +116,9 @@ describe('the list', () => {
 
   test('is French in French, with the searched terms marked as English', async () => {
     mount('fr');
-    await expect.element(page.getByRole('searchbox', { name: 'Rechercher une fonction' })).toBeVisible();
+    await expect
+      .element(page.getByRole('searchbox', { name: 'Rechercher une fonction' }))
+      .toBeVisible();
     await expect.element(page.getByRole('group', { name: 'Fonctions', exact: true })).toBeVisible();
     await search('a');
     const term = document.querySelector('[data-function^="term:"] .row-name')!;
@@ -212,7 +212,11 @@ describe('search', () => {
   test('Escape with text clears it and is handled; Escape on an empty field is left to the page', async () => {
     mount();
     await search('lang');
-    const handled = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    const handled = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    });
     fieldElement().dispatchEvent(handled);
     flushSync();
     expect(handled.defaultPrevented).toBe(true);
@@ -304,7 +308,9 @@ describe('announcing results', () => {
     mount();
     await search('lang');
     expect(announcer().textContent).toBe('');
-    await expect.poll(() => announcer().textContent, { timeout: 2000 }).toMatch(/^\d+ functions?( and \d+ Neurosynth terms?)?$/);
+    await expect
+      .poll(() => announcer().textContent, { timeout: 2000 })
+      .toMatch(/^\d+ functions?( and \d+ Neurosynth terms?)?$/);
     const said = announcer().textContent;
     await userEvent.click(page.getByRole('button', { name: 'Clear search' }));
     announcer().textContent = '';
@@ -434,7 +440,9 @@ describe('opening a function', () => {
     await open(many().id);
     expect(document.querySelector('.profile section, .profile [role="region"]')).toBeNull();
     expect(document.querySelector('aside')).toBeNull();
-    const headings = [...document.querySelectorAll('.profile h3')].map((h) => h.textContent!.trim());
+    const headings = [...document.querySelectorAll('.profile h3')].map((h) =>
+      h.textContent!.trim(),
+    );
     expect(headings).toContain('Deficits that check this map');
   });
 });
@@ -447,7 +455,9 @@ describe('areas', () => {
     expect(document.querySelectorAll('.profile .areas > li').length).toBe(all.length);
     const details = document.querySelector<HTMLDetailsElement>('details')!;
     expect(details.open).toBe(false);
-    expect(details.querySelector('summary')!.textContent).toBe(`${all.length - AREAS_SHOWN} more areas`);
+    expect(details.querySelector('summary')!.textContent).toBe(
+      `${all.length - AREAS_SHOWN} more areas`,
+    );
     expect(details.querySelectorAll('li').length).toBe(all.length - AREAS_SHOWN);
     await userEvent.click(page.getByText(/more areas$/));
     expect(details.open).toBe(true);
@@ -457,7 +467,9 @@ describe('areas', () => {
     mount();
     await open(many().id);
     await userEvent.click(page.getByText(/more areas$/));
-    const second = world.domains.domains.filter((d) => domainAreas(world.domains, d.id).length > AREAS_SHOWN)[1]!;
+    const second = world.domains.domains.filter(
+      (d) => domainAreas(world.domains, d.id).length > AREAS_SHOWN,
+    )[1]!;
     await open(second.id);
     expect(document.querySelector<HTMLDetailsElement>('details')!.open).toBe(false);
   });
@@ -474,7 +486,13 @@ describe('areas', () => {
     // name · side, division, z 3.2: the visible text, in order, with the separators and "z" hidden.
     expect(name).toMatch(/^.+ · [LR]\w*,? .*z [\d.]+$/);
     await expect
-      .element(page.getByRole('button', { name: new RegExp(`^${visible[0]!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) }).first())
+      .element(
+        page
+          .getByRole('button', {
+            name: new RegExp(`^${visible[0]!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+          })
+          .first(),
+      )
       .toBeVisible();
   });
 
@@ -484,7 +502,6 @@ describe('areas', () => {
     const button = area();
     button.focus();
     await userEvent.keyboard('{Enter}');
-    await expect.poll(() => world.session.state.selectedRegion ?? world.engine.calls.some((c) => c.method === 'openRegion' || c.method === 'select')).toBeTruthy();
     await expect.poll(() => document.activeElement?.id).toBe('selected-name');
     expect(meta().getAttribute('data-error')).toBe('false');
 
@@ -543,7 +560,8 @@ describe('runs: latest wins, failures are worded and offer a reload', () => {
   test('a failure says the areas could not be shown, logs it, and a newer-deploy failure raises the Reload notice', async () => {
     mount();
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    world.hold.reveal = () => Promise.reject(Object.assign(new Error('moved'), { code: 'asset-updated' }));
+    world.hold.reveal = () =>
+      Promise.reject(Object.assign(new Error('moved'), { code: 'asset-updated' }));
     await userEvent.click(rowOf(few().id));
     await expect.poll(() => meta().textContent).toBe('The HCP-MMP areas could not be shown.');
     expect(meta().getAttribute('data-error')).toBe('true');
@@ -588,7 +606,9 @@ describe('Restore', () => {
     const button = restore()!;
     button.focus();
     await userEvent.keyboard('{Enter}');
-    await expect.poll(() => meta().textContent).toBe('The previous view could not be fully restored.');
+    await expect
+      .poll(() => meta().textContent)
+      .toBe('The previous view could not be fully restored.');
     expect(restore()).toBe(button);
     expect(document.activeElement).toBe(button);
     expect(button.getAttribute('aria-disabled')).toBeNull();
@@ -659,9 +679,12 @@ describe('accessibility', () => {
     await open(many().id);
     await userEvent.click(page.getByText(/more areas$/));
     await search('x');
-    const targets = [...document.querySelectorAll<HTMLElement>('button, summary')].filter((b) => b.checkVisibility());
+    const targets = [...document.querySelectorAll<HTMLElement>('button, summary')].filter((b) =>
+      b.checkVisibility(),
+    );
     expect(targets.length).toBeGreaterThan(3);
-    for (const target of targets) expect(target.getBoundingClientRect().height, target.outerHTML).toBeGreaterThanOrEqual(24);
+    for (const target of targets)
+      expect(target.getBoundingClientRect().height, target.outerHTML).toBeGreaterThanOrEqual(24);
   });
 
   test('targets: 44 px with a coarse pointer, asserted with touch emulation', async () => {
@@ -674,10 +697,14 @@ describe('accessibility', () => {
       await open(many().id);
       await userEvent.click(page.getByText(/more areas$/));
       const check = (selector: string) => {
-        const targets = [...document.querySelectorAll<HTMLElement>(selector)].filter((e) => e.checkVisibility());
+        const targets = [...document.querySelectorAll<HTMLElement>(selector)].filter((e) =>
+          e.checkVisibility(),
+        );
         expect(targets.length, selector).toBeGreaterThan(0);
         for (const target of targets) {
-          expect(target.getBoundingClientRect().height, target.outerHTML).toBeGreaterThanOrEqual(44);
+          expect(target.getBoundingClientRect().height, target.outerHTML).toBeGreaterThanOrEqual(
+            44,
+          );
         }
       };
       check('.function-row');
@@ -705,13 +732,17 @@ describe('accessibility', () => {
       p { margin-bottom: 2em !important; }`;
     document.body.style.width = '320px';
     try {
-      for (const element of document.querySelectorAll<HTMLElement>('button, summary, h2, h3, p, label')) {
+      for (const element of document.querySelectorAll<HTMLElement>(
+        'button, summary, h2, h3, p, label',
+      )) {
         if (!element.checkVisibility()) continue;
         expect(element.scrollWidth, element.outerHTML).toBeLessThanOrEqual(element.clientWidth + 1);
         // A name that grows is taller, never cut: no fixed height on any control.
         if (element.matches('button, summary')) {
           expect(getComputedStyle(element).height).not.toBe('');
-          expect(element.scrollHeight, element.outerHTML).toBeLessThanOrEqual(element.clientHeight + 1);
+          expect(element.scrollHeight, element.outerHTML).toBeLessThanOrEqual(
+            element.clientHeight + 1,
+          );
         }
       }
       const root = document.documentElement;

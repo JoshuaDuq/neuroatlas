@@ -96,7 +96,10 @@ export function functionList(
       id: record.id,
       name: searched ? record.term : domainName(record, lang),
       studies,
-      detail: copy.termDetail(count(studies, 'study', lang), areaCountShort(domains, record.id, lang)),
+      detail: copy.termDetail(
+        count(studies, 'study', lang),
+        areaCountShort(domains, record.id, lang),
+      ),
       colour: searched ? null : (record as Domain).color,
       lang: searched && lang !== 'en' ? 'en' : null,
     };
@@ -135,7 +138,8 @@ export function functionList(
       functions: curated.reduce((sum, entry) => sum + entry.domains.length, 0),
       terms: terms.length,
     },
-    suggestion: query && !curated.length && !terms.length ? nearestName(domains, query, lang) : null,
+    suggestion:
+      query && !curated.length && !terms.length ? nearestName(domains, query, lang) : null,
   };
 }
 
@@ -233,9 +237,9 @@ export function functionProfile(
       });
 
   const population = record?.kind === 'population';
-  const found =
-    searched && population ? deficitsMatching((record as TermRecord).term, lang) : 0;
-  const checks = !all && !searched ? (domains.lesion_checks as Record<string, LesionCheck[]>)[id] : null;
+  const found = searched && population ? deficitsMatching((record as TermRecord).term, lang) : 0;
+  const checks =
+    !all && !searched ? (domains.lesion_checks as Record<string, LesionCheck[]>)[id] : null;
 
   let term: FunctionProfileContent['term'] = null;
   if (record) {

@@ -86,7 +86,10 @@ describe('functionList', () => {
   });
 
   test('the result sentence is the existing one in either language', () => {
-    assert.equal(resultsSentence({ functions: 1, terms: 2 }, 'en'), '1 function and 2 Neurosynth terms');
+    assert.equal(
+      resultsSentence({ functions: 1, terms: 2 }, 'en'),
+      '1 function and 2 Neurosynth terms',
+    );
     assert.equal(resultsSentence({ functions: 0, terms: 0 }, 'en'), 'No match');
     assert.equal(resultsSentence({ functions: 0, terms: 0 }, 'fr'), 'Aucun résultat');
   });
@@ -95,7 +98,10 @@ describe('functionList', () => {
 describe('area counts', () => {
   test('say areas and structures at the threshold', () => {
     const id = domains.domains[0]!.id;
-    assert.match(areaCount(domains, id, 'en'), /^\d+ HCP-MMP areas?( and \d+ structures?)? at z ≥ 3$/);
+    assert.match(
+      areaCount(domains, id, 'en'),
+      /^\d+ HCP-MMP areas?( and \d+ structures?)? at z ≥ 3$/,
+    );
     assert.match(areaCountShort(domains, id, 'en'), /^\d+ areas?(, \d+ structures?)?$/);
   });
 });
@@ -117,11 +123,17 @@ describe('functionProfile', () => {
     assert.equal(profile.searched, false);
     assert.equal(profile.areas.length, domainAreas(domains, id).length);
     const zs = profile.areas.map(({ z }) => Number(z));
-    assert.deepEqual(zs, [...zs].sort((a, b) => b - a));
+    assert.deepEqual(
+      zs,
+      [...zs].sort((a, b) => b - a),
+    );
     assert.match(profile.areas[0]!.name, / · (Left|Right)/);
     assert.ok(profile.areas.some(({ division }) => division !== null));
     assert.ok(profile.lesions !== null);
-    assert.match(`${profile.term!.before}${profile.term!.term}${profile.term!.after}`, /^Activation evidence · Neurosynth term “.+” · [\d,]+|\d+ studies?/);
+    assert.match(
+      `${profile.term!.before}${profile.term!.term}${profile.term!.after}`,
+      /^Activation evidence · Neurosynth term “.+” · [\d,]+|\d+ studies?/,
+    );
     assert.equal(profile.lesionBridge, null);
   });
 
@@ -140,7 +152,10 @@ describe('functionProfile', () => {
   test('the caveat names the kind of evidence', () => {
     const copyOf = (id: string) => functionProfile(deps(), id, 'en').caveat;
     const term = [...domains.search!.terms.values()];
-    assert.notEqual(copyOf(domains.domains[0]!.id), copyOf(term.find((r) => r.kind === 'function')!.id));
+    assert.notEqual(
+      copyOf(domains.domains[0]!.id),
+      copyOf(term.find((r) => r.kind === 'function')!.id),
+    );
     assert.notEqual(
       copyOf(term.find((r) => r.kind === 'function')!.id),
       copyOf(term.find((r) => r.kind === 'population')!.id),

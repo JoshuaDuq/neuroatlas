@@ -11,8 +11,7 @@ test.beforeEach(({ page: _page }, testInfo) => {
 
 const searchbox = (page: Page) => page.getByRole('searchbox');
 const list = (page: Page) => page.getByRole('group', { name: /^(Functions|Fonctions)$/ });
-const functionRow = (page: Page, name: string | RegExp) =>
-  list(page).getByRole('button', { name });
+const functionRow = (page: Page, name: string | RegExp) => list(page).getByRole('button', { name });
 const heading = (page: Page) => page.getByRole('heading', { level: 2 });
 
 /** Opens the Functions tab. */
@@ -48,7 +47,9 @@ test.describe('the list', () => {
     await expect(functionRow(page, /^Langage\s*, [\d,]+ études? ·/)).toBeVisible();
   });
 
-  test('the search label is visible on next (deviation x1-search-label)', async ({ app }, testInfo) => {
+  test('the search label is visible on next (deviation x1-search-label)', async ({
+    app,
+  }, testInfo) => {
     const { page } = app;
     await openFunctions(app);
     const label = page.locator('label[for]').filter({ hasText: 'Search functions' });
@@ -63,7 +64,9 @@ test.describe('the list', () => {
     const { page } = app;
     await openFunctions(app);
     await searchbox(page).fill('aphasia');
-    await expect(list(page).getByRole('heading', { level: 3, name: /Neurosynth clinical groups/ })).toBeVisible();
+    await expect(
+      list(page).getByRole('heading', { level: 3, name: /Neurosynth clinical groups/ }),
+    ).toBeVisible();
     await expect(functionRow(page, /^aphasia\s*,/)).toBeVisible();
     await expect(
       functionRow(page, /^Deficits: \d+ lesion profiles? match(es)? “aphasia”/),
@@ -95,7 +98,9 @@ test.describe('the list', () => {
     await expect(searchbox(page)).toBeFocused();
   });
 
-  test('ArrowDown and Enter in the field move to the first row, ArrowUp returns', async ({ app }) => {
+  test('ArrowDown and Enter in the field move to the first row, ArrowUp returns', async ({
+    app,
+  }) => {
     const { page } = app;
     await openFunctions(app);
     await searchbox(page).focus();
@@ -132,13 +137,16 @@ test.describe('a profile', () => {
     const row = functionRow(page, /^Language\s*,/);
     await row.click();
     await expect(heading(page).filter({ hasText: 'Language' })).toBeFocused();
-    // The list is behind the profile now.
-    await expect(
-      list(page).getByRole('button', { name: /^Language\s*,/, includeHidden: true }),
-    ).toHaveAttribute('aria-current', 'true');
+    // The list is behind the profile now, so it is found by its data attribute.
+    await expect(page.locator('[data-function="language"]')).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
     await expect(page.getByRole('status').filter({ hasText: /HCP-MMP areas?/ })).toBeVisible({
       timeout: 60_000,
     });
+    // The link is written once the camera move has finished.
+    await app.waitForCameraIdle();
     await expect.poll(() => app.hash()).toContain('function=language');
   });
 

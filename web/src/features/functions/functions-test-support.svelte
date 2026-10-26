@@ -22,7 +22,13 @@
   $effect(() => registerFocusTarget(FOCUS_TARGETS.regionTitle, () => regionTitle));
 </script>
 
-<div bind:this={announcer} role="status" aria-live="polite" class="visually-hidden" id="announcer"></div>
+<div
+  bind:this={announcer}
+  role="status"
+  aria-live="polite"
+  class="visually-hidden"
+  id="announcer"
+></div>
 <div class="bar"><FunctionRestore model={world.explorer} /></div>
 <div class="list"><FunctionList model={world.explorer} {registerCurrentItem} /></div>
 <div class="detail">

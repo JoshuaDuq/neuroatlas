@@ -48,12 +48,17 @@
   });
   $effect(() => {
     if (input && listElement) {
-      const navigation = listNav(listElement, { field: input, rows: '.function-row, .search-bridge' });
+      const navigation = listNav(listElement, {
+        field: input,
+        rows: '.function-row, .search-bridge',
+      });
       return () => navigation.destroy();
     }
   });
   $effect(() =>
-    registerCurrentItem(() => listElement?.querySelector<HTMLElement>('[aria-current="true"]') ?? null),
+    registerCurrentItem(
+      () => listElement?.querySelector<HTMLElement>('[aria-current="true"]') ?? null,
+    ),
   );
 
   // The count of results is said once typing pauses, from the query and the counts only: a
@@ -117,7 +122,12 @@
       {onkeydown}
     />
     {#if query !== ''}
-      <button type="button" class="search-clear" aria-label={t(lang, 'navigator').clearSearch} onclick={clear}>
+      <button
+        type="button"
+        class="search-clear"
+        aria-label={t(lang, 'navigator').clearSearch}
+        onclick={clear}
+      >
         <svg
           width="12"
           height="12"
@@ -163,7 +173,10 @@
     {#if empty}
       <EmptyState title={t(lang, 'navigator').noMatch(query)} message={copy.noResults} />
       {#if content.suggestion}
-        <SearchBridge text={copy.suggest(content.suggestion)} onclick={() => suggest(content.suggestion!)} />
+        <SearchBridge
+          text={copy.suggest(content.suggestion)}
+          onclick={() => suggest(content.suggestion!)}
+        />
       {/if}
     {/if}
     {#if deficits}

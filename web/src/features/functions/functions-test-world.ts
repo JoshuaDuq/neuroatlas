@@ -24,7 +24,7 @@ import { loadCircuitCatalog } from '../../lib/core/learning/load.ts';
 import type { ReaderFailure, ReaderState } from '../../lib/core/state/reader-state.ts';
 import { createSceneCommands } from '../../lib/core/state/scene-commands.ts';
 import type { DomainsData, FunctionalRegionsData } from '../../lib/engine/api.ts';
-import { createFakeEngine, type Call } from '../../lib/engine/fake.ts';
+import { createFakeEngine } from '../../lib/engine/fake.ts';
 import { createEngineSync } from '../../lib/state/engine-sync.svelte.ts';
 import { createLessonStore, createSessionStore } from '../../lib/state/session.svelte.ts';
 import { createView } from '../../lib/state/view.svelte.ts';
@@ -74,8 +74,6 @@ export function createWorld() {
   });
   const anatomy = createCatalog(manifest);
 
-  const note = (domain: string, method: string, ...args: unknown[]) =>
-    (engine.calls as Call[]).push({ domain, method, args });
   const real = createSceneCommands({
     model: engine.model,
     sections: engine.sections,
