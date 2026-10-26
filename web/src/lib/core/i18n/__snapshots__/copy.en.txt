@@ -41,8 +41,8 @@
    "[12345] → \"12345 landmarks\""
   ],
   "coverage": [
-   "[0,1] → \"0 guided circuits · 1 landmarks\"",
-   "[1,2] → \"1 guided circuits · 2 landmarks\"",
+   "[0,1] → \"0 guided circuits · 1 landmark\"",
+   "[1,2] → \"1 guided circuit · 2 landmarks\"",
    "[2,183] → \"2 guided circuits · 183 landmarks\"",
    "[183,12345] → \"183 guided circuits · 12345 landmarks\"",
    "[12345,0] → \"12345 guided circuits · 0 landmarks\""
@@ -302,7 +302,7 @@
  "diffusion": {
   "bundleCollection": [
    "[0] → \"0 tract bundles\"",
-   "[1] → \"1 tract bundles\"",
+   "[1] → \"1 tract bundle\"",
    "[2] → \"2 tract bundles\"",
    "[183] → \"183 tract bundles\"",
    "[12345] → \"12345 tract bundles\""
@@ -554,7 +554,7 @@
   "files": "Published files",
   "sourceFiles": [
    "[0,false] → \"0 source files\"",
-   "[1,true] → \"1 source files, each with a SHA-256 checksum\"",
+   "[1,true] → \"1 source file, with a SHA-256 checksum\"",
    "[2,false] → \"2 source files\"",
    "[183,true] → \"183 source files, each with a SHA-256 checksum\"",
    "[12345,false] → \"12345 source files\""
@@ -580,11 +580,11 @@
    "[\"\"] → \"HCP<NBHY>MMP areas: \""
   ],
   "contested": [
-   "[0,1] → \"Glasser's Table 1 gives section 0 as this area's primary section; the supplement's section text lists it under section 1.\"",
-   "[1,2] → \"Glasser's Table 1 gives section 1 as this area's primary section; the supplement's section text lists it under section 2.\"",
-   "[2,183] → \"Glasser's Table 1 gives section 2 as this area's primary section; the supplement's section text lists it under section 183.\"",
-   "[183,12345] → \"Glasser's Table 1 gives section 183 as this area's primary section; the supplement's section text lists it under section 12345.\"",
-   "[12345,0] → \"Glasser's Table 1 gives section 12345 as this area's primary section; the supplement's section text lists it under section 0.\""
+   "[0,1] → \"Glasser’s Table 1 gives section 0 as this area’s primary section; the supplement’s section text lists it under section 1.\"",
+   "[1,2] → \"Glasser’s Table 1 gives section 1 as this area’s primary section; the supplement’s section text lists it under section 2.\"",
+   "[2,183] → \"Glasser’s Table 1 gives section 2 as this area’s primary section; the supplement’s section text lists it under section 183.\"",
+   "[183,12345] → \"Glasser’s Table 1 gives section 183 as this area’s primary section; the supplement’s section text lists it under section 12345.\"",
+   "[12345,0] → \"Glasser’s Table 1 gives section 12345 as this area’s primary section; the supplement’s section text lists it under section 0.\""
   ],
   "note": "Published groupings of whole HCP-MMP areas, reaching this brain through its HCP-MMP projection; not measured function in this brain.",
   "keyAria": "Functional division level",
@@ -599,8 +599,8 @@
   "all": "All functions",
   "allDetail": "Each area in its strongest core assessment function",
   "coverage": [
-   "[0,1] → \"0 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 1 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
-   "[1,2] → \"1 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 2 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
+   "[0,1] → \"0 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 1 more Neurosynth term or clinical group. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
+   "[1,2] → \"1 function, a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 2 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
    "[2,183] → \"2 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 183 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
    "[183,12345] → \"183 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 12345 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\"",
    "[12345,0] → \"12345 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities.\""

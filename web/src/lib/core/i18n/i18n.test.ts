@@ -218,6 +218,54 @@ test('the French Escape row names the function and the deficit, as the English r
   assert.match(row('fr'), /la fonction ou le déficit$/);
 });
 
+test('counted phrases read right for a count of 1 and of 2, in both languages', () => {
+  const footer = both('footer');
+  const functions = both('functions');
+  assert.equal(footer.en.sourceFiles(1, false), '1 source file');
+  assert.equal(footer.en.sourceFiles(2, false), '2 source files');
+  assert.equal(footer.en.sourceFiles(1, true), '1 source file, with a SHA-256 checksum');
+  assert.equal(footer.en.sourceFiles(2, true), '2 source files, each with a SHA-256 checksum');
+  assert.equal(footer.fr.sourceFiles(1, false), '1 fichier source');
+  assert.equal(footer.fr.sourceFiles(2, false), '2 fichiers sources');
+  assert.equal(footer.fr.sourceFiles(1, true), '1 fichier source, avec une somme SHA-256');
+  assert.equal(footer.fr.sourceFiles(2, true), '2 fichiers sources, chacun avec une somme SHA-256');
+
+  assert.match(
+    functions.en.coverage(1, 1),
+    /^1 function, a Neurosynth meta-analysis .*finds 1 more Neurosynth term or clinical group\./,
+  );
+  assert.match(
+    functions.en.coverage(2, 2),
+    /^2 functions, each a Neurosynth meta-analysis .*finds 2 more Neurosynth terms and clinical groups\./,
+  );
+  assert.match(
+    functions.fr.coverage(1, 1),
+    /^1 fonction, une méta-analyse Neurosynth .*trouve aussi 1 autre terme ou groupe clinique Neurosynth\./,
+  );
+  assert.match(
+    functions.fr.coverage(2, 2),
+    /^2 fonctions, chacune une méta-analyse Neurosynth .*trouve aussi 2 autres termes et groupes cliniques Neurosynth\./,
+  );
+
+  assert.equal(CIRCUIT_TEXT.en.coverage(1, 1), '1 guided circuit · 1 landmark');
+  assert.equal(CIRCUIT_TEXT.en.coverage(2, 2), '2 guided circuits · 2 landmarks');
+  assert.equal(CIRCUIT_TEXT.fr.coverage(1, 1), '1 parcours guidé · 1 repère');
+  assert.equal(CIRCUIT_TEXT.fr.coverage(2, 2), '2 parcours guidés · 2 repères');
+
+  assert.deepEqual([1, 2].map(DIFFUSION_TEXT.en.bundleCollection), [
+    '1 tract bundle',
+    '2 tract bundles',
+  ]);
+  assert.deepEqual([1, 2].map(DIFFUSION_TEXT.fr.bundleCollection), ['1 faisceau', '2 faisceaux']);
+});
+
+test('the contested-section note uses typographic apostrophes', () => {
+  assert.equal(
+    both('functional').en.contested(3, 5),
+    'Glasser’s Table 1 gives section 3 as this area’s primary section; the supplement’s section text lists it under section 5.',
+  );
+});
+
 const NNBSP = ' ';
 
 test('I18N-05 · the strings later chunks asked for read as approved, in both languages', () => {

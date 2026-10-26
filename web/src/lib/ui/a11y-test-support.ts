@@ -8,36 +8,38 @@ import '../../styles/index.css';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
 
-async function violations(): Promise<string[]> {
-  // A component fixture has no landmarks; page-level rules are the integration chunks' job.
-  const results = await axe.run(document.body, {
-    runOnly: TAGS,
-    rules: { region: { enabled: false } },
-  });
-  return results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' ')}`);
-}
-
-/** axe (wcag2a/aa, 21aa, 22aa) on what is rendered now: light and dark, desktop and 390 px. */
-export async function expectAxeClean(): Promise<void> {
+/** axe (wcag2a/aa, 21aa, 22aa) on what is rendered now, in one theme and at one width. */
+export async function expectAxeCleanOnce(
+  theme: 'light' | 'dark',
+  width: 1280 | 390,
+): Promise<void> {
   const root = document.documentElement;
   // Colour transitions would let axe read a half-way colour on a slow runner.
   const still = document.head.appendChild(document.createElement('style'));
   still.textContent = '*, *::before, *::after { transition: none !important; }';
   try {
-    for (const theme of ['light', 'dark']) {
-      root.dataset.theme = theme;
-      for (const [width, height] of [
-        [1280, 800],
-        [390, 844],
-      ]) {
-        await page.viewport(width, height);
-        expect(await violations(), `${theme} ${width}px`).toEqual([]);
-      }
-    }
+    root.dataset.theme = theme;
+    await page.viewport(width, width === 1280 ? 800 : 844);
+    // A component fixture has no landmarks; page-level rules are the integration chunks' job.
+    const results = await axe.run(document.body, {
+      runOnly: TAGS,
+      rules: { region: { enabled: false } },
+    });
+    expect(
+      results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' ')}`),
+      `${theme} ${width}px`,
+    ).toEqual([]);
   } finally {
     still.remove();
     delete root.dataset.theme;
     await page.viewport(1280, 800);
+  }
+}
+
+/** axe on what is rendered now: light and dark, desktop and 390 px. */
+export async function expectAxeClean(): Promise<void> {
+  for (const theme of ['light', 'dark'] as const) {
+    for (const width of [1280, 390] as const) await expectAxeCleanOnce(theme, width);
   }
 }
 

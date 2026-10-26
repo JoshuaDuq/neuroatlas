@@ -128,7 +128,7 @@
               <p class="note">{t(lang, 'domains').noLesionCheck}</p>
             {:else}
               <ul class="links">
-                {#each content.lesions as check (check.deficit)}
+                {#each content.lesions as check (check.association)}
                   <li>
                     <button
                       type="button"

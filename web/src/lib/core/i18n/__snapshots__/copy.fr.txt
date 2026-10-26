@@ -41,11 +41,11 @@
    "[12345] → \"12345 repères\""
   ],
   "coverage": [
-   "[0,1] → \"0 parcours guidés · 1 repères\"",
-   "[1,2] → \"1 parcours guidés · 2 repères\"",
+   "[0,1] → \"0 parcours guidé · 1 repère\"",
+   "[1,2] → \"1 parcours guidé · 2 repères\"",
    "[2,183] → \"2 parcours guidés · 183 repères\"",
    "[183,12345] → \"183 parcours guidés · 12345 repères\"",
-   "[12345,0] → \"12345 parcours guidés · 0 repères\""
+   "[12345,0] → \"12345 parcours guidés · 0 repère\""
   ],
   "schematic": "Relations schématiques · sans mesure de connectivité ni tractographie",
   "connections": "Connexions et portée",
@@ -301,8 +301,8 @@
  },
  "diffusion": {
   "bundleCollection": [
-   "[0] → \"0 faisceaux\"",
-   "[1] → \"1 faisceaux\"",
+   "[0] → \"0 faisceau\"",
+   "[1] → \"1 faisceau\"",
    "[2] → \"2 faisceaux\"",
    "[183] → \"183 faisceaux\"",
    "[12345] → \"12345 faisceaux\""
@@ -553,8 +553,8 @@
   "supplemental": "Couches complémentaires",
   "files": "Fichiers publiés",
   "sourceFiles": [
-   "[0,false] → \"0 fichiers sources\"",
-   "[1,true] → \"1 fichiers sources, chacun avec une somme SHA-256\"",
+   "[0,false] → \"0 fichier source\"",
+   "[1,true] → \"1 fichier source, avec une somme SHA-256\"",
    "[2,false] → \"2 fichiers sources\"",
    "[183,true] → \"183 fichiers sources, chacun avec une somme SHA-256\"",
    "[12345,false] → \"12345 fichiers sources\""
@@ -599,8 +599,8 @@
   "all": "Toutes les fonctions",
   "allDetail": "Chaque aire dans la plus forte des fonctions de base de l’évaluation",
   "coverage": [
-   "[0,1] → \"0 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 1 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
-   "[1,2] → \"1 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 2 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
+   "[0,1] → \"0 fonction, une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 1 autre terme ou groupe clinique Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
+   "[1,2] → \"1 fonction, une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 2 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
    "[2,183] → \"2 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 183 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
    "[183,12345] → \"183 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP<NNBSP>; la recherche trouve aussi 12345 autres termes et groupes cliniques Neurosynth. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\"",
    "[12345,0] → \"12345 fonctions, chacune une méta-analyse Neurosynth de la littérature d’activation sur les aires HCP-MMP. Une carte de référence des activations rapportées par les études, et non une mesure de ce cerveau ni des capacités d’une personne.\""
