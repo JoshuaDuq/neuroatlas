@@ -310,7 +310,7 @@ values (I18N-22, I18N-28) hold it today.
 
 - **Rule:** Stated once as INSP-27 (`inspector.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see INSP-27
 - **Source:** see INSP-27
 - **Expected:** see INSP-27
 - **Covered by:** see INSP-27

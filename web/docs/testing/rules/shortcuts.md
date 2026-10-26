@@ -120,10 +120,10 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 
 - **Rule:** In the app the dialog opens from the "Keyboard shortcuts" item of the "More settings" menu. With single-key shortcuts turned off, `?` does not open it, and the note says how to turn them back on.
 - **Kind:** behaviour
-- **Level:** e2e — the assembled masthead, keymap and stored preference
+- **Level:** browser — the menu, the keymap and the stored preference mounted together (REGION-10 proves a menu setting the same way); the reload half is a stored-preference read at mount
 - **Source:** `viewer/ui/chrome/shortcuts.js:3`; KEY-06 in `controller.md`
 - **Expected:** "More settings" → "Keyboard shortcuts" → dialog "Keyboard shortcuts". `localStorage['planum.single-key-shortcuts'] = 'off'`, reload, `?` → no dialog; menu → note contains "Turn them back on in the settings menu".
-- **Covered by:** `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
+- **Covered by:** `e2e/parity/shortcuts.spec.ts` (R; `next` gated off); uncovered at its level
 
 ## Size, layout and media
 

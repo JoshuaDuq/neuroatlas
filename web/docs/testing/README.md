@@ -5,7 +5,7 @@ by legacy code equivalence: a test states what the app must do for the reader, o
 result, and checks it against fixed values without importing `viewer/`. This folder holds what the
 conversion needs.
 
-- `rules/<area>.md`: 34 catalogues, 1,323 entries (1,306 rules plus 17 that point to the one place a
+- `rules/<area>.md`: 34 catalogues, 1,324 entries (1,302 rules plus 22 that point to the one place a
   duplicated rule is stated). Each rule has an ID, the rule, its kind, the **cheapest level that proves it**,
   its legacy source, fixed expected values and the tests that cover it today, with their class.
 - `audit.md`: every test file in one table, the rule IDs hiding in each legacy-comparison file, the slow
@@ -20,13 +20,13 @@ Test files (237: 161 unit and 52 browser Vitest files, 24 Playwright specs), by 
 | --------------------------- | -------------------------------------------------------------------- |
 | R business rule             | 192 (120 unit, 48 browser, 24 e2e)                                   |
 | S scientific or data result | 8                                                                    |
-| D legacy comparison         | 27 (24 of the 25 `parity/*.test.ts`, both `*.parity.svelte.test.ts`) |
+| D legacy comparison         | 27 (25 of the 26 `parity/*.test.ts`, both `*.parity.svelte.test.ts`) |
 | I implementation-pinning    | 1                                                                    |
 | W weak or tautological      | 1                                                                    |
 | H hygiene                   | 8                                                                    |
 
-Rules by cheapest level: 843 unit, 465 browser, 15 e2e. About 56 rules are covered only by differential
-tests and 28 by nothing; they need rule tests before the differential files can go. Many R files also carry
+Rules by cheapest level (over the 1,302 rules, pointers left out): 826 unit, 469 browser, 7 e2e. About 55
+rules are covered only by differential tests and 48 by no test at all; they need rule tests before the differential files can go. Many R files also carry
 small I or W parts (call-order spies, re-derived expectations); `audit.md` names them.
 
 ## Conversion order
@@ -64,7 +64,8 @@ while the others took 48 to 67 s: it runs the 49-case engine contract with a fre
 parsing about 35 MB of GLB on software WebGL. Only 19 cases need the real engine. Booting once per
 `describe` saves about 160 to 185 s; splitting the suite into four files so shards balance cuts the CI wall
 time by about 260 s; running the contract in the unit project with the fake renderer that `index.test.ts`
-already uses leaves 25 to 30 s in the browser. After it: `parity/E4b` 43.6 s, `parity/C3` 34.3 s, the sheet
+already uses (after writing a fetch-to-disk shim for the volumes, tracts and overlap file, and keeping one
+browser cut case for the worker path) leaves 25 to 30 s in the browser. After it: `parity/E4b` 43.6 s, `parity/C3` 34.3 s, the sheet
 21.2 s, functions 19.9 s, `parity/F3` 16.6 s, the data bar 11.5 s (55 fixed 150 ms sleeps) and the overlays
 9.8 s. Most browser time comes from five patterns: axe theme × width × language matrices, real debounce and
 tooltip timers, CSS transitions, viewport churn and real data parsed per case.
@@ -73,7 +74,9 @@ tooltip timers, CSS transitions, viewport churn and real data parsed per case.
 
 The panels gate in `e2e/parity/enabled/` is `true` since #134, so the eleven panel specs are listed on
 `next` (pull requests skip e2e, so whether they pass there is not yet known); the shell and stage gates are
-`false`. As each gate flips, keep a few journeys and drop the cases a browser test already proves:
+`false`. As each gate flips, keep a few journeys and drop the cases a browser test already proves. A
+journey exercises the built site end to end; it is not the level that proves each rule it touches, and the
+rules it touches each keep their own unit or browser test:
 
 1. **Boot**: cold start to ready on the built site, the WebGL failure screen, a failed start that keeps the
    link (`boot.spec.ts`), plus the build harness that already runs (`harness.spec.ts`).
@@ -90,5 +93,6 @@ The panels gate in `e2e/parity/enabled/` is `true` since #134, so the eleven pan
 7. **Phone**: the sheet tells the stage what it covers, desktop to phone keeps tab focus, the page-wide
    focus walk, 320 px, and axe on the composed app.
 8. **Snapshot and full screen**: a real PNG from the real WebGL stage, and real full screen in and out.
-9. **Tracts**: the first opening loads and says so, the lengths CSV, and the MRI navigator's source voxel on
-   real NiiVue (TRACT-33, the one rule only real NiiVue can prove).
+9. **Tracts**: the first opening loads and says so, the lengths CSV downloads, and the MRI navigator opens
+   and steps on the built site. Its source-voxel rule (TRACT-33) is proved in the browser project, on the
+   real engine's navigator.

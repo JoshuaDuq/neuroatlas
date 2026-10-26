@@ -109,7 +109,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 
 - **Rule:** Stated once as LINK-05 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit (fake timers)
+- **Level:** see LINK-05
 - **Source:** see LINK-05
 - **Expected:** see LINK-05
 - **Covered by:** see LINK-05
@@ -118,7 +118,7 @@ The announcer's sentences are KEY-17 to KEY-21 in `controller.md`; the session's
 
 - **Rule:** Stated once as LINK-05 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit (fake timers)
+- **Level:** see LINK-05
 - **Source:** see LINK-05
 - **Expected:** see LINK-05
 - **Covered by:** see LINK-05

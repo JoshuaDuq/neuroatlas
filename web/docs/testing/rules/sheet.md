@@ -76,7 +76,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — layout/CSS media queries
 - **Source:** `viewer/ui/chrome/sheet.js:35-38,256-298`; `viewer/styles/phone.css:15,62-97`; `viewer/ui/chrome/sheet.test.js:103-164`
 - **Expected:** 390 × 844 → `position: fixed`, sheet bottom = `innerHeight`, `data-detent="peek"`, `#navigator` and `#inspector` `visibility: hidden`. 1280 × 800 → `display: contents`, handle not visible, no `data-detent`, `style.height` empty, insets all 0, `sheetFull` false, `#navigator` visible. 780 × 700 → `style.height` set, `style.width` empty, `bottom: 0px`. 800 px wide → phone shell; 801 px wide → desktop.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R; the 800/801 boundary is uncovered); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R; the 800/801 boundary is uncovered); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)
 
 ### SHEET-09 · Peek hugs the grip, and follows it when its text grows or shrinks
 
@@ -85,7 +85,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — layout
 - **Source:** `viewer/ui/chrome/sheet.js:61-79,243-251`
 - **Expected:** At peek, `sheet.bottom − tablist.bottom` < 3 px, and the tablist bottom ≤ `innerHeight`. Adding a selection or a notice grows the span; removing it returns to the bare span exactly. With 200 % text and the spacing override, the span grows, the tab row still ends within 3 px of the screen foot, and the grip row's bottom ≤ the tablist's top + 1.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)
 
 ### SHEET-10 · Held sideways the sheet is a side rail from the stage's top, and rotating swaps the axis
 
@@ -94,7 +94,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — layout
 - **Source:** `viewer/ui/chrome/sheet.js:58-100`; `viewer/styles/phone.css` (landscape block)
 - **Expected:** 390 × 844 rotated to 844 × 390 → `style.width` set, `style.height` empty, `style.top` = round(stage top) px, sheet left = 0, last tab's right within 40 px of the sheet's right edge, tab `white-space: nowrap`. Back to 390 × 844 → `style.height` set, `style.width` and `style.top` empty.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; on `next` only once the stage gate flips (its describe needs the stage region))
 
 ### SHEET-11 · The stage is told the span the sheet will land on, and whether it glides there
 
@@ -103,7 +103,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — layout (the span comes from measured boxes)
 - **Source:** `viewer/ui/chrome/sheet.js:103-122`; deviation `h6-first-inset-report.md`; comment 79 on #4
 - **Expected:** At peek: last report `{insets: {0, 0, rect.height, 0}, settle: true}`. During a drag: `settle: false`. After the handle: `bottom` = round(0.5·H), then H − 128. Desktop 1280 × 800 narrowed to 390 × 844 → the last `bottom` > 60 and = round(sheet height); widened again → `{0, 0, 0, 0}`. In the app the stage's `--vis-bottom` follows each rest (> 60 at peek, round(0.5·H) ± 5 at half), and `--vis-left` > 100 sideways.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`; the "narrowed to a phone after load" case skips on legacy as well, so it runs nowhere today)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; on `next` only once the stage gate flips (its describe needs the stage region); the "narrowed to a phone after load" case skips on legacy as well, so it runs nowhere today)
 
 ### SHEET-12 · A full sheet tells the stage, which then gives up its dock
 
@@ -123,7 +123,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — keyboard dispatch to a focused button
 - **Source:** `viewer/ui/chrome/sheet.js:124-134,210-212`; decision record 0006; deviation `h6-handle-controls.md`
 - **Expected:** Presses from peek → half (span round(0.5·H), "Expand panel"), full (H − 128, "Collapse panel"), peek (the first span, "Expand panel"); `onDetent` called with `['half', 'full', 'peek']`. `tagName` BUTTON, `aria-controls="workspace-panel"`, no `aria-expanded`. French at half, Escape → still half.
-- **Covered by:** `src/lib/core/detents.test.ts` (R, `stepDetent` walks peek → half → full, stops at the ends, and an unknown rest falls back to peek); `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`; the `aria-controls` case branches `sheet` / `workspace-panel`)
+- **Covered by:** `src/lib/core/detents.test.ts` (R, `stepDetent` walks peek → half → full, stops at the ends, and an unknown rest falls back to peek); `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134; the `aria-controls` case branches `sheet` / `workspace-panel`)
 
 ### SHEET-14 · A rest the reader chooses is announced; resizes and raises that come with another action are not
 
@@ -132,7 +132,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — the page's live region
 - **Source:** deviation `h6-detent-announcements.md`; decision 20 on #4; decision record 0006
 - **Expected:** EN "Panel collapsed", "Panel half open", "Panel fully open"; FR "Panneau replié", "Panneau à moitié ouvert", "Panneau entièrement ouvert". Drag of 30 px at 400 ms released at 800 ms (back to peek) → "". Tab chosen at peek → "". Strip with Enter → "". Resize 390 × 844 → 390 × 700 at half → the earlier message unchanged.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, `next` only; skips on `next` today, so unrun); the strings are in `src/lib/core/i18n/areas/sheet.ts` (I18N-)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, `next` only; enabled on `next` since #134); the strings are in `src/lib/core/i18n/areas/sheet.ts` (I18N-)
 
 ### SHEET-15 · A keyboard press moves the sheet without a glide; a pointer press, a settle or a drag each keep their own motion
 
@@ -141,7 +141,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — CSS computed style
 - **Source:** `viewer/ui/chrome/sheet.js:127-139,210-220`; `viewer/styles/a11y.css:8-14`; decision record 0006
 - **Expected:** At rest `transition-property: height`, `transition-duration: 0.24s`. Enter or Space on the handle → `data-instant` present, duration `0s`; then a click → `data-instant` absent. While dragging → duration `0s`. `prefers-reduced-motion: reduce` → `transition-property: opacity`.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)
 
 ## Dragging
 
@@ -152,7 +152,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — pointer events on real layout
 - **Source:** `viewer/ui/chrome/sheet.js:7-8,150-198`
 - **Expected:** 7 px → `data-dragging="false"`, span unchanged. Pulled to round(0.5·H) − 30 at 50 ms → dragging, span = round(0.5·H) − 30, `settle: false`; released at 400 ms → half, `settle: true`, `onDetent(['half'])`. Sideways at peek, +10 px → span = peek + 10, released at 400 ms → peek. A press on a list row moved 100 px, a non-primary press, a `button: 1` press → not dragging. A second finger (id 2) moving → span unchanged.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, mouse flick up and down; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, mouse flick up and down; enabled on `next` since #134)
 
 ### SHEET-17 · The click that ends a drag is swallowed; a tap that never dragged is not
 
@@ -181,7 +181,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — visibility from CSS; the name is a view-model string
 - **Source:** `viewer/ui/chrome/sheet.js:308-322`; deviation `h5-strip-name-side.md`
 - **Expected:** Selection {label "Insula", side "L", sideWord "left", clearable} → button "Inspect Insula, left" whose text contains "Insula" and "L"; "Clear selection" visible. French → "Examiner Insula, left", "Effacer la sélection", "Pas une anatomie clinique" on the page. After the strip opens the detail at half: strip not visible, clear visible.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, aria snapshots; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, aria snapshots; enabled on `next` since #134)
 
 ### SHEET-20 · The strip raises a resting sheet and opens the detail, moving focus only if it had it
 
@@ -190,7 +190,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — focus
 - **Source:** `viewer/ui/chrome/sheet.js:136-139,213-219`; `viewer/ui/chrome/sheet.test.js:294`
 - **Expected:** Enter on the strip → span round(0.5·H), `data-instant`, `onSelection` called, focus on `.detail-back`, `data-view="detail"`, announcer "". Click with focus on the Anatomy tab → half, detail, focus still on the tab. Then the handle → full; Back → list view, still full.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, focus on "Back to …"; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, focus on "Back to …"; enabled on `next` since #134)
 
 ### SHEET-21 · The grip's clear gives focus to the tab in front
 
@@ -199,7 +199,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — focus
 - **Source:** `viewer/ui/chrome/sheet.js:235-240`
 - **Expected:** Click "Clear selection" → `onClear` called once, focus on the Anatomy tab, no strip.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)
 
 ## Tabs, panels and focus
 
@@ -210,7 +210,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — click and keyboard on the tablist
 - **Source:** `viewer/ui/chrome/sheet.js:220`; `viewer/ui/chrome/sheet.test.js:215-222`
 - **Expected:** Click Functions at peek → span round(0.5·H), `mode:functions`, announcer "". Then the handle → full, then Deficits → still H − 128. Click Anatomy (chosen) at peek → half. Enter on Functions at peek → half with `data-instant`.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)
 
 ### SHEET-23 · At peek the panels take no focus; above it every panel stop is on screen below the grip
 
@@ -219,7 +219,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — sequential focus and layout
 - **Source:** `viewer/ui/chrome/sheet.js:17-20`; `viewer/styles/phone.css:90-97`; decision record 0006
 - **Expected:** With a selection: handle → strip → clear → Anatomy tab → (next stop not in `#navigator`). At half, Anatomy tab → Tab → "Search regions". With 30 rows and a notice at half or full: ≥ 31 stops in the panel, each `top ≥ grip floor − 0.5` and `bottom ≤ innerHeight + 0.5`. At peek: ≥ 4 stops, none in `#navigator`, all inside the sheet and the screen.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, Tab order and the page-wide 2.4.3 / 2.4.11 walk; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, Tab order and the page-wide 2.4.3 / 2.4.11 walk; enabled on `next` since #134)
 
 ### SHEET-24 · Settling on peek with focus in a panel moves focus to the handle
 
@@ -248,7 +248,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — layout and hit testing
 - **Source:** deviation `h6-handle-target.md`; `viewer/styles/phone.css:116-134,267-271,296-299`
 - **Expected:** At 390 × 844 and 844 × 390 with a selection: every control's width and height ≥ 44. Hit testing down the handle's centre line in 0.25 px steps finds ≥ 23 px of handle before anything else.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, 2.5.8 with `hasTouch`; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R, 2.5.8 with `hasTouch`; enabled on `next` since #134)
 
 ### SHEET-27 · The handle bar holds 3:1 against the sheet, and is ButtonText under forced colours
 
@@ -272,10 +272,10 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 
 - **Rule:** At 320 px the assembled page has no horizontal scroll and the last tab is still visible (WCAG 1.4.10).
 - **Kind:** accessibility
-- **Level:** e2e — whole-page layout
+- **Level:** browser — the composed panel region at 320 × 640 (as `PanelsRegion.svelte.test.ts` and `App.svelte.test.ts` set the viewport)
 - **Source:** WCAG 1.4.10
 - **Expected:** 320 × 640: `scrollWidth − clientWidth` = 0; the Tracts tab visible.
-- **Covered by:** `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134); uncovered at its level
 
 ### SHEET-30 · axe finds nothing on the sheet
 
@@ -284,4 +284,4 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` with no violations (light and dark × 1280 and 390 px); French the same. In the app: peek and half with a region in the link.
-- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)

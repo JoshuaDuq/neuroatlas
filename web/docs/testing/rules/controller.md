@@ -192,8 +192,8 @@ checks them in the browser today and could run in the unit project over the fake
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:569-598`, `675-686`; `viewer/catalog/visibility.js`
-- **Expected:** hemisphere `right`, reveal(`hemisphere`, `destrieux:left:30`) → `both`, selected, framed. Cortex hidden and region removed, reveal(`removed`) → cortex visible, selected. reveal(`hemisphere`, `hcp-mmp:left:1`) under Destrieux → failure notice, nothing selected.
-- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R: hemisphere, removed→cortex, failure); the other reasons: `parity/S2.test.ts` only (D, random walk)
+- **Expected:** hemisphere `right`, reveal(`hemisphere`, `destrieux:left:30`) → `both`, selected, framed. Cortex hidden and region removed, reveal(`removed`) → cortex visible, selected. reveal(`hemisphere`, `hcp-mmp:left:1`) under Destrieux → failure notice, nothing selected. One fixed outcome per remaining reason, each ending with the region selected and framed (ids from the published `cdmd` manifest): internal structures hidden, reveal(`internal-hidden`, `aseg:left:17`) on the `aseg` detail → `internalVisible: true`; cord hidden, reveal(`spinal-cord-hidden`, `zanatomy:midline:cord`) → the cord shown; `destrieux:left:30` isolated, reveal(`isolated`, `destrieux:left:38`) → `isolatedRegion: null`; surface colour `mri`, reveal(`no-mri`, …) → `surfaceColor: 'tissue'`; detail `aseg`, reveal(`other-detail`, `nextbrain:left:48`) → detail `nextbrain` loaded; a system filter that excludes the region, reveal(`other-system`, …) → `internalSystem: null`.
+- **Covered by:** `src/lib/controller/anatomy.svelte.test.ts` (R: hemisphere, removed→cortex, failure); internal-hidden, spinal-cord-hidden, isolated, no-mri, other-detail and other-system: `parity/S2.test.ts` only (D, random walk), so each needs the fixed case above before S2 goes
 
 ### CTRL-19 · A cut-only region is revealed by a coronal cut through its centre
 

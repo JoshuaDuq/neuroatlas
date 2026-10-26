@@ -448,12 +448,12 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 
 ### ANAT-49 · A chosen system is in the link and comes back from it
 
-- **Rule:** Choosing a system writes it to the link; choosing all removes it; reloading the link shows the same system chosen.
+- **Rule:** Stated once as LINK-21 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** e2e — permalink round trip on the built site (the URL format is `links.md`'s)
-- **Source:** `viewer/state/url-state.js:155` (`system=`); `viewer/ui/panels/internal-anatomy.js:102`
-- **Expected:** "By system", option 1 → hash contains `system=`, the checked option is that name; option 0 → no `system=`. Reload with the hash → the same hash and the same checked option.
-- **Covered by:** `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
+- **Level:** see LINK-21
+- **Source:** see LINK-21
+- **Expected:** see LINK-21
+- **Covered by:** see LINK-21
 
 ## Dissection bar
 
@@ -497,28 +497,28 @@ Scope: chunks A1 (#51, the anatomy tree with its visibility eyes), A2 (#52, the 
 
 - **Rule:** The `dissection-undo` focus target is Undo, or Restore all while Undo is disabled, and none without the bar, so the inspector's Hide never lands on a disabled button. Hiding the selected region from the inspector puts focus on Undo; Undo then brings the part back and focus goes to the tree.
 - **Kind:** behaviour
-- **Level:** browser — focus registry (the cross-panel journey is e2e)
+- **Level:** browser — focus registry, and the composed panel for the cross-panel half
 - **Source:** decision 35 and 36 on #4; deviation `a3-focus-fallback.md`
 - **Expected:** History [1] → `requestFocus('dissection-undo')` true, Undo focused; no history → Restore all focused; no bar → `false`, and with fallback `tree-stop` → `#stop`. Published data, `#region=destrieux:left:38`, Hide → "1 part hidden", Undo enabled and focused; Enter → no bar, focus on the tree's stop.
-- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/anatomy/DissectionBar.svelte.test.ts` (R); `src/app/regions/PanelsRegion.svelte.test.ts:123` (R, the inspector's Hide focuses Undo in the list); `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
 
 ### ANAT-55 · A restored link's hidden count is said once
 
-- **Rule:** Opening a link that hides parts says the count once, because the announcer exists before the link is applied. The bar itself does not announce.
+- **Rule:** Stated once as LINK-19 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** accessibility
-- **Level:** browser — whole-app boot order (`controller.md` owns the announcer)
-- **Source:** `viewer/ui/panels/dissection.js:36-42`; deviation `a3-initial-count.md`
-- **Expected:** Boot with `#hidden=<region>` → the live region reads "1 part hidden".
-- **Covered by:** `src/app/boot.svelte.test.ts` (R)
+- **Level:** see LINK-19
+- **Source:** see LINK-19
+- **Expected:** see LINK-19
+- **Covered by:** see LINK-19
 
 ### ANAT-56 · A hidden part is in the link and comes back from it
 
-- **Rule:** Parts hidden from a link show the bar with their count and Undo disabled; Restore all removes them from the link.
+- **Rule:** Stated once as LINK-21 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** e2e — permalink round trip on the built site (the URL format is `links.md`'s)
-- **Source:** `viewer/state/url-state.js:197-204` (`hidden=`); `viewer/ui/panels/dissection.js:20-30`
-- **Expected:** `#hidden=destrieux:left:38` → "1 part hidden", Undo disabled, axe clean (`dissection`); Restore all → hash has no `hidden=`.
-- **Covered by:** `e2e/parity/dissection.spec.ts` (R; enabled on `next` since #134)
+- **Level:** see LINK-21
+- **Source:** see LINK-21
+- **Expected:** see LINK-21
+- **Covered by:** see LINK-21
 
 ### ANAT-57 · The bar and the picker keep their targets and reflow
 

@@ -308,10 +308,10 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 
 - **Rule:** The fields are labelled "Source voxel (0-based)", and after any move (a canvas key, a click, Go to voxel) they hold the source voxel under the crosshair, so Go to voxel goes back to the same point. On the CDMD scan, whose first axis runs against the display (affine x = −1), a step to the right lowers the source i.
 - **Kind:** scientific
-- **Level:** e2e — real NiiVue on the published scan (the conversion is DIFF-, unit-tested in `navigation-viewer.test.ts`)
+- **Level:** browser — the real engine's navigator (real NiiVue on the published CDMD MRI already runs in the browser project through `index.svelte.test.ts`)
 - **Source:** comment 64 on #4; deviation `e7-navigator-source-voxel.md`; `viewer/diffusion/navigation-ui.js:95-102`
 - **Expected:** Go to voxel (40, 50, 60), then ArrowRight on the canvas → fields (39, 50, 60), not the RAS-reordered voxel legacy shows; pressing Go to voxel with those fields leaves the readout unchanged.
-- **Covered by:** uncovered at the dialog level (`e2e/parity/mri-navigator.spec.ts` asserts only that the readout text changes); the fake engine cannot show it
+- **Covered by:** uncovered: the contract-suite case "opens the MRI navigator on a canvas" (`src/lib/engine/fake/contract-suite.ts:714-740`, real NiiVue through `index.svelte.test.ts`) checks the step with `Math.abs(x - 5)`, so it does not prove the direction; `e2e/parity/mri-navigator.spec.ts` asserts only that the readout text changes. Add a browser case on the real engine: `setVoxel([40, 50, 60])`, ArrowRight → reported voxel (39, 50, 60)
 
 ### TRACT-34 · Tab leaves the canvas and walks the dialog's controls in order
 

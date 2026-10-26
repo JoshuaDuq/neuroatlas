@@ -216,7 +216,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as MAST-28 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see MAST-28
 - **Source:** see MAST-28
 - **Expected:** see MAST-28
 - **Covered by:** see MAST-28
@@ -225,7 +225,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as MAST-38 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see MAST-38
 - **Source:** see MAST-38
 - **Expected:** see MAST-38
 - **Covered by:** see MAST-38
@@ -234,7 +234,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as MAST-29 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see MAST-29
 - **Source:** see MAST-29
 - **Expected:** see MAST-29
 - **Covered by:** see MAST-29
@@ -243,7 +243,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as MAST-30 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see MAST-30
 - **Source:** see MAST-30
 - **Expected:** see MAST-30
 - **Covered by:** see MAST-30
@@ -252,7 +252,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as MAST-32 (`masthead.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see MAST-32
 - **Source:** see MAST-32
 - **Expected:** see MAST-32
 - **Covered by:** see MAST-32
@@ -261,7 +261,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as COLO-01 (`colophon.md`), COLO-02 (`colophon.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see COLO-01, COLO-02
 - **Source:** see COLO-01, COLO-02
 - **Expected:** see COLO-01, COLO-02
 - **Covered by:** see COLO-01, COLO-02
@@ -272,7 +272,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as PROV-01 (`provenance.md`), PROV-02 (`provenance.md`), PROV-03 (`provenance.md`), PROV-04 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** data
-- **Level:** unit
+- **Level:** see PROV-01, PROV-02, PROV-03, PROV-04
 - **Source:** see PROV-01, PROV-02, PROV-03, PROV-04
 - **Expected:** see PROV-01, PROV-02, PROV-03, PROV-04
 - **Covered by:** see PROV-01, PROV-02, PROV-03, PROV-04
@@ -281,7 +281,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as PROV-05 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** data
-- **Level:** unit
+- **Level:** see PROV-05
 - **Source:** see PROV-05
 - **Expected:** see PROV-05
 - **Covered by:** see PROV-05
@@ -290,7 +290,7 @@ are from `public/models/cdmd/` and `data/neuropsychology.yaml`.
 
 - **Rule:** Stated once as PROV-07 (`provenance.md`), PROV-08 (`provenance.md`); this entry only points there, so the rule is tested once. The view-model test (`src/lib/core/panels/header.test.ts` or `provenance.test.ts`) is where it is proved.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see PROV-07, PROV-08
 - **Source:** see PROV-07, PROV-08
 - **Expected:** see PROV-07, PROV-08
 - **Covered by:** see PROV-07, PROV-08

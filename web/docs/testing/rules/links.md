@@ -71,7 +71,7 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:636-650`
-- **Expected:** on `snail` with hcp-mmp, view left, Deficits on aphasia, a region selected, a part hidden, fr, coronal at 12.34 and window (50, 60): `switchAnatomy('bert')` → calls `cancel`, `replace`, `reload` in that order; the replaced link decodes to `{ anatomy: 'bert', atlas: 'hcp-mmp', cut: 'coronal', cutAtlas: 'destrieux', detail: 'learning', cutOffset: 12.3, view: 'left', explorer: 'deficits', selectedDeficit: 'aphasia', lang: 'fr' }`. `switchAnatomy('cdmd')` on cdmd → no call.
+- **Expected:** on `snail` with hcp-mmp, view left, Deficits on aphasia, a region selected, a part hidden, fr, coronal at 12.34 and window (50, 60): `switchAnatomy('bert')` → calls `cancel`, `replace`, `reload` in that order; the replaced link decodes to `{ anatomy: 'bert', atlas: 'hcp-mmp', cut: 'coronal', cutAtlas: 'destrieux', detail: 'learning', cutOffset: 12.3, view: 'left', explorer: 'deficits', selectedDeficit: 'aphasia', lang: 'fr' }`. `switchAnatomy('cdmd')` on cdmd → no call. The link is replaced, not pushed (LINK-01), so Back does not return to the brain just left. In the app the Subject field appears only with two published subjects; the published index has one today.
 - **Covered by:** `src/lib/controller/links.test.ts` (R; anatomy ids are opaque strings there)
 
 ## A link edited in place
@@ -147,8 +147,8 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:2039-2050`
-- **Expected:** `tab=functions&function=language` → explorer `functions`, function `language`, deficit null, lesson closed, both kept scenes null. `tab=circuits&circuit=language&step=2` → lesson `language` at step 1. `tab=circuits&circuit=bogus&step=9` → notApplied `['circuit', 'step']` (the notice names only the circuit, LINK-18), lesson closed.
-- **Covered by:** `parity/S4.test.ts` only (D)
+- **Expected:** `tab=functions&function=language` → explorer `functions`, function `language`, deficit null, lesson closed, both kept scenes null. `tab=circuits&circuit=language&step=2` → lesson `language` at step 1. `tab=circuits&circuit=bogus&step=9` → notApplied `['circuit', 'step']` (the notice names only the circuit, LINK-18), lesson closed. At boot the panels are mounted before the link is applied, so `#tab=functions&function=<id>` shows the detail with that function open.
+- **Covered by:** `src/app/boot.svelte.test.ts` (R, the boot half: a function link opens its detail); the rest only `parity/S4.test.ts` (D)
 
 ### LINK-15 · A lesson linked without its landmark opens on it
 
@@ -181,19 +181,19 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 
 - **Rule:** Stated once as I18N-20 (`core-i18n.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see I18N-20
 - **Source:** see I18N-20
 - **Expected:** see I18N-20
 - **Covered by:** see I18N-20
 
 ### LINK-19 · A restored hidden count is said once, if the announcer exists before the restore
 
-- **Rule:** The view announcer must exist before the first restore: its first view only records the hidden count, so a link that hides parts changes it and the count is said once. Created after, the restored count is never said.
+- **Rule:** The view announcer must exist before the first restore: its first view only records the hidden count, so a link that hides parts changes it and the count is said once. Created after, the restored count is never said. The dissection bar itself does not announce the restored count.
 - **Kind:** behaviour
 - **Level:** browser — the announcer's live region is a DOM node
-- **Source:** `viewer/app.js:2124-2130`; S1 contract on #4 (comment on `announceView`)
-- **Expected:** announcer first, `restore(hidden=<first published region>)` → live region "1 part hidden". Announcer after → region empty, one part hidden.
-- **Covered by:** `src/lib/controller/links.svelte.test.ts` (R); `src/app/boot.svelte.test.ts` (R, BOOT-09)
+- **Source:** `viewer/app.js:2124-2130`; S1 contract on #4 (comment on `announceView`); deviation `a3-initial-count.md`
+- **Expected:** announcer first, `restore(hidden=<first published region>)` → live region "1 part hidden". Announcer after → region empty, one part hidden. Whole app: boot with `#hidden=<region>` → the live region reads "1 part hidden".
+- **Covered by:** `src/lib/controller/links.svelte.test.ts` (R); `src/app/boot.svelte.test.ts` (R, a boot with `#hidden=`)
 
 ## The scene reader
 
@@ -214,5 +214,5 @@ on the cdmd manifest; "the corpus" below is the fixed scenario table of `parity/
 - **Kind:** behaviour
 - **Level:** e2e — the real address bar, `hashchange`, a page reload and the boot sequence of the built site
 - **Source:** `viewer/app.js:2111-2132`
-- **Expected:** choose a system, wait for the camera to be idle (link still 750 ms), read the hash, reload → status `ready`, the hash equals the one read, the system select shows the same option. A link with `hidden=<region>` opens with that part hidden, Undo disabled and Restore all enabled.
-- **Covered by:** `e2e/parity/dissection.spec.ts` (R, "a permalink’s system is the one shown" and "a permalink with a hidden part"; enabled on `next` since #134); writing alone (no reload): `e2e/parity/sections.spec.ts`, `dock.spec.ts`, `stage-keys.spec.ts` (R, legacy only, skip on `next`). No round trip runs on `next` today.
+- **Expected:** choose a system, wait for the camera to be idle (link still 750 ms), read the hash, reload → status `ready`, the hash equals the one read, the system select shows the same option. A link with `hidden=<region>` opens with that part hidden, Undo disabled and Restore all enabled. Choosing "By system" option 1 writes `system=` and the checked option is that name; option 0 removes it. `#hidden=destrieux:left:38` → "1 part hidden", Undo disabled, axe clean on the bar; Restore all → the hash has no `hidden=`.
+- **Covered by:** `e2e/parity/dissection.spec.ts` (R, "a permalink’s system is the one shown" and "a permalink with a hidden part"; enabled on `next` since #134, not yet seen passing there because pull requests skip e2e); writing alone (no reload): `e2e/parity/sections.spec.ts`, `dock.spec.ts`, `stage-keys.spec.ts` (R; on `next` only once the stage gate flips)

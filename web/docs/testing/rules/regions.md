@@ -131,12 +131,12 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 
 ### REGION-14 · Choosing another subject reopens the app on that subject
 
-- **Rule:** Choosing another subject rewrites the link and reloads. The reader keeps atlas, cut, view, panel and language, and loses the selection, isolation, hidden parts, exact camera and MRI window, which belong to the old subject. The link is replaced, not pushed, so Back does not return to the brain just left. Choosing the current subject does nothing.
+- **Rule:** Stated once as LINK-06 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** e2e: real reload (needs an index with two subjects; the published index has one, so no Subject field is offered today)
-- **Source:** `viewer/app.js:636-650`; the link writing is S4's (`links.md`)
-- **Expected:** from `#anatomy=sub_013&region=destrieux:left:30&lang=fr`, choose `sub_014` → `history.length` unchanged; the new hash has `anatomy=sub_014` and `lang=fr` and no `region`; the page reloads. Choose `sub_013` → nothing.
-- **Covered by:** uncovered
+- **Level:** see LINK-06
+- **Source:** see LINK-06
+- **Expected:** see LINK-06
+- **Covered by:** see LINK-06
 
 ### REGION-15 · The data popover and the settings panel share one open state
 

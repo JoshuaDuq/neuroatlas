@@ -75,10 +75,10 @@ The inline script in `web/index.html` is the theme and language script (decision
 
 - **Rule:** With every region composed, the page fits the window in both orientations and at 320×256 CSS px (WCAG 1.3.4, 1.4.10). Nothing scrolls the page, and the stage stays inside the window with a non-zero height.
 - **Kind:** accessibility
-- **Level:** e2e: needs the composed page (masthead, sheet, stage); a browser test mounting every region with the fake engine would also prove it
+- **Level:** browser — every region mounted with the fake engine at 812×375, 375×812 and 320×256 (the shell spec stays an e2e journey)
 - **Source:** WCAG 2.2 SC 1.3.4, 1.4.10; `viewer/styles/phone.css:30-45`
 - **Expected:** for 812×375, 375×812 and 320×256: overflowX 0, overflowY 0, `main` left ≥ 0, right ≤ clientWidth, bottom ≤ clientHeight, height > 0; no `contentinfo`.
-- **Covered by:** `e2e/parity/shell.spec.ts` "fits the frame" ×3 (R; `next` gated off)
+- **Covered by:** `e2e/parity/shell.spec.ts` "fits the frame" ×3 (R; `next` gated off); no browser test mounts every region at these sizes yet: uncovered at its level
 
 ### SHELL-09 · Before the anatomy arrives the panel shows a skeleton, not the inspector
 

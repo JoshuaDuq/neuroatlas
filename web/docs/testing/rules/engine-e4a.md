@@ -16,7 +16,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 - **Rule:** Stated once as RENDER-38 (`engine-e1.md`); this entry only points there, so the rule is tested once.
 - **Kind:** scientific/data
-- **Level:** unit
+- **Level:** see RENDER-38
 - **Source:** see RENDER-38
 - **Expected:** see RENDER-38
 - **Covered by:** see RENDER-38
@@ -25,7 +25,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 - **Rule:** Stated once as RENDER-39 (`engine-e1.md`), RENDER-42 (`engine-e1.md`); this entry only points there, so the rule is tested once. No business-rule test checks the edge letters yet.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see RENDER-39, RENDER-42
 - **Source:** see RENDER-39, RENDER-42
 - **Expected:** see RENDER-39, RENDER-42
 - **Covered by:** see RENDER-39, RENDER-42
@@ -43,7 +43,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 - **Rule:** Stated once as RENDER-40 (`engine-e1.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see RENDER-40
 - **Source:** see RENDER-40
 - **Expected:** see RENDER-40
 - **Covered by:** see RENDER-40
@@ -52,7 +52,7 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 
 - **Rule:** Stated once as RENDER-41 (`engine-e1.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit
+- **Level:** see RENDER-41
 - **Source:** see RENDER-41
 - **Expected:** see RENDER-41
 - **Covered by:** see RENDER-41
@@ -269,6 +269,15 @@ plane, picking, highlight). Legacy sources: `viewer/slices/coordinates.js`, `vie
 - **Source:** `viewer/slices/sections.js:57-93`
 - **Expected:** hiding the internal anatomy under an axial cut → one redraw.
 - **Covered by:** `src/lib/engine/slices/sections.test.ts` (R, counted as stub calls)
+
+### SLICE-39 · The cut's display options are booleans, and an omitted one keeps its value
+
+- **Rule:** The cut's reverse and overlay options take only `true` or `false`; anything else is refused and changes nothing. An option left out keeps its value. Only a change of reverse recuts; an overlay change only reports.
+- **Kind:** behaviour
+- **Level:** unit — a contract-suite case, so the fake and the real engine meet it alike
+- **Source:** `viewer/slices/sections.js:363-370`
+- **Expected:** `setDisplay({ reverse: 1 })` throws TypeError "Section display options must be boolean." and the state keeps `reverse: false, overlay: false`. `setDisplay({ reverse: true, overlay: true })` → both true; then `setDisplay({ overlay: false })` → reverse still true, overlay false.
+- **Covered by:** `src/lib/engine/fake/contract-suite.ts` "validates the oblique angles and the display options" (R, through `contract.test.ts` and `index.svelte.test.ts`; asserts the TypeError but not its message or the unchanged state); `parity/f2.test.ts` (D, the seeded `{ reverse: 1 }` draw)
 
 ## GPU cut faces
 

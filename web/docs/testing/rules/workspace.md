@@ -20,7 +20,7 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Level:** browser — ARIA attributes in the DOM
 - **Source:** `viewer/ui/chrome/workspace.js:101-113,143-167`; decision record 0004; deviations `h5-single-tablist.md`, `h5-tabpanel-semantics.md`; decisions 9 and 13 on #4
 - **Expected:** One `[role=tablist]`. Anatomy `aria-selected="true"`, tabindex 0, `aria-controls="navigator"`; the other four `aria-selected="false"`, tabindex −1, no `aria-controls`. Tabpanels `['navigator', 'inspector']`, both `aria-labelledby` the Anatomy tab, `hidden` `[false, true]`. After a drill-in the Anatomy tab controls `inspector`. No `aside aside` and no `[role=complementary]` inside `#workspace-panel`.
-- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's five `aria-controls`; enabled on `next` since #134); `e2e/parity/sheet.spec.ts` (R, one tablist on a phone; legacy only, skips on `next`)
+- **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R, branches legacy's five `aria-controls`; enabled on `next` since #134); `e2e/parity/sheet.spec.ts` (R, one tablist on a phone; enabled on `next` since #134)
 
 ### WORK-03 · Arrows, Home and End move focus between tabs without choosing; Enter, Space or a click choose
 

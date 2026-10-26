@@ -95,12 +95,12 @@ document, `location`, `history` and `window` directly.
 
 ### BOOT-09 · A link's restore reaches the panels and is announced
 
-- **Rule:** The panels are mounted before the link is applied, so a link that opens a function shows it, and what the link restored is announced.
+- **Rule:** Stated once as LINK-14 (`links.md`), LINK-19 (`links.md`); this entry only points there, so the rule is tested once.
 - **Kind:** behaviour
-- **Level:** unit
-- **Source:** `viewer/app.js:2115, 2128-2130`
-- **Expected:** `#tab=functions&function=<id>` → detail shown and function `<id>` opened; `#hidden=<region>` → announcer "1 part hidden".
-- **Covered by:** `src/app/boot.svelte.test.ts` (R); restore rules themselves → LINK-14 to LINK-16 and LINK-19 (`links.md`)
+- **Level:** see LINK-14, LINK-19
+- **Source:** see LINK-14, LINK-19
+- **Expected:** see LINK-14, LINK-19
+- **Covered by:** see LINK-14, LINK-19
 
 ### BOOT-10 · Download progress during the start
 

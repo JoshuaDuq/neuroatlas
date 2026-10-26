@@ -37,7 +37,7 @@ values, then the file is deleted); move down a level; merge with a duplicate; de
 | --------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------- |
 | R business rule             | 192   | 120 unit, 48 browser, 24 e2e specs; many carry small I, W or S parts, named in the Class column                           |
 | S scientific or data result | 8     | all unit: published-data checks with values from the data                                                                 |
-| D legacy comparison         | 27    | 24 of the 25 `parity/*.test.ts` files and the two `*.parity.svelte.test.ts` files (`parity/F3.test.ts` is R with D parts) |
+| D legacy comparison         | 27    | 25 of the 26 `parity/*.test.ts` files and the two `*.parity.svelte.test.ts` files (`parity/F3.test.ts` is R with D parts) |
 | I implementation-pinning    | 1     | `src/app/ports.test.ts` (kept: a cheap fail-fast contract)                                                                |
 | W weak or tautological      | 1     | `src/lib/ui/kit-spike.svelte.test.ts` (delete)                                                                            |
 | H hygiene                   | 8     | build, repository and stylesheet checks, and the WebGL probe                                                              |
@@ -74,7 +74,7 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `parity/T1.test.ts` | 3 | D | unit | — | convert to TRACT-01, -02, -06, -15, -19 in `src/lib/core/tracts.test.ts`; then delete |
 | `parity/U2.test.ts` | 8 | D | unit | — | convert to UI-14–UI-16, UI-19, UI-25, STORE-16, STORE-17, STORE-19–STORE-22; then delete |
 | `parity/f1.test.ts` | 9 | D (+H: 1 case, manifest fits the types; +I: 1 case pins legacy `matchMedia` call order) | unit | — | convert to CAT-01–CAT-05 (fixed literals, plus a check of the new stylesheets); move the manifest-type case (CAT-06) to a non-parity unit file; then delete |
-| `parity/f2.test.ts` | 3 | D | unit | — | convert to contract-suite cases (SLICE-02, SLICE-03, SLICE-16, SLICE-18, SLICE-19, and the selectable-region rule of `engine-e4b.md`), so the fake and the real engine meet them alike; then delete |
+| `parity/f2.test.ts` | 3 | D | unit | — | convert to contract-suite cases (SLICE-02, SLICE-03, SLICE-16, SLICE-18, SLICE-19, SLICE-39 and ATLAS-04, -13, -15–22, -30, -35–40), so the fake and the real engine meet them alike; then delete |
 | `parity/u1.test.ts` | 5 | D | unit | — | D: reads `viewer/styles/{tokens,phone,a11y,base,components}.css` and diffs declarations. Convert to UI-05–UI-11 (fixed token and declaration values; UI-09–UI-11 better as computed-style browser checks); then delete |
 | `src/app/App.svelte.test.ts` | 6 | R | browser | browser | keep (SHELL-01, -02, -03, -04, -05, -07, -10, -18); it uses stub slot snippets, which is right for the shell. Add the desktop grid (SHELL-06) and the empty-slot case (SHELL-03). The region-composition tests (REGION-01–REGION-26) belong in a new browser test that mounts the real regions with the fake engine |
 | `src/app/boot.svelte.test.ts` | 38 | R (+I: 3 cases and 1 assert pin mount/frame/dispose order and listener spies) | browser | browser (most cases are plain logic and could move to unit once `startApp` is given its document, `location` and `window`) | keep (BOOT-01, -04, -05, -07–14, -17–19, -25, -30, -31, ASSET-10; also CTRL-01, -37, LESSON-08, KEY-06, -07, -11, -14, -15, -19); trim the order and spy asserts; 9 cases hold other areas' rules (see Summary) |
@@ -107,7 +107,7 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `src/features/sections/section-text.test.ts` | 12 | R | unit | unit | Keep (SECT-11, -14, -15, -17). |
 | `src/features/sheet/Sheet.svelte.test.ts` | 54 | R | browser | browser | keep (SHEET-01, -03 to -30 in the browser; SHEET-01, -05, -06, -07 cases repeat the unit file through real pointer events, keep only one per rule); fix the speed (below) |
 | `src/features/shortcuts/shortcuts.svelte.test.ts` | 17 | R | browser | browser (+unit for 2 data rules) | keep (SHORT-01, -04 to -12, -14 to -17); move down to unit: "every key the keymap acts on is listed" (SHORT-02, `SHORTCUT_KEYS` against the i18n rows) and the group and row counts of SHORT-01 |
-| `src/features/snapshot/snapshot.parity.svelte.test.ts` | 1 | D | browser | — | Convert to SNAP-08, -09, -10, -13, then delete. |
+| `src/features/snapshot/snapshot.parity.svelte.test.ts` | 1 | D | browser | — | Convert to SNAP-08 to SNAP-13 (a browser rule test that records the drawing), then delete. |
 | `src/features/snapshot/snapshot.svelte.test.ts` | 13 | R (+I: 1 case, a fake keys model that contradicts the DOM to pin where the fold is read) | browser | browser (4 cases unit) | Keep (SNAP-02, -03, -04, -10, -11, -12, -14 to -18; STAGE-09). Move down: the two caption cases (SNAP-02, -04) take plain data once the caption inputs are split from `snapshotPlan`'s DOM reads. The join and failure cases (SNAP-17, -18) can use a stub stage and encoder. |
 | `src/features/snapshot/snapshot.test.ts` | 8 | R | unit | unit | Keep (SNAP-01, -03, -04, -06, -07, -09). The `viewer/` mention is a "ported from" comment. This is the home for the G6 sweep as a fixed table (SNAP-05). |
 | `src/features/stage/Dock.svelte.test.ts` | 49 | R (+I: 3 cases) | browser | browser | Keep (STAGE-06, -18 to -36). I: `data-own-keys` on the dock root should become a keymap test that a key pressed in the dock does not reach it (KEY-06, controller area). Also I: the `data-instant` attribute (STAGE-21), and `stage.dock.width` equal to the bounding box (store contract, `state.md`). Controller commands are `vi.fn` mocks, which is the dock-to-controller contract. |
@@ -194,7 +194,7 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `src/lib/engine/diffusion/tract-file.test.ts` | 3 | R (+S: af-left 3,639 streamlines) | unit | unit | keep (DIFF-04, -05) |
 | `src/lib/engine/diffusion/tracts.test.ts` | 3 | R | unit | unit | keep (DIFF-26, -27); mock the asset reader (see Slow tests) |
 | `src/lib/engine/framing.test.ts` | 8 | R | unit | unit | keep (FACADE-01, FACADE-03, FACADE-11–FACADE-14; its RENDER-07 assertion is W: tighten to ±0.8·v) |
-| `src/lib/engine/index.svelte.test.ts` | 50 | R (+W: "accepts the look of the app state" asserts nothing) | browser | unit for 46 cases; browser for the snapshot, the MRI navigator and a boot smoke | move down a level (contract on the real engine with the fake renderer of `index.test.ts`), or at least share boots and split into 4 files: see Engine contract cases |
+| `src/lib/engine/index.svelte.test.ts` | 50 | R (+W: "accepts the look of the app state" asserts nothing) | browser | unit for 45 cases; browser for the snapshot, the MRI navigator, one cut on the worker path and a boot smoke | move down a level (contract on the real engine with the fake renderer of `index.test.ts`, after writing a fetch-to-disk shim for the volumes, tracts and overlap file), or at least share boots and split into 4 files: see Engine contract cases |
 | `src/lib/engine/index.test.ts` | 5 | R (+I: 1 case spies `setMriAppearance`) | unit | unit | keep (FACADE-30–FACADE-32, FACADE-34, FACADE-36; SCENE-11, SCENE-29); boot once for the 4 cases that share |
 | `src/lib/engine/model/assets.test.ts` | 1 | S | unit | unit | keep (ATLAS-03, -06, -07, -20, -48); assert 14 Basal ganglia meshes instead of "> 5"; make it the shared CDMD model file (see Slow tests) |
 | `src/lib/engine/model/brain-atlas.cut.test.ts` | 1 | R | unit | unit | keep (SLICE-24, SLICE-37 in `engine-e4a.md`; ATLAS-52) |
@@ -279,7 +279,7 @@ Paths are relative to `web/`. Cases are from the CI run (or counted from the sou
 | `e2e/parity/mri-navigator.spec.ts` | 4 | R (+W: the key and plane cases assert only that the readout changed and the select's value) | e2e legacy+next (panels gate on since #134) | e2e | keep (TRACT-27, -30, -32, -36, -37, -40, -48, -49); add the source-voxel check TRACT-33 (Go to voxel 40, 50, 60, ArrowRight → fields 39, 50, 60), the one rule only real NiiVue can prove |
 | `e2e/parity/provenance.spec.ts` | 6 | R | e2e legacy only (next gated off) | e2e (1 journey: Provenance from the phone menu on the loaded app); browser for the rest | keep at the gate flip, then trim to REGION-18; the rest duplicates provenance.svelte.test (COLO-01–-03, -05, -08; PROV-09–-15, -17, -18, -22). It is the only check of the intended use on the loaded app (PROV-09) |
 | `e2e/parity/sections.spec.ts` | 10 | R | e2e legacy only (skips on next) | e2e (one journey) | Trim to the link journey (`cut=coronal`, `pos=12.5`, `rev=1`) on `next`. The rest repeats `SectionBar.svelte.test.ts` (SECT-01 to -03, -09 to -11, -15 to -18, -21, -24). The out-of-range case and the "Full brain · no cut" announcement are next-only, so they run nowhere today. |
-| `e2e/parity/sheet.spec.ts` | 20 | R | e2e legacy only (skips on next); "a window narrowed to a phone after load" also skips on legacy, so it runs nowhere | e2e for 6 journeys, browser for the rest | keep the journeys: stage told the cover (SHEET-11, incl. desktop → phone, the only evidence for h6-first-inset-report), page-wide focus walk (SHEET-23), touch targets (SHEET-26), 320 px (SHEET-29), axe in the app (SHEET-30), reduced motion still reports; drop the 14 cases that repeat `Sheet.svelte.test.ts` once `next` runs. Its only `viewer/` mention is a provenance comment (line 1): not D |
+| `e2e/parity/sheet.spec.ts` | 20 | R | e2e legacy+next (panels gate on since #134), except the 4 stage-gated cases (the "stage is told what the sheet covers" describe and the reduced-motion case), which skip on `next` until the stage gate flips; "a window narrowed to a phone after load" also skips on legacy, so it runs nowhere | e2e for 6 journeys, browser for the rest | keep the journeys: stage told the cover (SHEET-11, incl. desktop → phone, the only evidence for h6-first-inset-report), page-wide focus walk (SHEET-23), touch targets (SHEET-26), 320 px (SHEET-29), axe in the app (SHEET-30), reduced motion still reports; drop the 14 cases that repeat `Sheet.svelte.test.ts` once `next` runs. Its only `viewer/` mention is a provenance comment (line 1): not D |
 | `e2e/parity/shell.spec.ts` | 19 (10 `test(` sites; the layout loop runs 3 and the axe matrix 8; on legacy 9 skip: the saved-theme case and the 8-case axe matrix) | R (+W 1: "#app carries a known data-status" accepts any of five values) | e2e legacy only (next gated off) | e2e (3 frame-fit and 3 head-script journeys); browser for the rest | keep, trim: drop the data-status case (App.svelte.test covers SHELL-10 properly); cut the `next` axe matrix to 2 cases; landmark and order cases duplicate App.svelte.test. Covers SHELL-01, -02, -04, -05, -07, -08, -10–-13, -18 |
 | `e2e/parity/shortcuts.spec.ts` | 9 | R | e2e legacy only (next gated off) | e2e for 3 journeys, browser for the rest | keep SHORT-13 (settings menu opener, single keys off after reload), SHORT-11 (Escape leaves the selection), SHORT-09 (focus to ⋯ after the menu closes); the other 6 repeat `shortcuts.svelte.test.ts` |
 | `e2e/parity/snapshot.spec.ts` | 4 | R | e2e legacy only (skips on next; needs shell and stage gates) | e2e | Keep (SNAP-14, SNAP-16, STAGE-49, STAGE-50). These are the only checks of a real download from the real WebGL stage, and of real full screen with the real masthead and stage. The `viewer/` mention is a comment, not an import. "French names both labels" skips on legacy and `next` skips it, so it runs nowhere. The no-Fullscreen-API case and Save image's enabled state are the masthead's (`masthead.md`). |
@@ -314,7 +314,7 @@ Notes: the published-content observations (`observeClinical`, `observeComparison
 
 Rules hiding inside: STATE-01–STATE-33, STATE-35 and STATE-37–STATE-65 (STATE-34, the keyboard predicates, and STATE-36 are not in it). Covered only here, so the converter must add fixed-value tests for: STATE-02 (the whole parameter-name and order table), STATE-13 (limit + 0.17 mm accepted, + 0.18 mm refused), STATE-17 (the corpus round trip), STATE-43 (two downloads' progress summed), STATE-44 ("Atlas not applied: <id>" / "Detail level not applied: <id>"), STATE-50 (cut closed before showing; empty set), STATE-56 (every cdmd function, term, deficit and finding has a paint and key), and the edge parts of STATE-05 (`a,a`), STATE-10 (rounding), STATE-11 (written to hundredths), STATE-14 (bounds), STATE-22/23 (refused view keeps the notice), STATE-24/25 (`setFinding`), STATE-57/58 (no-change returns false, empty undo, reset).
 Also checks, which are not rules (drop): the scene-commands trace equality of render counts, console output, the exact model method calls and the `typeof progress` of each (`fake.events`); legacy error messages for nonsense inputs beyond those the rules name; the clinical-navigation call order beyond "show last".
-Notes: STATE-17 and STATE-18 are worth keeping as data tests over a fixed corpus: the `POOL` table (one entry per parameter: readable, near-miss and nonsense values) is a good fixed corpus; the 80 seeded hashes (seeds 1-40, 101-140) can be dropped or kept as a property test with a fixed seed asserting "decode never throws on a string; re-reading what is written gives the same state minus defaults". Seeded dissection and session sequences can become a few named sequences with fixed end states. STATE-51 found a quirk both versions share: `clinicalLayers` returns `0`, not `null`, for a layer when no cortical (or no structure) citation is given; the type says `string | null`.
+Notes: STATE-17 and STATE-18 are worth keeping as data tests over a fixed corpus: the `POOL` table (one entry per parameter: readable, near-miss and nonsense values) is a good fixed corpus; the 80 seeded hashes (seeds 1-40, 101-140) can be dropped or kept as a property test with a fixed seed asserting "decode never throws on a string; re-reading what is written gives the same state minus defaults". Seeded dissection and session sequences can become a few named sequences with fixed end states. STATE-51: with no cortical (or no structure) citation the layer is `null` in both versions (`len && !some(…) ? x : null` parses as `(len && !some(…)) ? x : null`); assert `null`.
 
 ### `parity/C5.test.ts`
 
@@ -450,7 +450,7 @@ Notes: replace the legacy-CSS case with the same check over the new stylesheets 
 
 ### `parity/f2.test.ts`
 
-Rules hiding inside: SLICE-02 (edge letters), SLICE-03, SLICE-16, SLICE-18, SLICE-19 on the fake; the selectable set under every hemisphere × cortex × internal setting (`engine-e4b.md`, ATLAS-) and the fake model's display and layer operations (ATLAS-).
+Rules hiding inside: SLICE-02 (edge letters), SLICE-03, SLICE-16, SLICE-18, SLICE-19 on the fake; SLICE-39 (`setDisplay({ reverse: 1 })` throws "Section display options must be boolean."; the contract suite asserts only the TypeError); the selectable set under every hemisphere × cortex × internal setting and the fake model's display and layer operations: ATLAS-04, ATLAS-13, ATLAS-15–ATLAS-22, ATLAS-30, ATLAS-35–ATLAS-40 (`engine-e4b.md`).
 Notes: what f2 proves is that the fake behaves like the real model. The contract suite is the standard place for that: add contract cases with fixed expectations (for example the number of selectable regions per hemisphere × cortex × internal setting, taken from the published manifest), and they run on both engines.
 
 ### `parity/u1.test.ts`
@@ -460,8 +460,8 @@ Notes: it slices legacy files by line number (`phone.css` lines 14–15, `a11y.c
 
 ### `src/features/snapshot/snapshot.parity.svelte.test.ts`
 
-Rules hiding inside: SNAP-08 (caption room up to the top letter, line spacing, sizes, ellipsis of a long subject), SNAP-09 (the statement is drawn), SNAP-10 (the scale bracket's pixels), SNAP-13 (only marks are added, at ratio 2). It is the only test that proves the image carries "Planum · Not clinical anatomy".
-Notes: Replace the pixel diff against legacy with a rule test on the same fixture: 560×520 at ratio 2, the DEFICIT legend, the long subject and the oblique section. Option 1: draw onto a canvas whose 2D context is wrapped to record `fillText`/`strokeText` calls with their font, x and y. Assert the statement text at (16, 520 − 24), every caption run ending before the top letter's left − 12, the bracket spanning `pixels` px, and the first line ending in "…". Option 2: keep a pixel check on the flat `#7a7f86` frame with fixed regions (pixels far from every mark unchanged; the statement's box changed). Do not compare with `viewer/`.
+Rules hiding inside: SNAP-08 (caption room up to the top letter, line spacing, sizes, ellipsis of a long subject), SNAP-09 (the statement is drawn), SNAP-10 (the scale bracket's pixels), SNAP-11 (the letters are drawn), SNAP-12 (each key is drawn), SNAP-13 (only marks are added, at ratio 2). `snapshot.svelte.test.ts` checks only the `markings()` plan for SNAP-11 and SNAP-12, not the drawing. It is the only test that proves the image carries "Planum · Not clinical anatomy".
+Notes: Replace the pixel diff against legacy with a rule test on the same fixture: 560×520 at ratio 2, the DEFICIT legend, the long subject and the oblique section. Option 1: draw onto a canvas whose 2D context is wrapped to record `fillText`/`strokeText` calls with their font, x and y. Assert the statement text at (16, 520 − 24), every caption run ending before the top letter's left − 12, the bracket spanning `pixels` px, and the first line ending in "…". Record the letters' and the keys' `fillText` calls and the swatch fills too, so SNAP-11 and SNAP-12 are proved on the drawing. Option 2: keep a pixel check on the flat `#7a7f86` frame with fixed regions (pixels far from every mark unchanged; the statement's box changed). Do not compare with `viewer/`.
 
 ### `src/lib/engine/render/lighting.parity.svelte.test.ts`
 
@@ -511,9 +511,14 @@ Three standard fixes, cheapest first (none implemented here):
    time per run**. Check where the four files land (Vitest assigns shards by path, not duration); a custom
    `sequence.sequencer` can place them if two collide.
 3. **Move the contract down a level.** Run the real-engine contract in the unit project with the fake
-   renderer and disk loader that `index.test.ts` already uses (volumes, tracts and the overlap file read from
-   disk), and keep one small browser file for what needs real WebGL: a boot smoke, the snapshot and the MRI
-   navigator (NiiVue). The camera-per-move case uses a driven loop, as `framing.test.ts` does. About 10 to
+   renderer that `index.test.ts` already uses. That harness reads only the GLBs from disk
+   (`model/test-support.ts:14-19`) and mocks the comparison overlay (`index.test.ts:117-140`); the volumes,
+   the tracts and the overlap file still go through `fetch` (`index.ts:100,136`,
+   `tissues/solid-assets.ts:149`), so a fetch-to-disk shim must be written first. Node has no `Worker`, so
+   in unit `SolidSections` takes only its no-worker path (`solid-sections.ts:394`): keep one browser cut case
+   for the worker path. Keep the rest of the small browser file for what needs real WebGL: a boot smoke, the
+   snapshot and the MRI navigator (NiiVue). The camera-per-move case uses a driven loop, as
+   `framing.test.ts` does. About 10 to
    20 s of unit time with shared boots, 25 to 30 s left in the browser: **about 360 s less browser time**,
    and shard 4 ends near 50 s like the others.
 
@@ -574,7 +579,7 @@ conversion" means the time disappears when the differential file is converted to
 
 ### Engine contract cases, one by one
 
-Measured in CI run 40377467496, shard 4 (`/tmp/k6-audit/ci/job-121764433200.log`). Cases are those of `src/lib/engine/fake/contract-suite.ts` as run by `src/lib/engine/index.svelte.test.ts` on the real engine (CDMD manifest, SwiftShader WebGL, a 1000×700 host), plus that file's own snapshot case. "Shared boot" means one engine per describe booted in `beforeAll`, with a restore in `afterEach` (below).
+Measured in CI run 40377467496, job 121764433200 (browser shard 4). Cases are those of `src/lib/engine/fake/contract-suite.ts` as run by `src/lib/engine/index.svelte.test.ts` on the real engine (CDMD manifest, SwiftShader WebGL, a 1000×700 host), plus that file's own snapshot case. "Shared boot" means one engine per describe booted in `beforeAll`, with a restore in `afterEach` (below).
 
 <!-- prettier-ignore -->
 | Case | CI ms | Needs the real engine? | Mutates state that would break a shared boot? | Proposal |
@@ -644,38 +649,36 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
    `social-cognition`, `spatial-attention`, `speech-production`, `recall`, `gestures`). Svelte rejects
    duplicate keys in a keyed each block. No browser test opens one of these domains. Key by association and
    add a browser case that opens `language`.
-2. **`clinicalLayers` returns `0` instead of `null`** (STATE-51) for a layer with no cortical or no structure
-   citation; the type says `string | null`. Legacy has the same quirk, so `parity/C4.test.ts` passes.
-3. **Provenance links lack the "(opens in a new tab)" cue** (PROV-18). `ProvenanceDialog.svelte` sets
+2. **Provenance links lack the "(opens in a new tab)" cue** (PROV-18). `ProvenanceDialog.svelte` sets
    `target="_blank"` without the cue decision 17 on #4 gives H4; `link.newTab` exists and
-   `ExternalLink.svelte`, `AtlasComparison.svelte` and `TractsExplorer.svelte` use it.
-4. The circuit source links had the same gap (CIRC-13); #136 fixed it (`x3-new-tab-cue.md`).
-5. **Counted phrases that ignore their count** (I18N-11): `footer.sourceFiles`, `functions.coverage`,
+   `ExternalLink.svelte`, `AtlasComparison.svelte` and `TractsExplorer.svelte` use it. (The circuit source
+   links had the same gap, CIRC-13; #136 fixed it, `x3-new-tab-cue.md`.)
+3. **Counted phrases that ignore their count** (I18N-11): `footer.sourceFiles`, `functions.coverage`,
    `circuits.coverage` and `diffusion.bundleCollection` read wrongly for 1 ("1 tract bundles",
    "1 faisceaux"); published counts are never 1 today. `functional.contested` uses straight apostrophes
    ("Glasser's") where the rest of the English uses ’.
-6. **The page claims 483 histological labels; the manifest has 514 NextBrain entries** (SHELL-17).
-   `web/index.html`'s `og:description` says "148 Destrieux regions, 360 HCP-MMP areas, 483 histological
-   labels"; the `cdmd` manifest has 150 `destrieux`, 362 `hcp-mmp` and 514 `nextbrain` entries, unknown and
-   medial-wall entries included. The first two plausibly match without those; 483 against 514 needs checking.
-7. **The domain order is not what the code says** (INSP-12, CAT-38). Domains come in published order,
-   strongest by z as a share of each domain's cortical maximum
-   (`brain_model/layers/neuropsych_domains.py:114-131`), not by raw z: on `hcp-mmp:left:50` Familiarity
-   (z 4.4) is first and Visual perception (z 14.8) fifth. `domainsOf`'s comment says "strongest first", and
-   no test checks the order.
-8. **`detents.ts` says the rests are distinct; on a short stage they coincide** (SHEET-02). Upright on a stage
+4. **`detents.ts` says the rests are distinct; on a short stage they coincide** (SHEET-02). Upright on a stage
    of 260 px or less the three rests are equal (200 px → 132/132/132) and half equals peek up to 264 px. The
    code matches legacy; the comment at `src/lib/core/detents.ts:51-52` and the test named "distinct" (which
    asserts only `≤`) are wrong.
+
+### To check (not confirmed bugs)
+
+1. **The page's label counts** (SHELL-17). `web/index.html`'s `og:description` says "148 Destrieux regions,
+   360 HCP-MMP areas, 483 histological labels", as legacy does. The `cdmd` manifest has 150 `destrieux`,
+   362 `hcp-mmp` and 514 `nextbrain` entries, unknown and medial-wall entries included. The first two match
+   once those are left out; whoever owns the data claims should check 483 against the 514.
+2. **The domain order's comment** (INSP-12, CAT-38). Domains come in published order, which is deliberate:
+   strongest by z as a share of each domain's cortical maximum
+   (`brain_model/layers/neuropsych_domains.py:114-131`), not by raw z, so on `hcp-mmp:left:50` Familiarity
+   (z 4.4) is first and Visual perception (z 14.8) fifth. `domainsOf`'s comment says only "strongest first",
+   which reads as raw z, and no test checks the order.
 
 ### Changes from legacy with no deviation record
 
 1. **Cache Storage failures other than `SecurityError`** (BOOT-16) now surface without reloading: a change
    from legacy pinned by `published-assets.test.ts`, with no record in `web/docs/decisions/deviations/`.
-2. **The cut material keeps its clear coat on phones** (SHADER-17) while every other tissue material drops it.
-3. **An unknown MRI highlight colour name is accepted** (SHADER-13) with only a three.js console warning,
-   against fail-fast.
-4. **G5, the linked MRI dialog, is not built**, and the `g5-*.md` records the #49 decision names do not exist.
+2. **G5, the linked MRI dialog, is not built**, and the `g5-*.md` records the #49 decision names do not exist.
    SECT-25 to SECT-33 are written from legacy and that decision, all uncovered.
 
 ### Decisions needed
@@ -683,14 +686,19 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
 1. **Functions and Deficits announce search results by different rules** (FUNC-12, DEF-11): Functions says
    nothing for a cleared field and does not repeat an equal sentence while the field keeps text
    (`x1-result-announcement.md`); Deficits says the full count when cleared and repeats an equal sentence
-   for a different query (`x2-results-announcement.md`). Decision 68 says Deficits follows Functions; K3's shared search field must
-   pick one.
+   for a different query (`x2-results-announcement.md`). Comment 68 on #4 aligns Deficits with the Functions
+   props shape but does not decide the announcement; K3's shared search field must pick one.
 2. **French spacing before `:` and `;` is mixed**: 42 narrow no-break spaces, 28 ordinary spaces; guillemets
    mix NBSP and ordinary spaces; the data summary's name has "…l’affichage: " with no space. Legacy is the
    same, so no rule can state the French typography until the French review on #4 decides it.
-3. **`DiffusionInputCode` lacks `'streamlines'`** (CAT-62, CAT-63), the code legacy streamline validation uses; still open on #4 (comment 24).
+3. **`DiffusionInputCode` lacks `'streamlines'`** (CAT-62, CAT-63), the code legacy streamline validation
+   uses; still open on #4 (comment 24).
 4. **Deleting `kit-spike.svelte.test.ts`** needs `0001-ui-kit.md` and `0005-settings-and-data-disclosure.md`
    reworded; they cite it as evidence.
+5. **The cut material keeps its clear coat on phones** (SHADER-17), as legacy does (`viewer/tissues/shader.js:10`),
+   while every other tissue material drops it on phones. Keep it, or align it with the others?
+6. **An unknown MRI highlight colour name is accepted** (SHADER-13) with only a three.js console warning, as
+   legacy does (`viewer/render/mri-material.js:39-44`). Should it fail fast, as the rest of the engine does?
 
 ### Test bugs
 
@@ -700,7 +708,7 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
    one": Node has no `Worker`, so `build` resolves `null` and the assertions never run.
 3. `src/lib/engine/tissues/assets.test.ts` and `palette.test.ts` `return` early when a published atlas is
    missing, so they pass vacuously.
-4. `native-viewer.test.ts` and `navigation-viewer.test.ts` pass the catalogue id `cdmd-sub-013` as an anatomy;
+4. `src/lib/engine/diffusion/native-viewer.test.ts:8` passes the catalogue id `cdmd-sub-013` as an anatomy;
    it works only through the fallback to `cdmd`.
 5. Fixtures still use retired anatomy ids (`snail`, `bert`, `aomic`) in `link-writer.test.ts`,
    `header.test.ts`, `url-state.test.ts`, `links.test.ts`, `workspace-test-world.ts` and
@@ -711,17 +719,17 @@ anywhere. Each names the rule that states the expected behaviour. Nothing was ch
 - `e2e/parity/circuits.spec.ts`, `anatomy-search`, `atlas-comparison`, `dissection` and `mri-navigator` gate
   themselves on the panels gate at run time but are not in `nextIgnored` in `playwright.config.ts`. Harmless
   now that the panels gate is on (#134), but the stage- and shell-gated specs that skip themselves the same
-  way (`dock`, `sections`, `stage-keys`, `snapshot`, `sheet`) are still collected on `next` and always skip,
-  inflating shard counts.
+  way (`dock`, `sections`, `stage-keys`, `snapshot`) are still collected on `next` and always skip,
+  inflating shard counts; `sheet` runs on `next` except its 4 stage-gated cases.
 - `sheet.spec.ts`, "a window narrowed to a phone after load is set up, and is told", skips on legacy by design
-  and on `next` behind the gate: it runs nowhere, and it is the only evidence for `h6-first-inset-report.md`.
+  and on `next` behind the stage gate: it runs nowhere, and it is the only evidence for `h6-first-inset-report.md`.
 - Next-only e2e cases that run nowhere while the gates are false: the dock's turn buttons (STAGE-27), the
   section position's range error and the "Full brain · no cut" announcement, the stage keys' level arrows,
   and the snapshot spec's French labels.
 - The navigator's source-voxel rule (TRACT-33) is checked only against a mocked NiiVue.
 - Every LINK- rule end to end (LINK-21) runs on no test against the next app; the `hidden=` and `system=`
   round trips (ANAT-49, ANAT-56) are in `dissection.spec.ts`, enabled on `next` only since #134.
-- About 56 rules are covered only by differential tests and 28 are wholly uncovered; they need rule tests
+- About 55 rules are covered only by differential tests and 48 by no test at all; they need rule tests
   before the differential files go.
 
 ### Integration gaps (I1, I2, I3b) and duplicated code

@@ -483,7 +483,7 @@ is the English interface text.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/clinical/navigation.js:1-34`
-- **Expected:** `destrieux:left:38` on hcp-mmp → `{ atlas: 'destrieux', detail: null }`; on destrieux → both null. `destrieux:right:26`, `aseg:right:49`, `aseg:right:50`, `nextbrain:right:7` on learning → `{ atlas: 'destrieux', detail: 'aseg' }`; on nextbrain → detail null. `a:1, b:1, b:2` → atlas `b`. `unknown` → "Unknown clinical region: unknown"; a non-region `wall` → "Unknown clinical region: wall". With no cortical or no structure citation the layer is falsy (today `0`, not null; both legacy and new).
+- **Expected:** `destrieux:left:38` on hcp-mmp → `{ atlas: 'destrieux', detail: null }`; on destrieux → both null. `destrieux:right:26`, `aseg:right:49`, `aseg:right:50`, `nextbrain:right:7` on learning → `{ atlas: 'destrieux', detail: 'aseg' }`; on nextbrain → detail null. `a:1, b:1, b:2` → atlas `b`. `unknown` → "Unknown clinical region: unknown"; a non-region `wall` → "Unknown clinical region: wall". With no cortical or no structure citation that layer is `null` (`clinical-navigation.ts:48-56`, as legacy `navigation.js:29-33`).
 - **Covered by:** `src/lib/core/state/clinical-navigation.test.ts` (R); `parity/C4.test.ts` (D, seeded citations)
 
 ### STATE-52 · Cited regions are shown together with nothing hiding them

@@ -37,10 +37,10 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 
 - **Rule:** Clear × and Hide remove the selection, and with it the commands; focus moves to a visible control instead of the page. The hand-off is S2's (`controller.md`, CTRL-04); Hide hands focus to the dissection bar's Undo (ANAT-54).
 - **Kind:** behaviour
-- **Level:** e2e — a cross-panel journey on the built app (the command logic is browser-tested in the controller)
+- **Level:** browser — the composed panel region with the fake engine
 - **Source:** `viewer/ui/panels/inspector.js:92-102`; deviations `r1-hidden-actions.md`, `s2-hide-focus-fallback.md`
 - **Expected:** `#atlas=hcp-mmp&region=hcp-mmp:left:1`: Clear selection → Isolate hidden, hash without `region=`, `document.activeElement` visible and not `body`. Hide → Isolate hidden, focus visible and not `body`.
-- **Covered by:** `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134); `src/lib/controller/anatomy.svelte.test.ts` (R, the commands); `src/features/inspector/inspector.svelte.test.ts` (W, only that the handlers are called)
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts:123` (R, Hide hands focus to Undo across panels); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134); `src/lib/controller/anatomy.svelte.test.ts` (R, the commands); `src/features/inspector/inspector.svelte.test.ts` (W, only that the handlers are called). The Clear half in the composed panel is uncovered
 
 ### INSP-05 · The datasheet gives the measurement by kind, the centroid and the source
 

@@ -113,7 +113,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: measured positions
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:646-664`
 - **Expected:** 1000×700 stage: letters in order top, right, bottom, left, each text = the camera's edge letter, x (and y except top) = the screen box centre (±1e-3); top y = 20. Dock 300×400 (tall) → bottom letter `{ x: 500, y: 652 }` (700 − 16 − 32). Status `loading` → `{ letters: [], scale: null }`.
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R). `snapshot.svelte.test.ts` checks the `markings()` plan (:230-243), not the drawing; that the letters and keys are drawn into the image is checked only by `src/features/snapshot/snapshot.parity.svelte.test.ts` (D)
 
 ### SNAP-12 · Each colour key is redrawn with every row named beside its swatch
 
@@ -122,7 +122,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: measured text and computed style
 - **Source:** `viewer/ui/chrome/snapshot.js:172-196`; `viewer/ui/chrome/viewport-chrome.js:665-691`; deviation `g6-paint-row-labels.md`
 - **Expected:** Deficit "Aphasia" with Broca picked, Wernicke absent, Arcuate → texts `['Aphasia', 'Broca', 'Wernicke', 'Arcuate']`, each row's x = the left of its label on screen (±1e-3) and right of its swatch; weights `['600', '400', '400']`; swatches `['rgb(100, 120, 200)', 'rgba(0, 0, 0, 0)', 'rgb(160, 120, 200)']`; the note absent; plate box = the screen plate's size. Functional, Sections level → `['Functional divisions', 'Sections', '1 · Early', '2 · Late']`, level x = the checked radio's text left; folded → `['Functional divisions', 'Sections']`, no swatches. 40 rows on a 1100×420 stage, opened → fewer than 41 texts and 40 swatches, all with y inside the plate.
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R; "a plate the model says is folded draws its title alone…" is I: a fake keys model that contradicts the DOM pins where the fold is read from)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R; "a plate the model says is folded draws its title alone…" is I: a fake keys model that contradicts the DOM pins where the fold is read from). `snapshot.svelte.test.ts` checks the `markings()` plan (:230-243), not the drawing; that the letters and keys are drawn into the image is checked only by `src/features/snapshot/snapshot.parity.svelte.test.ts` (D)
 
 ### SNAP-13 · Only marks are added; the anatomy is not resampled
 
