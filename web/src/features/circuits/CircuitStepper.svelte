@@ -81,6 +81,7 @@
     }
     /* A run in flight turns the control away without taking it from the Tab order. */
     .circuit-stepper :global(.icon-button[aria-disabled='true']) {
+      background: none;
       color: color-mix(in srgb, var(--text-tertiary) 55%, transparent);
       cursor: default;
     }

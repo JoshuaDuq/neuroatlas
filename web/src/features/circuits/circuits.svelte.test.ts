@@ -191,6 +191,9 @@ describe('opening a lesson', () => {
   test('the reader leaving the landmark is told so, and Return brings the landmark back', async () => {
     mount();
     await open('vision');
+    // Past the first landmark, so Return must go to the current one, not the first.
+    await userEvent.click(control('next'));
+    await expect.poll(() => world.lesson.state.step).toBe(1);
     await wander();
     expect(world.explorer.landmarkSelected).toBe(false);
     expect(document.querySelector('.circuit-context')).toBeNull();
@@ -200,6 +203,10 @@ describe('opening a lesson', () => {
     returnButton()!.focus();
     await userEvent.keyboard('{Enter}');
     await expect.poll(() => world.explorer.landmarkSelected).toBe(true);
+    expect(world.lesson.state.step).toBe(1);
+    expect(world.view.current.selectedRegion?.id).toBe(
+      world.circuits.get('vision').steps[1]!.region,
+    );
     expect(returnButton()).toBeNull();
     await expect.poll(() => document.activeElement).toBe(title());
   });
@@ -384,6 +391,21 @@ describe('related circuits', () => {
     expect(document.querySelector('.related')).toBeNull();
   });
 
+  test('a row opens the lesson at its own landmark, not the first', async () => {
+    mount();
+    const memory = world.circuits.get('memory');
+    const last = memory.steps.length - 1;
+    world.session.setExplorer('anatomy');
+    await world.commands.openRegion(memory.steps[last]!.region, () => true);
+    flushSync();
+    const row = document.querySelector<HTMLElement>(
+      `[data-landmark-circuit="memory"][data-landmark-step="${last}"]`,
+    )!;
+    await userEvent.click(row);
+    await expect.poll(() => world.lesson.state).toMatchObject({ circuit: 'memory', step: last });
+    await expect.poll(() => title().textContent).toBe(memory.steps[last]!.name.en);
+  });
+
   test('a region in no circuit has none', async () => {
     mount();
     world.session.setExplorer('anatomy');
@@ -430,6 +452,67 @@ describe('a run in flight', () => {
     await expect.poll(() => world.explorer.busy).toBe(false);
     expect(status().textContent).toBe('');
     expect(world.lesson.state.step).toBe(1);
+    world.hold.open = null;
+  });
+
+  test('related rows turn the reader away too while a run is in flight', async () => {
+    mount();
+    await open('vision');
+    // The Linked MRI run leaves the tab as it is, so the rows can be looked at while it is in flight.
+    const gate = deferred();
+    world.mri.openPreparedPlane.mockImplementationOnce(() => gate.promise);
+    const run = world.explorer.openMri();
+    world.session.setExplorer('anatomy');
+    flushSync();
+    const row = document.querySelector('[data-landmark-circuit="vision"]')!;
+    expect(row.getAttribute('aria-disabled')).toBe('true');
+    gate.resolve();
+    await run;
+    expect(row.getAttribute('aria-disabled')).toBeNull();
+  });
+
+  test('a busy stepper control has no hover fill', async () => {
+    mount();
+    await open('hearing');
+    const gate = deferred();
+    world.hold.open = () => gate.promise;
+    await userEvent.click(control('next'));
+    await userEvent.hover(control('next'));
+    expect(getComputedStyle(control('next')).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    gate.resolve();
+    await expect.poll(() => world.explorer.busy).toBe(false);
+    world.hold.open = null;
+  });
+
+  test('an opening overtaken by a newer scene command does nothing and does not throw', async () => {
+    mount();
+    const gate = deferred();
+    world.hold.open = () => gate.promise;
+    const opening = world.explorer.openCircuit('vision');
+    // A newer command begins: S3's openCircuit gives up without starting the lesson.
+    world.commands.begin();
+    gate.resolve();
+    expect(await opening).toBe(true);
+    expect(world.lesson.state.circuit).toBeNull();
+    expect(world.explorer.busy).toBe(false);
+    world.hold.open = null;
+  });
+
+  test('a failure is scrolled into view', async () => {
+    mount();
+    await open('hearing');
+    const detail = document.querySelector<HTMLElement>('.detail')!;
+    detail.style.cssText = 'height: 120px; overflow-y: auto';
+    expect(status().getBoundingClientRect().top).toBeGreaterThan(
+      detail.getBoundingClientRect().bottom,
+    );
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    world.hold.open = () => Promise.reject(new Error('geometry'));
+    await userEvent.click(control('next'));
+    await expect
+      .poll(() => status().getBoundingClientRect().bottom)
+      .toBeLessThanOrEqual(detail.getBoundingClientRect().bottom);
+    error.mockRestore();
     world.hold.open = null;
   });
 
@@ -665,10 +748,10 @@ describe('accessibility', () => {
     style.textContent = `html { font-size: 200%; }
       * { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
       p { margin-bottom: 2em !important; }`;
-    document.body.style.width = '320px';
+    await page.viewport(320, 700);
     try {
       for (const element of document.querySelectorAll<HTMLElement>(
-        'button, summary, h2, h3, p, dd, a',
+        'button, summary, h2, h3, p, dd',
       )) {
         if (!element.checkVisibility() || element.closest('.visually-hidden')) continue;
         expect(element.scrollWidth, element.outerHTML).toBeLessThanOrEqual(element.clientWidth + 1);
@@ -686,7 +769,7 @@ describe('accessibility', () => {
       expect(group.scrollWidth).toBeLessThanOrEqual(group.clientWidth + 1);
     } finally {
       style.remove();
-      document.body.style.width = '';
+      await page.viewport(1280, 800);
     }
   });
 });

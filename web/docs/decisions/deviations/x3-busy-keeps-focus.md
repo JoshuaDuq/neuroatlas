@@ -9,7 +9,7 @@ circuits.js:137-141 set `disabled` on every button of the browser, profile, step
 
 ## New behaviour
 
-No control is natively disabled. Each carries `aria-disabled="true"` while a run is in flight and is drawn as disabled, and the busy runner (`createBusyRunner`) refuses a second run. Focus never leaves the control that was pressed. Decision 40 names the focused control; the model does not know which control is focused, and no control can then lose focus, so every control in the four containers takes it. `aria-busy` stays on the profile and the notes only (it meant nothing on the other containers).
+No control is natively disabled. Each carries `aria-disabled="true"` while a run is in flight and is drawn as disabled, and the busy runner (`createBusyRunner`) refuses a second run. Focus never leaves the control that was pressed. Decision 40 names the focused control; every control takes it instead, for the reason `x1-focusable-while-opening.md` gives: the Tab sequence stays the same during a run, and no control can lose focus whichever one was pressed. The related circuit rows, which legacy never disabled (they sat outside the four containers and `run` refused them), take it too. `aria-busy` stays on the profile and the notes only (it meant nothing on the other containers).
 
 ## Standard cited
 

@@ -66,7 +66,8 @@ export function createCircuitExplorer(deps: CircuitExplorerDeps) {
   async function settle(direction: Direction | undefined) {
     // The controller has drawn the lesson; the hidden end of the stepper has left the page.
     await tick();
-    if (!exploring) return;
+    // A newer scene command overtook the opening: no lesson was started, so there is nothing to focus.
+    if (!exploring || !lesson.circuit) return;
     if (!profile) throw new Error('The lesson profile is not mounted.');
     scrollToTop(profile);
     const control =

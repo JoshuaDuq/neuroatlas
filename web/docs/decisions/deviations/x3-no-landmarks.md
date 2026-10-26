@@ -5,11 +5,11 @@ Status: fix (standard cited, decision 13 on #4)
 
 ## Legacy behaviour
 
-`section#circuit-profile`, `#circuit-region` and the landmark list's section carry `aria-labelledby` (index.html:341, 423; circuits.js:167-227), each becoming a `region` landmark nested inside the panel.
+`section#circuit-profile` and `section#circuit-region` carry `aria-labelledby` (index.html:341, 423; circuits.js:167-227, 229-257), each becoming a `region` landmark nested inside the panel. (The landmark list's section is labelled only on its `ol`, so it was never one.)
 
 ## New behaviour
 
-They are plain `div`s under their headings. The panel `<aside>` is the one landmark.
+The profile and the related section are plain `div`s under their headings; the landmark list's section is a plain `div` as before. The panel `<aside>` is the one landmark.
 
 ## Standard cited
 

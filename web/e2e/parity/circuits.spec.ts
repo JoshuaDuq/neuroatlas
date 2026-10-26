@@ -70,8 +70,9 @@ test.describe('a lesson', () => {
   }, testInfo) => {
     const { page } = app;
     await openCircuits(app);
-    const row = circuit(page, /^Visual pathway/);
-    await row.click();
+    await circuit(page, /^Visual pathway/).click();
+    // The list is behind the lesson now, so the row is found by its data attribute.
+    const row = page.locator('[data-circuit="vision"]');
     await expect(title(page)).toHaveText('Optic chiasm');
     await expect(title(page)).toBeFocused();
     // The open circuit is `aria-current` on next, `aria-pressed` on legacy (deviation x3-current-circuit).
@@ -135,8 +136,9 @@ test.describe('a lesson', () => {
       await expect(page.getByText(name, { exact: true })).toBeVisible();
     }
     await page.getByText('Sources', { exact: true }).click();
-    const links = page.locator('a[target="_blank"][rel~="noreferrer"]');
-    expect(await links.count()).toBeGreaterThan(0);
+    const sources = page.locator('details', { has: page.getByText('Sources', { exact: true }) });
+    const links = sources.locator('a[target="_blank"][rel~="noreferrer"]');
+    await expect(links.first()).toBeVisible();
     await expect(page.getByText(/^Content checked: /)).toBeVisible();
   });
 
@@ -172,9 +174,9 @@ test.describe('related circuits', () => {
     await app.gotoHash({ tab: 'anatomy', region: 'learning:midline:optic-chiasm' });
     await app.ready();
     await expect(page.getByRole('heading', { level: 3, name: 'In guided circuits' })).toBeVisible();
-    // The accessible name is "Name, Landmark 1 of 4" on legacy and "Name 1 of 4, Landmark" on next
-    // (deviation x3-label-in-name).
-    const link = page.getByRole('button', { name: /^Visual pathway,? (Landmark )?1 of 4/ });
+    // The accessible name is "Name , Landmark 1 of 4" on legacy (flex items gain spaces) and "Name 1 of 4, Landmark"
+    // on next (deviation x3-label-in-name).
+    const link = page.getByRole('button', { name: /^Visual pathway\s*,?\s*(Landmark )?1 of 4/ });
     await link.click();
     await expect.poll(() => app.hash()).toContain('tab=circuits');
     await expect(title(page)).toHaveText('Optic chiasm');

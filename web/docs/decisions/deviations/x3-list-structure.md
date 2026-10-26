@@ -9,7 +9,7 @@ Status: fix (standard cited)
 
 ## New behaviour
 
-The labelled list is `div role="group"` over a `ul` of `li` (as the Functions and Deficits lists), and the landmark sequence is `ol role="list"` labelled by its heading, so "1 of 5" navigation survives in Safari.
+The labelled list is `div role="group"` over a `ul` of `li` (as the Functions and Deficits lists), and the landmark sequence is `ol role="list"` labelled by its heading, so "1 of 5" navigation survives in Safari. The related circuit rows, a `div.circuit-links` of buttons in legacy, become a `ul` labelled by their heading, one `li` per row.
 
 ## Standard cited
 
