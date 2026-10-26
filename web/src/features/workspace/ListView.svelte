@@ -7,6 +7,7 @@
   import type { App, World } from '../../app/application.svelte.ts';
   import { sharedGroupNames } from '../../lib/core/panels/navigator.ts';
   import { atlasSwitchLabel } from '../../lib/core/i18n/index.ts';
+  import { isKeyboardActivation } from '../../lib/ui/instant.ts';
   import { insideInternal } from '../../lib/core/state/internal-mode.ts';
   import type { Explorer } from '../../lib/types/index.ts';
   import AnatomyExplorer from '../anatomy/AnatomyExplorer.svelte';
@@ -146,7 +147,8 @@
     active={current.explorer === 'diffusion'}
     cortexOpacity={current.cortexOpacity}
     onCortexOpacity={anatomy.setCortexOpacity}
-    onOpenMri={() => app.ports.openDiffusionMri()}
+    bind:minimum={app.tractsMinimum}
+    onOpenMri={(event) => app.ports.openDiffusionMri({ instant: isKeyboardActivation(event) })}
   />
 </div>
 

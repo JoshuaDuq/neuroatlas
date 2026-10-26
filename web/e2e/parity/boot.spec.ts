@@ -4,10 +4,13 @@
 // difference cites its deviation record in web/docs/decisions/deviations/.
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures.ts';
-import enabled from './enabled/stage.ts';
+import enabled from './enabled/shell.ts';
 
 test.beforeEach(({ page: _page }, testInfo) => {
-  test.skip(testInfo.project.name === 'next' && !enabled, 'the next stage region is not enabled');
+  test.skip(
+    testInfo.project.name === 'next' && !enabled,
+    'the next stage status is mounted by the shell region (I3b)',
+  );
 });
 
 const TEXT = {

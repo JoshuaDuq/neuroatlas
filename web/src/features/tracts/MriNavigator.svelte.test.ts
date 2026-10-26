@@ -11,6 +11,7 @@ import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { flushSync } from 'svelte';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import '../../app/layout.css';
 import Fixture from './mri-navigator-test-support.svelte';
@@ -100,6 +101,8 @@ const voxels = () =>
 const slider = (name: string) => page.getByRole('slider', { name });
 const notes = () => dialog().querySelector('.notes') as HTMLElement;
 const alertText = () => notes().querySelector('[role="alert"]')!.textContent!.trim();
+/** The dialog's own live region, where what the reader does here is said. */
+const said = () => dialog().querySelector('[role="status"].said') as HTMLElement;
 const statusNode = () => notes().querySelector('[role="status"]') as HTMLElement;
 const names = (calls: Call[], name: string) => calls.filter(([call]) => call === name);
 
@@ -331,16 +334,82 @@ describe('what the reader hears', () => {
     canvas().focus();
     await userEvent.keyboard('{ArrowRight}');
     await expect
-      .poll(() => region.textContent)
+      .poll(() => said().textContent)
       .toBe('RAS:\u00a0+10.0, +8.0, +10.0\u202fmm · T1:\u00a014 · FA:\u00a00.63');
 
-    region.textContent = '';
+    said().textContent = '';
     vi.useFakeTimers();
     // What NiiVue reports for a click or a drag: no key was pressed.
     base.tracts.navigators[0]!.setVoxel([1, 2, 3]);
     vi.advanceTimersByTime(2000);
-    expect(region.textContent).toBe('');
+    expect(said().textContent).toBe('');
     vi.useRealTimers();
+  });
+
+  /** A key press on the canvas, as the navigator hears it, with no wait for the keyboard's own timing. */
+  const key = (name: string) =>
+    canvas().dispatchEvent(
+      new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }),
+    );
+
+  test('a key move is said once the keys have rested for 200 ms, and only the last one', async () => {
+    await opened();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(150);
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(199);
+    flushSync();
+    expect(said().textContent).toBe('');
+    await vi.advanceTimersByTimeAsync(1);
+    flushSync();
+    expect(said().textContent).toBe(
+      'RAS:\u00a0+12.0, +8.0, +10.0\u202fmm · T1:\u00a015 · FA:\u00a00.75',
+    );
+  });
+
+  test('a move back to the sentence last said writes nothing to the live region', async () => {
+    await opened();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(200);
+    flushSync();
+    expect(said().textContent).not.toBe('');
+    let writes = 0;
+    const observer = new MutationObserver((records) => (writes += records.length));
+    observer.observe(said(), { childList: true, characterData: true, subtree: true });
+    key('ArrowLeft');
+    key('ArrowRight');
+    await vi.advanceTimersByTimeAsync(1000);
+    flushSync();
+    await Promise.resolve();
+    expect(writes).toBe(0);
+    observer.disconnect();
+  });
+
+  test('after the dialog is closed and opened again the same sentence is said again', async () => {
+    await opened();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowRight');
+    vi.advanceTimersByTime(200);
+    flushSync();
+    const first = said().textContent;
+    expect(first).not.toBe('');
+    vi.useRealTimers();
+    await closing(() => userEvent.keyboard('{Escape}'));
+    expect(said().textContent).toBe('');
+    await openFromKeyboard();
+    await expect.element(planeSelect()).toBeEnabled();
+    canvas().focus();
+    vi.useFakeTimers();
+    key('ArrowLeft');
+    key('ArrowRight');
+    vi.advanceTimersByTime(200);
+    flushSync();
+    expect(said().textContent).toBe(first);
   });
 
   test('the readout is plain text, not a live region', async () => {
@@ -360,8 +429,24 @@ describe('what the reader hears', () => {
     await voxelInput('k').fill('3');
     await page.getByRole('button', { name: 'Go to voxel' }).click();
     expect(names(calls, 'setVoxel').at(-1)).toEqual(['setVoxel', [[1, 2, 3]]]);
-    expect(region.textContent).toBe('Crosshair moved to voxel 1, 2, 3.');
+    expect(said().textContent).toBe('Crosshair moved to voxel 1, 2, 3.');
+    expect(region.textContent).toBe('');
     expect(onPoint).toHaveBeenLastCalledWith([2, 4, 6]);
+  });
+
+  test('what is said is said inside the modal dialog, where it is not inert, and a repeat is spoken again', async () => {
+    await opened();
+    const live = said();
+    expect(live.closest('dialog')).toBe(dialog());
+    expect(dialog().matches(':modal')).toBe(true);
+    const go = page.getByRole('button', { name: 'Go to voxel' });
+    await go.click();
+    expect(live.textContent).toBe('Crosshair moved to voxel 4, 4, 5.');
+    // The same sentence again is cleared, then written, so the region changes and is spoken again.
+    await go.click();
+    expect(live.textContent).toBe('');
+    await expect.poll(() => live.textContent).toBe('Crosshair moved to voxel 4, 4, 5.');
+    expect(region.textContent).toBe('');
   });
 
   test('a voxel outside the grid is stopped by the form and named by its range', async () => {
@@ -371,7 +456,7 @@ describe('what the reader hears', () => {
     await page.getByRole('button', { name: 'Go to voxel' }).click();
     expect((voxelInput('i').element() as HTMLInputElement).validity.rangeOverflow).toBe(true);
     expect(names(calls, 'setVoxel')).toHaveLength(before);
-    expect(region.textContent).toBe('');
+    expect(said().textContent).toBe('');
     await expect.element(voxelInput('i')).toHaveAccessibleDescription('0 to 7');
     await expect.element(voxelInput('k')).toHaveAccessibleDescription('0 to 9');
     await expect.element(page.getByRole('group', { name: 'Source voxel (0-based)' })).toBeVisible();

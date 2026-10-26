@@ -7,6 +7,7 @@ import type { createCatalog } from '../lib/core/catalog/catalog.ts';
 import type { ClinicalCatalog } from '../lib/core/clinical/catalog.ts';
 import type { CircuitCatalog } from '../lib/core/learning/catalog.ts';
 import type { SceneCommands } from '../lib/core/state/scene-commands.ts';
+import { MINIMUM_LENGTH } from '../lib/core/tracts.ts';
 import { decodeState } from '../lib/core/state/url-state.ts';
 import { VIEW_DIRECTIONS } from '../lib/engine/render/camera-views.ts';
 import { createLanguage } from '../lib/state/language.svelte.ts';
@@ -67,6 +68,8 @@ export function createApp() {
   });
   let world = $state.raw<World | null>(null);
   let failure = $state.raw<StartFailure | undefined>();
+  // The Tracts panel's length filter, which the stage's MRI navigator draws with.
+  let tractsMinimum = $state<number>(MINIMUM_LENGTH.min);
   const cleanups: (() => unknown)[] = [];
 
   const theme = createTheme((current) => {
@@ -92,6 +95,13 @@ export function createApp() {
     chooseLanguage(next: Language) {
       language.set(next);
       session.setLang(next);
+    },
+
+    get tractsMinimum() {
+      return tractsMinimum;
+    },
+    set tractsMinimum(minimum: number) {
+      tractsMinimum = minimum;
     },
 
     get world() {

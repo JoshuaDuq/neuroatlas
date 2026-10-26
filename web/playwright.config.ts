@@ -17,8 +17,8 @@ const nextIgnored = [
   ...(panelsEnabled
     ? []
     : ['anatomy-tree', 'deficits', 'functions', 'inspector', 'tracts', 'workspace']),
-  ...(shellEnabled ? [] : ['data-bar', 'masthead', 'provenance', 'shell', 'shortcuts']),
-  ...(stageEnabled ? [] : ['boot', 'stage-overlay']),
+  ...(shellEnabled ? [] : ['boot', 'data-bar', 'masthead', 'provenance', 'shell', 'shortcuts']),
+  ...(stageEnabled ? [] : ['stage-overlay']),
 ].map((name) => `**/parity/${name}.spec.ts`);
 
 export default defineConfig({

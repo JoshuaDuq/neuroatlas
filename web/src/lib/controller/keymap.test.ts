@@ -275,7 +275,7 @@ describe('keymap', () => {
     const { keymap, commands } = host({ explorer: 'diffusion', tractReferenceActive: true });
     const event = press('m');
     dispatchKey(event, keymap);
-    assert.equal(calls(commands.openDiffusionMri), 1);
+    assert.deepEqual(commands.openDiffusionMri.mock.calls, [[{ instant: true }]]);
     assert.equal(calls(commands.openMpr), 0);
     assert.equal(calls(event.preventDefault), 1);
     const reference = host({ explorer: 'anatomy', tractReferenceActive: true });
@@ -544,7 +544,7 @@ describe('keymap outcomes', () => {
     assert.deepEqual(outcome({}, 'm'), { log: ['openMpr([{"instant":true}])'], prevented: true });
     assert.deepEqual(outcome({ tractReferenceActive: true }, 'M'), { log: [], prevented: false });
     assert.deepEqual(outcome({ explorer: 'diffusion' }, 'M'), {
-      log: ['openDiffusionMri'],
+      log: ['openDiffusionMri([{"instant":true}])'],
       prevented: true,
     });
   });
