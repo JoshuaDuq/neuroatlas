@@ -18,8 +18,6 @@ export interface TractsOptions {
 export interface Tracts extends EngineTracts {
   readonly bounds: Box3;
   setClippingPlanes(planes: Plane[]): void;
-  scannerToSurface(point: Vec3): Vec3;
-  surfaceToScanner(point: Vec3): Vec3;
   dispose(): void;
 }
 

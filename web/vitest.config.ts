@@ -42,7 +42,13 @@ export default defineConfig({
             headless: true,
             provider: playwright({
               launchOptions: {
-                args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+                // Scrollbars hidden as headless hides them, so CI's headed run (tests.yml) lays
+                // pages out at the widths the tests are written for.
+                args: [
+                  '--use-angle=swiftshader',
+                  '--enable-unsafe-swiftshader',
+                  '--hide-scrollbars',
+                ],
               },
             }),
             instances: [{ browser: 'chromium' }],
