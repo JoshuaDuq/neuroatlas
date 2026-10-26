@@ -107,6 +107,7 @@ export function createFakeModel({
   layers.add(values.atlas);
   layers.add(values.detail);
 
+  let spinalCordRequest = 0;
   const unknownLayer = (message: string) => coded(message, 'unknown-layer');
   const settings = (): DisplaySettings => ({
     ...values,
@@ -252,7 +253,11 @@ export function createFakeModel({
     async setSpinalCordVisible(visible, onProgress?: OnProgress) {
       requireBoolean(visible, 'Spinal cord visibility');
       if (disposed) throw new Error('BrainAtlas has been disposed.');
-      if (visible) await model.ensureSpinalCord(onProgress);
+      const request = ++spinalCordRequest;
+      if (visible) {
+        await model.ensureSpinalCord(onProgress);
+        if (request !== spinalCordRequest) return;
+      }
       values.spinalCordVisible = visible;
       values.isolatedRegion = null;
       update();
@@ -312,9 +317,13 @@ export function createFakeModel({
       requireRegions(ids);
       dissection.hidden = new Set(ids);
       dissection.history = [];
+      if (values.isolatedRegion && dissection.hidden.has(values.isolatedRegion)) {
+        values.isolatedRegion = null;
+      }
       update();
     },
     reset() {
+      spinalCordRequest++;
       dissection.hidden = new Set();
       dissection.history = [];
       values.internalSystem = null;
