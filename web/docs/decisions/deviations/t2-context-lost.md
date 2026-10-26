@@ -9,8 +9,8 @@ Neither the legacy dialog nor NiiVue (`dist/index.js` has no `webglcontextlost` 
 
 ## New behaviour
 
-A `webglcontextlost` listener on the live canvas shows the "could not be displayed" alert and disables the controls; Retry disposes the engine and starts a new one on a fresh canvas. The context that closing the dialog frees on purpose is not reported.
+A `webglcontextlost` listener on the live canvas shows the "could not be displayed" alert and disables the controls; Retry disposes the engine and starts a new one on a fresh canvas. The context that closing the dialog frees on purpose is not reported. A loss during the first load is shown when that load ends.
 
 ## Standard cited
 
-WCAG 2.2 SC 4.1.3 Status Messages and SC 3.3.1 Error Identification; WebGL's `webglcontextlost` event.
+The WebGL specification's `webglcontextlost` event (Khronos WebGL 1.0 §5.15.2: a page that wants to recover must handle it); WCAG 2.2 SC 4.1.3 Status Messages for the alert.

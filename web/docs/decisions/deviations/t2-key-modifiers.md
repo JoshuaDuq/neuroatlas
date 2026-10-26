@@ -13,4 +13,4 @@ The six canvas keys act only without Alt, Ctrl, Meta or Shift, and the event is 
 
 ## Standard cited
 
-WCAG 2.2 SC 2.1.1 Keyboard and SC 2.1.4; platform key reservation (browser history and assistive-technology keys).
+WCAG 2.2 SC 2.1.1 Keyboard (the page must not take away the browser's and assistive technology's own keys); platform key reservation (Alt+Arrow is history navigation).

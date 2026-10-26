@@ -136,6 +136,7 @@
   let voxel = $state<(number | null)[]>([null, null, null]);
   let canvas = $state<HTMLCanvasElement>();
   let notes = $state<HTMLElement>();
+  let root = $state<HTMLElement>();
   /** A fresh canvas per engine: a context that was lost stays bound to its canvas. */
   let canvasKey = $state(0);
   /** Counts openings and closings; a load that finds it changed was abandoned. */
@@ -251,7 +252,7 @@
       if (mine !== session) return;
       current.setPlane(plane as MriPlaneChoice);
       current.resize();
-      ready = true;
+      ready = !lost;
     } catch (error) {
       if (mine === session) report(error);
       else console.error(error);
@@ -295,12 +296,25 @@
     moves.dispose();
   });
 
+  // The sticky header grows when its title wraps (200 % text, a narrow phone): the focus scroll
+  // margin follows its measured height.
+  $effect(() => {
+    const header = root?.closest('dialog')?.querySelector('.dialog-header');
+    if (!root || !header) return;
+    const target = root;
+    const observer = new ResizeObserver(() =>
+      target.style.setProperty('--header-clearance', `${header.getBoundingClientRect().height}px`),
+    );
+    observer.observe(header);
+    return () => observer.disconnect();
+  });
+
   // No library surfaces this: NiiVue and the legacy dialog left a blank canvas.
   $effect(() => {
     const target = canvas;
     if (!target) return;
+    // Also while the first load runs: the load then ends with the failure shown and Retry offered.
     const onLost = () => {
-      if (!navigator) return;
       lost = true;
       report(new Error('The WebGL context of the MRI canvas was lost.'));
     };
@@ -373,7 +387,7 @@
     <h2 {id}>{dataset.mriTitle}</h2>
   {/snippet}
 
-  <div class="navigator">
+  <div class="navigator" bind:this={root}>
     <p id="{uid}-hint" class="hint">{hint}</p>
 
     <div class="notes" tabindex="-1" bind:this={notes}>
@@ -507,9 +521,7 @@
     }
     .navigator :global(:is(button, input, select, canvas)) {
       /* The sticky header must not cover what a keyboard puts in view (WCAG 2.4.11). */
-      scroll-margin-top: calc(
-        var(--header-height) + env(safe-area-inset-top, 0px) + var(--space-2)
-      );
+      scroll-margin-top: calc(var(--header-clearance, var(--header-height)) + var(--space-2));
     }
     .hint,
     .footnotes > p {
@@ -535,8 +547,9 @@
     .alert {
       color: var(--danger);
     }
+    /* Present before it has text (ARIA19), but with no room of its own. */
     .alert:empty {
-      display: none;
+      position: absolute;
     }
     .toolbar {
       display: flex;
@@ -627,6 +640,10 @@
       height: 100%;
       touch-action: none;
     }
+    /* The box clips what is outside it, so the ring is drawn inside (WCAG 2.4.7). */
+    canvas:focus-visible {
+      outline-offset: -2px;
+    }
     .readout {
       margin: 0;
     }
@@ -683,20 +700,6 @@
     @media (prefers-contrast: more) {
       button:not(:disabled) {
         border-color: var(--border-control);
-      }
-    }
-    @media (forced-colors: active) {
-      button,
-      input[type='number'] {
-        border-color: CanvasText;
-      }
-      button:disabled,
-      input[type='number']:disabled {
-        border-color: GrayText;
-      }
-      canvas:focus-visible,
-      input[type='number']:focus-visible {
-        outline: 2px solid Highlight;
       }
     }
   }

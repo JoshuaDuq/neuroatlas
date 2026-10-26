@@ -10,7 +10,7 @@ import type { MriLocation, MriNavigator } from '../../lib/engine/api.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
 import type { Manifest } from '../../lib/types/index.ts';
-import { expectAxeClean } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import '../../app/layout.css';
 import Fixture from './mri-navigator-test-support.svelte';
@@ -179,6 +179,8 @@ describe('opening', () => {
     await expect.element(planeSelect()).toBeEnabled();
     expect(canvas().tabIndex).toBe(0);
     expect(names(calls, 'moveVoxel')).toEqual([]);
+    // A key pressed with no engine yet must not become a failure.
+    expect(alertText()).toBe('');
     expect(base.tracts.navigators).toHaveLength(1);
   });
 
@@ -471,10 +473,14 @@ describe('failure', () => {
     expect(page.getByRole('button', { name: 'Reload MRI' }).elements()).toHaveLength(0);
   });
 
+  /** The browser's own loss of the context: a real `webglcontextlost` event on the live canvas. */
+  const loseContext = (target: HTMLCanvasElement) =>
+    target.getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext();
+
   test('a lost WebGL context is shown, and Retry rebuilds the engine on a fresh canvas', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const { base, canvases } = await opened();
-    canvas().dispatchEvent(new Event('webglcontextlost'));
+    loseContext(canvas());
     await expect.poll(alertText).toBe('The reference data could not be displayed.');
     expect((planeSelect().element() as HTMLSelectElement).disabled).toBe(true);
     await page.getByRole('button', { name: 'Reload MRI' }).click();
@@ -484,18 +490,42 @@ describe('failure', () => {
     expect(alertText()).toBe('');
   });
 
+  test('a context lost during the first load is shown when the load ends, with Retry', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const held = gate();
+    await show({}, instrument({ gate: held.promise }));
+    await openFromKeyboard();
+    loseContext(canvas());
+    await expect.poll(alertText).toBe('The reference data could not be displayed.');
+    held.release();
+    await expect.element(page.getByRole('button', { name: 'Reload MRI' })).toBeVisible();
+    expect((planeSelect().element() as HTMLSelectElement).disabled).toBe(true);
+    expect(alertText()).toBe('The reference data could not be displayed.');
+  });
+
   test('closing a dialog frees its context without that being reported as a failure', async () => {
     const { canvases } = await opened();
+    const old = canvases[0]!;
+    old.getContext('webgl2');
     await closing(() => userEvent.keyboard('{Escape}'));
-    // Disposing loses the context on the old canvas, a task later.
-    canvases[0]!.dispatchEvent(new Event('webglcontextlost'));
+    // Disposing an engine loses its context on the old canvas, a task later.
+    const lost = new Promise((resolve) =>
+      old.addEventListener('webglcontextlost', resolve, { once: true }),
+    );
+    loseContext(old);
+    await lost;
     expect(alertText()).toBe('');
   });
 });
 
 describe('M', () => {
-  test('closes the dialog from the canvas and returns focus to the opener', async () => {
-    await opened();
+  test('closes the dialog from the canvas, at once, and returns focus to the opener', async () => {
+    // Opened with the pointer, which animates: the key's close is what sets `data-instant`.
+    await show();
+    await opener().click();
+    await expect.poll(() => dialog().open).toBe(true);
+    await expect.element(planeSelect()).toBeEnabled();
+    expect(dialog().hasAttribute('data-instant')).toBe(false);
     canvas().focus();
     await closing(() => userEvent.keyboard('m'));
     await expect.element(opener()).toHaveFocus();
@@ -613,17 +643,87 @@ describe('accessibility', () => {
     }
   });
 
-  test('a focused control is never left under the sticky header', async () => {
-    await page.viewport(320, 256);
+  test.each([
+    [320, 256, '100%'],
+    [320, 640, '200%'],
+    [390, 844, '200%'],
+  ])(
+    'a focused control is never left under the sticky header at %ix%i, text %s',
+    async (width, height, size) => {
+      await page.viewport(width, height);
+      document.documentElement.style.fontSize = size;
+      try {
+        await opened();
+        const headerBox = () => dialog().querySelector('.dialog-header')!.getBoundingClientRect();
+        // The margin follows the header as it wraps its title.
+        await expect
+          .poll(() =>
+            (dialog().querySelector('.navigator') as HTMLElement).style.getPropertyValue(
+              '--header-clearance',
+            ),
+          )
+          .toBe(`${headerBox().height}px`);
+        // Scrolled until the select is half out of view above the dialog's edge: the browser then
+        // scrolls it back just enough to reveal it, and that stop must clear the sticky header.
+        const select = planeSelect().element() as HTMLElement;
+        dialog().scrollTop +=
+          select.getBoundingClientRect().top - dialog().getBoundingClientRect().top + 10;
+        select.focus();
+        expect(select.getBoundingClientRect().top).toBeGreaterThanOrEqual(headerBox().bottom);
+      } finally {
+        document.documentElement.style.fontSize = '';
+      }
+    },
+  );
+
+  test('the focused canvas draws its ring inside the clipping box', async () => {
     await opened();
-    // Scrolled until the select is half out of view above the dialog's edge: the browser then
-    // scrolls it back just enough to reveal it, and that stop must clear the sticky header.
-    const select = planeSelect().element() as HTMLElement;
-    dialog().scrollTop +=
-      select.getBoundingClientRect().top - dialog().getBoundingClientRect().top + 10;
-    select.focus();
-    const header = dialog().querySelector('.dialog-header')!.getBoundingClientRect();
-    expect(select.getBoundingClientRect().top).toBeGreaterThanOrEqual(header.bottom);
+    canvas().focus({ focusVisible: true });
+    expect(canvas().matches(':focus-visible')).toBe(true);
+    const ring = getComputedStyle(canvas());
+    expect(ring.outlineStyle).toBe('solid');
+    // The box clips what is outside it: the ring must lie wholly within the canvas.
+    expect(parseFloat(ring.outlineOffset)).toBeLessThanOrEqual(-parseFloat(ring.outlineWidth));
+  });
+
+  test('the failure region is in the page before any failure', async () => {
+    await opened();
+    const alert = notes().querySelector('[role="alert"]')!;
+    expect(alert.textContent!.trim()).toBe('');
+    expect(getComputedStyle(alert).display).not.toBe('none');
+  });
+
+  /** What a property resolves to for a system colour or a token, measured on a probe in the dialog. */
+  const resolved = (property: 'color', value: string) => {
+    const probe = dialog().querySelector('.navigator')!.appendChild(document.createElement('i'));
+    probe.style.setProperty(property, value);
+    const out = getComputedStyle(probe).color;
+    probe.remove();
+    return out;
+  };
+
+  test('forced colours keep system colours and a ring inside the canvas box', async () => {
+    await opened();
+    const go = () => getComputedStyle(page.getByRole('button', { name: 'Go to voxel' }).element());
+    await withMedia([{ name: 'forced-colors', value: 'active' }], () => {
+      expect(matchMedia('(forced-colors: active)').matches).toBe(true);
+      // The browser forces these; the test holds the component to leaving them alone.
+      expect(go().borderTopColor).toBe(resolved('color', 'CanvasText'));
+      canvas().focus({ focusVisible: true });
+      const ring = getComputedStyle(canvas());
+      expect(ring.outlineColor).toBe(resolved('color', 'Highlight'));
+      expect(parseFloat(ring.outlineOffset)).toBeLessThanOrEqual(-parseFloat(ring.outlineWidth));
+    });
+    expect(matchMedia('(forced-colors: active)').matches).toBe(false);
+  });
+
+  test('more contrast outlines the buttons in the control border colour', async () => {
+    await opened();
+    const go = () => getComputedStyle(page.getByRole('button', { name: 'Go to voxel' }).element());
+    expect(go().borderTopColor).toBe('rgba(0, 0, 0, 0)');
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], () => {
+      expect(go().borderTopColor).toBe(resolved('color', 'var(--border-control)'));
+    });
   });
 });
 

@@ -9,7 +9,7 @@ Status: fix (D9 (decision 41)); listed in the T2 PR
 
 ## New behaviour
 
-Every focusable control in the dialog has a `scroll-margin-top` of the header's height (plus the safe-area inset and a gap), so the browser's focus scroll leaves it clear.
+Every focusable control in the dialog has a `scroll-margin-top` of the header's measured height (a `ResizeObserver` on U5's header, which grows when its title wraps at 200 % text or 320 px) plus a gap, so the browser's focus scroll leaves it clear.
 
 ## Standard cited
 

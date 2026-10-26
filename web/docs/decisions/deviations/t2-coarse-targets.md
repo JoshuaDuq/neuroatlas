@@ -1,7 +1,7 @@
 # Touch targets are 44 px on any coarse pointer
 
 Chunk: T2
-Status: fix (decision 41 (targets)); listed in the T2 PR
+Status: fix (T2 decision record on #60, targets); listed in the T2 PR
 
 ## Legacy behaviour
 
