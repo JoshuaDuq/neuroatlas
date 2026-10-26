@@ -1,4 +1,4 @@
-import { afterAll, expect, test } from 'vitest';
+import { expect, test } from 'vitest';
 import {
   Data3DTexture,
   FloatType,
@@ -23,10 +23,8 @@ import {
 
 // Real WebGL: what a mark does to a cut face is what the fragment shader writes.
 const SIGNAL = 100;
-// A WebGL context on SwiftShader is slow to create and each material compiles its own shader, so one
-// renderer serves both tests and each test gets room for a loaded machine (an idle one needs under 1 s).
-const renderer = new WebGLRenderer({ canvas: document.createElement('canvas') });
-afterAll(() => renderer.dispose());
+// Each test compiles its own MeshPhysicalMaterial program on SwiftShader (0.1 to 0.3 s on an idle
+// machine), which a loaded machine can stretch past the browser project's 15 s default.
 const SHADER_COMPILE_TIMEOUT_MS = 30_000;
 
 const oetf = (value: number) =>
@@ -34,6 +32,7 @@ const oetf = (value: number) =>
 
 /** The display colour the shader writes for a constant scan value, with `mark` as the mark amount. */
 function render(mark: string): [number, number, number] {
+  const renderer = new WebGLRenderer({ canvas: document.createElement('canvas') });
   const texture = new Data3DTexture(new Uint8Array(8).fill(SIGNAL), 2, 2, 2);
   texture.format = RedFormat;
   texture.type = UnsignedByteType;
@@ -66,7 +65,7 @@ function render(mark: string): [number, number, number] {
   target.dispose();
   material.dispose();
   texture.dispose();
-  renderer.setRenderTarget(null);
+  renderer.dispose();
   return [oetf(pixel[0]!), oetf(pixel[1]!), oetf(pixel[2]!)];
 }
 

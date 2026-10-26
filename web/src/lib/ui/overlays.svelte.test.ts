@@ -13,18 +13,12 @@ const button = (name: string) => page.getByRole('button', { name, exact: true })
 const el = (name: string) => button(name).element() as HTMLElement;
 const attr = (name: string, attribute: string) => el(name).getAttribute(attribute);
 const tooltip = () => document.querySelector<HTMLElement>('[role="tooltip"]');
-/** Resolves when a tooltip with this text is in the page, however long a loaded machine takes to draw it (the test's own timeout bounds it, and the page's timers may be faked). */
-const tooltipDrawn = (text: string) =>
-  new Promise<void>((resolve) => {
-    const observer = new MutationObserver(check);
-    function check() {
-      if (tooltip()?.textContent !== text) return;
-      observer.disconnect();
-      resolve();
-    }
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-    check();
-  });
+const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+/** Real frames until `done`, which fails fast with `what` rather than waiting out the test timeout. */
+async function frames(done: () => boolean, what: string) {
+  for (let count = 0; count < 300 && !done(); count++) await frame();
+  expect(done(), what).toBe(true);
+}
 const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
 
 async function violations() {
@@ -481,38 +475,33 @@ describe('Tooltip placement and disposal', () => {
 
 describe('Tooltip', () => {
   test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
-    // Only the page's timers are faked, so the delays hold however loaded the machine is.
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    // The page's timers and its clock are faked, so the delays and the skip window hold however
+    // loaded the machine is; frames stay real, because drawing needs them.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
     try {
       render(Fixture);
       await button('Snapshot').hover();
-      // The pointer event may reach the page after `hover()` returns on a loaded machine, so the
-      // clock is counted up in steps and the tooltip may not exist before the 500 ms have run.
-      let waited = 0;
-      while (tooltip() === null && waited < 2000) {
-        await vi.advanceTimersByTimeAsync(10);
-        waited += 10;
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-      }
-      expect(waited).toBeGreaterThanOrEqual(500);
-      expect(waited).toBeLessThan(2000);
-      expect(tooltip()!.textContent).toBe('Save a PNG');
+      // The pointer may reach the page after `hover()` returns; the delay starts there.
+      await frames(() => el('Snapshot').matches(':hover'), 'the pointer reached the trigger');
+      await vi.advanceTimersByTimeAsync(499);
+      expect(tooltip()).toBeNull();
+      await vi.advanceTimersByTimeAsync(1);
+      await frames(() => tooltip()?.textContent === 'Save a PNG', 'the tooltip shows at 500 ms');
       expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
 
       await userEvent.unhover(el('Snapshot'));
-      // The skip window starts when the trigger closes, not when the exit transition (real time)
-      // removes the element, so that is what the fake clock is counted from: not before the page has
-      // seen the pointer leave, which a loaded machine can delay.
-      while (el('Snapshot').matches(':hover'))
-        await new Promise((resolve) => requestAnimationFrame(resolve));
+      await frames(() => !el('Snapshot').matches(':hover'), 'the pointer left the trigger');
+      // The skip window starts when the trigger closes, not when the exit transition removes the element.
       for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
         await vi.advanceTimersByTimeAsync(10);
       expect(attr('Snapshot', 'aria-describedby')).toBeNull();
       await vi.advanceTimersByTimeAsync(250);
       await button('Fullscreen').hover();
       // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
-      await tooltipDrawn('Enter full screen');
-      expect(tooltip()!.textContent).toBe('Enter full screen');
+      await frames(
+        () => tooltip()?.textContent === 'Enter full screen',
+        'the next tooltip skips the wait',
+      );
       expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
     } finally {
       vi.useRealTimers();

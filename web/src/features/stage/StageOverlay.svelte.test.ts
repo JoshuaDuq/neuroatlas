@@ -181,7 +181,13 @@ describe('the layer', () => {
     await mount();
     await focusByKeyboard();
     await withMedia([{ name: 'forced-colors', value: 'active' }], () => {
-      expect(getComputedStyle(host(), '::after').borderTopColor).not.toBe('rgb(127, 208, 204)');
+      // What Highlight computes to here: Chromium's own forced-colour adjustment would also turn the
+      // teal into some system colour, so only the keyword itself tells the rule from its absence.
+      const probe = document.body.appendChild(document.createElement('div'));
+      probe.style.cssText = 'border: 2px solid Highlight';
+      const highlight = getComputedStyle(probe).borderTopColor;
+      probe.remove();
+      expect(getComputedStyle(host(), '::after').borderTopColor).toBe(highlight);
     });
   });
 });
@@ -461,10 +467,7 @@ describe('hints', () => {
   test('the keyboard hint shows only while the canvas has keyboard focus', async () => {
     await mount();
     expect(getComputedStyle(focusHint()).opacity).toBe('0');
-    await userEvent.tab();
-    await userEvent.tab();
-    if (document.activeElement !== canvas()) await userEvent.tab();
-    expect(document.activeElement).toBe(canvas());
+    await focusByKeyboard();
     // Both fade over the camera transition.
     await vi.waitFor(() => expect(getComputedStyle(focusHint()).opacity).toBe('1'), {
       timeout: 5000,

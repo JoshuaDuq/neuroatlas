@@ -67,7 +67,7 @@ function rig(camera: Camera) {
 
 // The first reflect() compiles the PBR shader with an environment map on SwiftShader (about 2 s on an
 // idle machine, once per renderer; the other five renders take milliseconds), so a loaded machine
-// can exceed the 5 s default. 30 s matches the unit project's budget.
+// can exceed the browser project's 15 s default. 30 s matches the unit project's budget.
 const SHADER_COMPILE_TIMEOUT_MS = 30_000;
 
 test(
