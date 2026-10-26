@@ -11,7 +11,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: `inspectorEmptyChrome`, the hint choice)
 - **Source:** `viewer/ui/panels/inspector.js:13-22`, `265-305`; deviations `r1-hidden-actions.md`, `r1-summary-headings.md`
 - **Expected:** h2 "No region selected" and "Select a region on the model or in the anatomy list."; cortex hidden → "Cortex is hidden — internal structures are selectable."; no `button`, `dl` or `details`. Explorer `functions` → empty text. French h2 "Aucune région sélectionnée".
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `src/lib/core/panels/inspector.test.ts` (R); `parity/C5.test.ts` (D)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `src/lib/core/panels/inspector.test.ts` (R)
 
 ## The selected region
 
@@ -58,7 +58,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: `sourceLabel`, `core-panels.md`)
 - **Source:** `viewer/ui/panels/inspector.js:24-42`, `237-262`
 - **Expected:** `hcp-mmp:left:1` (`source_label_id` 1) → "… · 1", `.code` "1", not stacked. `zanatomy:midline:cord` (no id) → stacked. `learning:left:thalamus` (52 `source_label_ids`) → summary ending "52 labels" (French "52 étiquettes") and the 52 ids joined by ", ". The boundary: 8 ids listed, 9 counted.
-- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R; the 8/9 boundary is only in `parity/C5.test.ts`, D); `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R, with the 8/9 boundary); `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
 
 ### INSP-07 · An open source list stays open until the region or the language changes
 
@@ -253,7 +253,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit
 - **Source:** `viewer/ui/panels/comparison-format.js:1-15`
 - **Expected:** Area: 0 → "0.0"; −0 → "0.0"; 0.0003, 0.05, 0.0500001, 0.08 and 0.0999999 → "<0.1"; `Number.MIN_VALUE` → "<0.1"; 0.1 → "0.1"; 0.95 → "0.9"; 1 → "1.0"; 99.95 → "100.0"; 100 → "100.0"; −1 → "−1.0" (U+2212); 25.36 French → "25,4". Share: 0 → "0.0"; 0.000001 → "<0.1" (French "<0,1"); 0.0008 → "<0.1"; 0.001 → "0.1"; 0.1536 → "15.4" (French "15,4"); `Number.MIN_VALUE / 100` (= 0) → "0.0". Published data: `destrieux:left:4`'s last overlap (0.069 mm², 0.0066 %) → "<0.1" and "<0.1".
-- **Covered by:** `src/lib/core/comparison-format.test.ts` (R; lacks −0, 0.95, 99.95, 100, −1 and `MIN_VALUE`); `parity/R2.test.ts` (D); `src/features/inspector/AtlasComparison.svelte.test.ts` (S, the 0.069 mm² row)
+- **Covered by:** `src/lib/core/comparison-format.test.ts` (R, including the edge values); `src/features/inspector/AtlasComparison.svelte.test.ts` (S, the 0.069 mm² row)
 
 ### INSP-28 · A row is a toggle named with its region, area and share
 

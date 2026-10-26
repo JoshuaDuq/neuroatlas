@@ -71,3 +71,32 @@ test('a selected region keeps the hint and reveals its title, facts and actions'
     });
   }
 });
+
+test('PANEL-17 with no region only Anatomy keeps the hint; every other tab hides it', () => {
+  for (const explorer of ['functions', 'deficits', 'circuits', 'diffusion'] as const) {
+    assert.deepEqual(
+      inspectorEmptyChrome({ selectedRegion: null, explorer }),
+      { hideTitle: true, hideHint: true, hideFacts: true, hideActions: true },
+      explorer,
+    );
+  }
+});
+
+test('PANEL-18 eight ids are listed, nine are counted and the full list is kept', () => {
+  const label = (count: number) =>
+    sourceLabel(
+      {
+        atlas: 'learning',
+        source_atlas: 'nextbrain',
+        source_label_ids: Array.from({ length: count }, (_, index) => index + 1),
+      },
+      'en',
+    );
+  assert.deepEqual(label(8), { atlas: 'NextBrain', ids: '1, 2, 3, 4, 5, 6, 7, 8', stacked: true });
+  assert.deepEqual(label(9), {
+    atlas: 'NextBrain · 9 labels',
+    ids: null,
+    stacked: false,
+    all: '1, 2, 3, 4, 5, 6, 7, 8, 9',
+  });
+});

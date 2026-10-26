@@ -22,7 +22,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:8-33,201-218`
 - **Expected:** Defaults: hemisphere `both`, cortex shown, opacity 1, internal anatomy shown, cord hidden, colour `atlas`, level `named`, view `oblique`, cut `off`, position 0, not reversed, tilt 30, azimuth 30, no region, no isolation, no system, no anatomy, tab `anatomy`, no function, deficit or circuit, step 0, no camera, no MRI window. `encodeState` of all those plus `atlas: 'destrieux'` → `atlas=destrieux`. `{ atlas: 'destrieux', spinalCordVisible: false }` → `atlas=destrieux`. `{ cut: 'off' }` writes no `cut=`.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `src/lib/core/state/reader-state.test.ts` (R, "the defaults are exactly what a link leaves out"); `parity/C4.test.ts` (D, the DEFAULTS table)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `src/lib/core/state/reader-state.test.ts` (R, "the defaults are exactly what a link leaves out")
 
 ### STATE-02 · Each field travels under one short parameter, in a fixed order
 
@@ -31,7 +31,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:145-218`
 - **Expected:** Order and names: `hidden`, `anatomy`, `atlas`, `cuts` (cut atlas), `system`, `detail`, `region`, `isolate`, `view`, `cam`, `cut`, `pos`, `rev`, `tilt`, `az`, `hemi`, `cortex`, `internal`, `cord`, `colors`, `level`, `opacity`, `mri`, `tab`, `function`, `deficit`, `circuit`, `step`, `lang`. `{ explorer: 'circuits', selectedDeficit: 'aphasia', circuit: 'visual', circuitStep: 2 }` → `tab=circuits&deficit=aphasia&circuit=visual&step=3`. `{ surfaceColor: 'functional', functionalLevel: 'sections' }` → `colors=functional&level=sections`.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R, by examples); the whole name table: `parity/C4.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R, by examples; `STATE-02`: the whole name table and order)
 
 ### STATE-03 · Names pass through as readable, opaque strings
 
@@ -40,7 +40,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:150-165,216`
 - **Expected:** `atlas=made-up&region=not:a:region&view=sideways` → `{ atlas: 'made-up', selectedRegion: 'not:a:region', view: 'sideways' }`, nothing rejected. `{ atlas: 'destrieux', selectedRegion: 'destrieux:left:75' }` → `atlas=destrieux&region=destrieux:left:75`. `{ detail: 'learning', internalSystem: 'Basal ganglia' }` reads back with the same system.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-04 · A selected region is written by its id
 
@@ -49,7 +49,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:141-143`
 - **Expected:** `{ atlas: 'destrieux', selectedRegion: { id: 'destrieux:left:29', label: 'Precentral gyrus' } }` → `atlas=destrieux&region=destrieux:left:29`.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D, seeded records)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-05 · Hidden parts travel sorted, once each
 
@@ -58,7 +58,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:203-206,229-235`
 - **Expected:** `{ hiddenRegions: Set['destrieux:right:18', 'aseg:left:11'] }` → `hidden=aseg:left:11,destrieux:right:18`, read back as `['aseg:left:11', 'destrieux:right:18']`. Empty set → `''`. `hidden=a,a` → `['a']`. `hidden=a,,b` and `hidden=a&hidden=b` → rejected `['hidden']`.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; the `a,a` case: `parity/C4.test.ts` only, D); `e2e/parity/dissection.spec.ts` (R, a link with a hidden part; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-05`: the `a,a` case); `e2e/parity/dissection.spec.ts` (R, a link with a hidden part; enabled on `next` since #134)
 
 ### STATE-06 · A field that does not parse, or appears twice, is named and left out
 
@@ -67,7 +67,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:220-239`
 - **Expected:** `opacity=0.2&opacity=0.8&hemi=left` → `{ state: { hemisphere: 'left' }, rejected: ['opacity'] }`. `atlas` with no value → `['atlas']`. `anatomy=snail&lang=de` → `{ state: { anatomy: 'snail' }, rejected: ['lang'] }`. `''`, `#`, `???`, `#=&=&`, `#%%%%`, `#unrelated=1` → `{ state: {}, rejected: [] }`. `decodeState(null | 5 | {} | [])` throws a TypeError matching `/string/`. `rejected` lists fields in the order of STATE-02, `hidden` last.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D, fuzzed hashes)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-07 · Flags are 1 or 0, and old colour flags keep their meaning
 
@@ -94,7 +94,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:56-61,113-123`
 - **Expected:** `pos=12.36` → 12.4; `pos=-512`, `pos=512` read; `pos=513`, `pos=9999`, `pos=`, `pos= `, `pos=abc` rejected. `towardZero(127.96)` = 127.9, `(-127.96)` = -127.9, `(12.3)` = 12.3, `(12.299999999999)` = 12.3. `{ cut: 'axial', cutOffset: 127.96 }` → `cut=axial&pos=127.9`; `cutOffset: -0.04` → `cut=axial&pos=0`.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); `parity/C4.test.ts` (D, seeded values)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-10 · Cut angles are whole degrees in range
 
@@ -103,7 +103,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:63-68,161-162`
 - **Expected:** `tilt=0`, `tilt=90`, `az=-180`, `az=180` read; `tilt=44.6` → 45; `tilt=91`, `tilt=-1`, `az=181` rejected. `{ cut: 'oblique', cutTilt: 10, cutAzimuth: -20 }` round trips.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; the rounding: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-10`: whole degrees, the range)
 
 ### STATE-11 · Cortex opacity is 0 to 1, written to hundredths
 
@@ -112,7 +112,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:177-185`
 - **Expected:** `opacity=0` → 0, `opacity=1` → 1, `opacity=0.456` → 0.456. `opacity=5`, `-0.1`, `1.01`, ``, ` `, `NaN`, `Infinity`, `true` rejected. `{ cortexOpacity: 0.456 }` writes `opacity=0.46`; `{ cortexOpacity: 0.35 }` round trips.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; writing to hundredths: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-11`: writing to hundredths)
 
 ### STATE-12 · The exact camera travels in tenths of a millimetre, its up only when it has its own
 
@@ -121,7 +121,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:77-111,125-128`
 - **Expected:** `{ position: [-312.44, 95.06, -140.61], target: [1.23, -10.27, 4.5] }` → `cam=-312.4,95.1,-140.6,1.2,-10.3,4.5`. Up `[0, 0.6, 0.8]` round trips. `cam=0,0,300,0,0,0,0,2,0` → up `[0, 1, 0]`. `cam=1,2,3`, `1,2,3,4,5,x`, `0,0,200000,0,0,0`, `1,2,3,4,5,6,0,0,0`, `1,2,3,4,5,6,7,8,9,10` rejected.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R), `parity/C4.test.ts` (D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R)
 
 ### STATE-13 · A written camera reads back inside the orbit limit it was written under
 
@@ -130,7 +130,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:84-91`
 - **Expected:** For region, brain and brain-with-cord frames, 500 cameras each between `minDistance` and `maxDistance` of `cameraConstraints(box)` (half of them exactly at the limit, fixed LCG seed 7): the written link reads back with nothing rejected and `orbitWithin(read, maxDistance·1000)` is true. Position equal to target → false. Distance 101 with limit 100 → false. Limit + 0.17 → true, limit + 0.18 → false.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R); the limit ± 0.17/0.18 cases: `parity/C4.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-13`: the limit + 0.17 and + 0.18 cases)
 
 ### STATE-14 · The MRI window travels as level then width
 
@@ -139,7 +139,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:129-136,186`
 - **Expected:** `{ mriWindow: { center: 90, width: 180 } }` → `mri=90,180`. `mri=128,256` → `{ center: 128, width: 256 }`; `mri=0,1` reads. `mri=90`, `300,100`, `90,0`, `256,1`, `-1,10`, `10,257`, `1,2,3`, `a,b` rejected.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; some bounds `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-14`: the bounds and the tenths)
 
 ### STATE-15 · A lesson step is counted from one in the link
 
@@ -166,7 +166,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:201-239`
 - **Expected:** `{ atlas: 'hcp-mmp', hemisphere: 'left', cortexVisible: false, cortexOpacity: 0.35, surfaceColor: 'network', view: 'superior', selectedRegion: 'aseg:left:11', isolatedRegion: 'aseg:left:11' }` round trips exactly. `{ atlas: 'destrieux', cut: 'sagittal', cutOffset: 12.5, cutReverse: true }` round trips. For the C4 corpus (every parameter of STATE-02 with its readable, near-miss and nonsense values, plus 80 seeded hashes, seeds 1-40 and 101-140), `decodeState(encodeState(decodeState(h).state)).state` equals `decodeState(h).state` without default-valued fields and with the written rounding.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R, single scenes); the corpus sweep: `parity/C4.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R, single scenes; `STATE-17`: a fixed corpus of eleven links)
 
 ## Checking a link against the anatomy
 
@@ -177,7 +177,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/link-check.js:8-41`
 - **Expected:** Known: atlases destrieux, hcp-mmp; details aseg, nextbrain, learning; cut atlases destrieux, hcp-mmp, nextbrain; the seven views; colours tissue, mri, atlas, network, cab-np; functions all, language; deficit aphasia; circuit visual with 4 steps. `atlas=yeo&detail=fine&cuts=x&view=Left&colors=functional&region=nope&isolate=destrieux:left:medial-wall&hidden=aseg:left:17,nope&tab=diffusion&function=praxis&deficit=x&circuit=y&step=2&hemi=left` → rejected `['atlas','detail','cuts','view','colors','region','isolate','hidden','function','deficit','circuit','step']`, state `{ explorer: 'diffusion', hemisphere: 'left' }`. A link naming only known ids passes whole.
-- **Covered by:** `src/lib/core/state/link-check.test.ts` (R); `parity/C4.test.ts` (D, corpus with and without a cord)
+- **Covered by:** `src/lib/core/state/link-check.test.ts` (R)
 
 ### STATE-19 · A non-region can be hidden but not selected or isolated
 
@@ -204,7 +204,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/link-check.js:37-39`; `viewer/state/scene-commands.js:6`
 - **Expected:** `publishesSpinalCord(cdmd manifest)` = true; with `zanatomy` removed = false; `{}` and `{ supplemental_layers: [{ id: 'envelopes' }] }` = false. Cordless: `cord=1&hemi=left` → rejected `['cord']`, state `{ hemisphere: 'left' }`; `cord=0` → nothing rejected. With a cord, `cord=1` passes.
-- **Covered by:** `src/lib/core/state/link-check.test.ts` (R); `parity/C4.test.ts` (D)
+- **Covered by:** `src/lib/core/state/link-check.test.ts` (R)
 
 ## The session
 
@@ -215,7 +215,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/session.js:39-72,172-175`
 - **Expected:** A fresh session gives view `oblique`, query `''`, explorer `anatomy`, function query `''`, no function, clinical query `''`, no deficit, no finding, paint not lifted, no group expanded, theme `dark` unless given, lang `en` unless `'fr'`, status `loading`, no progress, error or notice. `assemble({ atlas: 'destrieux' })` after `setView('left')`, `setQuery('putamen')` carries `atlas`, `view: 'left'`, `query: 'putamen'`. No `results`, `groups` or `visibleCount` key. `session.state` is `undefined`.
-- **Covered by:** `src/lib/core/state/session.test.ts` (R; the `session.state` case is I, it pins the absence of a property); `parity/C4.test.ts` (D, seeded action sequences)
+- **Covered by:** `src/lib/core/state/session.test.ts` (R; the `session.state` case is I, it pins the absence of a property)
 
 ### STATE-23 · An unknown view is refused and an unknown tab is an error
 
@@ -224,7 +224,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/session.js:79-90`
 - **Expected:** `setView('sideways')` → false, view stays `oblique`, a standing notice stays; `setView('superior')` → true. `setExplorer('unknown')` throws `/Unknown explorer/`.
-- **Covered by:** `src/lib/core/state/session.test.ts` (R; the notice surviving a refused view: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/session.test.ts` (R; `STATE-23`: the notice surviving a refused view)
 
 ### STATE-24 · Each tab keeps its own search and choice
 
@@ -233,7 +233,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/session.js:86-99`
 - **Expected:** `setQuery('hippocampus')`, `setExplorer('deficits')`, `setClinicalQuery('memory')`, `setDeficit('amnesia')` → explorer `deficits`, query `hippocampus`, clinical query `memory`, deficit `amnesia`, no region selected; `setExplorer('anatomy')` keeps the deficit. `setFinding('naming')` then `setDeficit('aphasia')` → finding null.
-- **Covered by:** `src/lib/core/state/session.test.ts` (R; the finding reset: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/session.test.ts` (R; `STATE-24`: the finding reset)
 
 ### STATE-25 · A masthead choice lifts the open paint until a function, deficit, finding or tab is chosen
 
@@ -242,7 +242,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/session.js:86-99`
 - **Expected:** `liftPaint()` → `paintLifted: true`; each of `setFunction('all')`, `setDeficit('aphasia')`, `setExplorer('functions')`, `setFinding(x)` → false. The function query is kept.
-- **Covered by:** `src/lib/core/state/session.test.ts` (R; `setFinding`: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/session.test.ts` (R; `STATE-25`: `setFinding`)
 
 ### STATE-26 · Tree groups open and close one by one or all at once
 
@@ -305,7 +305,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/session.js:152-170`; deviation `c4-unbalanced-notice-release.md`
 - **Expected:** hold; notify "Could not show the white matter."; notify "Planum was updated." (reload); `setExplorer('deficits')`, `setDeficit('aphasia')` → notice null; release with "Not applied from this link: language." → `{ text: 'Not applied from this link: language. Could not show the white matter. Planum was updated.', action: 'reload' }`. Two holds: the first release shows nothing; the second shows "Not applied from this link: view. A download failed.". `releaseNotices()` with nothing held throws `/No notices are held/`; a later hold and release still shows "Waits.".
-- **Covered by:** `src/lib/core/state/session.test.ts` (R); `parity/C4.test.ts` (D, balanced sequences only)
+- **Covered by:** `src/lib/core/state/session.test.ts` (R)
 
 ## Keyboard predicates
 
@@ -316,7 +316,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/session.js:13-37`
 - **Expected:** `{ tagName: 'INPUT', type: 'text' }`, `TEXTAREA`, `SELECT`, `{ isContentEditable: true }` → false. `CANVAS`, `BUTTON`, `BODY`, `null`, checkbox → true. Range with ArrowUp…PageDown → false; range with no key → false; range with `c` or `3` → true.
-- **Covered by:** `src/lib/core/state/session.test.ts` (R); `parity/C4.test.ts` (D); dispatch: KEY-05 in `controller.md`
+- **Covered by:** `src/lib/core/state/session.test.ts` (R); dispatch: KEY-05 in `controller.md`
 
 ### STATE-34 · Character shortcuts can be turned off, and pressable controls in marked regions keep their keys
 
@@ -336,7 +336,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/reader-state.js:1-33`
 - **Expected:** `readerState({}, { atlas: 'destrieux', detail: 'learning', cutAtlas: 'destrieux' })` → the STATE-01 defaults on those layers, `hiddenRegions` empty set, `camera: 'view'`; it encodes to `atlas=destrieux&cuts=destrieux&detail=learning`. `{ cortexVisible: false, cortexOpacity: 0, cutOffset: 0 }` keeps them. `selectedRegion: { id: 'aseg:left:17' }` → `'aseg:left:17'`. Loaded cut atlas `''` → throws `/no cutAtlas/`. `camera: 'cut'` and an exact pose pass through by identity.
-- **Covered by:** `src/lib/core/state/reader-state.test.ts` (R); `parity/C4.test.ts` (D, seeded partials)
+- **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-36 · A captured scene writes the link it was captured from
 
@@ -354,7 +354,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/reader-state.js:42-128`
 - **Expected:** A scene changing every field → events `atlas, detail, system, hemisphere, cord, hidden, color, cut-atlas, angles, cut, cut-display, cut-position, selection, isolation, tree, mri-load, mri-window, camera, orbit`. A scene without the cord asks `showSpinalCord(false)` once. With the cord download pending, no selection, tree or camera event happens until it lands. `sameRegions({a,b},{b,a})` true; `({a},{a,b})` false.
-- **Covered by:** `src/lib/core/state/reader-state.test.ts` (R); `parity/C4.test.ts` (D, seeded targets and failures)
+- **Covered by:** `src/lib/core/state/reader-state.test.ts` (R)
 
 ### STATE-38 · A failed step is reported with its link fields and the rest still apply
 
@@ -401,7 +401,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/scene-commands.js:19-30,145-166`
 - **Expected:** atlas hcp-mmp; open deficit A (`destrieux:left:12`, needs a Destrieux download), then B (`aseg:left:11`, loaded) → B true; Destrieux lands → A false, atlas still hcp-mmp, regions drawn only `[['aseg:left:11']]`. A needs Destrieux and NextBrain, B needs NextBrain → `[false, true]`, atlas hcp-mmp, detail nextbrain.
-- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R); `parity/C4.test.ts` (D, seeded scripts)
+- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R)
 
 ### STATE-43 · Downloads report in the status bar, then step aside
 
@@ -410,7 +410,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/scene-commands.js:45-75`
 - **Expected:** opening a deficit that needs Destrieux → `switching`; progress `4/16` → `{ loaded: 4, total: 16 }`; done → `ready`. Detail `aseg`, envelopes (`5/15`), cord (`1/4`) and the first cut likewise. Two downloads reporting `1/4` and `5/15` → `{ loaded: 6, total: 19 }`.
-- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R; summing two downloads: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R; `STATE-43`: summing two downloads)
 
 ### STATE-44 · Asking for the layer on screen is free, unless another is on its way
 
@@ -419,7 +419,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/scene-commands.js:76-101`
 - **Expected:** atlas hcp-mmp: `loadAtlas('hcp-mmp')` → no request. `loadAtlas('destrieux')` pending, then `loadAtlas('hcp-mmp')` under a new intent, then Destrieux lands → atlas hcp-mmp. A current switch whose model stays elsewhere throws "Atlas not applied: <id>" (or "Detail level not applied: <id>").
-- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R; the "not applied" errors: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R; `STATE-44`: the "not applied" errors)
 
 ### STATE-45 · A colouring defined on one atlas first shows that atlas
 
@@ -473,7 +473,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/scene-commands.js:145-166`
 - **Expected:** `revealRegions(['destrieux:left:12'])` on hcp-mmp → Destrieux loaded, cut off, regions shown, true. `revealRegions([])` → nothing changes. `openRegion('aseg:left:11')` → shown and selected.
-- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R, through overtaking cases); the cut closing and the empty set: `parity/C4.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/scene-commands.test.ts` (R, through overtaking cases; `STATE-50`: the cut closing, the empty set and `openRegion`)
 
 ## Clinical navigation
 
@@ -484,7 +484,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/clinical/navigation.js:1-34`
 - **Expected:** `destrieux:left:38` on hcp-mmp → `{ atlas: 'destrieux', detail: null }`; on destrieux → both null. `destrieux:right:26`, `aseg:right:49`, `aseg:right:50`, `nextbrain:right:7` on learning → `{ atlas: 'destrieux', detail: 'aseg' }`; on nextbrain → detail null. `a:1, b:1, b:2` → atlas `b`. `unknown` → "Unknown clinical region: unknown"; a non-region `wall` → "Unknown clinical region: wall". With no cortical or no structure citation that layer is `null` (`clinical-navigation.ts:48-56`, as legacy `navigation.js:29-33`).
-- **Covered by:** `src/lib/core/state/clinical-navigation.test.ts` (R); `parity/C4.test.ts` (D, seeded citations)
+- **Covered by:** `src/lib/core/state/clinical-navigation.test.ts` (R)
 
 ### STATE-52 · Cited regions are shown together with nothing hiding them
 
@@ -504,7 +504,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/paint.js:1-22`
 - **Expected:** domains on hcp-mmp: Functions, all, hcp-mmp → `function:all`; on destrieux → null; no function, lifted, or Anatomy tab → null. Deficits `aphasia` on destrieux → `deficit:aphasia`; finding `naming` → `deficit:aphasia:naming`; no deficit → null. `paintKind` of `function:language` → `function`, of `deficit:aphasia:naming` → `deficit`, of null → null.
-- **Covered by:** `src/lib/core/state/paint.test.ts` (R); `parity/C4.test.ts` (D)
+- **Covered by:** `src/lib/core/state/paint.test.ts` (R)
 
 ### STATE-54 · The function key lists the overview, or one function's z scale
 
@@ -513,7 +513,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/paint.js:24-62`
 - **Expected:** cdmd scale `[3, 5, 10]`: memory in fr → title "Mémoire", rows `z ≥ 10` [10,62,125], `z 5 à 10` [43,131,199], `z 3 à 5` [150,200,240] with no-break spaces (en "z ≥ 10", "z 5 to 10", "z 3 to 5"), `pickable: false`, note "Mean consistency z per area; darker is more consistent. Tissue-coloured areas fall below 3." Overview → title "Neuropsychological functions", note "Each area shows its strongest function; tissue-coloured areas reach none. Choose one to see all its areas.", the 11 cdmd overview functions (executive … emotion), none pressed. No paint → null.
-- **Covered by:** `src/lib/core/state/paint.test.ts` (R, on a three-domain fixture); the cdmd values and the term note: `parity/C4.test.ts` only (D)
+- **Covered by:** `src/lib/core/state/paint.test.ts` (R, on a three-domain fixture; `STATE-54`: the cdmd bands in both languages and the overview, on the published data)
 
 ### STATE-55 · The deficit key lists each finding, and greys one the view does not colour
 
@@ -531,7 +531,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/paint.js`; `public/models/cdmd/neuropsych-domains.json`; `data/neuropsychology.yaml`
 - **Expected:** cdmd: for `all`, each of the 70 domains and each Neurosynth term on hcp-mmp → paint id `function:<id>`, and null on destrieux; a single function's key has the three bands of STATE-54 and is titled with its name in en and fr. For each of the 40 deficits in `data/neuropsychology.yaml` and each of its findings → `deficit:<id>` or `deficit:<id>:<finding>`; the key title is the deficit's name in en and fr and has one row per finding. Lifted paint → null.
-- **Covered by:** `parity/C4.test.ts` only (D; it sweeps the domains and the first 12 terms, with every region drawn, half drawn and none)
+- **Covered by:** `src/lib/core/state/paint.test.ts` (S, `STATE-56`: all 70 domains, 277 terms, 40 deficits and their findings, in both languages)
 
 ## Dissection
 
@@ -542,7 +542,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/dissection.js:1-53`
 - **Expected:** `hide(['left'], { selectedId: 'left' })` → true; adding `right` to the snapshot leaves the live set `['left']`; `undo()` → `{ selectedId: 'left' }`, nothing hidden, `dissectionCanUndo` false. Hiding what is hidden, showing what is shown, or restoring with nothing hidden → false, no entry. `undo()` with no history → null.
-- **Covered by:** `src/lib/core/state/dissection.test.ts` (R; the no-change and empty-undo cases: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/dissection.test.ts` (R; `STATE-57`: the no-change and empty-undo cases)
 
 ### STATE-58 · A shared mask is validated whole and starts with no history
 
@@ -551,7 +551,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/dissection.js:6-14,44-52`
 - **Expected:** `load(['right'])` → can't undo. `load(['left','unknown'])` throws `/Unknown region/`, set still `['right']`. `hide('left')` throws `/array/`. `reset()` → nothing hidden, can't undo.
-- **Covered by:** `src/lib/core/state/dissection.test.ts` (R; reset: `parity/C4.test.ts` only, D)
+- **Covered by:** `src/lib/core/state/dissection.test.ts` (R; `STATE-58`: reset)
 
 ### STATE-59 · The hidden count is said as a sentence in the reader's language
 
@@ -560,7 +560,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/ui/panels/dissection.js:21,31`
 - **Expected:** en 0 → "All parts shown", 1 → "1 part hidden", 7 → "7 parts hidden"; fr 0 → "Tout est visible", 1 → "1 partie masquée", 7 → "7 parties masquées".
-- **Covered by:** `src/lib/core/state/dissection.test.ts` (R); `parity/C4.test.ts` (D)
+- **Covered by:** `src/lib/core/state/dissection.test.ts` (R)
 
 ## Internal anatomy
 
@@ -571,7 +571,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/internal-mode.js:1-46`
 - **Expected:** outside `{ tissue, destrieux }`, entering applies `learning`; leaving from learning → `{ cortexVisible: true, surfaceColor: 'tissue', detail: 'destrieux', internalSystem: null, colourLost: null }`. Left from nextbrain → detail null. Entered on learning already → detail null. `leaveInternal(null, …)` → cortex shown, colour `atlas`, detail null. Only the keys `colourLost, cortexVisible, detail, internalSystem, surfaceColor`.
-- **Covered by:** `src/lib/core/state/internal-mode.test.ts` (R); `parity/C4.test.ts` (D, all colour × detail × atlas combinations)
+- **Covered by:** `src/lib/core/state/internal-mode.test.ts` (R)
 
 ### STATE-61 · An atlas switched inside wins over a colouring defined on the atlas left behind
 
@@ -591,7 +591,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/boot.js:16-19`
 - **Expected:** atlases destrieux, hcp-mmp: shown destrieux → hcp-mmp; shown hcp-mmp on 4g → destrieux. `prefetchLayers: false` → null. `saveData: true` (even on 4g), `slow-2g`, `2g`, `3g` → null. One atlas only → null.
-- **Covered by:** `src/lib/core/state/boot.test.ts` (R); `parity/C4.test.ts` (D); the boot call: BOOT-11 in `boot-and-assets.md`
+- **Covered by:** `src/lib/core/state/boot.test.ts` (R); the boot call: BOOT-11 in `boot-and-assets.md`
 
 ## The link writer
 
@@ -602,7 +602,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/link-writer.js:7-17`; decision on link timing (comment 67 on #4)
 - **Expected:** schedule, +200 ms, schedule, +200 ms → 0 writes; +50 ms → 1. schedule, cancel, +1000 ms → 0. `schedule(0)` writes on the next tick.
-- **Covered by:** `src/lib/core/state/link-writer.test.ts` (R; `schedule(0)` via `src/lib/state/stores.svelte.test.ts`, see LINK-05); `parity/C4.test.ts` (D, seeded scripts)
+- **Covered by:** `src/lib/core/state/link-writer.test.ts` (R; `schedule(0)` via `src/lib/state/stores.svelte.test.ts`, see LINK-05)
 
 ### STATE-64 · While a link is applied the address bar keeps it
 
@@ -620,4 +620,4 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/link-writer.js:26`
 - **Expected:** default `cdmd`: `{}` on cdmd → true; `{}` on `other` → false; `{ anatomy: 'other' }` on other → true; `{ anatomy: 'other' }` on cdmd → false; `{ anatomy: null }` on cdmd → true.
-- **Covered by:** `src/lib/core/state/link-writer.test.ts` (R, with retired anatomy ids as opaque strings); `parity/C4.test.ts` (D)
+- **Covered by:** `src/lib/core/state/link-writer.test.ts` (R, with retired anatomy ids as opaque strings)

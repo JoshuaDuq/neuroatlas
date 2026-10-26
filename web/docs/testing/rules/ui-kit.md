@@ -60,7 +60,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (contrast computed from the declared tokens)
 - **Source:** WCAG 2.2 SC 1.4.3, 1.4.11; deviation `u1-overlay-control-contrast.md`
 - **Expected:** Inks `--text-primary`, `--text-secondary`, `--text-tertiary`, `--accent`, `--danger` ≥ 4.5 on `--surface-base`, `-navigation`, `-sunken`, `-canvas`, `-hover`, `-raised`, `-tonal`, `-tonal-hover`; `--border-control`, `--thumb-ring` ≥ 3 on them; `--primary-ink` ≥ 4.5 on `--primary-fill`, `--primary-fill-hover`; `--overlay-ink`, `-ink-muted`, `-ink-faint`, `-accent`, `-danger` ≥ 4.5 and `--overlay-control-border` ≥ 3 on `--overlay-plate`, `-plate-hover`, `-track`, `-track-hover`. `--overlay-control-border` is `#70777f`: 3.96, 3.34, 3.43, 3.01:1 on those four (±0.01).
-- **Covered by:** `src/styles/contrast.test.ts` (R); `parity/u1.test.ts` (D, the border value)
+- **Covered by:** `src/styles/contrast.test.ts` (R; the dark theme was tested with the light tokens until K9 fixed its selector key, and now fails if that rule is missing; the dark `--thumb-ring` was 2.92:1 on `--surface-raised` and is fixed, deviation `u1-thumb-ring-contrast.md`)
 
 ### UI-06 · Both themes declare the published palette
 
@@ -68,8 +68,8 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Kind:** data
 - **Level:** unit (declared values)
 - **Source:** `viewer/styles/tokens.css`; deviation `u1-overlay-control-contrast.md`
-- **Expected:** The selectors before the phone rule are exactly `:root` and `:root[data-theme='dark']`. Fixed values include `--surface-base` `#ffffff` light and `#1b1e21` dark, and `--overlay-control-border` `#70777f`. The full table is a fixed token list taken once from today's `tokens.css` (it equals the legacy palette apart from that border).
-- **Covered by:** `parity/u1.test.ts` (D)
+- **Expected:** The selectors before the phone rule are exactly `:root` and `:root[data-theme='dark']`. Fixed values include `--surface-base` `#ffffff` light and `#1b1e21` dark, and `--overlay-control-border` `#70777f`. The full table is a fixed token list taken once from today's `tokens.css` (it equals the legacy palette apart from that border and the dark `--thumb-ring`).
+- **Covered by:** `src/styles/tokens.test.ts` (R, the selectors and each theme's whole declared set against a fixed literal: 94 in `:root`, 22 in the dark override)
 
 ### UI-07 · A phone or a finger gets 44 px touch sizes; a desktop mouse keeps instrument density
 
@@ -78,7 +78,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: media queries on the real viewport
 - **Source:** `viewer/styles/phone.css:15, 318`; WCAG 2.5.8
 - **Expected:** Query `@media (max-width: 800px), (max-height: 480px) and (orientation: landscape)`. At 390 × 844, 812 × 375 and 844 × 390: `--control-height`, `--row-height`, `--tab-height` `44px`, `--header-height` `max(52px, 3.25rem)`, `--panel-inset` `16px`. At 1280 × 800: `--control-height` and `--row-height` `32px`; with touch emulation (coarse pointer) `44px` for rows, controls and tabs, header `max(48px, 3rem)`.
-- **Covered by:** `src/styles/phone-tokens.svelte.test.ts` (R); `parity/u1.test.ts` (D, the declarations)
+- **Covered by:** `src/styles/phone-tokens.svelte.test.ts` (R); the query literal is held by CAT-05
 
 ### UI-08 · Increased contrast strengthens the faint tokens in both themes
 
@@ -87,7 +87,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (declared values)
 - **Source:** `viewer/styles/a11y.css:19-33`
 - **Expected:** On `:root, :root[data-theme='dark']`: `--text-tertiary: var(--text-secondary)`, `--border-control: var(--text-primary)`, `--border-subtle: var(--border-control)`, `--thumb-ring: var(--text-primary)`, `--overlay-ink-muted`, `--overlay-border`, `--overlay-ink-faint`, `--overlay-control-border: var(--overlay-ink)`, `--overlay-halo: rgb(6 9 13 / 0.95)`, `--overlay-plate: #0c0d0f`, `--overlay-plate-hover: #1e2024`.
-- **Covered by:** `parity/u1.test.ts` (D); UI-31 checks one component effect
+- **Covered by:** `src/styles/tokens.test.ts` (R, the declared swap); UI-31 checks one component effect
 
 ### UI-09 · One focus ring, for keyboard focus only, in every theme and in forced colours
 
@@ -96,7 +96,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: computed style for keyboard and pointer focus
 - **Source:** `viewer/styles/base.css:47-51`; `src/styles/a11y.css:45-55`; WCAG 2.4.7
 - **Expected:** Tabbed-to button: `outline: 2px solid` the `--accent` colour, `outline-offset: 2px`. Clicked button: `outline-style: none`. Under `forced-colors: active`: outline colour equals `Highlight`, button border colour `CanvasText`.
-- **Covered by:** `parity/u1.test.ts` (D, declarations only); `src/lib/ui/SearchCombobox.svelte.test.ts` (R, the forced-colour Highlight ring on the search field); the light/dark ring and the no-ring-on-click case are uncovered
+- **Covered by:** `src/styles/base.svelte.test.ts` (R, computed style: keyboard ring, no ring on a click, forced colours); `src/lib/ui/SearchCombobox.svelte.test.ts` (R, the forced-colour Highlight ring on the search field)
 
 ### UI-10 · Hidden is hidden, and visually hidden text stays in the accessibility tree
 
@@ -105,7 +105,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: computed style and accessible name
 - **Source:** `viewer/styles/base.css:53, 70-78`
 - **Expected:** `<div hidden style="display:flex">` → computed `display: none`. `.visually-hidden` → `position: absolute`, 1 × 1 px, `margin: -1px`, `overflow: hidden`, `clip-path: inset(50%)`, `white-space: nowrap`, and its text still names a button. `body`: `margin: 0`, `font-family` the UI font, `color` `--text-primary`, `background` `--surface-canvas`.
-- **Covered by:** `parity/u1.test.ts` (D, declarations only)
+- **Covered by:** `src/styles/base.svelte.test.ts` (R, computed style)
 
 ### UI-11 · Keys are drawn as caps and quantities line up
 
@@ -114,7 +114,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: computed style
 - **Source:** `viewer/styles/base.css:56-58`; `viewer/styles/components.css:489-503`
 - **Expected:** `kbd`: `display: inline-block`, `min-width: 20px`, mono font, caption size, centred, `--text-secondary` on `--surface-base`, 1 px `--border-subtle` border, inset bottom shadow. `.key-range`: `--text-tertiary`, caption. `.measure`: `font-variant-numeric: tabular-nums`. `.code`: mono, caption.
-- **Covered by:** `parity/u1.test.ts` (D, declarations only)
+- **Covered by:** `src/styles/base.svelte.test.ts` (R, computed style)
 
 ### UI-12 · A theme switch and an instant overlay show no transition
 
@@ -143,7 +143,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit
 - **Source:** `viewer/ui/roving.js:2-12`
 - **Expected:** Count 4: `ArrowRight` 0 → 1; `ArrowDown` 3 → 0; `ArrowLeft` 0 → 3; `ArrowUp` 2 → 1; `Home` 2 → 0; `End` 0 → 3. `Enter`, `' '`, `Tab`, `'a'` → `null`. Count 0 → `null`.
-- **Covered by:** `src/lib/ui/roving.test.ts` (R); `parity/U2.test.ts` (D, every key × index −1..n × size 0..5)
+- **Covered by:** `src/lib/ui/roving.test.ts` (R)
 
 ### UI-15 · The group's Tab stop is the focused member, else the chosen one, else the first usable
 
@@ -152,7 +152,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit
 - **Source:** `viewer/ui/roving.js:14-19`
 - **Expected:** `[{}, {pressed}, {}]` → member 1; focused member 2 → 2. `[{disabled}, {}, {}]` → 1. `[{disabled}, {disabled}]` → `null`. `[{hidden, pressed}, {}]` → 1. Bound to `[{}, {}, {pressed}, {}]`, the tabindexes are `[-1, -1, 0, -1]`.
-- **Covered by:** `src/lib/ui/roving.test.ts` (R); `src/lib/ui/interaction.svelte.test.ts` (R); `parity/U2.test.ts` (D)
+- **Covered by:** `src/lib/ui/roving.test.ts` (R); `src/lib/ui/interaction.svelte.test.ts` (R)
 
 ### UI-16 · Arrows move focus in a roving group without choosing; Tab leaves and returns to the chosen one
 
@@ -161,7 +161,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (fake group) for the stop and key handling; browser: real Tab order
 - **Source:** `viewer/ui/roving.js:21-58`; APG Toolbar
 - **Expected:** `[{pressed}, {disabled}, {}, {}]`, focus 0: `ArrowRight` → handled, focus 2, stops `[-1, -1, 0, -1]`, member 0 still pressed; `End` → 3; `ArrowRight` → 0; `Enter` not handled. A key on a disabled member is not handled. Focus 1 of `[{}, {pressed}, {}]`, `ArrowRight`, leave → stops `[-1, 0, -1]`. Real DOM (Front, Left pressed, Right disabled, Top): from Left, Right → Top → Front, Left → Top, Home → Front, End → Top, Left stays pressed; Tab out to After and Shift+Tab → Left. `sync` after the choice moves to member 1 → `[-1, 0]`; all disabled → `[-1, -1]`.
-- **Covered by:** `src/lib/ui/roving.test.ts` (R; the dispose case is I: it pins the listener map); `src/lib/ui/interaction.svelte.test.ts` (R); `parity/U2.test.ts` (D)
+- **Covered by:** `src/lib/ui/roving.test.ts` (R; the dispose case is I: it pins the listener map); `src/lib/ui/interaction.svelte.test.ts` (R)
 
 ### UI-17 · A modified arrow is the browser's or the platform's
 
@@ -188,7 +188,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (fake timers)
 - **Source:** `viewer/ui/announce.js:5-16`; decision 37 on #4
 - **Expected:** `'1 result'`, +499 `'12 results'`, +499 → nothing; +1 → `['12 results']`. `'3 results'` (said), `'4 results'`, +200 `'3 results'`, +1000 → `['3 results']`. Said, `reset`, same again, +500 → `['3 results', '']`, +100 → `['3 results', '', '3 results']`. `a`, `reset`, `b`, `dispose`, +1000 → `[]`. Delay 50 → written at +50. Script (wait ms, text): 0 a, 100 ab, 400 abc, 700 abc, 499 abcd, 50 abc, 600 abc, 10 x, 500 x, 600 y, 600 x, then +2000 → writes at `[[1000, 'abc'], [2859, 'x'], [3959, 'y'], [4559, 'x']]`.
-- **Covered by:** `src/lib/ui/announcer.test.ts` (R); `parity/U2.test.ts` (D, the script)
+- **Covered by:** `src/lib/ui/announcer.test.ts` (R, including the fixed-time typing script)
 
 ### UI-20 · Focus is asked for by name and lands only where it can
 
@@ -242,7 +242,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (plain event targets)
 - **Source:** `viewer/ui/drag.js`
 - **Expected:** For each of the four endings: `input` → `dragging true`; ending → `false`, 1 end; `pointerup` again → still 1; after `dispose`, `input` → `false`. Two sliders: `input` on b, `change` on a → `false`, 1 end. For every pair of events on two sliders, `dragging` is true exactly when the latest start-or-end event was `input`.
-- **Covered by:** `src/lib/ui/drag.test.ts` (R); `parity/U2.test.ts` (D, the 7 × 7 pair matrix)
+- **Covered by:** `src/lib/ui/drag.test.ts` (R, including the pair matrix)
 
 ### UI-26 · Up and Down cross between a search field and its result rows
 
@@ -307,7 +307,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: axe-core on rendered DOM
 - **Source:** WCAG 2.2 AA
 - **Expected:** `violations` `[]` for: IconButton; ChoiceGroup; ToggleToolbar; Toolbar; Switch off and on; Collapsible closed and open; a roving toolbar; RangeField enabled, disabled and with a range error; Select; Disclosure; Progress determinate and indeterminate; CheckboxGroup; DrillRow, SearchBridge; StatusLine; EmptyState; the U4 set in French at 390 px in both themes; Popover open (light, dark); Dialog open (light, dark, 390 px); Tooltip open (light, dark); SearchCombobox expanded (light, dark, 1000 and 390 px); Treegrid collapsed, expanded and dark.
-- **Covered by:** `src/lib/ui/IconButton.svelte.test.ts`, `ChoiceGroup.svelte.test.ts`, `ToggleToolbar.svelte.test.ts`, `Toolbar.svelte.test.ts`, `Switch.svelte.test.ts`, `Collapsible.svelte.test.ts`, `interaction.svelte.test.ts`, `native-primitives.svelte.test.ts`, `overlays.svelte.test.ts`, `SearchCombobox.svelte.test.ts`, `Treegrid.svelte.test.ts` (R each); `kit-spike.svelte.test.ts` (W, the spike fixture only)
+- **Covered by:** `src/lib/ui/IconButton.svelte.test.ts`, `ChoiceGroup.svelte.test.ts`, `ToggleToolbar.svelte.test.ts`, `Toolbar.svelte.test.ts`, `Switch.svelte.test.ts`, `Collapsible.svelte.test.ts`, `interaction.svelte.test.ts`, `native-primitives.svelte.test.ts`, `overlays.svelte.test.ts`, `SearchCombobox.svelte.test.ts`, `Treegrid.svelte.test.ts` (R each)
 
 ### UI-33 · A cheap exclusive setting is an APG radio group: arrows move and select
 
@@ -316,7 +316,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: keyboard and focus
 - **Source:** decision 0003; deviation `u3-segmented-controls.md`; APG Radio Group
 - **Expected:** Both/Left/Right, value Left: radiogroup 'Hemisphere', checked `['Left']`, tabindex Left 0, others −1. `aria-labelledby` a span 'Show hemisphere' → group named so. From Both: Right → Left checked; Down → Right; Right → Both; Left → Right; Up → Left. Both, Right, Tab → After, Shift+Tab → Left. Axial/Coronal (disabled)/Sagittal from Axial: Right → Sagittal checked; click Axial → Axial; focus Sagittal → still Axial; Space → Sagittal.
-- **Covered by:** `src/lib/ui/ChoiceGroup.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits RadioGroup in the spike fixture)
+- **Covered by:** `src/lib/ui/ChoiceGroup.svelte.test.ts` (R)
 
 ### UI-34 · A radio group busy with a load keeps focus moving but refuses a change
 
@@ -352,7 +352,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: keyboard and focus
 - **Source:** APG Toolbar
 - **Expected:** Toolbar 'Tools': Snapshot has no `aria-pressed`, Key `"false"`. From Snapshot: Right → Key → More (the disabled tool skipped) → Snapshot; Left → More; Home → Snapshot; End → More. Enter on Snapshot → `onpress('snapshot')`; Space on Key → `"true"`; Enter → `"false"`. Button 'More' is visible by name.
-- **Covered by:** `src/lib/ui/Toolbar.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits Toolbar, no longer shipped)
+- **Covered by:** `src/lib/ui/Toolbar.svelte.test.ts` (R)
 
 ### UI-38 · An on/off setting is an APG switch
 
@@ -473,7 +473,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: keyboard dispatch order
 - **Source:** `viewer/ui/chrome/header.js:141`; decision 0005
 - **Expected:** Focus on 'Light', Escape → popover gone, `aria-expanded="false"`, focus on Settings, window saw `defaultPrevented [true]`. Closed: Escape on Settings → `[false]`.
-- **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W)
+- **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-51 · A popover closes when focus leaves it, and only one is open
 
@@ -482,7 +482,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: focus events
 - **Source:** decision 0005 (`header.js:135-138`)
 - **Expected:** Provenance, Tab → focus on 'Data', Settings `"false"`. Shift+Tab from Settings → 'Fullscreen', closed. Focus in Settings, click Data → Data `"true"`, Settings `"false"`, 'Light' gone; 'Open data' clicked inside Settings → the same. Focus back on Settings → still `"true"` after 50 ms; `focusout` with no related target → still `"true"`.
-- **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W)
+- **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-52 · An outside press closes a popover; a command inside closes it and returns focus
 
@@ -563,7 +563,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (timing with an injected clock); browser for one end-to-end check in Chromium
 - **Source:** `viewer/ui/tooltip.js:10-11, 50-80`; decision 7 on #4
 - **Expected:** Delays `500` and `300`. Enter 'save', +499 → nothing, +1 → `[['save', false]]`. Enter, +200, leave, +500 → nothing. Enter, +300, enter again, +200 → shown once. Shown, leave → hidden `['save']`, +299, enter 'fullscreen' → `['fullscreen', true]`; after +300 instead → nothing until +500, then `['fullscreen', false]`. Focus 'save' → `['save', true]`; focus 'fullscreen' → hidden `['save']`, shown `['fullscreen', true]`. In Chromium with faked timers: nothing at 499 ms, 'Save a PNG' at 500 ms; the next trigger 250 ms after the close opens with `data-instant` and no timer advanced.
-- **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits' provider in the spike)
+- **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-61 · A tooltip is dismissible, and touch shows none
 
@@ -572,7 +572,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: real events
 - **Source:** `viewer/ui/tooltip.js:147, 152, 179-182`; WCAG 2.2 SC 1.4.13
 - **Expected:** Tab to 'Snapshot' → 'Save a PNG' shown; Escape → gone. Touch `pointerover` → none after 500 ms. A trigger with `aria-expanded="true"` hovered → none.
-- **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R; press, scroll and the expanded-trigger case are uncovered); `src/lib/ui/kit-spike.svelte.test.ts` (W)
+- **Covered by:** `src/lib/ui/overlays.svelte.test.ts` (R; press, scroll and the expanded-trigger case are uncovered)
 
 ### UI-62 · The pointer can cross to the tooltip and read it
 
@@ -590,7 +590,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** unit (`describedBy`); browser for the attribute on a real trigger
 - **Source:** `viewer/ui/tooltip.js:110-118`
 - **Expected:** `(null, 'tooltip', on)` → `'tooltip'`; `('note tooltip', on)` → `'note tooltip'`; `('note tooltip', off)` → `'note'`; `('tooltip', off)` → `null`; repeats: `('note', on)` → `'note'`, `(null, on)` → `null`. Shown on 'Snapshot' → its `aria-describedby` is the tooltip's id; closed → absent. Hover, unmount at 200 ms → after 600 ms no tooltip, no `aria-describedby`.
-- **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W)
+- **Covered by:** `src/lib/ui/tooltip.test.ts` (R); `src/lib/ui/overlays.svelte.test.ts` (R)
 
 ### UI-64 · A tooltip is placed where it fits, inside the viewport and inside an open dialog
 
@@ -610,7 +610,7 @@ Deviations: `u1-overlay-control-contrast.md`, `u2-roving-modifier-keys.md`, `u3-
 - **Level:** browser: ARIA and keyboard (the next-enabled index is unit, in `core-panels.md`)
 - **Source:** `viewer/ui/panels/navigator.js:44-54, 452-461, 642`; decision 34 on #4; deviation `a2-active-option-selected.md`
 - **Expected:** 'h' → Hippocampus (disabled), Hypothalamus, Thalamus (current): armed Hypothalamus; states `[['Hippocampus', null, 'false'], ['Hypothalamus', null, 'true'], ['Thalamus', 'true', 'false']]`. Down → Thalamus; Down → Thalamus; Up → Hypothalamus; Up → Hypothalamus; focus on the field. `move(1)`/`move(-1)` from outside arm the same way. 'hippo' → Down, Up, Enter: no error, no `aria-activedescendant`.
-- **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R); `src/lib/ui/kit-spike.svelte.test.ts` (W, Bits Combobox, no longer shipped)
+- **Covered by:** `src/lib/ui/SearchCombobox.svelte.test.ts` (R)
 
 ### UI-66 · Enter or a click chooses the armed option and keeps the search
 

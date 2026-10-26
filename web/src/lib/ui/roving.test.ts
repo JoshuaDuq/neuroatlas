@@ -101,3 +101,22 @@ describe('roving', () => {
     }
   });
 });
+
+test('UI-14: Tab and a letter move nothing, and an empty group moves nothing for any key', () => {
+  expect(rovingStep('Tab', 1, 4)).toBeNull();
+  expect(rovingStep('a', 1, 4)).toBeNull();
+  for (const key of ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End', 'Enter']) {
+    expect(rovingStep(key, -1, 0), key).toBeNull();
+  }
+});
+
+test('UI-14: a one-member group wraps onto itself', () => {
+  expect(rovingStep('ArrowRight', 0, 1)).toBe(0);
+  expect(rovingStep('ArrowLeft', 0, 1)).toBe(0);
+});
+
+test('UI-15: a group with a hidden chosen member and a disabled first one falls to the first usable', () => {
+  const { items } = fakeGroup([{ disabled: true }, {}, { hidden: true, pressed: true }, {}]);
+  expect(tabStop(members(items))).toBe(items[1]);
+  expect(tabStop(members([]))).toBeNull();
+});
