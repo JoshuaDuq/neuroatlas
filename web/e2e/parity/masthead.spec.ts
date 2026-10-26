@@ -120,23 +120,16 @@ test.describe('masthead', () => {
     await expect(more(page)).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('the masthead passes axe with the panel open', async ({ app }) => {
-    await openSettings(app.page);
-    await app.expectAccessible('masthead');
-  });
-});
-
-// Booted at phone size: resizing the legacy stage from desktop after boot leaves it drawing a
-// frame every few seconds under software WebGL, which is not what these tests are about.
-test.describe('masthead on a phone', () => {
-  test.use({ viewport: { width: 390, height: 844 } });
-
-  test('the panel also offers Full screen', async ({ app }) => {
+  test('on a phone the panel also offers Full screen', async ({ app }) => {
     const { page } = app;
-    await app.gotoHash();
-    await app.ready();
+    await page.setViewportSize({ width: 390, height: 844 });
     await openSettings(page);
     await expect(page.getByRole('button', { name: 'Full screen' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Keyboard shortcuts' })).toBeVisible();
+  });
+
+  test('the masthead passes axe with the panel open', async ({ app }) => {
+    await openSettings(app.page);
+    await app.expectAccessible('masthead');
   });
 });

@@ -81,17 +81,13 @@ test.describe('colophon and provenance', () => {
     await expect(dialog(page)).toBeHidden();
     await expect(opener(page)).toBeFocused();
   });
-});
 
-// Each of these boots the app once, in the language or at the size it needs.
-test.describe('colophon and provenance, booted otherwise', () => {
   test('French labels, and the published data keeps its own language', async ({
     app,
   }, testInfo) => {
     const { page } = app;
     await app.gotoHash({ lang: 'fr' });
     await app.ready();
-    // The legacy camera animates after ready; a click during it never becomes "stable".
     await app.waitForCameraIdle();
     await expect(page.getByRole('contentinfo')).toContainText('Pas une anatomie clinique');
     await page.getByRole('button', { name: 'Provenance', exact: true }).click();
@@ -103,18 +99,13 @@ test.describe('colophon and provenance, booted otherwise', () => {
     const marked = await sheet.locator('[lang="en"]').count();
     expect(marked > 0).toBe(testInfo.project.name === 'next');
   });
-});
 
-// Booted at phone size: resizing the legacy stage from desktop after boot leaves it drawing a
-// frame every few seconds under software WebGL, which is not what these tests are about.
-test.describe('colophon and provenance on a phone', () => {
-  test.use({ viewport: { width: 390, height: 844 } });
-
-  test('the status bar gives way and Provenance opens from the ⋯ menu', async ({ app }) => {
+  test('on a phone the status bar gives way and Provenance opens from the ⋯ menu', async ({
+    app,
+  }) => {
+    test.slow();
     const { page } = app;
-    await app.gotoHash();
-    await app.ready();
-    await app.waitForCameraIdle();
+    await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.getByRole('contentinfo')).toBeHidden();
     const more = page.getByRole('button', { name: 'More settings' });
     await more.click();
