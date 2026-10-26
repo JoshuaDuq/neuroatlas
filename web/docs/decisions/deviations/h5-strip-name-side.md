@@ -13,4 +13,4 @@ Both strips use the side word: `Inspect <label>, <side word>` / `Examiner <label
 
 ## Standard cited
 
-WCAG 2.2 SC 2.5.3 Label in Name (the name contains the visible text, with the glyph said as a word) and 3.2.4 Consistent Identification (one control, one name in both shells).
+WCAG 2.2 SC 3.2.4 Consistent Identification (one control, one name in both shells) and 1.3.1 Info and Relationships (the side shown as a glyph is also in the name).

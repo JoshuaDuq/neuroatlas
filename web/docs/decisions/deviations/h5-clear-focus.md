@@ -4,11 +4,11 @@ Chunk: H5
 
 ## Legacy behaviour
 
-workspace.js:257-260 clears, then checks at once whether focus is still on a visible control. The strip is hidden by the render that follows, so the check passes and focus then falls to the document (observed in the legacy build at 1280 px: `document.activeElement` is `body` after the click).
+workspace.js:257-260 clears, then checks whether focus is still on a visible control. Rendering is synchronous (`clearContext` → `select(null)` → `render()`, app.js:533-536, 1563-1566), so by the time the check runs the strip is already hidden and focus has dropped to `<body>`. `visible(document.body)` is true, so the rescue is skipped and focus stays on `body` (observed in the legacy build at 1280 px).
 
 ## New behaviour
 
-After the clear command the workspace waits for the page to update and then, if focus was stranded, hands it to the tab in front.
+After the clear command the workspace waits for the page to update and then, if focus is stranded (on `body` or on a hidden control), hands it to the tab in front.
 
 ## Standard cited
 

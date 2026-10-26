@@ -54,7 +54,7 @@
         </button>
       </li>
       {#if group}
-        <li class="place">
+        <li>
           <span class="chevron" aria-hidden="true"></span>
           <button
             type="button"
@@ -112,10 +112,6 @@
     }
     li:has(+ li) {
       flex: none;
-    }
-    /* The place gives way to an ellipsis, but never below a target (WCAG 2.5.8): its chevron and 44px. */
-    .place {
-      min-width: calc(var(--tab-height) + 12px);
     }
     /* The one chevron: two 1.5px strokes of a 6px square, inked at the centre of a 12px slot. */
     .chevron {

@@ -5,6 +5,7 @@ import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
 import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import '../../app/layout.css';
 import Fixture from './workspace-test-support.svelte';
 import { newWorld, type World } from './workspace-test-world.ts';
 
@@ -494,12 +495,124 @@ describe('sizes and media', () => {
     });
   });
 
-  test('French at 320 px: the tabs scroll inside their bar rather than the page', async () => {
+  test('French at 320 px: the tabs scroll inside their bar and nothing overflows the panel', async () => {
     await mount({ lang: 'fr' });
     await page.viewport(320, 700);
     const bar = document.querySelector<HTMLElement>('[role=tablist]')!;
-    expect(bar.scrollWidth).toBeGreaterThanOrEqual(bar.clientWidth);
+    expect(bar.scrollWidth).toBeGreaterThan(bar.clientWidth);
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(320);
+    expectContained();
+  });
+});
+
+/** Nothing the workspace draws leaves the panel, and no text is cut off vertically. */
+function expectContained() {
+  // On a phone the panel is display: contents (no box); the viewport is then the bound.
+  const own = panel('workspace-panel').getBoundingClientRect();
+  const panelBox = own.width ? own : { left: 0, right: document.documentElement.clientWidth };
+  const parts = panel('workspace-panel').querySelectorAll<HTMLElement>(
+    '[role=tablist], .notice, .workspace-selection-row, .detail-location',
+  );
+  for (const part of parts) {
+    if (!part.checkVisibility()) continue;
+    const box = part.getBoundingClientRect();
+    expect(box.right, part.className).toBeLessThanOrEqual(panelBox.right + 1);
+    expect(box.left, part.className).toBeGreaterThanOrEqual(panelBox.left - 1);
+  }
+  const text = panel('workspace-panel').querySelectorAll<HTMLElement>(
+    '[role=tab], .notice-text, .notice-action, .workspace-selection, .detail-back, .detail-crumb',
+  );
+  for (const node of text) {
+    if (!node.checkVisibility()) continue;
+    expect(node.scrollHeight, node.className || node.textContent!).toBeLessThanOrEqual(
+      node.clientHeight + 1,
+    );
+  }
+}
+
+const TEXT_SPACING = `* { line-height: 1.5 !important; letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }`;
+
+describe('large text and spacing', () => {
+  const busy = {
+    selection: {
+      kind: 'region',
+      label: 'Gyrus précentral',
+      side: 'G',
+      sideWord: 'gauche',
+      clearable: true,
+    },
+    selectedRegion: { id: 'left:2' },
+    notice: { text: 'Planum a été mis à jour.', action: 'reload' },
+  } as const;
+
+  afterEach(() => {
+    document.documentElement.style.fontSize = '';
+    document.getElementById('text-spacing')?.remove();
+  });
+
+  for (const width of [1280, 320]) {
+    test(`200 % text at ${width} px, in French, with an X3 stepper: contained, no overlap in the bar`, async () => {
+      document.documentElement.style.fontSize = '200%';
+      await page.viewport(width, 800);
+      await mount(
+        { lang: 'fr', explorer: 'circuits', place: 'Voie motrice', ...busy },
+        { slots: 'stepper' },
+      );
+      await expect.poll(view).toBe('detail');
+      expectContained();
+      const crumb = el(
+        page.getByRole('button', { name: /afficher dans la liste/ }),
+      ).getBoundingClientRect();
+      const step = el(page.getByRole('button', { name: 'Précédent' })).getBoundingClientRect();
+      expect(crumb.right).toBeLessThanOrEqual(step.left + 1);
+      await page.getByRole('button', { name: 'Retour : Circuits' }).click();
+      await expect.poll(view).toBe('list');
+      expectContained();
+    });
+  }
+
+  test('the 1.4.12 text-spacing override cuts nothing off', async () => {
+    await page.viewport(1280, 800);
+    await mount({
+      explorer: 'deficits',
+      ...busy,
+      lang: 'en',
+      notice: { text: 'Updated.', action: 'reload' },
+    });
+    const style = document.head.appendChild(document.createElement('style'));
+    style.id = 'text-spacing';
+    style.textContent = TEXT_SPACING;
+    await tab('Deficits').click();
+    await expect.element(page.getByRole('button', { name: /^Inspect/ })).toBeVisible();
+    expectContained();
+  });
+
+  test('contrast: more and reduced motion stay accessible', async () => {
+    await mount({
+      explorer: 'deficits',
+      ...busy,
+      lang: 'en',
+      notice: { text: 'Updated.', action: 'reload' },
+    });
+    await tab('Deficits').click();
+    await withMedia(
+      [
+        { name: 'prefers-contrast', value: 'more' },
+        { name: 'prefers-reduced-motion', value: 'reduce' },
+      ],
+      () => expectAxeClean(),
+    );
+  });
+});
+
+describe('panel layout', () => {
+  test('the phone layout wins: #workspace-panel is display: contents at 390 px, a flex column on desktop', async () => {
+    await mount();
+    await page.viewport(1280, 800);
+    expect(getComputedStyle(panel('workspace-panel')).display).toBe('flex');
+    await page.viewport(390, 844);
+    expect(getComputedStyle(panel('workspace-panel')).display).toBe('contents');
   });
 });
 

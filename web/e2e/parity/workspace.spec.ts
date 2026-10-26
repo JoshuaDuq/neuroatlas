@@ -94,7 +94,10 @@ test.describe('mode tabs', () => {
 
   test('a phone has the same tabs, and choosing one switches the mode', async ({ app }) => {
     const { page } = app;
+    // Loaded at phone width, so the shell is the sheet from the start.
     await page.setViewportSize({ width: 390, height: 844 });
+    await app.gotoHash();
+    await app.ready();
     await expect(tab(page, 'Anatomy')).toBeVisible();
     await tab(page, 'Functions').click();
     await expect(tab(page, 'Functions')).toHaveAttribute('aria-selected', 'true');
@@ -107,6 +110,8 @@ test.describe('list and detail', () => {
     await app.page.setViewportSize({ width: 1280, height: 800 });
     await app.gotoHash({ region: REGION });
     await app.ready();
+    // The region's framing renders under software WebGL and stalls click actionability.
+    await app.waitForCameraIdle();
   });
 
   test('a region in the link opens the detail: a breadcrumb that leads Back, then its group', async ({
@@ -168,9 +173,10 @@ test.describe('list and detail', () => {
     await tab(page, 'Deficits').click();
     await page.getByRole('button', { name: 'Clear selection' }).first().click();
     await expect(strip(page)).toBeHidden();
-    // h5-clear-focus: the legacy strip checks for stranded focus before it has re-rendered, so
-    // focus falls to the document; the next app waits for the page and hands it to the tab.
+    // h5-clear-focus: legacy renders synchronously, so focus is already on body when its check
+    // runs and `visible(body)` skips the rescue; the next app hands stranded focus to the tab.
     if (testInfo.project.name === 'next') await expect(tab(page, 'Deficits')).toBeFocused();
+    else await expect(page.locator('body')).toBeFocused();
   });
 
   test('accessibility', async ({ app }) => {

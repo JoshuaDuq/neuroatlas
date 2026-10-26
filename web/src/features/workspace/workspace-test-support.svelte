@@ -110,7 +110,17 @@
 </aside>
 
 {#snippet stepper()}
-  <div role="group" aria-label="Steps"><button type="button" class="fx">Next step</button></div>
+  <div role="group" aria-label={world.lang === 'fr' ? 'Étapes' : 'Steps'} class="steps">
+    <button
+      type="button"
+      class="fx step"
+      aria-label={world.lang === 'fr' ? 'Précédent' : 'Previous'}>‹</button
+    >
+    <span>2 / 7</span>
+    <button type="button" class="fx step" aria-label={world.lang === 'fr' ? 'Suivant' : 'Next'}
+      >›</button
+    >
+  </div>
 {/snippet}
 {#snippet trailing()}
   <button type="button">Restore previous view</button>
@@ -118,6 +128,16 @@
 
 <style>
   @layer features {
+    .steps {
+      display: flex;
+      align-items: center;
+      flex: none;
+    }
+    .step {
+      width: var(--control-height);
+      height: var(--control-height);
+      border: 0;
+    }
     .fx {
       background: var(--surface-tonal);
       color: var(--text-primary);

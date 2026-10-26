@@ -201,6 +201,8 @@
       returnToList();
       return;
     }
+    // The row is focused below, once, so the old opener must not take focus first.
+    opener = null;
     onLocate();
     returnToList();
     await tick();
@@ -314,8 +316,12 @@
 
 <style>
   @layer features {
-    /* One task panel beside the anatomy; its parts are the panel's own flex items (layout.css:13-21). */
-    :global(#workspace-panel) {
+    /*
+     * One task panel beside the anatomy; its parts are the panel's own flex items (layout.css:13-21).
+     * :where keeps this at zero specificity, so H1a's phone rule (#workspace-panel { display: contents })
+     * wins and the sheet keeps the panel's children as its grid items.
+     */
+    :global(:where(#workspace-panel)) {
       display: flex;
       flex-direction: column;
       min-height: 0;
