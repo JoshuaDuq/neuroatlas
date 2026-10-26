@@ -86,7 +86,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: canvas text measurement
 - **Source:** `viewer/ui/chrome/snapshot.js:6-13, 203-230`
 - **Expected:** 560×520 plan, top letter at x 280 → every caption run's right end ≤ 280 − ½ × letter width − 12; first baseline y 24, then 40, 56…; with a long subject ("A subject whose name is far too long for the room it has here") the first line ends in "…".
-- **Covered by:** `src/features/snapshot/snapshot.parity.svelte.test.ts` (D only); a rule test is uncovered
+- **Covered by:** `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ### SNAP-09 · The statement and the scale bar share the bottom line until they would meet
 
@@ -95,7 +95,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** unit for the positions; browser for the drawn statement
 - **Source:** `viewer/ui/chrome/snapshot.js:73-85, 234-241`; `snapshot.test.js:61-68`; `viewport.snapshotStatement`
 - **Expected:** `bottomLine({ 1120, 824, statementWidth: 190, scaleWidth: 110 })` → statement `{ x: 16, y: 800 }`, scale `{ x: 994, y: 800 }`. `(300, 600, 190, 110)` → scale y 552 (576 − 16 − 8), scale x + 110 = 284. Statement text "Planum · Not clinical anatomy" (French "Planum · Pas une anatomie clinique"), 12 px, at the statement spot. Property: the statement and the bar never overlap.
-- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R, positions); `parity/G6.test.ts` (D); `src/features/snapshot/snapshot.parity.svelte.test.ts` (D; the only check that the statement is drawn)
+- **Covered by:** `src/features/snapshot/snapshot.test.ts` (R), `parity/G6.test.ts` (D), `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ### SNAP-10 · The scale bar is drawn at its on-screen length
 
@@ -104,7 +104,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: canvas pixels
 - **Source:** `viewer/ui/chrome/snapshot.js:147-170`; `viewer/ui/chrome/viewport-chrome.js:692-696`
 - **Expected:** On-screen bar `{ pixels: 100, label: '10 mm' }` → plan `scale` `{ pixels: 100, label: '10 mm' }`; on the image the bracket's foot spans 100 px (from `round(x) + 0.5` to that + 99) at `round(y + 3) − 0.5`; label starts at x + 108. No scale bar shown → `scale: null` and nothing drawn.
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R, the plan values); the drawn bracket is checked only by `src/features/snapshot/snapshot.parity.svelte.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R), `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ### SNAP-11 · The letters are drawn where the reader sees them
 
@@ -113,7 +113,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: measured positions
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:646-664`
 - **Expected:** 1000×700 stage: letters in order top, right, bottom, left, each text = the camera's edge letter, x (and y except top) = the screen box centre (±1e-3); top y = 20. Dock 300×400 (tall) → bottom letter `{ x: 500, y: 652 }` (700 − 16 − 32). Status `loading` → `{ letters: [], scale: null }`.
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R). `snapshot.svelte.test.ts` checks the `markings()` plan (:230-243), not the drawing; that the letters and keys are drawn into the image is checked only by `src/features/snapshot/snapshot.parity.svelte.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R), `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ### SNAP-12 · Each colour key is redrawn with every row named beside its swatch
 
@@ -122,7 +122,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: measured text and computed style
 - **Source:** `viewer/ui/chrome/snapshot.js:172-196`; `viewer/ui/chrome/viewport-chrome.js:665-691`; deviation `g6-paint-row-labels.md`
 - **Expected:** Deficit "Aphasia" with Broca picked, Wernicke absent, Arcuate → texts `['Aphasia', 'Broca', 'Wernicke', 'Arcuate']`, each row's x = the left of its label on screen (±1e-3) and right of its swatch; weights `['600', '400', '400']`; swatches `['rgb(100, 120, 200)', 'rgba(0, 0, 0, 0)', 'rgb(160, 120, 200)']`; the note absent; plate box = the screen plate's size. Functional, Sections level → `['Functional divisions', 'Sections', '1 · Early', '2 · Late']`, level x = the checked radio's text left; folded → `['Functional divisions', 'Sections']`, no swatches. 40 rows on a 1100×420 stage, opened → fewer than 41 texts and 40 swatches, all with y inside the plate.
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R; "a plate the model says is folded draws its title alone…" is I: a fake keys model that contradicts the DOM pins where the fold is read from). `snapshot.svelte.test.ts` checks the `markings()` plan (:230-243), not the drawing; that the letters and keys are drawn into the image is checked only by `src/features/snapshot/snapshot.parity.svelte.test.ts` (D)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R), `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ### SNAP-13 · Only marks are added; the anatomy is not resampled
 
@@ -131,7 +131,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: canvas pixels
 - **Source:** `viewer/ui/chrome/snapshot.js:198-257`; `viewer/ui/chrome/viewport-chrome.js:816-830`
 - **Expected:** A 560×520 plan at ratio 2 over a flat `#7a7f86` frame: more than 5000 pixels change, every changed pixel lies within the halo reach (8 px blur) of a drawn letter, caption run, key, statement or bar; pixels farther away keep `#7a7f86`. `document.fonts.load` is awaited for 400 12 px, 400 13 px, 600 13 px and each key font before `captureSnapshot`.
-- **Covered by:** `src/features/snapshot/snapshot.parity.svelte.test.ts` (D; asserts > 5000 marked pixels and equality with legacy); a rule test is uncovered
+- **Covered by:** `src/features/snapshot/snapshot.drawing.svelte.test.ts` (R)
 
 ## Saving
 

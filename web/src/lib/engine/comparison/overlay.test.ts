@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'vitest';
-import { BoxGeometry, Group, Mesh, MeshBasicMaterial } from 'three';
+import { BoxGeometry, DoubleSide, Group, Mesh, MeshBasicMaterial } from 'three';
 import { createComparisonOverlay } from './overlay.ts';
 
 function overlapScene(): Group {
@@ -26,6 +26,7 @@ describe('comparison overlay', () => {
     assert.equal(overlay.outlined[0]!.userData.overlap_id, 'pair-a');
     assert.equal(overlay.outlined[0]!.material.colorWrite, false);
     assert.equal(overlay.outlined[0]!.material.depthWrite, false);
+    assert.equal(overlay.outlined[0]!.material.side, DoubleSide);
     assert.equal(overlay.outlined[0]!.geometry, geometry);
     assert.deepEqual(geometry.attributes.position!.array, positions);
     assert.equal(source.children[1]!.visible, false);
@@ -109,5 +110,25 @@ describe('comparison overlay', () => {
     assert.equal(attempts, 2);
     assert.equal(overlay.outlined[0]!.userData.overlap_id, 'pair-a');
     overlay.dispose();
+  });
+
+  it('SCENE-28 a later highlight overtakes an earlier one still loading', async () => {
+    let resolve!: (scene: Group) => void;
+    const overlay = createComparisonOverlay(() => new Promise((done) => (resolve = done)));
+    const first = overlay.highlight('pair-a');
+    const second = overlay.highlight('pair-b');
+    resolve(overlapScene());
+    assert.deepEqual([await first, await second], [false, true]);
+    assert.deepEqual(
+      overlay.outlined.map((mesh) => mesh.userData.overlap_id),
+      ['pair-b'],
+    );
+    overlay.dispose();
+  });
+
+  it('SCENE-32 a highlight after disposal is refused', async () => {
+    const overlay = createComparisonOverlay(async () => overlapScene());
+    overlay.dispose();
+    await assert.rejects(overlay.highlight('pair-a'), /disposed/);
   });
 });

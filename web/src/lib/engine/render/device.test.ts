@@ -88,3 +88,11 @@ test('the GPU probe releases its context and lets errors surface', () => {
   });
   assert.throws(() => detectIntegratedGpu(), /no context/);
 });
+
+test('RENDER-31 without a document the GPU is not integrated', () => {
+  vi.stubGlobal('document', undefined);
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+  });
+  assert.equal(detectIntegratedGpu(), false);
+});
