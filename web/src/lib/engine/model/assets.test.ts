@@ -178,6 +178,13 @@ describe('the published CDMD model', () => {
           assert.ok(Math.abs(value * 10 - Math.round(value * 10)) < 1e-6, `${id}: ${value}`);
       }
       assert.ok(found >= 400, `${found} centroids`);
+      assert.deepEqual(
+        ['destrieux:left:1', 'destrieux:right:1'].map((id) => model.centroidOf(id)),
+        [
+          [-17.4, 52.3, 35.9],
+          [22.7, 53.7, 36.1],
+        ],
+      );
       for (const id of model.regions.keys()) {
         const [, side, label] = id.split(':');
         if (!id.startsWith('destrieux:left:') || Number(label) < 1) continue;
