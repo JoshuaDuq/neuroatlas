@@ -31,6 +31,13 @@
     fallbackFocus,
   }: Props = $props();
 
+  // Opened by `?` with nothing focused, it closes the same way: focus stays on the page
+  // (shortcuts.js:109,125). The fallback is for an opener that went away, not for none.
+  let openedFromBody = false;
+  $effect.pre(() => {
+    if (open) openedFromBody = document.activeElement === document.body;
+  });
+
   const copy = $derived(t(lang, 'shortcuts'));
 
   // Moves to `shortcuts.rangeTo` with the C1 amendment (deviations/s5b-shortcut-strings.md).
@@ -41,7 +48,12 @@
   const caps = (keys: string) => keys.split(' ').filter(Boolean);
 </script>
 
-<Dialog bind:open bind:instant {fallbackFocus} closeLabel={copy.close}>
+<Dialog
+  bind:open
+  bind:instant
+  fallbackFocus={() => (openedFromBody ? null : fallbackFocus())}
+  closeLabel={copy.close}
+>
   {#snippet heading(id)}
     <!-- Native modal dialogs focus an `autofocus` descendant on open (HTML standard, dialog focusing steps). -->
     <!-- svelte-ignore a11y_autofocus -->

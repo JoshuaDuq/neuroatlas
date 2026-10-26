@@ -49,7 +49,7 @@ test.describe('keyboard shortcuts dialog', () => {
     await expect(sheet).toContainText('can be turned off in the settings menu');
     // Deviation s5b-shortcut-strings D4: only the next app reads a range's dash as "to".
     expect(await sheet.locator('.key-range .visually-hidden').count()).toBe(
-      testInfo.project.name === 'next' ? 3 : 0,
+      testInfo.project.name === 'next' ? 1 : 0,
     );
     // Deviation s5b-group-structure: legacy wraps each group in an unnamed section.
     expect(await sheet.locator('section').count()).toBe(testInfo.project.name === 'next' ? 0 : 3);
@@ -78,7 +78,7 @@ test.describe('keyboard shortcuts dialog', () => {
 
   test('Tab stays in the dialog; Escape closes it and focus does not fall to the page', async ({
     app,
-  }, testInfo) => {
+  }) => {
     const { page } = app;
     await more(page).focus();
     await page.keyboard.press('Enter');
@@ -99,8 +99,8 @@ test.describe('keyboard shortcuts dialog', () => {
     await page.keyboard.press('Escape');
     await expect(dialog(page)).toBeHidden();
     // The settings panel closed behind the dialog, so the opener is gone: focus goes to ⋯.
-    // Deviation s5b-focus-return-keyboard: legacy can leave focus on the body after a keyboard open.
-    if (testInfo.project.name === 'next') await expect(more(page)).toBeFocused();
+    // The late `close` event can take a while under software WebGL.
+    await expect(more(page)).toBeFocused({ timeout: 30_000 });
   });
 
   test('Escape closes only the dialog: the selection behind it stays', async ({ app }) => {

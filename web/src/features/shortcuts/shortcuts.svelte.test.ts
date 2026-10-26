@@ -67,13 +67,18 @@ describe('content', () => {
   test('every key the keymap acts on is listed', async () => {
     render(Fixture, { lang: 'en' });
     await openFromKeyboard();
-    const listed = new Set([...dialog().querySelectorAll('kbd')].map((kbd) => kbd.textContent));
+    // The keys the dialog shows, read from its caps; a range lists every key between its ends.
+    const listed = new Set<string>();
+    for (const cap of dialog().querySelectorAll('kbd')) listed.add(cap.textContent!);
+    for (const range of dialog().querySelectorAll('.key-range')) {
+      const from = Number(range.previousElementSibling!.textContent);
+      const to = Number(range.nextElementSibling!.textContent);
+      for (let digit = from; digit <= to; digit++) listed.add(String(digit));
+    }
     const arrows: Record<string, string> = { ArrowDown: '↓', ArrowUp: '↑' };
-    // `1 – 6` is listed as its two ends.
-    const covered = (key: string) => listed.has(arrows[key] ?? key) || /^[1-6]$/.test(key);
     const { views, ...single } = SHORTCUT_KEYS;
     for (const key of [...Object.values(single), ...Object.values(views)]) {
-      expect(covered(key), key).toBe(true);
+      expect(listed.has(arrows[key] ?? key), key).toBe(true);
     }
   });
 
@@ -124,10 +129,9 @@ describe('keyboard, focus and instant', () => {
   test('Escape closes instantly and returns focus to the opener', async () => {
     render(Fixture, { lang: 'en' });
     await openFromKeyboard();
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(() => dialog().open).toBe(false);
+    await closing(() => userEvent.keyboard('{Escape}'));
     expect(dialog().hasAttribute('data-instant')).toBe(true);
-    await expect.poll(() => document.activeElement).toBe(opener().element());
+    expect(document.activeElement).toBe(opener().element());
   });
 
   test('Tab cycles inside the dialog and never reaches the page', async () => {
@@ -151,10 +155,9 @@ describe('keyboard, focus and instant', () => {
     await expect.poll(() => dialog().open).toBe(true);
     expect(dialog().hasAttribute('data-instant')).toBe(true);
     expect(document.activeElement).toBe(title());
-    await userEvent.keyboard('?');
-    await expect.poll(() => dialog().open).toBe(false);
-    // Nothing had focus when it opened, so there is no opener: the fallback takes focus.
-    await expect.poll(() => document.activeElement).toBe(more());
+    await closing(() => userEvent.keyboard('?'));
+    // Nothing had focus when it opened, so focus stays on the page, as in legacy.
+    expect(document.activeElement).toBe(document.body);
   });
 
   test('keys that scroll are not cancelled', async () => {
@@ -187,9 +190,8 @@ describe('keyboard, focus and instant', () => {
     render(Fixture, { lang: 'en' });
     await openFromKeyboard();
     (document.querySelector('.opener') as HTMLElement).style.display = 'none';
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(() => dialog().open).toBe(false);
-    await expect.poll(() => document.activeElement).toBe(more());
+    await closing(() => userEvent.keyboard('{Escape}'));
+    expect(document.activeElement).toBe(more());
   });
 });
 
@@ -263,6 +265,10 @@ describe('size, reflow and media', () => {
     await expectAxeClean();
     await screen.rerender({ lang: 'fr' });
     await expectAxeClean();
+    await withMedia([{ name: 'prefers-contrast', value: 'more' }], async () => {
+      expect(matchMedia('(prefers-contrast: more)').matches).toBe(true);
+      await expectAxeClean();
+    });
   });
 
   test('reduced motion keeps no scale, forced colours keep an edge', async () => {

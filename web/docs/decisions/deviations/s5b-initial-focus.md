@@ -9,7 +9,7 @@ viewer/ui/chrome/shortcuts.js:107-116 calls `showModal()`, which focuses the fir
 
 ## New behaviour
 
-The dialog title (`<h2 tabindex="-1" autofocus>`) takes focus on open, as in the Provenance dialog (h4-initial-focus). The list starts in view and a screen reader reads the dialog's name, then its content. Close stays the first Tab stop.
+The dialog title (`<h2 tabindex="-1" autofocus>`) takes focus on open, as in the Provenance dialog (h4-initial-focus). A screen reader reads the dialog's name, then its content. Close stays the first Tab stop.
 
 ## Standard cited
 
