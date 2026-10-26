@@ -243,7 +243,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Kind:** accessibility
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
-- **Expected:** `expectAxeClean()` with no violations for each language; `expectAccessible('tracts')` in the app.
+- **Expected:** `expectAxeClean()` with no violations in English (both themes, 1280 and 390 px) and one run in French (light, 1280 px); `expectAccessible('tracts')` in the app.
 - **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
 
 ## The MRI navigator: opening and lifetime

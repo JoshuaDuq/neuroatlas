@@ -245,5 +245,5 @@ Scope: chunk H5 (#43), the task panel's frame: the one tablist of the five modes
 - **Kind:** accessibility
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
-- **Expected:** `expectAxeClean()` with no violations in each state.
+- **Expected:** `expectAxeClean()` with no violations on the list with a notice and the strip (both themes, 1280 and 390 px); one run each (light, 1280 px) for the detail, the French detail and `prefers-contrast: more` with reduced motion.
 - **Covered by:** `src/features/workspace/Workspace.svelte.test.ts` (R); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134)

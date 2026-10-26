@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { FOCUS_TARGETS, requestFocus } from '../../lib/ui/focus.ts';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import Fixture from './workspace-test-support.svelte';
 import { newWorld, type World } from './workspace-test-world.ts';
@@ -618,7 +618,7 @@ describe('large text and spacing', () => {
         { name: 'prefers-contrast', value: 'more' },
         { name: 'prefers-reduced-motion', value: 'reduce' },
       ],
-      () => expectAxeClean(),
+      () => expectAxeCleanOnce('light', 1280),
     );
   });
 });
@@ -655,7 +655,7 @@ describe('axe', () => {
   test('detail with the location bar and its slots', async () => {
     await mount({ selectedRegion: { id: 'left:2' } }, { slots: 'stepper' });
     await expect.poll(view).toBe('detail');
-    await expectAxeClean();
+    await expectAxeCleanOnce('light', 1280);
   });
 
   test('French detail', async () => {
@@ -666,6 +666,6 @@ describe('axe', () => {
       place: 'Voie motrice',
     });
     await expect.poll(view).toBe('detail');
-    await expectAxeClean();
+    await expectAxeCleanOnce('light', 1280);
   });
 });

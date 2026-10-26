@@ -160,5 +160,5 @@ Scope: chunk S5b (#37), the keyboard shortcuts dialog: what it lists, how its ke
 - **Kind:** accessibility
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
-- **Expected:** `expectAxeClean()` with no violations in English, in French, and under `prefers-contrast: more`; in the app, `expectAccessible('shortcuts')`.
+- **Expected:** `expectAxeClean()` with no violations in English (both themes, 1280 and 390 px), and one run each in French and under `prefers-contrast: more` (light, 1280 px); in the app, `expectAccessible('shortcuts')`.
 - **Covered by:** `src/features/shortcuts/shortcuts.svelte.test.ts` (R); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)

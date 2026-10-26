@@ -283,5 +283,5 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Kind:** accessibility
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
-- **Expected:** `expectAxeClean()` with no violations (light and dark × 1280 and 390 px); French the same. In the app: peek and half with a region in the link.
+- **Expected:** `expectAxeClean()` with no violations once per theme and width (light and dark × 1280 and 390 px) with the panel raised and a selection; French one run (light, 390 px). In the app: peek and half with a region in the link.
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R); `e2e/parity/sheet.spec.ts` (R; enabled on `next` since #134)

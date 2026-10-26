@@ -1,10 +1,10 @@
 // The phone sheet in a real browser: the legacy sheet.test.js cases as behaviour (a hand-made DOM stub
 // there), the Material 3 standard-sheet and WCAG 2.2 criteria of the H6 decision record on #45, and the
 // desktop to phone transition after load that G1's review asked H6 to cover (#4, issuecomment-6405672591).
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
-import { expectAxeClean, withMedia } from '../../lib/ui/a11y-test-support.ts';
+import { expectAxeClean, expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
 import '../../app/layout.css';
 import { newWorld, type World } from '../workspace/workspace-test-world.ts';
 import Fixture from './sheet-test-support.svelte';
@@ -53,6 +53,20 @@ const contrast = (a: string, b: string) => {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi! + 0.05) / (lo! + 0.05);
 };
+/**
+ * The window size last asked for. A case that needs the size it already has does not ask again, so a
+ * run of phone cases resizes once, not three times each.
+ */
+let requested: readonly [number, number] | null = null;
+async function resize(width: number, height: number) {
+  if (requested?.[0] === width && requested[1] === height) return;
+  requested = [width, height];
+  await page.viewport(width, height);
+  // The new size reaches the frame in a later rendering step.
+  await expect.poll(() => [innerWidth, innerHeight]).toEqual([width, height]);
+}
+/** The sheet's 240 ms glide is zeroed for every case but the ones that test motion. */
+const glide = () => document.documentElement.style.removeProperty('--camera-transition');
 const lastInsets = (recorded: Recorded) => recorded.insets.at(-1)!;
 
 interface Mounted {
@@ -62,7 +76,7 @@ interface Mounted {
 }
 
 async function mount(size = PHONE, fields: Partial<World> = {}, rows = 3): Promise<Mounted> {
-  await page.viewport(...size);
+  await resize(...size);
   const world = $state(newWorld(fields));
   const stage = { sheetFull: false };
   const recorded = newRecorded();
@@ -114,15 +128,16 @@ const halfSpan = () => Math.round((sideways() ? innerWidth : stageBox().height) 
 const fullSpan = () => (sideways() ? Math.round(innerWidth * 0.62) : stageBox().height - 128);
 const dragging = () => sheet().dataset.dragging;
 
-beforeEach(async () => {
-  await page.viewport(...DESKTOP);
+beforeEach(() => {
+  // Every change of rest would otherwise wait out the glide, and a click waits for the handle to stop.
+  document.documentElement.style.setProperty('--camera-transition', '0s');
 });
-afterEach(async () => {
+afterEach(() => {
   cleanup();
   document.documentElement.removeAttribute('style');
   document.head.querySelectorAll('style[data-test]').forEach((style) => style.remove());
-  await page.viewport(...DESKTOP);
 });
+afterAll(() => page.viewport(...DESKTOP));
 
 describe('the shell', () => {
   test('on a phone the sheet is a fixed bottom sheet at peek, hugging its tabs, with its panels hidden', async () => {
@@ -158,7 +173,7 @@ describe('the shell', () => {
 
   test('a desktop window narrowed to a phone after load sets the sheet up and reports its cover', async () => {
     const { recorded } = await mount(DESKTOP);
-    await page.viewport(...PHONE);
+    await resize(...PHONE);
     await vi.waitFor(() => expect(sheet().dataset.detent).toBe('peek'));
     // The report that matters is the last one, from a laid-out grip: legacy's first one could stay at 0.
     await vi.waitFor(() => {
@@ -166,7 +181,7 @@ describe('the shell', () => {
       expect(bottom).toBeGreaterThan(60);
       expect(bottom).toBe(Math.round(box(sheet()).height));
     });
-    await page.viewport(...DESKTOP);
+    await resize(...DESKTOP);
     await vi.waitFor(() => expect(sheet().dataset.detent).toBeUndefined());
     expect(lastInsets(recorded).insets).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
     expect(sheet().style.height).toBe('');
@@ -174,7 +189,7 @@ describe('the shell', () => {
 
   test('a phone held sideways is a side sheet from the stage top, and rotating swaps the axis', async () => {
     const { recorded } = await mount(PHONE);
-    await page.viewport(...SIDEWAYS);
+    await resize(...SIDEWAYS);
     await vi.waitFor(() => expect(sheet().style.width).not.toBe(''));
     await rested();
     expect(sheet().style.height).toBe('');
@@ -189,7 +204,7 @@ describe('the shell', () => {
       bottom: 0,
       left: span(),
     });
-    await page.viewport(...PHONE);
+    await resize(...PHONE);
     await vi.waitFor(() => expect(sheet().style.height).not.toBe(''));
     expect(sheet().style.width).toBe('');
     expect(sheet().style.top).toBe('');
@@ -436,13 +451,13 @@ describe('dragging the grip', () => {
     await rested();
     grip().move(100, 10);
     expect(dragging()).toBe('true');
-    await page.viewport(390, 800);
+    await resize(390, 800);
     await vi.waitFor(() => expect(dragging()).toBe('false'));
     await rested();
     const first = grip();
     first.move(60, 10);
     expect(dragging()).toBe('true');
-    await page.viewport(...SIDEWAYS);
+    await resize(...SIDEWAYS);
     await vi.waitFor(() => expect(sheet().style.width).not.toBe(''));
     expect(dragging()).toBe('false');
     await rested();
@@ -618,7 +633,7 @@ describe('entering and leaving the shell', () => {
     const { recorded } = await mount(DESKTOP);
     const row = document.querySelector<HTMLElement>('[data-row]')!;
     row.focus();
-    await page.viewport(...PHONE);
+    await resize(...PHONE);
     await vi.waitFor(() => expect(sheet().dataset.detent).toBe('half'));
     expect(sheet().hasAttribute('data-instant')).toBe(true);
     expect(focused()).toBe(row);
@@ -630,7 +645,7 @@ describe('entering and leaving the shell', () => {
   test('with focus elsewhere it rests at peek', async () => {
     await mount(DESKTOP);
     tab('Anatomy').element().focus();
-    await page.viewport(...PHONE);
+    await resize(...PHONE);
     await vi.waitFor(() => expect(sheet().dataset.detent).toBe('peek'));
     expect(sheet().hasAttribute('data-instant')).toBe(false);
   });
@@ -639,7 +654,7 @@ describe('entering and leaving the shell', () => {
     const { recorded } = await mount();
     await userEvent.click(handle());
     const spoken = announced();
-    await page.viewport(390, 700);
+    await resize(390, 700);
     await vi.waitFor(() => expect(span()).toBe(halfSpan()));
     expect(lastInsets(recorded).insets.bottom).toBe(halfSpan());
     expect(announced()).toBe(spoken);
@@ -650,7 +665,7 @@ describe('entering and leaving the shell', () => {
     await userEvent.click(handle());
     await userEvent.click(handle());
     expect(stage.sheetFull).toBe(true);
-    await page.viewport(...DESKTOP);
+    await resize(...DESKTOP);
     await vi.waitFor(() => expect(stage.sheetFull).toBe(false));
   });
 });
@@ -678,6 +693,7 @@ describe('text size and motion', () => {
   });
 
   test('a settled sheet glides, a keyboard activation does not, and reduced motion leaves a fade', async () => {
+    glide();
     await mount();
     expect(getComputedStyle(sheet()).transitionProperty).toBe('height');
     await userEvent.click(handle());
@@ -691,6 +707,7 @@ describe('text size and motion', () => {
   });
 
   test('a dragged sheet follows the finger with no transition', async () => {
+    glide();
     await mount();
     await rested();
     grip().move(100, 10);
@@ -758,11 +775,15 @@ describe('targets and contrast', () => {
     await mount(PHONE, { selection: SELECTION });
     handle().click();
     await expectAxeClean();
+    // expectAxeClean leaves the window at 1280 px.
+    requested = null;
   });
 
   test('axe finds nothing in French', async () => {
     await mount(PHONE, { lang: 'fr', selection: SELECTION });
-    await expectAxeClean();
+    await expectAxeCleanOnce('light', 390);
+    // expectAxeCleanOnce leaves the window at 1280 px.
+    requested = null;
   });
 });
 
@@ -771,9 +792,9 @@ describe('legacy cases ported, and the notice', () => {
     await mount();
     await userEvent.click(handle());
     await userEvent.click(handle());
-    await page.viewport(...DESKTOP);
+    await resize(...DESKTOP);
     await vi.waitFor(() => expect(sheet().dataset.detent).toBeUndefined());
-    await page.viewport(...PHONE);
+    await resize(...PHONE);
     await vi.waitFor(() => expect(sheet().dataset.detent).toBe('full'));
     await rested();
     expect(span()).toBe(fullSpan());

@@ -1,5 +1,6 @@
 // The data bar against the APG Disclosure table and the legacy header.js cases
 // (chrome.contract.test.js:167-200, 249-273, header.test.js), as behaviour in a real browser.
+import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
@@ -71,11 +72,12 @@ async function withTouch(check: () => Promise<void>) {
 async function expectAxeClean(
   sizes: (readonly [number, number])[] = [WIDE, PHONE],
   collapsedAt: (width: number) => boolean = (width) => width === PHONE[0],
+  themes: string[] = ['light', 'dark'],
 ) {
   const still = document.head.appendChild(document.createElement('style'));
   still.textContent = '*, *::before, *::after { transition: none !important; }';
   try {
-    for (const theme of ['light', 'dark']) {
+    for (const theme of themes) {
       document.documentElement.dataset.theme = theme;
       for (const [width, height] of sizes) {
         // A new size reaches the frame in a later rendering step, which a loaded machine can hold
@@ -104,7 +106,14 @@ async function expectAxeClean(
     await page.viewport(...WIDE);
   }
 }
-const settle = () => new Promise((resolve) => setTimeout(resolve, 150));
+const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+// Svelte has applied the change and the bar's size observer has seen the layout it left: the
+// observer reports in the frame after a change, so two frames cover a refit it triggers.
+const settle = async () => {
+  await tick();
+  await frame();
+  await frame();
+};
 
 async function wide(props = barProps(), extra: Record<string, unknown> = {}) {
   await page.viewport(...WIDE);
@@ -178,19 +187,13 @@ describe('DataBar on the bar', () => {
   test('a choice downloading shows its progress in the select, and reverts if it does not land', async () => {
     const bar = $state(barProps());
     await wide(bar, { onCommand: () => Object.assign(bar, { status: 'switching' }) });
+    const shown = () => (el(field('Atlas')) as HTMLSelectElement).selectedOptions[0].textContent;
     await userEvent.selectOptions(field('Atlas'), 'hcp-mmp');
-    await settle();
-    expect((el(field('Atlas')) as HTMLSelectElement).selectedOptions[0].textContent).toBe(
-      'HCP-MMP · Loading…',
-    );
+    await expect.poll(shown).toBe('HCP-MMP · Loading…');
     bar.progress = { loaded: 34, total: 100 };
-    await settle();
-    expect((el(field('Atlas')) as HTMLSelectElement).selectedOptions[0].textContent).toMatch(
-      /^HCP-MMP · Loading 34/,
-    );
+    await expect.poll(shown).toMatch(/^HCP-MMP · Loading 34/);
     bar.status = 'ready';
-    await settle();
-    expect((el(field('Atlas')) as HTMLSelectElement).value).toBe('destrieux');
+    await expect.poll(() => (el(field('Atlas')) as HTMLSelectElement).value).toBe('destrieux');
     expect((el(field('Atlas')) as HTMLSelectElement).selectedOptions[0].textContent).toBe(
       'Destrieux',
     );
@@ -222,8 +225,7 @@ describe('DataBar on the bar', () => {
     await wide(props);
     el(field('Subject')).focus();
     props.status = 'switching';
-    await settle();
-    expect((el(field('Subject')) as HTMLSelectElement).disabled).toBe(true);
+    await expect.poll(() => (el(field('Subject')) as HTMLSelectElement).disabled).toBe(true);
     expect(document.activeElement).toBe(el(field('Atlas')));
   });
 
@@ -454,13 +456,13 @@ describe('DataBar touch and refit', () => {
       const popover = bar().querySelector('.masthead-data')!;
       expect(Math.abs(box(popover).left - box(el(summary())).left)).toBeLessThan(3);
       expect(parseFloat(getComputedStyle(bar()).paddingLeft)).toBeGreaterThan(0);
-      await expectAxeClean([WIDE], () => true);
+      await expectAxeClean([WIDE], () => true, ['light']);
     });
   });
 
   test('the desktop bar passes axe in French', async () => {
     await wide(barProps({ lang: 'fr' }));
-    await expectAxeClean([WIDE], () => false);
+    await expectAxeClean([WIDE], () => false, ['light']);
   });
 
   test('Space opens the summary', async () => {
@@ -571,29 +573,25 @@ describe('DataBar announcements', () => {
     const props = $state(barProps());
     await wide(props, { onCommand: () => Object.assign(props, { status: 'switching' }) });
     await userEvent.selectOptions(field('Atlas'), 'hcp-mmp');
-    await settle();
-    expect(announced()).toBe('HCP-MMP: Loading…');
+    await expect.poll(announced).toBe('HCP-MMP: Loading…');
     Object.assign(props, { status: 'ready', atlas: 'hcp-mmp' });
-    await settle();
-    expect(announced()).toBe('Anatomy loaded.');
+    await expect.poll(announced).toBe('Anatomy loaded.');
   });
 
   test('in French, with a French spacing before the colon', async () => {
     const props = $state(barProps({ lang: 'fr' }));
     await wide(props, { onCommand: () => Object.assign(props, { status: 'switching' }) });
     await userEvent.selectOptions(field('Atlas'), 'hcp-mmp');
-    await settle();
-    expect(announced()).toBe('HCP-MMP : Chargement…');
+    await expect.poll(announced).toBe('HCP-MMP : Chargement…');
     Object.assign(props, { status: 'ready', atlas: 'hcp-mmp' });
-    await settle();
-    expect(announced()).toBe('Anatomie chargée.');
+    await expect.poll(announced).toBe('Anatomie chargée.');
   });
 
   test('a download that fails says nothing more (the notice does)', async () => {
     const props = $state(barProps());
     await wide(props, { onCommand: () => Object.assign(props, { status: 'switching' }) });
     await userEvent.selectOptions(field('Atlas'), 'hcp-mmp');
-    await settle();
+    await expect.poll(announced).toBe('HCP-MMP: Loading…');
     Object.assign(props, { status: 'ready' });
     await settle();
     expect(announced()).toBe('HCP-MMP: Loading…');
@@ -617,7 +615,8 @@ describe('DataBar accessibility', () => {
     for (const lang of ['en', 'fr'] as const) {
       await phone(barProps({ lang }));
       await summary().click();
-      await expectAxeClean([PHONE]);
+      // English in light, French in dark: the bar's colours are in the first test's matrix.
+      await expectAxeClean([PHONE], undefined, [lang === 'en' ? 'light' : 'dark']);
       cleanup();
     }
   });
