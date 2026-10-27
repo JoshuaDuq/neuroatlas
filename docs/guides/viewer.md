@@ -57,7 +57,16 @@ The dock at the bottom left holds four tools.
 
 ### Lesion report
 
-A placed lesion is Anatomy's detail. It lists what the sphere covers on the subject's 1 mm label volumes: each tissue in cm³, then the cortical regions (Destrieux or HCP-MMP), deep structures and gyral white matter it reaches, with the share of each region inside it. **Count** downloads the tract bundles on the sides the sphere reaches, plus the seven callosal segments, and gives the share of each bundle's streamlines with a point inside. The findings that cite a reached region follow, ranked by the largest share of a cited region inside. Findings under 1% are folded. A bilateral finding the lesion reaches on one side is marked. **Show on the brain** paints the cited regions, one colour per finding. The report measures overlap only: it predicts no deficit. Structures drawn only as meshes, such as the fornix, are not measured.
+A placed lesion is Anatomy's detail. It opens on **What it reaches**, under the six groups the Functions and Deficits tabs share, strongest group first.
+
+- **Functions** whose territories the lesion overlaps. A territory is a function's HCP-MMP areas and structures at z ≥ 3, on the sides the lesion reaches. Each function shows the share of its territory inside the lesion; bars are scaled to the largest share.
+- **Deficits** with a finding whose cited region the lesion reaches, with the largest share reached.
+
+Each row opens its function or deficit. **On the brain** switches between the lesion alone, the territories of the leading functions, and the regions cited by the findings, one colour per item in rank order; the atlas follows the choice.
+
+Below, **Findings in detail** lists each finding with its reached regions and mapping note, and marks a bilateral finding the lesion reaches on one side only. **Anatomy measured** gives the tissue volumes and each cortical region's share, on Destrieux or HCP-MMP; deep structures and gyral white matter follow. **Tracts** downloads the bundles on the sides the sphere reaches, plus the seven callosal segments, and counts the streamlines with a point inside.
+
+The report measures overlap only: it predicts no deficit. Structures drawn only as meshes, such as the fornix, are not measured.
 
 A cut adds the section bar above the dock: a slider and a millimetre field for the position, tilt and azimuth for an oblique plane, **Reverse side**, **Linked MRI**, and × to return to the full brain. Positions are surface RAS millimetres: +R right, +A anterior, +S superior. Each solid is capped where the plane meets it, and the cap samples the label volume of the chosen cut labels.
 

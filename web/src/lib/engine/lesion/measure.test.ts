@@ -3,6 +3,7 @@ import { test } from 'vitest';
 import { Volume } from '../slices/volume.ts';
 import {
   labelTotals,
+  regionSizes,
   regionsInSphere,
   streamlinesCrossing,
   tissueClass,
@@ -165,4 +166,29 @@ test('counts a streamline once when any of its points lies within the radius', (
   ]);
   const offsets = new Uint32Array([0, 5, 7, 9]);
   assert.equal(streamlinesCrossing(points, offsets, { centre: [0, 0, 0], radius: 5 }), 2);
+});
+
+test('sizes every labelled region of a volume in mm³, reached or not', () => {
+  const affine = [
+    [2, 0, 0, 0],
+    [0, 2, 0, 0],
+    [0, 0, 2, 0],
+    [0, 0, 0, 1],
+  ];
+  const volume = new Volume(
+    { shape: [2, 2, 2], order: 'F', voxel_to_surface_ras_mm: affine },
+    new Uint16Array([1, 1, 0, 2, 0, 0, 0, 0]),
+  );
+  const labels = [
+    { kind: 'tissue', region_id: null },
+    { kind: 'cortex', region_id: 'atlas:left:1' },
+    { kind: 'cortex', region_id: 'atlas:left:2' },
+  ];
+  assert.deepEqual(
+    regionSizes(labels, labelTotals(volume), volume),
+    new Map([
+      ['atlas:left:1', 16],
+      ['atlas:left:2', 8],
+    ]),
+  );
 });

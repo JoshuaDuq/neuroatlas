@@ -2,7 +2,7 @@
 
 Scope: chunk X2 (#57), the Deficits tab and the region inspector's related deficits: the search field, the list of deficit profiles, the profile of one deficit (its meta line, associations, evidence and publications, checked maps), Restore, and the "Neuropsychology" list under a selected region. Legacy sources: `viewer/ui/panels/clinical.js` (the Deficits half: `createClinicalExplorer`, lines 40-164 and 227-550), `index.html:279-295,339,417`. New code: `web/src/features/deficits/` (`explorer.svelte.ts` holds the runner and the focus hand-offs, `profile-meta.ts` the meta line's counts; `DeficitList`, `DeficitSearch`, `DeficitProfile`, `ProfileBody`, `Association`, `Publication`, `ExternalLink`, `LinkRow`, `RelatedDeficits`, `DeficitRestore` draw them). Deviations: `x2-aria-disabled-while-opening.md`, `x2-evidence-summary-name.md`, `x2-external-links.md`, `x2-focus-after-render.md`, `x2-list-semantics.md`, `x2-results-announcement.md`, `x2-search-label.md`, `x2-section-landmarks.md`, `x2-single-clear-control.md`, `x2-status-live-region.md`; decisions 13, 17, 37, 38 and 68 ("Deficits follows the Functions shape") on #4.
 
-What opening a deficit does to the scene (draw, frame, the reveal notice and the see-through offer, Restore itself, the search carried between tabs) is in `controller.md` (CTRL-24, CTRL-26 to CTRL-33); the deficit catalogue (`grouped`, `search`, `nearest`, `mappedRegions`, `paint`, `forDeficit`, `forRegion`, validation) is in `core-catalogs.md`; `stageMessage`, `sharedSide`, `sideStated`, `publishedCorrections`, `relatedRegionVisible`, `involved` and the runners are in `core-panels.md`; the list keys and the announcer are in `ui-kit.md` and `state.md`; a link that carries `deficit=` is in `links.md`. The published data (`data/neuropsychology.yaml`, revised 2026-10-27) has 58 deficits in 6 groups; `aphasia` has 6 left associations, `neglect` 5 right ones, `amnesia` 3 bilateral ones. Copy quoted is the English interface text (`web/src/lib/core/i18n/areas/clinical.ts`).
+What opening a deficit does to the scene (draw, frame, the reveal notice and the see-through offer, Restore itself, the search carried between tabs) is in `controller.md` (CTRL-24, CTRL-26 to CTRL-33); the deficit catalogue (`grouped`, `search`, `nearest`, `mappedRegions`, `paint`, `forDeficit`, `forRegion`, validation) is in `core-catalogs.md`; `stageMessage`, `sharedSide`, `sideStated`, `publishedCorrections`, `relatedRegionVisible`, `involved` and the runners are in `core-panels.md`; the list keys and the announcer are in `ui-kit.md` and `state.md`; a link that carries `deficit=` is in `links.md`. The published data (`data/neuropsychology.yaml`, revised 2026-10-27) has 70 deficits in 6 groups; `aphasia` has 6 left associations, `neglect` 5 right ones, `amnesia` 3 bilateral ones. Copy quoted is the English interface text (`web/src/lib/core/i18n/areas/clinical.ts`).
 
 ## The list
 
@@ -12,7 +12,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Kind:** data
 - **Level:** unit (view-model; the grouping is the clinical catalogue's) for the content; browser for the note's removal
 - **Source:** `viewer/ui/panels/clinical.js:40-49,63-71,494-504`
-- **Expected:** 58 rows in 6 groups ("Attention and executive functions" 10, "Memory" 4, "Language, reading and number" 9, "Perception and visuospatial abilities" 12, "Sensorimotor functions" 18, "Social and emotional functions" 5); note "58 profiles · adult acquired deficits"; query "aphas" → 1 row ("Aphasia") and no note.
+- **Expected:** 70 rows in 6 groups ("Attention and executive functions" 10, "Memory" 5, "Language, reading and number" 10, "Perception and visuospatial abilities" 17, "Sensorimotor functions" 21, "Social and emotional functions" 7); note "70 profiles · adult acquired deficits"; query "aphas" → 1 row ("Aphasia") and no note.
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; groups only checked as more than 3)
 
 ### DEF-02 · Groups are labelled lists of buttons
@@ -21,7 +21,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Kind:** accessibility
 - **Level:** browser — DOM semantics
 - **Source:** `viewer/ui/panels/clinical.js:63-71`; deviation `x2-list-semantics.md`; decisions 38 and 68 on #4
-- **Expected:** `[role=group][aria-label="Deficits"]` present; every `[role=group][aria-labelledby]` is labelled by an `H3` and its `ul > li` count equals its `ul > li > button.row` count; 58 `ul > li > button.row` in all.
+- **Expected:** `[role=group][aria-label="Deficits"]` present; every `[role=group][aria-labelledby]` is labelled by an `H3` and its `ul > li` count equals its `ul > li > button.row` count; 70 `ul > li > button.row` in all.
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-03 · The search field has a visible label, controls the list and shows the `/` hint
@@ -44,7 +44,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 
 ### DEF-05 · Escape empties a filled field and keeps focus; on an empty field it is the page's
 
-- **Rule:** Escape in a field with text empties it, keeps focus in the field and is marked handled; the list returns to all 58. Escape in an empty field, or while an input method composes, is left to the page's Escape cascade.
+- **Rule:** Escape in a field with text empties it, keeps focus in the field and is marked handled; the list returns to all 70. Escape in an empty field, or while an input method composes, is left to the page's Escape cascade.
 - **Kind:** behaviour
 - **Level:** browser — key dispatch to the focused field
 - **Source:** `viewer/ui/panels/clinical.js:406-413`; KEY-04 in `controller.md`
@@ -94,7 +94,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — layout and scroll
 - **Source:** WCAG 2.2 SC 2.4.11 Focus Not Obscured
 - **Expected:** for every row reached, its top ≥ its group heading's bottom − 1 px and its bottom ≤ the list's bottom + 1 px.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; walks all 58 rows three times, see the audit's slow tests)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; walks all 70 rows three times, see the audit's slow tests)
 
 ### DEF-11 · Every settled query says its count, a cleared one included
 
@@ -102,7 +102,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Kind:** accessibility
 - **Level:** unit for the sentence (`results`); browser with fake timers for the debounce in the component
 - **Source:** `viewer/ui/panels/clinical.js:513`; `viewer/ui/announce.js`; deviation `x2-results-announcement.md`; decision 37 on #4
-- **Expected:** "aphas" → '' at once, then "1 deficit"; Escape → "58 deficits"; "aphas" then "amnesi" → "1 deficit" written again; "aphazia" → "No match". Language `fr` with a query → nothing said.
+- **Expected:** "aphas" → '' at once, then "1 deficit"; Escape → "70 deficits"; "aphas" then "amnesi" → "1 deficit" written again; "aphazia" → "No match". Language `fr` with a query → nothing said.
 - **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; real 500 ms waits). The language case is uncovered.
 
 ### DEF-12 · The open deficit's row is current

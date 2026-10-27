@@ -385,12 +385,12 @@
   "paints": {
    "function": "Fonctions",
    "deficit": "Déficit",
-   "lesion": "Constats de la lésion"
+   "lesion": "Lésion"
   },
   "paintTitles": {
    "function": "Choisi dans l’onglet Fonctions<NNBSP>: fonctions neuropsychologiques sur les aires HCP-MMP, là où les études rapportent régulièrement une activation (Neurosynth). Choisissez une couleur ici pour l’afficher à la place.",
    "deficit": "Choisi dans l’onglet Déficits<NNBSP>: les régions citées par les constats du déficit ouvert, une couleur par constat. Choisissez une couleur ici pour l’afficher à la place.",
-   "lesion": "Choisi dans le rapport de la lésion<NNBSP>: les régions citées par les constats proches de la lésion, une couleur par constat. Choisissez une couleur ici pour l’afficher à la place."
+   "lesion": "Choisi dans le rapport de la lésion<NNBSP>: les territoires des fonctions qu’elle atteint, ou les régions citées par les constats proches. Choisissez une couleur ici pour l’afficher à la place."
   },
   "surfaceColorTitles": {
    "tissue": "Couleurs des tissus, nuancées par la luminosité T1",
@@ -828,8 +828,31 @@
   "findings": "Constats citant ces régions",
   "findingsNote": "Classés selon la part d’une région citée comprise dans la lésion. Un chevauchement avec une région citée, pas un déficit prédit.",
   "noFindings": "Aucun constat ne cite une région atteinte par cette lésion.",
-  "showOnBrain": "Afficher sur le cerveau",
-  "hideOnBrain": "Retirer du cerveau",
+  "onBrain": "Sur le cerveau",
+  "modes": {
+   "lesion": "Lésion seule",
+   "functions": "Fonctions",
+   "deficits": "Déficits"
+  },
+  "reaches": "Ce qu’elle atteint",
+  "reachesNote": "Fonctions<NNBSP>: la part du territoire de chaque fonction, du côté de la lésion, comprise dans celle-ci (cartes de cohérence Neurosynth, z ≥ 3). Les barres sont à l’échelle de la plus grande part. Déficits<NNBSP>: constats dont les régions citées sont atteintes. Un chevauchement seulement<NNBSP>; elle ne prédit aucun déficit.",
+  "nothingReached": "Aucune fonction cartographiée ni aucun constat n’est atteint.",
+  "functionsLabel": "Fonctions",
+  "deficitsLabel": "Déficits",
+  "deficitReach": [
+   "[\"Alpha\",\"\"] → \"Alpha · jusqu’à \"",
+   "[\"\",\"Alpha\"] → \" · jusqu’à Alpha\""
+  ],
+  "more": [
+   "[\"Alpha\"] → \"Alpha de plus\"",
+   "[\"\"] → \" de plus\""
+  ],
+  "slightFunctions": [
+   "[\"Alpha\"] → \"Alpha fonctions de plus sous 1<NNBSP>%\"",
+   "[\"\"] → \" fonctions de plus sous 1<NNBSP>%\""
+  ],
+  "findingsDetail": "Constats en détail",
+  "anatomy": "Anatomie mesurée",
   "cited": [
    "[\"Alpha\",1] → \"Alpha sur 1 citée\"",
    "[\"\",2] → \" sur 2 citées\"",
@@ -847,6 +870,8 @@
    "[\"\"] → \" de plus touchent une région citée à moins de 1<NNBSP>%\""
   ],
   "unmeasured": "Les structures tracées seulement en maillage, comme le fornix ou les noyaux mamillaires, ne sont pas mesurées.",
+  "keyFunctionsTitle": "Fonctions atteintes par la lésion",
+  "keyFunctionsNote": "Le territoire entier de chaque fonction, une couleur par fonction dans l’ordre du classement<NNBSP>; une aire partagée par plusieurs fonctions prend la couleur de la première.",
   "keyTitle": "Constats près de la lésion",
   "keyNote": "Une couleur par constat, dans l’ordre du classement<NNBSP>; une région citée par plusieurs constats prend la couleur du premier."
  },

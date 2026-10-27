@@ -574,6 +574,8 @@ export interface LesionMeasurement {
   tissue: LesionTissue;
   /** Every labelled region it reaches, in mm³: how much lies inside and the region's whole size. */
   regions: ReadonlyMap<string, { inside: number; whole: number }>;
+  /** Every labelled region's whole size in mm³, reached or not: what a function's territory adds up to. */
+  sizes: ReadonlyMap<string, number>;
 }
 
 /** One tract bundle's streamlines, and how many have a point inside the lesion. */

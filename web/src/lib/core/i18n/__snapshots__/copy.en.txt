@@ -385,12 +385,12 @@
   "paints": {
    "function": "Functions",
    "deficit": "Deficit",
-   "lesion": "Lesion findings"
+   "lesion": "Lesion"
   },
   "paintTitles": {
    "function": "Set by the Functions tab: neuropsychological functions on HCP-MMP areas, where studies consistently report activation (Neurosynth). Choose a colour here to show it instead.",
    "deficit": "Set by the Deficits tab: the regions the open deficit’s findings cite, one colour per finding. Choose a colour here to show it instead.",
-   "lesion": "Set by the lesion’s report: the regions cited by the findings near the lesion, one colour per finding. Choose a colour here to show it instead."
+   "lesion": "Set by the lesion’s report: the territories of the functions it reaches, or the regions its nearby findings cite. Choose a colour here to show it instead."
   },
   "surfaceColorTitles": {
    "tissue": "Tissue colours, shaded by T1 brightness",
@@ -828,8 +828,31 @@
   "findings": "Findings citing these regions",
   "findingsNote": "Ranked by how much of a cited region lies inside. Overlap with a cited region, not a predicted deficit.",
   "noFindings": "No finding cites a region this lesion reaches.",
-  "showOnBrain": "Show on the brain",
-  "hideOnBrain": "Hide from the brain",
+  "onBrain": "On the brain",
+  "modes": {
+   "lesion": "Lesion only",
+   "functions": "Functions",
+   "deficits": "Deficits"
+  },
+  "reaches": "What it reaches",
+  "reachesNote": "Functions: the share of each function’s territory on the lesion’s side that lies inside it (Neurosynth consistency maps, z ≥ 3). Bars are scaled to the largest share. Deficits: findings whose cited regions it reaches. Overlap only; it predicts no deficit.",
+  "nothingReached": "No mapped function or finding is reached.",
+  "functionsLabel": "Functions",
+  "deficitsLabel": "Deficits",
+  "deficitReach": [
+   "[\"Alpha\",\"\"] → \"Alpha · up to \"",
+   "[\"\",\"Alpha\"] → \" · up to Alpha\""
+  ],
+  "more": [
+   "[\"Alpha\"] → \"Alpha more\"",
+   "[\"\"] → \" more\""
+  ],
+  "slightFunctions": [
+   "[\"Alpha\"] → \"Alpha more functions under 1%\"",
+   "[\"\"] → \" more functions under 1%\""
+  ],
+  "findingsDetail": "Findings in detail",
+  "anatomy": "Anatomy measured",
   "cited": [
    "[\"Alpha\",1] → \"Alpha of 1 cited\"",
    "[\"\",2] → \" of 2 cited\"",
@@ -847,6 +870,8 @@
    "[\"\"] → \" more touch a cited region by under 1%\""
   ],
   "unmeasured": "Structures drawn only as meshes, such as the fornix or the mammillary nuclei, are not measured.",
+  "keyFunctionsTitle": "Functions the lesion reaches",
+  "keyFunctionsNote": "Each function’s whole territory, one colour per function in rank order; an area several functions share takes the first one’s colour.",
   "keyTitle": "Findings near the lesion",
   "keyNote": "One colour per finding, in rank order; a region several findings cite takes the first one’s colour."
  },

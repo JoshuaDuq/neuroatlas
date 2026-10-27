@@ -109,6 +109,21 @@ export function regionsInSphere(
   return regions;
 }
 
+/** Every labelled region's whole size in mm³, from the volume's `labelTotals`. */
+export function regionSizes(
+  labels: readonly MeasuredLabel[],
+  totals: Map<number, number>,
+  volume: Volume,
+): Map<string, number> {
+  const voxel = voxelMm3(volume);
+  const sizes = new Map<string, number>();
+  for (const [value, count] of totals) {
+    const { region_id: id } = labelOf(labels, value);
+    if (id) sizes.set(id, (sizes.get(id) ?? 0) + count * voxel);
+  }
+  return sizes;
+}
+
 /** The mm³ of each tissue inside the sphere, on a volume of FreeSurfer labels. */
 export function tissueInSphere(
   volume: Volume,

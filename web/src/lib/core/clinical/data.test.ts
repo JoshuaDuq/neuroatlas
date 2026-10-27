@@ -43,6 +43,7 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       'amnesia',
       'amusia',
       'anosognosia',
+      'aphantasia',
       'aphasia',
       'apraxia',
       'aprosodia',
@@ -50,6 +51,7 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       'auditory-agnosia',
       'auditory-short-term-memory',
       'autotopagnosia',
+      'buccofacial-apraxia',
       'central-pain',
       'cerebellar-cognitive',
       'coma',
@@ -57,33 +59,43 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       'constructional-apraxia',
       'cortical-deafness',
       'decision-making',
+      'disinhibition',
       'dysarthria',
       'dysphagia',
       'dystonia',
       'emotion-recognition',
+      'emotional-empathy',
       'executive',
       'finger-agnosia',
+      'foreign-accent',
       'hand-paresis',
       'hemianopia',
       'hemichorea',
       'hemiparesis',
       'lateropulsion',
+      'left-right-disorientation',
       'locked-in',
       'motor-neglect',
       'neglect',
+      'oculomotor-apraxia',
       'olfactory-recognition',
       'optic-ataxia',
+      'pain-asymbolia',
+      'palinopsia',
       'parkinsonism',
+      'phonagnosia',
       'prospective-memory',
       'simultanagnosia',
       'somatoparaphrenia',
       'somatosensory',
+      'sound-localization',
       'spasticity',
       'speech-apraxia',
       'stuttering',
       'tactile-agnosia',
       'tactile-extinction',
       'taste-impairment',
+      'temporal-disorientation',
       'theory-of-mind',
       'topographical-disorientation',
       'visual-extinction',
@@ -110,7 +122,12 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       .forRegion('destrieux:right:26')
       .map((a) => a.id)
       .sort(),
-    ['extinction-temporoparietal', 'neglect-egocentric', 'neglect-perceptual'],
+    [
+      'extinction-temporoparietal',
+      'neglect-egocentric',
+      'neglect-perceptual',
+      'sound-localization-right-network',
+    ],
   );
   assert.ok(
     data.references.some((r) => r.method === 'meta-analysis'),
@@ -135,6 +152,7 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       'apraxia-finger',
       'dysphagia-insula',
       'emotion-prosody',
+      'emotional-empathy-inferior-frontal',
       'speech-apraxia-frontal',
       'stuttering-cortico-striatal',
     ],
@@ -195,12 +213,12 @@ describe('published clinical content: fixed values', () => {
   const [, manifest] = manifests[0];
   const catalog = createClinicalCatalog(data, manifest);
 
-  test('CAT-50 · the published records are the revision of 2026-10-27: 6 groups, 58 deficits, 89 references, 79 associations', () => {
+  test('CAT-50 · the published records are the revision of 2026-10-27: 6 groups, 70 deficits, 113 references, 96 associations', () => {
     assert.equal(catalog.revised, '2026-10-27');
     assert.equal(data.groups.length, 6);
-    assert.equal(data.deficits.length, 58);
-    assert.equal(data.references.length, 89);
-    assert.equal(data.associations.length, 79);
+    assert.equal(data.deficits.length, 70);
+    assert.equal(data.references.length, 113);
+    assert.equal(data.associations.length, 96);
   });
 
   test('CAT-45 · a published search ignores case and accents and ranks the named deficit first', () => {
@@ -215,7 +233,7 @@ describe('published clinical content: fixed values', () => {
       'prospective-memory',
       'confabulation',
     ]);
-    assert.equal(ids('', 'fr').length, 58);
+    assert.equal(ids('', 'fr').length, 70);
     assert.deepEqual(ids('unlisted', 'en'), []);
   });
 

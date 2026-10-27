@@ -72,6 +72,8 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
     const lesion = createLesionStore({
       lesion: engine.lesion,
       associations: clinical.associations,
+      domains,
+      deficitGroup: (id) => clinical.get(id).group,
     });
     syncPaint(model, view, { domains, clinical, lesion });
     syncPresentation(engine, view, engineState);

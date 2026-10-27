@@ -237,7 +237,7 @@ describe('the published cdmd functions and deficits', () => {
         assert.equal(legend.rows.length, 3, id);
       }
     }
-    assert.equal(data.deficits.length, 58);
+    assert.equal(data.deficits.length, 70);
     for (const deficit of data.deficits) {
       const state: PaintState = {
         explorer: 'deficits',
@@ -269,6 +269,7 @@ describe('the published cdmd functions and deficits', () => {
 
 describe('the lesion', () => {
   const lesion = {
+    kind: 'deficits' as const,
     paint: paintOf('lesion:-45,-25,30:15'),
     rows: [
       { id: 'naming', color: [57, 135, 229] as const, title: { en: 'Naming', fr: 'Dénomination' } },

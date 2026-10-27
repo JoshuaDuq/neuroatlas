@@ -21,6 +21,7 @@
   import { t } from '../../lib/core/i18n/index.ts';
   import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
   import LesionReport from '../lesion/LesionReport.svelte';
+  import { clinicalLayers } from '../../lib/core/state/clinical-navigation.ts';
   import type { FunctionExplorer } from '../functions/functions-explorer.svelte.ts';
   import AtlasComparison from '../inspector/AtlasComparison.svelte';
   import RegionDetail from '../inspector/RegionDetail.svelte';
@@ -37,8 +38,18 @@
     circuits: CircuitExplorer;
   } = $props();
 
-  const { engine, view, regions, catalog, anatomy, excursions, lesion, clinical, session } =
-    $derived(world);
+  const {
+    engine,
+    view,
+    regions,
+    catalog,
+    anatomy,
+    excursions,
+    lesion,
+    clinical,
+    session,
+    commands,
+  } = $derived(world);
   const current = $derived(view.current);
   const { manifest, cabNp, functionalRegions, domains } = $derived(engine.model);
   // The comparison file is published beside the manifest the engine opened (boot.ts).
@@ -61,6 +72,29 @@
   });
   const bundles = $derived(tractCatalog(manifest.anatomy.id).bundles);
 
+  // The lesion's functions are named and grouped as the Functions tab names them.
+  const domainNames = $derived(new Map(domains!.domains.map((row) => [row.id, row])));
+  const groupNames = $derived(new Map(domains!.groups.map((group) => [group.id, group])));
+  const named = (record: { name: string; name_fr: string } | undefined, id: string) => {
+    if (!record) throw new Error(`No published name for ${id}.`);
+    return current.lang === 'fr' ? record.name_fr : record.name;
+  };
+  // Under a masthead colour the brain shows the lesion alone, whatever was asked.
+  const lesionMode = $derived(current.paintLifted ? 'lesion' : lesion.mode);
+
+  /** Colour the brain by the lesion's functions or findings, on the atlas their regions are drawn on. */
+  function chooseLesionMode(next: typeof lesion.mode) {
+    lesion.setMode(next);
+    if (next === 'lesion') return;
+    session.showPaint();
+    const cited = (lesion.findings?.shown ?? []).flatMap(({ association }) =>
+      association.mappings.map(({ region }) => region),
+    );
+    const target =
+      next === 'functions' ? domains!.atlas : clinicalLayers(engine.model, cited).atlas;
+    if (target && target !== current.atlas) void commands.chooseAtlas(target);
+  }
+
   async function openFinding(deficit: string, finding: string) {
     await deficits.openDeficit(deficit);
     session.setFinding(finding);
@@ -81,11 +115,12 @@
         label={(id) => catalog.label(id).name}
         bundleName={(id) => bundles.find((bundle) => bundle.id === id)!.name[current.lang]}
         deficitName={(id) => clinical.get(id).name[current.lang]}
-        paintShown={lesion.painted && !current.paintLifted}
-        onPaint={(shown) => {
-          lesion.setPainted(shown);
-          if (shown) session.showPaint();
-        }}
+        functionName={(id) => named(domainNames.get(id), id)}
+        groupName={(id) => named(groupNames.get(id), id)}
+        mode={lesionMode}
+        onMode={chooseLesionMode}
+        onFunction={(id) => void functions.openFunction(id)}
+        onDeficit={(id) => void deficits.openDeficit(id)}
         onFinding={(deficit, finding) => void openFinding(deficit, finding)}
       />
     {:else}

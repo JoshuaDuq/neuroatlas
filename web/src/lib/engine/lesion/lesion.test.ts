@@ -87,6 +87,15 @@ test('reads each region from its own atlas volume, and the aseg from the tissue 
       ['wmparc:left:3001', { inside: 2, whole: 2 }],
     ]),
   );
+  assert.deepEqual(
+    measured.sizes,
+    new Map([
+      ['destrieux:left:1', 2],
+      ['aseg:left:10', 1],
+      ['hcp-mmp:left:1', 1],
+      ['wmparc:left:3001', 2],
+    ]),
+  );
   assert.deepEqual(measured.tissue, { cortex: 1, white: 0, deep: 1, fluid: 0, outside: 1 });
   assert.equal(measured.volume, 3);
 });

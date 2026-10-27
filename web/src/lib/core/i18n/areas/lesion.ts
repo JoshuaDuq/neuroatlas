@@ -39,8 +39,19 @@ export const en = {
   findingsNote:
     'Ranked by how much of a cited region lies inside. Overlap with a cited region, not a predicted deficit.',
   noFindings: 'No finding cites a region this lesion reaches.',
-  showOnBrain: 'Show on the brain',
-  hideOnBrain: 'Hide from the brain',
+  onBrain: 'On the brain',
+  modes: { lesion: 'Lesion only', functions: 'Functions', deficits: 'Deficits' },
+  reaches: 'What it reaches',
+  reachesNote:
+    'Functions: the share of each function’s territory on the lesion’s side that lies inside it (Neurosynth consistency maps, z ≥ 3). Bars are scaled to the largest share. Deficits: findings whose cited regions it reaches. Overlap only; it predicts no deficit.',
+  nothingReached: 'No mapped function or finding is reached.',
+  functionsLabel: 'Functions',
+  deficitsLabel: 'Deficits',
+  deficitReach: (findings: string, share: string) => `${findings} · up to ${share}`,
+  more: (count: string) => `${count} more`,
+  slightFunctions: (count: string) => `${count} more functions under 1%`,
+  findingsDetail: 'Findings in detail',
+  anatomy: 'Anatomy measured',
   cited: (reached: string, cited: number) => `${reached} of ${cited} cited`,
   oneSide: {
     left: 'Bilateral finding; this lesion reaches the left side only.',
@@ -50,6 +61,9 @@ export const en = {
   slightFindings: (count: string) => `${count} more touch a cited region by under 1%`,
   unmeasured:
     'Structures drawn only as meshes, such as the fornix or the mammillary nuclei, are not measured.',
+  keyFunctionsTitle: 'Functions the lesion reaches',
+  keyFunctionsNote:
+    'Each function’s whole territory, one colour per function in rank order; an area several functions share takes the first one’s colour.',
   keyTitle: 'Findings near the lesion',
   keyNote:
     'One colour per finding, in rank order; a region several findings cite takes the first one’s colour.',
@@ -101,8 +115,19 @@ export const fr: typeof en = {
   findingsNote:
     'Classés selon la part d’une région citée comprise dans la lésion. Un chevauchement avec une région citée, pas un déficit prédit.',
   noFindings: 'Aucun constat ne cite une région atteinte par cette lésion.',
-  showOnBrain: 'Afficher sur le cerveau',
-  hideOnBrain: 'Retirer du cerveau',
+  onBrain: 'Sur le cerveau',
+  modes: { lesion: 'Lésion seule', functions: 'Fonctions', deficits: 'Déficits' },
+  reaches: 'Ce qu’elle atteint',
+  reachesNote:
+    'Fonctions\u202f: la part du territoire de chaque fonction, du côté de la lésion, comprise dans celle-ci (cartes de cohérence Neurosynth, z ≥ 3). Les barres sont à l’échelle de la plus grande part. Déficits\u202f: constats dont les régions citées sont atteintes. Un chevauchement seulement\u202f; elle ne prédit aucun déficit.',
+  nothingReached: 'Aucune fonction cartographiée ni aucun constat n’est atteint.',
+  functionsLabel: 'Fonctions',
+  deficitsLabel: 'Déficits',
+  deficitReach: (findings: string, share: string) => `${findings} · jusqu’à ${share}`,
+  more: (count: string) => `${count} de plus`,
+  slightFunctions: (count: string) => `${count} fonctions de plus sous 1\u202f%`,
+  findingsDetail: 'Constats en détail',
+  anatomy: 'Anatomie mesurée',
   cited: (reached: string, cited: number) =>
     `${reached} sur ${cited} ${cited === 1 ? 'citée' : 'citées'}`,
   oneSide: {
@@ -113,6 +138,9 @@ export const fr: typeof en = {
   slightFindings: (count: string) => `${count} de plus touchent une région citée à moins de 1 %`,
   unmeasured:
     'Les structures tracées seulement en maillage, comme le fornix ou les noyaux mamillaires, ne sont pas mesurées.',
+  keyFunctionsTitle: 'Fonctions atteintes par la lésion',
+  keyFunctionsNote:
+    'Le territoire entier de chaque fonction, une couleur par fonction dans l’ordre du classement\u202f; une aire partagée par plusieurs fonctions prend la couleur de la première.',
   keyTitle: 'Constats près de la lésion',
   keyNote:
     'Une couleur par constat, dans l’ordre du classement ; une région citée par plusieurs constats prend la couleur du premier.',

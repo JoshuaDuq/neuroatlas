@@ -131,6 +131,44 @@
    "pages": "2283-301",
    "corrections": []
   },
+  "pmid:2012521": {
+   "pmid": "2012521",
+   "pmcid": null,
+   "doi": "10.1001/archneur.1991.00530160102023",
+   "doi_source": "pubmed",
+   "title": "Right parietal stroke with Gerstmann's syndrome. Appearance on computed tomography, magnetic resonance imaging, and single-photon emission computed tomography",
+   "authors": [
+    "Moore MR",
+    "Saver JL",
+    "Johnson KA",
+    "Romero JA"
+   ],
+   "year": 1991,
+   "pubdate": "1991 Apr",
+   "journal": "Arch Neurol",
+   "volume": "48",
+   "issue": "4",
+   "pages": "432-5",
+   "corrections": []
+  },
+  "pmid:2310343": {
+   "pmid": "2310343",
+   "pmcid": null,
+   "doi": "10.1001/archopht.1990.01070050097040",
+   "doi_source": "pubmed",
+   "title": "Trazodone-induced palinopsia",
+   "authors": [
+    "Hughes MS",
+    "Lessell S"
+   ],
+   "year": 1990,
+   "pubdate": "1990 Mar",
+   "journal": "Arch Ophthalmol",
+   "volume": "108",
+   "issue": "3",
+   "pages": "399-400",
+   "corrections": []
+  },
   "pmid:2757526": {
    "pmid": "2757526",
    "pmcid": null,
@@ -184,6 +222,25 @@
    "volume": "26",
    "issue": "3",
    "pages": "387-400",
+   "corrections": []
+  },
+  "pmid:3415199": {
+   "pmid": "3415199",
+   "pmcid": null,
+   "doi": "10.1002/ana.410240109",
+   "doi_source": "pubmed",
+   "title": "Asymbolia for pain: a sensory-limbic disconnection syndrome",
+   "authors": [
+    "Berthier M",
+    "Starkstein S",
+    "Leiguarda R"
+   ],
+   "year": 1988,
+   "pubdate": "1988 Jul",
+   "journal": "Ann Neurol",
+   "volume": "24",
+   "issue": "1",
+   "pages": "41-9",
    "corrections": []
   },
   "pmid:3760943": {
@@ -258,6 +315,24 @@
    "volume": "106 (Pt 2)",
    "issue": null,
    "pages": "313-40",
+   "corrections": []
+  },
+  "pmid:7191073": {
+   "pmid": "7191073",
+   "pmcid": null,
+   "doi": "10.1212/wnl.30.8.887",
+   "doi_source": "pubmed",
+   "title": "Palinopsia: cerebral localization with computed tomography",
+   "authors": [
+    "Michel EM",
+    "Troost BT"
+   ],
+   "year": 1980,
+   "pubdate": "1980 Aug",
+   "journal": "Neurology",
+   "volume": "30",
+   "issue": "8",
+   "pages": "887-9",
    "corrections": []
   },
   "pmid:7922471": {
@@ -449,6 +524,25 @@
    "volume": "121 ( Pt 4)",
    "issue": null,
    "pages": "561-79",
+   "corrections": []
+  },
+  "pmid:9879853": {
+   "pmid": "9879853",
+   "pmcid": null,
+   "doi": "10.1016/s0303-8467(98)00054-7",
+   "doi_source": "pubmed",
+   "title": "Parietal motor syndrome: a clinical description in 32 patients in the acute phase of pure parietal strokes studied prospectively",
+   "authors": [
+    "Ghika J",
+    "Ghika-Schmid F",
+    "Bogousslasvky J"
+   ],
+   "year": 1998,
+   "pubdate": "1998 Dec",
+   "journal": "Clin Neurol Neurosurg",
+   "volume": "100",
+   "issue": "4",
+   "pages": "271-82",
    "corrections": []
   },
   "pmid:10404203": {
@@ -694,6 +788,30 @@
    "pages": "201-15",
    "corrections": []
   },
+  "pmid:12373363": {
+   "pmid": "12373363",
+   "pmcid": null,
+   "doi": "10.1007/s00221-002-1203-9",
+   "doi_source": "pubmed",
+   "title": "What and where in human audition: selective deficits following focal hemispheric lesions",
+   "authors": [
+    "Clarke S",
+    "Bellmann Thiran A",
+    "Maeder P",
+    "Adriani M",
+    "Vernet O",
+    "Regli L",
+    "Cuisenaire O",
+    "Thiran JP"
+   ],
+   "year": 2002,
+   "pubdate": "2002 Nov",
+   "journal": "Exp Brain Res",
+   "volume": "147",
+   "issue": "1",
+   "pages": "8-15",
+   "corrections": []
+  },
   "pmid:12805123": {
    "pmid": "12805123",
    "pmcid": null,
@@ -774,6 +892,34 @@
    "pages": "8432-44",
    "corrections": []
   },
+  "pmid:14504861": {
+   "pmid": "14504861",
+   "pmcid": null,
+   "doi": "10.1007/s00221-003-1616-0",
+   "doi_source": "pubmed",
+   "title": "Sound recognition and localization in man: specialized cortical networks and effects of acute circumscribed lesions",
+   "authors": [
+    "Adriani M",
+    "Maeder P",
+    "Meuli R",
+    "Thiran AB",
+    "Frischknecht R",
+    "Villemure JG",
+    "Mayer J",
+    "Annoni JM",
+    "Bogousslavsky J",
+    "Fornari E",
+    "Thiran JP",
+    "Clarke S"
+   ],
+   "year": 2003,
+   "pubdate": "2003 Dec",
+   "journal": "Exp Brain Res",
+   "volume": "153",
+   "issue": "4",
+   "pages": "591-604",
+   "corrections": []
+  },
   "pmid:14610633": {
    "pmid": "14610633",
    "pmcid": null,
@@ -820,6 +966,29 @@
    "volume": "14",
    "issue": "1",
    "pages": "11-22",
+   "corrections": []
+  },
+  "pmid:14716234": {
+   "pmid": "14716234",
+   "pmcid": null,
+   "doi": "10.1097/00004728-200401000-00010",
+   "doi_source": "pubmed",
+   "title": "Visual object agnosia and pure word alexia: correlation of functional magnetic resonance imaging and lesion localization",
+   "authors": [
+    "Salvan CV",
+    "Ulmer JL",
+    "DeYoe EA",
+    "Wascher T",
+    "Mathews VP",
+    "Lewis JW",
+    "Prost RW"
+   ],
+   "year": 2004,
+   "pubdate": "2004",
+   "journal": "J Comput Assist Tomogr",
+   "volume": "28",
+   "issue": "1",
+   "pages": "63-7",
    "corrections": []
   },
   "pmid:15037129": {
@@ -1193,6 +1362,25 @@
    "pages": "393-402",
    "corrections": []
   },
+  "pmid:17635980": {
+   "pmid": "17635980",
+   "pmcid": "PMC2117735",
+   "doi": "10.1136/jnnp.2006.113654",
+   "doi_source": "pubmed",
+   "title": "Thalamic chronotaraxis: isolated time disorientation",
+   "authors": [
+    "Kumral E",
+    "Gulluoglu H",
+    "Dramali B"
+   ],
+   "year": 2007,
+   "pubdate": "2007 Aug",
+   "journal": "J Neurol Neurosurg Psychiatry",
+   "volume": "78",
+   "issue": "8",
+   "pages": "880-2",
+   "corrections": []
+  },
   "pmid:17640690": {
    "pmid": "17640690",
    "pmcid": null,
@@ -1255,6 +1443,44 @@
    "volume": "19",
    "issue": "14",
    "pages": "1429-33",
+   "corrections": []
+  },
+  "pmid:18938026": {
+   "pmid": "18938026",
+   "pmcid": null,
+   "doi": "10.1016/j.clineuro.2008.07.014",
+   "doi_source": "pubmed",
+   "title": "Cortical stimulation mapping in a patient with foreign accent syndrome: case report",
+   "authors": [
+    "Abel TJ",
+    "Hebb AO",
+    "Silbergeld DL"
+   ],
+   "year": 2009,
+   "pubdate": "2009 Jan",
+   "journal": "Clin Neurol Neurosurg",
+   "volume": "111",
+   "issue": "1",
+   "pages": "97-101",
+   "corrections": []
+  },
+  "pmid:18971202": {
+   "pmid": "18971202",
+   "pmcid": null,
+   "doi": "10.1093/brain/awn279",
+   "doi_source": "pubmed",
+   "title": "Two systems for empathy: a double dissociation between emotional and cognitive empathy in inferior frontal gyrus versus ventromedial prefrontal lesions",
+   "authors": [
+    "Shamay-Tsoory SG",
+    "Aharon-Peretz J",
+    "Perry D"
+   ],
+   "year": 2009,
+   "pubdate": "2009 Mar",
+   "journal": "Brain",
+   "volume": "132",
+   "issue": "Pt 3",
+   "pages": "617-27",
    "corrections": []
   },
   "pmid:19353229": {
@@ -1558,6 +1784,26 @@
    "pages": "665-70",
    "corrections": []
   },
+  "pmid:21745637": {
+   "pmid": "21745637",
+   "pmcid": "PMC4896507",
+   "doi": "10.1016/j.neuron.2011.05.030",
+   "doi_source": "pubmed",
+   "title": "The functional neuroanatomy of object agnosia: a case study",
+   "authors": [
+    "Konen CS",
+    "Behrmann M",
+    "Nishimura M",
+    "Kastner S"
+   ],
+   "year": 2011,
+   "pubdate": "2011 Jul 14",
+   "journal": "Neuron",
+   "volume": "71",
+   "issue": "1",
+   "pages": "49-60",
+   "corrections": []
+  },
   "pmid:21774922": {
    "pmid": "21774922",
    "pmcid": null,
@@ -1769,6 +2015,29 @@
    "pages": "215-24; discussion 224-25",
    "corrections": []
   },
+  "pmid:22961548": {
+   "pmid": "22961548",
+   "pmcid": "PMC3437027",
+   "doi": "10.1093/brain/aws199",
+   "doi_source": "pubmed",
+   "title": "Anterior insular cortex is necessary for empathetic pain perception",
+   "authors": [
+    "Gu X",
+    "Gao Z",
+    "Wang X",
+    "Liu X",
+    "Knight RT",
+    "Hof PR",
+    "Fan J"
+   ],
+   "year": 2012,
+   "pubdate": "2012 Sep",
+   "journal": "Brain",
+   "volume": "135",
+   "issue": "Pt 9",
+   "pages": "2726-35",
+   "corrections": []
+  },
   "pmid:23071379": {
    "pmid": "23071379",
    "pmcid": "PMC3543080",
@@ -1806,6 +2075,26 @@
    "volume": "135",
    "issue": "Pt 12",
    "pages": "3799-814",
+   "corrections": []
+  },
+  "pmid:23658385": {
+   "pmid": "23658385",
+   "pmcid": null,
+   "doi": "10.1212/wnl.0b013e318295d6e3",
+   "doi_source": "pubmed",
+   "title": "Isolated buccofacial apraxia subsequent to a left ventral premotor cortex infarction",
+   "authors": [
+    "Kwon M",
+    "Lee JH",
+    "Oh JS",
+    "Koh JY"
+   ],
+   "year": 2013,
+   "pubdate": "2013 Jun 04",
+   "journal": "Neurology",
+   "volume": "80",
+   "issue": "23",
+   "pages": "2166-7",
    "corrections": []
   },
   "pmid:23725661": {
@@ -1889,6 +2178,29 @@
    "pages": "3-25",
    "corrections": []
   },
+  "pmid:25959040": {
+   "pmid": "25959040",
+   "pmcid": "PMC6126363",
+   "doi": "10.1176/appi.neuropsych.14060126",
+   "doi_source": "pubmed",
+   "title": "Areas of Brain Damage Underlying Increased Reports of Behavioral Disinhibition",
+   "authors": [
+    "Knutson KM",
+    "Dal Monte O",
+    "Schintu S",
+    "Wassermann EM",
+    "Raymont V",
+    "Grafman J",
+    "Krueger F"
+   ],
+   "year": 2015,
+   "pubdate": "2015",
+   "journal": "J Neuropsychiatry Clin Neurosci",
+   "volume": "27",
+   "issue": "3",
+   "pages": "193-8",
+   "corrections": []
+  },
   "pmid:25995383": {
    "pmid": "25995383",
    "pmcid": null,
@@ -1930,6 +2242,25 @@
    "volume": "139",
    "issue": "Pt 2",
    "pages": "588-604",
+   "corrections": []
+  },
+  "pmid:26748167": {
+   "pmid": "26748167",
+   "pmcid": null,
+   "doi": "10.1016/j.wneu.2015.12.071",
+   "doi_source": "pubmed",
+   "title": "Glioblastoma Presenting with Pure Alexia and Palinopsia Involving the Left Inferior Occipital Gyrus and Visual Word Form Area Evaluated with Functional Magnetic Resonance Imaging and Diffusion Tensor Imaging Tractography",
+   "authors": [
+    "Huang M",
+    "Baskin DS",
+    "Fung S"
+   ],
+   "year": 2016,
+   "pubdate": "2016 May",
+   "journal": "World Neurosurg",
+   "volume": "89",
+   "issue": null,
+   "pages": "725.e5-725.e10",
    "corrections": []
   },
   "pmid:26801227": {
@@ -2098,6 +2429,32 @@
    "pages": "2059-2070",
    "corrections": []
   },
+  "pmid:28506806": {
+   "pmid": "28506806",
+   "pmcid": null,
+   "doi": "10.1016/j.neuropsychologia.2017.05.016",
+   "doi_source": "pubmed",
+   "title": "Selective associative phonagnosia after right anterior temporal stroke",
+   "authors": [
+    "Luzzi S",
+    "Coccia M",
+    "Polonara G",
+    "Reverberi C",
+    "Ceravolo G",
+    "Silvestrini M",
+    "Fringuelli F",
+    "Baldinelli S",
+    "Provinciali L",
+    "Gainotti G"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Jul 31",
+   "journal": "Neuropsychologia",
+   "volume": "116",
+   "issue": "Pt B",
+   "pages": "154-161",
+   "corrections": []
+  },
   "pmid:28712994": {
    "pmid": "28712994",
    "pmcid": null,
@@ -2227,6 +2584,46 @@
    "volume": "97",
    "issue": null,
    "pages": "240-254",
+   "corrections": []
+  },
+  "pmid:29228111": {
+   "pmid": "29228111",
+   "pmcid": "PMC5837691",
+   "doi": "10.1093/brain/awx313",
+   "doi_source": "pubmed",
+   "title": "Obligatory and facultative brain regions for voice-identity recognition",
+   "authors": [
+    "Roswandowitz C",
+    "Kappes C",
+    "Obrig H",
+    "von Kriegstein K"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Jan 01",
+   "journal": "Brain",
+   "volume": "141",
+   "issue": "1",
+   "pages": "234-247",
+   "corrections": []
+  },
+  "pmid:29430525": {
+   "pmid": "29430525",
+   "pmcid": "PMC5790035",
+   "doi": "10.1016/j.ensci.2018.01.004",
+   "doi_source": "pubmed",
+   "title": "Interval timing errors in a patient with thalamic chronotaraxis",
+   "authors": [
+    "Hayashi R",
+    "Yamaguchi S",
+    "Katsumata Y",
+    "Mimura M"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Mar",
+   "journal": "eNeurologicalSci",
+   "volume": "10",
+   "issue": null,
+   "pages": "19-21",
    "corrections": []
   },
   "pmid:29519468": {
@@ -2386,6 +2783,29 @@
    "pages": "116137",
    "corrections": []
   },
+  "pmid:31972965": {
+   "pmid": "31972965",
+   "pmcid": "PMC7071355",
+   "doi": "10.3390/brainsci10020059",
+   "doi_source": "pubmed",
+   "title": "The Architect Who Lost the Ability to Imagine: The Cerebral Basis of Visual Imagery",
+   "authors": [
+    "Thorudottir S",
+    "Sigurdardottir HM",
+    "Rice GE",
+    "Kerry SJ",
+    "Robotham RJ",
+    "Leff AP",
+    "Starrfelt R"
+   ],
+   "year": 2020,
+   "pubdate": "2020 Jan 21",
+   "journal": "Brain Sci",
+   "volume": "10",
+   "issue": "2",
+   "pages": null,
+   "corrections": []
+  },
   "pmid:32132227": {
    "pmid": "32132227",
    "pmcid": "PMC7231447",
@@ -2468,6 +2888,34 @@
    "pages": "374-380",
    "corrections": []
   },
+  "pmid:34274725": {
+   "pmid": "34274725",
+   "pmcid": "PMC8319358",
+   "doi": "10.1016/j.nicl.2021.102760",
+   "doi_source": "pubmed",
+   "title": "Neural mechanisms of foreign accent syndrome: Lesion and network analysis",
+   "authors": [
+    "Higashiyama Y",
+    "Hamada T",
+    "Saito A",
+    "Morihara K",
+    "Okamoto M",
+    "Kimura K",
+    "Joki H",
+    "Kishida H",
+    "Doi H",
+    "Ueda N",
+    "Takeuchi H",
+    "Tanaka F"
+   ],
+   "year": 2021,
+   "pubdate": "2021",
+   "journal": "Neuroimage Clin",
+   "volume": "31",
+   "issue": null,
+   "pages": "102760",
+   "corrections": []
+  },
   "pmid:34633436": {
    "pmid": "34633436",
    "pmcid": "PMC8719842",
@@ -2495,6 +2943,29 @@
    "volume": "144",
    "issue": "12",
    "pages": "3779-3787",
+   "corrections": []
+  },
+  "pmid:34652492": {
+   "pmid": "34652492",
+   "pmcid": "PMC8803819",
+   "doi": "10.1007/s00221-021-06224-3",
+   "doi_source": "pubmed",
+   "title": "Speech apraxia and oral apraxia: association or dissociation? A multivariate lesion-symptom mapping study in acute stroke patients",
+   "authors": [
+    "Conterno M",
+    "Kümmerer D",
+    "Dressing A",
+    "Glauche V",
+    "Urbach H",
+    "Weiller C",
+    "Rijntjes M"
+   ],
+   "year": 2022,
+   "pubdate": "2022 Jan",
+   "journal": "Exp Brain Res",
+   "volume": "240",
+   "issue": "1",
+   "pages": "39-51",
    "corrections": []
   },
   "pmid:35042861": {
@@ -2669,6 +3140,31 @@
    "pages": "119703",
    "corrections": []
   },
+  "pmid:36794351": {
+   "pmid": "36794351",
+   "pmcid": null,
+   "doi": "10.1080/13554794.2023.2176778",
+   "doi_source": "pubmed",
+   "title": "Partial Balint's syndrome and left homonymous hemianopsia presenting after resection of a right occipito-parietal glioblastoma",
+   "authors": [
+    "Aboulhosn P",
+    "Ryu A",
+    "Shafieesabet A",
+    "Lekshminarayanan A",
+    "Husain S",
+    "O'Connor K",
+    "D'Souza S",
+    "O'Neill S",
+    "Altschuler EL"
+   ],
+   "year": 2022,
+   "pubdate": "2022 Dec",
+   "journal": "Neurocase",
+   "volume": "28",
+   "issue": "6",
+   "pages": "483-487",
+   "corrections": []
+  },
   "pmid:37442623": {
    "pmid": "37442623",
    "pmcid": "PMC10491452",
@@ -2803,6 +3299,30 @@
    "volume": "648",
    "issue": "8094",
    "pages": "678-685",
+   "corrections": []
+  },
+  "pmid:41712966": {
+   "pmid": "41712966",
+   "pmcid": "PMC13170749",
+   "doi": "10.1016/j.cortex.2026.01.009",
+   "doi_source": "pubmed",
+   "title": "Lesions causing aphantasia are connected to the fusiform imagery node",
+   "authors": [
+    "Kutsche J",
+    "Howard C",
+    "Palacin AC",
+    "Drew W",
+    "Michel M",
+    "Cohen AL",
+    "Fox MD",
+    "Kletenik I"
+   ],
+   "year": 2026,
+   "pubdate": "2026 Apr",
+   "journal": "Cortex",
+   "volume": "197",
+   "issue": null,
+   "pages": "1-12",
    "corrections": []
   }
  }

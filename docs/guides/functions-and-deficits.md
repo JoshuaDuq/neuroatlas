@@ -12,7 +12,7 @@ Search also offers selected Neurosynth terms and clinical groups. These maps use
 
 ## Deficits
 
-The 58 profiles describe acquired adult deficits and selected associations with brain regions. Search by name, synonym or function. A profile identifies the evidence, population and limitations for each finding, and links to its regions and relevant function maps. Regions are coloured by finding; the key indicates findings that cannot be coloured in the current view.
+The 70 profiles describe acquired adult deficits and selected associations with brain regions. Search by name, synonym or function. A profile identifies the evidence, population and limitations for each finding, and links to its regions and relevant function maps. Regions are coloured by finding; the key indicates findings that cannot be coloured in the current view.
 
 When the consulted sources identify only a broad anatomical location, a profile may have no specific atlas parcel selected. Its mapping note explains the limit; the publications remain available.
 

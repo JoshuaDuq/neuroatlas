@@ -13,7 +13,23 @@ const measurement = (regions: [string, number, number][]): LesionMeasurement => 
   volume: 100,
   tissue: { cortex: 100, white: 0, deep: 0, fluid: 0, outside: 0 },
   regions: new Map(regions.map(([id, inside, whole]) => [id, { inside, whole }])),
+  sizes: new Map([
+    ...regions.map(([id, , whole]) => [id, whole] as const),
+    ['hcp-mmp:left:1', 200],
+  ]),
 });
+
+const domains = {
+  groups: [{ id: 'language-number' }, { id: 'perception' }],
+  domains: [
+    { id: 'phonology', group: 'language-number', name: 'Phonology', name_fr: 'Phonologie' },
+    { id: 'hearing', group: 'perception', name: 'Hearing', name_fr: 'Audition' },
+  ],
+  regions: {
+    'hcp-mmp:left:1': [{ domain: 'phonology', z: 5 }],
+    'hcp-mmp:left:2': [{ domain: 'hearing', z: 4 }],
+  },
+} as never;
 
 const associations = [
   {
@@ -54,7 +70,12 @@ afterEach(() => stop());
 function build(held = heldLesion()) {
   let store!: ReturnType<typeof createLesionStore>;
   stop = $effect.root(() => {
-    store = createLesionStore({ lesion: held.lesion, associations });
+    store = createLesionStore({
+      lesion: held.lesion,
+      associations,
+      domains,
+      deficitGroup: () => 'language-number',
+    });
   });
   flushSync();
   return { store, ...held };
@@ -105,12 +126,40 @@ test('paints the ranked findings only once asked, in rank order', async () => {
   );
   await expect.poll(() => store.findings?.shown.length).toBe(2);
   expect(store.paint).toBe(null);
-  store.setPainted(true);
+  store.setMode('deficits');
+  expect(store.paint!.kind).toBe('deficits');
   expect(store.paint!.rows.map((row) => [row.id, row.color])).toEqual([
     ['repetition', FINDING_COLORS[0]],
     ['naming', FINDING_COLORS[1]],
   ]);
   expect(store.paint!.paint.colors.get('destrieux:left:34')).toBe(FINDING_COLORS[0]);
+});
+
+test('profiles the functions and deficits it reaches by group, and paints the functions on asking', async () => {
+  const { store, pending } = build();
+  store.place([0, 0, 0]);
+  pending[0]!.settle(
+    measurement([
+      ['hcp-mmp:left:2', 10, 100],
+      ['destrieux:left:34', 50, 100],
+    ]),
+  );
+  await expect.poll(() => store.profile?.length).toBe(2);
+  expect(
+    store.profile!.map((group) => [
+      group.group,
+      group.functions.map((row) => row.id),
+      group.deficits.map((row) => row.deficit),
+    ]),
+  ).toEqual([
+    ['language-number', [], ['aphasia']],
+    ['perception', ['hearing'], []],
+  ]);
+  store.setMode('functions');
+  expect(store.paint!.kind).toBe('functions');
+  expect(store.paint!.rows).toEqual([
+    { id: 'hearing', color: FINDING_COLORS[0], title: { en: 'Hearing', fr: 'Audition' } },
+  ]);
 });
 
 test('counts the tracts once asked, then again for every later placement', async () => {
@@ -129,7 +178,7 @@ test('counts the tracts once asked, then again for every later placement', async
 test('removing it takes it off the stage and forgets its measurement and paint', () => {
   const { store, shown } = build();
   store.place([0, 0, 0]);
-  store.setPainted(true);
+  store.setMode('deficits');
   store.remove();
   flushSync();
   expect(shown.at(-1)).toBe(null);

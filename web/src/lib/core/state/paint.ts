@@ -22,6 +22,8 @@ export type PaintState = Pick<ModelState, 'atlas'> &
 
 /** The findings near a placed lesion on the brain: its paint and the coloured findings, in rank order. */
 export interface LesionPaint {
+  /** The territories of the functions it reaches, or the regions its nearby findings cite. */
+  kind: 'functions' | 'deficits';
   paint: Paint;
   rows: readonly { id: string; color: Rgb; title: Translated }[];
 }
@@ -96,10 +98,11 @@ export function legendFor(
   const lang: Language = state.lang;
   if (kind === 'lesion') {
     const copy = t(lang, 'lesion');
+    const functions = lesion!.kind === 'functions';
     return {
       map: 'lesion',
-      title: copy.keyTitle,
-      note: copy.keyNote,
+      title: functions ? copy.keyFunctionsTitle : copy.keyTitle,
+      note: functions ? copy.keyFunctionsNote : copy.keyNote,
       pickable: false,
       rows: lesion!.rows.map(({ id, color, title }) => ({
         id,

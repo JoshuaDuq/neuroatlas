@@ -6,7 +6,7 @@ import type { TissueAtlasRecord, TissueMetadata } from '../tissues/gpu-sections.
 import { loadVolume as loadPublishedVolume } from '../slices/volume.ts';
 import type { Volume, VolumeFile } from '../slices/volume.ts';
 import { createLesionMarking } from './marking.ts';
-import { labelTotals, regionsInSphere, tissueInSphere } from './measure.ts';
+import { labelTotals, regionSizes, regionsInSphere, tissueInSphere } from './measure.ts';
 import type { MeasuredLabel, RegionShares } from './measure.ts';
 
 /** aparc.a2009s+aseg: FreeSurfer's own tissue labels, which the tissue composition is read from. */
@@ -110,28 +110,29 @@ export function createLesion({
         ...(white ? [load('white-matter', whiteMatterRecord(white))] : []),
       ]);
       const regions: RegionShares = new Map();
+      const sizes = new Map<string, number>();
       // Each atlas volume answers for its own regions; the cortex-free labels it shares (aseg) are
       // read once, from the tissue atlas. Gyral white matter is its own volume.
-      const keep = (shares: RegionShares, prefixes: readonly string[]) => {
-        for (const [id, share] of shares) {
-          if (prefixes.includes(id.slice(0, id.indexOf(':')))) regions.set(id, share);
+      const keep = <T>(into: Map<string, T>, from: Map<string, T>, prefixes: readonly string[]) => {
+        for (const [id, value] of from) {
+          if (prefixes.includes(id.slice(0, id.indexOf(':')))) into.set(id, value);
         }
       };
-      atlasIds.forEach((id, index) => {
-        const { volume, labels, totals } = loaded[index]!;
-        const shares = regionsInSphere(volume, labels, sphere, totals);
-        keep(shares, id === TISSUE_ATLAS ? [id, 'aseg'] : [id]);
+      const owners = [
+        ...atlasIds.map((id) => (id === TISSUE_ATLAS ? [id, 'aseg'] : [id])),
+        ...(white ? [['wmparc']] : []),
+      ];
+      loaded.forEach(({ volume, labels, totals }, index) => {
+        keep(regions, regionsInSphere(volume, labels, sphere, totals), owners[index]!);
+        keep(sizes, regionSizes(labels, totals, volume), owners[index]!);
       });
-      if (white) {
-        const { volume, labels, totals } = loaded.at(-1)!;
-        keep(regionsInSphere(volume, labels, sphere, totals), ['wmparc']);
-      }
       const tissue = loaded[atlasIds.indexOf(TISSUE_ATLAS)]!;
       const composition = tissueInSphere(tissue.volume, tissue.labels, sphere);
       const measurement: LesionMeasurement = {
         volume: Object.values(composition).reduce((sum, mm3) => sum + mm3, 0),
         tissue: composition,
         regions,
+        sizes,
       };
       return measurement;
     },

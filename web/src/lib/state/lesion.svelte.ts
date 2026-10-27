@@ -1,5 +1,7 @@
+import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalAssociation } from '../core/clinical/types.ts';
-import { findingsPaint, rankFindings } from '../core/lesion/findings.ts';
+import { SLIGHT_SHARE, findingsPaint, rankFindings } from '../core/lesion/findings.ts';
+import { functionReach, functionsPaint, lesionProfile } from '../core/lesion/functions.ts';
 import type { LesionPaint } from '../core/state/paint.ts';
 import type {
   EngineLesion,
@@ -23,39 +25,71 @@ export type Counted =
   | { status: 'ready'; crossings: TractCrossing[] }
   | { status: 'error'; error: unknown };
 
+/** What colours the brain beside the lesion: nothing, its functions' territories, or its findings' regions. */
+export type LesionMode = 'lesion' | 'functions' | 'deficits';
+
 const tenth = (value: number) => Math.round(value * 10) / 10;
 
 /**
  * The placed lesion: what the stage draws and where a click places it, its measurement and tract
- * count, each answered only for the placement that asked, and the findings near it.
+ * count, each answered only for the placement that asked, and the functions and findings near it.
  */
 export function createLesionStore({
   lesion,
   associations,
+  domains,
+  deficitGroup,
 }: {
   lesion: EngineLesion;
   associations: readonly ClinicalAssociation[];
+  domains: Pick<NeuropsychDomains, 'groups' | 'domains' | 'regions'>;
+  deficitGroup: (deficit: string) => string;
 }) {
   let sphere = $state.raw<LesionSphere | null>(null);
   let radius = $state<number>(LESION_RADIUS.initial);
   let placing = $state(false);
   let measured = $state.raw<Measured | null>(null);
   let counted = $state.raw<Counted>({ status: 'idle' });
-  let painted = $state(false);
+  let mode = $state<LesionMode>('lesion');
   // Once the reader has asked for the tracts, each later placement counts them too.
   let tractsWanted = false;
   let request = 0;
 
-  const findings = $derived(
-    measured?.status === 'ready' ? rankFindings(associations, measured.measurement.regions) : null,
-  );
-  const paint = $derived.by((): LesionPaint | null => {
-    if (!painted || !findings || !sphere) return null;
-    const { findings: coloured, paint } = findingsPaint(
-      findings.shown,
-      `${sphere.centre.join(',')}:${sphere.radius}`,
-    );
+  const measurement = $derived(measured?.status === 'ready' ? measured.measurement : null);
+  const findings = $derived(measurement && rankFindings(associations, measurement.regions));
+  const functions = $derived.by(() => {
+    if (!measurement) return null;
+    const reach = functionReach(domains, measurement.regions, measurement.sizes);
     return {
+      shown: reach.filter((row) => row.share >= SLIGHT_SHARE),
+      slight: reach.filter((row) => row.share < SLIGHT_SHARE),
+    };
+  });
+  const profile = $derived(
+    findings &&
+      functions &&
+      lesionProfile(
+        domains.groups.map((group) => group.id),
+        functions.shown,
+        findings.shown,
+        deficitGroup,
+      ),
+  );
+  const names = new Map(domains.domains.map((row) => [row.id, { en: row.name, fr: row.name_fr }]));
+  const paint = $derived.by((): LesionPaint | null => {
+    if (mode === 'lesion' || !findings || !functions || !sphere) return null;
+    const key = `${sphere.centre.join(',')}:${sphere.radius}`;
+    if (mode === 'functions') {
+      const { paint, rows } = functionsPaint(domains, functions.shown, key);
+      return {
+        kind: 'functions',
+        paint,
+        rows: rows.map(({ id, color }) => ({ id, color, title: names.get(id)! })),
+      };
+    }
+    const { findings: coloured, paint } = findingsPaint(findings.shown, key);
+    return {
+      kind: 'deficits',
       paint,
       rows: coloured.flatMap(({ finding, color }) =>
         color ? [{ id: finding.association.id, color, title: finding.association.title }] : [],
@@ -126,10 +160,18 @@ export function createLesionStore({
     get findings() {
       return findings;
     },
-    get painted() {
-      return painted;
+    /** The functions whose territories it reaches, those under 1% apart. */
+    get functions() {
+      return functions;
     },
-    /** The findings on the brain, while the reader has asked for them. */
+    /** The functions and deficits it reaches, by the groups the two tabs share. */
+    get profile() {
+      return profile;
+    },
+    get mode() {
+      return mode;
+    },
+    /** The functions' territories or the findings' regions on the brain, as the mode asks. */
     get paint() {
       return paint;
     },
@@ -151,8 +193,8 @@ export function createLesionStore({
     setPlacing(next: boolean): void {
       placing = next;
     },
-    setPainted(next: boolean): void {
-      painted = next;
+    setMode(next: LesionMode): void {
+      mode = next;
     },
     countTracts(): void {
       tractsWanted = true;
@@ -163,7 +205,7 @@ export function createLesionStore({
       sphere = null;
       measured = null;
       counted = { status: 'idle' };
-      painted = false;
+      mode = 'lesion';
       tractsWanted = false;
     },
   };
