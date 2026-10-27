@@ -20,7 +20,7 @@
     "@niivue/niivue": "0.69.0",
     "bits-ui": "2.20.2",
     "three": "0.186.1",
-    "three-mesh-bvh": "0.9.15",
+    "three-mesh-bvh": "0.9.16",
     "yaml": "2.9.1"
   },
   "devDependencies": {
