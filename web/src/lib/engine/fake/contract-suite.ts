@@ -1113,6 +1113,8 @@ export function defineEngineContract(
         assert.throws(() => model.setSurfaceColor('mri'), /MRI must load/);
         await sections.setSurfaceColor('mri');
         assert.equal(model.settings.surfaceColor, 'mri');
+        assert.equal(sections.volumesLoaded, false, 'the colour loads the T1, not the linked MRI');
+        assert.equal(sections.display, null);
         await sections.setSurfaceColor('atlas');
         assert.equal(model.settings.surfaceColor, 'atlas');
         await sections.setSurfaceColor('functional', () => false);

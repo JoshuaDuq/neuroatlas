@@ -40,5 +40,39 @@
     :focus-visible {
       outline-color: Highlight;
     }
+    /* A transparent track is forced to nothing; the slider's track and thumb keep system colours of their own. */
+    .slider {
+      forced-color-adjust: none;
+    }
+    .slider::-webkit-slider-runnable-track {
+      background: CanvasText;
+    }
+    .slider::-moz-range-track {
+      background: CanvasText;
+    }
+    .slider::-webkit-slider-thumb {
+      background: Canvas;
+      border-color: CanvasText;
+    }
+    .slider::-moz-range-thumb {
+      background: Canvas;
+      border-color: CanvasText;
+    }
+    .slider:disabled::-webkit-slider-runnable-track {
+      background: GrayText;
+    }
+    .slider:disabled::-moz-range-track {
+      background: GrayText;
+    }
+    .slider:disabled::-webkit-slider-thumb {
+      border-color: GrayText;
+    }
+    .slider:disabled::-moz-range-thumb {
+      border-color: GrayText;
+    }
+    /* The thumb keeps a system outline when focused, as forced colours drop the page's ring. */
+    .slider:focus-visible {
+      outline: 2px solid Highlight;
+    }
   }
 }

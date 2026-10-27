@@ -16,7 +16,7 @@
     /** A data bar field holds a choice still downloading (the masthead region's). */
     choosing: boolean;
     /** The masthead region's `openProvenance`, which owns the dialog. */
-    onProvenance: () => void;
+    onProvenance: (event: MouseEvent) => void;
   } = $props();
 
   const world = $derived(getApp().world);

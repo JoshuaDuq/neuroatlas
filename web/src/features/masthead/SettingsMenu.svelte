@@ -42,8 +42,9 @@
     onTheme: (choice: ThemeChoice) => void;
     onSingleKeys: (on: boolean) => void;
     onFullscreen: () => void;
-    onProvenance: () => void;
-    onShortcuts: () => void;
+    /** Given the click, so the dialog opens without its entry animation from the keyboard. */
+    onProvenance: (event: MouseEvent) => void;
+    onShortcuts: (event: MouseEvent) => void;
   }
 
   let {
@@ -141,10 +142,14 @@
   }
 
   // Close, then act once focus is back on ⋯: the dialog a command opens takes ⋯ as its invoker.
-  async function command(close: () => void, action: () => void) {
+  async function command(
+    close: () => void,
+    action: (event: MouseEvent) => void,
+    event: MouseEvent,
+  ) {
     close();
     await tick();
-    action();
+    action(event);
   }
 </script>
 
@@ -224,7 +229,7 @@
           class="menu-item phone-only"
           {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
           disabled={!ready}
-          onclick={() => command(close, onFullscreen)}
+          onclick={(event) => command(close, onFullscreen, event)}
         >
           {fullscreenLabel}
         </button>
@@ -235,7 +240,7 @@
           class="menu-item phone-only"
           {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
           aria-haspopup="dialog"
-          onclick={() => command(close, onProvenance)}
+          onclick={(event) => command(close, onProvenance, event)}
         >
           {t(lang, 'footer').provenance}
         </button>
@@ -244,7 +249,7 @@
         type="button"
         class="menu-item"
         {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
-        onclick={() => command(close, onShortcuts)}
+        onclick={(event) => command(close, onShortcuts, event)}
       >
         <span>{copy.shortcuts}</span>
         <kbd aria-hidden="true">?</kbd>

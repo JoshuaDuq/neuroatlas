@@ -34,8 +34,9 @@
     onSingleKeys: (on: boolean) => void;
     onFullscreen: () => void;
     onSnapshot: () => void;
-    onProvenance: () => void;
-    onShortcuts: () => void;
+    /** Given the click, so the dialog opens without its entry animation from the keyboard. */
+    onProvenance: (event: MouseEvent) => void;
+    onShortcuts: (event: MouseEvent) => void;
   }
 
   let {

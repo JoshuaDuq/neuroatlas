@@ -199,6 +199,19 @@ describe('DataBar on the bar', () => {
     );
   });
 
+  test('a choice that lands during another download shows its name, the other its progress', async () => {
+    const bar = $state(barProps());
+    await wide(bar, { onCommand: () => Object.assign(bar, { status: 'switching' }) });
+    const shown = (name: string) =>
+      (el(field(name)) as HTMLSelectElement).selectedOptions[0].textContent;
+    await userEvent.selectOptions(field('Atlas'), 'hcp-mmp');
+    await userEvent.selectOptions(field('Internal anatomy'), 'nextbrain');
+    await expect.poll(() => shown('Internal anatomy')).toMatch(/ · Loading…$/);
+    bar.atlas = 'hcp-mmp';
+    await expect.poll(() => shown('Atlas')).toBe('HCP-MMP');
+    expect(shown('Internal anatomy')).toMatch(/ · Loading…$/);
+  });
+
   test('each field calls its command; the subject calls onAnatomy', async () => {
     const calls: string[] = [];
     await wide(barProps(), { calls });
