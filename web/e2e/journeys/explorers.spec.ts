@@ -19,7 +19,6 @@ test('open a function, then Restore the previous view', async ({ app }) => {
   await expect(page.getByRole('status').filter({ hasText: /HCP-MMP areas?/ })).toBeVisible({
     timeout: 60_000,
   });
-  await app.waitForCameraIdle();
   await expect.poll(() => app.hash()).toContain('function=language');
 
   await page.getByRole('button', { name: 'Restore previous view' }).click();
@@ -58,7 +57,6 @@ test('open a circuit and step through it with Next', async ({ app }) => {
   await expect(stepper).toContainText('1 of 4');
   await page.getByRole('button', { name: 'Next landmark' }).click();
   await expect(stepper).toContainText('2 of 4');
-  await app.waitForCameraIdle();
   await expect.poll(() => app.hash()).toMatch(/(^|&)circuit=vision(&|$)/);
   await expect.poll(() => app.hash()).toMatch(/(^|&)step=2(&|$)/);
 });

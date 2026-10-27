@@ -13,7 +13,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
-  reporter: process.env.CI ? 'github' : 'list',
+  reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     // The trailing slash matters: relative URLs in the journeys resolve under the app.
     baseURL: `${origin}/neuroatlas/next/`,
