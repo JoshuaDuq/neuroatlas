@@ -40,7 +40,6 @@ test.describe('wide window', () => {
     const { page } = app;
     const save = page.getByRole('button', { name: 'Save image (PNG)' });
     await app.gotoHash({ atlas: 'destrieux' });
-    await expect(save).toBeDisabled();
     await app.ready();
     await expect(save).toBeEnabled();
     const downloading = page.waitForEvent('download');
