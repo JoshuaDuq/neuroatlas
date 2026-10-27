@@ -41,13 +41,9 @@
   let provenanceOpen = $state(false);
   let provenanceInstant = $state(false);
 
-  // TODO(H2): the menu's callbacks take the click (#4 issuecomment-6429895842 item 2), which removes this capture.
-  // The colophon's button and the settings menu's commands run without the click: the dialog they open reads it here.
-  let keyboardClick = false;
-
   /** The colophon's Provenance button, and the phone menu's item. */
-  export function openProvenance() {
-    provenanceInstant = keyboardClick;
+  export function openProvenance(event: MouseEvent) {
+    provenanceInstant = isKeyboardActivation(event);
     provenanceOpen = true;
   }
 
@@ -90,8 +86,6 @@
   }
 </script>
 
-<svelte:document onclickcapture={(event) => (keyboardClick = isKeyboardActivation(event))} />
-
 <Masthead
   bind:this={masthead}
   {lang}
@@ -112,8 +106,8 @@
   {onFullscreen}
   {onSnapshot}
   onProvenance={openProvenance}
-  onShortcuts={() => {
-    shortcutsInstant = keyboardClick;
+  onShortcuts={(event) => {
+    shortcutsInstant = isKeyboardActivation(event);
     shortcutsOpen = true;
   }}
 >
