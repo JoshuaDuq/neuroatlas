@@ -89,6 +89,7 @@
   <div class="inputs">
     <input
       id="{id}-range"
+      class="slider"
       type="range"
       {min}
       {max}
@@ -166,59 +167,9 @@
       align-items: center;
       gap: var(--space-3);
     }
-    input[type='range'] {
-      appearance: none;
+    .slider {
       flex: 1;
       min-width: 0;
-      width: 100%;
-      height: 20px;
-      margin: var(--space-1) 0;
-      padding: 0;
-      background: transparent;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    input[type='range']::-webkit-slider-runnable-track {
-      height: 2px;
-      background: var(--border-control);
-      border-radius: 1px;
-    }
-    input[type='range']::-moz-range-track {
-      height: 2px;
-      background: var(--border-control);
-      border-radius: 1px;
-    }
-    input[type='range']:disabled {
-      opacity: 1;
-      cursor: default;
-    }
-    input[type='range']::-webkit-slider-thumb {
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      margin-top: -6px;
-      background: var(--surface-base);
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-    }
-    input[type='range']::-moz-range-thumb {
-      width: 10px;
-      height: 10px;
-      background: var(--surface-base);
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-    }
-    input[type='range']:disabled::-webkit-slider-runnable-track {
-      background: var(--border-subtle);
-    }
-    input[type='range']:disabled::-moz-range-track {
-      background: var(--border-subtle);
-    }
-    input[type='range']:disabled::-webkit-slider-thumb {
-      border-color: var(--border-control);
-    }
-    input[type='range']:disabled::-moz-range-thumb {
-      border-color: var(--border-control);
     }
     .number {
       appearance: textfield;
@@ -253,21 +204,6 @@
       line-height: var(--lh-caption);
       color: var(--danger, var(--text-primary));
     }
-    @media (pointer: coarse) {
-      input[type='range'] {
-        height: 44px;
-        margin: 0;
-      }
-      input[type='range']::-webkit-slider-thumb {
-        width: 20px;
-        height: 20px;
-        margin-top: -9px;
-      }
-      input[type='range']::-moz-range-thumb {
-        width: 20px;
-        height: 20px;
-      }
-    }
     @media (hover: hover) and (pointer: fine) {
       .number:hover:not(:disabled) {
         border-color: var(--text-secondary);
@@ -277,40 +213,6 @@
   @layer a11y {
     @media (forced-colors: active) {
       .number:focus-visible {
-        outline: 2px solid Highlight;
-      }
-      /* A transparent track is forced to nothing; the track and thumb keep system colours of their own. */
-      input[type='range'] {
-        forced-color-adjust: none;
-      }
-      input[type='range']::-webkit-slider-runnable-track {
-        background: CanvasText;
-      }
-      input[type='range']::-moz-range-track {
-        background: CanvasText;
-      }
-      input[type='range']::-webkit-slider-thumb {
-        background: Canvas;
-        border-color: CanvasText;
-      }
-      input[type='range']::-moz-range-thumb {
-        background: Canvas;
-        border-color: CanvasText;
-      }
-      input[type='range']:disabled::-webkit-slider-runnable-track {
-        background: GrayText;
-      }
-      input[type='range']:disabled::-moz-range-track {
-        background: GrayText;
-      }
-      input[type='range']:disabled::-webkit-slider-thumb {
-        border-color: GrayText;
-      }
-      input[type='range']:disabled::-moz-range-thumb {
-        border-color: GrayText;
-      }
-      /* The thumb keeps a system outline when focused, as forced colours drop the page's ring. */
-      input[type='range']:focus-visible {
         outline: 2px solid Highlight;
       }
     }

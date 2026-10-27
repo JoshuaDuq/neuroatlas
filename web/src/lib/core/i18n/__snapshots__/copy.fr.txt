@@ -1208,10 +1208,6 @@
   },
   "tabsAria": "Explorer l’atlas",
   "panelAria": "Panneau de l’atlas",
-  "inspect": [
-   "[\"Alpha\"] → \"Examiner Alpha\"",
-   "[\"\"] → \"Examiner \""
-  ],
   "back": [
    "[\"Alpha\"] → \"Retour : Alpha\"",
    "[\"\"] → \"Retour : \""

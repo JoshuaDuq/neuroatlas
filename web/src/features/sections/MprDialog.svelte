@@ -25,6 +25,7 @@
   import { PHONE_QUERY } from '../../lib/types/index.ts';
   import type { Language, ManifestAnatomy } from '../../lib/types/index.ts';
   import ChoiceGroup from '../../lib/ui/ChoiceGroup.svelte';
+  import { REPEAT_GAP_MS } from '../../lib/ui/announcer.svelte.ts';
   import Dialog from '../../lib/ui/Dialog.svelte';
   import RangeField from '../../lib/ui/RangeField.svelte';
   import StatusLine from '../../lib/ui/StatusLine.svelte';
@@ -57,8 +58,6 @@
 
   /** The readout waits for the crosshair to rest, so a drag or a held key is not said per step. */
   const READOUT_QUIET_MS = 250;
-  /** The page announcer's repeat gap (`REPEAT_GAP_MS`, src/lib/ui/announcer.svelte.ts:16, not exported): a repeated sentence is cleared, then written after this gap. */
-  const REPEAT_GAP_MS = 100;
 
   const uid = $props.id();
   const copy = $derived(t(lang, 'mpr'));
@@ -267,6 +266,7 @@
             >
             <input
               id="{uid}-position-{plane}"
+              class="slider"
               type="range"
               min={-COORDINATE_LIMIT}
               max={COORDINATE_LIMIT}
@@ -409,58 +409,8 @@
       line-height: var(--lh-caption);
       font-variant-numeric: tabular-nums;
     }
-    /* The same slider as RangeField draws (components.css:120-148), so the dialog shows one style. */
     .position input {
-      appearance: none;
       grid-column: 1 / -1;
-      width: 100%;
-      height: 20px;
-      margin: var(--space-1) 0;
-      padding: 0;
-      background: transparent;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    .position input::-webkit-slider-runnable-track {
-      height: 2px;
-      background: var(--border-control);
-      border-radius: 1px;
-    }
-    .position input::-moz-range-track {
-      height: 2px;
-      background: var(--border-control);
-      border-radius: 1px;
-    }
-    .position input::-webkit-slider-thumb {
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      margin-top: -6px;
-      background: var(--surface-base);
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-    }
-    .position input::-moz-range-thumb {
-      width: 10px;
-      height: 10px;
-      background: var(--surface-base);
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-    }
-    @media (pointer: coarse) {
-      .position input {
-        height: 44px;
-        margin: 0;
-      }
-      .position input::-webkit-slider-thumb {
-        width: 20px;
-        height: 20px;
-        margin-top: -9px;
-      }
-      .position input::-moz-range-thumb {
-        width: 20px;
-        height: 20px;
-      }
     }
     /* The crosshair's position and label: a tonal readout, not a boxed field. */
     .where {
@@ -571,28 +521,6 @@
       }
     }
     @media (forced-colors: active) {
-      /* A transparent track is forced to nothing; the track and thumb keep system colours of their own. */
-      .position input {
-        forced-color-adjust: none;
-      }
-      .position input::-webkit-slider-runnable-track {
-        background: CanvasText;
-      }
-      .position input::-moz-range-track {
-        background: CanvasText;
-      }
-      .position input::-webkit-slider-thumb {
-        background: Canvas;
-        border-color: CanvasText;
-      }
-      .position input::-moz-range-thumb {
-        background: Canvas;
-        border-color: CanvasText;
-      }
-      /* The thumb keeps a system outline when focused, as forced colours drop the page's ring. */
-      .position input:focus-visible {
-        outline: 2px solid Highlight;
-      }
       .save:focus-visible,
       input[type='checkbox']:focus-visible {
         outline: 2px solid Highlight;

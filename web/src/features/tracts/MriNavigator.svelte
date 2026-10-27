@@ -37,6 +37,7 @@
   } from '../../lib/engine/api.ts';
   import { COARSE_POINTER_QUERY, PHONE_DEVICE_QUERY } from '../../lib/types/index.ts';
   import type { Language } from '../../lib/types/index.ts';
+  import { REPEAT_GAP_MS } from '../../lib/ui/announcer.svelte.ts';
   import Dialog from '../../lib/ui/Dialog.svelte';
   import RangeField from '../../lib/ui/RangeField.svelte';
   import Select from '../../lib/ui/Select.svelte';
@@ -121,8 +122,6 @@
   let keyMove = false;
   /** A key move is said once the keys have rested. */
   const MOVE_QUIET_MS = 200;
-  /** The page announcer's repeat gap (`REPEAT_GAP_MS`, src/lib/ui/announcer.svelte.ts, not exported). */
-  const REPEAT_GAP_MS = 100;
   // The dialog's one live region. The page's announcer is outside the modal dialog, so inert while it
   // is open and never spoken (deviations/i2-navigator-live-region.md); this one is inside.
   let said = $state('');
