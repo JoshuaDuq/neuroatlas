@@ -71,6 +71,9 @@ export interface NeuropsychDomains {
   atlas: string;
   structure_atlas: string;
   structures: string[];
+  /** The teaching set, whose units in `units` are drawn with the score of the structure each names. */
+  unit_atlas: string;
+  units: Record<string, string>;
   threshold_z: number;
   z_scale: ZBand[];
   groups: DomainGroup[];
@@ -125,7 +128,7 @@ function validateTerms(
     throw new Error('Invalid Neurosynth term search.');
   }
   for (const id of published.regions) {
-    if (!scoredRegion(partition, regions.get(id)))
+    if (!sampledRegion(partition, regions.get(id)))
       throw new Error(`Invalid Neurosynth term region: ${id}`);
   }
   const curated = new Set(partition.domains.map((domain) => domain.term));
@@ -171,9 +174,22 @@ export function validateNeuropsychDomains(
     !partition.regions ||
     !Array.isArray(partition.groups) ||
     !partition.structure_atlas ||
-    !Array.isArray(partition.structures)
+    !Array.isArray(partition.structures) ||
+    !partition.unit_atlas ||
+    !partition.units
   ) {
     throw new Error('Invalid neuropsychological-domain partition.');
+  }
+  for (const [unit, structure] of Object.entries(partition.units)) {
+    const region = regions.get(unit);
+    if (
+      region?.atlas !== partition.unit_atlas ||
+      region.kind !== 'structure' ||
+      regions.get(structure)?.atlas !== partition.structure_atlas ||
+      !sampledRegion(partition, regions.get(structure))
+    ) {
+      throw new Error(`Invalid neuropsychological-domain teaching unit: ${unit}`);
+    }
   }
   const groups = new Set<string>();
   for (const group of partition.groups) {
@@ -270,9 +286,13 @@ export const nearestName = (partition: NeuropsychDomains, query: string, lang: L
     ...(partition.search ? [...partition.search.terms.values()].map((record) => record.term) : []),
   ]);
 
+/** The scored region whose domains a region has: a teaching unit's structure, otherwise itself. */
+export const scoredSource = (partition: NeuropsychDomains, regionId: string) =>
+  partition.units[regionId] ?? regionId;
+
 /** An area's domains with their z, strongest first; none where no domain reaches the threshold. */
 export const domainsOf = (partition: NeuropsychDomains | null | undefined, regionId: string) =>
-  (partition?.regions[regionId] ?? []).map((member) => ({
+  (partition?.regions[scoredSource(partition, regionId)] ?? []).map((member) => ({
     ...(domainRecord(partition, member.domain) as Domain),
     z: member.z,
   }));
@@ -286,7 +306,7 @@ export function shownDomain(
   regionId: string,
   picked: string | null,
 ): Domain | null {
-  const members = partition?.regions[regionId];
+  const members = partition?.regions[scoredSource(partition, regionId)];
   if (!members) return null;
   const member = members.find((entry) =>
     picked ? entry.domain === picked : (domainRecord(partition, entry.domain) as Domain).overview,
@@ -316,11 +336,36 @@ export function groupedDomains(partition: NeuropsychDomains, query: string, lang
     .filter((entry) => entry.domains.length > 0);
 }
 
-/** Whether a region is one the domains are scored on: an area of their atlas, or a sampled structure. */
-export const scoredRegion = (partition: NeuropsychDomains, region: Region | undefined) =>
+/** Whether the domains were measured on a region: an area of their atlas, or a sampled structure. */
+const sampledRegion = (partition: NeuropsychDomains, region: Region | undefined) =>
   (region?.atlas === partition.atlas && region.kind === 'cortex') ||
   (region?.atlas === partition.structure_atlas &&
     partition.structures.includes(region.source_name as string));
+
+/** Whether a region has domains: one they were measured on, or a teaching unit carrying a structure's. */
+export const scoredRegion = (partition: NeuropsychDomains, region: Region | undefined) =>
+  sampledRegion(partition, region) || (region !== undefined && region.id in partition.units);
+
+/** The regions a listed structure is drawn as: the teaching units carrying its score, unless FreeSurfer's segmentation is shown. */
+export function drawnAs(partition: NeuropsychDomains, regionId: string, detail: string): string[] {
+  if (detail === partition.structure_atlas) return [regionId];
+  const units = Object.keys(partition.units).filter((unit) => partition.units[unit] === regionId);
+  return units.length ? units : [regionId];
+}
+
+/**
+ * A paint's regions to reveal: its areas, and its structures on FreeSurfer's segmentation when that is
+ * shown, else on the teaching set.
+ */
+export function revealedRegions(
+  partition: NeuropsychDomains,
+  paint: Paint,
+  detail: string,
+): string[] {
+  const other =
+    detail === partition.structure_atlas ? partition.unit_atlas : partition.structure_atlas;
+  return [...paint.colors.keys()].filter((id) => !id.startsWith(`${other}:`));
+}
 
 /** Every area or structure that reaches a domain, strongest first; ties keep the published order. */
 export function domainAreas(
@@ -346,23 +391,25 @@ export function zBand(partition: NeuropsychDomains, z: number): ZBand | undefine
 
 /**
  * The model paint for `ALL_DOMAINS`, each area in its strongest overview domain's colour, or for one
- * domain or searched term alone, each area in its z-scale band's colour.
+ * domain or searched term alone, each area in its z-scale band's colour. Each teaching unit takes its
+ * structure's colour.
  */
 export function domainPaint(partition: NeuropsychDomains, id: string): Paint {
   if (id !== ALL_DOMAINS && !domainRecord(partition, id))
     throw new Error(`Unknown neuropsychological domain: ${id}`);
-  if (id !== ALL_DOMAINS) {
-    return {
-      id: `function:${id}`,
-      colors: new Map(
-        domainAreas(partition, id).map(({ region, z }) => [region, zBand(partition, z)!.color]),
-      ),
-    };
-  }
   const colors = new Map<string, Rgb>();
-  for (const region of Object.keys(partition.regions)) {
-    const shown = shownDomain(partition, region, null);
-    if (shown) colors.set(region, shown.color);
+  if (id !== ALL_DOMAINS) {
+    for (const { region, z } of domainAreas(partition, id))
+      colors.set(region, zBand(partition, z)!.color);
+  } else {
+    for (const region of Object.keys(partition.regions)) {
+      const shown = shownDomain(partition, region, null);
+      if (shown) colors.set(region, shown.color);
+    }
+  }
+  for (const [unit, structure] of Object.entries(partition.units)) {
+    const color = colors.get(structure);
+    if (color) colors.set(unit, color);
   }
   return { id: `function:${id}`, colors };
 }

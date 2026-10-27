@@ -15,6 +15,7 @@ import { createSceneCommands } from '../lib/core/state/scene-commands.ts';
 import type { Engine } from '../lib/engine/api.ts';
 import { createCatalogStore } from '../lib/state/catalog.svelte.ts';
 import { createEngineSync, syncPaint, syncPresentation } from '../lib/state/engine-sync.svelte.ts';
+import { createLesionStore } from '../lib/state/lesion.svelte.ts';
 import { createLink } from '../lib/state/link.svelte.ts';
 import { createLessonStore } from '../lib/state/session.svelte.ts';
 import { announceView, createView } from '../lib/state/view.svelte.ts';
@@ -68,7 +69,11 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       anatomy: model.manifest.anatomy.id,
       referenceAnatomy: engine.tracts.anatomy,
     });
-    syncPaint(model, view, { domains, clinical });
+    const lesion = createLesionStore({
+      lesion: engine.lesion,
+      associations: clinical.associations,
+    });
+    syncPaint(model, view, { domains, clinical, lesion });
     syncPresentation(engine, view, engineState);
     const catalog = createCatalogStore(regions, view);
     // Before the first restore: a link that loads hidden regions then says their count once.
@@ -152,6 +157,7 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       excursions,
       links,
       speech,
+      lesion,
     };
   });
   app.defer(stop);
@@ -165,6 +171,14 @@ export function composeWorld(app: App, engine: Engine, defaultAnatomy: string): 
       session.notify(failureNotice(error, session.state.lang, 'whiteMatter')),
     ),
     engine.on('pick', ({ id }) => world.anatomy.selectRegion(id)),
+    // The lesion's report is Anatomy's detail, which shows it once no region is selected.
+    engine.on('lesionPoint', ({ point }) => {
+      world.excursions.chooseExplorer('anatomy');
+      world.anatomy.selectRegion(null);
+      world.lesion.place(point);
+      flushSync();
+      ports.showDetail();
+    }),
     // The keys act once the model has loaded, never during a failed start.
     installKeymap({
       canvas: engine.canvas,

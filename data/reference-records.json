@@ -1,5 +1,5 @@
 {
- "fetched": "2026-10-24",
+ "fetched": "2026-10-27",
  "sources": "PubMed efetch, Bookshelf esummary and Crossref; no abstracts",
  "year": "PubMed's journal-issue publication year (PubDate, or the first year of a MedlineDate range), not the online-first year; for a Bookshelf chapter, the book's publication year",
  "records": {
@@ -149,6 +149,43 @@
    "pages": "862-7",
    "corrections": []
   },
+  "pmid:2849547": {
+   "pmid": "2849547",
+   "pmcid": null,
+   "doi": "10.1007/bf00449910",
+   "doi_source": "pubmed",
+   "title": "Akinetic mutism associated with bicingular lesions: clinicopathological and functional anatomical correlates",
+   "authors": [
+    "Németh G",
+    "Hegedüs K",
+    "Molnár L"
+   ],
+   "year": 1988,
+   "pubdate": "1988",
+   "journal": "Eur Arch Psychiatry Neurol Sci",
+   "volume": "237",
+   "issue": "4",
+   "pages": "218-22",
+   "corrections": []
+  },
+  "pmid:3374800": {
+   "pmid": "3374800",
+   "pmcid": null,
+   "doi": "10.1016/0028-3932(88)90093-0",
+   "doi_source": "pubmed",
+   "title": "Olfactory identification deficits in patients with focal cerebral excision",
+   "authors": [
+    "Jones-Gotman M",
+    "Zatorre RJ"
+   ],
+   "year": 1988,
+   "pubdate": "1988",
+   "journal": "Neuropsychologia",
+   "volume": "26",
+   "issue": "3",
+   "pages": "387-400",
+   "corrections": []
+  },
   "pmid:3760943": {
    "pmid": "3760943",
    "pmcid": "PMC6568782",
@@ -166,6 +203,23 @@
    "volume": "6",
    "issue": "10",
    "pages": "2950-67",
+   "corrections": []
+  },
+  "pmid:4075073": {
+   "pmid": "4075073",
+   "pmcid": null,
+   "doi": "10.1093/brain/108.4.1009",
+   "doi_source": "pubmed",
+   "title": "Autotopagnosia. Occurrence in a patient without nominal aphasia and with an intact ability to point to parts of animals and objects",
+   "authors": [
+    "Ogden JA"
+   ],
+   "year": 1985,
+   "pubdate": "1985 Dec",
+   "journal": "Brain",
+   "volume": "108 ( Pt 4)",
+   "issue": null,
+   "pages": "1009-22",
    "corrections": []
   },
   "pmid:6538274": {
@@ -282,6 +336,65 @@
    "pages": "7-15",
    "corrections": []
   },
+  "pmid:8186955": {
+   "pmid": "8186955",
+   "pmcid": null,
+   "doi": "10.1093/brain/117.2.281",
+   "doi_source": "pubmed",
+   "title": "Non-verbal environmental sound recognition after unilateral hemispheric stroke",
+   "authors": [
+    "Schnider A",
+    "Benson DF",
+    "Alexander DN",
+    "Schnider-Klaus A"
+   ],
+   "year": 1994,
+   "pubdate": "1994 Apr",
+   "journal": "Brain",
+   "volume": "117 ( Pt 2)",
+   "issue": null,
+   "pages": "281-7",
+   "corrections": []
+  },
+  "pmid:8208417": {
+   "pmid": "8208417",
+   "pmcid": null,
+   "doi": "10.1212/wnl.44.6.1164",
+   "doi_source": "pubmed",
+   "title": "Motor neglect associated with a discrete parietal lesion",
+   "authors": [
+    "Triggs WJ",
+    "Gold M",
+    "Gerstle G",
+    "Adair J",
+    "Heilman KM"
+   ],
+   "year": 1994,
+   "pubdate": "1994 Jun",
+   "journal": "Neurology",
+   "volume": "44",
+   "issue": "6",
+   "pages": "1164-6",
+   "corrections": []
+  },
+  "pmid:8373572": {
+   "pmid": "8373572",
+   "pmcid": null,
+   "doi": "10.1006/brcg.1993.1033",
+   "doi_source": "pubmed",
+   "title": "Odor recognition memory in humans: role of right temporal and orbitofrontal regions",
+   "authors": [
+    "Jones-Gotman M",
+    "Zatorre RJ"
+   ],
+   "year": 1993,
+   "pubdate": "1993 Jul",
+   "journal": "Brain Cogn",
+   "volume": "22",
+   "issue": "2",
+   "pages": "182-98",
+   "corrections": []
+  },
   "pmid:8906789": {
    "pmid": "8906789",
    "pmcid": null,
@@ -336,6 +449,24 @@
    "volume": "121 ( Pt 4)",
    "issue": null,
    "pages": "561-79",
+   "corrections": []
+  },
+  "pmid:10404203": {
+   "pmid": "10404203",
+   "pmcid": null,
+   "doi": "10.1038/10236",
+   "doi_source": "pubmed",
+   "title": "Spontaneous confabulators fail to suppress currently irrelevant memory traces",
+   "authors": [
+    "Schnider A",
+    "Ptak R"
+   ],
+   "year": 1999,
+   "pubdate": "1999 Jul",
+   "journal": "Nat Neurosci",
+   "volume": "2",
+   "issue": "7",
+   "pages": "677-81",
    "corrections": []
   },
   "pmid:10495075": {
@@ -400,6 +531,27 @@
    "volume": "123 ( Pt 1)",
    "issue": null,
    "pages": "141-54",
+   "corrections": []
+  },
+  "pmid:10683386": {
+   "pmid": "10683386",
+   "pmcid": null,
+   "doi": "10.1016/s0028-3932(99)00101-3",
+   "doi_source": "pubmed",
+   "title": "A category-specific deficit of spatial representation: the case of autotopagnosia",
+   "authors": [
+    "Denes G",
+    "Cappelletti JY",
+    "Zilli T",
+    "Dalla Porta F",
+    "Gallana A"
+   ],
+   "year": 2000,
+   "pubdate": "2000",
+   "journal": "Neuropsychologia",
+   "volume": "38",
+   "issue": "4",
+   "pages": "345-50",
    "corrections": []
   },
   "pmid:10734011": {
@@ -713,6 +865,25 @@
    "pages": "1479-87",
    "corrections": []
   },
+  "pmid:15120533": {
+   "pmid": "15120533",
+   "pmcid": null,
+   "doi": "10.1016/j.bandl.2004.01.006",
+   "doi_source": "pubmed",
+   "title": "Affective aprosodia from a medial frontal stroke",
+   "authors": [
+    "Heilman KM",
+    "Leon SA",
+    "Rosenbek JC"
+   ],
+   "year": 2004,
+   "pubdate": "2004 Jun",
+   "journal": "Brain Lang",
+   "volume": "89",
+   "issue": "3",
+   "pages": "411-6",
+   "corrections": []
+  },
   "pmid:15217900": {
    "pmid": "15217900",
    "pmcid": null,
@@ -1022,6 +1193,24 @@
    "pages": "393-402",
    "corrections": []
   },
+  "pmid:17640690": {
+   "pmid": "17640690",
+   "pmcid": null,
+   "doi": "10.1016/j.neuropsychologia.2007.05.021",
+   "doi_source": "pubmed",
+   "title": "Dissociable prefrontal networks for cognitive and affective theory of mind: a lesion study",
+   "authors": [
+    "Shamay-Tsoory SG",
+    "Aharon-Peretz J"
+   ],
+   "year": 2007,
+   "pubdate": "2007 Oct 01",
+   "journal": "Neuropsychologia",
+   "volume": "45",
+   "issue": "13",
+   "pages": "3054-67",
+   "corrections": []
+  },
   "pmid:18636551": {
    "pmid": "18636551",
    "pmcid": "PMC6870829",
@@ -1045,6 +1234,29 @@
    "pages": "1444-56",
    "corrections": []
   },
+  "pmid:18766025": {
+   "pmid": "18766025",
+   "pmcid": null,
+   "doi": "10.1097/wnr.0b013e32830e017b",
+   "doi_source": "pubmed",
+   "title": "Differences in finger localisation performance of patients with finger agnosia",
+   "authors": [
+    "Anema HA",
+    "Kessels RP",
+    "de Haan EH",
+    "Kappelle LJ",
+    "Leijten FS",
+    "van Zandvoort MJ",
+    "Dijkerman HC"
+   ],
+   "year": 2008,
+   "pubdate": "2008 Sep 17",
+   "journal": "Neuroreport",
+   "volume": "19",
+   "issue": "14",
+   "pages": "1429-33",
+   "corrections": []
+  },
   "pmid:19353229": {
    "pmid": "19353229",
    "pmcid": null,
@@ -1065,6 +1277,25 @@
    "volume": "256",
    "issue": "7",
    "pages": "1146-51",
+   "corrections": []
+  },
+  "pmid:19698727": {
+   "pmid": "19698727",
+   "pmcid": "PMC2794980",
+   "doi": "10.1016/j.neuropsychologia.2009.08.015",
+   "doi_source": "pubmed",
+   "title": "Nonverbal auditory agnosia with lesion to Wernicke's area",
+   "authors": [
+    "Saygin AP",
+    "Leech R",
+    "Dick F"
+   ],
+   "year": 2010,
+   "pubdate": "2010 Jan",
+   "journal": "Neuropsychologia",
+   "volume": "48",
+   "issue": "1",
+   "pages": "107-13",
    "corrections": []
   },
   "pmid:19759300": {
@@ -1111,6 +1342,29 @@
    "pages": "276-81",
    "corrections": []
   },
+  "pmid:19892765": {
+   "pmid": "19892765",
+   "pmcid": "PMC2792373",
+   "doi": "10.1093/brain/awp273",
+   "doi_source": "pubmed",
+   "title": "The left superior temporal gyrus is a shared substrate for auditory short-term memory and speech comprehension: evidence from 210 patients with stroke",
+   "authors": [
+    "Leff AP",
+    "Schofield TM",
+    "Crinion JT",
+    "Seghier ML",
+    "Grogan A",
+    "Green DW",
+    "Price CJ"
+   ],
+   "year": 2009,
+   "pubdate": "2009 Dec",
+   "journal": "Brain",
+   "volume": "132",
+   "issue": "Pt 12",
+   "pages": "3401-10",
+   "corrections": []
+  },
   "pmid:19942676": {
    "pmid": "19942676",
    "pmcid": "PMC2792374",
@@ -1153,6 +1407,24 @@
    "volume": "133",
    "issue": "Pt 3",
    "pages": "880-94",
+   "corrections": []
+  },
+  "pmid:20044884": {
+   "pmid": "20044884",
+   "pmcid": null,
+   "doi": "10.1162/jocn.2010.21419",
+   "doi_source": "pubmed",
+   "title": "Knowing your lines but missing your cue: rostral prefrontal lesions impair prospective memory cue detection, but not action-intention superiority",
+   "authors": [
+    "Uretzky S",
+    "Gilboa A"
+   ],
+   "year": 2010,
+   "pubdate": "2010 Dec",
+   "journal": "J Cogn Neurosci",
+   "volume": "22",
+   "issue": "12",
+   "pages": "2745-57",
    "corrections": []
   },
   "pmid:20219998": {
@@ -1213,6 +1485,27 @@
    "volume": "20",
    "issue": "6",
    "pages": "704-16",
+   "corrections": []
+  },
+  "pmid:21371485": {
+   "pmid": "21371485",
+   "pmcid": "PMC3128701",
+   "doi": "10.1016/j.neuropsychologia.2011.02.045",
+   "doi_source": "pubmed",
+   "title": "The role of rostral prefrontal cortex in prospective memory: a voxel-based lesion study",
+   "authors": [
+    "Volle E",
+    "Gonen-Yaacovi G",
+    "Costello Ade L",
+    "Gilbert SJ",
+    "Burgess PW"
+   ],
+   "year": 2011,
+   "pubdate": "2011 Jul",
+   "journal": "Neuropsychologia",
+   "volume": "49",
+   "issue": "8",
+   "pages": "2185-98",
    "corrections": []
   },
   "pmid:21653723": {
@@ -1309,6 +1602,27 @@
    "volume": "24",
    "issue": "3",
    "pages": "718-35",
+   "corrections": []
+  },
+  "pmid:22451328": {
+   "pmid": "22451328",
+   "pmcid": "PMC6869968",
+   "doi": "10.1002/hbm.22052",
+   "doi_source": "pubmed",
+   "title": "A crucial role for the cortico-striato-cortical loop in the pathogenesis of stroke-related neurogenic stuttering",
+   "authors": [
+    "Theys C",
+    "De Nil L",
+    "Thijs V",
+    "van Wieringen A",
+    "Sunaert S"
+   ],
+   "year": 2013,
+   "pubdate": "2013 Sep",
+   "journal": "Hum Brain Mapp",
+   "volume": "34",
+   "issue": "9",
+   "pages": "2103-12",
    "corrections": []
   },
   "pmid:22482693": {
@@ -1575,6 +1889,28 @@
    "pages": "3-25",
    "corrections": []
   },
+  "pmid:25995383": {
+   "pmid": "25995383",
+   "pmcid": null,
+   "doi": "10.1177/1545968315585357",
+   "doi_source": "pubmed",
+   "title": "Lesion Characteristics of Individuals With Upper Limb Spasticity After Stroke",
+   "authors": [
+    "Cheung DK",
+    "Climans SA",
+    "Black SE",
+    "Gao F",
+    "Szilagyi GM",
+    "Mochizuki G"
+   ],
+   "year": 2016,
+   "pubdate": "2016 Jan",
+   "journal": "Neurorehabil Neural Repair",
+   "volume": "30",
+   "issue": "1",
+   "pages": "63-70",
+   "corrections": []
+  },
   "pmid:26685156": {
    "pmid": "26685156",
    "pmcid": "PMC4805091",
@@ -1594,6 +1930,27 @@
    "volume": "139",
    "issue": "Pt 2",
    "pages": "588-604",
+   "corrections": []
+  },
+  "pmid:26801227": {
+   "pmid": "26801227",
+   "pmcid": "PMC4752907",
+   "doi": "10.1016/j.neuropsychologia.2016.01.021",
+   "doi_source": "pubmed",
+   "title": "Acquired alexithymia following damage to the anterior insula",
+   "authors": [
+    "Hogeveen J",
+    "Bird G",
+    "Chau A",
+    "Krueger F",
+    "Grafman J"
+   ],
+   "year": 2016,
+   "pubdate": "2016 Feb",
+   "journal": "Neuropsychologia",
+   "volume": "82",
+   "issue": null,
+   "pages": "142-148",
    "corrections": []
   },
   "pmid:26900565": {
@@ -1721,6 +2078,24 @@
    "volume": "36",
    "issue": "34",
    "pages": "8872-81",
+   "corrections": []
+  },
+  "pmid:27807627": {
+   "pmid": "27807627",
+   "pmcid": null,
+   "doi": "10.1007/s00429-016-1325-7",
+   "doi_source": "pubmed",
+   "title": "Investigating structure and function in the healthy human brain: validity of acute versus chronic lesion-symptom mapping",
+   "authors": [
+    "Karnath HO",
+    "Rennig J"
+   ],
+   "year": 2017,
+   "pubdate": "2017 Jul",
+   "journal": "Brain Struct Funct",
+   "volume": "222",
+   "issue": "5",
+   "pages": "2059-2070",
    "corrections": []
   },
   "pmid:28712994": {
@@ -1915,6 +2290,26 @@
    "pages": "239-253",
    "corrections": []
   },
+  "pmid:30275309": {
+   "pmid": "30275309",
+   "pmcid": "PMC6196503",
+   "doi": "10.1073/pnas.1814117115",
+   "doi_source": "pubmed",
+   "title": "Lesion network localization of free will",
+   "authors": [
+    "Darby RR",
+    "Joutsa J",
+    "Burke MJ",
+    "Fox MD"
+   ],
+   "year": 2018,
+   "pubdate": "2018 Oct 16",
+   "journal": "Proc Natl Acad Sci U S A",
+   "volume": "115",
+   "issue": "42",
+   "pages": "10792-10797",
+   "corrections": []
+  },
   "pmid:30291974": {
    "pmid": "30291974",
    "pmcid": "PMC6289683",
@@ -1935,6 +2330,34 @@
    "volume": "185",
    "issue": null,
    "pages": "35-57",
+   "corrections": []
+  },
+  "pmid:30969973": {
+   "pmid": "30969973",
+   "pmcid": "PMC6457498",
+   "doi": "10.1371/journal.pone.0213528",
+   "doi_source": "pubmed",
+   "title": "Diffusion tensor imaging reveals diffuse white matter injuries in locked-in syndrome patients",
+   "authors": [
+    "Leonard M",
+    "Renard F",
+    "Harsan L",
+    "Pottecher J",
+    "Braun M",
+    "Schneider F",
+    "Froehlig P",
+    "Blanc F",
+    "Roquet D",
+    "Achard S",
+    "Meyer N",
+    "Kremer S"
+   ],
+   "year": 2019,
+   "pubdate": "2019",
+   "journal": "PLoS One",
+   "volume": "14",
+   "issue": "4",
+   "pages": "e0213528",
    "corrections": []
   },
   "pmid:31473352": {
@@ -1981,6 +2404,97 @@
    "volume": "91",
    "issue": "5",
    "pages": "547-559",
+   "corrections": []
+  },
+  "pmid:32576080": {
+   "pmid": "32576080",
+   "pmcid": null,
+   "doi": "10.1080/13803395.2020.1770703",
+   "doi_source": "pubmed",
+   "title": "The association between communication impairments and acquired alexithymia in chronic stroke patients",
+   "authors": [
+    "Hobson H",
+    "Chiu EG",
+    "Ravenscroft C",
+    "Partridge K",
+    "Bird G",
+    "Demeyere N"
+   ],
+   "year": 2020,
+   "pubdate": "2020 Jul",
+   "journal": "J Clin Exp Neuropsychol",
+   "volume": "42",
+   "issue": "5",
+   "pages": "495-504",
+   "corrections": []
+  },
+  "pmid:33327707": {
+   "pmid": "33327707",
+   "pmcid": "PMC8311059",
+   "doi": "10.7874/jao.2020.00269",
+   "doi_source": "pubmed",
+   "title": "Cortical Deafness Due to Ischaemic Strokes in Both Temporal Lobes",
+   "authors": [
+    "Lachowska M",
+    "Pastuszka A",
+    "Sokołowsk J",
+    "Szczudlik P",
+    "Niemczyk K"
+   ],
+   "year": 2021,
+   "pubdate": "2021 Jul",
+   "journal": "J Audiol Otol",
+   "volume": "25",
+   "issue": "3",
+   "pages": "163-170",
+   "corrections": []
+  },
+  "pmid:33573440": {
+   "pmid": "33573440",
+   "pmcid": null,
+   "doi": "10.1080/00016489.2020.1871510",
+   "doi_source": "pubmed",
+   "title": "Subcortical deafness as a subtype of auditory agnosia after injury of bilateral auditory radiations caused by two cerebrovascular accidents - normal auditory brainstem responses with I-VII waves and abolished consciousness of hearing",
+   "authors": [
+    "Akiyoshi R",
+    "Shindo M",
+    "Kaga K"
+   ],
+   "year": 2021,
+   "pubdate": "2021 Apr",
+   "journal": "Acta Otolaryngol",
+   "volume": "141",
+   "issue": "4",
+   "pages": "374-380",
+   "corrections": []
+  },
+  "pmid:34633436": {
+   "pmid": "34633436",
+   "pmcid": "PMC8719842",
+   "doi": "10.1093/brain/awab384",
+   "doi_source": "pubmed",
+   "title": "Tonic somatosensory responses and deficits of tactile awareness converge in the parietal operculum",
+   "authors": [
+    "Del Vecchio M",
+    "Fossataro C",
+    "Zauli FM",
+    "Sartori I",
+    "Pigorini A",
+    "d'Orio P",
+    "Abarrategui B",
+    "Russo S",
+    "Mikulan EP",
+    "Caruana F",
+    "Rizzolatti G",
+    "Garbarini F",
+    "Avanzini P"
+   ],
+   "year": 2021,
+   "pubdate": "2021 Dec 31",
+   "journal": "Brain",
+   "volume": "144",
+   "issue": "12",
+   "pages": "3779-3787",
    "corrections": []
   },
   "pmid:35042861": {
@@ -2058,6 +2572,30 @@
    "pages": "103038",
    "corrections": []
   },
+  "pmid:35715476": {
+   "pmid": "35715476",
+   "pmcid": "PMC9206020",
+   "doi": "10.1038/s41598-022-14359-8",
+   "doi_source": "pubmed",
+   "title": "Shared and distinct voxel-based lesion-symptom mappings for spasticity and impaired movement in the hemiparetic upper limb",
+   "authors": [
+    "Frenkel-Toledo S",
+    "Levin MF",
+    "Berman S",
+    "Liebermann DG",
+    "Baniña MC",
+    "Solomon JM",
+    "Ofir-Geva S",
+    "Soroker N"
+   ],
+   "year": 2022,
+   "pubdate": "2022 Jun 17",
+   "journal": "Sci Rep",
+   "volume": "12",
+   "issue": "1",
+   "pages": "10169",
+   "corrections": []
+  },
   "pmid:35940310": {
    "pmid": "35940310",
    "pmcid": "PMC10804970",
@@ -2131,6 +2669,58 @@
    "pages": "119703",
    "corrections": []
   },
+  "pmid:37442623": {
+   "pmid": "37442623",
+   "pmcid": "PMC10491452",
+   "doi": "10.1212/wnl.0000000000207577",
+   "doi_source": "pubmed",
+   "title": "Demographic, Medical, and Clinical Characteristics of a Population-Based Sample of Patients With Long-lasting Locked-In Syndrome",
+   "authors": [
+    "Nilsen HW",
+    "Martinsen ACT",
+    "Johansen I",
+    "Kirkevold M",
+    "Sunnerhagen KS",
+    "Becker F"
+   ],
+   "year": 2023,
+   "pubdate": "2023 Sep 05",
+   "journal": "Neurology",
+   "volume": "101",
+   "issue": "10",
+   "pages": "e1025-e1035",
+   "corrections": []
+  },
+  "pmid:37478549": {
+   "pmid": "37478549",
+   "pmcid": null,
+   "doi": "10.1016/j.cortex.2023.05.016",
+   "doi_source": "pubmed",
+   "title": "White matter tract disconnection in Gerstmann's syndrome: Insights from a single case study",
+   "authors": [
+    "Ranzini M",
+    "Ferrazzi G",
+    "D'Imperio D",
+    "Giustiniani A",
+    "Danesin L",
+    "D'Antonio V",
+    "Rigon E",
+    "Cacciante L",
+    "Rigon J",
+    "Meneghello F",
+    "Turolla A",
+    "Vallesi A",
+    "Semenza C",
+    "Burgio F"
+   ],
+   "year": 2023,
+   "pubdate": "2023 Sep",
+   "journal": "Cortex",
+   "volume": "166",
+   "issue": null,
+   "pages": "322-337",
+   "corrections": []
+  },
   "pmid:38433712": {
    "pmid": "38433712",
    "pmcid": "PMC10910281",
@@ -2149,6 +2739,30 @@
    "volume": "45",
    "issue": "4",
    "pages": "e26639",
+   "corrections": []
+  },
+  "pmid:38797521": {
+   "pmid": "38797521",
+   "pmcid": "PMC11146419",
+   "doi": "10.1093/brain/awae059",
+   "doi_source": "pubmed",
+   "title": "Localization of stuttering based on causal brain lesions",
+   "authors": [
+    "Theys C",
+    "Jaakkola E",
+    "Melzer TR",
+    "De Nil LF",
+    "Guenther FH",
+    "Cohen AL",
+    "Fox MD",
+    "Joutsa J"
+   ],
+   "year": 2024,
+   "pubdate": "2024 Jun 03",
+   "journal": "Brain",
+   "volume": "147",
+   "issue": "6",
+   "pages": "2203-2213",
    "corrections": []
   },
   "pmid:41193801": {

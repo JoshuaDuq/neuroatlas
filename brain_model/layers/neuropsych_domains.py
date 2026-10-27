@@ -10,6 +10,7 @@ from nibabel.freesurfer.io import read_annot
 
 from ..sources import HEMISPHERES, ROOT, write_json
 from .functional_regions import AREA_NAME, AREAS_PER_HEMISPHERE, area_of
+from .learning import ATLAS_ID as UNIT_ATLAS
 
 ATLAS_ID = "neuropsych-domains"
 SURFACE_ATLAS = "hcp-mmp"
@@ -76,6 +77,13 @@ def read_definition(path=DEFINITION):
             raise ValueError(f"{domain['id']}: no lesion association {sorted(unknown)}")
     if not any(domain.get("overview") for domain in definition["domains"]):
         raise ValueError("At least one domain must be in the overview")
+    units = definition["teaching_units"]
+    if not 0 < units["minimum_share"] <= 1:
+        raise ValueError("A teaching unit's minimum share must be in (0, 1]")
+    unknown = {name for name in units["structures"].values()
+               if not {f"Left-{name}", f"Right-{name}"} <= set(STRUCTURES.values())}
+    if unknown:
+        raise ValueError(f"Teaching units name unscored structures {sorted(unknown)}")
     if not definition["threshold_z"] > 0:
         raise ValueError("The membership threshold must be a positive z")
     scale = definition["z_scale"]
@@ -144,6 +152,23 @@ def assign(regions, definition, scores):
         if found:
             assigned[region["id"]] = found
     return assigned
+
+
+def teaching_units(regions, definition):
+    """Each teaching-set unit drawn with a scored structure's score, and that structure's region."""
+    ids = {region["id"] for region in regions}
+    if not any(region["atlas"] == UNIT_ATLAS for region in regions):
+        return {}
+    structures = {region["source_name"]: region["id"]
+                  for region in regions if region["atlas"] == STRUCTURE_ATLAS}
+    units = {}
+    for unit, name in definition["teaching_units"]["structures"].items():
+        for side in SIDES:
+            unit_id = f"{UNIT_ATLAS}:{side}:{unit}"
+            if unit_id not in ids:
+                raise ValueError(f"No teaching-set unit {unit_id}")
+            units[unit_id] = structures[f"{side.capitalize()}-{name}"]
+    return units
 
 
 def short_citation(reference):
@@ -226,6 +251,8 @@ def partition(regions):
         "atlas": SURFACE_ATLAS,
         "structure_atlas": STRUCTURE_ATLAS,
         "structures": sorted(STRUCTURES.values()),
+        "unit_atlas": UNIT_ATLAS,
+        "units": teaching_units(regions, definition),
         "threshold_z": definition["threshold_z"],
         "z_scale": definition["z_scale"],
         "sources": definition["sources"],
@@ -274,7 +301,7 @@ def validate(config, manifest):
             counts[region.split(":")[0]][member["domain"]] += 1
     structures = [region for region in published["regions"] if region.startswith(f"{STRUCTURE_ATLAS}:")]
     return {"assigned_areas": len(published["regions"]) - len(structures),
-            "assigned_structures": len(structures),
+            "assigned_structures": len(structures), "teaching_units": len(published["units"]),
             "areas_per_domain": counts[SURFACE_ATLAS], "structures_per_domain": counts[STRUCTURE_ATLAS]}
 
 

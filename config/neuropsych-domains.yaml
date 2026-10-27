@@ -33,6 +33,22 @@ z_scale:
   - {from: 3, color: [150, 200, 240]}
   - {from: 5, color: [43, 131, 199]}
   - {from: 10, color: [10, 62, 125]}
+# The teaching set's units drawn with a scored structure's score, on both sides: each must have at
+# least `minimum_share` of its voxels inside that aseg structure on the subject (validate_learning).
+# On sub_013 the least is the accumbens (0.57), the rest 0.84 or more. The geniculate bodies,
+# substantia nigra, hypothalamus and red nucleus lie in the ventral diencephalon, one FreeSurfer
+# label over many nuclei, so no unit carries its score.
+teaching_units:
+  minimum_share: 0.5
+  structures:
+    caudate: Caudate
+    putamen: Putamen
+    pallidum-external: Pallidum
+    pallidum-internal: Pallidum
+    accumbens: Accumbens-area
+    thalamus: Thalamus-Proper
+    hippocampus: Hippocampus
+    amygdala: Amygdala
 scores_source: neurosynth
 sources:
   neurosynth:
@@ -543,5 +559,5 @@ limitations:
   - Most terms are used by at least 100 studies. Eleven clinically pertinent ones rest on fewer, down to 74 (sustained attention, smell, navigation, verbal fluency, taste, interoception, gestures, object recognition, moral reasoning, arithmetic, speech perception); their maps are weaker evidence, and every function names its study count.
   - Consciousness (74 studies) was derived and left out: its map reached one area, MT, at z 3.1, and no structure.
   - Each domain is one abstract term chosen to name the clinical domain, and a study counts when its abstract uses the term, whatever task it ran. Consistency z grows with the number of such studies, so domains backed by large literatures (attention, language, working memory) reach more areas than executive function or social cognition; regions engaged by most demanding tasks, such as the anterior insula and intraparietal sulcus, reach several domains.
-  - Besides the cortex, each map is averaged over FreeSurfer's grey-matter structures (thalamus, caudate, putamen, pallidum, hippocampus, amygdala, accumbens, ventral diencephalon, cerebellar cortex and brainstem), each as a whole on fsaverage's own segmentation. The 6 mm kernel is large beside the smaller nuclei, the few millimetres between MNI305 and MNI152 matter more there, and studies report fewer subcortical coordinates, so these are weaker evidence than the cortical areas. White matter, NextBrain's finer nuclei and the teaching set's units are not scored, and a lesion check on them is reported as not measured.
+  - Besides the cortex, each map is averaged over FreeSurfer's grey-matter structures (thalamus, caudate, putamen, pallidum, hippocampus, amygdala, accumbens, ventral diencephalon, cerebellar cortex and brainstem), each as a whole on fsaverage's own segmentation. The 6 mm kernel is large beside the smaller nuclei, the few millimetres between MNI305 and MNI152 matter more there, and studies report fewer subcortical coordinates, so these are weaker evidence than the cortical areas. White matter and NextBrain's finer nuclei are not scored, and a lesion check on them is reported as not measured. The teaching set's caudate, putamen, both pallidal segments, accumbens, thalamus, hippocampus and amygdala are drawn with the score of the structure most of each lies in on this brain; its other units, the geniculate bodies among them, which FreeSurfer files under the ventral diencephalon, are not scored.
   - Neurosynth's MNI152 maps are sampled on fsaverage's surfaces, whose MNI305 space differs from MNI152 by a few millimetres; whole-area averages absorb most, not all, of that difference.

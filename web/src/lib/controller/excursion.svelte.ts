@@ -6,8 +6,10 @@ import {
   domainName,
   domainPaint,
   domainRecord,
+  drawnAs,
   groupedDomains,
   matchingTerms,
+  revealedRegions,
 } from '../core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
@@ -120,7 +122,7 @@ export function createExcursions(
     engine,
     session,
     clinical,
-    domainsAtlas: domains.atlas,
+    domains,
     chooseExplorer,
     leaveLesson: lessons.leave,
     openFunction: panels.openFunction,
@@ -322,7 +324,10 @@ export function createExcursions(
     return true;
   }
 
-  /** The profile opens at once; the function's HCP-MMP areas are then drawn and framed, and painted by the paint effect. */
+  /**
+   * The profile opens at once; the function's HCP-MMP areas and its structures, on the teaching set
+   * unless FreeSurfer's segmentation is shown, are then drawn and framed, and painted by the paint effect.
+   */
   async function openFunction(id: string): Promise<boolean> {
     const current = commands.begin();
     const fromLesson = lessons.takeBeforeLesson();
@@ -333,7 +338,7 @@ export function createExcursions(
     render();
     shell.showDetail();
     const before = revealSettings();
-    const regions = [...domainPaint(domains, id).colors.keys()];
+    const regions = revealedRegions(domains, domainPaint(domains, id), model.settings.detail);
     if (!(await commands.revealRegions(regions, current))) return false;
     cutLabelsFollowAtlas();
     sayRevealed(before, seeThroughFor(deepHint(id)));
@@ -349,11 +354,15 @@ export function createExcursions(
     const current = commands.begin();
     beforeExcursion ??= reader.capture();
     const before = revealSettings();
-    if (!(await commands.openRegion(id, current))) return false;
+    // A function's structure is drawn where its paint is.
+    const shown =
+      session.state.explorer === 'functions' ? drawnAs(domains, id, model.settings.detail) : [id];
+    if (!(await commands.revealRegions(shown, current))) return false;
+    model.select(shown[0]!);
     sayRevealed(before);
     // With the context around it a deficit's regions get, not filling the stage on its own.
     render();
-    camera.frameRegions([id]);
+    camera.frameRegions(shown);
     render();
     return true;
   }

@@ -15,6 +15,8 @@ export interface DetailState {
   lesson?: { circuit: string | null };
   anatomy?: string | null;
   referenceAnatomy?: string | null;
+  /** A lesion is placed: its report is Anatomy's detail. */
+  lesion?: boolean;
 }
 
 export type WorkspaceView = 'list' | 'detail';
@@ -23,6 +25,7 @@ export type WorkspaceView = 'list' | 'detail';
 export function detailAvailable(state: DetailState): boolean {
   if (isIndependentTractReference(state)) return false;
   if (state.selectedRegion) return true;
+  if (state.explorer === 'anatomy') return Boolean(state.lesion);
   if (state.explorer === 'functions') return Boolean(state.selectedFunction);
   if (state.explorer === 'deficits') return Boolean(state.selectedDeficit);
   if (state.explorer === 'circuits') return Boolean(state.lesson?.circuit);

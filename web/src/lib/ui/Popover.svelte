@@ -40,6 +40,8 @@
     trigger: Snippet<[{ props: Record<string, unknown> }]>;
     /** `close` shuts the popover and returns focus to the trigger, for a command chosen inside. */
     children: Snippet<[{ close: () => void }]>;
+    /** A press or a move of focus onto such a node leaves the popover open: the work it does is there. */
+    holdsOpen?: (node: Node) => boolean;
   }
 
   let {
@@ -50,6 +52,7 @@
     style,
     trigger,
     children,
+    holdsOpen,
   }: Props = $props();
 
   const uid = $props.id();
@@ -97,7 +100,9 @@
 
   function onInteractOutside(event: Event) {
     const target = event.target as Element;
-    if ([...stageTriggers].some((trigger) => trigger.contains(target))) event.preventDefault();
+    if ([...stageTriggers].some((trigger) => trigger.contains(target)) || holdsOpen?.(target)) {
+      event.preventDefault();
+    }
   }
 
   const own = (node: EventTarget | null) =>
@@ -155,7 +160,10 @@
     // No related target: the window lost focus (a switch to another window); the popover stays.
     // A pressed stage trigger takes over by its click, which swaps them (stage-tools.js:133-136).
     const swapping = pressed?.contains(next) ?? false;
-    if (open && next !== null && !wrapper.contains(next) && !swapping) close({ instantly: true });
+    const held = next !== null && (holdsOpen?.(next) ?? false);
+    if (open && next !== null && !wrapper.contains(next) && !swapping && !held) {
+      close({ instantly: true });
+    }
   }
 
   // A click with no pointer behind it came from Enter or Space.

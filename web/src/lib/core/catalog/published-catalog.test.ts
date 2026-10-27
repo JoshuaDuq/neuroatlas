@@ -396,8 +396,10 @@ describe('the published cdmd anatomy', () => {
       assert.equal(zBand(domains, z)!.from, from, String(z));
   });
 
-  test('CAT-39: the overview paints 249 of the 289 regions that reach a domain; an unknown domain throws', () => {
-    assert.equal(domainPaint(domains, ALL_DOMAINS).colors.size, 249);
+  test('CAT-39: the overview paints 249 of the 289 regions that reach a domain, and 16 teaching units; an unknown domain throws', () => {
+    const painted = [...domainPaint(domains, ALL_DOMAINS).colors.keys()];
+    assert.equal(painted.length, 249 + 16);
+    assert.equal(painted.filter((id) => id in domains.units).length, 16);
     assert.equal(Object.keys(domains.regions).length, 289);
     assert.throws(
       () => domainPaint(domains, 'praxis'),
@@ -452,7 +454,8 @@ describe('the published cdmd anatomy', () => {
     );
     const records = [...domains.search!.terms.values()];
     assert.equal(terms.regions.length, 379);
-    assert.equal(manifest.regions.filter((region) => scoredRegion(domains, region)).length, 379);
+    // Every sampled region, and the 16 teaching units that carry a sampled structure's score.
+    assert.equal(manifest.regions.filter((region) => scoredRegion(domains, region)).length, 379 + 16);
     assert.equal(records.length, 277);
     assert.equal(records.filter((record) => record.kind === 'function').length, 232);
     assert.equal(records.filter((record) => record.kind === 'population').length, 45);

@@ -15,6 +15,7 @@
   import { createSectionControls } from '../../features/sections/section-controls.svelte.ts';
   import SectionBar from '../../features/sections/SectionBar.svelte';
   import SectionPopover from '../../features/sections/SectionPopover.svelte';
+  import LesionPopover from '../../features/lesion/LesionPopover.svelte';
   import { saveSnapshot } from '../../features/snapshot/snapshot.ts';
   import Dock from '../../features/stage/Dock.svelte';
   import { createFullscreen } from '../../features/stage/fullscreen.ts';
@@ -213,6 +214,7 @@
       {tractReference}
       view={current}
       hasSpinalCord={publishesSpinalCord(model.manifest)}
+      onLesionPlacing={world.lesion.setPlacing}
       commands={{
         reset: world.anatomy.reset,
         setHemisphere: world.anatomy.setHemisphere,
@@ -243,6 +245,17 @@
           {tractReference}
         />
       {/snippet}
+      {#snippet lesionPopover()}
+        <LesionPopover
+          lesion={world.lesion}
+          lang={current.lang}
+          onReport={() => {
+            world.excursions.chooseExplorer('anatomy');
+            world.anatomy.selectRegion(null);
+            app.ports.showDetail();
+          }}
+        />
+      {/snippet}
     </Dock>
     <StageKeys
       bind:this={keys}
@@ -262,12 +275,17 @@
             // the world's own effect root), as legacy keyed the paint it had just set (app.js:1613).
             {
               ...current,
-              paint: paintFor(current, { domains: model.domains!, clinical: world.clinical }),
+              paint: paintFor(current, {
+                domains: model.domains!,
+                clinical: world.clinical,
+                lesion: world.lesion.paint,
+              }),
             },
             {
               domains: model.domains!,
               clinical: world.clinical,
               drawn: (id) => visibilityOf(world.regions.get(id)!.region, current).visible,
+              lesion: world.lesion.paint,
             },
           )}
       {directionShown}

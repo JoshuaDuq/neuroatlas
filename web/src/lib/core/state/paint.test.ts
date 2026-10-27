@@ -13,6 +13,8 @@ import type { PaintState } from './paint.ts';
 
 const domains = {
   atlas: 'hcp-mmp',
+  unit_atlas: 'learning',
+  units: {},
   domains: [
     { id: 'language', name: 'Language', name_fr: 'Langage', overview: true, color: [1, 2, 3] },
     { id: 'memory', name: 'Memory', name_fr: 'Mémoire', overview: true, color: [4, 5, 6] },
@@ -235,7 +237,7 @@ describe('the published cdmd functions and deficits', () => {
         assert.equal(legend.rows.length, 3, id);
       }
     }
-    assert.equal(data.deficits.length, 40);
+    assert.equal(data.deficits.length, 58);
     for (const deficit of data.deficits) {
       const state: PaintState = {
         explorer: 'deficits',
@@ -262,5 +264,35 @@ describe('the published cdmd functions and deficits', () => {
         }
       }
     }
+  });
+});
+
+describe('the lesion', () => {
+  const lesion = {
+    paint: paintOf('lesion:-45,-25,30:15'),
+    rows: [
+      { id: 'naming', color: [57, 135, 229] as const, title: { en: 'Naming', fr: 'Dénomination' } },
+    ],
+  };
+  const anatomy: PaintState = { ...base, explorer: 'anatomy' };
+
+  test('paints the findings near it while Anatomy, where its report is, is in front', () => {
+    assert.equal(paintFor(anatomy, { ...sources, lesion })!.id, 'lesion:-45,-25,30:15');
+    assert.equal(paintFor({ ...anatomy, paintLifted: true }, { ...sources, lesion }), null);
+    assert.equal(paintFor(anatomy, { ...sources, lesion: null }), null);
+    // Another tab's own paint is that tab's.
+    assert.equal(paintFor(base, { ...sources, lesion })!.id, 'function:all');
+  });
+
+  test('keys each coloured finding by its title', () => {
+    const legend = legendFor(
+      { ...anatomy, lang: 'fr', paint: lesion.paint },
+      { ...sources, lesion },
+    );
+    assert.equal(legend!.map, 'lesion');
+    assert.equal(legend!.pickable, false);
+    assert.deepEqual(legend!.rows, [
+      { id: 'naming', color: [57, 135, 229], label: 'Dénomination', pressed: false },
+    ]);
   });
 });

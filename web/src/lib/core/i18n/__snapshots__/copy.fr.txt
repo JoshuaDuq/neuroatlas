@@ -384,11 +384,13 @@
   },
   "paints": {
    "function": "Fonctions",
-   "deficit": "Déficit"
+   "deficit": "Déficit",
+   "lesion": "Constats de la lésion"
   },
   "paintTitles": {
    "function": "Choisi dans l’onglet Fonctions<NNBSP>: fonctions neuropsychologiques sur les aires HCP-MMP, là où les études rapportent régulièrement une activation (Neurosynth). Choisissez une couleur ici pour l’afficher à la place.",
-   "deficit": "Choisi dans l’onglet Déficits<NNBSP>: les régions citées par les constats du déficit ouvert, une couleur par constat. Choisissez une couleur ici pour l’afficher à la place."
+   "deficit": "Choisi dans l’onglet Déficits<NNBSP>: les régions citées par les constats du déficit ouvert, une couleur par constat. Choisissez une couleur ici pour l’afficher à la place.",
+   "lesion": "Choisi dans le rapport de la lésion<NNBSP>: les régions citées par les constats proches de la lésion, une couleur par constat. Choisissez une couleur ici pour l’afficher à la place."
   },
   "surfaceColorTitles": {
    "tissue": "Couleurs des tissus, nuancées par la luminosité T1",
@@ -444,6 +446,7 @@
    "[\"Alpha\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après Alpha. Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\"",
    "[\"\"] → \"Constance méta-analytique moyenne sur toute la structure de la segmentation de fsaverage pour chaque terme, d’après . Données plus faibles que pour une aire corticale<NNBSP>: le noyau de lissage de 6<NBSP>mm est grand à côté d’un noyau, et les études y rapportent moins de coordonnées. Ni ce que fait ce cerveau, ni ce qu’une lésion ici altérerait.\""
   ],
+  "noteUnit": "Cette unité de l’ensemble pédagogique reçoit la valeur de la structure FreeSurfer qui en contient la plus grande partie dans ce cerveau.",
   "note": [
    "[\"Alpha\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après Alpha<NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\"",
    "[\"\"] → \"Constance méta-analytique moyenne sur l’aire HCP-MMP entière pour chaque terme, d’après <NNBSP>: là où les études qui emploient le terme rapportent régulièrement une activation, et non ce que fait ce cerveau ni ce qu’une lésion ici altérerait.\""
@@ -763,6 +766,89 @@
   "constituentsHeading": "Régions constitutives",
   "constituentsNote": "Union de régions sources. Surface lissée pour la lecture<NNBSP>; volume mesuré sur les voxels sources. Les petites régions sans surface restent accessibles en coupe.",
   "constituentCutOnly": "Coupe seulement"
+ },
+ "lesion": {
+  "tool": "Lésion",
+  "radius": "Rayon",
+  "placeHint": "Cliquez sur le cerveau ou une face de coupe pour placer son centre.",
+  "moveHint": "Cliquez sur le cerveau ou une face de coupe pour déplacer son centre.",
+  "showReport": "Afficher le rapport",
+  "remove": "Retirer",
+  "title": "Lésion",
+  "sides": {
+   "left": "Hémisphère gauche",
+   "right": "Hémisphère droit",
+   "both": "Les deux hémisphères"
+  },
+  "meta": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha · sphère de  · Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \" · sphère de Alpha · \""
+  ],
+  "caveat": "Une forme placée sur ce seul cerveau, mesurée sur ses étiquettes de 1 mm. Ce n’est pas la lésion d’un patient et elle ne prédit aucun déficit.",
+  "measuring": "Mesure en cours…",
+  "failed": "La lésion n’a pas pu être mesurée.",
+  "volumeCaption": "Volume compris, cm³",
+  "tissue": {
+   "cortex": "Cortex",
+   "white": "Substance blanche",
+   "deep": "Gris profond",
+   "fluid": "LCS",
+   "outside": "Hors cerveau"
+  },
+  "cortex": "Cortex",
+  "shareNote": "Part de chaque région comprise dans la lésion",
+  "deep": "Structures profondes",
+  "white": "Substance blanche gyrale",
+  "whiteNote": "À moins de 5 mm du cortex, nommée d’après le gyrus au-dessus",
+  "slightRegions": [
+   "[\"Alpha\"] → \"Alpha de plus sous 1<NNBSP>%\"",
+   "[\"\"] → \" de plus sous 1<NNBSP>%\""
+  ],
+  "tracts": "Faisceaux",
+  "tractsNote": "Trajectoires ayant un point dans la lésion",
+  "countTracts": [
+   "[\"Alpha\"] → \"Compter Alpha\"",
+   "[\"\"] → \"Compter \""
+  ],
+  "tractsDownload": "Télécharge les trajectoires de chaque faisceau<NNBSP>: des dizaines de mégaoctets.",
+  "counting": [
+   "[\"Alpha\",\"\"] → \"Faisceau Alpha sur  en cours…\"",
+   "[\"\",\"Alpha\"] → \"Faisceau  sur Alpha en cours…\""
+  ],
+  "tractsFailed": "Les faisceaux n’ont pas pu être comptés.",
+  "ofTotal": [
+   "[\"Alpha\",\"\"] → \"Alpha sur \"",
+   "[\"\",\"Alpha\"] → \" sur Alpha\""
+  ],
+  "notReached": [
+   "[\"Alpha\"] → \"Non atteints<NNBSP>: Alpha\"",
+   "[\"\"] → \"Non atteints<NNBSP>: \""
+  ],
+  "noTracts": "Cette anatomie ne publie pas de faisceaux qui lui sont propres.",
+  "findings": "Constats citant ces régions",
+  "findingsNote": "Classés selon la part d’une région citée comprise dans la lésion. Un chevauchement avec une région citée, pas un déficit prédit.",
+  "noFindings": "Aucun constat ne cite une région atteinte par cette lésion.",
+  "showOnBrain": "Afficher sur le cerveau",
+  "hideOnBrain": "Retirer du cerveau",
+  "cited": [
+   "[\"Alpha\",1] → \"Alpha sur 1 citée\"",
+   "[\"\",2] → \" sur 2 citées\"",
+   "[\"Alpha\",183] → \"Alpha sur 183 citées\"",
+   "[\"\",12345] → \" sur 12345 citées\"",
+   "[\"Alpha\",0] → \"Alpha sur 0 citées\""
+  ],
+  "oneSide": {
+   "left": "Constat bilatéral<NNBSP>; cette lésion n’atteint que le côté gauche.",
+   "right": "Constat bilatéral<NNBSP>; cette lésion n’atteint que le côté droit."
+  },
+  "openFinding": "Ouvrir le constat",
+  "slightFindings": [
+   "[\"Alpha\"] → \"Alpha de plus touchent une région citée à moins de 1<NNBSP>%\"",
+   "[\"\"] → \" de plus touchent une région citée à moins de 1<NNBSP>%\""
+  ],
+  "unmeasured": "Les structures tracées seulement en maillage, comme le fornix ou les noyaux mamillaires, ne sont pas mesurées.",
+  "keyTitle": "Constats près de la lésion",
+  "keyNote": "Une couleur par constat, dans l’ordre du classement<NNBSP>; une région citée par plusieurs constats prend la couleur du premier."
  },
  "link": {
   "newTab": "(s’ouvre dans un nouvel onglet)",

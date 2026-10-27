@@ -45,6 +45,8 @@ let commands: { [K in keyof DockCommands]: Mock<DockCommands[K]> };
 let cleanups: (() => void)[];
 /** What the stage layout's `onDock` runs: the camera refit in the app. */
 let onDock: () => void;
+/** Each placing state the dock has asked for, in order. */
+let placing: boolean[];
 
 function liveState(overrides: Partial<Live>): Live {
   const state = $state<Live>({
@@ -101,7 +103,8 @@ async function mount(
       });
     }),
   );
-  const result = await render(Fixture, { engine, stage, live, commands, width, height });
+  placing = [];
+  const result = await render(Fixture, { engine, stage, live, commands, width, height, placing });
   stage.setGutter(20);
   stage.setViewport(engine.camera.visibleRect, engine.camera.hostSize);
   flushSync();
@@ -155,31 +158,31 @@ afterEach(() => {
 });
 
 describe('the toolbar', () => {
-  test('is a labelled toolbar of three tools with one Tab stop that the arrows walk, wrapping', async () => {
+  test('is a labelled toolbar of four tools with one Tab stop that the arrows walk, wrapping', async () => {
     await mount();
     const bar = page.getByRole('toolbar', { name: '3D viewer tools' }).element();
     const tools = [...bar.querySelectorAll<HTMLElement>('.stage-tool')];
     expect(
       tools.map((node) => node.getAttribute('aria-label') ?? node.textContent!.trim()),
-    ).toEqual(['Anatomical view: Oblique', 'Section', 'Display']);
-    expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1]);
+    ).toEqual(['Anatomical view: Oblique', 'Section', 'Display', 'Lesion']);
+    expect(tools.map((node) => node.tabIndex)).toEqual([0, -1, -1, -1]);
 
     tool('Anatomical view').focus();
     await userEvent.keyboard('{ArrowRight}');
     expect(active()).toBe(tool('Section'));
-    await userEvent.keyboard('{ArrowDown}{ArrowRight}');
+    await userEvent.keyboard('{ArrowDown}{ArrowRight}{ArrowRight}');
     expect(active()).toBe(tool('Anatomical view'));
     await userEvent.keyboard('{ArrowLeft}');
-    expect(active()).toBe(tool('Display'));
+    expect(active()).toBe(tool('Lesion'));
     await userEvent.keyboard('{Home}');
     expect(active()).toBe(tool('Anatomical view'));
     await userEvent.keyboard('{End}');
-    expect(active()).toBe(tool('Display'));
+    expect(active()).toBe(tool('Lesion'));
   });
 
   test('Tab passes the whole toolbar in one stop, and comes back to its first tool', async () => {
     await mount();
-    tool('Display').focus();
+    tool('Lesion').focus();
     await userEvent.keyboard('{Tab}');
     expect(active()).toBe(control('button', 'After'));
     // The Tab stop is the focused tool, else the first (ui/roving.js), as in the legacy dock.
@@ -788,5 +791,27 @@ describe('accessibility (axe)', () => {
       await expectAxeClean();
       await userEvent.keyboard('{Escape}');
     }
+  });
+});
+
+describe('the Lesion tool', () => {
+  test('places while its popover is open: a press on the stage keeps it open, one elsewhere closes it', async () => {
+    await mount();
+    expect(placing.at(-1)).toBe(false);
+    await press('button', 'Lesion');
+    await vi.waitFor(() => expect(placing.at(-1)).toBe(true));
+    const canvas = document.getElementById('stage-canvas')!;
+    await userEvent.click(canvas);
+    expect(tool('Lesion').getAttribute('aria-expanded')).toBe('true');
+    expect(placing.at(-1)).toBe(true);
+    await press('button', 'After');
+    await vi.waitFor(() => expect(tool('Lesion').getAttribute('aria-expanded')).toBe('false'));
+    expect(placing.at(-1)).toBe(false);
+  });
+
+  test('is not offered over the tract reference, so nothing is placed there', async () => {
+    await mount({ tractReference: true });
+    expect(page.getByRole('button', { name: 'Lesion' }).elements()).toHaveLength(0);
+    expect(placing.at(-1)).toBe(false);
   });
 });

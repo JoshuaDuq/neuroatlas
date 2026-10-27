@@ -341,20 +341,20 @@ the expected values change with them in the same commit.
 
 ### CAT-35 · The domain partition is checked against the regions it scores
 
-- **Rule:** The domain file needs unique groups with both names; domains with a unique id other than "all", both names, a term, a known group, an overview flag, a colour, a study count and a lesion check; at least one overview domain; a z scale that starts at the threshold and rises; and assignments only to scored regions, with known domains at or above the threshold.
+- **Rule:** The domain file needs unique groups with both names; domains with a unique id other than "all", both names, a term, a known group, an overview flag, a colour, a study count and a lesion check; at least one overview domain; a z scale that starts at the threshold and rises; assignments only to scored regions, with known domains at or above the threshold; and teaching units, each a structure of the unit atlas naming a sampled structure.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/catalog/neuropsych-domains.js:51-90`
-- **Expected:** with the `neuropsych-domains.test.ts` fixture: z 2.9 under threshold 3, a Destrieux region, an unknown domain, or an unsampled aseg structure (Left-Lateral-Ventricle) → "Invalid neuropsychological-domain assignment: <id>"; missing lesion check, unknown group, id "all", missing overview flag, missing study count → "Invalid neuropsychological domain: <id>"; first band ≠ threshold or a band not above the last → "Invalid neuropsychological-domain z scale."; duplicate group → "Invalid neuropsychological-domain group: cognition"; no overview domain → "No neuropsychological domain is in the overview.".
+- **Expected:** with the `neuropsych-domains.test.ts` fixture: z 2.9 under threshold 3, a Destrieux region, an unknown domain, or an unsampled aseg structure (Left-Lateral-Ventricle) → "Invalid neuropsychological-domain assignment: <id>"; missing lesion check, unknown group, id "all", missing overview flag, missing study count → "Invalid neuropsychological domain: <id>"; first band ≠ threshold or a band not above the last → "Invalid neuropsychological-domain z scale."; duplicate group → "Invalid neuropsychological-domain group: cognition"; no overview domain → "No neuropsychological domain is in the overview."; a unit naming Left-Lateral-Ventricle or an HCP-MMP area, or an HCP-MMP area as a unit → "Invalid neuropsychological-domain teaching unit: <id>"; no units → "Invalid neuropsychological-domain partition.".
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R)
 
 ### CAT-36 · An area is drawn as its strongest overview domain, or the one picked
 
-- **Rule:** An area lists its domains strongest first. With no domain picked it is drawn as its strongest overview domain (passing over a stronger one shown only alone); with one picked that it reaches, as that one. A sampled aseg structure is scored like an area.
+- **Rule:** An area lists its domains strongest first. With no domain picked it is drawn as its strongest overview domain (passing over a stronger one shown only alone); with one picked that it reaches, as that one. A sampled aseg structure is scored like an area. A teaching unit has the domains of the structure it names; the structure, not the unit, is what a domain lists.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/catalog/neuropsych-domains.js:119-134, 150-152`
-- **Expected:** fixture: `hcp-mmp:left:1` → memory 7.5, language 3.2; shown null → memory, picked language → language; unscored area → [] and null. With memory not overview: overview `['language','visual']`, shown null → language, picked memory → memory. `scoredRegion`: aseg Left-Amygdala true, Left-Lateral-Ventricle false, hcp-mmp cortex true, destrieux false.
+- **Expected:** fixture: `hcp-mmp:left:1` → memory 7.5, language 3.2; shown null → memory, picked language → language; unscored area → [] and null. With memory not overview: overview `['language','visual']`, shown null → language, picked memory → memory. `scoredRegion`: aseg Left-Amygdala true, Left-Lateral-Ventricle false, hcp-mmp cortex true, destrieux false, the unit `learning:left:amygdala` true and `learning:left:thalamus` (no unit) false; the amygdala unit lists the same domains as `aseg:left:18`, shown null → memory; memory still lists `aseg:left:18`, not the unit.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R)
 
 ### CAT-37 · The Functions list groups domains in authored order and filters by either name or term
@@ -377,11 +377,11 @@ the expected values change with them in the same commit.
 
 ### CAT-39 · The model paint: overview colours, or z bands for one domain
 
-- **Rule:** The overview paints each scored area in its shown domain's colour. One domain or term paints each area it reaches in the colour of its z band: the last band whose start the z reaches. An unknown domain fails.
+- **Rule:** The overview paints each scored area in its shown domain's colour. One domain or term paints each area it reaches in the colour of its z band: the last band whose start the z reaches. Each teaching unit takes its structure's colour. A function's paint is revealed with its structures on aseg when aseg is the detail shown, otherwise on the teaching set; a listed structure opens as the units that carry its score, unless aseg is shown. An unknown domain fails.
 - **Kind:** scientific
 - **Level:** unit
 - **Source:** `viewer/catalog/neuropsych-domains.js:163-181`
-- **Expected:** fixture bands 3 / 5 / 10: overview id "function:all" → `hcp-mmp:left:1` [4,5,6], `hcp-mmp:right:1` [1,2,3], `aseg:left:18` [4,5,6]; language → both [30,30,30]; memory → `hcp-mmp:left:1` [50,50,50], `aseg:left:18` [30,30,30]; `term:fear` id "function:term:fear", `aseg:left:18` [50,50,50]; "praxis" and "term:praxis" throw "Unknown neuropsychological domain: <id>". Published bands start at 3, 5, 10: z 2.9 → none, 3 and 4.99 → 3, 5 → 5, 10 and 25 → 10. Published overview paint colours 249 regions (of the 289 with a domain assignment).
+- **Expected:** fixture bands 3 / 5 / 10: overview id "function:all" → `hcp-mmp:left:1` [4,5,6], `hcp-mmp:right:1` [1,2,3], `aseg:left:18` and `learning:left:amygdala` [4,5,6]; language → both [30,30,30]; memory → `hcp-mmp:left:1` [50,50,50], `aseg:left:18` and the unit [30,30,30]; `term:fear` id "function:term:fear", `aseg:left:18` and the unit [50,50,50]; memory revealed on detail aseg → `hcp-mmp:left:1`, `aseg:left:18`; on learning or nextbrain → `hcp-mmp:left:1`, `learning:left:amygdala`; `aseg:left:18` listed on learning or nextbrain → the unit, on aseg → itself, two units on it → both; "praxis" and "term:praxis" throw "Unknown neuropsychological domain: <id>". Published bands start at 3, 5, 10: z 2.9 → none, 3 and 4.99 → 3, 5 → 5, 10 and 25 → 10. Published overview paint colours 249 regions (of the 289 with a domain assignment) and the 16 teaching units.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R); `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ### CAT-40 · The Neurosynth term search is checked
@@ -390,7 +390,7 @@ the expected values change with them in the same commit.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/catalog/neuropsych-domains.js:24-49`
-- **Expected:** fixture: z 2.9, a region index out of range, a repeated term, no regions, kind "anatomy", or the curated term "language" → "Invalid Neurosynth term: <term>"; an unscored region → "Invalid Neurosynth term region: aseg:left:4"; another threshold or atlas → "Invalid Neurosynth term search.". `term:aphasia` kind population; `term:language` has no record.
+- **Expected:** fixture: z 2.9, a region index out of range, a repeated term, no regions, kind "anatomy", or the curated term "language" → "Invalid Neurosynth term: <term>"; an unscored region or a teaching unit → "Invalid Neurosynth term region: <id>"; another threshold or atlas → "Invalid Neurosynth term search.". `term:aphasia` kind population; `term:language` has no record.
 - **Covered by:** `src/lib/core/catalog/neuropsych-domains.test.ts` (R)
 
 ### CAT-41 · Term search ranks the term itself, then word starts, then the rest
@@ -417,7 +417,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `public/models/cdmd/neuropsych-domains.json`, `neurosynth-terms.json`
-- **Expected:** atlas hcp-mmp, structure atlas aseg with 19 sampled structures, threshold z 3, bands from 3, 5, 10; 6 groups (attention-executive, memory, language-number, perception, sensorimotor, social-emotional); 70 domains, 11 in the overview (executive, working-memory, long-term-memory, language, attention, visuospatial, social-cognition, visual-perception, motor, auditory-perception, emotion); 289 regions with an assignment; 277 terms (232 function, 45 population) over 379 regions; the files validate together.
+- **Expected:** atlas hcp-mmp, structure atlas aseg with 19 sampled structures, 16 teaching units, threshold z 3, bands from 3, 5, 10; 6 groups (attention-executive, memory, language-number, perception, sensorimotor, social-emotional); 70 domains, 11 in the overview (executive, working-memory, long-term-memory, language, attention, visuospatial, social-cognition, visual-perception, motor, auditory-perception, emotion); 289 regions with an assignment; 277 terms (232 function, 45 population) over 379 regions; 395 regions with domains (the 379 and the 16 units); the files validate together.
 - **Covered by:** `src/lib/core/catalog/published-catalog.test.ts` (S)
 
 ## Clinical catalogue
@@ -437,7 +437,7 @@ the expected values change with them in the same commit.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/clinical/catalog.js:64-90`
-- **Expected:** fixture: "amnesie" (fr), "mémoire" (fr), "oubli" (fr), "forgetfulness" (en), "memory" (en) → `['amnesia']`; "" → 1; "unlisted" → []; `search('x','de')` throws "Unknown language: de". Published: "prosopagnosie" (fr) first `agnosia`; "set shifting" first `executive`; "champ visuel" (fr) first `hemianopia`; "reading" first `alexia`; "amnesia" → `['amnesia']`; "memory" (en) → `['agraphia','amnesia']`.
+- **Expected:** fixture: "amnesie" (fr), "mémoire" (fr), "oubli" (fr), "forgetfulness" (en), "memory" (en) → `['amnesia']`; "" → 1; "unlisted" → []; `search('x','de')` throws "Unknown language: de". Published: "prosopagnosie" (fr) first `agnosia`; "set shifting" first `executive`; "champ visuel" (fr) first `hemianopia`; "reading" first `alexia`; "amnesia" → `['amnesia']`; "memory" (en) → `['agraphia','amnesia','auditory-short-term-memory','olfactory-recognition','prospective-memory','confabulation']`.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S, fixed published searches); `catalog.test.ts` (R, ranking and the unknown-language error)
 
 ### CAT-46 · Deficits list under their groups in authored order
@@ -446,7 +446,7 @@ the expected values change with them in the same commit.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/clinical/catalog.js:14-24, 95`
-- **Expected:** groups language, memory, motor with amnesia (memory), aphasia and dysarthria (language) → `[['language',['aphasia','dysarthria']],['memory',['amnesia']]]`; no deficits → []; fixture `grouped('oubli','fr')` → group "Mémoire et orientation spatiale"; `grouped('unlisted')` → []. Published `grouped('')`: attention-executive, memory, language-number, perception, sensorimotor, social-emotional, holding all 40 deficits.
+- **Expected:** groups language, memory, motor with amnesia (memory), aphasia and dysarthria (language) → `[['language',['aphasia','dysarthria']],['memory',['amnesia']]]`; no deficits → []; fixture `grouped('oubli','fr')` → group "Mémoire et orientation spatiale"; `grouped('unlisted')` → []. Published `grouped('')`: attention-executive, memory, language-number, perception, sensorimotor, social-emotional, holding all 58 deficits.
 - **Covered by:** `src/lib/core/clinical/catalog.test.ts` (R), `data.test.ts` (S)
 
 ### CAT-47 · A deficit and a region reach the same cited findings
@@ -482,7 +482,7 @@ the expected values change with them in the same commit.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `data/neuropsychology.yaml`; `viewer/clinical/data.test.js`
-- **Expected:** revised "2026-10-22"; 6 groups, 40 deficits (abulia … word-deafness, the list in `data.test.ts`), 60 references, 58 associations; every deficit has a finding. `forRegion`: `destrieux:left:38` deficits aphasia, aphasia, aphasia, akinetopsia; `destrieux:right:21` agnosia; `aseg:left:17` and `aseg:right:53` amnesia; `destrieux:left:16` none; `destrieux:right:38` neglect-allocentric, akinetopsia-lateral; `destrieux:right:26` extinction-temporoparietal, neglect-egocentric, neglect-perceptual; `destrieux:left:12` apraxia-finger, dysphagia-insula, emotion-prosody, speech-apraxia-frontal; `aseg:left:18` emotion-recognition; `learning:right:dentate` ataxia; `nextbrain:left:458` central-pain, lateropulsion; `aseg:right:47` ataxia, cerebellar-cognitive, dysarthria. `forDeficit('amnesia')` hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic; `speech-apraxia` 2 findings, each with qualifying evidence; every apraxia finding and the first hemichorea finding have qualifying evidence; a meta-analysis is cited.
+- **Expected:** revised "2026-10-27"; 6 groups, 58 deficits (abulia … word-deafness, the list in `data.test.ts`), 89 references, 79 associations; every deficit has a finding. `forRegion`: `destrieux:left:38` deficits aphasia, aphasia, aphasia, akinetopsia; `destrieux:right:21` agnosia; `aseg:left:17` and `aseg:right:53` amnesia; `destrieux:left:16` none; `destrieux:right:38` neglect-allocentric, akinetopsia-lateral; `destrieux:right:26` extinction-temporoparietal, neglect-egocentric, neglect-perceptual; `destrieux:left:12` apraxia-finger, dysphagia-insula, emotion-prosody, speech-apraxia-frontal, stuttering-cortico-striatal; `aseg:left:18` emotion-recognition; `learning:right:dentate` ataxia; `nextbrain:left:458` central-pain, lateropulsion; `aseg:right:47` ataxia, cerebellar-cognitive, dysarthria. `forDeficit('amnesia')` hippocampal-amnesia, amnesia-fornix, amnesia-diencephalic; `speech-apraxia` 2 findings, each with qualifying evidence; every apraxia finding and the first hemichorea finding have qualifying evidence; a meta-analysis is cited.
 - **Covered by:** `src/lib/core/clinical/data.test.ts` (S, counts and revision added)
 
 ## Circuits and lessons

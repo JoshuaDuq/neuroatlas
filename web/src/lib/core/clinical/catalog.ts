@@ -130,6 +130,8 @@ export function createClinicalCatalog(data: ClinicalData, manifest: Pick<Manifes
   return {
     revised: data.revised,
     groups: [...groups.values()] as ClinicalGroup[],
+    /** Every finding, in authored order. */
+    associations: [...associations.values()],
     get: (id: string) => required(deficits, id, 'deficit'),
     reference: (id: string) => required(references, id, 'reference'),
     forDeficit: (id: string) => required(byDeficit, id, 'deficit'),

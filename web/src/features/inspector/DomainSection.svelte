@@ -34,7 +34,8 @@
     const sources = domains!.sources as Record<string, { short: string }>;
     const source = sources[domains!.scores_source as string]!.short;
     const basis = region!.atlas === domains!.atlas ? copy.note : copy.noteStructure;
-    return [!found.length && copy.none(decimal(domains!.threshold_z, 0, lang)), basis(source)]
+    const unit = region!.id in domains!.units && copy.noteUnit;
+    return [!found.length && copy.none(decimal(domains!.threshold_z, 0, lang)), basis(source), unit]
       .filter(Boolean)
       .join(' ');
   });

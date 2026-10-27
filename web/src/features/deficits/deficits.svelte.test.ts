@@ -49,9 +49,9 @@ describe('the list', () => {
       const label = document.getElementById(group.getAttribute('aria-labelledby')!)!;
       expect(label.tagName).toBe('H3');
     }
-    expect(rows()).toHaveLength(40);
+    expect(rows()).toHaveLength(58);
     expect(document.querySelector('.scope-note')!.textContent).toContain(
-      '40 profiles · adult acquired deficits',
+      '58 profiles · adult acquired deficits',
     );
     expect(document.querySelector('[role="group"][aria-label="Deficits"]')).not.toBeNull();
     await expect.element(page.getByRole('searchbox', { name: /search deficits/i })).toBeVisible();
@@ -75,7 +75,7 @@ describe('the list', () => {
     expect(field().value).toBe('');
     expect(document.activeElement).toBe(field());
     expect(calls.at(-1)).toBe('query:');
-    await expect.poll(announced, { timeout: 2000 }).toBe('40 deficits');
+    await expect.poll(announced, { timeout: 2000 }).toBe('58 deficits');
   });
 
   test('an equal sentence for a different query is said again', async () => {
@@ -158,7 +158,7 @@ describe('the list', () => {
       expect(items.length).toBeGreaterThan(0);
       expect(group.querySelectorAll('ul > li > button.row')).toHaveLength(items.length);
     }
-    expect(document.querySelectorAll('ul > li > button.row')).toHaveLength(40);
+    expect(document.querySelectorAll('ul > li > button.row')).toHaveLength(58);
   });
 
   test('one clear control: the custom button, with the native cancel hidden (D9)', async () => {
@@ -228,6 +228,22 @@ describe('the list', () => {
 });
 
 describe('opening a deficit', () => {
+  test('a profile without parcel-level evidence opens with its publications and no region buttons', async () => {
+    const { view } = await mount();
+    await row('autotopagnosia').click();
+    await expect.poll(() => heading().textContent!.trim()).toBe('Autotopagnosia');
+    expect(document.querySelectorAll('button.region')).toHaveLength(0);
+    await expect.element(page.getByText('No atlas mapping available.')).toBeVisible();
+    document.querySelector<HTMLElement>('summary')!.click();
+    expect(document.querySelectorAll('article.publication')).toHaveLength(2);
+    view.lang = 'fr';
+    await expect.poll(() => heading().textContent!.trim()).toBe('Autotopoagnosie');
+    await expect
+      .element(page.getByText('Aucune correspondance disponible dans l’atlas.'))
+      .toBeVisible();
+    expect(document.querySelectorAll('button.region')).toHaveLength(0);
+  });
+
   test('the heading takes focus once the profile for that deficit is in the page (x2-focus-after-render)', async () => {
     const { calls } = await mount();
     await row('aphasia').click();

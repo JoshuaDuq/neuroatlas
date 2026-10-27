@@ -46,6 +46,8 @@ const domains = {
     ],
     b: [{ domain: 'memory', z: 3 }],
   },
+  // A teaching unit carrying area a's score.
+  units: { u: 'a' },
   search: {
     terms: new Map([
       ['term:reading', { id: 'term:reading', term: 'reading', areas: [{ region: 'a', z: 3 }] }],
@@ -122,6 +124,7 @@ describe('hoverText', () => {
     const painted = view({ paint: functionPaint, selectedFunction: 'all' });
     expect(hoverText(region('a'), painted, sources())).toBe('Area A · Attention · Left');
     expect(hoverText(region('b'), painted, sources())).toBe('raw b · Left');
+    expect(hoverText(region('u'), painted, sources())).toBe('raw u · Attention · Left');
   });
 
   test('one function shown alone names it where the area reaches it', () => {
@@ -136,6 +139,7 @@ describe('hoverText', () => {
     const term = view({ paint: functionPaint, selectedFunction: 'term:reading' });
     expect(hoverText(region('a'), term, sources())).toBe('Area A · reading · Left');
     expect(hoverText(region('b'), term, sources())).toBe('raw b · Left');
+    expect(hoverText(region('u'), term, sources())).toBe('raw u · reading · Left');
   });
 
   test('a deficit paint names no function', () => {

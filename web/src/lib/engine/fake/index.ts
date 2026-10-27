@@ -3,23 +3,27 @@ import type {
   Engine,
   EngineComparison,
   EngineEvents,
+  LesionMeasurement,
   MriDisplay,
   Presentation,
   Rect,
   Size,
 } from '../api.ts';
 import { createFakeCamera } from './camera.ts';
+import { createFakeLesion } from './lesion.ts';
+import type { FakeLesion } from './lesion.ts';
 import { createFakeModel } from './model.ts';
 import type { FakeModel } from './model.ts';
 import { createFakeSections } from './sections.ts';
 import { canvasElement, createEvents, recorded } from './support.ts';
 import type { Call } from './support.ts';
-import { createFakeTracts } from './tracts.ts';
+import { DEFAULT_BUNDLES, createFakeTracts } from './tracts.ts';
 import type { FakeBundle, FakeTracts } from './tracts.ts';
 
 export type { Call } from './support.ts';
 export type { FakeMriNavigator } from './mri.ts';
 export type { FakeBundle, FakeTracts } from './tracts.ts';
+export type { FakeLesion } from './lesion.ts';
 
 type FakeFile = { atlas: string; [field: string]: unknown };
 
@@ -37,11 +41,14 @@ export interface FakeEngineOptions {
   /** The anatomy the tracts belong to, when it is not the manifest's own. */
   tractAnatomy?: string;
   tractBundles?: FakeBundle[];
+  /** What a lesion measures to. */
+  lesionMeasurement?: LesionMeasurement;
 }
 
 export interface FakeEngine extends Engine {
   readonly model: FakeModel;
   readonly tracts: FakeTracts;
+  readonly lesion: FakeLesion;
   /** Every call into the engine's domains, in order. Events and getters are not recorded. */
   readonly calls: readonly Call[];
   /** What the comparison overlay shows: the highlighted overlap and whether it is visible. */
@@ -92,6 +99,14 @@ export function createFakeEngine(options: FakeEngineOptions): FakeEngine {
     emit: events.emit,
   });
 
+  const lesion = createFakeLesion({
+    bundles:
+      (options.tractAnatomy ?? options.manifest.anatomy.id) === options.manifest.anatomy.id
+        ? (options.tractBundles ?? DEFAULT_BUNDLES)
+        : null,
+    ...(options.lesionMeasurement && { measurement: options.lesionMeasurement }),
+  });
+
   const camera = createFakeCamera({
     model,
     sections,
@@ -128,6 +143,7 @@ export function createFakeEngine(options: FakeEngineOptions): FakeEngine {
     camera: recorded('camera', camera, calls),
     comparison: recorded('comparison', comparison, calls),
     tracts: recorded('tracts', tracts, calls),
+    lesion: recorded('lesion', lesion, calls),
     calls,
     get highlighted() {
       return overlayVisible ? highlighted : null;

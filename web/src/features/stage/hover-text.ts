@@ -9,6 +9,7 @@ import {
   domainRecord,
   domainsOf,
   isTermId,
+  scoredSource,
 } from '../../lib/core/catalog/neuropsych-domains.ts';
 import type { NeuropsychDomains, TermRecord } from '../../lib/core/catalog/neuropsych-domains.ts';
 import { t } from '../../lib/core/i18n/index.ts';
@@ -40,7 +41,8 @@ function domainNames(
   domains: NeuropsychDomains,
 ): string {
   if (isTermId(selectedFunction)) {
-    return domainAreas(domains, selectedFunction).some((area) => area.region === region.id)
+    const scored = scoredSource(domains, region.id);
+    return domainAreas(domains, selectedFunction).some((area) => area.region === scored)
       ? (domainRecord(domains, selectedFunction) as TermRecord).term
       : '';
   }

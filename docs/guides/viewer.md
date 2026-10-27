@@ -48,11 +48,16 @@ A Destrieux or HCP-MMP region lists the regions of the other atlas it shares pia
 
 ## Stage
 
-The dock at the bottom left holds three tools.
+The dock at the bottom left holds four tools.
 
 - **View** holds the presets: oblique, left, right, anterior, posterior, superior, inferior.
 - **Section** chooses the cutting plane (full brain, sagittal, coronal, axial, oblique) and the cut labels.
 - **Display** holds hemisphere, cortex and its opacity, internal anatomy, spinal cord and **Reset view**.
+- **Lesion** places a sphere (3–30 mm radius): while it is open, a click on the brain or a cut face sets the centre. Cut first to place it at depth.
+
+### Lesion report
+
+A placed lesion is Anatomy's detail. It lists what the sphere covers on the subject's 1 mm label volumes: each tissue in cm³, then the cortical regions (Destrieux or HCP-MMP), deep structures and gyral white matter it reaches, with the share of each region inside it. **Count** downloads the tract bundles on the sides the sphere reaches, plus the seven callosal segments, and gives the share of each bundle's streamlines with a point inside. The findings that cite a reached region follow, ranked by the largest share of a cited region inside. Findings under 1% are folded. A bilateral finding the lesion reaches on one side is marked. **Show on the brain** paints the cited regions, one colour per finding. The report measures overlap only: it predicts no deficit. Structures drawn only as meshes, such as the fornix, are not measured.
 
 A cut adds the section bar above the dock: a slider and a millimetre field for the position, tilt and azimuth for an oblique plane, **Reverse side**, **Linked MRI**, and × to return to the full brain. Positions are surface RAS millimetres: +R right, +A anterior, +S superior. Each solid is capped where the plane meets it, and the cap samples the label volume of the chosen cut labels.
 

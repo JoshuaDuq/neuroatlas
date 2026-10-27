@@ -23,6 +23,25 @@
     "Right-Thalamus-Proper",
     "Right-VentralDC"
   ],
+  "unit_atlas": "learning",
+  "units": {
+    "learning:left:caudate": "aseg:left:11",
+    "learning:right:caudate": "aseg:right:50",
+    "learning:left:putamen": "aseg:left:12",
+    "learning:right:putamen": "aseg:right:51",
+    "learning:left:pallidum-external": "aseg:left:13",
+    "learning:right:pallidum-external": "aseg:right:52",
+    "learning:left:pallidum-internal": "aseg:left:13",
+    "learning:right:pallidum-internal": "aseg:right:52",
+    "learning:left:accumbens": "aseg:left:26",
+    "learning:right:accumbens": "aseg:right:58",
+    "learning:left:thalamus": "aseg:left:10",
+    "learning:right:thalamus": "aseg:right:49",
+    "learning:left:hippocampus": "aseg:left:17",
+    "learning:right:hippocampus": "aseg:right:53",
+    "learning:left:amygdala": "aseg:left:18",
+    "learning:right:amygdala": "aseg:right:54"
+  },
   "threshold_z": 3,
   "z_scale": [
     {

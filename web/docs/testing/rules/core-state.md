@@ -530,8 +530,8 @@ is the English interface text.
 - **Kind:** data
 - **Level:** unit
 - **Source:** `viewer/state/paint.js`; `public/models/cdmd/neuropsych-domains.json`; `data/neuropsychology.yaml`
-- **Expected:** cdmd: for `all`, each of the 70 domains and each Neurosynth term on hcp-mmp → paint id `function:<id>`, and null on destrieux; a single function's key has the three bands of STATE-54 and is titled with its name in en and fr. For each of the 40 deficits in `data/neuropsychology.yaml` and each of its findings → `deficit:<id>` or `deficit:<id>:<finding>`; the key title is the deficit's name in en and fr and has one row per finding. Lifted paint → null.
-- **Covered by:** `src/lib/core/state/paint.test.ts` (S, `STATE-56`: all 70 domains, 277 terms, 40 deficits and their findings, in both languages)
+- **Expected:** cdmd: for `all`, each of the 70 domains and each Neurosynth term on hcp-mmp → paint id `function:<id>`, and null on destrieux; a single function's key has the three bands of STATE-54 and is titled with its name in en and fr. For each of the 58 deficits in `data/neuropsychology.yaml` and each of its findings → `deficit:<id>` or `deficit:<id>:<finding>`; the key title is the deficit's name in en and fr and has one row per finding. Lifted paint → null.
+- **Covered by:** `src/lib/core/state/paint.test.ts` (S, `STATE-56`: all 70 domains, 277 terms, 58 deficits and their findings, in both languages)
 
 ## Dissection
 

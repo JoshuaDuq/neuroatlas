@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { describe, expect, test, vi } from 'vitest';
 import { beneathCortex } from '../core/catalog/labels.ts';
-import { ALL_DOMAINS, domainAreas, domainPaint } from '../core/catalog/neuropsych-domains.ts';
+import {
+  ALL_DOMAINS,
+  domainAreas,
+  domainPaint,
+  revealedRegions,
+} from '../core/catalog/neuropsych-domains.ts';
 import { createScene } from './excursion-test-support.ts';
 
 const DEFICIT = 'acalculia';
@@ -133,6 +138,39 @@ describe('an excursion into a function', () => {
     ]);
     const shown = [...domainPaint(scene.domains, 'language').colors.keys()];
     assert.ok(shown.every((id) => scene.engine.model.isRegionDrawn(id)));
+  });
+
+  for (const [detail, drawnOn] of [
+    ['learning', 'learning'],
+    ['nextbrain', 'learning'],
+    ['aseg', 'aseg'],
+  ]) {
+    test(`from the ${detail} detail, draws its structures on ${drawnOn}`, async () => {
+      const scene = createScene();
+      const { model } = scene.engine;
+      await model.setDetail(detail);
+      await scene.excursions.openFunction('reward');
+      assert.equal(model.settings.detail, drawnOn);
+      const paint = domainPaint(scene.domains, 'reward');
+      const structures = revealedRegions(scene.domains, paint, drawnOn).filter((id) =>
+        id.startsWith(`${drawnOn}:`),
+      );
+      assert.ok(structures.length > 0);
+      assert.ok(structures.every((id) => model.isRegionDrawn(id)));
+    });
+  }
+
+  test('a structure it lists opens as the teaching units that carry its score', async () => {
+    const scene = createScene();
+    await scene.engine.model.setDetail('nextbrain');
+    await scene.excursions.openFunction('motor');
+    assert.equal(await scene.excursions.openListedRegion('aseg:left:13'), true);
+    assert.equal(scene.engine.model.settings.detail, 'learning');
+    assert.equal(scene.engine.model.state.selectedRegion?.id, 'learning:left:pallidum-external');
+    const framed = scene.engine.calls.findLast((call) => call.method === 'frameRegions')!;
+    assert.deepEqual(framed.args, [
+      ['learning:left:pallidum-external', 'learning:left:pallidum-internal'],
+    ]);
   });
 
   test('a lesson it is opened from ends there and hands over the scene from before it', async () => {

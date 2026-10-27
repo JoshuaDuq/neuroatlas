@@ -1,9 +1,13 @@
-import type { Box3, Object3D, Plane } from 'three';
+import type { Box3, Matrix4, Object3D, Plane } from 'three';
+import { readDiffusionAsset } from '../../core/assets/diffusion-assets.ts';
 import { tractCatalog } from '../../core/diffusion/catalogs.ts';
-import type { EngineEvents, EngineTracts, Vec3 } from '../api.ts';
+import type { EngineEvents, EngineTracts, LesionSphere, TractCrossing, Vec3 } from '../api.ts';
+import { streamlinesCrossing } from '../lesion/measure.ts';
+import { rasToWorld, worldToRas } from '../slices/coordinates.ts';
 import { createNativeTractViewer } from './native-viewer.ts';
 import { createMriNavigationViewer } from './navigation-viewer.ts';
-import { createTractLoader } from './tract-file.ts';
+import { createReferenceTransform } from './reference-space.ts';
+import { createTractLoader, decodeTractAsset } from './tract-file.ts';
 
 type TractEvents = Pick<EngineEvents, 'tractsActive' | 'tractsReady' | 'tractsVisibility'>;
 
@@ -17,6 +21,15 @@ export interface TractsOptions {
 /** The tracts domain of the engine, with the parts the stage and the facade need beside it. */
 export interface Tracts extends EngineTracts {
   readonly bounds: Box3;
+  /** The anatomy's own bundles and the lesion count over them; null when the tracts are another subject's. */
+  readonly own: {
+    readonly bundles: readonly { id: string }[];
+    crossing(
+      sphere: LesionSphere,
+      ids: readonly string[],
+      onBundle?: (counted: number, total: number) => void,
+    ): Promise<TractCrossing[]>;
+  } | null;
   setClippingPlanes(planes: Plane[]): void;
   dispose(): void;
 }
@@ -50,6 +63,44 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
     return bundle;
   }
 
+  // Surface RAS to the scan's, where the streamlines are; read apart from the outline, which only the tab loads.
+  let toScanner: Promise<Matrix4> | null = null;
+  function scannerTransform(): Promise<Matrix4> {
+    toScanner ??= readDiffusionAsset(catalog.reference_space).then(({ buffer }) => {
+      const space = JSON.parse(new TextDecoder().decode(buffer)) as {
+        anatomy: string;
+        scanner_ras_to_surface_ras: number[][];
+      };
+      if (space.anatomy !== catalog.anatomy) {
+        throw new Error('The tract reference space belongs to a different anatomy.');
+      }
+      return createReferenceTransform(space.scanner_ras_to_surface_ras).invert();
+    });
+    toScanner.catch(() => (toScanner = null));
+    return toScanner;
+  }
+
+  /** Each bundle is downloaded, counted and let go: a lesion keeps no streamlines in memory. */
+  async function crossing(
+    sphere: LesionSphere,
+    ids: readonly string[],
+    onBundle?: (counted: number, total: number) => void,
+  ): Promise<TractCrossing[]> {
+    const centre = worldToRas(rasToWorld(sphere.centre).applyMatrix4(await scannerTransform()));
+    const counted: TractCrossing[] = [];
+    for (const id of ids) {
+      const { buffer } = await readDiffusionAsset(bundleOf(id).file);
+      const { pts, offsetPt0 } = await decodeTractAsset(buffer);
+      counted.push({
+        id,
+        crossing: streamlinesCrossing(pts, offsetPt0, { centre, radius: sphere.radius }),
+        total: offsetPt0.length - 1,
+      });
+      onBundle?.(counted.length, ids.length);
+    }
+    return counted;
+  }
+
   function load(): Promise<void> {
     loading ??= engine
       .load()
@@ -75,6 +126,7 @@ export function createTracts({ anatomy, scene, emit }: TractsOptions): Tracts {
       return engine.bounds;
     },
     defaultOpacity: catalog.overlay_cortex_opacity,
+    own: matchingAnatomy ? { bundles: catalog.bundles, crossing } : null,
     snapshot: engine.snapshot,
     hasBundle: engine.hasBundle,
 

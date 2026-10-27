@@ -27,7 +27,7 @@ export interface FakeTracts extends EngineTracts {
   readonly navigators: readonly FakeMriNavigator[];
 }
 
-const DEFAULT_BUNDLES: FakeBundle[] = [
+export const DEFAULT_BUNDLES: FakeBundle[] = [
   { id: 'arcuate-left', name: { en: 'Arcuate · left', fr: 'Arqué · gauche' }, initial: true },
   { id: 'arcuate-right', name: { en: 'Arcuate · right', fr: 'Arqué · droit' }, initial: true },
   { id: 'cingulum-left', name: { en: 'Cingulum · left', fr: 'Cingulum · gauche' } },

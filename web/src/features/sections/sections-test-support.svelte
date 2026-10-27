@@ -83,6 +83,7 @@
     }}
     hasSpinalCord={false}
     {commands}
+    onLesionPlacing={() => {}}
   >
     {#snippet sectionPopover({ close })}
       <SectionPopover {controls} lang={live.lang} phone={live.phone} {close} />
@@ -96,6 +97,7 @@
         tractReference={live.tractReference}
       />
     {/snippet}
+    {#snippet lesionPopover()}{/snippet}
   </Dock>
 </main>
 <button type="button">After</button>

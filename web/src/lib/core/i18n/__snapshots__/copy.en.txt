@@ -384,11 +384,13 @@
   },
   "paints": {
    "function": "Functions",
-   "deficit": "Deficit"
+   "deficit": "Deficit",
+   "lesion": "Lesion findings"
   },
   "paintTitles": {
    "function": "Set by the Functions tab: neuropsychological functions on HCP-MMP areas, where studies consistently report activation (Neurosynth). Choose a colour here to show it instead.",
-   "deficit": "Set by the Deficits tab: the regions the open deficit’s findings cite, one colour per finding. Choose a colour here to show it instead."
+   "deficit": "Set by the Deficits tab: the regions the open deficit’s findings cite, one colour per finding. Choose a colour here to show it instead.",
+   "lesion": "Set by the lesion’s report: the regions cited by the findings near the lesion, one colour per finding. Choose a colour here to show it instead."
   },
   "surfaceColorTitles": {
    "tissue": "Tissue colours, shaded by T1 brightness",
@@ -444,6 +446,7 @@
    "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from Alpha. Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\"",
    "[\"\"] → \"Mean meta-analytic consistency over this whole structure on fsaverage’s segmentation for each term, from . Weaker evidence than a cortical area: the 6 mm kernel is large beside a nucleus, and studies report fewer coordinates here. Not what this brain does, and not what damage here would impair.\""
   ],
+  "noteUnit": "This teaching-set unit takes the score of the FreeSurfer structure most of it lies in on this brain.",
   "note": [
    "[\"Alpha\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from Alpha: where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\"",
    "[\"\"] → \"Mean meta-analytic consistency over this whole HCP-MMP area for each term, from : where studies using the term reliably report activation, not what this brain does, and not what damage here would impair.\""
@@ -763,6 +766,89 @@
   "constituentsHeading": "Constituent regions",
   "constituentsNote": "Union of source regions. Surface smoothed for readability; volume measured from source voxels. Small regions without a surface remain available on cuts.",
   "constituentCutOnly": "Cut only"
+ },
+ "lesion": {
+  "tool": "Lesion",
+  "radius": "Radius",
+  "placeHint": "Click the brain or a cut face to place its centre.",
+  "moveHint": "Click the brain or a cut face to move its centre.",
+  "showReport": "Show the report",
+  "remove": "Remove",
+  "title": "Lesion",
+  "sides": {
+   "left": "Left hemisphere",
+   "right": "Right hemisphere",
+   "both": "Both hemispheres"
+  },
+  "meta": [
+   "[\"Alpha\",\"\",\"Alpha\"] → \"Alpha ·  sphere · Alpha\"",
+   "[\"\",\"Alpha\",\"\"] → \" · Alpha sphere · \""
+  ],
+  "caveat": "A shape placed on this one brain, measured against its 1 mm labels. It is not a patient’s lesion and predicts no deficit.",
+  "measuring": "Measuring…",
+  "failed": "The lesion could not be measured.",
+  "volumeCaption": "Volume inside, cm³",
+  "tissue": {
+   "cortex": "Cortex",
+   "white": "White matter",
+   "deep": "Deep grey",
+   "fluid": "CSF",
+   "outside": "Outside"
+  },
+  "cortex": "Cortex",
+  "shareNote": "Share of each region inside the lesion",
+  "deep": "Deep structures",
+  "white": "Gyral white matter",
+  "whiteNote": "Within 5 mm of the cortex, named by the gyrus above",
+  "slightRegions": [
+   "[\"Alpha\"] → \"Alpha more under 1%\"",
+   "[\"\"] → \" more under 1%\""
+  ],
+  "tracts": "Tracts",
+  "tractsNote": "Streamlines with a point inside the lesion",
+  "countTracts": [
+   "[\"Alpha\"] → \"Count Alpha\"",
+   "[\"\"] → \"Count \""
+  ],
+  "tractsDownload": "Downloads each bundle’s streamlines: tens of megabytes.",
+  "counting": [
+   "[\"Alpha\",\"\"] → \"Counting bundle Alpha of …\"",
+   "[\"\",\"Alpha\"] → \"Counting bundle  of Alpha…\""
+  ],
+  "tractsFailed": "The tracts could not be counted.",
+  "ofTotal": [
+   "[\"Alpha\",\"\"] → \"Alpha of \"",
+   "[\"\",\"Alpha\"] → \" of Alpha\""
+  ],
+  "notReached": [
+   "[\"Alpha\"] → \"Not reached: Alpha\"",
+   "[\"\"] → \"Not reached: \""
+  ],
+  "noTracts": "This anatomy publishes no tracts of its own.",
+  "findings": "Findings citing these regions",
+  "findingsNote": "Ranked by how much of a cited region lies inside. Overlap with a cited region, not a predicted deficit.",
+  "noFindings": "No finding cites a region this lesion reaches.",
+  "showOnBrain": "Show on the brain",
+  "hideOnBrain": "Hide from the brain",
+  "cited": [
+   "[\"Alpha\",1] → \"Alpha of 1 cited\"",
+   "[\"\",2] → \" of 2 cited\"",
+   "[\"Alpha\",183] → \"Alpha of 183 cited\"",
+   "[\"\",12345] → \" of 12345 cited\"",
+   "[\"Alpha\",0] → \"Alpha of 0 cited\""
+  ],
+  "oneSide": {
+   "left": "Bilateral finding; this lesion reaches the left side only.",
+   "right": "Bilateral finding; this lesion reaches the right side only."
+  },
+  "openFinding": "Open the finding",
+  "slightFindings": [
+   "[\"Alpha\"] → \"Alpha more touch a cited region by under 1%\"",
+   "[\"\"] → \" more touch a cited region by under 1%\""
+  ],
+  "unmeasured": "Structures drawn only as meshes, such as the fornix or the mammillary nuclei, are not measured.",
+  "keyTitle": "Findings near the lesion",
+  "keyNote": "One colour per finding, in rank order; a region several findings cite takes the first one’s colour."
  },
  "link": {
   "newTab": "(opens in a new tab)",

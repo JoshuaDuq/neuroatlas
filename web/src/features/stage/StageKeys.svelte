@@ -459,7 +459,7 @@
         column-gap: var(--space-3);
       }
       /* A finding is a sentence, not a name: one per line, or every one wraps. */
-      .stage-key[data-map='deficit'] .stage-key-list {
+      .stage-key:is([data-map='deficit'], [data-map='lesion']) .stage-key-list {
         grid-template-columns: minmax(0, 1fr);
       }
     }

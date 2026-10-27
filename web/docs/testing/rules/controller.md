@@ -235,11 +235,11 @@ checks them in the browser today and could run in the unit project over the fake
 
 ### CTRL-23 · Back on Functions or Deficits, an open item is redrawn on its own atlas
 
-- **Rule:** Returning to Functions with a function open while another atlas is shown opens the function again, which loads the domains' atlas. Returning to Deficits with a deficit open whose mapped cortex lies on another atlas opens the deficit again. Otherwise the scene is left as it is. The reopen goes through the panel's entry point and is not awaited.
+- **Rule:** Returning to Functions with a function open while another atlas, or a detail other than aseg or the teaching set, is shown opens the function again, which loads the domains' atlas and the teaching set. Returning to Deficits with a deficit open whose mapped cortex lies on another atlas opens the deficit again. Otherwise the scene is left as it is. The reopen goes through the panel's entry point and is not awaited.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:1353-1361`
-- **Expected:** open `language`, Anatomy, switch to a non-HCP atlas, Functions → explorer `functions`, atlas = domains atlas, `selectedFunction: 'language'`. Same atlas → no reframe. Deficit `acalculia`, other atlas, Deficits → atlas of its cortical region, regions framed.
+- **Expected:** open `language`, Anatomy, switch to a non-HCP atlas, Functions → explorer `functions`, atlas = domains atlas, `selectedFunction: 'language'`. Open `reward`, Anatomy, detail nextbrain, Functions → detail learning. Same atlas → no reframe. Deficit `acalculia`, other atlas, Deficits → atlas of its cortical region, regions framed.
 - **Covered by:** `src/lib/controller/modes.test.ts` (R; the same-atlas case is W: it asserts before the un-awaited re-open could show)
 
 ## Excursions
@@ -255,20 +255,20 @@ checks them in the browser today and could run in the unit project over the fake
 
 ### CTRL-25 · Opening a function draws its areas and frames the whole brain
 
-- **Rule:** Opening a function does the same as a deficit (CTRL-24), but shows Functions, draws every area the function's paint colours, and frames the whole brain.
+- **Rule:** Opening a function does the same as a deficit (CTRL-24), but shows Functions, draws every area the function's paint colours, and frames the whole brain. Its structures are drawn on aseg when aseg is shown, otherwise on the teaching set, so NextBrain gives way to the teaching set and the teaching set stays.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:997-1017`
-- **Expected:** `openFunction('language')` → `true`; explorer `functions`; every id in `domainPaint(domains,'language').colors` drawn; the last framing is the whole brain.
+- **Expected:** `openFunction('language')` → `true`; explorer `functions`; every id in `domainPaint(domains,'language').colors` drawn; the last framing is the whole brain. `reward` from detail learning → learning, nextbrain → learning, aseg → aseg, its structures on that detail drawn.
 - **Covered by:** `src/lib/controller/excursion.test.ts` (R)
 
 ### CTRL-26 · A region a function or deficit names is opened as an excursion step
 
-- **Rule:** A region listed by a function or deficit is drawn, selected and framed with context around it. It holds the scene if no excursion holds one yet.
+- **Rule:** A region listed by a function or deficit is drawn, selected and framed with context around it. It holds the scene if no excursion holds one yet. On Functions, a structure is opened as the teaching units that carry its score unless aseg is shown; the first is selected and all are framed.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:1019-1034`
-- **Expected:** `openListedRegion('destrieux:left:25')` → `true`, selected, Restore offered, `frameRegions(['destrieux:left:25'])`.
+- **Expected:** `openListedRegion('destrieux:left:25')` → `true`, selected, Restore offered, `frameRegions(['destrieux:left:25'])`. From nextbrain, `motor` open, `aseg:left:13` → detail learning, `learning:left:pallidum-external` selected, both pallidal units framed.
 - **Covered by:** `src/lib/controller/excursion.test.ts` (R)
 
 ### CTRL-27 · Restore previous view returns to the scene before the excursion

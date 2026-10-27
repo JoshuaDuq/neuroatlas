@@ -107,11 +107,11 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 
 ### INSP-12 · Domains list the functions an area reaches, in published strength order
 
-- **Rule:** An HCP-MMP cortical area, or a structure the domains sample, has a Neuropsychological functions section. It lists each function that reaches the published threshold in the published order, which is strongest first by the z as a share of that function's own cortical maximum (not by raw z), each with its term and z at one decimal. A scored region that reaches none says so. The note names the source and differs for an area and a structure.
+- **Rule:** An HCP-MMP cortical area, a structure the domains sample, or a teaching unit carrying one's score has a Neuropsychological functions section. It lists each function that reaches the published threshold in the published order, which is strongest first by the z as a share of that function's own cortical maximum (not by raw z), each with its term and z at one decimal. A scored region that reaches none says so. The note names the source and differs for an area and a structure; a teaching unit lists its structure's functions and adds that it takes that structure's score.
 - **Kind:** scientific
 - **Level:** unit (view-model: `scoredRegion`, `domainsOf`, the note)
 - **Source:** `viewer/ui/panels/inspector.js:206-235`; `brain_model/layers/neuropsych_domains.py:114-131` (the order)
-- **Expected:** `hcp-mmp:left:1` → one row "Visual perception" with "“visual” · z 3.3", note containing "this whole HCP-MMP area" and "Neurosynth (Yarkoni et al. 2011)". `hcp-mmp:left:50` → first rows "Familiarity" z 4.4, "Colour perception" z 7.3, "Mental rotation" z 4.8 (published order; "Visual perception", the largest raw z at 14.8, is fifth). `aseg:left:8` → no row, "No function reaches z 3 here." and a note containing "over this whole structure".
+- **Expected:** `hcp-mmp:left:1` → one row "Visual perception" with "“visual” · z 3.3", note containing "this whole HCP-MMP area" and "Neurosynth (Yarkoni et al. 2011)". `hcp-mmp:left:50` → first rows "Familiarity" z 4.4, "Colour perception" z 7.3, "Mental rotation" z 4.8 (published order; "Visual perception", the largest raw z at 14.8, is fifth). `aseg:left:8` → no row, "No function reaches z 3 here." and a note containing "over this whole structure". `learning:left:amygdala` → the rows of `aseg:left:18`, first "Facial emotion recognition" z 13.2, and a note containing "over this whole structure" and "This teaching-set unit takes the score".
 - **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (W: one regex on V1's single row, so the order is uncovered)
 
 ### INSP-13 · A region outside every partition has no evidence sections

@@ -105,6 +105,8 @@ export interface EngineEvents {
   tractsReady: undefined;
   /** Which streamlines are drawn changed (app.js:1447). */
   tractsVisibility: undefined;
+  /** While the lesion is being placed, a click met the brain or a cut face here, in RAS millimetres. */
+  lesionPoint: { point: Vec3 };
   /** High frequency: every camera move. Never route through reactive state (app.js:1819-1823). */
   camera: CameraView;
   /** High frequency: pointer-over-region, once per frame of a pointer move (app.js:1804). */
@@ -554,6 +556,50 @@ export interface EngineTracts {
 }
 
 // ---------------------------------------------------------------------------
+// Lesion (lesion/lesion.ts)
+// ---------------------------------------------------------------------------
+
+/** A spherical lesion: its centre in RAS millimetres and its radius in millimetres. */
+export interface LesionSphere {
+  centre: Vec3;
+  radius: number;
+}
+
+/** What a lesion covers of each tissue, in mm³, on the FreeSurfer segmentation. */
+export type LesionTissue = Record<'cortex' | 'white' | 'deep' | 'fluid' | 'outside', number>;
+
+export interface LesionMeasurement {
+  /** mm³ of the sphere on the label grid. */
+  volume: number;
+  tissue: LesionTissue;
+  /** Every labelled region it reaches, in mm³: how much lies inside and the region's whole size. */
+  regions: ReadonlyMap<string, { inside: number; whole: number }>;
+}
+
+/** One tract bundle's streamlines, and how many have a point inside the lesion. */
+export interface TractCrossing {
+  id: string;
+  crossing: number;
+  total: number;
+}
+
+export interface EngineLesion {
+  /** Draw the lesion on the stage, or take it away with null. Throws a `RangeError` for a radius that is not positive. */
+  show(sphere: LesionSphere | null): void;
+  /** While on, a click on the brain or a cut face raises `lesionPoint` instead of choosing a region. */
+  setPlacing(placing: boolean): void;
+  /** Measure it on every published label volume; the first call downloads them. */
+  measure(sphere: LesionSphere): Promise<LesionMeasurement>;
+  /** The anatomy's own tract bundles on the sides the lesion reaches, in catalog order; none on an anatomy without tracts of its own. */
+  tractBundles(sphere: LesionSphere): string[];
+  /** Download those bundles and count the streamlines crossing the lesion, reporting each bundle as it is counted. */
+  measureTracts(
+    sphere: LesionSphere,
+    onBundle?: (counted: number, total: number) => void,
+  ): Promise<TractCrossing[]>;
+}
+
+// ---------------------------------------------------------------------------
 // The engine
 // ---------------------------------------------------------------------------
 
@@ -572,6 +618,7 @@ export interface Engine extends Emitter<EngineEvents> {
   readonly camera: EngineCamera;
   readonly comparison: EngineComparison;
   readonly tracts: EngineTracts;
+  readonly lesion: EngineLesion;
 
   /** Re-read the colours from the token layer after a theme change (app.js:131, 2106). */
   applyTheme(theme: Theme): void;

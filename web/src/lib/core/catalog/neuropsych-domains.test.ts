@@ -8,10 +8,12 @@ import {
   domainRecord,
   domainsOf,
   domainStudies,
+  drawnAs,
   groupedDomains,
   matchingTerms,
   nearestName,
   overviewDomains,
+  revealedRegions,
   scoredRegion,
   shownDomain,
   validateNeuropsychDomains,
@@ -33,12 +35,22 @@ const regions = new Map<string, Region>([
     'aseg:left:4',
     asRegion({ atlas: 'aseg', kind: 'structure', source_name: 'Left-Lateral-Ventricle' }),
   ],
+  [
+    'learning:left:amygdala',
+    asRegion({ id: 'learning:left:amygdala', atlas: 'learning', kind: 'structure' }),
+  ],
+  [
+    'learning:left:thalamus',
+    asRegion({ id: 'learning:left:thalamus', atlas: 'learning', kind: 'structure' }),
+  ],
 ]);
 const partition = (): Fixture => ({
   id: 'neuropsych-domains',
   atlas: 'hcp-mmp',
   structure_atlas: 'aseg',
   structures: ['Left-Amygdala'],
+  unit_atlas: 'learning',
+  units: { 'learning:left:amygdala': 'aseg:left:18' },
   threshold_z: 3,
   z_scale: [
     { from: 3, color: [30, 30, 30] },
@@ -145,6 +157,30 @@ test('a domain assigned below the threshold, off its atlas or unknown is rejecte
     ],
     [
       (p: Fixture) => {
+        p.units['learning:left:thalamus'] = 'aseg:left:4';
+      },
+      /teaching unit: learning:left:thalamus/,
+    ],
+    [
+      (p: Fixture) => {
+        p.units['hcp-mmp:right:1'] = 'aseg:left:18';
+      },
+      /teaching unit: hcp-mmp:right:1/,
+    ],
+    [
+      (p: Fixture) => {
+        p.units['learning:left:thalamus'] = 'hcp-mmp:left:1';
+      },
+      /teaching unit: learning:left:thalamus/,
+    ],
+    [
+      (p: Fixture) => {
+        delete p.units;
+      },
+      /Invalid neuropsychological-domain partition/,
+    ],
+    [
+      (p: Fixture) => {
         p.domains[2].id = ALL_DOMAINS;
       },
       /domain: all/,
@@ -234,6 +270,7 @@ test('the overview paints each area its strongest domain, and one domain paints 
       ['hcp-mmp:left:1', [4, 5, 6]],
       ['hcp-mmp:right:1', [1, 2, 3]],
       ['aseg:left:18', [4, 5, 6]],
+      ['learning:left:amygdala', [4, 5, 6]],
     ],
   );
   assert.deepEqual(
@@ -248,6 +285,7 @@ test('the overview paints each area its strongest domain, and one domain paints 
     [
       ['hcp-mmp:left:1', [50, 50, 50]],
       ['aseg:left:18', [30, 30, 30]],
+      ['learning:left:amygdala', [30, 30, 30]],
     ],
   );
   assert.equal(domainPaint(published, 'visual').colors.size, 0);
@@ -290,6 +328,45 @@ test('a sampled structure is scored like an area; another structure, or another 
   assert.deepEqual(domainPaint(published, 'memory').colors.get('aseg:left:18'), [30, 30, 30]);
 });
 
+test('a teaching unit has the domains of the structure it lies in; one carrying none has none', () => {
+  const published = validateNeuropsychDomains(partition(), regions);
+  assert.equal(scoredRegion(published, regions.get('learning:left:amygdala')), true);
+  assert.equal(scoredRegion(published, regions.get('learning:left:thalamus')), false);
+  assert.deepEqual(
+    domainsOf(published, 'learning:left:amygdala'),
+    domainsOf(published, 'aseg:left:18'),
+  );
+  assert.equal(shownDomain(published, 'learning:left:amygdala', null)!.id, 'memory');
+  assert.deepEqual(domainsOf(published, 'learning:left:thalamus'), []);
+  // The profile lists the structure measured, not the units drawn for it.
+  assert.deepEqual(
+    domainAreas(published, 'memory').map(({ region }) => region),
+    ['hcp-mmp:left:1', 'aseg:left:18'],
+  );
+});
+
+test('a function’s structures are revealed on the teaching set unless FreeSurfer’s segmentation is shown', () => {
+  const published = validateNeuropsychDomains(partition(), regions);
+  const memory = domainPaint(published, 'memory');
+  assert.deepEqual(revealedRegions(published, memory, 'aseg'), ['hcp-mmp:left:1', 'aseg:left:18']);
+  for (const detail of ['learning', 'nextbrain']) {
+    assert.deepEqual(revealedRegions(published, memory, detail), [
+      'hcp-mmp:left:1',
+      'learning:left:amygdala',
+    ]);
+    assert.deepEqual(drawnAs(published, 'aseg:left:18', detail), ['learning:left:amygdala']);
+  }
+  assert.deepEqual(drawnAs(published, 'aseg:left:18', 'aseg'), ['aseg:left:18']);
+  assert.deepEqual(drawnAs(published, 'hcp-mmp:left:1', 'learning'), ['hcp-mmp:left:1']);
+  // Both pallidal segments carry the pallidum's score, so a listed pallidum opens both.
+  const split = partition();
+  split.units['learning:left:thalamus'] = 'aseg:left:18';
+  assert.deepEqual(drawnAs(validateNeuropsychDomains(split, regions), 'aseg:left:18', 'learning'), [
+    'learning:left:amygdala',
+    'learning:left:thalamus',
+  ]);
+});
+
 const terms = (): Fixture => ({
   id: 'neurosynth-terms',
   atlas: 'hcp-mmp',
@@ -329,6 +406,7 @@ test('searched terms paint the regions they reach by z band and keep their kind'
     [
       ['aseg:left:18', [50, 50, 50]],
       ['hcp-mmp:left:1', [30, 30, 30]],
+      ['learning:left:amygdala', [50, 50, 50]],
     ],
   );
   assert.equal(domainPaint(published, 'term:fear').id, 'function:term:fear');
@@ -399,6 +477,12 @@ test('a term below the threshold, reaching nothing, of no kind, repeating a cura
         p.regions.push('aseg:left:4');
       },
       /term region: aseg:left:4/,
+    ],
+    [
+      (p: Fixture) => {
+        p.regions.push('learning:left:amygdala');
+      },
+      /term region: learning:left:amygdala/,
     ],
     [
       (p: Fixture) => {

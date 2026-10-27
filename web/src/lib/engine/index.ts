@@ -1,4 +1,4 @@
-import { Box3 } from 'three';
+import { Box3, Group } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { readComparisonGeometry } from '../core/assets/comparison-assets.ts';
 import { t } from '../core/i18n/index.ts';
@@ -18,12 +18,14 @@ import type { TractsOptions } from './diffusion/tracts.ts';
 import { createFraming } from './framing.ts';
 import type { Emit } from './framing.ts';
 import { createHeldView } from './held-view.ts';
+import { createLesion } from './lesion/lesion.ts';
 import { BrainAtlas } from './model/brain-atlas.ts';
 import { createPresentation } from './presentation.ts';
 import { createPicker } from './render/picking.ts';
 import { stayOutside, zoomAboutSurface } from './render/orbit-controls.ts';
 import { createScene } from './render/scene.ts';
 import type { Appearance as SceneAppearance } from './render/scene.ts';
+import { worldToRas } from './slices/coordinates.ts';
 import { BrainSections } from './slices/sections.ts';
 
 /** How long the camera must rest before its move counts as settled and the link follows it. */
@@ -107,6 +109,19 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
       emit: events.emit as TractsOptions['emit'],
     });
     cleanups.push(() => tracts.dispose());
+    const lesion = createLesion({
+      model: atlas,
+      tissues: sections.tissues,
+      baseUrl: new URL('volumes.json', absoluteManifestUrl),
+      tracts: tracts.own,
+      invalidate: scene.invalidate,
+    });
+    cleanups.push(() => lesion.dispose());
+    // A layer of its own, so the tract reference shown alone hides it as it hides the brain.
+    const lesionLayer = new Group();
+    lesionLayer.add(lesion.group);
+    scene.scene.add(lesionLayer);
+
     const reference = {
       active: false,
       get bounds() {
@@ -177,6 +192,8 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
       onHover: presentation.hover,
       onSelect: (id) => events.emit('pick', { id }),
       onFocusPoint: stage.focusWorldPoint,
+      placing: () => lesion.placing && !reference.active,
+      onPlace: (point) => events.emit('lesionPoint', { point: worldToRas(point) }),
     });
     cleanups.push(() => picker.dispose());
 
@@ -187,6 +204,7 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
       const { surfaceColor, paint } = atlas.settings;
       atlas.group.visible = !referenceOnly;
       sections.group.visible = !referenceOnly && sections.active;
+      lesionLayer.visible = !referenceOnly;
       if (anatomy === tracts.anatomy) tracts.setClippingPlanes(atlas.clippingPlanes);
       scene.setMriAppearance(surfaceColor === 'mri' && !paint && !referenceOnly);
       presentation.outline();
@@ -195,6 +213,7 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
     const engineSections = createEngineSections(sections);
     const onChange = () => {
       stage.invalidate();
+      lesion.refresh();
       refresh();
       events.emit('change', { model: atlas.state, sections: engineSections.state });
     };
@@ -268,10 +287,18 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
       camera: stage.camera,
       comparison,
       tracts,
+      lesion: {
+        show: lesion.show,
+        setPlacing: lesion.setPlacing,
+        measure: lesion.measure,
+        tractBundles: lesion.tractBundles,
+        measureTracts: lesion.measureTracts,
+      },
 
       applyTheme() {
         scene.applyTheme();
         sections.applyTheme();
+        lesion.applyTheme();
         refresh();
       },
       present(presentation) {

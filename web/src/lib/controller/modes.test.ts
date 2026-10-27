@@ -91,7 +91,7 @@ describe('choosing a tab', () => {
       engine: scene.engine,
       session: scene.session,
       clinical: { mappedRegions: () => [] },
-      domainsAtlas: 'hcp-mmp',
+      domains: { atlas: 'hcp-mmp', structure_atlas: 'aseg', unit_atlas: 'learning' },
       chooseExplorer: (value) => void chosen.push(value),
       leaveLesson: () => waiting,
       openFunction: async () => true,
@@ -119,6 +119,17 @@ describe('choosing a tab', () => {
     assert.equal(session.state.explorer, 'functions');
     assert.equal(engine.model.settings.atlas, scene.domains.atlas);
     assert.equal(session.state.selectedFunction, 'language');
+  });
+
+  test('back on Functions after NextBrain, opens the function again on the teaching set', async () => {
+    const scene = createScene();
+    const { engine, excursions } = scene;
+    await excursions.openFunction('reward');
+    excursions.chooseExplorer('anatomy');
+    await engine.model.setDetail('nextbrain');
+    await excursions.chooseMode('functions');
+    await scene.settled();
+    assert.equal(engine.model.settings.detail, 'learning');
   });
 
   test('back on Functions on the right atlas, leaves the open function as it is', async () => {
@@ -157,7 +168,7 @@ describe('choosing a tab', () => {
       engine: scene.engine,
       session: { state: { ...scene.session.state, selectedFunction: 'language' } },
       clinical: { mappedRegions: () => [] },
-      domainsAtlas: 'not-the-atlas',
+      domains: { atlas: 'not-the-atlas', structure_atlas: 'aseg', unit_atlas: 'learning' },
       chooseExplorer: vi.fn(),
       leaveLesson: async () => undefined,
       openFunction,

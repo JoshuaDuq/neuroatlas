@@ -33,6 +33,13 @@ test('clinical navigation preserves anatomical search and selection independentl
   assert.throws(() => s.setExplorer('unknown' as Explorer), /Unknown explorer/);
 });
 
+test('asking for the lesion’s findings on the brain puts a lifted paint back', () => {
+  const s = session();
+  s.liftPaint();
+  s.showPaint();
+  assert.equal(s.assemble(modelState).paintLifted, false);
+});
+
 test('a masthead choice lifts the open paint until a function, a deficit or a tab is chosen again', () => {
   const s = session();
   s.setExplorer('functions');

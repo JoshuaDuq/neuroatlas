@@ -1,4 +1,4 @@
-revised: '2026-10-22'
+revised: '2026-10-27'
 
 groups:
   - id: attention-executive
@@ -454,6 +454,204 @@ deficits:
     aliases:
       en: [alien hand, anarchic hand, intermanual conflict, callosal disconnection]
       fr: [main étrangère, main anarchique, conflit intermanuel, déconnexion calleuse]
+
+  - id: confabulation
+    name: {en: Spontaneous confabulation, fr: Confabulation spontanée}
+    domain: {en: Memory monitoring, fr: Contrôle des souvenirs}
+    group: memory
+    summary:
+      en: Acting on memories or accounts that do not fit present reality. This profile concerns acquired spontaneous confabulation after anterior limbic injury.
+      fr: Actions fondées sur des souvenirs ou des récits incompatibles avec la réalité présente. Ce profil concerne la confabulation spontanée acquise après une atteinte limbique antérieure.
+    aliases:
+      en: [confabulation, false memories, reality monitoring, temporal context confusion]
+      fr: [confabulation, faux souvenirs, contrôle de la réalité, confusion du contexte temporel]
+
+  - id: olfactory-recognition
+    name: {en: Olfactory recognition impairment, fr: Trouble de la reconnaissance olfactive}
+    domain: {en: Smell recognition, fr: Reconnaissance des odeurs}
+    group: perception
+    summary:
+      en: Difficulty identifying or remembering smells after focal brain surgery. This profile distinguishes recognition from the ability to detect an odour.
+      fr: Difficulté à identifier ou à mémoriser les odeurs après une chirurgie cérébrale focale. Ce profil distingue la reconnaissance de la capacité à détecter une odeur.
+    aliases:
+      en: [olfaction, smell identification, odor identification, odour recognition, smell memory]
+      fr: [olfaction, identification des odeurs, reconnaissance des odeurs, mémoire olfactive]
+
+  - id: theory-of-mind
+    name: {en: Impaired affective theory of mind, fr: Trouble de la théorie de l’esprit affective}
+    domain: {en: Mental-state inference, fr: Inférence des états mentaux}
+    group: social-emotional
+    summary:
+      en: Difficulty inferring other people’s emotional mental states. This profile concerns affective mentalizing after focal prefrontal injury.
+      fr: Difficulté à inférer les états mentaux émotionnels d’autrui. Ce profil concerne la mentalisation affective après une atteinte préfrontale focale.
+    aliases:
+      en: [theory of mind, affective mentalizing, mentalising, social inference, emotional perspective taking]
+      fr: [théorie de l’esprit, mentalisation affective, inférence sociale, prise de perspective émotionnelle]
+
+  - id: aprosodia
+    name: {en: Expressive aprosodia, fr: Aprosodie expressive}
+    domain: {en: Emotional speech expression, fr: Expression émotionnelle de la parole}
+    group: language-number
+    summary:
+      en: Difficulty conveying emotion through tone of voice. This profile documents a persistent expressive impairment after a right medial frontal stroke.
+      fr: Difficulté à transmettre une émotion par le ton de la voix. Ce profil documente un trouble expressif persistant après un AVC frontal médial droit.
+    aliases:
+      en: [aprosodia, affective prosody production, emotional intonation, motor aprosodia, monotone speech]
+      fr: [aprosodie, production de prosodie affective, intonation émotionnelle, aprosodie motrice, parole monotone]
+
+  - id: stuttering
+    name: {en: Acquired neurogenic stuttering, fr: Bégaiement neurogène acquis}
+    domain: {en: Speech fluency, fr: Fluence de la parole}
+    group: language-number
+    summary:
+      en: Speech dysfluency acquired after brain injury. This profile follows post-stroke lesion mapping and distinguishes damaged sites from their functional connections.
+      fr: Disfluences de la parole acquises après une lésion cérébrale. Ce profil suit la cartographie lésionnelle après AVC et distingue les sites lésés de leurs connexions fonctionnelles.
+    aliases:
+      en: [stuttering, stammering, acquired dysfluency, speech disfluency, neurogenic stammering]
+      fr: [bégaiement, disfluence acquise, disfluence de la parole, bégaiement neurogène]
+
+  - id: cortical-deafness
+    name: {en: Cortical deafness, fr: Surdité corticale}
+    domain: {en: Central hearing, fr: Audition centrale}
+    group: perception
+    summary:
+      en: Severe loss of conscious hearing from central auditory injury. This profile concerns bilateral auditory cortical infarcts, with subcortical disconnection as a comparison.
+      fr: Perte sévère de l’audition consciente par atteinte auditive centrale. Ce profil concerne des infarctus corticaux auditifs bilatéraux, comparés à une déconnexion sous-corticale.
+    aliases:
+      en: [cortical deafness, central deafness, cerebral deafness, auditory cortex, Heschl’s gyrus]
+      fr: [surdité corticale, surdité centrale, surdité cérébrale, cortex auditif, gyrus de Heschl]
+
+  - id: auditory-agnosia
+    name: {en: Nonverbal auditory agnosia, fr: Agnosie auditive non verbale}
+    domain: {en: Environmental sound recognition, fr: Reconnaissance des sons de l’environnement}
+    group: perception
+    summary:
+      en: Difficulty recognizing everyday sounds beyond peripheral hearing loss. This profile contrasts group lesion evidence with a case whose speech comprehension recovered.
+      fr: Difficulté à reconnaître les sons du quotidien au-delà d’une perte auditive périphérique. Ce profil confronte les données lésionnelles de groupe à un cas dont la compréhension de la parole avait récupéré.
+    aliases:
+      en: [auditory agnosia, environmental sounds, sound recognition, nonverbal sounds, acoustic agnosia]
+      fr: [agnosie auditive, sons de l’environnement, reconnaissance sonore, sons non verbaux, agnosie acoustique]
+
+  - id: auditory-short-term-memory
+    name: {en: Auditory short-term memory impairment, fr: Trouble de la mémoire auditive à court terme}
+    domain: {en: Short-term retention, fr: Rétention à court terme}
+    group: memory
+    summary:
+      en: Reduced capacity to hold heard material briefly in mind. This profile examines digit span after stroke and its relationship to spoken sentence comprehension.
+      fr: Capacité réduite à maintenir brièvement en mémoire des informations entendues. Ce profil examine l’empan de chiffres après AVC et son lien avec la compréhension des phrases entendues.
+    aliases:
+      en: [auditory memory, verbal short-term memory, digit span, phonological memory, immediate recall]
+      fr: [mémoire auditive, mémoire verbale à court terme, empan de chiffres, mémoire phonologique, rappel immédiat]
+
+  - id: autotopagnosia
+    name: {en: Autotopagnosia, fr: Autotopoagnosie}
+    domain: {en: Body-part localization, fr: Localisation des parties du corps}
+    group: perception
+    summary:
+      en: Difficulty locating body parts despite being able to name or use them. This profile concerns acquired parietal lesions and the spatial representation of the body.
+      fr: Difficulté à localiser les parties du corps malgré une capacité préservée à les nommer ou à les utiliser. Ce profil concerne les lésions pariétales acquises et la représentation spatiale du corps.
+    aliases:
+      en: [autotopagnosia, body part localization, body structural description, body schema, body representation]
+      fr: [autotopagnosie, autotopoagnosie, localisation des parties du corps, description structurale du corps, schéma corporel]
+
+  - id: finger-agnosia
+    name: {en: Finger agnosia, fr: Agnosie digitale}
+    domain: {en: Finger identification, fr: Identification des doigts}
+    group: perception
+    summary:
+      en: Difficulty identifying fingers beyond elementary sensory loss. This profile distinguishes selective finger-identification findings from finger agnosia within Gerstmann’s syndrome.
+      fr: Difficulté à identifier les doigts au-delà d’une perte sensitive élémentaire. Ce profil distingue les troubles sélectifs d’identification digitale de l’agnosie digitale dans le syndrome de Gerstmann.
+    aliases:
+      en: [finger agnosia, finger identification, finger recognition, finger gnosis, Gerstmann syndrome]
+      fr: [agnosie digitale, identification des doigts, reconnaissance des doigts, gnosies digitales, syndrome de Gerstmann]
+
+  - id: motor-neglect
+    name: {en: Motor neglect, fr: Négligence motrice}
+    domain: {en: Spontaneous limb use, fr: Utilisation spontanée des membres}
+    group: sensorimotor
+    summary:
+      en: Reduced spontaneous use of one side despite preserved motor output. This profile concerns a parietal infarct without accompanying sensory or visuospatial neglect.
+      fr: Réduction de l’utilisation spontanée d’un côté malgré une commande motrice préservée. Ce profil concerne un infarctus pariétal sans négligence sensitive ou visuospatiale associée.
+    aliases:
+      en: [motor neglect, motor hemineglect, limb underuse, intentional neglect, spontaneous movement]
+      fr: [négligence motrice, héminégligence motrice, sous-utilisation du membre, négligence intentionnelle, mouvement spontané]
+
+  - id: tactile-extinction
+    name: {en: Tactile extinction, fr: Extinction tactile}
+    domain: {en: Tactile awareness, fr: Conscience tactile}
+    group: attention-executive
+    summary:
+      en: Failure to report a touch on the affected side when both sides are touched together, despite detecting touch on that side alone. This profile draws on post-stroke lesion mapping.
+      fr: Absence de signalement d’un toucher du côté atteint lors d’une stimulation bilatérale simultanée, malgré sa détection lorsqu’il est stimulé seul. Ce profil s’appuie sur une cartographie lésionnelle après AVC.
+    aliases:
+      en: [tactile extinction, somatosensory extinction, double simultaneous stimulation, bilateral touch, sensory competition]
+      fr: [extinction tactile, extinction somatosensorielle, stimulation simultanée bilatérale, toucher bilatéral, compétition sensorielle]
+
+  - id: akinetic-mutism
+    name: {en: Akinetic mutism, fr: Mutisme akinétique}
+    domain: {en: Initiation of speech and action, fr: Initiation de la parole et de l’action}
+    group: social-emotional
+    summary:
+      en: Profound reduction of spontaneous speech and movement. This profile follows bilateral medial frontal injury and distinguishes damaged tissue from a wider network associated with volition.
+      fr: Réduction profonde de la parole et des mouvements spontanés. Ce profil concerne les atteintes frontales médiales bilatérales et distingue les tissus lésés d’un réseau plus large associé à la volition.
+    aliases:
+      en: [akinetic mutism, loss of initiative, volition, severe abulia, spontaneous speech, motor initiation]
+      fr: [mutisme akinétique, perte d’initiative, volition, aboulie sévère, parole spontanée, initiation motrice]
+
+  - id: locked-in
+    name: {en: Locked-in syndrome, fr: Syndrome d’enfermement}
+    domain: {en: Voluntary motor output, fr: Commande motrice volontaire}
+    group: sensorimotor
+    summary:
+      en: Preserved consciousness with profound paralysis and loss of speech. This profile concerns ventral pontine injury and the additional lesions found in some patients.
+      fr: Conscience préservée avec paralysie profonde et perte de la parole. Ce profil concerne les atteintes pontiques ventrales et les lésions supplémentaires observées chez certains patients.
+    aliases:
+      en: [locked-in syndrome, LIS, ventral pons, quadriplegia, anarthria, preserved consciousness]
+      fr: [syndrome d’enfermement, locked-in syndrome, LIS, pont ventral, tétraplégie, anarthrie, conscience préservée]
+
+  - id: prospective-memory
+    name: {en: Prospective memory impairment, fr: Trouble de la mémoire prospective}
+    domain: {en: Remembering intentions, fr: Rappel des intentions}
+    group: memory
+    summary:
+      en: Difficulty remembering to carry out an intended action at the appropriate time or cue. This profile examines acquired right frontopolar lesions.
+      fr: Difficulté à se rappeler d’effectuer une action prévue au moment ou au signal approprié. Ce profil examine les lésions frontopolaires droites acquises.
+    aliases:
+      en: [prospective memory, remembering intentions, time-based memory, event-based memory, delayed intention, missed appointments]
+      fr: [mémoire prospective, rappel des intentions, mémoire fondée sur le temps, mémoire fondée sur un événement, intention différée, rendez-vous oubliés]
+
+  - id: alexithymia
+    name: {en: Acquired alexithymia, fr: Alexithymie acquise}
+    domain: {en: Emotional self-awareness, fr: Conscience de ses émotions}
+    group: social-emotional
+    summary:
+      en: Difficulty identifying and describing one’s own emotional states after brain injury. This profile examines anterior insular damage and the influence of communication difficulties.
+      fr: Difficulté à identifier et à décrire ses propres états émotionnels après une lésion cérébrale. Ce profil examine les atteintes insulaires antérieures et l’influence des difficultés de communication.
+    aliases:
+      en: [alexithymia, emotional awareness, identifying feelings, describing feelings, emotional self-awareness]
+      fr: [alexithymie, conscience émotionnelle, identification des émotions, description des émotions, conscience de ses émotions]
+
+  - id: hemiparesis
+    name: {en: Post-stroke hemiparesis, fr: Hémiparésie après AVC}
+    domain: {en: Voluntary strength and movement, fr: Force et mouvement volontaires}
+    group: sensorimotor
+    summary:
+      en: Weakness and impaired voluntary movement on one side after stroke. This profile focuses on upper-limb impairment, corticospinal injury and selected subcortical associations.
+      fr: Faiblesse et trouble du mouvement volontaire d’un côté après AVC. Ce profil porte sur l’atteinte du membre supérieur, les lésions corticospinales et certaines associations sous-corticales.
+    aliases:
+      en: [hemiparesis, hemiplegia, unilateral weakness, arm paresis, corticospinal tract, motor weakness]
+      fr: [hémiparésie, hémiplégie, faiblesse unilatérale, parésie du bras, faisceau corticospinal, faiblesse motrice]
+
+  - id: spasticity
+    name: {en: Post-stroke spasticity, fr: Spasticité après AVC}
+    domain: {en: Stretch-reflex regulation, fr: Régulation du réflexe d’étirement}
+    group: sensorimotor
+    summary:
+      en: Abnormally increased stretch-reflex responses after stroke. This profile concerns upper-limb spasticity and separates resistance-to-movement ratings from an instrumented reflex-threshold measure.
+      fr: Augmentation anormale des réponses réflexes à l’étirement après AVC. Ce profil concerne la spasticité du membre supérieur et distingue les cotations de résistance au mouvement d’une mesure instrumentée du seuil réflexe.
+    aliases:
+      en: [spasticity, spastic hypertonia, muscle tone, stretch reflex, Modified Ashworth Scale, elbow flexors]
+      fr: [spasticité, hypertonie spastique, tonus musculaire, réflexe d’étirement, échelle d’Ashworth modifiée, fléchisseurs du coude]
 
 references:
   - id: dronkers-2004
@@ -1245,6 +1443,383 @@ references:
     population:
       en: Right-brain-damaged hemiplegic patients who denied their motor impairment; the abstract gives no count.
       fr: Patients hémiplégiques avec lésion cérébrale droite qui niaient leur déficit moteur; le résumé n’indique pas l’effectif.
+
+  - id: schnider-1999
+    title: Spontaneous confabulators fail to suppress currently irrelevant memory traces
+    authors: Schnider A, Ptak R
+    year: 1999
+    journal: Nature Neuroscience
+    doi: 10.1038/10236
+    pmid: '10404203'
+    method: case-series
+    scope: abstract
+    population:
+      en: Amnesic patients with and without spontaneous confabulation; the abstract gives no sample size.
+      fr: Patients amnésiques avec et sans confabulation spontanée; le résumé ne précise pas l’effectif.
+
+  - id: jones-gotman-1988
+    title: Olfactory identification deficits in patients with focal cerebral excision
+    authors: Jones-Gotman M, Zatorre RJ
+    year: 1988
+    journal: Neuropsychologia
+    doi: 10.1016/0028-3932(88)90093-0
+    pmid: '3374800'
+    method: case-series
+    scope: abstract
+    population:
+      en: 120 patients with focal surgical brain lesions and 20 healthy controls.
+      fr: 120 patients avec lésions cérébrales chirurgicales focales et 20 témoins sains.
+
+  - id: jones-gotman-1993
+    title: 'Odor recognition memory in humans: role of right temporal and orbitofrontal regions'
+    authors: Jones-Gotman M, Zatorre RJ
+    year: 1993
+    journal: Brain and Cognition
+    doi: 10.1006/brcg.1993.1033
+    pmid: '8373572'
+    method: case-series
+    scope: abstract
+    population:
+      en: 121 patients with unilateral cerebral excisions and 20 controls.
+      fr: 121 patients avec exérèses cérébrales unilatérales et 20 témoins.
+
+  - id: shamay-tsoory-2007
+    title: 'Dissociable prefrontal networks for cognitive and affective theory of mind: a lesion study'
+    authors: Shamay-Tsoory SG, Aharon-Peretz J
+    year: 2007
+    journal: Neuropsychologia
+    doi: 10.1016/j.neuropsychologia.2007.05.021
+    pmid: '17640690'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: Patients with ventromedial, dorsolateral, mixed prefrontal or posterior lesions and healthy controls; the abstract gives no sample size.
+      fr: Patients avec lésions ventromédianes, dorsolatérales, préfrontales mixtes ou postérieures et témoins sains; le résumé ne précise pas l’effectif.
+
+  - id: heilman-2004
+    title: Affective aprosodia from a medial frontal stroke
+    authors: Heilman KM, Leon SA, Rosenbek JC
+    year: 2004
+    journal: Brain and Language
+    doi: 10.1016/j.bandl.2004.01.006
+    pmid: '15120533'
+    method: case-report
+    scope: abstract
+    population:
+      en: One man assessed seven years after a right medial frontal cerebral infarction.
+      fr: Un homme évalué sept ans après un infarctus cérébral frontal médial droit.
+
+  - id: theys-2013
+    title: A crucial role for the cortico-striato-cortical loop in the pathogenesis of stroke-related neurogenic stuttering
+    authors: Theys C, De Nil L, Thijs V, van Wieringen A, Sunaert S
+    year: 2013
+    journal: Human Brain Mapping
+    doi: 10.1002/hbm.22052
+    pmid: '22451328'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 20 stroke patients with neurogenic stuttering and 17 comparison participants, studied with voxel-based lesion-symptom mapping.
+      fr: 20 patients avec bégaiement neurogène après AVC et 17 participants comparatifs, étudiés par cartographie voxel par voxel des relations lésion-symptôme.
+
+  - id: theys-2024
+    title: Localization of stuttering based on causal brain lesions
+    authors: Theys C, Jaakkola E, Melzer TR, De Nil LF, Guenther FH, Cohen AL, Fox MD, Joutsa J
+    year: 2024
+    journal: Brain
+    doi: 10.1093/brain/awae059
+    pmid: '38797521'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 20 published stroke cases aged 16–77, a clinical stroke cohort of 20 aged 45–87, and 20 adults with persistent developmental stuttering; lesion network mapping used the stroke datasets.
+      fr: 20 cas d’AVC publiés âgés de 16 à 77 ans, une cohorte clinique de 20 patients avec AVC âgés de 45 à 87 ans et 20 adultes avec bégaiement développemental persistant; la cartographie de réseau lésionnel utilisait les données d’AVC.
+
+  - id: lachowska-2021
+    title: Cortical Deafness Due to Ischaemic Strokes in Both Temporal Lobes
+    authors: Lachowska M, Pastuszka A, Sokołowsk J, Szczudlik P, Niemczyk K
+    year: 2021
+    journal: Journal of Audiology and Otology
+    doi: 10.7874/jao.2020.00269
+    pmid: '33327707'
+    method: case-report
+    scope: abstract
+    population:
+      en: One patient with bilateral temporal infarcts, followed with audiometry and auditory electrophysiology over ten months.
+      fr: Un patient avec infarctus temporaux bilatéraux, suivi par audiométrie et électrophysiologie auditive pendant dix mois.
+
+  - id: akiyoshi-2021
+    title: Subcortical deafness as a subtype of auditory agnosia after injury of bilateral auditory radiations caused by two cerebrovascular accidents - normal auditory brainstem responses with I-VII waves and abolished consciousness of hearing
+    authors: Akiyoshi R, Shindo M, Kaga K
+    year: 2021
+    journal: Acta Oto-Laryngologica
+    doi: 10.1080/00016489.2020.1871510
+    pmid: '33573440'
+    method: case-series
+    scope: abstract
+    population:
+      en: Three patients with complete hearing loss and bilateral auditory radiation injury, studied with MRI and audiological testing.
+      fr: Trois patients avec perte auditive complète et atteinte bilatérale des radiations auditives, étudiés par IRM et examens audiologiques.
+
+  - id: schnider-1994
+    title: Non-verbal environmental sound recognition after unilateral hemispheric stroke
+    authors: Schnider A, Benson DF, Alexander DN, Schnider-Klaus A
+    year: 1994
+    journal: Brain
+    doi: 10.1093/brain/117.2.281
+    pmid: '8186955'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 52 people with unilateral cerebrovascular lesions and 18 age-matched healthy controls.
+      fr: 52 personnes avec lésions cérébrovasculaires unilatérales et 18 témoins sains appariés pour l’âge.
+
+  - id: saygin-2010
+    title: Nonverbal auditory agnosia with lesion to Wernicke’s area
+    authors: Saygin AP, Leech R, Dick F
+    year: 2010
+    journal: Neuropsychologia
+    doi: 10.1016/j.neuropsychologia.2009.08.015
+    pmid: '19698727'
+    method: case-report
+    scope: full-text
+    population:
+      en: Patient M, aged 74 at testing, with a left temporoparietal stroke at age 62; behavioural, audiological and functional MRI comparisons with controls.
+      fr: Patient M, âgé de 74 ans lors de l’évaluation, avec AVC temporopariétal gauche à 62 ans; comparaisons comportementales, audiologiques et par IRM fonctionnelle avec des témoins.
+
+  - id: leff-2009
+    title: 'The left superior temporal gyrus is a shared substrate for auditory short-term memory and speech comprehension: evidence from 210 patients with stroke'
+    authors: Leff AP, Schofield TM, Crinion JT, Seghier ML, Grogan A, Green DW, Price CJ
+    year: 2009
+    journal: Brain
+    doi: 10.1093/brain/awp273
+    pmid: '19892765'
+    method: lesion-mapping
+    scope: full-text
+    population:
+      en: 210 stroke patients, mean age 59; left and right lesions, predominantly left-sided, assessed more than one month after stroke.
+      fr: 210 patients avec AVC, âge moyen de 59 ans; lésions gauches et droites, surtout gauches, évaluées plus d’un mois après l’AVC.
+
+  - id: denes-2000
+    title: 'A category-specific deficit of spatial representation: the case of autotopagnosia'
+    authors: Denes G, Cappelletti JY, Zilli T, Dalla Porta F, Gallana A
+    year: 2000
+    journal: Neuropsychologia
+    doi: 10.1016/S0028-3932(99)00101-3
+    pmid: '10683386'
+    method: case-series
+    scope: abstract
+    population:
+      en: Two patients with vascular parietal lesions in the language-dominant hemisphere, right-sided in one case.
+      fr: Deux patients avec lésions pariétales vasculaires de l’hémisphère dominant pour le langage, droit dans un cas.
+
+  - id: ogden-1985
+    title: Autotopagnosia. Occurrence in a patient without nominal aphasia and with an intact ability to point to parts of animals and objects
+    authors: Ogden JA
+    year: 1985
+    journal: Brain
+    doi: 10.1093/brain/108.4.1009
+    pmid: '4075073'
+    method: case-report
+    scope: abstract
+    population:
+      en: One patient with a left parietal metastasis and preserved naming and comprehension.
+      fr: Un patient avec métastase pariétale gauche et dénomination et compréhension préservées.
+
+  - id: anema-2008
+    title: Differences in finger localisation performance of patients with finger agnosia
+    authors: Anema HA, Kessels RP, de Haan EH, Kappelle LJ, Leijten FS, van Zandvoort MJ, Dijkerman HC
+    year: 2008
+    journal: NeuroReport
+    doi: 10.1097/WNR.0b013e32830e017b
+    pmid: '18766025'
+    method: case-series
+    scope: abstract
+    population:
+      en: Three patients with angular gyrus lesions, intact somatosensory processing and selectively impaired finger identification; lesion side is not specified in the abstract.
+      fr: Trois patients avec lésions du gyrus angulaire, traitement somatosensoriel préservé et trouble sélectif d’identification digitale; le côté lésionnel n’est pas précisé dans le résumé.
+
+  - id: ranzini-2023
+    title: 'White matter tract disconnection in Gerstmann’s syndrome: Insights from a single case study'
+    authors: Ranzini M, Ferrazzi G, D'Imperio D, Giustiniani A, Danesin L, D'Antonio V, Rigon E, Cacciante L, Rigon J, Meneghello F, Turolla A, Vallesi A, Semenza C, Burgio F
+    year: 2023
+    journal: Cortex
+    doi: 10.1016/j.cortex.2023.05.016
+    pmid: '37478549'
+    method: case-report
+    scope: abstract
+    population:
+      en: One left parietal patient with the four signs of Gerstmann’s syndrome, investigated using lesion mapping, atlas-based disconnection estimates and diffusion tractography.
+      fr: Un patient avec lésion pariétale gauche et les quatre signes du syndrome de Gerstmann, étudié par cartographie lésionnelle, estimation de déconnexion par atlas et tractographie de diffusion.
+
+  - id: triggs-1994
+    title: Motor neglect associated with a discrete parietal lesion
+    authors: Triggs WJ, Gold M, Gerstle G, Adair J, Heilman KM
+    year: 1994
+    journal: Neurology
+    doi: 10.1212/wnl.44.6.1164
+    pmid: '8208417'
+    method: case-report
+    scope: abstract
+    population:
+      en: One right-handed man aged 79 with right-sided motor neglect and a left posterior parietal infarct.
+      fr: Un homme droitier de 79 ans avec négligence motrice droite et infarctus pariétal postérieur gauche.
+
+  - id: del-vecchio-2021
+    title: Tonic somatosensory responses and deficits of tactile awareness converge in the parietal operculum
+    authors: Del Vecchio M, Fossataro C, Zauli FM, Sartori I, Pigorini A, d'Orio P, Abarrategui B, Russo S, Mikulan EP, Caruana F, Rizzolatti G, Garbarini F, Avanzini P
+    year: 2021
+    journal: Brain
+    doi: 10.1093/brain/awab384
+    pmid: '34633436'
+    method: lesion-mapping
+    scope: full-text
+    population:
+      en: 78 stroke patients (46 right and 32 left lesions), with tactile extinction in 28 right-lesion and four left-lesion patients; lesion comparisons focused on the right-lesion group. A separate 60-patient epilepsy cohort provided stereo-EEG recordings.
+      fr: 78 patients avec AVC (46 lésions droites et 32 gauches), dont 28 avec lésion droite et quatre avec lésion gauche présentaient une extinction tactile; les comparaisons lésionnelles portaient sur le groupe droit. Une cohorte distincte de 60 patients épileptiques fournissait les enregistrements stéréo-EEG.
+
+  - id: nemeth-1988
+    title: 'Akinetic mutism associated with bicingular lesions: clinicopathological and functional anatomical correlates'
+    authors: Németh G, Hegedüs K, Molnár L
+    year: 1988
+    journal: European Archives of Psychiatry and Neurological Sciences
+    doi: 10.1007/BF00449910
+    pmid: '2849547'
+    method: case-series
+    scope: abstract
+    population:
+      en: Three patients with akinetic mutism and neuropathological examination of their lesions.
+      fr: Trois patients avec mutisme akinétique et examen neuropathologique des lésions.
+
+  - id: darby-2018
+    title: Lesion network localization of free will
+    authors: Darby RR, Joutsa J, Burke MJ, Fox MD
+    year: 2018
+    journal: Proceedings of the National Academy of Sciences
+    doi: 10.1073/pnas.1814117115
+    pmid: '30275309'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: Lesion network mapping of 28 cases of akinetic mutism and 50 cases of alien limb syndrome, with lesion comparison groups.
+      fr: Cartographie de réseau lésionnel de 28 cas de mutisme akinétique et 50 cas de syndrome du membre étranger, avec groupes lésionnels comparatifs.
+
+  - id: leonard-2019
+    title: Diffusion tensor imaging reveals diffuse white matter injuries in locked-in syndrome patients
+    authors: Leonard M, Renard F, Harsan L, Pottecher J, Braun M, Schneider F, Froehlig P, Blanc F, Roquet D, Achard S, Meyer N, Kremer S
+    year: 2019
+    journal: PLOS ONE
+    doi: 10.1371/journal.pone.0213528
+    pmid: '30969973'
+    method: case-series
+    scope: full-text
+    population:
+      en: Seven patients with locked-in syndrome and pontine lesions, aged 37–70, studied with diffusion MRI about 26 days after injury.
+      fr: Sept patients avec syndrome d’enfermement et lésions pontiques, âgés de 37 à 70 ans, étudiés par IRM de diffusion environ 26 jours après l’atteinte.
+
+  - id: nilsen-2023
+    title: Demographic, Medical, and Clinical Characteristics of a Population-Based Sample of Patients With Long-lasting Locked-In Syndrome
+    authors: Nilsen HW, Martinsen ACT, Johansen I, Kirkevold M, Sunnerhagen KS, Becker F
+    year: 2023
+    journal: Neurology
+    doi: 10.1212/WNL.0000000000207577
+    pmid: '37442623'
+    method: case-series
+    scope: abstract
+    population:
+      en: 51 patients from a Norwegian national cohort with vascular locked-in syndrome lasting at least six weeks; 43 had follow-up data.
+      fr: 51 patients d’une cohorte nationale norvégienne avec syndrome d’enfermement vasculaire durant au moins six semaines; 43 avaient des données de suivi.
+
+  - id: volle-2011
+    title: 'The role of rostral prefrontal cortex in prospective memory: a voxel-based lesion study'
+    authors: Volle E, Gonen-Yaacovi G, Costello Ade L, Gilbert SJ, Burgess PW
+    year: 2011
+    journal: Neuropsychologia
+    doi: 10.1016/j.neuropsychologia.2011.02.045
+    pmid: '21371485'
+    method: lesion-mapping
+    scope: full-text
+    population:
+      en: 45 adults with focal brain lesions and 107 matched healthy controls; eight patients had rostral prefrontal involvement.
+      fr: 45 adultes avec lésions cérébrales focales et 107 témoins sains appariés; huit patients avaient une atteinte préfrontale rostrale.
+
+  - id: uretzky-2010
+    title: 'Knowing your lines but missing your cue: rostral prefrontal lesions impair prospective memory cue detection, but not action-intention superiority'
+    authors: Uretzky S, Gilboa A
+    year: 2010
+    journal: Journal of Cognitive Neuroscience
+    doi: 10.1162/jocn.2010.21419
+    pmid: '20044884'
+    method: case-report
+    scope: abstract
+    population:
+      en: Patient Z.P., with a chronic prospective-memory impairment and a right polar prefrontal lesion involving Brodmann areas 10 and 9.
+      fr: Patient Z.P., avec trouble chronique de la mémoire prospective et lésion préfrontale polaire droite impliquant les aires 10 et 9 de Brodmann.
+
+  - id: hogeveen-2016
+    title: Acquired alexithymia following damage to the anterior insula
+    authors: Hogeveen J, Bird G, Chau A, Krueger F, Grafman J
+    year: 2016
+    journal: Neuropsychologia
+    doi: 10.1016/j.neuropsychologia.2016.01.021
+    pmid: '26801227'
+    method: lesion-mapping
+    scope: full-text
+    population:
+      en: 129 male Vietnam veterans with penetrating traumatic brain injury and 33 non-brain-injured veteran controls; nine patients had more than 15% anterior insula damage.
+      fr: 129 vétérans masculins du Vietnam avec traumatisme craniocérébral pénétrant et 33 vétérans témoins sans lésion cérébrale; neuf patients avaient une atteinte de plus de 15 % de l’insula antérieure.
+
+  - id: hobson-2020
+    title: The association between communication impairments and acquired alexithymia in chronic stroke patients
+    authors: Hobson H, Chiu EG, Ravenscroft C, Partridge K, Bird G, Demeyere N
+    year: 2020
+    journal: Journal of Clinical and Experimental Neuropsychology
+    doi: 10.1080/13803395.2020.1770703
+    pmid: '32576080'
+    method: case-series
+    scope: abstract
+    population:
+      en: 118 people with chronic stroke, assessed with alexithymia self-report, communication ratings and brief language tests.
+      fr: 118 personnes avec AVC chronique, évaluées par autoquestionnaire d’alexithymie, cotations de communication et tests langagiers brefs.
+
+  - id: frenkel-toledo-2022
+    title: Shared and distinct voxel-based lesion-symptom mappings for spasticity and impaired movement in the hemiparetic upper limb
+    authors: Frenkel-Toledo S, Levin MF, Berman S, Liebermann DG, Baniña MC, Solomon JM, Ofir-Geva S, Soroker N
+    year: 2022
+    journal: Scientific Reports
+    doi: 10.1038/s41598-022-14359-8
+    pmid: '35715476'
+    method: lesion-mapping
+    scope: full-text
+    population:
+      en: 41 people aged 25–80 with first middle-cerebral-artery stroke, upper-limb paresis and elbow-flexor spasticity, assessed three weeks to six months after stroke; right lesions were flipped for pooled analysis.
+      fr: 41 personnes âgées de 25 à 80 ans avec premier AVC sylvien, parésie du membre supérieur et spasticité des fléchisseurs du coude, évaluées de trois semaines à six mois après l’AVC; les lésions droites étaient retournées pour l’analyse groupée.
+
+  - id: karnath-2017
+    title: 'Investigating structure and function in the healthy human brain: validity of acute versus chronic lesion-symptom mapping'
+    authors: Karnath HO, Rennig J
+    year: 2017
+    journal: Brain Structure and Function
+    doi: 10.1007/s00429-016-1325-7
+    pmid: '27807627'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 60 unselected stroke patients assessed for arm motor function, comparing acute and chronic imaging and behavioural measurements.
+      fr: 60 patients avec AVC non sélectionnés, évalués pour la motricité du bras, avec comparaison de mesures d’imagerie et comportementales aiguës et chroniques.
+
+  - id: cheung-2016
+    title: Lesion Characteristics of Individuals With Upper Limb Spasticity After Stroke
+    authors: Cheung DK, Climans SA, Black SE, Gao F, Szilagyi GM, Mochizuki G
+    year: 2016
+    journal: Neurorehabilitation and Neural Repair
+    doi: 10.1177/1545968315585357
+    pmid: '25995383'
+    method: lesion-mapping
+    scope: abstract
+    population:
+      en: 97 stroke patients, including 51 with upper-limb spasticity, studied with lesion subtraction and Fisher’s exact test; tone was rated at the elbow or wrist.
+      fr: 97 patients avec AVC, dont 51 avec spasticité du membre supérieur, étudiés par soustraction lésionnelle et test exact de Fisher; le tonus était coté au coude ou au poignet.
 
 associations:
   - id: aphasia-comprehension
@@ -2477,3 +3052,428 @@ associations:
       - {region: 'aseg:midline:255', source_name: CC_Anterior}
     evidence:
       - {reference: feinberg-1992, role: supporting}
+
+  - id: confabulation-anterior-limbic
+    deficit: confabulation
+    title: {en: Memories mistaken for current reality, fr: Souvenirs pris pour la réalité présente}
+    network: {en: Anterior limbic memory-monitoring system, fr: Système limbique antérieur de contrôle des souvenirs}
+    laterality: bilateral
+    finding:
+      en: Spontaneous confabulators confused previously seen items with current targets. Lesions involved medial orbitofrontal cortex or other anterior limbic structures.
+      fr: Les patients confabulateurs confondaient des éléments vus précédemment avec les cibles actuelles. Les lésions touchaient le cortex orbitofrontal médial ou d’autres structures limbiques antérieures.
+    limitation:
+      en: This comparison concerns spontaneous confabulation in amnesia. It does not establish a single necessary site or explain every type of false memory.
+      fr: Cette comparaison concerne la confabulation spontanée dans l’amnésie. Elle n’établit pas un site nécessaire unique et n’explique pas tous les types de faux souvenirs.
+    mapping_note:
+      en: The rectus gyri are broad medial orbitofrontal landmarks. Basal forebrain, perirhinal and hypothalamic involvement is not delineated; both sides are shown without a claim that bilateral damage is required.
+      fr: Les gyri rectus sont des repères orbitofrontaux médiaux larges. Les atteintes du prosencéphale basal, périrhinales et hypothalamiques ne sont pas délimitées; les deux côtés sont affichés sans supposer une atteinte bilatérale nécessaire.
+    mappings:
+      - {region: 'destrieux:left:31', source_name: G_rectus}
+      - {region: 'destrieux:right:31', source_name: G_rectus}
+    evidence:
+      - {reference: schnider-1999, role: supporting}
+
+  - id: olfactory-identification-orbital
+    deficit: olfactory-recognition
+    title: {en: Identifying familiar smells, fr: Identification des odeurs familières}
+    network: {en: Orbitofrontal olfactory recognition system, fr: Système orbitofrontal de reconnaissance olfactive}
+    laterality: bilateral
+    finding:
+      en: Odour identification was impaired after temporal excision or frontal excision involving orbital cortex. Detection thresholds remained normal in all patient groups.
+      fr: L’identification des odeurs était altérée après exérèse temporale ou frontale impliquant le cortex orbital. Les seuils de détection restaient normaux dans tous les groupes de patients.
+    limitation:
+      en: Surgical groups and an identification task do not establish a universal smell-loss map. This is not evidence of complete anosmia.
+      fr: Les groupes chirurgicaux et une tâche d’identification n’établissent pas une carte universelle de la perte olfactive. Ces résultats ne démontrent pas une anosmie complète.
+    mapping_note:
+      en: Orbital gyri mark the frontal finding only. Temporal removals also caused impairment; their extent is not mapped from the abstract. Patients had unilateral excisions.
+      fr: Les gyri orbitaux représentent seulement le constat frontal. Les exérèses temporales entraînaient aussi un trouble; leur étendue n’est pas cartographiée à partir du résumé. Les exérèses étaient unilatérales.
+    mappings:
+      - {region: 'destrieux:left:24', source_name: G_orbital}
+      - {region: 'destrieux:right:24', source_name: G_orbital}
+    evidence:
+      - {reference: jones-gotman-1988, role: supporting}
+
+  - id: olfactory-memory-right-orbital
+    deficit: olfactory-recognition
+    title: {en: Remembering previously presented smells, fr: Reconnaissance d’odeurs déjà présentées}
+    network: {en: Right orbitofrontal and temporal odour memory, fr: Mémoire olfactive orbitofrontale et temporale droite}
+    laterality: right
+    finding:
+      en: Odour recognition memory was impaired after right temporal or right orbitofrontal excision. Naming the odours improved recognition across groups.
+      fr: La mémoire de reconnaissance olfactive était altérée après exérèse temporale droite ou orbitofrontale droite. Nommer les odeurs améliorait la reconnaissance dans les différents groupes.
+    limitation:
+      en: This memory task differs from smell detection and identification. Its right-sided result does not imply that all olfactory functions are right-lateralized.
+      fr: Cette tâche mnésique diffère de la détection et de l’identification des odeurs. Son résultat droit ne signifie pas que toutes les fonctions olfactives sont latéralisées à droite.
+    mapping_note:
+      en: The right orbital parcel marks one reported surgical site. It neither defines a memory-specific subregion nor represents the temporal excisions.
+      fr: La parcelle orbitale droite représente un des sites chirurgicaux rapportés. Elle ne délimite pas une sous-région propre à la mémoire et ne représente pas les exérèses temporales.
+    mappings:
+      - {region: 'destrieux:right:24', source_name: G_orbital}
+    evidence:
+      - {reference: jones-gotman-1993, role: supporting}
+
+  - id: theory-of-mind-ventromedial
+    deficit: theory-of-mind
+    title: {en: Inferring emotional mental states, fr: Inférence des états mentaux émotionnels}
+    network: {en: Ventromedial prefrontal social cognition, fr: Cognition sociale préfrontale ventromédiane}
+    laterality: bilateral
+    finding:
+      en: Ventromedial lesions particularly impaired affective theory of mind; cognitive theory of mind was more affected by extensive prefrontal damage.
+      fr: Les lésions ventromédianes altéraient surtout la théorie de l’esprit affective; la théorie de l’esprit cognitive était davantage touchée par des lésions préfrontales étendues.
+    limitation:
+      en: Two experimental tasks support a partial dissociation. They do not identify a unique mentalizing centre, establish laterality, or measure every aspect of empathy.
+      fr: Deux tâches expérimentales soutiennent une dissociation partielle. Elles n’identifient pas un centre unique de mentalisation, n’établissent pas sa latéralisation et ne mesurent pas tous les aspects de l’empathie.
+    mapping_note:
+      en: Rectus gyri provide coarse ventromedial landmarks on both sides. They do not reproduce the lesion boundaries or imply that bilateral injury is necessary.
+      fr: Les gyri rectus fournissent des repères ventromédiaux approximatifs des deux côtés. Ils ne reproduisent pas les limites lésionnelles et n’impliquent pas qu’une atteinte bilatérale soit nécessaire.
+    mappings:
+      - {region: 'destrieux:left:31', source_name: G_rectus}
+      - {region: 'destrieux:right:31', source_name: G_rectus}
+    evidence:
+      - {reference: shamay-tsoory-2007, role: supporting}
+
+  - id: aprosodia-medial-frontal
+    deficit: aprosodia
+    title: {en: Emotional intonation after medial frontal stroke, fr: Intonation émotionnelle après AVC frontal médial}
+    network: {en: Right medial frontal affective speech, fr: Parole affective frontale médiale droite}
+    laterality: right
+    finding:
+      en: A right medial frontal infarct left persistent difficulty expressing emotional intonation despite preserved propositional speech and syntactic prosody. Prosodic comprehension and repetition were less severely impaired.
+      fr: Un infarctus frontal médial droit entraînait une difficulté persistante à exprimer l’intonation émotionnelle malgré une parole propositionnelle et une prosodie syntaxique préservées. La compréhension et la répétition prosodiques étaient moins altérées.
+    limitation:
+      en: One chronic case demonstrates a possible lesion association. It cannot establish prevalence, specificity or the principal site of expressive aprosodia.
+      fr: Un cas chronique démontre une association lésionnelle possible. Il n’établit ni la prévalence, ni la spécificité, ni le site principal de l’aprosodie expressive.
+    mapping_note:
+      en: The whole superior frontal gyrus is a broad landmark extending onto the medial surface. It does not isolate the medial infarct or a prosody-specific area.
+      fr: Le gyrus frontal supérieur entier est un repère large s’étendant à la face médiale. Il n’isole ni l’infarctus médial ni une aire spécifique de la prosodie.
+    mappings:
+      - {region: 'destrieux:right:16', source_name: G_front_sup}
+    evidence:
+      - {reference: heilman-2004, role: supporting}
+
+  - id: stuttering-cortico-striatal
+    deficit: stuttering
+    title: {en: Distributed lesions affecting speech fluency, fr: Lésions distribuées affectant la fluence}
+    network: {en: Left cortico-basal ganglia-cortical speech network, fr: Réseau de la parole cortico-noyaux gris-cortical gauche}
+    laterality: left
+    finding:
+      en: Lesion mapping implicated left inferior frontal, superior temporal, intraparietal and basal ganglia regions and their white-matter connections, rather than one stuttering site.
+      fr: La cartographie lésionnelle impliquait des régions frontales inférieures, temporales supérieures, intrapariétales et des noyaux gris gauches, ainsi que leurs connexions de substance blanche, plutôt qu’un site unique du bégaiement.
+    limitation:
+      en: The 2024 study linked heterogeneous lesions to a network centred on left putamen. Functional connectivity does not mean that putamen was directly damaged in every case; these studies do not localize all developmental stuttering.
+      fr: L’étude de 2024 reliait des lésions hétérogènes à un réseau centré sur le putamen gauche. La connectivité fonctionnelle ne signifie pas que le putamen était directement lésé dans chaque cas; ces études ne localisent pas tous les bégaiements développementaux.
+    mapping_note:
+      en: Inferior frontal opercular and lateral superior temporal parcels provide selected cortical landmarks. The other lesions and connecting white matter are not delineated.
+      fr: Les parcelles frontale inférieure operculaire et temporale supérieure latérale fournissent des repères corticaux sélectionnés. Les autres lésions et la substance blanche de connexion ne sont pas délimitées.
+    mappings:
+      - {region: 'destrieux:left:12', source_name: G_front_inf-Opercular}
+      - {region: 'destrieux:left:34', source_name: G_temp_sup-Lateral}
+    evidence:
+      - {reference: theys-2013, role: supporting}
+      - {reference: theys-2024, role: qualifying}
+
+  - id: cortical-deafness-bitemporal
+    deficit: cortical-deafness
+    title: {en: Bilateral auditory cortical injury, fr: Atteinte corticale auditive bilatérale}
+    network: {en: Bilateral central auditory pathways, fr: Voies auditives centrales bilatérales}
+    laterality: bilateral
+    finding:
+      en: Bilateral temporal infarcts involving Heschl’s gyri caused profound hearing loss with normal otoacoustic emissions and brainstem responses. Sound detection partly recovered, but word comprehension remained absent at ten months.
+      fr: Des infarctus temporaux bilatéraux impliquant les gyri de Heschl entraînaient une surdité profonde avec otoémissions et réponses du tronc cérébral normales. La détection sonore récupérait partiellement, mais la compréhension des mots restait absente à dix mois.
+    limitation:
+      en: This is one cortical case. A separate three-patient series found bilateral auditory radiation damage, showing that severe central deafness can also arise from subcortical disconnection.
+      fr: Il s’agit d’un seul cas cortical. Une série distincte de trois patients trouvait une atteinte bilatérale des radiations auditives, montrant qu’une surdité centrale sévère peut aussi résulter d’une déconnexion sous-corticale.
+    mapping_note:
+      en: Transverse temporal parcels mark Heschl’s gyri on each side, not the full infarcts or auditory radiations. This case involved bilateral injury.
+      fr: Les parcelles temporales transverses représentent les gyri de Heschl de chaque côté, sans délimiter les infarctus entiers ni les radiations auditives. Ce cas comportait une atteinte bilatérale.
+    mappings:
+      - {region: 'destrieux:left:33', source_name: G_temp_sup-G_T_transv}
+      - {region: 'destrieux:right:33', source_name: G_temp_sup-G_T_transv}
+    evidence:
+      - {reference: lachowska-2021, role: supporting}
+      - {reference: akiyoshi-2021, role: qualifying}
+
+  - id: auditory-agnosia-temporoparietal
+    deficit: auditory-agnosia
+    title: {en: Environmental sound recognition after unilateral stroke, fr: Reconnaissance des sons après AVC unilatéral}
+    network: {en: Bilateral temporal and inferior parietal auditory processing, fr: Traitement auditif temporal et pariétal inférieur bilatéral}
+    laterality: bilateral
+    finding:
+      en: Impaired sound recognition followed superior temporal, inferior parietal and opercular damage on either side. Right-lesion patients confused acoustically similar sounds; left-lesion patients more often confused semantically related sources.
+      fr: La reconnaissance sonore était altérée après atteinte temporale supérieure, pariétale inférieure et operculaire de chaque côté. Les patients avec lésion droite confondaient des sons acoustiquement similaires; ceux avec lésion gauche confondaient davantage des sources sémantiquement proches.
+    limitation:
+      en: These group error patterns are not invariant. Saygin’s later left-lesion case retained severe nonverbal auditory agnosia after speech comprehension recovered.
+      fr: Ces profils d’erreurs de groupe ne sont pas invariants. Le cas ultérieur de Saygin conservait une agnosie auditive non verbale sévère après récupération de la compréhension de la parole malgré une lésion gauche.
+    mapping_note:
+      en: Superior temporal and planum temporale parcels mark selected cortical sites on each side. The inferior parietal, opercular and full lesion extents are not reproduced. The strokes were unilateral.
+      fr: Les parcelles temporales supérieures et du planum temporale repèrent certains sites corticaux de chaque côté. Les atteintes pariétales inférieures, operculaires et l’étendue complète des lésions ne sont pas reproduites. Les AVC étaient unilatéraux.
+    mappings:
+      - {region: 'destrieux:left:34', source_name: G_temp_sup-Lateral}
+      - {region: 'destrieux:right:34', source_name: G_temp_sup-Lateral}
+      - {region: 'destrieux:left:36', source_name: G_temp_sup-Plan_tempo}
+      - {region: 'destrieux:right:36', source_name: G_temp_sup-Plan_tempo}
+    evidence:
+      - {reference: schnider-1994, role: supporting}
+      - {reference: saygin-2010, role: qualifying}
+
+  - id: auditory-agnosia-selective-left
+    deficit: auditory-agnosia
+    title: {en: Persistent nonverbal impairment with recovered speech comprehension, fr: Trouble non verbal persistant après récupération de la compréhension orale}
+    network: {en: Left posterior temporal auditory recognition, fr: Reconnaissance auditive temporale postérieure gauche}
+    laterality: left
+    finding:
+      en: Patient M had severe environmental sound agnosia with preserved speech comprehension and no peripheral hearing problem after an extensive left temporoparietal infarct. Mild word-finding difficulty persisted.
+      fr: Le patient M présentait une agnosie sévère des sons de l’environnement avec compréhension orale préservée et sans trouble auditif périphérique après un infarctus temporopariétal gauche étendu. Un léger manque du mot persistait.
+    limitation:
+      en: One chronic case shows that nonverbal auditory impairment can persist independently of speech-comprehension failure. The extensive lesion and recovery prevent assigning the dissociation to a single gyrus.
+      fr: Un cas chronique montre qu’un trouble auditif non verbal peut persister indépendamment d’un trouble de compréhension de la parole. La lésion étendue et la récupération empêchent d’attribuer cette dissociation à un seul gyrus.
+    mapping_note:
+      en: The whole lateral superior temporal parcel provides a posterior temporal landmark. It does not reproduce the parietal damage or the reorganized responses seen with functional MRI.
+      fr: La parcelle temporale supérieure latérale entière fournit un repère temporal postérieur. Elle ne reproduit ni l’atteinte pariétale ni les réponses réorganisées observées en IRM fonctionnelle.
+    mappings:
+      - {region: 'destrieux:left:34', source_name: G_temp_sup-Lateral}
+    evidence:
+      - {reference: saygin-2010, role: supporting}
+
+  - id: auditory-short-term-memory-temporal
+    deficit: auditory-short-term-memory
+    title: {en: Digit span and posterior temporal integrity, fr: Empan de chiffres et intégrité temporale postérieure}
+    network: {en: Left posterior superior temporal retention and comprehension, fr: Rétention et compréhension temporales supérieures postérieures gauches}
+    laterality: left
+    finding:
+      en: Posterior left superior temporal gyrus and sulcus integrity predicted digit span after other language scores and stroke volume were accounted for. The same region also predicted spoken sentence comprehension.
+      fr: L’intégrité du gyrus et du sillon temporaux supérieurs postérieurs gauches prédisait l’empan de chiffres après prise en compte d’autres scores langagiers et du volume de l’AVC. La même région prédisait aussi la compréhension des phrases entendues.
+    limitation:
+      en: Digit span samples one component of short-term memory. The result supports a shared substrate with speech comprehension, rather than a unique store for every form of working memory.
+      fr: L’empan de chiffres évalue une composante de la mémoire à court terme. Le résultat soutient un substrat partagé avec la compréhension orale, plutôt qu’un stockage unique pour toutes les formes de mémoire de travail.
+    mapping_note:
+      en: The whole lateral superior temporal parcel is a coarse landmark for the posterior cluster and adjacent sulcus. It exceeds the statistically associated region.
+      fr: La parcelle temporale supérieure latérale entière est un repère approximatif pour l’amas postérieur et le sillon adjacent. Elle dépasse la région statistiquement associée.
+    mappings:
+      - {region: 'destrieux:left:34', source_name: G_temp_sup-Lateral}
+    evidence:
+      - {reference: leff-2009, role: supporting}
+
+  - id: autotopagnosia-parietal
+    deficit: autotopagnosia
+    title: {en: Localizing body parts with preserved naming, fr: Localisation des parties du corps avec dénomination préservée}
+    network: {en: Parietal body representation in the language-dominant hemisphere, fr: Représentation pariétale du corps dans l’hémisphère dominant pour le langage}
+    laterality: bilateral
+    finding:
+      en: Two vascular parietal cases could name and use body parts but failed to locate them on themselves or a mannequin. The language-dominant hemisphere was right-sided in one case; Ogden described a comparable dissociation after a left parietal metastasis.
+      fr: Deux cas pariétaux vasculaires pouvaient nommer et utiliser les parties du corps mais ne les localisaient pas sur eux-mêmes ou un mannequin. L’hémisphère dominant pour le langage était droit dans un cas; Ogden décrivait une dissociation comparable après une métastase pariétale gauche.
+    limitation:
+      en: Small case evidence does not establish a universal site or fixed left-hemisphere dominance. Preserved naming and object-part pointing help distinguish this disorder from language or general part–whole difficulties.
+      fr: Ces quelques cas n’établissent ni un site universel ni une dominance gauche fixe. La dénomination et la désignation des parties d’objets préservées aident à distinguer ce trouble de difficultés langagières ou générales de traitement des parties et du tout.
+    mapping_note:
+      en: The abstracts identify parietal cortex without parcel-level boundaries, so no specific atlas region is selected. Bilateral here records cases on either side, not a requirement for bilateral lesions.
+      fr: Les résumés identifient le cortex pariétal sans limites à l’échelle des parcelles; aucune région précise de l’atlas n’est donc sélectionnée. Bilatéral indique ici des cas de chaque côté, pas une nécessité de lésions bilatérales.
+    mappings: []
+    evidence:
+      - {reference: denes-2000, role: supporting}
+      - {reference: ogden-1985, role: supporting}
+
+  - id: finger-agnosia-parietal-disconnection
+    deficit: finger-agnosia
+    title: {en: Finger identification and parietal disconnection, fr: Identification digitale et déconnexion pariétale}
+    network: {en: Left intraparietal body-representation connections, fr: Connexions intrapariétales gauches de représentation corporelle}
+    laterality: left
+    finding:
+      en: A patient with Gerstmann’s four signs, including finger agnosia, had predominantly superior parietal damage and disruption of intraparietal connections. Angular-to-superior-parietal tracts crossed the implicated subcortical area.
+      fr: Un patient avec les quatre signes de Gerstmann, dont l’agnosie digitale, avait une atteinte surtout pariétale supérieure et une déconnexion intrapariétale. Des faisceaux reliant les gyri angulaire et pariétal supérieur traversaient la zone sous-corticale impliquée.
+    limitation:
+      en: This mixed syndrome does not isolate finger identification. Anema’s three angular-lesion cases had selective identification problems despite intact touch localization on their own hand, so one site or mechanism cannot cover every presentation.
+      fr: Ce syndrome mixte n’isole pas l’identification digitale. Les trois cas de lésions angulaires d’Anema avaient un trouble sélectif d’identification malgré une localisation tactile préservée sur leur propre main; un seul site ou mécanisme ne couvre donc pas toutes les présentations.
+    mapping_note:
+      en: The left superior parietal parcel marks the main cortical lesion in the Gerstmann case. It does not reproduce white-matter disconnection or map the angular-lesion cases, whose side is unspecified in the abstract.
+      fr: La parcelle pariétale supérieure gauche repère la lésion corticale principale du cas de Gerstmann. Elle ne reproduit pas la déconnexion de substance blanche et ne cartographie pas les cas angulaires, dont le côté n’est pas précisé dans le résumé.
+    mappings:
+      - {region: 'destrieux:left:27', source_name: G_parietal_sup}
+    evidence:
+      - {reference: ranzini-2023, role: supporting}
+      - {reference: anema-2008, role: qualifying}
+
+  - id: motor-neglect-parietal
+    deficit: motor-neglect
+    title: {en: Reduced spontaneous movement with preserved motor conduction, fr: Mouvement spontané réduit avec conduction motrice préservée}
+    network: {en: Left posterior parietal motor intention, fr: Intention motrice pariétale postérieure gauche}
+    laterality: left
+    finding:
+      en: A left posterior parietal infarct produced right-sided motor neglect without sensory or visuospatial neglect. Primary sensorimotor cortex was spared, with normal central motor conduction and comparable stimulation thresholds on both sides.
+      fr: Un infarctus pariétal postérieur gauche entraînait une négligence motrice droite sans négligence sensitive ou visuospatiale. Le cortex sensorimoteur primaire était épargné, avec conduction motrice centrale normale et seuils de stimulation comparables des deux côtés.
+    limitation:
+      en: One case demonstrates a possible intentional disorder with intact motor output. It does not establish the most common lesion site or exclude frontal and subcortical causes.
+      fr: Un cas démontre un trouble intentionnel possible avec commande motrice préservée. Il n’établit pas le site lésionnel le plus fréquent et n’exclut pas des causes frontales ou sous-corticales.
+    mapping_note:
+      en: The superior parietal parcel provides a broad posterior parietal landmark. The abstract does not assign the infarct to a specific gyrus; this parcel is not a reconstructed lesion or a claim of superior parietal specificity.
+      fr: La parcelle pariétale supérieure fournit un repère pariétal postérieur large. Le résumé n’attribue pas l’infarctus à un gyrus précis; cette parcelle n’est ni une reconstruction lésionnelle ni une affirmation de spécificité pariétale supérieure.
+    mappings:
+      - {region: 'destrieux:left:27', source_name: G_parietal_sup}
+    evidence:
+      - {reference: triggs-1994, role: supporting}
+
+  - id: tactile-extinction-opercular
+    deficit: tactile-extinction
+    title: {en: Tactile competition and the right parietal operculum, fr: Compétition tactile et opercule pariétal droit}
+    network: {en: Right operculo-insular tactile awareness, fr: Conscience tactile operculo-insulaire droite}
+    laterality: right
+    finding:
+      en: Right-lesion comparisons linked tactile extinction to rostral parietal operculum and posterior insula damage. These sites co-localized with sustained tactile responses recorded in a separate epilepsy cohort.
+      fr: Les comparaisons de lésions droites reliaient l’extinction tactile à une atteinte de l’opercule pariétal rostral et de l’insula postérieure. Ces sites coïncidaient avec des réponses tactiles soutenues enregistrées dans une cohorte épileptique distincte.
+    limitation:
+      en: The lesion analysis focused on right-sided strokes because only four left-lesion patients had extinction. Co-localization with stereo-EEG responses across cohorts does not prove that tonic activity alone causes awareness.
+      fr: L’analyse lésionnelle portait sur les AVC droits car seuls quatre patients avec lésion gauche avaient une extinction. La coïncidence avec les réponses stéréo-EEG de l’autre cohorte ne prouve pas que l’activité tonique suffit à produire la conscience.
+    mapping_note:
+      en: Subcentral and long-insular parcels provide coarse landmarks for the opercular and posterior insular sites. They do not isolate OP3 or the significant lesion clusters. Extinction affected the contralesional hand.
+      fr: Les parcelles subcentrale et insulaire longue fournissent des repères approximatifs des sites operculaire et insulaire postérieur. Elles n’isolent ni OP3 ni les amas lésionnels significatifs. L’extinction touchait la main controlatérale.
+    mappings:
+      - {region: 'destrieux:right:4', source_name: G_and_S_subcentral}
+      - {region: 'destrieux:right:17', source_name: 'G_Ins_lg&S_cent_ins'}
+    evidence:
+      - {reference: del-vecchio-2021, role: supporting}
+
+  - id: akinetic-mutism-cingulate
+    deficit: akinetic-mutism
+    title: {en: Bilateral anterior cingulate injury and loss of initiation, fr: Atteinte cingulaire antérieure bilatérale et perte d’initiative}
+    network: {en: Medial frontal volitional network, fr: Réseau frontal médial de la volition}
+    laterality: bilateral
+    finding:
+      en: Three neuropathological cases shared bilateral rostral anterior cingulate damage extending into neighbouring supplementary motor regions, with near-total loss of speech and movement.
+      fr: Trois cas neuropathologiques partageaient une atteinte cingulaire antérieure rostrale bilatérale s’étendant aux régions motrices supplémentaires voisines, avec perte quasi totale de la parole et du mouvement.
+    limitation:
+      en: These cases describe one anatomical pattern. Darby’s 28 lesions were heterogeneous but connected to anterior cingulate cortex; network connectivity does not mean this cortex was directly damaged in every case.
+      fr: Ces cas décrivent un profil anatomique. Les 28 lésions de Darby étaient hétérogènes mais connectées au cortex cingulaire antérieur; cette connectivité ne signifie pas que ce cortex était directement lésé dans chaque cas.
+    mapping_note:
+      en: Whole anterior cingulate parcels mark the bilateral cortical finding. The supplementary motor extension, other injuries and lesion-network connections are not delineated.
+      fr: Les parcelles cingulaires antérieures entières repèrent le constat cortical bilatéral. L’extension motrice supplémentaire, les autres lésions et les connexions du réseau lésionnel ne sont pas délimitées.
+    mappings:
+      - {region: 'destrieux:left:6', source_name: 'G_and_S_cingul-Ant'}
+      - {region: 'destrieux:right:6', source_name: 'G_and_S_cingul-Ant'}
+    evidence:
+      - {reference: nemeth-1988, role: supporting}
+      - {reference: darby-2018, role: qualifying}
+
+  - id: locked-in-pontine
+    deficit: locked-in
+    title: {en: Ventral pontine injury with preserved consciousness, fr: Atteinte pontique ventrale avec conscience préservée}
+    network: {en: Pontine descending motor pathways, fr: Voies motrices descendantes pontiques}
+    laterality: bilateral
+    finding:
+      en: Seven patients with locked-in syndrome had ventral pontine injury and diffuse white-matter abnormalities on diffusion MRI, even with little or no supratentorial injury visible on conventional images.
+      fr: Sept patients avec syndrome d’enfermement avaient une atteinte pontique ventrale et des anomalies diffuses de substance blanche en IRM de diffusion, malgré peu ou pas de lésion supratentorielle visible sur les images conventionnelles.
+    limitation:
+      en: This selected imaging series is not a universal lesion map. A national cohort of 51 patients frequently had additional lesions outside the brainstem. Preserved consciousness does not establish that every cognitive function is intact.
+      fr: Cette série d’imagerie sélectionnée n’est pas une carte lésionnelle universelle. Une cohorte nationale de 51 patients présentait souvent des lésions supplémentaires hors du tronc cérébral. La conscience préservée n’établit pas que toutes les fonctions cognitives sont intactes.
+    mapping_note:
+      en: The two pontine territories provide a coarse landmark for the pons. They do not isolate its ventral motor pathways, the tegmentum, or diffuse white-matter abnormalities.
+      fr: Les deux territoires pontiques fournissent un repère approximatif du pont. Ils n’isolent ni ses voies motrices ventrales, ni le tegmentum, ni les anomalies diffuses de substance blanche.
+    mappings:
+      - {region: 'learning:left:pons', source_name: Pontine territory}
+      - {region: 'learning:right:pons', source_name: Pontine territory}
+    evidence:
+      - {reference: leonard-2019, role: supporting}
+      - {reference: nilsen-2023, role: qualifying}
+
+  - id: prospective-memory-time-based
+    deficit: prospective-memory
+    title: {en: Remembering to act at a particular time, fr: Se rappeler d’agir à un moment précis}
+    network: {en: Right rostral prefrontal intention retrieval, fr: Rappel des intentions préfrontal rostral droit}
+    laterality: right
+    finding:
+      en: Right polar prefrontal damage was associated with impaired time-based prospective memory for words and pictures, with event-based performance preserved in that subgroup. Time estimation was also impaired.
+      fr: L’atteinte préfrontale polaire droite était associée à une mémoire prospective fondée sur le temps altérée pour les mots et les images, avec performance événementielle préservée dans ce sous-groupe. L’estimation du temps était aussi altérée.
+    limitation:
+      en: Only eight patients had rostral prefrontal lesions, and lesion coverage was uneven. Uretzky’s case had impaired event-cue detection after right polar damage, so the time/event distinction is not universal.
+      fr: Seuls huit patients avaient des lésions préfrontales rostrales et la couverture lésionnelle était inégale. Le cas d’Uretzky avait une détection des indices événementiels altérée après atteinte polaire droite; la distinction temps/événement n’est donc pas universelle.
+    mapping_note:
+      en: The transverse frontopolar parcel is a coarse landmark for right polar area 10. It does not reproduce the lesion cluster, all of area 10, or the other prefrontal findings.
+      fr: La parcelle frontopolaire transverse est un repère approximatif de l’aire polaire droite 10. Elle ne reproduit ni l’amas lésionnel, ni toute l’aire 10, ni les autres constats préfrontaux.
+    mappings:
+      - {region: 'destrieux:right:5', source_name: G_and_S_transv_frontopol}
+    evidence:
+      - {reference: volle-2011, role: supporting}
+      - {reference: uretzky-2010, role: qualifying}
+
+  - id: prospective-memory-cue-detection
+    deficit: prospective-memory
+    title: {en: Detecting the cue for an intended action, fr: Détection du signal d’une action prévue}
+    network: {en: Right polar prefrontal prospective cue processing, fr: Traitement préfrontal polaire droit des indices prospectifs}
+    laterality: right
+    finding:
+      en: Z.P. struggled to detect prospective-memory cues during ongoing tasks, while implicit advantages for intended actions remained intact. Other tested cognitive functions, including memory, were preserved.
+      fr: Z.P. avait des difficultés à détecter les indices de mémoire prospective pendant une tâche en cours, alors que les avantages implicites pour les actions prévues restaient intacts. Les autres fonctions cognitives testées, dont la mémoire, étaient préservées.
+    limitation:
+      en: A single chronic case separates cue detection from the tested representation of intentions. It does not show that all prospective-memory failures have this mechanism or location.
+      fr: Un cas chronique distingue la détection des indices de la représentation des intentions testée. Il ne montre pas que tous les troubles de mémoire prospective partagent ce mécanisme ou cette localisation.
+    mapping_note:
+      en: The frontopolar parcel is a reference landmark for the polar component of a lesion involving areas 10 and 9. Its full extent and the component in area 9 are not reconstructed.
+      fr: La parcelle frontopolaire est un repère de la composante polaire d’une lésion impliquant les aires 10 et 9. Son étendue complète et la composante dans l’aire 9 ne sont pas reconstruites.
+    mappings:
+      - {region: 'destrieux:right:5', source_name: G_and_S_transv_frontopol}
+    evidence:
+      - {reference: uretzky-2010, role: supporting}
+
+  - id: alexithymia-anterior-insula
+    deficit: alexithymia
+    title: {en: Emotional self-awareness after anterior insula injury, fr: Conscience émotionnelle après atteinte insulaire antérieure}
+    network: {en: Anterior insular emotional awareness, fr: Conscience émotionnelle insulaire antérieure}
+    laterality: bilateral
+    finding:
+      en: Greater anterior insula damage predicted higher alexithymia questionnaire scores after accounting for anterior cingulate damage and total lesion volume. The most extensively damaged subgroup had the highest scores.
+      fr: Une atteinte insulaire antérieure plus importante prédisait des scores d’alexithymie plus élevés après prise en compte des lésions cingulaires antérieures et du volume lésionnel total. Le sous-groupe le plus atteint avait les scores les plus élevés.
+    limitation:
+      en: The most damaged subgroup contained nine men, assessed decades after penetrating injury. Cross-sectional self-reports do not measure within-person change; Hobson’s stroke study also linked alexithymia to reported communication difficulties.
+      fr: Le sous-groupe le plus atteint comptait neuf hommes, évalués des décennies après une lésion pénétrante. Les autoquestionnaires transversaux ne mesurent pas le changement individuel; l’étude d’AVC de Hobson reliait aussi l’alexithymie aux difficultés de communication rapportées.
+    mapping_note:
+      en: Short insular parcels provide broad anterior insula landmarks. The study’s region of interest and damage proportions are not reproduced, and these landmarks do not establish hemispheric dominance or require bilateral injury.
+      fr: Les parcelles insulaires courtes fournissent des repères larges de l’insula antérieure. La région d’intérêt et les proportions de lésion de l’étude ne sont pas reproduites; ces repères n’établissent pas de dominance hémisphérique et n’exigent pas une atteinte bilatérale.
+    mappings:
+      - {region: 'destrieux:left:18', source_name: G_insular_short}
+      - {region: 'destrieux:right:18', source_name: G_insular_short}
+    evidence:
+      - {reference: hogeveen-2016, role: supporting}
+      - {reference: hobson-2020, role: qualifying}
+
+  - id: hemiparesis-subcortical
+    deficit: hemiparesis
+    title: {en: Voluntary arm movement after hemispheric stroke, fr: Mouvement volontaire du bras après AVC hémisphérique}
+    network: {en: Corticospinal and distributed motor pathways, fr: Voies corticospinales et réseau moteur distribué}
+    laterality: bilateral
+    finding:
+      en: Upper-limb movement scores were associated with damage to corticospinal pathways, putamen, pallidum and other regions. These findings survived correction for multiple comparisons; the corticospinal association also appeared with acute measures in a separate 60-patient study.
+      fr: Les scores de mouvement du membre supérieur étaient associés à des lésions des voies corticospinales, du putamen, du pallidum et d’autres régions. Ces résultats résistaient à la correction des comparaisons multiples; l’association corticospinale apparaissait aussi avec des mesures aiguës dans une étude distincte de 60 patients.
+    limitation:
+      en: The 41-patient cohort was selected for arm paresis and spasticity after middle-cerebral-artery stroke. Lesion coverage was incomplete; pooled, flipped hemispheres cannot establish dominance. Acute and chronic lesion maps differ with recovery.
+      fr: La cohorte de 41 patients était sélectionnée pour parésie du bras et spasticité après AVC sylvien. La couverture lésionnelle était incomplète; le regroupement des hémisphères retournés n’établit pas de dominance. Les cartes aiguës et chroniques diffèrent avec la récupération.
+    mapping_note:
+      en: Whole putamen and pallidum provide selected subcortical landmarks. The central corticospinal finding, including corona radiata and internal capsule, is not delineated by these parcels. Weakness affects the contralesional limb.
+      fr: Le putamen et le pallidum entiers fournissent des repères sous-corticaux sélectionnés. Le constat corticospinal central, incluant la couronne rayonnante et la capsule interne, n’est pas délimité par ces parcelles. La faiblesse touche le membre controlatéral.
+    mappings:
+      - {region: 'aseg:left:12', source_name: Left-Putamen}
+      - {region: 'aseg:right:51', source_name: Right-Putamen}
+      - {region: 'aseg:left:13', source_name: Left-Pallidum}
+      - {region: 'aseg:right:52', source_name: Right-Pallidum}
+    evidence:
+      - {reference: frenkel-toledo-2022, role: supporting}
+      - {reference: karnath-2017, role: supporting}
+
+  - id: spasticity-putamen
+    deficit: spasticity
+    title: {en: Putaminal lesions and upper-limb spasticity, fr: Lésions putaminales et spasticité du membre supérieur}
+    network: {en: Distributed regulation of muscle tone, fr: Régulation distribuée du tonus musculaire}
+    laterality: bilateral
+    finding:
+      en: In 97 stroke patients, the putamen was the region most frequently damaged in those with upper-limb spasticity after lesion subtraction and statistical comparison. Greater spasticity was associated with larger lesions.
+      fr: Chez 97 patients avec AVC, le putamen était la région la plus fréquemment lésée chez ceux présentant une spasticité du membre supérieur après soustraction lésionnelle et comparaison statistique. Une spasticité plus importante était associée à des lésions plus volumineuses.
+    limitation:
+      en: Modified Ashworth ratings include resistance to passive movement and differ from a reflex-threshold measure. Frenkel-Toledo’s elbow-flexor spasticity map did not survive multiple-comparison correction and is exploratory; it cannot establish a definitive spasticity network.
+      fr: Les cotations d’Ashworth modifiée incluent la résistance au mouvement passif et diffèrent d’une mesure du seuil réflexe. La carte de spasticité des fléchisseurs du coude de Frenkel-Toledo ne résistait pas à la correction des comparaisons multiples et reste exploratoire; elle n’établit pas un réseau définitif de la spasticité.
+    mapping_note:
+      en: Whole putamina are coarse landmarks on each side, not the significant voxels or a requirement for bilateral injury. Their overlap with the hemiparesis landmarks does not mean that the same voxels or mechanisms underlie both impairments.
+      fr: Les putamens entiers sont des repères approximatifs de chaque côté, pas les voxels significatifs ni une exigence de lésion bilatérale. Leur chevauchement avec les repères de l’hémiparésie ne signifie pas que les mêmes voxels ou mécanismes sous-tendent les deux troubles.
+    mappings:
+      - {region: 'aseg:left:12', source_name: Left-Putamen}
+      - {region: 'aseg:right:51', source_name: Right-Putamen}
+    evidence:
+      - {reference: cheung-2016, role: supporting}
+      - {reference: frenkel-toledo-2022, role: qualifying}

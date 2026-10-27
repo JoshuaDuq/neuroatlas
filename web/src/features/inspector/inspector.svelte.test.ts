@@ -354,6 +354,19 @@ describe('evidence sections', () => {
     expect(text(domains())).toContain('over this whole structure');
   });
 
+  test('a teaching unit lists its structure’s functions and says it takes that score', async () => {
+    const screen = await render(Fixture, { regionId: 'aseg:left:18' });
+    const domains = () => section('Neuropsychological functions');
+    domains().open = true;
+    const rows = () => [...domains().querySelectorAll('.network-row')].map(text);
+    const amygdala = rows();
+    expect(text(domains())).not.toContain('This teaching-set unit');
+    await screen.rerender({ regionId: 'learning:left:amygdala' });
+    expect(rows()).toEqual(amygdala);
+    expect(rows()[0]).toBe('Facial emotion recognition “facial expressions” · z 13.2');
+    expect(text(domains())).toContain('This teaching-set unit takes the score');
+  });
+
   test('a region outside every partition has no evidence sections', async () => {
     render(Fixture, { regionId: INNOMINATA });
     expect(section('Functional')).toBeUndefined();

@@ -1,4 +1,5 @@
 import type { Language, ModelState, Paint, Rgb, SessionState } from '../../types/index.ts';
+import type { Translated } from '../clinical/types.ts';
 import {
   ALL_DOMAINS,
   domainName,
@@ -19,19 +20,31 @@ export type PaintState = Pick<ModelState, 'atlas'> &
     'explorer' | 'selectedFunction' | 'selectedDeficit' | 'selectedFinding' | 'paintLifted' | 'lang'
   > & { paint?: Paint | null };
 
-/** Which tab a paint belongs to, by its id: `function:…` or `deficit:…`. */
+/** The findings near a placed lesion on the brain: its paint and the coloured findings, in rank order. */
+export interface LesionPaint {
+  paint: Paint;
+  rows: readonly { id: string; color: Rgb; title: Translated }[];
+}
+
+/** Which tab a paint belongs to, by its id: `function:…`, `deficit:…` or `lesion:…`. */
 export const paintKind = (paint: Paint | null | undefined): string | null =>
   paint?.id.slice(0, paint.id.indexOf(':')) || null;
 
 /**
- * The tab's paint: the open function on its own atlas, or the open deficit, while that tab is in
- * front and the reader has not chosen a masthead colour or atlas over it.
+ * The tab's paint: the open function on its own atlas, the open deficit, or the findings near a
+ * lesion, whose report is Anatomy's, while that tab is in front and the reader has not chosen a
+ * masthead colour or atlas over it.
  */
 export function paintFor(
   state: PaintState,
-  { domains, clinical }: { domains: NeuropsychDomains; clinical: ClinicalCatalog },
+  {
+    domains,
+    clinical,
+    lesion = null,
+  }: { domains: NeuropsychDomains; clinical: ClinicalCatalog; lesion?: LesionPaint | null },
 ): Paint | null {
   if (state.paintLifted) return null;
+  if (state.explorer === 'anatomy' && lesion) return lesion.paint;
   if (state.explorer === 'functions' && state.selectedFunction && state.atlas === domains.atlas) {
     return domainPaint(domains, state.selectedFunction);
   }
@@ -52,7 +65,7 @@ export interface LegendRow {
 }
 
 export interface Legend {
-  map: 'function' | 'deficit';
+  map: 'function' | 'deficit' | 'lesion';
   title: string;
   note: string;
   /** False for a z scale, whose bands are not toggles. */
@@ -71,14 +84,31 @@ export function legendFor(
     domains,
     clinical,
     drawn,
+    lesion = null,
   }: {
     domains: NeuropsychDomains;
     clinical: ClinicalCatalog;
     drawn: (region: string, state: PaintState) => boolean;
+    lesion?: LesionPaint | null;
   },
 ): Legend | null {
   const kind = paintKind(state.paint);
   const lang: Language = state.lang;
+  if (kind === 'lesion') {
+    const copy = t(lang, 'lesion');
+    return {
+      map: 'lesion',
+      title: copy.keyTitle,
+      note: copy.keyNote,
+      pickable: false,
+      rows: lesion!.rows.map(({ id, color, title }) => ({
+        id,
+        color,
+        label: title[lang],
+        pressed: false,
+      })),
+    };
+  }
   if (kind === 'function') {
     const copy = t(lang, 'domains');
     if (state.selectedFunction !== ALL_DOMAINS) {

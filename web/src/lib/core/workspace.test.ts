@@ -44,6 +44,12 @@ test('a function, a deficit or a lesson is detail only in its own mode', () => {
   assert.equal(detailAvailable({ explorer: 'anatomy', lesson: { circuit: 'motor' } }), false);
 });
 
+test('a placed lesion is detail in Anatomy, where its report is, and nowhere else', () => {
+  assert.equal(detailAvailable({ explorer: 'anatomy', lesion: true }), true);
+  assert.equal(detailAvailable({ explorer: 'anatomy', lesion: false }), false);
+  assert.equal(detailAvailable({ explorer: 'deficits', lesion: true }), false);
+});
+
 function view(fields: Partial<Parameters<typeof viewAfterUpdate>[0]>): WorkspaceView {
   return viewAfterUpdate({
     view: 'list',

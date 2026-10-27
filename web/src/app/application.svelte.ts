@@ -7,6 +7,7 @@ import type { createCatalog } from '../lib/core/catalog/catalog.ts';
 import type { ClinicalCatalog } from '../lib/core/clinical/catalog.ts';
 import type { CircuitCatalog } from '../lib/core/learning/catalog.ts';
 import type { SceneCommands } from '../lib/core/state/scene-commands.ts';
+import type { LesionStore } from '../lib/state/lesion.svelte.ts';
 import { MINIMUM_LENGTH } from '../lib/core/tracts.ts';
 import { decodeState } from '../lib/core/state/url-state.ts';
 import { VIEW_DIRECTIONS } from '../lib/engine/render/camera-views.ts';
@@ -43,6 +44,8 @@ export interface World extends AppContext {
   links: Links;
   /** The live announcer: an eye press hands it the part sentence after its command. */
   speech: ReturnType<typeof announceView>;
+  /** The placed lesion, its measurement and the findings near it. */
+  lesion: LesionStore;
 }
 
 /** Runs `build` where `$effect`s may be created and settles them, as a component's setup would. */

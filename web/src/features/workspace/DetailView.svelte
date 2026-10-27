@@ -18,6 +18,9 @@
   import type { DeficitsExplorer } from '../deficits/explorer.svelte.ts';
   import RelatedDeficits from '../deficits/RelatedDeficits.svelte';
   import FunctionProfile from '../functions/FunctionProfile.svelte';
+  import { t } from '../../lib/core/i18n/index.ts';
+  import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
+  import LesionReport from '../lesion/LesionReport.svelte';
   import type { FunctionExplorer } from '../functions/functions-explorer.svelte.ts';
   import AtlasComparison from '../inspector/AtlasComparison.svelte';
   import RegionDetail from '../inspector/RegionDetail.svelte';
@@ -34,7 +37,8 @@
     circuits: CircuitExplorer;
   } = $props();
 
-  const { engine, view, regions, catalog, anatomy, excursions } = $derived(world);
+  const { engine, view, regions, catalog, anatomy, excursions, lesion, clinical, session } =
+    $derived(world);
   const current = $derived(view.current);
   const { manifest, cabNp, functionalRegions, domains } = $derived(engine.model);
   // The comparison file is published beside the manifest the engine opened (boot.ts).
@@ -44,6 +48,23 @@
     (current.explorer === 'functions' && current.selectedFunction !== null) ||
       (current.explorer === 'deficits' && current.selectedDeficit !== null),
   );
+  // A placed lesion is Anatomy's detail once no region is selected.
+  const lesionShown = $derived(
+    current.explorer === 'anatomy' && !current.selectedRegion && lesion.sphere !== null,
+  );
+  // The cortex is listed on the atlas on screen first, then the other.
+  const lesionAtlases = $derived.by(() => {
+    const short = t(current.lang, 'header').atlasShort as Record<string, string>;
+    return [...manifest.atlases]
+      .sort((a, b) => Number(b.id === current.atlas) - Number(a.id === current.atlas))
+      .map(({ id }) => ({ id, name: short[id] ?? id }));
+  });
+  const bundles = $derived(tractCatalog(manifest.anatomy.id).bundles);
+
+  async function openFinding(deficit: string, finding: string) {
+    await deficits.openDeficit(deficit);
+    session.setFinding(finding);
+  }
 </script>
 
 <div class="detail-body">
@@ -52,46 +73,63 @@
     <CircuitStatus model={circuits} />
     <FunctionProfile model={functions} />
     <DeficitProfile explorer={deficits} view={current} />
-    <RegionDetail
-      lang={current.lang}
-      region={current.selectedRegion}
-      explorer={current.explorer}
-      cortexVisible={current.cortexVisible}
-      isolated={current.isolatedRegion !== null}
-      landmarkSelected={circuits.landmarkSelected}
-      {underProfile}
-      catalog={{ get: regions.get, label: catalog.label }}
-      centroidOf={(id) => engine.model.centroidOf(id)}
-      networkColors={manifest.networks?.colors as Readonly<Record<string, Rgb>> | undefined}
-      {cabNp}
-      {functionalRegions}
-      {domains}
-      onfocus={() => anatomy.focusSelection()}
-      onisolate={anatomy.isolateSelection}
-      onhide={() => void anatomy.hideSelection()}
-      onclear={() => void anatomy.clearSelection()}
-      onregion={(id) => void anatomy.openConstituent(id)}
-      openLinkedMri={excursions.openLinkedMri}
-    >
-      {#snippet comparison()}
-        <AtlasComparison
-          {engine}
-          {manifest}
-          {manifestUrl}
-          region={current.selectedRegion}
-          lang={current.lang}
-          outlineAvailable={!current.cutActive && !isIndependentTractReference(current)}
-        />
-      {/snippet}
-      {#snippet relatedDeficits()}
-        <RelatedDeficits explorer={deficits} view={current} />
-      {/snippet}
-      {#snippet relatedCircuits()}
-        <!-- The lesson's notes come before the lessons through the region, as in legacy; never both at once. -->
-        <CircuitNotes model={circuits} />
-        <RelatedCircuits model={circuits} />
-      {/snippet}
-    </RegionDetail>
+    {#if lesionShown}
+      <LesionReport
+        {lesion}
+        lang={current.lang}
+        atlases={lesionAtlases}
+        label={(id) => catalog.label(id).name}
+        bundleName={(id) => bundles.find((bundle) => bundle.id === id)!.name[current.lang]}
+        deficitName={(id) => clinical.get(id).name[current.lang]}
+        paintShown={lesion.painted && !current.paintLifted}
+        onPaint={(shown) => {
+          lesion.setPainted(shown);
+          if (shown) session.showPaint();
+        }}
+        onFinding={(deficit, finding) => void openFinding(deficit, finding)}
+      />
+    {:else}
+      <RegionDetail
+        lang={current.lang}
+        region={current.selectedRegion}
+        explorer={current.explorer}
+        cortexVisible={current.cortexVisible}
+        isolated={current.isolatedRegion !== null}
+        landmarkSelected={circuits.landmarkSelected}
+        {underProfile}
+        catalog={{ get: regions.get, label: catalog.label }}
+        centroidOf={(id) => engine.model.centroidOf(id)}
+        networkColors={manifest.networks?.colors as Readonly<Record<string, Rgb>> | undefined}
+        {cabNp}
+        {functionalRegions}
+        {domains}
+        onfocus={() => anatomy.focusSelection()}
+        onisolate={anatomy.isolateSelection}
+        onhide={() => void anatomy.hideSelection()}
+        onclear={() => void anatomy.clearSelection()}
+        onregion={(id) => void anatomy.openConstituent(id)}
+        openLinkedMri={excursions.openLinkedMri}
+      >
+        {#snippet comparison()}
+          <AtlasComparison
+            {engine}
+            {manifest}
+            {manifestUrl}
+            region={current.selectedRegion}
+            lang={current.lang}
+            outlineAvailable={!current.cutActive && !isIndependentTractReference(current)}
+          />
+        {/snippet}
+        {#snippet relatedDeficits()}
+          <RelatedDeficits explorer={deficits} view={current} />
+        {/snippet}
+        {#snippet relatedCircuits()}
+          <!-- The lesson's notes come before the lessons through the region, as in legacy; never both at once. -->
+          <CircuitNotes model={circuits} />
+          <RelatedCircuits model={circuits} />
+        {/snippet}
+      </RegionDetail>
+    {/if}
   </div>
 </div>
 

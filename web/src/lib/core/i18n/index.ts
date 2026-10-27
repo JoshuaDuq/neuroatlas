@@ -17,6 +17,7 @@ import * as functional from './areas/functional.ts';
 import * as functions from './areas/functions.ts';
 import * as header from './areas/header.ts';
 import * as inspector from './areas/inspector.ts';
+import * as lesion from './areas/lesion.ts';
 import * as link from './areas/link.ts';
 import * as menu from './areas/menu.ts';
 import * as mpr from './areas/mpr.ts';
@@ -51,6 +52,7 @@ export const TRANSLATIONS = {
     functions: functions.en,
     header: header.en,
     inspector: inspector.en,
+    lesion: lesion.en,
     link: link.en,
     menu: menu.en,
     mpr: mpr.en,
@@ -84,6 +86,7 @@ export const TRANSLATIONS = {
     functions: functions.fr,
     header: header.fr,
     inspector: inspector.fr,
+    lesion: lesion.fr,
     link: link.fr,
     menu: menu.fr,
     mpr: mpr.fr,

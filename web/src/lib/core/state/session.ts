@@ -136,6 +136,8 @@ export function createSession({ views, theme = 'dark', lang = 'en' }: SessionOpt
       act({ selectedDeficit, selectedFinding: null, paintLifted: false }),
     setFinding: (selectedFinding: string | null) => act({ selectedFinding, paintLifted: false }),
     liftPaint: () => act({ paintLifted: true }),
+    /** The reader asked for a paint again, as the lesion's findings on the brain. */
+    showPaint: () => act({ paintLifted: false }),
 
     toggleGroup(name: string) {
       const expanded = new Set(state.expanded);

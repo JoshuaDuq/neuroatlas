@@ -37,6 +37,7 @@ const FRENCH_NOUNS: Partial<Record<string, { one: string; other: string }>> = {
   région: { one: 'région', other: 'régions' },
   correspondance: { one: 'correspondance', other: 'correspondances' },
   study: { one: 'étude', other: 'études' },
+  bundle: { one: 'faisceau', other: 'faisceaux' },
 };
 
 /** A count and its noun, in agreement. "1 regions" is how software looks unfinished. */

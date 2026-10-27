@@ -63,6 +63,7 @@ const KINDS: Record<string, string> = {
   'mri.dialog.range': 'n',
   'mri.dialog.moved': 'd',
   'viewport.loadingWithTotal': 'nn',
+  'lesion.cited': 'sn',
 };
 
 type Fn = (...args: unknown[]) => unknown;

@@ -1,3 +1,4 @@
+import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
 import type { Engine } from '../engine/api.ts';
 import type { SessionStore } from '../state/session.svelte.ts';
@@ -60,7 +61,7 @@ export function createModes({
   engine,
   session,
   clinical,
-  domainsAtlas,
+  domains,
   chooseExplorer,
   leaveLesson,
   openFunction,
@@ -69,8 +70,8 @@ export function createModes({
   engine: Pick<Engine, 'model'>;
   session: Pick<SessionStore, 'state'>;
   clinical: Pick<ClinicalCatalog, 'mappedRegions'>;
-  /** The atlas the neuropsychological domains are defined on. */
-  domainsAtlas: string;
+  /** The neuropsychological domains' atlas, and the internal layers that draw their structures. */
+  domains: Pick<NeuropsychDomains, 'atlas' | 'structure_atlas' | 'unit_atlas'>;
   chooseExplorer: (value: Explorer) => void;
   leaveLesson: () => Promise<void>;
   /** The panels' entry points (busy state, failure wording), fired and not awaited, as legacy did. */
@@ -87,7 +88,14 @@ export function createModes({
       const { selectedFunction, selectedDeficit } = session.state;
       const { regions, settings } = engine.model;
       const shownAtlas = settings.atlas;
-      if (value === 'functions' && selectedFunction && shownAtlas !== domainsAtlas) {
+      const structuresDrawn = [domains.structure_atlas, domains.unit_atlas].includes(
+        settings.detail,
+      );
+      if (
+        value === 'functions' &&
+        selectedFunction &&
+        (shownAtlas !== domains.atlas || !structuresDrawn)
+      ) {
         openFunction(selectedFunction);
       }
       if (

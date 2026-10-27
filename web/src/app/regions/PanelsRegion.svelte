@@ -237,7 +237,7 @@
       <Workspace
         bind:this={workspace}
         {lang}
-        snapshot={current}
+        snapshot={{ ...current, lesion: world.lesion.sphere !== null }}
         {selection}
         {place}
         groups={world.catalog.groups}

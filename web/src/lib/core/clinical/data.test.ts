@@ -35,38 +35,56 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       'achromatopsia',
       'agnosia',
       'agraphia',
+      'akinetic-mutism',
       'akinetopsia',
       'alexia',
+      'alexithymia',
       'alien-hand',
       'amnesia',
       'amusia',
       'anosognosia',
       'aphasia',
       'apraxia',
+      'aprosodia',
       'ataxia',
+      'auditory-agnosia',
+      'auditory-short-term-memory',
+      'autotopagnosia',
       'central-pain',
       'cerebellar-cognitive',
       'coma',
+      'confabulation',
       'constructional-apraxia',
+      'cortical-deafness',
       'decision-making',
       'dysarthria',
       'dysphagia',
       'dystonia',
       'emotion-recognition',
       'executive',
+      'finger-agnosia',
       'hand-paresis',
       'hemianopia',
       'hemichorea',
+      'hemiparesis',
       'lateropulsion',
+      'locked-in',
+      'motor-neglect',
       'neglect',
+      'olfactory-recognition',
       'optic-ataxia',
       'parkinsonism',
+      'prospective-memory',
       'simultanagnosia',
       'somatoparaphrenia',
       'somatosensory',
+      'spasticity',
       'speech-apraxia',
+      'stuttering',
       'tactile-agnosia',
+      'tactile-extinction',
       'taste-impairment',
+      'theory-of-mind',
       'topographical-disorientation',
       'visual-extinction',
       'word-deafness',
@@ -113,7 +131,13 @@ function checkAnatomy(catalog: ClinicalCatalog) {
       .forRegion('destrieux:left:12')
       .map((a) => a.id)
       .sort(),
-    ['apraxia-finger', 'dysphagia-insula', 'emotion-prosody', 'speech-apraxia-frontal'],
+    [
+      'apraxia-finger',
+      'dysphagia-insula',
+      'emotion-prosody',
+      'speech-apraxia-frontal',
+      'stuttering-cortico-striatal',
+    ],
   );
   // Deep landmarks reach into aseg and the learning-anatomy solids.
   assert.equal(catalog.forRegion('aseg:left:18')[0].deficit, 'emotion-recognition');
@@ -171,20 +195,27 @@ describe('published clinical content: fixed values', () => {
   const [, manifest] = manifests[0];
   const catalog = createClinicalCatalog(data, manifest);
 
-  test('CAT-50 · the published records are the revision of 2026-10-22: 6 groups, 40 deficits, 60 references, 58 associations', () => {
-    assert.equal(catalog.revised, '2026-10-22');
+  test('CAT-50 · the published records are the revision of 2026-10-27: 6 groups, 58 deficits, 89 references, 79 associations', () => {
+    assert.equal(catalog.revised, '2026-10-27');
     assert.equal(data.groups.length, 6);
-    assert.equal(data.deficits.length, 40);
-    assert.equal(data.references.length, 60);
-    assert.equal(data.associations.length, 58);
+    assert.equal(data.deficits.length, 58);
+    assert.equal(data.references.length, 89);
+    assert.equal(data.associations.length, 79);
   });
 
   test('CAT-45 · a published search ignores case and accents and ranks the named deficit first', () => {
     const ids = (query: string, lang: 'en' | 'fr') => catalog.search(query, lang).map((d) => d.id);
     assert.deepEqual(ids('amnesia', 'en'), ['amnesia']);
     assert.deepEqual(ids('AMNÉSIA', 'en'), ['amnesia']);
-    assert.deepEqual(ids('memory', 'en'), ['agraphia', 'amnesia']);
-    assert.equal(ids('', 'fr').length, 40);
+    assert.deepEqual(ids('memory', 'en'), [
+      'agraphia',
+      'amnesia',
+      'auditory-short-term-memory',
+      'olfactory-recognition',
+      'prospective-memory',
+      'confabulation',
+    ]);
+    assert.equal(ids('', 'fr').length, 58);
     assert.deepEqual(ids('unlisted', 'en'), []);
   });
 

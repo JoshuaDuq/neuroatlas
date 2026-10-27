@@ -4,7 +4,7 @@ The **Functions** and **Deficits** tabs colour related regions and show a key. S
 
 ## Functions
 
-The 70 curated functions are based on Neurosynth terms. **All functions** displays eleven assessment functions together; opening one shows its study count, regions with mean z ≥ 3 and any lesion associations used to check the map. Individual maps use a blue scale for z 3–5, 5–10 and ≥ 10. Deep structures can be exposed with **See through the cortex**.
+The 70 curated functions are based on Neurosynth terms. **All functions** displays eleven assessment functions together; opening one shows its study count, regions with mean z ≥ 3 and any lesion associations used to check the map. Individual maps use a blue scale for z 3–5, 5–10 and ≥ 10. Deep structures can be exposed with **See through the cortex**. They are scored on FreeSurfer's whole structures and drawn on the teaching set, or on FreeSurfer aseg when that is the internal anatomy shown; NextBrain's finer nuclei are not scored, so opening a function switches NextBrain to the teaching set.
 
 A map describes where studies using a term consistently report activation in healthy groups. It does not measure function in this subject or predict the effect of a lesion. See [the method and limitations](../concepts/atlases.md#neuropsychological-functions).
 
@@ -12,6 +12,8 @@ Search also offers selected Neurosynth terms and clinical groups. These maps use
 
 ## Deficits
 
-The 40 profiles describe acquired adult deficits and selected associations with brain regions. Search by name, synonym or function. A profile identifies the evidence, population and limitations for each finding, and links to its regions and relevant function maps. Regions are coloured by finding; the key indicates findings that cannot be coloured in the current view.
+The 58 profiles describe acquired adult deficits and selected associations with brain regions. Search by name, synonym or function. A profile identifies the evidence, population and limitations for each finding, and links to its regions and relevant function maps. Regions are coloured by finding; the key indicates findings that cannot be coloured in the current view.
+
+When the consulted sources identify only a broad anatomical location, a profile may have no specific atlas parcel selected. Its mapping note explains the limit; the publications remain available.
 
 The literature is selected, not a systematic review. Group-level associations mapped onto a reference anatomy do not predict an individual patient's deficit. Content and citations are in [`data/neuropsychology.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/data/neuropsychology.yaml).

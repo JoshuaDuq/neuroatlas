@@ -31,6 +31,9 @@ export interface PickerOptions<Region extends { id: string }> {
   onHover?: (region: Region | null, position: { x: number; y: number } | null) => void;
   onSelect: (id: string) => void;
   onFocusPoint?: (point: Vector3) => void;
+  /** While this holds, a click places at the point it meets rather than choosing a region. */
+  placing?: () => boolean;
+  onPlace?: (point: Vector3) => void;
 }
 
 interface Press {
@@ -58,6 +61,8 @@ export function createPicker<Region extends { id: string }>({
   onHover,
   onSelect,
   onFocusPoint,
+  placing,
+  onPlace,
 }: PickerOptions<Region>): { dispose(): void } {
   const raycaster = new Raycaster();
   raycaster.firstHitOnly = true;
@@ -120,6 +125,13 @@ export function createPicker<Region extends { id: string }>({
     // A miss is not a request to forget the region. The stage is mostly
     // empty, and a sulcus is easy to miss; Escape is the deliberate clear.
     if (!isClick) return;
+    if (placing?.()) {
+      const rect = domElement.getBoundingClientRect();
+      if (!aim(event.clientX - rect.left, event.clientY - rect.top)) return;
+      const hit = model().intersect?.(raycaster) ?? null;
+      if (hit?.point) onPlace?.(hit.point);
+      return;
+    }
     const id = regionAt(event)?.id;
     if (id) onSelect(id);
   };

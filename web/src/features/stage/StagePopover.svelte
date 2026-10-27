@@ -31,6 +31,8 @@
     /** What the tool draws; the chevron follows it. */
     name: Snippet;
     body: Snippet<[{ close: () => void }]>;
+    /** A press or focus here leaves the popover open (`Popover`). */
+    holdsOpen?: (node: Node) => boolean;
   }
 
   let {
@@ -44,6 +46,7 @@
     rescueFocus,
     name,
     body,
+    holdsOpen,
   }: Props = $props();
 
   let tool = $state<HTMLElement | null>(null);
@@ -58,7 +61,7 @@
   });
 </script>
 
-<Popover variant="stage" bind:open class="stage-popover" {style}>
+<Popover variant="stage" bind:open class="stage-popover" {style} {holdsOpen}>
   {#snippet trigger({ props })}
     <button
       {...props}

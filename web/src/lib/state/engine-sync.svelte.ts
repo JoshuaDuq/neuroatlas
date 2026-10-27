@@ -2,6 +2,7 @@ import type { NeuropsychDomains } from '../core/catalog/neuropsych-domains.ts';
 import type { ClinicalCatalog } from '../core/clinical/catalog.ts';
 import { isIndependentTractReference } from '../core/diffusion/presentation.ts';
 import { paintFor } from '../core/state/paint.ts';
+import type { LesionPaint } from '../core/state/paint.ts';
 import type { Engine, EngineModel, SectionsState } from '../engine/api.ts';
 import type { ModelState } from '../types/index.ts';
 import type { ViewStore } from './view.svelte.ts';
@@ -43,9 +44,15 @@ export type EngineSync = ReturnType<typeof createEngineSync>;
 export function syncPaint(
   model: Pick<EngineModel, 'setPaint'>,
   view: ViewStore,
-  sources: { domains: NeuropsychDomains; clinical: ClinicalCatalog },
+  sources: {
+    domains: NeuropsychDomains;
+    clinical: ClinicalCatalog;
+    lesion?: { readonly paint: LesionPaint | null };
+  },
 ) {
-  $effect.pre(() => model.setPaint(paintFor(view.current, sources)));
+  $effect.pre(() =>
+    model.setPaint(paintFor(view.current, { ...sources, lesion: sources.lesion?.paint ?? null })),
+  );
 }
 
 /**

@@ -108,6 +108,36 @@ def test_a_domain_must_belong_to_a_defined_group(tmp_path):
         neuropsych_domains.read_definition(write_definition(tmp_path / "d.yaml", regroup))
 
 
+def test_a_teaching_unit_must_name_a_structure_sampled_on_both_sides(tmp_path):
+    def unscored(definition):
+        definition["teaching_units"]["structures"]["claustrum"] = "Claustrum"
+    with pytest.raises(ValueError, match="unscored structures"):
+        neuropsych_domains.read_definition(write_definition(tmp_path / "d.yaml", unscored))
+    def unbounded(definition):
+        definition["teaching_units"]["minimum_share"] = 0
+    with pytest.raises(ValueError, match="minimum share"):
+        neuropsych_domains.read_definition(write_definition(tmp_path / "e.yaml", unbounded))
+
+
+def test_each_teaching_unit_names_its_sides_structure_region_and_all_must_be_published():
+    definition = neuropsych_domains.read_definition()
+    structures = [{"id": f"aseg:{side}:{code}", "atlas": "aseg", "kind": "structure", "source_name": name}
+                  for code, name in neuropsych_domains.STRUCTURES.items()
+                  for side in ("left", "right") if name.lower().startswith(side)]
+    units = [{"id": f"learning:{side}:{unit}", "atlas": "learning", "kind": "structure"}
+             for unit in definition["teaching_units"]["structures"] for side in ("left", "right")]
+    published = neuropsych_domains.teaching_units(structures + units, definition)
+    assert published["learning:left:pallidum-external"] == "aseg:left:13"
+    assert published["learning:right:pallidum-internal"] == "aseg:right:52"
+    assert published["learning:right:thalamus"] == "aseg:right:49"
+    assert len(published) == 2 * len(definition["teaching_units"]["structures"])
+    # An anatomy without the teaching set has no units to draw.
+    assert neuropsych_domains.teaching_units(structures, definition) == {}
+    with pytest.raises(ValueError, match="No teaching-set unit learning:right:amygdala"):
+        neuropsych_domains.teaching_units(
+            structures + [unit for unit in units if unit["id"] != "learning:right:amygdala"], definition)
+
+
 def test_the_overview_flag_is_a_boolean_and_holds_some_domain(tmp_path):
     def stringly(definition):
         definition["domains"][0]["overview"] = "yes"

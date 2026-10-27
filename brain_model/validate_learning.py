@@ -6,8 +6,10 @@ import trimesh
 from .gltf.encode import published_display_colors
 from .labels import cerebellum, nextbrain
 from .labels.volumes import load_on_grid, resample_nearest
+from .layers import neuropsych_domains
 from .layers.learning import (
     constituents,
+    expand_nextbrain,
     family_order,
     read_definition,
     source_grids,
@@ -58,6 +60,25 @@ def validate_source_overlap(config, nextbrain_source):
         if fraction >= 0.5:
             raise ValueError(f"Learning unit {unit['id']} is mostly inside another source: {fraction:.3f}")
         reports.append({"unit": unit["id"], "cross_source_overlap_fraction": fraction})
+    return reports
+
+
+def validate_domain_units(config, nextbrain_source):
+    """The share of each teaching unit drawn with a structure's domain score that lies in that structure."""
+    grid, table = nextbrain_source
+    aseg = on_nextbrain_grid(config, config["source_directory"] / "mri/aseg.mgz", grid)
+    labels = {name: label for label, name in neuropsych_domains.STRUCTURES.items()}
+    teaching = neuropsych_domains.read_definition()["teaching_units"]
+    units = {unit["id"]: unit for unit in expand_nextbrain(read_definition(config)["nextbrain"], table)}
+    reports = []
+    for unit, name in teaching["structures"].items():
+        for side in neuropsych_domains.SIDES:
+            mask = np.isin(grid.labels, units[f"{side}:{unit}"]["labels"])
+            structure = f"{side.capitalize()}-{name}"
+            share = float(np.mean(aseg[mask] == labels[structure]))
+            if share < teaching["minimum_share"]:
+                raise ValueError(f"Teaching unit {side}:{unit} is {share:.2f} inside {structure}")
+            reports.append({"unit": f"{side}:{unit}", "structure": structure, "share": round(share, 3)})
     return reports
 
 
@@ -183,4 +204,5 @@ def validate(config, manifest, nextbrain_source):
         "source_volumes_unchanged": True,
         "maximum_allowed_displacement_mm": maximum,
         "cross_source_overlap": validate_source_overlap(config, nextbrain_source),
+        "domain_units": validate_domain_units(config, nextbrain_source),
     }

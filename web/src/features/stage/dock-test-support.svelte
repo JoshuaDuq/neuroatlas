@@ -1,4 +1,4 @@
-<!-- Fixture for the dock tests: the stage host as the Stage region renders it, with the dock, a stub for G4's Section body, and a tab stop each side. Not shipped. -->
+<!-- Fixture for the dock tests: the stage host as the Stage region renders it, with the dock, stubs for the Section and Lesion bodies, and a tab stop each side. Not shipped. -->
 <script lang="ts">
   import type { FakeEngine } from '../../lib/engine/fake.ts';
   import type { StageLayout } from '../../lib/state/stage-layout.svelte.ts';
@@ -30,9 +30,11 @@
     commands: DockCommands;
     width: number;
     height: number;
+    /** Each placing state the dock asks for. */
+    placing: boolean[];
   }
 
-  let { engine, stage, live, commands, width, height }: Props = $props();
+  let { engine, stage, live, commands, width, height, placing }: Props = $props();
 
   let host: HTMLElement;
 
@@ -71,10 +73,15 @@
     view={live.view}
     hasSpinalCord={live.hasSpinalCord}
     {commands}
+    onLesionPlacing={(next) => placing.push(next)}
   >
     {#snippet sectionPopover()}
       <p class="stage-field-label">Cutting plane</p>
       <button type="button">Sagittal</button>
+    {/snippet}
+    {#snippet lesionPopover()}
+      <p class="stage-field-label">Radius</p>
+      <button type="button">Remove</button>
     {/snippet}
   </Dock>
 </main>

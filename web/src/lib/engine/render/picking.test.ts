@@ -133,6 +133,29 @@ describe('picker', () => {
     assert.deepEqual(chosen, ['destrieux:left:1']);
   });
 
+  it('while placing, a click hands over the point it meets instead of choosing a region', () => {
+    const domElement = canvas();
+    const chosen: string[] = [];
+    const placed: Vector3[] = [];
+    let placing = true;
+    const point = { x: 0.01, y: 0.02, z: 0.03 } as Vector3;
+    createPicker<Region>({
+      domElement: domElement as unknown as HTMLElement,
+      camera: new PerspectiveCamera(),
+      model: () => ({ pick: () => ({ id: 'destrieux:left:1' }), intersect: () => ({ point }) }),
+      onSelect: (id) => chosen.push(id),
+      placing: () => placing,
+      onPlace: (at) => placed.push(at),
+    });
+    domElement.emit('pointerdown', { button: 0 });
+    domElement.emit('pointerup', { button: 0 });
+    assert.deepEqual([placed, chosen], [[point], []]);
+    placing = false;
+    domElement.emit('pointerdown', { button: 0 });
+    domElement.emit('pointerup', { button: 0 });
+    assert.deepEqual([placed, chosen], [[point], ['destrieux:left:1']]);
+  });
+
   it('does not clear the selection on a click on the empty stage', () => {
     const { domElement, chosen } = selecting(() => null);
     domElement.emit('pointerdown', { button: 0 });
