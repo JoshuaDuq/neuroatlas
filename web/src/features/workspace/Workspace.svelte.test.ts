@@ -361,7 +361,9 @@ describe('selection strip', () => {
     await settle();
     el(button('Back to Deficits')).click();
     await expect.poll(view).toBe('list');
-    await expect.element(page.getByRole('button', { name: /^Inspect/ })).toBeVisible();
+    await expect
+      .element(page.getByRole('button', { name: 'Precentral gyrus L, left' }))
+      .toBeVisible();
     world.explorer = 'anatomy';
     await expect.poll(stripShown).toBe(false);
   });
@@ -369,7 +371,7 @@ describe('selection strip', () => {
   test('its name carries the side as a word, and contains the visible text (WCAG 2.5.3)', async () => {
     await mount({ explorer: 'deficits', selection: region, selectedRegion: { id: 'left:1' } });
     await tab('Deficits').click();
-    const strip = page.getByRole('button', { name: 'Inspect Precentral gyrus, left' });
+    const strip = page.getByRole('button', { name: 'Precentral gyrus L, left' });
     await expect.element(strip).toBeVisible();
     expect(el(strip).textContent).toContain('Precentral gyrus');
     expect(el(strip).textContent).toContain('L');
@@ -384,7 +386,7 @@ describe('selection strip', () => {
     });
     await tab('Déficits').click();
     await expect
-      .element(page.getByRole('button', { name: 'Examiner Precentral gyrus, gauche' }))
+      .element(page.getByRole('button', { name: 'Precentral gyrus G, gauche' }))
       .toBeVisible();
   });
 
@@ -393,7 +395,7 @@ describe('selection strip', () => {
     world.selectedRegion = { id: 'left:1' };
     await tab('Deficits').click();
     await expect.poll(view).toBe('list');
-    const strip = page.getByRole('button', { name: /^Inspect/ });
+    const strip = page.getByRole('button', { name: 'Precentral gyrus L, left' });
     await strip.click();
     await expect.poll(view).toBe('detail');
     expect(focused()).toBe(el(button('Back to Deficits')));
@@ -420,7 +422,9 @@ describe('selection strip', () => {
       selectedRegion: null,
     });
     world.selection = { ...region, kind: 'function', clearable: false };
-    await expect.element(page.getByRole('button', { name: /^Inspect/ })).toBeVisible();
+    await expect
+      .element(page.getByRole('button', { name: 'Precentral gyrus L, left' }))
+      .toBeVisible();
     expect(document.querySelector('.selection-clear')).toBeNull();
     world.shell = 'sheet';
     await expect.poll(stripShown).toBe(false);
@@ -496,10 +500,14 @@ describe('sizes and media', () => {
       notice: { text: 'A notice.', action: 'reload' },
     });
     await tab('Deficits').click();
-    await expect.element(page.getByRole('button', { name: /^Inspect/ })).toBeVisible();
+    await expect
+      .element(page.getByRole('button', { name: 'Precentral gyrus L, left' }))
+      .toBeVisible();
     const height = (locator: { element(): Element }) => el(locator).getBoundingClientRect().height;
     for (const name of MODE_NAMES) expect(height(tab(name))).toBeGreaterThanOrEqual(44);
-    expect(height(page.getByRole('button', { name: /^Inspect/ }))).toBeGreaterThanOrEqual(44);
+    expect(
+      height(page.getByRole('button', { name: 'Precentral gyrus L, left' })),
+    ).toBeGreaterThanOrEqual(44);
     for (const name of ['Clear selection', 'Dismiss']) {
       const box = el(button(name)).getBoundingClientRect();
       expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(24);
@@ -601,7 +609,9 @@ describe('large text and spacing', () => {
     style.id = 'text-spacing';
     style.textContent = TEXT_SPACING;
     await tab('Deficits').click();
-    await expect.element(page.getByRole('button', { name: /^Inspect/ })).toBeVisible();
+    await expect
+      .element(page.getByRole('button', { name: 'Gyrus précentral G, gauche' }))
+      .toBeVisible();
     expectContained();
   });
 
@@ -648,7 +658,9 @@ describe('axe', () => {
       notice: { text: 'Planum was updated.', action: 'reload' },
     });
     await tab('Deficits').click();
-    await expect.element(page.getByRole('button', { name: /^Inspect/ })).toBeVisible();
+    await expect
+      .element(page.getByRole('button', { name: 'Precentral gyrus L, left' }))
+      .toBeVisible();
     await expectAxeClean();
   });
 
