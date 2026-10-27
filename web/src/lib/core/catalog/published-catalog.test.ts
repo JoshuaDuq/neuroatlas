@@ -455,7 +455,10 @@ describe('the published cdmd anatomy', () => {
     const records = [...domains.search!.terms.values()];
     assert.equal(terms.regions.length, 379);
     // Every sampled region, and the 16 teaching units that carry a sampled structure's score.
-    assert.equal(manifest.regions.filter((region) => scoredRegion(domains, region)).length, 379 + 16);
+    assert.equal(
+      manifest.regions.filter((region) => scoredRegion(domains, region)).length,
+      379 + 16,
+    );
     assert.equal(records.length, 277);
     assert.equal(records.filter((record) => record.kind === 'function').length, 232);
     assert.equal(records.filter((record) => record.kind === 'population').length, 45);
