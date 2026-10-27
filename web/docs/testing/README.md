@@ -103,6 +103,9 @@ it touches; those rules keep their own unit or browser test.
 10. **Accessibility** (`accessibility.spec.ts`, BUILD-10): axe on the composed app, light and dark, at 1280 px
     and 390 px.
 
-Known gaps found while writing them: on a phone the selection strip's name ("Inspect Middle temporal gyrus,
-left") does not contain its visible text, so axe reports `label-content-name-mismatch`; and after a window
-goes from a phone to a desktop width the stage keeps the sheet's `--vis-bottom` inset.
+Two things K19 found while writing them are settled in K20: the phone's selection strip is named by its visible
+words (`deviations/k20-strip-label-in-name.md`), so the accessibility journey runs axe with a selection at both
+widths; and the phone journey checks that the stage's `--vis-bottom` returns to 0 after a phone to desktop resize.
+That check waits up to 30 s: on the runners' software WebGL a window resize reaches the page only after a slow
+frame, and a polling probe slows it further (about 10 s measured), so the default 5 s poll timed out although the
+inset did clear.

@@ -29,7 +29,11 @@
     type SpanSample,
   } from '../../lib/core/detents.ts';
   import { t } from '../../lib/core/i18n/index.ts';
-  import type { ContextSelection, WorkspaceView } from '../../lib/core/workspace.ts';
+  import {
+    selectionName,
+    type ContextSelection,
+    type WorkspaceView,
+  } from '../../lib/core/workspace.ts';
   import type { ChromeInsets } from '../../lib/engine/api.ts';
   import type { Media } from '../../lib/state/media.svelte.ts';
   import type { Language } from '../../lib/types/index.ts';
@@ -112,9 +116,7 @@
 
   const copy = $derived(t(lang, 'sheet'));
   const label = $derived(selection.label ?? '');
-  const selectionName = $derived(
-    t(lang, 'workspace').inspect(selection.sideWord ? `${label}, ${selection.sideWord}` : label),
-  );
+  const stripName = $derived(selectionName(selection));
 
   /** The workspace the sheet holds, found in its own subtree (the tablist and the panel in front). */
   function workspace() {
@@ -433,12 +435,7 @@
       <span class="sheet-handle-bar"></span>
     </button>
     {#if selection.label}
-      <button
-        type="button"
-        class="sheet-selection"
-        aria-label={selectionName}
-        onclick={openSelection}
-      >
+      <button type="button" class="sheet-selection" aria-label={stripName} onclick={openSelection}>
         <span class="sheet-selection-text">
           <span class="sheet-selection-name">{label}</span>
           <span class="sheet-selection-side">{selection.side ?? ''}</span>

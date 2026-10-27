@@ -1,5 +1,5 @@
 // BUILD-10: axe on the composed, loaded app, once per theme at a desktop and a 390 px phone width,
-// on one load. Each feature's own states (open dialogs, French, every panel) are axe-checked in its
+// on one load, then with a selection. Each feature's own states (open dialogs, French, every panel) are axe-checked in its
 // browser test.
 import { expect, test } from '../fixtures.ts';
 
@@ -18,11 +18,12 @@ test('the loaded app passes axe in both themes at a desktop and a phone width', 
       expect(await app.axe(), `${colorScheme}, ${width} px`).toEqual([]);
     }
   }
-  // A selection on a desktop. The phone's selection strip is left out: its name, "Inspect Middle
-  // temporal gyrus, left", does not contain its visible text, "Middle temporal gyrus L" (axe
-  // label-content-name-mismatch).
+  // A selection, whose strip is on the page at a desktop and in the phone's sheet.
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.evaluate(() => (location.hash = 'region=destrieux:left:38'));
   await expect(page.getByRole('button', { name: 'Clear selection' })).toBeVisible();
   expect(await app.axe(), 'dark, 1280 px, with a selection').toEqual([]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole('button', { name: 'Middle temporal gyrus L, left' })).toBeVisible();
+  expect(await app.axe(), 'dark, 390 px, with a selection').toEqual([]);
 });

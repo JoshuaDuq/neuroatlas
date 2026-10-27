@@ -2,6 +2,7 @@
 // there), the Material 3 standard-sheet and WCAG 2.2 criteria of the H6 decision record on #45, and the
 // desktop to phone transition after load that G1's review asked H6 to cover (#4, issuecomment-6405672591).
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import axe from 'axe-core';
 import { page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { expectAxeClean, expectAxeCleanOnce, withMedia } from '../../lib/ui/a11y-test-support.ts';
@@ -500,10 +501,20 @@ const SELECTION = {
 describe('the selection in the grip', () => {
   test('it is named at peek, the side said as a word, with its clear beside it', async () => {
     await mount(PHONE, { selection: SELECTION });
-    await expect.element(page.getByRole('button', { name: 'Inspect Insula, left' })).toBeVisible();
+    await expect.element(page.getByRole('button', { name: 'Insula L, left' })).toBeVisible();
     expect(strip().textContent).toContain('Insula');
     expect(strip().textContent).toContain('L');
     await expect.element(page.getByRole('button', { name: 'Clear selection' })).toBeVisible();
+  });
+
+  test('at 390 px the name contains the visible text, which it starts with (WCAG 2.5.3)', async () => {
+    await mount(PHONE, { selection: SELECTION });
+    const visible = strip().innerText.replace(/\s+/g, ' ').trim();
+    expect(visible).toBe('Insula L');
+    expect(strip().getAttribute('aria-label')!.startsWith(visible)).toBe(true);
+    // The shared axe run lacks the wcag21a tag this rule carries; the journeys' run has it.
+    const { violations } = await axe.run(strip(), { runOnly: ['label-content-name-mismatch'] });
+    expect(violations).toEqual([]);
   });
 
   test('the peek follows the name as it arrives and goes', async () => {
@@ -560,7 +571,7 @@ describe('the selection in the grip', () => {
 
   test('French names the strip and its clear, and says the sheet in French', async () => {
     await mount(PHONE, { lang: 'fr', selection: SELECTION });
-    await expect.element(page.getByRole('button', { name: 'Examiner Insula, left' })).toBeVisible();
+    await expect.element(page.getByRole('button', { name: 'Insula L, left' })).toBeVisible();
     await expect.element(page.getByRole('button', { name: 'Effacer la sélection' })).toBeVisible();
   });
 });
