@@ -5,6 +5,8 @@ Two classes work in any Three.js application, without the viewer's interface:
 - [`BrainAtlas`](https://github.com/JoshuaDuq/neuroatlas/blob/main/web/src/lib/engine/model/brain-atlas.ts) loads an anatomy from its `manifest.json`, renders it as one group, and selects and picks regions.
 - [`BrainSections`](https://github.com/JoshuaDuq/neuroatlas/blob/main/web/src/lib/engine/slices/sections.ts) cuts the model with a plane, caps the cut and samples the label volumes on the cut face.
 
+The following excerpt assumes an existing application that sizes and attaches the renderer, positions the camera, adds lighting, and renders the scene.
+
 ```typescript
 import * as THREE from 'three';
 import { BrainAtlas } from './web/src/lib/engine/model/brain-atlas.ts';
@@ -50,6 +52,7 @@ Serve a published `models/cdmd/` directory next to the module; `npm run build --
 | :--- | :--- |
 | `BrainAtlas.load(manifestUrl, atlasId, options)` | Loads the manifest, one cortical atlas (`destrieux`, `hcp-mmp`) and one detail level. The third argument is a progress callback or `{ detail }`. |
 | `group` | The group to add to your scene. |
+| `setAtlas(id)` | Switches the cortical atlas, loading it if needed; clears the selection and isolation. |
 | `setDetail(id)` | Shows `learning`, `aseg` or `nextbrain`, downloading it the first time. |
 | `setSpinalCordVisible(visible)` | Shows or hides the cord. |
 | `hideRegions(ids)`, `showRegions(ids)` | Dissection. Hidden cortex exposes the white matter beneath. |
@@ -66,6 +69,7 @@ A region record is the manifest entry: `id`, `label`, `source_name`, `hemisphere
 | `setMode(mode)` | `off`, `sagittal`, `coronal`, `axial` or `oblique`. |
 | `setOffset(mm)` | Moves the plane in surface RAS mm, building the caps synchronously. Throws `RangeError` outside `offsetRange`. |
 | `setOffsetReady(mm)` | Builds the caps in a worker; use it while dragging. |
+| `setAnglesReady(tilt, azimuth)` | Builds an oblique cut in a worker while changing its angles. |
 | `offsetRange` | `[minimum, maximum]` for the current plane. |
 | `setCutAtlas(atlas)` | The label volume the cut face samples, independent of the surface atlas. |
 | `pick(raycaster)` | The region under the ray, honouring the cut. |

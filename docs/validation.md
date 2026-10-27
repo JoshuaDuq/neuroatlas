@@ -10,6 +10,22 @@ npm test --prefix web
 
 CI runs all three for `cdmd` on every pull request and deployment. A validation takes about two and a half minutes and at most 4.7 GB.
 
+## What is checked
+
+1. **Volumes round-trip.** Each `.volume` decodes, matches both checksums, and placed by its affine equals `orig.mgz`, `aseg.mgz` or `aparc.a2009s+aseg.mgz`.
+2. **Grids register.** Native volumes share shape, scanner affine and the full tkregister transform before they are combined.
+3. **Manifest.** Every region id matches its mesh name and lookup-table entry.
+4. **HCP cut labels.** Equal to Destrieux outside cortex; inside, every ribbon voxel holds the HCP label of its nearest pial or white vertex.
+5. **Solids.** No vertex beyond 0.6 mm, and re-voxelised by ray parity, `misclassified_voxel_centres` is 0 for every solid.
+6. **NextBrain cut blocks.** Every 0.8 mm block recounted from source.
+7. **Per-area layers.** `cab-np.json`, `functional-regions.json` and `neuropsych-domains.json` rebuilt from their sources must match exactly, with every area assigned and licences copied byte for byte.
+8. **Colours.** Linear glTF colours decode back to the exact sRGB palette entries.
+9. **Declared layers.** Nothing undeclared is published, nothing declared is missing, and no unnamed file sits in the directory.
+10. **Segmentation agreement.** NextBrain against the subject's own aseg (below); a Dice under 0.8 fails unless a documented exception specifies a lower floor. CDMD’s left amygdala has a 0.77 floor (measured 0.772). Where lobules are declared, CerebNet's lobules together must reach Dice 0.85 against aseg's cerebellar cortex.
+11. **Transforms.** Projected annotations are re-derived byte for byte; CDMD's tract scanner-to-surface transform is recomputed from `orig.mgz`.
+
+Browser QA runs are recorded in [`deliverables/`](https://github.com/JoshuaDuq/neuroatlas/tree/main/deliverables); the docs build does not re-run them.
+
 ## Geometry
 
 | | `cdmd` |
@@ -24,29 +40,13 @@ CI runs all three for `cdmd` on every pull request and deployment. A validation 
 
 Counts are before barycentric partition; area is conserved across it to a relative $10^{-6}$. Scalar errors are within half a `uint16` step of each file's source range, $(\max - \min) / (2 \times 65535)$, in source units.
 
-## What is checked
-
-1. **Volumes round-trip.** Each `.volume` decodes, matches both checksums, and placed by its affine equals `orig.mgz`, `aseg.mgz` or `aparc.a2009s+aseg.mgz`.
-2. **Grids register.** Native volumes share shape, scanner affine and the full tkregister transform before they are combined.
-3. **Manifest.** Every region id matches its mesh name and lookup-table entry.
-4. **HCP cut labels.** Equal to Destrieux outside cortex; inside, every ribbon voxel holds the HCP label of its nearest pial or white vertex.
-5. **Solids.** No vertex beyond 0.6 mm, and re-voxelised by ray parity, `misclassified_voxel_centres` is 0 for every solid.
-6. **NextBrain cut blocks.** Every 0.8 mm block recounted from source.
-7. **Per-area layers.** `cab-np.json`, `functional-regions.json` and `neuropsych-domains.json` rebuilt from their sources must match exactly, with every area assigned and licences copied byte for byte.
-8. **Colours.** Linear glTF colours decode back to the exact sRGB palette entries.
-9. **Declared layers.** Nothing undeclared is published, nothing declared is missing, and no unnamed file sits in the directory.
-10. **Segmentation agreement.** NextBrain against the subject's own aseg (below); a Dice under 0.8 fails. Where lobules are declared, CerebNet's lobules together must reach Dice 0.85 against aseg's cerebellar cortex.
-11. **Transforms.** Projected annotations are re-derived byte for byte; CDMD's tract scanner-to-surface transform is recomputed from `orig.mgz`.
-
-Browser QA runs are recorded in [`deliverables/`](https://github.com/JoshuaDuq/neuroatlas/tree/main/deliverables); the docs build does not re-run them.
-
 ## Atlas comparison
 
 [`tests/test_comparison.py`](https://github.com/JoshuaDuq/neuroatlas/blob/main/tests/test_comparison.py) checks the overlap calculation against explicit barycentric subdivision. CDMD publishes 1,202 positive pairs. Pair areas conserve both hemispheres (about 85,619.412 mm² left, 85,458.887 mm² right); the largest discrepancy against the cortical meshes is $1.12 \times 10^{-4}$ mm², within the float32 bound. These are numerical checks, not proof that projected boundaries are biologically exact.
 
 ## Tracts
 
-Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, all 27 bundle counts, sampled RAS+ coordinates against NiBabel, and float64 lengths. The scanner-to-surface transform is checked against independent voxel anchors and rejects scale and reflection.
+Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, bundle counts, sampled RAS+ coordinates against NiBabel, and float64 lengths. The scanner-to-surface transform is checked against independent voxel anchors and rejects scale and reflection.
 
 ## Limits
 

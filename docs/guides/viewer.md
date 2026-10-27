@@ -1,21 +1,13 @@
 # Using the viewer
 
-The window has three homes. The **masthead** says what data is loaded. The **panel** is where you explore and drill into it. The **stage** holds the tools that act on the picture.
+The masthead selects the subject and display layers. The panel holds searchable content; the stage contains the model and its view, section and display controls. On phones the panel is a draggable sheet.
 
-```
-+------------------------------------------------------------------------+
-| Planum | Subject  Atlas | Colour  Internal anatomy   Full screen ⋯     |
-+------------------------+-----------------------------------------------+
-| Anatomy Functions      |                                               |
-| Deficits Circuits      |                    3D stage                   |
-| Tracts                 |                                               |
-| Search, list or detail | [View ▾] [Section ▾] [Display ▾]              |
-+------------------------+-----------------------------------------------+
-| Not clinical anatomy · description · N visible regions · Provenance    |
-+------------------------------------------------------------------------+
-```
+## First steps
 
-On phones the panel becomes a sheet with peek, half and full positions; in short landscape it sits beside the anatomy.
+1. Open the [viewer](https://joshuaduq.github.io/neuroatlas/) and search for a region in the **Anatomy** tab. Select a result or select it on the model to see its details.
+2. Choose **Section** below the model and select a plane. Move the slider to explore the cut.
+3. Open **Linked MRI** from the section bar to compare the model with the subject's scan.
+4. Copy the page URL to share the view, or use **Save image** to export the stage.
 
 ## Masthead
 
@@ -74,22 +66,9 @@ An anatomy whose scan ends inside the brainstem publishes no spinal cord; Displa
 
 “Not clinical anatomy”, a description of the subject, the visible region count and **Provenance**. Provenance lists the subject, reconstruction, atlases, published files and sources.
 
-## Links and notices
+## Sharing a view
 
-The address bar holds a link to what is on screen. It carries only what differs from the opening view.
-
-| Field | Holds |
-| :--- | :--- |
-| `anatomy`, `atlas`, `detail`, `cuts` | Subject, cortical atlas, internal anatomy, cut labels |
-| `colors`, `level`, `function`, `opacity`, `mri` | Colour, functional level, function, cortex opacity, MRI window |
-| `hemi`, `cortex`, `internal`, `cord`, `system` | What is drawn |
-| `cut`, `pos`, `tilt`, `az`, `rev` | The cutting plane and its position |
-| `region`, `isolate`, `hidden` | Selection, isolation, dissection |
-| `view`, `cam` | The preset, or the exact camera once moved |
-| `tab`, `deficit`, `circuit`, `step` | Panel tab, deficit, circuit and landmark |
-| `lang` | Language |
-
-A link is applied field by field. A field the subject cannot apply is left out and named in a notice under the tabs. Notices say what changed or failed, stay until your next action, and offer **Reload** when a newer Planum has been published.
+The address bar records the current view, including selection, display settings, camera and section. Copy the URL to share it. If a setting cannot be applied to the selected subject, a notice explains what was omitted.
 
 ## Keyboard
 

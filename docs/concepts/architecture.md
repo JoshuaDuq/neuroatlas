@@ -1,6 +1,6 @@
 # Architecture
 
-An offline Python compiler ([`brain_model`](https://github.com/JoshuaDuq/neuroatlas/tree/main/brain_model)) turns FreeSurfer reconstructions into binary files. A WebGL 2 viewer on Three.js ([`viewer`](https://github.com/JoshuaDuq/neuroatlas/tree/main/viewer)) renders them. The two meet only at `public/models/`.
+An offline Python compiler ([`brain_model`](https://github.com/JoshuaDuq/neuroatlas/tree/main/brain_model)) turns FreeSurfer reconstructions into binary files. A WebGL 2 viewer on Three.js ([`viewer`](https://github.com/JoshuaDuq/neuroatlas/tree/main/web)) renders them. The viewer loads the compiled anatomy from `public/models/` and diffusion assets from `public/diffusion/`.
 
 ## Coordinate frames
 

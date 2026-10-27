@@ -1,39 +1,36 @@
-# Planum
+# Planum documentation
 
 ```{rst-class} hero-lede
-Source-faithful brain anatomy in the browser, for neuroscience teaching and anatomical research.
+Explore an individual brain in the browser, from cortical regions to internal anatomy and diffusion tracts.
 ```
 
-Planum renders individual FreeSurfer reconstructions at native resolution, with their cortical atlases, internal structures and linked MRI. A Python pipeline (`brain-model` {{ release }}) compiles each reconstruction into the files the viewer loads. It is not clinical anatomy.
+Planum combines a 3D viewer with a Python pipeline that converts FreeSurfer reconstructions into viewable assets. The published anatomy is MGH CDMD subject `sub_013`. Planum is for research and education; it is **not clinical anatomy**.
 
-```{figure} ../public/preview.png
-:alt: A cortical parcellation rendered in the Planum viewer
-:class: hero-figure
-
-A cortical parcellation in the viewer. Each colour is one region.
-```
-
-## Start here
+## Find your way
 
 [Use the viewer](guides/viewer.md)
-: The masthead, the five panel tabs, sections, linked MRI and keyboard control.
+: Search and select regions, make sections, and inspect linked MRI.
 
-[Install](install.md)
-: Run the viewer locally, or set up the pipeline to build an anatomy.
+[Install and build](install.md)
+: Run the viewer locally, build an anatomy, or build this documentation.
 
-[Embed the API](guides/embedding.md)
-: Load an anatomy and cut it from your own Three.js code.
+[Explore the data](concepts/atlases.md)
+: Understand the atlases, segmentations, functional layers, and their sources.
 
 [Validation and limits](validation.md)
-: What is checked against the source, and what the model does not claim.
+: Learn what is checked against the source and how to interpret the result.
 
-## Published anatomies
+[Developer reference](api/index.md)
+: Browse the Python pipeline API or [embed the viewer components](guides/embedding.md) in a Three.js application.
 
-| Subject | Source | Licence |
-| :--- | :--- | :--- |
-| `cdmd` (default) | MGH CDMD `sub_013`, its own diffusion tracts, FreeSurfer 8.2 | CC0 1.0 |
+```{figure} ../.github/assets/neuroatlas-destrieux.png
+:alt: Inferior view of Destrieux regions and diffusion tracts in Planum
+:class: hero-figure
 
-Each is one person's brain. Folds, ventricles and asymmetries belong to that individual and are not normative. See [Anatomies](concepts/anatomies.md).
+Destrieux regions and diffusion tracts from CDMD subject `sub_013`.
+```
+
+The anatomy represents one individual; its folds and asymmetries are not normative. Atlas projections and segmentations are estimates. See [Anatomies](concepts/anatomies.md) and [References and licensing](reference/references.md) for provenance and data terms.
 
 ```{toctree}
 :hidden:

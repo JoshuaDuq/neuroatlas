@@ -352,3 +352,23 @@ dl.py > dt.sig .sig-name { font-weight: 600; }
   color: var(--color-foreground-muted);
   font-size: 0.8125rem;
 }
+
+/* Keep long-form documentation comfortable at wide and narrow widths. */
+article { overflow-wrap: anywhere; }
+article p, article li, article dd { line-height: 1.65; }
+article h1 { font-size: clamp(1.75rem, 2.2vw, 2.125rem); line-height: 1.2; }
+article h2 { font-size: 1.25rem; }
+article h3 { font-size: 1.0625rem; }
+article :is(p, li, dd) > code.literal { overflow-wrap: anywhere; }
+article pre { overflow-wrap: normal; }
+article table { font-variant-numeric: tabular-nums; }
+article table th, article table td { padding: 0.65rem 0.75rem; vertical-align: top; }
+
+@media (max-width: 63em) {
+  html { scroll-padding-top: 1.5rem; }
+}
+@media (max-width: 40em) {
+  article h1 { font-size: 1.75rem; }
+  article h2 { margin-top: 2rem; }
+  figure { margin-inline: 0; }
+}

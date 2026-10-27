@@ -1,40 +1,17 @@
 # Functions and deficits
 
-Both tabs paint the brain while they are in front: the regions in question in their colours, every other region in tissue colour, with a key on the stage. Choosing a colour in the masthead replaces the paint.
+The **Functions** and **Deficits** tabs colour related regions and show a key. Select a profile for its evidence and region list; **Restore previous view** returns to the view before opening a profile. Choosing a colour in the masthead replaces the profile colours.
 
 ## Functions
 
-70 functions in six groups, each one Neurosynth term. **All functions** shows the eleven functions an assessment reports (executive functions, working memory, long-term memory, language, attention, visuospatial abilities, social cognition, visual perception, motor functions, auditory perception, emotion), each area in its strongest one. Open a function to see:
+The 70 curated functions are based on Neurosynth terms. **All functions** displays eleven assessment functions together; opening one shows its study count, regions with mean z ≥ 3 and any lesion associations used to check the map. Individual maps use a blue scale for z 3–5, 5–10 and ≥ 10. Deep structures can be exposed with **See through the cortex**.
 
-- its Neurosynth term, how many studies use it, and how many HCP-MMP areas and subcortical structures reach z ≥ 3;
-- those areas and structures, strongest first, each opening its region;
-- **Deficits that check this map**: the share of each lesion-mapped parcel the map colours.
+A map describes where studies using a term consistently report activation in healthy groups. It does not measure function in this subject or predict the effect of a lesion. See [the method and limitations](../concepts/atlases.md#neuropsychological-functions).
 
-One function alone is drawn on a blue z scale: z 3–5, 5–10 and 10 or more, darker for more consistent, so the brain shows the same order of strength as the list of areas. The overview keeps one colour per function.
-
-When one of a function's five strongest regions is a deep forebrain structure the cortex hides (the amygdala for Fear, the accumbens for Reward), the notice says so and offers **See through the cortex**, which lowers the cortex's opacity while the painted areas stay opaque. The next map that has no such region makes the cortex opaque again. **Restore previous view** puts back the view from before the first function or deficit you opened, and closes the profile.
-
-A map shows where studies using the term reliably report activation in healthy groups. It is not what this brain does, nor what damage would impair. The method is in [Atlases](../concepts/atlases.md#neuropsychological-functions).
-
-### Searching Neurosynth terms
-
-On CDMD, a search also lists matching Neurosynth version 7 terms below the curated functions: 232 that name a function, task, stimulus, state or behaviour under **Neurosynth terms**, and 45 clinical groups (schizophrenia, aphasia, smokers…) under **Neurosynth clinical groups**. The exact term comes first, then terms with a word starting with what you typed, larger literatures first. A misspelt query that matches nothing offers the closest name or term.
-
-Opening a term paints every area and structure whose mean z reaches 3, in one colour, keyed **Neurosynth term**. Each map is derived the same way as the curated functions, but none was checked against what it names or against lesion studies, and the profile says so first. A clinical group's map shows where studies of that group report activation, not where damage causes the condition; where Deficits has a profile for the same words, the term links to it.
-
-The rest of the 3,228-word vocabulary is report language ("accordingly"), anatomy ("angular gyrus") or method ("voxel"), whose maps name no function. [`config/neurosynth-terms.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/config/neurosynth-terms.yaml) lists the terms offered; edit it and rebuild to change them.
-
-### Between the two tabs
-
-Functions and Deficits stay apart because their evidence differs: activation consistency in healthy groups against lesion and clinical associations. They share the same six groups, in the same order, so a domain sits in the same place in both. Each profile says which evidence it rests on under its name. A search whose words the other tab also finds ends with a link to those matches, and a deficit lists the activation maps its associations check, the reverse of a function's **Deficits that check this map**.
+Search also offers selected Neurosynth terms and clinical groups. These maps use the same method but have not been checked against their names or lesion studies. A clinical-group map shows reported activation in studies of that group, not where damage causes the condition. The offered terms are in [`config/neurosynth-terms.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/config/neurosynth-terms.yaml).
 
 ## Deficits
 
-40 profiles of adult acquired deficits, in the same six groups as the functions, searchable by name, synonym or cognitive function. Opening one:
+The 40 profiles describe acquired adult deficits and selected associations with brain regions. Search by name, synonym or function. A profile identifies the evidence, population and limitations for each finding, and links to its regions and relevant function maps. Regions are coloured by finding; the key indicates findings that cannot be coloured in the current view.
 
-- paints the regions its findings cite, one colour per finding, and states what it changed in the view, with **Restore previous view**; a finding none of whose regions is coloured in the view (its regions lie in another internal-anatomy set, or take an earlier finding's colour) is outlined in the key;
-- when its findings map both cortex and deep forebrain structures (neglect's caudate and pulvinar, emotion recognition's amygdala), names the deep ones and offers **See through the cortex**; when every mapped region is deep, the cortex is hidden instead;
-- gives the definition, the interpretation limits and each association, with its method (lesion–symptom mapping, meta-analysis, case report or series), study population and publications;
-- keeps each association's mapped regions in reach, each opening its region.
-
-The literature is selected, not a systematic review. Associations come from group studies mapped onto a reference anatomy, and do not predict an individual patient's deficit. Content and references live in [`data/neuropsychology.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/data/neuropsychology.yaml); every PMID and DOI is checked against PubMed by the test suite.
+The literature is selected, not a systematic review. Group-level associations mapped onto a reference anatomy do not predict an individual patient's deficit. Content and citations are in [`data/neuropsychology.yaml`](https://github.com/JoshuaDuq/neuroatlas/blob/main/data/neuropsychology.yaml).
