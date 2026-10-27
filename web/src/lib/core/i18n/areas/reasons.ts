@@ -1,0 +1,31 @@
+export const en = {
+  'no-mri': 'Outside the MRI scan',
+  hemisphere: 'Hemisphere hidden',
+  'cortex-hidden': 'Cortex hidden',
+  'internal-hidden': 'Internal anatomy hidden',
+  'spinal-cord-hidden': 'Spinal cord hidden',
+  isolated: 'Hidden by isolation',
+  removed: 'Hidden',
+  'no-cut': 'Visible in a section',
+  'below-cut-resolution': 'Too small for the cut',
+  'other-detail': 'In another detail level',
+  inDetailSet: (set: string) => `In ${set}`,
+  'other-system': 'In another system',
+  fallback: 'Hidden',
+};
+
+export const fr: typeof en = {
+  'no-mri': 'Hors du volume IRM',
+  hemisphere: 'Hémisphère masqué',
+  'cortex-hidden': 'Cortex masqué',
+  'internal-hidden': 'Anatomie interne masquée',
+  'spinal-cord-hidden': 'Moelle épinière masquée',
+  isolated: 'Masqué par l’isolement',
+  removed: 'Masqué',
+  'no-cut': 'Visible en coupe',
+  'below-cut-resolution': 'Trop petit pour la coupe',
+  'other-detail': 'Dans un autre niveau de détail',
+  inDetailSet: (set: string) => `Dans ${set}`,
+  'other-system': 'Dans un autre système',
+  fallback: 'Masqué',
+};

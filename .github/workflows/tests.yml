@@ -2,9 +2,11 @@ name: Tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, svelte-rebuild]
   # Called by the deploy workflow, which publishes nothing unless this passes.
   workflow_call:
+  # Runs everything, including the end-to-end tests that pull requests skip.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,6 +24,7 @@ jobs:
     outputs:
       python: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.python == 'true' }}
       validate: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.validate == 'true' }}
+      web: ${{ steps.base.outputs.full == 'true' || steps.filter.outputs.web == 'true' }}
     steps:
       # Commits and trees only: enough to list changed paths without the 400 MB of assets.
       - name: Checkout repository history
@@ -68,6 +71,19 @@ jobs:
               - *validate
               - tests/**
               - scripts/**/*.py
+            # The Svelte app, what it reads, and the legacy app it is compared with.
+            web:
+              - web/**
+              - config/**
+              - data/**
+              - public/**
+              - scripts/published-version.mjs
+              - viewer/**
+              - index.html
+              - vite.config.js
+              - package*.json
+              - .github/scripts/**
+              - .github/workflows/tests.yml
 
   python:
     needs: changes
@@ -133,3 +149,171 @@ jobs:
 
       - name: Run viewer tests
         run: npm test
+
+  web-check:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # web/ is self-contained: no web file imports the legacy viewer since K6's conversion.
+      - name: Install dependencies
+        run: npm ci --prefix web
+
+      - name: Lint
+        run: npm run lint --prefix web
+
+      - name: Check formatting
+        run: npm run format --prefix web -- --check
+
+      - name: Type-check (TypeScript 6 and svelte-check)
+        run: npm run check --prefix web
+
+      - name: Type-check (TypeScript 7)
+        run: npm run check:ts7 --prefix web
+
+      - name: Run unit tests
+        run: npm test --prefix web
+
+      # What deploy ships (copyPublicDir is off in the preview), checked once for the chunks, the
+      # page's head and the service worker's version map; it also hashes the real public/ tree.
+      - name: Build the preview and check the built site
+        run: |
+          npm run build:preview --prefix web
+          node .github/scripts/check-dist.mjs
+
+      # Bits UI plus the Svelte runtime, as web/docs/decisions/0001-ui-kit.md defines the budget.
+      - name: Check the UI bundle budget
+        shell: bash
+        run: |
+          node .github/scripts/ui-bundle-budget.mjs | tee ui-budget.log
+          cat ui-budget.log >> "$GITHUB_STEP_SUMMARY"
+
+  # In Playwright's image (Playwright's CI guide): Chromium, its system libraries and Xvfb are
+  # already there, so nothing is installed per run. Installing them took 25 s, or 6 to 11 min when
+  # an apt mirror was slow (12 runs in 67). The tag must equal the Playwright version in
+  # web/package-lock.json; the first step fails if a dependency update moves one without the other.
+  # Four shards: the browser suite is about 11 min on one runner (Vitest's sharding guide).
+  web-browser:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # web/ is self-contained: no web file imports the legacy viewer since K6's conversion.
+      - name: Install dependencies
+        run: npm ci --prefix web
+
+      - name: Check the image matches Playwright
+        run: |
+          version=$(node -p "require('./web/node_modules/playwright-core/package.json').version")
+          test "$version" = 1.64.1 || { echo "::error::Playwright is $version; set the container image tag in tests.yml to v$version-noble"; exit 1; }
+
+      # Headed under Xvfb, so the browser has a mouse: headless Linux has no pointing device and
+      # matches (hover: none) and (pointer: none), where a desktop matches hover and a fine pointer.
+      # A launch flag cannot stand in for it, as switching touch emulation off restores the device's.
+      # Includes the WebGL probe (src/boot/webgl-probe.svelte.test.ts); its renderer line goes to
+      # the job summary of the shard that runs it.
+      - name: Run browser tests, shard ${{ matrix.shard }}/4
+        shell: bash
+        run: |
+          set -o pipefail
+          xvfb-run -a npm run test:browser --prefix web -- --browser.headless=false --shard=${{ matrix.shard }}/4 2>&1 | tee browser-tests.log
+          if grep -qh 'WebGL renderer' browser-tests.log; then
+            { echo '### WebGL probe'; grep -h 'WebGL renderer' browser-tests.log; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: web-browser-failures-${{ matrix.shard }}
+          path: |
+            web/src/**/__screenshots__/
+            web/.vitest/attachments/
+          if-no-files-found: ignore
+
+  # About 25 minutes a shard and flaky on the runners' software WebGL, so pull requests skip it:
+  # it runs when started by hand (Actions → Tests → Run workflow) and before a deploy.
+  web-e2e:
+    needs: changes
+    if: github.event_name != 'pull_request' && needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix web
+
+      # The legacy build empties dist/, so it comes first; the preview goes beside it.
+      - name: Build the legacy app
+        run: npm run build
+
+      - name: Build the preview
+        run: |
+          npm run build:preview --prefix web
+          cp -r web/dist dist/next
+
+      # Playwright's CI guide: one worker per job, scaled out by sharding. One retry, and a test
+      # that needed it fails the job. The global timeout (25 min) ends the run inside Playwright,
+      # so the artifacts below are still uploaded before the job's 40 min limit (setup takes a few minutes).
+      # Specs of regions not yet integrated are left out of the next project (playwright.config.ts),
+      # so the shards split only tests that run: about 21 legacy tests, 12 to 13 min, each.
+      - name: Run end-to-end tests (legacy and next), shard ${{ matrix.shard }}/8
+        run: npm run test:e2e --prefix web -- --workers=1 --retries=1 --fail-on-flaky-tests --global-timeout=1500000 --shard=${{ matrix.shard }}/8
+
+      - name: Upload failure artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: web-e2e-failures-${{ matrix.shard }}
+          path: |
+            web/test-results/
+          if-no-files-found: ignore

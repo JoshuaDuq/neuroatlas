@@ -1,0 +1,617 @@
+// Real-DOM checks for Dialog, Popover and Tooltip in Chromium: keyboard paths, focus hand-offs,
+// Escape consumption and axe (wcag2a/aa/21aa/22aa), against the fixture a feature would write.
+import axe from 'axe-core';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { tick } from 'svelte';
+import { page, userEvent } from 'vitest/browser';
+import { cleanup, render } from 'vitest-browser-svelte';
+import '../../styles/index.css';
+import Fixture from './overlay-test-support.svelte';
+
+const WCAG = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+const button = (name: string) => page.getByRole('button', { name, exact: true });
+const el = (name: string) => button(name).element() as HTMLElement;
+const attr = (name: string, attribute: string) => el(name).getAttribute(attribute);
+const tooltip = () => document.querySelector<HTMLElement>('[role="tooltip"]');
+const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+/** Real frames until `done`, which fails fast with `what` rather than waiting out the test timeout. */
+async function frames(done: () => boolean, what: string) {
+  for (let count = 0; count < 300 && !done(); count++) await frame();
+  expect(done(), what).toBe(true);
+}
+const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
+
+async function violations() {
+  const results = await axe.run(document.body, {
+    runOnly: WCAG,
+    rules: { region: { enabled: false } },
+  });
+  return results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' ')}`);
+}
+
+/**
+ * Every transition and animation on the page has finished: a theme change and an entry animation
+ * both pass through blended colours and sizes, and under load they outlast any fixed wait.
+ */
+async function pageSettled() {
+  // Reading layout brings style up to date, so a change made just now has started its transitions.
+  void document.body.offsetHeight;
+  // A transition that a newer one replaces rejects its `finished`, so look again until none is left.
+  // A finished animation that holds its end state stays listed, so only playing ones are awaited.
+  const playing = () =>
+    document.getAnimations().filter((animation) => animation.playState !== 'finished');
+  for (let running = playing(); running.length > 0; running = playing())
+    await Promise.allSettled(running.map((animation) => animation.finished));
+}
+
+async function useTheme(theme: 'light' | 'dark') {
+  document.documentElement.dataset.theme = theme;
+  await pageSettled();
+}
+
+// Entry and exit run as CSS transitions; wait for the ones in flight, not for a fixed time.
+async function settled(node: Element) {
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  await Promise.all(node.getAnimations().map((animation) => animation.finished));
+}
+
+/** The page's timers and clock are faked so the 500 ms show delay is advanced, not waited out. */
+function fakeClock() {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
+}
+
+/** Hovers `trigger` and advances the clock past the show delay until its tooltip is drawn. */
+async function hoverShown(trigger: HTMLElement) {
+  await userEvent.hover(trigger);
+  // The pointer may reach the page after `hover()` returns; the delay starts there.
+  await frames(() => trigger.matches(':hover'), 'the pointer reached the trigger');
+  await vi.advanceTimersByTimeAsync(500);
+  await frames(() => tooltip() !== null, 'the tooltip shows after 500 ms');
+}
+
+// The pointer stays where the last test left it, over whichever control is there.
+const parkPointer = () => userEvent.hover(el('After popovers'));
+
+afterEach(() => {
+  // A test that times out never reaches its own `finally`; a faked clock must not leak into the next.
+  vi.useRealTimers();
+  document.documentElement.removeAttribute('data-theme');
+});
+
+describe('Popover', () => {
+  test('the menu keeps focus on the trigger; a keyboard open is instant, a pointer open is not', async () => {
+    render(Fixture);
+    expect(attr('Settings', 'aria-expanded')).toBe('false');
+    await button('Settings').click();
+    expect(attr('Settings', 'aria-expanded')).toBe('true');
+    await expect.element(button('Light')).toBeInTheDocument();
+    expect(document.activeElement).toBe(el('Settings'));
+    expect(document.querySelector('.popover')?.hasAttribute('data-instant')).toBe(false);
+
+    await userEvent.keyboard('{Escape}');
+    await expect.element(button('Light')).not.toBeInTheDocument();
+
+    el('Settings').focus();
+    await userEvent.keyboard('{Enter}');
+    await expect.element(button('Light')).toBeInTheDocument();
+    expect(document.querySelector('.popover')?.hasAttribute('data-instant')).toBe(true);
+  });
+
+  test('a keyboard open is instant, with Enter and with Space, before any Escape', async () => {
+    for (const key of ['{Enter}', ' ']) {
+      render(Fixture);
+      el('Settings').focus();
+      await userEvent.keyboard(key);
+      await expect.element(button('Light')).toBeInTheDocument();
+      expect(document.querySelector('.popover')?.hasAttribute('data-instant'), key).toBe(true);
+      cleanup();
+    }
+  });
+
+  test('Escape closes, returns focus to the trigger and is handled before the page keymap', async () => {
+    render(Fixture);
+    const seen: boolean[] = [];
+    const listener = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') seen.push(event.defaultPrevented);
+    };
+    window.addEventListener('keydown', listener);
+    await button('Settings').click();
+    await expect.element(button('Light')).toBeInTheDocument();
+    el('Light').focus();
+    await userEvent.keyboard('{Escape}');
+    window.removeEventListener('keydown', listener);
+
+    await expect.element(button('Light')).not.toBeInTheDocument();
+    expect(attr('Settings', 'aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(el('Settings'));
+    expect(seen).toEqual([true]);
+  });
+
+  test('Escape with the popover closed is left to the page', async () => {
+    render(Fixture);
+    const seen: boolean[] = [];
+    const listener = (event: KeyboardEvent) => seen.push(event.defaultPrevented);
+    window.addEventListener('keydown', listener);
+    el('Settings').focus();
+    await userEvent.keyboard('{Escape}');
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual([false]);
+  });
+
+  test('Tab out of the last control closes it and focus stays where Tab put it', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    el('Provenance').focus();
+    await userEvent.tab();
+    // Tab from the last control goes to the next popover's trigger, which is not this popover's own.
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Data')));
+    await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
+    expect(document.activeElement).toBe(el('Data'));
+  });
+
+  test('Shift+Tab from the trigger closes it and focus is not pulled back', async () => {
+    render(Fixture);
+    el('Fullscreen').focus();
+    await button('Settings').click();
+    el('Settings').focus();
+    await userEvent.tab({ shift: true });
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Fullscreen')));
+    await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
+    expect(document.activeElement).toBe(el('Fullscreen'));
+  });
+
+  test('focus moving to another popover trigger closes this one, so only one stays open', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    el('Light').focus();
+    await button('Data').click();
+    await expect.element(button('Subject')).toBeInTheDocument();
+    await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
+    expect(attr('Data', 'aria-expanded')).toBe('true');
+    await expect.element(button('Light')).not.toBeInTheDocument();
+  });
+
+  test('opening one with no focus change still closes the other', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    // An owner opening the other one (a command), while focus stays inside this one.
+    el('Open data').click();
+    await expect.element(button('Subject')).toBeInTheDocument();
+    await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
+    expect(attr('Data', 'aria-expanded')).toBe('true');
+  });
+
+  test('focus moving to its own trigger keeps it open', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    el('Light').focus();
+    el('Settings').focus();
+    // The close handler runs on the focus event itself; a rendered frame is the latest it could show.
+    await tick();
+    await frame();
+    expect(attr('Settings', 'aria-expanded')).toBe('true');
+  });
+
+  test('a window switch (no related target) keeps it open', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    el('Light').dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+    await tick();
+    await frame();
+    expect(attr('Settings', 'aria-expanded')).toBe('true');
+  });
+
+  test('a press outside closes it without moving focus to the trigger', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    await button('Fullscreen').click();
+    await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
+    expect(document.activeElement).not.toBe(el('Settings'));
+  });
+
+  test('a command inside closes it and returns focus to the trigger', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    await button('Provenance').click();
+    await vi.waitFor(() => expect(attr('Settings', 'aria-expanded')).toBe('false'));
+    expect(document.activeElement).toBe(el('Settings'));
+    expect(document.getElementById('picked')!.textContent).toBe('provenance');
+  });
+
+  test('axe finds no violations with the popover open', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    await expect.element(button('Light')).toBeInTheDocument();
+    await useTheme('dark');
+    expect(await violations()).toEqual([]);
+  });
+});
+
+describe('Popover keys and stage variant', () => {
+  test('↑ and ↓ on a control inside are handled; other keys are left to the control', async () => {
+    render(Fixture);
+    await button('Settings').click();
+    el('Provenance').focus();
+    const seen: Record<string, boolean> = {};
+    const listener = (event: KeyboardEvent) => (seen[event.key] = event.defaultPrevented);
+    window.addEventListener('keydown', listener);
+    for (const key of ['ArrowDown', 'ArrowUp', 'a']) {
+      await userEvent.keyboard(key.length > 1 ? `{${key}}` : key);
+    }
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual({ ArrowDown: true, ArrowUp: true, a: false });
+  });
+
+  test('the stage popover moves focus to the pressed control and ↑ ↓ on a checkbox are handled', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Orbit')));
+    const seen: boolean[] = [];
+    const listener = (event: KeyboardEvent) => seen.push(event.defaultPrevented);
+    window.addEventListener('keydown', listener);
+    (page.getByRole('checkbox', { name: 'Grid' }).element() as HTMLElement).focus();
+    await userEvent.keyboard('{ArrowDown}');
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual([true]);
+  });
+
+  test('focus placed in a stage popover is not taken back after the reader moves it to the trigger', async () => {
+    render(Fixture);
+    // Bits places focus twice for every open. Moving it back to the trigger the moment the first
+    // placement lands makes the second one the late call that must leave it there.
+    const stage = el('Stage');
+    const back = (event: FocusEvent) => {
+      if (event.target === stage) return;
+      document.removeEventListener('focusin', back);
+      stage.focus();
+    };
+    stage.focus();
+    document.addEventListener('focusin', back);
+    try {
+      await userEvent.keyboard('{Enter}');
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      expect(attr('Stage', 'aria-expanded')).toBe('true');
+      expect(document.activeElement).toBe(stage);
+    } finally {
+      document.removeEventListener('focusin', back);
+    }
+  });
+
+  test('an outside press fades the stage popover out; Escape closes it at once', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    const popover = document.querySelector('.popover')!;
+    await settled(popover);
+    // The fade is the popover's own opacity transition; its start and the exit duration are what
+    // is observed, so the result does not depend on how loaded the machine is.
+    let faded = false;
+    let fadeDuration = '';
+    popover.addEventListener('transitionrun', (event) => {
+      if ((event as TransitionEvent).propertyName !== 'opacity') return;
+      faded = popover.hasAttribute('data-ending-style');
+      fadeDuration = getComputedStyle(popover).transitionDuration;
+    });
+    const outside = el('Fullscreen');
+    outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerType: 'mouse' }));
+    outside.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerType: 'mouse' }));
+    outside.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await vi.waitFor(() => expect(document.querySelector('.popover')).toBeNull(), {
+      timeout: 5000,
+    });
+    expect(faded).toBe(true);
+    expect(fadeDuration.split(',')[0]).toBe('0.12s');
+
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    await vi.waitFor(() => expect(attr('Stage', 'aria-expanded')).toBe('false'));
+    // Bits unmounts it a frame later, after checking that nothing is animating.
+    await vi.waitFor(() => expect(document.querySelector('.popover')).toBeNull());
+  });
+});
+
+describe('Stage popover swap', () => {
+  test('a pointer press on another stage trigger swaps them at once, with no fade', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    const popovers = () => [...document.querySelectorAll('.popover')];
+    const first = popovers()[0];
+    await settled(first);
+    // Bits marks the ending state; with data-instant it has no transition, so no fade is seen.
+    let fadedVisibly = false;
+    const watch = setInterval(
+      () =>
+        (fadedVisibly ||=
+          first.hasAttribute('data-ending-style') && !first.hasAttribute('data-instant')),
+      1,
+    );
+    await button('Other stage').click();
+    await expect.element(button('Zoom')).toBeInTheDocument();
+    await vi.waitFor(() => expect(first.isConnected).toBe(false));
+    clearInterval(watch);
+    expect(fadedVisibly).toBe(false);
+    expect(attr('Stage', 'aria-expanded')).toBe('false');
+    expect(popovers()).toHaveLength(1);
+    expect(popovers()[0].hasAttribute('data-instant')).toBe(true);
+  });
+});
+
+describe('Stage popover Tab', () => {
+  test('Tab from the last control onto the next stage trigger closes it and focus stays there', async () => {
+    render(Fixture);
+    await button('Stage').click();
+    await expect.element(button('Orbit')).toBeInTheDocument();
+    (page.getByRole('checkbox', { name: 'Grid' }).element() as HTMLElement).focus();
+    await userEvent.tab();
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Other stage')));
+    await vi.waitFor(() => expect(attr('Stage', 'aria-expanded')).toBe('false'));
+    expect(document.activeElement).toBe(el('Other stage'));
+  });
+});
+
+describe('Dialog', () => {
+  test('a keyboard open is instant and Escape returns focus to the opener', async () => {
+    render(Fixture);
+    el('Shortcuts').focus();
+    await userEvent.keyboard('{Enter}');
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    expect(dialog().hasAttribute('data-instant')).toBe(true);
+    expect(dialog().getAttribute('aria-labelledby')).toBe(
+      page.getByRole('heading', { name: 'Keyboard shortcuts' }).element().id,
+    );
+    await userEvent.keyboard('{Escape}');
+    await vi.waitFor(() => expect(dialog().open).toBe(false));
+    expect(document.activeElement).toBe(el('Shortcuts'));
+    expect(dialog().hasAttribute('data-instant')).toBe(true);
+  });
+
+  test('a pointer open and the close button animate, and focus returns to the opener', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    expect(dialog().hasAttribute('data-instant')).toBe(false);
+    await button('Close').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(false));
+    expect(dialog().hasAttribute('data-instant')).toBe(false);
+    expect(document.activeElement).toBe(el('Shortcuts'));
+  });
+
+  test('a close event that arrives while the dialog is open is ignored', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    dialog().dispatchEvent(new Event('close'));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('a reopen in the frame after the close button is not undone by the late close', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    el('Close').click();
+    await tick();
+    el('Shortcuts').click();
+    for (let frame = 0; frame < 3; frame++)
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('a reopen in the frame after a close request (Escape) is not undone by the late close', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    dialog().requestClose();
+    await tick();
+    el('Shortcuts').click();
+    for (let frame = 0; frame < 3; frame++)
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog().open).toBe(true);
+  });
+
+  test('the background is inert: Tab never reaches the page behind', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    for (let i = 0; i < 6; i++) {
+      await userEvent.tab();
+      // The cycle passes through the browser's own UI, where nothing in the page has focus.
+      expect([dialog(), document.body]).toContain(
+        document.activeElement === document.body
+          ? document.body
+          : document.activeElement?.closest('dialog'),
+      );
+    }
+  });
+
+  test('with the opener gone, focus goes to the fallback', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    el('Shortcuts').style.display = 'none';
+    await userEvent.keyboard('{Escape}');
+    await vi.waitFor(() => expect(dialog().open).toBe(false));
+    // Focus moves in the dialog's close event, a task after `open` turns false.
+    await vi.waitFor(() => expect(document.activeElement).toBe(el('Fallback')));
+  });
+
+  test('isolateKeys keeps the page keymap out; Escape still closes', async () => {
+    render(Fixture, { isolateKeys: true });
+    const seen: string[] = [];
+    const listener = (event: KeyboardEvent) => seen.push(event.key);
+    window.addEventListener('keydown', listener);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    el('Inside').focus();
+    await userEvent.keyboard('h');
+    await userEvent.keyboard('{Escape}');
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual([]);
+    await vi.waitFor(() => expect(dialog().open).toBe(false));
+  });
+
+  test('without isolateKeys the page keymap hears the keys', async () => {
+    render(Fixture);
+    const seen: string[] = [];
+    const listener = (event: KeyboardEvent) => seen.push(event.key);
+    window.addEventListener('keydown', listener);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    el('Inside').focus();
+    await userEvent.keyboard('h');
+    window.removeEventListener('keydown', listener);
+    expect(seen).toEqual(['h']);
+  });
+
+  test('axe finds no violations with the dialog open, light and dark, desktop and phone', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    try {
+      for (const theme of ['light', 'dark'] as const) {
+        for (const width of [1280, 390]) {
+          await page.viewport(width, 844);
+          await useTheme(theme);
+          expect(await violations(), `${theme} ${width}px`).toEqual([]);
+        }
+      }
+      expect(dialog().getBoundingClientRect().width).toBe(390);
+    } finally {
+      await page.viewport(414, 896);
+    }
+  });
+});
+
+describe('Tooltip placement and disposal', () => {
+  beforeEach(fakeClock);
+  const fixed = (name: string, css: string) => {
+    const target = el(name);
+    target.style.cssText = `position: fixed; ${css}`;
+    return target;
+  };
+  const shown = async (trigger: HTMLElement) => {
+    await hoverShown(trigger);
+    // The tooltip has finished its entry and been placed.
+    await settled(tooltip()!);
+    return { tip: tooltip()!.getBoundingClientRect(), root: document.documentElement };
+  };
+
+  test('with no room below, the tooltip is drawn above its trigger', async () => {
+    render(Fixture);
+    const trigger = fixed('Snapshot', 'left: 100px; bottom: 4px');
+    const { tip } = await shown(trigger);
+    expect(tip.bottom).toBeLessThanOrEqual(trigger.getBoundingClientRect().top);
+  });
+
+  test('a trigger at the right edge keeps the tooltip 8 px inside the viewport', async () => {
+    render(Fixture);
+    const trigger = fixed('Snapshot', 'right: 0; top: 100px');
+    const { tip, root } = await shown(trigger);
+    expect(tip.right).toBeLessThanOrEqual(root.clientWidth - 8 + 0.5);
+    expect(tip.right).toBeGreaterThan(root.clientWidth - 40);
+  });
+
+  test('unmounting during a pending hover shows nothing and leaves no aria-describedby', async () => {
+    render(Fixture);
+    const trigger = el('Snapshot');
+    await userEvent.hover(trigger);
+    await frames(() => trigger.matches(':hover'), 'the pointer reached the trigger');
+    await vi.advanceTimersByTimeAsync(200);
+    cleanup();
+    await vi.advanceTimersByTimeAsync(600);
+    expect(tooltip()).toBeNull();
+    expect(trigger.hasAttribute('aria-describedby')).toBe(false);
+  });
+});
+
+describe('Tooltip', () => {
+  beforeEach(fakeClock);
+
+  test('hover waits 500 ms, names the trigger by aria-describedby, and the next one skips the wait', async () => {
+    // The page's timers and its clock are faked (beforeEach), so the delays and the skip window
+    // hold however loaded the machine is; frames stay real, because drawing needs them.
+    render(Fixture);
+    await button('Snapshot').hover();
+    // The pointer may reach the page after `hover()` returns; the delay starts there.
+    await frames(() => el('Snapshot').matches(':hover'), 'the pointer reached the trigger');
+    await vi.advanceTimersByTimeAsync(499);
+    expect(tooltip()).toBeNull();
+    await vi.advanceTimersByTimeAsync(1);
+    await frames(() => tooltip()?.textContent === 'Save a PNG', 'the tooltip shows at 500 ms');
+    expect(attr('Snapshot', 'aria-describedby')).toBe(tooltip()!.id);
+
+    await userEvent.unhover(el('Snapshot'));
+    await frames(() => !el('Snapshot').matches(':hover'), 'the pointer left the trigger');
+    // The skip window starts when the trigger closes, not when the exit transition removes the element.
+    for (let step = 0; step < 100 && attr('Snapshot', 'aria-describedby') !== null; step++)
+      await vi.advanceTimersByTimeAsync(10);
+    expect(attr('Snapshot', 'aria-describedby')).toBeNull();
+    await vi.advanceTimersByTimeAsync(250);
+    await button('Fullscreen').hover();
+    // Opens with no timer advanced; only the frames Svelte and Bits need to draw it.
+    await frames(
+      () => tooltip()?.textContent === 'Enter full screen',
+      'the next tooltip skips the wait',
+    );
+    expect(tooltip()!.hasAttribute('data-instant')).toBe(true);
+  });
+
+  test('keyboard focus shows it at once and Escape dismisses it', async () => {
+    render(Fixture);
+    await parkPointer();
+    await userEvent.tab();
+    for (let i = 0; i < 10 && document.activeElement !== el('Snapshot'); i++) {
+      await userEvent.tab();
+    }
+    expect(document.activeElement).toBe(el('Snapshot'));
+    // No timer is advanced: only the frames it takes to draw.
+    await frames(() => tooltip()?.textContent === 'Save a PNG', 'focus shows it at once');
+    await userEvent.keyboard('{Escape}');
+    await vi.waitFor(() => expect(tooltip()).toBeNull());
+  });
+
+  test('the pointer can cross to the tooltip and read it, and leaving closes it', async () => {
+    render(Fixture);
+    await hoverShown(el('Snapshot'));
+    const tip = tooltip()!;
+    await userEvent.hover(tip);
+    await tick();
+    await frame();
+    expect(tooltip()).toBe(tip);
+    await userEvent.unhover(tip);
+    await frames(() => tooltip() === null, 'leaving closes it');
+  });
+
+  test('a touch pointer shows none', async () => {
+    render(Fixture);
+    el('Snapshot').dispatchEvent(
+      new PointerEvent('pointerover', { bubbles: true, pointerType: 'touch' }),
+    );
+    await vi.advanceTimersByTimeAsync(700);
+    expect(tooltip()).toBeNull();
+  });
+
+  test('a tooltip for a control inside a modal dialog is drawn inside it', async () => {
+    render(Fixture);
+    await button('Shortcuts').click();
+    await vi.waitFor(() => expect(dialog().open).toBe(true));
+    await hoverShown(el('Hint'));
+    expect(dialog().contains(tooltip())).toBe(true);
+  });
+
+  test('axe finds no violations with a tooltip open', async () => {
+    // Keyboard focus shows the tooltip at once: nothing here needs the faked clock.
+    vi.useRealTimers();
+    render(Fixture);
+    await parkPointer();
+    await userEvent.tab();
+    for (let i = 0; i < 10 && document.activeElement !== el('Snapshot'); i++) {
+      await userEvent.tab();
+    }
+    await vi.waitFor(() => expect(tooltip()).not.toBeNull());
+    await useTheme('light');
+    expect(await violations()).toEqual([]);
+  });
+});
