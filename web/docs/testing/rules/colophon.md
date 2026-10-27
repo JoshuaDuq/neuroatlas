@@ -13,7 +13,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** browser: text order and layout (truncation)
 - **Source:** `index.html:592-596`; `chrome.contract.test.js:283-296` (the statement leads, ahead of the description that truncates); `viewer/styles/masthead.css:453-492`
 - **Expected:** text "Not clinical anatomy Bert · one individual’s MRI reconstruction 12 visible regions Provenance" (FR statement "Pas une anatomie clinique"). With a description wider than the bar, the statement's `scrollWidth === clientWidth` and the description has `text-overflow: ellipsis` with `scrollWidth > clientWidth`.
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `COLO-01`: the statement in each language and state); `src/features/provenance/provenance.svelte.test.ts` (R, order and the French statement); `e2e/parity/provenance.spec.ts` (R; `next` gated off); truncation is uncovered
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `COLO-01`: the statement in each language and state); `src/features/provenance/provenance.svelte.test.ts` (R, order and the French statement); `e2e/parity/provenance.spec.ts` (R; `next` since #64); truncation is uncovered
 
 ### COLO-02 · The description names what is loaded, as the masthead names it
 
@@ -22,7 +22,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** unit (view-model `colophonParts`)
 - **Source:** `header.js:78-84`; `chrome.contract.test.js:283-296`
 - **Expected:** `{display_name:'SNAIL “subj_1”', individual:true}` → "SNAIL subj_1 · one individual’s MRI reconstruction" (FR "SNAIL subj_1 · reconstruction IRM d’un individu"). `individual:false` → "… · averaged reference template" (FR "gabarit de référence moyenné"). `reference {label:'Ref'}` → "Ref · reference data" (FR "Ref · données de référence"). Nothing loaded → `''`. Statement "Not clinical anatomy" / "Pas une anatomie clinique" in all three cases. The published build shows "MGH CDMD sub_013 · one individual’s MRI reconstruction".
-- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `COLO-02`: the exact description for an individual, a template and a reference, in both languages); `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, regex; `next` gated off)
+- **Covered by:** `src/lib/core/panels/header.test.ts` (R, `COLO-02`: the exact description for an individual, a template and a reference, in both languages); `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, regex; `next` since #64)
 
 ### COLO-03 · The count says how many regions are visible, in each language's plural
 
@@ -31,7 +31,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** unit (`regionCountText`)
 - **Source:** `header.js:537-541`; `chrome.contract.test.js:298-303`
 - **Expected:** 1 → "1 visible region"; 3 → "3 visible regions"; 228 → "228 visible regions"; FR 3 → "3 régions visibles", 1 → "1 région visible". Tracts text "72 bundles" with status `switching` → "72 bundles". Status `loading` → `''`.
-- **Covered by:** `src/features/colophon/region-count.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, `/\d+ visible regions?/`; `next` gated off)
+- **Covered by:** `src/features/colophon/region-count.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, `/\d+ visible regions?/`; `next` since #64)
 
 ### COLO-04 · A download the data bar is not showing is shown in the count
 
@@ -51,7 +51,7 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** browser: role and attribute
 - **Source:** `index.html:595`; `chrome.contract.test.js:311-315` (a dialog, not a raw JSON file); `viewer/ui/panels/provenance.js:183-186`
 - **Expected:** button "Provenance" (FR "Provenance") with `aria-haspopup="dialog"`. With no opener supplied, no button.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R for the name and attribute; I for "only when the owner supplies an opener", a component-prop contract); `e2e/parity/provenance.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R for the name and attribute; I for "only when the owner supplies an opener", a component-prop contract); `e2e/parity/provenance.spec.ts` (R; `next` since #64)
 
 ### COLO-06 · The Provenance target is 24 px on a fine pointer and 44 px on a coarse one
 
@@ -78,4 +78,4 @@ Copy quoted is the English interface text unless marked FR. English sets a perce
 - **Level:** browser: CSS computed style
 - **Source:** `viewer/styles/phone.css:48-49`; the sheet's statement is SHEET's, the menu item MAST-19
 - **Expected:** 390×844 → `#colophon` `display: none`; no `contentinfo` in the accessibility tree.
-- **Covered by:** `src/app/App.svelte.test.ts` (R, with a stub footer); `e2e/parity/provenance.spec.ts` "on a phone the status bar gives way" (R; `next` gated off); `e2e/parity/shell.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/app/App.svelte.test.ts` (R, the real footer at 390 px); `e2e/parity/provenance.spec.ts` "on a phone the status bar gives way" (R; `next` since #64); `e2e/parity/shell.spec.ts` (R; `next` since #64)

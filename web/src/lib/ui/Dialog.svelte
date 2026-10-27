@@ -89,12 +89,12 @@
   {oncancel}
   {onkeydown}
 >
-  <header class="dialog-header">
+  <div class="dialog-header">
     <div>{@render heading(headingId)}</div>
     <button type="button" class="dialog-close" aria-label={closeLabel} onclick={onclosebutton}>
       <span aria-hidden="true">×</span>
     </button>
-  </header>
+  </div>
   {@render children()}
 </dialog>
 

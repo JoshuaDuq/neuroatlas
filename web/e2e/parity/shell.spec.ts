@@ -69,6 +69,8 @@ test.describe('skip link target', () => {
   }, testInfo) => {
     const { page } = app;
     await app.gotoHash();
+    // `header` below is the masthead only if it is the page's one banner.
+    await expect(page.getByRole('banner')).toHaveCount(1);
     const order = await page.evaluate(() => {
       const [header, main] = ['header', 'main'].map((selector) =>
         document.querySelector(selector)!,

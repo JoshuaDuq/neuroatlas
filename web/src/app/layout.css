@@ -100,6 +100,10 @@
     #workspace-panel {
       display: contents;
     }
+    /* Before the engine the panel holds only the list's skeleton, which here would be a row of the frame. */
+    #workspace-panel > #tree {
+      display: none;
+    }
     /* The colophon's disclaimer moves into the sheet, where it stays visible. */
     #colophon {
       display: none;

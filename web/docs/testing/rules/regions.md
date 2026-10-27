@@ -2,7 +2,7 @@
 
 Scope: the four region components `web/src/app/regions/{Masthead,Panels,Stage,Status}Region.svelte` and the integration chunks that fill them. I1 (#61) composes the panel region (workspace, sheet, explorers, detail view). I2 (#62) composes the stage region (overlays, dock, popovers, section bar, the Linked MRI and Diffusion MRI dialogs). I3b (#64) composes the masthead and status regions and mounts the Shortcuts and Provenance dialogs. The rules follow the I3a composition contract (comment 70 on #4), conductor decision 6 (comment 39: slot regions add no element), conductor decision 12 (comment 72: the root owns the single stateful instances, and every port is registered once the shell mounts), decision record `0008-dialog-mount-points.md` and the #4 composition rule: features never mount each other, and cross-panel behaviour goes through controller commands and the focus registry. Legacy sources: the root `index.html:96-603, 679-701`, `viewer/app.js:93-160, 606-738, 1406-1545, 1615-1645, 2065-2068`, `viewer/main.js:81`, `viewer/ui/chrome/viewport-chrome.js:684-791, 798-819, 853-884`. New code: `web/src/app/{App.svelte,application.svelte.ts,ports.ts,world.ts,boot.ts}` and the regions.
 
-State on 2026-10-26, after #134 (I1) merged: the panel region composes the workspace, the explorers and the phone sheet, and `src/app/regions/PanelsRegion.svelte.test.ts` tests it; the masthead, stage and status regions are still H1a's slots, and I2 and I3b have not started. The panels gate in `web/e2e/parity/enabled/` is now `true`; the shell and stage gates are `false`, and `playwright.config.ts` drops their specs from `next`. The panels gate covers `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts` and `workspace`; the shell gate `data-bar`, `masthead`, `provenance`, `shell` and `shortcuts`; the stage gate `boot` and `stage-overlay`. So most rules outside the panel composition are uncovered. Each feature's own rules are in its catalogue (`masthead.md`, `colophon.md`, `provenance.md`, `workspace.md`, `sheet.md`, `stage.md`, `shortcuts.md`, …). This catalogue holds only what composing them adds.
+State on 2026-10-26, after #64 (I3b): all four regions are integrated. `src/app/regions/PanelsRegion.svelte.test.ts`, `StageRegion.svelte.test.ts`, `MastheadRegion.svelte.test.ts`, `StatusRegion.svelte.test.ts` and `ShellRegions.svelte.test.ts` test them over the fake engine, and `src/app/App.svelte.test.ts` tests the shell before the engine. The panels, stage and shell gates in `web/e2e/parity/enabled/` are all `true`. The panels gate covers `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts` and `workspace`; the stage gate `stage-overlay`; the shell gate `boot`, `data-bar`, `masthead`, `provenance`, `shell` and `shortcuts`. Whether the gated specs pass on `next` is known only from CI's e2e run, since pull requests skip e2e. Each feature's own rules are in its catalogue (`masthead.md`, `colophon.md`, `provenance.md`, `workspace.md`, `sheet.md`, `stage.md`, `shortcuts.md`, …). This catalogue holds only what composing them adds.
 
 **Levels.** "browser (regions + fake engine)" means a Vitest browser test that builds the app with `createApp()`, attaches a `World` built on F2's fake engine, mounts `App.svelte` with the real regions, and asserts DOM, focus and the fake engine's record. This is the default. It is fast and needs no built site. "e2e" is kept for the few journeys that need the built page: a real reload, real fullscreen (the Vitest iframe has no `allowfullscreen`), the real model switching assets, and the gated parity specs as the end-to-end check once each gate flips.
 
@@ -14,8 +14,8 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
 - **Source:** `index.html:96-186`; decision 6 (comment 39 on #4); #64 scope
-- **Expected:** one `header`, which is `#masthead`, and one `banner`. Inside it, in DOM order: the skip link, the `h1` "Planum", the Atlas, Colour and Internal anatomy comboboxes (published build, wide window: one subject, so no Subject field), the "Save image (PNG)" button, the "More settings" button. Tab from the start of the document: "Skip to model", Atlas, Colour, Internal anatomy, then the masthead buttons.
-- **Covered by:** uncovered (`src/app/App.svelte.test.ts` mounts stub snippets)
+- **Expected:** one `header`, which is `#masthead`, and one `banner`. Inside it, in DOM order: the skip link, the `h1` "Planum", the Atlas, Colour and Internal anatomy comboboxes (published build, wide window: one subject, so no Subject field), the "Full screen" button (where the page allows full screen), the "Save image (PNG)" button, the "More settings" button. Tab from the start of the document: "Skip to model", Atlas, Colour, Internal anatomy, then the masthead buttons.
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` (R, the order and names, and before the engine); `src/app/App.svelte.test.ts` (R, the tab order across the regions)
 
 ### REGION-02 · The status region holds the colophon and nothing else
 
@@ -24,7 +24,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `index.html:592-597`; decision 6
 - **Expected:** one `footer`, which is `#colophon`, holding "Not clinical anatomy", the description "MGH CDMD sub_013 · one individual’s MRI reconstruction", the count and the Provenance button.
-- **Covered by:** uncovered
+- **Covered by:** `src/app/regions/StatusRegion.svelte.test.ts` (R, the parts, before the engine, French)
 
 ### REGION-03 · The panel region is the one named aside, with no aside inside it
 
@@ -33,7 +33,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** decision 13 on #4; decision 9 (one tablist); #61 scope; `index.html:189-425`
 - **Expected:** `querySelectorAll('aside').length === 1`; `complementary` named "Atlas panel" (FR "Panneau de l’atlas"); one `[role=tablist]` at both 1280 and 390 px; axe `landmark-complementary-is-top-level` passes.
-- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R, the composed panel and its sheet); `src/app/App.svelte.test.ts` (R, the empty aside); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134); `e2e/parity/sheet.spec.ts` (R; `next` gated off by the stage gate)
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R, the composed panel and its sheet); `src/app/App.svelte.test.ts` (R, the empty aside); `e2e/parity/workspace.spec.ts` (R; enabled on `next` since #134); `e2e/parity/sheet.spec.ts` (R; `next` since #148)
 
 ### REGION-04 · The stage region is the main landmark and holds the stage
 
@@ -42,16 +42,16 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** #62 scope; comment 55 item 1 on #4 (StageStatus inside `main`); `index.html:426-591`
 - **Expected:** one `main`; the canvas with `role="application"`, and the stage-status element, are its descendants; no stage control sits outside `main`.
-- **Covered by:** uncovered
+- **Covered by:** `src/app/regions/StageRegion.svelte.test.ts` (R, the landmark holds the overlay, dock and keys; no stage control outside it); `src/app/regions/ShellRegions.svelte.test.ts` (R, the stage status inside it)
 
-### REGION-05 · Dialogs are mounted once, by the root, after the regions
+### REGION-05 · Dialogs are mounted once, as children of the app root
 
-- **Rule:** Each dialog is a native `<dialog>` mounted once, as a direct child of the app root, so stacking and the inert page never depend on region markup (top layer). I3b mounts Keyboard shortcuts and Provenance; I2 mounts Linked MRI and Diffusion MRI, which follow the stage's `<main>` because the regions render as fragments. The Tracts MRI holds no GPU context, volume or navigator while closed (decision 0008); G5's panes are 2D canvases.
+- **Rule:** Each dialog is a native `<dialog>` mounted once, as a direct child of the app root, so stacking and the inert page never depend on region markup (top layer). The masthead region mounts Keyboard shortcuts and Provenance, which follow `#masthead`; the stage region mounts Linked MRI and Diffusion MRI, which follow the stage's `<main>`. The regions render as fragments, so none of them has a wrapper. The Tracts MRI holds no GPU context, volume or navigator while closed (decision 0008); G5's panes are 2D canvases.
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine)
 - **Source:** decision record `0008-dialog-mount-points.md`; `index.html:599-697`
 - **Expected:** four `dialog` elements, one each with the names "Keyboard shortcuts", "Provenance", the Linked MRI and Diffusion MRI titles. Each one's parent is the app root. With one open, it `matches(':modal')` and the regions are inert (a click on a masthead button does nothing). While the Tracts MRI is closed the engine holds no navigator.
-- **Covered by:** uncovered
+- **Covered by:** `src/app/regions/ShellRegions.svelte.test.ts` (R, all four, their parents, an open one modal and the masthead unfocusable); `src/app/regions/StageRegion.svelte.test.ts` (R, the two MRI dialogs and no navigator while closed)
 
 ### REGION-06 · One tooltip serves the whole page
 
@@ -60,7 +60,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `viewer/main.js:81` (`startTooltips()`); comment 70 ("not mounted by anyone yet: `Tooltip.svelte`"); comment 83 item 3 on #4
 - **Expected:** keyboard focus on More settings → one `tooltip` with "More settings". Focus on a panel control that has `data-tooltip` → its text. Never two tooltips at once.
-- **Covered by:** uncovered (feature tests mount their own `Tooltip`)
+- **Covered by:** `src/app/regions/ShellRegions.svelte.test.ts` "the one tooltip" (R, the masthead and a panel control, by keyboard focus, one tooltip at a time)
 
 ## Ports and single instances
 
@@ -71,7 +71,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** conductor decision 12 (comment 72 on #4: "I3b adds a test that every port is registered once the shell mounts"); comment 70 (the port list); comment 85 item 1 (the non-raising detail port for links). The unmounted behaviour is BOOT-20.
 - **Expected:** after mount and `attach(world)`, these do not throw "not mounted": `showDetail`, `showList`, `revealOnSelect`, `back`, `focusSearch`, `walkTree`, `openFunction`, `openDeficit`, `openLessonMri` (I1); `showMri`, `openPreparedPlane`, `openMpr`, `closeMpr`, `openDiffusionMri` (I2); `toggleShortcuts` (I3b). Each question answers true in its state: `shortcutsOpen()` after `toggleShortcuts()`, `mprOpen()` after `openMpr()`, `diffusionMriOpen()` after `openDiffusionMri()`, `focusInDetail()` with focus in a region detail. Unmounting the app withdraws them all.
-- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts` (R, the panel region's ports: `/` from the detail, Escape as Back, the tree walk, the explorers' entry points); the masthead, stage and status ports are uncovered (`src/app/boot.svelte.test.ts` registers stub ports)
+- **Covered by:** `src/app/regions/ShellRegions.svelte.test.ts` "the ports" (R, every command reaches a region, the questions answer, and closing the app withdraws them); `src/app/regions/PanelsRegion.svelte.test.ts` and `StageRegion.svelte.test.ts` (R, what each port does)
 
 ### REGION-08 · Regions share the root's single stateful instances
 
@@ -99,8 +99,8 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Kind:** behaviour
 - **Level:** browser (regions + fake engine); e2e for the reload journey
 - **Source:** `viewer/app.js:137-148, 606-615`; comment 70 (`onLang` is `app.chooseLanguage`; a link's language goes through `language.follow`); `viewer/state/theme.js`
-- **Expected:** choose Français → `html[lang=fr]`, `localStorage['planum-lang'] === 'fr'`, complementary "Panneau de l’atlas", status bar "Pas une anatomie clinique". Choose Dark → `html[data-theme=dark]`, `localStorage['planum.theme'] === 'dark'`, the engine's `applyTheme('dark')` called once. Single keys Off → `html[data-single-keys=off]`, and `f` on the stage does not frame. Open `#lang=fr` with nothing saved → French, `planum-lang` absent; reload without a hash → English.
-- **Covered by:** `e2e/parity/masthead.spec.ts` "choosing a theme, a language and single keys" (R, the attributes only, not storage; `next` gated off); `src/features/masthead/Masthead.svelte.test.ts` (R, only through its fixture, which applies `lang` itself)
+- **Expected:** choose Français → `html[lang=fr]`, `localStorage['planum-lang'] === 'fr'`, complementary "Panneau de l’atlas", status bar "Pas une anatomie clinique". Choose Dark → `html[data-theme=dark]`, `localStorage['planum.theme'] === 'dark'`, the engine's `applyTheme('dark')` called once. Single keys Off → `html[data-single-keys=off]`, and a view key (`1`) no longer changes the view. Open `#lang=fr` with nothing saved → French, `planum-lang` absent; reload without a hash → English.
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "the settings the reader chooses" (R: language with its storage and a link's language, theme with the engine's `applyTheme`, single keys with a key that no longer acts); the reload journey is uncovered at e2e; `e2e/parity/masthead.spec.ts` (R, the attributes only; `next` since #64)
 
 ### REGION-11 · Skip to model focuses the canvas, or the stage when the canvas cannot take focus
 
@@ -109,16 +109,16 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine); one e2e journey on the built page
 - **Source:** `viewer/ui/chrome/header.js:167-170`; comment 38 item 2 on #4; deviations `h1a-skip-link.md`, `h2-skip-link-without-script.md`
 - **Expected:** status `ready`: Tab, Enter → `activeElement` is the canvas and `matches(':focus-visible')`; `location.hash` unchanged. Status `loading` → `activeElement` is `main#viewport`.
-- **Covered by:** `e2e/parity/masthead.spec.ts` (R, the ready case: `CANVAS`; `next` gated off); `src/features/masthead/Masthead.svelte.test.ts` (R, only that the handler runs and the hash stays empty)
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "skip to model" (R: the canvas with `:focus-visible`, the stage while there is no canvas or it cannot take focus, the address left alone); `e2e/parity/masthead.spec.ts` (R, the ready case: `CANVAS`; `next` since #64)
 
 ### REGION-12 · Full screen and Save image act on the stage, and their labels follow
 
 - **Rule:** The masthead's Full screen and Save image are enabled while the status is `ready` or `switching`. Full screen puts the stage into fullscreen and the labels become "Exit full screen". Leaving fullscreen in any way restores "Full screen". Save image saves the stage's picture (G6).
 - **Kind:** behaviour
-- **Level:** e2e: real fullscreen needs a top-level page
+- **Level:** browser (regions + fake engine) for the wiring, with the browser's full-screen API stubbed; e2e for real fullscreen, which needs a top-level page
 - **Source:** `header.js:200-210`; deviation `h2-fullscreen-label.md`; decisions 4 and 33 on #4
 - **Expected:** `loading`, `error`, `context-lost` → both disabled; `ready`, `switching` → enabled. Click Full screen → `document.fullscreenElement` is the stage, and the masthead button (or the phone menu item) is named "Exit full screen". Escape → "Full screen". Save image → a PNG download named as SNAP- specifies.
-- **Covered by:** uncovered for the wiring (`src/features/masthead/Masthead.svelte.test.ts` covers the props: MAST-04, MAST-06)
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "Full screen and Save image" (R: enabled by status, Save image reaches the saver with the stage, Full screen asks the stage and the labels follow `fullscreenchange`); entering and leaving real fullscreen, and the downloaded file, are uncovered at e2e; the props are MAST-04, MAST-06
 
 ### REGION-13 · The data bar's choices change the model
 
@@ -127,7 +127,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine); one e2e journey for a real atlas switch
 - **Source:** `viewer/app.js:618-636`
 - **Expected:** with the Functions paint shown, Colour → T1 MRI → paint `null`, `surfaceColor` `mri`. Destrieux with Colour → CAB-NP networks → atlas `hcp-mmp`, colour `cab-np`, and the Atlas options read "Destrieux (colour becomes Regions)", "HCP-MMP". Internal anatomy → NextBrain → detail `nextbrain`.
-- **Covered by:** `e2e/parity/data-bar.spec.ts` "choosing a colour and an atlas changes the select" (R; `next` gated off); `src/features/masthead/DataBar.svelte.test.ts` "each field calls its command" (R at the component boundary: the emitted values only)
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "the data bar" (R: Colour lifts the paint and chooses the colouring, Atlas lifts it too, Internal anatomy chooses the detail); the option labels and the CAB-NP atlas change are uncovered at this level; `e2e/parity/data-bar.spec.ts` (R; `next` since #64); `src/features/masthead/DataBar.svelte.test.ts` (R at the component boundary)
 
 ### REGION-14 · Choosing another subject reopens the app on that subject
 
@@ -145,7 +145,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `header.js:164-165, 396`; MAST-43
 - **Expected:** at 390 px, open the data popover, then More settings → data closed, settings open; the reverse also holds.
-- **Covered by:** `src/features/masthead/DataBar.svelte.test.ts` (R, through a fixture that makes the same binding); `e2e/parity/data-bar.spec.ts` (R; `next` gated off); the region's own binding is uncovered
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "the data popover and the settings panel are never open together" (R, both directions at 390 px); `e2e/parity/data-bar.spec.ts` (R; `next` since #64)
 
 ### REGION-16 · Alone on screen, the tract reference replaces the subject everywhere
 
@@ -154,7 +154,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `viewer/app.js:1617-1634`; `header.js:543-549`
 - **Expected:** reference-only state → data bar in reference mode, with the reference label and description; colophon "<label> · reference data"; Provenance rows "Tract reference" and "Sources", whose links are the Tracts panel's source and provenance links. Explorer `diffusion` → the count is the reference's bundle detail text.
-- **Covered by:** uncovered (each part in its own catalogue: MAST-47, COLO-02, COLO-03, PROV-07)
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` (R, the data bar in reference mode with no fields, and the Provenance rows and links); `src/app/regions/StatusRegion.svelte.test.ts` (R, the bundle count and the colophon text); the reference's description and Colour as Tissue are DataBar's own (MAST-47)
 
 ### REGION-17 · The status bar shows a download only when the data bar does not
 
@@ -163,7 +163,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `header.js:537-541`; COLO-04
 - **Expected:** choose HCP-MMP in the data bar while it downloads → the Atlas option shows "HCP-MMP · Loading 34%" and the count shows "N visible regions". A download started from a link → the count shows "Loading 34%".
-- **Covered by:** `src/features/colophon/region-count.test.ts` (R, the function only); the wiring is uncovered
+- **Covered by:** `src/app/regions/StatusRegion.svelte.test.ts` "the count" (R: a download the data bar holds is not in the count, and the next one, started elsewhere, is); `src/features/colophon/region-count.test.ts` (R, the function)
 
 ### REGION-18 · Provenance opens from the colophon and the phone menu, once the manifest is there
 
@@ -172,7 +172,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine); the phone journey also as e2e
 - **Source:** `viewer/ui/panels/provenance.js:137-190`; `header.js:423-425`; #64 scope
 - **Expected:** 1280 px: Provenance → dialog "Provenance" with the "Neuropsychological domains" row and domain notes; Escape → focus on the button. 390 px: More settings → Provenance → dialog; Escape → focus on More settings. Before the manifest → no Provenance menu item.
-- **Covered by:** `e2e/parity/provenance.spec.ts` (R; `next` gated off); `src/features/provenance/provenance.svelte.test.ts` (R, a fixture composition with `domains: null`)
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` (R, the phone menu: no item before the manifest, then the dialog and focus back on More settings; the tract reference's rows); `src/app/regions/StatusRegion.svelte.test.ts` "Provenance" (R, the colophon's button, animated for a pointer, instant for the keyboard, focus back on the button); `e2e/parity/provenance.spec.ts` (R; `next` since #64)
 
 ### REGION-19 · Keyboard shortcuts opens from the menu and from the keymap
 
@@ -181,7 +181,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `viewer/ui/chrome/shortcuts.js:121-125`; deviation `h2-focus-before-dialog.md`; comment 70
 - **Expected:** More settings → Keyboard shortcuts → dialog open and `shortcutsOpen()` true; Escape → focus on More settings. `?` with single keys on → opens; `?` again → closes.
-- **Covered by:** `src/features/masthead/Masthead.svelte.test.ts` (R, focus is on ⋯ when the command runs); `e2e/parity/shortcuts.spec.ts` (R; `next` gated off); the composition is uncovered
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "the dialogs" (R: the menu item with focus back on More settings and `shortcutsOpen()`, the menu's entry animation for a pointer and none for the keyboard, `?` opening and closing with none); `e2e/parity/shortcuts.spec.ts` (R; `next` since #64)
 
 ## Stage composition (I2)
 
@@ -192,7 +192,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** comments 50 and 55 item 5 on #4; BOOT-22–BOOT-26 for the screens themselves
 - **Expected:** status `loading`, progress 34/100 → a progress bar with value 34 inside `main`. Status `ready` → the bar is gone and the announcer has said "Anatomy loaded." once. A failure → its text in `main` and said once.
-- **Covered by:** uncovered for the composition (`src/app/boot.svelte.test.ts` covers BOOT- with H1b's component)
+- **Covered by:** `src/app/regions/ShellRegions.svelte.test.ts` "the stage status" (R: the progress bar inside `main` and "Anatomy loaded." once ready, a failure in `main` and said); `src/app/boot.svelte.test.ts` (R, BOOT- with H1b's component)
 
 ### REGION-21 · The MRI dialogs open from the stage and from the controllers
 
@@ -201,7 +201,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine; the dialogs' own WebGL is not needed)
 - **Source:** #62 scope; comment 70; comment 81 (M also closes the Tracts MRI); comment 83 item 1
 - **Expected:** `openMpr()` → the Linked MRI dialog open, `mprOpen()` true; `closeMpr()` → closed, false. Tracts → Open MRI → the Diffusion MRI dialog open, `diffusionMriOpen()` true; `M` → closed.
-- **Covered by:** uncovered
+- **Covered by:** `src/app/regions/StageRegion.svelte.test.ts` "the MRI dialogs" (R: the ports, `M`, the section row's opener, Escape, and a navigator only while open)
 
 ### REGION-22 · The Tracts minimum length is one shared value
 
@@ -210,7 +210,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** comment 83 item 1 on #4 (T1's `minimum` bound to one place in the app)
 - **Expected:** set the Tracts minimum to 40 mm, open the Diffusion MRI → the navigator's minimum is 40; change it to 60 in the panel → the navigator follows.
-- **Covered by:** uncovered
+- **Covered by:** `src/app/regions/StageRegion.svelte.test.ts` "the Tracts MRI draws with the length the panel set" (R, 40 mm; following a later change is uncovered)
 
 ### REGION-23 · The stage layout follows the panel and the window
 
@@ -219,7 +219,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Level:** browser (regions + fake engine)
 - **Source:** `viewer/app.js:121-125`; `viewport-chrome.js:684-791`; comment 83 item 2; `stage.css:720-721`
 - **Expected:** desktop resize 1280 → 1000 px → the store's viewport width follows the stage's new width. Sheet at full on a phone → the stage's full-sheet style applies. No second stage-layout store (REGION-08).
-- **Covered by:** uncovered (the store itself is in `state.md`)
+- **Covered by:** `src/app/regions/StageRegion.svelte.test.ts` "the stage layout" (R: a desktop resize, and a full phone sheet hiding the dock, scale bar and letters); the store itself is in `state.md`
 
 ## Panel composition (I1)
 
@@ -258,7 +258,7 @@ State on 2026-10-26, after #134 (I1) merged: the panel region composes the works
 - **Kind:** hygiene
 - **Level:** e2e
 - **Source:** #4 body, "Parity proof"; #61, #62 and #64 acceptance criteria; `playwright.config.ts:13-21`
-- **Expected:** `enabled/panels.ts` `true` after I1 → `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts`, `workspace` listed by `playwright test --list --project next`. `enabled/stage.ts` after I2 → `stage-overlay`. `enabled/shell.ts` after I3b → `boot` (the stage status is mounted by the shell), `data-bar`, `masthead`, `provenance`, `shell`, `shortcuts`. Each spec's run-time `test.skip` on `next` is then inactive.
-- **Covered by:** the panels gate is `true` since #134, so its specs (and the self-gated `anatomy-search`, `atlas-comparison`, `circuits`, `dissection` and `mri-navigator`) are listed on `next`; whether they pass there is not yet known, since pull requests skip e2e. The stage and shell gates are `false`: uncovered
+- **Expected:** `enabled/panels.ts` `true` after I1 → `anatomy-tree`, `deficits`, `functions`, `inspector`, `tracts`, `workspace` listed by `playwright test --list --project next`. `enabled/stage.ts` after I2 → `stage-overlay` (and the other stage specs, which are not gated by name). `enabled/shell.ts` after I3b → `boot` (the stage status is mounted by the shell), `data-bar`, `masthead`, `provenance`, `shell`, `shortcuts`. Each spec's run-time `test.skip` on `next` is then inactive.
+- **Covered by:** all three gates are `true` (#134, #148, #64), so the panels and shell specs and `stage-overlay` are listed on `next` (`playwright test --list --project next`); whether they pass there is known only from CI's e2e run, since pull requests skip e2e
 
 The e2e journeys worth keeping on `next` after cutover, one test each: the first boot to a drawn model (BOOT-), the skip link to the canvas (REGION-11), a theme and language chosen and kept across a reload (REGION-10), a real atlas switch from the data bar (REGION-13), another subject through a reload (REGION-14, once two subjects are published), real fullscreen (REGION-12), Provenance from the phone menu (REGION-18), the frame fit (SHELL-08), and the head script before the app (SHELL-11, SHELL-13). Everything else in the gated specs is covered by browser tests of the features and, once written, of the regions.

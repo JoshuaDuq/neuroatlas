@@ -200,7 +200,8 @@ export function startTooltips({ tipId, show, hide }: TooltipHost) {
     focusout(event: FocusEvent) {
       const trigger = triggerOf(event.target);
       if (trigger !== null && !trigger.matches(':hover') && !tip()?.matches(':hover')) {
-        timing.leave(trigger);
+        // A focused trigger that a render removes blurs inside that render: leave after it.
+        queueMicrotask(() => timing.leave(trigger));
       }
     },
     keydown(event: KeyboardEvent) {

@@ -522,7 +522,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1897-1920`
 - **Expected:** detail + selection → `back` only. Selection + function + deficit → `clearSelection`, then `rescueFocus`. Function + deficit on Functions → `closeFunction` + `rescueFocus`. Function on Anatomy → no `closeFunction`. Deficit → `closeDeficit` + `rescueFocus`. Sheet open, or tract reference → nothing.
-- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `e2e/parity/shortcuts.spec.ts` (R, sheet; `next` gated off)
+- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `e2e/parity/shortcuts.spec.ts` (R, sheet; `next` since #64)
 
 ### KEY-04 · Escape from a form field still steps back unless the field used it
 
@@ -567,7 +567,7 @@ checks them in the browser today and could run in the unit project over the fake
 - **Level:** unit
 - **Source:** `viewer/app.js:1927-1928`
 - **Expected:** `?` → `toggleShortcuts({instant: true})`, key cancelled. Sheet open: `c / 1 m` → nothing; `?` → toggled.
-- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `e2e/parity/shortcuts.spec.ts` (R; `next` gated off)
+- **Covered by:** `src/lib/controller/keymap.test.ts` (R), `e2e/parity/shortcuts.spec.ts` (R; `next` since #64)
 
 ### KEY-09 · / goes to the search of the explorer in front
 
