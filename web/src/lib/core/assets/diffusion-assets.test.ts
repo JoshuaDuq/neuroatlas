@@ -21,7 +21,7 @@ describe('diffusion assets', () => {
   it('reads from the published root, not the app base', async () => {
     const bytes = new Uint8Array([1, 2]);
     publish({ 'diffusion/snail-subject-1/t1.nii.gz': recordOf(bytes) });
-    vi.stubGlobal('location', { href: 'https://example.test/neuroatlas/next/' });
+    vi.stubGlobal('location', { href: 'https://example.test/neuroatlas/' });
     vi.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response(bytes));
     const asset = await readDiffusionAsset('snail-subject-1/t1.nii.gz');
     expect(asset.url).toBe(`${ASSET_BASE}diffusion/snail-subject-1/t1.nii.gz`);

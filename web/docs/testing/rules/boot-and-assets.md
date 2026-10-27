@@ -391,11 +391,11 @@ document, `location`, `history` and `window` directly.
 
 ### ASSET-10 · Published files come from the site root
 
-- **Rule:** The anatomy index, manifests and diffusion files are read from `/neuroatlas/`, the published root, wherever the page itself is served (the preview lives at `/neuroatlas/next/`).
+- **Rule:** The anatomy index, manifests and diffusion files are read from `/neuroatlas/`, the published root, wherever the page itself is served.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `viewer/app.js:102`; `viewer/diffusion/assets.js:3-6` (legacy used the app base, which was the root)
-- **Expected:** manifest URL `/neuroatlas/models/cdmd/manifest.json`; with `location` `…/neuroatlas/next/`, `readDiffusionAsset('snail-subject-1/t1.nii.gz').url` = `/neuroatlas/diffusion/snail-subject-1/t1.nii.gz`.
+- **Expected:** manifest URL `/neuroatlas/models/cdmd/manifest.json`; with `location` `…/neuroatlas/`, `readDiffusionAsset('snail-subject-1/t1.nii.gz').url` = `/neuroatlas/diffusion/snail-subject-1/t1.nii.gz`.
 - **Covered by:** `src/app/boot.svelte.test.ts` (R), `src/lib/core/assets/diffusion-assets.test.ts` (R)
 
 ### ASSET-11 · The anatomy index request
@@ -595,30 +595,30 @@ document, `location`, `history` and `window` directly.
 
 ### BUILD-01 · Site paths
 
-- **Rule:** The live site and the development server serve from `/neuroatlas/`; `build:preview` publishes under `/neuroatlas/next/`.
+- **Rule:** The live site and the development server serve from `/neuroatlas/`.
 - **Kind:** behaviour
 - **Level:** unit
 - **Source:** `vite.config.js:9`
-- **Expected:** `siteBase('development')` = `siteBase('production')` = `/neuroatlas/`; `siteBase('preview')` = `/neuroatlas/next/`.
-- **Covered by:** `build/site.test.ts` (H), `build/published-files.test.ts` (R, `ASSET_BASE` = `/neuroatlas/`)
+- **Expected:** `ASSET_BASE` = `/neuroatlas/`; the service worker's map has `base` `/neuroatlas/`.
+- **Covered by:** `build/published-files.test.ts` (R, `ASSET_BASE` = `/neuroatlas/`); `.github/scripts/check-dist.mjs` (R, the worker's `base`)
 
-### BUILD-02 · The preview does not republish the data
+### BUILD-02 · The site publishes its data
 
-- **Rule:** The preview build leaves the published models and diffusion data out, since the live site already serves them; the production build copies them.
+- **Rule:** The build copies the published models and diffusion data into the site.
 - **Kind:** behaviour
-- **Level:** unit
-- **Source:** new (`web/vite.config.ts`); preview deploy
-- **Expected:** `copyPublicDir` = `false` for mode `preview`, `true` for `production`.
-- **Covered by:** `build/published-files.test.ts` (R, over the fixture tree)
+- **Level:** post-build check of `web/dist` (`web-check`)
+- **Source:** `web/vite.config.ts` `publicDir`
+- **Expected:** every file in the service worker's map exists in `web/dist`.
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build` in the `web-check` job)
 
-### BUILD-03 · Only the preview is hidden from search
+### BUILD-03 · The site is indexed
 
-- **Rule:** The preview's raw HTML carries `<meta name="robots" content="noindex">`; the live site has no robots meta.
+- **Rule:** The built page carries no `noindex`.
 - **Kind:** behaviour
-- **Level:** unit
-- **Source:** new (`web/vite.config.ts` `preview-noindex`)
-- **Expected:** as stated, in the HTTP response body for the preview.
-- **Covered by:** `build/published-files.test.ts` "BUILD-03" (R, the `preview-noindex` hook for both modes)
+- **Level:** post-build check of `web/dist` (`web-check`)
+- **Source:** `web/index.html`
+- **Expected:** `web/dist/index.html` does not contain `noindex`.
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build` in the `web-check` job)
 
 ### BUILD-04 · Three.js and the BVH index in their own chunks
 
@@ -627,7 +627,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** post-build check of `web/dist` (`web-check`)
 - **Source:** `vite.config.js:31-41`
 - **Expected:** chunk `three` contains `WebGLRenderer`; chunk `bvh` contains `MeshBVH`.
-- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build` in the `web-check` job)
 
 ### BUILD-05 · The version maps the build writes
 
@@ -636,7 +636,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:13-24, 63-65, 84-90`; `scripts/published-version.mjs:10-45`
 - **Expected:** keys exactly `base`, `files`, `gunzipped`; `base` = `/neuroatlas/`; head map non-empty with every key starting `models/`; `sw.js` contains `planum-models`.
-- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
+- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build` in the `web-check` job)
 
 ### BUILD-06 · Charset first, prefetch before the stylesheet
 
@@ -645,7 +645,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** post-build check of `web/dist` (`web-check`)
 - **Source:** HTML Standard 4.2.5.4; `index.html:4, 34`
 - **Expected:** first 1024 bytes contain `<meta charset="UTF-8"`; index of `window.__planumAssets` < index of `rel="stylesheet"`.
-- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
+- **Covered by:** `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build` in the `web-check` job)
 
 ### BUILD-07 · The prefetch script is inlined with its values
 

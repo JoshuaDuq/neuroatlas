@@ -52,27 +52,23 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            web/package-lock.json
+          cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix web
+        run: npm ci --prefix web
 
       - name: Build static site
-        run: npm run build
-
-      # The preview build leaves the published assets out: /neuroatlas/ already serves them.
-      # It is not indexed; the live site stays canonical.
-      - name: Build the Svelte preview into dist/next
         run: |
-          npm run build:preview --prefix web
-          cp -r web/dist dist/next
-          grep -q 'name="robots" content="noindex"' dist/next/index.html
+          npm run build --prefix web
+          cp -r web/dist dist
 
-      # After the viewer build: vite build empties dist/, so the docs are added to it here.
+      # The Svelte build was previewed at /neuroatlas/next/; links to it now lead to the site.
+      - name: Redirect the former preview path
+        run: |
+          mkdir dist/next
+          cp web/build/next-redirect.html dist/next/index.html
+
+      # After the site is copied into dist/, the docs are added to it here.
       - name: Install uv and Python
         uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:

@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "build:preview": "vite build --mode preview",
     "preview": "vite preview --host 127.0.0.1",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && svelte-check --tsconfig ./tsconfig.test.json && node node_modules/typescript/bin/tsc -p tsconfig.node.json && node node_modules/typescript/bin/tsc -p tsconfig.sw.json",
     "check:ts7": "node node_modules/@typescript/native/bin/tsc -p tsconfig.ts7.json && node node_modules/@typescript/native/bin/tsc -p tsconfig.test.json && node node_modules/@typescript/native/bin/tsc -p tsconfig.node.json && node node_modules/@typescript/native/bin/tsc -p tsconfig.sw.json",

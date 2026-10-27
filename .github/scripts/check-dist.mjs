@@ -1,6 +1,6 @@
-// Checks the built site in web/dist (after `npm run build:preview --prefix web`, from the repository
-// root): the chunks, the page's head and the service worker's version map. BUILD-04, BUILD-05 and
-// BUILD-06 in web/docs/testing/rules/boot-and-assets.md. It fails if dist/index.html is absent.
+// Checks the built site in web/dist (after `npm run build --prefix web`, from the repository
+// root): the published data, the chunks, the page's head and the service worker's version map.
+// BUILD-02 to BUILD-06 in web/docs/testing/rules/boot-and-assets.md. It fails if dist/index.html is absent.
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
@@ -9,6 +9,11 @@ const dist = resolve('web/dist');
 const published = resolve('public');
 const indexPath = resolve(dist, 'index.html');
 assert.ok(existsSync(indexPath), `${indexPath} is missing: build the site first`);
+
+// BUILD-03: the site is indexed.
+const html = readFileSync(indexPath);
+const text = html.toString('utf8');
+assert.ok(!text.includes('noindex'), 'the page is not marked noindex');
 
 // BUILD-04: Three.js core and the BVH index are chunks of their own.
 const chunk = (name) => {
@@ -22,8 +27,6 @@ assert.ok(chunk('three').includes('WebGLRenderer'), 'the three chunk holds WebGL
 assert.ok(chunk('bvh').includes('MeshBVH'), 'the bvh chunk holds MeshBVH');
 
 // BUILD-06: the charset within the first 1024 bytes, the prefetch script ahead of the stylesheet.
-const html = readFileSync(indexPath);
-const text = html.toString('utf8');
 assert.ok(
   html.subarray(0, 1024).toString('utf8').includes('<meta charset="UTF-8"'),
   'charset first',
@@ -50,6 +53,8 @@ assert.equal(map.base, '/neuroatlas/');
 for (const [path, version] of Object.entries(map.files)) {
   assert.match(version, /^[0-9a-f]{16}$/, path);
   assert.ok(existsSync(resolve(published, path)), `${path} is published`);
+  // BUILD-02: the site serves the published data itself.
+  assert.ok(existsSync(resolve(dist, path)), `${path} is in the built site`);
 }
 // Every published file is mapped: the keys equal a directory walk of the published trees.
 const walk = (directory) =>

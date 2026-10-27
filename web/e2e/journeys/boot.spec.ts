@@ -13,9 +13,6 @@ const prefetched = [
   `models/${brain}/learning.glb`,
 ];
 
-/** The published files live at the site root, `/neuroatlas/`, beside the preview's `/neuroatlas/next/`. */
-const siteRoot = (baseURL: string) => baseURL.replace(/next\/$/, '');
-
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, (char) => `\\${char}`);
 
 /** The URL a published file is requested under: its path and its own content version. */
@@ -35,7 +32,7 @@ test('a cold start reaches ready, asks for each prefetched file once and version
   app,
   baseURL,
 }) => {
-  const root = siteRoot(baseURL!);
+  const root = baseURL!;
   await app.gotoHash();
   await app.ready();
   await app.page.waitForLoadState('networkidle');
@@ -60,7 +57,7 @@ test('the service worker registers in its scope and serves the second visit', as
   baseURL,
 }) => {
   const { page } = app;
-  const root = siteRoot(baseURL!);
+  const root = baseURL!;
   await app.gotoHash();
   const scope = await page.evaluate(async (base) => {
     await navigator.serviceWorker.register(`${base}sw.js`, { scope: base });

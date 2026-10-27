@@ -1,6 +1,5 @@
-// Serves the site the way GitHub Pages does until the cutover: the Svelte preview (`npm run
-// build:preview` in web/, into web/dist/) at /neuroatlas/next/, and the published models and
-// diffusion data (the repository's public/) at /neuroatlas/, where the live site serves them.
+// Serves the built site (`npm run build` in web/, into web/dist/) at /neuroatlas/, the way GitHub
+// Pages does.
 // Not `vite preview`, which sets different headers and answers unknown paths with index.html.
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
@@ -8,10 +7,8 @@ import { createServer } from 'node:http';
 import { extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const published = fileURLToPath(new URL('../../public/', import.meta.url));
-const preview = fileURLToPath(new URL('../dist/', import.meta.url));
+const site = fileURLToPath(new URL('../dist/', import.meta.url));
 const base = '/neuroatlas/';
-const previewBase = `${base}next/`;
 const port = Number(process.env.PORT ?? 4173);
 
 const types = {
@@ -30,10 +27,7 @@ const types = {
 };
 
 async function fileFor(pathname) {
-  const [site, root] = pathname.startsWith(previewBase)
-    ? [preview, previewBase]
-    : [published, base];
-  const path = resolve(site, decodeURIComponent(pathname.slice(root.length)));
+  const path = resolve(site, decodeURIComponent(pathname.slice(base.length)));
   if (path !== site.slice(0, -1) && !path.startsWith(site)) return null;
   const info = await stat(path).catch(() => null);
   if (info?.isDirectory()) return fileFor(`${pathname.replace(/\/?$/, '/')}index.html`);
@@ -42,7 +36,7 @@ async function fileFor(pathname) {
 
 createServer(async (request, response) => {
   const { pathname } = new URL(request.url, 'http://localhost');
-  if (pathname === base.slice(0, -1) || pathname === `${base}next`) {
+  if (pathname === base.slice(0, -1)) {
     response.writeHead(301, { location: `${pathname}/` }).end();
     return;
   }
@@ -63,5 +57,5 @@ createServer(async (request, response) => {
   if (request.method === 'HEAD') response.end();
   else createReadStream(file.path).pipe(response);
 }).listen(port, '127.0.0.1', () =>
-  console.log(`Serving ${preview} at http://127.0.0.1:${port}${previewBase}`),
+  console.log(`Serving ${site} at http://127.0.0.1:${port}${base}`),
 );
