@@ -64,6 +64,14 @@ export interface ContextSelection {
   clearable?: boolean;
 }
 
+/**
+ * The strip's accessible name: its visible words (the label, then the side glyph), then the side as a word
+ * (WCAG 2.5.3 Label in Name; deviations/k20-strip-label-in-name.md).
+ */
+export function selectionName({ label = '', side, sideWord }: ContextSelection): string {
+  return side && sideWord ? `${label} ${side}, ${sideWord}` : label;
+}
+
 /** The modes whose list already shows a selection of each kind. */
 const LISTED_IN: Record<NonNullable<ContextSelection['kind']>, readonly Explorer[]> = {
   region: ['anatomy'],

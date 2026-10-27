@@ -1,13 +1,13 @@
 <!--
   The selection strip (viewer/ui/chrome/workspace.js:183-187, 255-260, index.html:216-225,
   layout.css:23-50): a button naming the selection, which opens its detail, and a clear. The
-  workspace decides when it is shown. The name carries the side as a word, as the phone strip's
-  does (deviations/h5-strip-name-side.md).
+  workspace decides when it is shown. The name starts with the visible words and says the side as a
+  word, as the phone strip's does (deviations/h5-strip-name-side.md, k20-strip-label-in-name.md).
 -->
 <script lang="ts">
   import { tick } from 'svelte';
   import { t } from '../../lib/core/i18n/index.ts';
-  import type { ContextSelection } from '../../lib/core/workspace.ts';
+  import { selectionName, type ContextSelection } from '../../lib/core/workspace.ts';
   import type { Language } from '../../lib/types/index.ts';
   import { FOCUS_TARGETS, rescueFocus } from '../../lib/ui/focus.ts';
   import IconButton, { iconGraphic } from '../../lib/ui/IconButton.svelte';
@@ -27,9 +27,7 @@
   const clearLabel = $derived(t(lang, 'inspector').clearSelection);
   // The side is drawn as a letter and said as a word.
   const label = $derived(selection.label ?? '');
-  const name = $derived(
-    t(lang, 'workspace').inspect(selection.sideWord ? `${label}, ${selection.sideWord}` : label),
-  );
+  const name = $derived(selectionName(selection));
 
   // The strip and its clear vanish with the context, so focus goes to the tab in front.
   async function clear() {

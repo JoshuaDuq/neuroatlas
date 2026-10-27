@@ -118,6 +118,7 @@ One file per fix, named `<chunk>-<slug>.md`: legacy behaviour, new behaviour, st
 | t1-search-folds-accents.md                    | fix (decision 42)                                              |
 | t1-status-and-alert.md                        | fix (decision 42, B1)                                          |
 | k4-prefetch-index-after-warm.md               | fix (standard cited)                                           |
+| k20-strip-label-in-name.md                    | fix (standard cited)                                           |
 | a2-active-option-selected.md                  | fix (standard cited)                                           |
 | a2-arrows-focus-field.md                      | fix (standard cited)                                           |
 | a2-expanded-with-options.md                   | fix (standard cited)                                           |

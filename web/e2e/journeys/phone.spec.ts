@@ -1,11 +1,12 @@
 // Journey 7: the phone. The sheet's geometry and rests are proved in the browser tests of the
 // sheet; this is the assembled page: the sheet tells the stage what it covers, the desktop to
-// phone change keeps tab focus, the focus walk never lands under the sheet, and 320 px fits.
+// phone change keeps tab focus, the focus walk never lands under the sheet, 320 px fits, and the
+// phone to desktop change gives the stage its room back.
 import { expect, test } from '../fixtures.ts';
 
 const PHONE = { width: 390, height: 844 };
 
-test('the phone: the sheet tells the stage, focus survives the resize, the focus walk, the data popover, 320 px', async ({
+test('the phone: the sheet tells the stage, focus survives the resize, the focus walk, the data popover, 320 px, back to a desktop', async ({
   app,
 }) => {
   const { page } = app;
@@ -61,4 +62,10 @@ test('the phone: the sheet tells the stage, focus survives the resize, the focus
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
   expect(overflow).toBe(0);
+
+  // Back to a desktop: the sheet is gone, so the stage is no longer covered.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(handle).toBeHidden();
+  // The resize reaches the page after a slow software-WebGL frame, and polling slows it: see docs/testing.
+  await expect.poll(covered, { timeout: 30_000 }).toBe(0);
 });

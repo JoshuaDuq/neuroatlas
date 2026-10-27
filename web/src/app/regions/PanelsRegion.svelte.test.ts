@@ -120,7 +120,7 @@ describe('selection', () => {
 
     await userEvent.click(page.getByRole('tab', { name: 'Functions' }));
     await expect
-      .element(page.getByRole('button', { name: `Inspect ${nameOf(REGION)}, left` }))
+      .element(page.getByRole('button', { name: `${nameOf(REGION)} L, left` }))
       .toBeVisible();
   });
 
@@ -274,7 +274,8 @@ describe('the phone sheet’s strip and its clear', () => {
   // The rails show the strip only for what their list is not showing, and a function, deficit or
   // lesson is held only in its own mode; the sheet's grip names it in front of every panel.
   beforeEach(() => page.viewport(390, 844));
-  const strip = (name: string) => page.getByRole('button', { name: `Inspect ${name}` });
+  // A function's or deficit's list row has the same name; the strip is the first, in the sheet's grip.
+  const strip = (name: string) => page.getByRole('button', { name, exact: true }).first();
   const clear = () => page.getByRole('button', { name: t('en', 'inspector').clearSelection });
 
   test('an open function is named in the strip, and its clear closes it', async () => {
@@ -405,6 +406,22 @@ describe('the phone sheet', () => {
     app.ports.showDetail();
     expect(camera.fittedDistance()).not.toBe(before);
     expect(cameraCalls('keepFraming').map(({ args }) => args[0])).toEqual([before]);
+  });
+
+  test('leaving the phone layout clears the sheet’s inset from the stage and the camera', async () => {
+    await boot();
+    await userEvent.click(page.getByRole('button', { name: t('en', 'sheet').expand }));
+    const stage = () => document.getElementById('viewport')!;
+    await expect.poll(() => stage().style.getPropertyValue('--vis-bottom')).not.toBe('0px');
+    await page.viewport(1280, 800);
+    await expect.poll(() => stage().style.getPropertyValue('--vis-bottom')).toBe('0px');
+    const insets = cameraCalls('setChromeInsets').at(-1)!.args[0];
+    expect({ top: 0, right: 0, bottom: 0, left: 0, ...(insets as object) }).toEqual({
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    });
   });
 
   test('a function link and a lesson link keep the sheet at peek, where a pick raises it', async () => {
