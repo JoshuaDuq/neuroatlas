@@ -70,7 +70,6 @@ jobs:
         run: |
           npm run build:preview --prefix web
           cp -r web/dist dist/next
-          sed -i 's#</head>#<meta name="robots" content="noindex"></head>#' dist/next/index.html
           grep -q 'name="robots" content="noindex"' dist/next/index.html
 
       # After the viewer build: vite build empties dist/, so the docs are added to it here.

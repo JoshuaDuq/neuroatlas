@@ -261,10 +261,11 @@ jobs:
           if-no-files-found: ignore
 
   # About 25 minutes a shard and flaky on the runners' software WebGL, so pull requests skip it:
-  # it runs when started by hand (Actions → Tests → Run workflow) and before a deploy.
+  # it runs only when started by hand (Actions → Tests → Run workflow), not on pull requests or pushes.
   web-e2e:
     needs: changes
-    if: github.event_name != 'pull_request' && needs.changes.outputs.web == 'true'
+    # By hand only (Actions → Tests → Run workflow): e2e is not a gate for pull requests or the deploy.
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     container:
