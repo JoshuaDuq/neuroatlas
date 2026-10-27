@@ -5,7 +5,7 @@ import { expect, test } from '../fixtures.ts';
 
 const PHONE = { width: 390, height: 844 };
 
-test('the sheet tells the stage what it covers, and a resize to a phone keeps focus on the tab', async ({
+test('the phone: the sheet tells the stage, focus survives the resize, the focus walk, the data popover, 320 px', async ({
   app,
 }) => {
   const { page } = app;
@@ -28,15 +28,8 @@ test('the sheet tells the stage what it covers, and a resize to a phone keeps fo
   await handle.click();
   const stage = (await page.locator('#viewport').boundingBox())!;
   await expect.poll(covered).toBeCloseTo(Math.round(stage.height * 0.5), -1);
-});
 
-test('the page-wide focus walk never lands under the sheet', async ({ app }) => {
-  const { page } = app;
-  await page.setViewportSize(PHONE);
-  await app.gotoHash();
-  await app.ready();
-  const handle = page.getByRole('button', { name: /^(Expand|Collapse) panel$/ });
-  await handle.click();
+  // The page-wide focus walk never lands under the sheet.
   await handle.focus();
   for (let step = 0; step < 30; step += 1) {
     await page.keyboard.press('Tab');
@@ -50,18 +43,22 @@ test('the page-wide focus walk never lands under the sheet', async ({ app }) => 
     });
     expect(obscured, `Tab ${step + 1}`).toBe(false);
   }
-});
 
-test('SHEET-29: at 320 px the page does not scroll sideways and the last tab shows', async ({
-  app,
-}) => {
-  const { page } = app;
+  // Escape in the data popover closes it onto the summary and keeps the selection.
+  await page.evaluate(() => (location.hash = 'region=destrieux:left:38'));
+  const summary = page.getByRole('button', { name: /^Atlas and display settings: / });
+  await summary.click();
+  await page.getByRole('combobox', { name: 'Colour', exact: true }).focus();
+  await page.keyboard.press('Escape');
+  await expect(summary).toHaveAttribute('aria-expanded', 'false');
+  await expect(summary).toBeFocused();
+  expect(await app.hash()).toContain('destrieux:left:38');
+
+  // SHEET-29: at 320 px the page does not scroll sideways and the last tab shows.
   await page.setViewportSize({ width: 320, height: 640 });
-  await app.gotoHash();
-  await app.ready();
+  await expect(page.getByRole('tab', { name: 'Tracts', exact: true })).toBeVisible();
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
   expect(overflow).toBe(0);
-  await expect(page.getByRole('tab', { name: 'Tracts', exact: true })).toBeVisible();
 });

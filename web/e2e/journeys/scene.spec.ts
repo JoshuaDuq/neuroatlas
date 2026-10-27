@@ -68,9 +68,7 @@ test('LINK-21: a scene with a region, a hidden part, a cut, a hemisphere, a colo
   await expect.poll(() => app.hash()).not.toContain('hidden=');
 });
 
-test('pick and inspect: hover names the region, a click selects it, Hide hands focus to Undo and Undo brings it back', async ({
-  app,
-}) => {
+test('pick and inspect on the real model, then find a region by search', async ({ app }) => {
   const { page } = app;
   await app.gotoHash();
   await app.ready();
@@ -104,14 +102,8 @@ test('pick and inspect: hover names the region, a click selects it, Hide hands f
   await page.keyboard.press('Enter');
   await expect(bar(page)).toHaveCount(0);
   await expect.poll(() => app.hash()).not.toContain('hidden=');
-});
 
-test('find a region: search, Enter, region= in the link, Back, the tree row selected, and an eye press says what is hidden', async ({
-  app,
-}) => {
-  const { page } = app;
-  await app.gotoHash();
-  await app.ready();
+  // Find a region.
   const field = page.getByRole('combobox', { name: 'Search regions' });
   await field.fill('middle frontal gyrus');
   await expect(

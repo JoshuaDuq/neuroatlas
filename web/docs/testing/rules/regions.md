@@ -118,7 +118,7 @@ State on 2026-10-26, after #64 (I3b): all four regions are integrated. `src/app/
 - **Level:** browser (regions + fake engine) for the wiring, with the browser's full-screen API stubbed; e2e for real fullscreen, which needs a top-level page
 - **Source:** `header.js:200-210`; deviation `h2-fullscreen-label.md`; decisions 4 and 33 on #4
 - **Expected:** `loading`, `error`, `context-lost` → both disabled; `ready`, `switching` → enabled. Click Full screen → `document.fullscreenElement` is the stage, and the masthead button (or the phone menu item) is named "Exit full screen". Escape → "Full screen". Save image → a PNG download named as SNAP- specifies.
-- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "Full screen and Save image" (R: enabled by status, Save image reaches the saver with the stage, Full screen asks the stage and the labels follow `fullscreenchange`); `e2e/journeys/chrome.spec.ts` "Save image downloads a PNG of the real stage, and full screen goes in and out" (R: real full screen in and out, and the downloaded file); the props are MAST-04, MAST-06
+- **Covered by:** `src/app/regions/MastheadRegion.svelte.test.ts` "Full screen and Save image" (R: enabled by status, Save image reaches the saver with the stage, Full screen asks the stage and the labels follow `fullscreenchange`); `e2e/journeys/chrome.spec.ts` "data bar, comparison CSV, saved PNG and full screen on one load" (R: real full screen in and out, and the downloaded file); the props are MAST-04, MAST-06
 
 ### REGION-13 · The data bar's choices change the model
 

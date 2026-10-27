@@ -9,7 +9,7 @@ export default defineConfig({
   testDir: './e2e/journeys',
   testMatch: '**/*.spec.ts',
   // Software WebGL makes the first frame slow to settle.
-  timeout: 90_000,
+  timeout: 180_000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,

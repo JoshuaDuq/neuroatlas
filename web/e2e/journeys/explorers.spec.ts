@@ -1,11 +1,13 @@
-// Journey 5: the explorers on the built site. Each opens from its list, writes its state to the
-// link and gives the previous scene back; the lists, profiles and wording are proved in the
+// Journey 5: the explorers on the built site, on one load. Each opens from its list, writes its state
+// to the link and gives the previous scene back; the lists, profiles and wording are proved in the
 // browser tests of each feature.
 import { expect, test } from '../fixtures.ts';
 
 test.use({ viewport: { width: 1280, height: 800 } });
 
-test('open a function, then Restore the previous view', async ({ app }) => {
+test('open a function and Restore, open a deficit and a mapped region, step a circuit with Next', async ({
+  app,
+}) => {
   const { page } = app;
   await app.gotoHash({ tab: 'functions' });
   await app.ready();
@@ -20,23 +22,17 @@ test('open a function, then Restore the previous view', async ({ app }) => {
     timeout: 60_000,
   });
   await expect.poll(() => app.hash()).toContain('function=language');
-
   await page.getByRole('button', { name: 'Restore previous view' }).click();
   await expect(row).toBeFocused();
   await expect.poll(() => app.hash()).not.toContain('function=');
-});
 
-test('open a deficit and one of its mapped regions', async ({ app }) => {
-  const { page } = app;
-  await app.gotoHash({ tab: 'deficits' });
-  await app.ready();
-  const row = page
+  await page.getByRole('tab', { name: 'Deficits', exact: true }).click();
+  await page
     .getByRole('group', { name: 'Deficits', exact: true })
-    .getByRole('button', { name: /^Aphasia\b/ });
-  await row.click();
+    .getByRole('button', { name: /^Aphasia\b/ })
+    .click();
   await expect(page.getByRole('heading', { level: 2, name: 'Aphasia', exact: true })).toBeFocused();
   await expect.poll(() => app.hash()).toContain('deficit=aphasia');
-
   await page
     .getByRole('button', { name: /^Open region: .+ · Left$/ })
     .first()
@@ -45,12 +41,8 @@ test('open a deficit and one of its mapped regions', async ({ app }) => {
   await expect(page.getByRole('heading', { level: 2 }).and(page.locator(':focus'))).not.toHaveText(
     'Aphasia',
   );
-});
 
-test('open a circuit and step through it with Next', async ({ app }) => {
-  const { page } = app;
-  await app.gotoHash({ tab: 'circuits' });
-  await app.ready();
+  await page.getByRole('tab', { name: 'Circuits', exact: true }).click();
   await page.getByRole('button', { name: /^Visual pathway/ }).click();
   const stepper = page.getByRole('group', { name: 'Landmarks' });
   await expect(page.locator('[data-circuit-title]')).toHaveText('Optic chiasm');

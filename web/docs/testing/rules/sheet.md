@@ -275,7 +275,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 - **Level:** browser — the composed panel region at 320 × 640 (as `PanelsRegion.svelte.test.ts` and `App.svelte.test.ts` set the viewport)
 - **Source:** WCAG 1.4.10
 - **Expected:** 320 × 640: `scrollWidth − clientWidth` = 0; the Tracts tab visible.
-- **Covered by:** `e2e/journeys/phone.spec.ts` "SHEET-29" (R)
+- **Covered by:** `e2e/journeys/phone.spec.ts` "the phone: …, 320 px" (R)
 
 ### SHEET-30 · axe finds nothing on the sheet
 
