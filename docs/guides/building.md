@@ -8,7 +8,7 @@ uv run python scripts/segment_nextbrain.py --anatomy cdmd --record
 uv run python scripts/segment_cerebellum.py --anatomy cdmd --record
 uv run python -m brain_model.build --anatomy cdmd
 uv run python -m brain_model.validate --anatomy cdmd
-npm run build
+npm run build --prefix web
 ```
 
 | Step | Does | Writes |
@@ -19,7 +19,7 @@ npm run build
 | `tractseg_cdmd.py` | CDMD only: TractSeg's SLF I–III and callosal segments and the tensor FA map, from its diffusion scan, for `prepare_diffusion_cdmd.py` to package. See [Diffusion and tracts](tracts.md). | the pilot's `derived/` |
 | `brain_model.build` | Exports atlases, solids, label volumes, cord and manifest, and updates the anatomy index. | `public/models/<anatomy>/` |
 | `brain_model.validate` | Reads the outputs back against the sources. See [Validation](../validation.md). | `validation.json` |
-| `npm run build` | Bundles the viewer. | `dist/` |
+| `npm run build --prefix web` | Bundles the viewer with the published files. | `web/dist/` |
 
 The sources of `cdmd` are committed, so build, validate and the tests run on a fresh clone. A build takes about two and a half minutes and 3.1 GB per anatomy.
 

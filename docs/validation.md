@@ -5,7 +5,7 @@
 ```bash
 uv run python -m brain_model.validate --anatomy cdmd
 uv run pytest
-npm test
+npm test --prefix web
 ```
 
 CI runs all three for `cdmd` on every pull request and deployment. A validation takes about two and a half minutes and at most 4.7 GB.
@@ -46,7 +46,7 @@ Browser QA runs are recorded in [`deliverables/`](https://github.com/JoshuaDuq/n
 
 ## Tracts
 
-Tests in `viewer/diffusion/` verify byte-exact NIfTI, lossless TRK, all 27 bundle counts, sampled RAS+ coordinates against NiBabel, and float64 lengths. The scanner-to-surface transform is checked against independent voxel anchors and rejects scale and reflection.
+Tests in `web/src/lib/engine/diffusion/` verify byte-exact NIfTI, lossless TRK, all 27 bundle counts, sampled RAS+ coordinates against NiBabel, and float64 lengths. The scanner-to-surface transform is checked against independent voxel anchors and rejects scale and reflection.
 
 ## Limits
 

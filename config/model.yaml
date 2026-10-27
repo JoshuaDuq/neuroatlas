@@ -97,7 +97,7 @@ anatomies:
 
 output_directory: public/models
 # Each anatomy with tracts of its own names them in one catalog; the viewer's
-# viewer/diffusion/catalogs.js imports the same files.
+# web/src/lib/core/diffusion/catalogs.ts imports the same files.
 tract_catalogs: [data/diffusion-cdmd.yaml]
 # scripts/prepare_subject.py checks this many evenly spaced vertices of every
 # annotation it projects against a brute-force nearest source vertex.

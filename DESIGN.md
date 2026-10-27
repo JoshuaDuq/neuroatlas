@@ -610,7 +610,7 @@ spans and hidden from assistive technology.
   colour, language, theme, single-key shortcuts, presets, cutting
   plane, hemisphere, MRI plane): quiet track, raised thumb with a 1px ring,
   primary 600 label without a contact shadow. The ring, not teal alone, marks the choice. Every group is
-  one Tab stop with arrow, Home, and End movement (viewer/ui/roving.js).
+  one Tab stop with arrow, Home, and End movement (web/docs/decisions/0003-segmented-controls.md).
   The track is control height with a 2px inset, so a segment is 4px shorter.
   The explorer's browse scope is the same control in 13px with word-width
   segments, so Expand all fits beside it.
@@ -786,7 +786,7 @@ and recorded; overlay tokens belong to the stage, not to panel backgrounds.
 
 ### Do:
 
-- Do use the shared palette, spacing, typography, and radius tokens in viewer/styles/tokens.css.
+- Do use the shared palette, spacing, typography, and radius tokens in web/src/styles/tokens.css.
 - Do keep data choices in the masthead, exploration modes and drill-in in the panel, and picture tools on the stage; phones mirror the modes in the sheet.
 - Do preserve visible focus, ARIA semantics, keyboard operation, and English and French at every breakpoint.
 - Do maintain readable hover, selected, disabled, empty, loading, and error states in both themes; text at least 4.5:1, field outlines and state edges at least 3:1.

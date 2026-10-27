@@ -13,11 +13,12 @@ The viewer and the pipeline install separately. The published anatomies are alre
 ## Viewer
 
 ```bash
+cd web
 npm ci
 npm run dev
 ```
 
-Vite serves the viewer at `http://127.0.0.1:5173/neuroatlas/`. `npm run build` writes the static site to `dist/`, `npm run preview` serves it, and `npm test` runs the JavaScript tests.
+Vite serves the viewer at `http://127.0.0.1:5173/neuroatlas/`. `npm run build` writes the static site to `web/dist/`, `npm run preview` serves it, and `npm test` runs the unit tests.
 
 ## Pipeline
 
@@ -28,7 +29,7 @@ uv run pytest
 
 `--locked` installs exactly what `uv.lock` records. The tests read the committed sources of `cdmd`. Run pipeline commands through `uv run`; the [build guide](guides/building.md) lists them.
 
-CI runs `uv run pytest`, `npm test` and `python -m brain_model.validate` for each published anatomy on every pull request and before each deployment.
+CI runs `uv run pytest`, the viewer's tests and `python -m brain_model.validate` for each published anatomy on every pull request and before each deployment.
 
 ## Documentation
 
