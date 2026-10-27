@@ -4,8 +4,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it, vi } from 'vitest';
-import type { Plugin, UserConfig } from 'vite';
-import viteConfig from '../vite.config.ts';
+import type { Plugin } from 'vite';
 import { FIXTURE_FILES, FIXTURE_GZ } from './published-fixture.ts';
 import { headVersions, publishedAssets, workerVersions } from './published-files.ts';
 import { ASSET_BASE } from './site.ts';
@@ -101,39 +100,6 @@ describe('the version maps the build writes', () => {
 });
 
 describe('the build config', () => {
-  const copiesPublicDir = (mode: string) =>
-    (
-      (viteConfig as (env: { mode: string; command: 'build' }) => UserConfig)({
-        mode,
-        command: 'build',
-      }).build ?? {}
-    ).copyPublicDir;
-
-  it('BUILD-02 copies the published data in production and leaves it out of the preview', () => {
-    expect(copiesPublicDir('preview')).toBe(false);
-    expect(copiesPublicDir('production')).toBe(true);
-  });
-
-  const noindexTags = (mode: string) => {
-    const plugins = (viteConfig as (env: { mode: string; command: 'build' }) => UserConfig)({
-      mode,
-      command: 'build',
-    }).plugins as Plugin[];
-    const plugin = plugins.find((entry) => entry.name === 'preview-noindex')!;
-    return hook(plugin, 'transformIndexHtml')('');
-  };
-
-  it('BUILD-03 marks only the preview noindex, in the raw HTML', () => {
-    expect(noindexTags('preview')).toEqual([
-      {
-        tag: 'meta',
-        attrs: { name: 'robots', content: 'noindex' },
-        injectTo: 'head-prepend',
-      },
-    ]);
-    expect(noindexTags('production')).toEqual([]);
-  });
-
   it('BUILD-09 declares lang="en" and the title "Planum"', () => {
     const html = readFileSync(resolve(webRoot, 'index.html'), 'utf8');
     expect(html).toMatch(/<html lang="en">/);

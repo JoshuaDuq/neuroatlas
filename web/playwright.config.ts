@@ -1,8 +1,8 @@
 import { defineConfig } from '@playwright/test';
 
-// The journeys run against the Svelte preview, served as GitHub Pages serves it
+// The journeys run against the built site, served as GitHub Pages serves it
 // (e2e/serve-site.mjs). Build it into web/dist first:
-//   npm run build:preview        (web/)
+//   npm run build        (web/)
 const origin = 'http://127.0.0.1:4173';
 
 export default defineConfig({
@@ -16,14 +16,14 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     // The trailing slash matters: relative URLs in the journeys resolve under the app.
-    baseURL: `${origin}/neuroatlas/next/`,
+    baseURL: `${origin}/neuroatlas/`,
     // Software WebGL, as in the browser tests (vitest.config.ts).
     launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
     trace: 'retain-on-failure',
   },
   webServer: {
     command: 'node e2e/serve-site.mjs',
-    url: `${origin}/neuroatlas/next/`,
+    url: `${origin}/neuroatlas/`,
     reuseExistingServer: !process.env.CI,
   },
 });
