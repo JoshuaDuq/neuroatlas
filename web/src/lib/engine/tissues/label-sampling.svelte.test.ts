@@ -77,7 +77,7 @@ function gpuLabels(data: Uint8Array, shape: [number, number, number], points: Po
   const pixels = new Uint32Array(points.length * 4);
   gl.readPixels(0, 0, points.length, 1, gl.RGBA_INTEGER, gl.UNSIGNED_INT, pixels);
   gl.getExtension('WEBGL_lose_context')?.loseContext();
-  return [...pixels.filter((_, index) => index % 4 === 0)];
+  return Array.from(pixels).filter((_, index) => index % 4 === 0);
 }
 
 /** The GPU's labels at `points`, with the CPU's beside them for the same volume. */
