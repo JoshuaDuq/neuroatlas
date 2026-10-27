@@ -83,6 +83,7 @@ The repository is heavy: a clone downloads about 410 MB and takes about 900 MB o
 ### Viewer
 
 ```bash
+cd web
 npm ci
 npm run dev
 ```
@@ -104,7 +105,7 @@ The NextBrain step needs FreeSurfer 8.2 and takes about 20 minutes on a CPU. See
 ### Tests and docs
 
 ```bash
-npm test
+npm test --prefix web
 uv run pytest
 uv run python -m brain_model.validate --anatomy cdmd
 uv sync --locked --group docs
@@ -115,9 +116,9 @@ uv run sphinx-build -W -b html docs docs/_build/html
 
 `BrainAtlas` and `BrainSections` render a published anatomy inside your own Three.js scene, without the viewer's interface.
 
-```javascript
-import { BrainAtlas } from './viewer/model/brain-atlas.js';
-import { BrainSections } from './viewer/slices/sections.js';
+```typescript
+import { BrainAtlas } from './web/src/lib/engine/model/brain-atlas.ts';
+import { BrainSections } from './web/src/lib/engine/slices/sections.ts';
 
 const manifestUrl = new URL('./models/cdmd/manifest.json', import.meta.url);
 const brain = await BrainAtlas.load(manifestUrl, 'destrieux');
@@ -145,16 +146,16 @@ brain_model (Python)           compiles, quantizes and validates
 public/models/<anatomy>/       manifest, glTF meshes, label and MRI volumes, validation report
           │
           ▼
-viewer (Three.js, WebGL 2)     cuts and caps, GPU label sampling, linked MRI
+web (Svelte, Three.js, WebGL 2) cuts and caps, GPU label sampling, linked MRI
 ```
 
 The offline compiler keeps coordinates traceable from FreeSurfer's surface RAS to the WebGL scene, and records a validation report beside every publication. [Architecture](https://joshuaduq.github.io/neuroatlas/docs/concepts/architecture.html) covers the coordinate frames, binary formats, quantization and rendering.
 
 | Path | Contents |
 | :--- | :--- |
-| `viewer/` | The browser viewer: scene, cuts and label sampling, panels, translations |
+| `web/` | The browser viewer (Svelte): scene, cuts and label sampling, panels, translations |
 | `brain_model/` | The Python compiler that turns a reconstruction into published assets, and its validators |
-| `scripts/` | Subject preparation, NextBrain segmentation, diffusion preparation and benchmarks |
+| `scripts/` | Subject preparation, NextBrain segmentation and diffusion preparation |
 | `config/` | `model.yaml`, which declares the anatomies |
 | `data/` | Source annotations and lookup tables, plus the authored circuits, deficits and tract content |
 | `public/models/` | The published anatomies the viewer loads |

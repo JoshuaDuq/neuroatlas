@@ -30,7 +30,7 @@ Volumes end in `.volume`, not `.gz`, so servers do not decode them in transit.
 
 ## Loading
 
-The first frame needs the anatomy index, the manifest, one cortical atlas and one detail level; `index.html` starts those requests before the scripts parse. Everything else loads when a view first needs it: other levels and atlases when chosen, envelopes and label volumes with the first cut, the MRI with the first cut or T1 colour. A desktop with spare memory and a fast connection prefetches the other atlas.
+The first frame needs the anatomy index, the manifest, one cortical atlas and one detail level; `web/index.html` starts those requests before the scripts parse. Everything else loads when a view first needs it: other levels and atlases when chosen, envelopes and label volumes with the first cut, the MRI with the first cut or T1 colour. A desktop with spare memory and a fast connection prefetches the other atlas.
 
 Every request carries `?v=` and the first 16 hex digits of the file's SHA-256, recorded at build time. A download whose bytes differ fails with `asset-updated`, so a tab open across a deploy stops instead of mixing versions. The service worker caches files by versioned URL and evicts only those a new deploy drops. It does not make the site work offline.
 

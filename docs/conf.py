@@ -17,7 +17,7 @@ project = "Planum"
 author = "Joshua Duquette"
 copyright = "2026, Joshua Duquette"
 # The Python package's version, so the site cannot name another one. The
-# viewer's package.json is private and versioned separately, and is not used.
+# viewer's web/package.json is private and versioned separately, and is not used.
 with (PROJECT_ROOT / "pyproject.toml").open("rb") as handle:
     version = release = tomllib.load(handle)["project"]["version"]
 
@@ -85,7 +85,7 @@ intersphinx_mapping = {
 }
 
 # ---------------------------------------------------------------------------
-# HTML output: furo, coloured from the viewer's own tokens (viewer/styles/tokens.css)
+# HTML output: furo, coloured from the viewer's own tokens (web/src/styles/tokens.css)
 # ---------------------------------------------------------------------------
 html_theme = "furo"
 html_title = "Planum"

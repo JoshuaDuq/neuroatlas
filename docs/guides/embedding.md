@@ -2,13 +2,13 @@
 
 Two classes work in any Three.js application, without the viewer's interface:
 
-- [`BrainAtlas`](https://github.com/JoshuaDuq/neuroatlas/blob/main/viewer/model/brain-atlas.js) loads an anatomy from its `manifest.json`, renders it as one group, and selects and picks regions.
-- [`BrainSections`](https://github.com/JoshuaDuq/neuroatlas/blob/main/viewer/slices/sections.js) cuts the model with a plane, caps the cut and samples the label volumes on the cut face.
+- [`BrainAtlas`](https://github.com/JoshuaDuq/neuroatlas/blob/main/web/src/lib/engine/model/brain-atlas.ts) loads an anatomy from its `manifest.json`, renders it as one group, and selects and picks regions.
+- [`BrainSections`](https://github.com/JoshuaDuq/neuroatlas/blob/main/web/src/lib/engine/slices/sections.ts) cuts the model with a plane, caps the cut and samples the label volumes on the cut face.
 
-```javascript
+```typescript
 import * as THREE from 'three';
-import { BrainAtlas } from './viewer/model/brain-atlas.js';
-import { BrainSections } from './viewer/slices/sections.js';
+import { BrainAtlas } from './web/src/lib/engine/model/brain-atlas.ts';
+import { BrainSections } from './web/src/lib/engine/slices/sections.ts';
 
 // The cut needs a stencil buffer and local clipping.
 const renderer = new THREE.WebGLRenderer({ antialias: true, stencil: true });
@@ -32,7 +32,7 @@ await sections.setCutAtlas('nextbrain');
 await brain.setDetail('learning');
 
 const raycaster = new THREE.Raycaster();
-addEventListener('pointerdown', event => {
+addEventListener('pointerdown', (event) => {
   raycaster.setFromCamera({
     x: (event.clientX / innerWidth) * 2 - 1,
     y: -(event.clientY / innerHeight) * 2 + 1,
@@ -42,7 +42,7 @@ addEventListener('pointerdown', event => {
 });
 ```
 
-Serve a published `models/cdmd/` directory next to the module; `npm run build` produces that layout in `dist/`. Without `stencil: true`, a non-manifold cut face fills the whole plane.
+Serve a published `models/cdmd/` directory next to the module; `npm run build --prefix web` produces that layout in `web/dist/`. Without `stencil: true`, a non-manifold cut face fills the whole plane.
 
 ## BrainAtlas
 
@@ -74,6 +74,6 @@ A region record is the manifest entry: `id`, `label`, `source_name`, `hemisphere
 
 ## Notes
 
-- The modules import `three`, `three/addons/…` and `three-mesh-bvh` by bare specifier, and start a module worker with `new URL('./section-worker.js', import.meta.url)`. Use a bundler that handles module workers (Vite, webpack 5, or Rollup or esbuild with a worker plugin). Without one the cut builds on the main thread and drags stall.
+- The modules are TypeScript. They import `three`, `three/addons/…` and `three-mesh-bvh` by bare specifier, and start a module worker with `new URL('./section-worker.ts', import.meta.url)`. Use a bundler that compiles TypeScript and handles module workers (Vite, or webpack 5, Rollup or esbuild with TypeScript and worker plugins). Without one the cut builds on the main thread and drags stall.
 - Await the asynchronous setters before reading the state they change.
 - Call `dispose()` on both objects when you discard them.

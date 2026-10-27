@@ -1,4 +1,4 @@
-"""Pygments styles drawn from viewer/styles/tokens.css: teal and one slate, on neutral greys."""
+"""Pygments styles drawn from web/src/styles/tokens.css: teal and one slate, on neutral greys."""
 
 from pygments.style import Style
 from pygments.token import (

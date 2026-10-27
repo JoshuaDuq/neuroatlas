@@ -71,7 +71,7 @@ def read_definition(path=DEFINITION):
         if not all(source.get(field) for field in ("short", "citation", "doi", "pmid")):
             raise ValueError(f"Source {key} needs a short name, citation, DOI and PMID")
         # That the DOI and PMID name the cited work is checked against the fetched
-        # records by viewer/learning/references.test.js.
+        # records by web/src/lib/core/learning/references.test.ts.
         if not (re.fullmatch(r"https://doi\.org/10\.\d{4,9}/\S+", source["doi"])
                 and isinstance(source["pmid"], int) and source["pmid"] > 0):
             raise ValueError(f"Source {key} needs a doi.org DOI and an integer PMID")
