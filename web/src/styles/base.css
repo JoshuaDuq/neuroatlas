@@ -33,6 +33,10 @@
   output {
     font-variant-numeric: tabular-nums;
   }
+  /* Every button draws its own edge; the platform's bevel would be a second, undesigned one. */
+  button {
+    border: 0;
+  }
 
   /* The browser's own surfaces, drawn from the palette; mixed per element, so the dark MRI viewers re-scope them too. */
   ::selection {

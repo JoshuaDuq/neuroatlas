@@ -146,7 +146,7 @@
   <div id="{uid}-list" role="group" aria-label={copy.list} bind:this={listElement}>
     {#if content.overview}
       <ul class="rows">
-        <li>{@render row(content.overview)}</li>
+        <li>{@render row(content.overview, true)}</li>
       </ul>
     {/if}
     {#each [...content.groups, ...content.termGroups] as group (group.id)}
@@ -187,7 +187,8 @@
   </p>
 </div>
 
-{#snippet row(item: FunctionRow)}
+<!-- The overview is the whole list, not a coloured function: it starts on the inset, like the captions. -->
+{#snippet row(item: FunctionRow, overview = false)}
   {@const current = item.id === model.selected}
   <button
     type="button"
@@ -198,11 +199,13 @@
     data-selected={String(current)}
     onclick={() => model.openFunction(item.id)}
   >
-    <span
-      class="function-swatch"
-      aria-hidden="true"
-      style:background={item.colour ? networkCss(item.colour) : undefined}
-    ></span>
+    {#if !overview}
+      <span
+        class="function-swatch"
+        aria-hidden="true"
+        style:background={item.colour ? networkCss(item.colour) : undefined}
+      ></span>
+    {/if}
     <span class="row-name" lang={item.lang ?? undefined}>{item.name}</span>
     {#if item.studies !== null}
       <span class="group-count" aria-hidden="true">{grouped(item.studies)}</span>
@@ -241,29 +244,6 @@
       height: 14px;
       color: var(--text-tertiary);
       pointer-events: none;
-    }
-    input[type='search'] {
-      appearance: none;
-      width: 100%;
-      /* At a large reader text size the field grows around its words rather than spilling over the list. */
-      height: auto;
-      min-height: var(--control-height);
-      padding: 0 36px 0 32px;
-      border: 1px solid var(--border-control);
-      border-radius: var(--radius-control);
-      background-color: var(--surface-base);
-      font-size: var(--text-ui);
-      transition: border-color var(--ui-transition) var(--ease-ui);
-    }
-    input[type='search']:not(:focus) {
-      background-color: var(--surface-navigation);
-    }
-    input[type='search']:focus {
-      border-color: var(--accent);
-    }
-    input[type='search']::-webkit-search-cancel-button {
-      appearance: none;
-      display: none;
     }
     .search-clear {
       position: absolute;

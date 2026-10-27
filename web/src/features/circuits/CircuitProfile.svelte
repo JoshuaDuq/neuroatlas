@@ -95,9 +95,10 @@
     .circuit-context dd {
       margin: 0;
     }
-    .circuit-context dd:last-child {
-      padding-left: var(--space-2);
-      border-left: 1px solid var(--border-control);
+    .circuit-context dd:last-child::before {
+      content: '·' / '';
+      margin-inline-end: var(--space-2);
+      color: var(--text-tertiary);
     }
     .circuit-role {
       margin-top: var(--space-2);

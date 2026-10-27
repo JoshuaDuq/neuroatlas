@@ -116,6 +116,18 @@
       /* At 200 % text a long French name wraps instead of leaving the popover. */
       text-align: left;
       cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    :global(.stage-command:active:not(:disabled, [aria-disabled='true'], :focus-visible)) {
+      transform: scale(var(--press-scale));
+    }
+    @media (hover: hover) and (pointer: fine) {
+      :global(.stage-command:not(.stage-command-quiet):hover:not(:disabled)) {
+        background: var(--surface-tonal-hover);
+      }
     }
     @media (pointer: coarse) {
       :global(.stage-command) {
@@ -135,6 +147,14 @@
   }
 
   @layer a11y {
+    @media (prefers-reduced-motion: reduce) {
+      :global(.stage-command) {
+        transition-property: background-color, color;
+      }
+      :global(.stage-command:active) {
+        transform: none;
+      }
+    }
     @media (prefers-contrast: more) {
       /* Tonal fills alone are too faint to find a button by (a11y.css:40). */
       :global(.stage-command) {

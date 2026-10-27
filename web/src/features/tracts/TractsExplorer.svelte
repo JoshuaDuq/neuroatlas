@@ -494,31 +494,6 @@
       color: var(--text-tertiary);
       pointer-events: none;
     }
-    input[type='search'] {
-      appearance: none;
-      width: 100%;
-      height: auto;
-      min-height: var(--control-height);
-      padding: 0 36px 0 32px;
-      border: 1px solid var(--border-control);
-      border-radius: var(--radius-control);
-      background-color: var(--surface-navigation);
-      box-shadow: none;
-      font-size: var(--text-ui);
-    }
-    input[type='search']::placeholder {
-      color: var(--text-tertiary);
-      opacity: 1;
-    }
-    /* One clear control: the native one is hidden. */
-    input[type='search']::-webkit-search-cancel-button {
-      appearance: none;
-      display: none;
-    }
-    input[type='search']:focus {
-      background-color: var(--surface-base);
-      border-color: var(--accent);
-    }
     .search-shortcut {
       position: absolute;
       right: 6px;
@@ -825,6 +800,17 @@
       color: var(--primary-ink);
       white-space: normal;
     }
+    /* Commands answer a pointer press; a key press does not animate. */
+    .primary,
+    .retry {
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    :is(.primary, .retry):active:not(:disabled, :focus-visible) {
+      transform: scale(var(--press-scale));
+    }
 
     @media (hover: hover) and (pointer: fine) {
       button:hover:not(:disabled) {
@@ -837,9 +823,6 @@
       .primary:hover:not(:disabled) {
         background: var(--primary-fill-hover);
         border-color: var(--primary-fill-hover);
-      }
-      input[type='search']:hover:not(:disabled) {
-        border-color: var(--text-secondary);
       }
       .search-clear:hover:not(:disabled) {
         color: var(--text-primary);
@@ -897,6 +880,9 @@
     @media (prefers-reduced-motion: reduce) {
       .settings > summary::after {
         transition: none;
+      }
+      :is(.primary, .retry):active {
+        transform: none;
       }
     }
     @media (prefers-contrast: more) {

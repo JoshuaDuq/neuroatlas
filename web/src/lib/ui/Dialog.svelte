@@ -11,6 +11,7 @@
 -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import IconButton from './IconButton.svelte';
   import { captureInvoker } from './focus.ts';
   import { isKeyboardActivation, setInstant } from './instant.ts';
 
@@ -91,9 +92,7 @@
 >
   <div class="dialog-header">
     <div>{@render heading(headingId)}</div>
-    <button type="button" class="dialog-close" aria-label={closeLabel} onclick={onclosebutton}>
-      <span aria-hidden="true">×</span>
-    </button>
+    <IconButton class="dialog-close" icon="close" label={closeLabel} onclick={onclosebutton} />
   </div>
   {@render children()}
 </dialog>
@@ -207,36 +206,14 @@
     .dialog-header > :first-child {
       min-width: 0;
     }
-    .dialog-close {
+    /* The glyph, not its ground, meets the content edge. */
+    .dialog-header :global(.dialog-close) {
       flex: none;
-      display: grid;
-      place-items: center;
-      width: var(--control-height);
-      height: var(--control-height);
       margin-right: calc((16px - var(--control-height)) / 2);
-      padding: 0;
-      border: 0;
-      border-radius: var(--radius-control);
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 1.25rem;
-      line-height: var(--lh-ui);
     }
     /* Phones put it against the clipped screen edge, so its ring is drawn inside. */
-    .dialog-close:focus-visible {
+    .dialog-header :global(.dialog-close:focus-visible) {
       outline-offset: -2px;
-    }
-    @media (hover: hover) and (pointer: fine) {
-      .dialog-close:hover {
-        background: var(--surface-hover);
-        color: var(--text-primary);
-      }
-    }
-    @media (pointer: coarse) {
-      .dialog-close {
-        width: 44px;
-        height: 44px;
-      }
     }
 
     /* A phone has no room for a dialog inset from the screen (dialogs.css:255-282). 100dvh, not

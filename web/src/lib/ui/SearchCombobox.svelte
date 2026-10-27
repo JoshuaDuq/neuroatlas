@@ -243,27 +243,6 @@
       color: var(--text-tertiary);
       pointer-events: none;
     }
-    input[type='search'] {
-      width: 100%;
-      padding-left: 32px;
-      padding-right: 36px;
-      transition: border-color var(--ui-transition) var(--ease-ui);
-    }
-    input[type='search']::placeholder {
-      color: var(--text-tertiary);
-      opacity: 1;
-    }
-    /* One clear control: the native one is hidden (decision 38 on #4). */
-    input[type='search']::-webkit-search-cancel-button {
-      appearance: none;
-      display: none;
-    }
-    input[type='search']:not(:focus) {
-      background-color: var(--surface-navigation);
-    }
-    input[type='search']:focus {
-      border-color: var(--accent);
-    }
     .search-clear {
       position: absolute;
       inset-block: 0;
@@ -299,9 +278,6 @@
       cursor: default;
     }
     @media (hover: hover) and (pointer: fine) {
-      input[type='search']:hover:not(:disabled) {
-        border-color: var(--text-secondary);
-      }
       .search-clear:hover:not(:disabled) {
         color: var(--text-primary);
         background: var(--surface-hover);

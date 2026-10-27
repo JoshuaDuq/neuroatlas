@@ -97,6 +97,7 @@
         appearance: base-select;
       }
       select {
+        align-items: center;
         background-image: none;
         padding-right: var(--space-3);
       }
@@ -104,7 +105,7 @@
         content: '';
         width: 6px;
         height: 6px;
-        margin: 0 3px;
+        margin: 0 3px 0 auto;
         border-right: 1.5px solid var(--text-secondary);
         border-bottom: 1.5px solid var(--text-secondary);
         transform: translateY(-2px) rotate(45deg);

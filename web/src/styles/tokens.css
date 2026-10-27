@@ -158,6 +158,7 @@
       --tab-height: 44px;
       --header-height: max(52px, 3.25rem);
       --panel-inset: var(--space-4);
+      --stage-gutter: var(--panel-inset);
     }
   }
 

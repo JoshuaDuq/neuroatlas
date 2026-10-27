@@ -293,6 +293,13 @@
       font-size: var(--text-stage);
       white-space: nowrap;
       cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    /* Pointer presses only: a key that opens a tool answers at once. */
+    :global(.stage-tool:active:not(:focus-visible)) {
+      transform: scale(var(--press-scale));
     }
     @media (pointer: coarse) {
       :global(.stage-tool) {
@@ -363,6 +370,12 @@
       /* A chevron points the new way at once (a11y.css:13). */
       :global(.stage-tool-chevron) {
         transition: none;
+      }
+      :global(.stage-tool) {
+        transition-property: background-color;
+      }
+      :global(.stage-tool:active) {
+        transform: none;
       }
     }
     @media (forced-colors: active) {

@@ -68,7 +68,12 @@
       cursor: pointer;
       transition:
         background-color var(--ui-transition) var(--ease-ui),
-        color var(--ui-transition) var(--ease-ui);
+        color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    /* A pointer press answers; a key press does not animate. */
+    .icon-button:active:not(:disabled, [aria-disabled='true'], :focus-visible) {
+      transform: scale(var(--press-scale));
     }
     .icon-button :global(.control-icon) {
       flex: none;
@@ -100,6 +105,11 @@
   }
 
   @layer a11y {
+    @media (prefers-reduced-motion: reduce) {
+      .icon-button:active {
+        transform: none;
+      }
+    }
     /* a11y.css:40-42 leaves .icon-button without a contrast border; forced colours still need an edge. */
     @media (forced-colors: active) {
       .icon-button[aria-expanded='true'],

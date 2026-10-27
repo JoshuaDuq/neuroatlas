@@ -115,25 +115,6 @@
       color: var(--text-tertiary);
       pointer-events: none;
     }
-    input {
-      width: 100%;
-      /* At a large text size the field grows around its words (layout.css:127). */
-      height: auto;
-      min-height: var(--control-height);
-      padding-left: 32px;
-      padding-right: 36px;
-      transition: border-color var(--ui-transition) var(--ease-ui);
-    }
-    input::-webkit-search-cancel-button {
-      appearance: none;
-      display: none;
-    }
-    input:not(:focus) {
-      background-color: var(--surface-navigation);
-    }
-    input:focus {
-      border-color: var(--accent);
-    }
     .clear {
       position: absolute;
       inset-block: 0;
@@ -160,9 +141,6 @@
       display: none;
     }
     @media (hover: hover) and (pointer: fine) {
-      input:hover:not(:disabled) {
-        border-color: var(--text-secondary);
-      }
       .clear:hover {
         color: var(--text-primary);
         background: var(--surface-hover);
@@ -185,7 +163,6 @@
         right: 0;
       }
       input {
-        min-height: 44px;
         padding-right: 44px;
       }
       .shortcut {

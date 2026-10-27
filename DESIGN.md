@@ -484,8 +484,9 @@ or in a lesson the circuit name with a “n of N” stepper; a function or defic
 profile adds a “Restore previous view” text link at its end, with no category crumb. A selection strip
 (44px) appears only when the panel is not already showing the selection.
 Dissection docks at the explorer foot as one 44px line over its rule. Tracts docks its
-single primary at the foot. Tree rows end in L and R eye slots on the panel's
-far edge; a section with midline parts also reserves Mid. Region details place tonal Focus,
+single primary at the foot. Group rows end in L and R eye slots on the panel's
+far edge (a section with midline parts also reserves Mid); a region row ends in
+its one side's eye and letter on that edge, so its name keeps the rest of the width. Region details place tonal Focus,
 Isolate, Hide, and accent-ink Linked MRI commands in one left-aligned row.
 Atlas overlap and supporting maps use closed disclosures, preserving room for related findings.
 
@@ -633,10 +634,10 @@ spans and hidden from assistive technology.
   rule. They remain sticky, with indentation distinguishing their regions; a group name shared by two vocabularies is
   qualified (“Limbic lobe”, “Limbic system”). Selected rows take the teal
   wash; the keyboard target, like search's armed result, takes the accent
-  ring (2px, inset). Rows end in Mid, L, and R eye slots at control height,
-  declared per section: only a section with midline parts reserves Mid (48px),
-  so each side's control and letter line up down the section without clipping
-  or reflowing names. Eye then letter sit flush to the slot's end: side
+  ring (2px, inset). Group rows end in Mid, L, and R eye slots at control height,
+  declared per section: only a section with midline parts reserves Mid (48px).
+  A region row has one side, so its eye and letter take one far-edge column
+  and long names keep the freed width. Eye then letter sit flush to the slot's end: side
   letters, group counts, the search field, and Expand all end on one right
   edge. The tree carries no column heads. With a mouse, a group shows its tabular
   count right-aligned in the eye area and trades it for its eyes on hover,
@@ -689,7 +690,8 @@ spans and hidden from assistive technology.
   open state between selections; opening adds 16px bottom padding and leaves
   the source notes and caveats beside their map.
   On phones the grip carries a compact readout at peek and while browsing.
-  An open detail keeps its clear command in a 44px grip and shows the complete,
+  An open detail keeps its clear command in a 44px grip, centred on the
+  disclaimer line, hides the grip's name in both orientations, and shows the complete,
   wrapping name once in the body at 24px before its context.
   Neuropsychology and guided-circuit links follow. Related findings and
   circuits, like a function profile's areas, use primary-ink rows, with

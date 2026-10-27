@@ -539,9 +539,27 @@ describe('the selection in the grip', () => {
     await vi.waitFor(() => expect(focused()).toBe(document.querySelector('.detail-back')));
     expect(sheet().dataset.view).toBe('detail');
     expect(announced()).toBe('');
-    // The detail names itself, so the grip stops naming it; its clear stays.
+    // The detail names itself, so the grip stops naming it; its clear stays, on the statement's line.
     expect(strip().checkVisibility()).toBe(false);
     expect(clearButton().checkVisibility()).toBe(true);
+    const statement = box(document.querySelector('.sheet-disclaimer')!);
+    const middle = (rect: DOMRect) => rect.top + rect.height / 2;
+    expect(Math.abs(middle(box(clearButton())) - (statement.top + 9))).toBeLessThan(1);
+    expect(box(document.querySelector('.sheet-grip-row')!).bottom).toBe(statement.bottom);
+  });
+
+  test('sideways an open detail also names itself, and the statement takes the row of the name', async () => {
+    await mount(SIDEWAYS, { selection: SELECTION });
+    await rested();
+    expect(strip().checkVisibility()).toBe(true);
+    strip().click();
+    await vi.waitFor(() => expect(sheet().dataset.view).toBe('detail'));
+    await rested();
+    expect(strip().checkVisibility()).toBe(false);
+    const statement = box(document.querySelector('.sheet-disclaimer')!);
+    expect(statement.top).toBe(box(sheet()).top);
+    expect(box(clearButton()).top).toBeGreaterThanOrEqual(statement.top);
+    expect(box(clearButton()).bottom).toBeLessThanOrEqual(statement.bottom);
   });
 
   test('a pointer activation that left focus where it was does not take it, and a raised sheet is not lowered', async () => {
@@ -874,9 +892,11 @@ describe('the tab row matches the legacy sheet tabs', () => {
     expect(getComputedStyle(selected).whiteSpace).toBe('normal');
   });
 
-  test('held sideways the one row of tabs is 368 px, and a label never wraps', async () => {
+  test('held sideways the one row of tabs is 352 px from the label column, and a label never wraps', async () => {
     await mount(SIDEWAYS);
     await rested();
+    const first = tablist().children[0]!;
+    expect(box(first).left + parseFloat(getComputedStyle(first).paddingLeft)).toBe(16);
     // The row is as wide as its labels, which each platform's text shaping measures a little
     // differently (369 px on Linux): the sheet hugs the row it has, to the next whole pixel.
     const row =
@@ -885,8 +905,15 @@ describe('the tab row matches the legacy sheet tabs', () => {
       box(sheet()).left +
       parseFloat(getComputedStyle(sheet()).borderRightWidth);
     expect(span()).toBe(Math.ceil(row));
-    expect(Math.abs(span() - 368)).toBeLessThanOrEqual(1);
+    expect(Math.abs(span() - 352)).toBeLessThanOrEqual(1);
     expect(getComputedStyle(tablist().children[0]!).whiteSpace).toBe('nowrap');
+    // Raised, the row's rule runs to the sheet's edge with the labels still packed at the start.
+    handle().click();
+    await rested();
+    expect(box(tablist()).right).toBe(
+      box(sheet()).right - parseFloat(getComputedStyle(sheet()).borderRightWidth),
+    );
+    expect(box(first).left + parseFloat(getComputedStyle(first).paddingLeft)).toBe(16);
   });
 });
 

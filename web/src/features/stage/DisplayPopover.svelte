@@ -118,10 +118,9 @@
       white-space: normal;
       overflow-wrap: anywhere;
     }
+    /* Spaced, not ruled, like the other popovers' fields; the rows' own padding makes up the field gap. */
     .visibility {
       margin-top: var(--space-3);
-      padding-top: var(--space-1);
-      border-top: 1px solid var(--overlay-border);
     }
     /* Indented to the checkbox's words: a 16px box and its 8px gap. */
     .opacity {

@@ -244,6 +244,7 @@
       padding: var(--space-3) calc(var(--space-1) + var(--space-3));
       border-color: var(--overlay-border);
       background: var(--overlay-plate);
+      box-shadow: none;
       color: var(--overlay-ink);
       font-size: var(--text-ui);
       text-align: left;

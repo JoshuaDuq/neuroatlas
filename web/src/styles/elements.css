@@ -10,6 +10,37 @@
     font-size: var(--text-caption);
   }
 
+  /* The one search field: navigation ground at rest, base ground and a teal edge while focused. Owners place its icons. */
+  input[type='search'] {
+    appearance: none;
+    width: 100%;
+    min-height: var(--control-height);
+    margin: 0;
+    padding: 0 36px 0 32px;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    background-color: var(--surface-navigation);
+    font-size: var(--text-ui);
+    transition: border-color var(--ui-transition) var(--ease-ui);
+  }
+  input[type='search']::placeholder {
+    color: var(--text-tertiary);
+    opacity: 1;
+  }
+  input[type='search']::-webkit-search-cancel-button {
+    appearance: none;
+    display: none;
+  }
+  input[type='search']:focus {
+    border-color: var(--accent);
+    background-color: var(--surface-base);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    input[type='search']:hover:not(:focus, :disabled) {
+      border-color: var(--text-secondary);
+    }
+  }
+
   /* A key is a thing you press, so it is drawn as one rather than quoted: a 20px cap. */
   kbd {
     display: inline-block;

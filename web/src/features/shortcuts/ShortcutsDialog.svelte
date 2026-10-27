@@ -87,10 +87,11 @@
     .shortcuts-title {
       margin: 0;
     }
-    /* dialogs.css:104-123. A datasheet: key column then description, each row ruled. */
+    /* Key column then description; the keycaps carry the rows, so only each group is ruled. */
     .shortcuts-group {
       margin: 0;
       padding: var(--space-6) 0 var(--space-2);
+      border-bottom: 1px solid var(--border-subtle);
       font-size: var(--text-caption);
       font-weight: 600;
       line-height: var(--lh-caption);
@@ -103,15 +104,14 @@
       display: grid;
       grid-template-columns: 148px minmax(0, 1fr);
       margin: 0;
-      border-top: 1px solid var(--border-subtle);
+      padding-top: var(--space-1);
       font-size: var(--text-ui);
       line-height: var(--lh-ui);
     }
     .shortcuts-list dt,
     .shortcuts-list dd {
       margin: 0;
-      padding: var(--space-2) 0;
-      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-1) 0;
     }
     .shortcuts-list dt {
       display: flex;
@@ -135,11 +135,10 @@
         grid-template-columns: minmax(0, 1fr);
       }
       .shortcuts-list dt {
-        padding: calc(var(--space-2) - 1px) 0 0;
-        border: 0;
+        padding: var(--space-2) 0 var(--space-1);
       }
       .shortcuts-list dd {
-        padding: 0 0 var(--space-2);
+        padding: 0;
       }
     }
   }

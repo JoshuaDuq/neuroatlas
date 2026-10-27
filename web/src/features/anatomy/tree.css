@@ -1,8 +1,8 @@
 /*
  * The anatomy tree (viewer/styles/navigator.css:1-40, 66-251, 302-322; phone.css:15-25).
- * An index, not a menu: rows run edge to edge, names on the panel inset, and each row ends in
- * Mid, L and R eye slots anchored to the panel's far edge, so each side's letter and eye line up
- * down the tree. Only a section with midline parts reserves Mid on a fine pointer.
+ * An index, not a menu: rows run edge to edge, names on the panel inset. A group ends in Mid, L and
+ * R eye slots anchored to the panel's far edge; a region ends in its one side's eye on that edge.
+ * Only a section with midline parts reserves Mid on a fine pointer.
  * The rows, cells and Tab stop are U7's Treegrid; this sheet dresses them.
  */
 @layer features {
@@ -39,8 +39,18 @@
     cursor: pointer;
     user-select: none;
   }
+  /* A region has one side, so its eye and letter take one column on the far edge and the name keeps the rest. */
   .anatomy-tree .row[aria-level='2'] {
+    grid-template-columns: minmax(0, 1fr) auto;
     padding-inline-start: calc(var(--indent) + var(--space-2));
+  }
+  /* The side cells stack in that column, so every row keeps all its gridcells; only the filled one can be hit. */
+  .anatomy-tree .row[aria-level='2'] > .cell.action {
+    grid-area: 1 / 2;
+    pointer-events: none;
+  }
+  .anatomy-tree .row[aria-level='2'] > .cell.action > * {
+    pointer-events: auto;
   }
   .anatomy-tree .row:focus-visible {
     outline-offset: -2px;
@@ -147,8 +157,12 @@
     margin-top: 0;
     border-top: 0;
   }
+  .anatomy-tree .treegrid-block:first-child .section-label {
+    padding-top: var(--space-3);
+  }
+  /* 16px under its rule and 4px over its rows, as the other modes' captions. */
   .section-label {
-    padding-block: var(--space-3) var(--space-1);
+    padding-block: var(--space-4) var(--space-1);
     overflow-wrap: anywhere;
     font-size: var(--text-caption);
     line-height: var(--lh-caption);
@@ -326,7 +340,7 @@
 
   /* Phone: a tighter caption, so the half detent shows rows rather than chrome (phone.css:23-25). */
   @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
-    .section-label {
+    .anatomy-tree .treegrid-block .section-label {
       padding-block: 1px 0;
     }
     .anatomy-tree .row:has(.section-label) {

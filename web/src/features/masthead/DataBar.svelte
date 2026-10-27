@@ -690,6 +690,12 @@
       background: transparent;
       color: var(--text-secondary);
       font-weight: 400;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    .data-bar:global([data-collapsed]) .data-toggle:active:not(:focus-visible) {
+      transform: scale(var(--press-scale));
     }
     .data-bar:global([data-collapsed]) .data-toggle[aria-expanded='true'] {
       background: var(--surface-tonal);
@@ -932,6 +938,9 @@
       }
       .data-bar:global([data-collapsed]) .data-toggle::after {
         transition: none;
+      }
+      .data-bar:global([data-collapsed]) .data-toggle:active {
+        transform: none;
       }
     }
     @media (prefers-contrast: more) {

@@ -365,7 +365,7 @@
       grid-column: 2;
       grid-row: 1;
       justify-self: end;
-      height: var(--space-8);
+      height: var(--control-height);
       padding: 0 var(--space-2);
       border: 1px solid transparent;
       border-radius: var(--radius-control);
@@ -375,6 +375,13 @@
       font-weight: 500;
       line-height: var(--lh-ui);
       cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    .save:active:not(:focus-visible) {
+      transform: scale(var(--press-scale));
     }
     canvas {
       grid-column: 1 / -1;
@@ -513,6 +520,12 @@
   }
 
   @layer a11y {
+    @media (prefers-reduced-motion: reduce) {
+      .save {
+        transition-property: background-color, color;
+        transform: none;
+      }
+    }
     @media (prefers-contrast: more) {
       .mpr {
         --text-tertiary: var(--text-secondary);

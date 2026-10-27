@@ -476,6 +476,12 @@
       -webkit-appearance: none;
       margin: 0;
     }
+    /* The same hover edge as the stage's select. */
+    @media (hover: hover) and (pointer: fine) {
+      .cut-number:hover:not(:disabled, [aria-invalid='true']) {
+        border-color: var(--text-secondary);
+      }
+    }
     .cut-number[aria-invalid='true'] {
       border-color: var(--overlay-danger);
     }
@@ -547,6 +553,13 @@
       background: none;
       color: var(--overlay-ink-muted);
       cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    .stage-icon-button:active:not(:focus-visible) {
+      transform: scale(var(--press-scale));
     }
     @media (hover: hover) and (pointer: fine) {
       .stage-icon-button:hover:not(:disabled),
@@ -714,6 +727,15 @@
   }
 
   @layer a11y {
+    @media (prefers-reduced-motion: reduce) {
+      .stage-icon-button,
+      .section-bar :global(.icon-button.cut-close) {
+        transition-property: background-color, color;
+      }
+      .stage-icon-button:active {
+        transform: none;
+      }
+    }
     @media (forced-colors: active) {
       .cut-number:focus-visible {
         outline: 2px solid Highlight;

@@ -87,13 +87,22 @@
       flex: none;
       min-height: 24px;
       /* The words, not the ground, end on the stage gutter. */
-      margin-right: calc(-1px - var(--space-2));
+      margin-right: calc(-1 * var(--space-2));
       padding: 0 var(--space-2);
+      border-radius: var(--radius-control);
       background: none;
       color: var(--text-secondary);
       font-size: var(--text-caption);
       line-height: var(--lh-caption);
       font-weight: 500;
+      cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    .provenance-opener:active:not(:focus-visible) {
+      transform: scale(var(--press-scale));
     }
     /* A coarse pointer needs the project's 44px target at any width: the bar grows and the button fills it (deviations/h4-coarse-target.md). */
     @media (pointer: coarse) {
@@ -112,6 +121,13 @@
     @media (max-width: 800px), (max-height: 480px) and (orientation: landscape) {
       .colophon {
         display: none;
+      }
+    }
+  }
+  @layer a11y {
+    @media (prefers-reduced-motion: reduce) {
+      .provenance-opener:active {
+        transform: none;
       }
     }
   }

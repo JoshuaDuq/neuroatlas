@@ -96,7 +96,7 @@
       grid-column: 1 / -1;
     }
     .turn-caption {
-      margin-top: var(--space-3);
+      margin-top: var(--space-4);
     }
     .turn {
       display: flex;
@@ -109,6 +109,11 @@
       height: auto;
       background: var(--surface-tonal);
       color: var(--text-primary);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .turn :global(.icon-button:hover) {
+        background: var(--surface-tonal-hover);
+      }
     }
     /* At the popover's foot, its icon on the popover's text column (past its padding and border). */
     .reset {

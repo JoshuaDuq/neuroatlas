@@ -90,7 +90,8 @@
       align-items: center;
       flex: none;
       height: var(--tab-height);
-      border-bottom: 1px solid var(--border-subtle);
+      /* The rule is drawn inside, so the way back and the crumb keep the bar's full 44px as their target. */
+      box-shadow: inset 0 -1px var(--border-subtle);
       background: var(--surface-navigation);
     }
     .detail-path {
@@ -195,6 +196,14 @@
         color: var(--accent-hover);
         text-decoration: underline;
         text-underline-offset: 3px;
+      }
+    }
+  }
+  @layer a11y {
+    /* Forced colours drop shadows: the rule returns as an edge. */
+    @media (forced-colors: active) {
+      .detail-location {
+        border-bottom: 1px solid CanvasText;
       }
     }
   }

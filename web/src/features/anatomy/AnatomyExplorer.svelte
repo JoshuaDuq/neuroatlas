@@ -205,10 +205,6 @@
       inset-block-end: calc(-1 * var(--space-3));
       border-bottom: 1px solid var(--border-subtle);
     }
-    .explorer :global(.search-box input[type='search']) {
-      height: auto;
-      min-height: var(--control-height);
-    }
     .explorer :global(.search-shortcut) {
       right: 6px;
       padding: 0 6px;

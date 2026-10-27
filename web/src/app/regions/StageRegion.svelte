@@ -336,6 +336,25 @@
       color: var(--overlay-ink);
       font-size: var(--text-stage);
       cursor: pointer;
+      transition:
+        background-color var(--ui-transition) var(--ease-ui),
+        transform var(--press-transition) var(--ease-ui);
+    }
+    .exit-fullscreen:active:not(:focus-visible) {
+      transform: scale(var(--press-scale));
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .exit-fullscreen:hover {
+        background: var(--overlay-plate-hover);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .exit-fullscreen {
+        transition-property: background-color;
+      }
+      .exit-fullscreen:active:not(:focus-visible) {
+        transform: none;
+      }
     }
     :global(.exit-fullscreen[hidden]) {
       display: none;

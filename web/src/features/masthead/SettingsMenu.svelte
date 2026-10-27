@@ -359,7 +359,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: var(--space-2) var(--space-4);
-        padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+        padding: var(--space-3);
       }
       .menu-label {
         flex: 1 0 8ch;

@@ -658,23 +658,23 @@
       }
 
       /* The detail owns its complete title; the grip keeps the statement, and the clear beside it. */
-      @media (orientation: portrait) {
-        #sheet[data-view='detail']:not([data-detent='peek']) .sheet-grip-row {
-          grid-template-rows: var(--handle-row) auto;
-        }
-        #sheet[data-view='detail']:not([data-detent='peek']) .sheet-selection {
-          display: none;
-        }
-        #sheet[data-view='detail']:not([data-detent='peek'])
-          .sheet-grip-row
-          :global(.sheet-selection-clear) {
-          grid-row: 1 / 3;
-          align-self: center;
-        }
-        #sheet[data-view='detail']:not([data-detent='peek']) .sheet-disclaimer {
-          grid-row: 2;
-          padding: 0 var(--space-2) var(--space-2) var(--panel-inset);
-        }
+      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-grip-row {
+        grid-template-rows: var(--handle-row) auto;
+      }
+      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-selection {
+        display: none;
+      }
+      /* Centred on the statement's line; its 44px reaches past that line without making it taller. */
+      #sheet[data-view='detail']:not([data-detent='peek'])
+        .sheet-grip-row
+        :global(.sheet-selection-clear) {
+        grid-row: 2;
+        align-self: start;
+        margin-block: calc((var(--lh-caption) - var(--control-height)) / 2);
+      }
+      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-disclaimer {
+        grid-row: 2;
+        padding: 0 var(--space-2) var(--space-2) var(--panel-inset);
       }
 
       /* The labels run from the sheet's column to its right edge, so the first stands under the words above it. */
@@ -772,10 +772,14 @@
       .sheet-selection-side {
         margin-left: var(--space-2);
       }
-      .sheet-grip-row :global(.sheet-selection-clear) {
+      .sheet-grip-row :global(.sheet-selection-clear),
+      #sheet[data-view='detail']:not([data-detent='peek'])
+        .sheet-grip-row
+        :global(.sheet-selection-clear) {
         grid-column: 2;
         grid-row: 1 / 3;
         align-self: center;
+        margin-block: 0;
       }
       #sheet .sheet-disclaimer {
         grid-column: 1 / 3;
@@ -783,8 +787,11 @@
         align-self: end;
         padding: 0 var(--space-2) var(--space-2) var(--space-4);
       }
-      /* Alone, the statement is the handle's 44px line. */
-      #sheet .sheet-grip-row:not([data-selection='true']) .sheet-disclaimer {
+      /* Alone, the statement is the handle's 44px line; so it is beside an open detail, which names itself. */
+      #sheet .sheet-grip-row:not([data-selection='true']) .sheet-disclaimer,
+      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-disclaimer {
+        grid-row: 1 / 3;
+        align-self: center;
         padding-block: 14px;
       }
       #sheet .sheet-handle {
@@ -800,18 +807,28 @@
         width: 4px;
         height: 36px;
       }
-      /* Measure the labels at their natural width so peek never squeezes words into fragments. */
+      /*
+       * Measure the labels at their natural width so peek never squeezes words into fragments. The first
+       * label stands on the column above it, and the rule beneath runs to the sheet's edge once it is wider.
+       */
       #sheet :global(.workspace-tabs) {
         grid-column: 1 / -1;
         grid-row: 3;
         width: max-content;
+        min-width: 100%;
         flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-inline: calc(var(--panel-inset) - var(--space-3));
       }
       #sheet :global(.workspace-tab) {
         flex: 0 0 auto;
         padding-inline: var(--space-3);
         white-space: nowrap;
         overflow-wrap: normal;
+      }
+      /* The underline overhangs its label by 4px, as upright. */
+      #sheet :global(.workspace-tab[aria-selected='true'])::before {
+        inset: auto calc(var(--space-3) - var(--space-1)) 0;
       }
       #sheet :global(.notice) {
         grid-column: 1 / -1;

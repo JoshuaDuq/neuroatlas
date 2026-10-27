@@ -60,9 +60,11 @@
     min-width: 0;
     overflow-wrap: anywhere;
   }
-  .region-detail .selection-context .context-group {
-    padding-left: var(--space-2);
-    border-left: 1px solid var(--border-control);
+  /* Side · group, with the separator the panel uses elsewhere (Destrieux · 53). */
+  .region-detail .selection-context .context-group::before {
+    content: '·' / '';
+    margin-inline-end: var(--space-2);
+    color: var(--text-tertiary);
   }
   .region-detail .selected-hint {
     margin-top: var(--space-2);
@@ -127,7 +129,12 @@
     transition:
       background-color var(--ui-transition) var(--ease-ui),
       color var(--ui-transition) var(--ease-ui),
-      border-color var(--ui-transition) var(--ease-ui);
+      border-color var(--ui-transition) var(--ease-ui),
+      transform var(--press-transition) var(--ease-ui);
+  }
+  /* A pointer press answers; a key press does not animate. */
+  .region-detail .actions button:active:not(:disabled, :focus-visible) {
+    transform: scale(var(--press-scale));
   }
   /* The 320px compact panel keeps all four commands on one line. */
   @media (min-width: 801px) and (max-width: 1000px) {
@@ -428,6 +435,9 @@
     .region-detail .constituents > summary::after,
     .region-detail .actions button {
       transition: none;
+    }
+    .region-detail .actions button:active {
+      transform: none;
     }
   }
   @media (forced-colors: active) {

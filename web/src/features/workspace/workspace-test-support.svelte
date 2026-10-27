@@ -142,5 +142,9 @@
       background: var(--surface-tonal);
       color: var(--text-primary);
     }
+    /* A list row at the real rows' height. */
+    .fx[data-row] {
+      min-height: var(--row-height);
+    }
   }
 </style>

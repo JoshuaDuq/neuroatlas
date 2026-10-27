@@ -12,6 +12,15 @@
     }
   }
 
+  /* Fields read at 16px under a finger, which also keeps iOS from zooming the page on focus. */
+  @media (pointer: coarse) {
+    input:not([type='range'], [type='checkbox'], [type='radio']),
+    select,
+    textarea {
+      font-size: max(16px, 1rem);
+    }
+  }
+
   /* Increased contrast */
   @media (prefers-contrast: more) {
     :root,
