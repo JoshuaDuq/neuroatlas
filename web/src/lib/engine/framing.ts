@@ -115,6 +115,8 @@ export interface Framing {
   invalidate(): void;
   /** Move the camera onto a point of the surface in world metres: the picker's double click (app.js:1783). */
   focusWorldPoint(point: Vector3): void;
+  /** Where zooming out leads the orbit target: what is framed, and the distance it fills the stage from. */
+  home(direction: Vector3): { center: Vector3; distance: number };
   /** The stage's canvas resized (app.js:115-125). */
   onResize(change: { canvasChanged: boolean }): void;
   /** The tract reference opened or closed (app.js:1431). */
@@ -732,6 +734,10 @@ export function createFraming({
   return {
     camera: cameraApi,
     focusWorldPoint,
+    home: (direction) => ({
+      center: framingBounds().getCenter(new Vector3()),
+      distance: fittedDistance(direction),
+    }),
     invalidate() {
       cachedBounds = null;
       cachedPoints = null;

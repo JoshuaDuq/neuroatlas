@@ -120,7 +120,8 @@ export const createEngine: CreateEngine = async (options: EngineOptions): Promis
     const surfaceHit: Parameters<typeof stayOutside>[1] = (raycaster) =>
       reference.active ? null : sections.intersect(raycaster);
     stayOutside(scene.controls, surfaceHit);
-    zoomAboutSurface(scene.controls, surfaceHit);
+    // Framing is created below, before the reader can zoom.
+    zoomAboutSurface(scene.controls, surfaceHit, (direction) => framing!.home(direction));
 
     const held = createHeldView({
       controls: scene.controls,

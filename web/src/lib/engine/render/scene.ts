@@ -24,7 +24,7 @@ import type { Rect, Size } from './effective-viewport.ts';
 import { orbitPath } from './camera-path.ts';
 import type { PathPose } from './camera-path.ts';
 import type { FitScale } from './camera-views.ts';
-import { followCameraUp } from './orbit-controls.ts';
+import { levelOnOrbit } from './orbit-controls.ts';
 import { gpuRendererName, isAppleSilicon, isIntegratedGpu } from './device.ts';
 import { motionRatio, qualityProfile } from './quality.ts';
 import { paintOutlineEdges, sameMeshSet } from './outline-edges.ts';
@@ -336,7 +336,7 @@ export function createScene(
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
   controls.zoomToCursor = true;
-  followCameraUp(controls);
+  levelOnOrbit(controls);
 
   /*
    * How much of the canvas the interface is covering. On a phone the sheet

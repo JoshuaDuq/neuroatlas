@@ -5,8 +5,10 @@ import type { ViewName } from '../../types/index.ts';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VIEW_DIRECTIONS, upFor } from './camera-views.ts';
 import {
-  followCameraUp,
+  type Home,
   type Intersect,
+  homeward,
+  levelOnOrbit,
   stayOutside,
   zoomAbout,
   zoomAboutSurface,
@@ -39,7 +41,18 @@ function settledOn(view: ViewName, adapt: Adapt = () => {}) {
   return { camera, controls };
 }
 
-test('every drag turns the superior and inferior views, where the stock controls sat on a pole', () => {
+/** Where the screen's top points, in world space. */
+const screenUp = (camera: PerspectiveCamera) =>
+  new Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+
+/** The roll between the screen's top and superior as seen along the line of sight, in radians. */
+function roll(camera: PerspectiveCamera, about: Vector3): number {
+  const sight = about.clone().sub(camera.position).normalize();
+  const level = new Vector3(0, 1, 0).addScaledVector(sight, -sight.y).normalize();
+  return screenUp(camera).angleTo(level);
+}
+
+test('a turn from the superior or inferior view spins the picture it showed, where the stock controls sat still', () => {
   for (const view of ['superior', 'inferior'] as const) {
     const stock = settledOn(view);
     const before = stock.camera.quaternion.clone();
@@ -49,48 +62,78 @@ test('every drag turns the superior and inferior views, where the stock controls
       `${view}: a sideways drag did nothing`,
     );
 
-    for (const [turn, angle] of [
-      ['rotateLeft', 0.3],
-      ['rotateLeft', -0.3],
-      ['rotateUp', 0.3],
-      ['rotateUp', -0.3],
-    ] as const) {
-      const { camera, controls } = settledOn(view, followCameraUp);
-      const start = camera.position.clone();
-      controls[turn](angle);
-      assert.ok(
-        camera.position.distanceTo(start) > 0.1,
-        `${view}: ${turn}(${angle}) moves the camera`,
-      );
-      assert.ok(
-        Math.abs(camera.position.distanceTo(target) - DISTANCE) < 1e-9,
-        `${view}: ${turn} keeps the distance`,
-      );
-    }
+    const { camera, controls } = settledOn(view, levelOnOrbit);
+    const shown = camera.quaternion.clone();
+    controls.rotateLeft(0.3);
+    // A jump to the other side of the axis would add half a turn; any roll would add its own angle.
+    assert.ok(
+      Math.abs(camera.quaternion.angleTo(shown) - 0.3) < 1e-3,
+      `${view}: the view turns by the drag and nothing more`,
+    );
+    assert.ok(
+      Math.abs(camera.position.distanceTo(target) - DISTANCE) < 1e-9,
+      `${view}: the distance is kept`,
+    );
+    assert.ok(camera.up.equals(new Vector3(0, 1, 0)), `${view}: the turntable is superior up`);
   }
 });
 
-test('from above, a sideways drag rolls the brain about its anterior–posterior axis', () => {
-  const { camera, controls } = settledOn('superior', followCameraUp);
-  controls.rotateLeft(Math.PI / 2);
-  // A quarter turn lands on a lateral view, still level along the anterior–posterior axis.
-  const offset = camera.position.clone().sub(target).normalize();
-  assert.ok(Math.abs(Math.abs(offset.x) - 1) < 1e-6, 'the camera faces a hemisphere');
-  assert.ok(
-    camera.up.distanceTo(upFor('superior')) < 1e-12,
-    'anterior stays at the top of the screen',
-  );
+test('leaving the superior or inferior view, the brain stands superior up', () => {
+  // Off the axis, superior can read as the top of the screen; the old frame laid the brain on its side.
+  for (const [view, tilt] of [
+    ['superior', -0.6],
+    ['inferior', 0.6],
+  ] as const) {
+    const { camera, controls } = settledOn(view, levelOnOrbit);
+    controls.rotateLeft(Math.PI / 2);
+    controls.rotateUp(tilt);
+    assert.ok(roll(camera, target) < 1e-9, `${view}: level`);
+    assert.ok(screenUp(camera).y > 0, `${view}: superior at the top, not the bottom`);
+  }
+});
+
+test('a rolled camera rights itself over a few frames of a turn, not in one snap', () => {
+  // A faced cut or a grab mid-move can leave the camera rolled a quarter turn.
+  const camera = new PerspectiveCamera(35, 1.4, 0.001, 10);
+  const controls = new OrbitControls(camera);
+  levelOnOrbit(controls);
+  camera.up.set(0, 0, -1);
+  camera.position.copy(target).addScaledVector(VIEW_DIRECTIONS.left, DISTANCE);
+  controls.target.copy(target);
+  controls.update();
+  assert.ok(Math.abs(roll(camera, target) - Math.PI / 2) < 1e-9, 'it starts rolled');
+
+  controls.update();
+  assert.ok(Math.abs(roll(camera, target) - Math.PI / 2) < 1e-9, 'at rest it keeps its roll');
+
+  controls.rotateLeft(0.01);
+  const first = roll(camera, target);
+  assert.ok(first > Math.PI / 4 && first < Math.PI / 2 - 0.1, `one frame eases it: ${first}`);
+  for (let i = 0; i < 60; i += 1) controls.update();
+  assert.ok(roll(camera, target) < 1e-9, 'it ends level');
+  assert.ok(camera.up.equals(new Vector3(0, 1, 0)));
+});
+
+test('a framing that writes its own up mid-levelling keeps it', () => {
+  const { camera, controls } = settledOn('left', levelOnOrbit);
+  camera.up.set(0, 0, -1);
+  controls.rotateLeft(0.01);
+  // A faced cut arrives with the cut's own up.
+  camera.up.set(0, 0, 1);
+  for (let i = 0; i < 10; i += 1) controls.update();
+  assert.ok(camera.up.equals(new Vector3(0, 0, 1)));
 });
 
 test('views with a superior up orbit exactly as the stock controls do', () => {
   for (const view of ['oblique', 'left', 'anterior'] as const) {
     const stock = settledOn(view);
-    const adapted = settledOn(view, followCameraUp);
+    const adapted = settledOn(view, levelOnOrbit);
     for (const { controls } of [stock, adapted]) {
       controls.rotateLeft(0.4);
       controls.rotateUp(-0.2);
     }
     assert.deepEqual(adapted.camera.position.toArray(), stock.camera.position.toArray(), view);
+    assert.deepEqual(adapted.camera.quaternion.toArray(), stock.camera.quaternion.toArray(), view);
   }
 });
 
@@ -108,6 +151,8 @@ const singleSided =
     return { point };
   };
 const hitSurface = singleSided(surface);
+/** The framing the settled views were placed by: centred on the target, filling the stage at DISTANCE. */
+const framedAtTarget: Home = () => ({ center: target.clone(), distance: DISTANCE });
 
 function zoomAt(controls: OrbitControls, ndc: Vector2, scale: number) {
   const driven = controls as unknown as DrivenControls;
@@ -118,7 +163,9 @@ function zoomAt(controls: OrbitControls, ndc: Vector2, scale: number) {
 }
 
 test('zooming onto a surface approaches it but never passes through it', () => {
-  const { camera, controls } = settledOn('left', (c) => zoomAboutSurface(c, hitSurface));
+  const { camera, controls } = settledOn('left', (c) =>
+    zoomAboutSurface(c, hitSurface, framedAtTarget),
+  );
   const ndc = new Vector2(0.3, -0.2);
   let gap = Infinity;
   for (let i = 0; i < 200; i += 1) {
@@ -135,7 +182,9 @@ test('zooming onto a surface approaches it but never passes through it', () => {
 });
 
 test('the surface point under the pointer stays under it', () => {
-  const { camera, controls } = settledOn('left', (c) => zoomAboutSurface(c, hitSurface));
+  const { camera, controls } = settledOn('left', (c) =>
+    zoomAboutSurface(c, hitSurface, framedAtTarget),
+  );
   const ndc = new Vector2(-0.45, 0.3);
   zoomAt(controls, ndc, 0.7);
   camera.updateMatrixWorld();
@@ -148,7 +197,9 @@ test('the surface point under the pointer stays under it', () => {
 });
 
 test('a zoom key moves toward the surface in the middle of the view and stops short of it', () => {
-  const { camera, controls } = settledOn('left', (c) => zoomAboutSurface(c, hitSurface));
+  const { camera, controls } = settledOn('left', (c) =>
+    zoomAboutSurface(c, hitSurface, framedAtTarget),
+  );
   const heading = controls.target.clone().sub(camera.position).normalize();
   for (let i = 0; i < 100; i += 1) controls.dollyIn(1 / 1.1);
   assert.ok(camera.position.x < SURFACE_X, 'the camera stays outside the surface');
@@ -159,7 +210,9 @@ test('a zoom key moves toward the surface in the middle of the view and stops sh
 });
 
 test('over empty stage a zoom scales the distance to the target, as before', () => {
-  const { camera, controls } = settledOn('left', (c) => zoomAboutSurface(c, () => null));
+  const { camera, controls } = settledOn('left', (c) =>
+    zoomAboutSurface(c, () => null, framedAtTarget),
+  );
   controls.dollyIn(1 / 1.1);
   assert.ok(Math.abs(camera.position.distanceTo(controls.target) - DISTANCE / 1.1) < 1e-9);
   assert.ok(controls.target.distanceTo(target) < 1e-9, 'a centred zoom keeps the target');
@@ -168,6 +221,43 @@ test('over empty stage a zoom scales the distance to the target, as before', () 
     Math.abs(camera.position.distanceTo(controls.target) - DISTANCE) < 1e-9,
     'and returns exactly',
   );
+});
+
+test('zooming back out leads the target home, most of the way by the framed distance', () => {
+  const { camera, controls } = settledOn('left', (c) =>
+    zoomAboutSurface(c, hitSurface, framedAtTarget),
+  );
+  for (let i = 0; i < 12; i += 1) zoomAt(controls, new Vector2(0.6, 0.4), 1 / 1.1);
+  const strayed = controls.target.distanceTo(target);
+  assert.ok(strayed > 0.01, `zooming in follows the pointer off centre: ${strayed}`);
+  const heading = camera.position.clone().sub(controls.target).normalize();
+
+  // Out again over another spot: the pointer no longer steers, and each step leads the target back.
+  let gap = strayed;
+  while (camera.position.distanceTo(controls.target) < DISTANCE - 1e-9) {
+    zoomAt(controls, new Vector2(-0.5, -0.3), 1.1);
+    const now = controls.target.distanceTo(target);
+    assert.ok(now < gap, 'the target only nears home');
+    gap = now;
+  }
+  assert.ok(gap < strayed * 0.1, `nearly home once the framing fills the stage: ${gap / strayed}`);
+  for (let i = 0; i < 20; i += 1) zoomAt(controls, new Vector2(-0.5, -0.3), 1.1);
+  assert.ok(controls.target.distanceTo(target) < strayed * 1e-3, 'and home further out');
+  assert.ok(
+    camera.position.clone().sub(controls.target).normalize().distanceTo(heading) < 1e-9,
+    'the heading is unchanged',
+  );
+});
+
+test('homeward compounds toward the whole way, and never jumps', () => {
+  let left = 1;
+  for (let distance = 0.04; distance < 0.4; distance *= 1.07) {
+    left *= 1 - homeward(distance, Math.min(distance * 1.07, 0.4), 0.4);
+  }
+  assert.ok(left < 0.1, `${left} of the way still to go at the framed distance`);
+  // A pan made at the framed distance, then a notch of zoom out: a share, not the whole way.
+  assert.ok(homeward(0.399, 0.399 * 1.1, 0.4) < 0.3);
+  assert.equal(homeward(0.3, 0.3, 0.4), 0, 'a zoom held at its limit leaves the target');
 });
 
 test('zoomAbout holds the distance to the target within the orbit limits', () => {
@@ -242,7 +332,7 @@ test('once the turn is free again, the camera returns to the distance the reader
 test('a zoom sets the distance the camera returns to', () => {
   const { camera, controls } = closeIn((c) => {
     stayOutside(c, hitSurface);
-    zoomAboutSurface(c, hitSurface);
+    zoomAboutSurface(c, hitSurface, framedAtTarget);
   });
   controls.dollyIn(1.5);
   const zoomed = camera.position.distanceTo(controls.target);
@@ -298,7 +388,7 @@ test('a framing move that places the camera is not taken for a crossing', () => 
 test('in the app’s order, zooming in still reaches the closest zoom rather than backing off', () => {
   const both: Adapt = (c) => {
     stayOutside(c, hitSurface);
-    zoomAboutSurface(c, hitSurface);
+    zoomAboutSurface(c, hitSurface, framedAtTarget);
   };
   const { camera, controls } = settledOn('left', both);
   // A deep pivot: at the closest zoom the surface is nearer than the clearance a turn keeps.

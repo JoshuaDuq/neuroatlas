@@ -372,7 +372,9 @@ describe('framing a named view', () => {
       const meshes = wholeBrain();
       const stage = fixture({ meshes, scale: FULL });
       stage.camera.applyView(view, { immediate: true });
-      assert.ok(headingOf(stage).distanceTo(VIEW_DIRECTIONS[view]) < 1e-9, view);
+      // The controls hold a camera on the superior axis a millionth of a radian off it.
+      const tolerance = view === 'superior' || view === 'inferior' ? 2e-6 : 1e-9;
+      assert.ok(headingOf(stage).distanceTo(VIEW_DIRECTIONS[view]) < tolerance, view);
       assert.ok(stage.scene.camera.up.distanceTo(upFor(view)) < 1e-12, view);
       assertFramed(stage, meshes);
       assert.equal(stage.camera.viewHeld, true, view);
@@ -470,7 +472,8 @@ describe('the whole anatomy is what is drawn', () => {
         }
       }
     }
-    assert.ok(Math.abs(reach - FRAME_FILL) < 1e-9, `reach ${reach}`);
+    // Faced from above, the controls hold the camera a millionth of a radian off the superior axis.
+    assert.ok(Math.abs(reach - FRAME_FILL) < 1e-6, `reach ${reach}`);
   });
 });
 
@@ -627,7 +630,8 @@ describe('facing the cut', () => {
         }
       }
     }
-    assert.ok(Math.abs(reach - FRAME_FILL) < 1e-9, `reach ${reach}`);
+    // Faced from above, the controls hold the camera a millionth of a radian off the superior axis.
+    assert.ok(Math.abs(reach - FRAME_FILL) < 1e-6, `reach ${reach}`);
   });
 });
 

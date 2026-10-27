@@ -3,7 +3,7 @@ import { test } from 'vitest';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { DOLLY_KEYS, ORBIT_KEYS, ORBIT_STEP, turnFromKeyboard } from './keyboard-orbit.ts';
-import { followCameraUp } from './orbit-controls.ts';
+import { levelOnOrbit } from './orbit-controls.ts';
 
 const target = new Vector3(0, 0, 0);
 
@@ -12,7 +12,7 @@ function controlsAt(position: Vector3, up = new Vector3(0, 1, 0)) {
   const camera = new PerspectiveCamera(35, 1.4, 0.001, 10);
   const controls = new OrbitControls(camera);
   controls.enableDamping = true;
-  followCameraUp(controls);
+  levelOnOrbit(controls);
   camera.up.copy(up);
   camera.position.copy(position);
   controls.target.copy(target);
@@ -78,12 +78,13 @@ test('the horizon never flips, however long an arrow is held', () => {
   }
 });
 
-test('a view looking straight down still orbits around its own up axis', () => {
-  // Superior and inferior views set `up` off the Y axis; a Y-up-only rotation
-  // would leave the camera stuck on the pole.
-  const { position } = press('ArrowLeft', new Vector3(0, 0.2, 0), new Vector3(0, 0, -1));
-  assert.ok(Math.abs(position.distanceTo(target) - 0.2) < 1e-9);
-  assert.ok(position.distanceTo(new Vector3(0, 0.2, 0)) > 0.01, 'the camera actually moved');
+test('a view looking straight down spins in place by one step', () => {
+  // The superior view sets an anterior up on the superior axis, where the stock controls sat still.
+  const { camera, controls } = controlsAt(new Vector3(0, 0.2, 0), new Vector3(0, 0, -1));
+  const before = camera.quaternion.clone();
+  turnFromKeyboard(controls, ORBIT_KEYS.ArrowLeft);
+  assert.ok(Math.abs(camera.position.distanceTo(target) - 0.2) < 1e-9);
+  assert.ok(Math.abs(camera.quaternion.angleTo(before) - ORBIT_STEP) < 1e-3, 'it turned one step');
 });
 
 test('every arrow and zoom key is bound, and nothing else is', () => {
