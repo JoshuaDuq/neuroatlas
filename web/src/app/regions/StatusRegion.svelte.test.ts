@@ -128,6 +128,15 @@ describe('the count', () => {
 });
 
 describe('Provenance', () => {
+  test('is in the reader’s language', async () => {
+    await shell.open();
+    shell.app.chooseLanguage('fr');
+    flushSync();
+    await userEvent.click(page.getByRole('button', { name: 'Provenance' }));
+    const dialog = [...document.querySelectorAll('dialog')].find((candidate) => candidate.open)!;
+    expect(dialog.textContent).toContain(t('fr', 'footer').intendedUse);
+  });
+
   test('opens the dialog with a pointer, animated, and Escape returns focus to the button', async () => {
     await shell.open();
     const opener = page.getByRole('button', { name: 'Provenance' });

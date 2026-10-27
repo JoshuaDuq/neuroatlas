@@ -41,6 +41,7 @@
   let provenanceOpen = $state(false);
   let provenanceInstant = $state(false);
 
+  // TODO(H2): the menu's callbacks take the click (#4 issuecomment-6429895842 item 2), which removes this capture.
   // The colophon's button and the settings menu's commands run without the click: the dialog they open reads it here.
   let keyboardClick = false;
 
@@ -58,20 +59,9 @@
     document.getElementById('viewport')!.focus();
   }
 
+  let masthead = $state<Masthead>();
   // The ⋯ button takes focus back when the menu item that opened a dialog is gone.
-  const settingsButton = () =>
-    document.querySelector<HTMLElement>(`#masthead [aria-label="${t(lang, 'menu').more}"]`);
-
-  // The data bar's choice is told to the status bar until the download settles.
-  $effect.pre(() => {
-    if (choosing && status !== 'switching') choosing = false;
-  });
-  const choose =
-    <A extends unknown[]>(command: (...args: A) => unknown) =>
-    (...args: A) => {
-      choosing = true;
-      return command(...args);
-    };
+  const settingsButton = () => masthead!.settingsButton();
 
   // The key that opens the shortcuts sheet (ports.ts).
   $effect(() =>
@@ -103,12 +93,14 @@
 <svelte:document onclickcapture={(event) => (keyboardClick = isKeyboardActivation(event))} />
 
 <Masthead
+  bind:this={masthead}
   {lang}
   themeChoice={app.theme.choice}
   {singleKeys}
   ready={status === 'ready' || status === 'switching'}
   fullscreen={isFullscreen()}
   provenanceReady={world !== null}
+  settingsDisabled={app.failure !== undefined}
   bind:settingsOpen
   onSkipToModel={skipToModel}
   onLanguage={app.chooseLanguage}
@@ -130,6 +122,7 @@
       {@const current = world.view.current}
       {@const { model } = world.engine}
       {@const tractReference = isIndependentTractReference(current)}
+      <!-- TODO(I3a): `anatomies` is world.anatomies, the published index (#4 issuecomment-6429895842 item 1). Until then no Subject field is offered and `onAnatomy` is unreachable. -->
       <DataBar
         lang={current.lang}
         status={current.status}
@@ -149,9 +142,10 @@
         anatomies={[model.manifest.anatomy]}
         reference={tractReference ? reference(current.referenceAnatomy) : null}
         bind:settingsOpen
-        onAtlas={choose(world.excursions.chooseAtlas)}
-        onSurfaceColor={choose(world.excursions.chooseSurfaceColor)}
-        onDetail={choose(world.commands.chooseDetail)}
+        bind:choosing
+        onAtlas={world.excursions.chooseAtlas}
+        onSurfaceColor={world.excursions.chooseSurfaceColor}
+        onDetail={world.commands.chooseDetail}
         onAnatomy={world.links.switchAnatomy}
       />
     {/if}

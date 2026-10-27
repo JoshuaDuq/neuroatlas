@@ -69,8 +69,21 @@ describe('the one tooltip', () => {
       .element(page.getByRole('tooltip'))
       .toHaveTextContent(panelControl.dataset.tooltip!);
     expect(page.getByRole('tooltip').elements()).toHaveLength(1);
-    // Unmounting a focused trigger makes the tooltip hide itself inside the teardown.
-    panelControl.blur();
+  });
+});
+
+describe('the one tooltip, when its trigger goes', () => {
+  test('a focused trigger that removes itself takes its tooltip with it', async () => {
+    await shell.open();
+    shell.engine.emit('pick', { id: 'destrieux:left:30' });
+    flushSync();
+    const clear = document.querySelector<HTMLElement>('.region-detail .selection-clear')!;
+    await userEvent.tab();
+    clear.focus();
+    await expect.element(page.getByRole('tooltip')).toHaveTextContent(clear.dataset.tooltip!);
+    await userEvent.keyboard('{Enter}');
+    await vi.waitFor(() => expect(clear.isConnected).toBe(false));
+    await vi.waitFor(() => expect(page.getByRole('tooltip').elements()).toHaveLength(0));
   });
 });
 
@@ -94,6 +107,8 @@ describe('the dialogs', () => {
     const open = dialogs().find((dialog) => dialog.open)!;
     expect(titleOf(open)).toBe('Keyboard shortcuts');
     expect(open.matches(':modal')).toBe(true);
+    // The dialog's own header is not a second banner.
+    expect(page.getByRole('banner').elements()).toHaveLength(1);
     const more = page.getByRole('button', { name: 'More settings' }).element() as HTMLElement;
     more.focus();
     expect(document.activeElement).not.toBe(more);

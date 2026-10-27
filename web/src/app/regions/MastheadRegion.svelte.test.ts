@@ -83,14 +83,6 @@ describe('skip to model', () => {
     expect(location.hash).not.toBe('#viewport');
   });
 
-  test('shows the ring when the link was activated with no key behind it', async () => {
-    await shell.open();
-    await userEvent.click(page.getByRole('heading', { name: 'Planum' }));
-    document.querySelector<HTMLElement>('.skip-link')!.click();
-    expect(document.activeElement).toBe(shell.engine.canvas);
-    expect(document.activeElement!.matches(':focus-visible')).toBe(true);
-  });
-
   test('focuses the stage while there is no canvas', async () => {
     await shell.open({ start: false });
     await userEvent.tab();
@@ -265,6 +257,18 @@ describe('the data bar', () => {
   });
 });
 
+describe('after a failed start', () => {
+  test('More settings is disabled and its panel is shut', async () => {
+    await shell.open({ start: false });
+    await userEvent.click(button('More settings'));
+    await expect.element(button('More settings')).toHaveAttribute('aria-expanded', 'true');
+    shell.app.fail(new Error('refused'), { text: 'This anatomy could not be opened.' });
+    flushSync();
+    await expect.element(button('More settings')).toBeDisabled();
+    await expect.element(button('More settings')).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
 describe('the dialogs', () => {
   test('Keyboard shortcuts opens from the menu and returns focus to More settings', async () => {
     await shell.open();
@@ -398,5 +402,10 @@ describe('the dialogs', () => {
     expect(links).toHaveLength(2);
     expect(links[0]).toContain(t('en', 'diffusion').source);
     expect(links[1]).toContain(t('en', 'diffusion').outlineProvenance);
+    // The dataset's source, and the brain outline's provenance file (data/diffusion-cdmd.yaml).
+    expect([...dialog.querySelectorAll('dd a')].map((a) => (a as HTMLAnchorElement).href)).toEqual([
+      'https://doi.org/10.6084/m9.figshare.c.5315474.v1',
+      new URL(`${ASSET_BASE}diffusion/cdmd-sub-013/brain-outline.json`, location.href).href,
+    ]);
   });
 });

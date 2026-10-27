@@ -59,6 +59,8 @@
     reference: { label: string; description?: string } | null;
     /** The settings panel; opening this popover closes it, and it opening closes this. */
     settingsOpen?: boolean;
+    /** A field holds a choice still downloading: the status bar leaves that download to the bar (header.js:538). */
+    choosing?: boolean;
     /** S3's `chooseAtlas`. */
     onAtlas: (id: string) => unknown;
     /** The composition lifts the paint first (app.js:633-636), then runs the colour command. */
@@ -83,6 +85,7 @@
     anatomies,
     reference,
     settingsOpen = $bindable(false),
+    choosing = $bindable(false),
     onAtlas,
     onSurfaceColor,
     onDetail,
@@ -123,6 +126,7 @@
         chosen[field] = null;
       }
     }
+    choosing = Object.values(chosen).some((value) => value !== null);
   });
   const shown = (field: Field) => chosen[field] ?? values[field];
   const required = (colour: string) => requiredAtlas(colourings, colour as SurfaceColor);

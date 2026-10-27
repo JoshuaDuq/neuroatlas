@@ -75,6 +75,23 @@ describe('landmarks', () => {
   });
 });
 
+describe('the phone frame before the engine', () => {
+  test.each([
+    [812, 375],
+    [320, 256],
+  ])('at %i×%i the stage keeps its height while the anatomy loads', async (width, height) => {
+    mountShell();
+    await page.viewport(width, height);
+    try {
+      await expect
+        .poll(() => target.querySelector('main')!.getBoundingClientRect().height)
+        .toBeGreaterThan(0);
+    } finally {
+      await page.viewport(1280, 800);
+    }
+  });
+});
+
 describe('tab order', () => {
   test('the masthead comes first, then the panel, then the stage; main is a focus target only', async () => {
     mountShell();

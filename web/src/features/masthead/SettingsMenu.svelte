@@ -36,6 +36,8 @@
     /** The provenance manifest has loaded (phones only: the status bar carries it elsewhere). */
     provenanceReady: boolean;
     open?: boolean;
+    /** The start failed: the panel is closed and ⋯ waits for nothing (app.js:183-189, header.js:236-241). */
+    disabled?: boolean;
     onLanguage: (lang: Language) => void;
     onTheme: (choice: ThemeChoice) => void;
     onSingleKeys: (on: boolean) => void;
@@ -53,6 +55,7 @@
     fullscreenLabel,
     provenanceReady,
     open = $bindable(false),
+    disabled = false,
     onLanguage,
     onTheme,
     onSingleKeys,
@@ -60,6 +63,15 @@
     onProvenance,
     onShortcuts,
   }: Props = $props();
+
+  let moreButton: HTMLElement | undefined;
+  /** The ⋯ button, which takes focus back when the opener of a dialog has gone. */
+  export function button(): HTMLElement | null {
+    return moreButton ?? null;
+  }
+  $effect.pre(() => {
+    if (disabled) open = false;
+  });
 
   const uid = $props.id();
   const labelId = (row: string) => `${row}-label-${uid}`;
@@ -144,6 +156,10 @@
       aria-haspopup={undefined}
       {...{ [OWN_KEYS_ATTRIBUTE]: '' }}
       icon="more"
+      {disabled}
+      {@attach (node) => {
+        moreButton = node;
+      }}
       label={t(lang, 'menu').more}
       data-tooltip={t(lang, 'menu').more}
     />

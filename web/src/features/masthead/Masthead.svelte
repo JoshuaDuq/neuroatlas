@@ -24,6 +24,8 @@
     provenanceReady: boolean;
     /** The settings panel; H3's data popover closes it by setting this false. */
     settingsOpen?: boolean;
+    /** The start failed: ⋯ is disabled, as legacy leaves it (app.js:183-189). */
+    settingsDisabled?: boolean;
     /** The data group (H3), composed in by I3b. */
     data?: Snippet;
     onSkipToModel: () => void;
@@ -44,6 +46,7 @@
     fullscreen,
     provenanceReady,
     settingsOpen = $bindable(false),
+    settingsDisabled = false,
     data,
     onSkipToModel,
     onLanguage,
@@ -54,6 +57,12 @@
     onProvenance,
     onShortcuts,
   }: Props = $props();
+
+  let menu: SettingsMenu;
+  /** The ⋯ button, for a dialog whose opener has gone to hand focus to. */
+  export function settingsButton(): HTMLElement | null {
+    return menu.button();
+  }
 
   // Asked once, as legacy does (header.js:192).
   const fullscreenAvailable = document.fullscreenEnabled;
@@ -101,6 +110,8 @@
       onclick={onSnapshot}
     />
     <SettingsMenu
+      bind:this={menu}
+      disabled={settingsDisabled}
       {lang}
       {themeChoice}
       {singleKeys}
