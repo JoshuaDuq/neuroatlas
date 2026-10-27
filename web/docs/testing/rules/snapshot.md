@@ -142,7 +142,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: real canvas encode; e2e for the real engine and download
 - **Source:** `viewer/app.js:1450-1463`; FACADE-33
 - **Expected:** Host 1000×700, chrome insets `{ bottom: 100 }`, HCP-MMP → one link, `download` "planum-hcp-mmp.png", blob type `image/png`, decoded 1000×600 at ratio 1. Atlas `null` → "planum-brain.png". Built site 1280×800, Destrieux → suggested file "planum-destrieux.png", PNG signature, width = stage width × devicePixelRatio (±1), 0 < height ≤ ceil(stage height × ratio), focus stays on Save image.
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R); `e2e/parity/snapshot.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R)
 
 ### SNAP-15 · The image is handed over as a Blob URL, released 40 s after the click
 
@@ -160,7 +160,7 @@ letter gap 12, scale gap 8); "mm" follows a narrow no-break space (U+202F).
 - **Level:** browser: the announcer's live region
 - **Source:** decision 33 and comment 87 on #4 (`viewport.snapshotSaved`, WCAG 4.1.3)
 - **Expected:** English "Image saved as planum-destrieux.png."; French "Image enregistrée : planum-hcp-mmp.png."; "planum-brain.png" with no atlas. Built site (next): `#announcer` text "Image saved as planum-destrieux.png.".
-- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R); `e2e/parity/snapshot.spec.ts` (R; next-only, so it runs nowhere today)
+- **Covered by:** `src/features/snapshot/snapshot.svelte.test.ts` (R)
 
 ### SNAP-17 · A second request while one is being made joins it
 

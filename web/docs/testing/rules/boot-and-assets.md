@@ -26,7 +26,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/main.js:24-41, 82-84`
 - **Expected:** `getContext('webgl2')` returns null or throws → `missingWebgl()` = `'webgl2'`; stage text starts "This viewer needs WebGL 2, which this browser or device does not provide." (fr "Cette visionneuse nécessite WebGL 2, …"); `createEngine` is not called; status `error`.
-- **Covered by:** `src/app/webgl-check.test.ts` (R), `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/app/webgl-check.test.ts` (R), `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-02 · Floating-point render targets are required
 
@@ -35,7 +35,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/main.js:38-40`; `viewer/i18n/translations.js:507`
 - **Expected:** extension missing → `'floatTargets'`; text starts "This viewer needs WebGL 2 with floating-point render targets"; no Retry.
-- **Covered by:** `src/app/webgl-check.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/app/webgl-check.test.ts` (R)
 
 ### BOOT-03 · The capability probe frees its context
 
@@ -53,7 +53,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** browser — shown text, announcer and `<html lang>` in the DOM
 - **Source:** `viewer/main.js:43-52, 82-84`; deviation `h1b-webgl-failure-theme.md` (themed screen), `h1b-single-failure-announcement.md`
 - **Expected:** `#announcer` text = the shown text; no button named "Retry"/"Réessayer"; `#app[data-status=error]`; `<html lang>` = link or saved language; `app.failure = { text }` with no button.
-- **Covered by:** `e2e/parity/boot.spec.ts` (R; `next` since #64), `src/app/boot.svelte.test.ts` (R), `src/features/stage/StageStatus.svelte.test.ts` (R)
+- **Covered by:**, `src/app/boot.svelte.test.ts` (R), `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ## Start sequence
 
@@ -127,7 +127,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** browser — `data-status` and `aria-label` on the mounted shell
 - **Source:** `viewer/main.js:45`; `viewer/app.js:60-61`
 - **Expected:** mounted shell starts `data-status="loading"`; after `ready` and French, `data-status="ready"` and the panel's `aria-label` is the French text.
-- **Covered by:** `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-30 · A command the reader starts overtakes a link still being applied
 
@@ -147,7 +147,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/main.js:54-60, 90-92`; `viewer/app.js:183-189`; `viewer/i18n/errors.js:34-40`
 - **Expected:** `asset-fetch` → text "Could not load the anatomy. A file could not be downloaded. Check the connection and try again." (fr "Impossible de charger l’anatomie. …"), button "Retry", `dropLink: false`, no progress bar, no world.
-- **Covered by:** `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64), `src/features/stage/StageStatus.svelte.test.ts` (R)
+- **Covered by:** `src/app/boot.svelte.test.ts` (R),, `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-14 · A failed start from a link
 
@@ -156,7 +156,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/i18n/errors.js:34-42`; `viewer/main.js:56-58`
 - **Expected:** `#view=left` + renderer error → text contains "Retry opens Planum without this link.", `dropLink: true`; clicking Retry empties `location.hash`, then reloads.
-- **Covered by:** `src/app/boot.svelte.test.ts` (R), `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/app/boot.svelte.test.ts` (R), `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-15 · A newer deploy asks for a reload
 
@@ -232,7 +232,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit (view-model)
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:68-78, 778-781`
 - **Expected:** text "Loading anatomy…" (fr "Chargement de l’anatomie…"); no `progress`; total 0 removes a shown bar.
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-22 · The download bar
 
@@ -241,7 +241,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit (view-model)
 - **Source:** `viewer/ui/chrome/viewport-chrome.js:68-83`; deviation `c1-loading-megabytes.md`
 - **Expected:** 12.3 MiB of 45.6 MiB → bar value 27, max 100, text contains "12.3" and "45.6"; fr 1 MiB of 4 MiB → bar "Téléchargement de l’anatomie", text contains "1,0"; a slow real download's value increases.
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-23 · What the stage announces
 
@@ -250,7 +250,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit (view-model)
 - **Source:** `viewer/app.js:97-99, 2128`; deviation `h1b-single-failure-announcement.md`
 - **Expected:** start → "Loading anatomy…" (even when a total is already known); 4 progress events → no announcer mutation; ready → "Anatomy loaded."; error → the failure text; context lost → stage announces "".
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ### BOOT-24 · The error screen
 
@@ -268,7 +268,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** browser — computed stage background in the light theme
 - **Source:** `viewer/app.js:118-120`; `viewer/ui/chrome/viewport-chrome.js:763-767`; deviation `h1b-webgl-failure-theme.md` (context lost not covered)
 - **Expected:** "The 3D view was interrupted by the graphics driver. Restoring…"; light theme stage background `rgb(14, 17, 22)`; `webglcontextrestored` → `data-status="ready"`, announcer "Anatomy loaded.".
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `src/app/boot.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `src/app/boot.svelte.test.ts` (R)
 
 ### BOOT-26 · Focus around the stage status
 
@@ -286,7 +286,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** browser — computed colours, forced colours
 - **Source:** deviations `h1b-webgl-failure-theme.md` (decisions 3 and 18 on #4), `h1b-progress-track-contrast.md`
 - **Expected:** light and dark: track/surface, fill/surface, fill/track ≥ 3:1; ring/stage ≥ 3:1 on loading, error and context-lost; forced colours: message colour = stage colour, bar visible.
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R; the increased-contrast case is W), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R; the increased-contrast case is W)
 
 ### BOOT-28 · Retry stays usable on every screen
 
@@ -304,7 +304,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** browser — axe
 - **Source:** H1b decision record (#39)
 - **Expected:** zero axe violations.
-- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R), `e2e/parity/boot.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/stage/StageStatus.svelte.test.ts` (R)
 
 ## Published assets
 
@@ -441,7 +441,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** e2e — every request the served page makes
 - **Source:** `viewer/model/published-assets.js:19-28`
 - **Expected:** for each request, `?v=` = `publishedRecord(public, path).version`.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`)
+- **Covered by:** `e2e/journeys/boot.spec.ts` "a cold start reaches ready, asks for each prefetched file once and versions every request" (R)
 
 ## Head prefetch
 
@@ -497,7 +497,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** e2e — request count on the served page
 - **Source:** `index.html:46-52`; `viewer/model/asset-cache.js:86-88`
 - **Expected:** for each of `models/anatomies.json`, `models/<default>/manifest.json`, `…/cortex-destrieux.glb`, `…/learning.glb`: exactly `[<root><file>?v=<version>]`.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`)
+- **Covered by:** `e2e/journeys/boot.spec.ts` "a cold start reaches ready, asks for each prefetched file once and versions every request" (R)
 
 ## Service worker
 
@@ -508,7 +508,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `viewer/main.js:62-76, 86-89`
 - **Expected:** `register('${BASE_URL}sw.js', {scope: BASE_URL})`; `PROD=false` or no `navigator.serviceWorker` → not called; rejection → `console.warn('Service worker registration failed:', error)`.
-- **Covered by:** `src/boot/keep-cached.test.ts` (R); "only after a successful start" → uncovered (tests run with `PROD=false`, and `e2e/parity/harness.spec.ts` registers the worker itself)
+- **Covered by:** `src/boot/keep-cached.test.ts` (R); "only after a successful start" → uncovered (tests run with `PROD=false`, and registers the worker itself)
 
 ### SW-02 · Store once, serve after
 
@@ -589,7 +589,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** e2e — a real service worker across a reload
 - **Source:** `viewer/service-worker.js`; `vite.config.js:84-90`
 - **Expected:** `serviceWorker.ready.scope` = base URL; `planum-models` holds `models/anatomies.json?v=<version>`; after reload that response is `fromServiceWorker()`; controller script `<base>sw.js`.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`)
+- **Covered by:** `e2e/journeys/boot.spec.ts` "the service worker registers in its scope and serves the second visit" (R)
 
 ## Build output
 
@@ -618,7 +618,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** new (`web/vite.config.ts` `preview-noindex`)
 - **Expected:** as stated, in the HTTP response body for the preview.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R; the preview half runs on `next`, the live half on `legacy` only). Could move down to unit: the `preview-noindex` hook, as `build/published-files.test.ts` calls the prefetch hook.
+- **Covered by:** `build/published-files.test.ts` "BUILD-03" (R, the `preview-noindex` hook for both modes)
 
 ### BUILD-04 · Three.js and the BVH index in their own chunks
 
@@ -636,7 +636,7 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `vite.config.js:13-24, 63-65, 84-90`; `scripts/published-version.mjs:10-45`
 - **Expected:** keys exactly `base`, `files`, `gunzipped`; `base` = `/neuroatlas/`; head map non-empty with every key starting `models/`; `sw.js` contains `planum-models`.
-- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job); `e2e/parity/harness.spec.ts` (R, end to end, versions only)
+- **Covered by:** `build/published-files.test.ts` (R, fixed versions of a fixture tree, `.gz` by contents); `.github/scripts/check-dist.mjs` (R, over `web/dist` after `npm run build:preview` in the `web-check` job)
 
 ### BUILD-06 · Charset first, prefetch before the stylesheet
 
@@ -672,16 +672,16 @@ document, `location`, `history` and `window` directly.
 - **Level:** unit
 - **Source:** `index.html:2, 7`
 - **Expected:** as stated.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`); could move down to unit (a read of `index.html`).
+- **Covered by:** `build/published-files.test.ts` "BUILD-09" (R, a read of `index.html`); `e2e/journeys/boot.spec.ts` (R, on the loaded page)
 
 ### BUILD-10 · The page frame passes axe
 
-- **Rule:** The loaded page has no axe violations on `next` (legacy recorded as a baseline).
+- **Rule:** The loaded page has no axe violations, in both themes, at a desktop and a 390 px phone width.
 - **Kind:** behaviour
 - **Level:** e2e — axe on the built, loaded page
-- **Source:** new (browser parity harness, `e2e/parity/`)
-- **Expected:** zero violations on `next`.
-- **Covered by:** `e2e/parity/harness.spec.ts` (R, runs on `next`)
+- **Source:** new (axe on the built page)
+- **Expected:** zero violations.
+- **Covered by:** `e2e/journeys/accessibility.spec.ts` (R, light and dark, 1280 px and 390 px; the phone run leaves out the selection strip, whose name does not contain its visible text)
 
 ### BUILD-11 · No triple-slash type references
 

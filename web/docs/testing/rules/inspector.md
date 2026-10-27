@@ -22,7 +22,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — heading, focus target
 - **Source:** `viewer/ui/panels/inspector.js:283-312`; decision 35 on #4
 - **Expected:** `hcp-mmp:left:1` → h2 "V1"; context terms "Hemisphere", "Lobe / System"; side "Left" (French "Gauche"); `requestFocus('region-title')` → true, focus on the h2 with `tabindex="-1"`. `learning:left:thalamus` → "Left", then French "Gauche" and a different group text; region cleared → no context and no facts. `zanatomy:midline:cord` → hint "Z-Anatomy reference cord in its anatomical posture; seated below the brainstem by translation alone, not registered to this subject’s MRI. Segment levels and root counts are the reference model’s, not this subject’s."
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, but the group value is only checked non-empty and the notes only for length > 0: W for those parts); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, but the group value is only checked non-empty and the notes only for length > 0: W for those parts)
 
 ### INSP-03 · Four commands act on the selection
 
@@ -31,7 +31,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — keyboard vs pointer activation, focus kept on Isolate
 - **Source:** `viewer/ui/panels/inspector.js:104-109`, `278-290`, `328-331`; deviation `r1-hidden-actions.md`; conductor decision on #115 (Linked MRI name)
 - **Expected:** Buttons "Focus", "Isolate", "Hide", "Linked MRI" (French "Cibler", "Isoler", "Masquer", "IRM liée"); clicks on Focus, Hide, Clear → `focus`, `hide`, `clear`. Isolate: `data-active="false"`, no `aria-pressed`; click → `isolate`; isolated → text "Restore", `data-active="true"`, no `aria-pressed`, focus still on it. Linked MRI: click → `{atRegion: true, instant: false}`, Enter → `{atRegion: true, instant: true}`; no `aria-keyshortcuts`, no `aria-label`, `data-tooltip` "Open linked MRI slices". Published data: Isolate → "Restore" (`data-active="true"`) → Isolate.
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-04 · Clearing or hiding the selection keeps focus on the page
 
@@ -40,7 +40,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — the composed panel region with the fake engine
 - **Source:** `viewer/ui/panels/inspector.js:92-102`; deviations `r1-hidden-actions.md`, `s2-hide-focus-fallback.md`
 - **Expected:** `#atlas=hcp-mmp&region=hcp-mmp:left:1`: Clear selection → Isolate hidden, hash without `region=`, `document.activeElement` visible and not `body`. Hide → Isolate hidden, focus visible and not `body`.
-- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts:123` (R, Hide hands focus to Undo across panels); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134); `src/lib/controller/anatomy.svelte.test.ts` (R, the commands); `src/features/inspector/inspector.svelte.test.ts` (W, only that the handlers are called). The Clear half in the composed panel is uncovered
+- **Covered by:** `src/app/regions/PanelsRegion.svelte.test.ts:123` (R, Hide hands focus to Undo across panels); `src/lib/controller/anatomy.svelte.test.ts` (R, the commands); `src/features/inspector/inspector.svelte.test.ts` (W, only that the handlers are called). The Clear half in the composed panel is uncovered
 
 ### INSP-05 · The datasheet gives the measurement by kind, the centroid and the source
 
@@ -49,7 +49,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: metric choice by kind; `quantity` and `formatRas` are C1's, `core-i18n.md`)
 - **Source:** `viewer/ui/panels/inspector.js:314-320`
 - **Expected:** `hcp-mmp:left:1` (manifest `surface_area_mm2` 2783.08) → terms "Surface area", "Centroid (RAS)", "Source label"; metric "2 783 mm²". `aseg:left:8` (manifest `segmentation_volume_mm3` 49 786) → "Volume", "49 790 mm³"; no centroid → "—". Centroid [−12.34, 56.78, −9] → "−12.3, +56.8, −9.0 mm"; French starts "−12,3".
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, and S for the 49 790 mm³ volume; V1's area figure is uncovered); `e2e/parity/inspector.spec.ts` (W; enabled on `next` since #134: "mm²" and a regex for the centroid only)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R, and S for the 49 790 mm³ volume; V1's area figure is uncovered)
 
 ### INSP-06 · The source label names the source atlas and its label ids
 
@@ -58,7 +58,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: `sourceLabel`, `core-panels.md`)
 - **Source:** `viewer/ui/panels/inspector.js:24-42`, `237-262`
 - **Expected:** `hcp-mmp:left:1` (`source_label_id` 1) → "… · 1", `.code` "1", not stacked. `zanatomy:midline:cord` (no id) → stacked. `learning:left:thalamus` (52 `source_label_ids`) → summary ending "52 labels" (French "52 étiquettes") and the 52 ids joined by ", ". The boundary: 8 ids listed, 9 counted.
-- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R, with the 8/9 boundary); `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/panels/inspector.test.ts` (R, with the 8/9 boundary); `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-07 · An open source list stays open until the region or the language changes
 
@@ -85,7 +85,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — native details and keyboard
 - **Source:** `viewer/index.html:366`, `397-407`; deviation `r1-summary-headings.md`
 - **Expected:** `hcp-mmp:left:50` → summaries "Functional division", "Neuropsychological functions", "Functional networks", all closed, no heading in a summary, no `h3`. Tab from Clear walks "", Focus, Isolate, Hide, Linked MRI, then the three summaries; Enter opens Functional networks, Space closes it. Open networks on V1, select `learning:left:innominata`, then `hcp-mmp:left:50` → still open. French "Division fonctionnelle", "Fonctions neuropsychologiques". Published data: the three closed, legacy has an `h3` in each summary, next none.
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-10 · Networks give the region's Yeo shares and its CAB-NP network
 
@@ -94,7 +94,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: `networksOf`, `percent`)
 - **Source:** `viewer/ui/panels/inspector.js:111-160`
 - **Expected:** `hcp-mmp:left:50` (manifest shares DorsAttn 0.9342, Vis 0.0632, Cont 0.0026; `cab-np.json` "Dorsal-Attention") → "Dorsal attention 93%", "Visual 6%" (Cont below 5 % not listed), then CAB-NP "Dorsal attention 100%"; captions "Yeo 7 networks", "CAB-NP networks"; note "Shares of assigned source vertices; unassigned vertices excluded. Shares below 5% hidden without rescaling."; caveat "Group resting-state networks, not measured function in this brain." Bars are `aria-hidden`. `hcp-mmp:left:1` → "Visual 100%" and CAB-NP "Primary visual 100%".
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (W: checks only a "%" suffix, a final "100 %" and the captions; the shares from the data are uncovered); `e2e/parity/inspector.spec.ts` (W; enabled on `next` since #134: "Visual" and "100%")
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (W: checks only a "%" suffix, a final "100 %" and the captions; the shares from the data are uncovered)
 
 ### INSP-11 · Functional division gives the area's section and named region
 
@@ -132,7 +132,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — buttons that open a region (the list is a pure view-model)
 - **Source:** `viewer/ui/panels/constituents.js:10-56`
 - **Expected:** `learning:left:innominata` → summary "Constituent regions 2"; at least one text part containing "Cut only"; a button part → call `region:<its id>`; note "Union of source regions. Surface smoothed for readability; volume measured from source voxels. Small regions without a surface remain available on cuts." A constituent `ghost` the catalog lacks → throws "Missing learning constituent: ghost". Published data: `learning:midline:optic-chiasm` → summary contains "2"; its first part's button opens another region (the h2 no longer reads "Optic chiasm").
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ### INSP-15 · Parts on both sides each say their side
 
@@ -141,7 +141,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — accessible names with hidden text
 - **Source:** `viewer/ui/panels/constituents.js:35-51`; deviation `r1-constituent-side.md`
 - **Expected:** `learning:midline:optic-chiasm` (parts `nextbrain:left:161`, `nextbrain:right:10161`) → buttons "Optic chiasm, left" and "…, right", glyphs "L", "R" with `aria-hidden="true"`; French "Chiasma optique, gauche". `learning:left:innominata` (both left) → no glyph, no hidden side text.
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ## Inspector presentation
 
@@ -179,7 +179,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` clean for `learning:midline:optic-chiasm` and `hcp-mmp:left:50` in en and fr, for no region and for `learning:left:thalamus`; `app.expectAccessible('inspector')` on V1.
-- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R); `e2e/parity/inspector.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/inspector.svelte.test.ts` (R)
 
 ## Atlas comparison
 
@@ -190,7 +190,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: the `shown` predicate)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:192-196`; decision 39 on #4
 - **Expected:** `hcp-mmp:left:1` → shown; `aseg:left:8`, no region, or no `atlas_comparison` in the manifest → `hidden`. Published data, `learning:midline:optic-chiasm` → hidden.
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down)
 
 ### INSP-21 · The section is named for the other atlas
 
@@ -199,7 +199,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: the heading)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:117-120`; `viewer/index.html:366`; deviation `r2-summary-heading.md`
 - **Expected:** `hcp-mmp:left:1` → "Overlap with Destrieux"; `destrieux:left:16` in French → "Recouvrement avec HCP-MMP"; the summary has no child elements.
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down)
 
 ### INSP-22 · The comparison loads once, the first time the section is shown
 
@@ -208,7 +208,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: load phase; the request count is observable with a stubbed fetch)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:161-178`, `205`
 - **Expected:** V1 → 1 request with the panel closed; then `destrieux:left:16`, `aseg:left:8`, V1 → still 1. `aseg:left:8` first → 0. After a failure and Retry → 2. Published data: 1 request to `atlas-comparison.json` while closed.
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-23 · The status line says loading and loaded, and is never held back
 
@@ -226,7 +226,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — real focus
 - **Source:** `viewer/ui/panels/atlas-comparison.js:121-125`, `172-180`; deviation `r2-retry-focus.md`
 - **Expected:** HTTP 503 → "Could not load the atlas comparison. A file could not be downloaded. Check the connection and try again." and "Retry comparison"; Retry (focused) → focus on the summary, rows appear, 2 requests, focus still on the summary, no Retry. 503 then `destrieux:left:16` → error and Retry stay. Bytes with `"schema_version": 2` in French → "Planum a été mis à jour. Rechargez la page pour continuer." and "Réessayer la comparaison". Published data, aborted route → "Could not load the atlas comparison.", Retry → summary focused on next, 4 rows.
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-25 · The rows are the region's overlaps from the data, largest first
 
@@ -235,7 +235,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (catalog plus figures; the catalog is C3's, `core-catalogs.md`)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:129-140`; `viewer/comparison/catalog.js`
 - **Expected:** `hcp-mmp:left:1` (pial total 2783.08 mm²) → 5 rows; the first is `destrieux:left:43` at "956.4" mm² and "34.4" % (data 956.376, 34.36 %); Unassigned "0.0", "0.0". `destrieux:left:16` → 23 rows. `hcp-mmp:left:119` (total 366.20) → Unassigned "72.0 mm²", "19.7 %" (data 71.984, 19.66 %). Denominator "Shares of this region’s full pial surface."; column heads "Region", "Area (mm²)", "Share (%)" (`aria-hidden`).
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (S); `src/lib/core/comparison/catalog.test.ts` (S, the catalog); `e2e/parity/atlas-comparison.spec.ts` (S; enabled on `next` since #134). The denominator sentence is asserted only by the e2e spec, so it has no running next-app test.
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (S); `src/lib/core/comparison/catalog.test.ts` (S, the catalog). The denominator sentence is asserted only by the e2e spec, so it has no running next-app test.
 
 ### INSP-26 · Four rows show, the rest behind a counted disclosure
 
@@ -244,7 +244,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:133-137`
 - **Expected:** `destrieux:left:16` → 4 rows in the first list, disclosure "19 more overlapping regions", 23 rows in all. `hcp-mmp:left:1` → "1 more overlapping region"; French "1 autre région en recouvrement".
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R, could move down)
 
 ### INSP-27 · Overlap figures show one decimal, and a positive overlap never shows as zero
 
@@ -262,7 +262,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model: the name; `withUnit` is C1's)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:16-21`, `90-108`, `138-140`; decision 39 on #4
 - **Expected:** `hcp-mmp:left:1` first row: `aria-pressed="false"`, name matching "Highlight overlap with <name>, 956.4 mm², 34.4% of this region" containing its `.comparison-name` text, cells "956.4", "34.4"; French "Tracer le recouvrement avec <name>, 956,4 mm², 34,4 % de cette région". `hcp-mmp:left:119` Unassigned children "Unassigned", "72.0 mm²", "19.7 %" with hidden "mm²", "%"; French "Non assigné". `comparison-format.test.ts`: "Highlight overlap with Area 44, 25.4 mm², 15.4% of this region".
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `src/lib/core/comparison-format.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `src/lib/core/comparison-format.test.ts` (R)
 
 ### INSP-29 · Pressing a row outlines that overlap on the model
 
@@ -271,7 +271,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model over C5's latest runner and the engine port; today browser with a fake engine)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:65-88`
 - **Expected:** V1, press row 1 → `aria-pressed="true"`, engine highlighted `overlap:…`, request geometry `{file: 'atlas-overlaps.glb', sha256: 'c6ebb202fc9ec9852cc75ae8e6023d7efdd85e10e084abc3901e65d397b1d80c'}`; again → unpressed, nothing highlighted. Row 2 → row 2 pressed, row 1 not. Pending outline → status "Loading overlap outline…", unpressed, `[aria-busy=true]`; settled → pressed, status "". Press 1 then 2, settle 2 then 1 → pressed states `false, true, false, false, false`. Rejected → "Could not load the overlap outline.", unpressed. Not applied → status "", unpressed. Published data: press 1 → pressed; 2 → 2 pressed, 1 not; 2 again → unpressed.
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-30 · The outline goes when its context goes
 
@@ -280,7 +280,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** unit (view-model; today browser)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:183-185`, `197-203`, `208-210`
 - **Expected:** Pressed, close → `highlighted` null; open → unpressed. Close before the outline settles → `clear` called; settle; open → unpressed, status "". Region `destrieux:left:16` or none → `highlighted` null. Unmount → `clear` called. Published data: press row 1, close and reopen → unpressed.
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-31 · Without outlines, rows stay focusable and say why
 
@@ -289,7 +289,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — focus and `aria-describedby`
 - **Source:** `viewer/ui/panels/atlas-comparison.js:101`, `141-142`; deviation `r2-aria-disabled-rows.md`; decision 39 on #4
 - **Expected:** `outlineAvailable: false` → the first four rows `aria-disabled="true"`, not `disabled`, described by "Turn off sections to outline overlaps. Measurements use the full region, including hidden parts."; Tab from the summary → row 1; a click → no `highlight` call, unpressed. Back to true → no "Turn off sections", no `aria-describedby`, no `aria-disabled`. Pressed row 2 focused, outlines lost → nothing highlighted, unpressed, focus on row 2. Published data `cut=sagittal` → rows disabled, the note visible; Tab from the summary → row 1 focused on next (legacy: not focused).
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-32 · A language switch keeps focus and the press on the same row
 
@@ -307,7 +307,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — the saved file through an anchor click and the page announcer (the name and content are pure)
 - **Source:** `viewer/ui/panels/atlas-comparison.js:23-30`, `181-182`; deviation `r2-status-live.md`; decision 33 on #4
 - **Expected:** `destrieux:left:16` → "cdmd-destrieux-left-16-atlas-comparison.csv", ends with CRLF, 1 + 23 lines, header starting `schema_version,anatomy_id,subject,`, line 2 contains `,destrieux:left:16,` and "Superior frontal gyrus"; French contains "Gyrus frontal supérieur" and not the English name. Announcer "Atlas comparison CSV downloaded." / "Fichier CSV de la comparaison des atlas téléchargé." Published data: V1 → "cdmd-hcp-mmp-left-1-atlas-comparison.csv"; French button "Télécharger CSV".
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `src/lib/core/comparison/catalog.test.ts` (R, the CSV); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `src/lib/core/comparison/catalog.test.ts` (R, the CSV)
 
 ### INSP-34 · The method names its sources, which open in a new tab and say so
 
@@ -316,7 +316,7 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — link attributes and accessible names
 - **Source:** `viewer/ui/panels/atlas-comparison.js:144-153`; deviation `r2-new-tab-cue.md`; decision 17 on #4
 - **Expected:** Links ["Destrieux (opens in a new tab)", `https://doi.org/10.1016/j.neuroimage.2010.06.010`, `_blank`, `noopener noreferrer`] and ["HCP-MMP (opens in a new tab)", `https://doi.org/10.1038/nature18933`, `_blank`, `noopener noreferrer`].
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)
 
 ### INSP-35 · The section, its list and its method stay open across regions
 
@@ -352,4 +352,4 @@ Scope: chunks R1 (#54, the region inspector: the empty hint, the selected region
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` clean for `destrieux:left:16` (en, fr, all open), `hcp-mmp:left:119` pressed and then unavailable, and the 503 failure. `app.expectAccessible('atlas-comparison')` with the more list open (published data).
-- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R); `e2e/parity/atlas-comparison.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/inspector/AtlasComparison.svelte.test.ts` (R)

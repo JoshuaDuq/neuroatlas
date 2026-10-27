@@ -58,7 +58,7 @@ is the English interface text.
 - **Level:** unit
 - **Source:** `viewer/state/url-state.js:203-206,229-235`
 - **Expected:** `{ hiddenRegions: Set['destrieux:right:18', 'aseg:left:11'] }` → `hidden=aseg:left:11,destrieux:right:18`, read back as `['aseg:left:11', 'destrieux:right:18']`. Empty set → `''`. `hidden=a,a` → `['a']`. `hidden=a,,b` and `hidden=a&hidden=b` → rejected `['hidden']`.
-- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-05`: the `a,a` case); `e2e/parity/dissection.spec.ts` (R, a link with a hidden part; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/state/url-state.test.ts` (R; `STATE-05`: the `a,a` case)
 
 ### STATE-06 · A field that does not parse, or appears twice, is named and left out
 

@@ -13,7 +13,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit (view-model; the grouping is the clinical catalogue's) for the content; browser for the note's removal
 - **Source:** `viewer/ui/panels/clinical.js:40-49,63-71,494-504`
 - **Expected:** 40 rows in 6 groups ("Attention and executive functions" 9, "Memory" 1, "Language, reading and number" 7, "Perception and visuospatial abilities" 7, "Sensorimotor functions" 14, "Social and emotional functions" 2); note "40 profiles · adult acquired deficits"; query "aphas" → 1 row ("Aphasia") and no note.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; groups only checked as more than 3); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; groups only checked as more than 3)
 
 ### DEF-02 · Groups are labelled lists of buttons
 
@@ -31,7 +31,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — visible label and layout
 - **Source:** `index.html:279-295`; `viewer/ui/panels/clinical.js:486-487`; deviation `x2-search-label.md`; decisions 37 and 68 on #4
 - **Expected:** `label.field-label` "Search deficits or cognitive functions", taller than 8 px, `htmlFor` = the field's id; `placeholder` ''; `aria-controls` = the "Deficits" group's id; `kbd.shortcut` "/" with single keys on; absent with `showShortcut` false.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: the accessible name only; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-04 · One clear control, which returns focus to the field
 
@@ -40,7 +40,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — rendering of the native cancel, focus
 - **Source:** `viewer/ui/panels/clinical.js:459-465,488-491`; deviation `x2-single-clear-control.md`; decision 38 (D9) on #4
 - **Expected:** empty field → no clear button. "aphas" → `getByRole('button', {name: 'Clear search'})` visible; the native `::-webkit-search-cancel-button` not displayed; press → value '', focus on the field.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; I for the native cancel, which is checked by finding the CSS rule's text in the style sheets rather than its effect); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; I for the native cancel, which is checked by finding the CSS rule's text in the style sheets rather than its effect)
 
 ### DEF-05 · Escape empties a filled field and keeps focus; on an empty field it is the page's
 
@@ -49,7 +49,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — key dispatch to the focused field
 - **Source:** `viewer/ui/panels/clinical.js:406-413`; KEY-04 in `controller.md`
 - **Expected:** "aphas", Escape → value '', focus on the field, the query set to ''. Empty field, Escape → the window sees `defaultPrevented` false. Composing: uncovered.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134); the composing case is uncovered
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); the composing case is uncovered
 
 ### DEF-06 · The `/` entry point focuses the field with its text selected
 
@@ -67,7 +67,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit (view-model) for the content; browser for the hand-off
 - **Source:** `viewer/ui/panels/clinical.js:505-510,420-425`
 - **Expected:** "aphazia" → 0 rows; title "No match for “aphazia”"; hint "Try another term or a cognitive function."; button "Did you mean “Aphasia”?"; press → the query set to the suggestion, focus on the field.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the suggested name is not pinned); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the suggested name is not pinned)
 
 ### DEF-08 · A query that names activation maps bridges to the Functions tab
 
@@ -76,7 +76,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit (view-model) for the text; browser for the press
 - **Source:** `viewer/ui/panels/clinical.js:511-512,427-428`
 - **Expected:** 3 matches for "memory" → button "Functions: 3 activation maps match “memory”"; 1 → "Functions: 1 activation map matches “memory”"; press → the search carried to `functions` with "memory". On the built site, "language" → the Functions tab selected, hash `tab=functions`.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the count is a stub and the press is checked on the controller's call log); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the count is a stub and the press is checked on the controller's call log)
 
 ### DEF-09 · The arrow keys walk the list from the field; every row stays a Tab stop
 
@@ -85,7 +85,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — key dispatch and focus
 - **Source:** `viewer/ui/panels/clinical.js:414-417,432-440`; decision 38 on #4
 - **Expected:** field, ArrowDown → row 0; ArrowDown → row 1; ArrowUp × 2 → the field; Enter → row 0; Tab → row 1; every row `tabIndex` 0. "memory" with a bridge, walking down → the last stop is `.search-bridge`.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-10 · A focused row is never hidden under its sticky group heading
 
@@ -103,7 +103,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit for the sentence (`results`); browser with fake timers for the debounce in the component
 - **Source:** `viewer/ui/panels/clinical.js:513`; `viewer/ui/announce.js`; deviation `x2-results-announcement.md`; decision 37 on #4
 - **Expected:** "aphas" → '' at once, then "1 deficit"; Escape → "40 deficits"; "aphas" then "amnesi" → "1 deficit" written again; "aphazia" → "No match". Language `fr` with a query → nothing said.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; real 500 ms waits); `e2e/parity/deficits.spec.ts` (R: "1 deficit"; enabled on `next` since #134). The language case is uncovered.
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; real 500 ms waits). The language case is uncovered.
 
 ### DEF-12 · The open deficit's row is current
 
@@ -123,7 +123,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — focus after render, scroll
 - **Source:** `viewer/ui/panels/clinical.js:275-285`; deviation `x2-focus-after-render.md`
 - **Expected:** press Aphasia → focus on `h2` "Aphasia"; row `aria-current="true"`. Press Amnesia → focus on `h2` "Amnesia". Scroll parent at 200 px, open another → `scrollTop` 0. `openDeficit('amnesia')` resolves after the preparation, focus on the heading.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; the hash part is `links.md`; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-14 · The profile reads evidence kind, summary, caveat, associations, checked maps and sources
 
@@ -132,7 +132,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit (view-model) for the content; today built in `ProfileBody.svelte`
 - **Source:** `viewer/ui/panels/clinical.js:321-358`
 - **Expected:** Aphasia → "Lesion and clinical evidence · 6 associations"; caveat "Reference anatomy; associations do not predict an individual patient’s deficit."; one `h3` "Associations"; "Activation maps this evidence checks" present only when `checkedMaps` is not empty; foot "Selected literature · not a systematic review · Content checked: 2026-10-22".
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R: the single "Associations" heading); `e2e/parity/deficits.spec.ts` (R: the kind line; enabled on `next` since #134). The caveat, the checked-maps heading and the sources line are uncovered.
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R: the single "Associations" heading). The caveat, the checked-maps heading and the sources line are uncovered.
 
 ### DEF-15 · The meta line says what is opening, then the side and what the stage shows
 
@@ -141,7 +141,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit (`profile-meta.ts` `stageCounts`; the sentence is a view-model)
 - **Source:** `viewer/ui/panels/clinical.js:361-368,388-403`; `viewer/clinical/translations.js` (`regionsMarked`)
 - **Expected:** on Destrieux, aseg, both hemispheres: Aphasia held → "Opening anatomy…", then "Left hemisphere · 7 regions visible"; hemisphere `right` → "Left hemisphere · 0 of 7 regions visible". Paint with one region → "Left hemisphere · 1 region coloured". Amnesia → starts "Bilateral landmarks"; Neglect → starts "Right hemisphere" and `stageCounts` counts all its mapped regions but one as shown. `stageCounts` on aphasia with hemisphere `right` → shown 0; isolated on its first region → 1; its first region hidden → total − 1; an unknown region → throws.
-- **Covered by:** `src/features/deficits/profile-meta.test.ts` (R); `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R, by regex; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/profile-meta.test.ts` (R); `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-16 · The meta line is one status region updated in place
 
@@ -179,7 +179,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — accessible names (the side choices are `sharedSide` / `sideStated`, unit in `core-panels.md`)
 - **Source:** `viewer/ui/panels/clinical.js:114-174`
 - **Expected:** Neglect → more than one `article.association`; the title's `.network-swatch` `aria-hidden="true"`; no `.side`; hidden text " · Right hemisphere"; first region `aria-label` matching `^Open region: .+ · Right$`, its text without "Right".
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: the region names; enabled on `next` since #134). Mixed sides and the empty mapping are uncovered here.
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R). Mixed sides and the empty mapping are uncovered here.
 
 ### DEF-20 · A mapped region opens below the profile with its name in focus
 
@@ -188,7 +188,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — focus and scroll position
 - **Source:** `viewer/ui/panels/clinical.js:22-29,441-447`
 - **Expected:** Aphasia, "Open region: Middle temporal gyrus…" → the region `destrieux:left:38` opened; focus on the region title, its top within 2 px of the detail view's top.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the region is checked on the controller's call log); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R; the region is checked on the controller's call log)
 
 ### DEF-21 · While a run is in flight, region buttons and Restore stay focusable and refuse
 
@@ -206,7 +206,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — accessible names
 - **Source:** `viewer/ui/panels/clinical.js:150-161`; deviation `x2-evidence-summary-name.md`
 - **Expected:** Neglect → 5 summaries, names unique, each `^Evidence, `; the first text node "Evidence"; French `^Données probantes, `. A summary opens and closes the evidence, which holds "Reported finding", "Interpretation", "Approximate anatomical mapping" and "Publications · <n>" headings.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: open and close, "Reported finding"; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-23 · Opened evidence survives a language change and closes for another deficit
 
@@ -224,7 +224,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — `lang` and link attributes
 - **Source:** `viewer/ui/panels/clinical.js:80-112`; deviation `x2-external-links.md`; decision 17 on #4
 - **Expected:** the title link `href` `^https://doi.org/`, `target="_blank"`, text containing "(opens in a new tab)", `svg[aria-hidden=true]`, no `[lang]` in English; in French "(s’ouvre dans un nouvel onglet)", a `span[lang=en]` inside, an authors `p.note[lang=en]`. PubMed link "PubMed · <pmid>" → `https://pubmed.ncbi.nlm.nih.gov/<pmid>/`. A correction → "Correction published", its summary, a "doi:<doi>" link.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R: DOI and PubMed links; enabled on `next` since #134). Corrections are uncovered here (`publishedCorrections` is in `core-panels.md`).
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R). Corrections are uncovered here (`publishedCorrections` is in `core-panels.md`).
 
 ### DEF-25 · A checked map opens that function
 
@@ -253,7 +253,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — focus
 - **Source:** `viewer/ui/panels/clinical.js:230-236,314-319,391`
 - **Expected:** nothing open → no Restore; no held scene → no Restore. Aphasia open → Restore; press → the scene put back, focus on the Aphasia row. Restore rejects "boom" → meta "The previous view could not be fully restored.", class `error`, the reload offer hears "boom", focus on Restore. The field fallback is uncovered.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ## Related deficits
 
@@ -264,7 +264,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** unit (view-model) for the list; browser for the hand-off
 - **Source:** `viewer/ui/panels/clinical.js:51-61,206-209,370-386`
 - **Expected:** select `destrieux:left:38` → section shown, `h3` "Neuropsychology", no `aria-labelledby`, a row "Aphasia"; press → Aphasia opened, focus on its heading. `destrieux:left:-1` → section hidden.
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ## Language and accessibility checks
 
@@ -275,7 +275,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser
 - **Source:** `viewer/clinical/translations.js`
 - **Expected:** Aphasia → heading "Aphasie", "Données lésionnelles et cliniques · 6 associations", summary "Données probantes"; meta "Hémisphère gauche · …"; Neglect → "Négligence spatiale".
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-30 · axe finds nothing in the list or in a profile with its evidence open
 
@@ -284,7 +284,7 @@ What opening a deficit does to the scene (draw, frame, the reveal notice and the
 - **Level:** browser — axe
 - **Source:** decision record #57
 - **Expected:** `expectAxeClean()` → no violations, Neglect open; then French and "mém".
-- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R); `e2e/parity/deficits.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/deficits/deficits.svelte.test.ts` (R)
 
 ### DEF-31 · At 200 % text, or with WCAG 1.4.12 spacing, nothing overflows or clips
 
