@@ -297,9 +297,16 @@ export function createFakeSections({ model, changed, mri }: FakeSectionsOptions)
       emit();
     },
     async setSurfaceColor(mode: SurfaceColor, current = () => true) {
+      // As the real engine: the colour loads the T1 alone, not the linked MRI's volumes.
       if (mode === 'mri') {
-        await this.load();
-        if (!current()) return;
+        state.status = 'loading';
+        emit();
+        await Promise.resolve();
+        if (!current()) {
+          state.status = 'ready';
+          emit();
+          return;
+        }
         model.attachMri();
       }
       if (mode === 'functional') {

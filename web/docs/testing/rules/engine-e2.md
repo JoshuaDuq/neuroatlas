@@ -177,7 +177,7 @@ The legacy comparison file `parity/E2.test.ts` is deleted; a rule that lists no 
 - **Level:** browser — real WebGL (`usampler3D`, `texelFetch`)
 - **Source:** `viewer/tissues/label-sampling.js:9-59`; `viewer/slices/volume.js:33-54`
 - **Expected:** the SLICE-09 fixtures drawn through `labelAt`: ramp `[1.4]³` → 51, `[1.6]³` → 102, `[1.5]³` → 51; corners `[4,9,9,9,4,9,9,9]` at `[0.4,0.4,0.5]` → 9, `[0.2,0.2,0.5]` → 4; all-7 cube at `[−0.4,.5,.5]` → 7, `[−0.6,.5,.5]` → 0.
-- **Covered by:** uncovered (needs a browser pixel test; first follow-up, the cut must colour the label the pick names)
+- **Covered by:** `src/lib/engine/tissues/label-sampling.svelte.test.ts` (R, real WebGL against `Volume.label`)
 
 ### SHADER-17 · A cut face is drawn in its label's palette colour, lit as tissue, and absent where hidden
 

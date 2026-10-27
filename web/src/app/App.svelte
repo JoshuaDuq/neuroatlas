@@ -53,4 +53,4 @@
     failure={app.failure}
   />
 </StageRegion>
-<StatusRegion {lang} {choosing} onProvenance={() => masthead!.openProvenance()} />
+<StatusRegion {lang} {choosing} onProvenance={(event) => masthead!.openProvenance(event)} />

@@ -13,7 +13,7 @@ const DEBOUNCE_MS = 500;
  * A live region speaks when its content changes. Writing the sentence it already holds
  * changes nothing, so a repeat is cleared first and written after this gap.
  */
-const REPEAT_GAP_MS = 100;
+export const REPEAT_GAP_MS = 100;
 
 let region: HTMLElement | null = null;
 let repeatTimer: ReturnType<typeof setTimeout> | undefined;
