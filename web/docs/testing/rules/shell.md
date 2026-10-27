@@ -13,7 +13,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser: landmark roles in the DOM
 - **Source:** `index.html:96, 225, 319, 426, 592`; decision 13 on #4 (this overrides the #38 issue text, which listed a `nav`)
 - **Expected:** element order `HEADER, ASIDE, MAIN, FOOTER`; `getByRole` count 1 each for `banner`, `complementary`, `main`, `contentinfo`; 0 `nav`. Legacy has 0 `complementary`, because its asides carry `role=tabpanel`.
-- **Covered by:** `src/app/App.svelte.test.ts` (R, the real masthead and colophon before the engine); `e2e/parity/shell.spec.ts` "one banner, main and contentinfo" (R; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R, the real masthead and colophon before the engine)
 
 ### SHELL-02 · The panel landmark is named in the reader's language
 
@@ -22,7 +22,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser: accessible name of a landmark
 - **Source:** comment 38 item 1 on #4 (`workspace.panelAria`)
 - **Expected:** `en` → "Atlas panel"; `fr` → "Panneau de l’atlas".
-- **Covered by:** `src/app/App.svelte.test.ts` (R, French); `src/app/boot.svelte.test.ts` (R, BOOT-12); `e2e/parity/shell.spec.ts` (R, English; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R, French); `src/app/boot.svelte.test.ts` (R, BOOT-12)
 
 ### SHELL-03 · The masthead and status slots add no element of their own
 
@@ -40,7 +40,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser: real Tab order
 - **Source:** `viewer/ui/chrome/chrome.contract.test.js:68`; `index.html:96, 225-426`
 - **Expected:** a button appended to each of `header`, `aside` and `main`. Three Tabs from the start of the document focus them in that order. `header.compareDocumentPosition(main)` and `aside.compareDocumentPosition(main)` both include `DOCUMENT_POSITION_FOLLOWING`.
-- **Covered by:** `src/app/App.svelte.test.ts` (R); `e2e/parity/shell.spec.ts` "panel before the stage" and "the masthead is first" (R; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R)
 
 ### SHELL-05 · The stage can take focus but is not a Tab stop
 
@@ -49,7 +49,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser: focus
 - **Source:** deviation `h1a-skip-link.md`; comment 38 item 2 on #4; legacy `index.html:426` (no tabindex)
 - **Expected:** `main#viewport` has `tabIndex === -1`. `main.focus()` makes it `document.activeElement`. Tabbing through the page never lands on `main` itself.
-- **Covered by:** `src/app/App.svelte.test.ts` (R); `e2e/parity/shell.spec.ts` "main can take focus" (R; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R)
 
 ## Layout
 
@@ -69,7 +69,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser: layout/CSS
 - **Source:** `viewer/styles/phone.css:30-61`
 - **Expected:** at 390×844: `footer` `display: none`; `aside` `display: contents`; `#app` has one column, rows `auto 1fr` and `overflow: hidden`; `main` is column 1, row 2; `documentElement.scrollWidth − clientWidth = 0`. The same holds at 812×375 (landscape ≤ 480 px tall).
-- **Covered by:** `src/app/App.svelte.test.ts` (R, only the `footer` and `aside` display values at 390 px); `e2e/parity/shell.spec.ts` "a phone has no contentinfo" (R; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R, only the `footer` and `aside` display values at 390 px)
 
 ### SHELL-08 · The frame fits both phone orientations and 320×256
 
@@ -78,7 +78,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser — every region mounted with the fake engine at 812×375, 375×812 and 320×256 (the shell spec stays an e2e journey)
 - **Source:** WCAG 2.2 SC 1.3.4, 1.4.10; `viewer/styles/phone.css:30-45`
 - **Expected:** for 812×375, 375×812 and 320×256: overflowX 0, overflowY 0, `main` left ≥ 0, right ≤ clientWidth, bottom ≤ clientHeight, height > 0; no `contentinfo`.
-- **Covered by:** `e2e/parity/shell.spec.ts` "fits the frame" ×3 (R; `next` since #64); `src/app/App.svelte.test.ts` "the phone frame before the engine" (R, `main` taller than 0 at 812×375 and 320×256 while loading); the rest of the three sizes is covered only by the e2e spec
+- **Covered by:** ×3 (R; `next` since #64); `src/app/App.svelte.test.ts` "the phone frame before the engine" (R, `main` taller than 0 at 812×375 and 320×256 while loading); the rest of the three sizes is covered only by the e2e spec
 
 ### SHELL-09 · Before the anatomy arrives the panel shows a skeleton, not the inspector
 
@@ -98,7 +98,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser: a DOM attribute set by the component
 - **Source:** `index.html:95`; `viewer/app.js:1623`
 - **Expected:** static HTML `<div id="app" data-status="loading">`; mounted → `loading`; then `ready`, `switching`, `error`, `context-lost` as the status changes.
-- **Covered by:** `src/app/App.svelte.test.ts` (R); `src/app/boot.svelte.test.ts` (R, BOOT-12); `e2e/parity/shell.spec.ts` "#app carries a known data-status" (W: accepts any of the five values; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R); `src/app/boot.svelte.test.ts` (R, BOOT-12)
 
 ## Before the app loads
 
@@ -109,7 +109,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** unit for the resolution (the script run in a VM); e2e for "before the app's script" on the built page
 - **Source:** deviation `h1a-theme-flash.md`; decision 2 on #4; comment 18 item 1 (key `planum.theme`). Legacy `index.html:2` ships `data-theme="light"`.
 - **Expected:** stored nothing, `''`, `'system'` or `'Dark'` → `light` with a light system and `dark` with a dark one. Stored `light` with a dark system → `light`; stored `dark` with a light system → `dark`. With the app's scripts blocked and a dark scheme → `<html data-theme="dark">`.
-- **Covered by:** `src/app/head-script.test.ts` (R; its oracle is the app's own `resolveTheme`, so a literal table of the values above would also name the rule); `e2e/parity/shell.spec.ts` "the first frame has the system theme", "a saved theme wins over the system" (R; `next` since #64)
+- **Covered by:** `src/app/head-script.test.ts` (R; its oracle is the app's own `resolveTheme`, so a literal table of the values above would also name the rule), "a saved theme wins over the system" (R; `next` since #64)
 
 ### SHELL-12 · The browser chrome takes the theme's surface colour
 
@@ -118,7 +118,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** unit
 - **Source:** `index.html:26`; `web/src/styles/tokens.css` `--surface-base`
 - **Expected:** light → `#ffffff`; dark → `#1b1e21`; static `<meta name="theme-color" content="#ffffff" />`.
-- **Covered by:** `src/app/head-script.test.ts` (R, read from `tokens.css`); `e2e/parity/shell.spec.ts` (R, dark only; `next` since #64)
+- **Covered by:** `src/app/head-script.test.ts` (R, read from `tokens.css`)
 
 ### SHELL-13 · The page language is right before the first paint
 
@@ -127,7 +127,7 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** unit (the script run in a VM); e2e for the built page
 - **Source:** deviation `h1a-html-lang.md`; WCAG 2.2 SC 3.1.1; comment 18 item 2
 - **Expected:** `#lang=fr` → `fr`; `#tab=functions&lang=fr` → `fr`; `#lang=en` with `fr` saved → `en`; `#lang=de` with `fr` saved → `fr`; `#lang=` with nothing saved → `en`; `#lang=fr&lang=en` with nothing saved → `en`, with `fr` saved → `fr`; no hash with `de` saved → `en`. With the app's scripts blocked, `#lang=fr` → `fr`, and no hash with `planum-lang=fr` saved → `fr`.
-- **Covered by:** `src/app/head-script.test.ts` (R; the oracle is `startLanguage(decodeState(hash).state.lang, saved)`); `e2e/parity/shell.spec.ts` "<html lang> follows the link and the saved choice" (R; `next` since #64)
+- **Covered by:** `src/app/head-script.test.ts` (R; the oracle is `startLanguage(decodeState(hash).state.lang, saved)`)
 
 ### SHELL-14 · Blocked site data does not stop the first paint
 
@@ -174,4 +174,4 @@ The inline script in `web/index.html` is the theme and language script (decision
 - **Level:** browser for the shell alone; e2e for the whole loaded page (BUILD-10)
 - **Source:** #4 parity proof ("`next` must have zero axe violations")
 - **Expected:** zero violations at 1280×800 and 390×844, light and dark.
-- **Covered by:** `src/app/App.svelte.test.ts` (R, English only); `e2e/parity/shell.spec.ts` "the shell passes axe" (legacy baseline) and the 8-case theme × width × language matrix (R; `next` since #64)
+- **Covered by:** `src/app/App.svelte.test.ts` (R, English only) and the 8-case theme × width × language matrix (R; `next` since #64)

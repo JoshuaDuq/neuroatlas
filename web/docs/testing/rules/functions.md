@@ -13,7 +13,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** unit (view-model: `functionList`)
 - **Source:** `viewer/ui/panels/functions.js:31-45,421-436`
 - **Expected:** `functionList(domains, '', 'en')` → `overview.id = 'all'`, `name = 'All functions'`, `studies = null`, `colour = null`, detail "Each area in its strongest core assessment function"; 6 groups in the order `attention-executive, memory, language-number, perception, sensorimotor, social-emotional`; 70 rows in all; no term groups; no suggestion. A row's `detail` reads "<n> studies · <a> areas[, <s> structures]"; `colour` is the domain's published colour; `lang` null.
-- **Covered by:** `src/features/functions/functions-view.test.ts` (R; the group order and row count are re-derived from the data, not fixed); `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions-view.test.ts` (R; the group order and row count are re-derived from the data, not fixed); `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-02 · Groups are labelled lists of buttons, and the count column is for the eye
 
@@ -22,7 +22,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — DOM semantics and accessible names
 - **Source:** `viewer/ui/panels/functions.js:73-84`; deviation `x1-list-semantics.md`; decision 37 on #4
 - **Expected:** `getByRole('group', {name: 'Functions', exact: true})` visible; every `[role=group][aria-labelledby]` is labelled by an `H3` and holds `ul > li > button`; `.group-count`, `.function-swatch`, `.column-head` have `aria-hidden="true"`; every column head reads "Studies"; the first curated row's name matches `^<name> , [\d,]+ studies? ·`.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-03 · The list's scope stands under it at rest and leaves while searching
 
@@ -31,7 +31,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** unit (view-model) for the sentence; browser for hiding (today the sentence is built in `FunctionList.svelte`)
 - **Source:** `viewer/ui/panels/functions.js:418,453-454`
 - **Expected:** at rest the note reads "70 functions, each a Neurosynth meta-analysis of the activation literature on HCP-MMP areas; searching also finds 277 more Neurosynth terms and clinical groups. A reference map of where studies report activation, not a measure of this brain or of a person’s abilities." Query "a" → the note is not visible.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; checks only "70 functions", re-derived from the data); `e2e/parity/functions.spec.ts` (R; hidden while searching; enabled on `next` since #134). The full sentence and the term count are uncovered.
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; checks only "70 functions", re-derived from the data). The full sentence and the term count are uncovered.
 
 ### FUNC-04 · The list is shown only on the Functions tab
 
@@ -51,7 +51,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — visible label and computed visibility
 - **Source:** `index.html:262-277`; `viewer/ui/panels/functions.js:412-415`; `viewer/styles/components.css:194-195`; deviation `x1-search-label.md`; decisions 37 and 68 on #4
 - **Expected:** `label.field-label` text "Search functions" (FR "Rechercher une fonction"), visible, `htmlFor` = the field's id; the field's `aria-controls` = the list group's id; `autocomplete="off"`; `placeholder` empty; `kbd` text "/" with `aria-hidden="true"`; with `:root[data-single-keys="off"]`, at 390 px wide or with a coarse pointer the `kbd` is not displayed.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R: name, and the label's box wider than 40 px; enabled on `next` since #134). The missing placeholder and the hidden hint (single keys off, phone, coarse pointer) are uncovered.
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R). The missing placeholder and the hidden hint (single keys off, phone, coarse pointer) are uncovered.
 
 ### FUNC-06 · Clear and Escape empty the field and keep focus in it
 
@@ -60,7 +60,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — key dispatch to the focused field, focus
 - **Source:** `viewer/ui/panels/functions.js:338-355`; KEY-04 in `controller.md`
 - **Expected:** "lang", Clear → value '', `functionQuery` '', focus on the field, `.search-clear` gone, the `all` row back. "lang", Escape → `defaultPrevented` true, value ''. Escape again → `defaultPrevented` false. Escape with `isComposing` → not prevented, value still "lang". After typing "lang" focus is still the field.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-07 · The `/` entry point focuses the field with its text selected
 
@@ -80,7 +80,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** unit (view-model: `functionList`)
 - **Source:** `viewer/ui/panels/functions.js:424-445`
 - **Expected:** `functionList(domains, ' a ', 'fr')` → `overview` null; 20 term rows, every one `lang: 'en'`, `colour: null`; `termsMore = matches.terms − 20`; note "<termsMore> more terms match; type more to narrow the list." (1 → "1 more term matches; …"); groups in the order `terms-function`, `terms-population`. Query "a" in English → term rows `lang: null`. Query "aphasia" → a "Neurosynth clinical groups" heading and the row `term:aphasia`.
-- **Covered by:** `src/features/functions/functions-view.test.ts` (R); `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions-view.test.ts` (R); `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-09 · A query that finds nothing says so and offers the nearest name
 
@@ -89,7 +89,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** unit (view-model) for the content; browser for the hand-off to the field
 - **Source:** `viewer/ui/panels/functions.js:446-450,357-362`
 - **Expected:** "langauge" → `matches {functions: 0, terms: 0}`; title "No match for “langauge”"; hint "Search a function, task or stimulus, such as “faces” or “reward”, or a clinical group such as “aphasia”."; a button "Did you mean “Language”?". Pressing it → field value and `functionQuery` "Language", focus on the field. "language" → no suggestion.
-- **Covered by:** `src/features/functions/functions-view.test.ts` (R; the suggested name is only checked non-empty); `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134). The suggested name itself is not pinned anywhere.
+- **Covered by:** `src/features/functions/functions-view.test.ts` (R; the suggested name is only checked non-empty); `src/features/functions/functions.svelte.test.ts` (R). The suggested name itself is not pinned anywhere.
 
 ### FUNC-10 · A query that names lesion profiles bridges to the Deficits tab
 
@@ -98,7 +98,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** unit (view-model) for the text; browser for the press (today the count is read in `FunctionList.svelte`)
 - **Source:** `viewer/ui/panels/functions.js:451-452,364-365`
 - **Expected:** "aphasia" → a button "Deficits: <n> lesion profiles match “aphasia”" (n = the Deficits tab's match count; 1 → "1 lesion profile matches"). Press → explorer `deficits`, `clinicalQuery` "aphasia", `selectedFunction` null.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-11 · The arrow keys walk the list from the field; every row stays a Tab stop
 
@@ -107,7 +107,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — key dispatch and focus
 - **Source:** `viewer/ui/panels/functions.js:345-348,369-377`; decisions 37 and 38 on #4
 - **Expected:** field, ArrowDown → the `all` row; ArrowUp → the field; Enter → the `all` row. "aphasia", walking down → every `.function-row, .search-bridge` in order, the last a bridge, a further ArrowDown stays on it. Home on a row → not prevented. Tab from row 1 → row 2.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-12 · The result count is said once typing pauses, and again after the field is cleared
 
@@ -136,7 +136,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — focus and scroll
 - **Source:** `viewer/ui/panels/functions.js:149-162,457-462`; CTRL-25 for the scene
 - **Expected:** a function with ≤12 areas, its download held → `document.activeElement` is the `h2[data-function-title]` (`tabindex=-1`) reading the function's name; meta "Preparing the HCP-MMP areas…"; once drawn, `[data-function=<id>]` has `aria-current="true"` and it is the only one; `currentItem()` is that row; `selectedFunction` = id; Restore offered. Scroll parent at 80 px, open another → `scrollTop` 0. Enter on the open row → focus on the heading.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; the hash part is `links.md`; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-15 · The meta line says what is being prepared, then what is shown
 
@@ -228,7 +228,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — `<details>` state across renders (the split is unit)
 - **Source:** `viewer/ui/panels/functions.js:209-218`
 - **Expected:** `language` (96 areas) → 96 area rows in all, 84 inside a closed `details` whose summary reads "84 more areas" (1 → "1 more area"); pressing it → open. Open another function with more than 12 areas → closed.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-25 · An area button is named by what it shows
 
@@ -237,7 +237,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — accessible name
 - **Source:** `viewer/ui/panels/functions.js:181-182`; deviation `x1-area-name.md`
 - **Expected:** no `aria-label`; name matches `^.+ · [LR]\w*,? .*z [\d.]+$`, e.g. "<area> · Left, <division>, z 20.3"; `getByRole('button', {name: /^<visible name>/})` finds it.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; the regex accepts the legacy "Show area: " prefix; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-26 · Opening an area draws it and hands focus to the region's name
 
@@ -264,7 +264,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — roles
 - **Source:** `index.html:338`; `viewer/ui/panels/functions.js:195-199,225-228,254-256,282-286`; deviation `x1-no-landmarks.md`; decision 13 on #4
 - **Expected:** no `section` or `[role=region]` inside `.profile`; on the page, `getByRole('region')` count 0.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ## Restore
 
@@ -275,7 +275,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — focus
 - **Source:** `viewer/ui/panels/functions.js:107-111,164-169,323`; deviation `x1-restore-focus.md`
 - **Expected:** nothing open → no `.restore`. Open a function → "Restore previous view" (FR "Rétablir la vue précédente"); Enter → `selectedFunction` null, focus on the row, `.restore` gone, notice "Previous view restored.". Open, search "zzzqqq", Restore → focus on the field.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-30 · A failed restore keeps Restore and its focus for another try
 
@@ -295,7 +295,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — `lang` attributes and accessible names
 - **Source:** `viewer/ui/panels/functions.js:35-36,301,429-430`
 - **Expected:** searchbox "Rechercher une fonction"; group "Fonctions"; row `^Toutes les fonctions`; row `^Langage\s*, [\d,]+ études? ·`; query "a" → `[data-function^="term:"] .row-name[lang=en]`; `[data-function=language] .row-name` has no `lang`.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)
 
 ### FUNC-32 · axe finds nothing in the list, an open profile or a search
 
@@ -304,7 +304,7 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — axe
 - **Source:** decision record #56
 - **Expected:** `expectAxeClean()` → no violations in each state.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; the full theme × width matrix in each of 3 states × 2 languages, see the audit's slow tests); `e2e/parity/functions.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R; the full theme × width matrix in each of 3 states × 2 languages, see the audit's slow tests)
 
 ### FUNC-33 · In forced colours the swatches, the open row and the focus ring stay visible
 
@@ -331,4 +331,4 @@ What opening a function does to the scene (draw, frame, hold the scene, the see-
 - **Level:** browser — layout
 - **Source:** WCAG 2.2 SC 1.4.4, 1.4.10, 1.4.12
 - **Expected:** every visible `button, summary, h2, h3, p, label`: `scrollWidth ≤ clientWidth + 1`; `button, summary`: `scrollHeight ≤ clientHeight + 1`; root `scrollWidth ≤ clientWidth + 1`. 390 px page → `scrollWidth − clientWidth = 0`.
-- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R); `e2e/parity/functions.spec.ts` (R: the 390 px page; enabled on `next` since #134)
+- **Covered by:** `src/features/functions/functions.svelte.test.ts` (R)

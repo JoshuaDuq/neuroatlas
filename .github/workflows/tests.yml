@@ -71,17 +71,13 @@ jobs:
               - *validate
               - tests/**
               - scripts/**/*.py
-            # The Svelte app, what it reads, and the legacy app it is compared with.
+            # The Svelte app and what it reads.
             web:
               - web/**
               - config/**
               - data/**
               - public/**
               - scripts/published-version.mjs
-              - viewer/**
-              - index.html
-              - vite.config.js
-              - package*.json
               - .github/scripts/**
               - .github/workflows/tests.yml
 
@@ -130,25 +126,6 @@ jobs:
       # Re-checks every published asset of this anatomy against its sources.
       - name: Validate the published anatomy
         run: uv run python -m brain_model.validate --anatomy ${{ matrix.anatomy }}
-
-  node:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run viewer tests
-        run: npm test
 
   web-check:
     needs: changes
@@ -260,20 +237,16 @@ jobs:
             web/.vitest/attachments/
           if-no-files-found: ignore
 
-  # About 25 minutes a shard and flaky on the runners' software WebGL, so pull requests skip it:
-  # it runs when started by hand (Actions → Tests → Run workflow) and before a deploy.
+  # A few journeys on the built Svelte preview (web/e2e/journeys), on one runner. Pull requests skip
+  # it: it runs when started by hand (Actions → Tests → Run workflow) and before a deploy.
   web-e2e:
     needs: changes
     if: github.event_name != 'pull_request' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 20
     container:
       image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --ipc=host
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -283,37 +256,25 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            web/package-lock.json
+          cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix web
+        run: npm ci --prefix web
 
-      # The legacy build empties dist/, so it comes first; the preview goes beside it.
-      - name: Build the legacy app
-        run: npm run build
-
+      # The server (web/e2e/serve-site.mjs) serves web/dist at /neuroatlas/next/ and public/ at
+      # /neuroatlas/, as Pages does until the cutover.
       - name: Build the preview
-        run: |
-          npm run build:preview --prefix web
-          cp -r web/dist dist/next
+        run: npm run build:preview --prefix web
 
-      # Playwright's CI guide: one worker per job, scaled out by sharding. One retry, and a test
-      # that needed it fails the job. The global timeout (25 min) ends the run inside Playwright,
-      # so the artifacts below are still uploaded before the job's 40 min limit (setup takes a few minutes).
-      # Specs of regions not yet integrated are left out of the next project (playwright.config.ts),
-      # so the shards split only tests that run: about 21 legacy tests, 12 to 13 min, each.
-      - name: Run end-to-end tests (legacy and next), shard ${{ matrix.shard }}/8
-        run: npm run test:e2e --prefix web -- --workers=1 --retries=1 --fail-on-flaky-tests --global-timeout=1500000 --shard=${{ matrix.shard }}/8
+      # Playwright's CI guide: one worker per job. One retry, and a test that needed it fails the job.
+      - name: Run end-to-end tests
+        run: npm run test:e2e --prefix web -- --workers=1 --retries=1 --fail-on-flaky-tests --global-timeout=900000
 
       - name: Upload failure artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: web-e2e-failures-${{ matrix.shard }}
+          name: web-e2e-failures
           path: |
             web/test-results/
           if-no-files-found: ignore

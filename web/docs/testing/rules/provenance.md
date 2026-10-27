@@ -85,7 +85,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: text in the dialog (one fixed string)
 - **Source:** `provenance.js:152`; `index.html:697`
 - **Expected:** "For research and education. Planum is not a medical device and must not be used for diagnosis, treatment or any other clinical decision." FR "Pour la recherche et l’enseignement. Planum n’est pas un dispositif médical et ne doit pas servir au diagnostic, au traitement ni à aucune autre décision clinique." It is not marked `lang="en"` in French.
-- **Covered by:** `e2e/parity/provenance.spec.ts` (R, "is not a medical device" and the French start; `next` since #64); `src/features/provenance/provenance.svelte.test.ts` (R, the `lang` part only)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, the `lang` part only)
 
 ## The dialog
 
@@ -96,7 +96,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: roles
 - **Source:** `index.html:689-697`; decision record `0008-dialog-mount-points.md`
 - **Expected:** `dialog` named "Provenance" with `heading` level 2 "Provenance"; button "Close" (FR "Fermer"); `dialog.open` after opening.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R)
 
 ### PROV-11 · Opening focuses the title, not Close
 
@@ -105,7 +105,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: focus
 - **Source:** deviation `h4-initial-focus.md`; legacy `provenance.js:163-169` (focused Close)
 - **Expected:** after a keyboard open, `document.activeElement` is the `h2`. One Tab → Close.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, the title; "Close is next" is implied by the Tab-loop case); `e2e/parity/provenance.spec.ts` (R, `next` branch; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, the title; "Close is next" is implied by the Tab-loop case)
 
 ### PROV-12 · A keyboard open and close are instant; a pointer open and Close animate
 
@@ -114,7 +114,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: keyboard versus pointer activation
 - **Source:** `provenance.js:163-174`; `provenance.test.js:68`
 - **Expected:** pointer open → no `data-instant`; keyboard open → `data-instant`; Escape → closed with `data-instant`; pointer Close → closed without `data-instant`, focus on the opener; Enter on Close → closed with `data-instant`.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 3 cases); `e2e/parity/provenance.spec.ts` (R; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 3 cases)
 
 ### PROV-13 · Focus stays in the dialog while it is open
 
@@ -123,7 +123,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: real Tab order
 - **Source:** APG Dialog (Modal); HTML `showModal()`
 - **Expected:** for `links + 3` Tabs and 3 Shift+Tabs, `activeElement` is `body` or inside the dialog; Close and every link are reached.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` (R, 40 Tabs; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R)
 
 ### PROV-14 · Escape closes and returns focus; the page's keys never reach the page
 
@@ -132,7 +132,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: keyboard dispatch
 - **Source:** `provenance.js:175-176, 177-181`
 - **Expected:** with a `window` keydown listener, `v` then Escape → the listener sees nothing; dialog closed; focus on the opener. ArrowDown inside → `defaultPrevented === false`.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases); `e2e/parity/provenance.spec.ts` (R, focus return; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases)
 
 ### PROV-15 · When the opener is gone by the time it closes, focus goes to More settings
 
@@ -141,7 +141,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: focus
 - **Source:** `provenance.js:177-181`; `header.js:423-425`
 - **Expected:** open from the keyboard, hide the colophon, Escape → focus on the fallback ("More" in the fixture, "More settings" in the app). On a 390 px phone: More settings → Provenance → Escape → focus on More settings.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R); `e2e/parity/provenance.spec.ts` "Provenance opens from the ⋯ menu" (R; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R)
 
 ### PROV-16 · A change while open re-labels in place, and focus is kept or handed to the title
 
@@ -159,7 +159,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: the `lang` attribute in the rendered DOM (the "identical in both languages" test is a pure function that could be unit)
 - **Source:** deviation `h4-lang-of-parts.md`; WCAG 2.2 SC 3.1.2
 - **Expected:** `en` → the reconstruction has no `lang`. `fr` → the reconstruction and the subject value have `lang="en"`; the note "Reconstruction IRM d’un individu" has none; `.provenance-use` has none. French reference `{label:'Référence'}` → no `[lang]` in the dialog.
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases); `e2e/parity/provenance.spec.ts` (R, `next` branch: some `[lang="en"]`; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, 2 cases)
 
 ### PROV-18 · External links open in a new tab and say so
 
@@ -168,7 +168,7 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: accessible name
 - **Source:** `provenance.js:126-129` (`target="_blank"`, `rel="noreferrer"`); decision 17 on #4 (H4, C1); string `link.newTab`
 - **Expected:** each `a` in the dialog has `target="_blank"` and `rel="noreferrer"`. Its accessible name ends with "(opens in a new tab)" (FR "(s’ouvre dans un nouvel onglet)").
-- **Covered by:** `e2e/parity/provenance.spec.ts` (R, `target` on the first link only; `next` since #64). The new-tab cue is uncovered and **not implemented**: `ProvenanceDialog.svelte` renders the link text alone, though `ExternalLink.svelte`, `AtlasComparison.svelte` and `TractsExplorer.svelte` already add `link.newTab`.
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, `target` and `rel` on every link). The new-tab cue is uncovered and **not implemented**: `ProvenanceDialog.svelte` renders the link text alone, though `ExternalLink.svelte`, `AtlasComparison.svelte` and `TractsExplorer.svelte` already add `link.newTab`.
 
 ### PROV-19 · A focused link scrolls clear of the sticky header on a phone
 
@@ -204,4 +204,4 @@ The data values below come from the published `public/models/cdmd/manifest.json`
 - **Level:** browser: axe
 - **Source:** #4 parity proof
 - **Expected:** zero violations (`wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`).
-- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, a 3-state × 2-theme × 2-width matrix: 12 axe runs); `e2e/parity/provenance.spec.ts` (legacy baseline; `next` since #64)
+- **Covered by:** `src/features/provenance/provenance.svelte.test.ts` (R, a 3-state × 2-theme × 2-width matrix: 12 axe runs)

@@ -113,6 +113,32 @@ describe('the build config', () => {
     expect(copiesPublicDir('preview')).toBe(false);
     expect(copiesPublicDir('production')).toBe(true);
   });
+
+  const noindexTags = (mode: string) => {
+    const plugins = (viteConfig as (env: { mode: string; command: 'build' }) => UserConfig)({
+      mode,
+      command: 'build',
+    }).plugins as Plugin[];
+    const plugin = plugins.find((entry) => entry.name === 'preview-noindex')!;
+    return hook(plugin, 'transformIndexHtml')('');
+  };
+
+  it('BUILD-03 marks only the preview noindex, in the raw HTML', () => {
+    expect(noindexTags('preview')).toEqual([
+      {
+        tag: 'meta',
+        attrs: { name: 'robots', content: 'noindex' },
+        injectTo: 'head-prepend',
+      },
+    ]);
+    expect(noindexTags('production')).toEqual([]);
+  });
+
+  it('BUILD-09 declares lang="en" and the title "Planum"', () => {
+    const html = readFileSync(resolve(webRoot, 'index.html'), 'utf8');
+    expect(html).toMatch(/<html lang="en">/);
+    expect(html).toMatch(/<title>Planum<\/title>/);
+  });
 });
 
 describe('the head script the build injects', () => {

@@ -20,7 +20,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit
 - **Source:** `data/diffusion-cdmd.yaml`; `config/model.yaml` (`tract_catalogs`); `viewer/diffusion/controls.test.js:36-46`
 - **Expected:** For each catalog in `config/model.yaml`: members summed = bundles; `cdmd-sub-013` → 13 rows; `TRACT_CATALOGS[0].bundles.length` = 30; every `tractRowName(row, 'en' | 'fr')` non-empty. Row names include "Arcuate fasciculus", "Corticospinal tract", "Cingulum", "Corpus callosum · whole", "Corpus callosum · TractSeg segment". Initial: `af-left`, `cst-right`.
-- **Covered by:** `src/lib/core/tracts.test.ts` (R) (S, 13 rows per catalog; the 30-bundle names); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, 13 groups, 30 keys in catalog order); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R) (S, 13 rows per catalog; the 30-bundle names); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, 13 groups, 30 keys in catalog order)
 
 ### TRACT-03 · Each tract is a group of keys, each key a checkbox named in full
 
@@ -29,7 +29,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — ARIA in the DOM
 - **Source:** `viewer/diffusion/controls.js:48-104`
 - **Expected:** 13 `section [role=group]`; checkbox names = the 30 English bundle names in order; group "Arcuate fasciculus" with checkbox "Arcuate fasciculus · left" [checked] then "Arcuate fasciculus · right"; the left key's tooltip "Arcuate fasciculus · left" and visible text "L".
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, aria snapshot; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-04 · Opening the Tracts tab the first time loads the dataset; the engine follows the tab after that
 
@@ -38,7 +38,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — the component's effects with the fake engine (pure enough to move into a view-model unit test)
 - **Source:** `viewer/diffusion/native-ui.js:78-120`
 - **Expected:** `active: true` → `setActive` called with `[true]` once; Arcuate fasciculus · left and Corticospinal tract · right checked, Arcuate fasciculus · right not. `active: false` → no `setActive`, `.tracts` hidden. Open, close, open during the first load → `setActive` `[true, false, true]`.
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, the initial two drawn; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-05 · A key's count and lengths describe it only while its bundle is drawn
 
@@ -47,7 +47,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — `aria-describedby` and DOM presence
 - **Source:** `viewer/diffusion/controls.js:89-110`; deviation `t1-metrics-only-while-drawn.md`
 - **Expected:** Fake engine: af-left described "L", "4 streamlines", "mean 50.0 mm (range 20.0–80.0)"; af-right has no `aria-describedby` and no `#native-diffusion-bundle-af-right-meta`. After a 40 mm minimum: "3 of 4 streamlines". Unchecking af-left removes the description. In the app: af-left description matches `/streamlines.*mean .* mm \(range/`, and is "" once unchecked (legacy keeps it).
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R; "No streamlines meet this length filter." is uncovered); `e2e/parity/tracts.spec.ts` (R, branches legacy; enabled on `next` since #134); the count wording is I18N-
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R; "No streamlines meet this length filter." is uncovered); the count wording is I18N-
 
 ### TRACT-06 · Lengths read as a paper writes them, in the reader's notation
 
@@ -65,7 +65,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — keyboard and the fake engine's timing
 - **Source:** `viewer/diffusion/native-ui.js:100-118,176-195`; deviations `t1-pending-check.md`, `t1-restore-export-announced.md`
 - **Expected:** Space on af-left → af-left not visible, no description; Space again → checked. Cingulum · left (not loaded) → engine has `cg-left`, checked, announcer "Loaded: Cingulum · left". Held download: checked, fieldset disabled, group "Cingulum" `aria-busy="true"`; rejected with `asset-fetch` → alert contains "could not be downloaded", unchecked, no `aria-busy`. Unmount before the download resolves → announcer "".
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, first check downloads and describes; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ## The search
 
@@ -76,7 +76,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit (view-model); the row hiding is checked in the browser
 - **Source:** `viewer/diffusion/native-ui.js:122-136`; `viewer/diffusion/controls.js:107-108`; deviation `t1-search-folds-accents.md`; decision 42 on #4
 - **Expected:** `foldForSearch('Arqué', 'fr')` = "arque"; the FR search text of the arcuate row contains "arque" and "gauche", the EN text does not contain "gauche". On the catalog: "cingul" → 1 row (Cingulum); "" → 13 rows; FR "ARQUE" → 1 row; FR "gauche" → 11 rows.
-- **Covered by:** `src/lib/core/tracts.test.ts` (R); `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R); `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-09 · The list heading counts the bundles kept; with none, an empty state replaces it
 
@@ -85,7 +85,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — heading name; the count is a view-model value
 - **Source:** `viewer/diffusion/native-ui.js:122-136`; deviation `t1-list-heading-name.md`
 - **Expected:** Empty query → heading text "Tract bundles, 30"; "arcuate" → "Tract bundles, 2"; "zzz" → "No match for “zzz”" and "Try another tract name." visible, no `h4`.
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, heading contains "2" for "cingul"; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-10 · The result is said once typing pauses
 
@@ -103,7 +103,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — keyboard and focus
 - **Source:** `viewer/diffusion/native-ui.js:13-24,213-228`
 - **Expected:** Type "cing", Escape → value "", focus in the field, the keydown `defaultPrevented`; Escape again → not prevented. "cing" → "Clear search" present; click → value "", focus in the field, button gone. `.head kbd` text "/", `aria-hidden="true"`. `focusSearch()` → focus in the field.
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ## Loading and failure
 
@@ -143,7 +143,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit — the readout; the disclosure in the browser
 - **Source:** `viewer/diffusion/controls.js:118-121`; `viewer/diffusion/native-ui.js:228-238`
 - **Expected:** `settingsReadout(0.16, 1, 'en')` = "16% · ≥1 mm"; `(1, 40, 'fr')` = "100 % · ≥40 mm"; `(0, 250, 'en')` = "0% · ≥250 mm"; `(0, 250, 'fr')` = "0 % · ≥250 mm". Closed by default, summary "16% · ≥1 mm" (FR "16 % · ≥1 mm"); opened → the readout is hidden.
-- **Covered by:** `src/lib/core/tracts.test.ts` (R); `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, "16% · ≥2 mm" after one step; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R); `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-16 · The opacity slider sets the cortex on the tracts' own anatomy, and the reference outline elsewhere
 
@@ -152,7 +152,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — slider keys and engine calls
 - **Source:** `viewer/diffusion/native-ui.js:228-233`; deviation `u4-slider-readout-not-in-name.md`
 - **Expected:** Own anatomy, ArrowRight from 0.16 → `onCortexOpacity(0.18)`, no `setOutlineOpacity`; Home → 0, End → 1. `aria-valuetext` "16%" and "1 mm"; two `output[aria-hidden=true]`. Other anatomy: no overlay checkbox, "Brain outline opacity" "16%", ArrowLeft → `setOutlineOpacity(0.14)`, text "uses a different subject" visible. Overlay checkbox click → `setOverlay(true)`, again → `setOverlay(false)`.
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R, name branch; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-17 · The minimum length runs from 1 to 250 mm in 1 mm steps; dragging previews, letting go applies
 
@@ -161,7 +161,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — `input` versus `change`
 - **Source:** `viewer/diffusion/native-ui.js:55,234-239`; deviation `t1-minimum-length-config.md`; decision 42 on #4
 - **Expected:** `MINIMUM_LENGTH` = `{min 1, max 250, step 1}`. `input` at 40 → `aria-valuetext` "40 mm", no `setMinimum`; `change` → `setMinimum` `[[40]]`, then "3 of 4 streamlines". End → 250; PageDown → < 250; Home → 1; PageUp → > 1, each applied. In the app: ArrowRight from 1 → "2 mm".
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-18 · Restore returns the drawn tracts to the catalog's initial bundles, and says so
 
@@ -170,7 +170,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — focus and the announcer
 - **Source:** `viewer/diffusion/native-ui.js:240-245`; deviation `t1-restore-export-announced.md`; decision 42 on #4 (Restore resets only tract visibility)
 - **Expected:** Uncheck af-left, check af-right → drawn `['af-right', 'cst-right']`; Restore → `['af-left', 'cst-right']`, focus on Restore, announcer "Default tracts restored.".
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-19 · The lengths CSV has one quoted, formula-safe row per loaded bundle, in English, with LF line ends
 
@@ -179,7 +179,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit — the builder; e2e for the real download
 - **Source:** `viewer/diffusion/controls.js:123-135`; decisions 29 and 42 on #4
 - **Expected:** Header `bundle,total_streamlines,enabled_streamlines,minimum_length_mm,mean_length_mm,min_length_mm,max_length_mm`. At minimum 40: `"Arcuate · left",1234,1000,40,142.25,75,239.5`; `"'=SUM(A1)",…`; `"'+x"`, `"'-x"`, `"'@x"`; hidden `"He said ""hi"", left",1234,0,40,,,`; at 250 with shown 0 → `"Arcuate · left",1234,0,250,,,`; no `\r`; not starting with U+FEFF. In the app at minimum 1 the first row is af-left, `"Arcuate fasciculus · left",3639,3639,1,…` (3,639 streamlines per DIFF-).
-- **Covered by:** `src/lib/core/tracts.test.ts` (R) (the builder, the file name and MIME type, one row per catalog bundle); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, the file name, a `blob:` link and the announcement); `e2e/parity/tracts.spec.ts` (R, header, LF and a row regex; enabled on `next` since #134)
+- **Covered by:** `src/lib/core/tracts.test.ts` (R) (the builder, the file name and MIME type, one row per catalog bundle); `src/features/tracts/TractsExplorer.svelte.test.ts` (R, the file name, a `blob:` link and the announcement)
 
 ## Notes and the MRI command
 
@@ -199,7 +199,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — keyboard activation
 - **Source:** `viewer/diffusion/native-ui.js:70-76`
 - **Expected:** `.dock` holds one button and no `.nii` file name; click → `onOpenMri` once; Enter then Space → twice.
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ### TRACT-22 · Keyboard order and a language switch keep the reader's place
 
@@ -244,7 +244,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` with no violations in English (both themes, 1280 and 390 px) and one run in French (light, 1280 px); `expectAccessible('tracts')` in the app.
-- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R); `e2e/parity/tracts.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/TractsExplorer.svelte.test.ts` (R)
 
 ## The MRI navigator: opening and lifetime
 
@@ -255,7 +255,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — engine calls through the fake; e2e for the real scan
 - **Source:** `viewer/diffusion/navigation-ui.js:35-60,104-130`; comment 76 on #4
 - **Expected:** Dialog "MRI with tracts · MGH CDMD sub_013" (FR "IRM avec faisceaux · MGH CDMD sub_013"), focus on "Close". Fake 8 × 9 × 10 scan → voxel fields (4, 4, 5). `setWindow(263, 525)`, `setFaOpacity(0)`, `setPlane('MULTIPLANAR')` (390 × 844 → `'AXIAL'`, select value AXIAL), `syncTracts(visible ids, 40)`. In the app: view select MULTIPLANAR, three voxel fields, Go to voxel and the three sliders enabled, text "source voxels".
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R, +I: `resize` called once); `e2e/parity/mri-navigator.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R, +I: `resize` called once)
 
 ### TRACT-28 · Until the scan is up the controls and the canvas are off, and a status says so
 
@@ -282,7 +282,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — the fake's dispose flags
 - **Source:** `viewer/diffusion/navigation-ui.js:104-153`
 - **Expected:** ArrowRight, Level +1, Escape → navigator 0 disposed, canvas 0 disconnected, focus on the opener. Reopen → 2 navigators, canvas 1 is the dialog's, `setWindow(264, 525)`, `setVoxel([5, 4, 5])`, fields (5, 4, 5). Plane CORONAL → reopen → `setPlane('CORONAL')`. Close before the held engine arrives → it is disposed, no `setWindow`, no `syncTracts`. Close, reopen, release → disposed `[true, false]`.
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (R, a second opening works; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ## The MRI navigator: moving the crosshair
 
@@ -302,7 +302,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — keyboard dispatch to the focused canvas
 - **Source:** `viewer/diffusion/navigation-ui.js:167-173`; deviation `t2-key-modifiers.md`
 - **Expected:** From (4, 4, 5): ArrowRight → (5, 4, 5); ArrowLeft → (3, 4, 5); ArrowUp → (4, 5, 5); ArrowDown → (4, 3, 5); PageUp → (4, 4, 6); PageDown → (4, 4, 4); one `moveVoxel` each. Alt/Ctrl/Meta/Shift+ArrowRight → `dispatchEvent` true, no `moveVoxel`; plain → false, one `moveVoxel`.
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R, +I: counts `moveVoxel` calls); `e2e/parity/mri-navigator.spec.ts` (W, only checks the readout changed; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R, +I: counts `moveVoxel` calls)
 
 ### TRACT-33 · The voxel fields always show the source voxel the crosshair is on
 
@@ -311,7 +311,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — the real engine's navigator (real NiiVue on the published CDMD MRI already runs in the browser project through `index.svelte.test.ts`)
 - **Source:** comment 64 on #4; deviation `e7-navigator-source-voxel.md`; `viewer/diffusion/navigation-ui.js:95-102`
 - **Expected:** Go to voxel (40, 50, 60), then ArrowRight on the canvas → fields (39, 50, 60), not the RAS-reordered voxel legacy shows; pressing Go to voxel with those fields leaves the readout unchanged.
-- **Covered by:** uncovered: the contract-suite case "opens the MRI navigator on a canvas" (`src/lib/engine/fake/contract-suite.ts:714-740`, real NiiVue through `index.svelte.test.ts`) checks the step with `Math.abs(x - 5)`, so it does not prove the direction; `e2e/parity/mri-navigator.spec.ts` asserts only that the readout text changes. Add a browser case on the real engine: `setVoxel([40, 50, 60])`, ArrowRight → reported voxel (39, 50, 60)
+- **Covered by:** uncovered: the contract-suite case "opens the MRI navigator on a canvas" (`src/lib/engine/fake/contract-suite.ts:714-740`, real NiiVue through `index.svelte.test.ts`) checks the step with `Math.abs(x - 5)`, so it does not prove the direction asserts only that the readout text changes. Add a browser case on the real engine: `setVoxel([40, 50, 60])`, ArrowRight → reported voxel (39, 50, 60)
 
 ### TRACT-34 · Tab leaves the canvas and walks the dialog's controls in order
 
@@ -338,7 +338,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — native validation and names
 - **Source:** `viewer/diffusion/navigation-ui.js:81-82,158-161`; deviation `t2-voxel-group.md`; comment 76 on #4
 - **Expected:** Fields 1, 2, 3, Go to voxel → `setVoxel([1, 2, 3])`, announcer "Crosshair moved to voxel 1, 2, 3.", `onPoint([2, 4, 6])`. i = 99 → `rangeOverflow`, no new `setVoxel`, announcer "". Descriptions: i "0 to 7", k "0 to 9"; FR i "de 0 à 7"; group FR "Voxel source (indices à partir de 0)".
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (R, names branch; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-37 · Window, Level and FA preview while dragged and apply on release; the plane applies on change
 
@@ -347,7 +347,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — `input` versus `change`
 - **Source:** `viewer/diffusion/navigation-ui.js:50-55,157,162-166`; deviation `t2-slider-output.md`
 - **Expected:** Level `input` 300 → no new `setWindow`; `change` → `setWindow(300, 525)`. Window ArrowLeft → `setWindow(263, 524)`. FA ArrowRight → `setFaOpacity(0.05)`. Select CORONAL → `setPlane('CORONAL')`. In the app: AXIAL selected → value AXIAL.
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (W, the select value only; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-38 · The MRI crosshair moves the atlas crosshair, except while loading
 
@@ -376,7 +376,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — keyboard dispatch
 - **Source:** `viewer/diffusion/navigation-ui.js:174-179`; deviation `t2-shortcut-toggle.md`; WCAG 2.1.4
 - **Expected:** Opened by pointer (no `data-instant`), `m` on the canvas → closed, `data-instant`, focus on "MRI with tracts". Single keys off → still open. `m` in voxel i → open; Ctrl+m on the canvas → open. Escape → closed, focus on the opener.
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)
 
 ### TRACT-41 · A location that does not match the maps fails loudly
 
@@ -450,7 +450,7 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** unit (view-model) — the grid sentence is I18N-; e2e for the real header
 - **Source:** `viewer/diffusion/navigation-ui.js:17,27,81`
 - **Expected:** Fake header 8 × 9 × 10 with 2 mm voxels → "8 × 9 × 10 source voxels · 2 × 2 × 2 mm spacing" (FR "8 × 9 × 10 voxels source · espacement de 2 × 2 × 2 mm"). In the app the dialog contains "source voxels".
-- **Covered by:** `e2e/parity/mri-navigator.spec.ts` (W, the substring "source voxels" only; enabled on `next` since #134); uncovered in the browser tests
+- **Covered by:** `e2e/journeys/tracts.spec.ts` (W, the substring "source voxels" only); uncovered in the browser tests
 
 ### TRACT-49 · axe finds nothing with the navigator open
 
@@ -459,4 +459,4 @@ Scope: chunks T1 (#59), the Tracts panel (the tract list and its keys, the searc
 - **Level:** browser — axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` with no violations in English and in French; `expectAccessible('mri-navigator')` in the app.
-- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R); `e2e/parity/mri-navigator.spec.ts` (R; enabled on `next` since #134)
+- **Covered by:** `src/features/tracts/MriNavigator.svelte.test.ts` (R)

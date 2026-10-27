@@ -27,7 +27,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: roles and focus (decision 6 on #4)
 - **Source:** `viewer/ui/chrome/sections.js:56-64, 416-428`; deviations `u3-segmented-controls.md`, `g4-label-in-name.md`
 - **Expected:** Texts `['Full brain', 'Sagittal', 'Coronal', 'Axial', 'Oblique']`, `aria-pressed` `['true', 'false', 'false', 'false', 'false']`, focus on Full brain, no `title`. While Sagittal is prepared, Sagittal is pressed. French: toolbar "Plan de coupe", "Cerveau entier" pressed. The popover also holds the combobox "Cut labels".
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-02 · The arrows only move; Enter or a click chooses and gives focus back to Section
 
@@ -36,7 +36,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: keyboard and focus
 - **Source:** `viewer/ui/chrome/sections.js:171-174`; `stage-tools.js:119-123` (`[data-cut-mode]` closes)
 - **Expected:** Open, → → → focus on Coronal and no cut; Enter → Section `aria-expanded="false"`, focus on Section, cut calls `['coronal']`, row named "Coronal section". With Axial cut, click Section then Axial → popover closed, cut calls still `['axial']`. Built site: Coronal → popover hidden, Section focused, link `cut=coronal`.
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, no second cut); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, no second cut)
 
 ### SECT-03 · On a phone the planes show short names and keep the full ones as their names
 
@@ -45,7 +45,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: layout and accessible name
 - **Source:** `viewer/ui/chrome/sections.js:57-64` (`modesShort`); deviation `g4-label-in-name.md`
 - **Expected:** At 390×844 the button named "Sagittal" shows "Sag" (others "Full", "Cor", "Ax", "Obl"), is ≥ 44 px tall, and the toolbar has 5 grid columns.
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-04 · Cut labels lists the published label sets, and a failed change returns to the labels still cut
 
@@ -54,7 +54,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: native select (the controller's side is CTRL-38)
 - **Source:** `viewer/ui/chrome/sections.js:159-169, 194, 483-489`
 - **Expected:** Options `['destrieux', 'hcp-mmp', 'nextbrain']`, value `destrieux`; choose `hcp-mmp` → `cutAtlas === 'hcp-mmp'`; `setCutAtlas` rejects for `nextbrain` → value back to `hcp-mmp`, spoken "Could not prepare the section.". The manifest marks NextBrain as segmented on this brain (`nextbrainSegmented === true`). French combobox "Étiquettes de coupe".
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, the list and NextBrain); `e2e/parity/sections.spec.ts` (R, combobox present; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, the list and NextBrain)
 
 ## Choosing and closing a plane
 
@@ -101,7 +101,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: focus and the live region
 - **Source:** `viewer/ui/chrome/sections.js:238-242`; deviation `g4-status-outlives-bar.md` (WCAG 4.1.3)
 - **Expected:** Enter on "Close section and show the full brain" → the row still there and focus on Section; when `setMode('off')` resolves → row gone, mode `off`, the `role="status"` node still connected, said "Full brain · no cut". `close()` while Coronal is prepared → not pending, mode `off`, `current === null`. Built site (next): `#viewport [role="status"]` with "Full brain · no cut".
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R); `e2e/parity/sections.spec.ts` (R; the announcement is next-only, so it runs nowhere today)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R)
 
 ## The section row
 
@@ -112,7 +112,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: DOM order and layout
 - **Source:** `viewer/ui/chrome/sections.js:430-438`; `viewer/styles/stage.css:325`
 - **Expected:** No plane → no group. Sagittal → group "Sagittal section" (also "Coronal section", "Axial section", "Oblique section"; French "Coupe sagittale"); `.section-bar` parent is `.stage-dock`; the toolbar precedes it (`DOCUMENT_POSITION_FOLLOWING`); the row's bottom ≤ the toolbar's top + 0.5.
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-11 · The position slider is named by its axis, ends in anatomical letters and speaks millimetres
 
@@ -121,7 +121,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** unit for the words (`axisEnds`); browser for the slider's attributes
 - **Source:** `viewer/ui/chrome/sections.js:17-20, 439-452`
 - **Expected:** `axisEnds`: sagittal `['L', 'R']`, French `['G', 'D']`; coronal `['P', 'A']`; axial French `['I', 'S']`; oblique `['−', '+']`. Sagittal slider "R coordinate (mm): − left / + right", `min −128`, `max 128`, `step 0.5`, `aria-valuetext` "0.0 mm"; the ends `L`, `R` with `aria-hidden="true"`. Coronal "A coordinate (mm): − posterior / + anterior", axial "S coordinate (mm): − inferior / + superior". French at −12.5 → "−12,5 mm".
-- **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-12 · The slider builds one cut at a time and skips to the newest value
 
@@ -157,7 +157,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** unit for the message (`rangeMessage`); browser for the field
 - **Source:** `viewer/ui/chrome/sections.js:196-202`; `sections.test.js:88-116`; deviation `u4-number-field-range-error.md`; comment on #4 (G4 requests, `cuts.positionRange`)
 - **Expected:** Position 37.5, commit empty → no `setOffset`, value "37.5". Commit −12.5, 0, 18.75 → `setOffset` `[[-12.5], [0], [18.75]]`. Commit 900 → no call, `aria-invalid="true"`, description "Enter a position from −128 to 128 mm." visible; Tab → value still "900"; commit 12 → `aria-invalid="false"`, no `aria-describedby`, call `[[12]]`. `rangeMessage([-73.25, 96.5], 'fr')` → "Saisissez une position de −73,3 à 96,5 mm.". Built site: 12.5 → link `pos=12.5`; empty → field "12.5"; 900 → no `pos=` in the link (next only).
-- **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, values reach the cut); `e2e/parity/sections.spec.ts` (R; the range case is next-only, so it runs nowhere today; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R, values reach the cut)
 
 ### SECT-16 · Reverse side is named by its words and keeps the other half, facing it
 
@@ -166,7 +166,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: accessible name and description (WCAG 2.5.3)
 - **Source:** `viewer/ui/chrome/sections.js:203, 463-465`; deviation `g4-label-in-name.md`
 - **Expected:** Checkbox "Reverse side" (French "Inverser le côté"), `data-tooltip` "Reverse retained side", described "Reverse retained side" while focused; checking → `state.reverse === true`; coronal reversed → `setView('posterior')`. Built site: link `rev=1`.
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `src/features/sections/section-controls.test.ts` (R)
 
 ### SECT-17 · An oblique cut adds tilt and azimuth in whole degrees
 
@@ -175,7 +175,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** unit for the degrees (`degrees`); browser for the sliders
 - **Source:** `viewer/ui/chrome/sections.js:205-207, 456-462, 474-478`; deviation `g4-label-in-name.md`
 - **Expected:** `degrees(30, 'en')` "30°"; signed "+30°"; `degrees(-45, 'fr', true)` "−45°". Oblique opens at tilt 30, azimuth 30: "Tilt" `aria-valuetext` "30°", "Azimuth" "+30°", descriptions "Tilt from axial" and "Rotation around superior axis"; ends `−`, `+`. End on Azimuth → azimuth 180, "+180°", tilt 30. French names "Inclinaison", "Azimut".
-- **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/section-text.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-18 · Linked MRI opens at once from the keyboard and ignores presses while it loads
 
@@ -184,7 +184,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** unit for the guard; browser for the attributes
 - **Source:** `viewer/ui/chrome/sections.js:219-236`; deviation `g4-linked-mri-busy.md`; decision 31 on #4
 - **Expected:** `aria-keyshortcuts="M"`. Enter → `aria-disabled="true"`; Enter again → `openLinkedMri` calls `[[{ instant: true }]]`; after it loads no `aria-disabled`; a click → `[[{ instant: true }], [{ instant: false }]]`. A rejected opening → `failure` is the error, `opening === false`. French "IRM liée".
-- **Covered by:** `src/features/sections/section-controls.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R, present; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/section-controls.test.ts` (R); `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ### SECT-19 · The slider, the field and Reverse side wait for a cut
 
@@ -211,7 +211,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: measured widths (the fold decision is STORE-29, `state.md`)
 - **Source:** `viewer/ui/chrome/stage-tools.js:3-9`; `stage-tools.test.js:46-54`; `viewer/ui/chrome/viewport-chrome.js:147-176`
 - **Expected:** `compactSection({ room: 748, need: 700 })` false, `(700, 700)` false, `(488, 700)` true, `need: null` (phone) true. App, 1280 wide: no row → `sectionNeed 0`; Coronal → `data-compact="false"`, `sectionNeed` = dock `offsetWidth`; French → a new width, again the dock's; closed → 0. Visible 560 → folded; French re-measured while folded; visible 1280 → unfolded and the dock's width equals the width measured while folded. 560 px stage: More `aria-expanded="false"`, its panel not visible, no "Reverse side"; Enter → `"true"`, Reverse side visible, dock right ≤ 560. Phone 390: folded, full name hidden, short "Sag", dock width 390 − 2 × gutter. Built site phone: More toggles, then "Linked MRI" visible.
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R; the "writes its one-line width to the stage layout" case also pins the store field); `src/lib/state/stage-layout.svelte.test.ts` (R, the fold decision); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R; the "writes its one-line width to the stage layout" case also pins the store field); `src/lib/state/stage-layout.svelte.test.ts` (R, the fold decision)
 
 ### SECT-22 · The cut on screen is what the snapshot's caption reports
 
@@ -238,7 +238,7 @@ a narrow no-break space (U+202F); "−" is U+2212.
 - **Level:** browser: axe
 - **Source:** WCAG 2.2 AA
 - **Expected:** `expectAxeClean()` passes for each state named.
-- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R); `e2e/parity/sections.spec.ts` (R; legacy only, skips on `next`)
+- **Covered by:** `src/features/sections/SectionBar.svelte.test.ts` (R)
 
 ## The linked MRI dialog (G5, not built)
 

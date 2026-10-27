@@ -72,29 +72,37 @@ browser cut case for the worker path) leaves 25 to 30 s in the browser. After it
 9.8 s. Most browser time comes from five patterns: axe theme × width × language matrices, real debounce and
 tooltip timers, CSS transitions, viewport churn and real data parsed per case.
 
-## End-to-end journeys worth keeping on `next`
+## End-to-end journeys
 
-The panels gate in `e2e/parity/enabled/` is `true` since #134, so the eleven panel specs are listed on
-`next` (pull requests skip e2e, so whether they pass there is not yet known); the shell and stage gates are
-`false`. As each gate flips, keep a few journeys and drop the cases a browser test already proves. A
-journey exercises the built site end to end; it is not the level that proves each rule it touches, and the
-rules it touches each keep their own unit or browser test:
+`web/e2e/journeys/` runs a few journeys against the built Svelte preview on its real engine, served as Pages
+serves it (`e2e/serve-site.mjs`): one job, about 5 minutes, off pull requests (manual run and deploy). K19
+deleted the 25 specs of `e2e/parity/` and the `legacy` project; the rules they held are proved by the
+browser tests cited in the catalogues, or by these journeys. A journey is not the level that proves each rule
+it touches; those rules keep their own unit or browser test.
 
-1. **Boot**: cold start to ready on the built site, the WebGL failure screen, a failed start that keeps the
-   link (`boot.spec.ts`), plus the build harness that already runs (`harness.spec.ts`).
-2. **Permalink round trip** (LINK-21): a scene with a region, hidden parts, a system, a cut with position and
-   reverse, a hemisphere, a colouring and level, a function, deficit or circuit step and a tab, reloaded into
-   the same scene.
-3. **Pick and inspect on the real model**: hover names the region under the pointer, a click selects it, the
-   inspector's Clear and Hide hand focus on, and Undo brings the part back.
-4. **Find a region**: search, Enter, `region=` in the link, Back, and the tree row selected; an eye press
-   says "Hidden: …. 1 part hidden".
-5. **Explorers**: open a function and Restore; open a deficit's mapped region; step a circuit with Next.
-6. **Data bar**: switch atlas with its download and progress; Escape in the popover keeps the selection;
-   the comparison CSV downloads under its file name.
-7. **Phone**: the sheet tells the stage what it covers, desktop to phone keeps tab focus, the page-wide
-   focus walk, 320 px, and axe on the composed app.
-8. **Snapshot and full screen**: a real PNG from the real WebGL stage, and real full screen in and out.
-9. **Tracts**: the first opening loads and says so, the lengths CSV downloads, and the MRI navigator opens
-   and steps on the built site. Its source-voxel rule (TRACT-33) is proved in the browser project, on the
-   real engine's navigator.
+1. **Boot** (`boot.spec.ts`): cold start to ready, each prefetched file requested once at its version
+   (ASSET-15, ASSET-21), a second visit served by the service worker (SW-10), the WebGL failure screen, a
+   failed start that keeps the link until Retry, the head script before the app.
+2. **Permalink round trip** (`scene.spec.ts`, LINK-21): a system chosen by hand, and a scene with a region,
+   a hidden part, a cut with position and reverse, a hemisphere, a colouring and level, a function and a tab,
+   each reloaded to the same link.
+3. **Pick and inspect on the real model** (`scene.spec.ts`): hover names the region, a click selects it, Hide
+   hands focus to Undo, and Undo brings the part back.
+4. **Find a region** (`scene.spec.ts`): search, Enter, `region=` in the link, Back, the tree row selected;
+   an eye press says "Hidden: …. 1 part hidden".
+5. **Explorers** (`explorers.spec.ts`): open a function and Restore; open a deficit's mapped region; step a
+   circuit with Next.
+6. **Data bar** (`chrome.spec.ts`): a colouring that needs another atlas switches it; Escape in the phone
+   popover keeps the selection; the comparison CSV downloads under its file name.
+7. **Phone** (`phone.spec.ts`): the sheet tells the stage what it covers and a resize keeps tab focus; the
+   page-wide focus walk; 320 px (SHEET-29).
+8. **Snapshot and full screen** (`chrome.spec.ts`): a real PNG from the real WebGL stage, and real full
+   screen in and out. The settings menu and single-key shortcuts after a reload (SHORT-13) are there too.
+9. **Tracts** (`tracts.spec.ts`): the first opening downloads and draws, the lengths CSV downloads, and the
+   MRI navigator opens and steps on the built site (TRACT-48). TRACT-33 is proved in the browser project.
+10. **Accessibility** (`accessibility.spec.ts`, BUILD-10): axe on the composed app, light and dark, at 1280 px
+    and 390 px.
+
+Known gaps found while writing them: on a phone the selection strip's name ("Inspect Middle temporal gyrus,
+left") does not contain its visible text, so axe reports `label-content-name-mismatch`; and after a window
+goes from a phone to a desktop width the stage keeps the sheet's `--vis-bottom` inset.
