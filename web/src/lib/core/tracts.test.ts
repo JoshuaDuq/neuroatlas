@@ -3,7 +3,7 @@ import { test } from 'vitest';
 import { readRepoYaml } from '../../../test/repo.ts';
 import type { TractBundle as LoadedBundle } from '../engine/api.ts';
 import { TRACT_CATALOGS } from './diffusion/catalogs.ts';
-import type { TractCatalog } from './diffusion/catalogs.ts';
+import type { TractCatalog, TractClass } from './diffusion/catalogs.ts';
 import { t } from './i18n/index.ts';
 import {
   buildLengthsCsv,
@@ -12,12 +12,19 @@ import {
   foldForSearch,
   lengthSummary,
   settingsReadout,
+  bundleName,
+  tractGroups,
   tractRowName,
   tractRows,
   tractSearchText,
 } from './tracts.ts';
 
-const bundle = (id: string, en: string, fr = en) => ({ id, file: `${id}.trk`, name: { en, fr } });
+const bundle = (id: string, en: string, fr = en, fibreClass: TractClass = 'association') => ({
+  id,
+  file: `${id}.trk`,
+  name: { en, fr },
+  class: fibreClass,
+});
 
 // Ported from viewer/diffusion/controls.test.js.
 test('a tract’s left and right files share one row, left first', () => {
@@ -56,6 +63,65 @@ test('a bundle with neither side nor segment, or members that disagree, is an er
     () => tractRows([bundle('x-left', 'One · left'), bundle('x-1', 'One 1')]),
     /mixes sides and segments/,
   );
+  assert.throws(
+    () =>
+      tractRows([
+        bundle('x-left', 'One · left'),
+        bundle('x-right', 'One · right', 'One · right', 'projection'),
+      ]),
+    /mixes fibre classes/,
+  );
+  assert.throws(
+    () => tractRows([bundle('x-left', 'One · left', 'One · left', 'limbic' as TractClass)]),
+    /no known fibre class/,
+  );
+});
+
+test('rows group by fibre class in anatomical order, keeping list order inside a class', () => {
+  const rows = tractRows([
+    bundle('cc-1', 'Corpus callosum · whole', 'Corps calleux · entier', 'commissural'),
+    bundle('af-left', 'Arcuate · left'),
+    bundle('cst-left', 'Corticospinal · left', 'Corticospinal · gauche', 'projection'),
+    bundle('uf-left', 'Uncinate · left'),
+  ]);
+  assert.deepEqual(
+    tractGroups(rows).map(({ fibreClass, rows }) => [fibreClass, rows.map((row) => row.key)]),
+    [
+      ['association', ['af', 'uf']],
+      ['projection', ['cst']],
+      ['commissural', ['cc']],
+    ],
+  );
+  assert.deepEqual(
+    tractGroups(rows.filter((row) => row.fibreClass !== 'projection')).map((g) => g.fibreClass),
+    ['association', 'commissural'],
+  );
+});
+
+test('a lone numbered bundle is a whole tract named without its qualifier', () => {
+  const [row] = tractRows([
+    bundle('cc-1', 'Corpus callosum · whole', 'Corps calleux · entier', 'commissural'),
+  ]);
+  assert.equal(tractRowName(row!, 'en'), 'Corpus callosum');
+  assert.equal(tractRowName(row!, 'fr'), 'Corps calleux');
+});
+
+test('a segment’s name carries its anatomical part, and the search finds it', () => {
+  const [row] = tractRows([
+    {
+      ...bundle(
+        'callosum-7',
+        'Corpus callosum · segment 7',
+        'Corps calleux · segment 7',
+        'commissural',
+      ),
+      segment: { en: 'splenium', fr: 'splénium' },
+    },
+    bundle('callosum-1', 'Corpus callosum · segment 1', 'Corps calleux · segment 1', 'commissural'),
+  ]);
+  assert.equal(bundleName(row!.members[0]!.bundle, 'en'), 'Corpus callosum · segment 7 · splenium');
+  assert.equal(bundleName(row!.members[1]!.bundle, 'fr'), 'Corps calleux · segment 1');
+  assert.ok(tractSearchText(row!, 'fr').includes(foldForSearch('splenium', 'fr')));
 });
 
 test('each published collection reads as one row per tract in both languages', () => {
@@ -158,10 +224,31 @@ test('TRACT-02: the 30 catalog bundles read as 13 rows whose names include the k
     'Arcuate fasciculus',
     'Corticospinal tract',
     'Cingulum',
-    'Corpus callosum \u00b7 whole',
+    'Corpus callosum',
     'Corpus callosum \u00b7 TractSeg segment',
   ])
     assert.ok(names.includes(name), name);
+  assert.deepEqual(
+    tractGroups(rows).map(({ fibreClass, rows }) => [fibreClass, rows.length]),
+    [
+      ['association', 10],
+      ['projection', 1],
+      ['commissural', 2],
+    ],
+  );
+  const segments = TRACT_CATALOGS[0]!.bundles.filter((bundle) => bundle.id.startsWith('callosum-'));
+  assert.deepEqual(
+    segments.map((bundle) => bundle.segment?.en),
+    [
+      'rostrum',
+      'genu',
+      'rostral body',
+      'anterior midbody',
+      'posterior midbody',
+      'isthmus',
+      'splenium',
+    ],
+  );
 });
 
 test('TRACT-06: tiny and zero-based lengths keep one decimal in both languages', () => {

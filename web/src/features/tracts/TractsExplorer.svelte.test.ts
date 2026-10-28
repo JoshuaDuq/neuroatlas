@@ -6,6 +6,7 @@ import { cdp, page, userEvent } from 'vitest/browser';
 import { cleanup, render } from 'vitest-browser-svelte';
 import manifest from '../../../../public/models/cdmd/manifest.json' with { type: 'json' };
 import { tractCatalog } from '../../lib/core/diffusion/catalogs.ts';
+import { bundleName, tractGroups, tractRows } from '../../lib/core/tracts.ts';
 import type { Engine } from '../../lib/engine/api.ts';
 import { createFakeEngine } from '../../lib/engine/fake.ts';
 import type { FakeEngine } from '../../lib/engine/fake.ts';
@@ -16,7 +17,11 @@ import { attachAnnouncer } from '../../lib/ui/announcer.svelte.ts';
 import TractsExplorer from './TractsExplorer.svelte';
 
 const catalog = tractCatalog('cdmd');
-const names = (lang: Language) => catalog.bundles.map((bundle) => bundle.name[lang]);
+/** Every bundle's full name, in the order the list shows them: by class, then catalog order. */
+const names = (lang: Language) =>
+  tractGroups(tractRows(catalog.bundles)).flatMap(({ rows }) =>
+    rows.flatMap((row) => row.members.map(({ bundle }) => bundleName(bundle, lang))),
+  );
 
 const createEngine = (): FakeEngine =>
   createFakeEngine({
@@ -114,6 +119,38 @@ describe('the list', () => {
     // The key shows a letter; its tooltip and its name are the whole bundle name.
     expect(el('Arcuate fasciculus · left').dataset.tooltip).toBe('Arcuate fasciculus · left');
     expect(el('Arcuate fasciculus · left').parentElement!.textContent!.trim()).toBe('L');
+    // The whole callosum is one "Whole" key on a row named for the tract; a segment's key names its part.
+    await expect.element(group('Corpus callosum')).toBeVisible();
+    expect(el('Corpus callosum · whole').parentElement!.textContent!.trim()).toBe('Whole');
+    const splenium = el('Corpus callosum · TractSeg segment 7 · splenium');
+    expect(splenium.dataset.tooltip).toBe('Corpus callosum · TractSeg segment 7 · splenium');
+    expect(splenium.parentElement!.textContent!.trim()).toBe('7');
+  });
+
+  test('tracts are grouped under their fibre class, in anatomical order', async () => {
+    await ready();
+    const captions = [...document.querySelectorAll('#native-tract-bundles h4')].map(
+      (h) => h.textContent,
+    );
+    expect(captions).toEqual([
+      'Association tracts, 20',
+      'Projection tracts, 2',
+      'Commissural tracts, 8',
+    ]);
+    const rows = (fibreClass: string) =>
+      [
+        ...document.querySelectorAll(
+          `[aria-labelledby="native-tract-class-${fibreClass}"] section .name`,
+        ),
+      ].map((n) => n.textContent);
+    expect(rows('projection')).toEqual(['Corticospinal tract']);
+    expect(rows('commissural')).toEqual(['Corpus callosum', 'Corpus callosum · TractSeg segment']);
+    expect(rows('association').slice(-4)).toEqual([
+      'Superior longitudinal fasciculus',
+      'Superior longitudinal fasciculus I',
+      'Superior longitudinal fasciculus II',
+      'Superior longitudinal fasciculus III',
+    ]);
   });
 
   test('the first opening loads the dataset and draws the catalog’s two initial bundles', async () => {
@@ -198,20 +235,25 @@ describe('the search', () => {
     expect(document.querySelectorAll('section:not([hidden])')).toHaveLength(13);
   });
 
-  test('the heading counts the bundles kept and reads as one phrase', async () => {
+  test('each class caption counts the bundles kept, and a class with none is hidden', async () => {
     await ready();
-    const heading = page.getByRole('heading', { level: 4 });
-    await expect.poll(() => text(heading)).toContain('Tract bundles, 30');
+    const shown = () =>
+      [...document.querySelectorAll<HTMLElement>('#native-tract-bundles h4')]
+        .filter((heading) => heading.checkVisibility())
+        .map((heading) => heading.textContent);
     await search().fill('arcuate');
-    await expect.poll(() => text(heading)).toContain('Tract bundles, 2');
+    await expect.poll(shown).toEqual(['Association tracts, 2']);
+    // A part's name finds its row, and the caption counts the row's bundles.
+    await search().fill('splenium');
+    await expect.poll(shown).toEqual(['Commissural tracts, 7']);
   });
 
-  test('no match replaces the heading with the empty state', async () => {
+  test('no match replaces the captions with the empty state', async () => {
     await ready();
     await search().fill('zzz');
     await expect.element(page.getByText('No match for “zzz”')).toBeVisible();
     await expect.element(page.getByText('Try another tract name.')).toBeVisible();
-    expect(document.querySelector('h4')).toBeNull();
+    expect([...document.querySelectorAll('h4')].some((h) => h.checkVisibility())).toBe(false);
   });
 
   test('French folds accents and case: “arque” finds “Arqué”', async () => {
@@ -725,14 +767,19 @@ describe('keys and sliders', () => {
     expect(document.activeElement).toBe(el('Cingulum · gauche'));
   });
 
-  test('the search head carries the aria-hidden / keycap and the caption comes before the list', async () => {
+  test('the search head has a visible label and the / keycap, and captions come before their rows', async () => {
     await ready();
     const keycap = document.querySelector('.head kbd')!;
     expect(keycap.textContent).toBe('/');
     expect(keycap.getAttribute('aria-hidden')).toBe('true');
-    const heading = document.querySelector('h4')!;
-    const list = document.getElementById('native-tract-bundles')!;
-    expect(heading.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const label = document.querySelector<HTMLLabelElement>('.head label.search-label')!;
+    expect(label.textContent).toBe('Search tracts');
+    expect(label.checkVisibility()).toBe(true);
+    expect(label.htmlFor).toBe(searchEl().id);
+    expect(searchEl().placeholder).toBe('');
+    const heading = document.querySelector('#native-tract-bundles h4')!;
+    const first = document.querySelector('#native-tract-bundles section')!;
+    expect(heading.compareDocumentPosition(first) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(document.querySelectorAll('details')).toHaveLength(2);
   });
 });

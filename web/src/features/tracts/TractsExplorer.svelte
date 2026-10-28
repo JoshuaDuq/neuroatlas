@@ -24,9 +24,11 @@
     buildLengthsCsv,
     foldForSearch,
     settingsReadout,
+    tractGroups,
     tractRows,
     tractSearchText,
   } from '../../lib/core/tracts.ts';
+  import type { TractRow as TractRowData } from '../../lib/core/tracts.ts';
   import type { Engine, TractBundle as LoadedBundle } from '../../lib/engine/api.ts';
   import type { Language } from '../../lib/types/index.ts';
   import { ASSET_BASE } from '../../../build/site.ts';
@@ -70,6 +72,7 @@
   const catalog = $derived(tractCatalog(anatomy));
   const matching = $derived(anatomy === catalog.anatomy);
   const rows = $derived(tractRows(catalog.bundles));
+  const groups = $derived(tractGroups(rows));
   const text = $derived(t(lang, 'diffusion'));
   const dataset = $derived(catalog.text[lang]);
   const link = $derived(t(lang, 'link'));
@@ -107,10 +110,14 @@
   const shownMinimum = $derived(minimumDraft ?? minimum);
 
   const needle = $derived(foldForSearch(query.trim(), lang));
-  const kept = $derived(rows.map((row) => tractSearchText(row, lang).includes(needle)));
-  const matches = $derived(
-    rows.reduce((count, row, index) => count + (kept[index] ? row.members.length : 0), 0),
+  const kept = $derived(
+    new Set(
+      rows.filter((row) => tractSearchText(row, lang).includes(needle)).map((row) => row.key),
+    ),
   );
+  const bundlesKept = (list: readonly TractRowData[]) =>
+    list.reduce((count, row) => count + (kept.has(row.key) ? row.members.length : 0), 0);
+  const matches = $derived(bundlesKept(rows));
   const noMatch = $derived(t(lang, 'navigator').noMatch(query.trim()));
 
   const runner = createBusyRunner();
@@ -269,7 +276,7 @@
 
 <div class="tracts" bind:this={root} hidden={!active}>
   <div class="head">
-    <label class="visually-hidden" for="native-tract-search">{text.search}</label>
+    <label class="search-label" for="native-tract-search">{text.search}</label>
     <div class="search-box">
       <svg
         class="search-affordance"
@@ -292,7 +299,6 @@
         autocomplete="off"
         spellcheck="false"
         aria-controls="native-tract-bundles"
-        placeholder={text.search}
         value={query}
         oninput={(event) => {
           query = event.currentTarget.value;
@@ -346,25 +352,33 @@
     {/if}
 
     <fieldset disabled={busy || !ready}>
-      {#if matches > 0}
-        <h4 class="list-heading">
-          <span>{text.bundles}</span><span class="visually-hidden">{', '}</span><span class="count"
-            >{grouped(matches)}</span
-          >
-        </h4>
-      {/if}
       <div id="native-tract-bundles" class="list">
-        {#each rows as row, index (row.key)}
-          <TractRow
-            {row}
-            {lang}
-            {loaded}
-            {pending}
-            glyphs={t(lang, 'sides').glyphs}
-            {text}
-            hidden={!kept[index]}
-            ontoggle={toggle}
-          />
+        {#each groups as group (group.fibreClass)}
+          {@const count = bundlesKept(group.rows)}
+          <div
+            class="group"
+            role="group"
+            aria-labelledby="native-tract-class-{group.fibreClass}"
+            hidden={!count}
+          >
+            <h4 class="list-heading" id="native-tract-class-{group.fibreClass}">
+              <span>{text.classes[group.fibreClass]}</span><span class="visually-hidden"
+                >{', '}</span
+              ><span class="count">{grouped(count)}</span>
+            </h4>
+            {#each group.rows as row (row.key)}
+              <TractRow
+                {row}
+                {lang}
+                {loaded}
+                {pending}
+                glyphs={t(lang, 'sides').glyphs}
+                {text}
+                hidden={!kept.has(row.key)}
+                ontoggle={toggle}
+              />
+            {/each}
+          </div>
         {/each}
       </div>
       {#if matches === 0}
@@ -586,6 +600,11 @@
       font-variant-numeric: tabular-nums;
     }
     .list :global(.bundle + .bundle) {
+      border-top: 1px solid var(--border-subtle);
+    }
+    /* Fibre classes follow the tree's section rhythm: a rule, then the caption 16px under it. */
+    .group:not([hidden]) ~ .group .list-heading {
+      padding-top: var(--space-4);
       border-top: 1px solid var(--border-subtle);
     }
     /* A caveat on the whole collection is the list's foot line. */

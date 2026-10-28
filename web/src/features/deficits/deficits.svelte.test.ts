@@ -138,7 +138,7 @@ describe('the list', () => {
 
   test('the field has a visible label, no placeholder and aria-controls the list (x2-search-label)', async () => {
     await mount();
-    const label = document.querySelector<HTMLLabelElement>('label.field-label')!;
+    const label = document.querySelector<HTMLLabelElement>('label.search-label')!;
     expect(label.textContent).toBe('Search deficits or cognitive functions');
     // Not the 1 px box of a visually hidden label.
     expect(label.getBoundingClientRect().height).toBeGreaterThan(8);

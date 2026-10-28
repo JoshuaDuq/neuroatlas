@@ -1,6 +1,7 @@
 import type { TractBundle as LoadedBundle } from '../engine/api.ts';
 import type { Language } from '../types/index.ts';
-import type { TractBundle } from './diffusion/catalogs.ts';
+import { TRACT_CLASSES } from './diffusion/catalogs.ts';
+import type { TractBundle, TractClass } from './diffusion/catalogs.ts';
 import { decimal, percent, withUnit } from './format.ts';
 
 /** The length filter's range in millimetres; `max` is the legacy slider's (native-ui.js:55). */
@@ -11,6 +12,7 @@ const SIDES: readonly string[] = ['left', 'right'];
 export interface TractRow {
   key: string;
   sided: boolean;
+  fibreClass: TractClass;
   members: { bundle: TractBundle; part: string }[];
 }
 
@@ -21,13 +23,19 @@ export function tractRows(bundles: readonly TractBundle[]): TractRow[] {
     const match = bundle.id.match(/^(.+)-(left|right|\d+)$/);
     if (!match) throw new Error(`Tract bundle ${bundle.id} names neither a side nor a segment.`);
     const [, key, part] = match as unknown as [string, string, string];
+    if (!TRACT_CLASSES.includes(bundle.class)) {
+      throw new Error(`Tract bundle ${bundle.id} has no known fibre class.`);
+    }
     let row = rows.get(key);
     if (!row) {
-      row = { key, sided: SIDES.includes(part), members: [] };
+      row = { key, sided: SIDES.includes(part), fibreClass: bundle.class, members: [] };
       rows.set(key, row);
     }
     if (row.sided !== SIDES.includes(part)) {
       throw new Error(`Tract ${key} mixes sides and segments.`);
+    }
+    if (row.fibreClass !== bundle.class) {
+      throw new Error(`Tract ${key} mixes fibre classes.`);
     }
     row.members.push({ bundle, part });
   }
@@ -37,18 +45,37 @@ export function tractRows(bundles: readonly TractBundle[]): TractRow[] {
   return [...rows.values()];
 }
 
-/** What the members' names share: the tract before " · side", or before the segment number. */
+/** The rows of each fibre class, in list order; a class without rows is left out. */
+export function tractGroups(rows: readonly TractRow[]) {
+  return TRACT_CLASSES.map((fibreClass) => ({
+    fibreClass,
+    rows: rows.filter((row) => row.fibreClass === fibreClass),
+  })).filter((group) => group.rows.length > 0);
+}
+
+/** A row of one numbered bundle is a whole tract: its key is "Whole", not its number. */
+export const isWhole = (row: TractRow) => !row.sided && row.members.length === 1;
+
+/**
+ * What the members' names share: the tract before " · side" (or " · whole"), or before the
+ * segment number.
+ */
 export function tractRowName(row: TractRow, lang: Language): string {
   const stems = row.members.map(({ bundle }) => {
     const name = bundle.name[lang];
     const cut = name.lastIndexOf(' · ');
     if (cut < 0) throw new Error(`Tract name "${name}" has no qualifier.`);
-    return row.sided ? name.slice(0, cut) : name.replace(/\s*\d+$/, '');
+    return row.sided || isWhole(row) ? name.slice(0, cut) : name.replace(/\s*\d+$/, '');
   });
   if (new Set(stems).size !== 1) {
     throw new Error(`Tract ${row.key} members disagree on a name: ${stems.join(' / ')}`);
   }
   return stems[0]!;
+}
+
+/** A bundle's full name, with a segment's anatomical part: "… segment 7 · splenium". */
+export function bundleName(bundle: TractBundle, lang: Language): string {
+  return bundle.segment ? `${bundle.name[lang]} · ${bundle.segment[lang]}` : bundle.name[lang];
 }
 
 /** Lower case with the accents folded, so "arque" finds "Arqué" (decision 42 on #4). */
@@ -59,7 +86,9 @@ export function foldForSearch(text: string, lang: Language): string {
 /** The text a query is matched against: the row's name and every member's name. */
 export function tractSearchText(row: TractRow, lang: Language): string {
   return foldForSearch(
-    [tractRowName(row, lang), ...row.members.map(({ bundle }) => bundle.name[lang])].join(' '),
+    [tractRowName(row, lang), ...row.members.map(({ bundle }) => bundleName(bundle, lang))].join(
+      ' ',
+    ),
     lang,
   );
 }

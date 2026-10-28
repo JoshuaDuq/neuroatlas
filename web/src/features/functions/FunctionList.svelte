@@ -90,7 +90,7 @@
 </script>
 
 <div class="head" hidden={!model.exploring}>
-  <label class="field-label" for="{uid}-search">{copy.search}</label>
+  <label class="search-label" for="{uid}-search">{copy.search}</label>
   <div class="search-box">
     <svg
       class="search-affordance"
@@ -224,12 +224,6 @@
       padding: var(--space-3) var(--panel-inset);
       border-bottom: 1px solid var(--border-subtle);
       background: var(--surface-base);
-    }
-    .field-label {
-      color: var(--text-secondary);
-      font-size: var(--text-caption);
-      font-weight: 600;
-      line-height: var(--lh-caption);
     }
     .search-box {
       position: relative;

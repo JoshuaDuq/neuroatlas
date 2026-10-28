@@ -11,10 +11,17 @@ export interface TractMap {
   opacity: number;
 }
 
+/** The anatomical fibre classes, in the order the Tracts list shows them. */
+export const TRACT_CLASSES = ['association', 'projection', 'commissural'] as const;
+export type TractClass = (typeof TRACT_CLASSES)[number];
+
 export interface TractBundle {
   id: string;
   file: string;
   name: Translated;
+  class: TractClass;
+  /** A numbered segment's anatomical part (TractSeg's CC_1–CC_7). */
+  segment?: Translated;
   initial?: boolean;
 }
 

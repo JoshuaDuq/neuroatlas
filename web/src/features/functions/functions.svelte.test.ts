@@ -100,7 +100,7 @@ describe('the list', () => {
 
   test('the search field has a visible label, aria-controls the list and the / hint', async () => {
     mount();
-    const label = document.querySelector<HTMLLabelElement>('label.field-label')!;
+    const label = document.querySelector<HTMLLabelElement>('label.search-label')!;
     expect(label.textContent).toBe('Search functions');
     expect(label.checkVisibility()).toBe(true);
     expect(label.htmlFor).toBe(fieldElement().id);

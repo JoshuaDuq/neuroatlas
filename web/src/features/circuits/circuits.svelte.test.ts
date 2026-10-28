@@ -92,7 +92,11 @@ describe('the list', () => {
     expect(vision.querySelector('.group-count')!.getAttribute('aria-hidden')).toBe('true');
     expect(vision.querySelector('.chevron')!.getAttribute('aria-hidden')).toBe('true');
     await expect
-      .element(page.getByRole('button', { name: 'Visual pathway , 4 landmarks' }))
+      .element(
+        page.getByRole('button', {
+          name: 'Visual pathway Chiasm → optic tract → lateral geniculate nucleus → V1 , 4 landmarks',
+        }),
+      )
       .toBeVisible();
     const landmarks = world.circuits.all.reduce((sum, c) => sum + c.steps.length, 0);
     expect(document.querySelector('.scope-note')!.textContent!.trim()).toBe(
@@ -104,7 +108,11 @@ describe('the list', () => {
     mount('fr');
     await expect.element(page.getByRole('group', { name: 'Apprentissage guidé' })).toBeVisible();
     await expect
-      .element(page.getByRole('button', { name: 'Voie visuelle , 4 repères' }))
+      .element(
+        page.getByRole('button', {
+          name: 'Voie visuelle Chiasma → tractus optique → noyau géniculé latéral → V1 , 4 repères',
+        }),
+      )
       .toBeVisible();
     expect(document.querySelector('.scope-note')!.textContent).toContain('parcours guidés');
   });

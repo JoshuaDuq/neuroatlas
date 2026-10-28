@@ -169,8 +169,7 @@
   <SearchCombobox
     bind:query
     groups={groupsOfOptions}
-    label={copy.searchPlaceholder}
-    placeholder={copy.searchPlaceholder}
+    label={copy.searchLabel}
     listLabel={copy.searchResults}
     clearLabel={copy.clearSearch}
     {status}

@@ -39,7 +39,6 @@
     {groups}
     {showShortcut}
     label="Search regions"
-    placeholder="Search"
     listLabel="Matching regions"
     clearLabel="Clear search"
     status={`${found.length} matches.`}

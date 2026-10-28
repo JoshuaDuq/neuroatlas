@@ -392,6 +392,13 @@ describe('layout and accessibility', () => {
     expect(box.top).toBeLessThan(scroller.getBoundingClientRect().top + 24);
   });
 
+  test('a long result list scrolls inside the explorer without lengthening the page', async () => {
+    mount({ crowd: 60 });
+    await search('v1');
+    await expect.poll(() => options().length).toBe(50);
+    expect(document.documentElement.scrollHeight).toBe(window.innerHeight);
+  });
+
   test('the armed result is never under the pinned field, after typing, arrowing, or text at 200 %', async () => {
     mount({ crowd: 60 });
     await search('v1');

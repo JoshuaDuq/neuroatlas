@@ -274,7 +274,7 @@ components:
     typography: "{typography.caption}"
     rounded: "{rounded.small}"
     height: 24px
-    width: 28px
+    min-width: 28px
   dissection-dock:
     backgroundColor: "{colors.surface-navigation}"
     rounded: "{rounded.flat}"
@@ -475,7 +475,8 @@ clears the key. A region opened from a profile is framed with its neighbours,
 and its detail is scrolled into view with focus on its name. On stages
 narrower than 600px a paint key keeps its rows and drops its note. The selected tab uses semibold teal ink
 and a 2px teal bottom rule on a transparent ground. A control-height search
-field starts each searchable task, with the browse scope below it. They share
+field starts each searchable task under a visible 13px/600 secondary label (a
+placeholder is no label; decision 37), with the browse scope below it. They share
 a flat task-control area with 12px top and bottom padding and an 8px gap.
 One fine rule separates these controls from the index. Each mode is a list; opening an item
 drills into
@@ -654,8 +655,9 @@ spans and hidden from assistive technology.
   the tree's row (row height, teal-wash selection). Function rows are one line:
   a 12px swatch slot, the name, and the study count under a “Studies”
   (“Études”) column head, the full detail kept in hidden text; deficit rows
-  stay two lines, name over domain; circuit rows give a bare tabular landmark
-  count. Group captions mirror the tree's ruled, sticky sections. On fine
+  stay two lines, name over domain; circuit rows put the route (“Chiasm → optic
+  tract → …”) under the name, 8px above and below, with a bare tabular landmark
+  count on the name's line. Group captions mirror the tree's ruled, sticky sections. On fine
   pointers a row's figure sits on the data edge at rest and the drill chevron
   replaces it on hover or keyboard focus; a selected row keeps its figure.
   Rows without a figure show the chevron on hover, focus, or selection; touch
@@ -706,8 +708,13 @@ spans and hidden from assistive technology.
   role, description, the landmark's actions and
   datasheet, then the lesson's notes as a cohesive index of ruled disclosures at the foot. A
   selection that is not the landmark becomes a ruled 16px second subject.
-- **Tracts:** one row per tract at row height, separated by fine rules; name
-  then lettered L | R (or numbered segment) 28×24 tonal keys (3px radius),
+- **Tracts:** rows sit under Association, Projection and Commissural tracts
+  captions (13px/600 with the bundle count, ruled after the first; a class with
+  no match hides), in catalog order within a class. One row per tract at row
+  height, separated by fine rules; name then lettered L | R (or numbered
+  segment, or “Whole” for the lone whole-callosum bundle) 24px-tall tonal keys
+  at least 28px wide (3px radius); a segment's key and readout name its part
+  (TractSeg CC_1–7, rostrum … splenium),
   edgeless at rest and changing state without a colour fade; drawn is a
   selection: teal wash, 1px teal edge, 600 letter. Names use weight 500;
   metrics sit under the name in 13px tabular type with stronger counts.

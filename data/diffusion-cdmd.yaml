@@ -57,96 +57,133 @@ bundles:
   - id: af-left
     file: cdmd-sub-013/af.left.trk.gz
     name: { en: Arcuate fasciculus · left, fr: Faisceau arqué · gauche }
+    class: association
     initial: true
   - id: af-right
     file: cdmd-sub-013/af.right.trk.gz
     name: { en: Arcuate fasciculus · right, fr: Faisceau arqué · droit }
+    class: association
   - id: cst-left
     file: cdmd-sub-013/cst.left.trk.gz
     name: { en: Corticospinal tract · left, fr: Faisceau corticospinal · gauche }
+    class: projection
   - id: cst-right
     file: cdmd-sub-013/cst.right.trk.gz
     name: { en: Corticospinal tract · right, fr: Faisceau corticospinal · droit }
+    class: projection
     initial: true
   - id: cg-left
     file: cdmd-sub-013/cg.left.trk.gz
     name: { en: Cingulum · left, fr: Cingulum · gauche }
+    class: association
   - id: cg-right
     file: cdmd-sub-013/cg.right.trk.gz
     name: { en: Cingulum · right, fr: Cingulum · droit }
+    class: association
   - id: uf-left
     file: cdmd-sub-013/uf.left.trk.gz
     name: { en: Uncinate fasciculus · left, fr: Faisceau unciné · gauche }
+    class: association
   - id: uf-right
     file: cdmd-sub-013/uf.right.trk.gz
     name: { en: Uncinate fasciculus · right, fr: Faisceau unciné · droit }
+    class: association
   - id: ifof-left
     file: cdmd-sub-013/ifof.left.trk.gz
     name: { en: Inferior fronto-occipital fasciculus · left, fr: Faisceau fronto-occipital inférieur · gauche }
+    class: association
   - id: ifof-right
     file: cdmd-sub-013/ifof.right.trk.gz
     name: { en: Inferior fronto-occipital fasciculus · right, fr: Faisceau fronto-occipital inférieur · droit }
+    class: association
   - id: ilf-left
     file: cdmd-sub-013/ilf.left.trk.gz
     name: { en: Inferior longitudinal fasciculus · left, fr: Faisceau longitudinal inférieur · gauche }
+    class: association
   - id: ilf-right
     file: cdmd-sub-013/ilf.right.trk.gz
     name: { en: Inferior longitudinal fasciculus · right, fr: Faisceau longitudinal inférieur · droit }
+    class: association
   - id: mdlf-left
     file: cdmd-sub-013/mdlf.left.trk.gz
     name: { en: Middle longitudinal fasciculus · left, fr: Faisceau longitudinal moyen · gauche }
+    class: association
   - id: mdlf-right
     file: cdmd-sub-013/mdlf.right.trk.gz
     name: { en: Middle longitudinal fasciculus · right, fr: Faisceau longitudinal moyen · droit }
+    class: association
   - id: slf-left
     file: cdmd-sub-013/slf.left.trk.gz
     name: { en: Superior longitudinal fasciculus · left, fr: Faisceau longitudinal supérieur · gauche }
+    class: association
   - id: slf-right
     file: cdmd-sub-013/slf.right.trk.gz
     name: { en: Superior longitudinal fasciculus · right, fr: Faisceau longitudinal supérieur · droit }
+    class: association
   - id: cc-1
     file: cdmd-sub-013/cc.trk.gz
     name: { en: Corpus callosum · whole, fr: Corps calleux · entier }
+    class: commissural
 # TractSeg's subdivisions, which DIPY's HCP842 atlas does not make.
   - id: slf1-left
     file: cdmd-sub-013/slf1.left.trk.gz
     name: { en: Superior longitudinal fasciculus I · left, fr: Faisceau longitudinal supérieur I · gauche }
+    class: association
   - id: slf1-right
     file: cdmd-sub-013/slf1.right.trk.gz
     name: { en: Superior longitudinal fasciculus I · right, fr: Faisceau longitudinal supérieur I · droit }
+    class: association
   - id: slf2-left
     file: cdmd-sub-013/slf2.left.trk.gz
     name: { en: Superior longitudinal fasciculus II · left, fr: Faisceau longitudinal supérieur II · gauche }
+    class: association
   - id: slf2-right
     file: cdmd-sub-013/slf2.right.trk.gz
     name: { en: Superior longitudinal fasciculus II · right, fr: Faisceau longitudinal supérieur II · droit }
+    class: association
   - id: slf3-left
     file: cdmd-sub-013/slf3.left.trk.gz
     name: { en: Superior longitudinal fasciculus III · left, fr: Faisceau longitudinal supérieur III · gauche }
+    class: association
   - id: slf3-right
     file: cdmd-sub-013/slf3.right.trk.gz
     name: { en: Superior longitudinal fasciculus III · right, fr: Faisceau longitudinal supérieur III · droit }
+    class: association
 # TractSeg's CC_1–CC_7: rostrum, genu, rostral body (premotor), anterior
 # midbody (primary motor), posterior midbody (primary somatosensory), isthmus
 # and splenium.
   - id: callosum-1
     file: cdmd-sub-013/callosum_1.trk.gz
     name: { en: Corpus callosum · TractSeg segment 1, fr: Corps calleux · segment TractSeg 1 }
+    class: commissural
+    segment: { en: rostrum, fr: rostre }
   - id: callosum-2
     file: cdmd-sub-013/callosum_2.trk.gz
     name: { en: Corpus callosum · TractSeg segment 2, fr: Corps calleux · segment TractSeg 2 }
+    class: commissural
+    segment: { en: genu, fr: genou }
   - id: callosum-3
     file: cdmd-sub-013/callosum_3.trk.gz
     name: { en: Corpus callosum · TractSeg segment 3, fr: Corps calleux · segment TractSeg 3 }
+    class: commissural
+    segment: { en: rostral body, fr: corps rostral }
   - id: callosum-4
     file: cdmd-sub-013/callosum_4.trk.gz
     name: { en: Corpus callosum · TractSeg segment 4, fr: Corps calleux · segment TractSeg 4 }
+    class: commissural
+    segment: { en: anterior midbody, fr: corps moyen antérieur }
   - id: callosum-5
     file: cdmd-sub-013/callosum_5.trk.gz
     name: { en: Corpus callosum · TractSeg segment 5, fr: Corps calleux · segment TractSeg 5 }
+    class: commissural
+    segment: { en: posterior midbody, fr: corps moyen postérieur }
   - id: callosum-6
     file: cdmd-sub-013/callosum_6.trk.gz
     name: { en: Corpus callosum · TractSeg segment 6, fr: Corps calleux · segment TractSeg 6 }
+    class: commissural
+    segment: { en: isthmus, fr: isthme }
   - id: callosum-7
     file: cdmd-sub-013/callosum_7.trk.gz
     name: { en: Corpus callosum · TractSeg segment 7, fr: Corps calleux · segment TractSeg 7 }
+    class: commissural
+    segment: { en: splenium, fr: splénium }

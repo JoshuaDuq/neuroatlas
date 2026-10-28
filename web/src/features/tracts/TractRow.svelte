@@ -6,7 +6,7 @@
 -->
 <script lang="ts">
   import type { TractBundle as LoadedBundle } from '../../lib/engine/api.ts';
-  import { lengthSummary, tractRowName } from '../../lib/core/tracts.ts';
+  import { bundleName, isWhole, lengthSummary, tractRowName } from '../../lib/core/tracts.ts';
   import type { TractRow } from '../../lib/core/tracts.ts';
   import type { Language } from '../../lib/types/index.ts';
 
@@ -32,6 +32,7 @@
       mean: string;
       range: string;
       noShown: string;
+      whole: string;
     };
     hidden: boolean;
     /** The key's wish; the owner applies it and the key follows what the engine then holds. */
@@ -41,6 +42,7 @@
   const nameId = $derived(`native-tract-row-${row.key}`);
   const drawn = (id: string) => Boolean(loaded.get(id)?.visible);
   const busy = $derived(row.members.some(({ bundle }) => pending.has(bundle.id)));
+  const keyLabel = (part: string) => (row.sided ? glyphs[part] : isWhole(row) ? text.whole : part);
 </script>
 
 <section class="bundle" data-layout={row.members.length > 2 ? 'segments' : 'sides'} {hidden}>
@@ -53,9 +55,9 @@
           <input
             type="checkbox"
             id="native-diffusion-bundle-{bundle.id}"
-            aria-label={bundle.name[lang]}
+            aria-label={bundleName(bundle, lang)}
             aria-describedby={isDrawn ? `native-diffusion-bundle-${bundle.id}-meta` : undefined}
-            data-tooltip={bundle.name[lang]}
+            data-tooltip={bundleName(bundle, lang)}
             checked={isDrawn || pending.has(bundle.id)}
             onchange={(event) => {
               const input = event.currentTarget;
@@ -64,7 +66,7 @@
               input.checked = drawn(bundle.id) || pending.has(bundle.id);
             }}
           />
-          <span aria-hidden="true">{row.sided ? glyphs[part] : part}</span>
+          <span aria-hidden="true">{keyLabel(part)}</span>
         </label>
       {/each}
     </span>
@@ -74,8 +76,11 @@
       {@const metrics = loaded.get(bundle.id)}
       {#if metrics?.visible}
         <p class="meta" id="native-diffusion-bundle-{bundle.id}-meta">
-          <span class="side" aria-hidden="true">{row.sided ? glyphs[part] : part}</span>
+          <span class="side" aria-hidden="true">{isWhole(row) ? '' : keyLabel(part)}</span>
           <span class="values">
+            {#if bundle.segment}<span class="segment" aria-hidden="true"
+                >{bundle.segment[lang]}</span
+              >{/if}
             <span class="count">{text.streamlines(metrics.shown, metrics.total)}</span>
             <span class="length"
               ><span>{metrics.shown ? lengthSummary(metrics, text, lang) : text.noShown}</span
@@ -143,9 +148,11 @@
     .part > * {
       grid-area: 1 / 1;
     }
+    /* A key is as wide as its word ("Whole"), and never narrower than a letter's 28px. */
     .part input {
       appearance: none;
-      width: 28px;
+      width: 100%;
+      min-width: 28px;
       height: 24px;
       margin: 0;
       border: 1px solid transparent;
@@ -155,6 +162,7 @@
     }
     .part > span {
       place-self: center;
+      padding-inline: var(--space-2);
       pointer-events: none;
       font-size: var(--text-caption);
       line-height: var(--lh-caption);
@@ -189,7 +197,7 @@
     }
     @media (pointer: coarse) {
       .part input {
-        width: 44px;
+        min-width: 44px;
         height: 44px;
       }
     }
@@ -225,12 +233,14 @@
     .length {
       display: contents;
     }
-    .length > span {
+    .length > span,
+    .segment + .count {
       position: relative;
       white-space: normal;
     }
     /* The dot is centred in the gap, so one that would start a wrapped line falls outside the clip. */
-    .length > span::before {
+    .length > span::before,
+    .segment + .count::before {
       content: '·';
       content: '·' / '';
       position: absolute;

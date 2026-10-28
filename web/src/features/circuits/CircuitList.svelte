@@ -47,7 +47,10 @@
             data-selected={String(current)}
             onclick={() => model.openCircuit(circuit.id)}
           >
-            <span class="row-name">{circuit.name[model.lang]}</span>
+            <span class="text">
+              <span class="row-name">{circuit.name[model.lang]}</span>
+              <span class="route">{circuit.route[model.lang]}</span>
+            </span>
             <span class="group-count" aria-hidden="true">{circuit.steps.length}</span>
             <span class="visually-hidden">, {copy.landmarkCount(circuit.steps.length)}</span>
             <span class="chevron" aria-hidden="true"></span>
@@ -77,7 +80,7 @@
       min-height: var(--row-height);
       height: auto;
       margin: 0;
-      padding: max(0px, (var(--row-height) - var(--lh-ui)) / 2) var(--panel-inset);
+      padding: var(--space-2) var(--panel-inset);
       border: 0;
       border-radius: 0;
       background: transparent;
@@ -99,16 +102,32 @@
       color: var(--text-tertiary);
       cursor: default;
     }
-    .row-name {
+    /* The route under the name says what the lesson walks through before it is opened. */
+    .text {
+      display: grid;
       flex: 1;
       min-width: 0;
+    }
+    .row-name {
       overflow-wrap: anywhere;
       text-wrap: pretty;
+    }
+    .route {
+      color: var(--text-secondary);
+      font-size: var(--text-caption);
+      font-weight: 400;
+      line-height: var(--lh-caption);
+      text-wrap: pretty;
+    }
+    .circuit-choice[data-selected='true'] .route {
+      color: inherit;
     }
     /* The landmark count stands in the tree's count column; its noun is read, not shown. */
     .group-count {
       flex: none;
+      align-self: flex-start;
       min-width: 2ch;
+      margin-top: calc((var(--lh-ui) - var(--lh-caption)) / 2);
       margin-left: auto;
       color: var(--text-tertiary);
       font-size: var(--text-caption);

@@ -36,9 +36,8 @@
     /** The field's text. */
     query: string;
     groups: SearchGroup[];
-    /** The field's accessible name. */
+    /** The field's visible label. */
     label: string;
-    placeholder: string;
     /** The listbox's accessible name. */
     listLabel: string;
     clearLabel: string;
@@ -57,7 +56,6 @@
     query = $bindable(),
     groups,
     label,
-    placeholder,
     listLabel,
     clearLabel,
     status,
@@ -141,6 +139,7 @@
   pointed at with `aria-activedescendant`. Escape is handled only in the field.
 -->
 <div class="search">
+  <label class="search-label" for="{uid}-field">{label}</label>
   <div class="search-box">
     <svg
       class="search-affordance"
@@ -158,16 +157,15 @@
     </svg>
     <input
       bind:this={input}
+      id="{uid}-field"
       type="search"
       role="combobox"
-      aria-label={label}
       aria-autocomplete="list"
       aria-expanded={expanded}
       aria-controls={listId}
       aria-activedescendant={expanded && armed !== null ? optionId(armed) : undefined}
       autocomplete="off"
       spellcheck="false"
-      {placeholder}
       bind:value={query}
       {onkeydown}
     />

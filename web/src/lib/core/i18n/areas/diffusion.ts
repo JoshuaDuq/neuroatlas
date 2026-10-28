@@ -2,7 +2,12 @@ import { grouped } from '../../format.ts';
 
 export const en = {
   bundleCollection: (count: number) => `${count} tract ${count === 1 ? 'bundle' : 'bundles'}`,
-  bundles: 'Tract bundles',
+  classes: {
+    association: 'Association tracts',
+    projection: 'Projection tracts',
+    commissural: 'Commissural tracts',
+  },
+  whole: 'Whole',
   brainOpacity: 'Brain outline opacity',
   minimum: 'Minimum length (mm)',
   cortexOpacity: 'Cortex opacity',
@@ -52,7 +57,12 @@ export const en = {
 
 export const fr: typeof en = {
   bundleCollection: (count: number) => `${count} ${count > 1 ? 'faisceaux' : 'faisceau'}`,
-  bundles: 'Faisceaux',
+  classes: {
+    association: 'Faisceaux d’association',
+    projection: 'Faisceaux de projection',
+    commissural: 'Faisceaux commissuraux',
+  },
+  whole: 'Entier',
   brainOpacity: 'Opacité du contour cérébral',
   minimum: 'Longueur minimale (mm)',
   cortexOpacity: 'Opacité du cortex',

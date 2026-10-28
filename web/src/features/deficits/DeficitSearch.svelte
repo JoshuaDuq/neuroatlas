@@ -46,7 +46,7 @@
   }
 </script>
 
-<label class="field-label" for="{uid}-field">{label}</label>
+<label class="search-label" for="{uid}-field">{label}</label>
 <div class="search-box">
   <svg
     class="affordance"
@@ -95,13 +95,8 @@
 
 <style>
   @layer features {
-    .field-label {
-      display: block;
+    .search-label {
       margin-bottom: var(--space-2);
-      color: var(--text-secondary);
-      font-size: var(--text-caption);
-      font-weight: 600;
-      line-height: var(--lh-caption);
     }
     .search-box {
       position: relative;

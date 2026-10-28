@@ -83,8 +83,9 @@
   $effect(() => {
     const box = explorer.querySelector<HTMLElement>('.search-box')!;
     const measure = () => {
-      const margin = parseFloat(getComputedStyle(box).marginTop);
-      explorer.style.setProperty('--field-clearance', `${box.offsetHeight + 2 * margin}px`);
+      // Its sticky offset above, and as much ground below while searching.
+      const top = parseFloat(getComputedStyle(box).top);
+      explorer.style.setProperty('--field-clearance', `${box.offsetHeight + 2 * top}px`);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -162,8 +163,12 @@
 
 <style>
   @layer features {
-    /* The panel gives this its height. Browsing: the field and scope stay put and the tree scrolls. */
+    /*
+     * The panel gives this its height. Browsing: the field and scope stay put and the tree scrolls.
+     * It is its own containing block, or the results' hidden text would lengthen the page.
+     */
     .explorer {
+      position: relative;
       display: flex;
       flex: 1;
       flex-direction: column;
@@ -182,12 +187,16 @@
      * The field is the head of the panel (layout.css:120-132): on the inset, with a ground behind it
      * that runs edge to edge so results scroll under it, not through it.
      */
+    .explorer :global(.search-label) {
+      flex: none;
+      margin: var(--space-3) var(--panel-inset) 0;
+    }
     .explorer :global(.search-box) {
       position: sticky;
       top: var(--space-3);
       z-index: 2;
       flex: none;
-      margin: var(--space-3) var(--panel-inset) var(--space-2);
+      margin: var(--space-2) var(--panel-inset);
       width: auto;
     }
     .explorer :global(.search-box)::before {
