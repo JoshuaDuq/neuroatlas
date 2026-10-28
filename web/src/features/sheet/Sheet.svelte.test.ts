@@ -205,10 +205,14 @@ describe('the shell', () => {
       bottom: 0,
       left: span(),
     });
+    // The rail at peek is full height, so it keeps its panel rather than an empty column.
+    expect(getComputedStyle(el('navigator')).visibility).toBe('visible');
+    expect(box(el('navigator')).height).toBeGreaterThan(100);
     await resize(...PHONE);
     await vi.waitFor(() => expect(sheet().style.height).not.toBe(''));
     expect(sheet().style.width).toBe('');
     expect(sheet().style.top).toBe('');
+    await vi.waitFor(() => expect(getComputedStyle(el('navigator')).visibility).toBe('hidden'));
   });
 
   test('a narrow landscape window taller than 480 px keeps the bottom sheet', async () => {

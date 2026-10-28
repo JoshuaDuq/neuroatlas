@@ -194,17 +194,26 @@
     report(applied);
   }
 
+  /** Upright peek is the grip alone; the side rail at peek is already as wide as its tabs, so it keeps the panel. */
+  const panelHiddenAt = (rest: Detent) => rest === 'peek' && !media.sideways;
+
   /** `quick` writes `data-instant`: no glide for the sheet or the stage chrome that follows it. */
   function setDetent(next: Detent, { notify = true, quick = false, say = false } = {}) {
     // A drag that springs back to where it began has changed nothing to announce.
     const changed = next !== detent;
     // A panel that is about to hide takes its focus with it, so the handle takes it first (deviations/h6-peek-focus.md).
     const active = document.activeElement;
-    if (next === 'peek' && active && root.contains(active) && active.closest('[role="tabpanel"]')) {
+    if (
+      panelHiddenAt(next) &&
+      active &&
+      root.contains(active) &&
+      active.closest('[role="tabpanel"]')
+    ) {
       handle.focus({ preventScroll: true });
     }
     detent = next;
     root.dataset.detent = next;
+    root.dataset.panel = panelHiddenAt(next) ? 'hidden' : 'shown';
     root.toggleAttribute('data-instant', quick);
     // Written before the span is reported: the framing that follows reads it as it runs.
     stage.sheetFull = next === 'full';
@@ -215,7 +224,7 @@
 
   /** Content chosen with the sheet at rest should be seen; a raised sheet stays where it was put. */
   export function raise({ instant = false } = {}) {
-    if (media.phone && detent === 'peek') setDetent('half', { quick: instant });
+    if (media.phone && panelHiddenAt(detent)) setDetent('half', { quick: instant });
   }
 
   // ---- dragging ----------------------------------------------------------------------------
@@ -332,6 +341,7 @@
     root.style.removeProperty('width');
     root.style.removeProperty('top');
     delete root.dataset.detent;
+    delete root.dataset.panel;
     delete root.dataset.dragging;
     applied = null;
     stage.sheetFull = false;
@@ -343,7 +353,7 @@
     const panelFocused = !!active && root.contains(active) && !!active.closest('[role="tabpanel"]');
     root.dataset.dragging = 'false';
     // Peek hides the panels, so a control already in use keeps its panel exposed on the new shell.
-    setDetent(panelFocused && detent === 'peek' ? 'half' : detent, {
+    setDetent(panelFocused && panelHiddenAt(detent) ? 'half' : detent, {
       notify: false,
       quick: panelFocused,
     });
@@ -514,14 +524,18 @@
       #sheet[data-detent='peek'] {
         padding-bottom: env(safe-area-inset-bottom);
       }
-      #sheet[data-detent='peek'] :global(#navigator),
-      #sheet[data-detent='peek'] :global(#inspector) {
+      #sheet[data-panel='hidden'] :global(#navigator),
+      #sheet[data-panel='hidden'] :global(#inspector) {
         visibility: hidden;
         pointer-events: none;
         flex: 0 0 0;
         min-height: 0;
         padding: 0;
         overflow: hidden;
+      }
+      /* Nothing follows the tabs at rest, so their rule would only underline the screen edge. */
+      #sheet[data-panel='hidden'] :global(.workspace-tabs) {
+        border-bottom-color: transparent;
       }
 
       /*
@@ -658,21 +672,21 @@
       }
 
       /* The detail owns its complete title; the grip keeps the statement, and the clear beside it. */
-      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-grip-row {
+      #sheet[data-view='detail']:not([data-panel='hidden']) .sheet-grip-row {
         grid-template-rows: var(--handle-row) auto;
       }
-      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-selection {
+      #sheet[data-view='detail']:not([data-panel='hidden']) .sheet-selection {
         display: none;
       }
       /* Centred on the statement's line; its 44px reaches past that line without making it taller. */
-      #sheet[data-view='detail']:not([data-detent='peek'])
+      #sheet[data-view='detail']:not([data-panel='hidden'])
         .sheet-grip-row
         :global(.sheet-selection-clear) {
         grid-row: 2;
         align-self: start;
         margin-block: calc((var(--lh-caption) - var(--control-height)) / 2);
       }
-      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-disclaimer {
+      #sheet[data-view='detail']:not([data-panel='hidden']) .sheet-disclaimer {
         grid-row: 2;
         padding: 0 var(--space-2) var(--space-2) var(--panel-inset);
       }
@@ -694,10 +708,6 @@
       }
       #sheet :global(.workspace-tab[aria-selected='true'])::before {
         inset: auto 0 0;
-      }
-      /* Nothing follows the tabs at rest, so their rule would only underline the screen edge. */
-      #sheet[data-detent='peek'] :global(.workspace-tabs) {
-        border-bottom-color: transparent;
       }
       /* In the grip the notice is on screen at every rest; its ground, not a rule, sets it off. */
       #sheet :global(.notice) {
@@ -773,7 +783,7 @@
         margin-left: var(--space-2);
       }
       .sheet-grip-row :global(.sheet-selection-clear),
-      #sheet[data-view='detail']:not([data-detent='peek'])
+      #sheet[data-view='detail']:not([data-panel='hidden'])
         .sheet-grip-row
         :global(.sheet-selection-clear) {
         grid-column: 2;
@@ -789,7 +799,7 @@
       }
       /* Alone, the statement is the handle's 44px line; so it is beside an open detail, which names itself. */
       #sheet .sheet-grip-row:not([data-selection='true']) .sheet-disclaimer,
-      #sheet[data-view='detail']:not([data-detent='peek']) .sheet-disclaimer {
+      #sheet[data-view='detail']:not([data-panel='hidden']) .sheet-disclaimer {
         grid-row: 1 / 3;
         align-self: center;
         padding-block: 14px;

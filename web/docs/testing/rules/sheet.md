@@ -71,7 +71,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 
 ### SHEET-08 · On a phone the panel becomes a fixed sheet at the foot of the screen; on a desktop there is no sheet
 
-- **Rule:** The phone shell applies at 800 px wide or less, and on a landscape window 480 px tall or less. There the sheet is fixed to the bottom edge and starts at peek with both panels hidden. Off the phone the sheet is not a box of its own, the grip is gone, nothing is written to the sheet's size, and the stage is told it covers nothing. A landscape window taller than 480 px keeps the bottom sheet.
+- **Rule:** The phone shell applies at 800 px wide or less, and on a landscape window 480 px tall or less. There the sheet is fixed to the bottom edge and starts at peek with both panels hidden (sideways the rail keeps them; SHEET-10). Off the phone the sheet is not a box of its own, the grip is gone, nothing is written to the sheet's size, and the stage is told it covers nothing. A landscape window taller than 480 px keeps the bottom sheet.
 - **Kind:** behaviour
 - **Level:** browser — layout/CSS media queries
 - **Source:** `viewer/ui/chrome/sheet.js:35-38,256-298`; `viewer/styles/phone.css:15,62-97`; `viewer/ui/chrome/sheet.test.js:103-164`
@@ -89,11 +89,11 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 
 ### SHEET-10 · Held sideways the sheet is a side rail from the stage's top, and rotating swaps the axis
 
-- **Rule:** On a short landscape window the same sheet with the same rests sits on the left, starts at the stage's top (so it does not cover the masthead), grows rightward, and at peek is as wide as its one row of tabs, whose labels never wrap. Rotating back restores the bottom sheet.
+- **Rule:** On a short landscape window the same sheet with the same rests sits on the left, starts at the stage's top (so it does not cover the masthead), grows rightward, and at peek is as wide as its one row of tabs, whose labels never wrap. Being full height, the rail keeps its panel at peek rather than leaving an empty column, so a selection does not raise it. Rotating back restores the bottom sheet and hides the panel at peek.
 - **Kind:** behaviour
 - **Level:** browser — layout
 - **Source:** `viewer/ui/chrome/sheet.js:58-100`; `viewer/styles/phone.css` (landscape block)
-- **Expected:** 390 × 844 rotated to 844 × 390 → `style.width` set, `style.height` empty, `style.top` = round(stage top) px, sheet left = 0, last tab's right within 40 px of the sheet's right edge, tab `white-space: nowrap`. Back to 390 × 844 → `style.height` set, `style.width` and `style.top` empty.
+- **Expected:** 390 × 844 rotated to 844 × 390 → `style.width` set, `style.height` empty, `style.top` = round(stage top) px, sheet left = 0, last tab's right within 40 px of the sheet's right edge, tab `white-space: nowrap`, `#navigator` visible and taller than 100 px. Back to 390 × 844 → `style.height` set, `style.width` and `style.top` empty, `#navigator` hidden.
 - **Covered by:** `src/features/sheet/Sheet.svelte.test.ts` (R)
 
 ### SHEET-11 · The stage is told the span the sheet will land on, and whether it glides there
@@ -214,7 +214,7 @@ Scope: chunk H6 (#45), the phone bottom sheet with three rests (peek, half, full
 
 ### SHEET-23 · At peek the panels take no focus; above it every panel stop is on screen below the grip
 
-- **Rule:** The sheet is a non-modal region with no focus trap. Tab walks the handle, the name, its clear, then the tablist as one stop. At peek the panels are hidden, so nothing in them is reachable. At half and full every Tab stop in the panel, as the list scrolls, lies fully on screen and below the grip (WCAG 2.4.11). In the app the sheet comes before the stage in reading order and no stop outside it lands under it.
+- **Rule:** The sheet is a non-modal region with no focus trap. Tab walks the handle, the name, its clear, then the tablist as one stop. Upright at peek the panels are hidden, so nothing in them is reachable. At half and full every Tab stop in the panel, as the list scrolls, lies fully on screen and below the grip (WCAG 2.4.11). In the app the sheet comes before the stage in reading order and no stop outside it lands under it.
 - **Kind:** accessibility
 - **Level:** browser — sequential focus and layout
 - **Source:** `viewer/ui/chrome/sheet.js:17-20`; `viewer/styles/phone.css:90-97`; decision record 0006

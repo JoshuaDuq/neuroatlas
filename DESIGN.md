@@ -551,7 +551,8 @@ Sheet tabs mirror the desktop tabs without a rule above, spread edge to edge
 with the first label on the 16px column; peek pads for the home indicator. In short landscape, the selection occupies the first grip row and
 the disclaimer the second. Tabs use their natural full-label width, with
 nonshrinking, unwrapped labels and 12px inline padding; the measured tab row
-sets the side sheet’s peek width, preventing fragmented labels.
+sets the side sheet’s peek width, preventing fragmented labels. Being full height, the side sheet keeps its panel at peek
+rather than leaving an empty column beside the anatomy.
 
 Dialogs share sticky ruled headers as tall as the masthead (4px vertical
 padding), the title then a quiet × icon button named Close whose glyph meets
